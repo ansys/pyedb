@@ -5,25 +5,25 @@ updates:
     schedule:
       interval: "daily"
     reviewers: 
-      - "MaxJPRey"
+      - "SMoraisAnsys"
     assignees:
       - "pyansys-ci-bot"
     labels:
       - "maintenance"
       - "dependencies"
     commit-message:
-      prefix: "MAINT"
+      prefix: "maint"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
     reviewers: 
-      - "MaxJPRey"
+      - "SMoraisAnsys"
     assignees:
       - "pyansys-ci-bot"
     labels:
       - "maintenance"
       - "dependencies"
     commit-message:
-      prefix: "MAINT"
+      prefix: "maint"
