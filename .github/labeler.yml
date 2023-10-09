@@ -1,0 +1,15 @@
+documentation:
+- doc/source/**/*
+- README.md
+- README_CN.md
+maintenance:
+- .github/**/*
+- .flake8
+- setup.py
+- setup-distutils.py
+dependencies:
+- requirements/**/*
+testing:
+- _unittest/conftest.py
+- _unittest_ironpython/run_unittests.py
+- _unittest_ironpython/run_unittests_batchmode.cmd
