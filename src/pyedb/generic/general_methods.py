@@ -11,7 +11,7 @@ from collections import OrderedDict
 import inspect
 import itertools
 import traceback
-from generic.settings import settings
+from pyedb.generic.settings import settings
 
 
 def pyedb_function_handler(direct_func=None):

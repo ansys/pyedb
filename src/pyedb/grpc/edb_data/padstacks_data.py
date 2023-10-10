@@ -3,19 +3,13 @@ import math
 import re
 import warnings
 
-# from pyaedt.edb_core.dotnet.database import PolygonDataDotNet
-# from pyaedt.edb_core.edb_data.edbvalue import EdbValue
-from pyaedt.edb_core.edb_data.primitives_data import EDBPrimitivesMain
-# from pyaedt.edb_core.general import PadGeometryTpe
-# from pyaedt.edb_core.general import convert_py_list_to_net_list
-# from pyaedt.generic.clr_module import String
-# from pyaedt.generic.clr_module import _clr
+from primitives_data import EDBPrimitivesMain
 from ansys.edb.utility import Value
-from generic.general_methods import generate_unique_name
-from generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.general_methods import pyedb_function_handler
 from ansys.edb.geometry.polygon_data import PolygonData
 from ansys.edb.definition.padstack_def_data import PadGeometryType
-from pyaedt.modeler.geometry_operators import GeometryOperators
+from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 class EDBPadProperties(object):

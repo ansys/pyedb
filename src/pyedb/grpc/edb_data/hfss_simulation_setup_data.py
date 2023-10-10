@@ -1,5 +1,6 @@
-from generic.general_methods import generate_unique_name
-from generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.general_methods import pyedb_function_handler
+
 
 class EdbFrequencySweep(object):
     """Manages EDB methods for frequency sweep."""

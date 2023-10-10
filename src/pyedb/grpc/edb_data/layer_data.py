@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 import re
 
-from generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
 from ansys.edb.utility import Value
 
 
