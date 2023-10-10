@@ -26,9 +26,8 @@ import sys
 import tempfile
 import time
 
-import pytest
-
 from pyaedt.generic.settings import settings
+import pytest
 
 settings.enable_local_log_file = False
 settings.enable_global_log_file = False
@@ -39,7 +38,6 @@ settings.enable_desktop_logs = False
 settings.desktop_launch_timeout = 180
 
 
-from pyedb import Edb
 from pyaedt import Hfss
 from pyaedt.aedt_logger import pyaedt_logger
 from pyaedt.desktop import Desktop
@@ -49,6 +47,8 @@ from pyaedt.generic.filesystem import Scratch
 from pyaedt.generic.general_methods import generate_unique_name
 from pyaedt.generic.general_methods import inside_desktop
 from pyaedt.misc.misc import list_installed_ansysem
+
+from pyedb import Edb
 
 local_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(local_path)
