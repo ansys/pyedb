@@ -7,7 +7,7 @@ import math
 import re
 import warnings
 
-from pyaedt import _retry_ntimes
+
 from pyaedt.edb_core.edb_data.components_data import EDBComponent
 from pyaedt.edb_core.edb_data.components_data import EDBComponentDef
 from pyaedt.edb_core.edb_data.padstacks_data import EDBPadstackInstance

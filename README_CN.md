@@ -1,7 +1,7 @@
 <!-- -->
 <a name="readme-top"></a>
 <!--
-*** PyAEDT README
+*** PyEDB README
 -->
 
 # PyAEDT
