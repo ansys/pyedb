@@ -4,16 +4,15 @@ This module contains these classes: `EdbLayout` and `Shape`.
 import math
 import warnings
 
-from pyaedt.edb_core.dotnet.primitive import BondwireDotNet
-from pyaedt.edb_core.dotnet.primitive import CircleDotNet
-from pyaedt.edb_core.dotnet.primitive import PathDotNet
-from pyaedt.edb_core.dotnet.primitive import PolygonDotNet
-from pyaedt.edb_core.dotnet.primitive import RectangleDotNet
-from pyaedt.edb_core.edb_data.primitives_data import EDBPrimitives
-from pyaedt.edb_core.edb_data.primitives_data import cast
-from pyaedt.edb_core.edb_data.utilities import EDBStatistics
-from pyaedt.edb_core.general import convert_py_list_to_net_list
-from pyaedt.generic.general_methods import pyaedt_function_handler
+from ansys.edb.primitive import Bondwire
+from ansys.edb.primitive import Circle
+from ansys.edb.primitive import Path
+from ansys.edb.primitive import Polygon
+from ansys.edb.primitive import Rectangle
+from edb_data.primitives_data import EDBPrimitives
+from edb_data.primitives_data import cast
+from edb_data.utilities import EDBStatistics
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class EdbLayout(object):
@@ -21,7 +20,7 @@ class EdbLayout(object):
 
     Examples
     --------
-    >>> from pyaedt import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_layout = edbapp.modeler
     """

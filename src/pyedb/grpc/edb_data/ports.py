@@ -270,7 +270,7 @@ class CoaxPort(PadstackInstanceTerminal):
 
     Parameters
     ----------
-    pedb : pyaedt.edb.Edb
+    pedb : pyedb.edb.Edb
         EDB object from the ``Edblib`` library.
     edb_object : Ansys.Ansoft.Edb.Cell.Terminal.PadstackInstanceTerminal
         PadstackInstanceTerminal instance from EDB.

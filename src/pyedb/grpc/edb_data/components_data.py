@@ -156,7 +156,7 @@ class EDBComponent(object):
 
         @property
         def resistance(self):
-            return self._pin_pair_rlc.R.ToDouble()  # pragma: no cover
+            return self._pin_pair_rlc.R.value  # pragma: no cover
 
         @resistance.setter
         def resistance(self, value):

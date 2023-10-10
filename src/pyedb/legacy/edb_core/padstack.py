@@ -147,8 +147,6 @@ class EdbPadstacks(object):
             return self._edb.definition.PadGeometryType.Square45
         elif val == 11:
             return self._edb.definition.PadGeometryType.Square90
-        elif val == 12:
-            return self._edb.definition.PadGeometryType.InvalidGeometry
         else:
             return val
 

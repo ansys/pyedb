@@ -1002,7 +1002,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> edbapp = pyaedt.Edb("myproject.aedb")
+        >>> edbapp = pyedb.Edb("myproject.aedb")
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
         if not self._core_primitives and self.active_db:
