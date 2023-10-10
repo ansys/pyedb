@@ -60,8 +60,8 @@ def run_pyinstaller_from_c_python(oDesktop):
     with open(python_script, "w") as f:
         # enable in debu mode
         #f.write("import sys\n")
-        #f.write('sys.path.insert(0, r"c:\\ansysdev\\git\\repos\\pyaedt")\n')
-        f.write("from pyaedt.misc.aedtlib_personalib_install import add_pyaedt_to_aedt\n")
+        #f.write('sys.path.insert(0, r"c:\\ansysdev\\git\\repos\\legacy")\n')
+        f.write("from legacy.misc.aedtlib_personalib_install import add_pyaedt_to_aedt\n")
         f.write('add_pyaedt_to_aedt(aedt_version="{}", is_student_version={}, use_sys_lib=False, new_desktop_session=False, pers_dir=r"{}")\n'.format(oDesktop.GetVersion()[:6], is_student_version(oDesktop), oDesktop.GetPersonalLibDirectory()))
 
     command = r'"{}" "{}"'.format(python_exe, python_script)
@@ -138,13 +138,13 @@ def install_pyaedt():
                 # Extract all contents to a directory (you can specify a different extraction path if needed)
                 zip_ref.extractall(unzipped_path)
 
-            run_command('"{}" install --no-cache-dir --no-index --find-links={} pyaedt[all]'.format(pip_exe, unzipped_path))
+            run_command('"{}" install --no-cache-dir --no-index --find-links={} legacy[all]'.format(pip_exe, unzipped_path))
             run_command('"{}" install --no-cache-dir --no-index --find-links={} jupyterlab'.format(pip_exe, unzipped_path))
 
         else:
             run_command('"{}" -m pip install --upgrade pip'.format(python_exe))
             run_command('"{}" --default-timeout=1000 install wheel'.format(pip_exe))
-            run_command('"{}" --default-timeout=1000 install pyaedt[full]'.format(pip_exe))
+            run_command('"{}" --default-timeout=1000 install legacy[full]'.format(pip_exe))
             # run_command('"{}" --default-timeout=1000 install git+https://github.com/ansys/pyaedt.git@main'.format(pip_exe))
             run_command('"{}" --default-timeout=1000 install jupyterlab'.format(pip_exe))
             run_command('"{}" --default-timeout=1000 install ipython -U'.format(pip_exe))
@@ -158,7 +158,7 @@ def install_pyaedt():
             run_command('"{}" uninstall -y pywin32'.format(pip_exe))
 
     else:
-        run_command('"{}" uninstall --yes pyaedt'.format(pip_exe))
+        run_command('"{}" uninstall --yes legacy'.format(pip_exe))
 
         if args.wheel and os.path.exists(args.wheel):
             wheelpyaedt = args.wheel
@@ -171,14 +171,14 @@ def install_pyaedt():
                 # Extract all contents to a directory (you can specify a different extraction path if needed)
                 zip_ref.extractall(unzipped_path)
 
-            run_command('"{}" install --no-cache-dir --no-index --find-links={} pyaedt'.format(pip_exe, unzipped_path))
+            run_command('"{}" install --no-cache-dir --no-index --find-links={} legacy'.format(pip_exe, unzipped_path))
         else:
-            run_command('"{}" --default-timeout=1000 install pyaedt[full]'.format(pip_exe))
+            run_command('"{}" --default-timeout=1000 install legacy[full]'.format(pip_exe))
 
     # if is_windows:
-    #     pyaedt_setup_script = "{}/Lib/site-packages/pyaedt/misc/aedtlib_personalib_install.py".format(venv_dir)
+    #     pyaedt_setup_script = "{}/Lib/site-packages/legacy/misc/aedtlib_personalib_install.py".format(venv_dir)
     # else:
-    #     pyaedt_setup_script = "{}/lib/python{}/site-packages/pyaedt/misc/aedtlib_personalib_install.py".format(
+    #     pyaedt_setup_script = "{}/lib/python{}/site-packages/legacy/misc/aedtlib_personalib_install.py".format(
     #         venv_dir, args.python_version)
     #
     # if not os.path.isfile(pyaedt_setup_script):

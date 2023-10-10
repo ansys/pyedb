@@ -47,12 +47,12 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Install pyaedt
+      - name: Install legacy
         run: |
           pip install .[doc]
 
-      - name: Verify pyaedt can be imported
-        run: python -c "import pyaedt"
+      - name: Verify legacy can be imported
+        run: python -c "import legacy"
 
       - name: Retrieve PyAEDT version
         id: version

@@ -12,10 +12,10 @@ import shutil
 
 import os
 import time
-import pyaedt
+import pyedb
 
-temp_folder = pyaedt.generate_unique_folder_name()
-targetfile = pyaedt.downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+temp_folder = pyedb.generate_unique_folder_name()
+targetfile = pyedb.downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
 
 siwave_file = os.path.join(os.path.dirname(targetfile), "ANSYS-HSD_V1.siw")
 print(targetfile)
@@ -25,11 +25,11 @@ aedt_file = targetfile[:-4] + "aedt"
 ###############################################################################
 # Launch EDB
 # ~~~~~~~~~~
-# Launch the :class:`pyaedt.Edb` class, using EDB 2023 R2 and SI units.
+# Launch the :class:`legacy.Edb` class, using EDB 2023 R2 and SI units.
 edb_version = "2023.2"
 if os.path.exists(aedt_file):
     os.remove(aedt_file)
-edb = pyaedt.Edb(edbpath=targetfile, edbversion=edb_version)
+edb = pyedb.Edb(edbpath=targetfile, edbversion=edb_version)
 
 ###############################################################################
 # Compute nets and components
@@ -163,7 +163,7 @@ edb.close_edb()
 # ~~~~~~~~~~~~~~~~~~~~~
 # Open Siwave and generate a report. This works on Window only.
 
-# from pyaedt import Siwave
+# from legacy import Siwave
 # siwave = Siwave("2023.2")
 # siwave.open_project(siwave_file)
 # report_file = os.path.join(temp_folder,'Ansys.htm')

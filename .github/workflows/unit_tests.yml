@@ -30,7 +30,7 @@ jobs:
   # This workflow contains a single job called "build"
   build_solvers:
     # The type of runner that the job will run on
-    runs-on: [ windows-latest, pyaedt ]
+    runs-on: [ windows-latest, legacy ]
     strategy:
       matrix:
         python-version: [ '3.10' ]
@@ -51,7 +51,7 @@ jobs:
           python -m pip install wheel setuptools -U
           python -c "import sys; print(sys.executable)"
 
-      - name: 'Install pyaedt'
+      - name: 'Install legacy'
         run: |
           testenv_s\Scripts\Activate.ps1
           pip install .
@@ -93,7 +93,7 @@ jobs:
 
   build:
     # The type of runner that the job will run on
-    runs-on: [windows-latest, pyaedt]
+    runs-on: [windows-latest, legacy]
     strategy:
       matrix:
         python-version: ['3.10']
@@ -114,7 +114,7 @@ jobs:
           python -m pip install wheel setuptools -U
           python -c "import sys; print(sys.executable)"
 
-      - name: 'Install pyaedt'
+      - name: 'Install legacy'
         run: |
           testenv\Scripts\Activate.ps1
           pip install .

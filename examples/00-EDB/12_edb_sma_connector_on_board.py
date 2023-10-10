@@ -25,12 +25,12 @@ This example shows how to
 
 import os
 import numpy as np
-import pyaedt
+import pyedb
 
 ansys_version = "2023.2"
 
-aedb_path = os.path.join(pyaedt.generate_unique_folder_name(), pyaedt.generate_unique_name("pcb") + ".aedb")
-edb = pyaedt.Edb(edbpath=aedb_path, edbversion=ansys_version)
+aedb_path = os.path.join(pyedb.generate_unique_folder_name(), pyedb.generate_unique_name("pcb") + ".aedb")
+edb = pyedb.Edb(edbpath=aedb_path, edbversion=ansys_version)
 print("EDB is located at {}".format(aedb_path))
 
 #####################
@@ -168,13 +168,13 @@ edb.close_edb()
 # Launch Hfss3dLayout
 # ~~~~~~~~~~~~~~~~~~~
 
-h3d = pyaedt.Hfss3dLayout(aedb_path, specified_version=ansys_version, new_desktop_session=True)
+h3d = pyedb.Hfss3dLayout(aedb_path, specified_version=ansys_version, new_desktop_session=True)
 
 ####################
 # Place 3D component
 # ~~~~~~~~~~~~~~~~~~
 
-component3d = pyaedt.downloads.download_file("component_3d", "SMA_RF_SURFACE_MOUNT.a3dcomp",)
+component3d = pyedb.downloads.download_file("component_3d", "SMA_RF_SURFACE_MOUNT.a3dcomp", )
 
 comp = h3d.modeler.place_3d_component(
     component_path=component3d, number_of_terminals=1, placement_layer="TOP", component_name="my_connector",

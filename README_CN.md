@@ -26,7 +26,7 @@
 2. 当您同时需要其他数据处理时可以选择安装 `PyAEDT` 和以下对应的库（`matplotlib`,  `numpy`, `pandas`, `pyvista`）：
 
 ```sh
-  pip install pyaedt[all]
+  pip install legacy[all]
   pip install matplotlib
   pip install numpy
   pip install pandas
@@ -36,7 +36,7 @@
 3. 您也可以从 `Conda-Forge` 安装 `PyAEDT` ：
 
 ```sh
-  conda install -c conda-forge pyaedt
+  conda install -c conda-forge legacy
 ```
 
 `PyAEDT` 与 `Ironpython` 兼容，仍然可以在 `AEDT` 框架中使用。
@@ -52,7 +52,7 @@
 ```
 4. 如果你需要其他库来做后期处理，可以使用以下方法来安装它们：
 ```sh
-pip install pyaedt[full]
+pip install legacy[full]
 ```
 
 ## 关于 PyAEDT

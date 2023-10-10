@@ -11,7 +11,7 @@ for a CPWG (coplanar waveguide with ground).
 # Peform required imports. Importing the ``Hfss3dlayout`` object initializes it
 # on version 2023 R2.
 
-import pyaedt
+import pyedb
 import os
 import numpy as np
 
@@ -27,9 +27,9 @@ non_graphical = False
 # ~~~~~~~~~~
 # Launch EDB.
 
-aedb_path = os.path.join(pyaedt.generate_unique_folder_name(), pyaedt.generate_unique_name("pcb") + ".aedb")
+aedb_path = os.path.join(pyedb.generate_unique_folder_name(), pyedb.generate_unique_name("pcb") + ".aedb")
 print(aedb_path)
-edbapp = pyaedt.Edb(edbpath=aedb_path, edbversion="2023.2")
+edbapp = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
 
 ###############################################################################
 # Define parameters
@@ -123,8 +123,8 @@ edbapp.close_edb()
 # ~~~~~~~~~~~~~~~~
 # Open EDB in AEDT.
 
-h3d = pyaedt.Hfss3dLayout(projectname=aedb_path, specified_version="2023.2",
-                          non_graphical=non_graphical, new_desktop_session=True)
+h3d = pyedb.Hfss3dLayout(projectname=aedb_path, specified_version="2023.2",
+                         non_graphical=non_graphical, new_desktop_session=True)
 
 ###############################################################################
 # Create wave ports

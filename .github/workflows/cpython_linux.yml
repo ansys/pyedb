@@ -30,7 +30,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: [Linux, pyaedt]
+    runs-on: [Linux, legacy]
     strategy:
       matrix:
         python-version: [ '3.10' ]
@@ -43,7 +43,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: 'x86'
 
-      - name: 'Install pyaedt'
+      - name: 'Install legacy'
         run: |
           python -m venv .pyaedt_test_env
           export ANSYSEM_ROOT232=/apps/AnsysEM/v232/Linux64

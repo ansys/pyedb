@@ -5,8 +5,8 @@ import time
 
 import pytest
 
-from pyaedt import Edb
-from pyaedt.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+from pyedb import Edb
+from pyedb.edb_core.edb_data.simulation_configuration import SimulationConfiguration
 
 test_project_name = "ANSYS-HSD_V1"
 bom_example = "bom_example.csv"
@@ -15,7 +15,7 @@ from _unittest.conftest import config
 from _unittest.conftest import desktop_version
 from _unittest.conftest import local_path
 
-from pyaedt.generic.general_methods import is_linux
+from pyedb.generic.general_methods import is_linux
 
 test_subfolder = "TEDB"
 

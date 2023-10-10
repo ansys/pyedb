@@ -13,7 +13,7 @@ run anlasyis and get results.
 # on version 2023 R2.
 
 import os
-import pyaedt
+import pyedb
 
 ##########################################################
 # Set non-graphical mode
@@ -28,16 +28,16 @@ non_graphical = True
 # Download the AEDB file and copy it in the temporary folder.
 
 
-project_path = pyaedt.generate_unique_folder_name()
-target_aedb = pyaedt.downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=project_path)
+project_path = pyedb.generate_unique_folder_name()
+target_aedb = pyedb.downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=project_path)
 print("Project folder will be", target_aedb)
 
 ###############################################################################
 # Launch EDB
 # ~~~~~~~~~~
-# Launch the :class:`pyaedt.Edb` class, using EDB 2023 R2 and SI units.
+# Launch the :class:`legacy.Edb` class, using EDB 2023 R2 and SI units.
 
-edbapp = pyaedt.Edb(target_aedb, edbversion="2023.2")
+edbapp = pyedb.Edb(target_aedb, edbversion="2023.2")
 ###############################################################################
 # Import Definitions
 # ~~~~~~~~~~~~~~~~~~
@@ -174,7 +174,7 @@ edbapp.close_edb()
 # Open Aedt
 # ~~~~~~~~~
 # Project folder aedb will be opened in AEDT Hfss3DLayout and loaded.
-h3d = pyaedt.Hfss3dLayout(specified_version="2023.2", projectname=target_aedb, non_graphical=non_graphical, new_desktop_session=True)
+h3d = pyedb.Hfss3dLayout(specified_version="2023.2", projectname=target_aedb, non_graphical=non_graphical, new_desktop_session=True)
 
 ###############################################################################
 # Analyze

@@ -79,12 +79,12 @@ local_path = os.path.dirname(os.path.realpath(__file__))
 module_path = pathlib.Path(local_path)
 root_path = module_path.parent.parent
 try:
-    from pyaedt import __version__
+    from pyedb import __version__
 except ImportError:
 
     sys.path.append(os.path.abspath(os.path.join(local_path)))
     sys.path.append(os.path.join(root_path))
-    from pyaedt import __version__
+    from pyedb import __version__
 
 
 project = "PyAEDT"
@@ -277,7 +277,7 @@ if os.name != "posix" and "PYAEDT_CI_NO_EXAMPLES" not in os.environ:
             # directory where function granular galleries are stored
             "backreferences_dir": None,
             # Modules for which function level galleries are created.  In
-            "doc_module": "ansys-pyaedt",
+            "doc_module": "ansys-legacy",
             "image_scrapers": ("pyvista", "matplotlib"),
             "ignore_pattern": "flycheck*",
             "thumbnail_size": (350, 350),
@@ -310,7 +310,7 @@ html_theme = "ansys_sphinx_theme"
 html_logo = pyansys_logo_black
 html_context = {
     "github_user": "ansys",
-    "github_repo": "pyaedt",
+    "github_repo": "legacy",
     "github_version": "main",
     "doc_path": "doc/source",
 }
@@ -340,8 +340,8 @@ html_theme_options = {
     "use_meilisearch": {
         "api_key": os.getenv("MEILISEARCH_PUBLIC_API_KEY", ""),
         "index_uids": {
-            f"pyaedt-v{get_version_match(__version__).replace('.', '-')}": "PyAEDT",
-            f"pyedb-v{get_version_match(__version__).replace('.', '-')}": "EDB API",
+            f"legacy-v{get_version_match(__version__).replace('.', '-')}": "PyAEDT",
+            f"legacy-v{get_version_match(__version__).replace('.', '-')}": "EDB API",
         },
     },
 }

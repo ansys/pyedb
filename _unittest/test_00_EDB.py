@@ -7,13 +7,13 @@ import sys
 
 import pytest
 
-from pyaedt import Edb
-from pyaedt.edb_core.components import resistor_value_parser
-from pyaedt.edb_core.edb_data.edbvalue import EdbValue
-from pyaedt.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-from pyaedt.edb_core.edb_data.sources import Source
-from pyaedt.generic.constants import RadiationBoxType
-from pyaedt.generic.general_methods import check_numeric_equivalence
+from pyedb import Edb
+from pyedb.edb_core.components import resistor_value_parser
+from pyedb.edb_core.edb_data.edbvalue import EdbValue
+from pyedb.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+from pyedb.edb_core.edb_data.sources import Source
+from pyedb.generic.constants import RadiationBoxType
+from pyedb.generic.general_methods import check_numeric_equivalence
 
 test_project_name = "ANSYS-HSD_V1"
 bom_example = "bom_example.csv"
@@ -23,8 +23,8 @@ from _unittest.conftest import desktop_version
 from _unittest.conftest import local_path
 from _unittest.conftest import settings
 
-from pyaedt.generic.constants import SolverType
-from pyaedt.generic.constants import SourceType
+from pyedb.generic.constants import SolverType
+from pyedb.generic.constants import SourceType
 
 # try:
 #     import pytest
@@ -2571,7 +2571,7 @@ class TestClass:
         edb.close()
 
     def test_134_hfss_extent_info(self):
-        from pyaedt.edb_core.edb_data.primitives_data import EDBPrimitives as EDBPrimitives
+        from pyedb.edb_core.edb_data.primitives_data import EDBPrimitives as EDBPrimitives
 
         config = {
             "air_box_horizontal_extent_enabled": False,
@@ -2632,7 +2632,7 @@ class TestClass:
         gds_in = os.path.join(local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example.gds")
         gds_out = os.path.join(self.local_scratch.path, "sky130_fictitious_dtc_example.gds")
         self.local_scratch.copyfile(gds_in, gds_out)
-        from pyaedt.edb_core.edb_data.control_file import ControlFile
+        from pyedb.edb_core.edb_data.control_file import ControlFile
 
         c = ControlFile(c_file_in, layer_map=c_map)
         setup = c.setups.add_setup("Setup1", "1GHz")
@@ -2652,7 +2652,7 @@ class TestClass:
             via.snap_via_group = True
         c.write_xml(os.path.join(self.local_scratch.path, "test_138.xml"))
         c.import_options.import_dummy_nets = True
-        from pyaedt import Edb
+        from pyedb import Edb
 
         edb = Edb(
             gds_out, edbversion=desktop_version, technology_file=os.path.join(self.local_scratch.path, "test_138.xml")
@@ -2767,7 +2767,7 @@ class TestClass:
         edb.close()
 
     def test_143_add_layer_api_with_control_file(self):
-        from pyaedt.edb_core.edb_data.control_file import ControlFile
+        from pyedb.edb_core.edb_data.control_file import ControlFile
 
         ctrl = ControlFile()
         # Material

@@ -10,7 +10,7 @@ This example shows how you can use PyAEDT to export an IPC2581 file.
 # Perform required imports, which includes importing a section.
 
 import os
-import pyaedt
+import pyedb
 
 ###############################################################################
 # Download file
@@ -18,8 +18,8 @@ import pyaedt
 # Download the AEDB file and copy it in the temporary folder.
 
 
-temp_folder = pyaedt.generate_unique_folder_name()
-targetfile = pyaedt.downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+temp_folder = pyedb.generate_unique_folder_name()
+targetfile = pyedb.downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
 
 
 ipc2581_file = os.path.join(temp_folder, "Ansys_Hsd.xml")
@@ -30,9 +30,9 @@ print(targetfile)
 ###############################################################################
 # Launch EDB
 # ~~~~~~~~~~
-# Launch the :class:`pyaedt.Edb` class, using EDB 2023 R2 and SI units.
+# Launch the :class:`legacy.Edb` class, using EDB 2023 R2 and SI units.
 
-edb = pyaedt.Edb(edbpath=targetfile, edbversion="2023.2")
+edb = pyedb.Edb(edbpath=targetfile, edbversion="2023.2")
 
 
 ###############################################################################
@@ -41,7 +41,7 @@ edb = pyaedt.Edb(edbpath=targetfile, edbversion="2023.2")
 # Parametrize a net.
 
 edb.modeler.parametrize_trace_width(
-    "A0_N", parameter_name=pyaedt.generate_unique_name("Par"), variable_value="0.4321mm"
+    "A0_N", parameter_name=pyedb.generate_unique_name("Par"), variable_value="0.4321mm"
 )
 
 ###############################################################################

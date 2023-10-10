@@ -40,13 +40,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install pyaedt
+      - name: Install legacy
         run: |
           pip install .[all]
           pip install jupyterlab
 
-      - name: Verify pyaedt can be imported
-        run: python -c "import pyaedt"
+      - name: Verify legacy can be imported
+        run: python -c "import legacy"
 
       - name: Retrieve PyAEDT version
         run: |

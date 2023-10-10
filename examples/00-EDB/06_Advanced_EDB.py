@@ -10,10 +10,10 @@ This example shows how you can use EDB to create a layout.
 
 import os
 import numpy as np
-import pyaedt
+import pyedb
 
 
-aedb_path = os.path.join(pyaedt.generate_unique_folder_name(), pyaedt.generate_unique_name("via_opt") + ".aedb")
+aedb_path = os.path.join(pyedb.generate_unique_folder_name(), pyedb.generate_unique_name("via_opt") + ".aedb")
 
 ###############################################################################
 # Create stackup
@@ -38,7 +38,7 @@ def _create_ground_planes(edb, layers):
 # ~~~~~~~~~~
 # Create EDB. If the path doesn't exist, PyAEDT automatically generates a new AEDB folder.
 
-edb = pyaedt.Edb(edbpath=aedb_path, edbversion="2023.2")
+edb = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
 
 ##################################################################################
 # Create stackup layers
