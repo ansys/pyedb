@@ -2,17 +2,16 @@ from collections import OrderedDict
 import json
 import os
 
-from pyaedt import generate_unique_name
-from pyaedt.edb_core.edb_data.sources import Source
-from pyaedt.edb_core.edb_data.sources import SourceType
-from pyaedt.generic.clr_module import Dictionary
-from pyaedt.generic.constants import BasisOrder
-from pyaedt.generic.constants import CutoutSubdesignType
-from pyaedt.generic.constants import RadiationBoxType
-from pyaedt.generic.constants import SolverType
-from pyaedt.generic.constants import SweepType
-from pyaedt.generic.constants import validate_enum_class_value
-from pyaedt.generic.general_methods import pyaedt_function_handler
+from pyedb.generic.general_methods import generate_unique_name
+from sources import Source
+from pyedb.generic.constants import SourceType
+from pyedb.generic.constants import BasisOrder
+from pyedb.generic.constants import CutoutSubdesignType
+from pyedb.generic.constants import RadiationBoxType
+from pyedb.generic.constants import SolverType
+from pyedb.generic.constants import SweepType
+from pyedb.generic.constants import validate_enum_class_value
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class SimulationConfigurationBatch(object):
@@ -502,7 +501,7 @@ class SimulationConfigurationBatch(object):
             if len([src for src in value if isinstance(src, Source)]) == len(value):
                 self._sources = value
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_source(self, source=None):  # pragma: no cover
         """Add a new source to configuration.
 
@@ -667,7 +666,7 @@ class SimulationConfigurationDc(object):
         self._dc_per_pin_use_pin_format = True
         self._dc_use_loop_res_for_per_pin = True
         self._dc_via_report_path = ""
-        self._dc_source_terms_to_ground = Dictionary[str, int]()
+        self._dc_source_terms_to_ground = {}
 
     @property
     def dc_min_plane_area_to_mesh(self):  # pragma: no cover
@@ -1898,7 +1897,7 @@ class SimulationConfiguration(object):
 
     The class is instantiated from an open edb:
 
-    >>> from pyaedt import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb()
     >>> sim_setup = edb.new_simulation_configuration()
 
@@ -1906,7 +1905,7 @@ class SimulationConfiguration(object):
     From this class you can assign a lot of parameters related the project configuration but also solver options.
     Here is the list of parameters available:
 
-    >>> from pyaedt.generic.constants import SolverType
+    >>> from pyedb.generic.constants import SolverType
     >>> sim_setup.solver_type = SolverType.Hfss3dLayout
 
     Solver type can be selected, HFSS 3D Layout and Siwave are supported.
@@ -1932,7 +1931,7 @@ class SimulationConfiguration(object):
 
     When true activates the layout cutout based on net signal net selection and cutout expansion.
 
-    >>> from pyaedt.generic.constants import CutoutSubdesignType
+    >>> from pyedb.generic.constants import CutoutSubdesignType
     >>> sim_setup.cutout_subdesign_type = CutoutSubdesignType.Conformal
 
     Define the type of cutout used for computing the clippingextent polygon. CutoutSubdesignType.Conformal
@@ -2009,7 +2008,7 @@ class SimulationConfiguration(object):
     taking the closest reference pin. The last configuration is more often used when users are creating ports on PDN
     (Power delivery Network) and want to connect all pins individually.
 
-    >>> from pyaedt.generic.constants import SweepType
+    >>> from pyedb.generic.constants import SweepType
     >>> sim_setup.sweep_type = SweepType.Linear
 
     Specify the frequency sweep type, Linear or Log sweep can be defined.
@@ -2058,7 +2057,7 @@ class SimulationConfiguration(object):
 
     Define the frequency used for adaptive meshing (available for both HFSS and SIwave).
 
-    >>> from pyaedt.generic.constants import RadiationBoxType
+    >>> from pyedb.generic.constants import RadiationBoxType
     >>> sim_setup.radiation_box = RadiationBoxType.ConvexHull
 
     Defined the radiation box type, Conformal, Bounding box and ConvexHull are supported (HFSS only).
@@ -2077,7 +2076,7 @@ class SimulationConfiguration(object):
     specify the minimum number of consecutive coberged passes. Setting to 2 is a good practice to avoid converging on
     local minima.
 
-    >>> from pyaedt.generic.constants import BasisOrder
+    >>> from pyedb.generic.constants import BasisOrder
     >>> sim_setup.basis_order =  BasisOrder.Single
 
     Select the order basis (HFSS only), Zero, Single, Double and Mixed are supported. For Signal integrity Single or
@@ -2285,7 +2284,7 @@ class SimulationConfiguration(object):
         """
         return self._batch_solve_settings
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def build_simulation_project(self):
         """Build active simulation project. This method requires to be run inside Edb Class.
 
@@ -2363,7 +2362,7 @@ class SimulationConfiguration(object):
                 prop_values = [value.strip()]
             return prop_values
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_dc_ground_source_term(self, source_name=None, node_to_ground=1):
         """Add a dc ground source terminal for Siwave.
 
@@ -2381,219 +2380,6 @@ class SimulationConfiguration(object):
         if source_name:
             if node_to_ground in [0, 1, 2]:
                 self._dc_source_terms_to_ground[source_name] = node_to_ground
-
-    def _read_cfg(self):  # pragma: no cover
-        """Configuration file reader.
-
-        .. deprecated:: 0.6.78
-           Use :func:`import_json` instead.
-
-        Examples
-        --------
-
-        >>> from pyaedt import Edb
-        >>> from pyaedt.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-        >>> config_file = path_configuration_file
-        >>> source_file = path_to_edb_folder
-        >>> edb = Edb(source_file)
-        >>> sim_setup = SimulationConfiguration(config_file)
-        >>> edb.build_simulation_project(sim_setup)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
-        """
-
-        if not self.filename or not os.path.exists(self.filename):
-            # raise Exception("{} does not exist.".format(self.filename))
-            return
-
-        try:
-            with open(self.filename) as cfg_file:
-                cfg_lines = cfg_file.read().split("\n")
-                for line in cfg_lines:
-                    if line.strip() != "":
-                        if line.find("="):
-                            i, prop_value = line.strip().split("=")
-                            value = prop_value.replace("'", "").strip()
-                            if i.lower().startswith("generatesolderballs"):
-                                self.generate_solder_balls = self._get_bool_value(value)
-                            elif i.lower().startswith("signalnets"):
-                                self.signal_nets = value[1:-1].split(",") if value[0] == "[" else value.split(",")
-                                self.signal_nets = [item.strip() for item in self.signal_nets]
-                            elif i.lower().startswith("powernets"):
-                                self.power_nets = value[1:-1].split(",") if value[0] == "[" else value.split(",")
-                                self.power_nets = [item.strip() for item in self.power_nets]
-                            elif i.lower().startswith("components"):
-                                self.components = value[1:-1].split(",") if value[0] == "[" else value.split(",")
-                                self.components = [item.strip() for item in self.components]
-                            elif i.lower().startswith("coaxsolderballsdiams"):
-                                self.coax_solder_ball_diameter = (
-                                    value[1:-1].split(",") if value[0] == "[" else value.split(",")
-                                )
-                                self.coax_solder_ball_diameter = [
-                                    item.strip() for item in self.coax_solder_ball_diameter
-                                ]
-                            elif i.lower().startswith("usedefaultcoaxportradialextentfactor"):
-                                self.signal_nets = self._get_bool_value(value)
-                            elif i.lower().startswith("trimrefsize"):
-                                self.trim_reference_size = self._get_bool_value(value)
-                            elif i.lower().startswith("cutoutsubdesigntype"):
-                                if value.lower().startswith("conformal"):
-                                    self.cutout_subdesign_type = CutoutSubdesignType.Conformal
-                                elif value.lower().startswith("boundingbox"):
-                                    self.cutout_subdesign_type = CutoutSubdesignType.BoundingBox
-                                else:
-                                    print("Unprocessed value for CutoutSubdesignType '{0}'".format(value))
-                            elif i.lower().startswith("cutoutsubdesignexpansion"):
-                                self.cutout_subdesign_expansion = value
-                            elif i.lower().startswith("cutoutsubdesignroundcorners"):
-                                self.cutout_subdesign_round_corner = self._get_bool_value(value)
-                            elif i.lower().startswith("sweepinterpolating"):
-                                self.sweep_interpolating = self._get_bool_value(value)
-                            elif i.lower().startswith("useq3dfordc"):
-                                self.use_q3d_for_dc = self._get_bool_value(value)
-                            elif i.lower().startswith("relativeerrors"):
-                                self.relative_error = float(value)
-                            elif i.lower().startswith("useerrorz0"):
-                                self.use_error_z0 = self._get_bool_value(value)
-                            elif i.lower().startswith("percenterrorz0"):
-                                self.percentage_error_z0 = float(value)
-                            elif i.lower().startswith("enforcecausality"):
-                                self.enforce_causality = self._get_bool_value(value)
-                            elif i.lower().startswith("enforcepassivity"):
-                                self.enforce_passivity = self._get_bool_value(value)
-                            elif i.lower().startswith("passivitytolerance"):
-                                self.passivity_tolerance = float(value)
-                            elif i.lower().startswith("sweepname"):
-                                self.sweep_name = value
-                            elif i.lower().startswith("radiationbox"):
-                                if value.lower().startswith("conformal"):
-                                    self.radiation_box = RadiationBoxType.Conformal
-                                elif value.lower().startswith("boundingbox"):
-                                    self.radiation_box = RadiationBoxType.BoundingBox
-                                elif value.lower().startswith("convexhull"):
-                                    self.radiation_box = RadiationBoxType.ConvexHull
-                                else:
-                                    print("Unprocessed value for RadiationBox '{0}'".format(value))
-                            elif i.lower().startswith("startfreq"):
-                                self.start_freq = value
-                            elif i.lower().startswith("stopfreq"):
-                                self.stop_freq = value
-                            elif i.lower().startswith("sweeptype"):
-                                if value.lower().startswith("linear"):
-                                    self.sweep_type = SweepType.Linear
-                                elif value.lower().startswith("logcount"):
-                                    self.sweep_type = SweepType.LogCount
-                                else:
-                                    print("Unprocessed value for SweepType '{0}'".format(value))
-                            elif i.lower().startswith("stepfreq"):
-                                self.step_freq = value
-                            elif i.lower().startswith("decadecount"):
-                                self.decade_count = int(value)
-                            elif i.lower().startswith("mesh_freq"):
-                                self.mesh_freq = value
-                            elif i.lower().startswith("maxnumpasses"):
-                                self.max_num_passes = int(value)
-                            elif i.lower().startswith("maxmagdeltas"):
-                                self.max_mag_delta_s = float(value)
-                            elif i.lower().startswith("minnumpasses"):
-                                self.min_num_passes = int(value)
-                            elif i.lower().startswith("basisorder"):
-                                if value.lower().startswith("mixed"):
-                                    self.basis_order = BasisOrder.Mixed
-                                elif value.lower().startswith("zero"):
-                                    self.basis_order = BasisOrder.Zero
-                                elif value.lower().startswith("first"):  # single
-                                    self.basis_order = BasisOrder.Single
-                                elif value.lower().startswith("second"):  # double
-                                    self.basis_order = BasisOrder.Double
-                                else:
-                                    print("Unprocessed value for BasisOrder '{0}'".format(value))
-                            elif i.lower().startswith("dolambdarefinement"):
-                                self.do_lambda_refinement = self._get_bool_value(value)
-                            elif i.lower().startswith("arcangle"):
-                                self.arc_angle = value
-                            elif i.lower().startswith("startazimuth"):
-                                self.start_azimuth = float(value)
-                            elif i.lower().startswith("maxarcpoints"):
-                                self.max_arc_points = int(value)
-                            elif i.lower().startswith("usearctochorderror"):
-                                self.use_arc_to_chord_error = self._get_bool_value(value)
-                            elif i.lower().startswith("arctochorderror"):
-                                self.arc_to_chord_error = value
-                            elif i.lower().startswith("defeatureabsLength"):
-                                self.defeature_abs_length = value
-                            elif i.lower().startswith("defeaturelayout"):
-                                self.defeature_layout = self._get_bool_value(value)
-                            elif i.lower().startswith("minimumvoidsurface"):
-                                self.minimum_void_surface = float(value)
-                            elif i.lower().startswith("maxsurfdev"):
-                                self.max_suf_dev = float(value)
-                            elif i.lower().startswith("processpadstackdefinitions"):
-                                self.process_padstack_definitions = self._get_bool_value(value)
-                            elif i.lower().startswith("returncurrentdistribution"):
-                                self.return_current_distribution = self._get_bool_value(value)
-                            elif i.lower().startswith("ignorenonfunctionalpads"):
-                                self.ignore_non_functional_pads = self._get_bool_value(value)
-                            elif i.lower().startswith("includeinterplanecoupling"):
-                                self.include_inter_plane_coupling = self._get_bool_value(value)
-                            elif i.lower().startswith("xtalkthreshold"):
-                                self.xtalk_threshold = float(value)
-                            elif i.lower().startswith("minvoidarea"):
-                                self.min_void_area = value
-                            elif i.lower().startswith("minpadareatomesh"):
-                                self.min_pad_area_to_mesh = value
-                            elif i.lower().startswith("snaplengththreshold"):
-                                self.snap_length_threshold = value
-                            elif i.lower().startswith("minplaneareatomesh"):
-                                self.min_plane_area_to_mesh = value
-                            elif i.lower().startswith("dcminplaneareatomesh"):
-                                self.dc_min_plane_area_to_mesh = value
-                            elif i.lower().startswith("maxinitmeshedgelength"):
-                                self.max_init_mesh_edge_length = value
-                            elif i.lower().startswith("signallayersproperties"):
-                                self._parse_signal_layer_properties = value[1:-1] if value[0] == "[" else value
-                                self._parse_signal_layer_properties = [
-                                    item.strip() for item in self._parse_signal_layer_properties
-                                ]
-                            elif i.lower().startswith("coplanar_instances"):
-                                self.coplanar_instances = value[1:-1] if value[0] == "[" else value
-                                self.coplanar_instances = [item.strip() for item in self.coplanar_instances]
-                            elif i.lower().startswith("signallayersetching"):
-                                self.signal_layer_etching_instances = value[1:-1] if value[0] == "[" else value
-                                self.signal_layer_etching_instances = [
-                                    item.strip() for item in self.signal_layer_etching_instances
-                                ]
-                            elif i.lower().startswith("etchingfactor"):
-                                self.etching_factor_instances = value[1:-1] if value[0] == "[" else value
-                                self.etching_factor_instances = [item.strip() for item in self.etching_factor_instances]
-                            elif i.lower().startswith("docutoutsubdesign"):
-                                self.do_cutout_subdesign = self._get_bool_value(value)
-                            elif i.lower().startswith("solvertype"):
-                                if value.lower() == "hfss":
-                                    self.solver_type = 0
-                                if value.lower() == "hfss3dlayout":
-                                    self.solver_type = 6
-                                elif value.lower().startswith("siwavesyz"):
-                                    self.solver_type = 7
-                                elif value.lower().startswith("siwavedc"):
-                                    self.solver_type = 8
-                                elif value.lower().startswith("q3d"):
-                                    self.solver_type = 2
-                                elif value.lower().startswith("nexxim"):
-                                    self.solver_type = 4
-                                elif value.lower().startswith("maxwell"):
-                                    self.solver_type = 3
-                                elif value.lower().startswith("twinbuilder"):
-                                    self.solver_type = 5
-                                else:
-                                    self.solver_type = SolverType.Hfss3dLayout
-                        else:
-                            print("Unprocessed line in cfg file: {0}".format(line))
-                    else:
-                        continue
-        except EnvironmentError as e:
-            print("Error reading cfg file: {}".format(e.message))
-            raise
 
     def _dict_to_json(self, dict_out, dict_in=None):
         exclude = ["_pedb", "SOLVER_TYPE"]
@@ -2626,7 +2412,7 @@ class SimulationConfiguration(object):
                     source._read_json(src)
                     self.batch_solve_settings.sources.append(source)
             elif k == "dc_source_terms_to_ground":
-                dc_term_gnd = Dictionary[str, int]()
+                dc_term_gnd = {}
                 for k1, v1 in json_dict[k]:  # pragma: no cover
                     dc_term_gnd[k1] = v1
                 self.dc_source_terms_to_ground = dc_term_gnd
@@ -2635,7 +2421,7 @@ class SimulationConfiguration(object):
             else:
                 self.__setattr__(k, v)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def export_json(self, output_file):
         """Export Json file from SimulationConfiguration object.
 
@@ -2652,7 +2438,7 @@ class SimulationConfiguration(object):
         Examples
         --------
 
-        >>> from pyaedt.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+        >>> from pyedb.grpc.edb_data.simulation_configuration import SimulationConfiguration
         >>> config = SimulationConfiguration()
         >>> config.export_json(r"C:\Temp\test_json\test.json")
         """
@@ -2665,7 +2451,7 @@ class SimulationConfiguration(object):
         else:
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def import_json(self, input_file):
         """Import Json file into SimulationConfiguration object instance.
 
@@ -2681,7 +2467,7 @@ class SimulationConfiguration(object):
 
         Examples
         --------
-        >>> from pyaedt.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+        >>> from pyedb.grpc.edb_data.simulation_configuration import SimulationConfiguration
         >>> test = SimulationConfiguration()
         >>> test.import_json(r"C:\Temp\test_json\test.json")
         """
@@ -2694,7 +2480,7 @@ class SimulationConfiguration(object):
         else:
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_voltage_source(
         self,
         name="",
@@ -2766,7 +2552,7 @@ class SimulationConfiguration(object):
         except:  # pragma: no cover
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_current_source(
         self,
         name="",
@@ -2838,7 +2624,7 @@ class SimulationConfiguration(object):
         except:  # pragma: no cover
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_rlc(
         self,
         name="",
