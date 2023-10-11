@@ -1,7 +1,8 @@
-from pyaedt.edb_core.edb_data.terminals import BundleTerminal
-from pyaedt.edb_core.edb_data.terminals import EdgeTerminal
-from pyaedt.edb_core.edb_data.terminals import PadstackInstanceTerminal
-from pyaedt.edb_core.edb_data.terminals import Terminal
+from terminals import BundleTerminal
+from terminals import EdgeTerminal
+from terminals import PadstackInstanceTerminal
+from terminals import Terminal
+from ansys.edb.utility.value import Value
 
 
 class GapPort(EdgeTerminal):
@@ -17,7 +18,7 @@ class GapPort(EdgeTerminal):
     Examples
     --------
     This example shows how to access the ``GapPort`` class.
-    >>> from pyaedt import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb("myaedb.aedb")
     >>> gap_port = edb.ports["gap_port"]
     """
@@ -28,29 +29,29 @@ class GapPort(EdgeTerminal):
     @property
     def magnitude(self):
         """Magnitude."""
-        return self._edb_object.GetSourceAmplitude().ToDouble()
+        return self._edb_object.source_amplitude.value
 
     @property
     def phase(self):
         """Phase."""
-        return self._edb_object.GetSourcePhase().ToDouble()
+        return self._edb_object.source_phase.value
 
     @property
     def renormalize(self):
         """Whether renormalize is active."""
-        return self._edb_object.GetPortPostProcessingProp().DoRenormalize
+        return self._edb_object.port_post_processing_prop.do_renormalize
 
     @property
     def deembed(self):
         """Inductance value of the deembed gap port."""
-        return self._edb_object.GetPortPostProcessingProp().DoDeembedGapL
+        return self._edb_object.port_post_processing_prop.do_deembed_gap_l
 
     @property
     def renormalize_z0(self):
         """Renormalize Z0 value (real, imag)."""
         return (
-            self._edb_object.GetPortPostProcessingProp().RenormalizionZ0.ToComplex().Item1,
-            self._edb_object.GetPortPostProcessingProp().RenormalizionZ0.ToComplex().Item2,
+            self._edb_object.port_post_processing_prop.renormalizion_z0.complex[0],
+            self._edb_object.port_post_processing_prop.renormalizion_z0.complex[1],
         )
 
 
@@ -68,7 +69,7 @@ class WavePort(EdgeTerminal):
     --------
     This example shows how to access the ``WavePort`` class.
 
-    >>> from pyaedt import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb("myaedb.aedb")
     >>> exc = edb.ports
     """
@@ -112,24 +113,24 @@ class WavePort(EdgeTerminal):
     @property
     def deembed(self):
         """Whether deembed is active."""
-        return self._edb_object.GetPortPostProcessingProp().DoDeembed
+        return self._edb_object.port_post_processing_prop.do_deembed
 
     @deembed.setter
     def deembed(self, value):
-        p = self._edb_object.GetPortPostProcessingProp()
-        p.DoDeembed = value
-        self._edb_object.SetPortPostProcessingProp(p)
+        p = self._edb_object.port_post_processing_prop
+        p.do_deembed = value
+        self._edb_object.port_post_processing_prop = p
 
     @property
     def deembed_length(self):
         """Deembed Length."""
-        return self._edb_object.GetPortPostProcessingProp().DeembedLength.ToDouble()
+        return self._edb_object.port_post_processing_prop.deembed_length.value
 
     @deembed_length.setter
     def deembed_length(self, value):
-        p = self._edb_object.GetPortPostProcessingProp()
-        p.DeembedLength = self._pedb.edb_value(value)
-        self._edb_object.SetPortPostProcessingProp(p)
+        p = self._edb_object.port_post_processing_prop
+        p.deembed_length = Value(value)
+        self._edb_object.port_post_processing_prop = p
 
 
 class ExcitationSources(Terminal):
@@ -147,7 +148,7 @@ class ExcitationSources(Terminal):
     Examples
     --------
     This example shows how to access this class.
-    >>> from pyaedt import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb("myaedb.aedb")
     >>> all_sources = edb.sources
     >>> print(all_sources["VSource1"].name)
@@ -160,20 +161,20 @@ class ExcitationSources(Terminal):
     @property
     def magnitude(self):
         """Get the magnitude of the source."""
-        return self._edb_object.GetSourceAmplitude().ToDouble()
+        return self._edb_object.source_amplitude.value
 
     @magnitude.setter
     def magnitude(self, value):
-        self._edb_object.SetSourceAmplitude(self._edb.utility.value(value))
+        self._edb_object.source_amplitude = Value(value)
 
     @property
     def phase(self):
         """Get the phase of the source."""
-        return self._edb_object.GetSourcePhase().ToDouble()
+        return self._edb_object.source_phase.value
 
     @phase.setter
     def phase(self, value):
-        self._edb_object.SetSourcePhase(self._edb.utility.value(value))
+        self._edb_object.source_phase = Value(value)
 
 
 class ExcitationProbes(Terminal):
@@ -190,7 +191,7 @@ class ExcitationProbes(Terminal):
     Examples
     --------
     This example shows how to access this class.
-    >>> from pyaedt import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb("myaedb.aedb")
     >>> probes = edb.probes
     >>> print(probes["Probe1"].name)
