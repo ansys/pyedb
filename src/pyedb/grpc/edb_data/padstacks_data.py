@@ -1137,23 +1137,16 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             Tuple of the layer name, drill diameter, and offset if it exists.
         """
         layer = self._pedb.edb_api.cell.layer("", LayerType.SIGNAL_LAYER)
-        val = Value(0)
-        offset = self._pedb.edb_value(0.0)
-        (
-            flag,
-            drill_to_layer,
-            offset,
-            diameter,
-        ) = self._edb_padstackinstance.GetBackDrillParametersLayerValue(layer, offset, val, False)
+        flag, drill_to_layer, offset, diameter = self._edb_padstackinstance.get_back_drill_by_layer()
         if flag:
-            if offset.ToDouble():
-                return drill_to_layer.GetName(), diameter.ToString(), offset.ToString()
+            if offset.value:
+                return drill_to_layer.name, diameter.value, offset.value
             else:
-                return drill_to_layer.GetName(), diameter.ToString()
+                return drill_to_layer.name, diameter.value
         else:
             return
 
-    def set_backdrill_top(self, drill_depth, drill_diameter, offset=0.0):
+    def set_backdrill_top(self, drill_depth, drill_diameter, offset=0.0, from_bottom=True):
         """Set backdrill from top.
 
         Parameters
@@ -1166,6 +1159,8 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             Offset for the backdrill. The default is ``0.0``. If the value is other than the
             default, the stub does not stop at the layer. In AEDT, this parameter is called
             "Mfg stub length".
+        from_bottom : bool
+            ``True`` back drill starts from bottom ``True`` from top. Default value is ``False``.
 
         Returns
         -------
@@ -1173,12 +1168,15 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             True if success, False otherwise.
         """
         layer = self._pedb.stackup.layers[drill_depth]._edb_layer
-        val = self._pedb.edb_value(drill_diameter)
-        offset = self._pedb.edb_value(offset)
-        if offset.ToDouble():
-            return self._edb_padstackinstance.SetBackDrillParameters(layer, offset, val, False)
+        val = Value(drill_diameter)
+        offset = Value(offset)
+        if offset.value:
+            return self._edb_padstackinstance.set_back_drill_by_layer(drill_to_layer=layer,
+                                                                      offset=offset,
+                                                                      diameter=val,
+                                                                      from_bottom=from_bottom)
         else:
-            return self._edb_padstackinstance.SetBackDrillParameters(layer, val, False)
+            return self._edb_padstackinstance.set_back_drill_by_layer(layer, val, False)
 
     @property
     def backdrill_bottom(self):
@@ -1189,25 +1187,13 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         tuple
             Tuple of the layer name, drill diameter, and drill offset if it exists.
         """
-        layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
-        val = self._pedb.edb_value(0)
-        offset = self._pedb.edb_value(0.0)
-        if is_ironpython:  # pragma: no cover
-            diameter = _clr.StrongBox[type(val)]()
-            drill_to_layer = _clr.StrongBox[self._pedb.edb_api.Cell.ILayerReadOnly]()
-            flag = self._edb_padstackinstance.GetBackDrillParametersLayerValue(drill_to_layer, offset, diameter, True)
-        else:
-            (
-                flag,
-                drill_to_layer,
-                offset,
-                diameter,
-            ) = self._edb_padstackinstance.GetBackDrillParametersLayerValue(layer, offset, val, True)
+        layer = self._pedb.edb_api.cell.layer("", LayerType.SIGNAL_LAYER)
+        flag, drill_to_layer, offset, diameter, = self._edb_padstackinstance.get_back_drill_parameters_layer()
         if flag:
-            if offset.ToDouble():
-                return drill_to_layer.GetName(), diameter.ToString(), offset.ToString()
+            if offset.value:
+                return drill_to_layer.name, diameter.value, offset.value
             else:
-                return drill_to_layer.GetName(), diameter.ToString()
+                return drill_to_layer.name, diameter.value
         else:
             return
 
@@ -1231,12 +1217,12 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             True if success, False otherwise.
         """
         layer = self._pedb.stackup.layers[drill_depth]._edb_layer
-        val = self._pedb.edb_value(drill_diameter)
-        offset = self._pedb.edb_value(offset)
-        if offset.ToDouble():
-            return self._edb_padstackinstance.SetBackDrillParameters(layer, offset, val, True)
+        val = Value(drill_diameter)
+        offset = Value(offset)
+        if offset.value:
+            return self._edb_padstackinstance.set_back_drill_parameters(layer, offset, val, True)
         else:
-            return self._edb_padstackinstance.SetBackDrillParameters(layer, val, True)
+            return self._edb_padstackinstance.set_bBack_drillParameters(layer, val, True)
 
     @property
     def start_layer(self):
@@ -1247,18 +1233,17 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         str
             Name of the starting layer.
         """
-        layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
-        _, start_layer, stop_layer = self._edb_padstackinstance.GetLayerRange()
+        _, start_layer, stop_layer = self._edb_padstackinstance.get_layer_range()
 
         if start_layer:
-            return start_layer.GetName()
+            return start_layer.name
         return None
 
     @start_layer.setter
     def start_layer(self, layer_name):
         stop_layer = self._pedb.stackup.signal_layers[self.stop_layer]._edb_layer
         layer = self._pedb.stackup.signal_layers[layer_name]._edb_layer
-        self._edb_padstackinstance.SetLayerRange(layer, stop_layer)
+        self._edb_padstackinstance.set_layer_range(layer, stop_layer)
 
     @property
     def stop_layer(self):
@@ -1269,27 +1254,26 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         str
             Name of the stopping layer.
         """
-        layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
         _, start_layer, stop_layer = self._edb_padstackinstance.GetLayerRange()
 
         if stop_layer:
-            return stop_layer.GetName()
+            return stop_layer.name
         return None
 
     @stop_layer.setter
     def stop_layer(self, layer_name):
         start_layer = self._pedb.stackup.signal_layers[self.start_layer]._edb_layer
         layer = self._pedb.stackup.signal_layers[layer_name]._edb_layer
-        self._edb_padstackinstance.SetLayerRange(start_layer, layer)
+        self._edb_padstackinstance.set_layer_range(start_layer, layer)
 
     @property
     def layer_range_names(self):
         """List of all layers to which the padstack instance belongs."""
-        _, start_layer, stop_layer = self._edb_padstackinstance.GetLayerRange()
+        _, start_layer, stop_layer = self._edb_padstackinstance.get_layer_range()
         started = False
         layer_list = []
-        start_layer_name = start_layer.GetName()
-        stop_layer_name = stop_layer.GetName()
+        start_layer_name = start_layer.name
+        stop_layer_name = stop_layer.name
         for layer_name in list(self._pedb.stackup.layers.keys()):
             if started:
                 layer_list.append(layer_name)
@@ -1316,18 +1300,18 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         str
             Name of the net.
         """
-        return self._edb_padstackinstance.GetNet().GetName()
+        return self._edb_padstackinstance.net.name
 
     @net_name.setter
     def net_name(self, val):
         if not isinstance(val, str):
             try:
-                self._edb_padstackinstance.SetNet(val.net_obj)
+                self._edb_padstackinstance.net = val.net_obj
             except:
                 raise AttributeError("Value inserted not found. Input has to be net name or net object.")
         elif val in self._pedb.nets.netlist:
             net = self._pedb.nets.nets[val].net_object
-            self._edb_padstackinstance.SetNet(net)
+            self._edb_padstackinstance.net = net
         else:
             raise AttributeError("Value inserted not found. Input has to be net name or net object.")
 
@@ -1340,7 +1324,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         bool
             True if this padstack type is a layout pin, False otherwise.
         """
-        return self._edb_padstackinstance.IsLayoutPin()
+        return self._edb_padstackinstance.is_layout_pin
 
     @is_pin.setter
     def is_pin(self, pin):
@@ -1351,7 +1335,8 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         pin : bool
             True if set this padstack instance as pin, False otherwise
         """
-        self._edb_padstackinstance.SetIsLayoutPin(pin)
+        if isinstance(pin, bool):
+            self._edb_padstackinstance.is_layout_pin = pin
 
     @property
     def position(self):
@@ -1363,12 +1348,12 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             List of ``[x, y]``` coordinates for the padstack instance position.
         """
         self._position = []
-        out = self._edb_padstackinstance.GetPositionAndRotationValue()
-        if self._edb_padstackinstance.GetComponent():
-            out2 = self._edb_padstackinstance.GetComponent().GetTransform().TransformPoint(out[1])
-            self._position = [out2.X.ToDouble(), out2.Y.ToDouble()]
+        out = self._edb_padstackinstance.get_position_and_rotation()
+        if self._edb_padstackinstance.component:
+            out2 = self._edb_padstackinstance.component.transform.transform_point(out[1])
+            self._position = [out2.x.value, out2.y.value]
         elif out[0]:
-            self._position = [out[1].X.ToDouble(), out[1].Y.ToDouble()]
+            self._position = [out[1].x.value, out[1].y.value]
         return self._position
 
     @position.setter
@@ -1376,11 +1361,11 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         pos = []
         for v in value:
             if isinstance(v, (float, int, str)):
-                pos.append(self._pedb.edb_value(v))
+                pos.append(Value(v))
             else:
                 pos.append(v)
         point_data = self._pedb.edb_api.geometry.point_data(pos[0], pos[1])
-        self._edb_padstackinstance.SetPositionAndRotation(point_data, self._pedb.edb_value(self.rotation))
+        self._edb_padstackinstance.set_position_and_rotation(point_data, Value(self.rotation))
 
     @property
     def rotation(self):
@@ -1389,28 +1374,27 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         Returns
         -------
         float
-            Rotatation value for the padstack instance.
+            Rotation value for the padstack instance.
         """
-        point_data = self._pedb.edb_api.geometry.point_data(self._pedb.edb_value(0.0), self._pedb.edb_value(0.0))
-        out = self._edb_padstackinstance.GetPositionAndRotationValue()
+        out = self._edb_padstackinstance.get_position_and_rotation()
 
         if out[0]:
-            return out[2].ToDouble()
+            return out[2].value
 
     @property
     def name(self):
         """Padstack Instance Name. If it is a pin, the syntax will be like in AEDT ComponentName-PinName."""
         if self.is_pin:
-            comp_name = self._edb_padstackinstance.GetComponent().GetName()
-            pin_name = self._edb_padstackinstance.GetName()
+            comp_name = self._edb_padstackinstance.component.name
+            pin_name = self._edb_padstackinstance.name
             return "-".join([comp_name, pin_name])
         else:
-            return self._edb_padstackinstance.GetName()
+            return self._edb_padstackinstance.name
 
     @name.setter
     def name(self, value):
-        self._edb_padstackinstance.SetName(value)
-        self._edb_padstackinstance.SetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, value)
+        self._edb_padstackinstance.name = value
+        self._edb_padstackinstance.set_product_property(ProductIdType.DESIGNER, 11, value)
 
     @property
     def metal_volume(self):
@@ -1448,7 +1432,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     @property
     def pin_number(self):
         """Get pin number."""
-        return self._edb_padstackinstance.GetName()
+        return self._edb_padstackinstance.name
 
     @property
     def aedt_name(self):
@@ -1465,21 +1449,16 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         Examples
         --------
 
-        >>> from pyaedt import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.padstacks.instances[111].get_aedt_pin_name()
 
         """
-        if is_ironpython:
-            name = _clr.Reference[String]()
-            self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, name)
-        else:
-            val = String("")
-            _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
+        _, name = self._edb_padstackinstance.get_product_property(ProductIdType.DESIGNER, 11, "")
         name = str(name).strip("'")
         return name
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def parametrize_position(self, prefix=None):
         """Parametrize the instance position.
 
@@ -1504,7 +1483,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         self.position = [var_name + "X", var_name + "Y"]
         return [var_name + "X", var_name + "Y"]
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def delete_padstack_instance(self):
         """Delete this padstack instance.
 
@@ -1512,10 +1491,10 @@ class EDBPadstackInstance(EDBPrimitivesMain):
            Use :func:`delete` property instead.
         """
         warnings.warn("`delete_padstack_instance` is deprecated. Use `delete` instead.", DeprecationWarning)
-        self._edb_padstackinstance.Delete()
+        self._edb_padstackinstance.delete()
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def in_voids(self, net_name=None, layer_name=None):
         """Check if this padstack instance is in any void.
 
@@ -1531,13 +1510,13 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         list
             List of the voids that include this padstack instance.
         """
-        x_pos = self._pedb.edb_value(self.position[0])
-        y_pos = self._pedb.edb_value(self.position[1])
+        x_pos = Value(self.position[0])
+        y_pos = Value(self.position[1])
         point_data = self._pedb.modeler._edb.geometry.point_data(x_pos, y_pos)
 
         voids = []
         for prim in self._pedb.modeler.get_primitives(net_name, layer_name, is_void=True):
-            if prim.primitive_object.GetPolygonData().PointInPolygon(point_data):
+            if prim.primitive_object.polygon_data.in_polygon(point_data):
                 voids.append(prim)
         return voids
 
@@ -1550,7 +1529,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         list
             List of pin groups that the pin belongs to.
         """
-        return self._edb_padstackinstance.GetPinGroups()
+        return self._edb_padstackinstance.pin_groups()
 
     @property
     def placement_layer(self):
@@ -1561,7 +1540,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         str
             Name of the placement layer.
         """
-        return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetName()
+        return self._edb_padstackinstance.group.placement_layer.name
 
     @property
     def lower_elevation(self):
@@ -1572,7 +1551,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         float
             Lower elavation of the placement layer.
         """
-        return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetLowerElevation()
+        return self._edb_padstackinstance.group.placement_layer.lower_elevation
 
     @property
     def upper_elevation(self):
@@ -1583,7 +1562,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         float
            Upper elevation of the placement layer.
         """
-        return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetUpperElevation()
+        return self._edb_padstackinstance.group.placement_layer.upper_elevation
 
     @property
     def top_bottom_association(self):
@@ -1600,9 +1579,9 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             * 4 Number of top/bottom association type.
             * -1 Undefined.
         """
-        return int(self._edb_padstackinstance.GetGroup().GetPlacementLayer().GetTopBottomAssociation())
+        return int(self._edb_padstackinstance.group.placement_layer.top_bottom_association)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_rectangle_in_pad(self, layer_name, return_points=False, partition_max_order=16):
         """Create a rectangle inscribed inside a padstack instance pad.
 
@@ -1627,7 +1606,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
 
         Examples
         --------
-        >>> from pyaedt import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
         >>> edb_layout = edbapp.modeler
         >>> list_of_padstack_instances = list(edbapp.padstacks.instances.values())
@@ -1769,13 +1748,13 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             # Polygon
             points = []
             i = 0
-            while i < polygon_data.edb_api.Count:
-                point = polygon_data.edb_api.GetPoint(i)
+            while i < len(polygon_data.points):
+                point = polygon_data.points[i]
                 i += 1
-                if point.IsArc():
+                if point.is_arc:
                     continue
                 else:
-                    points.append([point.X.ToDouble(), point.Y.ToDouble()])
+                    points.append([point.x.value, point.y.value])
             xpoly, ypoly = zip(*points)
             polygon = [list(xpoly), list(ypoly)]
             rectangles = GeometryOperators.find_largest_rectangle_inside_polygon(
@@ -1791,8 +1770,8 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         pdata = self._pedb.modeler.shape_to_polygon_data(path)
         new_rect = []
         for point in pdata.Points:
-            p_transf = self._edb_padstackinstance.GetComponent().GetTransform().TransformPoint(point)
-            new_rect.append([p_transf.X.ToDouble(), p_transf.Y.ToDouble()])
+            p_transf = self._edb_padstackinstance.component.transform.transform_point(point)
+            new_rect.append([p_transf.x.value, p_transf.y.value])
         if return_points:
             return new_rect
         else:
@@ -1800,7 +1779,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             created_polygon = self._pedb.modeler.create_polygon(path, layer_name)
             return created_polygon
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_connected_object_id_set(self):
         """Produce a list of all geometries physically connected to a given layout object.
 
@@ -1809,17 +1788,17 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         list
             Found connected objects IDs with Layout object.
         """
-        layoutInst = self._edb_padstackinstance.GetLayout().GetLayoutInstance()
-        layoutObjInst = self.object_instance
-        return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
+        layout_inst = self._edb_padstackinstance.layout.layout_instance
+        layout_bbj_inst = self.object_instance
+        return [loi.layout_obj.id for loi in layout_inst.get_connected_objects(layout_bbj_inst).Items]
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _get_connected_object_obj_set(self):
-        layoutInst = self._edb_padstackinstance.GetLayout().GetLayoutInstance()
-        layoutObjInst = self.object_instance
-        return list([loi.GetLayoutObj() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items])
+        layout_inst = self._edb_padstackinstance.layout.layout_instance
+        layout_bbj_inst = self.object_instance
+        return [loi.layout_obj for loi in layout_inst.get_connected_objects(layout_bbj_inst).Items]
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_reference_pins(self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True):
         """Search for reference pins using given criteria.
 
