@@ -1,9 +1,8 @@
-from pyaedt.edb_core.edb_data.hfss_simulation_setup_data import EdbFrequencySweep
-from pyaedt.edb_core.general import convert_netdict_to_pydict
-from pyaedt.edb_core.general import convert_pydict_to_netdict
-from pyaedt.generic.general_methods import generate_unique_name
-from pyaedt.generic.general_methods import is_linux
-from pyaedt.generic.general_methods import pyaedt_function_handler
+from pyedb.grpc.edb_data.hfss_simulation_setup_data import EdbFrequencySweep
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.general_methods import pyedb_function_handler
+from ansys.edb.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup
+from ansys.edb.simulation_setup.siwave_simulation_setup import SimulationSetupType
 
 
 class SiwaveAdvancedSettings(object):
@@ -25,7 +24,7 @@ class SiwaveAdvancedSettings(object):
         bool
             ``True`` if interplane coupling is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.IncludeInterPlaneCoupling
+        return self.sim_setup_info.simulation_settings.advanced.include_inter_plane_coupling
 
     @property
     def xtalk_threshold(self):
@@ -36,7 +35,7 @@ class SiwaveAdvancedSettings(object):
         -------
         str
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.XtalkThreshold
+        return self.sim_setup_info.simulation_settings.advanced.cross_talk_threshold
 
     @property
     def min_void_area(self):
@@ -46,7 +45,7 @@ class SiwaveAdvancedSettings(object):
         -------
         bool
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.MinVoidArea
+        return self.sim_setup_info.simulation_settings.advanced.min_void_area
 
     @property
     def min_pad_area_to_mesh(self):
@@ -56,7 +55,7 @@ class SiwaveAdvancedSettings(object):
         -------
         bool
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.MinPadAreaToMesh
+        return self.sim_setup_info.simulation_settings.advanced.min_pad_area_to_mesh
 
     @property
     def min_plane_area_to_mesh(self):
@@ -66,7 +65,7 @@ class SiwaveAdvancedSettings(object):
         -------
         bool
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.MinPlaneAreaToMesh
+        return self.sim_setup_info.simulation_settings.advanced.min_plane_area_to_mesh
 
     @property
     def snap_length_threshold(self):
@@ -76,7 +75,7 @@ class SiwaveAdvancedSettings(object):
         -------
         str
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.SnapLengthThreshold
+        return self.sim_setup_info.simulation_settings.advanced.snap_length_threshold
 
     @property
     def return_current_distribution(self):
@@ -94,7 +93,7 @@ class SiwaveAdvancedSettings(object):
         bool
             ``True`` if return current distribution is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.ReturnCurrentDistribution
+        return self.sim_setup_info.simulation_settings.advanced.return_current_distribution
 
     @property
     def ignore_non_functional_pads(self):
@@ -105,7 +104,7 @@ class SiwaveAdvancedSettings(object):
         bool
             `True`` if functional pads have to be ignored, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.IgnoreNonFunctionalPads
+        return self.sim_setup_info.simulation_settings.advanced.ignore_non_functional_pads
 
     @property
     def include_coplane_coupling(self):
@@ -121,7 +120,7 @@ class SiwaveAdvancedSettings(object):
         bool
             ``True`` if coplane coupling is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.IncludeCoPlaneCoupling
+        return self.sim_setup_info.simulation_settings.advanced.include_co_plane_coupling
 
     @property
     def include_fringe_coupling(self):
@@ -133,7 +132,7 @@ class SiwaveAdvancedSettings(object):
         bool
             ``True`` if fringe coupling is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.IncludeFringeCoupling
+        return self.sim_setup_info.simulation_settings.advanced.include_fringe_coupling
 
     @property
     def include_split_plane_coupling(self):
@@ -152,7 +151,7 @@ class SiwaveAdvancedSettings(object):
         bool
             ``True`` if split plane coupling is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.IncludeSplitPlaneCoupling
+        return self.sim_setup_info.simulation_settings.advanced.include_split_plane_coupling
 
     @property
     def include_infinite_ground(self):
@@ -164,7 +163,7 @@ class SiwaveAdvancedSettings(object):
         bool
             ``True`` if infinite ground is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.IncludeInfGnd
+        return self.sim_setup_info.simulation_settings.advanced.include_inf_gnd
 
     @property
     def include_trace_coupling(self):
@@ -176,7 +175,7 @@ class SiwaveAdvancedSettings(object):
         bool
             ``True`` if trace coupling is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.IncludeTraceCoupling
+        return self.sim_setup_info.simulation_settings.advanced.include_trace_coupling
 
     @property
     def include_vi_sources(self):
@@ -188,7 +187,7 @@ class SiwaveAdvancedSettings(object):
         bool
             ``True`` if vi sources is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.IncludeVISources
+        return self.sim_setup_info.simulation_settings.advanced.include_vi_sources
 
     @property
     def infinite_ground_location(self):
@@ -198,7 +197,7 @@ class SiwaveAdvancedSettings(object):
         -------
         str
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.InfGndLocation
+        return self.sim_setup_info.simulation_settings.advanced.inf_gnd_location
 
     @property
     def max_coupled_lines(self):
@@ -208,7 +207,7 @@ class SiwaveAdvancedSettings(object):
         -------
         int
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.MaxCoupledLines
+        return self.sim_setup_info.simulation_settings.advanced.max_coupled_lines
 
     @property
     def automatic_mesh(self):
@@ -221,7 +220,7 @@ class SiwaveAdvancedSettings(object):
         bool
             ``True`` if automatic mesh is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.MeshAutoMatic
+        return self.sim_setup_info.simulation_settings.advanced.mesh_automatic
 
     @property
     def perform_erc(self):
@@ -236,7 +235,7 @@ class SiwaveAdvancedSettings(object):
         bool
             ``True`` if perform erc is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.PerformERC
+        return self.sim_setup_info.simulation_settings.advanced.perform_erc
 
     @property
     def mesh_frequency(self):
@@ -246,115 +245,125 @@ class SiwaveAdvancedSettings(object):
         -------
         str
         """
-        self.sim_setup_info.SimulationSettings.UseCustomSettings = True
-        return self.sim_setup_info.SimulationSettings.AdvancedSettings.MeshFrequency
+        return self.sim_setup_info.simulation_settings.advanced.mesh_frequency
 
     @include_inter_plane_coupling.setter
     def include_inter_plane_coupling(self, value):
-        self.sim_setup_info.SimulationSettings.UseCustomSettings = True
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.IncludeInterPlaneCoupling = value
-        self._parent._update_setup()
+        if isinstance(value, bool):
+            self.sim_setup_info.use_custom_settings = True
+            self.sim_setup_info.simulation_settings.advanced.include_inter_plane_coupling = value
+            self._parent._update_setup()
 
     @xtalk_threshold.setter
     def xtalk_threshold(self, value):
-        self.sim_setup_info.SimulationSettings.UseCustomSettings = True
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.XtalkThreshold = value
-        self._parent._update_setup()
+        if isinstance(value, bool):
+            self.sim_setup_info.use_custom_settings = True
+            self.sim_setup_info.simulation_settings.advanced.cross_talk_threshold = value
+            self._parent._update_setup()
 
     @min_void_area.setter
     def min_void_area(self, value):
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.MinVoidArea = value
+        self.sim_setup_info.simulation_settings.advanced.min_void_area = value
         self._parent._update_setup()
 
     @min_pad_area_to_mesh.setter
     def min_pad_area_to_mesh(self, value):
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.MinPadAreaToMesh = value
+        self.sim_setup_info.simulation_settings.advanced.min_pad_area_to_mesh = value
         self._parent._update_setup()
 
     @min_plane_area_to_mesh.setter
     def min_plane_area_to_mesh(self, value):
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.MinPlaneAreaToMesh = value
+        self.sim_setup_info.simulation_settings.advanced.min_plane_area_to_mesh = value
         self._parent._update_setup()
 
     @snap_length_threshold.setter
     def snap_length_threshold(self, value):
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.SnapLengthThreshold = value
+        self.sim_setup_info.simulation_settings.advanced.snap_length_threshold = value
         self._parent._update_setup()
 
     @return_current_distribution.setter
     def return_current_distribution(self, value):
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.ReturnCurrentDistribution = value
-        self._parent._update_setup()
+        if isinstance(value, bool):
+            self.sim_setup_info.simulation_settings.advanced.return_current_distribution = value
+            self._parent._update_setup()
 
     @ignore_non_functional_pads.setter
     def ignore_non_functional_pads(self, value):
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.IgnoreNonFunctionalPads = value
-        self._parent._update_setup()
+        if isinstance(value, bool):
+            self.sim_setup_info.simulation_settings.advanced.ignore_non_functional_pads = value
+            self._parent._update_setup()
 
     @include_coplane_coupling.setter
     def include_coplane_coupling(self, value):
-        self.sim_setup_info.SimulationSettings.UseCustomSettings = True
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.IncludeCoPlaneCoupling = value
-        self._parent._update_setup()
+        if isinstance(value, bool):
+            self.sim_setup_info.simulation_settings.use_custom_settings = True
+            self.sim_setup_info.simulation_settings.advanced.include_co_plane_coupling = value
+            self._parent._update_setup()
 
     @include_fringe_coupling.setter
     def include_fringe_coupling(self, value):
-        self.sim_setup_info.SimulationSettings.UseCustomSettings = True
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.IncludeFringeCoupling = value
-        self._parent._update_setup()
+        if isinstance(value, bool):
+            self.sim_setup_info.simulation_settings.use_customer_settings = True
+            self.sim_setup_info.simulation_settings.advanced.include_fringe_coupling = value
+            self._parent._update_setup()
 
     @include_split_plane_coupling.setter
     def include_split_plane_coupling(self, value):
-        self.sim_setup_info.SimulationSettings.UseCustomSettings = True
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.IncludeSplitPlaneCoupling = value
-        self._parent._update_setup()
+        if isinstance(value, bool):
+            self.sim_setup_info.simulation_settings.use_custom_settings = True
+            self.sim_setup_info.simulation_settings.advanced.include_split_plane_coupling = value
+            self._parent._update_setup()
 
     @include_infinite_ground.setter
     def include_infinite_ground(self, value):
-        self.sim_setup_info.SimulationSettings.UseCustomSettings = True
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.IncludeInfGnd = value
-        self._parent._update_setup()
+        if isinstance(value, bool):
+            self.sim_setup_info.simulation_settings.use_custom_settings = True
+            self.sim_setup_info.simulation_settings.advanced.include_inf_gnd = value
+            self._parent._update_setup()
 
     @include_trace_coupling.setter
     def include_trace_coupling(self, value):
-        self.sim_setup_info.SimulationSettings.UseCustomSettings = True
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.IncludeTraceCoupling = value
-        self._parent._update_setup()
+        if isinstance(value, bool):
+            self.sim_setup_info.simulation_settings.use_custom_settings = True
+            self.sim_setup_info.simulation_settings.advanced.include_trace_coupling = value
+            self._parent._update_setup()
 
     @include_vi_sources.setter
     def include_vi_sources(self, value):
-        self.sim_setup_info.SimulationSettings.UseCustomSettings = True
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.IncludeVISources = value
-        self._parent._update_setup()
+        if isinstance(value, bool):
+            self.sim_setup_info.simulation_settings.use_custom_settings = True
+            self.sim_setup_info.simulation_settings.advanced.include_vi_sources = value
+            self._parent._update_setup()
 
     @infinite_ground_location.setter
     def infinite_ground_location(self, value):
-        self.sim_setup_info.SimulationSettings.UseCustomSettings = True
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.InfGndLocation = value
+        self.sim_setup_info.simulation_settings.use_custom_settings = True
+        self.sim_setup_info.simulation_settings.advanced.inf_gnd_location = value
         self._parent._update_setup()
 
     @max_coupled_lines.setter
     def max_coupled_lines(self, value):
-        self.sim_setup_info.SimulationSettings.UseCustomSettings = True
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.MaxCoupledLines = value
+        self.sim_setup_info.simulation_settings.use_custom_settings = True
+        self.sim_setup_info.simulation_settings.advanced.max_coupled_lines = value
         self._parent._update_setup()
 
     @automatic_mesh.setter
     def automatic_mesh(self, value):
-        self.sim_setup_info.SimulationSettings.UseCustomSettings = True
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.MeshAutoMatic = value
+        self.sim_setup_info.simulation_settings.use_custom_settings = True
+        self.sim_setup_info.simulation_settings.advanced.mesh_automatic = value
         self._parent._update_setup()
 
     @perform_erc.setter
     def perform_erc(self, value):
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.PerformERC = value
+        self.sim_setup_info.simulation_settings.advanced.perform_erc = value
         self._parent._update_setup()
 
     @mesh_frequency.setter
     def mesh_frequency(self, value):
-        self.sim_setup_info.SimulationSettings.UseCustomSettings = True
-        self.sim_setup_info.SimulationSettings.AdvancedSettings.MeshFrequency = value
-        self._parent._update_setup()
+        if isinstance(value, bool):
+            self.sim_setup_info.SimulationSettings.UseCustomSettings = True
+            self.sim_setup_info.SimulationSettings.AdvancedSettings.MeshFrequency = value
+            self._parent._update_setup()
 
 
 class SiwaveDCAdvancedSettings(object):
@@ -375,7 +384,7 @@ class SiwaveDCAdvancedSettings(object):
         -------
         float
         """
-        return self.sim_setup_info.SimulationSettings.DCAdvancedSettings.DcMinVoidAreaToMesh
+        return self.sim_setup_info.simulation_settings.dc_advanced.dc_min_void_area_to_mesh
 
     @property
     def min_plane_area(self):
@@ -385,7 +394,7 @@ class SiwaveDCAdvancedSettings(object):
         -------
         float
         """
-        return self.sim_setup_info.SimulationSettings.DCAdvancedSettings.DcMinPlaneAreaToMesh
+        return self.sim_setup_info.simulation_settings.dc_advanced.dc_min_plane_area_to_mesh
 
     @property
     def energy_error(self):
@@ -395,7 +404,7 @@ class SiwaveDCAdvancedSettings(object):
         -------
         float
         """
-        return self.sim_setup_info.SimulationSettings.DCAdvancedSettings.EnergyError
+        return self.sim_setup_info.simulation_settings.dc_advanced.energy_error
 
     @property
     def max_init_mesh_edge_length(self):
@@ -405,7 +414,7 @@ class SiwaveDCAdvancedSettings(object):
         -------
         float
         """
-        return self.sim_setup_info.SimulationSettings.DCAdvancedSettings.MaxInitMeshEdgeLength
+        return self.sim_setup_info.simulation_settings.dc_advanced.max_init_mesh_edge_length
 
     @property
     def max_num_pass(self):
@@ -415,7 +424,7 @@ class SiwaveDCAdvancedSettings(object):
         -------
         int
         """
-        return self.sim_setup_info.SimulationSettings.DCAdvancedSettings.MaxNumPasses
+        return self.sim_setup_info.simulation_settings.dc_advanced.max_num_passes
 
     @property
     def min_num_pass(self):
@@ -425,7 +434,7 @@ class SiwaveDCAdvancedSettings(object):
         -------
         int
         """
-        return self.sim_setup_info.SimulationSettings.DCAdvancedSettings.MinNumPasses
+        return self.sim_setup_info.simulation_settings.dc_advanced.min_num_passes
 
     @property
     def mesh_bondwires(self):
@@ -435,7 +444,7 @@ class SiwaveDCAdvancedSettings(object):
         -------
         bool
         """
-        return self.sim_setup_info.SimulationSettings.DCAdvancedSettings.MeshBws
+        return self.sim_setup_info.simulation_settings.dc_advanced.mesh_bws
 
     @property
     def mesh_vias(self):
@@ -445,7 +454,7 @@ class SiwaveDCAdvancedSettings(object):
         -------
         bool
         """
-        return self.sim_setup_info.SimulationSettings.DCAdvancedSettings.MeshVias
+        return self.sim_setup_info.simulation_settings.dc_advanced.mesh_vias
 
     @property
     def num_bondwire_sides(self):
@@ -455,7 +464,7 @@ class SiwaveDCAdvancedSettings(object):
         -------
         int
         """
-        return self.sim_setup_info.SimulationSettings.DCAdvancedSettings.NumBwSides
+        return self.sim_setup_info.simulation_settings.dc_advanced.num_bw_sides
 
     @property
     def num_via_sides(self):
@@ -465,7 +474,7 @@ class SiwaveDCAdvancedSettings(object):
         -------
         int
         """
-        return self.sim_setup_info.SimulationSettings.DCAdvancedSettings.NumViaSides
+        return self.sim_setup_info.simulation_settings.dc_advanced.num_via_sides
 
     @property
     def percent_local_refinement(self):
@@ -475,7 +484,7 @@ class SiwaveDCAdvancedSettings(object):
         -------
         float
         """
-        return self.sim_setup_info.SimulationSettings.DCAdvancedSettings.PercentLocalRefinement
+        return self.sim_setup_info.simulation_settings.dc_advanced.percent_local_refinement
 
     @property
     def perform_adaptive_refinement(self):
@@ -486,7 +495,7 @@ class SiwaveDCAdvancedSettings(object):
         bool
             ``True`` if adaptive refinement is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.DCAdvancedSettings.PerformAdaptiveRefinement
+        return self.sim_setup_info.simulation_settings.dc_advanced.perform_adaptive_refinement
 
     @property
     def refine_bondwires(self):
@@ -497,7 +506,7 @@ class SiwaveDCAdvancedSettings(object):
         bool
             ``True`` if refine bondwires is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.DCAdvancedSettings.RefineBws
+        return self.sim_setup_info.simulation_settings.dc_advanced.refine_bws
 
     @property
     def refine_vias(self):
@@ -509,7 +518,7 @@ class SiwaveDCAdvancedSettings(object):
             ``True`` if via refinement is used, ``False`` otherwise.
 
         """
-        return self.sim_setup_info.SimulationSettings.DCAdvancedSettings.RefineVias
+        return self.sim_setup_info.simulation_settings.dc_advanced.refine_vias
 
     @property
     def compute_inductance(self):
@@ -520,7 +529,7 @@ class SiwaveDCAdvancedSettings(object):
         bool
             ``True`` if inductances will be computed, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.DCSettings.ComputeInductance
+        return self.sim_setup_info.simulation_settings.dc.compute_inductance
 
     @property
     def contact_radius(self):
@@ -530,7 +539,7 @@ class SiwaveDCAdvancedSettings(object):
         -------
         str
         """
-        return self.sim_setup_info.SimulationSettings.DCSettings.ContactRadius
+        return self.sim_setup_info.simulation_settings.dc.contact_radius
 
     @property
     def dc_slider_position(self):
@@ -540,7 +549,7 @@ class SiwaveDCAdvancedSettings(object):
         -------
         int
         """
-        return self.sim_setup_info.SimulationSettings.DCSettings.DCSliderPos
+        return self.sim_setup_info.simulation_settings.dc.dc_slider_pos
 
     @property
     def use_dc_custom_settings(self):
@@ -552,7 +561,7 @@ class SiwaveDCAdvancedSettings(object):
         bool
             ``True`` if custom dc settings are used, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings
+        return self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings
 
     @property
     def plot_jv(self):
@@ -563,21 +572,21 @@ class SiwaveDCAdvancedSettings(object):
         bool
             ``True`` if plot JV is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.SimulationSettings.DCSettings.PlotJV
+        return self.sim_setup_info.simulation_settings.dc.plot_jv
 
     @plot_jv.setter
     def plot_jv(self, value):
-        self.sim_setup_info.SimulationSettings.DCSettings.PlotJV = value
+        self.sim_setup_info.simulation_settings.dc.plot_jv = value
         self._parent._update_setup()
 
     @compute_inductance.setter
     def compute_inductance(self, value):
-        self.sim_setup_info.SimulationSettings.DCSettings.ComputeInductance = value
+        self.sim_setup_info.simulation_settings.dc.compute_inductance = value
         self._parent._update_setup()
 
     @contact_radius.setter
     def contact_radius(self, value):
-        self.sim_setup_info.SimulationSettings.DCSettings.ContactRadius = value
+        self.sim_setup_info.simulation_settings.dc.contact_radius = value
         self._parent._update_setup()
 
     @dc_slider_position.setter
@@ -588,99 +597,99 @@ class SiwaveDCAdvancedSettings(object):
         1- ``balanced``
         2- ``optimal accuracy``.
         """
-        self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings = False
-        self.sim_setup_info.SimulationSettings.DCSettings.DCSliderPos = value
+        self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings = False
+        self.sim_setup_info.simulation_settings.dc.dc_slider_pos = value
         self._parent._update_setup()
 
     @use_dc_custom_settings.setter
     def use_dc_custom_settings(self, value):
-        self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings = value
+        self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings = value
         self._parent._update_setup()
 
     @min_void_area.setter
     def min_void_area(self, value):
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.DcMinVoidAreaToMesh = value
+        self.sim_setup_info.simulation_settings.dc_advanced.dc_min_void_area_to_mesh = value
         self._parent._update_setup()
 
     @min_plane_area.setter
     def min_plane_area(self, value):
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.DcMinPlaneAreaToMesh = value
+        self.sim_setup_info.simulation_settings.dc_advanced.dc_min_plane_area_to_mesh = value
         self._parent._update_setup()
 
     @energy_error.setter
     def energy_error(self, value):
-        self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings = True
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.EnergyError = value
+        self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings = True
+        self.sim_setup_info.simulation_settings.dc_advanced.energy_error = value
         self._parent._update_setup()
 
     @max_init_mesh_edge_length.setter
     def max_init_mesh_edge_length(self, value):
-        self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings = True
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.MaxInitMeshEdgeLength = value
+        self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings = True
+        self.sim_setup_info.simulation_settings.dc_advanced.max_init_mesh_edge_length = value
         self._parent._update_setup()
 
     @max_num_pass.setter
     def max_num_pass(self, value):
-        self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings = True
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.MaxNumPasses = value
+        self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings = True
+        self.sim_setup_info.simulation_settings.dc_advanced.max_num_passes = value
         self._parent._update_setup()
 
     @min_num_pass.setter
     def min_num_pass(self, value):
-        self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings = True
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.MinNumPasses = value
+        self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings = True
+        self.sim_setup_info.simulation_settings.dc_advanced.min_num_passes = value
         self._parent._update_setup()
 
     @mesh_bondwires.setter
     def mesh_bondwires(self, value):
-        self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings = True
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.MeshBws = value
+        self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings = True
+        self.sim_setup_info.simulation_settings.dc_advanced.mesh_bws = value
         self._parent._update_setup()
 
     @mesh_vias.setter
     def mesh_vias(self, value):
-        self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings = True
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.MeshVias = value
+        self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings = True
+        self.sim_setup_info.simulation_settings.dc_advanced.mesh_vias = value
         self._parent._update_setup()
 
     @num_bondwire_sides.setter
     def num_bondwire_sides(self, value):
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.MeshBws = True
-        self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings = True
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.NumBwSides = value
+        self.sim_setup_info.simulation_settings.dc_advanced.mesh_bws = True
+        self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings = True
+        self.sim_setup_info.simulation_settings.dc_advanced.num_bw_sides = value
         self._parent._update_setup()
 
     @num_via_sides.setter
     def num_via_sides(self, value):
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.MeshVias = True
-        self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings = True
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.NumViaSides = value
+        self.sim_setup_info.simulation_settings.dc_advanced.mesh_vias = True
+        self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings = True
+        self.sim_setup_info.simulation_settings.dc_advanced.num_via_sides = value
         self._parent._update_setup()
 
     @percent_local_refinement.setter
     def percent_local_refinement(self, value):
-        self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings = True
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.PercentLocalRefinement = value
+        self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings = True
+        self.sim_setup_info.simulation_settings.dc_advanced.percent_local_refinement = value
         self._parent._update_setup()
 
     @perform_adaptive_refinement.setter
     def perform_adaptive_refinement(self, value):
-        self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings = True
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.PerformAdaptiveRefinement = value
+        self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings = True
+        self.sim_setup_info.simulation_settings.dc_advanced.perform_adaptive_refinement = value
         self._parent._update_setup()
 
     @refine_bondwires.setter
     def refine_bondwires(self, value):
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.MeshBws = True
-        self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings = True
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.RefineBws = value
+        self.sim_setup_info.simulation_settings.dc_advanced.mesh_bws = True
+        self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings = True
+        self.sim_setup_info.simulation_settings.dc_advanced.refine_bws = value
         self._parent._update_setup()
 
     @refine_vias.setter
     def refine_vias(self, value):
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.MeshVias = True
-        self.sim_setup_info.SimulationSettings.DCSettings.UseDCCustomSettings = True
-        self.sim_setup_info.SimulationSettings.DCAdvancedSettings.RefineVias = value
+        self.sim_setup_info.simulation_settings.dc_advanced.mesh_vias = True
+        self.sim_setup_info.simulation_settings.dc.use_dc_custom_settings = True
+        self.sim_setup_info.simulation_settings.dc_advanced.refine_vias = value
         self._parent._update_setup()
 
 
@@ -709,12 +718,12 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
         """EDB internal simulation setup object."""
         return self._edb_sim_setup_info
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _update_setup(self):
-        self._edb_sim_setup = self._edb.edb_api.utility.utility.SIWaveSimulationSetup(self._edb_sim_setup_info)
+        self._edb_sim_setup = SIWaveSimulationSetup(self._edb_sim_setup_info)
         if self.name in self._edb.setups:
-            self._edb.layout.cell.DeleteSimulationSetup(self.name)
-        self._edb.layout.cell.AddSimulationSetup(self._edb_sim_setup)
+            self._edb.layout.cell.delete_simulation_setup(self.name)
+        self._edb.layout.cell.add_simulation_setup(self._edb_sim_setup)
         return True
 
     @property
@@ -733,14 +742,14 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
         if self._sweep_data_list:
             return self._sweep_data_list
         self._sweep_data_list = {}
-        for i in list(self._edb_sim_setup_info.SweepDataList):
+        for i in list(self._edb_sim_setup_info.sweep_data):
             self._sweep_data_list[i.Name] = EdbFrequencySweep(self, None, i.Name, i)
         return self._sweep_data_list
 
     @property
     def name(self):
         """Setup name."""
-        return self._edb_sim_setup_info.Name
+        return self._edb_sim_setup_info.name
 
     @name.setter
     def name(self, value):
@@ -754,33 +763,33 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
     @property
     def enabled(self):
         """Whether the setup is enabled."""
-        return self._edb_sim_setup_info.SimulationSettings.Enabled
+        return self._edb_sim_setup_info.simulation_settings.enabled
 
     @property
     def pi_slider_postion(self):
         """PI solider position. Values are from ``1`` to ``3``."""
-        return self._edb_sim_setup_info.SimulationSettings.PISliderPos
+        return self._edb_sim_setup_info.simulation_settings.pi_slider_pos
 
     @property
     def si_slider_postion(self):
         """SI solider position. Values are from ``1`` to ``3``."""
-        return self._edb_sim_setup_info.SimulationSettings.SISliderPos
+        return self._edb_sim_setup_info.simulation_settings.si_slider_pos
 
     @enabled.setter
     def enabled(self, value):
-        self._edb_sim_setup_info.SimulationSettings.Enabled = value
+        self._edb_sim_setup_info.simulation_settings.enabled = value
         self._update_setup()
 
     @pi_slider_postion.setter
     def pi_slider_postion(self, value):
-        self._edb_sim_setup_info.SimulationSettings.UseCustomSettings = False
-        self._edb_sim_setup_info.SimulationSettings.PISliderPos = value
+        self._edb_sim_setup_info.simulation_settings.use_custom_settings = False
+        self._edb_sim_setup_info.simulation_settings.pi_slider_pos = value
         self._update_setup()
 
     @si_slider_postion.setter
     def si_slider_postion(self, value):
-        self._edb_sim_setup_info.SimulationSettings.UseCustomSettings = False
-        self._edb_sim_setup_info.SimulationSettings.SISliderPos = value
+        self._edb_sim_setup_info.simulation_settings.use_custom_settings = False
+        self._edb_sim_setup_info.simulation_settings.si_slider_pos = value
         self._update_setup()
 
     @property
@@ -791,11 +800,11 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
         -------
         bool
         """
-        return self._edb_sim_setup_info.SimulationSettings.UseCustomSettings
+        return self._edb_sim_setup_info.simulation_settings.use_custom_settings
 
     @use_custom_settings.setter
     def use_custom_settings(self, value):
-        self._edb_sim_setup_info.SimulationSettings.UseCustomSettings = value
+        self._edb_sim_setup_info.simulation_settings.use_custom_settings = value
         self._update_setup()
 
     @property
@@ -806,15 +815,15 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
         -------
         bool
         """
-        return self._edb_sim_setup_info.SimulationSettings.UseSISettings
+        return self._edb_sim_setup_info.simulation_settings.use_si_settings
 
     @use_si_settings.setter
     def use_si_settings(self, value):
-        self._edb_sim_setup_info.SimulationSettings.UseCustomSettings = False
-        self._edb_sim_setup_info.SimulationSettings.UseSISettings = value
+        self._edb_sim_setup_info.simulation_settings.use_custom_settings = False
+        self._edb_sim_setup_info.simulation_settings.use_si_settings = value
         self._update_setup()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
 
@@ -880,11 +889,9 @@ def _parse_value(v):
     return pv
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def _get_edb_setup_info(edb_siwave_sim_setup, edb_sim_setup_info):
-    string = edb_siwave_sim_setup.ToString().replace("\t", "").split("\r\n")
-    if is_linux:
-        string = string[0].split("\n")
+    string = str(edb_siwave_sim_setup).replace("\t", "").split("\r\n")
     keys = [i.split("=")[0] for i in string if len(i.split("=")) == 2 and "SourceTermsToGround" not in i]
     values = [i.split("=")[1] for i in string if len(i.split("=")) == 2 and "SourceTermsToGround" not in i]
     for val in string:
@@ -896,26 +903,26 @@ def _get_edb_setup_info(edb_siwave_sim_setup, edb_sim_setup_info):
             for v in val:
                 source = v.split("=")
                 sources[source[0]] = source[1]
-            edb_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(sources)
+            edb_sim_setup_info.simulation_settings.dc_ir_settings.source_terms_to_ground = sources
             break
     for k in keys:
         value = _parse_value(values[keys.index(k)])
         setter = None
-        if k in dir(edb_sim_setup_info.SimulationSettings):
-            setter = edb_sim_setup_info.SimulationSettings
-        elif k in dir(edb_sim_setup_info.SimulationSettings.AdvancedSettings):
-            setter = edb_sim_setup_info.SimulationSettings.AdvancedSettings
+        if k in dir(edb_sim_setup_info.simulation_settings):
+            setter = edb_sim_setup_info.simulation_settings
+        elif k in dir(edb_sim_setup_info.simulation_settings.advanced_settings):
+            setter = edb_sim_setup_info.simulation_settings.advanced_settings
 
-        elif k in dir(edb_sim_setup_info.SimulationSettings.DCAdvancedSettings):
-            setter = edb_sim_setup_info.SimulationSettings.DCAdvancedSettings
-        elif "DCIRSettings" in dir(edb_sim_setup_info.SimulationSettings) and k in dir(
-            edb_sim_setup_info.SimulationSettings.DCIRSettings
+        elif k in dir(edb_sim_setup_info.simulation_settings.dc_advanced_settings):
+            setter = edb_sim_setup_info.simulation_settings.dc_advanced_settings
+        elif "DCIRSettings" in dir(edb_sim_setup_info.simulation_settings) and k in dir(
+            edb_sim_setup_info.simulation_settings.dc_ir_settings
         ):
-            setter = edb_sim_setup_info.SimulationSettings.DCIRSettings
-        elif k in dir(edb_sim_setup_info.SimulationSettings.DCSettings):
-            setter = edb_sim_setup_info.SimulationSettings.DCSettings
-        elif k in dir(edb_sim_setup_info.SimulationSettings.AdvancedSettings):
-            setter = edb_sim_setup_info.SimulationSettings.AdvancedSettings
+            setter = edb_sim_setup_info.simulation_settings.dc_ir_settings
+        elif k in dir(edb_sim_setup_info.simulation_settings.dc_settings):
+            setter = edb_sim_setup_info.simulation_settings.dc_settings
+        elif k in dir(edb_sim_setup_info.simulation_settings.advanced_settings):
+            setter = edb_sim_setup_info.simulation_settings.advanced_settings
         if setter:
             try:
                 setter.__setattr__(k, value)
@@ -932,17 +939,15 @@ class SiwaveDCSimulationSetup(SiwaveDCAdvancedSettings, object):
     def __init__(self, edb, name=None, edb_siwave_sim_setup=None):
         self._edb = edb
         self._mesh_operations = {}
-        self._edb_sim_setup_info = self._edb.simsetupdata.SimSetupInfo[
-            self._edb.simsetupdata.SIwave.SIWDCIRSimulationSettings
-        ]()
+        self._edb_sim_setup_info = SiwaveDCSimulationSetup()
         if edb_siwave_sim_setup:
             _get_edb_setup_info(edb_siwave_sim_setup, self._edb_sim_setup_info)
 
         else:
             if not name:
-                self._edb_sim_setup_info.Name = generate_unique_name("siwave")
+                self._edb_sim_setup_info.name = generate_unique_name("siwave")
             else:
-                self._edb_sim_setup_info.Name = name
+                self._edb_sim_setup_info.name = name
             self._update_setup()
         self.setup_type = "kSIWaveDCIR"
 
@@ -953,24 +958,24 @@ class SiwaveDCSimulationSetup(SiwaveDCAdvancedSettings, object):
         """EDB internal simulation setup object."""
         return self._edb_sim_setup_info
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _update_setup(self):
-        edb_sim_setup = self._edb.edb_api.utility.utility.SIWaveDCIRSimulationSetup(self._edb_sim_setup_info)
+        edb_sim_setup = SiwaveDCSimulationSetup(self._edb_sim_setup_info)
         if self.name in self._edb.setups:
-            self._edb.layout.cell.DeleteSimulationSetup(self.name)
-        self._edb.active_cell.AddSimulationSetup(edb_sim_setup)
+            self._edb.layout.cell.delete_simulation_setupSetup(self.name)
+        self._edb.active_cell.add_simulation_setup(edb_sim_setup)
         return True
 
     @property
     def name(self):
         """Setup name."""
-        return self._edb_sim_setup_info.Name
+        return self._edb_sim_setup_info.name
 
     @name.setter
     def name(self, value):
         """Set name of the setup."""
-        legacy_name = self._edb_sim_setup_info.Name
-        self._edb_sim_setup_info.Name = value
+        legacy_name = self._edb_sim_setup_info.name
+        self._edb_sim_setup_info.name = value
         self._update_setup()
         if legacy_name in self._edb.setups:
             del self._edb._setups[legacy_name]
@@ -978,11 +983,11 @@ class SiwaveDCSimulationSetup(SiwaveDCAdvancedSettings, object):
     @property
     def enabled(self):
         """Whether setup is enabled."""
-        return self._edb_sim_setup_info.SimulationSettings.Enabled
+        return self._edb_sim_setup_info.simulation_settings.enabled
 
     @enabled.setter
     def enabled(self, value):
-        self._edb_sim_setup_info.SimulationSettings.Enabled = value
+        self._edb_sim_setup_info.simulation_settings.enabled = value
         self._update_setup()
 
     @property
@@ -995,7 +1000,7 @@ class SiwaveDCSimulationSetup(SiwaveDCAdvancedSettings, object):
             {str, int}, keys is source name, value int 0 unspecified, 1 negative node, 2 positive one.
 
         """
-        return convert_netdict_to_pydict(self._edb_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround)
+        return self._edb_sim_setup_info.simulation_settings.dc_settings.source_terms_to_ground
 
     @pyaedt_function_handler()
     def add_source_terminal_to_ground(self, source_name, terminal=0):
@@ -1019,7 +1024,5 @@ class SiwaveDCSimulationSetup(SiwaveDCAdvancedSettings, object):
         """
         terminals = self.source_terms_to_ground
         terminals[source_name] = terminal
-        self._edb_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(
-            terminals
-        )
+        self._edb_sim_setup_info.simullation_settings.dc_ir.source_terms_to_ground = terminals
         return self._update_setup()
