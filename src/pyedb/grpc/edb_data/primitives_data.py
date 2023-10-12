@@ -8,7 +8,6 @@ from ansys.edb.primitive.primitive import Rectangle
 from ansys.edb.primitive.primitive import Text
 from ansys.edb.primitive.primitive import PrimitiveType
 from ansys.edb.utility.value import Value
-#from ansys.edb.primitive.primitive import Connectable
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
 
