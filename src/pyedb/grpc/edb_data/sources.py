@@ -1,6 +1,8 @@
-from pyaedt import pyaedt_function_handler
-from pyaedt.generic.constants import NodeType
-from pyaedt.generic.constants import SourceType
+from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.generic.constants import NodeType
+from pyedb.generic.constants import SourceType
+from ansys.edb.terminal.terminals import BoundaryType
+from ansys.edb.utility.value import Value
 
 
 class Node(object):
@@ -272,16 +274,16 @@ class PinGroup(object):
 
     @property
     def net_name(self):
-        return self._edb_pin_group.GetNet().GetName()
+        return self._edb_pin_group.net.name
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _create_pin_group_terminal(self, is_reference=False):
-        pg_term = self._edb_pin_group.GetPinGroupTerminal()
-        pin_group_net = self._edb_pin_group.GetNet()
-        if pin_group_net.IsNull():  # pragma: no cover
-            pin_group_net = list(self._edb_pin_group.GetPins())[0].GetNet()
+        pg_term = self._edb_pin_group.pin_group_terminal()
+        pin_group_net = self._edb_pin_group.net
+        if pin_group_net.is_null:  # pragma: no cover
+            pin_group_net = self._edb_pin_group.pins[0].net
         if pg_term.IsNull():
-            return self._pedb.edb_api.cell.terminal.PinGroupTerminal.Create(
+            return self._pedb.cell.terminal.pin_group_terminal.create(
                 self._active_layout,
                 pin_group_net,
                 self.name,
@@ -291,39 +293,39 @@ class PinGroup(object):
         else:
             return pg_term
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_current_source_terminal(self, magnitude=1, phase=0):
         terminal = self._create_pin_group_terminal()
-        terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kCurrentSource)
-        terminal.SetSourceAmplitude(self._pedb.edb_value(magnitude))
-        terminal.SetSourcePhase(self._pedb.edb_api.utility.value(phase))
+        terminal.boundary_type = BoundaryType.CURRENT_SOURCE
+        terminal.source_amplitude = Value(magnitude)
+        terminal.source_phase = Value(phase)
         return terminal
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_voltage_source_terminal(self, magnitude=1, phase=0, impedance=0.001):
         terminal = self._create_pin_group_terminal()
-        terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageSource)
-        terminal.SetSourceAmplitude(self._pedb.edb_value(magnitude))
-        terminal.SetSourcePhase(self._pedb.edb_api.utility.value(phase))
-        terminal.SetImpedance(self._pedb.edb_value(impedance))
+        terminal.boundary_type = BoundaryType.VOLTAGE_SOURCE
+        terminal.source_amplitude = Value(magnitude)
+        terminal.source_phase = Value(phase)
+        terminal.impedance = Value(impedance)
         return terminal
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_voltage_probe_terminal(self, impedance=1000000):
         terminal = self._create_pin_group_terminal()
-        terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageProbe)
-        terminal.SetImpedance(self._pedb.edb_value(impedance))
+        terminal.boundary_type = BoundaryType.VOLTAGE_PROBE
+        terminal.impedance = Value(impedance)
         return terminal
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_port_terminal(self, impedance=50):
         terminal = self._create_pin_group_terminal()
-        terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PortBoundary)
-        terminal.SetImpedance(self._pedb.edb_value(impedance))
+        terminal.boundary_type = BoundaryType.PORT
+        terminal.impedance = Value(impedance)
         terminal.SetIsCircuitPort(True)
         return terminal
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def delete(self):
         """Delete active pin group.
 
@@ -332,9 +334,9 @@ class PinGroup(object):
         bool
 
         """
-        terminals = self._edb_pin_group.GetPinGroupTerminal()
-        self._edb_pin_group.Delete()
-        terminals.Delete()
+        terminals = self._edb_pin_group.pin_group_terminal
+        self._edb_pin_group.delete()
+        terminals.delete()
         return True
 
 

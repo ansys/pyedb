@@ -3,9 +3,9 @@ from ansys.edb.layout.layout import ExtendedNet
 from ansys.edb.layout.layout import NetClass
 from ansys.edb.layout.layout import Net
 from ansys.edb.primitive.primitive import PrimitiveType
-from pyaedt.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyaedt.edb_core.edb_data.primitives_data import cast
-from generic.general_methods import pyedb_function_handler
+from padstacks_data import EDBPadstackInstance
+from primitives_data import cast
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class EDBNetsData(Net):

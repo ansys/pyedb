@@ -1,5 +1,5 @@
 from ansys.edb.utility import Value
-from generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
 from ansys.edb.utility import Value
 
 

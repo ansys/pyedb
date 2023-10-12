@@ -81,7 +81,7 @@ def Edb(
     >>> app = Edb("/path/to/file/myfile.gds")
 
     """
-    from pyaedt.edb import Edb as app
+    from pyedb.edb import Edb as app
 
     return app(
         edbpath=edbpath,
@@ -96,48 +96,5 @@ def Edb(
     )
 
 
-app_map = {"EDB": Edb,}
+app_map = {"EDB": Edb}
 
-
-def get_pyaedt_app(project_name=None, design_name=None):
-    """Returns the Pyaedt Object of specific project_name and design_name.
-
-    Parameters
-    ----------
-    project_name
-    design_name
-
-    Returns
-    -------
-    :def :`pyaedt.Hfss`
-        Any of the Pyaedt App initialized.
-    """
-    main = sys.modules["__main__"]
-    if "oDesktop" in dir(main):
-        if project_name and project_name not in main.oDesktop.GetProjectList():
-            raise AttributeError("Project  {} doesn't exist in current Desktop.".format(project_name))
-        if not project_name:
-            oProject = main.oDesktop.GetActiveProject()
-        else:
-            oProject = main.oDesktop.SetActiveProject(project_name)
-        if not oProject:
-            raise AttributeError("No Project Present.")
-        design_names = []
-        deslist = list(oProject.GetTopDesignList())
-        for el in deslist:
-            m = re.search(r"[^;]+$", el)
-            design_names.append(m.group(0))
-        if design_name and design_name not in design_names:
-            raise AttributeError("Design  {} doesn't exists in current Project.".format(design_name))
-        if not design_name:
-            oDesign = oProject.GetActiveDesign()
-        else:
-            oDesign = oProject.SetActiveDesign(design_name)
-        if not oDesign:
-            raise AttributeError("No Design Present.")
-        design_type = oDesign.GetDesignType()
-        if design_type in list(app_map.keys()):
-            version = main.oDesktop.GetVersion().split(".")
-            v = ".".join([version[0], version[1]])
-            return app_map[design_type](project_name, design_name, specified_version=v)
-    return None
