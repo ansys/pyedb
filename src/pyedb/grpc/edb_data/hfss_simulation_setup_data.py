@@ -1,6 +1,9 @@
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
-
+from ansys.edb.simulation_setup import SweepData
+from ansys.edb.utility.value import Value
+from ansys.edb.simulation_setup.hfss_simulation_settings import HFSSSimulationSettings
+from ansys.edb.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
 
 class EdbFrequencySweep(object):
     """Manages EDB methods for frequency sweep."""
@@ -16,16 +19,16 @@ class EdbFrequencySweep(object):
                 self._name = generate_unique_name("sweep")
             else:
                 self._name = name
-            self._edb_sweep_data = self._sim_setup._edb.simsetupdata.SweepData(self._name)
+            self._edb_sweep_data = self._sim_setup._edb.sweep_data(self._name)
             self.set_frequencies(frequency_sweep)
 
     @pyedb_function_handler()
     def _update_sweep(self):
         """Update sweep."""
-        self._sim_setup._edb_sim_setup_info.SweepDataList.Clear()
+        self._sim_setup.sweep_data.frequency_string = ""
         for el in list(self._sim_setup.frequency_sweeps.values()):
-            self._sim_setup._edb_sim_setup_info.SweepDataList.Add(el._edb_sweep_data)
-        self._sim_setup._edb_sim_setup_info.SweepDataList.Add(self._edb_sweep_data)
+            self._sim_setup.swee_data.add(el._edb_sweep_data)
+        self._sim_setup.sweep_data.add(self._edb_sweep_data)
         return self._sim_setup._update_setup()
 
     @property
@@ -47,7 +50,7 @@ class EdbFrequencySweep(object):
     @property
     def frequencies(self):
         """List of frequencies points."""
-        return list(self._edb_sweep_data.Frequencies)
+        return self._edb_sweep_data.frequencies
 
     @property
     def adaptive_sampling(self):
@@ -58,7 +61,7 @@ class EdbFrequencySweep(object):
         bool
             ``True`` if adaptive sampling is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.AdaptiveSampling
+        return self._edb_sweep_data.adaptive_sampling
 
     @property
     def adv_dc_extrapolation(self):
@@ -70,7 +73,7 @@ class EdbFrequencySweep(object):
             ``True`` if advanced DC Extrapolation is used, ``False`` otherwise.
 
         """
-        return self._edb_sweep_data.AdvDCExtrapolation
+        return self._edb_sweep_data.adv_dc_extrapolation
 
     @property
     def auto_s_mat_only_solve(self):
@@ -81,7 +84,7 @@ class EdbFrequencySweep(object):
         bool
             ``True`` if Auto/Manual SMatrix only solve is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.AutoSMatOnlySolve
+        return self._edb_sweep_data.auto_s_mat_only_solve
 
     @property
     def enforce_causality(self):
@@ -92,7 +95,7 @@ class EdbFrequencySweep(object):
         bool
             ``True`` if enforce causality is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.EnforceCausality
+        return self._edb_sweep_data.enforce_causality
 
     @property
     def enforce_dc_and_causality(self):
@@ -104,7 +107,7 @@ class EdbFrequencySweep(object):
             ``True`` if enforce dc point and causality is used, ``False`` otherwise.
 
         """
-        return self._edb_sweep_data.EnforceDCAndCausality
+        return self._edb_sweep_data.enforce_dc_and_causality
 
     @property
     def enforce_passivity(self):
@@ -115,7 +118,7 @@ class EdbFrequencySweep(object):
         bool
             ``True`` if enforce passivity is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.EnforcePassivity
+        return self._edb_sweep_data.enforce_passivity
 
     @property
     def freq_sweep_type(self):
@@ -129,7 +132,7 @@ class EdbFrequencySweep(object):
         -------
         str
         """
-        return self._edb_sweep_data.FreqSweepType.ToString()
+        return self._edb_sweep_data.freq_sweeptype
 
     @property
     def interp_use_full_basis(self):
@@ -140,7 +143,7 @@ class EdbFrequencySweep(object):
         bool
             ``True`` if full basis interpolation is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.InterpUseFullBasis
+        return self._edb_sweep_data.interp_use_full_basis
 
     @property
     def interp_use_port_impedance(self):
@@ -151,7 +154,7 @@ class EdbFrequencySweep(object):
         bool
             ``True`` if port impedance is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.InterpUsePortImpedance
+        return self._edb_sweep_data.interp_use_port_impedance
 
     @property
     def interp_use_prop_const(self):
@@ -162,7 +165,7 @@ class EdbFrequencySweep(object):
         bool
             ``True`` if propagation constants are used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.InterpUsePropConst
+        return self._edb_sweep_data.interp_use_prop_const
 
     @property
     def interp_use_s_matrix(self):
@@ -173,7 +176,7 @@ class EdbFrequencySweep(object):
         bool
             ``True`` if S matrix are used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.InterpUseSMatrix
+        return self._edb_sweep_data.interp_use_s_matrix
 
     @property
     def max_solutions(self):
@@ -183,7 +186,7 @@ class EdbFrequencySweep(object):
         -------
         int
         """
-        return self._edb_sweep_data.MaxSolutions
+        return self._edb_sweep_data.max_solutions
 
     @property
     def min_freq_s_mat_only_solve(self):
@@ -194,7 +197,7 @@ class EdbFrequencySweep(object):
         str
             Frequency with units.
         """
-        return self._edb_sweep_data.MinFreqSMatOnlySolve
+        return self._edb_sweep_data.min_freq_s_mat_only_solve
 
     @property
     def min_solved_freq(self):
@@ -205,7 +208,7 @@ class EdbFrequencySweep(object):
         str
             Frequency with units.
         """
-        return self._edb_sweep_data.MinSolvedFreq
+        return self._edb_sweep_data.min_solved_freq
 
     @property
     def passivity_tolerance(self):
@@ -215,7 +218,7 @@ class EdbFrequencySweep(object):
         -------
         float
         """
-        return self._edb_sweep_data.PassivityTolerance
+        return self._edb_sweep_data.passivity_tolerance
 
     @property
     def relative_s_error(self):
@@ -225,7 +228,7 @@ class EdbFrequencySweep(object):
         -------
         float
         """
-        return self._edb_sweep_data.RelativeSError
+        return self._edb_sweep_data.relative_s_error
 
     @property
     def save_fields(self):
@@ -236,7 +239,7 @@ class EdbFrequencySweep(object):
         bool
             ``True`` if save fields is enabled, ``False`` otherwise.
         """
-        return self._edb_sweep_data.SaveFields
+        return self._edb_sweep_data.save_fields
 
     @property
     def save_rad_fields_only(self):
@@ -248,7 +251,7 @@ class EdbFrequencySweep(object):
             ``True`` if save radiated field only is used, ``False`` otherwise.
 
         """
-        return self._edb_sweep_data.SaveRadFieldsOnly
+        return self._edb_sweep_data.save_rad_fields_only
 
     @property
     def use_q3d_for_dc(self):
@@ -259,117 +262,116 @@ class EdbFrequencySweep(object):
         bool
             ``True`` if Q3d for DC point is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.UseQ3DForDC
+        return self._edb_sweep_data.use_q3d_for_dc
 
     @adaptive_sampling.setter
     def adaptive_sampling(self, value):
-        self._edb_sweep_data.AdaptiveSampling = value
+        self._edb_sweep_data.adaptive_sampling = value
         self._update_sweep()
 
     @adv_dc_extrapolation.setter
     def adv_dc_extrapolation(self, value):
-        self._edb_sweep_data.AdvDCExtrapolation = value
+        self._edb_sweep_data.adv_dc_extrapolation = value
         self._update_sweep()
 
     @auto_s_mat_only_solve.setter
     def auto_s_mat_only_solve(self, value):
-        self._edb_sweep_data.AutoSMatOnlySolve = value
+        self._edb_sweep_data.auto_s_mat_only_solve = value
         self._update_sweep()
 
     @enforce_causality.setter
     def enforce_causality(self, value):
-        self._edb_sweep_data.EnforceCausality = value
+        self._edb_sweep_data.enforce_causality = value
         self._update_sweep()
 
     @enforce_dc_and_causality.setter
     def enforce_dc_and_causality(self, value):
-        self._edb_sweep_data.EnforceDCAndCausality = value
+        self._edb_sweep_data.enforce_dc_and_causality = value
         self._update_sweep()
 
     @enforce_passivity.setter
     def enforce_passivity(self, value):
-        self._edb_sweep_data.EnforcePassivity = value
+        self._edb_sweep_data.enforce_passivity = value
         self._update_sweep()
 
     @freq_sweep_type.setter
     def freq_sweep_type(self, value):
-        edb_freq_sweep_type = self._edb_sweep_data.TFreqSweepType
-        if value in [0, "kInterpolatingSweep"]:
-            self._edb_sweep_data.FreqSweepType = edb_freq_sweep_type.kInterpolatingSweep
-        elif value in [1, "kDiscreteSweep"]:
-            self._edb_sweep_data.FreqSweepType = edb_freq_sweep_type.kDiscreteSweep
-        elif value in [2, "kBroadbandFastSweep"]:
-            self._edb_sweep_data.FreqSweepType = edb_freq_sweep_type.kBroadbandFastSweep
-        elif value in [3, "kNumSweepTypes"]:
-            self._edb_sweep_data.FreqSweepType = edb_freq_sweep_type.kNumSweepTypes
-        self._edb_sweep_data.FreqSweepType.ToString()
+        edb_freq_sweep_type = self._edb_sweep_data.t_freq_sweep_type
+        if value in [0, "InterpolatingSweep"]:
+            self._edb_sweep_data.freq_sweep_type = edb_freq_sweep_type.interpolating_sweep
+        elif value in [1, "DiscreteSweep"]:
+            self._edb_sweep_data.freq_sweep_type = edb_freq_sweep_type.discrete_sweep
+        elif value in [2, "BroadbandFastSweep"]:
+            self._edb_sweep_data.freq_sweep_type = edb_freq_sweep_type.broadband_fast_sweep
+        elif value in [3, "NumSweepTypes"]:
+            self._edb_sweep_data.freq_sweep_type = edb_freq_sweep_type.num_sweep_types
 
     @interp_use_full_basis.setter
     def interp_use_full_basis(self, value):
-        self._edb_sweep_data.InterpUseFullBasis = value
+        self._edb_sweep_data.interp_use_full_basis = value
         self._update_sweep()
 
     @interp_use_port_impedance.setter
     def interp_use_port_impedance(self, value):
-        self._edb_sweep_data.InterpUsePortImpedance = value
+        self._edb_sweep_data.interp_use_port_impedance = value
         self._update_sweep()
 
     @interp_use_prop_const.setter
     def interp_use_prop_const(self, value):
-        self._edb_sweep_data.InterpUsePropConst = value
+        self._edb_sweep_data.interp_use_prop_const = value
         self._update_sweep()
 
     @interp_use_s_matrix.setter
     def interp_use_s_matrix(self, value):
-        self._edb_sweep_data.InterpUseSMatrix = value
+        self._edb_sweep_data.interp_use_s_matrix = value
         self._update_sweep()
 
     @max_solutions.setter
     def max_solutions(self, value):
-        self._edb_sweep_data.MaxSolutions = value
+        self._edb_sweep_data.max_solutions = value
         self._update_sweep()
 
     @min_freq_s_mat_only_solve.setter
     def min_freq_s_mat_only_solve(self, value):
-        self._edb_sweep_data.MinFreqSMatOnlySolve = value
+        self._edb_sweep_data.min_freq_s_mat_only_solve = value
         self._update_sweep()
 
     @min_solved_freq.setter
     def min_solved_freq(self, value):
-        self._edb_sweep_data.MinSolvedFreq = value
+        self._edb_sweep_data.min_solved_freq = value
         self._update_sweep()
 
     @passivity_tolerance.setter
     def passivity_tolerance(self, value):
-        self._edb_sweep_data.PassivityTolerance = value
+        self._edb_sweep_data.passivity_tolerance = value
         self._update_sweep()
 
     @relative_s_error.setter
     def relative_s_error(self, value):
-        self._edb_sweep_data.RelativeSError = value
+        self._edb_sweep_data.relative_s_error = value
         self._update_sweep()
 
     @save_fields.setter
     def save_fields(self, value):
-        self._edb_sweep_data.SaveFields = value
+        self._edb_sweep_data.save_fields = value
         self._update_sweep()
 
     @save_rad_fields_only.setter
     def save_rad_fields_only(self, value):
-        self._edb_sweep_data.SaveRadFieldsOnly = value
+        self._edb_sweep_data.save_rad_fields_only = value
         self._update_sweep()
 
     @use_q3d_for_dc.setter
     def use_q3d_for_dc(self, value):
-        self._edb_sweep_data.UseQ3DForDC = value
+        self._edb_sweep_data.use_q3d_for_dc = value
         self._update_sweep()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _set_frequencies(self, freq_sweep_string="Linear Step: 0GHz to 20GHz, step=0.05GHz"):
-        self._edb_sweep_data.SetFrequencies(freq_sweep_string)
+        self._edb_sweep_data.frequency_string = freq_sweep_string
         self._update_sweep()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def set_frequencies_linear_scale(self, start="0.1GHz", stop="20GHz", step="50MHz"):
         """Set a linear scale frequency sweep.
 
@@ -388,10 +390,10 @@ class EdbFrequencySweep(object):
             ``True`` if correctly executed, ``False`` otherwise.
 
         """
-        self._edb_sweep_data.Frequencies = self._edb_sweep_data.SetFrequencies(start, stop, step)
+        self._edb_sweep_data.frequency_string = self._edb_sweep_data(start_f=start, stop_f=stop, step=step)
         return self._update_sweep()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def set_frequencies_linear_count(self, start="1kHz", stop="0.1GHz", count=10):
         """Set a linear count frequency sweep.
 
@@ -412,10 +414,10 @@ class EdbFrequencySweep(object):
         """
         start = self._sim_setup._edb.arg_to_dim(start, "Hz")
         stop = self._sim_setup._edb.arg_to_dim(stop, "Hz")
-        self._edb_sweep_data.Frequencies = self._edb_sweep_data.SetFrequencies(start, stop, count)
+        self._edb_sweep_data.frequency_string = self._edb_sweep_data.frequency_string(start, stop, count)
         return self._update_sweep()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def set_frequencies_log_scale(self, start="1kHz", stop="0.1GHz", samples=10):
         """Set a log count frequency sweep.
 
@@ -435,10 +437,10 @@ class EdbFrequencySweep(object):
         """
         start = self._sim_setup._edb.arg_to_dim(start, "Hz")
         stop = self._sim_setup._edb.arg_to_dim(stop, "Hz")
-        self._edb_sweep_data.Frequencies = self._edb_sweep_data.SetLogFrequencies(start, stop, samples)
+        self._edb_sweep_data.frequency_stringequencies = self._edb_sweep_data.log_frequencies(start, stop, samples)
         return self._update_sweep()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def set_frequencies(self, frequency_list=None):
         """Set frequency list to the sweep frequencies.
 
@@ -561,8 +563,8 @@ class MeshOperation(object):
         temp = []
         for net, layers in values.items():
             for layer in layers:
-                temp.append(Tuple[str, str, bool](net, layer, True))
-        self.mesh_operation.NetsLayersList = convert_py_list_to_net_list(temp)
+                temp.append(net, layer, True)
+        self.mesh_operation.NetsLayersList = temp
 
     @property
     def refine_inside(self):
@@ -574,26 +576,26 @@ class MeshOperation(object):
             ``True`` if refine inside objects is used, ``False`` otherwise.
 
         """
-        return self.mesh_operation.RefineInside
+        return self.mesh_operation.refine_inside
 
     @enabled.setter
     def enabled(self, value):
-        self.mesh_operation.Enabled = value
+        self.mesh_operation.enabled = value
         self._parent._update_setup()
 
     @mesh_region.setter
     def mesh_region(self, value):
-        self.mesh_operation.MeshRegion = value
+        self.mesh_operation.mesh_region = value
         self._parent._update_setup()
 
     @name.setter
     def name(self, value):
-        self.mesh_operation.Name = value
+        self.mesh_operation.name = value
         self._parent._update_setup()
 
     @refine_inside.setter
     def refine_inside(self, value):
-        self.mesh_operation.RefineInside = value
+        self.mesh_operation.refine_inside = value
         self._parent._update_setup()
 
     @property
@@ -604,7 +606,7 @@ class MeshOperation(object):
         -------
         str
         """
-        return self.mesh_operation.MaxElems
+        return self.mesh_operation.max_elems
 
     @property
     def restrict_max_elements(self):
@@ -614,11 +616,11 @@ class MeshOperation(object):
         -------
         bool
         """
-        return self.mesh_operation.RestrictMaxElem
+        return self.mesh_operation.restrict_max_elem
 
     @max_elements.setter
     def max_elements(self, value):
-        self.mesh_operation.MaxElems = str(value)
+        self.mesh_operation.max_elems = value
         self._parent._update_setup()
 
     @restrict_max_elements.setter
@@ -629,7 +631,7 @@ class MeshOperation(object):
         -------
         bool
         """
-        self.mesh_operation.RestrictMaxElem = value
+        self.mesh_operation.restrict_max_elem = value
         self._parent._update_setup()
 
 
@@ -654,7 +656,7 @@ class MeshOperationLength(MeshOperation, object):
         -------
         str
         """
-        return self.mesh_operation.MaxLength
+        return self.mesh_operation.max_length
 
     @property
     def restrict_length(self):
@@ -664,11 +666,11 @@ class MeshOperationLength(MeshOperation, object):
         -------
         bool
         """
-        return self.mesh_operation.RestrictLength
+        return self.mesh_operation.restrict_length
 
     @max_length.setter
     def max_length(self, value):
-        self.mesh_operation.MaxLength = value
+        self.mesh_operation.max_length = value
         self._parent._update_setup()
 
     @restrict_length.setter
@@ -679,7 +681,7 @@ class MeshOperationLength(MeshOperation, object):
         -------
         bool
         """
-        self.mesh_operation.RestrictLength = value
+        self.mesh_operation.restrict_length = value
         self._parent._update_setup()
 
 
@@ -704,11 +706,11 @@ class MeshOperationSkinDepth(MeshOperation, object):
         -------
         str
         """
-        return self.mesh_operation.SkinDepth
+        return self.mesh_operation.skin_depth
 
     @skin_depth.setter
     def skin_depth(self, value):
-        self.mesh_operation.SkinDepth = value
+        self.mesh_operation.skin_depth = value
         self._parent._update_setup()
 
     @property
@@ -719,11 +721,11 @@ class MeshOperationSkinDepth(MeshOperation, object):
         -------
         str
         """
-        return self.mesh_operation.SurfTriLength
+        return self.mesh_operation.surf_tri_length
 
     @surface_triangle_length.setter
     def surface_triangle_length(self, value):
-        self.mesh_operation.SurfTriLength = value
+        self.mesh_operation.surf_tri_length = value
         self._parent._update_setup()
 
     @property
@@ -734,11 +736,11 @@ class MeshOperationSkinDepth(MeshOperation, object):
         -------
         str
         """
-        return self.mesh_operation.NumLayers
+        return self.mesh_operation.num_layers
 
     @number_of_layer_elements.setter
     def number_of_layer_elements(self, value):
-        self.mesh_operation.NumLayers = str(value)
+        self.mesh_operation.num_layers = value
         self._parent._update_setup()
 
 
@@ -750,7 +752,7 @@ class HfssPortSettings(object):
 
     @property
     def _hfss_port_settings(self):
-        return self._parent._edb_sim_setup_info.SimulationSettings.HFSSPortSettings
+        return self._parent._edb_sim_setup_info.simulation_settings.hfsss_port_settings
 
     @property
     def max_delta_z0(self):
@@ -760,11 +762,11 @@ class HfssPortSettings(object):
         -------
         float
         """
-        return self._hfss_port_settings.MaxDeltaZ0
+        return self._hfss_port_settings.max_delta_z0
 
     @max_delta_z0.setter
     def max_delta_z0(self, value):
-        self._hfss_port_settings.MaxDeltaZ0 = value
+        self._hfss_port_settings.max_delta_z0 = value
         self._parent._update_setup()
 
     @property
@@ -775,11 +777,11 @@ class HfssPortSettings(object):
         -------
         int
         """
-        return self._hfss_port_settings.MaxTrianglesWavePort
+        return self._hfss_port_settings.max_triangles_wave_port
 
     @max_triangles_wave_port.setter
     def max_triangles_wave_port(self, value):
-        self._hfss_port_settings.MaxTrianglesWavePort = value
+        self._hfss_port_settings.max_triangles_wave_port = value
         self._parent._update_setup()
 
     @property
@@ -790,11 +792,11 @@ class HfssPortSettings(object):
         -------
         int
         """
-        return self._hfss_port_settings.MinTrianglesWavePort
+        return self._hfss_port_settings.min_triangles_wave_port
 
     @min_triangles_wave_port.setter
     def min_triangles_wave_port(self, value):
-        self._hfss_port_settings.MinTrianglesWavePort = value
+        self._hfss_port_settings.min_triangles_wave_port = value
         self._parent._update_setup()
 
     @property
@@ -806,11 +808,11 @@ class HfssPortSettings(object):
         bool
             ``True`` if triangles wave port  is used, ``False`` otherwise.
         """
-        return self._hfss_port_settings.SetTrianglesWavePort
+        return self._hfss_port_settings.triangles_wave_port
 
     @enable_set_triangles_wave_port.setter
     def enable_set_triangles_wave_port(self, value):
-        self._hfss_port_settings.SetTrianglesWavePort = value
+        self._hfss_port_settings.triangles_wave_port = value
         self._parent._update_setup()
 
 
@@ -822,7 +824,7 @@ class HfssSolverSettings(object):
 
     @property
     def _hfss_solver_settings(self):
-        return self._parent._edb_sim_setup_info.SimulationSettings.HFSSSolverSettings
+        return self._parent._edb_sim_setup_info.simulation_settings.hfss_solver_settings
 
     @property
     def enhanced_low_freq_accuracy(self):
@@ -833,11 +835,11 @@ class HfssSolverSettings(object):
         bool
             ``True`` if low frequency accuracy is used, ``False`` otherwise.
         """
-        return self._hfss_solver_settings.EnhancedLowFreqAccuracy
+        return self._hfss_solver_settings.enhanced_low_freq_accuracy
 
     @enhanced_low_freq_accuracy.setter
     def enhanced_low_freq_accuracy(self, value):
-        self._hfss_solver_settings.EnhancedLowFreqAccuracy = value
+        self._hfss_solver_settings.enhanced_low_freq_accuracy = value
         self._parent._update_setup()
 
     @property
@@ -853,12 +855,12 @@ class HfssSolverSettings(object):
         int
             Integer value according to the description."""
         mapping = {0: "zero", 1: "first", 2: "second", 3: "mixed"}
-        return mapping[self._hfss_solver_settings.OrderBasis]
+        return mapping[self._hfss_solver_settings.order_basis]
 
     @order_basis.setter
     def order_basis(self, value):
         mapping = {"zero": 0, "first": 1, "second": 2, "mixed": 3}
-        self._hfss_solver_settings.OrderBasis = mapping[value]
+        self._hfss_solver_settings.order_basis = mapping[value]
         self._parent._update_setup()
 
     @property
@@ -869,11 +871,11 @@ class HfssSolverSettings(object):
         -------
         float
         """
-        return self._hfss_solver_settings.RelativeResidual
+        return self._hfss_solver_settings.relative_residual
 
     @relative_residual.setter
     def relative_residual(self, value):
-        self._hfss_solver_settings.RelativeResidual = value
+        self._hfss_solver_settings.relative_residual = value
         self._parent._update_setup()
 
     @property
@@ -890,17 +892,17 @@ class HfssSolverSettings(object):
         str
         """
         mapping = {"kAutoSolver": "auto", "kDirectSolver": "direct", "kIterativeSolver": "iterative"}
-        solver_type = self._hfss_solver_settings.SolverType.ToString()
+        solver_type = self._hfss_solver_settings.solver_type
         return mapping[solver_type]
 
     @solver_type.setter
     def solver_type(self, value):
         mapping = {
-            "auto": self._hfss_solver_settings.SolverType.kAutoSolver,
-            "direct": self._hfss_solver_settings.SolverType.kDirectSolver,
-            "iterative": self._hfss_solver_settings.SolverType.kIterativeSolver,
+            "auto": self._hfss_solver_settings.solver_type.auto_solver,
+            "direct": self._hfss_solver_settings.solver_type.direct_solver,
+            "iterative": self._hfss_solver_settings.solver_type.iterative_solver,
         }
-        self._hfss_solver_settings.SolverType = mapping[value]
+        self._hfss_solver_settings.solver_type = mapping[value]
         self._parent._update_setup()
 
     @property
@@ -912,11 +914,11 @@ class HfssSolverSettings(object):
         bool
             ``True`` if shall elements are used, ``False`` otherwise.
         """
-        return self._hfss_solver_settings.UseShellElements
+        return self._hfss_solver_settings.use_shell_elements
 
     @use_shell_elements.setter
     def use_shell_elements(self, value):
-        self._hfss_solver_settings.UseShellElements = value
+        self._hfss_solver_settings.use_shell_elements = value
         self._parent._update_setup()
 
 
@@ -935,11 +937,11 @@ class AdaptiveFrequencyData(object):
         str
             Frequency with units.
         """
-        return self._adaptive_frequency_data.AdaptiveFrequency
+        return self._adaptive_frequency_data.adaptive_frequency
 
     @adaptive_frequency.setter
     def adaptive_frequency(self, value):
-        self._adaptive_frequency_data.AdaptiveFrequency = value
+        self._adaptive_frequency_data.adaptive_frequency = value
 
     @property
     def max_delta(self):
@@ -950,11 +952,11 @@ class AdaptiveFrequencyData(object):
         -------
         str
         """
-        return self._adaptive_frequency_data.MaxDelta
+        return self._adaptive_frequency_data.max_delta
 
     @max_delta.setter
     def max_delta(self, value):
-        self._adaptive_frequency_data.MaxDelta = str(value)
+        self._adaptive_frequency_data.max_delta = str(value)
 
     @property
     def max_passes(self):
@@ -964,11 +966,11 @@ class AdaptiveFrequencyData(object):
         -------
         int
         """
-        return self._adaptive_frequency_data.MaxPasses
+        return self._adaptive_frequency_data.max_passes
 
     @max_passes.setter
     def max_passes(self, value):
-        self._adaptive_frequency_data.MaxPasses = value
+        self._adaptive_frequency_data.max_passes = value
 
 
 class AdaptiveSettings(object):
@@ -977,10 +979,10 @@ class AdaptiveSettings(object):
     def __init__(self, parent):
         self._parent = parent
         self._adapt_type_mapping = {
-            "kSingle": self.adaptive_settings.AdaptType.kSingle,
-            "kMultiFrequencies": self.adaptive_settings.AdaptType.kMultiFrequencies,
-            "kBroadband": self.adaptive_settings.AdaptType.kBroadband,
-            "kNumAdaptTypes": self.adaptive_settings.AdaptType.kNumAdaptTypes,
+            "single": self.adaptive_settings.adapt_type.single,
+            "multi_frequencies": self.adaptive_settings.adapt_type.multi_frequencies,
+            "broadband": self.adaptive_settings.adapt_type.broadband,
+            "num_adapt_types": self.adaptive_settings.adapt_type.mum_adapt_types,
         }
 
     @property
@@ -991,7 +993,7 @@ class AdaptiveSettings(object):
         -------
         :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.AdaptiveSettings`
         """
-        return self._parent._edb_sim_setup_info.SimulationSettings.AdaptiveSettings
+        return self._parent._edb_sim_setup_info.simulation_settings.adaptive_settings
 
     @property
     def adaptive_frequency_data_list(self):
@@ -1001,7 +1003,7 @@ class AdaptiveSettings(object):
         -------
         :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.AdaptiveFrequencyData`
         """
-        return [AdaptiveFrequencyData(i) for i in list(self.adaptive_settings.AdaptiveFrequencyDataList)]
+        return [AdaptiveFrequencyData(i) for i in list(self.adaptive_settings.adaptive_frequency_data)]
 
     @property
     def adapt_type(self):
@@ -1016,11 +1018,11 @@ class AdaptiveSettings(object):
         -------
         str
         """
-        return self.adaptive_settings.AdaptType.ToString()
+        return self.adaptive_settings.adapt_type
 
     @adapt_type.setter
     def adapt_type(self, value):
-        self.adaptive_settings.AdaptType = self._adapt_type_mapping[value]
+        self.adaptive_settings.adapt_type = self._adapt_type_mapping[value]
         self._parent._update_setup()
 
     @property
@@ -1031,7 +1033,7 @@ class AdaptiveSettings(object):
         -------
             ``True`` if bais adaptive is used, ``False`` otherwise.
         """
-        return self.adaptive_settings.Basic
+        return self.adaptive_settings.basic
 
     @basic.setter
     def basic(self, value):
@@ -1048,7 +1050,7 @@ class AdaptiveSettings(object):
             ``True`` if adaptive is used, ``False`` otherwise.
 
         """
-        return self.adaptive_settings.DoAdaptive
+        return self.adaptive_settings.do_adaptive
 
     @property
     def max_refinement(self):
@@ -1058,11 +1060,11 @@ class AdaptiveSettings(object):
         -------
         int
         """
-        return self.adaptive_settings.MaxRefinement
+        return self.adaptive_settings.max_refinement
 
     @max_refinement.setter
     def max_refinement(self, value):
-        self.adaptive_settings.MaxRefinement = value
+        self.adaptive_settings.max_refinement = value
         self._parent._update_setup()
 
     @property
@@ -1073,11 +1075,11 @@ class AdaptiveSettings(object):
         -------
         int
         """
-        return self.adaptive_settings.MaxRefinePerPass
+        return self.adaptive_settings.max_refine_per_pass
 
     @max_refine_per_pass.setter
     def max_refine_per_pass(self, value):
-        self.adaptive_settings.MaxRefinePerPass = value
+        self.adaptive_settings.max_refine_per_pass = value
         self._parent._update_setup()
 
     @property
@@ -1088,11 +1090,11 @@ class AdaptiveSettings(object):
         -------
         int
         """
-        return self.adaptive_settings.MinPasses
+        return self.adaptive_settings.min_passes
 
     @min_passes.setter
     def min_passes(self, value):
-        self.adaptive_settings.MinPasses = value
+        self.adaptive_settings.min_passes = value
         self._parent._update_setup()
 
     @property
@@ -1104,11 +1106,11 @@ class AdaptiveSettings(object):
         bool
             ``True`` if save fields is used, ``False`` otherwise.
         """
-        return self.adaptive_settings.SaveFields
+        return self.adaptive_settings.save_fields
 
     @save_fields.setter
     def save_fields(self, value):
-        self.adaptive_settings.SaveFields = value
+        self.adaptive_settings.save_fields = value
         self._parent._update_setup()
 
     @property
@@ -1121,11 +1123,11 @@ class AdaptiveSettings(object):
             ``True`` if save radiated field only is used, ``False`` otherwise.
 
         """
-        return self.adaptive_settings.SaveRadFieldsOnly
+        return self.adaptive_settings.save_rad_fields_only
 
     @save_rad_field_only.setter
     def save_rad_field_only(self, value):
-        self.adaptive_settings.SaveRadFieldsOnly = value
+        self.adaptive_settings.save_rad_fields_only = value
         self._parent._update_setup()
 
     @property
@@ -1138,11 +1140,11 @@ class AdaptiveSettings(object):
             ``True`` if convergence matrix is used, ``False`` otherwise.
 
         """
-        return self.adaptive_settings.UseConvergenceMatrix
+        return self.adaptive_settings.use_convergence_matrix
 
     @use_convergence_matrix.setter
     def use_convergence_matrix(self, value):
-        self.adaptive_settings.UseConvergenceMatrix = value
+        self.adaptive_settings.use_convergence_matrix = value
         self._parent._update_setup()
 
     @property
@@ -1154,14 +1156,14 @@ class AdaptiveSettings(object):
         bool
             ``True`` if maximum refinement is used, ``False`` otherwise.
         """
-        return self.adaptive_settings.UseMaxRefinement
+        return self.adaptive_settings.use_max_refinement
 
     @use_max_refinement.setter
     def use_max_refinement(self, value):
-        self.adaptive_settings.UseMaxRefinement = value
+        self.adaptive_settings.use_max_refinement = value
         self._parent._update_setup()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_adaptive_frequency_data(self, frequency=0, max_num_passes=10, max_delta_s=0.02):
         """Add a setup for frequency data.
 
@@ -1179,15 +1181,15 @@ class AdaptiveSettings(object):
         bool
             ``True`` if method is successful, ``False`` otherwise.
         """
-        low_freq_adapt_data = self._parent._edb.simsetupdata.AdaptiveFrequencyData()
-        low_freq_adapt_data.MaxDelta = self._parent._edb.edb_value(max_delta_s).ToString()
-        low_freq_adapt_data.MaxPasses = max_num_passes
-        low_freq_adapt_data.AdaptiveFrequency = self._parent._edb.edb_value(frequency).ToString()
-        self.adaptive_settings.AdaptiveFrequencyDataList.Clear()
-        self.adaptive_settings.AdaptiveFrequencyDataList.Add(low_freq_adapt_data)
+        low_freq_adapt_data = AdaptiveFrequencyData()
+        low_freq_adapt_data.max_delta = Value(max_delta_s)
+        low_freq_adapt_data.max_passes = max_num_passes
+        low_freq_adapt_data.adaptive_frequency = Value(frequency)
+        self.adaptive_settings.adaptive_frequency_data = ""
+        self.adaptive_settings.adaptive_frequency_data = low_freq_adapt_data
         return self._parent._update_setup()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_broadband_adaptive_frequency_data(
             self, low_frequency=0, high_frequency=10e9, max_num_passes=10, max_delta_s=0.02
     ):
@@ -1210,16 +1212,15 @@ class AdaptiveSettings(object):
             ``True`` if method is successful, ``False`` otherwise.
         """
         low_freq_adapt_data = self._parent._edb.simsetupdata.AdaptiveFrequencyData()
-        low_freq_adapt_data.MaxDelta = self._parent._edb.edb_value(max_delta_s).ToString()
-        low_freq_adapt_data.MaxPasses = max_num_passes
-        low_freq_adapt_data.AdaptiveFrequency = self._parent._edb.edb_value(low_frequency).ToString()
+        low_freq_adapt_data.max_delta = Value(max_delta_s)
+        low_freq_adapt_data.max_passes = max_num_passes
+        low_freq_adapt_data.adaptive_frequency = Value(low_frequency)
         high_freq_adapt_data = self._parent._edb.simsetupdata.AdaptiveFrequencyData()
-        high_freq_adapt_data.MaxDelta = self._parent._edb.edb_value(max_delta_s).ToString()
-        high_freq_adapt_data.MaxPasses = max_num_passes
-        high_freq_adapt_data.AdaptiveFrequency = self._parent._edb.edb_value(high_frequency).ToString()
-        self.adaptive_settings.AdaptiveFrequencyDataList.Clear()
-        self.adaptive_settings.AdaptiveFrequencyDataList.Add(low_freq_adapt_data)
-        self.adaptive_settings.AdaptiveFrequencyDataList.Add(high_freq_adapt_data)
+        high_freq_adapt_data.max_delta = Value(max_delta_s)
+        high_freq_adapt_data.may_passes = max_num_passes
+        high_freq_adapt_data.adaptive_fFrequency = Value(high_frequency)
+        self.adaptive_settings.adaptive_frequency_data = ""
+        self.adaptive_settings.adaptive_frequency_data = [low_freq_adapt_data, high_freq_adapt_data]
         return self._parent._update_setup()
 
 
@@ -1231,7 +1232,7 @@ class DefeatureSettings(object):
 
     @property
     def _defeature_settings(self):
-        return self._parent._edb_sim_setup_info.SimulationSettings.DefeatureSettings
+        return self._parent._edb_sim_setup_info.simulation_settings.defeature_settings
 
     @property
     def defeature_abs_length(self):
@@ -1241,11 +1242,11 @@ class DefeatureSettings(object):
         -------
         str
         """
-        return self._defeature_settings.DefeatureAbsLength
+        return self._defeature_settings.defeature_abs_length
 
     @defeature_abs_length.setter
     def defeature_abs_length(self, value):
-        self._defeature_settings.DefeatureAbsLength = value
+        self._defeature_settings.defeature_abs_length = value
         self._parent._update_setup()
 
     @property
@@ -1256,11 +1257,11 @@ class DefeatureSettings(object):
         -------
         float
         """
-        return self._defeature_settings.DefeatureRatio
+        return self._defeature_settings.defeature_ratio
 
     @defeature_ratio.setter
     def defeature_ratio(self, value):
-        self._defeature_settings.DefeatureRatio = value
+        self._defeature_settings.defeature_ratio = value
         self._parent._update_setup()
 
     @property
@@ -1274,11 +1275,11 @@ class DefeatureSettings(object):
         -------
         int
         """
-        return self._defeature_settings.HealingOption
+        return self._defeature_settings.healing_option
 
     @healing_option.setter
     def healing_option(self, value):
-        self._defeature_settings.HealingOption = value
+        self._defeature_settings.healing_option = value
         self._parent._update_setup()
 
     @property
@@ -1292,12 +1293,12 @@ class DefeatureSettings(object):
         -------
         int
         """
-        return self._defeature_settings.ModelType
+        return self._defeature_settings.model_type
 
     @model_type.setter
     def model_type(self, value):
         """Model type (General 0 or IC 1)."""
-        self._defeature_settings.ModelType = value
+        self._defeature_settings.model_type = value
         self._parent._update_setup()
 
     @property
@@ -1309,11 +1310,11 @@ class DefeatureSettings(object):
         bool
             ``True`` if floating geometry removal is used, ``False`` otherwise.
         """
-        return self._defeature_settings.RemoveFloatingGeometry
+        return self._defeature_settings.remove_floating_geometry
 
     @remove_floating_geometry.setter
     def remove_floating_geometry(self, value):
-        self._defeature_settings.RemoveFloatingGeometry = value
+        self._defeature_settings.remove_floating_geometry = value
         self._parent._update_setup()
 
     @property
@@ -1324,11 +1325,11 @@ class DefeatureSettings(object):
         -------
         float
         """
-        return self._defeature_settings.SmallVoidArea
+        return self._defeature_settings.small_void_area
 
     @small_void_area.setter
     def small_void_area(self, value):
-        self._defeature_settings.SmallVoidArea = value
+        self._defeature_settings.small_void_area = value
         self._parent._update_setup()
 
     @property
@@ -1340,11 +1341,11 @@ class DefeatureSettings(object):
         bool
             ``True`` if union polygons is used, ``False`` otherwise.
         """
-        return self._defeature_settings.UnionPolygons
+        return self._defeature_settings.union_polygons
 
     @union_polygons.setter
     def union_polygons(self, value):
-        self._defeature_settings.UnionPolygons = value
+        self._defeature_settings.union_polygons = value
         self._parent._update_setup()
 
     @property
@@ -1356,11 +1357,11 @@ class DefeatureSettings(object):
         bool
             ``True`` if defeature is used, ``False`` otherwise.
         """
-        return self._defeature_settings.UseDefeature
+        return self._defeature_settings.use_defeature
 
     @use_defeature.setter
     def use_defeature(self, value):
-        self._defeature_settings.UseDefeature = value
+        self._defeature_settings.use_defeature = value
         self._parent._update_setup()
 
     @property
@@ -1373,11 +1374,11 @@ class DefeatureSettings(object):
             ``True`` if defeature absolute length is used, ``False`` otherwise.
 
         """
-        return self._defeature_settings.UseDefeatureAbsLength
+        return self._defeature_settings.use_defeature_abs_length
 
     @use_defeature_abs_length.setter
     def use_defeature_abs_length(self, value):
-        self._defeature_settings.UseDefeatureAbsLength = value
+        self._defeature_settings.use_defeature_abs_length = value
         self._parent._update_setup()
 
 
@@ -1390,7 +1391,7 @@ class ViaSettings(object):
     ):
         self._parent = parent
         self._via_style_mapping = {
-            "k25DViaWirebond": self._via_settings.T25DViaStyle.k25DViaWirebond,
+            "k25DViaWirebond": self._via_settings.t25_d_via_style.k25_d_via_wirebond,
             "k25DViaRibbon": self._via_settings.T25DViaStyle.k25DViaRibbon,
             "k25DViaMesh": self._via_settings.T25DViaStyle.k25DViaMesh,
             "k25DViaField": self._via_settings.T25DViaStyle.k25DViaField,
@@ -1399,7 +1400,7 @@ class ViaSettings(object):
 
     @property
     def _via_settings(self):
-        return self._parent._edb_sim_setup_info.SimulationSettings.ViaSettings
+        return self._parent._edb_sim_setup_info.simulation_settings.via_settings
 
     @property
     def via_density(self):
@@ -1409,11 +1410,11 @@ class ViaSettings(object):
         -------
         float
         """
-        return self._via_settings.ViaDensity
+        return self._via_settings.via_density
 
     @via_density.setter
     def via_density(self, value):
-        self._via_settings.ViaDensity = value
+        self._via_settings.via_density = value
         self._parent._update_setup()
 
     @property
@@ -1424,11 +1425,11 @@ class ViaSettings(object):
         -------
         str
         """
-        return self._via_settings.ViaMaterial
+        return self._via_settings.via_material
 
     @via_material.setter
     def via_material(self, value):
-        self._via_settings.ViaMaterial = value
+        self._via_settings.via_material = value
         self._parent._update_setup()
 
     @property
@@ -1439,11 +1440,11 @@ class ViaSettings(object):
         -------
         int
         """
-        return self._via_settings.ViaNumSides
+        return self._via_settings.via_num_sides
 
     @via_num_sides.setter
     def via_num_sides(self, value):
-        self._via_settings.ViaNumSides = value
+        self._via_settings.via_num_sides = value
         self._parent._update_setup()
 
     @property
@@ -1460,11 +1461,11 @@ class ViaSettings(object):
         -------
         str
         """
-        return self._via_settings.ViaStyle.ToString()
+        return self._via_settings.via_style
 
     @via_style.setter
     def via_style(self, value):
-        self._via_settings.ViaStyle = self._via_style_mapping[value]
+        self._via_settings.via_style = self._via_style_mapping[value]
         self._parent._update_setup()
 
 
@@ -1476,7 +1477,7 @@ class AdvancedMeshSettings(object):
 
     @property
     def _advanced_mesh_settings(self):
-        return self._parent._edb_sim_setup_info.SimulationSettings.AdvancedMeshSettings
+        return self._parent._edb_sim_setup_info.simulation_settings.advanced_mesh_settings
 
     @property
     def layer_snap_tol(self):
@@ -1487,11 +1488,11 @@ class AdvancedMeshSettings(object):
         str
 
         """
-        return self._advanced_mesh_settings.LayerSnapTol
+        return self._advanced_mesh_settings.layer_snap_tol
 
     @layer_snap_tol.setter
     def layer_snap_tol(self, value):
-        self._advanced_mesh_settings.LayerSnapTol = value
+        self._advanced_mesh_settings.layer_snap_tol = value
         self._parent._update_setup()
 
     @property
@@ -1502,11 +1503,11 @@ class AdvancedMeshSettings(object):
         -------
         str
         """
-        return self._advanced_mesh_settings.MeshDisplayAttributes
+        return self._advanced_mesh_settings.mesh_display_attributes
 
     @mesh_display_attributes.setter
     def mesh_display_attributes(self, value):
-        self._advanced_mesh_settings.MeshDisplayAttributes = value
+        self._advanced_mesh_settings.mesh_display_attributes = value
         self._parent._update_setup()
 
     @property
@@ -1519,11 +1520,11 @@ class AdvancedMeshSettings(object):
             ``True`` if replace 3D triangles is used, ``False`` otherwise.
 
         """
-        return self._advanced_mesh_settings.Replace3DTriangles
+        return self._advanced_mesh_settings.replace_3D_triangles
 
     @replace_3d_triangles.setter
     def replace_3d_triangles(self, value):
-        self._advanced_mesh_settings.Replace3DTriangles = value
+        self._advanced_mesh_settings.replace_3D_triangles = value
         self._parent._update_setup()
 
 
@@ -1535,7 +1536,7 @@ class CurveApproxSettings(object):
 
     @property
     def _curve_approx_settings(self):
-        return self._parent._edb_sim_setup_info.SimulationSettings.CurveApproxSettings
+        return self._parent._edb_sim_setup_info.simulation_settings.curve_approx_settings
 
     @property
     def arc_angle(self):
@@ -1545,11 +1546,11 @@ class CurveApproxSettings(object):
         -------
         str
         """
-        return self._curve_approx_settings.ArcAngle
+        return self._curve_approx_settings.arc_angle
 
     @arc_angle.setter
     def arc_angle(self, value):
-        self._curve_approx_settings.ArcAngle = value
+        self._curve_approx_settings.arc_angle = value
         self._parent._update_setup()
 
     @property
@@ -1560,11 +1561,11 @@ class CurveApproxSettings(object):
         -------
         str
         """
-        return self._curve_approx_settings.ArcToChordError
+        return self._curve_approx_settings.arc_to_chord_error
 
     @arc_to_chord_error.setter
     def arc_to_chord_error(self, value):
-        self._curve_approx_settings.ArcToChordError = value
+        self._curve_approx_settings.arc_to_chord_error = value
         self._parent._update_setup()
 
     @property
@@ -1575,11 +1576,11 @@ class CurveApproxSettings(object):
         -------
         int
         """
-        return self._curve_approx_settings.MaxArcPoints
+        return self._curve_approx_settings.max_arc_points
 
     @max_arc_points.setter
     def max_arc_points(self, value):
-        self._curve_approx_settings.MaxArcPoints = value
+        self._curve_approx_settings.max_arc_points = value
         self._parent._update_setup()
 
     @property
@@ -1590,11 +1591,11 @@ class CurveApproxSettings(object):
         -------
         str
         """
-        return self._curve_approx_settings.StartAzimuth
+        return self._curve_approx_settings.start_azimuth
 
     @start_azimuth.setter
     def start_azimuth(self, value):
-        self._curve_approx_settings.StartAzimuth = value
+        self._curve_approx_settings.start_azimuth = value
         self._parent._update_setup()
 
     @property
@@ -1605,11 +1606,11 @@ class CurveApproxSettings(object):
         -------
             ``True`` if arc-to-chord error is used, ``False`` otherwise.
         """
-        return self._curve_approx_settings.UseArcToChordError
+        return self._curve_approx_settings.use_arc_to_chord_error
 
     @use_arc_to_chord_error.setter
     def use_arc_to_chord_error(self, value):
-        self._curve_approx_settings.UseArcToChordError = value
+        self._curve_approx_settings.use_arc_to_chord_error = value
         self._parent._update_setup()
 
 
@@ -1621,7 +1622,7 @@ class DcrSettings(object):
 
     @property
     def _dcr_settings(self):
-        return self._parent._edb_sim_setup_info.SimulationSettings.DCRSettings
+        return self._parent._edb_sim_setup_info.simulation_settings.dcr_settings
 
     @property
     def conduction_max_passes(self):
@@ -1631,11 +1632,11 @@ class DcrSettings(object):
         -------
         int
         """
-        return self._dcr_settings.ConductionMaxPasses
+        return self._dcr_settings.conduction_max_passes
 
     @conduction_max_passes.setter
     def conduction_max_passes(self, value):
-        self._dcr_settings.ConductionMaxPasses = value
+        self._dcr_settings.conduction_max_passes = value
         self._parent._update_setup()
 
     @property
@@ -1646,11 +1647,11 @@ class DcrSettings(object):
         -------
         int
         """
-        return self._dcr_settings.ConductionMinConvergedPasses
+        return self._dcr_settings.conduction_min_converged_passes
 
     @conduction_min_converged_passes.setter
     def conduction_min_converged_passes(self, value):
-        self._dcr_settings.ConductionMinConvergedPasses = value
+        self._dcr_settings.conduction_min_converged_passes = value
         self._parent._update_setup()
 
     @property
@@ -1661,11 +1662,11 @@ class DcrSettings(object):
         -------
         int
         """
-        return self._dcr_settings.ConductionMinPasses
+        return self._dcr_settings.conduction_min_passes
 
     @conduction_min_passes.setter
     def conduction_min_passes(self, value):
-        self._dcr_settings.ConductionMinPasses = value
+        self._dcr_settings.conduction_min_passes = value
         self._parent._update_setup()
 
     @property
@@ -1676,11 +1677,11 @@ class DcrSettings(object):
         -------
         float
         """
-        return self._dcr_settings.ConductionPerError
+        return self._dcr_settings.conduction_per_error
 
     @conduction_per_error.setter
     def conduction_per_error(self, value):
-        self._dcr_settings.ConductionPerError = value
+        self._dcr_settings.conduction_per_error = value
         self._parent._update_setup()
 
     @property
@@ -1691,11 +1692,11 @@ class DcrSettings(object):
         -------
         float
         """
-        return self._dcr_settings.ConductionPerRefine
+        return self._dcr_settings.conduction_per_refine
 
     @conduction_per_refine.setter
     def conduction_per_refine(self, value):
-        self._dcr_settings.ConductionPerRefine = value
+        self._dcr_settings.conduction_per_refine = value
         self._parent._update_setup()
 
 
@@ -1710,11 +1711,9 @@ class HfssSimulationSetup(object):
         if edb_hfss_sim_setup:
             self._edb_sim_setup = edb_hfss_sim_setup
             self._edb_sim_setup_info = edb_hfss_sim_setup.GetSimSetupInfo()
-            self._name = edb_hfss_sim_setup.GetName()
+            self._name = edb_hfss_sim_setup.name
         else:
-            self._edb_sim_setup_info = self._edb.simsetupdata.SimSetupInfo[
-                self._edb.simsetupdata.HFSSSimulationSettings
-            ]()
+            self._edb_sim_setup_info = HFSSSimulationSettings()
             if not name:
                 self._edb_sim_setup_info.Name = generate_unique_name("hfss")
             else:
@@ -1722,7 +1721,7 @@ class HfssSimulationSetup(object):
             self._name = name
             self.hfss_solver_settings.order_basis = "mixed"
 
-            self._edb_sim_setup = self._edb.edb_api.utility.utility.HFSSSimulationSetup(self._edb_sim_setup_info)
+            self._edb_sim_setup = HfssSimulationSetup(self._edb_sim_setup_info)
             self._update_setup()
 
     @property
@@ -1730,22 +1729,22 @@ class HfssSimulationSetup(object):
         """EDB internal simulation setup object."""
         return self._edb_sim_setup_info
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _update_setup(self):
-        mesh_operations = self._edb_sim_setup_info.SimulationSettings.MeshOperations
-        mesh_operations.Clear()
+        mesh_operations = self._edb_sim_setup_info.simulation_settings.mesh_operations
+        mesh_operations.clear()
         for mop in self.mesh_operations.values():
-            mesh_operations.Add(mop.mesh_operation)
+            mesh_operations.add(mop.mesh_operation)
 
-        self._edb_sim_setup = self._edb.edb_api.utility.utility.HFSSSimulationSetup(self._edb_sim_setup_info)
+        self._edb_sim_setup = HfssSimulationSetup(self._edb_sim_setup_info)
 
         if self._name in self._edb.setups:
-            self._edb.active_cell.DeleteSimulationSetup(self._name)
+            self._edb.active_cell.delete_simulation_setup(self._name)
         self._name = self.name
-        self._edb.active_cell.AddSimulationSetup(self._edb_sim_setup)
-        for i in list(self._edb.active_cell.SimulationSetups):
-            if i.GetSimSetupInfo().Name == self._name:
-                self._edb_sim_setup_info = i.GetSimSetupInfo()
+        self._edb.active_cell.add_simulation_setup(self._edb_sim_setup)
+        for i in list(self._edb.active_cell.simulation_setups):
+            if i.sim_setup_info().name == self._name:
+                self._edb_sim_setup_info = i.sim_setup_info
                 return True
         return False
 
@@ -1758,14 +1757,14 @@ class HfssSimulationSetup(object):
         List of :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.EdbFrequencySweep`
         """
         sweep_data_list = {}
-        for i in list(self._edb_sim_setup_info.SweepDataList):
-            sweep_data_list[i.Name] = EdbFrequencySweep(self, None, i.Name, i)
+        for i in self._edb_sim_setup_info.sweep_data:
+            sweep_data_list[i.name] = EdbFrequencySweep(self, None, i.Name, i)
         return sweep_data_list
 
     @property
     def name(self):
         """Name of the setup."""
-        return self._edb_sim_setup_info.Name
+        return self._edb_sim_setup_info.name
 
     @name.setter
     def name(self, value):
@@ -1789,34 +1788,34 @@ class HfssSimulationSetup(object):
         -------
         str
         """
-        return self._edb_sim_setup_info.SimulationSettings.TSolveSliderType.ToString()
+        return self._edb_sim_setup_info.simulation_settings.t_solve_slider_type
 
     @solver_slider_type.setter
     def solver_slider_type(self, value):
         """Set solver slider type."""
         solver_types = {
-            "kFast": self._edb_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaWirebond,
-            "kMedium": self._edb_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaRibbon,
-            "kAccurate": self._edb_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaMesh,
-            "kNumSliderTypes": self._edb_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaField,
+            "kFast": self._edb_sim_setup_info.simulation_settings.t_solve_slider_type.k25DViaWirebond,
+            "kMedium": self._edb_sim_setup_info.simulation_settings.t_solve_slider_type.k25DViaRibbon,
+            "kAccurate": self._edb_sim_setup_info.simulation_settings.t_solve_slider_type.k25DViaMesh,
+            "kNumSliderTypes": self._edb_sim_setup_info.simulation_settings.t_solve_slider_type.k25DViaField,
         }
-        self._edb_sim_setup_info.SimulationSettings.TSolveSliderType = solver_types[value]
+        self._edb_sim_setup_info.simulation_settings.t_solve_slider_type = solver_types[value]
         self._update_setup()
 
     @property
     def is_auto_setup(self):
         """Whether if auto setup is enabled."""
-        return self._edb_sim_setup_info.SimulationSettings.IsAutoSetup
+        return self._edb_sim_setup_info.simulation_settings.is_auto_setup
 
     @is_auto_setup.setter
     def is_auto_setup(self, value):
-        self._edb_sim_setup_info.SimulationSettings.IsAutoSetup = value
+        self._edb_sim_setup_info.simulation_settings.is_auto_setup = value
         self._update_setup()
 
     @property
     def setup_type(self):
         """Setup type."""
-        return self._edb_sim_setup_info.SimulationSettings.SetupType
+        return self._edb_sim_setup_info.simulation_settings.setup_type
 
     @property
     def hfss_solver_settings(self):
@@ -1917,7 +1916,7 @@ class HfssSimulationSetup(object):
         """
         if self._mesh_operations:
             return self._mesh_operations
-        settings = self._edb_sim_setup_info.SimulationSettings.MeshOperations
+        settings = self._edb_sim_setup_info.simulation_settings.mesh_operations
         self._mesh_operations = {}
         for i in list(settings):
             if i.MeshOpType == i.TMeshOpType.kMeshSetupLength:
@@ -1929,7 +1928,7 @@ class HfssSimulationSetup(object):
 
         return self._mesh_operations
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_length_mesh_operation(
             self,
             net_layer_list,
@@ -1980,7 +1979,7 @@ class HfssSimulationSetup(object):
         self.mesh_operations[name] = mesh_operation
         return mesh_operation if self._update_setup() else False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_skin_depth_mesh_operation(
             self,
             net_layer_list,
@@ -2035,7 +2034,7 @@ class HfssSimulationSetup(object):
         self.mesh_operations[name] = mesh_operation
         return mesh_operation if self._update_setup() else False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
 
@@ -2065,7 +2064,7 @@ class HfssSimulationSetup(object):
             name = generate_unique_name("sweep")
         return EdbFrequencySweep(self, frequency_sweep, name)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02):
         """Set single-frequency solution.
 
@@ -2087,7 +2086,7 @@ class HfssSimulationSetup(object):
         self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
         return self.adaptive_settings.add_adaptive_frequency_data(frequency, max_num_passes, max_delta_s)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def set_solution_multi_frequencies(self, frequencies=("5GHz", "10GHz"), max_num_passes=10, max_delta_s="0.02"):
         """Set multi-frequency solution.
 
@@ -2112,7 +2111,7 @@ class HfssSimulationSetup(object):
                 return False
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def set_solution_broadband(
             self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
     ):
