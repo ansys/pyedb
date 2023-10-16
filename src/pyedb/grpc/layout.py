@@ -12,7 +12,15 @@ from ansys.edb.primitive import Rectangle
 from edb_data.primitives_data import EDBPrimitives
 from edb_data.primitives_data import cast
 from edb_data.utilities import EDBStatistics
+from ansys.edb.geometry.point_data import PointData
+from ansys.edb.geometry.polygon_data import PolygonData
+from ansys.edb.geometry.arc_data import ArcData
 from pyedb.generic.general_methods import pyedb_function_handler
+from ansys.edb.net.net import Net
+from ansys.edb.primitive.primitive import PathEndCapType, PathCornerType
+from ansys.edb.utility.value import Value
+from ansys.edb.primitive.primitive import RectangleRepresentationType
+from ansys.edb.geometry.arc_data import RotationDirection
 
 
 class EdbLayout(object):
@@ -30,10 +38,7 @@ class EdbLayout(object):
 
     @property
     def _edb(self):
-        return self._pedb.edb_api
-
-    def _get_edb_value(self, value):
-        return self._pedb.edb_value(value)
+        return self._pedb
 
     @property
     def _logger(self):
@@ -128,7 +133,7 @@ class EdbLayout(object):
         for lay in self.layers:
             _primitives_by_layer[lay] = []
         for i in self._layout.primitives:
-            lay = i.GetLayer().GetName()
+            lay = i. layer.name
             if not lay:
                 continue
             _primitives_by_layer[lay].append(cast(i, self._pedb))
@@ -144,7 +149,7 @@ class EdbLayout(object):
             List of rectangles.
 
         """
-        return [i for i in self.primitives if isinstance(i, RectangleDotNet)]
+        return [i for i in self.primitives if isinstance(i, Rectangle)]
 
     @property
     def circles(self):
@@ -156,7 +161,7 @@ class EdbLayout(object):
             List of circles.
 
         """
-        return [i for i in self.primitives if isinstance(i, CircleDotNet)]
+        return [i for i in self.primitives if isinstance(i, Circle)]
 
     @property
     def paths(self):
@@ -167,7 +172,7 @@ class EdbLayout(object):
         list of :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of paths.
         """
-        return [i for i in self.primitives if isinstance(i, PathDotNet)]
+        return [i for i in self.primitives if isinstance(i, Path)]
 
     @property
     def bondwires(self):
@@ -178,7 +183,7 @@ class EdbLayout(object):
         list of :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of bondwires.
         """
-        return [i for i in self.primitives if isinstance(i, BondwireDotNet)]
+        return [i for i in self.primitives if isinstance(i, Bondwire)]
 
     @property
     def polygons(self):
@@ -189,9 +194,9 @@ class EdbLayout(object):
         list of :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of polygons.
         """
-        return [i for i in self.primitives if isinstance(i, PolygonDotNet)]
+        return [i for i in self.primitives if isinstance(i, Polygon)]
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_polygons_by_layer(self, layer_name, net_list=None):
         """Retrieve polygons by a layer.
 
@@ -209,14 +214,14 @@ class EdbLayout(object):
         """
         objinst = []
         for el in self.polygons:
-            if el.GetLayer().GetName() == layer_name:
-                if net_list and el.GetNet().GetName() in net_list:
+            if el.layer.name == layer_name:
+                if net_list and el.net.name in net_list:
                     objinst.append(el)
                 else:
                     objinst.append(el)
         return objinst
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_polygon_bounding_box(self, polygon):
         """Retrieve a polygon bounding box.
 
@@ -237,18 +242,18 @@ class EdbLayout(object):
         """
         bounding = []
         try:
-            bounding_box = polygon.GetPolygonData().GetBBox()
+            bounding_box = polygon.polygon_data().bbox
             bounding = [
-                bounding_box.Item1.X.ToDouble(),
-                bounding_box.Item1.Y.ToDouble(),
-                bounding_box.Item2.X.ToDouble(),
-                bounding_box.Item2.Y.ToDouble(),
+                bounding_box[0].x.value,
+                bounding_box[0].y.value,
+                bounding_box[1].x.value,
+                bounding_box[1].y.value,
             ]
         except:
             pass
         return bounding
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_polygon_points(self, polygon):
         """Retrieve polygon points.
 
@@ -282,12 +287,12 @@ class EdbLayout(object):
         prev_point = None
         while continue_iterate:
             try:
-                point = polygon.GetPolygonData().GetPoint(i)
+                point = polygon.polygon_data.points[i]
                 if prev_point != point:
-                    if point.IsArc():
-                        points.append([point.X.ToDouble()])
+                    if point.is_arc:
+                        points.append([point.x.value])
                     else:
-                        points.append([point.X.ToDouble(), point.Y.ToDouble()])
+                        points.append([point.x.value, point.y.value])
                     prev_point = point
                     i += 1
                 else:
@@ -296,7 +301,7 @@ class EdbLayout(object):
                 continue_iterate = False
         return points
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def parametrize_polygon(self, polygon, selection_polygon, offset_name="offsetx", origin=None):
         """Parametrize pieces of a polygon based on another polygon.
 
@@ -343,12 +348,12 @@ class EdbLayout(object):
                 xcoeff = str(xcoeff)
             return xcoeff, ycoeff
 
-        selection_polygon_data = selection_polygon.GetPolygonData()
-        poligon_data = polygon.GetPolygonData()
-        bound_center = poligon_data.GetBoundingCircleCenter()
-        bound_center2 = selection_polygon_data.GetBoundingCircleCenter()
-        center = [bound_center.X.ToDouble(), bound_center.Y.ToDouble()]
-        center2 = [bound_center2.X.ToDouble(), bound_center2.Y.ToDouble()]
+        selection_polygon_data = selection_polygon.polygon_data
+        polygon_data = polygon.polygon_data
+        bound_center = polygon_data.bounding_circle()
+        bound_center2 = selection_polygon_data.bounding_circle()
+        center = [bound_center.x.value, bound_center.y.value]
+        center2 = [bound_center2.x.value, bound_center2.y.value]
         x1, y1 = calc_slope(center2, center)
 
         if not origin:
@@ -359,27 +364,27 @@ class EdbLayout(object):
         prev_point = None
         while continue_iterate:
             try:
-                point = poligon_data.GetPoint(i)
+                point = polygon_data.points[i]
                 if prev_point != point:
-                    check_inside = selection_polygon_data.PointInPolygon(point)
+                    check_inside = selection_polygon_data.in_polygon(point)
                     if check_inside:
-                        xcoeff, ycoeff = calc_slope([point.X.ToDouble(), point.X.ToDouble()], origin)
+                        xcoeff, ycoeff = calc_slope([point.x.value, point.x.value], origin)
 
-                        new_points = self._pedb.point_data(
-                            point.X.ToString() + "{}*{}".format(xcoeff, offset_name),
-                            point.Y.ToString() + "{}*{}".format(ycoeff, offset_name),
+                        new_points = (
+                            str(point.x.value) + "{}*{}".format(xcoeff, offset_name),
+                            str(point.y.value) + "{}*{}".format(ycoeff, offset_name),
                         )
-                        poligon_data.SetPoint(i, new_points)
+                        polygon_data.points[i] = new_points
                     prev_point = point
                     i += 1
                 else:
                     continue_iterate = False
             except:
                 continue_iterate = False
-        polygon.SetPolygonData(poligon_data)
+        polygon.polygon_data = polygon_data
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _create_path(
         self,
         path_list,
@@ -422,42 +427,42 @@ class EdbLayout(object):
         """
         net = self._pedb.nets.find_or_create_net(net_name)
         if start_cap_style.lower() == "round":
-            start_cap_style = self._edb.cell.primitive.PathEndCapStyle.Round
+            start_cap_style = PathEndCapType.ROUND
         elif start_cap_style.lower() == "extended":
-            start_cap_style = self._edb.cell.primitive.PathEndCapStyle.Extended  # pragma: no cover
+            start_cap_style = PathEndCapType.EXTENDED
         else:
-            start_cap_style = self._edb.cell.primitive.PathEndCapStyle.Flat  # pragma: no cover
+            start_cap_style = PathEndCapType.FLAT
         if end_cap_style.lower() == "round":
-            end_cap_style = self._edb.cell.primitive.PathEndCapStyle.Round  # pragma: no cover
+            end_cap_style = PathEndCapType.ROUND
         elif end_cap_style.lower() == "extended":
-            end_cap_style = self._edb.cell.primitive.PathEndCapStyle.Extended  # pragma: no cover
+            end_cap_style = PathEndCapType.EXTENDED
         else:
-            end_cap_style = self._edb.cell.primitive.PathEndCapStyle.Flat
+            end_cap_style = PathEndCapType.FLAT
         if corner_style.lower() == "round":
-            corner_style = self._edb.cell.primitive.PathCornerStyle.RoundCorner
+            corner_style = PathCornerType.ROUND
         elif corner_style.lower() == "sharp":
-            corner_style = self._edb.cell.primitive.PathCornerStyle.SharpCorner  # pragma: no cover
+            corner_style = PathCornerType.SHARP
         else:
-            corner_style = self._edb.cell.primitive.PathCornerStyle.MiterCorner  # pragma: no cover
+            corner_style = PathCornerType.MITER
 
-        pointlists = [self._pedb.point_data(i[0], i[1]) for i in path_list.points]
-        polygonData = self._edb.geometry.polygon_data.dotnetobj(convert_py_list_to_net_list(pointlists), False)
-        polygon = self._edb.cell.primitive.path.create(
+        pointlists = [PointData(i[0], i[1]) for i in path_list.points]
+        polygonData = PolygonData(pointlists, False)
+        polygon = Path.create(
             self._active_layout,
             layer_name,
             net,
-            self._get_edb_value(width),
+            Value(width),
             start_cap_style,
             end_cap_style,
             corner_style,
             polygonData,
         )
-        if polygon.IsNull():  # pragma: no cover
+        if polygon.is_null:  # pragma: no cover
             self._logger.error("Null path created")
             return False
         return cast(polygon, self._pedb)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_trace(
         self,
         path_list,
@@ -510,7 +515,7 @@ class EdbLayout(object):
 
         return primitive
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_polygon(self, main_shape, layer_name, voids=[], net_name=""):
         """Create a polygon based on a list of points and voids.
 
@@ -538,25 +543,20 @@ class EdbLayout(object):
         if isinstance(main_shape, list):
             arcs = []
             for _ in range(len(main_shape)):
-                arcs.append(
-                    self._edb.Geometry.ArcData(
-                        self._pedb.point_data(0, 0),
-                        self._pedb.point_data(0, 0),
-                    )
-                )
-            polygonData = self._edb.Geometry.PolygonData.CreateFromArcs(convert_py_list_to_net_list(arcs), True)
+                arcs.append(ArcData(PointData(), PointData()))
+            polygonData = PolygonData(arcs, False)
 
             for idx, i in enumerate(main_shape):
-                pdata_0 = self._pedb.edb_value(i[0])
-                pdata_1 = self._pedb.edb_value(i[1])
-                new_points = self._edb.Geometry.PointData(pdata_0, pdata_1)
-                polygonData.SetPoint(idx, new_points)
+                pdata_0 = Value(i[0])
+                pdata_1 = Value(i[1])
+                new_points = PointData(pdata_0, pdata_1)
+                polygonData.points[idx] = new_points
 
         elif isinstance(main_shape, EdbLayout.Shape):
             polygonData = self.shape_to_polygon_data(main_shape)
         else:
             polygonData = main_shape
-        if polygonData is False or polygonData is None or polygonData.IsNull():
+        if polygonData is False or polygonData is None or polygonData.is_null:
             self._logger.error("Failed to create main shape polygon data")
             return False
         for void in voids:
@@ -567,18 +567,18 @@ class EdbLayout(object):
                 voidPolygonData = self.shape_to_polygon_data(void)
             else:
                 voidPolygonData = void
-            if voidPolygonData is False or voidPolygonData is None or voidPolygonData.IsNull():
+            if voidPolygonData is False or voidPolygonData is None or voidPolygonData.is_null:
                 self._logger.error("Failed to create void polygon data")
                 return False
-            polygonData.AddHole(voidPolygonData)
-        polygon = self._edb.cell.primitive.polygon.create(self._active_layout, layer_name, net, polygonData)
-        if polygon.IsNull() or polygonData is False:  # pragma: no cover
+            polygonData.holes.append(voidPolygonData)
+        polygon = Polygon.create(self._active_layout, layer_name, net, polygonData)
+        if polygon.is_null or polygonData is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
         else:
             return cast(polygon, self._pedb)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_polygon_from_points(self, point_list, layer_name, net_name=""):
         """Create a new polygon from a point list.
 
@@ -607,7 +607,7 @@ class EdbLayout(object):
         )
         return self.create_polygon(point_list, layer_name, net_name=net_name)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_rectangle(
         self,
         layer_name,
@@ -654,38 +654,33 @@ class EdbLayout(object):
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "LowerLeftUpperRight":
-            rep_type = self._edb.cell.primitive.RectangleRepresentationType.LowerLeftUpperRight
-            rect = self._edb.cell.primitive.rectangle.create(
-                self._active_layout,
-                layer_name,
-                edb_net.net_obj,
-                rep_type,
-                self._get_edb_value(lower_left_point[0]),
-                self._get_edb_value(lower_left_point[1]),
-                self._get_edb_value(upper_right_point[0]),
-                self._get_edb_value(upper_right_point[1]),
-                self._get_edb_value(corner_radius),
-                self._get_edb_value(rotation),
-            )
+            rep_type = RectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT
+            rect = Rectangle.create(self._active_layout, layer_name, edb_net.net_obj, rep_type,
+                                    Value(lower_left_point[0]),
+                                    Value(lower_left_point[1]),
+                                    Value(upper_right_point[0]),
+                                    Value(upper_right_point[1]),
+                                    Value(corner_radius),
+                                    Value(rotation))
         else:
-            rep_type = self._edb.cell.primitive.RectangleRepresentationType.CenterWidthHeight
-            rect = self._edb.cell.primitive.rectangle.create(
+            rep_type = RectangleRepresentationType.CENTER_WIDTH_HEIGHT
+            rect = Rectangle.create(
                 self._active_layout,
                 layer_name,
                 edb_net.net_obj,
                 rep_type,
-                self._get_edb_value(center_point[0]),
-                self._get_edb_value(center_point[1]),
-                self._get_edb_value(width),
-                self._get_edb_value(height),
-                self._get_edb_value(corner_radius),
-                self._get_edb_value(rotation),
+                Value(center_point[0]),
+                Value(center_point[1]),
+                Value(width),
+                Value(height),
+                Value(corner_radius),
+                Value(rotation),
             )
         if rect:
             return cast(rect, self._pedb)
         return False  # pragma: no cover
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_circle(self, layer_name, x, y, radius, net_name=""):
         """Create a circle on a specified layer.
 
@@ -710,19 +705,19 @@ class EdbLayout(object):
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
 
-        circle = self._edb.cell.primitive.circle.create(
+        circle = Circle.create(
             self._active_layout,
             layer_name,
             edb_net,
-            self._get_edb_value(x),
-            self._get_edb_value(y),
-            self._get_edb_value(radius),
+            Value(x),
+            Value(y),
+            Value(radius),
         )
         if circle:
             return cast(circle, self._pedb)
         return False  # pragma: no cover
 
-    @pyaedt_function_handler
+    @pyedb_function_handler
     def delete_primitives(self, net_names):
         """Delete primitives by net names.
 
@@ -749,7 +744,7 @@ class EdbLayout(object):
                 p.delete()
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=False):
         """Get primitives by conditions.
 
@@ -786,7 +781,7 @@ class EdbLayout(object):
             prims.append(el)
         return prims
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def fix_circle_void_for_clipping(self):
         """Fix issues when circle void are clipped due to a bug in EDB.
 
@@ -803,22 +798,22 @@ class EdbLayout(object):
                 center_x,
                 center_y,
                 radius,
-            ) = void_circle.primitive_object.GetParameters()
+            ) = void_circle.primitive_object.get_parameters()
 
-            cloned_circle = self._edb.cell.primitive.circle.create(
+            cloned_circle = Circle.create(
                 self._active_layout,
                 void_circle.layer_name,
                 void_circle.net,
-                self._get_edb_value(center_x),
-                self._get_edb_value(center_y),
-                self._get_edb_value(radius),
+                Value(center_x),
+                Value(center_y),
+                Value(radius),
             )
             if res:
-                cloned_circle.SetIsNegative(True)
-                void_circle.Delete()
+                cloned_circle.is_negative = True
+                void_circle.delete()
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_void(self, shape, void_shape):
         """Add a void into a shape.
 
@@ -836,14 +831,14 @@ class EdbLayout(object):
             void_shape = [void_shape]
         for void in void_shape:
             if isinstance(void, EDBPrimitives):
-                flag = shape.AddVoid(void.primitive_object)
+                flag = shape.add_void(void.primitive_object)
             else:
-                flag = shape.AddVoid(void)
+                flag = shape.add_void(void)
             if not flag:
                 return flag
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def shape_to_polygon_data(self, shape):
         """Convert a shape to polygon data.
 
@@ -863,7 +858,7 @@ class EdbLayout(object):
             )
             return None
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _createPolygonDataFromPolygon(self, shape):
         points = shape.points
         if not self._validatePoint(points[0]):
@@ -881,76 +876,72 @@ class EdbLayout(object):
 
             if not self._validatePoint(endPoint):
                 return None
-            startPoint = [self._get_edb_value(i) for i in startPoint]
-            endPoint = [self._get_edb_value(i) for i in endPoint]
+            startPoint = [Value(i) for i in startPoint]
+            endPoint = [Value(i) for i in endPoint]
             if len(endPoint) == 2:
                 is_parametric = (
                     is_parametric
-                    or startPoint[0].IsParametric()
-                    or startPoint[1].IsParametric()
-                    or endPoint[0].IsParametric()
-                    or endPoint[1].IsParametric()
+                    or startPoint[0].is_parametric
+                    or startPoint[1].is_parametric
+                    or endPoint[0].is_parametric
+                    or endPoint[1].is_parametric
                 )
-                arc = self._edb.geometry.arc_data(
-                    self._pedb.point_data(startPoint[0].ToDouble(), startPoint[1].ToDouble()),
-                    self._pedb.point_data(endPoint[0].ToDouble(), endPoint[1].ToDouble()),
-                )
+                arc = ArcData(PointData(startPoint[0].value, startPoint[1].value),
+                              PointData(endPoint[0].value, endPoint[1].value))
                 arcs.append(arc)
             elif len(endPoint) == 3:
                 is_parametric = (
                     is_parametric
-                    or startPoint[0].IsParametric()
-                    or startPoint[1].IsParametric()
-                    or endPoint[0].IsParametric()
-                    or endPoint[1].IsParametric()
-                    or endPoint[2].IsParametric()
+                    or startPoint[0].is_parametric
+                    or startPoint[1].is_parametric
+                    or endPoint[0].is_parametric
+                    or endPoint[1].is_parametric
+                    or endPoint[2].is_parametric
                 )
-                arc = self._edb.geometry.arc_data(
-                    self._pedb.point_data(startPoint[0].ToDouble(), startPoint[1].ToDouble()),
-                    self._pedb.point_data(endPoint[0].ToDouble(), endPoint[1].ToDouble()),
-                    endPoint[2].ToDouble(),
-                )
+                arc = ArcData(PointData(startPoint[0].value, startPoint[1].value),
+                    PointData(endPoint[0].value, endPoint[1].value,
+                    endPoint[2].value))
                 arcs.append(arc)
             elif len(endPoint) == 5:
                 is_parametric = (
                     is_parametric
-                    or startPoint[0].IsParametric()
-                    or startPoint[1].IsParametric()
-                    or endPoint[0].IsParametric()
-                    or endPoint[1].IsParametric()
-                    or endPoint[3].IsParametric()
-                    or endPoint[4].IsParametric()
+                    or startPoint[0].is_parametric
+                    or startPoint[1].is_parametric
+                    or endPoint[0].is_parametric
+                    or endPoint[1].is_parametric
+                    or endPoint[3].is_parametric
+                    or endPoint[4].is_parametric
                 )
-                rotationDirection = self._edb.geometry.geometry.RotationDirection.Colinear
-                if endPoint[2].ToString() == "cw":
-                    rotationDirection = self._edb.geometry.geometry.RotationDirection.CW
-                elif endPoint[2].ToString() == "ccw":
-                    rotationDirection = self._edb.geometry.geometry.RotationDirection.CCW
+                rotationDirection = RotationDirection.CO_LINEAR
+                if str(endPoint[2].value) == "cw":
+                    rotationDirection = RotationDirection.CW
+                elif str(endPoint[2].value) == "ccw":
+                    rotationDirection = RotationDirection.CCW
                 else:
                     self._logger.error("Invalid rotation direction %s is specified.", endPoint[2])
                     return None
-                arc = self._edb.geometry.arc_data(
-                    self._pedb.point_data(startPoint[0].ToDouble(), startPoint[1].ToDouble()),
-                    self._pedb.point_data(endPoint[0].ToDouble(), endPoint[1].ToDouble()),
+                arc = ArcData(
+                    PointData(startPoint[0].value, startPoint[1].value),
+                    PointData(endPoint[0].value, endPoint[1].value),
                     rotationDirection,
-                    self._pedb.point_data(endPoint[3].ToDouble(), endPoint[4].ToDouble()),
+                    PointData(endPoint[3].value, endPoint[4].value),
                 )
                 arcs.append(arc)
-        polygon = self._edb.geometry.polygon_data.create_from_arcs(arcs, True)
+        polygon = PolygonData(arcs, True)
         if not is_parametric:
             return polygon
         else:
             k = 0
             for pt in points:
-                point = [self._get_edb_value(i) for i in pt]
-                new_points = self._edb.geometry.point_data(point[0], point[1])
+                point = [Value(i) for i in pt]
+                new_points = PointData(point[0], point[1])
                 if len(point) > 2:
                     k += 1
-                polygon.SetPoint(k, new_points)
+                polygon.points[k] = new_points
                 k += 1
         return polygon
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _validatePoint(self, point, allowArcs=True):
         if len(point) == 2:
             if not isinstance(point[0], (int, float, str)):
@@ -1001,12 +992,8 @@ class EdbLayout(object):
     def _createPolygonDataFromRectangle(self, shape):
         if not self._validatePoint(shape.pointA, False) or not self._validatePoint(shape.pointB, False):
             return None
-        pointA = self._edb.geometry.point_data(
-            self._get_edb_value(shape.pointA[0]), self._get_edb_value(shape.pointA[1])
-        )
-        pointB = self._edb.geometry.point_data(
-            self._get_edb_value(shape.pointB[0]), self._get_edb_value(shape.pointB[1])
-        )
+        pointA = PointData(Value(shape.pointA[0]), Value(shape.pointA[1]))
+        pointB = PointData(Value(shape.pointB[0]), Value(shape.pointB[1]))
         return self._edb.geometry.polygon_data.create_from_bbox((pointA, pointB))
 
     class Shape(object):
@@ -1049,7 +1036,7 @@ class EdbLayout(object):
             self.points = points
             self.properties = properties
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def parametrize_trace_width(
         self,
         nets_name,
@@ -1082,26 +1069,26 @@ class EdbLayout(object):
         for net_name in nets_name:
             var_server = False
             for p in self.paths:
-                if p.GetNet().GetName() == net_name:
+                if p.net.name == net_name:
                     if not layers_name:
                         if not var_server:
                             if not variable_value:
-                                variable_value = p.GetWidth()
+                                variable_value = p.width
                             result, var_server = self._pedb.add_design_variable(
                                 parameter_name, variable_value, is_parameter=True
                             )
-                        p.SetWidth(self._pedb.edb_value(parameter_name))
-                    elif p.GetLayer().GetName() in layers_name:
+                        p.width = Value(parameter_name)
+                    elif p.layer.name in layers_name:
                         if not var_server:
                             if not variable_value:
-                                variable_value = p.GetWidth()
+                                variable_value = p.width
                             result, var_server = self._pedb.add_design_variable(
                                 parameter_name, variable_value, is_parameter=True
                             )
-                        p.SetWidth(self._pedb.edb_value(parameter_name))
+                        p.width = Value(parameter_name)
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False):
         """Try to unite all Polygons on specified layer.
 
@@ -1127,32 +1114,27 @@ class EdbLayout(object):
             poly_by_nets = {}
             if lay in list(self.polygons_by_layer.keys()):
                 for poly in self.polygons_by_layer[lay]:
-                    if not poly.GetNet().GetName() in list(poly_by_nets.keys()):
-                        if poly.GetNet().GetName():
-                            poly_by_nets[poly.GetNet().GetName()] = [poly]
+                    if not poly.net.name in list(poly_by_nets.keys()):
+                        if poly.net.name:
+                            poly_by_nets[poly.net.name] = [poly]
                     else:
-                        if poly.GetNet().GetName():
-                            poly_by_nets[poly.GetNet().GetName()].append(poly)
+                        if poly.net.name:
+                            poly_by_nets[poly.net.name].append(poly)
             for net in poly_by_nets:
-                list_polygon_data = [i.GetPolygonData() for i in poly_by_nets[net]]
-                all_voids = [i.Voids for i in poly_by_nets[net]]
-                a = self._edb.geometry.polygon_data.unite(convert_py_list_to_net_list(list_polygon_data))
+                list_polygon_data = [i.polygon_data() for i in poly_by_nets[net]]
+                all_voids = [i.voids for i in poly_by_nets[net]]
+                a = PolygonData.unite(list_polygon_data)
                 for item in a:
                     for v in all_voids:
                         for void in v:
-                            if int(item.GetIntersectionType(void.GetPolygonData())) == 2:
-                                item.AddHole(void.GetPolygonData())
-                    poly = self._edb.cell.primitive.polygon.create(
-                        self._active_layout,
-                        lay,
-                        self._pedb.nets.nets[net],
-                        item,
-                    )
+                            if int(item.intersection_type(void.polygon_data)) == 2:
+                                item.add_hole(void.polygon_data)
+                    poly = Polygon.create(self._active_layout, lay, self._pedb.nets.nets[net], item)
                 list_to_delete = [i for i in poly_by_nets[net]]
                 for v in all_voids:
                     for void in v:
                         for poly in poly_by_nets[net]:
-                            if int(void.GetPolygonData().GetIntersectionType(poly.GetPolygonData())) >= 2:
+                            if int(void.polygon_data.intersection_type(poly.polygon_data)) >= 2:
                                 try:
                                     id = list_to_delete.index(poly)
                                 except ValueError:
@@ -1165,12 +1147,12 @@ class EdbLayout(object):
         if delete_padstack_gemometries:
             self._logger.info("Deleting Padstack Definitions")
             for pad in self._pedb.padstacks.definitions:
-                p1 = self._pedb.padstacks.definitions[pad].edb_padstack.GetData()
-                if len(p1.GetLayerNames()) > 1:
+                p1 = self._pedb.padstacks.definitions[pad].edb_padstack.data
+                if len(p1.layer_names) > 1:
                     self._pedb.padstacks.remove_pads_from_padstack(pad)
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def defeature_polygon(self, poly, tolerance=0.001):
         """Defeature the polygon based on the maximum surface deviation criteria.
 
@@ -1188,11 +1170,11 @@ class EdbLayout(object):
             ``True`` when successful, ``False`` when failed.
         """
         poly_data = poly.polygon_data
-        new_poly = poly_data.edb_api.Defeature(tolerance)
+        new_poly = poly_data.defeature(tolerance)
         poly.polygon_data = new_poly
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_layout_statistics(self, evaluate_area=False, net_list=None):
         """Return EDBStatistics object from a layout.
 
@@ -1233,7 +1215,7 @@ class EdbLayout(object):
                 _poly = self._pedb.get_conformal_polygon_from_netlist(netlist)
             else:
                 _poly = self._pedb.get_conformal_polygon_from_netlist()
-            stat_model.occupying_surface = _poly.Area()
+            stat_model.occupying_surface = _poly.area
             outline_surface = stat_model.layout_size[0] * stat_model.layout_size[1]
             stat_model.occupying_ratio = stat_model.occupying_surface / outline_surface
         return stat_model
