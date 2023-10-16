@@ -4,15 +4,15 @@ import re
 import sys
 
 from pyedb import __version__
-from pyedb.aedt_logger import pyaedt_logger
-from pyedb.edb_core.general import convert_py_list_to_net_list
+from pyedb.edb_logger import pyedb_logger
+from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import env_path
 from pyedb.generic.general_methods import env_path_student
 from pyedb.generic.general_methods import env_value
 from pyedb.generic.general_methods import is_ironpython
 from pyedb.generic.general_methods import is_linux
 from pyedb.generic.general_methods import settings
-from pyedb.misc import list_installed_ansysem
+from pyedb.misc.misc import list_installed_ansysem
 
 
 class HierarchyDotNet:
@@ -682,8 +682,8 @@ class EdbDotNet(object):
     """Edb Dot Net Class."""
 
     def __init__(self, edbversion, student_version=False):
-        self._global_logger = pyaedt_logger
-        self._logger = pyaedt_logger
+        self._global_logger = pyedb_logger
+        self._logger = pyedb_logger
         if not edbversion:  # pragma: no cover
             try:
                 edbversion = "20{}.{}".format(list_installed_ansysem()[0][-3:-1], list_installed_ansysem()[0][-1:])
@@ -693,8 +693,8 @@ class EdbDotNet(object):
         self.edbversion = edbversion
         self.student_version = student_version
         """Initialize DLLs."""
-        from pyedb.generic.clr_module import _clr
-        from pyedb.generic.clr_module import edb_initialized
+        from pyedb.legacy.generic.clr_module import _clr
+        from pyedb.legacy.generic.clr_module import edb_initialized
 
         if settings.enable_screen_logs:
             self.logger.enable_stdout_log()

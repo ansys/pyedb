@@ -1,7 +1,8 @@
 import math
 
 from pyedb.generic.general_methods import ET
-from pyedb.generic.general_methods import pyaedt_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
+
 
 
 class Polygon(object):
@@ -12,7 +13,7 @@ class Polygon(object):
         self.solid_fill_id = ""
         self.cutout = []
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_poly_step(self, polygon=None):  # pragma no cover
         if polygon:
             polygon_data = polygon.GetPolygonData()
@@ -75,13 +76,13 @@ class Polygon(object):
                                 new_poly_step.clock_wise = not void_arc.IsCCW()
                                 void_polygon.poly_steps.append(new_poly_step)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_cutout(self, cutout):  # pragma no cover
         if not isinstance(cutout, Cutout):
             return False
         self.cutout.append(cutout)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def write_xml(self, root_net):  # pragma no cover
         if not self.poly_steps:
             return
@@ -105,7 +106,7 @@ class Cutout(object):
         self._ipc = ipc
         self.poly_steps = []
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def write_xml(self, contour, ipc):  # pragma no cover
         cutout = ET.SubElement(contour, "Cutout")
         cutout_begin = ET.SubElement(cutout, "PolyBegin")
@@ -134,7 +135,7 @@ class PolyStep(object):
         self.center_y = 0.0
         self.clock_wise = False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def write_xml(self, polygon, ipc):  # pragma no cover
         if self.poly_type == 0:
             poly = ET.SubElement(polygon, "PolyStepSegment")

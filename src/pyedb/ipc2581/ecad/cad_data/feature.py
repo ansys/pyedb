@@ -1,7 +1,7 @@
-from ipc2581.ecad.cad_data.drill import Drill
-from ipc2581.ecad.cad_data.padstack_instance import PadstackInstance
-from ipc2581.ecad.cad_data.path import Path
-from ipc2581.ecad.cad_data.polygon import Polygon
+from pyedb.ipc2581.ecad.cad_data.drill import Drill
+from pyedb.ipc2581.ecad.cad_data.padstack_instance import PadstackInstance
+from pyedb.ipc2581.ecad.cad_data.path import Path
+from pyedb.ipc2581.ecad.cad_data.polygon import Polygon
 from pyedb.generic.general_methods import ET
 
 

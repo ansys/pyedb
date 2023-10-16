@@ -1,8 +1,9 @@
-from ipc2581.content.entry_line import EntryLine
-from ipc2581.ecad.cad_data.polygon import PolyStep
-from ipc2581.ecad.cad_data.polygon import PolyType
+from pyedb.ipc2581.content.entry_line import EntryLine
+from pyedb.ipc2581.ecad.cad_data.polygon import PolyStep
+from pyedb.ipc2581.ecad.cad_data.polygon import PolyType
 from pyedb.generic.general_methods import ET
-from pyedb.generic.general_methods import pyaedt_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
+
 
 
 class Path(object):
@@ -16,7 +17,7 @@ class Path(object):
         self.entry_line = EntryLine()
         self.width_ref_id = ""
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_path_step(self, path_step=None):  # pragma no cover
         arcs = path_step.primitive_object.GetCenterLine().GetArcData()
         if not arcs:
@@ -67,7 +68,7 @@ class Path(object):
                 new_poly_step.clock_wise = not arc.IsCCW()
                 self.poly_steps.append(new_poly_step)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def write_xml(self, net_root):  # pragma no cover
         if not self.poly_steps:
             return

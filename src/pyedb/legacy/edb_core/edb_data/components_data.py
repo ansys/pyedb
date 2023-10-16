@@ -2,7 +2,7 @@ import logging
 import re
 import warnings
 
-from pyedb.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.generic.general_methods import is_ironpython
 
 if not is_ironpython:
@@ -14,7 +14,8 @@ if not is_ironpython:
             "Install with \n\npip install numpy\n\nRequires CPython."
         )
 from pyedb.generic.general_methods import get_filename_without_extension
-from pyedb.generic.general_methods import pyaedt_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
+
 
 
 class EDBComponentDef(object):
@@ -82,7 +83,7 @@ class EDBComponentDef(object):
         ]
         return {comp.refdes: comp for comp in comp_list}
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
         """Assign RLC to all components under this part name.
 
@@ -102,7 +103,7 @@ class EDBComponentDef(object):
             comp.assign_rlc_model(res, ind, cap, is_parallel)
         return True
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def assign_s_param_model(self, file_path, model_name=None, reference_net=None):
         """Assign S-parameter to all components under this part name.
 
@@ -120,7 +121,7 @@ class EDBComponentDef(object):
             comp.assign_s_param_model(file_path, model_name, reference_net)
         return True
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def assign_spice_model(self, file_path, model_name=None):
         """Assign Spice model to all components under this part name.
 
@@ -836,11 +837,11 @@ class EDBComponent(object):
         """
         return int(self.edbcomponent.GetPlacementLayer().GetTopBottomAssociation())
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def _get_edb_value(self, value):
         return self._pedb.edb_value(value)
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def _set_model(self, model):  # pragma: no cover
         comp_prop = self.component_property
         comp_prop.SetModel(model)
@@ -849,7 +850,7 @@ class EDBComponent(object):
             return False
         return True
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def assign_spice_model(self, file_path, name=None):
         """Assign Spice model to this component.
 
@@ -887,7 +888,7 @@ class EDBComponent(object):
             return False
         return self._set_model(model)
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def assign_s_param_model(self, file_path, name=None, reference_net=None):
         """Assign S-parameter to this component.
 
@@ -918,7 +919,7 @@ class EDBComponent(object):
             model.SetReferenceNet(reference_net)
         return self._set_model(model)
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
         """Assign RLC to this component.
 
@@ -953,7 +954,7 @@ class EDBComponent(object):
             model.SetPinPairRlc(pin_pair, rlc)
         return self._set_model(model)
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def create_clearance_on_component(self, extra_soldermask_clearance=1e-4):
         """Create a Clearance on Soldermask layer by drawing a rectangle.
 

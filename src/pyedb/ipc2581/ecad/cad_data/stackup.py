@@ -1,4 +1,4 @@
-from ipc2581.ecad.cad_data.stackup_group import StackupGroup
+from pyedb.ipc2581.ecad.cad_data.stackup_group import StackupGroup
 from pyedb.generic.general_methods import ET
 
 

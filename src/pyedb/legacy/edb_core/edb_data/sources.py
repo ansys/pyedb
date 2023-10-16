@@ -1,4 +1,4 @@
-from pyedb import pyaedt_function_handler
+from pyedb import pyedb_function_handler
 from pyedb.generic.constants import NodeType
 from pyedb.generic.constants import SourceType
 
@@ -274,7 +274,7 @@ class PinGroup(object):
     def net_name(self):
         return self._edb_pin_group.GetNet().GetName()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _create_pin_group_terminal(self, is_reference=False):
         pg_term = self._edb_pin_group.GetPinGroupTerminal()
         pin_group_net = self._edb_pin_group.GetNet()
@@ -291,7 +291,7 @@ class PinGroup(object):
         else:
             return pg_term
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_current_source_terminal(self, magnitude=1, phase=0):
         terminal = self._create_pin_group_terminal()
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kCurrentSource)
@@ -299,7 +299,7 @@ class PinGroup(object):
         terminal.SetSourcePhase(self._pedb.edb_api.utility.value(phase))
         return terminal
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_voltage_source_terminal(self, magnitude=1, phase=0, impedance=0.001):
         terminal = self._create_pin_group_terminal()
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageSource)
@@ -308,14 +308,14 @@ class PinGroup(object):
         terminal.SetImpedance(self._pedb.edb_value(impedance))
         return terminal
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_voltage_probe_terminal(self, impedance=1000000):
         terminal = self._create_pin_group_terminal()
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageProbe)
         terminal.SetImpedance(self._pedb.edb_value(impedance))
         return terminal
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_port_terminal(self, impedance=50):
         terminal = self._create_pin_group_terminal()
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PortBoundary)
@@ -323,7 +323,7 @@ class PinGroup(object):
         terminal.SetIsCircuitPort(True)
         return terminal
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def delete(self):
         """Delete active pin group.
 

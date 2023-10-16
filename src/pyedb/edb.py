@@ -60,7 +60,7 @@ from pyaedt.generic.general_methods import inside_desktop
 from pyaedt.generic.general_methods import is_ironpython
 from pyaedt.generic.general_methods import is_linux
 from pyaedt.generic.general_methods import is_windows
-from pyaedt.generic.general_methods import pyaedt_function_handler
+from pyaedt.generic.general_methods import pyedb_function_handler
 from pyaedt.generic.process import SiwaveSolve
 from pyaedt.modeler.geometry_operators import GeometryOperators
 
@@ -219,7 +219,7 @@ class Edb(Database):
         if ex_type:
             self.edb_exception(ex_value, ex_traceback)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def __getitem__(self, variable_name):
         """Get or Set a variable to the Edb project. The variable can be project using ``$`` prefix or
         it can be a design variable, in which case the ``$`` is omitted.
@@ -237,7 +237,7 @@ class Edb(Database):
             return self.variables[variable_name]
         return
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def __setitem__(self, variable_name, variable_value):
         type_error_message = "Allowed values are str, numeric or two-item list with variable description."
         if type(variable_value) in [list, tuple]:  # Two-item list or tuple. 2nd argument is a str description.
@@ -279,7 +279,7 @@ class Edb(Database):
         # time.sleep(2)
         # gc.collect()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _init_objects(self):
         self._components = Components(self)
         self._stackup = Stackup(self)
@@ -421,7 +421,7 @@ class Edb(Database):
         terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [8]]
         return {ter.GetName(): ExcitationProbes(self, ter) for ter in terms}
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def open_edb(self):
         """Open EDB.
 
@@ -464,7 +464,7 @@ class Edb(Database):
 
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def open_edb_inside_aedt(self):
         """Open EDB inside of AEDT.
 
@@ -496,7 +496,7 @@ class Edb(Database):
             self._active_cell = None
             return None
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_edb(self):
         """Create EDB."""
         # if self.edbversion > "2023.1":
@@ -518,7 +518,7 @@ class Edb(Database):
             return True
         return None
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def import_layout_pcb(self, input_file, working_dir, anstranslator_full_path="", use_ppe=False, control_file=None):
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
@@ -585,7 +585,7 @@ class Edb(Database):
         self.edbpath = os.path.join(working_dir, aedb_name)
         return self.open_edb()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def export_to_ipc2581(self, ipc_path=None, units="MILLIMETER"):
         """Create an XML IPC2581 file from the active EDB.
 
@@ -1065,7 +1065,7 @@ class Edb(Database):
 
         (Port, Pec, RLC, CurrentSource, VoltageSource, NexximGround, NexximPort, DcTerminal, VoltageProbe) = range(0, 9)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def edb_value(self, val):
         """Convert a value to an EDB value. Value can be a string, float or integer. Mainly used in internal calls.
 
@@ -1081,7 +1081,7 @@ class Edb(Database):
         """
         return self.edb_api.utility.value(val)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def point_3d(self, x, y, z=0.0):
         """Compute the Edb 3d Point Data.
 
@@ -1100,7 +1100,7 @@ class Edb(Database):
         """
         return self.edb_api.geometry.point3d_data(x, y, z)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def point_data(self, x, y=None):
         """Compute the Edb Point Data.
 
@@ -1121,7 +1121,7 @@ class Edb(Database):
         else:
             return self.edb_api.geometry.point_data(x, y)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _is_file_existing_and_released(self, filename):
         if os.path.exists(filename):
             try:
@@ -1133,14 +1133,14 @@ class Edb(Database):
         else:
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _is_file_existing(self, filename):
         if os.path.exists(filename):
             return True
         else:
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _wait_for_file_release(self, timeout=30, file_to_release=None):
         if not file_to_release:
             file_to_release = os.path.join(self.edbpath)
@@ -1153,7 +1153,7 @@ class Edb(Database):
             else:
                 time.sleep(0.250)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _wait_for_file_exists(self, timeout=30, file_to_release=None, wait_count=4):
         if not file_to_release:
             file_to_release = os.path.join(self.edbpath)
@@ -1172,7 +1172,7 @@ class Edb(Database):
                 times = 0
                 time.sleep(0.250)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def close_edb(self):
         """Close EDB and cleanup variables.
 
@@ -1193,7 +1193,7 @@ class Edb(Database):
         self._clean_variables()
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def save_edb(self):
         """Save the EDB file.
 
@@ -1210,7 +1210,7 @@ class Edb(Database):
         self.logger.info("EDB file save time: {0:.2f}ms".format(elapsed_time * 1000.0))
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def save_edb_as(self, fname):
         """Save the EDB file as another file.
 
@@ -1242,7 +1242,7 @@ class Edb(Database):
             self._logger = self._global_logger.add_file_logger(self.log_name, "Edb")
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def execute(self, func):
         """Execute a function.
 
@@ -1260,7 +1260,7 @@ class Edb(Database):
         """
         return self.edb_api.utility.utility.Command.Execute(func)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False):
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
@@ -1290,7 +1290,7 @@ class Edb(Database):
         else:
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def import_gds_file(
         self,
         inputGDS,
@@ -1352,7 +1352,7 @@ class Edb(Database):
         else:
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _create_extent(
         self,
         net_signals,
@@ -1414,7 +1414,7 @@ class Edb(Database):
                 _poly = self.edb_api.geometry.polygon_data.get_convex_hull_of_polygons(_poly_list)
         return _poly
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _create_conformal(
         self,
         net_signals,
@@ -1446,7 +1446,7 @@ class Edb(Database):
             areas = [i.Area() for i in _poly_unite]
             return _poly_unite[areas.index(max(areas))]
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _smart_cut(self, net_signals, reference_list=[], include_pingroups=True):
         _polys = []
         terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [0, 3, 4, 7, 8]]
@@ -1485,7 +1485,7 @@ class Edb(Database):
                     locations.append(pin.position)
         return _polys
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _create_convex_hull(
         self,
         net_signals,
@@ -1510,7 +1510,7 @@ class Edb(Database):
         _poly = _poly.Expand(expansion_size, tolerance, round_corner, round_extension)[0]
         return _poly
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def cutout(
         self,
         signal_list=None,
@@ -1742,7 +1742,7 @@ class Edb(Database):
                 self.open_edb()
             return result
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _create_cutout_legacy(
         self,
         signal_list=[],
@@ -1857,7 +1857,7 @@ class Edb(Database):
                 self.components.refresh_components()
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_cutout(
         self,
         signal_list=[],
@@ -1919,7 +1919,7 @@ class Edb(Database):
             use_pyaedt_extent_computing=use_pyaedt_extent_computing,
         )
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _create_cutout_multithread(
         self,
         signal_list=[],
@@ -2111,7 +2111,7 @@ class Edb(Database):
         self.logger.reset_timer()
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_cutout_multithread(
         self,
         signal_list=[],
@@ -2206,7 +2206,7 @@ class Edb(Database):
             extent_defeature=extent_defeature,
         )
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_conformal_polygon_from_netlist(self, netlist=None):
         """Return an EDB conformal polygon based on a netlist.
 
@@ -2243,7 +2243,7 @@ class Edb(Database):
         else:
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def number_with_units(self, value, units=None):
         """Convert a number to a string with units. If value is a string, it's returned as is.
 
@@ -2267,7 +2267,7 @@ class Edb(Database):
         else:
             return "{0}{1}".format(value, units)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def arg_with_dim(self, Value, sUnits):
         """Convert a number to a string with units. If value is a string, it's returned as is.
 
@@ -2297,7 +2297,7 @@ class Edb(Database):
         else:
             return val
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _create_cutout_on_point_list(
         self,
         point_list,
@@ -2471,7 +2471,7 @@ class Edb(Database):
                         pass
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_cutout_on_point_list(
         self,
         point_list,
@@ -2525,7 +2525,7 @@ class Edb(Database):
             keep_voids=keep_voids,
         )
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def write_export3d_option_config_file(self, path_to_output, config_dictionaries=None):
         """Write the options for a 3D export to a configuration file.
 
@@ -2563,7 +2563,7 @@ class Edb(Database):
                 f.write(el + " " + str(val) + "\n")
         return os.path.join(path_to_output, "options.config")
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def export_hfss(self, path_to_output, net_list=None, num_cores=None, aedt_file_name=None, hidden=False):
         """Export EDB to HFSS.
 
@@ -2603,7 +2603,7 @@ class Edb(Database):
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def export_q3d(self, path_to_output, net_list=None, num_cores=None, aedt_file_name=None, hidden=False):
         """Export EDB to Q3D.
 
@@ -2646,7 +2646,7 @@ class Edb(Database):
             "Q3D", path_to_output, net_list, num_cores=num_cores, aedt_file_name=aedt_file_name, hidden=hidden
         )
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def export_maxwell(self, path_to_output, net_list=None, num_cores=None, aedt_file_name=None, hidden=False):
         """Export EDB to Maxwell 3D.
 
@@ -2693,7 +2693,7 @@ class Edb(Database):
             hidden=hidden,
         )
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def solve_siwave(self):
         """Close EDB and solve it with Siwave.
 
@@ -2710,7 +2710,7 @@ class Edb(Database):
         process.solve()
         return self.edbpath[:-5] + ".siw"
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def export_siwave_dc_results(
         self,
         siwave_project,
@@ -2773,7 +2773,7 @@ class Edb(Database):
             hidden=True,
         )
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def variable_exists(self, variable_name):
         """Check if a variable exists or not.
 
@@ -2798,7 +2798,7 @@ class Edb(Database):
             return True, var_server
         return False, var_server
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_variable(self, variable_name):
         """Return Variable Value if variable exists.
 
@@ -2817,7 +2817,7 @@ class Edb(Database):
         self.logger.info("Variable %s doesn't exists.", variable_name)
         return None
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_project_variable(self, variable_name, variable_value):
         """Add a variable to edb database (project). The variable will have the prefix `$`.
 
@@ -2850,7 +2850,7 @@ class Edb(Database):
             variable_name = "${}".format(variable_name)
         return self.add_design_variable(variable_name=variable_name, variable_value=variable_value)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_design_variable(self, variable_name, variable_value, is_parameter=False):
         """Add a variable to edb. The variable can be a design one or a project variable (using ``$`` prefix).
 
@@ -2893,7 +2893,7 @@ class Edb(Database):
         self.logger.error("Variable %s already exists.", variable_name)
         return False, var_server[1]
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def change_design_variable_value(self, variable_name, variable_value):
         """Change a variable value.
 
@@ -2928,7 +2928,7 @@ class Edb(Database):
         self.logger.error("Variable %s does not exists.", variable_name)
         return False, var_server[1]
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_bounding_box(self):
         """Get the layout bounding box.
 
@@ -2940,7 +2940,7 @@ class Edb(Database):
         bbox = self.edbutils.HfssUtilities.GetBBox(self.active_layout)
         return [[bbox.Item1.X.ToDouble(), bbox.Item1.Y.ToDouble()], [bbox.Item2.X.ToDouble(), bbox.Item2.Y.ToDouble()]]
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def build_simulation_project(self, simulation_setup):
         # type: (SimulationConfiguration) -> bool
         """Build a ready-to-solve simulation project.
@@ -3100,7 +3100,7 @@ class Edb(Database):
         except:  # pragma: no cover
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_statistics(self, compute_area=False):
         """Get the EDBStatistics object.
 
@@ -3110,7 +3110,7 @@ class Edb(Database):
         """
         return self.modeler.get_layout_statistics(evaluate_area=compute_area, net_list=None)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def are_port_reference_terminals_connected(self, common_reference=None):
         """Check if all terminal references in design are connected.
         If the reference nets are different, there is no hope for the terminal references to be connected.
@@ -3199,7 +3199,7 @@ class Edb(Database):
         # If the intersections are non-zero, the terminal references are connected.
         return True if len(iDintersection) > 0 else False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def new_simulation_configuration(self, filename=None):
         # type: (str) -> SimulationConfiguration
         """New SimulationConfiguration Object.
@@ -3290,7 +3290,7 @@ class Edb(Database):
         self._setups[name] = setup
         return setup
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_siwave_syz_setup(self, name=None):
         """Create a setup from a template.
 
@@ -3320,7 +3320,7 @@ class Edb(Database):
         self._setups[name] = setup
         return setup
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_siwave_dc_setup(self, name=None):
         """Create a setup from a template.
 
@@ -3347,7 +3347,7 @@ class Edb(Database):
         self._setups[name] = setup
         return setup
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def calculate_initial_extent(self, expansion_factor):
         """Compute a float representing the larger number between the dielectric thickness or trace width
         multiplied by the nW factor. The trace width search is limited to nets with ports attached.
@@ -3380,7 +3380,7 @@ class Edb(Database):
         self.logger.info("The W factor is {}, The initial extent = {:e}".format(expansion_factor, max_width))
         return max_width
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def copy_zones(self, working_directory=None):
         """Copy multizone EDB project to one new edb per zone.
 
@@ -3428,7 +3428,7 @@ class Edb(Database):
                 edb_zones[edb_zone_path] = (-1, poly_data)
         return edb_zones
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def cutout_multizone_layout(self, zone_dict, common_reference_net=None):
         """Create a multizone project cutout.
 
@@ -3479,7 +3479,7 @@ class Edb(Database):
             edb.close_edb()
         return defined_ports, project_connexions
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _get_connected_ports_from_multizone_cutout(self, terminal_info_dict):
         """Return connected port list from clipped multizone layout.
 

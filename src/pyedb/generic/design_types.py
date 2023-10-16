@@ -1,5 +1,6 @@
 import re
 import sys
+import os
 
 
 # lazy imports
@@ -81,19 +82,36 @@ def Edb(
     >>> app = Edb("/path/to/file/myfile.gds")
 
     """
-    from pyedb.edb import Edb as app
 
-    return app(
-        edbpath=edbpath,
-        cellname=cellname,
-        isreadonly=isreadonly,
-        edbversion=edbversion,
-        isaedtowned=isaedtowned,
-        oproject=oproject,
-        student_version=student_version,
-        use_ppe=use_ppe,
-        technology_file=technology_file,
-    )
+    # TODO: Remove as it is used to ensure usage of the legacy API
+    os.environ["PYEDB_USE_LEGACY"] = "1"
+
+    if bool(os.getenv("PYEDB_USE_LEGACY", "0")):
+        from pyedb.legacy.edb import EdbLegacy as app
+        return app(
+                edbpath=edbpath,
+                cellname=cellname,
+                isreadonly=isreadonly,
+                edbversion=edbversion,
+                isaedtowned=isaedtowned,
+                oproject=oproject,
+                student_version=student_version,
+                use_ppe=use_ppe,
+                technology_file=technology_file,
+            )
+    else:
+        from pyedb.edb import Edb as app
+        return app(
+            edbpath=edbpath,
+            cellname=cellname,
+            isreadonly=isreadonly,
+            edbversion=edbversion,
+            isaedtowned=isaedtowned,
+            oproject=oproject,
+            student_version=student_version,
+            use_ppe=use_ppe,
+            technology_file=technology_file,
+        )
 
 
 app_map = {"EDB": Edb}

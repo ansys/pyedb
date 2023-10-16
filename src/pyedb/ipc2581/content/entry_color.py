@@ -1,4 +1,4 @@
-from ipc2581.content.color import Color
+from pyedb.ipc2581.content.color import Color
 from pyedb.generic.general_methods import ET
 
 

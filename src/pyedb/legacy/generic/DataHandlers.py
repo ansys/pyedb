@@ -7,7 +7,7 @@ import random
 import re
 import string
 
-from pyaedt.generic.general_methods import pyaedt_function_handler
+from pyaedt.generic.general_methods import pyedb_function_handler
 from pyaedt.generic.general_methods import settings
 from pyaedt.modeler.cad.elements3d import EdgePrimitive
 from pyaedt.modeler.cad.elements3d import FacePrimitive
@@ -44,7 +44,7 @@ def create_list_for_csharp(input_list, return_strings=False):
     return col
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def create_table_for_csharp(input_list_of_list, return_strings=True):
     """
 
