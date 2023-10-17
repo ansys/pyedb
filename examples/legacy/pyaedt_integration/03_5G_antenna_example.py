@@ -10,8 +10,9 @@ This example shows how you can use HFSS 3D Layout to create and solve a 5G linea
 # Perform required imports.
 
 import tempfile
-import pyaedt
+import pyedb
 import os
+from pyaedt import Hfss3dLayout
 
 ##########################################################
 # Set non-graphical mode
@@ -70,9 +71,9 @@ class LinearArray:
 
 
 tmpfold = tempfile.gettempdir()
-aedb_path = os.path.join(tmpfold, pyaedt.generate_unique_name("pcb") + ".aedb")
+aedb_path = os.path.join(tmpfold, pyedb.generate_unique_name("pcb") + ".aedb")
 print(aedb_path)
-edb = pyaedt.Edb(edbpath=aedb_path, edbversion="2023.2")
+edb = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
 
 
 ###############################################################################
@@ -213,8 +214,8 @@ print("EDB saved correctly to {}. You can import in AEDT.".format(aedb_path))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Launch HFSS 3D Layout and open EDB.
 
-h3d = pyaedt.Hfss3dLayout(projectname=aedb_path, specified_version="2023.2", new_desktop_session=True,
-                          non_graphical=non_graphical)
+h3d = Hfss3dLayout(projectname=aedb_path, specified_version="2023.2", new_desktop_session=True,
+                         non_graphical=non_graphical)
 
 ###############################################################################
 # Plot geometry
@@ -274,7 +275,7 @@ solution.plot()
 # Close AEDT
 # ~~~~~~~~~~
 # After the simulation completes, you can close AEDT or release it using the
-# :func:`pyaedt.Desktop.release_desktop` method.
+# :func:`legacy.Desktop.release_desktop` method.
 # All methods provide for saving the project before closing AEDT.
 
 h3d.save_project()

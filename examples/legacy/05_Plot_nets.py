@@ -10,16 +10,17 @@ This example shows how you can use the ``Edb`` class to plot a net or a layout.
 # Perform required imports, which includes importing a section.
 
 import os
-import pyaedt
+import pyedb
+from pyedb.legacy.downloads import download_file
 
 ###############################################################################
 # Download file
 # ~~~~~~~~~~~~~
 # Download the AEDT file and copy it into the temporary folder.
 
-temp_folder = pyaedt.generate_unique_folder_name()
+temp_folder = pyedb.generate_unique_folder_name()
 
-targetfolder = pyaedt.downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+targetfolder = download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
 
 
 ###############################################################################
@@ -27,7 +28,7 @@ targetfolder = pyaedt.downloads.download_file('edb/ANSYS-HSD_V1.aedb', destinati
 # ~~~~~~~~~~
 # Launch the :class:`pyaedt.Edb` class, using EDB 2023 R2 and SI units.
 
-edb = pyaedt.Edb(edbpath=targetfolder, edbversion="2023.2")
+edb = pyedb.Edb(edbpath=targetfolder, edbversion="2023.2")
 
 ###############################################################################
 # Plot custom set of nets colored by layer

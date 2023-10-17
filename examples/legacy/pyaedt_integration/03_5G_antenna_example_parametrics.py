@@ -11,9 +11,9 @@ This example shows how you can use EDB to create a layout component parametrics 
 # and initializing it on version 2023 R2.
 
 import tempfile
-import pyaedt
+import pyedb
 import os
-
+from pyaedt import Hfss
 
 ##########################################################
 # Set non-graphical mode
@@ -84,9 +84,9 @@ class LinearArray:
 
 
 tmpfold = tempfile.gettempdir()
-aedb_path = os.path.join(tmpfold, pyaedt.generate_unique_name("pcb") + ".aedb")
+aedb_path = os.path.join(tmpfold, pyedb.generate_unique_name("pcb") + ".aedb")
 print(aedb_path)
-edb = pyaedt.Edb(edbpath=aedb_path, edbversion="2023.2")
+edb = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
 
 ###############################################################################
 # Add stackup layers
@@ -248,7 +248,7 @@ print("EDB saved correctly to {}. You can import in AEDT.".format(aedb_path))
 # ~~~~~~~~~~~~~~
 # Launch HFSS 3D.
 
-h3d = pyaedt.Hfss(specified_version="2023.2",new_desktop_session=True, close_on_exit=True, solution_type="Terminal")
+h3d = Hfss(specified_version="2023.2", new_desktop_session=True, close_on_exit=True, solution_type="Terminal")
 
 
 ###############################################################################
@@ -388,7 +388,7 @@ h3d.post.create_fieldplot_layers_nets(
 # Close AEDT
 # ~~~~~~~~~~
 # After the simulation completes, you can close AEDT or release it using the
-# :func:`pyaedt.Desktop.release_desktop` method.
+# :func:`legacy.Desktop.release_desktop` method.
 # All methods provide for saving the project before closing AEDT.
 
 
