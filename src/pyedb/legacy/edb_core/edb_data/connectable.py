@@ -91,7 +91,7 @@ class Connectable(LayoutObj):
         -------
         :class:`pyaedt.edb_core.edb_data.nets_data.EDBNetsData`
         """
-        from pyedb.edb_core.edb_data.nets_data import EDBNetsData
+        from pyedb.legacy.edb_core.edb_data.nets_data import EDBNetsData
 
         return EDBNetsData(self._edb_object.GetNet(), self._pedb)
 

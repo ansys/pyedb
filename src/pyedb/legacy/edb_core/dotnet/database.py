@@ -476,7 +476,7 @@ class CellClassDotNet:
     @property
     def primitive(self):
         """Edb Dotnet Api Database `Edb.Cell.Primitive`."""
-        from pyedb.edb_core.dotnet.primitive import PrimitiveDotNet
+        from pyedb.legacy.edb_core.dotnet.primitive import PrimitiveDotNet
 
         return PrimitiveDotNet(self._app)
 
