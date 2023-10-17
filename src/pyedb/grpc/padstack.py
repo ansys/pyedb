@@ -414,6 +414,7 @@ class EdbPadstacks(object):
         if sball_layer is not None:
             padstackInst.solder_ball_layer = sball_layer
             return True
+
         return False
 
     @pyedb_function_handler()
@@ -572,7 +573,7 @@ class EdbPadstacks(object):
                 return polygon_data, offset_x, offset_y, rotation
             return PadType.UNKNOWN_GEOM_TYPE
 
-    @pyedb_function_handler
+    @pyaedt_function_handler
     def set_all_antipad_value(self, value):
         """Set all anti-pads from all pad-stack definition to the given value.
 
@@ -619,7 +620,7 @@ class EdbPadstacks(object):
                 padstack.edb_padstack.data = cloned_padstack_data
             return all_succeed
 
-    @pyedb_function_handler
+    @pyaedt_function_handler
     def check_and_fix_via_plating(self, minimum_value_to_replace=0.0, default_plating_ratio=0.2):
         """Check for minimum via plating ration value, values found below the minimum one are replaced by default
         plating ratio.

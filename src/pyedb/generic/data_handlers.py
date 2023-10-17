@@ -7,14 +7,14 @@ import random
 import re
 import string
 
-from pyaedt.generic.general_methods import pyaedt_function_handler
+from pyaedt.generic.general_methods import pyedb_function_handler
 from pyaedt.generic.general_methods import settings
 from pyaedt.modeler.cad.elements3d import EdgePrimitive
 from pyaedt.modeler.cad.elements3d import FacePrimitive
 from pyaedt.modeler.cad.elements3d import VertexPrimitive
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def _tuple2dict(t, d):
     """
 
@@ -53,7 +53,7 @@ def _tuple2dict(t, d):
         d[k] = v
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def _dict2arg(d, arg_out):
     """Create a valid string of name-value pairs for the native AEDT API.
 
@@ -110,7 +110,7 @@ def _dict2arg(d, arg_out):
                 arg_out.append(v)
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def _arg2dict(arg, dict_out):
     if arg[0] == "NAME:DimUnits" or "NAME:Point" in arg[0]:
         if arg[0][5:] in dict_out:
@@ -161,7 +161,7 @@ def _arg2dict(arg, dict_out):
         raise ValueError("Incorrect data argument format")
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def format_decimals(el):
     """
 
@@ -183,7 +183,7 @@ def format_decimals(el):
     return num
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def random_string(length=6, only_digits=False, char_set=None):
     """Generate a random string
 
@@ -212,7 +212,7 @@ def random_string(length=6, only_digits=False, char_set=None):
     return random_str
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def unique_string_list(element_list, only_string=True):
     """Return a unique list of strings from an element list.
 
@@ -247,7 +247,7 @@ def unique_string_list(element_list, only_string=True):
     return element_list
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def string_list(element_list):
     """
 
@@ -267,7 +267,7 @@ def string_list(element_list):
     return element_list
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def ensure_list(element_list):
     """
 
@@ -285,7 +285,7 @@ def ensure_list(element_list):
     return element_list
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def from_rkm(code):
     """Convert an RKM code string to a string with a decimal point.
 
@@ -417,7 +417,7 @@ unit_val = {
 }
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def float_units(val_str, units=""):
     """Retrieve units for a value.
 
@@ -448,7 +448,7 @@ def float_units(val_str, units=""):
     return val
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def json_to_dict(fn):
     """Load Json File to a dictionary.
 

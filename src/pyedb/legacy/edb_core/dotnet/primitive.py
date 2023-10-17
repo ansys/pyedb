@@ -1,7 +1,7 @@
 """Primitive."""
-from pyedb.edb_core.dotnet.database import NetDotNet
-from pyedb.edb_core.dotnet.database import PolygonDataDotNet
-from pyedb.edb_core.general import convert_py_list_to_net_list
+from pyedb.legacy.edb_core.dotnet.database import NetDotNet
+from pyedb.legacy.edb_core.dotnet.database import PolygonDataDotNet
+from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 

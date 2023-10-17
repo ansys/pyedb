@@ -745,7 +745,7 @@ class EdbPath(EDBPrimitives):
         if cloned_path:
             return cloned_path
 
-    # @pyaedt_function_handler
+    # @pyedb_function_handler()
     @pyedb_function_handler
     def create_edge_port(
         self,

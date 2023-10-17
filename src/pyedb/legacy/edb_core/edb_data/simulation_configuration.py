@@ -3,16 +3,17 @@ import json
 import os
 
 from pyedb import generate_unique_name
-from pyedb.edb_core.edb_data.sources import Source
-from pyedb.edb_core.edb_data.sources import SourceType
-from pyedb.generic.clr_module import Dictionary
+from pyedb.legacy.edb_core.edb_data.sources import Source
+from pyedb.legacy.edb_core.edb_data.sources import SourceType
+from pyedb.legacy.generic.clr_module import Dictionary
 from pyedb.generic.constants import BasisOrder
 from pyedb.generic.constants import CutoutSubdesignType
 from pyedb.generic.constants import RadiationBoxType
 from pyedb.generic.constants import SolverType
 from pyedb.generic.constants import SweepType
 from pyedb.generic.constants import validate_enum_class_value
-from pyedb.generic.general_methods import pyaedt_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
+
 
 
 class SimulationConfigurationBatch(object):
@@ -502,7 +503,7 @@ class SimulationConfigurationBatch(object):
             if len([src for src in value if isinstance(src, Source)]) == len(value):
                 self._sources = value
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_source(self, source=None):  # pragma: no cover
         """Add a new source to configuration.
 
@@ -2285,7 +2286,7 @@ class SimulationConfiguration(object):
         """
         return self._batch_solve_settings
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def build_simulation_project(self):
         """Build active simulation project. This method requires to be run inside Edb Class.
 
@@ -2363,7 +2364,7 @@ class SimulationConfiguration(object):
                 prop_values = [value.strip()]
             return prop_values
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_dc_ground_source_term(self, source_name=None, node_to_ground=1):
         """Add a dc ground source terminal for Siwave.
 
@@ -2635,7 +2636,7 @@ class SimulationConfiguration(object):
             else:
                 self.__setattr__(k, v)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def export_json(self, output_file):
         """Export Json file from SimulationConfiguration object.
 
@@ -2665,7 +2666,7 @@ class SimulationConfiguration(object):
         else:
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def import_json(self, input_file):
         """Import Json file into SimulationConfiguration object instance.
 
@@ -2694,7 +2695,7 @@ class SimulationConfiguration(object):
         else:
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_voltage_source(
         self,
         name="",
@@ -2766,7 +2767,7 @@ class SimulationConfiguration(object):
         except:  # pragma: no cover
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_current_source(
         self,
         name="",
@@ -2838,7 +2839,7 @@ class SimulationConfiguration(object):
         except:  # pragma: no cover
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_rlc(
         self,
         name="",

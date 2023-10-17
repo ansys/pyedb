@@ -1,4 +1,4 @@
-from ipc2581.content.entry_color import EntryColor
+from pyedb.ipc2581.content.entry_color import EntryColor
 from pyedb.generic.general_methods import ET
 
 

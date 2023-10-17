@@ -97,7 +97,7 @@ These examples demonstrate how to write messages only to the log file:
 
 Handle exceptions
 ~~~~~~~~~~~~~~~~~
-PyAEDT uses a specific decorator, ``@pyaedt_function_handler``,
+PyAEDT uses a specific decorator, ``@pyedb_function_handler()``,
 to handle exceptions caused by methods and by the AEDT API.
 This exception handler decorator makes PyAEDT fault tolerant
 to errors that can occur in any method.
@@ -106,7 +106,7 @@ For example:
 
 .. code:: python
 
-   @pyaedt_function_handler()
+   @pyedb_function_handler()
    def my_method(self, var):
        pass
 

@@ -8,10 +8,11 @@ from __future__ import absolute_import  # noreorder
 import logging
 
 from pyedb import is_ironpython
-from pyedb.generic.clr_module import Dictionary
-from pyedb.generic.clr_module import List
-from pyedb.generic.clr_module import Tuple
-from pyedb.generic.general_methods import pyaedt_function_handler
+from pyedb.legacy.generic.clr_module import Dictionary
+from pyedb.legacy.generic.clr_module import List
+from pyedb.legacy.generic.clr_module import Tuple
+from pyedb.generic.general_methods import pyedb_function_handler
+
 
 if not is_ironpython:  # pragma: no cover
     try:
@@ -24,7 +25,7 @@ else:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def convert_netdict_to_pydict(dict_in):
     """Convert a net dictionary to a Python dictionary.
 
@@ -45,7 +46,7 @@ def convert_netdict_to_pydict(dict_in):
     return pydict
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def convert_pytuple_to_nettuple(_tuple):
     """Convert a Python tuple into a .NET tuple.
     Parameters
@@ -59,7 +60,7 @@ def convert_pytuple_to_nettuple(_tuple):
     return Tuple.Create(_tuple[0], _tuple[1])
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def convert_pydict_to_netdict(input_dict):
     """Convert a Python dictionary to a .NET dictionary.
 
@@ -81,7 +82,7 @@ def convert_pydict_to_netdict(input_dict):
     # to be completed
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def convert_py_list_to_net_list(pylist, list_type=None):
     """Convert a Python list to a Net list.
 
@@ -108,7 +109,7 @@ def convert_py_list_to_net_list(pylist, list_type=None):
         return net_list
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def convert_net_list_to_py_list(netlist):
     """Convert a Net list to a Python list.
 

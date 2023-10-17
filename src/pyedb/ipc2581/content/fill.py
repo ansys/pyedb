@@ -1,4 +1,4 @@
-from ipc2581.content.content import Content
+from pyedb.ipc2581.content.content import Content
 from pyedb.generic.general_methods import ET
 
 

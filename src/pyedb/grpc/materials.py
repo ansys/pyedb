@@ -328,6 +328,10 @@ class Materials(object):
             self.add_material("fr4_epoxy", 4.4, 1, 0, 0.02, 0)
             self.add_material("solder_mask", 3.1, 1, 0, 0.035, 0)
 
+    @pyedb_function_handler()
+    def _edb_value(self, value):
+        return self._pedb.edb_value(value)
+
     @property
     def _edb(self):
         return self._pedb
@@ -341,7 +345,7 @@ class Materials(object):
         """Retrieve dictionary of material from material library."""
         return {obj.name: Material(self, obj) for obj in list(self._db.material_defs)}
 
-    @pyedb_function_handler
+    @pyedb_function_handler()
     def add_material(
         self,
         name="air",
@@ -667,7 +671,7 @@ class Materials(object):
         else:
             self.materials[mat_keys_case[mat_keys.index(material["name"].lower())]]._load(material)
 
-    @pyedb_function_handler
+    @pyedb_function_handler()
     def material_name_to_id(self, property_name):
         """Convert a material property name to a material property ID.
 

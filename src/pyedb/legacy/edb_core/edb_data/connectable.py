@@ -1,4 +1,4 @@
-from pyedb import pyaedt_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class LayoutObjInstance:
@@ -70,7 +70,7 @@ class LayoutObj(object):
         """
         return self._edb_object.GetId()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def delete(self):
         """Delete this primitive."""
         self._edb_object.Delete()
@@ -91,7 +91,7 @@ class Connectable(LayoutObj):
         -------
         :class:`pyaedt.edb_core.edb_data.nets_data.EDBNetsData`
         """
-        from pyedb.edb_core.edb_data.nets_data import EDBNetsData
+        from pyedb.legacy.edb_core.edb_data.nets_data import EDBNetsData
 
         return EDBNetsData(self._edb_object.GetNet(), self._pedb)
 

@@ -5,7 +5,7 @@ import re
 from pyedb.grpc.edb_data.nets_data import EDBDifferentialPairData
 from pyedb.grpc.edb_data.nets_data import EDBExtendedNetData
 from pyedb.grpc.edb_data.nets_data import EDBNetClassData
-from pyedb.generic.general_methods import pyaedt_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class EdbCommon:
@@ -27,7 +27,7 @@ class EdbCommon:
         """EDB logger."""
         return self._pedb.logger
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def __getitem__(self, name):
         """Get  a net from the EDB project.
 
@@ -73,7 +73,7 @@ class EdbNetClasses(EdbCommon, object):
             net_classes[net_class.name] = EDBNetClassData(self._pedb, net_class)
         return net_classes
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def create(self, name, net):
         # type: (str, str|list)->EDBNetClassData
         """Create a new net class.
@@ -130,7 +130,7 @@ class EdbExtendedNets(EdbCommon, object):
             nets[extended_net.name] = EDBExtendedNetData(self._pedb, extended_net)
         return nets
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def create(self, name, net):
         # type: (str, str|list)->EDBExtendedNetData
         """Create a new Extended net.
@@ -159,7 +159,7 @@ class EdbExtendedNets(EdbCommon, object):
 
         return self.items[name]
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def auto_identify_signal(self, resistor_below=10, inductor_below=1, capacitor_above=1e-9, exception_list=None):
         # type: (int | float, int | float, int |float, list) -> list
         """Get extended signal net and associated components.
@@ -194,7 +194,7 @@ class EdbExtendedNets(EdbCommon, object):
             resistor_below, inductor_below, capacitor_above, exception_list, True, False
         )
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def auto_identify_power(self, resistor_below=10, inductor_below=1, capacitor_above=1, exception_list=None):
         # type: (int | float, int | float, int |float, list) -> list
         """Get all extended power nets and their associated components.
@@ -258,7 +258,7 @@ class EdbDifferentialPairs(EdbCommon, object):
             diff_pairs[diff_pair.name] = EDBDifferentialPairData(self._pedb, diff_pair)
         return diff_pairs
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def create(self, name, net_p, net_n):
         # type: (str, str, str) -> EDBDifferentialPairData
         """
@@ -285,7 +285,7 @@ class EdbDifferentialPairs(EdbCommon, object):
 
         return self.items[name]
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def auto_identify(self, positive_differentiator="_P", negative_differentiator="_N"):
         """Auto identify differential pairs by naming conversion.
 

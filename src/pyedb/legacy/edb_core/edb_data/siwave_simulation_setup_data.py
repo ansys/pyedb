@@ -1,9 +1,10 @@
-from pyedb.edb_core.edb_data.hfss_simulation_setup_data import EdbFrequencySweep
-from pyedb.edb_core.general import convert_netdict_to_pydict
-from pyedb.edb_core.general import convert_pydict_to_netdict
+from pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data import EdbFrequencySweep
+from pyedb.legacy.edb_core.general import convert_netdict_to_pydict
+from pyedb.legacy.edb_core.general import convert_pydict_to_netdict
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import is_linux
-from pyedb.generic.general_methods import pyaedt_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
+
 
 
 class SiwaveAdvancedSettings(object):
@@ -709,7 +710,7 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
         """EDB internal simulation setup object."""
         return self._edb_sim_setup_info
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _update_setup(self):
         self._edb_sim_setup = self._edb.edb_api.utility.utility.SIWaveSimulationSetup(self._edb_sim_setup_info)
         if self.name in self._edb.setups:
@@ -814,7 +815,7 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
         self._edb_sim_setup_info.SimulationSettings.UseSISettings = value
         self._update_setup()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
 
@@ -880,7 +881,7 @@ def _parse_value(v):
     return pv
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def _get_edb_setup_info(edb_siwave_sim_setup, edb_sim_setup_info):
     string = edb_siwave_sim_setup.ToString().replace("\t", "").split("\r\n")
     if is_linux:
@@ -953,7 +954,7 @@ class SiwaveDCSimulationSetup(SiwaveDCAdvancedSettings, object):
         """EDB internal simulation setup object."""
         return self._edb_sim_setup_info
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _update_setup(self):
         edb_sim_setup = self._edb.edb_api.utility.utility.SIWaveDCIRSimulationSetup(self._edb_sim_setup_info)
         if self.name in self._edb.setups:
@@ -997,7 +998,7 @@ class SiwaveDCSimulationSetup(SiwaveDCAdvancedSettings, object):
         """
         return convert_netdict_to_pydict(self._edb_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_source_terminal_to_ground(self, source_name, terminal=0):
         """Add a source terminal to ground.
 

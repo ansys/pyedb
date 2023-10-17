@@ -1002,7 +1002,7 @@ class SiwaveDCSimulationSetup(SiwaveDCAdvancedSettings, object):
         """
         return self._edb_sim_setup_info.simulation_settings.dc_settings.source_terms_to_ground
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_source_terminal_to_ground(self, source_name, terminal=0):
         """Add a source terminal to ground.
 

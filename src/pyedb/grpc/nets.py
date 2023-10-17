@@ -985,6 +985,31 @@ class EdbNets(object):
             return edb_net
 
     @pyedb_function_handler()
+    def delete_nets(self, netlist):
+        """Delete one or more nets from EDB.
+
+        .. deprecated:: 0.6.62
+           Use :func:`delete` method instead.
+
+        Parameters
+        ----------
+        netlist : str or list
+            One or more nets to delete.
+
+        Returns
+        -------
+        list
+            List of nets that were deleted.
+
+        Examples
+        --------
+
+        >>> deleted_nets = edb_core.nets.delete(["Net1","Net2"])
+        """
+        warnings.warn("Use :func:`delete` method instead.", DeprecationWarning)
+        return self.delete(netlist=netlist)
+
+    @pyedb_function_handler()
     def delete(self, netlist):
         """Delete one or more nets from EDB.
 

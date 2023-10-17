@@ -1,4 +1,4 @@
-from ipc2581.ecad.spec import Spec
+from pyedb.ipc2581.ecad.spec import Spec
 from pyedb.generic.general_methods import ET
 
 

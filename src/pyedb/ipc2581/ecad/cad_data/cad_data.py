@@ -1,6 +1,6 @@
-from ipc2581.ecad.cad_data.layer import Layer
-from ipc2581.ecad.cad_data.stackup import Stackup
-from ipc2581.ecad.cad_data.step import Step
+from pyedb.ipc2581.ecad.cad_data.layer import Layer
+from pyedb.ipc2581.ecad.cad_data.stackup import Stackup
+from pyedb.ipc2581.ecad.cad_data.step import Step
 from pyedb.generic.general_methods import ET
 
 
