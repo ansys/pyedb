@@ -3,14 +3,15 @@ import os
 import re
 import sys
 
-from pyedb.aedt_logger import pyaedt_logger
+from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import ET
 from pyedb.generic.general_methods import env_path
 from pyedb.generic.general_methods import env_value
 from pyedb.generic.general_methods import is_ironpython
 from pyedb.generic.general_methods import is_linux
-from pyedb.generic.general_methods import pyaedt_function_handler
-from pyedb.misc import list_installed_ansysem
+from pyedb.generic.general_methods import pyedb_function_handler
+
+from pyedb.misc.misc import list_installed_ansysem
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 
 if is_linux and is_ironpython:
@@ -19,7 +20,7 @@ else:
     import subprocess
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def convert_technology_file(tech_file, edbversion=None, control_file=None):
     """Convert a technology file to edb control file (xml).
 
@@ -1231,7 +1232,7 @@ class ControlFile:
                                                 )
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def write_xml(self, xml_output):
         """Write xml to output file
 

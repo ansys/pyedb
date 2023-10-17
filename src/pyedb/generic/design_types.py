@@ -1,5 +1,6 @@
 import re
 import sys
+import os
 
 
 # lazy imports
@@ -81,19 +82,35 @@ def Edb(
     >>> app = Edb("/path/to/file/myfile.gds")
 
     """
-    from pyedb.edb import Edb as app
 
-    return app(
-        edbpath=edbpath,
-        cellname=cellname,
-        isreadonly=isreadonly,
-        edbversion=edbversion,
-        isaedtowned=isaedtowned,
-        oproject=oproject,
-        student_version=student_version,
-        use_ppe=use_ppe,
-        technology_file=technology_file,
-    )
+    # Use EDB legacy
+    if bool(os.getenv("PYEDB_USE_LEGACY", "0")):
+        from pyedb.legacy.edb import EdbLegacy as app
+        return app(
+                edbpath=edbpath,
+                cellname=cellname,
+                isreadonly=isreadonly,
+                edbversion=edbversion,
+                isaedtowned=isaedtowned,
+                oproject=oproject,
+                student_version=student_version,
+                use_ppe=use_ppe,
+                technology_file=technology_file,
+            )
+    # TODO: Use EDB gRPC
+    else:
+        from pyedb.edb import Edb as app
+        return app(
+            edbpath=edbpath,
+            cellname=cellname,
+            isreadonly=isreadonly,
+            edbversion=edbversion,
+            isaedtowned=isaedtowned,
+            oproject=oproject,
+            student_version=student_version,
+            use_ppe=use_ppe,
+            technology_file=technology_file,
+        )
 
 
 app_map = {"EDB": Edb}

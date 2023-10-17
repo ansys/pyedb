@@ -18,7 +18,7 @@ from pyaedt.edb_core.edb_data.layer_data import StackupLayerEdbClass
 from pyaedt.edb_core.general import convert_py_list_to_net_list
 from pyaedt.generic.general_methods import ET
 from pyaedt.generic.general_methods import is_ironpython
-from pyaedt.generic.general_methods import pyaedt_function_handler
+from pyaedt.generic.general_methods import pyedb_function_handler
 from pyaedt.misc.aedtlib_personalib_install import write_pretty_xml
 
 pd = None
@@ -87,7 +87,7 @@ class Stackup(object):
         """
         return len(list(self.stackup_layers.keys()))
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _int_to_layer_types(self, val):
         if int(val) == 0:
             return self.layer_types.SignalLayer
@@ -128,7 +128,7 @@ class Stackup(object):
         elif int(val) == -1:
             return self.layer_types.UndefinedLayerType
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _layer_types_to_int(self, layer_type):
         if not isinstance(layer_type, int):
             if layer_type == self.layer_types.SignalLayer:
@@ -166,7 +166,7 @@ class Stackup(object):
         elif isinstance(layer_type, int):
             return
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_symmetric_stackup(
         self,
         layer_count,
@@ -288,7 +288,7 @@ class Stackup(object):
             )
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def refresh_layer_collection(self):
         """Refresh layer collection from Edb. This method is run on demand after all edit operations on stackup."""
         lc_readonly = self._pedb.layout.layer_collection
@@ -523,7 +523,7 @@ class Stackup(object):
         self.refresh_layer_collection()
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _create_stackup_layer(self, layer_name, thickness, layer_type="signal"):
         if layer_type == "signal":
             _layer_type = self._pedb.edb_api.cell.layer_type.SignalLayer
@@ -540,7 +540,7 @@ class Stackup(object):
         self.refresh_layer_collection()
         return result
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _create_nonstackup_layer(self, layer_name, layer_type):
         if layer_type == "conducting":  # pragma: no cover
             _layer_type = self._pedb.edb_api.cell.layer_type.ConductingLayer
@@ -579,7 +579,7 @@ class Stackup(object):
         self.refresh_layer_collection()
         return result
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_outline_layer(self, outline_name="Outline"):
         """Add an outline layer named ``"Outline"`` if it is not present.
 
@@ -600,7 +600,7 @@ class Stackup(object):
         else:
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_layer(
         self,
         layer_name,
@@ -717,7 +717,7 @@ class Stackup(object):
         self.refresh_layer_collection()
         return True
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def export(self, fpath, file_format="xml", include_material_with_layer=False):
         """Export stackup definition to a CSV or JSON file.
 
@@ -754,7 +754,7 @@ class Stackup(object):
             self._logger.warning("Layer stackup format is not supported. Skipping import.")
             return False
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def export_stackup(self, fpath, file_format="xml", include_material_with_layer=False):
         """Export stackup definition to a CSV or JSON file.
 
@@ -783,7 +783,7 @@ class Stackup(object):
         self._logger.warning("Method export_stackup is deprecated. Use .export.")
         return self.export(fpath, file_format=file_format, include_material_with_layer=include_material_with_layer)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _export_layer_stackup_to_csv_xlsx(self, fpath=None, file_format=None):
         if not pd:
             self._pedb.logger.error("Pandas is needed. Please, install it first.")
@@ -814,7 +814,7 @@ class Stackup(object):
             df.to_excel(fpath)
         return True
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def _export_layer_stackup_to_json(self, output_file=None, include_material_with_layer=False):
         if not include_material_with_layer:
             material_out = {}
@@ -845,7 +845,7 @@ class Stackup(object):
         else:
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _import_layer_stackup(self, input_file=None):
         if input_file:
             f = open(input_file)
@@ -891,7 +891,7 @@ class Stackup(object):
             self.refresh_layer_collection()
             return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def stackup_limits(self, only_metals=False):
         """Retrieve stackup limits.
 
@@ -911,7 +911,7 @@ class Stackup(object):
         warnings.warn("`stackup_limits` is deprecated. Use `limits` property instead.", DeprecationWarning)
         return self.limits(only_metals=only_metals)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def limits(self, only_metals=False):
         """Retrieve stackup limits.
 
@@ -933,7 +933,7 @@ class Stackup(object):
         res, topl, topz, bottoml, bottomz = self._layer_collection.GetTopBottomStackupLayers(input_layers)
         return topl.GetName(), topz, bottoml.GetName(), bottomz
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def flip_design(self):
         """Flip the current design of a layout.
 
@@ -1063,7 +1063,7 @@ class Stackup(object):
         except:
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_layout_thickness(self):
         """Return the layout thickness.
 
@@ -1079,14 +1079,14 @@ class Stackup(object):
         thickness = abs(top_layer.upper_elevation - bottom_layer.lower_elevation)
         return round(thickness, 7)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _get_solder_height(self, layer_name):
         for _, val in self._pedb.components.components.items():
             if val.solder_ball_height and val.placement_layer == layer_name:
                 return val.solder_ball_height
         return 0
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _remove_solder_pec(self, layer_name):
         for _, val in self._pedb.components.components.items():
             if val.solder_ball_height and val.placement_layer == layer_name:
@@ -1097,7 +1097,7 @@ class Stackup(object):
                 comp_prop.SetPortProperty(port_property)
                 val.edbcomponent.SetComponentProperty(comp_prop)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def adjust_solder_dielectrics(self):
         """Adjust the stack-up by adding or modifying dielectric layers that contains Solder Balls.
         This method identifies the solder-ball height and adjust the dielectric thickness on top (or bottom) to fit
@@ -1134,7 +1134,7 @@ class Stackup(object):
                     list(self.stackup_layers.values())[0].thickness = val.solder_ball_height
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def place_in_layout(
         self,
         edb,
@@ -1228,7 +1228,7 @@ class Stackup(object):
         self.refresh_layer_collection()
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def place_in_layout_3d_placement(
         self,
         edb,
@@ -1361,7 +1361,7 @@ class Stackup(object):
         self.refresh_layer_collection()
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def place_instance(
         self,
         component_edb,
@@ -1513,7 +1513,7 @@ class Stackup(object):
         self.refresh_layer_collection()
         return cell_inst2
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def place_a3dcomp_3d_placement(
         self,
         a3dcomp_path,
@@ -1602,7 +1602,7 @@ class Stackup(object):
         self.refresh_layer_collection()
         return True
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def residual_copper_area_per_layer(self):
         """Report residual copper area per layer in percentage.
 
@@ -1632,7 +1632,7 @@ class Stackup(object):
         temp_data = {name: area / outline_area * 100 for name, area in temp_data.items()}
         return temp_data
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def _import_json(self, file_path):
         if file_path:
             f = open(file_path)
@@ -1677,7 +1677,7 @@ class Stackup(object):
                             self.stackup_layers[layer["name"]]._load_layer(layer)
             return True
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def _import_csv(self, file_path):
         """Import stackup defnition from a CSV file.
 
@@ -1723,7 +1723,7 @@ class Stackup(object):
         self.refresh_layer_collection()
         return True
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def _set(self, layers=None, materials=None, roughness=None, non_stackup_layers=None):
         """Update stackup information.
 
@@ -1851,7 +1851,7 @@ class Stackup(object):
 
         return True
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def _get(self):
         """Get stackup information from layout.
 
@@ -1923,7 +1923,7 @@ class Stackup(object):
 
         return layers, materials, roughness_models, non_stackup_layers
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _add_materials_from_dictionary(self, material_dict):
         mat_keys = [i.lower() for i in self._pedb.materials.materials.keys()]
         mat_keys_case = [i for i in self._pedb.materials.materials.keys()]
@@ -1946,7 +1946,7 @@ class Stackup(object):
                     local_material.loss_tanget = attr["DielectricLossTangent"]
         return True
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def _import_xml(self, file_path):
         """Read external xml file and update stackup.
         1, all existing layers must exist in xml file.
@@ -2017,7 +2017,7 @@ class Stackup(object):
         self.refresh_layer_collection()
         return True
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def _export_xml(self, file_path):
         """Export stackup information to an external XMLfile.
 
@@ -2067,7 +2067,7 @@ class Stackup(object):
         write_pretty_xml(root, file_path)
         return True
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def load(self, file_path):
         """Import stackup from a file. The file format can be XML, CSV, or JSON.
 
@@ -2097,7 +2097,7 @@ class Stackup(object):
         else:
             return False
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def import_stackup(self, file_path):
         """Import stackup from a file. The file format can be XML, CSV, or JSON.
 
@@ -2123,7 +2123,7 @@ class Stackup(object):
         self._logger.warning("Method export_stackup is deprecated. Use .export.")
         return self.load(file_path)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def plot(
         self,
         save_plot=None,

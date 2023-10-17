@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 import re
 
-from pyedb import pyaedt_function_handler
+from pyedb import pyedb_function_handler
 
 
 class LayerEdbClass(object):
@@ -413,7 +413,7 @@ class StackupLayerEdbClass(LayerEdbClass):
     def side_hallhuray_surface_ratio(self, value):
         self._side_hallhuray_surface_ratio = value
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_roughness_model(self, surface="top"):
         """Get roughness model of the layer.
 
@@ -436,7 +436,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         elif surface == "side":
             return self._edb_layer.GetRoughnessModel(self._pclass._pedb.edb_api.Cell.RoughnessModel.Region.Side)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def assign_roughness_model(
         self,
         model_type="huray",
@@ -500,7 +500,7 @@ class StackupLayerEdbClass(LayerEdbClass):
             layer_clone.SetRoughnessModel(r, model)
         return self._pclass._set_layout_stackup(layer_clone, "change_attribute")
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _json_format(self):
         dict_out = {}
         self._color = self.color

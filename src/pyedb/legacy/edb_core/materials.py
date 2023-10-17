@@ -7,9 +7,10 @@ import os
 import warnings
 
 from pyedb import is_ironpython
-from pyedb.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.clr_module import _clr
-from pyedb.generic.general_methods import pyaedt_function_handler
+from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
+from pyedb.legacy.generic.clr_module import _clr
+from pyedb.generic.general_methods import pyedb_function_handler
+
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ class Material(object):
     def _edb(self):
         return self._pclass._edb
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _get_property(self, property_name):
         if is_ironpython:  # pragma: no cover
             property_box = _clr.StrongBox[float]()
@@ -268,7 +269,7 @@ class Material(object):
         self._edb_material_def.SetProperty(material_id, self._edb_value(value))
         self._thermal_expansion_coefficient = value
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _json_format(self):
         out_dict = {}
         if self.permittivity == 0:  # pragma no cover
@@ -297,7 +298,7 @@ class Material(object):
                 out_dict[k[1:]] = v
         return out_dict
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _load(self, input_dict):
         default_material = {
             "name": "default",
@@ -399,7 +400,7 @@ class Materials(object):
         self._personal_lib = value
         self._materials_in_aedt = self._read_materials()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _edb_value(self, value):
         return self._pedb.edb_value(value)
 
@@ -416,7 +417,7 @@ class Materials(object):
         """Retrieve dictionary of material from material library."""
         return {obj.GetName(): Material(self, obj) for obj in list(self._db.MaterialDefs)}
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def add_material(
         self,
         name="air",
@@ -460,7 +461,7 @@ class Materials(object):
             warnings.warn("Material {} already exists in material library.".format(name))
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_conductor_material(self, name, conductivity):
         """Add a new conductor material in library.
 
@@ -487,7 +488,7 @@ class Materials(object):
             warnings.warn("Material {} already exists in material library.".format(name))
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_dielectric_material(self, name, permittivity, loss_tangent, permeability=1):
         """Add a new dielectric material in library.
 
@@ -517,7 +518,7 @@ class Materials(object):
             warnings.warn("Material {} already exists in material library.".format(name))
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_djordjevicsarkar_model(self, material_name=None):
         """Djordjevic-Sarkar model if present.
 
@@ -533,7 +534,7 @@ class Materials(object):
         if material:
             return material.GetDielectricMaterialModel()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_djordjevicsarkar_material(
         self, name, permittivity, loss_tangent, test_frequency, dc_permittivity=None, dc_conductivity=None
     ):
@@ -570,7 +571,7 @@ class Materials(object):
             material_def.SetDCRelativePermitivity(dc_permittivity)
         return self._add_dielectric_material_model(name, material_def)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_debye_material(
         self,
         name,
@@ -617,7 +618,7 @@ class Materials(object):
         )
         return self._add_dielectric_material_model(name, material_def)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_multipole_debye_material(
         self,
         name,
@@ -663,7 +664,7 @@ class Materials(object):
         )
         return self._add_dielectric_material_model(name, material_def)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _add_dielectric_material_model(self, name, material_model):
         if self._edb.definition.MaterialDef.FindByName(self._db, name).IsNull():
             self._edb.definition.MaterialDef.Create(self._db, name)
@@ -673,7 +674,7 @@ class Materials(object):
             return material_def
         return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def duplicate(self, material_name, new_material_name):
         """Duplicate a material from the database.
 
@@ -732,7 +733,7 @@ class Materials(object):
 
             return edb_material
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _load_materials(self, material=None):
         if self.materials:
             mat_keys = [i.lower() for i in self.materials.keys()]
@@ -752,7 +753,7 @@ class Materials(object):
         else:
             self.materials[mat_keys_case[mat_keys.index(material["name"].lower())]]._load(material)
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def material_name_to_id(self, property_name):
         """Convert a material property name to a material property ID.
 
@@ -786,7 +787,7 @@ class Materials(object):
         else:
             return self._edb.definition.MaterialPropertyId.InvalidProperty
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_property_by_material_name(self, property_name, material_name):
         """Get the property of a material. If it is executed in IronPython,
          you must only use the first element of the returned tuple, which is a float.
@@ -836,7 +837,7 @@ class Materials(object):
                     return property_box.ToDouble()
         return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def add_material_from_aedt(self, material_name):
         """Add a material read from ``syslib amat`` library.
 
@@ -886,7 +887,7 @@ class Materials(object):
                 pass
             return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def load_amat(self, amat_file):
         """Load material from an amat file and add materials to Edb.
 
@@ -929,7 +930,7 @@ class Materials(object):
                     pass
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _read_materials(self, mat_file=None):
         def get_mat_list(file_name, mats):
             from pyedb.generic.LoadAEDTFile import load_entire_aedt_file

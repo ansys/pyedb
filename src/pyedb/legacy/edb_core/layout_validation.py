@@ -1,7 +1,10 @@
-from pyedb.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.edb_core.edb_data.primitives_data import EDBPrimitives
+import re
+
+from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitives
 from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyaedt_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
+
 
 
 class LayoutValidation:
@@ -10,7 +13,7 @@ class LayoutValidation:
     def __init__(self, pedb):
         self._pedb = pedb
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def dc_shorts(self, net_list=None, fix=False):
         """Find DC shorts on layout.
 
@@ -91,7 +94,7 @@ class LayoutValidation:
                             i.net = temp_name
         return dc_shorts
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def disjoint_nets(
         self, net_list=None, keep_only_main_net=False, clean_disjoints_less_than=0.0, order_by_area=False
     ):
@@ -211,3 +214,21 @@ class LayoutValidation:
         self._pedb._logger.info_timer("Disjoint Cleanup Completed.", timer_start)
 
         return new_nets
+
+
+    def illegal_net_names(self, fix=False):
+        """Find and fix illegal net names."""
+        pattern = r"[\(\)\\\/:;*?<>\'\"|`~$]"
+
+        nets = self._pedb.nets.nets
+
+        renamed_nets = []
+        for net, val in nets.items():
+            if re.findall(pattern, net):
+                renamed_nets.append(net)
+                if fix:
+                    new_name = re.sub(pattern, "_", net)
+                    val.name = new_name
+
+        self._pedb._logger.info("Found {} illegal net names.".format(len(renamed_nets)))
+        return

@@ -233,7 +233,7 @@ def _function_handler_wrapper(user_function):
     return wrapper
 
 
-def pyaedt_function_handler(direct_func=None):
+def pyedb_function_handler(direct_func=None):
     """Provides an exception handler, logging mechanism, and argument converter for client-server
     communications.
 
@@ -255,7 +255,7 @@ def pyaedt_function_handler(direct_func=None):
     return decorating_function
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def check_numeric_equivalence(a, b, relative_tolerance=1e-7):
     """Check if two numeric values are equivalent to within a relative tolerance.
 
@@ -281,7 +281,7 @@ def check_numeric_equivalence(a, b, relative_tolerance=1e-7):
     return True if reldiff < relative_tolerance else False
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def check_and_download_file(local_path, remote_path, overwrite=True):
     """Check if a file is remote and either download it or return the path.
 
@@ -323,7 +323,7 @@ def check_if_path_exists(path):
     return os.path.exists(path)
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def check_and_download_folder(local_path, remote_path, overwrite=True):
     """Check if a folder is remote and either download it or return the path.
 
@@ -423,7 +423,7 @@ def _log_method(func, new_args, new_kwargs):
         settings.logger.debug(m)
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def get_version_and_release(input_version):
     version = int(input_version[2:4])
     release = int(input_version[5])
@@ -435,7 +435,7 @@ def get_version_and_release(input_version):
     return (version, release)
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def get_string_version(input_version):
     output_version = input_version
     if isinstance(input_version, float):
@@ -453,7 +453,7 @@ def get_string_version(input_version):
     return output_version
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def env_path(input_version):
     """Get the path of the version environment variable for an AEDT version.
 
@@ -480,7 +480,7 @@ def env_path(input_version):
     )
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def env_value(input_version):
     """Get the name of the version environment variable for an AEDT version.
 
@@ -504,7 +504,7 @@ def env_value(input_version):
     )
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def env_path_student(input_version):
     """Get the path of the version environment variable for an AEDT student version.
 
@@ -531,7 +531,7 @@ def env_path_student(input_version):
     )
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def env_value_student(input_version):
     """Get the name of the version environment variable for an AEDT student version.
 
@@ -555,7 +555,7 @@ def env_value_student(input_version):
     )
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def get_filename_without_extension(path):
     """Get the filename without its extension.
 
@@ -574,7 +574,7 @@ def get_filename_without_extension(path):
     return os.path.splitext(os.path.split(path)[1])[0]
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def generate_unique_name(rootname, suffix="", n=6):
     """Generate a new name given a root name and optional suffix.
 
@@ -601,7 +601,7 @@ def generate_unique_name(rootname, suffix="", n=6):
     return unique_name
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def generate_unique_folder_name(rootname=None, folder_name=None):
     """Generate a new AEDT folder name given a rootname.
 
@@ -632,7 +632,7 @@ def generate_unique_folder_name(rootname=None, folder_name=None):
     return temp_folder
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def generate_unique_project_name(rootname=None, folder_name=None, project_name=None, project_format="aedt"):
     """Generate a new AEDT project name given a rootname.
 
@@ -769,7 +769,7 @@ def is_project_locked(project_path):
     return check_if_path_exists(project_path + ".lock")
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def remove_project_lock(project_path):
     """Check if an AEDT project exists and try to remove the lock file.
 
@@ -791,7 +791,7 @@ def remove_project_lock(project_path):
     return True
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def read_csv(filename, encoding="utf-8"):
     """Read information from a CSV file and return a list.
 
@@ -816,7 +816,7 @@ def read_csv(filename, encoding="utf-8"):
     return lines
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def read_csv_pandas(filename, encoding="utf-8"):
     """Read information from a CSV file and return a list.
 
@@ -841,7 +841,7 @@ def read_csv_pandas(filename, encoding="utf-8"):
         return None
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def read_tab(filename):
     """Read information from a TAB file and return a list.
 
@@ -860,7 +860,7 @@ def read_tab(filename):
     return lines
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def read_xlsx(filename):
     """Read information from an XLSX file and return a list.
 
@@ -884,7 +884,7 @@ def read_xlsx(filename):
         return lines
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL):
     if is_ironpython:
         f = open(output, "wb")
@@ -897,7 +897,7 @@ def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE
     return True
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def filter_tuple(value, search_key1, search_key2):
     """Filter a tuple of two elements with two search keywords."""
     ignore_case = True
@@ -921,7 +921,7 @@ def filter_tuple(value, search_key1, search_key2):
     return False
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def filter_string(value, search_key1):
     """Filter a string"""
     ignore_case = True
@@ -943,7 +943,7 @@ def filter_string(value, search_key1):
     return False
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def recursive_glob(startpath, filepattern):
     """Get a list of files matching a pattern, searching recursively from a start path.
 
@@ -968,7 +968,7 @@ def recursive_glob(startpath, filepattern):
         ]
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def number_aware_string_key(s):
     """Get a key for sorting strings that treats embedded digit sequences as integers.
 
@@ -1006,7 +1006,7 @@ def number_aware_string_key(s):
     return tuple(result)
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def _create_json_file(json_dict, full_json_path):
     if not os.path.exists(os.path.dirname(full_json_path)):
         os.makedirs(os.path.dirname(full_json_path))
@@ -1027,7 +1027,7 @@ def _create_json_file(json_dict, full_json_path):
     return True
 
 
-# @pyaedt_function_handler()
+# @pyedb_function_handler()
 # def com_active_sessions(version=None, student_version=False, non_graphical=False):
 #     """Get information for the active COM AEDT sessions.
 #
@@ -1076,7 +1076,7 @@ def _create_json_file(json_dict, full_json_path):
 #     return sessions
 #
 #
-# @pyaedt_function_handler()
+# @pyedb_function_handler()
 # def grpc_active_sessions(version=None, student_version=False, non_graphical=False):
 #     """Get information for the active gRPC AEDT sessions.
 #
@@ -1184,7 +1184,7 @@ def _create_json_file(json_dict, full_json_path):
 #     return sessions
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def active_sessions(version=None, student_version=False, non_graphical=False):
     """Get information for the active AEDT sessions.
 
@@ -1237,7 +1237,7 @@ def active_sessions(version=None, student_version=False, non_graphical=False):
     return return_dict
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def com_active_sessions(version=None, student_version=False, non_graphical=False):
     """Get information for the active COM AEDT sessions.
 
@@ -1267,7 +1267,7 @@ def com_active_sessions(version=None, student_version=False, non_graphical=False
     return return_list
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def grpc_active_sessions(version=None, student_version=False, non_graphical=False):
     """Get information for the active gRPC AEDT sessions.
 
@@ -1296,7 +1296,7 @@ def grpc_active_sessions(version=None, student_version=False, non_graphical=Fals
     return return_list
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def compute_fft(time_vals, value):  # pragma: no cover
     """Compute FFT of input transient data.
 
@@ -1531,7 +1531,7 @@ class PropsManager(object):
             self.update()
             self._app.logger.warning("Key %s not found. Trying to applying new key ", key)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _recursive_search(self, dict_in, key="", matching_percentage=0.8):
         f = difflib.get_close_matches(key, list(dict_in.keys()), 1, matching_percentage)
         if f:
@@ -1549,7 +1549,7 @@ class PropsManager(object):
                             return out_val
         return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _recursive_list(self, dict_in, prefix=""):
         available_list = []
         for k, v in dict_in.items():
@@ -1574,7 +1574,7 @@ class PropsManager(object):
             return self._recursive_list(self.props)
         return []
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def update(self):
         """Update method."""
         pass
@@ -1603,7 +1603,7 @@ rgb_color_codes = {
 }
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def _arg2dict(arg, dict_out):
     if arg[0] == "NAME:DimUnits" or "NAME:Point" in arg[0]:
         if arg[0][5:] in dict_out:
@@ -1675,7 +1675,7 @@ def _uname(name=None):
         return "NewObject_" + unique_name
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def _to_boolean(val):
     """Retrieve the Boolean value of the provided input.
 
@@ -1703,7 +1703,7 @@ def _to_boolean(val):
     return not str(val).strip().lower() in false_items
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def _dim_arg(value, units):
     """Concatenate a specified units string to a numerical input.
 
@@ -1728,7 +1728,7 @@ def _dim_arg(value, units):
         return value
 
 
-@pyaedt_function_handler()
+@pyedb_function_handler()
 def _check_installed_version(install_path, long_version):
     """Check installation folder to determine if it is for specified Ansys EM version.
 
@@ -1878,17 +1878,17 @@ class Help:  # pragma: no cover
 
 # class Property(property):
 #
-#     @pyaedt_function_handler()
+#     @pyedb_function_handler()
 #     def getter(self, fget):
 #         """Property getter."""
 #         return self.__class__.__base__(fget, self.fset, self.fdel, self.__doc__)
 #
-#     @pyaedt_function_handler()
+#     @pyedb_function_handler()
 #     def setter(self, fset):
 #         """Property setter."""
 #         return self.__class__.__base__(self.fget, fset, self.fdel, self.__doc__)
 #
-#     @pyaedt_function_handler()
+#     @pyedb_function_handler()
 #     def deleter(self, fdel):
 #         """Property deleter."""
 #         return self.__class__.__base__(self.fget, self.fset, fdel, self.__doc__)

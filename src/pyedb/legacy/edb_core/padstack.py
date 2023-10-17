@@ -4,12 +4,13 @@ This module contains the `EdbPadstacks` class.
 import math
 import warnings
 
-from pyedb.edb_core.edb_data.padstacks_data import EDBPadstack
-from pyedb.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.clr_module import Array
+from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstack
+from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
+from pyedb.legacy.generic.clr_module import Array
 from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyaedt_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
+
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -23,7 +24,7 @@ class EdbPadstacks(object):
     >>> edb_padstacks = edbapp.padstacks
     """
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def __getitem__(self, name):
         """Get  a padstack definition or instance from the Edb project.
 
@@ -83,7 +84,7 @@ class EdbPadstacks(object):
         """ """
         return self._pedb.stackup.stackup_layers
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def int_to_pad_type(self, val=0):
         """Convert an integer to an EDB.PadGeometryType.
 
@@ -110,7 +111,7 @@ class EdbPadstacks(object):
         else:
             return val
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def int_to_geometry_type(self, val=0):
         """Convert an integer to an EDB.PadGeometryType.
 
@@ -285,7 +286,7 @@ class EdbPadstacks(object):
 
         return PadType
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_circular_padstack(
         self,
         padstackname=None,
@@ -387,7 +388,7 @@ class EdbPadstacks(object):
                 )
         PadStack.SetData(new_PadStackData)
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def delete_padstack_instances(self, net_names):  # pragma: no cover
         """Delete padstack instances by net names.
 
@@ -415,7 +416,7 @@ class EdbPadstacks(object):
                     return False
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def set_solderball(self, padstackInst, sballLayer_name, isTopPlaced=True, ballDiam=100e-6):
         """Set solderball for the given PadstackInstance.
 
@@ -458,7 +459,7 @@ class EdbPadstacks(object):
 
         return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_coax_port(self, padstackinstance, use_dot_separator=True, name=None):
         """Create HFSS 3Dlayout coaxial lumped port on a pastack
         Requires to have solder ball defined before calling this method.
@@ -520,11 +521,11 @@ class EdbPadstacks(object):
             return port_name
         return ""
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _port_exist(self, port_name):
         return any(port for port in list(self._pedb.excitations.keys()) if port == port_name)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_pinlist_from_component_and_net(self, refdes=None, netname=None):
         """Retrieve pins given a component's reference designator and net name.
 
@@ -561,7 +562,7 @@ class EdbPadstacks(object):
 
         return pinlist
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_pad_parameters(self, pin, layername, pad_type=0):
         """Get Padstack Parameters from Pin or Padstack Definition.
 
@@ -617,7 +618,7 @@ class EdbPadstacks(object):
                 return geometry_type, parameters, offset_x, offset_y, rotation
             return 0, [0], 0, 0, 0
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def set_all_antipad_value(self, value):
         """Set all anti-pads from all pad-stack definition to the given value.
 
@@ -666,7 +667,7 @@ class EdbPadstacks(object):
                 padstack.edb_padstack.SetData(cloned_padstack_data)
             return all_succeed
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def check_and_fix_via_plating(self, minimum_value_to_replace=0.0, default_plating_ratio=0.2):
         """Check for minimum via plating ration value, values found below the minimum one are replaced by default
         plating ratio.
@@ -692,7 +693,7 @@ class EdbPadstacks(object):
                 )
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_via_instance_from_net(self, net_list=None):
         """Get the list for EDB vias from a net name list.
 
@@ -723,7 +724,7 @@ class EdbPadstacks(object):
                     via_list.append(lobj)
         return via_list
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create_padstack(
         self,
         padstackname=None,
@@ -805,7 +806,7 @@ class EdbPadstacks(object):
             pad_rotation=pad_rotation,
         )
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def create(
         self,
         padstackname=None,
@@ -974,7 +975,7 @@ class EdbPadstacks(object):
         self._logger.info("Padstack %s create correctly", padstackname)
         return padstackname
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def _get_pin_layer_range(self, pin):
         res, fromlayer, tolayer = pin.GetLayerRange()
         if res:
@@ -982,7 +983,7 @@ class EdbPadstacks(object):
         else:
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def duplicate_padstack(self, target_padstack_name, new_padstack_name=""):
         """Duplicate a padstack.
 
@@ -1003,7 +1004,7 @@ class EdbPadstacks(object):
         warnings.warn("Use :func:`create` method instead.", DeprecationWarning)
         return self.duplicate(target_padstack_name=target_padstack_name, new_padstack_name=new_padstack_name)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def duplicate(self, target_padstack_name, new_padstack_name=""):
         """Duplicate a padstack.
 
@@ -1029,7 +1030,7 @@ class EdbPadstacks(object):
 
         return new_padstack_name
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def place(
         self,
         position,
@@ -1116,7 +1117,7 @@ class EdbPadstacks(object):
         else:
             return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def place_padstack(
         self,
         position,
@@ -1171,7 +1172,7 @@ class EdbPadstacks(object):
             is_pin=is_pin,
         )
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def remove_pads_from_padstack(self, padstack_name, layer_name=None):
         """Remove the Pad from a padstack on a specific layer by setting it as a 0 thickness circle.
 
@@ -1204,7 +1205,7 @@ class EdbPadstacks(object):
         self.definitions[padstack_name].edb_padstack.SetData(newPadstackDefinitionData)
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def set_pad_property(
         self,
         padstack_name,
@@ -1306,7 +1307,7 @@ class EdbPadstacks(object):
         self.definitions[padstack_name].edb_padstack.SetData(new_padstack_def)
         return True
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_padstack_instance_by_net_name(self, net_name):
         """Get a list of padstack instances by net name.
 
@@ -1325,7 +1326,7 @@ class EdbPadstacks(object):
                 padstack_instances.append(inst)
         return padstack_instances
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_reference_pins(
         self, positive_pin, reference_net="gnd", search_radius=5e-3, max_limit=0, component_only=True
     ):

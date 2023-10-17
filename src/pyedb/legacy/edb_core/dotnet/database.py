@@ -4,15 +4,15 @@ import re
 import sys
 
 from pyedb import __version__
-from pyedb.aedt_logger import pyaedt_logger
-from pyedb.edb_core.general import convert_py_list_to_net_list
+from pyedb.edb_logger import pyedb_logger
+from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import env_path
 from pyedb.generic.general_methods import env_path_student
 from pyedb.generic.general_methods import env_value
 from pyedb.generic.general_methods import is_ironpython
 from pyedb.generic.general_methods import is_linux
 from pyedb.generic.general_methods import settings
-from pyedb.misc import list_installed_ansysem
+from pyedb.misc.misc import list_installed_ansysem
 
 
 class HierarchyDotNet:
@@ -79,6 +79,39 @@ class PolygonDataDotNet:  # pragma: no cover
     def arcs(self):  # pragma: no cover
         """List of Edb.Geometry.ArcData."""
         return list(self.edb_api.GetArcData())
+
+    def get_points(self):
+        """Get all points in polygon.
+        Returns
+        -------
+        list[list[edb_value]]
+        """
+
+        return [[self._pedb.edb_value(i.X), self._pedb.edb_value(i.Y)] for i in list(self.edb_api.Points)]
+
+    def add_point(self, x, y, incremental=False):
+        """Add a point at the end of the point list of the polygon.
+        Parameters
+        ----------
+        x: str, int, float
+            X coordinate.
+        y: str, in, float
+            Y coordinate.
+        incremental: bool
+            Whether to add the point incrementally. The default value is ``False``. When
+            ``True``, the coordinates of the added point are incremental to the last point.
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        if incremental:
+            x = self._pedb.edb_value(x)
+            y = self._pedb.edb_value(y)
+            last_point = self.get_points()[-1]
+            x = "({})+({})".format(x, last_point[0].ToString())
+            y = "({})+({})".format(y, last_point[1].ToString())
+        return self.edb_api.AddPoint(GeometryDotNet(self._pedb).point_data(x, y))
 
     def get_bbox_of_boxes(self, points):
         """Get the EDB .NET API ``Edb.Geometry.GetBBoxOfBoxes`` database.
@@ -443,7 +476,7 @@ class CellClassDotNet:
     @property
     def primitive(self):
         """Edb Dotnet Api Database `Edb.Cell.Primitive`."""
-        from pyedb.edb_core.dotnet.primitive import PrimitiveDotNet
+        from pyedb.legacy.edb_core.dotnet.primitive import PrimitiveDotNet
 
         return PrimitiveDotNet(self._app)
 
@@ -649,8 +682,8 @@ class EdbDotNet(object):
     """Edb Dot Net Class."""
 
     def __init__(self, edbversion, student_version=False):
-        self._global_logger = pyaedt_logger
-        self._logger = pyaedt_logger
+        self._global_logger = pyedb_logger
+        self._logger = pyedb_logger
         if not edbversion:  # pragma: no cover
             try:
                 edbversion = "20{}.{}".format(list_installed_ansysem()[0][-3:-1], list_installed_ansysem()[0][-1:])
@@ -660,8 +693,8 @@ class EdbDotNet(object):
         self.edbversion = edbversion
         self.student_version = student_version
         """Initialize DLLs."""
-        from pyedb.generic.clr_module import _clr
-        from pyedb.generic.clr_module import edb_initialized
+        from pyedb.legacy.generic.clr_module import _clr
+        from pyedb.legacy.generic.clr_module import edb_initialized
 
         if settings.enable_screen_logs:
             self.logger.enable_stdout_log()

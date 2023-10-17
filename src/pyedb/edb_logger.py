@@ -7,7 +7,7 @@ import sys
 import tempfile
 import time
 
-from generic.settings import settings
+from pyedb.generic.settings import settings
 
 
 class Msg:

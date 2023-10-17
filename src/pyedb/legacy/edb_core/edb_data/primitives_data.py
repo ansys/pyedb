@@ -1,14 +1,15 @@
 import math
 
-from pyedb.edb_core.dotnet.primitive import BondwireDotNet
-from pyedb.edb_core.dotnet.primitive import CircleDotNet
-from pyedb.edb_core.dotnet.primitive import PathDotNet
-from pyedb.edb_core.dotnet.primitive import PolygonDotNet
-from pyedb.edb_core.dotnet.primitive import RectangleDotNet
-from pyedb.edb_core.dotnet.primitive import TextDotNet
-from pyedb.edb_core.edb_data.connectable import Connectable
-from pyedb.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import pyaedt_function_handler
+from pyedb.legacy.edb_core.dotnet.primitive import BondwireDotNet
+from pyedb.legacy.edb_core.dotnet.primitive import CircleDotNet
+from pyedb.legacy.edb_core.dotnet.primitive import PathDotNet
+from pyedb.legacy.edb_core.dotnet.primitive import PolygonDataDotNet
+from pyedb.legacy.edb_core.dotnet.primitive import PolygonDotNet
+from pyedb.legacy.edb_core.dotnet.primitive import RectangleDotNet
+from pyedb.legacy.edb_core.dotnet.primitive import TextDotNet
+from pyedb.legacy.edb_core.edb_data.connectable import Connectable
+from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
+from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -171,7 +172,7 @@ class EDBPrimitives(EDBPrimitivesMain):
     def __init__(self, raw_primitive, core_app):
         EDBPrimitivesMain.__init__(self, raw_primitive, core_app)
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def area(self, include_voids=True):
         """Return the total area.
 
@@ -331,7 +332,7 @@ class EDBPrimitives(EDBPrimitivesMain):
         bbox = self.bbox
         return [(bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2]
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def is_arc(self, point):
         """Either if a point is an arc or not.
 
@@ -341,7 +342,7 @@ class EDBPrimitives(EDBPrimitivesMain):
         """
         return point.IsArc()
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_connected_object_id_set(self):
         """Produce a list of all geometries physically connected to a given layout object.
 
@@ -354,7 +355,7 @@ class EDBPrimitives(EDBPrimitivesMain):
         layoutObjInst = layoutInst.GetLayoutObjInstance(self.primitive_object, None)  # 2nd arg was []
         return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def convert_to_polygon(self):
         """Convert path to polygon.
 
@@ -369,7 +370,7 @@ class EDBPrimitives(EDBPrimitivesMain):
             self.primitive_object.Delete()
             return polygon
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def subtract(self, primitives):
         """Subtract active primitive with one or more primitives.
 
@@ -423,7 +424,7 @@ class EDBPrimitives(EDBPrimitivesMain):
                     continue
         return new_polys
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def intersect(self, primitives):
         """Intersect active primitive with one or more primitives.
 
@@ -508,7 +509,7 @@ class EDBPrimitives(EDBPrimitivesMain):
                     continue
         return new_polys
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def unite(self, primitives):
         """Unite active primitive with one or more primitives.
 
@@ -563,7 +564,7 @@ class EDBPrimitives(EDBPrimitivesMain):
                     continue
         return new_polys
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def intersection_type(self, primitive):
         """Get intersection type between actual primitive and another primitive or polygon data.
 
@@ -588,7 +589,7 @@ class EDBPrimitives(EDBPrimitivesMain):
             pass
         return int(self.polygon_data.edb_api.GetIntersectionType(poly.edb_api))
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def is_intersecting(self, primitive):
         """Check if actual primitive and another primitive or polygon data intesects.
 
@@ -602,7 +603,7 @@ class EDBPrimitives(EDBPrimitivesMain):
         """
         return True if self.intersection_type(primitive) >= 1 else False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_closest_point(self, point):
         """Get the closest point of the primitive to the input data.
 
@@ -620,7 +621,7 @@ class EDBPrimitives(EDBPrimitivesMain):
         p0 = self.polygon_data.edb_api.GetClosestPoint(point)
         return [p0.X.ToDouble(), p0.Y.ToDouble()]
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def get_closest_arc_midpoint(self, point):
         """Get the closest arc midpoint of the primitive to the input data.
 
@@ -715,7 +716,27 @@ class EdbPath(EDBPrimitives, PathDotNet):
                 length += GeometryOperators.points_distance(center_line[pt_ind], center_line[pt_ind + 1])
         return length
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
+    def add_point(self, x, y, incremental=False):
+        """Add a point at the end of the path.
+        Parameters
+        ----------
+        x: str, int, float
+            X coordinate.
+        y: str, in, float
+            Y coordinate.
+        incremental: bool
+            Add point incrementally. If True, coordinates of the added point is incremental to the last point.
+            The default value is ``False``.
+        Returns
+        -------
+        bool
+        """
+        center_line = PolygonDataDotNet(self._pedb, self._edb_object.GetCenterLine())
+        center_line.add_point(x, y, incremental)
+        return self._edb_object.SetCenterLine(center_line.edb_api)
+
+    @pyedb_function_handler()
     def get_center_line(self, to_string=False):
         """Get the center line of the trace.
 
@@ -733,7 +754,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
         else:
             return [[p.X.ToDouble(), p.Y.ToDouble()] for p in list(self.primitive_object.GetCenterLine().Points)]
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def clone(self):
         """Clone a primitive object with keeping same definition and location.
 
@@ -759,8 +780,8 @@ class EdbPath(EDBPrimitives, PathDotNet):
         if cloned_path:
             return cloned_path
 
-    # @pyaedt_function_handler
-    @pyaedt_function_handler
+    # @pyedb_function_handler()
+    @pyedb_function_handler()
     def create_edge_port(
         self,
         name,
@@ -831,7 +852,7 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
         EDBPrimitives.__init__(self, raw_primitive, core_app)
         PolygonDotNet.__init__(self, self._app, raw_primitive)
 
-    @pyaedt_function_handler
+    @pyedb_function_handler()
     def clone(self):
         """Clone a primitive object with keeping same definition and location.
 
@@ -853,7 +874,7 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
             return cloned_poly
         return False
 
-    @pyaedt_function_handler()
+    @pyedb_function_handler()
     def in_polygon(
         self,
         point_data,
@@ -892,7 +913,7 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
         else:
             return False
 
-    # @pyaedt_function_handler()
+    # @pyedb_function_handler()
     # def add_void(self, point_list):
     #     """Add a void to current primitive.
     #

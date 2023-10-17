@@ -7,6 +7,11 @@ class Settings(object):
     """Manages all PyAEDT environment variables and global settings."""
 
     def __init__(self):
+        # TODO: Remove this (not always sure)
+        self.remote_rpc_session = False
+        self._enable_screen_logs = True
+        self._edb_dll_path = None
+        #
         self._enable_logger = True
         self._enable_file_logs = True
         self.pyedb_server_path = ""
@@ -196,6 +201,27 @@ class Settings(object):
     @enable_debug_logger.setter
     def enable_debug_logger(self, val):
         self._enable_debug_logger = val
+
+    # TODO: Not sure if neede, see with Simon
+    @property
+    def enable_screen_logs(self):
+        """Flag for enabling and disabling the logging to STDOUT."""
+        return self._enable_screen_logs
+
+    @enable_screen_logs.setter
+    def enable_screen_logs(self, val):
+        self._enable_screen_logs = val
+
+    # TODO: Not sure if neede, see with Simon
+    @property
+    def edb_dll_path(self):
+        """Optional path for the EDB DLL file."""
+        return self._edb_dll_path
+
+    @edb_dll_path.setter
+    def edb_dll_path(self, value):
+        if os.path.exists(value):
+            self._edb_dll_path = value
 
 
 settings = Settings()
