@@ -2,10 +2,10 @@ from __future__ import absolute_import  # noreorder
 
 import re
 
-from pyaedt.edb_core.edb_data.nets_data import EDBDifferentialPairData
-from pyaedt.edb_core.edb_data.nets_data import EDBExtendedNetData
-from pyaedt.edb_core.edb_data.nets_data import EDBNetClassData
-from pyaedt.generic.general_methods import pyaedt_function_handler
+from pyedb.grpc.edb_data.nets_data import EDBDifferentialPairData
+from pyedb.grpc.edb_data.nets_data import EDBExtendedNetData
+from pyedb.grpc.edb_data.nets_data import EDBNetClassData
+from pyedb.generic.general_methods import pyaedt_function_handler
 
 
 class EdbCommon:
@@ -51,7 +51,7 @@ class EdbNetClasses(EdbCommon, object):
 
     Examples
     --------
-    >>> from pyaedt import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_nets = edbapp.net_classes
     """
@@ -70,7 +70,7 @@ class EdbNetClasses(EdbCommon, object):
         """
         net_classes = {}
         for net_class in self._layout.net_classes:
-            net_classes[net_class.GetName()] = EDBNetClassData(self._pedb, net_class)
+            net_classes[net_class.name] = EDBNetClassData(self._pedb, net_class)
         return net_classes
 
     @pyaedt_function_handler
@@ -108,7 +108,7 @@ class EdbExtendedNets(EdbCommon, object):
 
     Examples
     --------
-    >>> from pyaedt import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_nets = edbapp.extended_nets
     """
@@ -127,7 +127,7 @@ class EdbExtendedNets(EdbCommon, object):
         """
         nets = {}
         for extended_net in self._layout.extended_nets:
-            nets[extended_net.GetName()] = EDBExtendedNetData(self._pedb, extended_net)
+            nets[extended_net.name] = EDBExtendedNetData(self._pedb, extended_net)
         return nets
 
     @pyaedt_function_handler
@@ -186,7 +186,7 @@ class EdbExtendedNets(EdbCommon, object):
 
         Examples
         --------
-        >>> from pyaedt import Edb
+        >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.extended_nets.auto_identify_signal()
         """
@@ -221,7 +221,7 @@ class EdbExtendedNets(EdbCommon, object):
 
         Examples
         --------
-        >>> from pyaedt import Edb
+        >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.extended_nets.auto_identify_power()
         """
@@ -235,7 +235,7 @@ class EdbDifferentialPairs(EdbCommon, object):
 
     Examples
     --------
-    >>> from pyaedt import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_nets = edbapp.differential_pairs.items
     >>> edb_nets = edbapp.differential_pairs["DQ4"]
@@ -255,7 +255,7 @@ class EdbDifferentialPairs(EdbCommon, object):
         """
         diff_pairs = {}
         for diff_pair in self._layout.differential_pairs:
-            diff_pairs[diff_pair.GetName()] = EDBDifferentialPairData(self._pedb, diff_pair)
+            diff_pairs[diff_pair.name] = EDBDifferentialPairData(self._pedb, diff_pair)
         return diff_pairs
 
     @pyaedt_function_handler
@@ -302,7 +302,7 @@ class EdbDifferentialPairs(EdbCommon, object):
             A list containing identified differential pair names.
         Examples
         --------
-        >>> from pyaedt import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", edbversion="2023.1")
         >>> edb_nets = edbapp.differential_pairs.auto_identify()
         """
