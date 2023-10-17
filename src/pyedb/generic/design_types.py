@@ -83,9 +83,7 @@ def Edb(
 
     """
 
-    # TODO: Remove as it is used to ensure usage of the legacy API
-    os.environ["PYEDB_USE_LEGACY"] = "1"
-
+    # Use EDB legacy
     if bool(os.getenv("PYEDB_USE_LEGACY", "0")):
         from pyedb.legacy.edb import EdbLegacy as app
         return app(
@@ -99,6 +97,7 @@ def Edb(
                 use_ppe=use_ppe,
                 technology_file=technology_file,
             )
+    # TODO: Use EDB gRPC
     else:
         from pyedb.edb import Edb as app
         return app(
