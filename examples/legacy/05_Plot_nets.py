@@ -9,7 +9,6 @@ This example shows how you can use the ``Edb`` class to plot a net or a layout.
 # ~~~~~~~~~~~~~~~~~~~~~~~~
 # Perform required imports, which includes importing a section.
 
-import os
 import pyedb
 from pyedb.legacy.downloads import download_file
 

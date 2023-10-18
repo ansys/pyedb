@@ -12,6 +12,7 @@ This example shows how you can use HFSS 3D Layout to create and solve a parametr
 
 import pyedb
 import os
+from pyaedt import Hfss3dLayout
 
 ##########################################################
 # Set non-graphical mode
@@ -281,7 +282,7 @@ edb.close_edb()
 # ~~~~~~~~~~~~~~~~
 # Open EDB in AEDT.
 
-h3d = pyaedt.Hfss3dLayout(projectname=aedb_path, specified_version="2023.2",
+h3d = Hfss3dLayout(projectname=aedb_path, specified_version="2023.2",
                           non_graphical=non_graphical, new_desktop_session=True)
 
 ###############################################################################

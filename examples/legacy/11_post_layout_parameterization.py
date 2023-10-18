@@ -16,18 +16,20 @@ layers = ["16_Bottom"]  # Specify layers to be parameterized
 # ~~~~~~~~~~~~~~~~~~~~~~~~
 import os
 import tempfile
-import pyaedt
+import pyedb
+from pyedb.legacy.downloads import download_file
+# import pyaedt
 
-from pyaedt import downloads
-from pyaedt import Edb
+# from pyaedt import downloads
+# from pyaedt import Edb
 
-temppath =  pyaedt.generate_unique_folder_name()
+temppath =  pyedb.generate_unique_folder_name()
 
 ###############################################################################
 # Download and open example layout file in edb format
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-edb_fpath = pyaedt.downloads.download_file('edb/ANSYS-HSD_V1.aedb',destination=temppath)
-appedb = Edb(edb_fpath, edbversion="2023.2")
+edb_fpath = download_file('edb/ANSYS-HSD_V1.aedb',destination=temppath)
+appedb = pyedb.Edb(edb_fpath, edbversion="2023.2")
 
 ###############################################################################
 # Cutout
@@ -87,7 +89,7 @@ appedb.nets.plot(layers=layers[0], size=2000)
 # Save and close Edb
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-save_edb_fpath = os.path.join(temppath, pyaedt.generate_unique_name("post_layout_parameterization") + ".aedb")
+save_edb_fpath = os.path.join(temppath, pyedb.generate_unique_name("post_layout_parameterization") + ".aedb")
 appedb.save_edb_as(save_edb_fpath)
 print("Edb is saved to ", save_edb_fpath)
 appedb.close_edb()
