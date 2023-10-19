@@ -373,25 +373,27 @@ class TestClass:
     # def test_031_get_component_connections(self):
     #     assert len(self.edbapp.components.get_component_net_connection_info("U1")) > 0
 
-    # def test_032_get_power_tree(self):
-    #     OUTPUT_NET = "5V"
-    #     GROUND_NETS = ["GND", "PGND"]
-    #     (
-    #         component_list,
-    #         component_list_columns,
-    #         net_group,
-    #     ) = self.edbapp.nets.get_powertree(OUTPUT_NET, GROUND_NETS)
-    #     assert component_list
-    #     assert component_list_columns
-    #     assert net_group
+    def test_032_get_power_tree(self):
+        OUTPUT_NET = "5V"
+        GROUND_NETS = ["GND", "PGND"]
+        (
+            component_list,
+            component_list_columns,
+            net_group,
+        ) = self.edbapp.nets.get_powertree(OUTPUT_NET, GROUND_NETS)
+        assert component_list
+        assert component_list_columns
+        assert net_group
 
-    # def test_033_aedt_pinname_pin_position(self):
-    #     cmp_pinlist = self.edbapp.padstacks.get_pinlist_from_component_and_net("U6", "GND")
-    #     pin_name = self.edbapp.components.get_aedt_pin_name(cmp_pinlist[0])
-    #     assert type(pin_name) is str
-    #     assert len(pin_name) > 0
-    #     assert len(cmp_pinlist[0].position) == 2
-    #     assert len(self.edbapp.components.get_pin_position(cmp_pinlist[0])) == 2
+    def test_033_aedt_pinname_pin_position(self):
+        cmp_pinlist = self.edbapp.padstacks.get_pinlist_from_component_and_net("U6", "GND")
+        print(cmp_pinlist)
+        assert False
+        pin_name = self.edbapp.components.get_aedt_pin_name(cmp_pinlist[0])
+        assert type(pin_name) is str
+        assert len(pin_name) > 0
+        assert len(cmp_pinlist[0].position) == 2
+        assert len(self.edbapp.components.get_pin_position(cmp_pinlist[0])) == 2
 
     # def test_034_get_pins_name_from_net(self):
     #     cmp_pinlist = self.edbapp.components.get_pin_from_component("U6")

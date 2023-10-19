@@ -28,7 +28,6 @@ class TestClass:
         assert self.edbapp.padstacks.get_via_instance_from_net("GND")
         assert not self.edbapp.padstacks.get_via_instance_from_net(["GND2"])
 
-    @pytest.mark.current
     def test_create_with_packstack_name(self):
         """Create a padstack"""
         # Create myVia

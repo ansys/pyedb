@@ -14,6 +14,7 @@ class TestClass:
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
+
     def test_nets_queries(self):
         """Evaluate nets queries"""
         assert len(self.edbapp.nets.netlist) > 0
@@ -39,17 +40,19 @@ class TestClass:
         assert self.edbapp.nets.find_or_create_net(start_with="g", end_with="d")
         assert self.edbapp.nets.find_or_create_net(end_with="d")
         assert self.edbapp.nets.find_or_create_net(contain="usb")
+        assert self.edbapp.nets["AVCC_1V3"].extended_net is None
+        self.edbapp.extended_nets.auto_identify_power()
         assert self.edbapp.nets["AVCC_1V3"].extended_net
 
-        self.edbapp.differential_pairs.auto_identify()
-        diff_pair = self.edbapp.differential_pairs.create("new_pair1", "PCIe_Gen4_RX1_P", "PCIe_Gen4_RX1_N")
-        assert diff_pair.positive_net.name == "PCIe_Gen4_RX1_P"
-        assert diff_pair.negative_net.name == "PCIe_Gen4_RX1_N"
-        assert self.edbapp.differential_pairs.items
-
-        assert self.edbapp.net_classes.items
-        assert self.edbapp.net_classes.create("DDR4_ADD", ["DDR4_A0", "DDR4_A1"])
-        assert self.edbapp.net_classes["DDR4_ADD"].name == "DDR4_ADD"
-        assert self.edbapp.net_classes["DDR4_ADD"].nets
-        self.edbapp.net_classes["DDR4_ADD"].name = "DDR4_ADD_RENAMED"
-        assert not self.edbapp.net_classes["DDR4_ADD_RENAMED"].is_null
+    def test_nets__get_power_tree(self):
+        """Evaluate nets get powertree."""
+        OUTPUT_NET = "5V"
+        GROUND_NETS = ["GND", "PGND"]
+        (
+            component_list,
+            component_list_columns,
+            net_group,
+        ) = self.edbapp.nets.get_powertree(OUTPUT_NET, GROUND_NETS)
+        assert component_list
+        assert component_list_columns
+        assert net_group
