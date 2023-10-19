@@ -395,25 +395,25 @@ class TestClass:
         assert len(cmp_pinlist[0].position) == 2
         assert len(self.edbapp.components.get_pin_position(cmp_pinlist[0])) == 2
 
-    # def test_034_get_pins_name_from_net(self):
-    #     cmp_pinlist = self.edbapp.components.get_pin_from_component("U6")
-    #     assert len(self.edbapp.components.get_pins_name_from_net(cmp_pinlist, "GND")) > 0
-    #     assert len(self.edbapp.components.get_pins_name_from_net(cmp_pinlist, "5V")) == 0
+    def test_034_get_pins_name_from_net(self):
+        cmp_pinlist = self.edbapp.components.get_pin_from_component("U6")
+        assert len(self.edbapp.components.get_pins_name_from_net(cmp_pinlist, "GND")) > 0
+        assert len(self.edbapp.components.get_pins_name_from_net(cmp_pinlist, "5V")) == 0
 
-    # def test_035_delete_single_pin_rlc(self):
-    #     assert len(self.edbapp.components.delete_single_pin_rlc()) == 0
+    def test_035_delete_single_pin_rlc(self):
+        assert len(self.edbapp.components.delete_single_pin_rlc()) == 0
 
-    # def test_036_component_rlc(self):
-    #     assert self.edbapp.components.set_component_rlc("R1", 30, 1e-9, 1e-12)
+    def test_036_component_rlc(self):
+        assert self.edbapp.components.set_component_rlc("R1", 30, 1e-9, 1e-12)
 
-    # def test_037_disable_component(self):
-    #     assert self.edbapp.components.disable_rlc_component("R1")
+    def test_037_disable_component(self):
+        assert self.edbapp.components.disable_rlc_component("R1")
 
-    # def test_038_delete_component(self):
-    #     assert self.edbapp.components.delete("R1")
+    def test_038_delete_component(self):
+        assert self.edbapp.components.delete("R1")
 
-    # def test_039_create_coax_port(self):
-    #     assert self.edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"])
+    def test_039_create_coax_port(self):
+        assert self.edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"])
 
     # def test_040_create_circuit_port(self):
     #     initial_len = len(self.edbapp.padstacks.pingroups)
@@ -479,20 +479,20 @@ class TestClass:
     #     setup = self.edbapp.siwave.add_siwave_dc_analysis()
     #     assert setup.add_source_terminal_to_ground(list(self.edbapp.sources.keys())[0], 2)
 
-    # def test_047_get_nets_from_pin_list(self):
-    #     cmp_pinlist = self.edbapp.padstacks.get_pinlist_from_component_and_net("U1", "GND")
-    #     if cmp_pinlist:
-    #         assert cmp_pinlist[0].GetNet().GetName()
+    def test_047_get_nets_from_pin_list(self):
+        cmp_pinlist = self.edbapp.padstacks.get_pinlist_from_component_and_net("U1", "GND")
+        if cmp_pinlist:
+            assert cmp_pinlist[0].GetNet().GetName()
 
-    # def test_048_mesh_operations(self):
-    #     self.edbapp.components.create_port_on_component(
-    #         "U1",
-    #         ["VDD_DDR"],
-    #         reference_net="GND",
-    #         port_type=SourceType.CircPort,
-    #     )
-    #     mesh_ops = self.edbapp.hfss.get_trace_width_for_traces_with_ports()
-    #     assert len(mesh_ops) > 0
+    def test_048_mesh_operations(self):
+        self.edbapp.components.create_port_on_component(
+            "U1",
+            ["VDD_DDR"],
+            reference_net="GND",
+            port_type=SourceType.CircPort,
+        )
+        mesh_ops = self.edbapp.hfss.get_trace_width_for_traces_with_ports()
+        assert len(mesh_ops) > 0
 
     # def test_049_assign_model(self):
     #     assert self.edbapp.components.set_component_model(

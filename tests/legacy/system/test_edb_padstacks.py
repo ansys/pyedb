@@ -70,3 +70,8 @@ class TestClass:
             assert via.backdrill_top
             assert via.set_backdrill_bottom("16_Bottom", 0.5e-3)
             assert via.backdrill_bottom
+
+    def test_padstacks_get_nets_from_pin_list(self):
+        """Retrieve pin list from component and net."""
+        cmp_pinlist = self.edbapp.padstacks.get_pinlist_from_component_and_net("U1", "GND")
+        assert cmp_pinlist[0].GetNet().GetName()

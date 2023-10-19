@@ -20,6 +20,7 @@ from pyedb.legacy.generic.clr_module import _clr
 from pyedb.generic.general_methods import get_filename_without_extension
 from pyedb.generic.general_methods import is_ironpython
 from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import _retry_ntimes
 
 from pyedb.modeler.geometry_operators import GeometryOperators
 
