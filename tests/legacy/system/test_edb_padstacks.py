@@ -75,3 +75,66 @@ class TestClass:
         """Retrieve pin list from component and net."""
         cmp_pinlist = self.edbapp.padstacks.get_pinlist_from_component_and_net("U1", "GND")
         assert cmp_pinlist[0].GetNet().GetName()
+
+    def test_padstack_properties_getter(self):
+        """Evaluate properties"""
+        for el in self.edbapp.padstacks.definitions:
+            padstack = self.edbapp.padstacks.definitions[el]
+            assert padstack.hole_plating_thickness is not None or False
+            assert padstack.hole_properties is not None or False
+            assert padstack.hole_plating_thickness is not None or False
+            assert padstack.hole_plating_ratio is not None or False
+            assert padstack.via_start_layer is not None or False
+            assert padstack.via_stop_layer is not None or False
+            assert padstack.material is not None or False
+            assert padstack.hole_finished_size is not None or False
+            assert padstack.hole_rotation is not None or False
+            assert padstack.hole_offset_x is not None or False
+            assert padstack.hole_offset_y is not None or False
+            assert padstack.hole_type is not None or False
+            pad = padstack.pad_by_layer[padstack.via_stop_layer]
+            if not pad.shape == "NoGeometry":
+                assert pad.parameters is not None or False
+                assert pad.parameters_values is not None or False
+                assert pad.offset_x is not None or False
+                assert pad.offset_y is not None or False
+                assert isinstance(pad.geometry_type, int)
+            polygon = pad.polygon_data
+            if polygon:
+                assert polygon.GetBBox()
+
+    def test_padstack_properties_setter(self):
+        """Set padstack properties"""
+        pad = self.edbapp.padstacks.definitions["c180h127"]
+        hole_pad = 8
+        tol = 1e-12
+        pad.hole_properties = hole_pad
+        pad.hole_offset_x = 0
+        pad.hole_offset_y = 1
+        pad.hole_rotation = 0
+        pad.hole_plating_ratio = 90
+        assert pad.hole_plating_ratio == 90
+        pad.hole_plating_thickness = 0.3
+        assert abs(pad.hole_plating_thickness - 0.3) <= tol
+        pad.material = "copper"
+        assert abs(pad.hole_properties[0] - hole_pad) < tol
+        offset_x = 7
+        offset_y = 1
+        pad.pad_by_layer[pad.via_stop_layer].shape = "Circle"
+        pad.pad_by_layer[pad.via_stop_layer].parameters = 7
+        pad.pad_by_layer[pad.via_stop_layer].offset_x = offset_x
+        pad.pad_by_layer[pad.via_stop_layer].offset_y = offset_y
+        assert pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"].tofloat == 7
+        assert pad.pad_by_layer[pad.via_stop_layer].offset_x == str(offset_x)
+        assert pad.pad_by_layer[pad.via_stop_layer].offset_y == str(offset_y)
+        pad.pad_by_layer[pad.via_stop_layer].parameters = {"Diameter": 8}
+        assert pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"].tofloat == 8
+        pad.pad_by_layer[pad.via_stop_layer].parameters = {"Diameter": 1}
+        pad.pad_by_layer[pad.via_stop_layer].shape = "Square"
+        pad.pad_by_layer[pad.via_stop_layer].parameters = {"Size": 1}
+        pad.pad_by_layer[pad.via_stop_layer].shape = "Rectangle"
+        pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1}
+        pad.pad_by_layer[pad.via_stop_layer].shape = "Oval"
+        pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1, "CornerRadius": 1}
+        pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1, "CornerRadius": 1}
+        pad.pad_by_layer[pad.via_stop_layer].parameters = [1, 1, 1]

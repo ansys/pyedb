@@ -23,9 +23,9 @@ from pyedb.generic.general_methods import check_numeric_equivalence
 
 from pyedb.generic.constants import SolverType
 from pyedb.generic.constants import SourceType
-from tests.conftest import config
+# from tests.conftest import config
 from tests.conftest import local_path
-from tests.conftest import edb_version
+# from tests.conftest import edb_version
 
 pytestmark = pytest.mark.unit
 
@@ -74,7 +74,7 @@ bom_example = "bom_example.csv"
 #     return
 
 
-@pytest.mark.skipif(config["skip_edb"], reason="Skipping on IPY and optionally on CPython.")
+# @pytest.mark.skipif(config["skip_edb"], reason="Skipping on IPY and optionally on CPython.")
 class TestClass:
     @pytest.fixture(autouse=True)
     def init(self, edbapp, local_scratch, target_path, target_path2, target_path4):
@@ -556,70 +556,70 @@ class TestClass:
             points = self.edbapp.modeler.get_polygon_points(poly)
             assert points
 
-    # def test_055_get_padstack(self):
-    #     for el in self.edbapp.padstacks.definitions:
-    #         padstack = self.edbapp.padstacks.definitions[el]
-    #         assert padstack.hole_plating_thickness is not None or False
-    #         assert padstack.hole_properties is not None or False
-    #         assert padstack.hole_plating_thickness is not None or False
-    #         assert padstack.hole_plating_ratio is not None or False
-    #         assert padstack.via_start_layer is not None or False
-    #         assert padstack.via_stop_layer is not None or False
-    #         assert padstack.material is not None or False
-    #         assert padstack.hole_finished_size is not None or False
-    #         assert padstack.hole_rotation is not None or False
-    #         assert padstack.hole_offset_x is not None or False
-    #         assert padstack.hole_offset_y is not None or False
-    #         assert padstack.hole_type is not None or False
-    #         pad = padstack.pad_by_layer[padstack.via_stop_layer]
-    #         if not pad.shape == "NoGeometry":
-    #             assert pad.parameters is not None or False
-    #             assert pad.parameters_values is not None or False
-    #             assert pad.offset_x is not None or False
-    #             assert pad.offset_y is not None or False
-    #             assert isinstance(pad.geometry_type, int)
-    #         polygon = pad.polygon_data
-    #         if polygon:
-    #             assert polygon.GetBBox()
+    def test_055_get_padstack(self):
+        for el in self.edbapp.padstacks.definitions:
+            padstack = self.edbapp.padstacks.definitions[el]
+            assert padstack.hole_plating_thickness is not None or False
+            assert padstack.hole_properties is not None or False
+            assert padstack.hole_plating_thickness is not None or False
+            assert padstack.hole_plating_ratio is not None or False
+            assert padstack.via_start_layer is not None or False
+            assert padstack.via_stop_layer is not None or False
+            assert padstack.material is not None or False
+            assert padstack.hole_finished_size is not None or False
+            assert padstack.hole_rotation is not None or False
+            assert padstack.hole_offset_x is not None or False
+            assert padstack.hole_offset_y is not None or False
+            assert padstack.hole_type is not None or False
+            pad = padstack.pad_by_layer[padstack.via_stop_layer]
+            if not pad.shape == "NoGeometry":
+                assert pad.parameters is not None or False
+                assert pad.parameters_values is not None or False
+                assert pad.offset_x is not None or False
+                assert pad.offset_y is not None or False
+                assert isinstance(pad.geometry_type, int)
+            polygon = pad.polygon_data
+            if polygon:
+                assert polygon.GetBBox()
 
-    # def test_056_set_padstack(self):
-    #     pad = self.edbapp.padstacks.definitions["c180h127"]
-    #     hole_pad = 8
-    #     tol = 1e-12
-    #     pad.hole_properties = hole_pad
-    #     pad.hole_offset_x = 0
-    #     pad.hole_offset_y = 1
-    #     pad.hole_rotation = 0
-    #     pad.hole_plating_ratio = 90
-    #     assert pad.hole_plating_ratio == 90
-    #     pad.hole_plating_thickness = 0.3
-    #     assert abs(pad.hole_plating_thickness - 0.3) <= tol
-    #     pad.material = "copper"
-    #     assert abs(pad.hole_properties[0] - hole_pad) < tol
-    #     offset_x = 7
-    #     offset_y = 1
-    #     pad.pad_by_layer[pad.via_stop_layer].shape = "Circle"
-    #     pad.pad_by_layer[pad.via_stop_layer].parameters = 7
-    #     pad.pad_by_layer[pad.via_stop_layer].offset_x = offset_x
-    #     pad.pad_by_layer[pad.via_stop_layer].offset_y = offset_y
-    #     assert pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"].tofloat == 7
-    #     assert pad.pad_by_layer[pad.via_stop_layer].offset_x == str(offset_x)
-    #     assert pad.pad_by_layer[pad.via_stop_layer].offset_y == str(offset_y)
-    #     pad.pad_by_layer[pad.via_stop_layer].parameters = {"Diameter": 8}
-    #     assert pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"].tofloat == 8
-    #     pad.pad_by_layer[pad.via_stop_layer].parameters = {"Diameter": 1}
-    #     pad.pad_by_layer[pad.via_stop_layer].shape = "Square"
-    #     pad.pad_by_layer[pad.via_stop_layer].parameters = {"Size": 1}
-    #     pad.pad_by_layer[pad.via_stop_layer].shape = "Rectangle"
-    #     pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1}
-    #     pad.pad_by_layer[pad.via_stop_layer].shape = "Oval"
-    #     pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1, "CornerRadius": 1}
-    #     pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1, "CornerRadius": 1}
-    #     pad.pad_by_layer[pad.via_stop_layer].parameters = [1, 1, 1]
+    def test_056_set_padstack(self):
+        pad = self.edbapp.padstacks.definitions["c180h127"]
+        hole_pad = 8
+        tol = 1e-12
+        pad.hole_properties = hole_pad
+        pad.hole_offset_x = 0
+        pad.hole_offset_y = 1
+        pad.hole_rotation = 0
+        pad.hole_plating_ratio = 90
+        assert pad.hole_plating_ratio == 90
+        pad.hole_plating_thickness = 0.3
+        assert abs(pad.hole_plating_thickness - 0.3) <= tol
+        pad.material = "copper"
+        assert abs(pad.hole_properties[0] - hole_pad) < tol
+        offset_x = 7
+        offset_y = 1
+        pad.pad_by_layer[pad.via_stop_layer].shape = "Circle"
+        pad.pad_by_layer[pad.via_stop_layer].parameters = 7
+        pad.pad_by_layer[pad.via_stop_layer].offset_x = offset_x
+        pad.pad_by_layer[pad.via_stop_layer].offset_y = offset_y
+        assert pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"].tofloat == 7
+        assert pad.pad_by_layer[pad.via_stop_layer].offset_x == str(offset_x)
+        assert pad.pad_by_layer[pad.via_stop_layer].offset_y == str(offset_y)
+        pad.pad_by_layer[pad.via_stop_layer].parameters = {"Diameter": 8}
+        assert pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"].tofloat == 8
+        pad.pad_by_layer[pad.via_stop_layer].parameters = {"Diameter": 1}
+        pad.pad_by_layer[pad.via_stop_layer].shape = "Square"
+        pad.pad_by_layer[pad.via_stop_layer].parameters = {"Size": 1}
+        pad.pad_by_layer[pad.via_stop_layer].shape = "Rectangle"
+        pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1}
+        pad.pad_by_layer[pad.via_stop_layer].shape = "Oval"
+        pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1, "CornerRadius": 1}
+        pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1, "CornerRadius": 1}
+        pad.pad_by_layer[pad.via_stop_layer].parameters = [1, 1, 1]
 
-    # def test_057_save_edb_as(self):
-    #     assert self.edbapp.save_edb_as(os.path.join(self.local_scratch.path, "Gelileo_new.aedb"))
-    #     assert os.path.exists(os.path.join(self.local_scratch.path, "Gelileo_new.aedb", "edb.def"))
+    def test_057_save_edb_as(self):
+        assert self.edbapp.save_edb_as(os.path.join(self.local_scratch.path, "Gelileo_new.aedb"))
+        assert os.path.exists(os.path.join(self.local_scratch.path, "Gelileo_new.aedb", "edb.def"))
 
     # def test_058_parametrize_layout(self):
     #     assert len(self.edbapp.modeler.polygons) > 0
@@ -656,12 +656,12 @@ class TestClass:
     #     assert edbapp.components.export_bom(export_bom_path)
     #     edbapp.close()
 
-    # def test_061_create_component_from_pins(self):
-    #     pins = self.edbapp.components.get_pin_from_component("R13")
-    #     component = self.edbapp.components.create(pins, "newcomp")
-    #     assert component
-    #     assert component.part_name == "newcomp"
-    #     assert len(component.pins) == 2
+    def test_061_create_component_from_pins(self):
+        pins = self.edbapp.components.get_pin_from_component("R13")
+        component = self.edbapp.components.create(pins, "newcomp")
+        assert component
+        assert component.part_name == "newcomp"
+        assert len(component.pins) == 2
 
     # def test_062_create_cutout(self):
     #     source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")

@@ -1,6 +1,7 @@
 """Tests related to Edb
 """
 
+import os
 import pytest
 from pyedb.generic.constants import SourceType
 
@@ -134,3 +135,7 @@ class TestClass:
         result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
         assert not result
 
+    def test_save_edb_as(self):
+        """Save edb as some file."""
+        assert self.edbapp.save_edb_as(os.path.join(self.local_scratch.path, "Gelileo_new.aedb"))
+        assert os.path.exists(os.path.join(self.local_scratch.path, "Gelileo_new.aedb", "edb.def"))

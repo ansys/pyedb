@@ -5,19 +5,19 @@ import os
 
 import pytest
 
-from pyedb import Edb
-from pyedb.legacy.edb_core.components import resistor_value_parser
-from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-from pyedb.legacy.edb_core.edb_data.sources import Source
-from pyedb.generic.constants import RadiationBoxType
-from pyedb.generic.general_methods import check_numeric_equivalence
+# from pyedb import Edb
+# from pyedb.legacy.edb_core.components import resistor_value_parser
+# from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
+# from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+# from pyedb.legacy.edb_core.edb_data.sources import Source
+# from pyedb.generic.constants import RadiationBoxType
+# from pyedb.generic.general_methods import check_numeric_equivalence
 
-from pyedb.generic.constants import SolverType
-from pyedb.generic.constants import SourceType
-from tests.conftest import config
+# from pyedb.generic.constants import SolverType
+# from pyedb.generic.constants import SourceType
+# from tests.conftest import config
 from tests.conftest import local_path
-from tests.conftest import edb_version
+# from tests.conftest import edb_version
 
 test_subfolder = "TEDB"
 test_project_name = "ANSYS-HSD_V1"

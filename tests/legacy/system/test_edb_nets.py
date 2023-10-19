@@ -59,6 +59,7 @@ class TestClass:
 
     def test_nets_delete(self):
         """Delete a net."""
+        assert "JTAG_TDI" in self.edbapp.nets
         self.edbapp.nets["JTAG_TCK"].delete()
         nets_deleted = self.edbapp.nets.delete("JTAG_TDI")
         assert "JTAG_TDI" in nets_deleted

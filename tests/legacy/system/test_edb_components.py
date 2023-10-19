@@ -2,10 +2,15 @@
 """
 import os
 import pytest
+
 from tests.conftest import local_path
+from tests.conftest import default_version
+from pyedb import Edb
 
 pytestmark = pytest.mark.system
+
 test_subfolder = "TEDB"
+bom_example = "bom_example.csv"
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -191,3 +196,51 @@ class TestClass:
             ),
             modelname="GRM32ER72A225KA35_25C_0V",
         )
+
+    # TODO: Maybe rework this test if #25 is accepted
+    def test_modeler_parametrize_layout(self):
+        """Parametrize a polygon"""
+        assert len(self.edbapp.modeler.polygons) > 0
+        for el in self.edbapp.modeler.polygons:
+            if el.GetId() == 5953:
+                poly = el
+        for el in self.edbapp.modeler.polygons:
+            if el.GetId() == 5954:
+                selection_poly = el
+                
+        assert self.edbapp.modeler.parametrize_polygon(poly, selection_poly)
+
+    def test_components_update_from_bom(self):
+        """Update components with values coming from a BOM file."""
+        assert self.edbapp.components.update_rlc_from_bom(
+            os.path.join(local_path, "example_models", test_subfolder, bom_example),
+            delimiter=",",
+            valuefield="Value",
+            comptype="Prod name",
+            refdes="RefDes",
+        )
+        assert not self.edbapp.components.components["R2"].is_enabled
+        self.edbapp.components.components["R2"].is_enabled = True
+        assert self.edbapp.components.components["R2"].is_enabled
+
+    def test_components_export_bom(self):
+        """Export Bom file from layout."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_bom.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=default_version)
+        edbapp.components.import_bom(os.path.join(local_path, "example_models", test_subfolder, "bom_example_2.csv"))
+        assert not edbapp.components.instances["R2"].is_enabled
+        assert edbapp.components.instances["U13"].partname == "SLAB-QFN-24-2550x2550TP_V"
+
+        export_bom_path = os.path.join(self.local_scratch.path, "export_bom.csv")
+        assert edbapp.components.export_bom(export_bom_path)
+        edbapp.close()
+
+    def test_components_create_component_from_pins(self):
+        """Create a component from a pin."""
+        pins = self.edbapp.components.get_pin_from_component("R13")
+        component = self.edbapp.components.create(pins, "newcomp")
+        assert component
+        assert component.part_name == "newcomp"
+        assert len(component.pins) == 2
