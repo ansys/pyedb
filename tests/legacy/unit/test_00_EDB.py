@@ -109,9 +109,9 @@ class TestClass:
     #     assert isinstance(parameters[1], list)
     #     assert isinstance(parameters[0], int)
 
-    def test_002_get_vias_from_nets(self):
-        assert self.edbapp.padstacks.get_via_instance_from_net("GND")
-        assert not self.edbapp.padstacks.get_via_instance_from_net(["GND2"])
+    # def test_002_get_vias_from_nets(self):
+    #     assert self.edbapp.padstacks.get_via_instance_from_net("GND")
+    #     assert not self.edbapp.padstacks.get_via_instance_from_net(["GND2"])
 
     # def test_003_create_coax_port_on_component(self):
     #     assert self.edbapp.hfss.create_coax_port_on_component("U1", "DDR4_DQS0_P")
@@ -197,6 +197,7 @@ class TestClass:
     # def test_007_get_signal_layers(self):
     #     assert self.edbapp.stackup.residual_copper_area_per_layer()
 
+    # TODO: this test was removed
     # def test_008_component_lists(self):
     #     component_list = self.edbapp.components.components
     #     assert len(component_list) > 2

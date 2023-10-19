@@ -22,7 +22,7 @@ class TestClass:
         self.target_path4 = target_path4
 
     def test_export_to_ipc2581(self):
-        """Test EDB exporting of a loaded aedb file to an XML IPC2581 file"""
+        """Export of a loaded aedb file to an XML IPC2581 file"""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_ipc.aedb")
         self.local_scratch.copyfolder(source_path, target_path)

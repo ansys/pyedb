@@ -618,9 +618,6 @@ class EdbLegacy(Database):
         bool
             ``True`` if successful, ``False`` if failed.
         """
-        if is_ironpython:  # pragma no cover
-            self.logger.error("This method is not supported in Ironpython")
-            return False
         if units.lower() not in ["millimeter", "inch", "micron"]:  # pragma no cover
             self.logger.warning("The wrong unit is entered. Setting to the default, millimeter.")
             units = "millimeter"
@@ -1058,25 +1055,25 @@ class EdbLegacy(Database):
         ):
             obj_type = i.GetObjType().ToString()
             if obj_type == LayoutObjType.PadstackInstance.name:
-                from pyedb.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+                from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 
                 temp.append(EDBPadstackInstance(i, self))
             elif obj_type == LayoutObjType.Primitive.name:
                 prim_type = i.GetPrimitiveType().ToString()
                 if prim_type == Primitives.Path.name:
-                    from pyedb.edb_core.edb_data.primitives_data import EdbPath
+                    from pyedb.legacy.edb_core.edb_data.primitives_data import EdbPath
 
                     temp.append(EdbPath(i, self))
                 elif prim_type == Primitives.Rectangle.name:
-                    from pyedb.edb_core.edb_data.primitives_data import EdbRectangle
+                    from pyedb.legacy.edb_core.edb_data.primitives_data import EdbRectangle
 
                     temp.append(EdbRectangle(i, self))
                 elif prim_type == Primitives.Circle.name:
-                    from pyedb.edb_core.edb_data.primitives_data import EdbCircle
+                    from pyedb.legacy.edb_core.edb_data.primitives_data import EdbCircle
 
                     temp.append(EdbCircle(i, self))
                 elif prim_type == Primitives.Polygon.name:
-                    from pyedb.edb_core.edb_data.primitives_data import EdbPolygon
+                    from pyedb.legacy.edb_core.edb_data.primitives_data import EdbPolygon
 
                     temp.append(EdbPolygon(i, self))
                 else:
