@@ -515,46 +515,46 @@ class TestClass:
     #         modelname="GRM32ER72A225KA35_25C_0V",
     #     )
 
-    # def test_050_assign_variable(self):
-    #     result, var_server = self.edbapp.add_design_variable("my_variable", "1mm")
-    #     assert result
-    #     assert var_server
-    #     result, var_server = self.edbapp.add_design_variable("my_variable", "1mm")
-    #     assert not result
-    #     assert self.edbapp.modeler.parametrize_trace_width("A0_N")
-    #     assert self.edbapp.modeler.parametrize_trace_width("A0_N_R")
-    #     result, var_server = self.edbapp.add_design_variable("my_parameter", "2mm", True)
-    #     assert result
-    #     assert var_server.IsVariableParameter("my_parameter")
-    #     result, var_server = self.edbapp.add_design_variable("my_parameter", "2mm", True)
-    #     assert not result
-    #     result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
-    #     assert result
-    #     assert var_server
-    #     result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
-    #     assert not result
+    def test_050_assign_variable(self):
+        result, var_server = self.edbapp.add_design_variable("my_variable", "1mm")
+        assert result
+        assert var_server
+        result, var_server = self.edbapp.add_design_variable("my_variable", "1mm")
+        assert not result
+        assert self.edbapp.modeler.parametrize_trace_width("A0_N")
+        assert self.edbapp.modeler.parametrize_trace_width("A0_N_R")
+        result, var_server = self.edbapp.add_design_variable("my_parameter", "2mm", True)
+        assert result
+        assert var_server.IsVariableParameter("my_parameter")
+        result, var_server = self.edbapp.add_design_variable("my_parameter", "2mm", True)
+        assert not result
+        result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
+        assert result
+        assert var_server
+        result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
+        assert not result
 
-    # def test_051_delete_net(self):
-    #     self.edbapp.nets["JTAG_TCK"].delete()
-    #     nets_deleted = self.edbapp.nets.delete("JTAG_TDI")
-    #     assert "JTAG_TDI" in nets_deleted
+    def test_051_delete_net(self):
+        self.edbapp.nets["JTAG_TCK"].delete()
+        nets_deleted = self.edbapp.nets.delete("JTAG_TDI")
+        assert "JTAG_TDI" in nets_deleted
 
-    # def test_052_get_polygons_bounding(self):
-    #     polys = self.edbapp.modeler.get_polygons_by_layer("GND")
-    #     for poly in polys:
-    #         bounding = self.edbapp.modeler.get_polygon_bounding_box(poly)
-    #         assert len(bounding) == 4
+    def test_052_get_polygons_bounding(self):
+        polys = self.edbapp.modeler.get_polygons_by_layer("GND")
+        for poly in polys:
+            bounding = self.edbapp.modeler.get_polygon_bounding_box(poly)
+            assert len(bounding) == 4
 
-    # def test_053_get_polygons_bbylayerandnets(self):
-    #     nets = ["GND", "1V0"]
-    #     polys = self.edbapp.modeler.get_polygons_by_layer("16_Bottom", nets)
-    #     assert polys
+    def test_053_get_polygons_bbylayerandnets(self):
+        nets = ["GND", "1V0"]
+        polys = self.edbapp.modeler.get_polygons_by_layer("16_Bottom", nets)
+        assert polys
 
-    # def test_0548_get_polygons_points(self):
-    #     polys = self.edbapp.modeler.get_polygons_by_layer("GND")
-    #     for poly in polys:
-    #         points = self.edbapp.modeler.get_polygon_points(poly)
-    #         assert points
+    def test_0548_get_polygons_points(self):
+        polys = self.edbapp.modeler.get_polygons_by_layer("GND")
+        for poly in polys:
+            points = self.edbapp.modeler.get_polygon_points(poly)
+            assert points
 
     # def test_055_get_padstack(self):
     #     for el in self.edbapp.padstacks.definitions:

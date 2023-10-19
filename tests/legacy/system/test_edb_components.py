@@ -1,9 +1,11 @@
 """Tests related to Edb components
 """
-
+import os
 import pytest
+from tests.conftest import local_path
 
 pytestmark = pytest.mark.system
+test_subfolder = "TEDB"
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -165,5 +167,27 @@ class TestClass:
         assert self.edbapp.components.disable_rlc_component("R1")
 
     def test_components_delete(self):
-        """Delete a component"""
+        """Delete a component."""
         assert self.edbapp.components.delete("R1")
+
+    def test_components_set_model(self):
+        """Assign component model."""
+        assert self.edbapp.components.set_component_model(
+            "C10",
+            modelpath=os.path.join(
+                local_path,
+                "example_models",
+                test_subfolder,
+                "GRM32ER72A225KA35_25C_0V.sp",
+            ),
+            modelname="GRM32ER72A225KA35_25C_0V",
+        )
+        assert not self.edbapp.components.set_component_model(
+            "C100000",
+            modelpath=os.path.join(
+                local_path,
+                test_subfolder,
+                "GRM32ER72A225KA35_25C_0V.sp",
+            ),
+            modelname="GRM32ER72A225KA35_25C_0V",
+        )

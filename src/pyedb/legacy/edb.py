@@ -922,6 +922,7 @@ class EdbLegacy(Database):
         """
 
         if not self._nets and self.active_db:
+            raise Exception("")
             self._nets = EdbNets(self)
         return self._nets
 

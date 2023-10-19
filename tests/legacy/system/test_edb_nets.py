@@ -44,7 +44,7 @@ class TestClass:
         self.edbapp.extended_nets.auto_identify_power()
         assert self.edbapp.nets["AVCC_1V3"].extended_net
 
-    def test_nets__get_power_tree(self):
+    def test_nets_get_power_tree(self):
         """Evaluate nets get powertree."""
         OUTPUT_NET = "5V"
         GROUND_NETS = ["GND", "PGND"]
@@ -56,3 +56,10 @@ class TestClass:
         assert component_list
         assert component_list_columns
         assert net_group
+
+    def test_nets_delete(self):
+        """Delete a net."""
+        self.edbapp.nets["JTAG_TCK"].delete()
+        nets_deleted = self.edbapp.nets.delete("JTAG_TDI")
+        assert "JTAG_TDI" in nets_deleted
+        assert "JTAG_TDI" not in self.edbapp.nets

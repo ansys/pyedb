@@ -80,3 +80,24 @@ class TestClass:
         assert len(self.edbapp.modeler.polygons_by_layer["DE1"]) == 0
         assert self.edbapp.modeler.rectangles[0].type == "Rectangle"
         assert self.edbapp.modeler.circles[0].type == "Circle"
+
+    def test_modeler_get_polygons_bounding(self):
+        """Retrieve polygons bounding box."""
+        polys = self.edbapp.modeler.get_polygons_by_layer("GND")
+        for poly in polys:
+            bounding = self.edbapp.modeler.get_polygon_bounding_box(poly)
+            assert len(bounding) == 4
+
+    def test_modeler_get_polygons_by_layer_and_nets(self):
+        """Retrieve polygons by layer and nets."""
+        nets = ["GND", "1V0"]
+        polys = self.edbapp.modeler.get_polygons_by_layer("16_Bottom", nets)
+        assert polys
+
+
+    def test_modeler_get_polygons_points(self):
+        """Retrieve polygons points."""
+        polys = self.edbapp.modeler.get_polygons_by_layer("GND")
+        for poly in polys:
+            points = self.edbapp.modeler.get_polygon_points(poly)
+            assert points
