@@ -4,8 +4,8 @@ This module contains the ``EdbHfss`` class.
 import math
 
 from pyedb.grpc.edb_core.edb_data.hfss_extent_info import HfssExtentInfo
-from pyedb.grpc.edb_core.edb_data import BundleWavePort
-from pyedb.grpc.edb_core.edb_data import WavePort
+from pyedb.grpc.edb_core.edb_data.ports import BundleWavePort
+from pyedb.grpc.edb_core.edb_data.ports import WavePort
 from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitives
 from pyedb.grpc.edb_core.edb_data.simulation_configuration import SimulationConfiguration
 from pyedb.generic.constants import RadiationBoxType
