@@ -3,13 +3,12 @@ This module contains the ``EdbHfss`` class.
 """
 import math
 
-from pyedb.grpc.edb_data.hfss_extent_info import HfssExtentInfo
-from pyedb.grpc.edb_data.ports import BundleWavePort
-from pyedb.grpc.edb_data.ports import WavePort
-from pyedb.grpc.edb_data.primitives_data import EDBPrimitives
-from pyedb.grpc.edb_data.simulation_configuration import SimulationConfiguration
+from pyedb.grpc.edb_core.edb_data.hfss_extent_info import HfssExtentInfo
+from pyedb.grpc.edb_core.edb_data import BundleWavePort
+from pyedb.grpc.edb_core.edb_data import WavePort
+from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitives
+from pyedb.grpc.edb_core.edb_data.simulation_configuration import SimulationConfiguration
 from pyedb.generic.constants import RadiationBoxType
-from pyedb.generic.constants import SweepType
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
@@ -31,11 +30,7 @@ from ansys.edb.terminal.terminals import Terminal
 from ansys.edb.hierarchy.component_group import ComponentType
 from ansys.edb.terminal.terminals import BoundaryType
 from ansys.edb.utility.rlc import Rlc
-from ansys.edb.simulation_setup.hfss_simulation_settings import HFSSSimulationSettings
 from ansys.edb.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
-from ansys.edb.simulation_setup.simulation_setup import SimulationSetup
-from ansys.edb.simulation_setup.adaptive_solutions import AdaptiveFrequency
-from ansys.edb.simulation_setup.hfss_simulation_settings import SolverType
 
 
 class EdbHfss(object):

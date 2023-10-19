@@ -2,10 +2,9 @@
 This module contains the `EdbPadstacks` class.
 """
 import math
-import warnings
 
-from pyedb.grpc.edb_data.padstacks_data import EDBPadstack
-from pyedb.grpc.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.grpc.edb_core.edb_data import EDBPadstack
+from pyedb.grpc.edb_core.edb_data import EDBPadstackInstance
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators

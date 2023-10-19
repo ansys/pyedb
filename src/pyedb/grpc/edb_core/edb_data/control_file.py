@@ -43,7 +43,7 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
             return False
         os.environ["HELIC_ROOT"] = os.path.join(base_path, "helic")
         if os.getenv("ANSYSLMD_LICENCE_FILE", None) is None:
-            lic = os.path.join(base_path, "..", "..", "shared_files", "licensing", "ansyslmd.ini")
+            lic = os.path.join(base_path, "../..", "..", "shared_files", "licensing", "ansyslmd.ini")
             if os.path.exists(lic):
                 with open(lic, "r") as fh:
                     lines = fh.read().splitlines()

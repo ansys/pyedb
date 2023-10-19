@@ -3,9 +3,9 @@ import math
 import re
 import warnings
 
-from primitives_data import EDBPrimitivesMain
+from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitivesMain
 from ansys.edb.layer.layer import LayerType
-from terminals import PadstackInstanceTerminal
+from pyedb.grpc.edb_core.edb_data.terminals import PadstackInstanceTerminal
 from ansys.edb.utility import Value
 from ansys.edb.geometry.point_data import PointData
 from ansys.edb.database import ProductIdType

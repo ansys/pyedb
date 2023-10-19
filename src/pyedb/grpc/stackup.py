@@ -10,11 +10,10 @@ import json
 import logging
 import math
 import re
-import warnings
 
 from pyedb.generic.general_methods import generate_unique_name
-from pyedb.grpc.edb_data.layer_data import LayerEdbClass
-from pyedb.grpc.edb_data.layer_data import StackupLayerEdbClass
+from pyedb.grpc.edb_core.edb_data import LayerEdbClass
+from pyedb.grpc.edb_core.edb_data import StackupLayerEdbClass
 from pyedb.generic.general_methods import ET
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml

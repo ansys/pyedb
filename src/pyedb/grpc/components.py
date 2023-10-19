@@ -7,12 +7,11 @@ import math
 import re
 import warnings
 
-import ansys.edb.hierarchy.component_group
-from pyedb.grpc.edb_data.components_data import EDBComponent
-from pyedb.grpc.edb_data.components_data import EDBComponentDef
-from pyedb.grpc.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.grpc.edb_data.sources import Source
-from pyedb.grpc.edb_data.sources import SourceType
+from pyedb.grpc.edb_core.edb_data.components_data import EDBComponent
+from pyedb.grpc.edb_core.edb_data.components_data import EDBComponentDef
+from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.grpc.edb_core.edb_data.sources import Source
+from pyedb.grpc.edb_core.edb_data.sources import SourceType
 from pyedb.grpc.padstack import EdbPadstacks
 from pyedb.generic.general_methods import get_filename_without_extension
 from pyedb.generic.general_methods import pyedb_function_handler
@@ -23,11 +22,9 @@ from ansys.edb.definition.component_model import NPortComponentModel
 from ansys.edb.hierarchy.sparameter_model import SParameterModel
 from ansys.edb.hierarchy.pin_group import PinGroup
 from ansys.edb.database import ProductIdType
-from ansys.edb.definition.component_pin import ComponentPin
 from ansys.edb.definition.solder_ball_property import SolderballShape
 from ansys.edb.definition.die_property import DieType
 from ansys.edb.definition.die_property import DieOrientation
-from ansys.edb.layer.layer_collection import LayerCollection
 from ansys.edb.definition.component_def import ComponentDef
 from ansys.edb.definition.component_pin import ComponentPin
 from ansys.edb.hierarchy.component_group import ComponentGroup
@@ -40,6 +37,7 @@ from ansys.edb.terminal.terminals import PinGroupTerminal
 from ansys.edb.terminal.terminals import PadstackInstanceTerminal
 from ansys.edb.hierarchy.component_group import ComponentType
 from ansys.edb.utility.rlc import Rlc
+
 
 def resistor_value_parser(RValue):
     """Convert a resistor value.
@@ -522,14 +520,14 @@ class Components(object):
 
     @pyedb_function_handler()
     def get_component_placement_vector(
-        self,
-        mounted_component,
-        hosting_component,
-        mounted_component_pin1,
-        mounted_component_pin2,
-        hosting_component_pin1,
-        hosting_component_pin2,
-        flipped=False,
+            self,
+            mounted_component,
+            hosting_component,
+            mounted_component_pin1,
+            mounted_component_pin2,
+            hosting_component_pin1,
+            hosting_component_pin2,
+            flipped=False,
     ):
         """Get the placement vector between 2 components.
 
@@ -807,7 +805,8 @@ class Components(object):
 
     @pyedb_function_handler()
     def create_port_on_component(
-        self, component, net_list, port_type=SourceType.CoaxPort, do_pingroup=True, reference_net="gnd", port_name=None
+            self, component, net_list, port_type=SourceType.CoaxPort, do_pingroup=True, reference_net="gnd",
+            port_name=None
     ):
         """Create ports on a component.
 
@@ -895,7 +894,7 @@ class Components(object):
             ]
             for p in ref_pins:
                 if not p.is_layout_pin:
-                    p.is_layout_pin= True
+                    p.is_layout_pin = True
             if len(ref_pins) == 0:
                 self._logger.info("No reference pin found on component {}.".format(component.GetName()))
             if do_pingroup:
@@ -1023,9 +1022,9 @@ class Components(object):
                 return False
         component_type = component.edbcomponent.component_type
         if (
-            component_type == ComponentType.OTHER
-            or component_type == ComponentType.IC
-            or component_type == ComponentType.IO
+                component_type == ComponentType.OTHER
+                or component_type == ComponentType.IC
+                or component_type == ComponentType.IO
         ):
             self._logger.info("Component %s passed to deactivate is not an RLC.", component.refdes)
             return False
@@ -1069,9 +1068,9 @@ class Components(object):
                 return False
         component_type = component.edbcomponent.component_type
         if (
-            component_type == ComponentType.OTHER
-            or component_type == ComponentType.IC
-            or component_type == ComponentType.IO
+                component_type == ComponentType.OTHER
+                or component_type == ComponentType.IC
+                or component_type == ComponentType.IO
         ):
             self._logger.info("Component %s passed to deactivate is not an RLC.", component.refdes)
             return False
@@ -1275,7 +1274,7 @@ class Components(object):
 
     @pyedb_function_handler()
     def create_rlc_component(
-        self, pins, component_name="", r_value=1.0, c_value=1e-9, l_value=1e-9, is_parallel=False
+            self, pins, component_name="", r_value=1.0, c_value=1e-9, l_value=1e-9, is_parallel=False
     ):  # pragma: no cover
         """Create physical Rlc component.
 
@@ -1315,16 +1314,16 @@ class Components(object):
 
     @pyedb_function_handler()
     def create(
-        self,
-        pins,
-        component_name,
-        placement_layer=None,
-        component_part_name=None,
-        is_rlc=False,
-        r_value=1.0,
-        c_value=1e-9,
-        l_value=1e-9,
-        is_parallel=False,
+            self,
+            pins,
+            component_name,
+            placement_layer=None,
+            component_part_name=None,
+            is_rlc=False,
+            r_value=1.0,
+            c_value=1e-9,
+            l_value=1e-9,
+            is_parallel=False,
     ):
         """Create a component from pins.
 
@@ -1488,7 +1487,7 @@ class Components(object):
         elif model_type == "Touchstone":  # pragma: no cover
             nPortModelName = modelname
             edbComponentDef = edb_component.component_def
-            nPortModel = NPortComponentModel.find(edbComponentDef, nPortModelName) # -> Missing command in pyedb
+            nPortModel = NPortComponentModel.find(edbComponentDef, nPortModelName)  # -> Missing command in pyedb
             if nPortModel.IsNull():
                 nPortModel = NPortComponentModel.create(nPortModelName)
                 nPortModel.reference_file(modelpath)
@@ -1660,7 +1659,7 @@ class Components(object):
         >>> edbapp.components.disable_rlc_component("A1")
 
         """
-        edb_cmp = self.get_component_by_name(component_name) # not correct need to be checked in debug
+        edb_cmp = self.get_component_by_name(component_name)  # not correct need to be checked in debug
         if edb_cmp is not None:
             rlc_property = edb_cmp.component_property
             pin_pair_model = rlc_property.model
@@ -1676,13 +1675,13 @@ class Components(object):
 
     @pyedb_function_handler()
     def set_solder_ball(
-        self,
-        component="",
-        sball_diam="100um",
-        sball_height="150um",
-        shape="Cylinder",
-        sball_mid_diam=None,
-        chip_orientation="chip_down",
+            self,
+            component="",
+            sball_diam="100um",
+            sball_height="150um",
+            shape="Cylinder",
+            sball_mid_diam=None,
+            chip_orientation="chip_down",
     ):
         """Set cylindrical solder balls on a given component.
 
@@ -1768,12 +1767,12 @@ class Components(object):
 
     @pyedb_function_handler()
     def set_component_rlc(
-        self,
-        componentname,
-        res_value=None,
-        ind_value=None,
-        cap_value=None,
-        isparallel=False,
+            self,
+            componentname,
+            res_value=None,
+            ind_value=None,
+            cap_value=None,
+            isparallel=False,
     ):
         """Update values for an RLC component.
 
@@ -1833,8 +1832,8 @@ class Components(object):
                 rlc.c = Value(cap_value)
             else:
                 rlc.c_enabled = False
-            pin_pair = (from_pin.name, to_pin.name)# missing PinPair ?
-            rlc_model = PinPairModel.create() # all to check
+            pin_pair = (from_pin.name, to_pin.name)  # missing PinPair ?
+            rlc_model = PinPairModel.create()  # all to check
             rlc_model.pin_pairs(pin_pair, rlc)
             edb_rlc_component_property.model = rlc_model
             edb_component.component_property = edb_rlc_component_property
@@ -1850,12 +1849,12 @@ class Components(object):
 
     @pyedb_function_handler()
     def update_rlc_from_bom(
-        self,
-        bom_file,
-        delimiter=";",
-        valuefield="Func des",
-        comptype="Prod name",
-        refdes="Pos / Place",
+            self,
+            bom_file,
+            delimiter=";",
+            valuefield="Func des",
+            comptype="Prod name",
+            refdes="Pos / Place",
     ):
         """Update the EDC core component values (RLCs) with values coming from a BOM file.
 
@@ -1920,13 +1919,13 @@ class Components(object):
 
     @pyedb_function_handler()
     def import_bom(
-        self,
-        bom_file,
-        delimiter=",",
-        refdes_col=0,
-        part_name_col=1,
-        comp_type_col=2,
-        value_col=3,
+            self,
+            bom_file,
+            delimiter=",",
+            refdes_col=0,
+            part_name_col=1,
+            comp_type_col=2,
+            value_col=3,
     ):
         """Load external BOM file.
 
@@ -2084,8 +2083,8 @@ class Components(object):
                 p
                 for p in list(component.layout_objs)
                 if int(p.obj_type) == 1
-                and p.is_layout_pin
-                and (self.get_aedt_pin_name(p) in pinName or p.name in pinName)
+                   and p.is_layout_pin
+                   and (self.get_aedt_pin_name(p) in pinName or p.name in pinName)
             ]
         else:
             pins = [p for p in list(component.layout_objs) if int(p.obj_type) == 1 and p.is_layout_pin]
