@@ -2,10 +2,11 @@
 """
 
 import os
+from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
 import pytest
 
 from pyedb import Edb
-from pyedb.generic.constants import SourceType
+from pyedb.generic.constants import RadiationBoxType, SourceType
 from pyedb.generic.constants import SolverType
 from tests.conftest import local_path
 from tests.conftest import desktop_version
@@ -522,4 +523,54 @@ class TestClass:
         assert sim_setup.build_simulation_project()
         assert edb.edbpath == os.path.join(self.local_scratch.path, "build.aedb")
 
+        edb.close()
+
+    def test_edb_statistics(self):
+        """Get statistics."""
+        example_project = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_110.aedb")
+        self.local_scratch.copyfolder(example_project, target_path)
+        edb = Edb(target_path, edbversion=desktop_version)
+        edb_stats = edb.get_statistics(compute_area=True)
+        assert edb_stats
+        assert edb_stats.num_layers
+        assert edb_stats.stackup_thickness
+        assert edb_stats.num_vias
+        assert edb_stats.occupying_ratio
+        assert edb_stats.occupying_surface
+        assert edb_stats.layout_size
+        assert edb_stats.num_polygons
+        assert edb_stats.num_traces
+        assert edb_stats.num_nets
+        assert edb_stats.num_discrete_components
+        assert edb_stats.num_inductors
+        assert edb_stats.num_capacitors
+        assert edb_stats.num_resistors
+        edb.close()
+
+    def test_hfss_set_bounding_box_extent(self):
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "test_107.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_113.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edb = Edb(target_path, edbversion=desktop_version)
+        initial_extent_info = edb.active_cell.GetHFSSExtentInfo()
+        assert initial_extent_info.ExtentType == edb.edb_api.utility.utility.HFSSExtentInfoType.Conforming
+        config = SimulationConfiguration()
+        config.radiation_box = RadiationBoxType.BoundingBox
+        assert edb.hfss.configure_hfss_extents(config)
+        final_extent_info = edb.active_cell.GetHFSSExtentInfo()
+        assert final_extent_info.ExtentType == edb.edb_api.utility.utility.HFSSExtentInfoType.BoundingBox
+        edb.close()
+
+    def test_create_rlc_component(self):
+        """Create rlc components from pin"""
+        example_project = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "ANSYS_114.aedb")
+        self.local_scratch.copyfolder(example_project, target_path)
+        edb = Edb(target_path, edbversion=desktop_version)
+        pins = edb.components.get_pin_from_component("U1", "1V0")
+        ref_pins = edb.components.get_pin_from_component("U1", "GND")
+        assert edb.components.create([pins[0], ref_pins[0]], "test_0rlc", r_value=1.67, l_value=1e-13, c_value=1e-11)
+        assert edb.components.create([pins[0], ref_pins[0]], "test_1rlc", r_value=None, l_value=1e-13, c_value=1e-11)
+        assert edb.components.create([pins[0], ref_pins[0]], "test_2rlc", r_value=None, c_value=1e-13)
         edb.close()
