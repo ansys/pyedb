@@ -59,6 +59,7 @@ tests = [
     "SRTM.py",
     "utm",
     "scikit-rf",
+    "mock",
 ]
 doc = [
     "ansys-sphinx-theme==0.12.2",

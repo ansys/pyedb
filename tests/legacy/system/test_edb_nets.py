@@ -64,3 +64,13 @@ class TestClass:
         nets_deleted = self.edbapp.nets.delete("JTAG_TDI")
         assert "JTAG_TDI" in nets_deleted
         assert "JTAG_TDI" not in self.edbapp.nets
+
+    def test_nets_classify_nets(self):
+        """Reassign power based on list of nets."""
+        assert self.edbapp.nets.classify_nets(["RSVD_0", "RSVD_1"], ["V3P3_S0"])
+        assert "RSVD_0" in self.edbapp.nets.power
+        assert "RSVD_0" not in self.edbapp.nets.signal
+        assert "RSVD_1" in self.edbapp.nets.power
+        assert "RSVD_1" not in self.edbapp.nets.signal
+        assert "V3P3_S0" not in self.edapp.nets.power
+        assert "V3P3_S0" in self.edapp.nets.signal

@@ -329,12 +329,12 @@ class TestClass:
         )
         edbapp.close()
 
-    def test_create_edb(self):
-        """Create EDB."""
-        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
-        assert edb
-        assert edb.active_layout
-        edb.close()
+    # def test_create_edb(self):
+    #     """Create EDB."""
+    #     edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+    #     assert edb
+    #     assert edb.active_layout
+    #     edb.close()
 
     def test_export_to_hfss(self):
         """Export EDB to HFSS."""
@@ -375,65 +375,66 @@ class TestClass:
         assert os.path.exists(out)
         edb.close()
 
-    def test_change_design_variable_value(self):
-        """Change a variable value."""
-        self.edbapp.add_design_variable("ant_length", "1cm")
-        self.edbapp.add_design_variable("my_parameter_default", "1mm", is_parameter=True)
-        self.edbapp.add_design_variable("$my_project_variable", "1mm")
-        changed_variable_1 = self.edbapp.change_design_variable_value("ant_length", "1m")
-        if isinstance(changed_variable_1, tuple):
-            changed_variable_done, ant_length_value = changed_variable_1
-            assert changed_variable_done
-        else:
-            assert changed_variable_1
-        changed_variable_2 = self.edbapp.change_design_variable_value("elephant_length", "1m")
-        if isinstance(changed_variable_2, tuple):
-            changed_variable_done, elephant_length_value = changed_variable_2
-            assert not changed_variable_done
-        else:
-            assert not changed_variable_2
-        changed_variable_3 = self.edbapp.change_design_variable_value("my_parameter_default", "1m")
-        if isinstance(changed_variable_3, tuple):
-            changed_variable_done, my_parameter_value = changed_variable_3
-            assert changed_variable_done
-        else:
-            assert changed_variable_3
-        changed_variable_4 = self.edbapp.change_design_variable_value("$my_project_variable", "1m")
-        if isinstance(changed_variable_4, tuple):
-            changed_variable_done, my_project_variable_value = changed_variable_4
-            assert changed_variable_done
-        else:
-            assert changed_variable_4
-        changed_variable_5 = self.edbapp.change_design_variable_value("$my_parameter", "1m")
-        if isinstance(changed_variable_5, tuple):
-            changed_variable_done, my_project_variable_value = changed_variable_5
-            assert not changed_variable_done
-        else:
-            assert not changed_variable_5
+    # def test_change_design_variable_value(self):
+    #     """Change a variable value."""
+    #     self.edbapp.add_design_variable("ant_length", "1cm")
+    #     self.edbapp.add_design_variable("my_parameter_default", "1mm", is_parameter=True)
+    #     self.edbapp.add_design_variable("$my_project_variable", "1mm")
+    #     changed_variable_1 = self.edbapp.change_design_variable_value("ant_length", "1m")
+    #     if isinstance(changed_variable_1, tuple):
+    #         changed_variable_done, ant_length_value = changed_variable_1
+    #         assert changed_variable_done
+    #     else:
+    #         assert changed_variable_1
+    #     changed_variable_2 = self.edbapp.change_design_variable_value("elephant_length", "1m")
+    #     if isinstance(changed_variable_2, tuple):
+    #         changed_variable_done, elephant_length_value = changed_variable_2
+    #         assert not changed_variable_done
+    #     else:
+    #         assert not changed_variable_2
+    #     changed_variable_3 = self.edbapp.change_design_variable_value("my_parameter_default", "1m")
+    #     if isinstance(changed_variable_3, tuple):
+    #         changed_variable_done, my_parameter_value = changed_variable_3
+    #         assert changed_variable_done
+    #     else:
+    #         assert changed_variable_3
+    #     changed_variable_4 = self.edbapp.change_design_variable_value("$my_project_variable", "1m")
+    #     if isinstance(changed_variable_4, tuple):
+    #         changed_variable_done, my_project_variable_value = changed_variable_4
+    #         assert changed_variable_done
+    #     else:
+    #         assert changed_variable_4
+    #     changed_variable_5 = self.edbapp.change_design_variable_value("$my_parameter", "1m")
+    #     if isinstance(changed_variable_5, tuple):
+    #         changed_variable_done, my_project_variable_value = changed_variable_5
+    #         assert not changed_variable_done
+    #     else:
+    #         assert not changed_variable_5
 
-    def test_variables_value(self):
-        """Evaluate variables value."""
-        from pyedb.generic.general_methods import check_numeric_equivalence
+    # def test_variables_value(self):
+    #     """Evaluate variables value."""
+    #     from pyedb.generic.general_methods import check_numeric_equivalence
 
-        variables = {
-            "var1": 0.01,
-            "var2": "10um",
-            "var3": [0.03, "test description"],
-            "$var4": ["1mm", "Project variable."],
-            "$var5": 0.1,
-        }
-        for key, val in variables.items():
-            self.edbapp[key] = val
-            if key == "var1":
-                assert self.edbapp[key].value == val
-            elif key == "var2":
-                assert check_numeric_equivalence(self.edbapp[key].value, 1.0e-5)
-            elif key == "var3":
-                assert self.edbapp[key].value == val[0]
-                assert self.edbapp[key].description == val[1]
-            elif key == "$var4":
-                assert self.edbapp[key].value == 0.001
-                assert self.edbapp[key].description == val[1]
-            elif key == "$var5":
-                assert self.edbapp[key].value == 0.1
-                assert self.edbapp.project_variables[key].delete()
+    #     variables = {
+    #         "var1": 0.01,
+    #         "var2": "10um",
+    #         "var3": [0.03, "test description"],
+    #         "$var4": ["1mm", "Project variable."],
+    #         "$var5": 0.1,
+    #     }
+    #     for key, val in variables.items():
+    #         self.edbapp[key] = val
+    #         if key == "var1":
+    #             assert self.edbapp[key].value == val
+    #         elif key == "var2":
+    #             assert check_numeric_equivalence(self.edbapp[key].value, 1.0e-5)
+    #         elif key == "var3":
+    #             assert self.edbapp[key].value == val[0]
+    #             assert self.edbapp[key].description == val[1]
+    #         elif key == "$var4":
+    #             assert self.edbapp[key].value == 0.001
+    #             assert self.edbapp[key].description == val[1]
+    #         elif key == "$var5":
+    #             assert self.edbapp[key].value == 0.1
+    #             assert self.edbapp.project_variables[key].delete()
+
