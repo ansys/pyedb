@@ -1,5 +1,5 @@
 import pytest
-from mock import Mock
+from mock import PropertyMock, patch, MagicMock
 from pyedb.legacy.edb_core.stackup import Stackup
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
@@ -7,7 +7,7 @@ pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
 class TestClass:
     @pytest.fixture(autouse=True)
     def init(self):
-        self.stackup = Stackup(Mock())
+        self.stackup = Stackup(MagicMock())
 
     def test_stackup_int_to_layer_types(self):
         """Evaluate mapping from integer to layer type."""
@@ -79,3 +79,10 @@ class TestClass:
         outline_layer = self.stackup._layer_types_to_int(self.stackup.layer_types.OutlineLayer)
         assert outline_layer == 18
 
+    @patch('pyedb.legacy.edb_core.stackup.Stackup.stackup_layers', new_callable=PropertyMock)
+    def test_110_layout_tchickness(self, mock_stackup_layers):
+        """"""
+        mock_stackup_layers.return_value = {"layer": MagicMock(upper_elevation = 42, lower_elevation = 0)}
+        assert self.stackup.get_layout_thickness() == 42
+        mock_stackup_layers.return_value = {"layer": MagicMock(upper_elevation = 0, lower_elevation = 0)}
+        assert self.stackup.get_layout_thickness() == 0
