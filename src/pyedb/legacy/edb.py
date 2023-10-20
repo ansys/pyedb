@@ -248,7 +248,7 @@ class EdbLegacy(Database):
                     description = variable_value[1] if len(variable_value[1]) > 0 else None
                 else:
                     description = None
-                    pyaedt.edb_core.general.logger.warning("Invalid type for Edb variable desciprtion is ignored.")
+                    self.logger.warning("Invalid type for Edb variable desciprtion is ignored.")
                 val = variable_value[0]
             else:
                 raise TypeError(type_error_message)
