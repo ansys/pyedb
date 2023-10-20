@@ -58,14 +58,14 @@ from pyedb.misc.misc import list_installed_ansysem
 # sys.path.append(local_path)
 
 # # Initialize default desktop configuration
-# default_version = "2023.2"
-# if "ANSYSEM_ROOT{}".format(default_version[2:].replace(".", "")) not in list_installed_ansysem():
-#     default_version = list_installed_ansysem()[0][12:].replace(".", "")
-#     default_version = "20{}.{}".format(default_version[:2], default_version[-1])
+# desktop_version = "2023.2"
+# if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_installed_ansysem():
+#     desktop_version = list_installed_ansysem()[0][12:].replace(".", "")
+#     desktop_version = "20{}.{}".format(desktop_version[:2], desktop_version[-1])
 # os.environ["ANSYSEM_FEATURE_SS544753_ICEPAK_VIRTUALMESHREGION_PARADIGM_ENABLE"] = "1"
 
 # config = {
-#     "edb_version": default_version,
+#     "edb_version": desktop_version,
 #     "NonGraphical": True,
 #     "NewThread": True,
 #     "skip_desktop_test": False,
@@ -103,10 +103,10 @@ logger = pyedb_logger
 local_path = os.path.dirname(os.path.realpath(__file__))
 
 # Initialize default desktop configuration
-default_version = "2023.2"
-if "ANSYSEM_ROOT{}".format(default_version[2:].replace(".", "")) not in list_installed_ansysem():
-    default_version = list_installed_ansysem()[0][12:].replace(".", "")
-    default_version = "20{}.{}".format(default_version[:2], default_version[-1])
+desktop_version = "2023.2"
+if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_installed_ansysem():
+    desktop_version = list_installed_ansysem()[0][12:].replace(".", "")
+    desktop_version = "20{}.{}".format(desktop_version[:2], desktop_version[-1])
 
 
 def generate_random_string(length):
@@ -225,7 +225,7 @@ def add_edb(local_scratch):
             target_folder = os.path.join(local_scratch.path, generate_unique_name("TestEdb") + ".aedb")
         return Edb(
             target_folder,
-            edbversion=default_version,
+            edbversion=desktop_version,
         )
 
     return _method

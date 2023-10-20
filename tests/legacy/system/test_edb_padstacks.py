@@ -138,3 +138,34 @@ class TestClass:
         pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1, "CornerRadius": 1}
         pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1, "CornerRadius": 1}
         pad.pad_by_layer[pad.via_stop_layer].parameters = [1, 1, 1]
+
+    def test_padstack_get_instance_by_name(self):
+        """Access padstack instance by name."""
+        padstack_instances = self.edbapp.padstacks.get_padstack_instance_by_net_name("GND")
+        assert len(padstack_instances)
+        padstack_1 = padstack_instances[0]
+        assert padstack_1.id
+        assert isinstance(padstack_1.bounding_box, list)
+        for v in padstack_instances:
+            if not v.is_pin:
+                v.name = "TestInst"
+                assert v.name == "TestInst"
+                break
+
+    def test_padstack_duplicate_padstack(self):
+        """Duplicate a padstack."""
+        self.edbapp.padstacks.duplicate(
+            target_padstack_name="c180h127",
+            new_padstack_name="c180h127_NEW",
+        )
+        assert self.edbapp.padstacks.definitions["c180h127_NEW"]
+
+    def test_padstack_set_pad_property(self):
+        """Set pad and antipad properties of the padstack."""
+        self.edbapp.padstacks.set_pad_property(
+            padstack_name="c180h127",
+            layer_name="new",
+            pad_shape="Circle",
+            pad_params="800um",
+        )
+        assert self.edbapp.padstacks.definitions["c180h127"].pad_by_layer["new"]

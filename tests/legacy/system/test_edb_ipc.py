@@ -7,7 +7,7 @@ import pytest
 from pyedb import Edb
 from tests.legacy.system.conftest import test_subfolder
 from tests.legacy.system.conftest import local_path
-from tests.conftest import default_version
+from tests.conftest import desktop_version
 
 # Mark tests as system tests
 pytestmark = pytest.mark.system
@@ -26,7 +26,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_ipc.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=default_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         ipc_path = os.path.join(self.local_scratch.path, "test.xml")
         edbapp.export_to_ipc2581(ipc_path)
         assert os.path.exists(ipc_path)

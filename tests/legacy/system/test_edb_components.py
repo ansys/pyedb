@@ -3,13 +3,14 @@
 import os
 import pytest
 
-from tests.conftest import local_path
-from tests.conftest import default_version
 from pyedb import Edb
+
+from tests.conftest import local_path
+from tests.conftest import desktop_version
+from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = pytest.mark.system
 
-test_subfolder = "TEDB"
 bom_example = "bom_example.csv"
 
 class TestClass:
@@ -228,7 +229,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_bom.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=default_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         edbapp.components.import_bom(os.path.join(local_path, "example_models", test_subfolder, "bom_example_2.csv"))
         assert not edbapp.components.instances["R2"].is_enabled
         assert edbapp.components.instances["U13"].partname == "SLAB-QFN-24-2550x2550TP_V"
@@ -244,3 +245,42 @@ class TestClass:
         assert component
         assert component.part_name == "newcomp"
         assert len(component.pins) == 2
+
+    def test_convert_resistor_value(self):
+        """Convert a resistor value."""
+        from pyedb.legacy.edb_core.components import resistor_value_parser
+        assert resistor_value_parser("100meg")
+
+    def test_components_create_solder_ball_on_component(self):
+        """Set cylindrical solder balls on a given component"""
+        assert self.edbapp.components.set_solder_ball("U1")
+
+    def test_components_short_component(self):
+        """Short pins of component with a trace."""
+        assert self.edbapp.components.short_component_pins("U12", width=0.2e-3)
+        assert self.edbapp.components.short_component_pins("U10", ["2", "5"])
+
+    def test_components_type(self):
+        """Retrieve components type."""
+        comp = self.edbapp.components["R4"]
+        comp.type = "Resistor"
+        assert comp.type == "Resistor"
+        comp.type = "Inductor"
+        assert comp.type == "Inductor"
+        comp.type = "Capacitor"
+        assert comp.type == "Capacitor"
+        comp.type = "IO"
+        assert comp.type == "IO"
+        comp.type = "IC"
+        assert comp.type == "IC"
+        comp.type = "Other"
+        assert comp.type == "Other"
+
+    def test_componenets_deactivate_rlc(self):
+        """Deactivate RLC component and convert to a circuit port."""
+        assert self.edbapp.components.deactivate_rlc_component(component="C1", create_circuit_port=True)
+        assert self.edbapp.components["C1"].is_enabled is False
+        self.edbapp.components["C2"].is_enabled = False
+        assert self.edbapp.components["C2"].is_enabled is False
+        self.edbapp.components["C2"].is_enabled = True
+        assert self.edbapp.components["C2"].is_enabled is True

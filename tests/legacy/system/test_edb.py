@@ -3,7 +3,12 @@
 
 import os
 import pytest
+
+from pyedb import Edb
 from pyedb.generic.constants import SourceType
+from tests.conftest import local_path
+from tests.conftest import desktop_version
+from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = pytest.mark.system
 
@@ -139,3 +144,296 @@ class TestClass:
         """Save edb as some file."""
         assert self.edbapp.save_edb_as(os.path.join(self.local_scratch.path, "Gelileo_new.aedb"))
         assert os.path.exists(os.path.join(self.local_scratch.path, "Gelileo_new.aedb", "edb.def"))
+
+    def test_create_custom_cutout_0(self):
+        """Create custom cutout 0."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
+        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_cutou1.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        output = os.path.join(self.local_scratch.path, "cutout.aedb")
+        assert edbapp.cutout(
+            ["DDR4_DQS0_P", "DDR4_DQS0_N"],
+            ["GND"],
+            output_aedb_path=output,
+            open_cutout_at_end=False,
+            use_pyaedt_extent_computing=True,
+            use_pyaedt_cutout=False,
+        )
+        assert edbapp.cutout(
+            ["DDR4_DQS0_P", "DDR4_DQS0_N"],
+            ["GND"],
+            output_aedb_path=output,
+            open_cutout_at_end=False,
+            remove_single_pin_components=True,
+            use_pyaedt_cutout=False,
+        )
+        assert os.path.exists(os.path.join(output, "edb.def"))
+        bounding = edbapp.get_bounding_box()
+        cutout_line_x = 41
+        cutout_line_y = 30
+        points = [[bounding[0][0], bounding[0][1]]]
+        points.append([cutout_line_x, bounding[0][1]])
+        points.append([cutout_line_x, cutout_line_y])
+        points.append([bounding[0][0], cutout_line_y])
+        points.append([bounding[0][0], bounding[0][1]])
+        output = os.path.join(self.local_scratch.path, "cutout2.aedb")
+
+        assert edbapp.cutout(
+            custom_extent=points,
+            signal_list=["GND", "1V0"],
+            output_aedb_path=output,
+            open_cutout_at_end=False,
+            include_partial_instances=True,
+            use_pyaedt_cutout=False,
+        )
+        assert os.path.exists(os.path.join(output, "edb.def"))
+        output = os.path.join(self.local_scratch.path, "cutout3.aedb")
+
+        assert edbapp.cutout(
+            custom_extent=points,
+            signal_list=["GND", "1V0"],
+            output_aedb_path=output,
+            open_cutout_at_end=False,
+            include_partial_instances=True,
+            use_pyaedt_cutout=False,
+        )
+        assert os.path.exists(os.path.join(output, "edb.def"))
+        edbapp.close()
+
+    def test_create_custom_cutout_1(self):
+        """Create custom cutout 1."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_cutou2.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
+        edbapp.components.instances["R8"].assign_spice_model(spice_path)
+        edbapp.nets.nets
+        assert edbapp.cutout(
+            signal_list=["1V0"],
+            reference_list=["GND"],
+            extent_type="Bounding",
+            number_of_threads=4,
+            extent_defeature=0.001,
+            preserve_components_with_model=True,
+        )
+        assert "A0_N" not in edbapp.nets.nets
+        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", order_by_area=True), list)
+        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True), list)
+        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
+        edbapp.close()
+
+    def test_create_custom_cutout_2(self):
+        """Create custom cutout 2."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_cutou3.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        bounding = edbapp.get_bounding_box()
+        cutout_line_x = 41
+        cutout_line_y = 30
+        points = [[bounding[0][0], bounding[0][1]]]
+        points.append([cutout_line_x, bounding[0][1]])
+        points.append([cutout_line_x, cutout_line_y])
+        points.append([bounding[0][0], cutout_line_y])
+        points.append([bounding[0][0], bounding[0][1]])
+        assert edbapp.cutout(
+            signal_list=["1V0"],
+            reference_list=["GND"],
+            number_of_threads=4,
+            extent_type="ConvexHull",
+            custom_extent=points,
+            simple_pad_check=False,
+        )
+        edbapp.close()
+
+    def test_create_custom_cutout_3(self):
+        """Create custom cutout 3."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_cutou5.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp.components.create_port_on_component(
+            "U1",
+            ["5V"],
+            reference_net="GND",
+            port_type=SourceType.CircPort,
+        )
+        edbapp.components.create_port_on_component("U2", ["5V"], reference_net="GND")
+        edbapp.hfss.create_voltage_source_on_net("U4", "5V", "U4", "GND")
+        legacy_name = edbapp.edbpath
+        assert edbapp.cutout(
+            signal_list=["5V"],
+            reference_list=["GND"],
+            number_of_threads=4,
+            extent_type="ConvexHull",
+            use_pyaedt_extent_computing=True,
+            check_terminals=True,
+        )
+        assert edbapp.edbpath == legacy_name
+        assert edbapp.are_port_reference_terminals_connected(common_reference="GND")
+
+        edbapp.close()
+
+    def test_create_custom_cutout_4(self):
+        """Create custom cutout 4."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
+        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_cut_smart.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+
+        edbapp = Edb(target_path, edbversion=desktop_version)
+
+        assert edbapp.cutout(
+            signal_list=["DDR4_DQS0_P", "DDR4_DQS0_N"],
+            reference_list=["GND"],
+            number_of_threads=4,
+            extent_type="ConvexHull",
+            use_pyaedt_extent_computing=True,
+            check_terminals=True,
+            expansion_factor=4,
+        )
+        edbapp.close()
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "MicrostripSpliGnd.aedb")
+        target_path = os.path.join(self.local_scratch.path, "MicrostripSpliGnd.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+
+        edbapp = Edb(target_path, edbversion=desktop_version)
+
+        assert edbapp.cutout(
+            signal_list=["trace_n"],
+            reference_list=["ground"],
+            number_of_threads=4,
+            extent_type="Conformal",
+            use_pyaedt_extent_computing=True,
+            check_terminals=True,
+            expansion_factor=2,
+        )
+        edbapp.close()
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "Multizone_GroundVoids.aedb")
+        target_path = os.path.join(self.local_scratch.path, "Multizone_GroundVoids.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+
+        edbapp = Edb(target_path, edbversion=desktop_version)
+
+        assert edbapp.cutout(
+            signal_list=["DIFF_N", "DIFF_P"],
+            reference_list=["GND"],
+            number_of_threads=4,
+            extent_type="Conformal",
+            use_pyaedt_extent_computing=True,
+            check_terminals=True,
+            expansion_factor=3,
+        )
+        edbapp.close()
+
+    def test_create_edb(self):
+        """Create EDB."""
+        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        assert edb
+        assert edb.active_layout
+        edb.close()
+
+    def test_export_to_hfss(self):
+        """Export EDB to HFSS."""
+        edb = Edb(
+            edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
+            edbversion=desktop_version,
+        )
+        options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
+        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        assert os.path.exists(out)
+        out = edb.export_hfss(self.local_scratch)
+        assert os.path.exists(out)
+        edb.close()
+
+    def test_export_to_q3d(self):
+        """Export EDB to Q3D."""
+        edb = Edb(
+            edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
+            edbversion=desktop_version,
+        )
+        options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
+        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        assert os.path.exists(out)
+        out = edb.export_q3d(self.local_scratch, net_list=["ANALOG_A0", "ANALOG_A1", "ANALOG_A2"], hidden=True)
+        assert os.path.exists(out)
+        edb.close()
+
+    def test_074_export_to_maxwell(self):
+        """Export EDB to Maxwell 3D."""
+        edb = Edb(
+            edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
+            edbversion=desktop_version,
+        )
+        options_config = {"UNITE_NETS": 1, "LAUNCH_MAXWELL": 0}
+        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        assert os.path.exists(out)
+        out = edb.export_maxwell(self.local_scratch, num_cores=6)
+        assert os.path.exists(out)
+        edb.close()
+
+    def test_change_design_variable_value(self):
+        """Change a variable value."""
+        self.edbapp.add_design_variable("ant_length", "1cm")
+        self.edbapp.add_design_variable("my_parameter_default", "1mm", is_parameter=True)
+        self.edbapp.add_design_variable("$my_project_variable", "1mm")
+        changed_variable_1 = self.edbapp.change_design_variable_value("ant_length", "1m")
+        if isinstance(changed_variable_1, tuple):
+            changed_variable_done, ant_length_value = changed_variable_1
+            assert changed_variable_done
+        else:
+            assert changed_variable_1
+        changed_variable_2 = self.edbapp.change_design_variable_value("elephant_length", "1m")
+        if isinstance(changed_variable_2, tuple):
+            changed_variable_done, elephant_length_value = changed_variable_2
+            assert not changed_variable_done
+        else:
+            assert not changed_variable_2
+        changed_variable_3 = self.edbapp.change_design_variable_value("my_parameter_default", "1m")
+        if isinstance(changed_variable_3, tuple):
+            changed_variable_done, my_parameter_value = changed_variable_3
+            assert changed_variable_done
+        else:
+            assert changed_variable_3
+        changed_variable_4 = self.edbapp.change_design_variable_value("$my_project_variable", "1m")
+        if isinstance(changed_variable_4, tuple):
+            changed_variable_done, my_project_variable_value = changed_variable_4
+            assert changed_variable_done
+        else:
+            assert changed_variable_4
+        changed_variable_5 = self.edbapp.change_design_variable_value("$my_parameter", "1m")
+        if isinstance(changed_variable_5, tuple):
+            changed_variable_done, my_project_variable_value = changed_variable_5
+            assert not changed_variable_done
+        else:
+            assert not changed_variable_5
+
+    def test_variables_value(self):
+        """Evaluate variables value."""
+        from pyedb.generic.general_methods import check_numeric_equivalence
+
+        variables = {
+            "var1": 0.01,
+            "var2": "10um",
+            "var3": [0.03, "test description"],
+            "$var4": ["1mm", "Project variable."],
+            "$var5": 0.1,
+        }
+        for key, val in variables.items():
+            self.edbapp[key] = val
+            if key == "var1":
+                assert self.edbapp[key].value == val
+            elif key == "var2":
+                assert check_numeric_equivalence(self.edbapp[key].value, 1.0e-5)
+            elif key == "var3":
+                assert self.edbapp[key].value == val[0]
+                assert self.edbapp[key].description == val[1]
+            elif key == "$var4":
+                assert self.edbapp[key].value == 0.001
+                assert self.edbapp[key].description == val[1]
+            elif key == "$var5":
+                assert self.edbapp[key].value == 0.1
+                assert self.edbapp.project_variables[key].delete()

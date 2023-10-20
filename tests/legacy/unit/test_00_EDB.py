@@ -27,7 +27,7 @@ from pyedb.generic.constants import SourceType
 from tests.conftest import local_path
 # from tests.conftest import edb_version
 
-pytestmark = pytest.mark.unit
+# pytestmark = pytest.mark.unit
 
 # try:
 #     import pytest
@@ -663,60 +663,60 @@ class TestClass:
         assert component.part_name == "newcomp"
         assert len(component.pins) == 2
 
-    # def test_062_create_cutout(self):
-    #     source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
-    #     target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_cutou1.aedb")
-    #     self.local_scratch.copyfolder(source_path, target_path)
-    #     edbapp = Edb(target_path, edbversion=desktop_version)
-    #     output = os.path.join(self.local_scratch.path, "cutout.aedb")
-    #     assert edbapp.cutout(
-    #         ["DDR4_DQS0_P", "DDR4_DQS0_N"],
-    #         ["GND"],
-    #         output_aedb_path=output,
-    #         open_cutout_at_end=False,
-    #         use_pyaedt_extent_computing=True,
-    #         use_pyaedt_cutout=False,
-    #     )
-    #     assert edbapp.cutout(
-    #         ["DDR4_DQS0_P", "DDR4_DQS0_N"],
-    #         ["GND"],
-    #         output_aedb_path=output,
-    #         open_cutout_at_end=False,
-    #         remove_single_pin_components=True,
-    #         use_pyaedt_cutout=False,
-    #     )
-    #     assert os.path.exists(os.path.join(output, "edb.def"))
-    #     bounding = edbapp.get_bounding_box()
-    #     cutout_line_x = 41
-    #     cutout_line_y = 30
-    #     points = [[bounding[0][0], bounding[0][1]]]
-    #     points.append([cutout_line_x, bounding[0][1]])
-    #     points.append([cutout_line_x, cutout_line_y])
-    #     points.append([bounding[0][0], cutout_line_y])
-    #     points.append([bounding[0][0], bounding[0][1]])
-    #     output = os.path.join(self.local_scratch.path, "cutout2.aedb")
+    def test_062_create_cutout(self):
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
+        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_cutou1.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        output = os.path.join(self.local_scratch.path, "cutout.aedb")
+        assert edbapp.cutout(
+            ["DDR4_DQS0_P", "DDR4_DQS0_N"],
+            ["GND"],
+            output_aedb_path=output,
+            open_cutout_at_end=False,
+            use_pyaedt_extent_computing=True,
+            use_pyaedt_cutout=False,
+        )
+        assert edbapp.cutout(
+            ["DDR4_DQS0_P", "DDR4_DQS0_N"],
+            ["GND"],
+            output_aedb_path=output,
+            open_cutout_at_end=False,
+            remove_single_pin_components=True,
+            use_pyaedt_cutout=False,
+        )
+        assert os.path.exists(os.path.join(output, "edb.def"))
+        bounding = edbapp.get_bounding_box()
+        cutout_line_x = 41
+        cutout_line_y = 30
+        points = [[bounding[0][0], bounding[0][1]]]
+        points.append([cutout_line_x, bounding[0][1]])
+        points.append([cutout_line_x, cutout_line_y])
+        points.append([bounding[0][0], cutout_line_y])
+        points.append([bounding[0][0], bounding[0][1]])
+        output = os.path.join(self.local_scratch.path, "cutout2.aedb")
 
-    #     assert edbapp.cutout(
-    #         custom_extent=points,
-    #         signal_list=["GND", "1V0"],
-    #         output_aedb_path=output,
-    #         open_cutout_at_end=False,
-    #         include_partial_instances=True,
-    #         use_pyaedt_cutout=False,
-    #     )
-    #     assert os.path.exists(os.path.join(output, "edb.def"))
-    #     output = os.path.join(self.local_scratch.path, "cutout3.aedb")
+        assert edbapp.cutout(
+            custom_extent=points,
+            signal_list=["GND", "1V0"],
+            output_aedb_path=output,
+            open_cutout_at_end=False,
+            include_partial_instances=True,
+            use_pyaedt_cutout=False,
+        )
+        assert os.path.exists(os.path.join(output, "edb.def"))
+        output = os.path.join(self.local_scratch.path, "cutout3.aedb")
 
-    #     assert edbapp.cutout(
-    #         custom_extent=points,
-    #         signal_list=["GND", "1V0"],
-    #         output_aedb_path=output,
-    #         open_cutout_at_end=False,
-    #         include_partial_instances=True,
-    #         use_pyaedt_cutout=False,
-    #     )
-    #     assert os.path.exists(os.path.join(output, "edb.def"))
-    #     edbapp.close()
+        assert edbapp.cutout(
+            custom_extent=points,
+            signal_list=["GND", "1V0"],
+            output_aedb_path=output,
+            open_cutout_at_end=False,
+            include_partial_instances=True,
+            use_pyaedt_cutout=False,
+        )
+        assert os.path.exists(os.path.join(output, "edb.def"))
+        edbapp.close()
 
     # def test_063_create_custom_cutout(self):
     #     source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
@@ -848,115 +848,115 @@ class TestClass:
     # def test_066_rvalue(self):
     #     assert resistor_value_parser("100meg")
 
-    # def test_067_stackup_limits(self):
-    #     assert self.edbapp.stackup.limits()
+    def test_067_stackup_limits(self):
+        assert self.edbapp.stackup.limits()
 
-    # def test_068_create_polygon(self):
-    #     settings.enable_error_handler = True
-    #     points = [
-    #         [-0.025, -0.02],
-    #         [0.025, -0.02],
-    #         [0.025, 0.02],
-    #         [-0.025, 0.02],
-    #         [-0.025, -0.02],
-    #     ]
-    #     plane = self.edbapp.modeler.Shape("polygon", points=points)
-    #     points = [
-    #         [-0.001, -0.001],
-    #         [0.001, -0.001, "ccw", 0.0, -0.0012],
-    #         [0.001, 0.001],
-    #         [0.0015, 0.0015, 0.0001],
-    #         [-0.001, 0.0015],
-    #         [-0.001, -0.001],
-    #     ]
-    #     void1 = self.edbapp.modeler.Shape("polygon", points=points)
-    #     void2 = self.edbapp.modeler.Shape("rectangle", [-0.002, 0.0], [-0.015, 0.0005])
-    #     assert self.edbapp.modeler.create_polygon(plane, "1_Top", [void1, void2])
-    #     self.edbapp["polygon_pts_x"] = -1.025
-    #     self.edbapp["polygon_pts_y"] = -1.02
-    #     points = [
-    #         ["polygon_pts_x", "polygon_pts_y"],
-    #         [1.025, -1.02],
-    #         [1.025, 1.02],
-    #         [-1.025, 1.02],
-    #         [-1.025, -1.02],
-    #     ]
-    #     assert self.edbapp.modeler.create_polygon(points, "1_Top")
-    #     settings.enable_error_handler = False
+    def test_068_create_polygon(self):
+        # settings.enable_error_handler = True
+        points = [
+            [-0.025, -0.02],
+            [0.025, -0.02],
+            [0.025, 0.02],
+            [-0.025, 0.02],
+            [-0.025, -0.02],
+        ]
+        plane = self.edbapp.modeler.Shape("polygon", points=points)
+        points = [
+            [-0.001, -0.001],
+            [0.001, -0.001, "ccw", 0.0, -0.0012],
+            [0.001, 0.001],
+            [0.0015, 0.0015, 0.0001],
+            [-0.001, 0.0015],
+            [-0.001, -0.001],
+        ]
+        void1 = self.edbapp.modeler.Shape("polygon", points=points)
+        void2 = self.edbapp.modeler.Shape("rectangle", [-0.002, 0.0], [-0.015, 0.0005])
+        assert self.edbapp.modeler.create_polygon(plane, "1_Top", [void1, void2])
+        self.edbapp["polygon_pts_x"] = -1.025
+        self.edbapp["polygon_pts_y"] = -1.02
+        points = [
+            ["polygon_pts_x", "polygon_pts_y"],
+            [1.025, -1.02],
+            [1.025, 1.02],
+            [-1.025, 1.02],
+            [-1.025, -1.02],
+        ]
+        assert self.edbapp.modeler.create_polygon(points, "1_Top")
+        # settings.enable_error_handler = False
 
-    # def test_069_create_path(self):
-    #     points = [
-    #         [-0.025, -0.02],
-    #         [0.025, -0.02],
-    #         [0.025, 0.02],
-    #     ]
-    #     trace = self.edbapp.modeler.create_trace(points, "1_Top")
-    #     assert trace
-    #     assert isinstance(trace.get_center_line(), list)
-    #     assert isinstance(trace.get_center_line(True), list)
-    #     self.edbapp["delta_x"] = "1mm"
-    #     assert trace.add_point("delta_x", "1mm", True)
-    #     assert trace.get_center_line(True)[-1][0] == "(delta_x)+(0.025)"
-    #     assert trace.add_point(0.001, 0.002)
-    #     assert trace.get_center_line()[-1] == [0.001, 0.002]
+    def test_069_create_path(self):
+        points = [
+            [-0.025, -0.02],
+            [0.025, -0.02],
+            [0.025, 0.02],
+        ]
+        trace = self.edbapp.modeler.create_trace(points, "1_Top")
+        assert trace
+        assert isinstance(trace.get_center_line(), list)
+        assert isinstance(trace.get_center_line(True), list)
+        self.edbapp["delta_x"] = "1mm"
+        assert trace.add_point("delta_x", "1mm", True)
+        assert trace.get_center_line(True)[-1][0] == "(delta_x)+(0.025)"
+        assert trace.add_point(0.001, 0.002)
+        assert trace.get_center_line()[-1] == [0.001, 0.002]
 
 
-    # def test_070_create_outline(self):
-    #     edbapp = Edb(
-    #         edbversion=desktop_version,
-    #     )
-    #     assert edbapp.stackup.add_outline_layer("Outline1")
-    #     assert not edbapp.stackup.add_outline_layer("Outline1")
-    #     edbapp.stackup.add_layer("1_Top")
-    #     assert edbapp.stackup.layers["1_Top"].thickness == 3.5e-05
-    #     edbapp.stackup.layers["1_Top"].thickness = 4e-5
-    #     assert edbapp.stackup.layers["1_Top"].thickness == 4e-05
-    #     edbapp.close()
+    def test_070_create_outline(self):
+        edbapp = Edb(
+            edbversion=desktop_version,
+        )
+        assert edbapp.stackup.add_outline_layer("Outline1")
+        assert not edbapp.stackup.add_outline_layer("Outline1")
+        edbapp.stackup.add_layer("1_Top")
+        assert edbapp.stackup.layers["1_Top"].thickness == 3.5e-05
+        edbapp.stackup.layers["1_Top"].thickness = 4e-5
+        assert edbapp.stackup.layers["1_Top"].thickness == 4e-05
+        edbapp.close()
 
-    # def test_071_create_edb(self):
-    #     edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
-    #     assert edb
-    #     assert edb.active_layout
-    #     edb.close()
-
-    # @pytest.mark.skipif(config["build_machine"], reason="Not running in non-graphical mode")
-    # def test_072_export_to_hfss(self):
-    #     edb = Edb(
-    #         edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
-    #         edbversion=desktop_version,
-    #     )
-    #     options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-    #     out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
-    #     assert os.path.exists(out)
-    #     out = edb.export_hfss(self.local_scratch)
-    #     assert os.path.exists(out)
-    #     edb.close()
+    def test_071_create_edb(self):
+        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        assert edb
+        assert edb.active_layout
+        edb.close()
 
     # @pytest.mark.skipif(config["build_machine"], reason="Not running in non-graphical mode")
-    # def test_073_export_to_q3d(self):
-    #     edb = Edb(
-    #         edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
-    #         edbversion=desktop_version,
-    #     )
-    #     options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-    #     out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
-    #     assert os.path.exists(out)
-    #     out = edb.export_q3d(self.local_scratch, net_list=["ANALOG_A0", "ANALOG_A1", "ANALOG_A2"], hidden=True)
-    #     assert os.path.exists(out)
-    #     edb.close()
+    def test_072_export_to_hfss(self):
+        edb = Edb(
+            edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
+            # edbversion=desktop_version,
+        )
+        options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
+        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        assert os.path.exists(out)
+        out = edb.export_hfss(self.local_scratch)
+        assert os.path.exists(out)
+        edb.close()
 
     # @pytest.mark.skipif(config["build_machine"], reason="Not running in non-graphical mode")
-    # def test_074_export_to_maxwell(self):
-    #     edb = Edb(
-    #         edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
-    #         edbversion=desktop_version,
-    #     )
-    #     options_config = {"UNITE_NETS": 1, "LAUNCH_MAXWELL": 0}
-    #     out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
-    #     assert os.path.exists(out)
-    #     out = edb.export_maxwell(self.local_scratch, num_cores=6)
-    #     assert os.path.exists(out)
-    #     edb.close()
+    def test_073_export_to_q3d(self):
+        edb = Edb(
+            edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
+            # edbversion=desktop_version,
+        )
+        options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
+        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        assert os.path.exists(out)
+        out = edb.export_q3d(self.local_scratch, net_list=["ANALOG_A0", "ANALOG_A1", "ANALOG_A2"], hidden=True)
+        assert os.path.exists(out)
+        edb.close()
+
+    # @pytest.mark.skipif(config["build_machine"], reason="Not running in non-graphical mode")
+    def test_074_export_to_maxwell(self):
+        edb = Edb(
+            edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
+            edbversion=desktop_version,
+        )
+        options_config = {"UNITE_NETS": 1, "LAUNCH_MAXWELL": 0}
+        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        assert os.path.exists(out)
+        out = edb.export_maxwell(self.local_scratch, num_cores=6)
+        assert os.path.exists(out)
+        edb.close()
 
     # def test_075_flatten_planes(self):
     #     assert self.edbapp.modeler.unite_polygons_on_layer("1_Top")
@@ -1005,17 +1005,17 @@ class TestClass:
     #     )
     #     assert self.edbapp.padstacks.definitions["c180h127"].pad_by_layer["new"]
 
-    # def test_084_primitives_area(self):
-    #     i = 0
-    #     while i < 10:
-    #         assert self.edbapp.modeler.primitives[i].area(False) > 0
-    #         assert self.edbapp.modeler.primitives[i].area(True) > 0
-    #         i += 1
-    #     assert self.edbapp.modeler.primitives[i].bbox
-    #     assert self.edbapp.modeler.primitives[i].center
-    #     assert self.edbapp.modeler.primitives[i].get_closest_point((0, 0))
-    #     assert self.edbapp.modeler.primitives[i].polygon_data
-    #     assert self.edbapp.modeler.paths[0].length
+    def test_084_primitives_area(self):
+        i = 0
+        while i < 10:
+            assert self.edbapp.modeler.primitives[i].area(False) > 0
+            assert self.edbapp.modeler.primitives[i].area(True) > 0
+            i += 1
+        assert self.edbapp.modeler.primitives[i].bbox
+        assert self.edbapp.modeler.primitives[i].center
+        assert self.edbapp.modeler.primitives[i].get_closest_point((0, 0))
+        assert self.edbapp.modeler.primitives[i].polygon_data
+        assert self.edbapp.modeler.paths[0].length
 
     # def test_085_short_component(self):
     #     assert self.edbapp.components.short_component_pins("U12", width=0.2e-3)

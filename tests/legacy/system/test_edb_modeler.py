@@ -2,6 +2,7 @@
 """
 
 import pytest
+from pyedb.generic.settings import settings
 
 pytestmark = pytest.mark.system
 
@@ -101,3 +102,111 @@ class TestClass:
         for poly in polys:
             points = self.edbapp.modeler.get_polygon_points(poly)
             assert points
+
+    def test_modeler_create_polygon(self):
+        """Create a polygon based on a shape or points."""
+        settings.enable_error_handler = True
+        points = [
+            [-0.025, -0.02],
+            [0.025, -0.02],
+            [0.025, 0.02],
+            [-0.025, 0.02],
+            [-0.025, -0.02],
+        ]
+        plane = self.edbapp.modeler.Shape("polygon", points=points)
+        points = [
+            [-0.001, -0.001],
+            [0.001, -0.001, "ccw", 0.0, -0.0012],
+            [0.001, 0.001],
+            [0.0015, 0.0015, 0.0001],
+            [-0.001, 0.0015],
+            [-0.001, -0.001],
+        ]
+        void1 = self.edbapp.modeler.Shape("polygon", points=points)
+        void2 = self.edbapp.modeler.Shape("rectangle", [-0.002, 0.0], [-0.015, 0.0005])
+        assert self.edbapp.modeler.create_polygon(plane, "1_Top", [void1, void2])
+        self.edbapp["polygon_pts_x"] = -1.025
+        self.edbapp["polygon_pts_y"] = -1.02
+        points = [
+            ["polygon_pts_x", "polygon_pts_y"],
+            [1.025, -1.02],
+            [1.025, 1.02],
+            [-1.025, 1.02],
+            [-1.025, -1.02],
+        ]
+        assert self.edbapp.modeler.create_polygon(points, "1_Top")
+        settings.enable_error_handler = False
+
+    def test_modeler_create_trace(self):
+        """Create a trace based on a list of points."""
+        points = [
+            [-0.025, -0.02],
+            [0.025, -0.02],
+            [0.025, 0.02],
+        ]
+        trace = self.edbapp.modeler.create_trace(points, "1_Top")
+        assert trace
+        assert isinstance(trace.get_center_line(), list)
+        assert isinstance(trace.get_center_line(True), list)
+        self.edbapp["delta_x"] = "1mm"
+        assert trace.add_point("delta_x", "1mm", True)
+        assert trace.get_center_line(True)[-1][0] == "(delta_x)+(0.025)"
+        assert trace.add_point(0.001, 0.002)
+        assert trace.get_center_line()[-1] == [0.001, 0.002]
+
+    def test_modeler_add_void(self):
+        """Add a void into a shape."""
+        plane_shape = self.edbapp.modeler.Shape("rectangle", pointA=["-5mm", "-5mm"], pointB=["5mm", "5mm"])
+        plane = self.edbapp.modeler.create_polygon(plane_shape, "1_Top", net_name="GND")
+        void = self.edbapp.modeler.create_trace([["0", "0"], ["0", "1mm"]], layer_name="1_Top", width="0.1mm")
+        assert self.edbapp.modeler.add_void(plane, void)
+        assert plane.add_void(void)
+
+    def test_modeler_fix_circle_void(self):
+        """Fix issues when circle void are clipped due to a bug in EDB."""
+        assert self.edbapp.modeler.fix_circle_void_for_clipping()
+
+    def test_modeler_primitives_area(self):
+        """Access primitives total area."""
+        i = 0
+        while i < 10:
+            assert self.edbapp.modeler.primitives[i].area(False) > 0
+            assert self.edbapp.modeler.primitives[i].area(True) > 0
+            i += 1
+        assert self.edbapp.modeler.primitives[i].bbox
+        assert self.edbapp.modeler.primitives[i].center
+        assert self.edbapp.modeler.primitives[i].get_closest_point((0, 0))
+        assert self.edbapp.modeler.primitives[i].polygon_data
+        assert self.edbapp.modeler.paths[0].length
+
+    def test_modeler_create_rectangle(self):
+        """Create rectangle."""
+        rect = self.edbapp.modeler.create_rectangle("1_Top", "SIG1", ["0", "0"], ["2mm", "3mm"])
+        assert rect
+        rect.is_negative = True
+        assert rect.is_negative
+        rect.is_negative = False
+        assert not rect.is_negative
+        assert self.edbapp.modeler.create_rectangle(
+            "1_Top",
+            "SIG2",
+            center_point=["0", "0"],
+            width="4mm",
+            height="5mm",
+            representation_type="CenterWidthHeight",
+        )
+
+    def test_modeler_create_circle(self):
+        """Create circle."""
+        poly = self.edbapp.modeler.create_polygon_from_points([[0, 0], [100, 0], [100, 100], [0, 100]], "1_Top")
+        assert poly
+        poly.add_void([[20, 20], [20, 30], [100, 30], [100, 20]])
+        poly2 = self.edbapp.modeler.create_polygon_from_points([[60, 60], [60, 150], [150, 150], [150, 60]], "1_Top")
+        new_polys = poly.subtract(poly2)
+        assert len(new_polys) == 1
+        circle = self.edbapp.modeler.create_circle("1_Top", 40, 40, 15)
+        assert circle
+        intersection = new_polys[0].intersect(circle)
+        assert len(intersection) == 1
+        circle2 = self.edbapp.modeler.create_circle("1_Top", 20, 20, 15)
+        assert circle2.unite(intersection)
