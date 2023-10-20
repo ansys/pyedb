@@ -122,6 +122,7 @@ class TestClass:
     #     assert outline_layer == 18
 
     def test_stackup_place_a3dcomp_3d_placement(self):
+        """Place a 3D Component into current layout."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "lam_for_bottom_place.aedb")
         target_path = os.path.join(self.local_scratch.path, "output.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
@@ -172,6 +173,70 @@ class TestClass:
             assert angle.IsEqual(zero_value)
             assert loc.IsEqual(
                 laminate_edb.edb_api.geometry.point3d_data(zero_value, zero_value, laminate_edb.edb_value(170e-6))
+            )
+            assert laminate_edb.save_edb()
+        finally:
+            laminate_edb.close()
+
+    def test_stackup_place_a3dcomp_3d_placement_on_bottom(self):
+        """Place a 3D Component into current layout."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "lam_for_bottom_place.aedb")
+        target_path = os.path.join(self.local_scratch.path, "output.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        laminate_edb = Edb(target_path, edbversion=desktop_version)
+        chip_a3dcomp = os.path.join(local_path, "example_models", test_subfolder, "chip.a3dcomp")
+        try:
+            layout = laminate_edb.active_layout
+            cell_instances = list(layout.CellInstances)
+            assert len(cell_instances) == 0
+            assert laminate_edb.stackup.place_a3dcomp_3d_placement(
+                chip_a3dcomp,
+                angle=90.0,
+                offset_x=0.5e-3,
+                offset_y=-0.5e-3,
+                place_on_top=False,
+            )
+            cell_instances = list(layout.CellInstances)
+            assert len(cell_instances) == 1
+            cell_instance = cell_instances[0]
+            assert cell_instance.Is3DPlacement()
+            if desktop_version > "2023.1":
+                (
+                    res,
+                    local_origin,
+                    rotation_axis_from,
+                    rotation_axis_to,
+                    angle,
+                    loc,
+                    mirror,
+                ) = cell_instance.Get3DTransformation()
+            else:
+                (
+                    res,
+                    local_origin,
+                    rotation_axis_from,
+                    rotation_axis_to,
+                    angle,
+                    loc,
+                ) = cell_instance.Get3DTransformation()
+            assert res
+            zero_value = laminate_edb.edb_value(0)
+            one_value = laminate_edb.edb_value(1)
+            flip_angle_value = laminate_edb.edb_value("180deg")
+            origin_point = laminate_edb.edb_api.geometry.point3d_data(zero_value, zero_value, zero_value)
+            x_axis_point = laminate_edb.edb_api.geometry.point3d_data(one_value, zero_value, zero_value)
+            assert local_origin.IsEqual(origin_point)
+            assert rotation_axis_from.IsEqual(x_axis_point)
+            assert rotation_axis_to.IsEqual(
+                laminate_edb.edb_api.geometry.point3d_data(zero_value, laminate_edb.edb_value(-1.0), zero_value)
+            )
+            assert angle.IsEqual(flip_angle_value)
+            assert loc.IsEqual(
+                laminate_edb.edb_api.geometry.point3d_data(
+                    laminate_edb.edb_value(0.5e-3),
+                    laminate_edb.edb_value(-0.5e-3),
+                    zero_value,
+                )
             )
             assert laminate_edb.save_edb()
         finally:

@@ -6,6 +6,7 @@ import pytest
 
 from pyedb import Edb
 from pyedb.generic.constants import SourceType
+from pyedb.generic.constants import SolverType
 from tests.conftest import local_path
 from tests.conftest import desktop_version
 from tests.legacy.system.conftest import test_subfolder
@@ -438,3 +439,87 @@ class TestClass:
     #             assert self.edbapp[key].value == 0.1
     #             assert self.edbapp.project_variables[key].delete()
 
+    def test_create_edge_port_on_polygon(self):
+        """Create lumped and vertical port."""
+        edb = Edb(
+            edbpath=os.path.join(local_path, "example_models", test_subfolder, "edge_ports.aedb"),
+            edbversion=desktop_version,
+        )
+        poly_list = [poly for poly in edb.layout.primitives if int(poly.GetPrimitiveType()) == 2]
+        port_poly = [poly for poly in poly_list if poly.GetId() == 17][0]
+        ref_poly = [poly for poly in poly_list if poly.GetId() == 19][0]
+        port_location = [-65e-3, -13e-3]
+        ref_location = [-63e-3, -13e-3]
+        assert edb.hfss.create_edge_port_on_polygon(
+            polygon=port_poly,
+            reference_polygon=ref_poly,
+            terminal_point=port_location,
+            reference_point=ref_location,
+        )
+        port_poly = [poly for poly in poly_list if poly.GetId() == 23][0]
+        ref_poly = [poly for poly in poly_list if poly.GetId() == 22][0]
+        port_location = [-65e-3, -10e-3]
+        ref_location = [-65e-3, -10e-3]
+        assert edb.hfss.create_edge_port_on_polygon(
+            polygon=port_poly,
+            reference_polygon=ref_poly,
+            terminal_point=port_location,
+            reference_point=ref_location,
+        )
+        port_poly = [poly for poly in poly_list if poly.GetId() == 25][0]
+        port_location = [-65e-3, -7e-3]
+        assert edb.hfss.create_edge_port_on_polygon(
+            polygon=port_poly, terminal_point=port_location, reference_layer="gnd"
+        )
+        sig = edb.modeler.create_trace([[0, 0], ["9mm", 0]], "TOP", "1mm", "SIG", "Flat", "Flat")
+        assert sig.create_edge_port("pcb_port_1", "end", "Wave", None, 8, 8)
+        assert sig.create_edge_port("pcb_port_2", "start", "gap")
+        gap_port = edb.ports["pcb_port_2"]
+        assert gap_port.component is None
+        assert gap_port.magnitude == 0.0
+        assert gap_port.phase == 0.0
+        assert gap_port.impedance
+        assert not gap_port.deembed
+        gap_port.name = "gap_port"
+        assert gap_port.name == "gap_port"
+        assert isinstance(gap_port.renormalize_z0, tuple)
+        edb.close()
+
+    def test_create_dc_simulation(self):
+        """Create Siwave DC simulation"""
+        edb = Edb(
+            edbpath=os.path.join(local_path, "example_models", test_subfolder, "dc_flow.aedb"),
+            edbversion=desktop_version,
+        )
+        sim_setup = edb.new_simulation_configuration()
+        sim_setup.do_cutout_subdesign = False
+        sim_setup.solver_type = SolverType.SiwaveDC
+        sim_setup.add_voltage_source(
+            positive_node_component="Q3",
+            positive_node_net="SOURCE_HBA_PHASEA",
+            negative_node_component="Q3",
+            negative_node_net="HV_DC+",
+        )
+        sim_setup.add_current_source(
+            name="I25",
+            positive_node_component="Q5",
+            positive_node_net="SOURCE_HBB_PHASEB",
+            negative_node_component="Q5",
+            negative_node_net="HV_DC+",
+        )
+        assert len(sim_setup.sources) == 2
+        sim_setup.open_edb_after_build = False
+        sim_setup.batch_solve_settings.output_aedb = os.path.join(self.local_scratch.path, "build.aedb")
+        original_path = edb.edbpath
+        assert sim_setup.batch_solve_settings.use_pyaedt_cutout
+        assert not sim_setup.batch_solve_settings.use_default_cutout
+        sim_setup.batch_solve_settings.use_pyaedt_cutout = True
+        assert sim_setup.batch_solve_settings.use_pyaedt_cutout
+        assert not sim_setup.batch_solve_settings.use_default_cutout
+        assert sim_setup.build_simulation_project()
+        assert edb.edbpath == original_path
+        sim_setup.open_edb_after_build = True
+        assert sim_setup.build_simulation_project()
+        assert edb.edbpath == os.path.join(self.local_scratch.path, "build.aedb")
+
+        edb.close()

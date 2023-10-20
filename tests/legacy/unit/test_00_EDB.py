@@ -1394,43 +1394,43 @@ class TestClass:
     #     assert isinstance(gap_port.renormalize_z0, tuple)
     #     edb.close()
 
-    # def test_108_create_dc_simulation(self):
-    #     edb = Edb(
-    #         edbpath=os.path.join(local_path, "example_models", test_subfolder, "dc_flow.aedb"),
-    #         edbversion=desktop_version,
-    #     )
-    #     sim_setup = edb.new_simulation_configuration()
-    #     sim_setup.do_cutout_subdesign = False
-    #     sim_setup.solver_type = SolverType.SiwaveDC
-    #     sim_setup.add_voltage_source(
-    #         positive_node_component="Q3",
-    #         positive_node_net="SOURCE_HBA_PHASEA",
-    #         negative_node_component="Q3",
-    #         negative_node_net="HV_DC+",
-    #     )
-    #     sim_setup.add_current_source(
-    #         name="I25",
-    #         positive_node_component="Q5",
-    #         positive_node_net="SOURCE_HBB_PHASEB",
-    #         negative_node_component="Q5",
-    #         negative_node_net="HV_DC+",
-    #     )
-    #     assert len(sim_setup.sources) == 2
-    #     sim_setup.open_edb_after_build = False
-    #     sim_setup.batch_solve_settings.output_aedb = os.path.join(self.local_scratch.path, "build.aedb")
-    #     original_path = edb.edbpath
-    #     assert sim_setup.batch_solve_settings.use_pyaedt_cutout
-    #     assert not sim_setup.batch_solve_settings.use_default_cutout
-    #     sim_setup.batch_solve_settings.use_pyaedt_cutout = True
-    #     assert sim_setup.batch_solve_settings.use_pyaedt_cutout
-    #     assert not sim_setup.batch_solve_settings.use_default_cutout
-    #     assert sim_setup.build_simulation_project()
-    #     assert edb.edbpath == original_path
-    #     sim_setup.open_edb_after_build = True
-    #     assert sim_setup.build_simulation_project()
-    #     assert edb.edbpath == os.path.join(self.local_scratch.path, "build.aedb")
+    def test_create_dc_simulation(self):
+        edb = Edb(
+            edbpath=os.path.join(local_path, "example_models", test_subfolder, "dc_flow.aedb"),
+            edbversion=desktop_version,
+        )
+        sim_setup = edb.new_simulation_configuration()
+        sim_setup.do_cutout_subdesign = False
+        sim_setup.solver_type = SolverType.SiwaveDC
+        sim_setup.add_voltage_source(
+            positive_node_component="Q3",
+            positive_node_net="SOURCE_HBA_PHASEA",
+            negative_node_component="Q3",
+            negative_node_net="HV_DC+",
+        )
+        sim_setup.add_current_source(
+            name="I25",
+            positive_node_component="Q5",
+            positive_node_net="SOURCE_HBB_PHASEB",
+            negative_node_component="Q5",
+            negative_node_net="HV_DC+",
+        )
+        assert len(sim_setup.sources) == 2
+        sim_setup.open_edb_after_build = False
+        sim_setup.batch_solve_settings.output_aedb = os.path.join(self.local_scratch.path, "build.aedb")
+        original_path = edb.edbpath
+        assert sim_setup.batch_solve_settings.use_pyaedt_cutout
+        assert not sim_setup.batch_solve_settings.use_default_cutout
+        sim_setup.batch_solve_settings.use_pyaedt_cutout = True
+        assert sim_setup.batch_solve_settings.use_pyaedt_cutout
+        assert not sim_setup.batch_solve_settings.use_default_cutout
+        assert sim_setup.build_simulation_project()
+        assert edb.edbpath == original_path
+        sim_setup.open_edb_after_build = True
+        assert sim_setup.build_simulation_project()
+        assert edb.edbpath == os.path.join(self.local_scratch.path, "build.aedb")
 
-    #     edb.close()
+        edb.close()
 
     # def test_109_add_soure(self):
     #     example_project = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
