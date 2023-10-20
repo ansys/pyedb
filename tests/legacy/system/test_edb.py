@@ -2,6 +2,7 @@
 """
 
 import os
+from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
 import pytest
 
@@ -549,6 +550,7 @@ class TestClass:
         edb.close()
 
     def test_hfss_set_bounding_box_extent(self):
+        """Configure HFSS with bounding box"""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_107.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_113.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
@@ -574,3 +576,996 @@ class TestClass:
         assert edb.components.create([pins[0], ref_pins[0]], "test_1rlc", r_value=None, l_value=1e-13, c_value=1e-11)
         assert edb.components.create([pins[0], ref_pins[0]], "test_2rlc", r_value=None, c_value=1e-13)
         edb.close()
+
+    def test_create_rlc_boundary_on_pins(self):
+        """Create hfss rlc boundary on pins."""
+        example_project = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_115.aedb")
+        if not os.path.exists(self.local_scratch.path):
+            os.mkdir(self.local_scratch.path)
+        self.local_scratch.copyfolder(example_project, target_path)
+        edb = Edb(target_path, edbversion=desktop_version)
+        pins = edb.components.get_pin_from_component("U1", "1V0")
+        ref_pins = edb.components.get_pin_from_component("U1", "GND")
+        assert edb.hfss.create_rlc_boundary_on_pins(pins[0], ref_pins[0], rvalue=1.05, lvalue=1.05e-12, cvalue=1.78e-13)
+        edb.close()
+
+    def test_configure_hfss_analysis_setup_enforce_causality(self):
+        """Configure HFSS analysis setup."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "lam_for_top_place_no_setups.aedb")
+        target_path = os.path.join(self.local_scratch.path, "lam_for_top_place_no_setups_t116.aedb")
+        if not os.path.exists(self.local_scratch.path):
+            os.mkdir(self.local_scratch.path)
+        self.local_scratch.copyfolder(source_path, target_path)
+        edb = Edb(target_path, edbversion=desktop_version)
+        assert len(list(edb.active_cell.SimulationSetups)) == 0
+        sim_config = SimulationConfiguration()
+        sim_config.enforce_causality = False
+        assert sim_config.do_lambda_refinement
+        sim_config.mesh_sizefactor = 0.1
+        assert sim_config.mesh_sizefactor == 0.1
+        assert not sim_config.do_lambda_refinement
+        sim_config.start_freq = "1GHz"
+        edb.hfss.configure_hfss_analysis_setup(sim_config)
+        assert len(list(edb.active_cell.SimulationSetups)) == 1
+        setup = list(edb.active_cell.SimulationSetups)[0]
+        ssi = setup.GetSimSetupInfo()
+        assert len(list(ssi.SweepDataList)) == 1
+        sweep = list(ssi.SweepDataList)[0]
+        assert not sweep.EnforceCausality
+        edb.close()
+
+    def test_configure_hfss_analysis_setup(self):
+        """Configure HFSS analysis setup."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_0117.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edb = Edb(target_path, edbversion=desktop_version)
+        sim_setup = SimulationConfiguration()
+        sim_setup.mesh_sizefactor = 1.9
+        assert not sim_setup.do_lambda_refinement
+        edb.hfss.configure_hfss_analysis_setup(sim_setup)
+        mesh_size_factor = (
+            list(edb.active_cell.SimulationSetups)[0]
+            .GetSimSetupInfo()
+            .get_SimulationSettings()
+            .get_InitialMeshSettings()
+            .get_MeshSizefactor()
+        )
+        assert mesh_size_factor == 1.9
+        edb.close()
+
+    def test_create_various_ports_0(self):
+        """Create various ports."""
+        edb = Edb(
+            edbpath=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
+            edbversion=desktop_version,
+        )
+        prim_1_id = [i.id for i in edb.modeler.primitives if i.net_name == "trace_2"][0]
+        assert edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
+
+        prim_2_id = [i.id for i in edb.modeler.primitives if i.net_name == "trace_3"][0]
+        assert edb.hfss.create_edge_port_horizontal(
+            prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
+        )
+        assert edb.hfss.get_ports_number() == 2
+        port_ver = edb.ports["port_ver"]
+        assert not port_ver.is_null
+        assert port_ver.hfss_type == "Gap"
+
+        args = {
+            "layer_name": "1_Top",
+            "net_name": "SIGP",
+            "width": "0.1mm",
+            "start_cap_style": "Flat",
+            "end_cap_style": "Flat",
+        }
+        traces = []
+        trace_paths = [
+            [["-40mm", "-10mm"], ["-30mm", "-10mm"]],
+            [["-40mm", "-10.2mm"], ["-30mm", "-10.2mm"]],
+            [["-40mm", "-10.4mm"], ["-30mm", "-10.4mm"]],
+        ]
+        for p in trace_paths:
+            t = edb.modeler.create_trace(path_list=p, **args)
+            traces.append(t)
+
+        assert edb.hfss.create_wave_port(traces[0].id, trace_paths[0][0], "wave_port")
+        wave_port = edb.ports["wave_port"]
+        wave_port.horizontal_extent_factor = 10
+        wave_port.vertical_extent_factor = 10
+        assert wave_port.horizontal_extent_factor == 10
+        assert wave_port.vertical_extent_factor == 10
+        wave_port.radial_extent_factor = 1
+        assert wave_port.radial_extent_factor == 1
+        assert wave_port.pec_launch_width
+        assert not wave_port.deembed
+        assert wave_port.deembed_length == 0.0
+        assert wave_port.do_renormalize
+        wave_port.do_renormalize = False
+        assert not wave_port.do_renormalize
+        assert edb.hfss.create_differential_wave_port(
+            traces[0].id,
+            trace_paths[0][0],
+            traces[1].id,
+            trace_paths[1][0],
+            horizontal_extent_factor=8,
+            port_name="df_port",
+        )
+        assert edb.ports["df_port"]
+        p, n = edb.ports["df_port"].terminals
+        assert edb.ports["df_port"].decouple()
+        p.couple_ports(n)
+
+        traces_id = [i.id for i in traces]
+        paths = [i[1] for i in trace_paths]
+        _, df_port = edb.hfss.create_bundle_wave_port(traces_id, paths)
+        assert df_port.name
+        assert df_port.terminals
+        df_port.horizontal_extent_factor = 10
+        df_port.vertical_extent_factor = 10
+        df_port.deembed = True
+        df_port.deembed_length = "1mm"
+        assert df_port.horizontal_extent_factor == 10
+        assert df_port.vertical_extent_factor == 10
+        assert df_port.deembed
+        assert df_port.deembed_length == 1e-3
+        edb.close()
+
+    def test_create_various_ports_1(self):
+        """Create various ports."""
+        edb = Edb(
+            edbpath=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
+            edbversion=desktop_version,
+        )
+        args = {
+            "layer_name": "1_Top",
+            "net_name": "SIGP",
+            "width": "0.1mm",
+            "start_cap_style": "Flat",
+            "end_cap_style": "Flat",
+        }
+        traces = []
+        trace_pathes = [
+            [["-40mm", "-10mm"], ["-30mm", "-10mm"]],
+            [["-40mm", "-10.2mm"], ["-30mm", "-10.2mm"]],
+            [["-40mm", "-10.4mm"], ["-30mm", "-10.4mm"]],
+        ]
+        for p in trace_pathes:
+            t = edb.modeler.create_trace(path_list=p, **args)
+            traces.append(t)
+
+        assert edb.hfss.create_wave_port(traces[0], trace_pathes[0][0], "wave_port")
+
+        assert edb.hfss.create_differential_wave_port(
+            traces[0],
+            trace_pathes[0][0],
+            traces[1],
+            trace_pathes[1][0],
+            horizontal_extent_factor=8,
+        )
+
+        paths = [i[1] for i in trace_pathes]
+        assert edb.hfss.create_bundle_wave_port(traces, paths)
+        p = edb.excitations["wave_port"]
+        p.horizontal_extent_factor = 6
+        p.vertical_extent_factor = 5
+        p.pec_launch_width = "0.02mm"
+        p.radial_extent_factor = 1
+        assert p.horizontal_extent_factor == 6
+        assert p.vertical_extent_factor == 5
+        assert p.pec_launch_width == "0.02mm"
+        assert p.radial_extent_factor == 1
+        edb.close()
+
+    def test_build_hfss_project_from_config_file(self):
+        """Build a simulation project from config file."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_0122.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        cfg_file = os.path.join(os.path.dirname(edbapp.edbpath), "test.cfg")
+        with open(cfg_file, "w") as f:
+            f.writelines("SolverType = 'Hfss3dLayout'\n")
+            f.writelines("PowerNets = ['GND']\n")
+            f.writelines("Components = ['U1', 'U7']")
+
+        sim_config = SimulationConfiguration(cfg_file)
+        assert edbapp.build_simulation_project(sim_config)
+        edbapp.close()
+
+    def test_set_all_antipad_values(self):
+        """Set all anti-pads from all pad-stack definition to the given value."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_0120.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        assert edbapp.padstacks.set_all_antipad_value(0.0)
+        edbapp.close()
+
+    def test_hfss_simulation_setup(self):
+        """Create a setup from a template and evaluate its properties."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_0129.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        setup1 = edbapp.create_hfss_setup("setup1")
+        assert setup1.set_solution_single_frequency()
+        assert setup1.set_solution_multi_frequencies()
+        assert setup1.set_solution_broadband()
+
+        setup1.hfss_solver_settings.enhanced_low_freq_accuracy = True
+        setup1.hfss_solver_settings.order_basis = "first"
+        setup1.hfss_solver_settings.relative_residual = 0.0002
+        setup1.hfss_solver_settings.use_shell_elements = True
+
+        hfss_solver_settings = edbapp.setups["setup1"].hfss_solver_settings
+        assert hfss_solver_settings.order_basis == "first"
+        assert hfss_solver_settings.relative_residual == 0.0002
+        assert hfss_solver_settings.solver_type
+        assert hfss_solver_settings.enhanced_low_freq_accuracy
+        assert not hfss_solver_settings.use_shell_elements
+
+        assert setup1.adaptive_settings.add_adaptive_frequency_data("5GHz", 8, "0.01")
+        assert setup1.adaptive_settings.adaptive_frequency_data_list
+        setup1.adaptive_settings.adapt_type = "kBroadband"
+        setup1.adaptive_settings.basic = False
+        setup1.adaptive_settings.max_refinement = 1000001
+        setup1.adaptive_settings.max_refine_per_pass = 20
+        setup1.adaptive_settings.min_passes = 2
+        setup1.adaptive_settings.save_fields = True
+        setup1.adaptive_settings.save_rad_field_only = True
+        setup1.adaptive_settings.use_convergence_matrix = True
+        setup1.adaptive_settings.use_max_refinement = True
+
+        assert edbapp.setups["setup1"].adaptive_settings.adapt_type == "kBroadband"
+        assert not edbapp.setups["setup1"].adaptive_settings.basic
+        assert edbapp.setups["setup1"].adaptive_settings.max_refinement == 1000001
+        assert edbapp.setups["setup1"].adaptive_settings.max_refine_per_pass == 20
+        assert edbapp.setups["setup1"].adaptive_settings.min_passes == 2
+        assert edbapp.setups["setup1"].adaptive_settings.save_fields
+        assert edbapp.setups["setup1"].adaptive_settings.save_rad_field_only
+        # assert adaptive_settings.use_convergence_matrix
+        assert edbapp.setups["setup1"].adaptive_settings.use_max_refinement
+
+        setup1.defeature_settings.defeature_abs_length = "1um"
+        setup1.defeature_settings.defeature_ratio = 1e-5
+        setup1.defeature_settings.healing_option = 0
+        setup1.defeature_settings.model_type = 1
+        setup1.defeature_settings.remove_floating_geometry = True
+        setup1.defeature_settings.small_void_area = 0.1
+        setup1.defeature_settings.union_polygons = False
+        setup1.defeature_settings.use_defeature = False
+        setup1.defeature_settings.use_defeature_abs_length = True
+
+        defeature_settings = edbapp.setups["setup1"].defeature_settings
+        assert defeature_settings.defeature_abs_length == "1um"
+        assert defeature_settings.defeature_ratio == 1e-5
+        # assert defeature_settings.healing_option == 0
+        # assert defeature_settings.model_type == 1
+        assert defeature_settings.remove_floating_geometry
+        assert defeature_settings.small_void_area == 0.1
+        assert not defeature_settings.union_polygons
+        assert not defeature_settings.use_defeature
+        assert defeature_settings.use_defeature_abs_length
+
+        via_settings = setup1.via_settings
+        via_settings.via_density = 1
+        via_settings.via_material = "pec"
+        via_settings.via_num_sides = 8
+        via_settings.via_style = "kNum25DViaStyle"
+
+        via_settings = edbapp.setups["setup1"].via_settings
+        assert via_settings.via_density == 1
+        assert via_settings.via_material == "pec"
+        assert via_settings.via_num_sides == 8
+        # assert via_settings.via_style == "kNum25DViaStyle"
+
+        advanced_mesh_settings = setup1.advanced_mesh_settings
+        advanced_mesh_settings.layer_snap_tol = "1e-6"
+        advanced_mesh_settings.mesh_display_attributes = "#0000001"
+        advanced_mesh_settings.replace_3d_triangles = False
+
+        advanced_mesh_settings = edbapp.setups["setup1"].advanced_mesh_settings
+        assert advanced_mesh_settings.layer_snap_tol == "1e-6"
+        assert advanced_mesh_settings.mesh_display_attributes == "#0000001"
+        assert not advanced_mesh_settings.replace_3d_triangles
+
+        curve_approx_settings = setup1.curve_approx_settings
+        curve_approx_settings.arc_angle = "15deg"
+        curve_approx_settings.arc_to_chord_error = "0.1"
+        curve_approx_settings.max_arc_points = 12
+        curve_approx_settings.start_azimuth = "1"
+        curve_approx_settings.use_arc_to_chord_error = True
+
+        curve_approx_settings = edbapp.setups["setup1"].curve_approx_settings
+        assert curve_approx_settings.arc_to_chord_error == "0.1"
+        assert curve_approx_settings.max_arc_points == 12
+        assert curve_approx_settings.start_azimuth == "1"
+        assert curve_approx_settings.use_arc_to_chord_error
+
+        dcr_settings = setup1.dcr_settings
+        dcr_settings.conduction_max_passes = 11
+        dcr_settings.conduction_min_converged_passes = 2
+        dcr_settings.conduction_min_passes = 2
+        dcr_settings.conduction_per_error = 2.0
+        dcr_settings.conduction_per_refine = 33.0
+
+        dcr_settings = edbapp.setups["setup1"].dcr_settings
+        assert dcr_settings.conduction_max_passes == 11
+        assert dcr_settings.conduction_min_converged_passes == 2
+        assert dcr_settings.conduction_min_passes == 2
+        assert dcr_settings.conduction_per_error == 2.0
+        assert dcr_settings.conduction_per_refine == 33.0
+
+        hfss_port_settings = setup1.hfss_port_settings
+        hfss_port_settings.max_delta_z0 = 0.5
+        assert hfss_port_settings.max_delta_z0 == 0.5
+        hfss_port_settings.max_triangles_wave_port = 1000
+        assert hfss_port_settings.max_triangles_wave_port == 1000
+        hfss_port_settings.min_triangles_wave_port = 200
+        assert hfss_port_settings.min_triangles_wave_port == 200
+        hfss_port_settings.set_triangles_wave_port = True
+        assert hfss_port_settings.set_triangles_wave_port
+
+        # mesh_operations = setup1.mesh_operations
+        # setup1.mesh_operations = mesh_operations
+
+        setup1.add_frequency_sweep(
+            "sweep1",
+            frequency_sweep=[
+                ["linear count", "0", "1kHz", 1],
+                ["log scale", "1kHz", "0.1GHz", 10],
+                ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+            ],
+        )
+        assert "sweep1" in setup1.frequency_sweeps
+        sweep1 = setup1.frequency_sweeps["sweep1"]
+        sweep1.adaptive_sampling = True
+        assert sweep1.adaptive_sampling
+
+        edbapp.setups["setup1"].name = "setup1a"
+        assert "setup1" not in edbapp.setups
+        assert "setup1a" in edbapp.setups
+
+        mop = edbapp.setups["setup1a"].add_length_mesh_operation({"GND": ["1_Top", "16_Bottom"]}, "m1")
+        assert mop.name == "m1"
+        assert mop.max_elements == "1000"
+        assert mop.restrict_max_elements
+        assert mop.restrict_length
+        assert mop.max_length == "1mm"
+
+        mop.name = "m2"
+        mop.max_elements = 2000
+        mop.restrict_max_elements = False
+        mop.restrict_length = False
+        mop.max_length = "2mm"
+
+        assert mop.name == "m2"
+        assert mop.max_elements == "2000"
+        assert not mop.restrict_max_elements
+        assert not mop.restrict_length
+        assert mop.max_length == "2mm"
+
+        mop = edbapp.setups["setup1a"].add_skin_depth_mesh_operation({"GND": ["1_Top", "16_Bottom"]})
+        assert mop.max_elements == "1000"
+        assert mop.restrict_max_elements
+        assert mop.skin_depth == "1um"
+        assert mop.surface_triangle_length == "1mm"
+        assert mop.number_of_layer_elements == "2"
+
+        mop.skin_depth = "5um"
+        mop.surface_triangle_length = "2mm"
+        mop.number_of_layer_elements = "3"
+
+        assert mop.skin_depth == "5um"
+        assert mop.surface_triangle_length == "2mm"
+        assert mop.number_of_layer_elements == "3"
+        edbapp.close()
+
+    def test_siwave_dc_simulation_setup(self):
+        """Create a dc simulation setup and evaluate its properties."""
+        setup1 = self.edbapp.create_siwave_dc_setup("DC1")
+        assert setup1.name == "DC1"
+        assert not setup1.compute_inductance
+        assert setup1.contact_radius == "0.1mm"
+        assert setup1.dc_slider_position == 1
+        assert setup1.enabled
+        assert setup1.energy_error == 3.0
+        assert setup1.max_init_mesh_edge_length == "2.5mm"
+        assert setup1.max_num_pass == 5
+        assert setup1.min_num_pass == 1
+        assert setup1.mesh_bondwires
+        assert setup1.mesh_vias
+        assert setup1.min_plane_area == "0.25mm2"
+        assert setup1.min_void_area == "0.01mm2"
+        assert setup1.num_bondwire_sides == 8
+        assert setup1.num_via_sides == 8
+        assert setup1.percent_local_refinement == 20.0
+        assert setup1.perform_adaptive_refinement
+        assert setup1.plot_jv
+        assert not setup1.refine_bondwires
+        assert not setup1.refine_vias
+        setup1.name = "DC2"
+        setup1.compute_inductance = True
+        setup1.contact_radius = "0.2mm"
+        setup1.dc_slider_position = 2
+        setup1.energy_error = 2.0
+        setup1.max_init_mesh_edge_length = "5.5mm"
+        setup1.max_num_pass = 3
+        setup1.min_num_pass = 2
+        setup1.mesh_bondwires = False
+        setup1.mesh_vias = False
+        assert not setup1.mesh_bondwires
+        assert not setup1.mesh_vias
+        setup1.min_plane_area = "0.5mm2"
+        setup1.min_void_area = "0.021mm2"
+        setup1.num_bondwire_sides = 6
+        setup1.num_via_sides = 10
+        setup1.percent_local_refinement = 10.0
+        setup1.perform_adaptive_refinement = False
+        setup1.plot_jv = False
+        setup1.refine_bondwires = True
+        setup1.refine_vias = True
+
+        assert setup1.name == "DC2"
+        assert setup1.compute_inductance
+        assert setup1.contact_radius == "0.2mm"
+        assert setup1.dc_slider_position == 2
+        assert setup1.energy_error == 2.0
+        assert setup1.max_init_mesh_edge_length == "5.5mm"
+        assert setup1.max_num_pass == 3
+        assert setup1.min_num_pass == 2
+        assert setup1.mesh_bondwires
+        assert setup1.mesh_vias
+        assert setup1.min_plane_area == "0.5mm2"
+        assert setup1.min_void_area == "0.021mm2"
+        assert setup1.num_bondwire_sides == 6
+        assert setup1.num_via_sides == 10
+        assert setup1.percent_local_refinement == 10.0
+        assert not setup1.perform_adaptive_refinement
+        assert not setup1.plot_jv
+        assert setup1.refine_bondwires
+        assert setup1.refine_vias
+
+    def test_131_siwave_ac_simulation_setup(self):
+        """Create an ac simulation setup and evaluate its properties."""
+        setup1 = self.edbapp.create_siwave_syz_setup("AC1")
+        assert setup1.name == "AC1"
+        assert setup1.enabled
+        sweep = setup1.add_frequency_sweep(
+            "sweep1",
+            frequency_sweep=[
+                ["linear count", "0", "1kHz", 1],
+                ["log scale", "1kHz", "0.1GHz", 10],
+                ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+            ],
+        )
+        assert "sweep1" in setup1.frequency_sweeps
+        assert "0" in sweep.frequencies
+        assert not sweep.adaptive_sampling
+        assert not sweep.adv_dc_extrapolation
+        assert sweep.auto_s_mat_only_solve
+        assert not sweep.enforce_causality
+        assert not sweep.enforce_dc_and_causality
+        assert sweep.enforce_passivity
+        assert sweep.freq_sweep_type == "kInterpolatingSweep"
+        assert sweep.interp_use_full_basis
+        assert sweep.interp_use_port_impedance
+        assert sweep.interp_use_prop_const
+        assert sweep.max_solutions == 250
+        assert sweep.min_freq_s_mat_only_solve == "1MHz"
+        assert not sweep.min_solved_freq
+        assert sweep.passivity_tolerance == 0.0001
+        assert sweep.relative_s_error == 0.005
+        assert not sweep.save_fields
+        assert not sweep.save_rad_fields_only
+        assert not sweep.use_q3d_for_dc
+
+        sweep.adaptive_sampling = True
+        sweep.adv_dc_extrapolation = True
+        sweep.auto_s_mat_only_solve = False
+        sweep.enforce_causality = True
+        sweep.enforce_dc_and_causality = True
+        sweep.enforce_passivity = False
+        sweep.freq_sweep_type = "kDiscreteSweep"
+        sweep.interp_use_full_basis = False
+        sweep.interp_use_port_impedance = False
+        sweep.interp_use_prop_const = False
+        sweep.max_solutions = 200
+        sweep.min_freq_s_mat_only_solve = "2MHz"
+        sweep.min_solved_freq = "1Hz"
+        sweep.passivity_tolerance = 0.0002
+        sweep.relative_s_error = 0.004
+        sweep.save_fields = True
+        sweep.save_rad_fields_only = True
+        sweep.use_q3d_for_dc = True
+
+        assert sweep.adaptive_sampling
+        assert sweep.adv_dc_extrapolation
+        assert not sweep.auto_s_mat_only_solve
+        assert sweep.enforce_causality
+        assert sweep.enforce_dc_and_causality
+        assert not sweep.enforce_passivity
+        assert sweep.freq_sweep_type == "kDiscreteSweep"
+        assert not sweep.interp_use_full_basis
+        assert not sweep.interp_use_port_impedance
+        assert not sweep.interp_use_prop_const
+        assert sweep.max_solutions == 200
+        assert sweep.min_freq_s_mat_only_solve == "2MHz"
+        assert sweep.min_solved_freq == "1Hz"
+        assert sweep.passivity_tolerance == 0.0002
+        assert sweep.relative_s_error == 0.004
+        assert sweep.save_fields
+        assert sweep.save_rad_fields_only
+        assert sweep.use_q3d_for_dc
+
+        assert setup1.automatic_mesh
+        assert setup1.enabled
+        assert setup1.dc_settings
+        assert setup1.ignore_non_functional_pads
+        assert setup1.include_coplane_coupling
+        assert setup1.include_fringe_coupling
+        assert not setup1.include_infinite_ground
+        assert not setup1.include_inter_plane_coupling
+        assert setup1.include_split_plane_coupling
+        assert setup1.include_trace_coupling
+        assert not setup1.include_vi_sources
+        assert setup1.infinite_ground_location == "0"
+        assert setup1.max_coupled_lines == 12
+        assert setup1.mesh_frequency == "4GHz"
+        assert setup1.min_pad_area_to_mesh == "1mm2"
+        assert setup1.min_plane_area_to_mesh == "6.25e-6mm2"
+        assert setup1.min_void_area == "2mm2"
+        assert setup1.name == "AC1"
+        assert setup1.perform_erc
+        assert setup1.pi_slider_postion == 1
+        assert setup1.si_slider_postion == 1
+        assert not setup1.return_current_distribution
+        assert setup1.snap_length_threshold == "2.5um"
+        assert setup1.use_si_settings
+        assert setup1.use_custom_settings
+        assert setup1.xtalk_threshold == "-34"
+
+        setup1.automatic_mesh = False
+        setup1.enabled = False
+        setup1.ignore_non_functional_pads = False
+        setup1.include_coplane_coupling = False
+        setup1.include_fringe_coupling = False
+        setup1.include_infinite_ground = True
+        setup1.include_inter_plane_coupling = True
+        setup1.include_split_plane_coupling = False
+        setup1.include_trace_coupling = False
+        assert setup1.use_custom_settings
+        setup1.include_vi_sources = True
+        setup1.infinite_ground_location = "0.1"
+        setup1.max_coupled_lines = 10
+        setup1.mesh_frequency = "3GHz"
+        setup1.min_pad_area_to_mesh = "2mm2"
+        setup1.min_plane_area_to_mesh = "5.25e-6mm2"
+        setup1.min_void_area = "1mm2"
+        setup1.name = "AC2"
+        setup1.perform_erc = False
+        setup1.pi_slider_postion = 0
+        setup1.si_slider_postion = 2
+        setup1.return_current_distribution = True
+        setup1.snap_length_threshold = "3.5um"
+        setup1.use_si_settings = False
+        assert not setup1.use_custom_settings
+        setup1.xtalk_threshold = "-44"
+
+        assert not setup1.automatic_mesh
+        assert not setup1.enabled
+        assert not setup1.ignore_non_functional_pads
+        assert not setup1.include_coplane_coupling
+        assert not setup1.include_fringe_coupling
+        assert setup1.include_infinite_ground
+        assert setup1.include_inter_plane_coupling
+        assert not setup1.include_split_plane_coupling
+        assert not setup1.include_trace_coupling
+        assert setup1.include_vi_sources
+        assert setup1.infinite_ground_location == "0.1"
+        assert setup1.max_coupled_lines == 10
+        assert setup1.mesh_frequency == "3GHz"
+        assert setup1.min_pad_area_to_mesh == "2mm2"
+        assert setup1.min_plane_area_to_mesh == "5.25e-6mm2"
+        assert setup1.min_void_area == "1mm2"
+        assert setup1.name == "AC2"
+        assert not setup1.perform_erc
+        assert setup1.pi_slider_postion == 0
+        assert setup1.si_slider_postion == 2
+        assert setup1.return_current_distribution
+        assert setup1.snap_length_threshold == "3.5um"
+        assert not setup1.use_si_settings
+        assert setup1.xtalk_threshold == "-44"
+
+    def test_siwave_build_ac_project(self):
+        """Build ac simulation project."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_133_simconfig.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        simconfig = edbapp.new_simulation_configuration()
+        simconfig.solver_type = SolverType.SiwaveSYZ
+        simconfig.mesh_freq = "40.25GHz"
+        edbapp.build_simulation_project(simconfig)
+        assert edbapp.siwave_ac_setups[simconfig.setup_name].mesh_frequency == simconfig.mesh_freq
+        edbapp.close()
+
+    def test_siwave_create_port_between_pin_and_layer(self):
+        """Create circuit port between pin and a reference layer."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_0134.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp.siwave.create_port_between_pin_and_layer(
+            component_name="U1", pins_name="A27", layer_name="16_Bottom", reference_net="GND"
+        )
+        edbapp.close()
+
+    def test_siwave_source_setter(self):
+        """Evaluate siwave sources property."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "test_sources.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_134_source_setter.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        sources = list(edbapp.siwave.sources.values())
+        sources[0].magnitude = 1.45
+        assert sources[0].magnitude == 1.45
+        sources[1].magnitude = 1.45
+        assert sources[1].magnitude == 1.45
+        sources[2].magnitude = 1.45
+        assert sources[2].magnitude == 1.45
+        edbapp.close()
+
+    def test_delete_pingroup(self):
+        """Delete siwave pin groups."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "test_pin_group.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_135_pin_group.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        for _, pingroup in edbapp.siwave.pin_groups.items():
+            assert pingroup.delete()
+        assert not edbapp.siwave.pin_groups
+        edbapp.close()
+
+    def test_design_options(self):
+        """Evaluate Edb design settings and options."""
+        self.edbapp.design_options.suppress_pads = False
+        assert not self.edbapp.design_options.suppress_pads
+        self.edbapp.design_options.antipads_always_on = True
+        assert self.edbapp.design_options.antipads_always_on
+
+    def test_pins(self):
+        """Evaluate the pins."""
+        assert len(self.edbapp.pins) > 0
+
+    def test_create_padstack_instance(self):
+        """Create padstack instances."""
+        edb = Edb(edbversion=desktop_version)
+        edb.stackup.add_layer(layer_name="1_Top", fillMaterial="AIR", thickness="30um")
+        edb.stackup.add_layer(layer_name="contact", fillMaterial="AIR", thickness="100um", base_layer="1_Top")
+
+        assert edb.padstacks.create(
+            pad_shape="Rectangle",
+            padstackname="pad",
+            x_size="350um",
+            y_size="500um",
+            holediam=0,
+        )
+        pad_instance1 = edb.padstacks.place(position=["-0.65mm", "-0.665mm"], definition_name="pad")
+        assert pad_instance1
+        pad_instance1.start_layer = "1_Top"
+        pad_instance1.stop_layer = "1_Top"
+        assert pad_instance1.start_layer == "1_Top"
+        assert pad_instance1.stop_layer == "1_Top"
+
+        assert edb.padstacks.create(pad_shape="Circle", padstackname="pad2", paddiam="350um", holediam="15um")
+        pad_instance2 = edb.padstacks.place(position=["-0.65mm", "-0.665mm"], definition_name="pad2")
+        assert pad_instance2
+        pad_instance2.start_layer = "1_Top"
+        pad_instance2.stop_layer = "1_Top"
+        assert pad_instance2.start_layer == "1_Top"
+        assert pad_instance2.stop_layer == "1_Top"
+
+        assert edb.padstacks.create(
+            pad_shape="Circle",
+            padstackname="test2",
+            paddiam="400um",
+            holediam="200um",
+            antipad_shape="Rectangle",
+            anti_pad_x_size="700um",
+            anti_pad_y_size="800um",
+            start_layer="1_Top",
+            stop_layer="1_Top",
+        )
+
+        pad_instance3 = edb.padstacks.place(position=["-1.65mm", "-1.665mm"], definition_name="test2")
+        assert pad_instance3.start_layer == "1_Top"
+        assert pad_instance3.stop_layer == "1_Top"
+        pad_instance3.dcir_equipotential_region = True
+        assert pad_instance3.dcir_equipotential_region
+        pad_instance3.dcir_equipotential_region = False
+        assert not pad_instance3.dcir_equipotential_region
+        edb.close()
+
+    def test_assign_hfss_extent_non_multiple_with_simconfig(self):
+        """Build simulation project without multiple."""
+        edb = Edb()
+        edb.stackup.add_layer(layer_name="GND", fillMaterial="AIR", thickness="30um")
+        edb.stackup.add_layer(layer_name="FR4", base_layer="gnd", thickness="250um")
+        edb.stackup.add_layer(layer_name="SIGNAL", base_layer="FR4", thickness="30um")
+        edb.modeler.create_trace(layer_name="SIGNAL", width=0.02, net_name="net1", path_list=[[-1e3, 0, 1e-3, 0]])
+        edb.modeler.create_rectangle(
+            layer_name="GND",
+            representation_type="CenterWidthHeight",
+            center_point=["0mm", "0mm"],
+            width="4mm",
+            height="4mm",
+            net_name="GND",
+        )
+        sim_setup = edb.new_simulation_configuration()
+        sim_setup.signal_nets = ["net1"]
+        # sim_setup.power_nets = ["GND"]
+        sim_setup.use_dielectric_extent_multiple = False
+        sim_setup.use_airbox_horizontal_extent_multiple = False
+        sim_setup.use_airbox_negative_vertical_extent_multiple = False
+        sim_setup.use_airbox_positive_vertical_extent_multiple = False
+        sim_setup.dielectric_extent = 0.0005
+        sim_setup.airbox_horizontal_extent = 0.001
+        sim_setup.airbox_negative_vertical_extent = 0.05
+        sim_setup.airbox_positive_vertical_extent = 0.04
+        sim_setup.add_frequency_sweep = False
+        sim_setup.include_only_selected_nets = True
+        sim_setup.do_cutout_subdesign = False
+        sim_setup.generate_excitations = False
+        edb.build_simulation_project(sim_setup)
+        hfss_ext_info = edb.active_cell.GetHFSSExtentInfo()
+        assert list(edb.nets.nets.values())[0].name == "net1"
+        assert not edb.setups["Pyaedt_setup"].frequency_sweeps
+        assert hfss_ext_info
+        assert hfss_ext_info.AirBoxHorizontalExtent.Item1 == 0.001
+        assert not hfss_ext_info.AirBoxHorizontalExtent.Item2
+        assert hfss_ext_info.AirBoxNegativeVerticalExtent.Item1 == 0.05
+        assert not hfss_ext_info.AirBoxNegativeVerticalExtent.Item2
+        assert hfss_ext_info.AirBoxPositiveVerticalExtent.Item1 == 0.04
+        assert not hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
+        assert hfss_ext_info.DielectricExtentSize.Item1 == 0.0005
+        assert not hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
+        edb.close()
+
+    def test_assign_hfss_extent_multiple_with_simconfig(self):
+        """Build simulation project with multiple."""
+        edb = Edb()
+        edb.stackup.add_layer(layer_name="GND", fillMaterial="AIR", thickness="30um")
+        edb.stackup.add_layer(layer_name="FR4", base_layer="gnd", thickness="250um")
+        edb.stackup.add_layer(layer_name="SIGNAL", base_layer="FR4", thickness="30um")
+        edb.modeler.create_trace(layer_name="SIGNAL", width=0.02, net_name="net1", path_list=[[-1e3, 0, 1e-3, 0]])
+        edb.modeler.create_rectangle(
+            layer_name="GND",
+            representation_type="CenterWidthHeight",
+            center_point=["0mm", "0mm"],
+            width="4mm",
+            height="4mm",
+            net_name="GND",
+        )
+        sim_setup = edb.new_simulation_configuration()
+        sim_setup.signal_nets = ["net1"]
+        sim_setup.power_nets = ["GND"]
+        sim_setup.use_dielectric_extent_multiple = True
+        sim_setup.use_airbox_horizontal_extent_multiple = True
+        sim_setup.use_airbox_negative_vertical_extent_multiple = True
+        sim_setup.use_airbox_positive_vertical_extent_multiple = True
+        sim_setup.dielectric_extent = 0.0005
+        sim_setup.airbox_horizontal_extent = 0.001
+        sim_setup.airbox_negative_vertical_extent = 0.05
+        sim_setup.airbox_positive_vertical_extent = 0.04
+        edb.build_simulation_project(sim_setup)
+        hfss_ext_info = edb.active_cell.GetHFSSExtentInfo()
+        assert hfss_ext_info
+        assert hfss_ext_info.AirBoxHorizontalExtent.Item1 == 0.001
+        assert hfss_ext_info.AirBoxHorizontalExtent.Item2
+        assert hfss_ext_info.AirBoxNegativeVerticalExtent.Item1 == 0.05
+        assert hfss_ext_info.AirBoxNegativeVerticalExtent.Item2
+        assert hfss_ext_info.AirBoxPositiveVerticalExtent.Item1 == 0.04
+        assert hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
+        assert hfss_ext_info.DielectricExtentSize.Item1 == 0.0005
+        assert hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
+        edb.close()
+
+    def test_stackup_properties(self):
+        """Evaluate stackup properties."""
+        edb = Edb(edbversion=desktop_version)
+        edb.stackup.add_layer(layer_name="gnd", fillMaterial="AIR", thickness="10um")
+        edb.stackup.add_layer(layer_name="diel1", fillMaterial="AIR", thickness="200um", base_layer="gnd")
+        edb.stackup.add_layer(layer_name="sig1", fillMaterial="AIR", thickness="10um", base_layer="diel1")
+        edb.stackup.add_layer(layer_name="diel2", fillMaterial="AIR", thickness="200um", base_layer="sig1")
+        edb.stackup.add_layer(layer_name="sig3", fillMaterial="AIR", thickness="10um", base_layer="diel2")
+        assert edb.stackup.thickness == 0.00043
+        assert edb.stackup.num_layers == 5
+        edb.close()
+
+    def test_hfss_extent_info(self):
+        """HFSS extent information."""
+        from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitives as EDBPrimitives
+
+        config = {
+            "air_box_horizontal_extent_enabled": False,
+            "air_box_horizontal_extent": 0.01,
+            "air_box_positive_vertical_extent": 0.3,
+            "air_box_positive_vertical_extent_enabled": False,
+            "air_box_negative_vertical_extent": 0.1,
+            "air_box_negative_vertical_extent_enabled": False,
+            "base_polygon": self.edbapp.modeler.polygons[0],
+            "dielectric_base_polygon": self.edbapp.modeler.polygons[1],
+            "dielectric_extent_size": 0.1,
+            "dielectric_extent_size_enabled": False,
+            "dielectric_extent_type": "Conforming",
+            "extent_type": "Conforming",
+            "honor_user_dielectric": False,
+            "is_pml_visible": False,
+            "open_region_type": "PML",
+            "operating_freq": "2GHz",
+            "radiation_level": 1,
+            "sync_air_box_vertical_extent": False,
+            "use_open_region": False,
+            "use_xy_data_extent_for_vertical_expansion": False,
+            "truncate_air_box_at_ground": True,
+        }
+        hfss_extent_info = self.edbapp.hfss.hfss_extent_info
+        hfss_extent_info.load_config(config)
+        exported_config = hfss_extent_info.export_config()
+        for i, j in exported_config.items():
+            if not i in config:
+                continue
+            if isinstance(j, EDBPrimitives):
+                assert j.id == config[i].id
+            elif isinstance(j, EdbValue):
+                assert j.tofloat == hfss_extent_info._get_edb_value(config[i]).ToDouble()
+            else:
+                assert j == config[i]
+
+    def test_import_gds_from_tech(self):
+        """Use techfile."""
+        from pyedb.legacy.edb_core.edb_data.control_file import ControlFile
+        c_file_in = os.path.join(
+            local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
+        )
+        c_map = os.path.join(local_path, "example_models", "cad", "GDS", "dummy_layermap.map")
+        gds_in = os.path.join(local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example.gds")
+        gds_out = os.path.join(self.local_scratch.path, "sky130_fictitious_dtc_example.gds")
+        self.local_scratch.copyfile(gds_in, gds_out)
+
+        c = ControlFile(c_file_in, layer_map=c_map)
+        setup = c.setups.add_setup("Setup1", "1GHz")
+        setup.add_sweep("Sweep1", "0.01GHz", "5GHz", "0.1GHz")
+        c.boundaries.units = "um"
+        c.stackup.units = "um"
+        c.boundaries.add_port("P1", x1=223.7, y1=222.6, layer1="Metal6", x2=223.7, y2=100, layer2="Metal6")
+        c.boundaries.add_extent()
+        comp = c.components.add_component("B1", "BGA", "IC", "Flip chip", "Cylinder")
+        comp.solder_diameter = "65um"
+        comp.add_pin("1", "81.28", "84.6", "met2")
+        comp.add_pin("2", "211.28", "84.6", "met2")
+        comp.add_pin("3", "211.28", "214.6", "met2")
+        comp.add_pin("4", "81.28", "214.6", "met2")
+        for via in c.stackup.vias:
+            via.create_via_group = True
+            via.snap_via_group = True
+        c.write_xml(os.path.join(self.local_scratch.path, "test_138.xml"))
+        c.import_options.import_dummy_nets = True
+        from pyedb import Edb
+
+        edb = Edb(
+            gds_out, edbversion=desktop_version, technology_file=os.path.join(self.local_scratch.path, "test_138.xml")
+        )
+
+        assert edb
+        assert "P1" in edb.excitations
+        assert "Setup1" in edb.setups
+        assert "B1" in edb.components.components
+        edb.close()
+
+    def test_database_properties(self):
+        """Evaluate database properties."""
+        assert isinstance(self.edbapp.dataset_defs, list)
+        assert isinstance(self.edbapp.material_defs, list)
+        assert isinstance(self.edbapp.component_defs, list)
+        assert isinstance(self.edbapp.package_defs, list)
+
+        assert isinstance(self.edbapp.padstack_defs, list)
+        assert isinstance(self.edbapp.jedec5_bondwire_defs, list)
+        assert isinstance(self.edbapp.jedec4_bondwire_defs, list)
+        assert isinstance(self.edbapp.apd_bondwire_defs, list)
+        assert self.edbapp.source_version == ""
+        self.edbapp.source_version = "2022.2"
+        assert self.edbapp.source == ""
+        assert self.edbapp.scale(1.0)
+        assert isinstance(self.edbapp.version, tuple)
+        assert isinstance(self.edbapp.footprint_cells, list)
+
+    def test_backdrill_via_with_offset(self):
+        """Set backdrill from top."""
+        edb = Edb(edbversion=desktop_version)
+        edb.stackup.add_layer(layer_name="bot")
+        edb.stackup.add_layer(layer_name="diel1", base_layer="bot", layer_type="dielectric", thickness="127um")
+        edb.stackup.add_layer(layer_name="signal1", base_layer="diel1")
+        edb.stackup.add_layer(layer_name="diel2", base_layer="signal1", layer_type="dielectric", thickness="127um")
+        edb.stackup.add_layer(layer_name="signal2", base_layer="diel2")
+        edb.stackup.add_layer(layer_name="diel3", base_layer="signal2", layer_type="dielectric", thickness="127um")
+        edb.stackup.add_layer(layer_name="top", base_layer="diel2")
+        edb.padstacks.create(padstackname="test1")
+        padstack_instance = edb.padstacks.place(position=[0, 0], net_name="test", definition_name="test1")
+        edb.padstacks.definitions["test1"].hole_range = "through"
+        padstack_instance.set_backdrill_top(drill_depth="signal1", drill_diameter="200um", offset="100um")
+        assert len(padstack_instance.backdrill_top) == 3
+        assert padstack_instance.backdrill_top[0] == "signal1"
+        assert padstack_instance.backdrill_top[1] == "200um"
+        assert padstack_instance.backdrill_top[2] == "100um"
+        padstack_instance2 = edb.padstacks.place(position=[0.5, 0.5], net_name="test", definition_name="test1")
+        padstack_instance2.set_backdrill_bottom(drill_depth="signal1", drill_diameter="200um", offset="100um")
+        assert len(padstack_instance2.backdrill_bottom) == 3
+        assert padstack_instance2.backdrill_bottom[0] == "signal1"
+        assert padstack_instance2.backdrill_bottom[1] == "200um"
+        assert padstack_instance2.backdrill_bottom[2] == "100um"
+        edb.close()
+
+    def test_add_layer_api_with_control_file(self):
+        """Add new layers with control file."""
+        from pyedb.legacy.edb_core.edb_data.control_file import ControlFile
+
+        ctrl = ControlFile()
+        # Material
+        ctrl.stackup.add_material(material_name="Copper", conductivity=5.56e7)
+        ctrl.stackup.add_material(material_name="BCB", permittivity=2.7)
+        ctrl.stackup.add_material(material_name="Silicon", conductivity=0.04)
+        ctrl.stackup.add_material(material_name="SiliconOxide", conductivity=4.4)
+        ctrl.stackup.units = "um"
+        assert len(ctrl.stackup.materials) == 4
+        assert ctrl.stackup.units == "um"
+        # Dielectrics
+        ctrl.stackup.add_dielectric(material="Silicon", layer_name="Silicon", thickness=180)
+        ctrl.stackup.add_dielectric(layer_index=1, material="SiliconOxide", layer_name="USG1", thickness=1.2)
+        assert next(diel for diel in ctrl.stackup.dielectrics if diel.name == "USG1").properties["Index"] == 1
+        ctrl.stackup.add_dielectric(material="BCB", layer_name="BCB2", thickness=9.5, base_layer="USG1")
+        ctrl.stackup.add_dielectric(
+            material="BCB", layer_name="BCB1", thickness=4.1, base_layer="BCB2", add_on_top=False
+        )
+        ctrl.stackup.add_dielectric(layer_index=4, material="BCB", layer_name="BCB3", thickness=6.5)
+        assert ctrl.stackup.dielectrics[0].properties["Index"] == 0
+        assert ctrl.stackup.dielectrics[1].properties["Index"] == 1
+        assert ctrl.stackup.dielectrics[2].properties["Index"] == 3
+        assert ctrl.stackup.dielectrics[3].properties["Index"] == 2
+        assert ctrl.stackup.dielectrics[4].properties["Index"] == 4
+        # Metal layer
+        ctrl.stackup.add_layer(
+            layer_name="9", elevation=185.3, material="Copper", target_layer="meta2", gds_type=0, thickness=6
+        )
+        assert [layer for layer in ctrl.stackup.layers if layer.name == "9"]
+        ctrl.stackup.add_layer(
+            layer_name="15", elevation=194.8, material="Copper", target_layer="meta3", gds_type=0, thickness=3
+        )
+        assert [layer for layer in ctrl.stackup.layers if layer.name == "15"]
+        # Via layer
+        ctrl.stackup.add_via(
+            layer_name="14", material="Copper", target_layer="via2", start_layer="meta2", stop_layer="meta3", gds_type=0
+        )
+        assert [layer for layer in ctrl.stackup.vias if layer.name == "14"]
+        # Port
+        ctrl.boundaries.add_port(
+            "test_port", x1=-21.1, y1=-288.7, layer1="meta3", x2=21.1, y2=-288.7, layer2="meta3", z0=50
+        )
+        assert ctrl.boundaries.ports
+        # setup using q3D for DC point
+        setup = ctrl.setups.add_setup("test_setup", "10GHz")
+        assert setup
+        setup.add_sweep(
+            name="test_sweep",
+            start="0GHz",
+            stop="20GHz",
+            step="10MHz",
+            sweep_type="Interpolating",
+            step_type="LinearStep",
+            use_q3d=True,
+        )
+        assert setup.sweeps

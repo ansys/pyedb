@@ -86,3 +86,4 @@ class TestClass:
         assert self.stackup.get_layout_thickness() == 42
         mock_stackup_layers.return_value = {"layer": MagicMock(upper_elevation = 0, lower_elevation = 0)}
         assert self.stackup.get_layout_thickness() == 0
+

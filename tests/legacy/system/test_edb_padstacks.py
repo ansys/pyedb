@@ -1,17 +1,21 @@
 """Tests related to Edb padstacks
 """
-
+import os
 import pytest
+
+from pyedb import Edb
+from tests.conftest import local_path
+from tests.conftest import desktop_version
+from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = pytest.mark.system
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, edbapp, local_scratch, target_path, target_path2, target_path4):
+    def init(self, edbapp, local_scratch, target_path, target_path4):
         self.edbapp = edbapp
         self.local_scratch = local_scratch
         self.target_path = target_path
-        self.target_path2 = target_path2
         self.target_path4 = target_path4
 
     def test_get_pad_parameters(self):
@@ -169,3 +173,48 @@ class TestClass:
             pad_params="800um",
         )
         assert self.edbapp.padstacks.definitions["c180h127"].pad_by_layer["new"]
+
+    def test_microvias(self):
+        """Convert padstack to microvias 3D objects."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_128_microvias.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        assert edbapp.padstacks.definitions["Padstack_Circle"].convert_to_3d_microvias(False)
+        assert edbapp.padstacks.definitions["Padstack_Rectangle"].convert_to_3d_microvias(False, hole_wall_angle=10)
+        assert edbapp.padstacks.definitions["Padstack_Polygon_p12"].convert_to_3d_microvias(False)
+        edbapp.close()
+
+    def test_split_microvias(self):
+        """Convert padstack definition to multiple microvias definitions."""
+        edbapp = Edb(self.target_path4, edbversion=desktop_version)
+        assert len(edbapp.padstacks.definitions["C4_POWER_1"].split_to_microvias()) > 0
+        edbapp.close()
+
+    def test_padstack_plating_ratio_fixing(self):
+        """Fix hole plating ratio."""        
+        assert self.edbapp.padstacks.check_and_fix_via_plating()
+
+    def test_padstack_search_reference_pins(self):
+        """Search for reference pins using given criteria."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_boundaries.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        pin = edbapp.components.instances["J5"].pins["19"]
+        assert pin
+        ref_pins = pin.get_reference_pins(reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True)
+        assert len(ref_pins) == 3
+        reference_pins = edbapp.padstacks.get_reference_pins(
+            positive_pin=pin, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True
+        )
+        assert len(reference_pins) == 3
+        reference_pins = edbapp.padstacks.get_reference_pins(
+            positive_pin=pin, reference_net="GND", search_radius=5e-3, max_limit=2, component_only=True
+        )
+        assert len(reference_pins) == 2
+        reference_pins = edbapp.padstacks.get_reference_pins(
+            positive_pin=pin, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=False
+        )
+        assert len(reference_pins) == 11
+        edbapp.close()

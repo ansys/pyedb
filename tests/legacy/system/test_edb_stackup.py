@@ -241,3 +241,143 @@ class TestClass:
             assert laminate_edb.save_edb()
         finally:
             laminate_edb.close()
+
+    def test_stackup_properties_0(self):
+        """Evaluate various stackup properties."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_0124.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        assert isinstance(edbapp.stackup.layers, dict)
+        assert isinstance(edbapp.stackup.signal_layers, dict)
+        assert isinstance(edbapp.stackup.dielectric_layers, dict)
+        assert isinstance(edbapp.stackup.stackup_layers, dict)
+        assert isinstance(edbapp.stackup.non_stackup_layers, dict)
+        assert not edbapp.stackup["Outline"].is_stackup_layer
+        assert edbapp.stackup["1_Top"].conductivity
+        assert edbapp.stackup["DE1"].permittivity
+        assert edbapp.stackup.add_layer("new_layer")
+        new_layer = edbapp.stackup["new_layer"]
+        assert new_layer.is_stackup_layer
+        assert not new_layer.is_negative
+        new_layer.name = "renamed_layer"
+        assert new_layer.name == "renamed_layer"
+        rename_layer = edbapp.stackup["renamed_layer"]
+        rename_layer.thickness = 50e-6
+        assert rename_layer.thickness == 50e-6
+        rename_layer.etch_factor = 0
+        rename_layer.etch_factor = 2
+        assert rename_layer.etch_factor == 2
+        assert rename_layer.material
+        assert rename_layer.type
+        assert rename_layer.dielectric_fill
+
+        rename_layer.roughness_enabled = True
+        assert rename_layer.roughness_enabled
+        rename_layer.roughness_enabled = False
+        assert not rename_layer.roughness_enabled
+        assert rename_layer.assign_roughness_model("groisse", groisse_roughness="2um")
+        assert rename_layer.assign_roughness_model(apply_on_surface="1_Top")
+        assert rename_layer.assign_roughness_model(apply_on_surface="bottom")
+        assert rename_layer.assign_roughness_model(apply_on_surface="side")
+        assert edbapp.stackup.add_layer("new_above", "1_Top", "insert_above")
+        assert edbapp.stackup.add_layer("new_below", "1_Top", "insert_below")
+        assert edbapp.stackup.add_layer("new_bottom", "1_Top", "add_on_bottom", "dielectric")
+        assert edbapp.stackup.remove_layer("new_bottom")
+        assert "new_bottom" not in edbapp.stackup.layers
+
+        assert edbapp.stackup["1_Top"].color
+        edbapp.stackup["1_Top"].color = [0, 120, 0]
+        assert edbapp.stackup["1_Top"].color == (0, 120, 0)
+        edbapp.stackup["1_Top"].transparency = 10
+        assert edbapp.stackup["1_Top"].transparency == 10
+        assert edbapp.stackup.mode == "Laminate"
+        edbapp.stackup.mode = "Overlapping"
+        assert edbapp.stackup.mode == "Overlapping"
+        edbapp.stackup.mode = "MultiZone"
+        assert edbapp.stackup.mode == "MultiZone"
+        edbapp.stackup.mode = "Overlapping"
+        assert edbapp.stackup.mode == "Overlapping"
+        assert edbapp.stackup.add_layer("new_bottom", "1_Top", "add_at_elevation", "dielectric", elevation=0.0003)
+        edbapp.close()
+
+    def test_stackup_properties_1(self):
+        """Evaluate various stackup properties."""
+        edbapp = Edb(edbversion=desktop_version)
+        import_method = edbapp.stackup.load
+        export_method = edbapp.stackup.export
+
+        assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml"))
+        assert "17_Bottom" in edbapp.stackup.layers.keys()
+        xml_export = os.path.join(self.local_scratch.path, "stackup.xml")
+        assert export_method(xml_export)
+        assert os.path.exists(xml_export)
+        assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.csv"))
+        assert "18_Bottom" in edbapp.stackup.layers.keys()
+        assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
+        export_stackup_path = os.path.join(self.local_scratch.path, "export_galileo_stackup.csv")
+        assert export_method(export_stackup_path)
+        assert os.path.exists(export_stackup_path)
+
+        edbapp.close()
+
+    def test_stackup_properties_2(self):
+        """Evaluate various stackup properties."""
+        edbapp = Edb(edbversion=desktop_version)
+        import_method = edbapp.stackup.import_stackup
+        export_method = edbapp.stackup.export_stackup
+
+        assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml"))
+        assert "17_Bottom" in edbapp.stackup.layers.keys()
+        xml_export = os.path.join(self.local_scratch.path, "stackup.xml")
+        assert export_method(xml_export)
+        assert os.path.exists(xml_export)
+        assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.csv"))
+        assert "18_Bottom" in edbapp.stackup.layers.keys()
+        assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
+        export_stackup_path = os.path.join(self.local_scratch.path, "export_galileo_stackup.csv")
+        assert export_method(export_stackup_path)
+        assert os.path.exists(export_stackup_path)
+        edbapp.close()
+
+    def test_stackup_layer_properties(self):
+        """Evaluate various layer properties."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_0126.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp.stackup.load(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml"))
+        layer = edbapp.stackup["1_Top"]
+        layer.name = "TOP"
+        assert layer.name == "TOP"
+        layer.type = "dielectric"
+        assert layer.type == "dielectric"
+        layer.type = "signal"
+        layer.color = (0, 0, 0)
+        assert layer.color == (0, 0, 0)
+        layer.transparency = 0
+        assert layer.transparency == 0
+        layer.etch_factor = 2
+        assert layer.etch_factor == 2
+        layer.thickness = 50e-6
+        assert layer.thickness == 50e-6
+        assert layer.lower_elevation
+        assert layer.upper_elevation
+        layer.is_negative = True
+        assert layer.is_negative
+        assert not layer.is_via_layer
+        assert layer.material == "copper"
+        edbapp.close()
+
+    def test_stackup_load(self):
+        """Import stackup from a file."""
+        fpath = os.path.join(local_path, "example_models", test_subfolder, "stackup.json")
+        stackup_json = json.load(open(fpath, "r"))
+
+        edbapp = Edb(edbversion=desktop_version)
+        edbapp.stackup.load(fpath)
+        edbapp.close()
+
+        edbapp = Edb(edbversion=desktop_version)
+        edbapp.stackup.load(stackup_json)
+        edbapp.close()

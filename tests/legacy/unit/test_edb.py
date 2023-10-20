@@ -85,3 +85,33 @@ class TestClass:
         assert edb["ant_length"] == "1cm"
         edb["ant_length"] = "2cm"
         assert edb["ant_length"] == "2cm"
+
+    def test_create_padstack_instance(self):
+        """Create padstack instances."""
+        edb = EdbLegacy(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+
+        pad_name = edb.padstacks.create(
+            pad_shape="Rectangle",
+            padstackname="pad",
+            x_size="350um",
+            y_size="500um",
+            holediam=0,
+        )
+        assert pad_name == "pad"
+
+        pad_name = edb.padstacks.create(pad_shape="Circle", padstackname="pad2", paddiam="350um", holediam="15um")
+        assert pad_name == "pad2"
+
+        pad_name = edb.padstacks.create(
+            pad_shape="Circle",
+            padstackname="test2",
+            paddiam="400um",
+            holediam="200um",
+            antipad_shape="Rectangle",
+            anti_pad_x_size="700um",
+            anti_pad_y_size="800um",
+            start_layer="1_Top",
+            stop_layer="1_Top",
+        )
+        pad_name == "test2"
+        edb.close()

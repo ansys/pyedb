@@ -284,3 +284,86 @@ class TestClass:
         assert self.edbapp.components["C2"].is_enabled is False
         self.edbapp.components["C2"].is_enabled = True
         assert self.edbapp.components["C2"].is_enabled is True
+
+    def test_components_definitions(self):
+        """Evaluate components definition."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_0126.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        assert edbapp.components.components
+        assert edbapp.components.definitions
+        comp_def = edbapp.components.definitions["CAPC2012X12N"]
+        assert comp_def
+        comp_def.part_name = "CAPC2012X12N_new"
+        assert comp_def.part_name == "CAPC2012X12N_new"
+        assert len(comp_def.components) > 0
+        cap = edbapp.components.definitions["CAPC2012X12N_new"]
+        assert cap.type == "Capacitor"
+        cap.type = "Resistor"
+        assert cap.type == "Resistor"
+
+        export_path = os.path.join(self.local_scratch.path, "comp_definition.csv")
+        assert edbapp.components.export_definition(export_path)
+        assert edbapp.components.import_definition(export_path)
+
+        assert edbapp.components.definitions["CAPC3216X180X20ML20"].assign_rlc_model(1, 2, 3)
+        sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
+        assert edbapp.components.definitions["CAPC3216X180X55ML20T25"].assign_s_param_model(sparam_path)
+        spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
+        assert edbapp.components.definitions["CAPMP7343X31N"].assign_spice_model(spice_path)
+        edbapp.close()
+
+    def test_rlc_component_values_getter_setter(self):
+        """Evaluate component values getter and setter."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_0136.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        components_to_change = [res for res in list(edbapp.components.Others.values()) if res.partname == "A93549-027"]
+        for res in components_to_change:
+            res.type = "Resistor"
+            res.res_value = [25, 0, 0]
+            res.res_value = 10
+            assert res.res_value == 10
+            res.rlc_values = [20, 1e-9, 1e-12]
+            assert res.res_value == 20
+            assert res.ind_value == 1e-9
+            assert res.cap_value == 1e-12
+            res.res_value = 12.5
+            assert res.res_value == 12.5 and res.ind_value == 1e-9 and res.cap_value == 1e-12
+            res.ind_value = 5e-9
+            assert res.res_value == 12.5 and res.ind_value == 5e-9 and res.cap_value == 1e-12
+            res.cap_value = 8e-12
+            assert res.res_value == 12.5 and res.ind_value == 5e-9 and res.cap_value == 8e-12
+        edbapp.close()
+
+    def test_create_port_on_pin(self):
+        """Create port on pins."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_0134b.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        pin = "A24"
+        ref_pins = [pin for pin in list(edbapp.components["U1"].pins.values()) if pin.net_name == "GND"]
+        assert edbapp.components.create_port_on_pins(refdes="U1", pins=pin, reference_pins=ref_pins)
+        assert edbapp.components.create_port_on_pins(refdes="U1", pins="C1", reference_pins=["A11"])
+        assert edbapp.components.create_port_on_pins(refdes="U1", pins="C2", reference_pins=["A11"])
+        assert edbapp.components.create_port_on_pins(refdes="U1", pins=["A24"], reference_pins=["A11", "A16"])
+        assert edbapp.components.create_port_on_pins(refdes="U1", pins=["A26"], reference_pins=["A11", "A16", "A17"])
+        assert edbapp.components.create_port_on_pins(refdes="U1", pins=["A28"], reference_pins=["A11", "A16"])
+        edbapp.close()
+
+    def test_replace_rlc_by_gap_boundaries(self):
+        """Replace RLC component by RLC gap boundaries."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_boundaries.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        for refdes, cmp in edbapp.components.components.items():
+            edbapp.components.replace_rlc_by_gap_boundaries(refdes)
+        rlc_list = [
+            term for term in list(edbapp.active_layout.Terminals) if str(term.GetBoundaryType()) == "RlcBoundary"
+        ]
+        assert len(rlc_list) == 944
+        edbapp.close()
