@@ -218,3 +218,13 @@ class TestClass:
         )
         assert len(reference_pins) == 11
         edbapp.close()
+
+    def test_vias_metal_volume(self):
+        """Metal volume of the via hole instance."""
+        vias = [
+            via
+            for via in list(self.edbapp.padstacks.padstack_instances.values())
+            if not via.start_layer == via.stop_layer
+        ]
+        assert vias[0].metal_volume
+        assert vias[1].metal_volume

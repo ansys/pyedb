@@ -77,3 +77,16 @@ class TestClass:
         edbapp = Edb(edbversion=desktop_version)
         assert "air" in edbapp.materials.materials
         edbapp.close()
+
+    def test_material_load_amat(self):
+        """Load material from an amat file."""
+        assert "Rogers RO3003 (tm)" in self.edbapp.materials.materials_in_aedt
+        material_file = os.path.join(self.edbapp.materials.syslib, "Materials.amat")
+        assert self.edbapp.materials.add_material_from_aedt("Arnold_Magnetics_N28AH_-40C")
+        assert "Arnold_Magnetics_N28AH_-40C" in self.edbapp.materials.materials.keys()
+        assert self.edbapp.materials.load_amat(material_file)
+        material_list = list(self.edbapp.materials.materials.keys())
+        assert material_list
+        assert len(material_list) > 0
+        assert self.edbapp.materials.materials["Rogers RO3003 (tm)"].loss_tangent == 0.0013
+        assert self.edbapp.materials.materials["Rogers RO3003 (tm)"].permittivity == 3.0
