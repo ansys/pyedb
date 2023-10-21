@@ -4,7 +4,7 @@ import pytest
 from tests.conftest import desktop_version
 from pyedb.legacy.edb import EdbLegacy
 
-pytestmark = pytest.mark.unit
+pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)

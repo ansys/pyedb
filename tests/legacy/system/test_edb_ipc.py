@@ -9,8 +9,7 @@ from tests.legacy.system.conftest import test_subfolder
 from tests.legacy.system.conftest import local_path
 from tests.conftest import desktop_version
 
-# Mark tests as system tests
-pytestmark = pytest.mark.system
+pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)

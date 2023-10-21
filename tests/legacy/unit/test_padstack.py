@@ -2,7 +2,7 @@ import pytest
 from mock import PropertyMock, patch, MagicMock
 from pyedb.legacy.edb_core.padstack import EdbPadstacks
 
-pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
+pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)

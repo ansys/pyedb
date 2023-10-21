@@ -3,7 +3,7 @@ from pyedb.generic.constants import SourceType
 from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
 import pytest
 
-pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
+pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)

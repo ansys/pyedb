@@ -4,7 +4,7 @@
 import pytest
 from pyedb.generic.settings import settings
 
-pytestmark = pytest.mark.system
+pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)

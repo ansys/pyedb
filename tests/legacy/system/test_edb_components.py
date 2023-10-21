@@ -9,7 +9,7 @@ from tests.conftest import local_path
 from tests.conftest import desktop_version
 from tests.legacy.system.conftest import test_subfolder
 
-pytestmark = pytest.mark.system
+pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 bom_example = "bom_example.csv"
 
