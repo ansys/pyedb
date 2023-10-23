@@ -9,14 +9,13 @@ from ansys.edb.primitive import Circle
 from ansys.edb.primitive import Path
 from ansys.edb.primitive import Polygon
 from ansys.edb.primitive import Rectangle
-from edb_data.primitives_data import EDBPrimitives
-from edb_data.primitives_data import cast
-from edb_data.utilities import EDBStatistics
+from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitives
+from pyedb.grpc.edb_core.edb_data.primitives_data import cast
+from pyedb.grpc.edb_core.edb_data.utilities import EDBStatistics
 from ansys.edb.geometry.point_data import PointData
 from ansys.edb.geometry.polygon_data import PolygonData
 from ansys.edb.geometry.arc_data import ArcData
 from pyedb.generic.general_methods import pyedb_function_handler
-from ansys.edb.net.net import Net
 from ansys.edb.primitive.primitive import PathEndCapType, PathCornerType
 from ansys.edb.utility.value import Value
 from ansys.edb.primitive.primitive import RectangleRepresentationType

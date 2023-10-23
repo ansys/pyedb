@@ -11,66 +11,55 @@ import tempfile
 import time
 import traceback
 import warnings
-import ansys.edb
+
+from pyedb.grpc.components import Components
+from pyedb.grpc.edb_core.edb_data.control_file import ControlFile
+from pyedb.grpc.edb_core.edb_data.control_file import convert_technology_file
+from pyedb.grpc.edb_core.edb_data.design_options import EdbDesignOptions
+from pyedb.grpc.edb_core.edb_data.hfss_simulation_setup_data import HfssSimulationSetup
+from pyedb.grpc.edb_core.edb_data.ports import BundleWavePort
+from pyedb.grpc.edb_core.edb_data.ports import CoaxPort
+from pyedb.grpc.edb_core.edb_data.ports import ExcitationProbes
+from pyedb.grpc.edb_core.edb_data.ports import ExcitationSources
+from pyedb.grpc.edb_core.edb_data.ports import GapPort
+from pyedb.grpc.edb_core.edb_data.ports import WavePort
+from pyedb.grpc.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+from pyedb.grpc.edb_core.edb_data.siwave_simulation_setup_data import SiwaveDCSimulationSetup
+from pyedb.grpc.edb_core.edb_data.siwave_simulation_setup_data import SiwaveSYZSimulationSetup
+from pyedb.grpc.edb_core.edb_data.sources import SourceType
+from pyedb.grpc.edb_core.edb_data.terminals import BundleTerminal
+from pyedb.grpc.edb_core.edb_data.terminals import EdgeTerminal
+from pyedb.grpc.edb_core.edb_data.terminals import PadstackInstanceTerminal
+from pyedb.grpc.edb_core.edb_data.terminals import Terminal
+from pyedb.grpc.edb_core.edb_data.variables import Variable
+from pyedb.grpc.general import TerminalType
+from pyedb.grpc.hfss import EdbHfss
+from pyedb.ipc2581.ipc2581 import Ipc2581
+from pyedb.grpc.layout import EdbLayout
+from pyedb.grpc.materials import Materials
+from pyedb.grpc.net_class import EdbDifferentialPairs
+from pyedb.grpc.net_class import EdbExtendedNets
+from pyedb.grpc.net_class import EdbNetClasses
+from pyedb.grpc.nets import EdbNets
+from pyedb.grpc.padstack import EdbPadstacks
+from pyedb.grpc.siwave import EdbSiwave
+from pyedb.grpc.stackup import Stackup
+from pyedb.generic.constants import AEDT_UNITS
+from pyedb.generic.constants import SolverType
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.general_methods import get_string_version
+from pyedb.generic.general_methods import inside_desktop
+from pyedb.generic.general_methods import is_ironpython
+from pyedb.generic.general_methods import is_linux
+from pyedb.generic.general_methods import is_windows
+from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.grpc.grpc_init.database import EdbGrpc
+from ansys.edb.database import Database
+import subprocess
 
 
-
-from pyaedt.application.Variables import decompose_variable_value
-from pyaedt.edb_core.components import Components
-from pyedb.edb_core.dotnet.database import Database
-from pyaedt.edb_core.dotnet.layout import LayoutDotNet
-from pyaedt.edb_core.edb_data.control_file import ControlFile
-from pyaedt.edb_core.edb_data.control_file import convert_technology_file
-from pyaedt.edb_core.edb_data.design_options import EdbDesignOptions
-from pyaedt.edb_core.edb_data.edbvalue import EdbValue
-from pyaedt.edb_core.edb_data.hfss_simulation_setup_data import HfssSimulationSetup
-from pyaedt.edb_core.edb_data.ports import BundleWavePort
-from pyaedt.edb_core.edb_data.ports import CoaxPort
-from pyaedt.edb_core.edb_data.ports import ExcitationProbes
-from pyaedt.edb_core.edb_data.ports import ExcitationSources
-from pyaedt.edb_core.edb_data.ports import GapPort
-from pyaedt.edb_core.edb_data.ports import WavePort
-from pyaedt.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-from pyaedt.edb_core.edb_data.siwave_simulation_setup_data import SiwaveDCSimulationSetup
-from pyaedt.edb_core.edb_data.siwave_simulation_setup_data import SiwaveSYZSimulationSetup
-from pyaedt.edb_core.edb_data.sources import SourceType
-from pyaedt.edb_core.edb_data.terminals import BundleTerminal
-from pyaedt.edb_core.edb_data.terminals import EdgeTerminal
-from pyaedt.edb_core.edb_data.terminals import PadstackInstanceTerminal
-from pyaedt.edb_core.edb_data.terminals import Terminal
-from pyaedt.edb_core.edb_data.variables import Variable
-from pyaedt.edb_core.general import TerminalType
-from pyaedt.edb_core.general import convert_py_list_to_net_list
-from pyaedt.edb_core.hfss import EdbHfss
-from pyaedt.edb_core.ipc2581.ipc2581 import Ipc2581
-from pyaedt.edb_core.layout import EdbLayout
-from pyaedt.edb_core.materials import Materials
-from pyaedt.edb_core.net_class import EdbDifferentialPairs
-from pyaedt.edb_core.net_class import EdbExtendedNets
-from pyaedt.edb_core.net_class import EdbNetClasses
-from pyaedt.edb_core.nets import EdbNets
-from pyaedt.edb_core.padstack import EdbPadstacks
-from pyaedt.edb_core.siwave import EdbSiwave
-from pyaedt.edb_core.stackup import Stackup
-from pyaedt.generic.constants import AEDT_UNITS
-from pyaedt.generic.constants import SolverType
-from pyaedt.generic.general_methods import generate_unique_name
-from pyaedt.generic.general_methods import get_string_version
-from pyaedt.generic.general_methods import inside_desktop
-from pyaedt.generic.general_methods import is_ironpython
-from pyaedt.generic.general_methods import is_linux
-from pyaedt.generic.general_methods import is_windows
-from pyaedt.generic.general_methods import pyedb_function_handler
-from pyaedt.generic.process import SiwaveSolve
-from pyaedt.modeler.geometry_operators import GeometryOperators
-
-if is_linux and is_ironpython:
-    import subprocessdotnet as subprocess
-else:
-    import subprocess
-
-
-class Edb(Database):
+class Edb(EdbGrpc):
     """Provides the EDB application interface.
 
     This module inherits all objects that belong to EDB.
@@ -105,7 +94,7 @@ class Edb(Database):
     --------
     Create an ``Edb`` object and a new EDB cell.
 
-    >>> from pyaedt import Edb
+    >>> from pyedb import Edb
     >>> app = Edb()
 
     Add a new variable named "s1" to the ``Edb`` instance.
@@ -120,7 +109,7 @@ class Edb(Database):
 
     >>> app['s2'] = ["20um", "Spacing between traces"]
     >>> app['s2'].value
-    >>> 1.9999999999999998e-05
+    >>> 2e-05
     >>> app['s2'].description
     >>> 'Spacing between traces'
 
@@ -144,20 +133,23 @@ class Edb(Database):
         edbversion=None,
         isaedtowned=False,
         oproject=None,
-        student_version=False,
+        port=50051,
         use_ppe=False,
         technology_file=None,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
-        Database.__init__(self, edbversion=edbversion, student_version=student_version)
+        EdbGrpc.__init__(self, edbversion=edbversion, port=port)
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
         self.edbversion = edbversion
         self.isaedtowned = isaedtowned
         self.isreadonly = isreadonly
-        self.cellname = cellname
+        if cellname:
+            self.cellname = cellname
+        else:
+            self.cellname = ""
         if not edbpath:
             if is_windows:
                 edbpath = os.getenv("USERPROFILE")
@@ -177,7 +169,7 @@ class Edb(Database):
                 os.path.dirname(edbpath), "pyaedt_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log"
             )
 
-        if isaedtowned and (inside_desktop or settings.remote_api or settings.remote_rpc_session):
+        if isaedtowned and (inside_desktop):
             self.open_edb_inside_aedt()
         elif edbpath[-3:] in ["brd", "mcm", "gds", "xml", "dxf", "tgz"]:
             self.edbpath = edbpath[:-4] + ".aedb"
@@ -189,28 +181,20 @@ class Edb(Database):
                 else:
                     control_file = convert_technology_file(technology_file, edbversion=edbversion)
             self.import_layout_pcb(edbpath, working_dir, use_ppe=use_ppe, control_file=control_file)
-            if settings.enable_local_log_file and self.log_name:
-                self._logger = self._global_logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath[-2:])
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
-            if settings.enable_local_log_file and self.log_name:
-                self._logger = self._global_logger.add_file_logger(self.log_name, "Edb")
             self.open_edb()
         elif not os.path.exists(os.path.join(self.edbpath, "edb.def")):
             self.create_edb()
-            if settings.enable_local_log_file and self.log_name:
-                self._logger = self._global_logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s created correctly.", self.edbpath)
         elif ".aedb" in edbpath:
             self.edbpath = edbpath
-            if settings.enable_local_log_file and self.log_name:
-                self._logger = self._global_logger.add_file_logger(self.log_name, "Edb")
             self.open_edb()
         if self.active_cell:
             self.logger.info("EDB initialized.")
         else:
-            self.logger.info("Failed to initialize DLLs.")
+            self.logger.info("Failed to initialize EDB.")
 
     def __enter__(self):
         return self
@@ -246,7 +230,7 @@ class Edb(Database):
                     description = variable_value[1] if len(variable_value[1]) > 0 else None
                 else:
                     description = None
-                    pyaedt.edb_core.general.logger.warning("Invalid type for Edb variable desciprtion is ignored.")
+                    self.logger.warning("Invalid type for Edb variable desciprtion is ignored.")
                 val = variable_value[0]
             else:
                 raise TypeError(type_error_message)
@@ -276,6 +260,7 @@ class Edb(Database):
         self._variables = None
         self._active_cell = None
         self._layout = None
+        self._db = None
         # time.sleep(2)
         # gc.collect()
 
@@ -291,6 +276,7 @@ class Edb(Database):
         self._stackup2 = self._stackup
         self._materials = Materials(self)
 
+
     @property
     def cell_names(self):
         """Cell name container.
@@ -298,10 +284,7 @@ class Edb(Database):
         -------
         list of str, cell names.
         """
-        names = []
-        for cell in self.circuit_cells:
-            names.append(cell.GetName())
-        return names
+        return [cell.name for cell in self.active_db.top_circuit_cells]
 
     @property
     def design_variables(self):
@@ -312,7 +295,7 @@ class Edb(Database):
         Dict[str, :class:`pyaedt.edb_core.edb_data.variables.Variable`]
         """
         d_var = dict()
-        for i in self.active_cell.GetVariableServer().GetAllVariableNames():
+        for i in self.active_cell.variable_server.get_all_variable_names():
             d_var[i] = Variable(self, i)
         return d_var
 
@@ -326,7 +309,7 @@ class Edb(Database):
 
         """
         p_var = dict()
-        for i in self.active_db.GetVariableServer().GetAllVariableNames():
+        for i in self.active_db.variable_server.get_all_variable_names():
             p_var[i] = Variable(self, i)
         return p_var
 
@@ -429,18 +412,11 @@ class Edb(Database):
         -------
 
         """
-        # self.logger.info("EDB Path is %s", self.edbpath)
-        # self.logger.info("EDB Version is %s", self.edbversion)
-        # if self.edbversion > "2023.1":
-        #     self.standalone = False
-
-        self.run_as_standalone(self.standalone)
-
-        # self.logger.info("EDB Standalone %s", self.standalone)
+        self.standalone = self.standalone
         try:
-            self.open(self.edbpath, self.isreadonly)
+            self._db = Database.open(self.edbpath, self.isreadonly)
         except Exception as e:
-            self.logger.error("Builder is not Initialized.")
+            self.logger.error("EDB Builder not Initialized.")
         if not self.active_db:
             self.logger.warning("Error Opening db")
             self._active_cell = None
@@ -449,13 +425,13 @@ class Edb(Database):
 
         self._active_cell = None
         if self.cellname:
-            for cell in list(self.top_circuit_cells):
-                if cell.GetName() == self.cellname:
+            for cell in self.active_db.circuit_cells:
+                if cell.name == self.cellname:
                     self._active_cell = cell
         # if self._active_cell is still None, set it to default cell
         if self._active_cell is None:
-            self._active_cell = list(self.top_circuit_cells)[0]
-        self.logger.info("Cell %s Opened", self._active_cell.GetName())
+            self._active_cell = self._db.circuit_cells[0]
+        self.logger.info("Cell %s Opened", self._active_cell.name)
         if self._active_cell:
             self._init_objects()
             self.logger.info("Builder was initialized.")
@@ -480,8 +456,8 @@ class Edb(Database):
                 self.logger.warning("Error getting the database.")
                 self._active_cell = None
                 return None
-            self._active_cell = self.edb_api.cell.cell.FindByName(
-                self.active_db, self.edb_api.cell._cell.CellType.CircuitCell, self.cellname
+            self._active_cell = self.cell.cell.find(
+                self.active_db, self.cell._cell.CellType.CircuitCell, self.cellname
             )
             if self._active_cell is None:
                 self._active_cell = list(self.top_circuit_cells)[0]
@@ -657,7 +633,7 @@ class Edb(Database):
     @property
     def active_db(self):
         """Database object."""
-        return self.db
+        return self._db
 
     @property
     def active_cell(self):
@@ -1017,7 +993,7 @@ class Edb(Database):
         -------
         :class:`pyaedt.edb_core.dotnet.layout.Layout`
         """
-        return LayoutDotNet(self)
+        return self.active_cell.layout
 
     @property
     def active_layout(self):
@@ -1183,14 +1159,14 @@ class Edb(Database):
 
         """
         self.close()
-        if self.log_name and settings.enable_local_log_file:
-            self._global_logger.remove_file_logger(os.path.splitext(os.path.split(self.log_name)[-1])[0])
-            self._logger = self._global_logger
+        self._global_logger.remove_file_logger(os.path.splitext(os.path.split(self.log_name)[-1])[0])
+        self._logger = self._global_logger
         start_time = time.time()
         self._wait_for_file_release()
         elapsed_time = time.time() - start_time
         self.logger.info("EDB file release time: {0:.2f}ms".format(elapsed_time * 1000.0))
         self._clean_variables()
+        self.session.disconnect()
         return True
 
     @pyedb_function_handler()

@@ -5,9 +5,9 @@ import os
 import time
 import warnings
 
-from pyedb.grpc.edb_data.nets_data import EDBNetsData
-from pyedb.grpc.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.grpc.edb_data.primitives_data import EDBPrimitives
+from pyedb.grpc.edb_core.edb_data.nets_data import EDBNetsData
+from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitives
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler

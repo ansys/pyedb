@@ -2,7 +2,7 @@ import logging
 import re
 import warnings
 
-from padstacks_data import EDBPadstackInstance
+from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 import numpy as np
 from pyedb.generic.general_methods import get_filename_without_extension
 from pyedb.generic.general_methods import pyedb_function_handler

@@ -1,7 +1,7 @@
-from terminals import BundleTerminal
-from terminals import EdgeTerminal
-from terminals import PadstackInstanceTerminal
-from terminals import Terminal
+from pyedb.grpc.edb_core.edb_data.terminals import BundleTerminal
+from pyedb.grpc.edb_core.edb_data.terminals import EdgeTerminal
+from pyedb.grpc.edb_core.edb_data.terminals import PadstackInstanceTerminal
+from pyedb.grpc.edb_core.edb_data.terminals import Terminal
 from ansys.edb.utility.value import Value
 
 

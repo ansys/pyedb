@@ -1,5 +1,3 @@
-import re
-import sys
 import os
 
 
@@ -99,7 +97,7 @@ def Edb(
             )
     # TODO: Use EDB gRPC
     else:
-        from pyedb.edb import Edb as app
+        from pyedb.grpc.edb import Edb as app
         return app(
             edbpath=edbpath,
             cellname=cellname,
