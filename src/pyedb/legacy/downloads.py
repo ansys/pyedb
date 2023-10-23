@@ -7,7 +7,7 @@ import zipfile
 from pyedb.generic.general_methods import is_ironpython
 from pyedb.generic.general_methods import is_linux
 from pyedb.generic.general_methods import settings
-from pyedb.misc import list_installed_ansysem
+from pyedb.misc.misc import list_installed_ansysem
 
 if is_ironpython:
     import urllib
@@ -127,15 +127,17 @@ def _retrieve_folder(url, directory, destination=None, local_paths=[]):
 
 def _download_file(directory, filename=None, destination=None, local_paths=[]):
     if not filename:
-        if not directory.startswith("legacy/"):
-            directory = "legacy/" + directory
+        # TODO: Remove this once pyedb is available in public
+        if not directory.startswith("pyaedt/"):
+            directory = "pyaedt/" + directory
         _retrieve_folder(EXAMPLE_REPO, directory, destination, local_paths)
     else:
-        if directory.startswith("legacy/"):
+        # TODO: Remove this once pyedb is available in public
+        if directory.startswith("pyaedt/"):
             url = _get_file_url(directory, filename)
             directory = directory[7:]
         else:
-            url = _get_file_url("legacy/" + directory, filename)
+            url = _get_file_url("pyaedt/" + directory, filename)
         _retrieve_file(url, filename, directory, destination, local_paths)
     if settings.remote_rpc_session:
         remote_path = os.path.join(settings.remote_rpc_session_temp_folder, os.path.split(local_paths[-1])[-1])

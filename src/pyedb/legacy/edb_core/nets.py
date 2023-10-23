@@ -43,6 +43,22 @@ class EdbNets(object):
         self._pedb.logger.error("Component or definition not found.")
         return
 
+    @pyedb_function_handler()
+    def __contains__(self, name):
+        """Determine if a net is named ``name`` or not.
+
+        Parameters
+        ----------
+        name : str
+
+        Returns
+        -------
+        bool
+            ``True`` when one of the net is named ``name``, ``False`` otherwise.
+
+        """
+        return name in self.nets
+
     def __init__(self, p_edb):
         self._pedb = p_edb
         self._nets_by_comp_dict = {}

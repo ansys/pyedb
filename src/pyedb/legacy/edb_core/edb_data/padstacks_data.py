@@ -1002,7 +1002,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     @property
     def terminal(self):
         """Return PadstackInstanceTerminal object."""
-        from pyedb.edb_core.edb_data.terminals import PadstackInstanceTerminal
+        from pyedb.legacy.edb_core.edb_data.terminals import PadstackInstanceTerminal
 
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         if not term.is_null:
@@ -1011,7 +1011,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     @pyedb_function_handler()
     def _create_terminal(self, name=None):
         """Create a padstack instance terminal"""
-        from pyedb.edb_core.edb_data.terminals import PadstackInstanceTerminal
+        from pyedb.legacy.edb_core.edb_data.terminals import PadstackInstanceTerminal
 
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term.create(self, name)
@@ -1019,7 +1019,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     @pyedb_function_handler()
     def create_coax_port(self, name=None, radial_extent_factor=0):
         """Create a coax port."""
-        from pyedb.edb_core.edb_data.ports import CoaxPort
+        from pyedb.legacy.edb_core.edb_data.ports import CoaxPort
 
         term = self._create_terminal(name)
         coax = CoaxPort(self._pedb, term._edb_object)
