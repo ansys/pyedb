@@ -7,12 +7,12 @@ import time
 
 from pyedb.grpc.edb_core.edb_data.simulation_configuration import SimulationConfiguration
 from pyedb.grpc.edb_core.edb_data.simulation_configuration import SourceType
-from pyedb.grpc.edb_core.edb_data import CircuitPort
-from pyedb.grpc.edb_core.edb_data import CurrentSource
-from pyedb.grpc.edb_core.edb_data import DCTerminal
-from pyedb.grpc.edb_core.edb_data import PinGroup
-from pyedb.grpc.edb_core.edb_data import ResistorSource
-from pyedb.grpc.edb_core.edb_data import VoltageSource
+from pyedb.grpc.edb_core.edb_data.sources import CircuitPort
+from pyedb.grpc.edb_core.edb_data.sources import CurrentSource
+from pyedb.grpc.edb_core.edb_data.sources import DCTerminal
+from pyedb.grpc.edb_core.edb_data.sources import PinGroup
+from pyedb.grpc.edb_core.edb_data.sources import ResistorSource
+from pyedb.grpc.edb_core.edb_data.sources import VoltageSource
 from pyedb.generic.constants import SolverType
 from pyedb.generic.constants import SweepType
 from pyedb.generic.general_methods import generate_unique_name

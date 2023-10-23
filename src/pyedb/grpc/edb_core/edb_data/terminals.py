@@ -2,7 +2,7 @@ import re
 
 from pyedb import pyedb_function_handler
 from pyedb.grpc.edb_core.edb_data.connectable import Connectable
-from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+#from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.grpc.edb_core.edb_data.primitives_data import cast
 #from pyaedt.edb_core.general import TerminalType
 from pyedb.generic.general_methods import generate_unique_name

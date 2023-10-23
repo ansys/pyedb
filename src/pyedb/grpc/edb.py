@@ -55,6 +55,7 @@ from pyedb.generic.general_methods import is_windows
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.grpc.grpc_init.database import EdbGrpc
+from ansys.edb.database import Database
 import subprocess
 
 
@@ -145,7 +146,10 @@ class Edb(EdbGrpc):
         self.edbversion = edbversion
         self.isaedtowned = isaedtowned
         self.isreadonly = isreadonly
-        self.cellname = cellname
+        if cellname:
+            self.cellname = cellname
+        else:
+            self.cellname = ""
         if not edbpath:
             if is_windows:
                 edbpath = os.getenv("USERPROFILE")
@@ -256,6 +260,7 @@ class Edb(EdbGrpc):
         self._variables = None
         self._active_cell = None
         self._layout = None
+        self._db = None
         # time.sleep(2)
         # gc.collect()
 
@@ -271,6 +276,7 @@ class Edb(EdbGrpc):
         self._stackup2 = self._stackup
         self._materials = Materials(self)
 
+
     @property
     def cell_names(self):
         """Cell name container.
@@ -278,10 +284,7 @@ class Edb(EdbGrpc):
         -------
         list of str, cell names.
         """
-        names = []
-        for cell in self.circuit_cells:
-            names.append(cell.GetName())
-        return names
+        return [cell.name for cell in self.active_db.top_circuit_cells]
 
     @property
     def design_variables(self):
@@ -306,7 +309,7 @@ class Edb(EdbGrpc):
 
         """
         p_var = dict()
-        for i in self.active_db.GetVariableServer().GetAllVariableNames():
+        for i in self.active_db.variable_server.get_all_variable_names():
             p_var[i] = Variable(self, i)
         return p_var
 
@@ -409,18 +412,11 @@ class Edb(EdbGrpc):
         -------
 
         """
-        # self.logger.info("EDB Path is %s", self.edbpath)
-        # self.logger.info("EDB Version is %s", self.edbversion)
-        # if self.edbversion > "2023.1":
-        #     self.standalone = False
-
-        self.run_as_standalone(self.standalone)
-
-        # self.logger.info("EDB Standalone %s", self.standalone)
+        self.standalone = self.standalone
         try:
-            self.open(self.edbpath, self.isreadonly)
+            self._db = Database.open(self.edbpath, self.isreadonly)
         except Exception as e:
-            self.logger.error("Builder is not Initialized.")
+            self.logger.error("EDB Builder not Initialized.")
         if not self.active_db:
             self.logger.warning("Error Opening db")
             self._active_cell = None
@@ -429,13 +425,13 @@ class Edb(EdbGrpc):
 
         self._active_cell = None
         if self.cellname:
-            for cell in list(self.top_circuit_cells):
-                if cell.GetName() == self.cellname:
+            for cell in self.active_db.circuit_cells:
+                if cell.name == self.cellname:
                     self._active_cell = cell
         # if self._active_cell is still None, set it to default cell
         if self._active_cell is None:
-            self._active_cell = list(self.top_circuit_cells)[0]
-        self.logger.info("Cell %s Opened", self._active_cell.GetName())
+            self._active_cell = self._db.circuit_cells[0]
+        self.logger.info("Cell %s Opened", self._active_cell.name)
         if self._active_cell:
             self._init_objects()
             self.logger.info("Builder was initialized.")
@@ -460,8 +456,8 @@ class Edb(EdbGrpc):
                 self.logger.warning("Error getting the database.")
                 self._active_cell = None
                 return None
-            self._active_cell = self.edb_api.cell.cell.FindByName(
-                self.active_db, self.edb_api.cell._cell.CellType.CircuitCell, self.cellname
+            self._active_cell = self.cell.cell.find(
+                self.active_db, self.cell._cell.CellType.CircuitCell, self.cellname
             )
             if self._active_cell is None:
                 self._active_cell = list(self.top_circuit_cells)[0]
@@ -637,7 +633,7 @@ class Edb(EdbGrpc):
     @property
     def active_db(self):
         """Database object."""
-        return self.db
+        return self._db
 
     @property
     def active_cell(self):
@@ -997,7 +993,7 @@ class Edb(EdbGrpc):
         -------
         :class:`pyaedt.edb_core.dotnet.layout.Layout`
         """
-        return LayoutDotNet(self)
+        return self.active_cell.layout
 
     @property
     def active_layout(self):
@@ -1163,14 +1159,14 @@ class Edb(EdbGrpc):
 
         """
         self.close()
-        if self.log_name and settings.enable_local_log_file:
-            self._global_logger.remove_file_logger(os.path.splitext(os.path.split(self.log_name)[-1])[0])
-            self._logger = self._global_logger
+        self._global_logger.remove_file_logger(os.path.splitext(os.path.split(self.log_name)[-1])[0])
+        self._logger = self._global_logger
         start_time = time.time()
         self._wait_for_file_release()
         elapsed_time = time.time() - start_time
         self.logger.info("EDB file release time: {0:.2f}ms".format(elapsed_time * 1000.0))
         self._clean_variables()
+        self.session.disconnect()
         return True
 
     @pyedb_function_handler()

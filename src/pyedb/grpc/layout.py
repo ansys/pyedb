@@ -11,7 +11,7 @@ from ansys.edb.primitive import Polygon
 from ansys.edb.primitive import Rectangle
 from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitives
 from pyedb.grpc.edb_core.edb_data.primitives_data import cast
-from pyedb.grpc.edb_core.edb_data import EDBStatistics
+from pyedb.grpc.edb_core.edb_data.utilities import EDBStatistics
 from ansys.edb.geometry.point_data import PointData
 from ansys.edb.geometry.polygon_data import PolygonData
 from ansys.edb.geometry.arc_data import ArcData

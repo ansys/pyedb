@@ -3,7 +3,7 @@ import json
 import os
 
 from pyedb.generic.general_methods import generate_unique_name
-from sources import Source
+from pyedb.grpc.edb_core.edb_data.sources import Source
 from pyedb.generic.constants import SourceType
 from pyedb.generic.constants import BasisOrder
 from pyedb.generic.constants import CutoutSubdesignType
