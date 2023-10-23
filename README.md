@@ -1,7 +1,7 @@
 <!-- -->
 <a name="readme-top"></a>
 <!--
-*** PyAEDT README
+*** PyEDB README
 -->
 
 
@@ -22,99 +22,82 @@
 
 ## What is PyAEDT?
 
-PyAEDT is a Python library that interacts directly with the API for
-Ansys Electronics Desktop (AEDT) to make scripting simpler. The architecture
-for PyAEDT can be reused for all AEDT 3D products (HFSS, Icepak, Maxwell 3D,
-and Q3D Extractor), 2D tools, and Ansys Mechanical. PyAEDT also provides
-support for circuit tools like Nexxim and system simulation tools like
-Twin Builder. Finally, PyAEDT provides scripting capabilities in Ansys layout
-tools like HFSS 3D Layout and EDB. The PyAEDT class and method structures
-simplify operation while reusing information as much as possible across
-the API.
+ANSYS EDB is very powerful for processing complex and large layout design. EDB-core native API
+can be used to automate workflows. However it requires a deep comprehension of the architecture and
+classes inheritances, resulting with a learning curve not always compatible with daily work load.
+
+PyEDB was developed to provide high level classes calling EDB-core API to speed up EDB adoption
+and improve user experience. Thanks to its application oriented architecture PyEDB, users can
+start using EDB faster and easier.
 
 ## Install on CPython from PyPI
 
-You can install PyAEDT on CPython 3.7 through 3.10 from PyPI with this command:
+You can install PyEDB on CPython 3.7 through 3.10 from PyPI with this command:
 
 ```sh
-  pip install legacy
+  pip install pyansys-edb
 ```
 
-Install PyAEDT with all extra packages (matplotlib, numpy, pandas, pyvista):
+Install PyEDB with all extra packages (matplotlib, numpy, pandas, pyvista):
 
 ```sh
-  pip install legacy[full]
+  pip install pyansys-edb[full]
 ```
-
-You can also install PyAEDT from Conda-Forge with this command:
-
-```sh
-  conda install -c conda-forge legacy
-```
-PyAEDT remains compatible with IronPython and can be still used in the AEDT Framework.
 
 ## About PyAnsys
 
-PyAEDT is part of the larger [PyAnsys](https://docs.pyansys.com "PyAnsys") effort to facilitate the use of Ansys technologies directly from Python.
+PyEDB is part of the larger [PyAnsys](https://docs.pyansys.com "PyAnsys") effort to facilitate the use of Ansys technologies directly from Python.
 
-PyAEDT is intended to consolidate and extend all existing
-functionalities around scripting for AEDT to allow reuse of existing code,
+PyEDB is intended to consolidate and extend all existing
+functionalities around scripting for EDB to allow reuse of existing code,
 sharing of best practices, and increased collaboration.
 
-## About AEDT
+## About EDB
 
-[AEDT](https://www.ansys.com/products/electronics) is a platform that enables true
-electronics system design. AEDT provides access to the Ansys gold-standard
-electro-magnetics simulation solutions, such as Ansys HFSS, Ansys Maxwell,
-Ansys Q3D Extractor, Ansys Siwave, and Ansys Icepak using electrical CAD (ECAD) and
-Mechanical CAD (MCAD) workflows.
+[AEDT](https://www.ansys.com/products/electronics) is a database allowing efficient and fast
+layout design handling and processing for building ready to solve projects. EDB is addressing Signal
+Integrity (SI), Power Integrity (PI-DC) and also Electro-Thermal work flows. The EDB can be
+imported into Electromagnetic Desktop which enables a user to modify layout,
+assign materials, define ports, simulations and constraints and then launch any of
+the various electromagnetic simulators: HFSS, HFSS3Dlayout, SIwave, Icepak, Maxwell, Q3D.
 
-In addition, AEDT includes direct links to the complete Ansys portfolio of thermal, fluid,
-and mechanical solvers for comprehensive multiphysics analysis.
-Tight integration among these solutions provides unprecedented ease of use for setup and
-faster resolution of complex simulations for design and optimization.
+AEDB is running as stand alone API and opens aedb folder for directly querying and manipulating
+layout design in memory and does not require opening any User Interface (UI). Hence AEDB is the fastest
+and most efficient way to handle large and complex layout.
 
-<p align="center">
-  <img width="100%" src="https://images.ansys.com/is/image/ansys/ansys-electronics-technology-collage?wid=941&op_usm=0.9,1.0,20,0&fit=constrain,0" title="AEDT Applications" herf="https://www.ansys.com/products/electronics"
-  />
-</p>
+AEDB can also been parsed with and Electromagnetic simulator command line like HFSS or SIwave in bacth.
+Therefore completely non graphical flows can be deployed from layout translation up to simulatiom results.
+AEDB can also be imported in ANSYS AEDT with PyAEDT for example to display the project, combining 3D design
+or performing simulation post-processing. AEDB also supports 3D component models.
 
-`PyAEDT` is licensed under the [MIT License](https://github.com/ansys/pyaedt/blob/main/LICENSE)
+`PyEDB` is licensed under the [MIT License](https://github.com/ansys/pyaedt/blob/main/LICENSE)
 
-PyAEDT includes functionality for interacting with the following AEDT tools and Ansys products:
+PyEDB includes functionality for interacting with the following AEDT tools and Ansys products:
 
-  - HFSS and HFSS 3D Layout
+  - HFSS 3D Layout
   - Icepak
-  - Maxwell 2D, Maxwell 3D, and RMXprt
-  - 2D Extractor and Q3D Extractor
-  - Mechanical
-  - Nexxim
   - EDB
-  - Twin Builder
+  - Icepak
 
 ## Documentation and issues
 
 Documentation for the latest stable release of PyAEDT is hosted at
-[PyAEDT documentation](https://aedt.docs.pyansys.com/version/stable/).
+[PyEDB documentation](https://aedt.docs.pyansys.com/version/stable/).
 
 In the upper right corner of the documentation's title bar, there is an option
 for switching from viewing the documentation for the latest stable release
 to viewing the documentation for the development version or previously
 released versions.
 
-You can also view or download PyAEDT cheat sheets, which are one-page references
-providing syntax rules and commands for using the PyAEDT API and PyEDB API:
-
-- [View](https://cheatsheets.docs.pyansys.com/pyaedt_API_cheat_sheet.png) or
-  [download](https://cheatsheets.docs.pyansys.com/pyaedt_API_cheat_sheet.pdf) the
-  PyAEDT API cheat sheet.
+You can also view or download PyEDB cheat sheets, which are one-page references
+providing syntax rules and commands for using the PyEDB API:
 
 - [View](https://cheatsheets.docs.pyansys.com/pyedb_API_cheat_sheet.png) or
   [download](https://cheatsheets.docs.pyansys.com/pyedb_API_cheat_sheet.pdf) the
-  PyAEDT API cheat sheet.
+  PyEDB API cheat sheet.
 
 
-On the [PyAEDT Issues](https://github.com/ansys/PyAEDT/issues) page, you can
+On the [PyEDB Issues](https://github.com/ansys-internal/pyansys-edb/issues) page, you can
 create issues to report bugs and request new features. On the
 [PyAEDT Discussions](https://github.com/ansys/pyaedt/discussions) page or the
 [Discussions](https://discuss.ansys.com/) page on the Ansys Developer portal,
@@ -124,39 +107,23 @@ To reach the project support team, email [pyansys.core@ansys.com](mailto:pyansys
 
 ## Dependencies
 
-To run PyAEDT, you must have a local licenced copy of AEDT.
-PyAEDT supports AEDT versions 2022 R1 or newer.
-
-## Student version
-
-PyAEDT supports AEDT Student versions 2022 R1 and later. For more information, see the
-[Ansys Electronics Desktop Student - Free Software Download](https://www.ansys.com/academic/students/ansys-electronics-desktop-student)
-page on the Ansys website.
+To run PyEDB, you must have a local licenced copy of AEDT.
+PyEDB supports AEDT versions 2022 R1 or newer.
 
 ## Why PyAEDT?
 
-A quick and easy approach for automating a simple operation in the AEDT UI is to record and reuse a script. However, disadvantages of this approach are:
+ANSYS EDB is very powerful for processing complex and large layout design. EDB-core native API
+can be used to automate workflows. However it requires a deep comprehension of the architecture and
+classes inheritances, resulting with a learning curve not always compatible with daily work load.
 
-  - Recorded code is dirty and difficult to read and understand.
-  - Recorded scripts are difficult to reuse and adapt.
-  - Complex coding is required by many global users of AEDT.
-
-The main advantages of PyAEDT are:
-
-  - Automatic initialization of all AEDT objects, such as desktop objects like the editor and boundaries
-  - Error management
-  - Log management
-  - Variable management
-  - Compatibility with IronPython and CPython
-  - Simplification of complex API syntax using data objects while maintaining PEP8 compliance.
-  - Code reusability across different solvers
-  - Clear documentation on functions and API
-  - Unit tests of code to increase quality across different AEDT versions
+PyEDB was developed to provide high level classes calling EDB-core API to speed up EDB adoption
+and improve user experience. Thanks to its application oriented architecture PyEDB, users can
+start using EDB faster and easier.
 
 ## Example workflow
 
- 1. Initialize the ``Desktop`` class with the version of AEDT to use.
- 2. Initialize the application to use within AEDT.
+ 1. 
+ 2. 
 
 ## Connect to AEDT from Python IDE
 
@@ -168,86 +135,19 @@ Usage examples follow.
 ## Explicit AEDT declaration and error management
 
 ``` python
-    # Launch AEDT 2022 R2 in non-graphical mode
+    # Launch PyEDB 2024 R1 
 
-    from pyaedt import Desktop, Circuit
-    with Desktop(specified_version="2022.2",
-                 non_graphical=False, new_desktop_session=True,
-                 close_on_exit=True, student_version=False):
-        circuit = Circuit()
-        ...
-        # Any error here will be caught by Desktop.
-        ...
-
-    # Desktop is automatically released here.
-```
-
-## Implicit AEDT declaration and error management
-
-``` python
-    # Launch the latest installed version of AEDT in graphical mode
-
-    from pyaedt import Circuit
-    with Circuit(specified_version="2022.2",
-                 non_graphical=False) as circuit:
-        ...
-        # Any error here will be caught by Desktop.
-        ...
-
-    # Desktop is automatically released here.
-```
-
-## Remote application call
-
-You can make a remote application call on a CPython server
-or any Windows client machine.
-
-On a CPython Server:
-
-``` python
-    # Launch PyAEDT remote server on CPython
-
-    from pyaedt.common_rpc import pyaedt_service_manager
-    pyaedt_service_manager()
-```
-
-On any Windows client machine:
-
-``` python
-    from pyaedt.common_rpc import create_session
-    cl1 = create_session("server_name")
-    cl1.aedt(port=50000, non_graphical=False)
-    hfss = Hfss(machine="server_name", port=50000)
-    # your code here
-```
-
-## Variables
-
-``` python
-    from pyaedt.HFSS import HFSS
-    with HFSS as hfss:
-         hfss["dim"] = "1mm"   # design variable
-         hfss["$dim"] = "1mm"  # project variable
-```
-
-## Modeler
-
-``` python
-    # Create a box, assign variables, and assign materials.
-
-    from pyaedt.hfss import Hfss
-    with Hfss as hfss:
-         hfss.modeler.create_box([0, 0, 0], [10, "dim", 10],
-                                 "mybox", "aluminum")
+    from pyedb import EDB
+    
 ```
 
 ## License
 
-PyAEDT is licensed under the MIT license.
+PyEDB is licensed under the MIT license.
 
-PyAEDT makes no commercial claim over Ansys whatsoever. This library extends the
-functionality of AEDT by adding a Python interface to AEDT without changing the
-core behavior or license of the original software. The use of PyAEDT requires a
+PyEDB makes no commercial claim over Ansys whatsoever. This library extends the
+functionality of EDB by adding a Python interface to EDB-core without changing the
+core behavior or license of the original software. The use of PyEDB requires a
 legally licensed local copy of AEDT.
 
 To get a copy of AEDT, see the [Ansys Electronics](https://www.ansys.com/products/electronics)
