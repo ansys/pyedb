@@ -5,7 +5,7 @@
 -->
 
 
-# PyAEDT
+# PyEDB
 
 <p style="text-align: center;">
     <br> English | <a href="README_CN.md">中文</a>
@@ -20,7 +20,7 @@
 [![MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)[![black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat)](https://github.com/psf/black)[![Anaconda](https://anaconda.org/conda-forge/pyaedt/badges/version.svg)](https://anaconda.org/conda-forge/pyaedt)
 [![pre-commit](https://results.pre-commit.ci/badge/github/ansys/pyaedt/main.svg)](https://results.pre-commit.ci/latest/github/ansys/pyaedt/main)
 
-## What is PyAEDT?
+## What is PyEDB ?
 
 ANSYS EDB is very powerful for processing complex and large layout design. EDB-core native API
 can be used to automate workflows. However it requires a deep comprehension of the architecture and

@@ -1,8 +1,7 @@
-PyAEDT documentation  |version|
-===============================
+PyEDB documentation  |version|
+==============================
 
-PyAEDT is a Python library that interacts directly with the API for
-Ansys Electronics Desktop (AEDT) to make scripting simpler.
+PyEDB is a Python library that interacts directly with the EDB-core API to make scripting simpler.
 
 .. grid:: 2
 
