@@ -72,13 +72,22 @@ class TestClass:
 
     def test_nets_classify_nets(self):
         """Reassign power based on list of nets."""
-        assert self.edbapp.nets.classify_nets(["RSVD_0", "RSVD_1"], ["V3P3_S0"])
-        assert "RSVD_0" in self.edbapp.nets.power
-        assert "RSVD_0" not in self.edbapp.nets.signal
-        assert "RSVD_1" in self.edbapp.nets.power
-        assert "RSVD_1" not in self.edbapp.nets.signal
-        assert "V3P3_S0" not in self.edapp.nets.power
-        assert "V3P3_S0" in self.edapp.nets.signal
+        assert "SFPA_SDA" in self.edbapp.nets.signal
+        assert "SFPA_SCL" in self.edbapp.nets.signal
+        assert "SFPA_VCCR" in self.edbapp.nets.power
+
+        assert self.edbapp.nets.classify_nets(["SFPA_SDA", "SFPA_SCL"], ["SFPA_VCCR"])
+        assert "SFPA_SDA" in self.edbapp.nets.power
+        assert "SFPA_SDA" not in self.edbapp.nets.signal
+        assert "SFPA_SCL" in self.edbapp.nets.power
+        assert "SFPA_SCL" not in self.edbapp.nets.signal
+        assert "SFPA_VCCR" not in self.edbapp.nets.power
+        assert "SFPA_VCCR" in self.edbapp.nets.signal
+
+        assert self.edbapp.nets.classify_nets(["SFPA_VCCR"], ["SFPA_SDA", "SFPA_SCL"])
+        assert "SFPA_SDA" in self.edbapp.nets.signal
+        assert "SFPA_SCL" in self.edbapp.nets.signal
+        assert "SFPA_VCCR" in self.edbapp.nets.power
 
     def test_arc_data(self):
         """Evaluate primitive arc data."""
@@ -87,6 +96,7 @@ class TestClass:
         assert self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs[0].end
         assert self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
 
+    @pytest.mark.slow
     def test_dc_shorts(self):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_dc_shorts", "ANSYS-HSD_V1_dc_shorts.aedb")
