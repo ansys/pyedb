@@ -1,7 +1,7 @@
 import os.path
 
-from pyedb import is_ironpython
-from pyedb import is_linux
+from pyedb.generic.general_methods import is_ironpython
+from pyedb.generic.general_methods import is_linux
 from pyedb.generic.general_methods import env_path
 
 if is_linux and is_ironpython:
