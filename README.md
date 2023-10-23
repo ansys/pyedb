@@ -110,7 +110,7 @@ To reach the project support team, email [pyansys.core@ansys.com](mailto:pyansys
 To run PyEDB, you must have a local licenced copy of AEDT.
 PyEDB supports AEDT versions 2022 R1 or newer.
 
-## Why PyAEDT?
+## Why PyEDB ?
 
 ANSYS EDB is very powerful for processing complex and large layout design. EDB-core native API
 can be used to automate workflows. However it requires a deep comprehension of the architecture and
@@ -125,9 +125,9 @@ start using EDB faster and easier.
  1. 
  2. 
 
-## Connect to AEDT from Python IDE
+## Connect to PyEDB from Python IDE
 
-PyAEDT works both inside AEDT and as a standalone application. This Python library
+PyEDB works both inside AEDT and as a standalone application. This Python library
 automatically detects whether it is running in an IronPython or CPython environment
 and initializes AEDT accordingly. PyAEDT also provides advanced error management.
 Usage examples follow.
