@@ -23,7 +23,7 @@ assign materials, define ports, simulations and constraints and then launch any 
 the various electromagnetic simulators: HFSS, HFSS3Dlayout, SIwave, Icepak, Maxwell, Q3D.
 
 AEDB is running as stand alone API and opens aedb folder for directly querying and manipulating
-layout design in memory and does not require to open any User Interface (UI). Hence AEDB is the fastest
+layout design in memory and does not require opening any User Interface (UI). Hence AEDB is the fastest
 and most efficient way to handle large and complex layout.
 
 AEDB can also been parsed with and Electromagnetic simulator command line like HFSS or SIwave in bacth.

@@ -3,8 +3,8 @@ Quick Code
 
 Documentation and issues
 ------------------------
-Documentation for the latest stable release of PyAEDT is hosted at
-`PyAEDT documentation <https://aedt.docs.pyansys.com/version/stable/>`_.
+Documentation for the latest stable release of PyEDB is hosted at
+`PyEDB documentation <https://aedt.docs.pyansys.com/version/stable/>`_.
 
 In the upper right corner of the documentation's title bar, there is an option
 for switching from viewing the documentation for the latest stable release
@@ -14,18 +14,14 @@ released versions.
 You can also view or download PyAEDT cheat sheets, which are one-page references
 providing syntax rules and commands for using the PyAEDT API and PyEDB API:
 
-- `View PyAEDT cheat sheet <https://cheatsheets.docs.pyansys.com/pyaedt_API_cheat_sheet.png>`_ or
-  `download PyAEDT cheat sheet <https://cheatsheets.docs.pyansys.com/pyaedt_API_cheat_sheet.pdf>`_ the
-  PyAEDT API cheat sheet.
-
-- `View EDB cheat sheet <https://cheatsheets.docs.pyansys.com/pyedb_API_cheat_sheet.png>`_ or
-  `download EDB cheat sheet  <https://cheatsheets.docs.pyansys.com/pyedb_API_cheat_sheet.pdf>`_ the
+- `View PyEDB cheat sheet <https://cheatsheets.docs.pyansys.com/pyedb_API_cheat_sheet.png>`_ or
+  `download PyEDB cheat sheet  <https://cheatsheets.docs.pyansys.com/pyedb_API_cheat_sheet.pdf>`_ the
   PyAEDT API cheat sheet.
 
 
-On the `PyAEDT Issues <https://github.com/ansys/PyAEDT/issues>`_ page, you can
-create issues to report bugs and request new features. On the `PyAEDT Discussions
-<https://github.com/ansys/pyaedt/discussions>`_ page or the `Discussions <https://discuss.ansys.com/>`_
+On the `PyEDB Issues <https://github.com/ansys/Pansys-edb/issues>`_ page, you can
+create issues to report bugs and request new features. On the `PyEDB Discussions
+<https://github.com/ansys/pyansys-edb/discussions>`_ page or the `Discussions <https://discuss.ansys.com/>`_
 page on the Ansys Developer portal, you can post questions, share ideas, and get community feedback.
 
 To reach the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
@@ -33,14 +29,12 @@ To reach the project support team, email `pyansys.core@ansys.com <pyansys.core@a
 
 Example workflow
 ----------------
-Here’s a brief example of how PyAEDT works:
+Here’s a brief example of how PyEDB works:
 
 Connect to AEDT from a Python IDE
 ---------------------------------
-PyAEDT works both inside AEDT and as a standalone app.
-This Python library automatically detects whether it is running
-in an IronPython or CPython environment and initializes AEDT accordingly.
-PyAEDT also provides advanced error management. Usage examples follow.
+PyEDB works both inside AEDT and as a standalone app.
+PyEDB also provides advanced error management. Usage examples follow.
 
 Explicit AEDT declaration and error management
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

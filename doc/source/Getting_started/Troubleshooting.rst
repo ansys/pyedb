@@ -1,6 +1,6 @@
 Troubleshooting
 ===============
-This section contains common issues and suggestions related to installation and use of PyAEDT.
+This section contains common issues and suggestions related to installation and use of PyEDB.
 
 Installation
 ~~~~~~~~~~~~
@@ -21,7 +21,7 @@ Here is the path to the Python 3.7 interpreter for the 2023 R1 installation:
    path\to\AnsysEM\v231\commonfiles\CPython\3_7\winx64\Release\python"
 
 
-Error installing PyAEDT using pip
+Error installing PyEDB using pip
 ---------------------------------
 - **Proxy server**: If your company uses a proxy server, you may have to update proxy
   settings at the command line. For more information, see the `Using a Proxy
@@ -46,30 +46,14 @@ run the Python command:
 
 .. code:: python
 
-    >>> pip install --no-cache-dir --no-index --find-links=/path/to/pyaedt/wheelhouse pyaedt
+    >>> pip install --no-cache-dir --no-index --find-links=/path/to/pyaedt/wheelhouse pyansys-edb
 
 
-Another option to install PyAEDT from the wheelhouse is to download the following file
-:download:`PyAEDT Installer Python file <../Resources/PyAEDTInstallerFromDesktop.py>`.
-Run this script directly from AEDT and pass the wheelhouse file name as an argument.
-
-
-
-
-Run PyAEDT
-~~~~~~~~~~
-
-COM vs gRPC
------------
-Prior to the 2022R2 release CPython automation in AEDT used
-`COM <https://learn.microsoft.com/en-us/windows/win32/com/com-objects-and-interfaces>`_  which
-requires all interfaces to be registered in the Windows Registry.
-Communication between Python and the AEDT API were translated through an intermediate layer using
-`pywin32 <https://github.com/mhammond/pywin32>`_ and  `PythonNET <https://pythonnet.github.io/pythonnet/>`_.
-
+Run PyEDB with gRPC
+~~~~~~~~~~~~~~~~~~~
 `gRPC <https://grpc.io/>`_ is a modern open source high performance Remote Procedure Call (RPC)
 framework that can run in any environment and supports client/server remote calls.
-Starting from 2022R2 the AEDT API has replaced the COM interface with a gRPC interface.
+Starting from 2024R1 the EDB-core API has replaced the .NET interface with a gRPC interface.
 
 
 .. list-table:: *gRPC Compatibility:*
@@ -92,7 +76,7 @@ On Linux, the Python interface to AEDT uses gRPC for all versions.
 
 Check the AEDT API configuration
 --------------------------------
-Run the following command to start AEDT as a gRPC server:
+Run the following command to start PyEDB as a gRPC server:
 
 *Windows:*
 
@@ -195,6 +179,6 @@ gRPC calls on the client where the Python script is to be run.
     export GRPC_VERBOSITY=DEBUG
     export GRPC_TRACE=all
 
-Now run the PyAEDT script, (making sure it connects to the same port as the gRPC server - 50051).
+Now run the PyEB script, (making sure it connects to the same port as the gRPC server - 50051).
 Capture the output in a file. For example *client.txt*. Then send all the logs
 to `Ansys Support <https://www.ansys.com/it-solutions/contacting-technical-support>`_.

@@ -4,11 +4,11 @@
 Versions and interfaces
 =======================
 
-The PyAEDT project attempts to maintain compatibility with legacy
-versions of AEDT while allowing for support of faster and better
-interfaces with the latest versions of AEDT.
+The PyEDB project attempts to maintain compatibility with legacy
+versions of EDB while allowing for support of faster and better
+interfaces with the latest versions of EDB.
 
-There are two interfaces PyAEDT can use to connect to AEDT.
+There are two interfaces PyEDB can use to connect to EDB.
 You can see a table with the AEDT version and the supported interfaces
 in `Table of supported versions <table_versions_>`_
 
@@ -17,7 +17,7 @@ gRPC interface
 ==============
 
 This is the default and preferred interface to connect to AEDT.
-Ansys 2022 R2 and later support the latest gRPC interface, allowing
+Ansys 2024 R2 and later support the latest gRPC interface, allowing
 for remote management of MAPDL with rapid streaming of mesh, results,
 and files from the MAPDL service.
 
@@ -25,12 +25,12 @@ and files from the MAPDL service.
 Legacy interfaces
 =================
 
-COM interface
+.NET interface
 --------------
 
-AnsysEM supports the legacy COM interface, enabled with the settings option.
+PyEDB supports the legacy .NET interface, enabled with the settings option.
 
-This interface works only on Windows and uses .NET COM objects.
+This interface works both on Windows and Linux.
 
 
 .. code:: python
@@ -55,19 +55,19 @@ The following table shows the supported versions of Ansys EDT and the recommende
 +---------------------------+------------------------+-----------------------------------------------+
 | Ansys Version             | Recommended interface  | Support                                       |
 |                           |                        +-----------------------+-----------------------+
-|                           |                        | gRPC                  | COM                   |
+|                           |                        | gRPC                  | .NET                   |
 +===========================+========================+=======================+=======================+
-| AnsysEM 2024 R1           | gRPC                   |        YES            |        NO*            |
+| AnsysEM 2024 R1           | gRPC                   |        YES            |        YES*            |
 +---------------------------+------------------------+-----------------------+-----------------------+
-| AnsysEM 2023 R2           | gRPC                   |        YES            |        YES*           |
+| AnsysEM 2023 R2           | .NET                   |        NO             |        YES           |
 +---------------------------+------------------------+-----------------------+-----------------------+
-| AnsysEM 2023 R1           | gRPC                   |        YES            |        YES*           |
+| AnsysEM 2023 R1           | .NET                   |        NO             |        YES           |
 +---------------------------+------------------------+-----------------------+-----------------------+
-| AnsysEM 2022 R2           | gRPC                   |        YES*           |        YES            |
+| AnsysEM 2022 R2           | .NET                   |        NO             |        YES            |
 +---------------------------+------------------------+-----------------------+-----------------------+
-| AnsysEM 2022 R1           | gRPC                   |        NO             |        YES            |
+| AnsysEM 2022 R1           | .NET                   |        NO             |        YES            |
 +---------------------------+------------------------+-----------------------+-----------------------+
-| AnsysEM 2021 R2           | gRPC                   |        NO            |         YES            |
+| AnsysEM 2021 R2           | .NET                   |        NO            |         YES            |
 +---------------------------+------------------------+-----------------------+-----------------------+
 
 Where:
