@@ -8,7 +8,7 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self,local_scratch,):
+    def init(self,local_scratch):
         self.local_scratch = local_scratch
 
     def test_create_edb(self):
@@ -57,8 +57,8 @@ class TestClass:
         """Add a variable value."""
         edb = EdbLegacy(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
         edb["ant_length"] = "1cm"
-        assert edb.variable_exists("ant_length")
-        assert edb["ant_length"] == "1cm"
+        assert edb.variable_exists("ant_length")[0]
+        assert edb["ant_length"].value == 0.01
 
     def test_change_design_variable_value(self):
         """Change a variable value."""
@@ -82,9 +82,9 @@ class TestClass:
         """Change a variable value."""
         edb = EdbLegacy(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
         edb["ant_length"] = "1cm"
-        assert edb["ant_length"] == "1cm"
+        assert edb["ant_length"].value == 0.01
         edb["ant_length"] = "2cm"
-        assert edb["ant_length"] == "2cm"
+        assert edb["ant_length"].value == 0.02
 
     def test_create_padstack_instance(self):
         """Create padstack instances."""

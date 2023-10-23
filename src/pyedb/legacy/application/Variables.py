@@ -338,7 +338,7 @@ def generate_validation_errors(property_names, expected_settings, actual_setting
     ]
     return validation_errors
 
-
+# TODO: See how we handle this (totally removed / reworked ) ?
 class VariableManager(object):
     """Manages design properties and project variables.
 
@@ -1261,7 +1261,7 @@ class VariableManager(object):
         var_list += [i for i in list(self._app.oproject.GetArrayVariables()) if i not in var_list]
         return var_list
 
-
+# TODO: See how we handle this (totally removed / reworked ) ?
 class Variable(object):
     """Stores design properties and project variables and provides operations to perform on them.
 
