@@ -63,7 +63,7 @@ from pyedb.generic.general_methods import is_linux
 from pyedb.generic.general_methods import is_windows
 from pyedb.generic.general_methods import pyedb_function_handler
 
-# from pyedb.legacy.generic.process import SiwaveSolve
+from pyedb.generic.process import SiwaveSolve
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 if is_linux and is_ironpython:
@@ -2828,7 +2828,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        tuple of bool and VaribleServer
+        tuple of bool and VariableServer
             It returns a booleand to check if the variable exists and the variable
             server that should contain the variable.
         """
