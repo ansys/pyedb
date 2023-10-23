@@ -11,7 +11,9 @@ class Settings(object):
         self.remote_rpc_session = False
         self._enable_screen_logs = True
         self._edb_dll_path = None
-        #
+        # Remove this if LoadAEDTFile.py is not kept
+        self._aedt_version = None
+        # 
         self._enable_logger = True
         self._enable_file_logs = True
         self.pyedb_server_path = ""
@@ -25,7 +27,6 @@ class Settings(object):
         self._enable_debug_internal_methods_logger = False
         self._enable_debug_logger = False
         self._enable_error_handler = True
-        self._aedt_version = None
         self.formatter = None
         self._project_properties = {}
         self._project_time_stamp = 0

@@ -141,7 +141,7 @@ class PolygonDataDotNet:  # pragma: no cover
         ----------
         points : list or `Edb.Geometry.PointData`
         """
-        from pyedb.generic.clr_module import Tuple
+        from pyedb.legacy.generic.clr_module import Tuple
 
         if isinstance(points, (tuple, list)):
             points = Tuple[self._pedb.edb_api.Geometry.PointData, self._pedb.edb_api.Geometry.PointData](

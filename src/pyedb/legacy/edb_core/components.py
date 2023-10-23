@@ -20,6 +20,7 @@ from pyedb.legacy.generic.clr_module import _clr
 from pyedb.generic.general_methods import get_filename_without_extension
 from pyedb.generic.general_methods import is_ironpython
 from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import _retry_ntimes
 
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -2220,12 +2221,8 @@ class Components(object):
         """
         if isinstance(pin, EDBPadstackInstance):
             pin = pin._edb_padstackinstance
-        if is_ironpython:
-            name = _clr.Reference[String]()
-            pin.GetProductProperty(self._edb.edb_api.ProductId.Designer, 11, name)
-        else:
-            val = String("")
-            _, name = pin.GetProductProperty(self._edb.edb_api.ProductId.Designer, 11, val)
+        val = String("")
+        _, name = pin.GetProductProperty(self._edb.edb_api.ProductId.Designer, 11, val)
         name = str(name).strip("'")
         return name
 
