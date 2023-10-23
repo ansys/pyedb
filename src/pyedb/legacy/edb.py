@@ -2273,7 +2273,7 @@ class EdbLegacy(Database):
         """
         temp_edb_path = self.edbpath[:-5] + "_temp_aedb.aedb"
         shutil.copytree(self.edbpath, temp_edb_path)
-        temp_edb = Edb(temp_edb_path)
+        temp_edb = EdbLegacy(temp_edb_path)
         for via in list(temp_edb.padstacks.instances.values()):
             via.pin.Delete()
         if netlist:
