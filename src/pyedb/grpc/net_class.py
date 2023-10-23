@@ -2,9 +2,9 @@ from __future__ import absolute_import  # noreorder
 
 import re
 
-from pyedb.grpc.edb_data.nets_data import EDBDifferentialPairData
-from pyedb.grpc.edb_data.nets_data import EDBExtendedNetData
-from pyedb.grpc.edb_data.nets_data import EDBNetClassData
+from pyedb.grpc.edb_core.edb_data.nets_data import EDBDifferentialPairData
+from pyedb.grpc.edb_core.edb_data.nets_data import EDBExtendedNetData
+from pyedb.grpc.edb_core.edb_data.nets_data import EDBNetClassData
 from pyedb.generic.general_methods import pyedb_function_handler
 
 

@@ -2,10 +2,9 @@
 This module contains the `EdbPadstacks` class.
 """
 import math
-import warnings
 
-from pyedb.grpc.edb_data.padstacks_data import EDBPadstack
-from pyedb.grpc.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstack
+from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
@@ -573,7 +572,7 @@ class EdbPadstacks(object):
                 return polygon_data, offset_x, offset_y, rotation
             return PadType.UNKNOWN_GEOM_TYPE
 
-    @pyaedt_function_handler
+    @pyedb_function_handler
     def set_all_antipad_value(self, value):
         """Set all anti-pads from all pad-stack definition to the given value.
 
@@ -620,7 +619,7 @@ class EdbPadstacks(object):
                 padstack.edb_padstack.data = cloned_padstack_data
             return all_succeed
 
-    @pyaedt_function_handler
+    @pyedb_function_handler
     def check_and_fix_via_plating(self, minimum_value_to_replace=0.0, default_plating_ratio=0.2):
         """Check for minimum via plating ration value, values found below the minimum one are replaced by default
         plating ratio.

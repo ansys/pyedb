@@ -5,7 +5,7 @@ The main component object is called directly from main application using the pro
 
 .. code:: python
 
-    from pyaedt import Edb
+    from pyedb import Edb
     edb = Edb(myedb, edbversion="2023.1")
 
     pins =edb.components.get_pin_from_component("U2A5")
@@ -13,7 +13,7 @@ The main component object is called directly from main application using the pro
     ...
 
 
-.. currentmodule:: pyaedt.edb_core.components
+.. currentmodule:: pyedb.edb_core.components
 
 .. autosummary::
    :toctree: _autosummary

@@ -31,7 +31,7 @@ page to submit questions, report bugs, and request new features.
 
 To reach the product support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
 
-View PyAEDT documentation
+View PyEDB documentation
 -------------------------
 Documentation for the latest stable release of PyAEDT is hosted at
 `PyAEDT Documentation <https://aedt.docs.pyansys.com>`_.  
@@ -73,7 +73,7 @@ For example::
 
 Log errors
 ~~~~~~~~~~
-PyAEDT has an internal logging tool named ``Messenger``
+PyEDB has an internal logging tool named ``Messenger``
 and a log file that is automatically generated in the project
 folder.
 
@@ -120,7 +120,7 @@ Here is an example of an error:
 .. code::
 
    ----------------------------------------------------------------------------------
-   PyAEDT error on method create_box:  General or AEDT error. Check again
+   PyEDB error on method create_box:  General or EDB error. Check again
    the arguments provided:
        position = [0, 0, 0]
        dimensions_list = [0, 10, 10]

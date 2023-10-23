@@ -3,8 +3,8 @@ from ansys.edb.layout.layout import ExtendedNet
 from ansys.edb.layout.layout import NetClass
 from ansys.edb.layout.layout import Net
 from ansys.edb.primitive.primitive import PrimitiveType
-from padstacks_data import EDBPadstackInstance
-from primitives_data import cast
+from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.grpc.edb_core.edb_data.primitives_data import cast
 from pyedb.generic.general_methods import pyedb_function_handler
 
 
