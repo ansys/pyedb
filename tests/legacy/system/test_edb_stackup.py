@@ -371,6 +371,7 @@ class TestClass:
 
     def test_stackup_load(self):
         """Import stackup from a file."""
+        import json
         fpath = os.path.join(local_path, "example_models", test_subfolder, "stackup.json")
         stackup_json = json.load(open(fpath, "r"))
 
