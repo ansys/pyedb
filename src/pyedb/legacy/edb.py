@@ -13,7 +13,7 @@ import traceback
 import warnings
 
 from pyedb import settings
-# from pyedb.legacy.application.Variables import decompose_variable_value
+from pyedb.legacy.application.Variables import decompose_variable_value
 from pyedb.legacy.edb_core.components import Components
 from pyedb.legacy.edb_core.dotnet.database import Database
 from pyedb.legacy.edb_core.dotnet.layout import LayoutDotNet
@@ -63,7 +63,7 @@ from pyedb.generic.general_methods import is_linux
 from pyedb.generic.general_methods import is_windows
 from pyedb.generic.general_methods import pyedb_function_handler
 
-# from pyedb.legacy.generic.process import SiwaveSolve
+from pyedb.generic.process import SiwaveSolve
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 if is_linux and is_ironpython:
@@ -248,7 +248,7 @@ class EdbLegacy(Database):
                     description = variable_value[1] if len(variable_value[1]) > 0 else None
                 else:
                     description = None
-                    pyaedt.edb_core.general.logger.warning("Invalid type for Edb variable desciprtion is ignored.")
+                    self.logger.warning("Invalid type for Edb variable desciprtion is ignored.")
                 val = variable_value[0]
             else:
                 raise TypeError(type_error_message)
@@ -618,9 +618,6 @@ class EdbLegacy(Database):
         bool
             ``True`` if successful, ``False`` if failed.
         """
-        if is_ironpython:  # pragma no cover
-            self.logger.error("This method is not supported in Ironpython")
-            return False
         if units.lower() not in ["millimeter", "inch", "micron"]:  # pragma no cover
             self.logger.warning("The wrong unit is entered. Setting to the default, millimeter.")
             units = "millimeter"
@@ -925,6 +922,7 @@ class EdbLegacy(Database):
         """
 
         if not self._nets and self.active_db:
+            raise Exception("")
             self._nets = EdbNets(self)
         return self._nets
 
@@ -1058,25 +1056,25 @@ class EdbLegacy(Database):
         ):
             obj_type = i.GetObjType().ToString()
             if obj_type == LayoutObjType.PadstackInstance.name:
-                from pyedb.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+                from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 
                 temp.append(EDBPadstackInstance(i, self))
             elif obj_type == LayoutObjType.Primitive.name:
                 prim_type = i.GetPrimitiveType().ToString()
                 if prim_type == Primitives.Path.name:
-                    from pyedb.edb_core.edb_data.primitives_data import EdbPath
+                    from pyedb.legacy.edb_core.edb_data.primitives_data import EdbPath
 
                     temp.append(EdbPath(i, self))
                 elif prim_type == Primitives.Rectangle.name:
-                    from pyedb.edb_core.edb_data.primitives_data import EdbRectangle
+                    from pyedb.legacy.edb_core.edb_data.primitives_data import EdbRectangle
 
                     temp.append(EdbRectangle(i, self))
                 elif prim_type == Primitives.Circle.name:
-                    from pyedb.edb_core.edb_data.primitives_data import EdbCircle
+                    from pyedb.legacy.edb_core.edb_data.primitives_data import EdbCircle
 
                     temp.append(EdbCircle(i, self))
                 elif prim_type == Primitives.Polygon.name:
-                    from pyedb.edb_core.edb_data.primitives_data import EdbPolygon
+                    from pyedb.legacy.edb_core.edb_data.primitives_data import EdbPolygon
 
                     temp.append(EdbPolygon(i, self))
                 else:
@@ -2275,7 +2273,7 @@ class EdbLegacy(Database):
         """
         temp_edb_path = self.edbpath[:-5] + "_temp_aedb.aedb"
         shutil.copytree(self.edbpath, temp_edb_path)
-        temp_edb = Edb(temp_edb_path)
+        temp_edb = EdbLegacy(temp_edb_path)
         for via in list(temp_edb.padstacks.instances.values()):
             via.pin.Delete()
         if netlist:
@@ -2830,7 +2828,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        tuple of bool and VaribleServer
+        tuple of bool and VariableServer
             It returns a booleand to check if the variable exists and the variable
             server that should contain the variable.
         """
