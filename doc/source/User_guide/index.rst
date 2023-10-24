@@ -54,3 +54,8 @@ You can obtain the same result with:
 
    loading_layout
    edb_queries
+   cutout
+   layer_stackup
+   ports
+   simulation_setup
+
