@@ -52,9 +52,5 @@ You can obtain the same result with:
    :hidden:
    :maxdepth: 2
 
-   variables
-   modeler
-   mesh
-   setup
-   optimetrics
-   postprocessing
+   loading_layout
+   edb_queries
