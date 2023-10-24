@@ -76,7 +76,6 @@ class TestClass:
         assert "air" in edbapp.materials.materials
         edbapp.close()
 
-    @pytest.mark.current
     def test_material_load_syslib_amat(self):
         """Load material from an amat file."""
         assert self.edbapp.materials.load_syslib_amat()
@@ -86,7 +85,6 @@ class TestClass:
         assert self.edbapp.materials.materials["Rogers RO3003 (tm)"].loss_tangent == 0.0013
         assert self.edbapp.materials.materials["Rogers RO3003 (tm)"].permittivity == 3.0
 
-    @pytest.mark.current
     def test_materials_read_materials(self):
         """Read materials."""
         path = os.path.join(local_path, "example_models", "syslib", "Materials.amat")
