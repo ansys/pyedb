@@ -11,8 +11,7 @@ PyEDB is a Python library that interacts directly with the EDB-core API to make 
             Getting started
             ^^^^^^^^^^^^^^^
 
-            Learn how to run install PyAEDT, to launch Electronics Desktop and
-            install link button in AEDT.
+            Learn how to run install PyEDB.
 
             +++
 
@@ -44,26 +43,6 @@ PyEDB is a Python library that interacts directly with the EDB-core API to make 
 
 
 
-.. grid:: 2
-
-   .. grid-item-card::
-            :img-top: _static/assets/index_api.png
-
-            AEDT API reference
-            ^^^^^^^^^^^^^^^^^^
-
-            Understand PyAEDT API endpoints, their capabilities,
-            and how to interact with them programmatically.
-
-            +++
-            .. button-link:: API/index.html
-               :color: secondary
-               :expand:
-               :outline:
-               :click-parent:
-
-                  AEDT API reference
-
    .. grid-item-card::
             :img-top: _static/assets/index_api.png
 
@@ -93,7 +72,7 @@ PyEDB is a Python library that interacts directly with the EDB-core API to make 
                     Examples
                     ^^^^^^^^
 
-                    Explore examples that show how to use PyAEDT to
+                    Explore examples that show how to use PyEDB to
                     perform different types of simulations.
 
                     +++
@@ -137,7 +116,6 @@ Indices and tables
 
        Getting_started/index
        User_guide/index
-       API/index
        EDBAPI/index
        {% if run_examples %}
        examples/index
