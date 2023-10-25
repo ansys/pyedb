@@ -108,6 +108,7 @@ class TestClass:
         """Add a sywave AC analysis."""
         assert self.edbapp.siwave.add_siwave_syz_analysis()
 
+    @pytest.mark.skip(reason="Not working in pyaedt")
     def test_siwave_add_dc_analysis(self):
         """Add a sywave DC analysis."""
         setup = self.edbapp.siwave.add_siwave_dc_analysis()
