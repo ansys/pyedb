@@ -62,7 +62,7 @@ $end 'Water(@360K)'
 class TestClass:
     @pytest.fixture(autouse=True)
     def init(self):
-        self.materials = Materials(MagicMock())
+        self.materials = Materials(MagicMock(materials=["copper"]))
 
     @patch.object(builtins, "open", new_callable=mock_open, read_data=MATERIALS)
     def test_materials_read_materials(self, mock_file_open):
