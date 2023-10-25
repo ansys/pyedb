@@ -2,8 +2,10 @@
 """
 import os
 import pytest
+import math
 
-from pyedb import Edb
+# from pyedb import Edb
+from pyedb.legacy.edb import EdbLegacy
 
 from tests.conftest import local_path
 from tests.conftest import desktop_version
@@ -229,7 +231,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_bom.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         edbapp.components.import_bom(os.path.join(local_path, "example_models", test_subfolder, "bom_example_2.csv"))
         assert not edbapp.components.instances["R2"].is_enabled
         assert edbapp.components.instances["U13"].partname == "SLAB-QFN-24-2550x2550TP_V"
@@ -290,7 +292,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_0126.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         assert edbapp.components.components
         assert edbapp.components.definitions
         comp_def = edbapp.components.definitions["CAPC2012X12N"]
@@ -319,7 +321,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_0136.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         components_to_change = [res for res in list(edbapp.components.Others.values()) if res.partname == "A93549-027"]
         for res in components_to_change:
             res.type = "Resistor"
@@ -343,7 +345,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_0134b.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         pin = "A24"
         ref_pins = [pin for pin in list(edbapp.components["U1"].pins.values()) if pin.net_name == "GND"]
         assert edbapp.components.create_port_on_pins(refdes="U1", pins=pin, reference_pins=ref_pins)
@@ -359,11 +361,104 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_boundaries.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         for refdes, cmp in edbapp.components.components.items():
             edbapp.components.replace_rlc_by_gap_boundaries(refdes)
         rlc_list = [
             term for term in list(edbapp.active_layout.Terminals) if str(term.GetBoundaryType()) == "RlcBoundary"
         ]
         assert len(rlc_list) == 944
+        edbapp.close()
+
+    def test_components_get_component_placement_vector(self):
+        """Get the placement vector between 2 components."""
+        edb2 = EdbLegacy(self.target_path4, edbversion=desktop_version)
+        for _, cmp in edb2.components.instances.items():
+            assert isinstance(cmp.solder_ball_placement, int)
+        mounted_cmp = edb2.components.get_component_by_name("BGA")
+        hosting_cmp = self.edbapp.components.get_component_by_name("U1")
+        (
+            result,
+            vector,
+            rotation,
+            solder_ball_height,
+        ) = self.edbapp.components.get_component_placement_vector(
+            mounted_component=mounted_cmp,
+            hosting_component=hosting_cmp,
+            mounted_component_pin1="A10",
+            mounted_component_pin2="A12",
+            hosting_component_pin1="A2",
+            hosting_component_pin2="A4",
+        )
+        assert result
+        assert abs(abs(rotation) - math.pi / 2) < 1e-9
+        assert solder_ball_height == 0.00033
+        assert len(vector) == 2
+        (
+            result,
+            vector,
+            rotation,
+            solder_ball_height,
+        ) = self.edbapp.components.get_component_placement_vector(
+            mounted_component=mounted_cmp,
+            hosting_component=hosting_cmp,
+            mounted_component_pin1="A10",
+            mounted_component_pin2="A12",
+            hosting_component_pin1="A2",
+            hosting_component_pin2="A4",
+            flipped=True,
+        )
+        assert result
+        assert abs(rotation + math.pi / 2) < 1e-9
+        assert solder_ball_height == 0.00033
+        assert len(vector) == 2
+        edb2.close()
+
+    def test_components_assign(self):
+        """Assign RLC model, S-parameter model and spice model."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_17.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
+        spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
+
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        comp = edbapp.components.instances["R2"]
+        assert not comp.assign_rlc_model()
+        comp.assign_rlc_model(1, None, 3, False)
+        assert (
+            not comp.is_parallel_rlc
+            and float(comp.res_value) == 1
+            and float(comp.ind_value) == 0
+            and float(comp.cap_value) == 3
+        )
+        comp.assign_rlc_model(1, 2, 3, True)
+        assert comp.is_parallel_rlc
+        assert (
+            comp.is_parallel_rlc
+            and float(comp.res_value) == 1
+            and float(comp.ind_value) == 2
+            and float(comp.cap_value) == 3
+        )
+        assert comp.value
+        assert not comp.spice_model and not comp.s_param_model and not comp.netlist_model
+        assert comp.assign_s_param_model(sparam_path) and comp.value
+        assert comp.s_param_model
+        assert edbapp.components.nport_comp_definition
+        assert comp.assign_spice_model(spice_path) and comp.value
+        assert comp.spice_model
+        comp.type = "Inductor"
+        comp.value = 10  # This command set the model back to ideal RLC
+        assert comp.type == "Inductor" and comp.value == 10 and float(comp.ind_value) == 10
+        edbapp.close()
+
+    def test_components_bounding_box(self):
+        """Get component's bounding box."""
+        target_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        out_edb = os.path.join(self.local_scratch.path, "get_comp_bbox.aedb")
+        self.local_scratch.copyfolder(target_path, out_edb)
+        edbapp = EdbLegacy(out_edb, edbversion=desktop_version)
+        component = edbapp.components.instances["U1"]
+        assert component.bounding_box
+        assert isinstance(component.rotation, float)
         edbapp.close()

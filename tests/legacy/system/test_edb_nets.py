@@ -3,7 +3,7 @@
 
 import os
 import pytest
-from pyedb import Edb
+from pyedb.legacy.edb import EdbLegacy
 from tests.conftest import desktop_version
 from tests.conftest import local_path
 from tests.legacy.system.conftest import test_subfolder
@@ -89,7 +89,7 @@ class TestClass:
         assert "SFPA_SCL" in self.edbapp.nets.signal
         assert "SFPA_VCCR" in self.edbapp.nets.power
 
-    def test_arc_data(self):
+    def test_nets_arc_data(self):
         """Evaluate primitive arc data."""
         assert len(self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs) > 0
         assert self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs[0].start
@@ -97,11 +97,11 @@ class TestClass:
         assert self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
 
     @pytest.mark.slow
-    def test_dc_shorts(self):
+    def test_nets_dc_shorts(self):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_dc_shorts", "ANSYS-HSD_V1_dc_shorts.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         dc_shorts = edbapp.layout_validation.dc_shorts()
         assert dc_shorts
         edbapp.nets.nets["DDR4_A0"].name = "DDR4$A0"
@@ -115,3 +115,7 @@ class TestClass:
         edbapp.nets["DDR4_DM3"].find_dc_short(True)
         assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) == 0
         edbapp.close()
+
+    def test_nets_eligible_power_nets(self):
+        """Evaluate eligible power nets."""
+        assert "GND" in [i.name for i in self.edbapp.nets.eligible_power_nets()]
