@@ -1,8 +1,8 @@
-from pyedb.ipc2581.content.entry_line import EntryLine
-from pyedb.ipc2581.ecad.cad_data.polygon import PolyStep
-from pyedb.ipc2581.ecad.cad_data.polygon import PolyType
-from pyedb.generic.general_methods import ET
-from pyedb.generic.general_methods import pyedb_function_handler
+from src.pyedb.ipc2581.content.entry_line import EntryLine
+from src.pyedb.ipc2581.ecad.cad_data.polygon import PolyStep
+from src.pyedb.ipc2581.ecad.cad_data.polygon import PolyType
+from src.pyedb.generic.general_methods import ET
+from src.pyedb.generic.general_methods import pyedb_function_handler
 
 
 

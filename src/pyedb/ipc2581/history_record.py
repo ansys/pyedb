@@ -1,6 +1,6 @@
 from datetime import date
 
-from pyedb.generic.general_methods import ET
+from src.pyedb.generic.general_methods import ET
 
 
 class HistoryRecord(object):

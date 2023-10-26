@@ -1,8 +1,8 @@
-from pyedb.ipc2581.ecad.cad_data.drill import Drill
-from pyedb.ipc2581.ecad.cad_data.padstack_instance import PadstackInstance
-from pyedb.ipc2581.ecad.cad_data.path import Path
-from pyedb.ipc2581.ecad.cad_data.polygon import Polygon
-from pyedb.generic.general_methods import ET
+from src.pyedb.ipc2581.ecad.cad_data.drill import Drill
+from src.pyedb.ipc2581.ecad.cad_data.padstack_instance import PadstackInstance
+from src.pyedb.ipc2581.ecad.cad_data.path import Path
+from src.pyedb.ipc2581.ecad.cad_data.polygon import Polygon
+from src.pyedb.generic.general_methods import ET
 
 
 class Feature(object):

@@ -2,10 +2,13 @@ import logging
 import re
 import warnings
 
-from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from src.pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 import numpy as np
-from pyedb.generic.general_methods import get_filename_without_extension
-from pyedb.generic.general_methods import pyedb_function_handler
+from src.pyedb.generic.general_methods import get_filename_without_extension
+from src.pyedb.generic.general_methods import pyedb_function_handler
+from src.pyedb.modeler.geometry_operators import GeometryOperators
+import ansys.edb.hierarchy as hierarchy
+import ansys.edb.utility as utility
 
 
 class EDBComponentDef(object):
@@ -183,8 +186,11 @@ class EDBComponent(object):
 
         @property
         def rlc_values(self):  # pragma: no cover
-            rlc = self._pin_pair_rlc
-            return [rlc.r, rlc.r, rlc.c]
+            cmp_type = self.edbcomponent.component_type.value
+            if 0 < cmp_type < 4:
+                rlc = self._pin_pair_rlc
+                return [rlc.r, rlc.r, rlc.c]
+            return None
 
         @rlc_values.setter
         def rlc_values(self, values):  # pragma: no cover
@@ -264,12 +270,10 @@ class EDBComponent(object):
 
     @property  # pragma: no cover
     def _pin_pairs(self):
-        edb_comp_prop = self.component_property
-        edb_model = self._edb_model
-        return [
-            self._PinPair(self, self.edbcomponent, edb_comp_prop, edb_model, pin_pair)
-            for pin_pair in list(edb_model.PinPairs)
-        ]
+        cmp_type = self.edbcomponent.component_type.value
+        if 0 < cmp_type < 4:
+            return self._edb_model.pin_pairs()
+        return []
 
     @property
     def is_enabled(self):
@@ -324,7 +328,7 @@ class EDBComponent(object):
     def solder_ball_placement(self):
         """Solder ball placement if available.."""
         if "solder_ball_property" in dir(self.component_property):
-            return int(self.component_property.solder_ball_property.placement)
+            return self.component_property.solder_ball_property.placement.value
         return 2
 
     @property
@@ -358,7 +362,7 @@ class EDBComponent(object):
             ``True`` if current object is enabled, ``False`` otherwise.
         """
         if self.type in ["Resistor", "Capacitor", "Inductor"]:
-            return self.component_property.is_enabled
+            return self.component_property.enabled
         else:  # pragma: no cover
             return True
 
@@ -367,13 +371,15 @@ class EDBComponent(object):
         """Enables the current object."""
         if self.type in ["Resistor", "Capacitor", "Inductor"]:
             component_property = self.component_property
-            component_property.is_enabled = enabled
+            component_property.enabled = enabled
             self.edbcomponent.component_property = component_property
 
     @property
     def model_type(self):
         """Retrieve assigned model type."""
-        _model_type = self._edb_model.ToString().split(".")[-1]
+        if self.type not in ["Resistor", "Inductor", "Capacitor"]:
+            return None
+        _model_type = str(self._edb_model).split(".")[-1]
         if _model_type == "PinPairModel":
             return "RLC"
         else:
@@ -382,24 +388,26 @@ class EDBComponent(object):
     @property
     def rlc_values(self):
         """Get component rlc values."""
-        if not len(self._pin_pairs):
+        if not self._pin_pairs:
             return [None, None, None]
-        pin_pair = self._pin_pairs[0]
-        return pin_pair.rlc_values
+        model = self.component_property.model.clone()
+        pair = model.rlc(self._pin_pairs[0])
+        return [pair.r.value, pair.l.value, pair.c.value]
+
 
     @rlc_values.setter
     def rlc_values(self, value):
         if isinstance(value, list):  # pragma no cover
             rlc_enabled = [True if i else False for i in value]
-            rlc_values = [self._get_edb_value(i) for i in value]
-            model = self._edb.cell.hierarchy._hierarchy.PinPairModel()
+            rlc_values = [utility.Value(i) for i in value]
+            model = hierarchy.PinPairModel()
             pin_names = list(self.pins.keys())
             for idx, i in enumerate(np.arange(len(pin_names) // 2)):
                 pin_pair = self._edb.utility.utility.PinPair(pin_names[idx], pin_names[idx + 1])
                 rlc = self._edb.utility.utility.Rlc(
                     rlc_values[0], rlc_enabled[0], rlc_values[1], rlc_enabled[1], rlc_values[2], rlc_enabled[2], False
                 )
-                model.SetPinPairRlc(pin_pair, rlc)
+                model.rlc(pin_pair)
             self._set_model(model)
 
     @property
@@ -430,22 +438,25 @@ class EDBComponent(object):
         elif self.model_type == "SParameterModel":
             return self.s_param_model.name
         else:
-            return self.netlist_model.netlist
+            try:
+                return self.netlist_model.netlist
+            except:
+                return None
 
     @value.setter
     def value(self, value):
         rlc_enabled = [True if i == self.type else False for i in ["Resistor", "Inductor", "Capacitor"]]
         rlc_values = [value if i == self.type else 0 for i in ["Resistor", "Inductor", "Capacitor"]]
-        rlc_values = [self._get_edb_value(i) for i in rlc_values]
+        rlc_values = [utility.Value(i) for i in rlc_values]
 
-        model = self._edb.cell.hierarchy._hierarchy.PinPairModel()
+        model = hierarchy.PinPairModel()
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
-            pin_pair = self._edb.utility.utility.PinPair(pin_names[idx], pin_names[idx + 1])
+            pin_pair = utility.PinPair(pin_names[idx], pin_names[idx + 1])
             rlc = self._edb.utility.utility.Rlc(
                 rlc_values[0], rlc_enabled[0], rlc_values[1], rlc_enabled[1], rlc_values[2], rlc_enabled[2], False
             )
-            model.SetPinPairRlc(pin_pair, rlc)
+            model.rlc = pin_pair, rlc
         self._set_model(model)
 
     @property
@@ -457,16 +468,16 @@ class EDBComponent(object):
         str
             Resistance value or ``None`` if not an RLC type.
         """
-        cmp_type = int(self.edbcomponent.GetComponentType())
+        cmp_type = self.edbcomponent.component_type.value
         if 0 < cmp_type < 4:
-            componentProperty = self.edbcomponent.GetComponentProperty()
-            model = componentProperty.GetModel().Clone()
-            pinpairs = model.PinPairs
-            if not list(pinpairs):
+            componentProperty = self.edbcomponent.component_property
+            model = componentProperty.model.clone()
+            pinpairs = model.pin_pairs()
+            if not pinpairs:
                 return "0"
             for pinpair in pinpairs:
-                pair = model.GetPinPairRlc(pinpair)
-                return pair.R.ToString()
+                pair = model.rlc(pinpair)
+                return pair.r.value
         return None
 
     @res_value.setter
@@ -486,16 +497,16 @@ class EDBComponent(object):
         str
             Capacitance Value. ``None`` if not an RLC Type.
         """
-        cmp_type = int(self.edbcomponent.GetComponentType())
+        cmp_type = self.edbcomponent.component_type.value
         if 0 < cmp_type < 4:
-            componentProperty = self.edbcomponent.GetComponentProperty()
-            model = componentProperty.GetModel().Clone()
-            pinpairs = model.PinPairs
-            if not list(pinpairs):
+            componentProperty = self.edbcomponent.component_property
+            model = componentProperty.model.clone()
+            pinpairs = model.pin_pairs()
+            if not pinpairs:
                 return "0"
             for pinpair in pinpairs:
-                pair = model.GetPinPairRlc(pinpair)
-                return pair.C.ToString()
+                pair = model.rlc(pinpair)
+                return pair.c.value
         return None
 
     @cap_value.setter
@@ -515,16 +526,16 @@ class EDBComponent(object):
         str
             Inductance Value. ``None`` if not an RLC Type.
         """
-        cmp_type = int(self.edbcomponent.GetComponentType())
+        cmp_type = self.edbcomponent.component_type.value
         if 0 < cmp_type < 4:
-            componentProperty = self.edbcomponent.GetComponentProperty()
-            model = componentProperty.GetModel().Clone()
-            pinpairs = model.PinPairs
-            if not list(pinpairs):
+            componentProperty = self.edbcomponent.component_property
+            model = componentProperty.model.clone()
+            pinpairs = model.pin_pairs()
+            if not pinpairs:
                 return "0"
             for pinpair in pinpairs:
-                pair = model.GetPinPairRlc(pinpair)
-                return pair.L.ToString()
+                pair = model.rlc(pinpair)
+                return pair.l.value
         return None
 
     @ind_value.setter
@@ -544,13 +555,13 @@ class EDBComponent(object):
         bool
             ``True`` if it is a parallel rlc model. ``False`` for series RLC. ``None`` if not an RLC Type.
         """
-        cmp_type = int(self.edbcomponent.GetComponentType())
+        cmp_type = self.edbcomponent.component_type.value
         if 0 < cmp_type < 4:
-            model = self.component_property.GetModel().Clone()
-            pinpairs = model.PinPairs
+            model = self.component_property.model.clone()
+            pinpairs = model.pin_pairs()
             for pinpair in pinpairs:
-                pair = model.GetPinPairRlc(pinpair)
-                return pair.IsParallel
+                pair = model.rlc(pinpair)
+                return pair.is_parallel
         return None
 
     @is_parallel_rlc.setter
@@ -559,19 +570,19 @@ class EDBComponent(object):
             logging.warning(self.refdes, " has no pin pair.")
         else:
             if isinstance(value, bool):
-                componentProperty = self.edbcomponent.GetComponentProperty()
-                model = componentProperty.GetModel().Clone()
-                pinpairs = model.PinPairs
+                componentProperty = self.edbcomponent.component_property
+                model = componentProperty.model.clone()
+                pinpairs = model.pin_pairs
                 if not list(pinpairs):
                     return "0"
                 for pin_pair in pinpairs:
-                    pin_pair_rlc = model.GetPinPairRlc(pin_pair)
-                    pin_pair_rlc.IsParallel = value
+                    pin_pair_rlc = model.rlc(pin_pair)
+                    pin_pair_rlc.is_parallel = value
                     pin_pair_model = self._edb_model
-                    pin_pair_model.SetPinPairRlc(pin_pair, pin_pair_rlc)
+                    pin_pair_model.rlc(pin_pair, pin_pair_rlc)
                     comp_prop = self.component_property
-                    comp_prop.SetModel(pin_pair_model)
-                    self.edbcomponent.SetComponentProperty(comp_prop)
+                    comp_prop.model = pin_pair_model
+                    self.edbcomponent.component_property = comp_prop
 
     @property
     def center(self):
@@ -581,8 +592,10 @@ class EDBComponent(object):
         -------
         list
         """
-        center = self.component_instance.GetCenter()
-        return [center.X.ToDouble(), center.Y.ToDouble()]
+        polygon_data = self.component_instance.get_bbox()
+        comp_outline = [[pt.x.value, pt.y.value, 0] for pt in polygon_data.points]
+        center = GeometryOperators.get_polygon_centroid(comp_outline)
+        return center[:2]
 
     @property
     def bounding_box(self):
@@ -595,10 +608,10 @@ class EDBComponent(object):
             coordinates in this order: [X lower left corner, Y lower left corner,
             X upper right corner, Y upper right corner].
         """
-        bbox = self.component_instance.GetBBox()
-        pt1 = bbox.Item1
-        pt2 = bbox.Item2
-        return [pt1.X.ToDouble(), pt1.Y.ToDouble(), pt2.X.ToDouble(), pt2.Y.ToDouble()]
+        bbox = self.component_instance.get_bbox()
+        lower_left = bbox.points[0]
+        upper_right = bbox.points[2]
+        return [lower_left.x.value, lower_left.y.value, upper_right.x.value, upper_right.y.value]
 
     @property
     def rotation(self):
@@ -608,7 +621,7 @@ class EDBComponent(object):
         -------
         float
         """
-        return self.edbcomponent.GetTransform().Rotation.ToDouble()
+        return self.edbcomponent.transform.rotation.value
 
     @property
     def pinlist(self):
@@ -619,13 +632,8 @@ class EDBComponent(object):
         list
             List of Pins of Component.
         """
-        pins = [
-            p
-            for p in self.edbcomponent.members
-            if p.type == self._edb.primitive.PadstackInstance
-               and p.is_layout_pin
-               and p.component.name == self.refdes
-        ]
+        pins = [p for p in self.edbcomponent.members if p.layout_obj_type.value == 1 and p.is_layout_pin
+                and p.component.name == self.refdes]
         return pins
 
     @property
@@ -637,7 +645,7 @@ class EDBComponent(object):
         list
             List of component nets.
         """
-        return list(set([pin.net.name for pin in self.pins]))
+        return list(set([pin.net_name for pin in list(self.pins.values())]))
 
     @property
     def pins(self):
@@ -660,18 +668,18 @@ class EDBComponent(object):
         str
             Component type.
         """
-        cmp_type = int(self.edbcomponent.component_type)
-        if cmp_type == 1:
+        cmp_type = self.edbcomponent.component_type
+        if cmp_type == hierarchy.ComponentType.RESISTOR:
             return "Resistor"
-        elif cmp_type == 2:
+        elif cmp_type == hierarchy.ComponentType.INDUCTOR:
             return "Inductor"
-        elif cmp_type == 3:
+        elif cmp_type == hierarchy.ComponentType.CAPACITOR:
             return "Capacitor"
-        elif cmp_type == 4:
+        elif cmp_type == hierarchy.ComponentType.IC:
             return "IC"
-        elif cmp_type == 5:
+        elif cmp_type == hierarchy.ComponentType.IO:
             return "IO"
-        elif cmp_type == 0:
+        elif cmp_type == hierarchy.ComponentType.OTHER:
             return "Other"
 
     @type.setter
@@ -686,17 +694,17 @@ class EDBComponent(object):
         """
         type_id = None
         if new_type == "Resistor":
-            type_id = self._pedb.hierachy.ComponentType(self._pedb.hierachy.ComponentType.RESISTOR)
+            type_id = hierarchy.ComponentType.RESISTOR
         elif new_type == "Inductor":
-            type_id = self._pedb.hierachy.ComponentType(self._pedb.hierachy.ComponentType.INDUCTOR)
+            type_id = hierarchy.ComponentType.INDUCTOR
         elif new_type == "Capacitor":
-            type_id = self._pedb.hierachy.ComponentType(self._pedb.hierachy.ComponentType.CAPACITOR)
+            type_id = hierarchy.ComponentType.CAPACITOR
         elif new_type == "IC":
-            type_id = self._pedb.hierachy.ComponentType(self._pedb.hierachy.ComponentType.IC)
+            type_id = hierarchy.ComponentType.IC
         elif new_type == "IO":
-            ttype_id = self._pedb.hierachy.ComponentType(self._pedb.hierachy.ComponentType.IO)
+            ttype_id = hierarchy.ComponentType.IO
         elif new_type == "Other":
-            type_id = self._pedb.hierachy.ComponentType(self._pedb.hierachy.ComponentType.OTHER)
+            type_id = hierarchy.ComponentType.OTHER
         else:
             return
         if type_id:
@@ -783,7 +791,7 @@ class EDBComponent(object):
             * 4 - Number of top/bottom associations.
             * -1 - Undefined
         """
-        return int(self.edbcomponent.placement_layer.top_bottom_association)
+        return self.edbcomponent.placement_layer.top_bottom_association.value
 
     @pyedb_function_handler
     def _set_model(self, model):  # pragma: no cover

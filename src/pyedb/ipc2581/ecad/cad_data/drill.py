@@ -1,4 +1,4 @@
-from pyedb.generic.general_methods import ET
+from src.pyedb.generic.general_methods import ET
 
 
 class Drill(object):

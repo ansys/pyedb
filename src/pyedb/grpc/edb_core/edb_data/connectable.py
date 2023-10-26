@@ -1,4 +1,4 @@
-from pyedb.generic.general_methods import pyedb_function_handler
+from src.pyedb.generic.general_methods import pyedb_function_handler
 
 
 class LayoutObj(object):

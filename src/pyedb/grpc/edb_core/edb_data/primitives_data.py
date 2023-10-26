@@ -8,8 +8,8 @@ from ansys.edb.primitive.primitive import Rectangle
 from ansys.edb.primitive.primitive import Text
 from ansys.edb.primitive.primitive import PrimitiveType
 from ansys.edb.utility.value import Value
-from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.modeler.geometry_operators import GeometryOperators
+from src.pyedb.generic.general_methods import pyedb_function_handler
+from src.pyedb.modeler.geometry_operators import GeometryOperators
 
 
 def cast(raw_primitive, core_app):
@@ -58,7 +58,7 @@ class EDBPrimitivesMain:
 
     Examples
     --------
-    >>> from pyedb import Edb
+    >>> from src.pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_prim = edb.modeler.primitives[0]
     >>> edb_prim.is_void # Class Property
@@ -66,11 +66,13 @@ class EDBPrimitivesMain:
     """
 
     def __init__(self, raw_primitive, core_app):
-        super().__init__(core_app, raw_primitive)
-        self._app = self._pedb
-        self._core_stackup = core_app.stackup
-        self._core_net = core_app.nets
-        self.primitive_object = self._edb_object
+        #super().__init__(core_app, raw_primitive)
+        #self._app = self._pedb
+        self._app = core_app
+        # self._core_stackup = core_app.stackup not yet added
+        # self._core_net = core_app.nets # not yet added
+        #self.primitive_object = self._edb_object
+        self.primitive_object = raw_primitive
 
     @property
     def type(self):
