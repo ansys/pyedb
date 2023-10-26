@@ -1,14 +1,14 @@
 import math
 
-from pyedb.ipc2581.ecad.cad_data.component import Component
-from pyedb.ipc2581.ecad.cad_data.layer_feature import LayerFeature
-from pyedb.ipc2581.ecad.cad_data.logical_net import LogicalNet
-from pyedb.ipc2581.ecad.cad_data.package import Package
-from pyedb.ipc2581.ecad.cad_data.padstack_def import PadstackDef
-from pyedb.ipc2581.ecad.cad_data.phy_net import PhyNet
-from pyedb.ipc2581.ecad.cad_data.profile import Profile
-from pyedb.generic.general_methods import ET
-from pyedb.generic.general_methods import pyedb_function_handler
+from src.pyedb.ipc2581.ecad.cad_data.component import Component
+from src.pyedb.ipc2581.ecad.cad_data.layer_feature import LayerFeature
+from src.pyedb.ipc2581.ecad.cad_data.logical_net import LogicalNet
+from src.pyedb.ipc2581.ecad.cad_data.package import Package
+from src.pyedb.ipc2581.ecad.cad_data.padstack_def import PadstackDef
+from src.pyedb.ipc2581.ecad.cad_data.phy_net import PhyNet
+from src.pyedb.ipc2581.ecad.cad_data.profile import Profile
+from src.pyedb.generic.general_methods import ET
+from src.pyedb.generic.general_methods import pyedb_function_handler
 
 
 

@@ -1,11 +1,11 @@
 import re
 
-from pyedb import pyedb_function_handler
-from pyedb.grpc.edb_core.edb_data.connectable import Connectable
+from src.pyedb.generic.general_methods import  pyedb_function_handler
+from src.pyedb.grpc.edb_core.edb_data.connectable import Connectable
 #from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.grpc.edb_core.edb_data.primitives_data import cast
+from src.pyedb.grpc.edb_core.edb_data.primitives_data import cast
 #from pyaedt.edb_core.general import TerminalType
-from pyedb.generic.general_methods import generate_unique_name
+from src.pyedb.generic.general_methods import generate_unique_name
 from ansys.edb.utility.value import Value
 from ansys.edb.terminal.terminals import TerminalType, EdgeType
 from ansys.edb.geometry.point_data import PointData

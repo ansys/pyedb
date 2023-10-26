@@ -1,6 +1,6 @@
-from pyedb.ipc2581.ecad.cad_data.padstack_hole_def import PadstackHoleDef
-from pyedb.ipc2581.ecad.cad_data.padstack_pad_def import PadstackPadDef
-from pyedb.generic.general_methods import ET
+from src.pyedb.ipc2581.ecad.cad_data.padstack_hole_def import PadstackHoleDef
+from src.pyedb.ipc2581.ecad.cad_data.padstack_pad_def import PadstackPadDef
+from src.pyedb.generic.general_methods import ET
 
 
 class PadstackDef(object):

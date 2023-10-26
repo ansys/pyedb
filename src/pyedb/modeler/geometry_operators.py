@@ -3,11 +3,11 @@ import math
 import re
 import sys
 
-from pyedb.generic.constants import AXIS
-from pyedb.generic.constants import PLANE
-from pyedb.generic.constants import SWEEPDRAFT
-from pyedb.generic.constants import scale_units
-from pyedb.generic.general_methods import pyedb_function_handler
+from src.pyedb.generic.constants import AXIS
+from src.pyedb.generic.constants import PLANE
+from src.pyedb.generic.constants import SWEEPDRAFT
+from src.pyedb.generic.constants import scale_units
+from src.pyedb.generic.general_methods import pyedb_function_handler
 
 
 class GeometryOperators(object):

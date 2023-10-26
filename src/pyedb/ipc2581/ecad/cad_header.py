@@ -1,5 +1,5 @@
-from pyedb.ipc2581.ecad.spec import Spec
-from pyedb.generic.general_methods import ET
+from src.pyedb.ipc2581.ecad.spec import Spec
+from src.pyedb.generic.general_methods import ET
 
 
 class CadHeader(object):

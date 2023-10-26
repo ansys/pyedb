@@ -3,15 +3,15 @@ import os
 import sys
 import ansys.edb
 
-from pyedb import __version__
-from pyedb.edb_logger import pyedb_logger
-from pyedb.generic.general_methods import settings
+from src.pyedb import __version__
+from src.pyedb.edb_logger import pyedb_logger
+from src.pyedb.generic.general_methods import settings
 from ansys.edb.session import launch_session
-from pyedb.misc.misc import list_installed_ansysem
-from pyedb.generic.general_methods import env_path
-from pyedb.generic.general_methods import env_path_student
-from pyedb.generic.general_methods import env_value
-from pyedb.generic.general_methods import is_linux
+from src.pyedb.misc.misc import list_installed_ansysem
+from src.pyedb.generic.general_methods import env_path
+from src.pyedb.generic.general_methods import env_path_student
+from src.pyedb.generic.general_methods import env_value
+from src.pyedb.generic.general_methods import is_linux
 
 
 class EdbGrpc(object):
@@ -43,21 +43,15 @@ class EdbGrpc(object):
                     self.base_path = edb_path
                     sys.path.append(edb_path)
                     os.environ[env_value(self.edbversion)] = self.base_path
-
         else:
             self.base_path = env_path(self.edbversion)
             sys.path.append(self.base_path)
-
-
-        #self.base_path = settings.pyedb_server_path
-        #sys.path.append(self.base_path)
         os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = self.base_path
         oaDirectory = os.path.join(self.base_path, "common", "oa")
         os.environ["ANSYS_OADIR"] = oaDirectory
         os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
         "Starting grpc server"
-        self.session = launch_session(self.base_path, port)
+        self.session = launch_session(self.base_path, port_num=port)
         if self.session:
             self.server_pid = self.session.local_server_proc.pid
             self.logger.info("Grpc session started")
-        self._edb = ansys.edb
