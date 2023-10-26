@@ -50,7 +50,7 @@ from src.pyedb.ipc2581.ipc2581 import Ipc2581
 #from pyedb.grpc.nets import EdbNets
 #from pyedb.grpc.padstack import EdbPadstacks
 #from pyedb.grpc.siwave import EdbSiwave
-#from pyedb.grpc.stackup import Stackup
+from src.pyedb.grpc.stackup import Stackup
 #from pyedb.generic.constants import AEDT_UNITS
 #from pyedb.generic.constants import SolverType
 from src.pyedb.generic.general_methods import generate_unique_name
@@ -269,7 +269,7 @@ class Edb(EdbGrpc):
     @pyedb_function_handler()
     def _init_objects(self):
         self._components = Components(self)
-        #self._stackup = Stackup(self)
+        self._stackup = Stackup(self)
         #self._padstack = EdbPadstacks(self)
         #self._siwave = EdbSiwave(self)
         #self._hfss = EdbHfss(self)
