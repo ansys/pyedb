@@ -49,7 +49,8 @@ from pyedb.edb_logger import pyedb_logger
 # # from pyaedt.generic.general_methods import inside_desktop
 # # from pyaedt.misc.misc import list_installed_ansysem
 
-from pyedb import Edb
+# from pyedb import Edb
+from pyedb.legacy.edb import EdbLegacy
 from pyedb.legacy.generic.filesystem import Scratch
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.misc import list_installed_ansysem
@@ -223,7 +224,7 @@ def add_edb(local_scratch):
                 target_folder = os.path.join(local_scratch.path, project_name + ".aedb")
         else:
             target_folder = os.path.join(local_scratch.path, generate_unique_name("TestEdb") + ".aedb")
-        return Edb(
+        return EdbLegacy(
             target_folder,
             edbversion=desktop_version,
         )

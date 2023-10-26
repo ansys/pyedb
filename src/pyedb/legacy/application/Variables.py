@@ -147,11 +147,7 @@ class CSVDataset:
 
         pass
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def __getitem__(self, item):
         variable_list = item.split(",")
         data_out = CSVDataset()
@@ -166,11 +162,7 @@ class CSVDataset:
             data_out._header.append(variable)
         return data_out
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def __add__(self, other):
         assert self.number_of_columns == other.number_of_columns, "Inconsistent number of columns"
         # Create a new object to return, avoiding changing the original inputs
@@ -240,11 +232,7 @@ class CSVDataset:
         return self.__next__()
 
 
-<<<<<<< HEAD
-@pyaedt_function_handler()
-=======
 @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
 def _find_units_in_dependent_variables(variable_value, full_variables={}):
     m2 = re.findall(r"[0-9.]+ *([a-z_A-Z]+)", variable_value)
     if len(m2) > 0:
@@ -263,11 +251,7 @@ def _find_units_in_dependent_variables(variable_value, full_variables={}):
     return ""
 
 
-<<<<<<< HEAD
-@pyaedt_function_handler()
-=======
 @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
 def decompose_variable_value(variable_value, full_variables={}):
     """Decompose a variable value.
 
@@ -310,11 +294,7 @@ def decompose_variable_value(variable_value, full_variables={}):
     return float_value, units
 
 
-<<<<<<< HEAD
-@pyaedt_function_handler()
-=======
 @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
 def _generate_property_validation_errors(property_name, expected, actual):
     expected_value, expected_unit = decompose_variable_value(expected)
     actual_value, actual_unit = decompose_variable_value(actual)
@@ -329,11 +309,7 @@ def _generate_property_validation_errors(property_name, expected, actual):
             yield "Error {0}: Expected {1}, got {2}".format(property_name, expected, actual)
 
 
-<<<<<<< HEAD
-@pyaedt_function_handler()
-=======
 @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
 def generate_validation_errors(property_names, expected_settings, actual_settings):
     """From the given property names, expected settings and actual settings, return a list of validation errors.
     If no errors are found, an empty list is returned. The validation of values such as "10mm"
@@ -362,11 +338,7 @@ def generate_validation_errors(property_names, expected_settings, actual_setting
     ]
     return validation_errors
 
-<<<<<<< HEAD
 # TODO: See how we handle this (totally removed / reworked ) ?
-=======
-
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
 class VariableManager(object):
     """Manages design properties and project variables.
 
@@ -482,11 +454,7 @@ class VariableManager(object):
         """
         return self._variable_dict([self._odesign, self._oproject])
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def decompose(self, variable_value):
         """Decompose a variable string to a floating with its unit.
 
@@ -838,37 +806,21 @@ class VariableManager(object):
         all.update(self._dependent_variables)
         return all
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def __delitem__(self, key):
         """Implement del with array name or index."""
         self.delete_variable(key)
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-    def __getitem__(self, variable_name):
-        return self.variables[variable_name]
-
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
     def __getitem__(self, variable_name):
         return self.variables[variable_name]
 
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def __setitem__(self, variable, value):
         self.set_variable(variable, value)
         return True
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def _cleanup_variables(self):
         variables = self._get_var_list_from_aedt(self._app.odesign) + self._get_var_list_from_aedt(self._app.oproject)
         all_dicts = [
@@ -882,11 +834,7 @@ class VariableManager(object):
                 if var_name not in variables:
                     del dict_var[var_name]
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def _variable_dict(self, object_list, dependent=True, independent=True):
         """Retrieve the variable dictionary.
 
@@ -941,11 +889,7 @@ class VariableManager(object):
                 vars_to_output[k] = v
         return vars_to_output
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def get_expression(self, variable_name):  # TODO: Should be renamed to "evaluate"
         """Retrieve the variable value of a project or design variable as a string.
 
@@ -964,11 +908,7 @@ class VariableManager(object):
         else:
             return False
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def aedt_object(self, variable):
         """Retrieve an AEDT object.
 
@@ -983,11 +923,7 @@ class VariableManager(object):
         else:
             return self._odesign
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def set_variable(
         self,
         variable_name,
@@ -1215,11 +1151,7 @@ class VariableManager(object):
             return False
         return True
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def delete_separator(self, separator_name):
         """Delete a separator from either the active project or design.
 
@@ -1260,11 +1192,7 @@ class VariableManager(object):
                 pass
         return False
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def delete_variable(self, var_name):
         """Delete a variable.
 
@@ -1308,11 +1236,7 @@ class VariableManager(object):
                 return True
         return False
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def _get_var_list_from_aedt(self, desktop_object):
         var_list = []
         if self._app._is_object_oriented_enabled() and self._app.design_type != "Maxwell Circuit":
@@ -1337,11 +1261,7 @@ class VariableManager(object):
         var_list += [i for i in list(self._app.oproject.GetArrayVariables()) if i not in var_list]
         return var_list
 
-<<<<<<< HEAD
 # TODO: See how we handle this (totally removed / reworked ) ?
-=======
-
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
 class Variable(object):
     """Stores design properties and project variables and provides operations to perform on them.
 
@@ -1434,11 +1354,7 @@ class Variable(object):
             return self._app._odesign
         return None
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def _update_var(self):
         if self._app:
             return self._app.variable_manager.set_variable(
@@ -1452,11 +1368,7 @@ class Variable(object):
             )
         return False
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def _set_prop_val(self, prop, val, n_times=10):
         if self._app.design_type == "Maxwell Circuit":
             return
@@ -1488,11 +1400,7 @@ class Variable(object):
         except:
             pass
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def _get_prop_val(self, prop):
         if self._app.design_type == "Maxwell Circuit":
             return
@@ -1774,11 +1682,7 @@ class Variable(object):
         """
         return ("{}{}").format(self.numeric_value, self._units)
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def decompose(self):
         """Decompose a variable value to a floating with its unit.
 
@@ -1797,11 +1701,7 @@ class Variable(object):
         """
         return decompose_variable_value(self.evaluated_value)
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def rescale_to(self, units):
         """Rescale the expression to a new unit within the current unit system.
 
@@ -1829,11 +1729,7 @@ class Variable(object):
         self._units = units
         return self
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def format(self, format):
         """Retrieve the string value with the specified numerical formatting.
 
@@ -1860,11 +1756,7 @@ class Variable(object):
         """
         return ("{0:" + format + "}{1}").format(self.numeric_value, self._units)
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def __mul__(self, other):
         """Multiply the variable with a number or another variable and return a new object.
 
@@ -1923,11 +1815,7 @@ class Variable(object):
 
     __rmul__ = __mul__
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def __add__(self, other):
         """Add the variable to another variable to return a new object.
 
@@ -1968,11 +1856,7 @@ class Variable(object):
 
         return result_variable
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def __sub__(self, other):
         """Subtract another variable from the variable to return a new object.
 
@@ -2015,11 +1899,7 @@ class Variable(object):
         return result_variable
 
     # Python 3.x version
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def __truediv__(self, other):
         """Divide the variable by a number or another variable to return a new object.
 
@@ -2059,19 +1939,11 @@ class Variable(object):
         return Variable("{}{}".format(result_value, result_units))
 
     # Python 2.7 version
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-    def __div__(self, other):
-        return self.__truediv__(other)
-
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
     def __div__(self, other):
         return self.__truediv__(other)
 
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def __rtruediv__(self, other):
         """Divide another object by this object.
 
@@ -2110,11 +1982,7 @@ class Variable(object):
         return Variable("{}{}".format(result_value, result_units))
 
     # # Python 2.7 version
-<<<<<<< HEAD
-    # @pyaedt_function_handler()
-=======
     # @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     # def __div__(self, other):
     #     return self.__rtruediv__(other)
 
@@ -2158,11 +2026,7 @@ class DataSet(object):
         self.zunit = zunit
         self.vunit = vunit
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def _args(self):
         """Retrieve arguments."""
         arg = []
@@ -2202,11 +2066,7 @@ class DataSet(object):
         arg.append(arg2)
         return arg
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def create(self):
         """Create a dataset.
 
@@ -2227,11 +2087,7 @@ class DataSet(object):
             self._app._odesign.AddDataset(self._args())
         return True
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def add_point(self, x, y, z=None, v=None):
         """Add a point to the dataset.
 
@@ -2265,11 +2121,7 @@ class DataSet(object):
 
         return self.update()
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def remove_point_from_x(self, x):
         """Remove a point from an X-axis value.
 
@@ -2294,11 +2146,7 @@ class DataSet(object):
         id_to_remove = self.x.index(x)
         return self.remove_point_from_index(id_to_remove)
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def remove_point_from_index(self, id_to_remove):
         """Remove a point from an index.
 
@@ -2328,11 +2176,7 @@ class DataSet(object):
         self._app.logger.error("cannot Remove {} index.".format(id_to_remove))
         return False
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def update(self):
         """Update the dataset.
 
@@ -2356,11 +2200,7 @@ class DataSet(object):
             self._app._odesign.EditDataset(self.name, self._args())
         return True
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def delete(self):
         """Delete the dataset.
 
@@ -2383,11 +2223,7 @@ class DataSet(object):
             del self._app.project_datasets[self.name]
         return True
 
-<<<<<<< HEAD
-    @pyaedt_function_handler()
-=======
     @pyedb_function_handler()
->>>>>>> 2b195ec (WIP: examples 00, 01 and 02 are working)
     def export(self, dataset_path=None):
         """Export the dataset.
 

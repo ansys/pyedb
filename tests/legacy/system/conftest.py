@@ -45,6 +45,13 @@ def target_path2(local_scratch):
     local_scratch.copyfolder(example_project2, target_path2)
     return target_path2
 
+@pytest.fixture(scope="class", autouse=True)
+def target_path3(local_scratch):
+    example_project3 = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
+    target_path3 = os.path.join(local_scratch.path, "test_plot.aedb")
+    local_scratch.copyfolder(example_project3, target_path3)
+    return target_path3
+
 
 @pytest.fixture(scope="class", autouse=True)
 def target_path4(local_scratch):

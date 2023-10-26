@@ -4,7 +4,7 @@
 import os
 import pytest
 
-from pyedb import Edb
+from pyedb.legacy.edb import EdbLegacy
 from tests.legacy.system.conftest import test_subfolder
 from tests.legacy.system.conftest import local_path
 from tests.conftest import desktop_version
@@ -25,7 +25,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_ipc.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         xml_file = os.path.join(self.local_scratch.path, "test.xml")
         edbapp.export_to_ipc2581(xml_file)
         assert os.path.exists(xml_file)
@@ -40,11 +40,11 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_ipc", "ANSYS-HSD_V1_boundaries.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         xml_file = os.path.join(target_path, "test.xml")
         edbapp.export_to_ipc2581(xml_file)
         assert os.path.isfile(xml_file)
-        ipc_edb = Edb(xml_file, edbversion=desktop_version)
+        ipc_edb = EdbLegacy(xml_file, edbversion=desktop_version)
         ipc_stats = ipc_edb.get_statistics()
         assert ipc_stats.layout_size == (0.1492, 0.0837)
         assert ipc_stats.num_capacitors == 380

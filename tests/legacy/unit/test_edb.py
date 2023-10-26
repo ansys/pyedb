@@ -18,6 +18,13 @@ class TestClass:
         assert edb.active_layout
         edb.close()
 
+    def test_create_edb_without_path(self):
+        """Create EDB without path."""
+        import time
+        edbapp_without_path = EdbLegacy(edbversion=desktop_version, isreadonly=False)
+        time.sleep(2)
+        edbapp_without_path.close()
+
     def test_variables_value(self):
         """Evaluate variables value."""
         from pyedb.generic.general_methods import check_numeric_equivalence

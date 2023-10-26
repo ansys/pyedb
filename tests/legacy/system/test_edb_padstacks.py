@@ -3,19 +3,21 @@
 import os
 import pytest
 
-from pyedb import Edb
+from pyedb.legacy.edb import EdbLegacy
 from tests.conftest import local_path
 from tests.conftest import desktop_version
+from tests.legacy.system.conftest import target_path3
 from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, edbapp, local_scratch, target_path, target_path4):
+    def init(self, edbapp, local_scratch, target_path, target_path3, target_path4):
         self.edbapp = edbapp
         self.local_scratch = local_scratch
         self.target_path = target_path
+        self.target_path3 = target_path3
         self.target_path4 = target_path4
 
     def test_get_pad_parameters(self):
@@ -179,7 +181,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_128_microvias.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         assert edbapp.padstacks.definitions["Padstack_Circle"].convert_to_3d_microvias(False)
         assert edbapp.padstacks.definitions["Padstack_Rectangle"].convert_to_3d_microvias(False, hole_wall_angle=10)
         assert edbapp.padstacks.definitions["Padstack_Polygon_p12"].convert_to_3d_microvias(False)
@@ -187,7 +189,7 @@ class TestClass:
 
     def test_split_microvias(self):
         """Convert padstack definition to multiple microvias definitions."""
-        edbapp = Edb(self.target_path4, edbversion=desktop_version)
+        edbapp = EdbLegacy(self.target_path4, edbversion=desktop_version)
         assert len(edbapp.padstacks.definitions["C4_POWER_1"].split_to_microvias()) > 0
         edbapp.close()
 
@@ -200,7 +202,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_boundaries.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         pin = edbapp.components.instances["J5"].pins["19"]
         assert pin
         ref_pins = pin.get_reference_pins(reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True)
@@ -228,3 +230,77 @@ class TestClass:
         ]
         assert vias[0].metal_volume
         assert vias[1].metal_volume
+
+    def test_padstacks_create_rectangle_in_pad(self):
+        """Create a rectangle inscribed inside a padstack instance pad."""
+        example_model = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
+        self.local_scratch.copyfolder(
+            example_model,
+            os.path.join(self.local_scratch.path, "padstacks2.aedb"),
+        )
+        edb = EdbLegacy(
+            edbpath=os.path.join(self.local_scratch.path, "padstacks2.aedb"),
+            edbversion=desktop_version,
+            isreadonly=True,
+        )
+        for test_prop in (edb.padstacks.instances, edb.padstacks.padstack_instances):
+            padstack_instances = list(test_prop.values())
+            for padstack_instance in padstack_instances:
+                result = padstack_instance.create_rectangle_in_pad("s", partition_max_order=8)
+                if padstack_instance.padstack_definition != "Padstack_None":
+                    assert result
+                else:
+                    assert not result
+        edb.close()
+
+    def test_padstaks_plot_on_matplotlib(self):
+        """Plot a Net to Matplotlib 2D Chart."""
+        edb_plot = EdbLegacy(self.target_path3, edbversion=desktop_version)
+
+        local_png1 = os.path.join(self.local_scratch.path, "test1.png")
+        edb_plot.nets.plot(
+            nets=None,
+            layers=None,
+            save_plot=local_png1,
+            plot_components_on_top=True,
+            plot_components_on_bottom=True,
+            outline=[[-10e-3, -10e-3], [110e-3, -10e-3], [110e-3, 70e-3], [-10e-3, 70e-3]],
+        )
+        assert os.path.exists(local_png1)
+
+        local_png2 = os.path.join(self.local_scratch.path, "test2.png")
+        edb_plot.nets.plot(
+            nets="V3P3_S5",
+            layers=None,
+            save_plot=local_png2,
+            plot_components_on_top=True,
+            plot_components_on_bottom=True,
+        )
+        assert os.path.exists(local_png2)
+
+        local_png3 = os.path.join(self.local_scratch.path, "test3.png")
+        edb_plot.nets.plot(
+            nets=["LVL_I2C_SCL", "V3P3_S5", "GATE_V5_USB"],
+            layers="TOP",
+            color_by_net=True,
+            save_plot=local_png3,
+            plot_components_on_top=True,
+            plot_components_on_bottom=True,
+        )
+        assert os.path.exists(local_png3)
+
+        local_png4 = os.path.join(self.local_scratch.path, "test4.png")
+        edb_plot.stackup.plot(
+            save_plot=local_png4,
+            plot_definitions=list(edb_plot.padstacks.definitions.keys())[0],
+        )
+        assert os.path.exists(local_png4)
+
+        local_png5 = os.path.join(self.local_scratch.path, "test5.png")
+        edb_plot.stackup.plot(
+            scale_elevation=False,
+            save_plot=local_png5,
+            plot_definitions=list(edb_plot.padstacks.definitions.keys())[0],
+        )
+        assert os.path.exists(local_png4)
+        edb_plot.close()

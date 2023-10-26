@@ -2,8 +2,9 @@
 """
 
 import os
+import math
 import pytest
-from pyedb import Edb
+from pyedb.legacy.edb import EdbLegacy
 from tests.conftest import desktop_version
 from tests.conftest import local_path
 from tests.legacy.system.conftest import test_subfolder
@@ -29,7 +30,7 @@ class TestClass:
 
     def test_stackup_add_outline(self):
         """Add an outline layer named ``"Outline1"`` if it is not present."""
-        edbapp = Edb(
+        edbapp = EdbLegacy(
             edbversion=desktop_version,
         )
         assert edbapp.stackup.add_outline_layer("Outline1")
@@ -42,91 +43,21 @@ class TestClass:
 
     def test_stackup_create_symmetric_stackup(self):
         """Create a symmetric stackup."""
-        app_edb = Edb(edbversion=desktop_version)
+        app_edb = EdbLegacy(edbversion=desktop_version)
         assert not app_edb.stackup.create_symmetric_stackup(9)
         assert app_edb.stackup.create_symmetric_stackup(8)
         app_edb.close()
 
-        app_edb = Edb(edbversion=desktop_version)
+        app_edb = EdbLegacy(edbversion=desktop_version)
         assert app_edb.stackup.create_symmetric_stackup(8, soldermask=False)
         app_edb.close()
-
-    # def test_stackup_int_to_layer_types(self):
-    #     stackup = self.edbapp.stackup
-    #     signal_layer = stackup._int_to_layer_types(0)
-    #     assert signal_layer == stackup.layer_types.SignalLayer
-    #     dielectric_layer = stackup._int_to_layer_types(1)
-    #     assert dielectric_layer == stackup.layer_types.DielectricLayer
-    #     conducting_layer = stackup._int_to_layer_types(2)
-    #     assert conducting_layer == stackup.layer_types.ConductingLayer
-    #     airlines_layer = stackup._int_to_layer_types(3)
-    #     assert airlines_layer == stackup.layer_types.AirlinesLayer
-    #     errors_layer = stackup._int_to_layer_types(4)
-    #     assert errors_layer == stackup.layer_types.ErrorsLayer
-    #     symbol_layer = stackup._int_to_layer_types(5)
-    #     assert symbol_layer == stackup.layer_types.SymbolLayer
-    #     measure_layer = stackup._int_to_layer_types(6)
-    #     assert measure_layer == stackup.layer_types.MeasureLayer
-    #     assembly_layer = stackup._int_to_layer_types(8)
-    #     assert assembly_layer == stackup.layer_types.AssemblyLayer
-    #     silkscreen_layer = stackup._int_to_layer_types(9)
-    #     assert silkscreen_layer == stackup.layer_types.SilkscreenLayer
-    #     solder_mask_layer = stackup._int_to_layer_types(10)
-    #     assert solder_mask_layer == stackup.layer_types.SolderMaskLayer
-    #     solder_paste_layer = stackup._int_to_layer_types(11)
-    #     assert solder_paste_layer == stackup.layer_types.SolderPasteLayer
-    #     glue_layer = stackup._int_to_layer_types(12)
-    #     assert glue_layer == stackup.layer_types.GlueLayer
-    #     wirebond_layer = stackup._int_to_layer_types(13)
-    #     assert wirebond_layer == stackup.layer_types.WirebondLayer
-    #     user_layer = stackup._int_to_layer_types(14)
-    #     assert user_layer == stackup.layer_types.UserLayer
-    #     siwave_hfss_solver_regions = stackup._int_to_layer_types(16)
-    #     assert siwave_hfss_solver_regions == stackup.layer_types.SIwaveHFSSSolverRegions
-    #     outline_layer = stackup._int_to_layer_types(18)
-    #     assert outline_layer == stackup.layer_types.OutlineLayer
-
-    # def test_100_layer_types_to_int(self):
-    #     stackup = self.edbapp.stackup
-    #     signal_layer = stackup._layer_types_to_int(stackup.layer_types.SignalLayer)
-    #     assert signal_layer == 0
-    #     dielectric_layer = stackup._layer_types_to_int(stackup.layer_types.DielectricLayer)
-    #     assert dielectric_layer == 1
-    #     conducting_layer = stackup._layer_types_to_int(stackup.layer_types.ConductingLayer)
-    #     assert conducting_layer == 2
-    #     airlines_layer = stackup._layer_types_to_int(stackup.layer_types.AirlinesLayer)
-    #     assert airlines_layer == 3
-    #     errors_layer = stackup._layer_types_to_int(stackup.layer_types.ErrorsLayer)
-    #     assert errors_layer == 4
-    #     symbol_layer = stackup._layer_types_to_int(stackup.layer_types.SymbolLayer)
-    #     assert symbol_layer == 5
-    #     measure_layer = stackup._layer_types_to_int(stackup.layer_types.MeasureLayer)
-    #     assert measure_layer == 6
-    #     assembly_layer = stackup._layer_types_to_int(stackup.layer_types.AssemblyLayer)
-    #     assert assembly_layer == 8
-    #     silkscreen_layer = stackup._layer_types_to_int(stackup.layer_types.SilkscreenLayer)
-    #     assert silkscreen_layer == 9
-    #     solder_mask_layer = stackup._layer_types_to_int(stackup.layer_types.SolderMaskLayer)
-    #     assert solder_mask_layer == 10
-    #     solder_paste_layer = stackup._layer_types_to_int(stackup.layer_types.SolderPasteLayer)
-    #     assert solder_paste_layer == 11
-    #     glue_layer = stackup._layer_types_to_int(stackup.layer_types.GlueLayer)
-    #     assert glue_layer == 12
-    #     wirebond_layer = stackup._layer_types_to_int(stackup.layer_types.WirebondLayer)
-    #     assert wirebond_layer == 13
-    #     user_layer = stackup._layer_types_to_int(stackup.layer_types.UserLayer)
-    #     assert user_layer == 14
-    #     siwave_hfss_solver_regions = stackup._layer_types_to_int(stackup.layer_types.SIwaveHFSSSolverRegions)
-    #     assert siwave_hfss_solver_regions == 16
-    #     outline_layer = stackup._layer_types_to_int(stackup.layer_types.OutlineLayer)
-    #     assert outline_layer == 18
 
     def test_stackup_place_a3dcomp_3d_placement(self):
         """Place a 3D Component into current layout."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "lam_for_bottom_place.aedb")
         target_path = os.path.join(self.local_scratch.path, "output.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        laminate_edb = Edb(target_path, edbversion=desktop_version)
+        laminate_edb = EdbLegacy(target_path, edbversion=desktop_version)
         chip_a3dcomp = os.path.join(local_path, "example_models", test_subfolder, "chip.a3dcomp")
         try:
             layout = laminate_edb.active_layout
@@ -183,7 +114,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "lam_for_bottom_place.aedb")
         target_path = os.path.join(self.local_scratch.path, "output.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        laminate_edb = Edb(target_path, edbversion=desktop_version)
+        laminate_edb = EdbLegacy(target_path, edbversion=desktop_version)
         chip_a3dcomp = os.path.join(local_path, "example_models", test_subfolder, "chip.a3dcomp")
         try:
             layout = laminate_edb.active_layout
@@ -247,7 +178,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_0124.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         assert isinstance(edbapp.stackup.layers, dict)
         assert isinstance(edbapp.stackup.signal_layers, dict)
         assert isinstance(edbapp.stackup.dielectric_layers, dict)
@@ -303,7 +234,7 @@ class TestClass:
 
     def test_stackup_properties_1(self):
         """Evaluate various stackup properties."""
-        edbapp = Edb(edbversion=desktop_version)
+        edbapp = EdbLegacy(edbversion=desktop_version)
         import_method = edbapp.stackup.load
         export_method = edbapp.stackup.export
 
@@ -323,7 +254,7 @@ class TestClass:
 
     def test_stackup_properties_2(self):
         """Evaluate various stackup properties."""
-        edbapp = Edb(edbversion=desktop_version)
+        edbapp = EdbLegacy(edbversion=desktop_version)
         import_method = edbapp.stackup.import_stackup
         export_method = edbapp.stackup.export_stackup
 
@@ -345,7 +276,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_0126.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         edbapp.stackup.load(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml"))
         layer = edbapp.stackup["1_Top"]
         layer.name = "TOP"
@@ -375,10 +306,725 @@ class TestClass:
         fpath = os.path.join(local_path, "example_models", test_subfolder, "stackup.json")
         stackup_json = json.load(open(fpath, "r"))
 
-        edbapp = Edb(edbversion=desktop_version)
+        edbapp = EdbLegacy(edbversion=desktop_version)
         edbapp.stackup.load(fpath)
         edbapp.close()
 
-        edbapp = Edb(edbversion=desktop_version)
+        edbapp = EdbLegacy(edbversion=desktop_version)
         edbapp.stackup.load(stackup_json)
+        edbapp.close()
+
+    def test_stackup_place_in_3d_with_flipped_stackup(self):
+        """Place into another cell using 3d placement method with and
+        without flipping the current layer stackup.
+        """
+        edb_path = os.path.join(self.target_path2, "edb.def")
+        edb1 = EdbLegacy(edb_path, edbversion=desktop_version)
+
+        edb2 = EdbLegacy(self.target_path, edbversion=desktop_version)
+        assert edb2.stackup.place_in_layout_3d_placement(
+            edb1,
+            angle=0.0,
+            offset_x="41.783mm",
+            offset_y="35.179mm",
+            flipped_stackup=False,
+            place_on_top=False,
+            solder_height=0.0,
+        )
+        edb2.close()
+        edb2 = EdbLegacy(self.target_path, edbversion=desktop_version)
+        assert edb2.stackup.place_in_layout_3d_placement(
+            edb1,
+            angle=0.0,
+            offset_x="41.783mm",
+            offset_y="35.179mm",
+            flipped_stackup=True,
+            place_on_top=False,
+            solder_height=0.0,
+        )
+        edb2.close()
+        edb2 = EdbLegacy(self.target_path, edbversion=desktop_version)
+        assert edb2.stackup.place_in_layout_3d_placement(
+            edb1,
+            angle=0.0,
+            offset_x="41.783mm",
+            offset_y="35.179mm",
+            flipped_stackup=False,
+            place_on_top=True,
+            solder_height=0.0,
+        )
+        edb2.close()
+        edb2 = EdbLegacy(self.target_path, edbversion=desktop_version)
+        assert edb2.stackup.place_in_layout_3d_placement(
+            edb1,
+            angle=0.0,
+            offset_x="41.783mm",
+            offset_y="35.179mm",
+            flipped_stackup=True,
+            place_on_top=True,
+            solder_height=0.0,
+        )
+        edb2.close()
+        edb1.close()
+
+    def test_stackup_place_instance_with_flipped_stackup(self):
+        """Place into another cell using 3d placement method with and
+        without flipping the current layer stackup.
+        """
+        edb_path = os.path.join(self.target_path2, "edb.def")
+        edb1 = EdbLegacy(edb_path, edbversion=desktop_version)
+
+        edb2 = EdbLegacy(self.target_path, edbversion=desktop_version)
+        assert edb1.stackup.place_instance(
+            edb2,
+            angle=0.0,
+            offset_x="41.783mm",
+            offset_y="35.179mm",
+            flipped_stackup=False,
+            place_on_top=False,
+            solder_height=0.0,
+        )
+        assert edb1.stackup.place_instance(
+            edb2,
+            angle=0.0,
+            offset_x="41.783mm",
+            offset_y="35.179mm",
+            flipped_stackup=True,
+            place_on_top=False,
+            solder_height=0.0,
+        )
+        assert edb1.stackup.place_instance(
+            edb2,
+            angle=0.0,
+            offset_x="41.783mm",
+            offset_y="35.179mm",
+            flipped_stackup=False,
+            place_on_top=True,
+            solder_height=0.0,
+        )
+        assert edb1.stackup.place_instance(
+            edb2,
+            angle=0.0,
+            offset_x="41.783mm",
+            offset_y="35.179mm",
+            flipped_stackup=True,
+            place_on_top=True,
+            solder_height=0.0,
+        )
+        edb2.close()
+        edb1.close()
+
+    def test_stackup_place_in_layout_with_flipped_stackup(self):
+        """Place into another cell using layer placement method with and
+        without flipping the current layer stackup.
+        """
+        edb2 = EdbLegacy(self.target_path, edbversion=desktop_version)
+        assert edb2.stackup.place_in_layout(
+            self.edbapp,
+            angle=0.0,
+            offset_x="41.783mm",
+            offset_y="35.179mm",
+            flipped_stackup=True,
+            place_on_top=True,
+        )
+        edb2.close()
+
+    def test_stackup_place_on_top_of_lam_with_mold(self):
+        """Place on top lam with mold using 3d placement method"""
+        laminateEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
+            edbversion=desktop_version,
+        )
+        chipEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "chip.aedb"),
+            edbversion=desktop_version,
+        )
+        try:
+            cellInstances = laminateEdb.layout.cell_instances
+            assert len(cellInstances) == 0
+            assert chipEdb.stackup.place_in_layout_3d_placement(
+                laminateEdb,
+                angle=0.0,
+                offset_x=0.0,
+                offset_y=0.0,
+                flipped_stackup=False,
+                place_on_top=True,
+            )
+            merged_cell = chipEdb.edb_api.cell.cell.FindByName(
+                chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+            )
+            assert not merged_cell.IsNull()
+            layout = merged_cell.GetLayout()
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 1
+            cellInstance = cellInstances[0]
+            assert cellInstance.Is3DPlacement()
+            if desktop_version > "2023.1":
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                    _,
+                ) = cellInstance.Get3DTransformation()
+            else:
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                ) = cellInstance.Get3DTransformation()
+            assert res
+            zeroValue = chipEdb.edb_value(0)
+            originPoint = chipEdb.point_3d(0.0, 0.0, 0.0)
+            xAxisPoint = chipEdb.point_3d(1.0, 0.0, 0.0)
+            assert localOrigin.IsEqual(originPoint)
+            assert rotAxisFrom.IsEqual(xAxisPoint)
+            assert rotAxisTo.IsEqual(xAxisPoint)
+            assert angle.IsEqual(zeroValue)
+            assert loc.IsEqual(chipEdb.point_3d(0.0, 0.0, chipEdb.edb_value(170e-6)))
+        finally:
+            chipEdb.close()
+            laminateEdb.close()
+
+    def test_stackup_place_on_bottom_of_lam_with_mold(self):
+        """Place on lam with mold using 3d placement method"""
+
+        laminateEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
+            edbversion=desktop_version,
+        )
+        chipEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "chip_flipped_stackup.aedb"),
+            edbversion=desktop_version,
+        )
+        try:
+            layout = laminateEdb.active_layout
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 0
+            assert chipEdb.stackup.place_in_layout_3d_placement(
+                laminateEdb,
+                angle=0.0,
+                offset_x=0.0,
+                offset_y=0.0,
+                flipped_stackup=False,
+                place_on_top=False,
+            )
+            merged_cell = chipEdb.edb_api.cell.cell.FindByName(
+                chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+            )
+            assert not merged_cell.IsNull()
+            layout = merged_cell.GetLayout()
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 1
+            cellInstance = cellInstances[0]
+            assert cellInstance.Is3DPlacement()
+            if desktop_version > "2023.1":
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                    _,
+                ) = cellInstance.Get3DTransformation()
+            else:
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                ) = cellInstance.Get3DTransformation()
+            assert res
+            zeroValue = chipEdb.edb_value(0)
+            originPoint = chipEdb.point_3d(0.0, 0.0, 0.0)
+            xAxisPoint = chipEdb.point_3d(1.0, 0.0, 0.0)
+            assert localOrigin.IsEqual(originPoint)
+            assert rotAxisFrom.IsEqual(xAxisPoint)
+            assert rotAxisTo.IsEqual(xAxisPoint)
+            assert angle.IsEqual(zeroValue)
+            assert loc.IsEqual(chipEdb.point_3d(0.0, 0.0, chipEdb.edb_value(-90e-6)))
+        finally:
+            chipEdb.close()
+            laminateEdb.close()
+
+    def test_stackup_place_on_top_of_lam_with_mold_solder(self):
+        """Place on top of lam with mold solder using 3d placement method."""
+        laminateEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
+            edbversion=desktop_version,
+        )
+        chipEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "chip_solder.aedb"),
+            edbversion=desktop_version,
+        )
+        try:
+            layout = laminateEdb.active_layout
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 0
+            assert chipEdb.stackup.place_in_layout_3d_placement(
+                laminateEdb,
+                angle=0.0,
+                offset_x=0.0,
+                offset_y=0.0,
+                flipped_stackup=False,
+                place_on_top=True,
+            )
+            merged_cell = chipEdb.edb_api.cell.cell.FindByName(
+                chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+            )
+            assert not merged_cell.IsNull()
+            layout = merged_cell.GetLayout()
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 1
+            cellInstance = cellInstances[0]
+            assert cellInstance.Is3DPlacement()
+            if desktop_version > "2023.1":
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                    _,
+                ) = cellInstance.Get3DTransformation()
+            else:
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                ) = cellInstance.Get3DTransformation()
+            assert res
+            zeroValue = chipEdb.edb_value(0)
+            oneValue = chipEdb.edb_value(1)
+            originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+            xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+            assert localOrigin.IsEqual(originPoint)
+            assert rotAxisFrom.IsEqual(xAxisPoint)
+            assert rotAxisTo.IsEqual(xAxisPoint)
+            assert angle.IsEqual(zeroValue)
+            assert loc.IsEqual(chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(190e-6)))
+        finally:
+            chipEdb.close()
+            laminateEdb.close()
+
+    def test_stackup_place_on_bottom_of_lam_with_mold_solder(self):
+        """Place on bottom of lam with mold solder using 3d placement method."""
+
+        laminateEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
+            edbversion=desktop_version,
+        )
+        chipEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "chip_solder.aedb"),
+            edbversion=desktop_version,
+        )
+        try:
+            layout = laminateEdb.active_layout
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 0
+            assert chipEdb.stackup.place_in_layout_3d_placement(
+                laminateEdb,
+                angle=0.0,
+                offset_x=0.0,
+                offset_y=0.0,
+                flipped_stackup=True,
+                place_on_top=False,
+            )
+            merged_cell = chipEdb.edb_api.cell.cell.FindByName(
+                chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+            )
+            assert not merged_cell.IsNull()
+            layout = merged_cell.GetLayout()
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 1
+            cellInstance = cellInstances[0]
+            assert cellInstance.Is3DPlacement()
+            if desktop_version > "2023.1":
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                    _,
+                ) = cellInstance.Get3DTransformation()
+            else:
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                ) = cellInstance.Get3DTransformation()
+            assert res
+            zeroValue = chipEdb.edb_value(0)
+            oneValue = chipEdb.edb_value(1)
+            originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+            xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+            assert localOrigin.IsEqual(originPoint)
+            assert rotAxisFrom.IsEqual(xAxisPoint)
+            assert rotAxisTo.IsEqual(xAxisPoint)
+            assert angle.IsEqual(chipEdb.edb_value(math.pi))
+            assert loc.IsEqual(chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(-20e-6)))
+        finally:
+            chipEdb.close()
+            laminateEdb.close()
+
+    def test_stackup_place_on_top_with_zoffset_chip(self):
+        """Place on top of lam with mold chip zoffset using 3d placement method."""
+        laminateEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
+            edbversion=desktop_version,
+        )
+        chipEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "chip_zoffset.aedb"),
+            edbversion=desktop_version,
+        )
+        try:
+            layout = laminateEdb.active_layout
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 0
+            assert chipEdb.stackup.place_in_layout_3d_placement(
+                laminateEdb,
+                angle=0.0,
+                offset_x=0.0,
+                offset_y=0.0,
+                flipped_stackup=False,
+                place_on_top=True,
+            )
+            merged_cell = chipEdb.edb_api.cell.cell.FindByName(
+                chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+            )
+            assert not merged_cell.IsNull()
+            layout = merged_cell.GetLayout()
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 1
+            cellInstance = cellInstances[0]
+            assert cellInstance.Is3DPlacement()
+            if desktop_version > "2023.1":
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                    _,
+                ) = cellInstance.Get3DTransformation()
+            else:
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                ) = cellInstance.Get3DTransformation()
+            assert res
+            zeroValue = chipEdb.edb_value(0)
+            oneValue = chipEdb.edb_value(1)
+            originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+            xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+            assert localOrigin.IsEqual(originPoint)
+            assert rotAxisFrom.IsEqual(xAxisPoint)
+            assert rotAxisTo.IsEqual(xAxisPoint)
+            assert angle.IsEqual(zeroValue)
+            assert loc.IsEqual(chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(160e-6)))
+        finally:
+            chipEdb.close()
+            laminateEdb.close()
+
+    def test_stackup_place_on_bottom_with_zoffset_chip(self):
+        """Place on bottom of lam with mold chip zoffset using 3d placement method."""
+
+        laminateEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
+            edbversion=desktop_version,
+        )
+        chipEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "chip_zoffset.aedb"),
+            edbversion=desktop_version,
+        )
+        try:
+            layout = laminateEdb.active_layout
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 0
+            assert chipEdb.stackup.place_in_layout_3d_placement(
+                laminateEdb,
+                angle=0.0,
+                offset_x=0.0,
+                offset_y=0.0,
+                flipped_stackup=True,
+                place_on_top=False,
+            )
+            merged_cell = chipEdb.edb_api.cell.cell.FindByName(
+                chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+            )
+            assert not merged_cell.IsNull()
+            layout = merged_cell.GetLayout()
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 1
+            cellInstance = cellInstances[0]
+            assert cellInstance.Is3DPlacement()
+            if desktop_version > "2023.1":
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                    _,
+                ) = cellInstance.Get3DTransformation()
+            else:
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                ) = cellInstance.Get3DTransformation()
+            assert res
+            zeroValue = chipEdb.edb_value(0)
+            oneValue = chipEdb.edb_value(1)
+            originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+            xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+            assert localOrigin.IsEqual(originPoint)
+            assert rotAxisFrom.IsEqual(xAxisPoint)
+            assert rotAxisTo.IsEqual(xAxisPoint)
+            assert angle.IsEqual(chipEdb.edb_value(math.pi))
+            assert loc.IsEqual(chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(10e-6)))
+        finally:
+            chipEdb.close()
+            laminateEdb.close()
+
+    def test_stackup_place_on_top_with_zoffset_solder_chip(self):
+        """Place on top of lam with mold chip zoffset using 3d placement method."""
+        laminateEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
+            edbversion=desktop_version,
+        )
+        chipEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "chip_zoffset_solder.aedb"),
+            edbversion=desktop_version,
+        )
+        try:
+            layout = laminateEdb.active_layout
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 0
+            assert chipEdb.stackup.place_in_layout_3d_placement(
+                laminateEdb,
+                angle=0.0,
+                offset_x=0.0,
+                offset_y=0.0,
+                flipped_stackup=False,
+                place_on_top=True,
+            )
+            merged_cell = chipEdb.edb_api.cell.cell.FindByName(
+                chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+            )
+            assert not merged_cell.IsNull()
+            layout = merged_cell.GetLayout()
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 1
+            cellInstance = cellInstances[0]
+            assert cellInstance.Is3DPlacement()
+            if desktop_version > "2023.1":
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                    _,
+                ) = cellInstance.Get3DTransformation()
+            else:
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                ) = cellInstance.Get3DTransformation()
+            assert res
+            zeroValue = chipEdb.edb_value(0)
+            oneValue = chipEdb.edb_value(1)
+            originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+            xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+            assert localOrigin.IsEqual(originPoint)
+            assert rotAxisFrom.IsEqual(xAxisPoint)
+            assert rotAxisTo.IsEqual(xAxisPoint)
+            assert angle.IsEqual(zeroValue)
+            assert loc.IsEqual(chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(150e-6)))
+        finally:
+            chipEdb.close()
+            laminateEdb.close()
+
+    def test_stackup_place_on_bottom_with_zoffset_solder_chip(self):
+        """Place on bottom of lam with mold chip zoffset using 3d placement method."""
+
+        laminateEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "lam_with_mold.aedb"),
+            edbversion=desktop_version,
+        )
+        chipEdb = EdbLegacy(
+            os.path.join(local_path, "example_models", test_subfolder, "chip_zoffset_solder.aedb"),
+            edbversion=desktop_version,
+        )
+        try:
+            layout = laminateEdb.active_layout
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 0
+            assert chipEdb.stackup.place_in_layout_3d_placement(
+                laminateEdb,
+                angle=0.0,
+                offset_x=0.0,
+                offset_y=0.0,
+                flipped_stackup=True,
+                place_on_top=False,
+            )
+            merged_cell = chipEdb.edb_api.cell.cell.FindByName(
+                chipEdb.active_db, chipEdb.edb_api.cell.CellType.CircuitCell, "lam_with_mold"
+            )
+            assert not merged_cell.IsNull()
+            layout = merged_cell.GetLayout()
+            cellInstances = list(layout.CellInstances)
+            assert len(cellInstances) == 1
+            cellInstance = cellInstances[0]
+            assert cellInstance.Is3DPlacement()
+            if desktop_version > "2023.1":
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                    _,
+                ) = cellInstance.Get3DTransformation()
+            else:
+                (
+                    res,
+                    localOrigin,
+                    rotAxisFrom,
+                    rotAxisTo,
+                    angle,
+                    loc,
+                ) = cellInstance.Get3DTransformation()
+            assert res
+            zeroValue = chipEdb.edb_value(0)
+            oneValue = chipEdb.edb_value(1)
+            originPoint = chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, zeroValue)
+            xAxisPoint = chipEdb.edb_api.geometry.point3d_data(oneValue, zeroValue, zeroValue)
+            assert localOrigin.IsEqual(originPoint)
+            assert rotAxisFrom.IsEqual(xAxisPoint)
+            assert rotAxisTo.IsEqual(xAxisPoint)
+            assert angle.IsEqual(chipEdb.edb_value(math.pi))
+            assert loc.IsEqual(chipEdb.edb_api.geometry.point3d_data(zeroValue, zeroValue, chipEdb.edb_value(20e-6)))
+        finally:
+            chipEdb.close()
+            laminateEdb.close()
+
+    def test_18_stackup(self):
+        def validate_material(pedb_materials, material, delta):
+            pedb_mat = pedb_materials[material["name"]]
+            if not material["dielectric_model_frequency"]:
+                assert (pedb_mat.conductivity - material["conductivity"]) < delta
+                assert (pedb_mat.permittivity - material["permittivity"]) < delta
+                assert (pedb_mat.loss_tangent - material["loss_tangent"]) < delta
+                assert (pedb_mat.permeability - material["permeability"]) < delta
+                assert (pedb_mat.magnetic_loss_tangent - material["magnetic_loss_tangent"]) < delta
+            assert (pedb_mat.mass_density - material["mass_density"]) < delta
+            assert (pedb_mat.poisson_ratio - material["poisson_ratio"]) < delta
+            assert (pedb_mat.specific_heat - material["specific_heat"]) < delta
+            assert (pedb_mat.thermal_conductivity - material["thermal_conductivity"]) < delta
+            assert (pedb_mat.youngs_modulus - material["youngs_modulus"]) < delta
+            assert (pedb_mat.thermal_expansion_coefficient - material["thermal_expansion_coefficient"]) < delta
+            if material["dc_conductivity"] is not None:
+                assert (pedb_mat.dc_conductivity - material["dc_conductivity"]) < delta
+            else:
+                assert pedb_mat.dc_conductivity == material["dc_conductivity"]
+            if material["dc_permittivity"] is not None:
+                assert (pedb_mat.dc_permittivity - material["dc_permittivity"]) < delta
+            else:
+                assert pedb_mat.dc_permittivity == material["dc_permittivity"]
+            if material["dielectric_model_frequency"] is not None:
+                assert (pedb_mat.dielectric_model_frequency - material["dielectric_model_frequency"]) < delta
+            else:
+                assert pedb_mat.dielectric_model_frequency == material["dielectric_model_frequency"]
+            if material["loss_tangent_at_frequency"] is not None:
+                assert (pedb_mat.loss_tangent_at_frequency - material["loss_tangent_at_frequency"]) < delta
+            else:
+                assert pedb_mat.loss_tangent_at_frequency == material["loss_tangent_at_frequency"]
+            if material["permittivity_at_frequency"] is not None:
+                assert (pedb_mat.permittivity_at_frequency - material["permittivity_at_frequency"]) < delta
+            else:
+                assert pedb_mat.permittivity_at_frequency == material["permittivity_at_frequency"]
+            return 0
+        import json
+
+        target_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        out_edb = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_test.aedb")
+        self.local_scratch.copyfolder(target_path, out_edb)
+        json_path = os.path.join(local_path, "example_models", test_subfolder, "test_mat.json")
+        edbapp = EdbLegacy(out_edb, edbversion=desktop_version)
+        edbapp.stackup.import_stackup(json_path)
+        edbapp.save_edb()
+        delta = 1e-6
+        f = open(json_path)
+        json_dict = json.load(f)
+        for k, v in json_dict.items():
+            if k == "materials":
+                for material in v.values():
+                    assert 0 == validate_material(edbapp.materials, material, delta)
+        for k, v in json_dict.items():
+            if k == "layers":
+                for layer_name, layer in v.items():
+                    pedb_lay = edbapp.stackup.layers[layer_name]
+                    assert list(pedb_lay.color) == layer["color"]
+                    assert pedb_lay.type == layer["type"]
+                    if isinstance(layer["material"], str):
+                        assert pedb_lay.material == layer["material"]
+                    else:
+                        assert 0 == validate_material(edbapp.materials, layer["material"], delta)
+                    if isinstance(layer["dielectric_fill"], str) or layer["dielectric_fill"] is None:
+                        assert pedb_lay.dielectric_fill == layer["dielectric_fill"]
+                    else:
+                        assert 0 == validate_material(edbapp.materials, layer["dielectric_fill"], delta)
+                    assert (pedb_lay.thickness - layer["thickness"]) < delta
+                    assert (pedb_lay.etch_factor - layer["etch_factor"]) < delta
+                    assert pedb_lay.roughness_enabled == layer["roughness_enabled"]
+                    if layer["roughness_enabled"]:
+                        assert (pedb_lay.top_hallhuray_nodule_radius - layer["top_hallhuray_nodule_radius"]) < delta
+                        assert (pedb_lay.top_hallhuray_surface_ratio - layer["top_hallhuray_surface_ratio"]) < delta
+                        assert (
+                            pedb_lay.bottom_hallhuray_nodule_radius - layer["bottom_hallhuray_nodule_radius"]
+                        ) < delta
+                        assert (
+                            pedb_lay.bottom_hallhuray_surface_ratio - layer["bottom_hallhuray_surface_ratio"]
+                        ) < delta
+                        assert (pedb_lay.side_hallhuray_nodule_radius - layer["side_hallhuray_nodule_radius"]) < delta
+                        assert (pedb_lay.side_hallhuray_surface_ratio - layer["side_hallhuray_surface_ratio"]) < delta
+        edbapp.close()
+        edbapp = EdbLegacy(edbversion=desktop_version)
+        json_path = os.path.join(local_path, "example_models", test_subfolder, "test_mat2.json")
+        assert edbapp.stackup.import_stackup(json_path)
+        assert "SOLDER" in edbapp.stackup.stackup_layers
         edbapp.close()
