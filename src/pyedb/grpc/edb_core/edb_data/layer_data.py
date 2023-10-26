@@ -2,8 +2,11 @@ from __future__ import absolute_import
 
 import re
 
-from pyedb.generic.general_methods import pyedb_function_handler
-from ansys.edb.utility import Value
+from src.pyedb.generic.general_methods import pyedb_function_handler
+import ansys.edb.utility as utility
+import ansys.edb.layer as layer
+
+import ansys.edb.definition as definition
 
 
 class LayerEdbClass(object):
@@ -159,7 +162,7 @@ class StackupLayerEdbClass(LayerEdbClass):
     def lower_elevation(self, value):
         if self._pclass.mode == "Overlapping":
             layer_clone = self._edb_layer
-            layer_clone.lower_elevation = Value(value)
+            layer_clone.lower_elevation = utility.Value(value)
             self._pclass._set_layout_stackup(layer_clone, "change_attribute")
 
     @property
@@ -285,7 +288,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         if not self.is_stackup_layer:  # pragma: no cover
             return
         layer_clone = self._edb_layer
-        layer_clone.thickness = Value(value)
+        layer_clone.thickness = utility.Value(value)
         self._pclass._set_layout_stackup(layer_clone, "change_attribute")
         self._thickness = value
 
@@ -310,7 +313,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         else:
             layer_clone = self._edb_layer
             layer_clone.etch_factor_enabled = True
-            layer_clone.etch_factor = Value(value)
+            layer_clone.etch_factor = utility.Value(value)
         self._pclass._set_layout_stackup(layer_clone, "change_attribute")
         self._etch_factor = value
 
@@ -469,37 +472,32 @@ class StackupLayerEdbClass(LayerEdbClass):
         if not self.is_stackup_layer:  # pragma: no cover
             return
 
-        radius = Value(huray_radius)
-        self._hurray_nodule_radius = Value(huray_radius)
-        surface_ratio = Value(huray_surface_ratio)
+        radius = utility.Value(huray_radius)
+        self._hurray_nodule_radius = utility.Value(huray_radius)
+        surface_ratio = utility.Value(huray_surface_ratio)
         self._hurray_surface_ratio = huray_surface_ratio
-        groisse_roughness = Value(groisse_roughness)
+        groisse_roughness = utility.Value(groisse_roughness)
         regions = []
         if apply_on_surface == "all":
             self._side_roughness = "all"
-            regions = [
-                self._pclass._pedb.edb_api.Cell.Layers.RoughnessRegion.TOP,
-                self._pclass._pedb.edb_api.Cell.Layers.RoughnessRegion.SIDE,
-                self._pclass._pedb.edb_api.Cell.Layers.RoughnessRegion.BOTTOM,
-            ]
+            regions = [layer.RoughnessRegion.TOP, layer.RoughnessRegion.SIDE, layer.RoughnessRegion.BOTTOM]
         elif apply_on_surface == "top":
             self._side_roughness = "top"
-            regions = [self._pclass._pedb.edb_api.Cell.Layers.RoughnessRegion.TOP]
+            regions = [layer.RoughnessRegion.TOP]
         elif apply_on_surface == "bottom":
             self._side_roughness = "bottom"
-            regions = [self._pclass._pedb.edb_api.Cell.Layers.RoughnessRegion.BOTTOM]
+            regions = [layer.RoughnessRegion.BOTTOM]
         elif apply_on_surface == "side":
             self._side_roughness = "side"
-            regions = [self._pclass._pedb.edb_api.Cell.Layers.RoughnessRegion.SIDE]
+            regions = [layer.RoughnessRegion.SIDE]
 
         layer_clone = self._edb_layer
         layer_clone.roughness_enabled = True
         for r in regions:
             if model_type == "huray":
-                model = self._pclass._pedb.edb_api.Cell.Layers.RoughnessModel(radius, surface_ratio)
+                layer_clone.set_rouhness_model((radius, surface_ratio), r)
             else:
-                model = self._pclass._pedb.edb_api.Cell.Layers.RoughnessModel(groisse_roughness)
-            layer_clone.set_rouhness_model(model, r)
+                layer_clone.set_rouhness_model(groisse_roughness, r)
         return self._pclass._set_layout_stackup(layer_clone, "change_attribute")
 
     @pyedb_function_handler()
