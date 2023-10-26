@@ -1,8 +1,11 @@
 """Tests related to Edb modeler
 """
 
+from pyedb.legacy.edb import EdbLegacy
 import pytest
 from pyedb.generic.settings import settings
+from tests.conftest import local_path
+from tests.conftest import desktop_version
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
@@ -211,11 +214,12 @@ class TestClass:
         circle2 = self.edbapp.modeler.create_circle("1_Top", 20, 20, 15)
         assert circle2.unite(intersection)
 
-    def test_140_defeature(self):
-        """Defeature the polygon ."""
+    def test_modeler_defeature(self):
+        """Defeature the polygon."""
         assert self.edbapp.modeler.defeature_polygon(self.edbapp.modeler.primitives_by_net["GND"][-1], 0.01)
 
-    def test_141_primitives_boolean_operation(self):
+    def test_modeler_primitives_boolean_operation(self):
+        """Evaluate modeler primitives boolean operations."""
         from pyedb.legacy.edb import EdbLegacy
         edb = EdbLegacy()
         edb.stackup.add_layer(layer_name="test")
@@ -259,3 +263,12 @@ class TestClass:
         y_clone = y.clone()
         assert y_clone.voids
         edb.close()
+
+    def test_modeler_path_convert_to_polygon(self):
+        import os
+        target_path = os.path.join(local_path, "example_models", "convert_and_merge_path.aedb")
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        for path in edbapp.modeler.paths:
+            assert path.convert_to_polygon()
+        assert edbapp.nets.merge_nets_polygons("test")
+        edbapp.close()
