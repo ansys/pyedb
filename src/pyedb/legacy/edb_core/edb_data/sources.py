@@ -1,4 +1,4 @@
-from pyedb import pyedb_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.generic.constants import NodeType
 from pyedb.generic.constants import SourceType
 

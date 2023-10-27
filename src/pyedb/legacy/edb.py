@@ -12,7 +12,8 @@ import time
 import traceback
 import warnings
 
-from pyedb import settings
+# from pyedb import settings
+from pyedb.generic.general_methods import settings
 from pyedb.legacy.application.Variables import decompose_variable_value
 from pyedb.legacy.edb_core.components import Components
 from pyedb.legacy.edb_core.dotnet.database import Database

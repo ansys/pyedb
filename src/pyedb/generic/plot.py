@@ -8,7 +8,7 @@ import tempfile
 import time
 import warnings
 
-from pyedb import pyedb_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.generic.constants import AEDT_UNITS
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.general_methods import is_ironpython
