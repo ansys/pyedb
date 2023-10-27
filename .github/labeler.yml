@@ -10,6 +10,4 @@ maintenance:
 dependencies:
 - requirements/**/*
 testing:
-- _unittest/conftest.py
-- _unittest_ironpython/run_unittests.py
-- _unittest_ironpython/run_unittests_batchmode.cmd
+- tests/**/*
