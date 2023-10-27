@@ -43,7 +43,7 @@ from src.pyedb.grpc.edb_core.edb_data.control_file import convert_technology_fil
 #from pyedb.grpc.hfss import EdbHfss
 from src.pyedb.ipc2581.ipc2581 import Ipc2581
 #from pyedb.grpc.layout import EdbLayout
-#from pyedb.grpc.materials import Materials
+from src.pyedb.grpc.materials import Materials
 #from pyedb.grpc.net_class import EdbDifferentialPairs
 #from pyedb.grpc.net_class import EdbExtendedNets
 #from pyedb.grpc.net_class import EdbNetClasses
@@ -98,7 +98,7 @@ class Edb(EdbGrpc):
     --------
     Create an ``Edb`` object and a new EDB cell.
 
-    >>> from pyedb.grpc.edb import Edb
+    >>> from src.pyedb.grpc.edb import Edb
     >>> app = Edb()
 
     Add a new variable named "s1" to the ``Edb`` instance.
@@ -254,7 +254,7 @@ class Edb(EdbGrpc):
         self._components = None
         self._core_primitives = None
         self._stackup = None
-        self._stackup2 = None
+        #self._stackup2 = None
         self._padstack = None
         self._siwave = None
         self._hfss = None
@@ -270,13 +270,14 @@ class Edb(EdbGrpc):
     def _init_objects(self):
         self._components = Components(self)
         self._stackup = Stackup(self)
+        self._materials = Materials(self)
         #self._padstack = EdbPadstacks(self)
         #self._siwave = EdbSiwave(self)
         #self._hfss = EdbHfss(self)
         #self._nets = EdbNets(self)
         #self._core_primitives = EdbLayout(self)
         #self._stackup2 = self._stackup
-        #self._materials = Materials(self)
+
 
 
     @property
@@ -468,6 +469,44 @@ class Edb(EdbGrpc):
         if not self._components and self.active_db:
             self._components = Components(self)
         return self._components
+
+    @property
+    def stackup(self):
+        """Stackup manager.
+
+        Returns
+        -------
+        Instance of :class: 'pyaedt.edb_core.Stackup`
+
+        Examples
+        --------
+        >>> edbapp = pyaedt.Edb("myproject.aedb")
+        >>> edbapp.stackup.layers["TOP"].thickness = 4e-5
+        >>> edbapp.stackup.layers["TOP"].thickness == 4e-05
+        >>> edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
+        """
+        if self.active_db:
+            self._stackup = Stackup(self)
+        return self._stackup
+
+    @property
+    def materials(self):
+        """Material Database.
+
+        Returns
+        -------
+        Instance of :class: `pyaedt.edb_core.Materials`
+
+        Examples
+        --------
+        >>> edbapp = pyaedt.Edb("myproject.aedb")
+        >>> edbapp.materials["FR4_epoxy"].conductivity = 1
+        >>> edbapp.materials.add_debye_material("My_Debye2", 5, 3, 0.02, 0.05, 1e5, 1e9)
+        >>> edbapp.materials.add_djordjevicsarkar_material("MyDjord2", 3.3, 0.02, 3.3)
+        """
+        if not self._materials and self.active_db:
+            self._materials = Materials(self)
+        return self._materials
 
     # @pyedb_function_handler()
     # def open_edb_inside_aedt(self):
@@ -673,44 +712,9 @@ class Edb(EdbGrpc):
     #     """
     #     return EdbDesignOptions(self.active_cell)
     #
-    # @property
-    # def stackup(self):
-    #     """Stackup manager.
+
     #
-    #     Returns
-    #     -------
-    #     Instance of :class: 'pyaedt.edb_core.Stackup`
-    #
-    #     Examples
-    #     --------
-    #     >>> edbapp = pyaedt.Edb("myproject.aedb")
-    #     >>> edbapp.stackup.layers["TOP"].thickness = 4e-5
-    #     >>> edbapp.stackup.layers["TOP"].thickness == 4e-05
-    #     >>> edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
-    #     """
-    #     if not self._stackup2 and self.active_db:
-    #         self._stackup2 = Stackup(self)
-    #     return self._stackup2
-    #
-    # @property
-    # def materials(self):
-    #     """Material Database.
-    #
-    #     Returns
-    #     -------
-    #     Instance of :class: `pyaedt.edb_core.Materials`
-    #
-    #     Examples
-    #     --------
-    #     >>> edbapp = pyaedt.Edb("myproject.aedb")
-    #     >>> edbapp.materials["FR4_epoxy"].conductivity = 1
-    #     >>> edbapp.materials.add_debye_material("My_Debye2", 5, 3, 0.02, 0.05, 1e5, 1e9)
-    #     >>> edbapp.materials.add_djordjevicsarkar_material("MyDjord2", 3.3, 0.02, 3.3)
-    #     """
-    #
-    #     if not self._materials and self.active_db:
-    #         self._materials = Materials(self)
-    #     return self._materials
+
     #
     # @property
     # def padstacks(self):

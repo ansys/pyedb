@@ -251,7 +251,7 @@ class StackupLayerEdbClass(LayerEdbClass):
     def dielectric_fill(self):
         """Retrieve material name of the layer dielectric fill."""
         if self.type == "signal":
-            self._dielectric_fill = self._edb_layer.GetFillMaterial()
+            self._dielectric_fill = self._edb_layer.cast().get_fill_material()
             return self._dielectric_fill
         else:
             return

@@ -297,19 +297,10 @@ class Stackup(object):
         lc_readonly = self._pedb.layout.layer_collection
         layers = [i.clone() for i in lc_readonly.get_layers(layer_collection.LayerTypeSet.STACKUP_LAYER_SET)]
         non_stackup = [i.clone() for i in lc_readonly.get_layers(layer_collection.LayerTypeSet.NON_STACKUP_LAYER_SET)]
-        self._lc = layer_collection.LayerCollection()
+        self._lc = layer_collection.LayerCollection.create()
         mode = lc_readonly.mode
-        self._lc.mode = lc_readonly.mode
-        if mode == layer_collection.LayerCollectionMode.OVERLAPPING:
-            for layer in layers:
-                self._lc.add_stackup_layer_at_elevation(layer)
-        elif mode == layer_collection.LayerCollectionMode.LAMINATE:
-            for layer in layers:
-                self._lc.add_layer_below(layer)
-        else:
-            self._lc.add_layers(layers)
-        for layer in non_stackup:
-            self._lc.add_layer_bottom(layer)
+        self._lc.mode = mode
+        self._lc.add_layers([*layers, *non_stackup])
 
     @property
     def _layer_collection(self):

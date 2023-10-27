@@ -78,7 +78,7 @@ class LayerEdbClass(object):
         int
             An integer between 0 and 100 with 0 being fully opaque and 100 being fully transparent.
         """
-        return self._edb_layer.transparency()
+        return self._edb_layer.cast().transparency
 
     @transparency.setter
     def transparency(self, transparency=0):
@@ -106,7 +106,11 @@ class LayerEdbClass(object):
     @property
     def type(self):
         """Retrieve type of the layer."""
-        return re.sub(r"Layer$", "", self._edb_layer.layer_type.lower())
+        layer_type = self._edb_layer.type.value
+        if layer_type == 0:
+            return "signal"
+        elif layer_type == 1:
+            return "dielectric"
 
     @type.setter
     def type(self, new_type):
@@ -155,7 +159,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         float
             Lower elevation.
         """
-        self._lower_elevation = self._edb_layer.lower_elevation
+        self._lower_elevation = self._edb_layer.cast().lower_elevation.value
         return self._lower_elevation
 
     @lower_elevation.setter
@@ -174,7 +178,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         float
             Upper elevation.
         """
-        self._upper_elevation = self._edb_layer.upper_elevation
+        self._upper_elevation = self._edb_layer.cast().upper_elevation.value
         return self._upper_elevation
 
     @property
@@ -186,7 +190,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         bool
             True if this layer is a negative layer, False otherwise.
         """
-        return self._edb_layer.negative
+        return self._edb_layer.cast().negative
 
     @is_negative.setter
     def is_negative(self, value):
@@ -203,12 +207,14 @@ class StackupLayerEdbClass(LayerEdbClass):
         -------
         float
         """
-        return self._edb_layer.get_material()
+        # bug found
+        # return self._edb_layer.cast().get_material()
+        return False
 
     @material.setter
     def material(self, name):
         layer_clone = self._edb_layer
-        layer_clone.Sset_material(name)
+        layer_clone.set_material(name)
         self._pclass._set_layout_stackup(layer_clone, "change_attribute")
         self._material = name
 
@@ -236,7 +242,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         if self.material in self._pclass._pedb.materials.materials:
             self._permittivity = self._pclass._pedb.materials[self.material].permittivity
             return self._permittivity
-        return None
+        return 1.0
 
     @property
     def loss_tangent(self):
@@ -249,16 +255,19 @@ class StackupLayerEdbClass(LayerEdbClass):
         if self.material in self._pclass._pedb.materials.materials:
             self._loss_tangent = self._pclass._pedb.materials[self.material].loss_tangent
             return self._loss_tangent
-        return None
+        return 0.0
 
     @property
     def dielectric_fill(self):
         """Retrieve material name of the layer dielectric fill."""
         if self.type == "signal":
-            self._dielectric_fill = self._edb_layer.get_fill_material()
-            return self._dielectric_fill
+            try:
+                self._dielectric_fill = self._edb_layer.cast().get_fill_material()
+                return self._dielectric_fill
+            except:
+                return None
         else:
-            return
+            return None
 
     @dielectric_fill.setter
     def dielectric_fill(self, name):
@@ -280,7 +289,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         """
         if not self.is_stackup_layer:  # pragma: no cover
             return
-        self._thickness = self._edb_layer.thickness
+        self._thickness = self._edb_layer.cast().thickness
         return self._thickness
 
     @thickness.setter
@@ -300,7 +309,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         -------
         float
         """
-        self._etch_factor = self._edb_layer.etch_factor
+        self._etch_factor = self._edb_layer.cast().etch_factor.value
         return self._etch_factor
 
     @etch_factor.setter
@@ -308,10 +317,10 @@ class StackupLayerEdbClass(LayerEdbClass):
         if not self.is_stackup_layer:  # pragma: no cover
             return
         if not value:
-            layer_clone = self._edb_layer
+            layer_clone = self._edb_layer.cast()
             layer_clone.etch_factor_enabled = False
         else:
-            layer_clone = self._edb_layer
+            layer_clone = self._edb_layer.cast()
             layer_clone.etch_factor_enabled = True
             layer_clone.etch_factor = utility.Value(value)
         self._pclass._set_layout_stackup(layer_clone, "change_attribute")
@@ -327,7 +336,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         """
         if not self.is_stackup_layer:  # pragma: no cover
             return
-        self._roughness_enabled = self._edb_layer.roughness_enabled
+        self._roughness_enabled = self._edb_layer.cast().roughness_enabled
         return self._roughness_enabled
 
     @roughness_enabled.setter
