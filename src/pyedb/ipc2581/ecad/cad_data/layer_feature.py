@@ -1,9 +1,9 @@
 import math
 
-from src.pyedb.ipc2581.ecad.cad_data.feature import Feature
-from src.pyedb.ipc2581.ecad.cad_data.feature import FeatureType
-from src.pyedb.generic.general_methods import ET
-from src.pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.ipc2581.ecad.cad_data.feature import Feature
+from pyedb.ipc2581.ecad.cad_data.feature import FeatureType
+from pyedb.generic.general_methods import ET
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
 

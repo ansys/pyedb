@@ -3,7 +3,7 @@ import math
 import re
 import warnings
 
-from pyedb import is_ironpython
+from pyedb.legacy.generic.general_methods import is_ironpython
 from pyedb.legacy.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitivesMain

@@ -1,6 +1,6 @@
 import re
 
-from pyedb import pyedb_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.legacy.edb_core.edb_data.connectable import Connectable
 from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.legacy.edb_core.edb_data.primitives_data import cast

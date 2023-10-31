@@ -1,4 +1,4 @@
-from src.pyedb.generic.general_methods import ET
+from pyedb.generic.general_methods import ET
 
 
 class StackupLayer(object):

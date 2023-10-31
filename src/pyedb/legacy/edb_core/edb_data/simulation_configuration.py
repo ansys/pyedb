@@ -2,7 +2,7 @@ from collections import OrderedDict
 import json
 import os
 
-from pyedb import generate_unique_name
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.legacy.edb_core.edb_data.sources import Source
 from pyedb.legacy.edb_core.edb_data.sources import SourceType
 from pyedb.legacy.generic.clr_module import Dictionary
