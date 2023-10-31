@@ -46,8 +46,8 @@ jobs:
 
       - name: "Executing legacy unit tests"
         run: |
-          pytest -m "legacy and unit" -n 6
+          pytest -m "legacy and unit" -n 6 -v
 
       - name: "Executing legacy system tests"
         run: |
-          pytest -m "legacy and system" -n 6
+          pytest -m "legacy and system" -n 6 -v
