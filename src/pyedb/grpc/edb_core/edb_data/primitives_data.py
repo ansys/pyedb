@@ -1,13 +1,15 @@
 import math
 
-from ansys.edb.primitive.primitive import Bondwire
-from ansys.edb.primitive.primitive import Circle
-from ansys.edb.primitive.primitive import Path
-from ansys.edb.primitive.primitive import Polygon
-from ansys.edb.primitive.primitive import Rectangle
-from ansys.edb.primitive.primitive import Text
-from ansys.edb.primitive.primitive import PrimitiveType
-from ansys.edb.utility.value import Value
+import ansys.edb.primitive as primitive
+import ansys.edb.utility as utility
+#from ansys.edb.primitive.primitive import Bondwire
+#from ansys.edb.primitive.primitive import Circle
+#from ansys.edb.primitive.primitive import Path
+#from ansys.edb.primitive.primitive import Polygon
+#from ansys.edb.primitive.primitive import Rectangle
+#from ansys.edb.primitive.primitive import Text
+#from ansys.edb.primitive.primitive import PrimitiveType
+#from ansys.edb.utility.value import Value
 from src.pyedb.generic.general_methods import pyedb_function_handler
 from src.pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -19,32 +21,32 @@ def cast(raw_primitive, core_app):
     -------
     Primitive
     """
-    if isinstance(raw_primitive, Rectangle):
+    if isinstance(raw_primitive, primitive.Rectangle):
         return EdbRectangle(raw_primitive.prim_obj, core_app)
-    elif isinstance(raw_primitive, Polygon):
+    elif isinstance(raw_primitive, primitive.Polygon):
         return EdbPolygon(raw_primitive.prim_obj, core_app)
-    elif isinstance(raw_primitive, Path):
+    elif isinstance(raw_primitive, primitive.Path):
         return EdbPath(raw_primitive.prim_obj, core_app)
-    elif isinstance(raw_primitive, Bondwire):
+    elif isinstance(raw_primitive, primitive.Bondwire):
         return EdbBondwire(raw_primitive.prim_obj, core_app)
-    elif isinstance(raw_primitive, Text):
+    elif isinstance(raw_primitive, primitive.Text):
         return EdbText(raw_primitive.prim_obj, core_app)
-    elif isinstance(raw_primitive, Circle):
+    elif isinstance(raw_primitive, primitive.Circle):
         return EdbCircle(raw_primitive.prim_obj, core_app)
     else:
         try:
             prim_type = raw_primitive.primitive_type
-            if prim_type == PrimitiveType.RECTANGLE:
+            if prim_type == primitive.PrimitiveType.RECTANGLE:
                 return EdbRectangle(raw_primitive, core_app)
-            elif prim_type == PrimitiveType.POLYGON:
+            elif prim_type == primitive.PrimitiveType.POLYGON:
                 return EdbPolygon(raw_primitive, core_app)
-            elif prim_type == PrimitiveType.PATH:
+            elif prim_type == primitive.PrimitiveType.PATH:
                 return EdbPath(raw_primitive, core_app)
-            elif prim_type == PrimitiveType.BONDWIRE:
+            elif prim_type == primitive.PrimitiveType.BONDWIRE:
                 return EdbBondwire(raw_primitive, core_app)
-            elif prim_type == PrimitiveType.TEXT:
+            elif prim_type == primitive.PrimitiveType.TEXT:
                 return EdbText(raw_primitive, core_app)
-            elif prim_type == PrimitiveType.CIRCLE:
+            elif prim_type == primitive.PrimitiveType.CIRCLE:
                 return EdbCircle(raw_primitive, core_app)
             else:
                 return None
@@ -58,7 +60,7 @@ class EDBPrimitivesMain:
 
     Examples
     --------
-    >>> from src.pyedb import Edb
+    >>> from src.pyedb.grpc.edb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_prim = edb.modeler.primitives[0]
     >>> edb_prim.is_void # Class Property
@@ -69,10 +71,13 @@ class EDBPrimitivesMain:
         #super().__init__(core_app, raw_primitive)
         #self._app = self._pedb
         self._app = core_app
-        # self._core_stackup = core_app.stackup not yet added
-        # self._core_net = core_app.nets # not yet added
+        self._stackup = core_app.stackup
+        #self._net = core_app.nets
         #self.primitive_object = self._edb_object
         self.primitive_object = raw_primitive
+        self._edb_object = raw_primitive
+        self._layer = None
+        self.net = None
 
     @property
     def type(self):
@@ -84,7 +89,7 @@ class EDBPrimitivesMain:
         str
         """
         types = ["CIRCLE", "PATH", "POLYGON", "RECTANGLE", "BONDWIRE"]
-        str_type = str(self.primitive_type).split(".")
+        str_type = str(self.primitive_object.primitive_type).split(".")
         if str_type[-1] in types:
             return f"{str_type[-1][0]}{str_type[-1][:1].lower()}"
         return None
@@ -112,7 +117,12 @@ class EDBPrimitivesMain:
     @property
     def layer(self):
         """Get the primitive edb layer object."""
-        return self.primitive_object.layer
+        if self.primitive_object.obj_type.name == "PADSTACK_INSTANCE":
+            self._layer = None
+            return self._layer
+        else:
+            self._layer = self.primitive_object.layer
+            return self._layer
 
     @property
     def layer_name(self):
@@ -122,17 +132,18 @@ class EDBPrimitivesMain:
         -------
         str
         """
-        return self.layer.name
+        if self._layer:
+            return self._layer.name
 
     @layer_name.setter
     def layer_name(self, val):
-        if isinstance(val, str) and val in list(self._core_stackup.layers.keys()):
-            lay = self._core_stackup.layers["TOP"]._edb_layer
+        if isinstance(val, str) and val in list(self._stackup.layers.keys()):
+            lay = self._stackup.layers["TOP"]._edb_layer
             if lay:
                 self.primitive_object.layer = lay
             else:
                 raise AttributeError("Layer {} not found in layer".format(val))
-        elif isinstance(val, type(self._core_stackup.layers["TOP"])):
+        elif isinstance(val, type(self._stackup.layers["TOP"])):
             try:
                 self.primitive_object.layer = val._edb_layer
             except:
@@ -148,7 +159,12 @@ class EDBPrimitivesMain:
         -------
         bool
         """
-        return self._edb_object.is_void
+        if self._edb_object.layout_obj_type in [primitive.PrimitiveType.CIRCLE,
+                                                primitive.PrimitiveType.POLYGON,
+                                                primitive.PrimitiveType.RECTANGLE]:
+            return self._edb_object.is_void
+        else:
+            return False
 
 
 class EDBPrimitives(EDBPrimitivesMain):
