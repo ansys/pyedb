@@ -22,8 +22,8 @@ env:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
-  legacy-unit-test:
-    name: "Check legacy unit tests"
+  legacy-test:
+    name: "Check legacy tests"
     runs-on: [ windows, pyedb, self-hosted ]
     steps:
       - name: "Install Git and clone project"
@@ -48,28 +48,6 @@ jobs:
         run: |
           pytest -m "legacy and unit"
 
-  legacy-system-test:
-    name: "Check legacy system tests"
-    runs-on: [ windows, pyedb, self-hosted ]
-    steps:
-      - name: "Install Git and clone project"
-        uses: actions/checkout@v4
-
-      - name: "Set up Python"
-        uses: ansys/actions/_setup-python@main
-        with:
-          python-version: '3.10'
-          use-cache: false
-
-      - name: "Update pip"
-        run: python -m pip install -U pip
-
-      - name: "Install Python library"
-        run: python -m pip install .
-
-      - name: "Install test requirements"
-        run: python -m pip install .[tests]
-
-      - name: "Executing legacy unit tests"
+      - name: "Executing legacy system tests"
         run: |
           pytest -m "legacy and system"
