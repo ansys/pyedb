@@ -14,8 +14,10 @@ import os
 import time
 import pyedb
 from pyedb.legacy.downloads import download_file
+from pyedb.generic.general_methods import generate_unique_folder_name
 
-temp_folder = pyedb.generate_unique_folder_name()
+
+temp_folder = generate_unique_folder_name()
 targetfile = download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
 
 siwave_file = os.path.join(os.path.dirname(targetfile), "ANSYS-HSD_V1.siw")

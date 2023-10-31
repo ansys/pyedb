@@ -16,6 +16,8 @@ import os
 import pyedb
 from pyedb.legacy.downloads import download_file
 from pyaedt import Hfss3dLayout
+from pyedb.generic.general_methods import generate_unique_folder_name
+from pyedb.generic.general_methods import generate_unique_name
 
 ##########################################################
 # Set non-graphical mode
@@ -30,7 +32,7 @@ non_graphical = True
 # Download the AEDB file and copy it in the temporary folder.
 
 
-project_path = pyedb.generate_unique_folder_name()
+project_path = generate_unique_folder_name()
 target_aedb = download_file('edb/ANSYS-HSD_V1.aedb', destination=project_path)
 print("Project folder will be", target_aedb)
 

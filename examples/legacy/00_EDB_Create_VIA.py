@@ -21,10 +21,12 @@ This example shows how you can use EDB to create a layout.
 import time
 import os
 import pyedb
+from pyedb.generic.general_methods import generate_unique_folder_name
+from pyedb.generic.general_methods import generate_unique_name
 
 start = time.time()
 
-aedb_path = os.path.join(pyedb.generate_unique_folder_name(), pyedb.generate_unique_name("pcb") + ".aedb")
+aedb_path = os.path.join(generate_unique_folder_name(), generate_unique_name("pcb") + ".aedb")
 # print(aedb_path)
 # edb = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
 edb = pyedb.Edb()

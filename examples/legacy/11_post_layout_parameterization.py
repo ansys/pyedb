@@ -15,15 +15,12 @@ layers = ["16_Bottom"]  # Specify layers to be parameterized
 # Perform required imports
 # ~~~~~~~~~~~~~~~~~~~~~~~~
 import os
-import tempfile
 import pyedb
 from pyedb.legacy.downloads import download_file
-# import pyaedt
+from pyedb.generic.general_methods import generate_unique_folder_name
+from pyedb.generic.general_methods import generate_unique_name
 
-# from pyaedt import downloads
-# from pyaedt import Edb
-
-temppath =  pyedb.generate_unique_folder_name()
+temppath = generate_unique_folder_name()
 
 ###############################################################################
 # Download and open example layout file in edb format
@@ -89,7 +86,7 @@ appedb.nets.plot(layers=layers[0], size=2000)
 # Save and close Edb
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-save_edb_fpath = os.path.join(temppath, pyedb.generate_unique_name("post_layout_parameterization") + ".aedb")
+save_edb_fpath = os.path.join(temppath, generate_unique_name("post_layout_parameterization") + ".aedb")
 appedb.save_edb_as(save_edb_fpath)
 print("Edb is saved to ", save_edb_fpath)
 appedb.close_edb()

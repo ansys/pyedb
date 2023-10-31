@@ -12,6 +12,8 @@ This example shows how you can use PyAEDT to export an IPC2581 file.
 import os
 import pyedb
 from pyedb.legacy.downloads import download_file
+from pyedb.generic.general_methods import generate_unique_folder_name
+from pyedb.generic.general_methods import generate_unique_name
 
 ###############################################################################
 # Download file
@@ -19,7 +21,7 @@ from pyedb.legacy.downloads import download_file
 # Download the AEDB file and copy it in the temporary folder.
 
 
-temp_folder = pyedb.generate_unique_folder_name()
+temp_folder = generate_unique_folder_name()
 targetfile = download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
 
 
@@ -42,7 +44,7 @@ edb = pyedb.Edb(edbpath=targetfile, edbversion="2023.2")
 # Parametrize a net.
 
 edb.modeler.parametrize_trace_width(
-    "A0_N", parameter_name=pyedb.generate_unique_name("Par"), variable_value="0.4321mm"
+    "A0_N", parameter_name=generate_unique_name("Par"), variable_value="0.4321mm"
 )
 
 ###############################################################################
