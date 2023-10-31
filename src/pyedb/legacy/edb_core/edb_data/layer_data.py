@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 import re
 
-from pyedb import pyedb_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class LayerEdbClass(object):
@@ -251,7 +251,7 @@ class StackupLayerEdbClass(LayerEdbClass):
     def dielectric_fill(self):
         """Retrieve material name of the layer dielectric fill."""
         if self.type == "signal":
-            self._dielectric_fill = self._edb_layer.cast().get_fill_material()
+            self._dielectric_fill = self._edb_layer.GetFillMaterial()
             return self._dielectric_fill
         else:
             return

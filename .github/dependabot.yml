@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: "daily"
     reviewers: 
-      - "MaxJPRey"
+      - "SMoraisAnsys"
     assignees:
       - "pyansys-ci-bot"
     labels:
@@ -19,7 +19,7 @@ updates:
     schedule:
       interval: "daily"
     reviewers: 
-      - "MaxJPRey"
+      - "SMoraisAnsys"
     assignees:
       - "pyansys-ci-bot"
     labels:
