@@ -48,7 +48,7 @@ from src.pyedb.grpc.materials import Materials
 #from pyedb.grpc.net_class import EdbExtendedNets
 #from pyedb.grpc.net_class import EdbNetClasses
 #from pyedb.grpc.nets import EdbNets
-#from pyedb.grpc.padstack import EdbPadstacks
+from src.pyedb.grpc.padstack import EdbPadstacks
 #from pyedb.grpc.siwave import EdbSiwave
 from src.pyedb.grpc.stackup import Stackup
 #from pyedb.generic.constants import AEDT_UNITS
@@ -271,7 +271,7 @@ class Edb(EdbGrpc):
         self._components = Components(self)
         self._stackup = Stackup(self)
         self._materials = Materials(self)
-        #self._padstack = EdbPadstacks(self)
+        self._padstack = EdbPadstacks(self)
         #self._siwave = EdbSiwave(self)
         #self._hfss = EdbHfss(self)
         #self._nets = EdbNets(self)
@@ -508,6 +508,28 @@ class Edb(EdbGrpc):
             self._materials = Materials(self)
         return self._materials
 
+    @property
+    def padstacks(self):
+        """Core padstack.
+
+
+        Returns
+        -------
+        Instance of :class: `pyaedt.edb_core.padstack.EdbPadstack`
+
+        Examples
+        --------
+        >>> edbapp = src.pyedb.grpc.edb.Edb("myproject.aedb")
+        >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
+        >>> edbapp.padstacks.get_pad_parameters(
+        >>> ... p, "TOP", self.edbapp.padstacks.pad_type.RegularPad
+        >>> ... )
+        """
+
+        if not self._padstack and self.active_db:
+            self._padstack = EdbPadstacks(self)
+        return self._padstack
+
     # @pyedb_function_handler()
     # def open_edb_inside_aedt(self):
     #     """Open EDB inside of AEDT.
@@ -716,27 +738,7 @@ class Edb(EdbGrpc):
     #
 
     #
-    # @property
-    # def padstacks(self):
-    #     """Core padstack.
-    #
-    #
-    #     Returns
-    #     -------
-    #     Instance of :class: `pyaedt.edb_core.padstack.EdbPadstack`
-    #
-    #     Examples
-    #     --------
-    #     >>> edbapp = pyaedt.Edb("myproject.aedb")
-    #     >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
-    #     >>> edbapp.padstacks.get_pad_parameters(
-    #     >>> ... p, "TOP", self.edbapp.padstacks.pad_type.RegularPad
-    #     >>> ... )
-    #     """
-    #
-    #     if not self._padstack and self.active_db:
-    #         self._padstack = EdbPadstacks(self)
-    #     return self._padstack
+
     #
     # @property
     # def siwave(self):
