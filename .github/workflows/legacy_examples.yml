@@ -1,0 +1,49 @@
+name: Examples
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    tags:
+     - 'v*'
+    branches:
+      - main
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
+  PYEDB_USE_LEGACY: '0'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  legacy-examples:
+    name: "Check legacy examples"
+    runs-on: [ windows, pyedb, self-hosted ]
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python"
+        uses: ansys/actions/_setup-python@main
+        with:
+          python-version: '3.10'
+          use-cache: false
+
+      - name: "Update pip"
+        run: python -m pip install -U pip
+
+      - name: "Install Python library"
+        run: python -m pip install .
+
+      - name: Look for legacy examples and execute them
+        run: |  
+          find examples/legacy -type f -name "*.py" | while read file; do
+            echo "Executing example $file"
+            python "$file"
+          done
