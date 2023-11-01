@@ -1,4 +1,4 @@
-"""Read errors output from a sphinx build and remove duplicate groups"""
+"""Read errors output from a Sphinx build and remove duplicate groups."""
 import sys
 import os
 import pathlib
