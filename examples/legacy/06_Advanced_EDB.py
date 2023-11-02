@@ -11,9 +11,10 @@ This example shows how you can use EDB to create a layout.
 import os
 import numpy as np
 import pyedb
+from pyedb.generic.general_methods import generate_unique_folder_name
+from pyedb.generic.general_methods import generate_unique_name
 
-
-aedb_path = os.path.join(pyedb.generate_unique_folder_name(), pyedb.generate_unique_name("via_opt") + ".aedb")
+aedb_path = os.path.join(generate_unique_folder_name(), generate_unique_name("via_opt") + ".aedb")
 
 ###############################################################################
 # Create stackup

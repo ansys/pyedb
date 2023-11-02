@@ -13,6 +13,7 @@ import tempfile
 import pyedb
 import os
 from pyaedt import Hfss3dLayout
+from pyedb.generic.general_methods import generate_unique_name
 
 ##########################################################
 # Set non-graphical mode
@@ -71,7 +72,7 @@ class LinearArray:
 
 
 tmpfold = tempfile.gettempdir()
-aedb_path = os.path.join(tmpfold, pyedb.generate_unique_name("pcb") + ".aedb")
+aedb_path = os.path.join(tmpfold, generate_unique_name("pcb") + ".aedb")
 print(aedb_path)
 edb = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
 

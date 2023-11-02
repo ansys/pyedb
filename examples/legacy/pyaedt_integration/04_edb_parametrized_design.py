@@ -10,9 +10,12 @@ This example shows how you can use HFSS 3D Layout to create and solve a parametr
 # Perform required imports, which includes importing the ``Hfss3dlayout`` object
 # and initializing it on version 2023 R2.
 
-import pyedb
 import os
+import pyedb
 from pyaedt import Hfss3dLayout
+from pyedb.generic.general_methods import generate_unique_folder_name
+from pyedb.generic.general_methods import generate_unique_name
+
 
 ##########################################################
 # Set non-graphical mode
@@ -26,7 +29,7 @@ non_graphical = False
 # ~~~~~~~~~~
 # Launch EDB.
 
-aedb_path = os.path.join(pyedb.generate_unique_folder_name(), pyedb.generate_unique_name("pcb") + ".aedb")
+aedb_path = os.path.join(generate_unique_folder_name(), generate_unique_name("pcb") + ".aedb")
 print(aedb_path)
 edb = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
 

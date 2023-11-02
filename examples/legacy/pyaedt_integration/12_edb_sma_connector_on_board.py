@@ -29,11 +29,13 @@ import numpy as np
 import pyedb
 from pyedb.legacy.downloads import download_file
 from pyaedt import Hfss3dLayout
+from pyedb.generic.general_methods import generate_unique_folder_name
+from pyedb.generic.general_methods import generate_unique_name
 
 
 ansys_version = "2023.2"
 
-aedb_path = os.path.join(pyedb.generate_unique_folder_name(), pyedb.generate_unique_name("pcb") + ".aedb")
+aedb_path = os.path.join(generate_unique_folder_name(), generate_unique_name("pcb") + ".aedb")
 edb = pyedb.Edb(edbpath=aedb_path, edbversion=ansys_version)
 print("EDB is located at {}".format(aedb_path))
 
