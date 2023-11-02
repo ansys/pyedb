@@ -1,7 +1,7 @@
 import math
 
-from src.pyedb.generic.general_methods import ET
-from src.pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import ET
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
 

@@ -1,6 +1,6 @@
-from src.pyedb.ipc2581.ecad.cad_data.cad_data import CadData
-from src.pyedb.ipc2581.ecad.cad_header import CadHeader
-from src.pyedb.generic.general_methods import ET
+from pyedb.ipc2581.ecad.cad_data.cad_data import CadData
+from pyedb.ipc2581.ecad.cad_header import CadHeader
+from pyedb.generic.general_methods import ET
 
 
 class Ecad(object):

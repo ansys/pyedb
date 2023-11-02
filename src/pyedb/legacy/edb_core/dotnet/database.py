@@ -697,15 +697,15 @@ class EdbDotNet(object):
         from pyedb.legacy.generic.clr_module import edb_initialized
 
         if settings.enable_screen_logs:
-            self.logger.enable_stdout_log()
+            self._logger.enable_stdout_log()
         else:  # pragma: no cover
-            self.logger.disable_stdout_log()
+            self._logger.disable_stdout_log()
         if not edb_initialized:  # pragma: no cover
-            self.logger.error("Failed to initialize Dlls.")
+            self._logger.error("Failed to initialize Dlls.")
             return
-        self.logger.info("Logger is initialized in EDB.")
-        self.logger.info("legacy v%s", __version__)
-        self.logger.info("Python version %s", sys.version)
+        self._logger.info("Logger is initialized in EDB.")
+        self._logger.info("legacy v%s", __version__)
+        self._logger.info("Python version %s", sys.version)
         if is_linux:  # pragma: no cover
             if env_value(self.edbversion) in os.environ or settings.edb_dll_path:
                 if settings.edb_dll_path:

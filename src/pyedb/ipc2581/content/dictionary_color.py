@@ -1,5 +1,5 @@
-from src.pyedb.ipc2581.content.entry_color import EntryColor
-from src.pyedb.generic.general_methods import ET
+from pyedb.ipc2581.content.entry_color import EntryColor
+from pyedb.generic.general_methods import ET
 
 
 class DictionaryColor(object):

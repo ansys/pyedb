@@ -7,7 +7,7 @@ import os
 import re
 import warnings
 
-from pyedb.generic.general_methods import is_ironpython
+from pyedb.legacy.generic.general_methods import is_ironpython
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 from pyedb.legacy.generic.clr_module import _clr
 from pyedb.generic.general_methods import pyedb_function_handler
