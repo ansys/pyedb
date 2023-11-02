@@ -36,6 +36,10 @@ if not is_ironpython:
     try:
         from matplotlib.patches import PathPatch
         from matplotlib.path import Path
+        # Use matplotlib agg backend (non-interactive) when the CI is running.
+        if bool(int(os.getenv("PYEDB_CI_NO_DISPLAY", "0"))):
+            import matplotlib
+            matplotlib.use('Agg')
         import matplotlib.pyplot as plt
 
     except ImportError:
