@@ -23,8 +23,8 @@ import tempfile
 import time
 import traceback
 
-from pyaedt.generic.constants import CSS4_COLORS
-from pyaedt.generic.settings import settings
+from pyedb.generic.constants import CSS4_COLORS
+from pyedb.generic.settings import settings
 
 is_ironpython = "IronPython" in sys.version or ".NETFramework" in sys.version
 is_linux = os.name == "posix"
