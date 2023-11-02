@@ -1454,7 +1454,6 @@ class TestClass:
             via.snap_via_group = True
         c.write_xml(os.path.join(self.local_scratch.path, "test_138.xml"))
         c.import_options.import_dummy_nets = True
-        from pyedb import Edb
 
         edb = EdbLegacy(
             gds_out, edbversion=desktop_version, technology_file=os.path.join(self.local_scratch.path, "test_138.xml")

@@ -81,10 +81,8 @@ def Edb(
 
     """
 
-    os.environ["PYEDB_USE_LEGACY"] = "1"
-
-    # Use EDB legacy (not the default choice)
-    if bool(os.getenv("PYEDB_USE_LEGACY", "0")):
+    # Use EDB legacy (default choice)
+    if bool(os.getenv("PYEDB_USE_LEGACY", "1")):
         from pyedb.legacy.edb import EdbLegacy as app
         return app(
                 edbpath=edbpath,
