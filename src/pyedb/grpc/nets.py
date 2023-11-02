@@ -107,36 +107,6 @@ class EdbNets(object):
         return list(self.nets.keys())
 
     @property
-    def signal_nets(self):
-        """Signal nets.
-
-        .. deprecated:: 0.6.62
-           Use :func:`signal` instead.
-
-        Returns
-        -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.EDBNetsData`]
-            Dictionary of signal nets.
-        """
-        warnings.warn("Use :func:`signal` instead.", DeprecationWarning)
-        return self.signal
-
-    @property
-    def power_nets(self):
-        """Power nets.
-
-        .. deprecated:: 0.6.62
-           Use :func:`power` instead.
-
-        Returns
-        -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.EDBNetsData`]
-            Dictionary of power nets.
-        """
-        warnings.warn("Use :func:`power` instead.", DeprecationWarning)
-        return self.power
-
-    @property
     def signal(self):
         """Signal nets.
 

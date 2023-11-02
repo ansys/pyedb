@@ -3,15 +3,15 @@ import os
 import sys
 import ansys.edb
 
-from src.pyedb import __version__
-from src.pyedb.edb_logger import pyedb_logger
-from src.pyedb.generic.general_methods import settings
+from pyedb import __version__
+from pyedb.edb_logger import pyedb_logger
+from pyedb.generic.general_methods import settings
 from ansys.edb.session import launch_session
-from src.pyedb.misc.misc import list_installed_ansysem
-from src.pyedb.generic.general_methods import env_path
-from src.pyedb.generic.general_methods import env_path_student
-from src.pyedb.generic.general_methods import env_value
-from src.pyedb.generic.general_methods import is_linux
+from pyedb.misc.misc import list_installed_ansysem
+from pyedb.generic.general_methods import env_path
+from pyedb.generic.general_methods import env_path_student
+from pyedb.generic.general_methods import env_value
+from pyedb.generic.general_methods import is_linux
 
 
 class EdbGrpc(object):

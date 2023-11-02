@@ -50,7 +50,7 @@ class EdbLayout(object):
 
     @property
     def _active_layout(self):
-        return self._pedb.active_layout
+        return self._layout
 
     @property
     def _layout(self):
@@ -86,7 +86,7 @@ class EdbLayout(object):
             List of primitives.
         """
         _prims = []
-        if self._active_layout:
+        if self._layout:
             for lay_obj in self._layout.primitives:
                 _prims.append(cast(lay_obj, self._pedb))
         return _prims
@@ -116,7 +116,7 @@ class EdbLayout(object):
         """
         _prim_by_net = {}
         for net, net_obj in self._pedb.nets.nets.items():
-            _prim_by_net[net] = [cast(i, self._pedb) for i in net_obj.primitives]
+            _prim_by_net[net] = [i for i in net_obj.primitives]
         return _prim_by_net
 
     @property
@@ -132,7 +132,7 @@ class EdbLayout(object):
         for lay in self.layers:
             _primitives_by_layer[lay] = []
         for i in self._layout.primitives:
-            lay = i. layer.name
+            lay = i.layer.name
             if not lay:
                 continue
             _primitives_by_layer[lay].append(cast(i, self._pedb))
@@ -148,7 +148,7 @@ class EdbLayout(object):
             List of rectangles.
 
         """
-        return [i for i in self.primitives if isinstance(i, Rectangle)]
+        return [prim for prim in self.primitives if prim.type == "Rectangle"]
 
     @property
     def circles(self):
@@ -160,7 +160,7 @@ class EdbLayout(object):
             List of circles.
 
         """
-        return [i for i in self.primitives if isinstance(i, Circle)]
+        return [prim for prim in self.primitives if prim.type == "Circle"]
 
     @property
     def paths(self):
@@ -171,7 +171,7 @@ class EdbLayout(object):
         list of :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of paths.
         """
-        return [i for i in self.primitives if isinstance(i, Path)]
+        return [prim for prim in self.primitives if prim.type == "Path"]
 
     @property
     def bondwires(self):
@@ -182,7 +182,7 @@ class EdbLayout(object):
         list of :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of bondwires.
         """
-        return [i for i in self.primitives if isinstance(i, Bondwire)]
+        return [prim for prim in self.primitives if prim.type == "Bondwire"]
 
     @property
     def polygons(self):
@@ -193,7 +193,7 @@ class EdbLayout(object):
         list of :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of polygons.
         """
-        return [i for i in self.primitives if isinstance(i, Polygon)]
+        return [prim for prim in self.primitives if prim.type == "Polygon"]
 
     @pyedb_function_handler()
     def get_polygons_by_layer(self, layer_name, net_list=None):
