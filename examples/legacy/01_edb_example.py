@@ -29,7 +29,7 @@ aedt_file = targetfile[:-4] + "aedt"
 # Launch EDB
 # ~~~~~~~~~~
 # Launch the :class:`pyaedt.Edb` class, using EDB 2023 R2 and SI units.
-edb_version = "2023.1"
+edb_version = "2023.2"
 if os.path.exists(aedt_file):
     os.remove(aedt_file)
 edb = pyedb.Edb(edbpath=targetfile, edbversion=edb_version)
