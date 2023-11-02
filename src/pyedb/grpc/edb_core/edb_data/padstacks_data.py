@@ -3,9 +3,9 @@ import math
 import re
 import warnings
 
-from src.pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitivesMain
+from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitivesMain
 from ansys.edb.layer.layer import LayerType
-from src.pyedb.grpc.edb_core.edb_data.terminals import PadstackInstanceTerminal
+from pyedb.grpc.edb_core.edb_data.terminals import PadstackInstanceTerminal
 import ansys.edb.utility as utility
 import ansys.edb.geometry as geometry
 import ansys.edb.definition as definition
@@ -15,12 +15,12 @@ import ansys.edb.hierarchy as hierachy
 #from ansys.edb.geometry.point_data import PointData
 #from ansys.edb.database import ProductIdType
 #from ansys.edb.definition.padstack_def_data import PadType
-from src.pyedb.generic.general_methods import generate_unique_name
-from src.pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.general_methods import pyedb_function_handler
 #from ansys.edb.geometry.polygon_data import PolygonData
 #from ansys.edb.hierarchy import MeshClosure
 #from ansys.edb.definition.padstack_def_data import PadGeometryType
-from src.pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 class EDBPadProperties(object):

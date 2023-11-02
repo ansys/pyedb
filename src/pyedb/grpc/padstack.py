@@ -3,11 +3,11 @@ This module contains the `EdbPadstacks` class.
 """
 import math
 
-from src.pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstack
-from src.pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from src.pyedb.generic.general_methods import generate_unique_name
-from src.pyedb.generic.general_methods import pyedb_function_handler
-from src.pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstack
+from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.modeler.geometry_operators import GeometryOperators
 import ansys.edb.definition as definition
 import ansys.edb.utility as utility
 import ansys.edb.terminal as terminal

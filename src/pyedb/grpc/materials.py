@@ -5,7 +5,7 @@ import logging
 import warnings
 
 
-from src.pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
 import ansys.edb.definition as definition
 import ansys.edb.utility as utility
 #from ansys.edb.definition.material_def import MaterialDef

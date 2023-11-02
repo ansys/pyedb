@@ -4,12 +4,12 @@ import re
 import sys
 
 import xml.etree.cElementTree as ET
-from src.pyedb.generic.general_methods import env_path
-from src.pyedb.generic.general_methods import env_value
-from src.pyedb.generic.general_methods import pyedb_function_handler
-from src.pyedb.edb_logger import pyedb_logger
-from src.pyedb.misc.misc import list_installed_ansysem
-from src.pyedb.misc.aedtlib_personalib_install import write_pretty_xml
+from pyedb.generic.general_methods import env_path
+from pyedb.generic.general_methods import env_value
+from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.edb_logger import pyedb_logger
+from pyedb.misc.misc import list_installed_ansysem
+from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 
 import subprocess
 

@@ -11,12 +11,12 @@ import logging
 import math
 import re
 
-from src.pyedb.generic.general_methods import generate_unique_name
-from src.pyedb.grpc.edb_core.edb_data.layer_data import LayerEdbClass
-from src.pyedb.grpc.edb_core.edb_data.layer_data import StackupLayerEdbClass
-from src.pyedb.generic.general_methods import ET
-from src.pyedb.generic.general_methods import pyedb_function_handler
-from src.pyedb.misc.aedtlib_personalib_install import write_pretty_xml
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.grpc.edb_core.edb_data.layer_data import LayerEdbClass
+from pyedb.grpc.edb_core.edb_data.layer_data import StackupLayerEdbClass
+from pyedb.generic.general_methods import ET
+from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 import ansys.edb.layer.layer as layer
 import ansys.edb.layer.layer_collection as layer_collection
 import ansys.edb.layer.stackup_layer as stackup_layer

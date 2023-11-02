@@ -2,11 +2,11 @@ import logging
 import re
 import warnings
 
-from src.pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 import numpy as np
-from src.pyedb.generic.general_methods import get_filename_without_extension
-from src.pyedb.generic.general_methods import pyedb_function_handler
-from src.pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.general_methods import get_filename_without_extension
+from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.modeler.geometry_operators import GeometryOperators
 import ansys.edb.hierarchy as hierarchy
 import ansys.edb.utility as utility
 

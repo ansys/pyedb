@@ -13,23 +13,24 @@ import traceback
 import warnings
 
 
-import src.pyedb.grpc.edb_core.edb_data as edb_data
-from src.pyedb.grpc.grpc_init.database import EdbGrpc
+import pyedb.grpc.edb_core.edb_data as edb_data
+from pyedb.grpc.grpc_init.database import EdbGrpc
 import ansys.edb.database as database
-import src.pyedb.generic as generic
+import pyedb.generic as generic
+import ansys.edb.terminal as terminal
 
 
-from src.pyedb.grpc.components import Components
-from src.pyedb.grpc.edb_core.edb_data.control_file import ControlFile
-from src.pyedb.grpc.edb_core.edb_data.control_file import convert_technology_file
+from pyedb.grpc.components import Components
+from pyedb.grpc.edb_core.edb_data.control_file import ControlFile
+from pyedb.grpc.edb_core.edb_data.control_file import convert_technology_file
 #from pyedb.grpc.edb_core.edb_data.design_options import EdbDesignOptions
 #from pyedb.grpc.edb_core.edb_data.hfss_simulation_setup_data import HfssSimulationSetup
-#from pyedb.grpc.edb_core.edb_data.ports import BundleWavePort
-#from pyedb.grpc.edb_core.edb_data.ports import CoaxPort
-#from pyedb.grpc.edb_core.edb_data.ports import ExcitationProbes
-#from pyedb.grpc.edb_core.edb_data.ports import ExcitationSources
-#from pyedb.grpc.edb_core.edb_data.ports import GapPort
-#from pyedb.grpc.edb_core.edb_data.ports import WavePort
+from pyedb.grpc.edb_core.edb_data.ports import BundleWavePort
+from pyedb.grpc.edb_core.edb_data.ports import CoaxPort
+from pyedb.grpc.edb_core.edb_data.ports import ExcitationProbes
+from pyedb.grpc.edb_core.edb_data.ports import ExcitationSources
+from pyedb.grpc.edb_core.edb_data.ports import GapPort
+from pyedb.grpc.edb_core.edb_data.ports import WavePort
 #from pyedb.grpc.edb_core.edb_data.simulation_configuration import SimulationConfiguration
 #from pyedb.grpc.edb_core.edb_data.siwave_simulation_setup_data import SiwaveDCSimulationSetup
 #from pyedb.grpc.edb_core.edb_data.siwave_simulation_setup_data import SiwaveSYZSimulationSetup
@@ -40,26 +41,26 @@ from src.pyedb.grpc.edb_core.edb_data.control_file import convert_technology_fil
 #from pyedb.grpc.edb_core.edb_data.terminals import Terminal
 #from pyedb.grpc.edb_core.edb_data.variables import Variable
 #from pyedb.grpc.general import TerminalType
-#from pyedb.grpc.hfss import EdbHfss
-from src.pyedb.ipc2581.ipc2581 import Ipc2581
-#from pyedb.grpc.layout import EdbLayout
-from src.pyedb.grpc.materials import Materials
+from pyedb.grpc.hfss import EdbHfss
+from pyedb.ipc2581.ipc2581 import Ipc2581
+from pyedb.grpc.layout import EdbLayout
+from pyedb.grpc.materials import Materials
 #from pyedb.grpc.net_class import EdbDifferentialPairs
 #from pyedb.grpc.net_class import EdbExtendedNets
 #from pyedb.grpc.net_class import EdbNetClasses
-#from pyedb.grpc.nets import EdbNets
-from src.pyedb.grpc.padstack import EdbPadstacks
-#from pyedb.grpc.siwave import EdbSiwave
-from src.pyedb.grpc.stackup import Stackup
+from pyedb.grpc.nets import EdbNets
+from pyedb.grpc.padstack import EdbPadstacks
+from pyedb.grpc.siwave import EdbSiwave
+from pyedb.grpc.stackup import Stackup
 #from pyedb.generic.constants import AEDT_UNITS
 #from pyedb.generic.constants import SolverType
-from src.pyedb.generic.general_methods import generate_unique_name
-from src.pyedb.generic.general_methods import get_string_version
-from src.pyedb.generic.general_methods import inside_desktop
-from src.pyedb.generic.general_methods import is_linux
-from src.pyedb.generic.general_methods import is_windows
-from src.pyedb.generic.general_methods import pyedb_function_handler
-from src.pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.general_methods import get_string_version
+from pyedb.generic.general_methods import inside_desktop
+from pyedb.generic.general_methods import is_linux
+from pyedb.generic.general_methods import is_windows
+from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.modeler.geometry_operators import GeometryOperators
 #from pyedb.grpc.grpc_init.database import EdbGrpc as grpc
 #from ansys.edb.database import Database
 import subprocess
@@ -98,7 +99,7 @@ class Edb(EdbGrpc):
     --------
     Create an ``Edb`` object and a new EDB cell.
 
-    >>> from src.pyedb.grpc.edb import Edb
+    >>> from pyedb.grpc.edb import Edb
     >>> app = Edb()
 
     Add a new variable named "s1" to the ``Edb`` instance.
@@ -272,9 +273,9 @@ class Edb(EdbGrpc):
         self._stackup = Stackup(self)
         self._materials = Materials(self)
         self._padstack = EdbPadstacks(self)
-        #self._siwave = EdbSiwave(self)
-        #self._hfss = EdbHfss(self)
-        #self._nets = EdbNets(self)
+        self._siwave = EdbSiwave(self)
+        self._hfss = EdbHfss(self)
+        self._nets = EdbNets(self)
         #self._core_primitives = EdbLayout(self)
         #self._stackup2 = self._stackup
 
@@ -342,80 +343,80 @@ class Edb(EdbGrpc):
     #         all_vars[i] = j
     #     return all_vars
     #
-    # @property
-    # def terminals(self):
-    #     """Get terminals belonging to active layout."""
-    #     temp = {}
-    #     for i in self.layout.terminals:
-    #         terminal_type = i.ToString().split(".")[-1]
-    #         if terminal_type == TerminalType.EdgeTerminal.name:
-    #             ter = EdgeTerminal(self, i)
-    #         elif terminal_type == TerminalType.BundleTerminal.name:
-    #             ter = BundleTerminal(self, i)
-    #         elif terminal_type == TerminalType.PadstackInstanceTerminal.name:
-    #             ter = PadstackInstanceTerminal(self, i)
-    #         else:
-    #             ter = Terminal(self, i)
-    #         temp[ter.name] = ter
-    #
-    #     return temp
-    #
-    # @property
-    # def excitations(self):
-    #     """Get all layout excitations."""
-    #     terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) == 0]
-    #     temp = {}
-    #     for ter in terms:
-    #         if "BundleTerminal" in ter.GetType().ToString():
-    #             temp[ter.GetName()] = BundleWavePort(self, ter)
-    #         else:
-    #             temp[ter.GetName()] = GapPort(self, ter)
-    #     return temp
-    #
-    # @property
-    # def ports(self):
-    #     """Get all ports.
-    #
-    #     Returns
-    #     -------
-    #     Dict[str, [:class:`pyaedt.edb_core.edb_data.ports.GapPort`,
-    #                :class:`pyaedt.edb_core.edb_data.ports.WavePort`,]]
-    #
-    #     """
-    #     temp = [term for term in self.layout.terminals if not term.IsReferenceTerminal()]
-    #
-    #     ports = {}
-    #     for t in temp:
-    #         t2 = Terminal(self, t)
-    #         if t2.terminal_type == TerminalType.BundleTerminal.name:
-    #             bundle_ter = BundleWavePort(self, t)
-    #             ports[bundle_ter.name] = bundle_ter
-    #         elif t2.hfss_type == "Wave":
-    #             ports[t2.name] = WavePort(self, t)
-    #         elif t2.terminal_type == TerminalType.PadstackInstanceTerminal.name:
-    #             ports[t2.name] = CoaxPort(self, t)
-    #         else:
-    #             ports[t2.name] = GapPort(self, t)
-    #     return ports
-    #
-    # @property
-    # def excitations_nets(self):
-    #     """Get all excitations net names."""
-    #     names = list(set([i.GetNet().GetName() for i in self.layout.terminals]))
-    #     names = [i for i in names if i]
-    #     return names
-    #
-    # @property
-    # def sources(self):
-    #     """Get all layout sources."""
-    #     terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [3, 4, 7]]
-    #     return {ter.name: ExcitationSources(self, ter) for ter in terms}
-    #
-    # @property
-    # def probes(self):
-    #     """Get all layout sources."""
-    #     terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [8]]
-    #     return {ter.name: ExcitationProbes(self, ter) for ter in terms}
+    @property
+    def terminals(self):
+        """Get terminals belonging to active layout."""
+        temp = {}
+        for i in self.layout.terminals:
+            terminal_type = i.ToString().split(".")[-1]
+            if terminal_type == terminal.TerminalType.name:
+                ter = terminal.EdgeTerminal(self, i)
+            elif terminal_type == terminal.TerminalType.name:
+                ter = terminal.BundleTerminal(self, i)
+            elif terminal_type == terminal.TerminalType.name:
+                ter = terminal.PadstackInstanceTerminal(self, i)
+            else:
+                ter = terminal.Terminal(self, i)
+            temp[ter.name] = ter
+
+        return temp
+
+    @property
+    def excitations(self):
+        """Get all layout excitations."""
+        terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) == 0]
+        temp = {}
+        for ter in terms:
+            if "BundleTerminal" in ter.GetType().ToString():
+                temp[ter.GetName()] = BundleWavePort(self, ter)
+            else:
+                temp[ter.GetName()] = GapPort(self, ter)
+        return temp
+
+    @property
+    def ports(self):
+        """Get all ports.
+
+        Returns
+        -------
+        Dict[str, [:class:`pyaedt.edb_core.edb_data.ports.GapPort`,
+                   :class:`pyaedt.edb_core.edb_data.ports.WavePort`,]]
+
+        """
+        temp = [term for term in self.layout.terminals if not term.IsReferenceTerminal()]
+
+        ports = {}
+        for t in temp:
+            t2 = terminal.Terminal(self, t)
+            if t2.terminal_type == terminal.TerminalType.name:
+                bundle_ter = BundleWavePort(self, t)
+                ports[bundle_ter.name] = bundle_ter
+            elif t2.hfss_type == "Wave":
+                ports[t2.name] = WavePort(self, t)
+            elif t2.terminal_type == terminal.TerminalType.name:
+                ports[t2.name] = CoaxPort(self, t)
+            else:
+                ports[t2.name] = GapPort(self, t)
+        return ports
+
+    @property
+    def excitations_nets(self):
+        """Get all excitations net names."""
+        names = list(set([i.GetNet().GetName() for i in self.layout.terminals]))
+        names = [i for i in names if i]
+        return names
+
+    @property
+    def sources(self):
+        """Get all layout sources."""
+        terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [3, 4, 7]]
+        return {ter.name: ExcitationSources(self, ter) for ter in terms}
+
+    @property
+    def probes(self):
+        """Get all layout sources."""
+        terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [8]]
+        return {ter.name: ExcitationProbes(self, ter) for ter in terms}
 
     @pyedb_function_handler()
     def open_edb(self):
@@ -529,6 +530,76 @@ class Edb(EdbGrpc):
         if not self._padstack and self.active_db:
             self._padstack = EdbPadstacks(self)
         return self._padstack
+
+    @property
+    def siwave(self):
+        """Core SIWave methods and properties.
+
+        Returns
+        -------
+        Instance of :class: `pyaedt.edb_core.siwave.EdbSiwave`
+
+        Examples
+        --------
+        >>> edbapp = Edb("myproject.aedb")
+        >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
+        """
+        if not self._siwave and self.active_db:
+            self._siwave = EdbSiwave(self)
+        return self._siwave
+
+    @property
+    def hfss(self):
+        """Core HFSS methods and properties.
+
+        Returns
+        -------
+        :class:`pyaedt.edb_core.hfss.EdbHfss`
+
+        Examples
+        --------
+        >>> edbapp = pyaedt.Edb("myproject.aedb")
+        >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
+        """
+        if not self._hfss and self.active_db:
+            self._hfss = EdbHfss(self)
+        return self._hfss
+
+    @property
+    def nets(self):
+        """Core nets.
+
+        Returns
+        -------
+        :class:`pyaedt.edb_core.nets.EdbNets`
+
+        Examples
+        --------
+        >>> edbapp = pyaedt.Edb("myproject.aedb")
+        >>> edbapp.nets.find_or_create_net("GND")
+        >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
+        """
+
+        if not self._nets and self.active_db:
+            self._nets = EdbNets(self)
+        return self._nets
+
+    @property
+    def modeler(self):
+        """Core primitives modeler.
+
+        Returns
+        -------
+        Instance of :class: `pyaedt.edb_core.layout.EdbLayout`
+
+        Examples
+        --------
+        >>> edbapp = pyedb.Edb("myproject.aedb")
+        >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
+        """
+        if not self._core_primitives and self.active_db:
+            self._core_primitives = EdbLayout(self)
+        return self._core_primitives
 
     # @pyedb_function_handler()
     # def open_edb_inside_aedt(self):
@@ -740,58 +811,11 @@ class Edb(EdbGrpc):
     #
 
     #
-    # @property
-    # def siwave(self):
-    #     """Core SIWave methods and properties.
+
     #
-    #     Returns
-    #     -------
-    #     Instance of :class: `pyaedt.edb_core.siwave.EdbSiwave`
+
     #
-    #     Examples
-    #     --------
-    #     >>> edbapp = pyaedt.Edb("myproject.aedb")
-    #     >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
-    #     """
-    #     if not self._siwave and self.active_db:
-    #         self._siwave = EdbSiwave(self)
-    #     return self._siwave
-    #
-    # @property
-    # def hfss(self):
-    #     """Core HFSS methods and properties.
-    #
-    #     Returns
-    #     -------
-    #     :class:`pyaedt.edb_core.hfss.EdbHfss`
-    #
-    #     Examples
-    #     --------
-    #     >>> edbapp = pyaedt.Edb("myproject.aedb")
-    #     >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
-    #     """
-    #     if not self._hfss and self.active_db:
-    #         self._hfss = EdbHfss(self)
-    #     return self._hfss
-    #
-    # @property
-    # def nets(self):
-    #     """Core nets.
-    #
-    #     Returns
-    #     -------
-    #     :class:`pyaedt.edb_core.nets.EdbNets`
-    #
-    #     Examples
-    #     --------
-    #     >>> edbapp = pyaedt.Edb("myproject.aedb")
-    #     >>> edbapp.nets.find_or_create_net("GND")
-    #     >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
-    #     """
-    #
-    #     if not self._nets and self.active_db:
-    #         self._nets = EdbNets(self)
-    #     return self._nets
+
     #
     # @property
     # def extended_nets(self):
@@ -828,22 +852,7 @@ class Edb(EdbGrpc):
     #     else:  # pragma: no cover
     #         return
     #
-    # @property
-    # def modeler(self):
-    #     """Core primitives modeler.
-    #
-    #     Returns
-    #     -------
-    #     Instance of :class: `pyaedt.edb_core.layout.EdbLayout`
-    #
-    #     Examples
-    #     --------
-    #     >>> edbapp = pyedb.Edb("myproject.aedb")
-    #     >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
-    #     """
-    #     if not self._core_primitives and self.active_db:
-    #         self._core_primitives = EdbLayout(self)
-    #     return self._core_primitives
+
     #
     @property
     def layout(self):

@@ -2,16 +2,17 @@ import math
 
 import ansys.edb.primitive as primitive
 import ansys.edb.utility as utility
-#from ansys.edb.primitive.primitive import Bondwire
-#from ansys.edb.primitive.primitive import Circle
-#from ansys.edb.primitive.primitive import Path
-#from ansys.edb.primitive.primitive import Polygon
-#from ansys.edb.primitive.primitive import Rectangle
-#from ansys.edb.primitive.primitive import Text
-#from ansys.edb.primitive.primitive import PrimitiveType
-#from ansys.edb.utility.value import Value
-from src.pyedb.generic.general_methods import pyedb_function_handler
-from src.pyedb.modeler.geometry_operators import GeometryOperators
+import ansys.edb.net as net
+# from ansys.edb.primitive.primitive import Bondwire
+# from ansys.edb.primitive.primitive import Circle
+# from ansys.edb.primitive.primitive import Path
+# from ansys.edb.primitive.primitive import Polygon
+# from ansys.edb.primitive.primitive import Rectangle
+# from ansys.edb.primitive.primitive import Text
+# from ansys.edb.primitive.primitive import PrimitiveType
+# from ansys.edb.utility.value import Value
+from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 def cast(raw_primitive, core_app):
@@ -22,17 +23,17 @@ def cast(raw_primitive, core_app):
     Primitive
     """
     if isinstance(raw_primitive, primitive.Rectangle):
-        return EdbRectangle(raw_primitive.prim_obj, core_app)
+        return EdbRectangle(raw_primitive, core_app)
     elif isinstance(raw_primitive, primitive.Polygon):
-        return EdbPolygon(raw_primitive.prim_obj, core_app)
+        return EdbPolygon(raw_primitive, core_app)
     elif isinstance(raw_primitive, primitive.Path):
-        return EdbPath(raw_primitive.prim_obj, core_app)
+        return EdbPath(raw_primitive, core_app)
     elif isinstance(raw_primitive, primitive.Bondwire):
-        return EdbBondwire(raw_primitive.prim_obj, core_app)
+        return EdbBondwire(raw_primitive, core_app)
     elif isinstance(raw_primitive, primitive.Text):
-        return EdbText(raw_primitive.prim_obj, core_app)
+        return EdbText(raw_primitive, core_app)
     elif isinstance(raw_primitive, primitive.Circle):
-        return EdbCircle(raw_primitive.prim_obj, core_app)
+        return EdbCircle(raw_primitive, core_app)
     else:
         try:
             prim_type = raw_primitive.primitive_type
@@ -60,7 +61,7 @@ class EDBPrimitivesMain:
 
     Examples
     --------
-    >>> from src.pyedb.grpc.edb import Edb
+    >>> from pyedb.grpc.edb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_prim = edb.modeler.primitives[0]
     >>> edb_prim.is_void # Class Property
@@ -68,12 +69,12 @@ class EDBPrimitivesMain:
     """
 
     def __init__(self, raw_primitive, core_app):
-        #super().__init__(core_app, raw_primitive)
-        #self._app = self._pedb
+        # super().__init__(core_app, raw_primitive)
+        # self._app = self._pedb
         self._app = core_app
         self._stackup = core_app.stackup
-        #self._net = core_app.nets
-        #self.primitive_object = self._edb_object
+        self._net = core_app.nets
+        # self.primitive_object = self._edb_object
         self.primitive_object = raw_primitive
         self._edb_object = raw_primitive
         self._layer = None
@@ -91,8 +92,23 @@ class EDBPrimitivesMain:
         types = ["CIRCLE", "PATH", "POLYGON", "RECTANGLE", "BONDWIRE"]
         str_type = str(self.primitive_object.primitive_type).split(".")
         if str_type[-1] in types:
-            return f"{str_type[-1][0]}{str_type[-1][:1].lower()}"
+            return f"{str_type[-1][0]}{str_type[-1][1:].lower()}"
         return None
+
+    @property
+    def net(self):
+        return self._edb_object.net
+
+    @net.setter
+    def net(self, value):
+        if isinstance(value, net.Net):
+            self._edb_object.net = value
+        elif isinstance(value, str):
+            layout_net = net.Net.find_by_name(self._app.layout, value)
+            if not layout_net.is_null:
+                self._edb_object.net = layout_net
+            else:
+                self._edb_object.net = net.Net.create(self._app.layout, value)
 
     @property
     def net_name(self):
@@ -201,6 +217,13 @@ class EDBPrimitives(EDBPrimitivesMain):
             for el in self.primitive_object.voids:
                 area -= el.polygon_data.area
         return area
+
+    @property
+    def polygon_data(self):
+        if self.primitive_object.primitive_type.name == "PATH":
+            return self.primitive_object.center_line
+        else:
+            return self.primitive_object.polygon_data
 
     @property
     def is_negative(self):
@@ -328,7 +351,7 @@ class EDBPrimitives(EDBPrimitivesMain):
             [lower_left x, lower_left y, upper right x, upper right y]
 
         """
-        bbox = self.polygon_data.bbox
+        bbox = self.polygon_data.bbox()
         return [bbox[0].x.value, bbox[0].y.value, bbox[1].x.value, bbox[1].y.value]
 
     @property
@@ -655,7 +678,7 @@ class EDBPrimitives(EDBPrimitivesMain):
     @property
     def arcs(self):
         """Get the Primitive Arc Data."""
-        arcs = [EDBArcs(self, i) for i in self.polygon_data.arcs]
+        arcs = [EDBArcs(self, i) for i in self.polygon_data.arc_data]
         return arcs
 
     @property
@@ -695,13 +718,13 @@ class EdbPath(EDBPrimitives):
             Path width or None.
         """
         if self.type == "Path":
-            return self.primitive_object.width
+            return self.primitive_object.width.value
         return
 
     @width.setter
     def width(self, value):
         if self.type == "Path":
-            self.primitive_object.width = Value(value).value
+            self.primitive_object.width = utility.Value(value)
 
     @property
     def length(self):
@@ -766,14 +789,14 @@ class EdbPath(EDBPrimitives):
     # @pyedb_function_handler()
     @pyedb_function_handler
     def create_edge_port(
-        self,
-        name,
-        position="End",
-        port_type="Wave",
-        reference_layer=None,
-        horizontal_extent_factor=5,
-        vertical_extent_factor=3,
-        pec_launch_width="0.01mm",
+            self,
+            name,
+            position="End",
+            port_type="Wave",
+            reference_layer=None,
+            horizontal_extent_factor=5,
+            vertical_extent_factor=3,
+            pec_launch_width="0.01mm",
     ):
         """
 
@@ -856,9 +879,9 @@ class EdbPolygon(EDBPrimitives):
 
     @pyedb_function_handler()
     def in_polygon(
-        self,
-        point_data,
-        include_partial=True,
+            self,
+            point_data,
+            include_partial=True,
     ):
         """Check if padstack Instance is in given polygon data.
 
@@ -875,7 +898,7 @@ class EdbPolygon(EDBPrimitives):
         """
         if isinstance(point_data, list):
             point_data = self._app.geometry.point_data(Value(point_data[0]), Value(point_data[1])
-            )
+                                                       )
         int_val = int(self.polygon_data.in_polygon(point_data))
 
         # Intersection type:
@@ -1004,7 +1027,8 @@ class EDBArcs(object):
         -------
         float
         """
-        return self.arc_object.mid_point
+        mid_point = self.arc_object.midpoint
+        return [mid_point.x.value, mid_point.y.value]
 
     @property
     def radius(self):
@@ -1024,7 +1048,7 @@ class EDBArcs(object):
         -------
         bool
         """
-        return self.arc_object.is_segment
+        return self.arc_object.is_segment()
 
     @property
     def is_point(self):
@@ -1034,7 +1058,7 @@ class EDBArcs(object):
         -------
         bool
         """
-        return self.arc_object.is_point
+        return self.arc_object.is_point()
 
     @property
     def is_ccw(self):
@@ -1044,7 +1068,7 @@ class EDBArcs(object):
         -------
         bool
         """
-        return self.arc_object.is_ccw
+        return self.arc_object.is_ccw()
 
     @property
     def points_raw(self):
