@@ -35,7 +35,7 @@ class TestClass:
         assert os.path.exists(xml_file)
         edbapp.close()
 
-    def test_146_export_ipc_1(self):
+    def test_export_to_ipc2581_1(self):
         """Export of a loaded aedb file to an XML IPC2581 file"""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_ipc", "ANSYS-HSD_V1_boundaries.aedb")
