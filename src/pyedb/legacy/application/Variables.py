@@ -20,7 +20,7 @@ import os
 import re
 import types
 
-from pyedb import pyedb_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.generic.constants import AEDT_UNITS
 from pyedb.generic.constants import SI_UNITS
 from pyedb.generic.constants import _resolve_unit_system
