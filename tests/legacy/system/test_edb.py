@@ -494,6 +494,8 @@ class TestClass:
         gap_port.name = "gap_port"
         assert gap_port.name == "gap_port"
         assert isinstance(gap_port.renormalize_z0, tuple)
+        gap_port.is_circuit_port = True
+        assert gap_port.is_circuit_port
         edb.close()
 
     def test_create_dc_simulation(self):
