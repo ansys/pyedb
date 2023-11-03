@@ -24,7 +24,6 @@ from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data import HfssSimulationSetup
 from pyedb.legacy.edb_core.edb_data.ports import BundleWavePort
 from pyedb.legacy.edb_core.edb_data.ports import CoaxPort
-from pyedb.legacy.edb_core.edb_data.ports import ExcitationProbes
 from pyedb.legacy.edb_core.edb_data.ports import ExcitationSources
 from pyedb.legacy.edb_core.edb_data.ports import GapPort
 from pyedb.legacy.edb_core.edb_data.ports import WavePort
@@ -35,8 +34,10 @@ from pyedb.legacy.edb_core.edb_data.sources import SourceType
 from pyedb.legacy.edb_core.edb_data.terminals import BundleTerminal
 from pyedb.legacy.edb_core.edb_data.terminals import EdgeTerminal
 from pyedb.legacy.edb_core.edb_data.terminals import PadstackInstanceTerminal
+from pyedb.legacy.edb_core.edb_data.terminals import PinGroupTerminal
 from pyedb.legacy.edb_core.edb_data.terminals import Terminal
 from pyedb.legacy.edb_core.edb_data.variables import Variable
+from pyedb.legacy.edb_core.general import BoundaryType
 from pyedb.legacy.edb_core.general import LayoutObjType
 from pyedb.legacy.edb_core.general import Primitives
 from pyedb.legacy.edb_core.general import TerminalType
@@ -365,6 +366,8 @@ class EdbLegacy(Database):
                 ter = BundleTerminal(self, i)
             elif terminal_type == TerminalType.PadstackInstanceTerminal.name:
                 ter = PadstackInstanceTerminal(self, i)
+            elif terminal_type == TerminalType.PinGroupTerminal.name:
+                ter = PinGroupTerminal(self, i)
             else:
                 ter = Terminal(self, i)
             temp[ter.name] = ter
@@ -425,9 +428,13 @@ class EdbLegacy(Database):
     @property
     def probes(self):
         """Get all layout sources."""
-        terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [8]]
-        return {ter.GetName(): ExcitationProbes(self, ter) for ter in terms}
-
+        temp = {}
+        for name, val in self.terminals.items():
+            if val.boundary_type == BoundaryType.kVoltageProbe.name:
+                if not val.is_reference_terminal:
+                    temp[name] = val
+        return temp
+    
     @pyedb_function_handler()
     def open_edb(self):
         """Open EDB.
