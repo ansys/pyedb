@@ -23,6 +23,7 @@ from pyedb.legacy.edb_core.edb_data.design_options import EdbDesignOptions
 from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data import HfssSimulationSetup
 from pyedb.legacy.edb_core.edb_data.ports import BundleWavePort
+from pyedb.legacy.edb_core.edb_data.ports import CircuitPort
 from pyedb.legacy.edb_core.edb_data.ports import CoaxPort
 from pyedb.legacy.edb_core.edb_data.ports import ExcitationSources
 from pyedb.legacy.edb_core.edb_data.ports import GapPort
@@ -401,9 +402,12 @@ class EdbLegacy(Database):
         ports = {}
         for t in temp:
             t2 = Terminal(self, t)
-            if t2.terminal_type == TerminalType.BundleTerminal.name:
-                bundle_ter = BundleWavePort(self, t)
-                ports[bundle_ter.name] = bundle_ter
+            if t2.is_circuit_port:
+                port = CircuitPort(self, t)
+                ports[port.name] = port
+            elif t2.terminal_type == TerminalType.BundleTerminal.name:
+                port = BundleWavePort(self, t)
+                ports[port.name] = port
             elif t2.hfss_type == "Wave":
                 ports[t2.name] = WavePort(self, t)
             elif t2.terminal_type == TerminalType.PadstackInstanceTerminal.name:
@@ -3638,3 +3642,35 @@ class EdbLegacy(Database):
                                             ):
                                                 connected_ports_list.append((port1_connexion, port2_connexion))
             return connected_ports_list
+
+    @pyedb_function_handler
+    def create_port(self, terminal, ref_terminal=None, is_circuit_port=False):
+        """Create a port between two terminals.
+        Parameters
+        ----------
+        terminal : class:`pyaedt.edb_core.edb_data.terminals.EdgeTerminal`,
+                   class:`pyaedt.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+                   class:`pyaedt.edb_core.edb_data.terminals.PointTerminal`,
+                   class:`pyaedt.edb_core.edb_data.terminals.PinGroupTerminal`,
+            Positive terminal of the port.
+        ref_terminal : class:`pyaedt.edb_core.edb_data.terminals.EdgeTerminal`,
+                   class:`pyaedt.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+                   class:`pyaedt.edb_core.edb_data.terminals.PointTerminal`,
+                   class:`pyaedt.edb_core.edb_data.terminals.PinGroupTerminal`,
+                   optional
+            Negative terminal of the port.
+        is_circuit_port : bool, optional
+            Whether it is a circuit port. The default is ``False``.
+        Returns
+        -------
+        """
+        if not ref_terminal:
+            port = CoaxPort(self, terminal._edb_object)
+        else:
+            if is_circuit_port:
+                port = CircuitPort(self, terminal._edb_object)
+            else:
+                port = GapPort(self, terminal._edb_object)
+            port.ref_terminal = ref_terminal
+            port.is_circuit_port = is_circuit_port
+        return port
