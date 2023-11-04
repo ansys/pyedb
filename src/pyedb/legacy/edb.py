@@ -1591,6 +1591,7 @@ class EdbLegacy(Database):
         maximum_iterations=10,
         preserve_components_with_model=False,
         simple_pad_check=True,
+        keep_lines_as_path=False,
     ):
         """Create a cutout using an approach entirely based on PyAEDT.
         This method replaces all legacy cutout methods in PyAEDT.
@@ -1662,6 +1663,11 @@ class EdbLegacy(Database):
             Whether to use the center of the pad to find the intersection with extent or use the bounding box.
             Second method is much slower and requires to disable multithread on padstack removal.
             Default is `True`.
+        keep_lines_as_path : bool, optional
+            Whether to keep the lines as Path after they are cutout or convert them to PolygonData.
+            This feature works only in Electronics Desktop (3D Layout).
+            If the flag is set to ``True`` it can cause issues in SiWave once the Edb is imported.
+            Default is ``False`` to generate PolygonData of cut lines.
 
         Returns
         -------
@@ -1751,6 +1757,7 @@ class EdbLegacy(Database):
                         preserve_components_with_model=preserve_components_with_model,
                         include_partial=include_partial_instances,
                         simple_pad_check=simple_pad_check,
+                        keep_lines_as_path=keep_lines_as_path,
                     )
                     if self.are_port_reference_terminals_connected():
                         if output_aedb_path:
@@ -1790,6 +1797,7 @@ class EdbLegacy(Database):
                     preserve_components_with_model=preserve_components_with_model,
                     include_partial=include_partial_instances,
                     simple_pad_check=simple_pad_check,
+                    keep_lines_as_path=keep_lines_as_path,
                 )
             if result and not open_cutout_at_end and self.edbpath != legacy_path:
                 self.save_edb()
@@ -1995,6 +2003,7 @@ class EdbLegacy(Database):
         preserve_components_with_model=False,
         include_partial=False,
         simple_pad_check=True,
+        keep_lines_as_path=False,
     ):
         if is_ironpython:  # pragma: no cover
             self.logger.error("Method working only in Cpython")
@@ -2032,6 +2041,7 @@ class EdbLegacy(Database):
                 i.net_object.Delete()
         reference_pinsts = []
         reference_prims = []
+        reference_paths = []
         for i in self.padstacks.instances.values():
             net_name = i.net_name
             id = i.id
@@ -2045,7 +2055,10 @@ class EdbLegacy(Database):
                 if net_name not in all_list:
                     i.delete()
                 elif net_name in reference_list and not i.is_void:
-                    reference_prims.append(i)
+                    if keep_lines_as_path and i.type == "Path":
+                        reference_paths.append(i)
+                    else:
+                        reference_prims.append(i)
         self.logger.info_timer("Net clean up")
         self.logger.reset_timer()
 
@@ -2093,6 +2106,17 @@ class EdbLegacy(Database):
         def subtract(poly, voids):
             return poly.Subtract(convert_py_list_to_net_list(poly), convert_py_list_to_net_list(voids))
 
+        def clip_path(path):
+            pdata = path.polygon_data.edb_api
+            int_data = _poly.GetIntersectionType(pdata)
+            if int_data == 0:
+                prims_to_delete.append(path)
+                return
+            result = path._edb_object.SetClipInfo(_poly, True)
+            if not result:
+                self.logger.info("Failed to clip path {}. Clipping as polygon.".format(path.id))
+                reference_prims.append(path)
+
         def clean_prim(prim_1):  # pragma: no cover
             pdata = prim_1.polygon_data.edb_api
             int_data = _poly.GetIntersectionType(pdata)
@@ -2138,6 +2162,11 @@ class EdbLegacy(Database):
         self.logger.info_timer("Padstack Instances removal completed")
         self.logger.reset_timer()
 
+        # with ThreadPoolExecutor(number_of_threads) as pool:
+        #     pool.map(lambda item: clip_path(item), reference_paths)
+
+        for item in reference_paths:
+            clip_path(item)
         with ThreadPoolExecutor(number_of_threads) as pool:
             pool.map(lambda item: clean_prim(item), reference_prims)
 
@@ -2146,6 +2175,7 @@ class EdbLegacy(Database):
 
         for prim in prims_to_delete:
             prim.delete()
+
         self.logger.info_timer("Primitives cleanup completed")
         self.logger.reset_timer()
 
@@ -2181,6 +2211,7 @@ class EdbLegacy(Database):
         remove_single_pin_components=False,
         use_pyaedt_extent_computing=False,
         extent_defeature=0,
+        keep_lines_as_path=False,
     ):
         """Create a cutout using an approach entirely based on legacy.
         It does in sequence:
@@ -2221,6 +2252,11 @@ class EdbLegacy(Database):
         extent_defeature : float, optional
             Defeature the cutout before applying it to produce simpler geometry for mesh (Experimental).
             It applies only to Conforming bounding box. Default value is ``0`` which disable it.
+        keep_lines_as_path : bool, optional
+            Whether to keep the lines as Path after they are cutout or convert them to PolygonData.
+            This feature works only in Electronics Desktop (3D Layout).
+            If the flag is set to True it can cause issues in SiWave once the Edb is imported.
+            Default is ``False`` to generate PolygonData of cut lines.
 
         Returns
         -------
@@ -2260,6 +2296,7 @@ class EdbLegacy(Database):
             remove_single_pin_components=remove_single_pin_components,
             use_pyaedt_extent_computing=use_pyaedt_extent_computing,
             extent_defeature=extent_defeature,
+            keep_lines_as_path=keep_lines_as_path,
         )
 
     @pyedb_function_handler()
