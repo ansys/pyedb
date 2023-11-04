@@ -85,15 +85,24 @@ class TestClass:
         )
 
         self.edbapp.siwave.create_pin_group(
-            reference_designator="U1", pin_numbers=["A14", "A15"], group_name="sink_pos"
+            reference_designator="U1", pin_numbers=["R23", "P23"], group_name="sink_pos"
         )
 
         # TODO: Moves this piece of code in another place
         assert self.edbapp.siwave.create_voltage_source_on_pin_group("sink_pos", "gnd", name="vrm_voltage_source")
         self.edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["A27", "A28"], group_name="vp_pos")
-        self.edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["A14", "A15"], group_name="vp_neg")
+        self.edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["R23", "P23"], group_name="vp_neg")
         assert self.edbapp.siwave.create_voltage_probe_on_pin_group("vprobe", "vp_pos", "vp_neg")
         assert self.edbapp.probes["vprobe"]
+        self.edbapp.siwave.place_voltage_probe(
+            "vprobe_2", "1V0", ["112mm", "24mm"], "1_Top", "GND", ["112mm", "27mm"], "Inner1(GND1)"
+        )
+        vprobe_2 = self.edbapp.probes["vprobe_2"]
+        ref_term = vprobe_2.ref_terminal
+        assert isinstance(ref_term.location, list)
+        ref_term.location = [0, 0]
+        assert ref_term.layer
+        ref_term.layer = "1_Top"
 
     def test_siwave_create_dc_terminal(self):
         """Create a DC terminal."""
@@ -215,16 +224,26 @@ class TestClass:
         edbapp.nets.nets
         assert edbapp.cutout(
             signal_list=["1V0"],
-            reference_list=["GND"],
+            reference_list=[
+                "GND",
+                "LVDS_CH08_N",
+                "LVDS_CH08_P",
+                "LVDS_CH10_N",
+                "LVDS_CH10_P",
+                "LVDS_CH04_P",
+                "LVDS_CH04_N",
+            ],
             extent_type="Bounding",
             number_of_threads=4,
             extent_defeature=0.001,
             preserve_components_with_model=True,
+            keep_lines_as_path=True,
         )
         assert "A0_N" not in edbapp.nets.nets
         assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", order_by_area=True), list)
         assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True), list)
         assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
+
         edbapp.close()
 
     def test_create_custom_cutout_2(self):
@@ -485,6 +504,8 @@ class TestClass:
         gap_port.name = "gap_port"
         assert gap_port.name == "gap_port"
         assert isinstance(gap_port.renormalize_z0, tuple)
+        gap_port.is_circuit_port = True
+        assert gap_port.is_circuit_port
         edb.close()
 
     def test_create_dc_simulation(self):
@@ -652,6 +673,8 @@ class TestClass:
         port_ver = edb.ports["port_ver"]
         assert not port_ver.is_null
         assert port_ver.hfss_type == "Gap"
+        port_hori = edb.ports["port_hori"]
+        assert port_hori.ref_terminal
 
         args = {
             "layer_name": "1_Top",
@@ -1028,7 +1051,7 @@ class TestClass:
         assert setup1.refine_bondwires
         assert setup1.refine_vias
 
-    def test_131_siwave_ac_simulation_setup(self):
+    def test_siwave_ac_simulation_setup(self):
         """Create an ac simulation setup and evaluate its properties."""
         setup1 = self.edbapp.create_siwave_syz_setup("AC1")
         assert setup1.name == "AC1"
@@ -1100,6 +1123,12 @@ class TestClass:
         assert sweep.save_rad_fields_only
         assert sweep.use_q3d_for_dc
 
+        setup1.pi_slider_postion = 0
+        setup1.pi_slider_postion = 1
+        setup1.pi_slider_postion = 2
+        setup1.si_slider_postion = 0
+        setup1.si_slider_postion = 1
+        setup1.si_slider_postion = 2
         assert setup1.automatic_mesh
         assert setup1.enabled
         assert setup1.dc_settings
@@ -1112,16 +1141,14 @@ class TestClass:
         assert setup1.include_trace_coupling
         assert not setup1.include_vi_sources
         assert setup1.infinite_ground_location == "0"
-        assert setup1.max_coupled_lines == 12
+        assert setup1.max_coupled_lines == 40
         assert setup1.mesh_frequency == "4GHz"
         assert setup1.min_pad_area_to_mesh == "1mm2"
         assert setup1.min_plane_area_to_mesh == "6.25e-6mm2"
         assert setup1.min_void_area == "2mm2"
         assert setup1.name == "AC1"
         assert setup1.perform_erc
-        assert setup1.pi_slider_postion == 1
-        assert setup1.si_slider_postion == 1
-        assert not setup1.return_current_distribution
+        assert setup1.return_current_distribution
         assert setup1.snap_length_threshold == "2.5um"
         assert setup1.use_si_settings
         assert setup1.use_custom_settings
@@ -1146,8 +1173,6 @@ class TestClass:
         setup1.min_void_area = "1mm2"
         setup1.name = "AC2"
         setup1.perform_erc = False
-        setup1.pi_slider_postion = 0
-        setup1.si_slider_postion = 2
         setup1.return_current_distribution = True
         setup1.snap_length_threshold = "3.5um"
         setup1.use_si_settings = False
@@ -1172,8 +1197,6 @@ class TestClass:
         assert setup1.min_void_area == "1mm2"
         assert setup1.name == "AC2"
         assert not setup1.perform_erc
-        assert setup1.pi_slider_postion == 0
-        assert setup1.si_slider_postion == 2
         assert setup1.return_current_distribution
         assert setup1.snap_length_threshold == "3.5um"
         assert not setup1.use_si_settings
@@ -1201,6 +1224,14 @@ class TestClass:
         edbapp.siwave.create_port_between_pin_and_layer(
             component_name="U1", pins_name="A27", layer_name="16_Bottom", reference_net="GND"
         )
+        U7 = edbapp.components["U7"]
+        U7.pins["G7"].create_port()
+        port = U7.pins["F7"].create_port(reference=U7.pins["E7"])
+        port.is_circuit_port = True
+        _, pin_group = edbapp.siwave.create_pin_group_on_net(
+            reference_designator="U7", net_name="GND", group_name="U7_GND"
+        )
+        U7.pins["F7"].create_port(reference=pin_group)
         edbapp.close()
 
     def test_siwave_source_setter(self):
