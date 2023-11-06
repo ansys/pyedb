@@ -100,7 +100,7 @@ class TestClass:
         assert "RST4000" == self.edbapp.siwave.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")
 
     def test_siwave_add_syz_analsyis(self):
-        """Add a sywave AC analysis."""
+        """Add a sywave SYZ analysis."""
         assert self.edbapp.siwave.add_siwave_syz_analysis()
 
     def test_siwave_add_dc_analysis(self):

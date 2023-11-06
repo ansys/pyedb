@@ -19,6 +19,7 @@ import ansys.edb.database as database
 import ansys.edb.layout_instance as layout_instance
 import pyedb.generic as generic
 import ansys.edb.terminal as terminal
+import ansys.edb.simulation_setup as simulation_setup
 
 from pyedb.grpc.components import Components
 from pyedb.grpc.edb_core.edb_data.control_file import ControlFile
@@ -3012,14 +3013,14 @@ class EdbGrpc(EdbInit):
         Dict[str, :class:`pyaedt.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
 
         """
-        for i in list(self.active_cell.SimulationSetups):
-            if i.GetName() not in self._setups:
-                if i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kHFSS:
-                    self._setups[i.GetName()] = HfssSimulationSetup(self, i.GetName(), i)
-                elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWave:
-                    self._setups[i.GetName()] = SiwaveSYZSimulationSetup(self, i.GetName(), i)
-                elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWaveDCIR:
-                    self._setups[i.GetName()] = SiwaveDCSimulationSetup(self, i.GetName(), i)
+        for i in self.active_cell.simulation_setups:
+            if i.name not in self._setups:
+                if i.type == simulation_setup.SimulationSetupType.HFSS:
+                    self._setups[i.name] = HfssSimulationSetup(self, i.name, i)
+                elif i.type == simulation_setup.SimulationSetupType.SI_WAVE:
+                    self._setups[i.name] = SiwaveSYZSimulationSetup(self, i.name, i)
+                elif i.type == simulation_setup.SimulationSetupType.SI_WAVE_DCIR:
+                    self._setups[i.name] = SiwaveDCSimulationSetup(self, i.name, i)
         return self._setups
 
     @property
