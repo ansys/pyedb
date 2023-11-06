@@ -332,6 +332,22 @@ class EDBComponent(object):
         return 2
 
     @property
+    def name(self):
+        """Component name, same as reference designator.
+
+        Returns
+        -------
+        str
+            Reference designator name.
+        """
+        return self.refdes
+
+    @name.setter
+    def name(self, name):
+        if isinstance(name, str):
+            self.edbcomponent.name = name
+
+    @property
     def refdes(self):
         """Reference Designator Name.
 
