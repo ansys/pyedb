@@ -14,8 +14,10 @@ import os
 import time
 import pyedb
 from pyedb.legacy.downloads import download_file
+from pyedb.generic.general_methods import generate_unique_folder_name
 
-temp_folder = pyedb.generate_unique_folder_name()
+
+temp_folder = generate_unique_folder_name()
 targetfile = download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
 
 siwave_file = os.path.join(os.path.dirname(targetfile), "ANSYS-HSD_V1.siw")
@@ -27,7 +29,7 @@ aedt_file = targetfile[:-4] + "aedt"
 # Launch EDB
 # ~~~~~~~~~~
 # Launch the :class:`pyaedt.Edb` class, using EDB 2023 R2 and SI units.
-edb_version = "2023.1"
+edb_version = "2023.2"
 if os.path.exists(aedt_file):
     os.remove(aedt_file)
 edb = pyedb.Edb(edbpath=targetfile, edbversion=edb_version)

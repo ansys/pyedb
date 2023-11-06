@@ -11,13 +11,14 @@ This example shows how you can use the ``Edb`` class to plot a net or a layout.
 
 import pyedb
 from pyedb.legacy.downloads import download_file
+from pyedb.generic.general_methods import generate_unique_folder_name
 
 ###############################################################################
 # Download file
 # ~~~~~~~~~~~~~
 # Download the AEDT file and copy it into the temporary folder.
 
-temp_folder = pyedb.generate_unique_folder_name()
+temp_folder = generate_unique_folder_name()
 
 targetfolder = download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
 

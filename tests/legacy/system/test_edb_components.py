@@ -255,7 +255,11 @@ class TestClass:
 
     def test_components_create_solder_ball_on_component(self):
         """Set cylindrical solder balls on a given component"""
-        assert self.edbapp.components.set_solder_ball("U1")
+        assert self.edbapp.components.set_solder_ball("U1", shape="Spheroid")
+        assert self.edbapp.components.set_solder_ball("U6", sball_height=None)
+        assert self.edbapp.components.set_solder_ball(
+            "U6", sball_height="100um", auto_reference_size=False, chip_orientation="chip_up"
+        )
 
     def test_components_short_component(self):
         """Short pins of component with a trace."""

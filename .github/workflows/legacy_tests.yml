@@ -17,7 +17,8 @@ concurrency:
 
 env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
-  PYEDB_USE_LEGACY: '0'
+  PYEDB_USE_LEGACY: '1'
+  PYEDB_CI_NO_DISPLAY: '1'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -48,6 +49,10 @@ jobs:
         run: |
           pytest -m "legacy and unit" -n 6 -v
 
-      - name: "Executing legacy system tests"
+      - name: "Executing legacy system tests (distributing on multiple CPUs)"
         run: |
-          pytest -m "legacy and system" -n 6 -v
+          pytest -m "legacy and system and not no_xdist" -n auto -v
+
+      - name: "Executing legacy system tests that cannot be distributed"
+        run: |
+          pytest -m "legacy and system and no_xdist" -v

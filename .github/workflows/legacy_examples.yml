@@ -1,0 +1,51 @@
+name: Examples
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    tags:
+     - 'v*'
+    branches:
+      - main
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
+  PYEDB_USE_LEGACY: '1'
+  PYEDB_CI_NO_DISPLAY: '1'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  legacy-examples:
+    name: "Check legacy examples"
+    runs-on: [ windows, pyedb, self-hosted ]
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v4
+
+      - name: "Setup Python"
+        uses: actions/setup-python@v4
+        with:
+          cache: 'pip'
+          python-version: '3.10'
+
+      - name: Install pyedb with tests dependencies
+        run: |
+          pip install .
+
+      - name: Execute legacy examples (except pyaedt related and 01)
+        run: |
+          # Exclude example 01_edb_example.py because it is too long
+          $excluded_example = "01_edb_example.py"
+          # TODO: once pyaedt examples are passing, use -Recurse to cover them
+          Get-ChildItem -Path examples/legacy -Filter *.py -File | ? { $_.Name -ne $excluded_example } | ForEach-Object {
+            Write-Host "Executing example $($_.FullName)"
+            python $_.FullName
+          }

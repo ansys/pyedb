@@ -7,14 +7,13 @@ import time
 
 from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
 from pyedb.legacy.edb_core.edb_data.simulation_configuration import SourceType
-
-# from legacy.edb_core.edb_data.sources import SourceType
 from pyedb.legacy.edb_core.edb_data.sources import CircuitPort
 from pyedb.legacy.edb_core.edb_data.sources import CurrentSource
 from pyedb.legacy.edb_core.edb_data.sources import DCTerminal
 from pyedb.legacy.edb_core.edb_data.sources import PinGroup
 from pyedb.legacy.edb_core.edb_data.sources import ResistorSource
 from pyedb.legacy.edb_core.edb_data.sources import VoltageSource
+from pyedb.legacy.edb_core.general import BoundaryType
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.constants import SolverType
 from pyedb.generic.constants import SweepType
@@ -1389,3 +1388,44 @@ class EdbSiwave(object):
         neg_terminal.SetName(name + "_ref")
         pos_terminal.SetReferenceTerminal(neg_terminal)
         return True
+
+    @pyedb_function_handler
+    def place_voltage_probe(
+        self,
+        name,
+        positive_net_name,
+        positive_location,
+        positive_layer,
+        negative_net_name,
+        negative_location,
+        negative_layer,
+    ):
+        """Place a voltage probe between two points.
+        Parameters
+        ----------
+        name : str,
+            Name of the probe.
+        positive_net_name : str
+            Name of the positive net.
+        positive_location : list
+            Location of the positive terminal.
+        positive_layer : str,
+            Layer of the positive terminal.
+        negative_net_name : str,
+            Name of the negative net.
+        negative_location : list
+            Location of the negative terminal.
+        negative_layer : str
+            Layer of the negative terminal.
+        """
+        from pyedb.legacy.edb_core.edb_data.terminals import PointTerminal
+
+        point_terminal = PointTerminal(self._pedb)
+        p_terminal = point_terminal.create(name, positive_net_name, positive_location, positive_layer)
+        p_terminal.boundary_type = BoundaryType.kVoltageProbe.name
+
+        n_terminal = point_terminal.create(name + "_ref", negative_net_name, negative_location, negative_layer)
+        n_terminal.boundary_type = BoundaryType.kVoltageProbe.name
+        p_terminal.ref_terminal = n_terminal
+        return self._pedb.probes[name]
+    

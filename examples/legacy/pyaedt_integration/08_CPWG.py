@@ -15,6 +15,8 @@ import os
 import numpy as np
 import pyedb
 from pyaedt import Hfss3dLayout
+from pyedb.generic.general_methods import generate_unique_folder_name
+from pyedb.generic.general_methods import generate_unique_name
 
 ###############################################################################
 # Set non-graphical mode
@@ -28,7 +30,7 @@ non_graphical = False
 # ~~~~~~~~~~
 # Launch EDB.
 
-aedb_path = os.path.join(pyedb.generate_unique_folder_name(), pyedb.generate_unique_name("pcb") + ".aedb")
+aedb_path = os.path.join(generate_unique_folder_name(), generate_unique_name("pcb") + ".aedb")
 print(aedb_path)
 edbapp = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
 

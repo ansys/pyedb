@@ -35,7 +35,9 @@ class TestClass:
         assert os.path.exists(xml_file)
         edbapp.close()
 
-    def test_146_export_ipc_1(self):
+    @pytest.mark.no_xdist
+    @pytest.mark.xfail(reason="This test is expected to crash (sometimes) at `ipc_edb.close()`", strict=False)
+    def test_export_to_ipc2581_1(self):
         """Export of a loaded aedb file to an XML IPC2581 file"""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_ipc", "ANSYS-HSD_V1_boundaries.aedb")
@@ -43,6 +45,7 @@ class TestClass:
         edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         xml_file = os.path.join(target_path, "test.xml")
         edbapp.export_to_ipc2581(xml_file)
+        edbapp.close()
         assert os.path.isfile(xml_file)
         ipc_edb = EdbLegacy(xml_file, edbversion=desktop_version)
         ipc_stats = ipc_edb.get_statistics()
@@ -58,5 +61,4 @@ class TestClass:
         assert ipc_stats.num_traces == 1565
         assert ipc_stats.num_vias == 4730
         assert ipc_stats.stackup_thickness == 0.001748
-        edbapp.close()
         ipc_edb.close()

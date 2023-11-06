@@ -20,4 +20,4 @@ class TestClass:
         diff_pair = self.edbapp.differential_pairs.create("new_pair1", "PCIe_Gen4_RX1_P", "PCIe_Gen4_RX1_N")
         assert diff_pair.positive_net.name == "PCIe_Gen4_RX1_P"
         assert diff_pair.negative_net.name == "PCIe_Gen4_RX1_N"
-        assert self.edbapp.differential_pairs.items
+        assert self.edbapp.differential_pairs["new_pair1"]
