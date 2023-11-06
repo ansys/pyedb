@@ -414,9 +414,9 @@ class EdbSiwave(object):
         current_source.phase = phase_value
         if not source_name:
             source_name = "ISource_{}_{}_{}_{}".format(
-                pos_pin.component.name,
+                pos_pin.component.refdes,
                 pos_pin.net.name,
-                neg_pin.component.name,
+                neg_pin.component.refdes,
                 neg_pin.net.name,
             )
         current_source.name = source_name
@@ -901,14 +901,12 @@ class EdbSiwave(object):
             self._logger.warning("Port already exists with same name. Renaming to {}".format(source.name))
         pos_pin_group = self._pedb.components.create_pingroup_from_pins(source.positive_node.node_pins)
         pos_node_net = self._pedb.nets.get_net_by_name(source.positive_node.net)
-
         pos_pingroup_term_name = source.name
         pos_pingroup_terminal = terminal.PinGroupTerminal.create(layout=self._active_layout,
                                                         net_ref=pos_node_net.net_object,
                                                         name=pos_pingroup_term_name,
                                                         pin_group=pos_pin_group,
                                                         is_ref=False)
-        time.sleep(0.5)
         if source.negative_node.node_pins:
             neg_pin_group = self._pedb.components.create_pingroup_from_pins(source.negative_node.node_pins)
             neg_node_net = self._pedb.nets.get_net_by_name(source.negative_node.net)
@@ -1268,12 +1266,12 @@ class EdbSiwave(object):
         pos_pin_group = self.pin_groups[pos_pin_group_name]
         pos_terminal = pos_pin_group.create_current_source_terminal(magnitude, phase)
         if name:
-            pos_terminal.SetName(name)
+            pos_terminal.name = name
         else:
             name = generate_unique_name("isource")
             pos_terminal.name = name
-        neg_pin_group_name = self.pin_groups[neg_pin_group_name]
-        neg_terminal = neg_pin_group_name.create_current_source_terminal()
+        neg_pin = self.pin_groups[neg_pin_group_name]
+        neg_terminal = neg_pin.create_current_source_terminal()
         neg_terminal.name = name + "_ref"
         pos_terminal.reference_terminal = neg_terminal
         return True
