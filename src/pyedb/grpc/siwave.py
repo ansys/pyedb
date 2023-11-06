@@ -18,13 +18,17 @@ from pyedb.generic.constants import SweepType
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
-from ansys.edb.terminal.terminals import PadstackInstanceTerminal
-from ansys.edb.terminal.terminals import BoundaryType
-from ansys.edb.utility.value import Value
-from ansys.edb.utility.rlc import Rlc
-from ansys.edb.geometry.point_data import PointData
-from ansys.edb.terminal.terminals import PointTerminal, PinGroupTerminal
-from ansys.edb.hierarchy.pin_group import PinGroup
+import ansys.edb.terminal as terminal
+import ansys.edb.utility as utility
+import ansys.edb.geometry as geometry
+import ansys.edb.hierarchy as hierarchy
+#from ansys.edb.terminal.terminals import PadstackInstanceTerminal
+#from ansys.edb.terminal.terminals import BoundaryType
+#from ansys.edb.utility.value import Value
+#from ansys.edb.utility.rlc import Rlc
+#from ansys.edb.geometry.point_data import PointData
+#from ansys.edb.terminal.terminals import PointTerminal, PinGroupTerminal
+#from ansys.edb.hierarchy.pin_group import PinGroup
 
 
 class EdbSiwave(object):
@@ -58,7 +62,7 @@ class EdbSiwave(object):
     @property
     def _active_layout(self):
         """Active layout."""
-        return self._pedb.active_layout
+        return self._pedb.layout
 
     @property
     def _layout(self):
@@ -101,7 +105,7 @@ class EdbSiwave(object):
         """
         _pingroups = {}
         for el in self._layout.pin_groups:
-            _pingroups[el.GetName()] = PinGroup(el.name, el, self._pedb)
+            _pingroups[el.name] = PinGroup(el.name, el, self._pedb)
         return _pingroups
 
     @pyedb_function_handler()
@@ -117,72 +121,92 @@ class EdbSiwave(object):
         pos_pin = source.positive_node.node_pins
         neg_pin = source.negative_node.node_pins
 
-        res, fromLayer_pos, toLayer_pos = pos_pin.layer_range
-        res, fromLayer_neg, toLayer_neg = neg_pin.layer_range
+        fromLayer_pos, toLayer_pos = pos_pin.primitive_object.get_layer_range()
+        fromLayer_neg, toLayer_neg = neg_pin.primitive_object.get_layer_range()
 
-        pos_pingroup_terminal = PadstackInstanceTerminal.create(self._active_layout, pos_pin.net, pos_pin.name, pos_pin, toLayer_pos)
-        time.sleep(0.5)
-        neg_pingroup_terminal = PadstackInstanceTerminal.create(self._active_layout, neg_pin.net, neg_pin.name, neg_pin, toLayer_neg)
+        pos_terminal = terminal.PadstackInstanceTerminal.create(layout=self._active_layout,
+                                                                         name=source.name,
+                                                                         padstack_instance=pos_pin.pin,
+                                                                         layer=fromLayer_pos,
+                                                                         net=pos_pin.net.net_object,
+                                                                         is_ref=False)
+        if pos_terminal.is_null:
+            self._logger.error(f"Failed to create voltage source on pin {pos_pin.name}, "
+                               f"component {pos_pin.component.refdes} (Positive terminal)")
+            return False
+        ref_term_name = neg_pin.name
+        if ref_term_name == pos_pin.name:
+            ref_term_name = f"{pos_pin.name}_ref"
+        neg_terminal = terminal.PadstackInstanceTerminal.create(layout=self._active_layout,
+                                                                         name=ref_term_name,
+                                                                         padstack_instance=neg_pin.pin,
+                                                                         layer=fromLayer_neg,
+                                                                         net=neg_pin.net.net_object,
+                                                                         is_ref=True)
+        if neg_terminal.is_null:
+            self._logger.error(f"Failed to create voltage source on pin {neg_pin.name}, "
+                               f"component {neg_pin.component.refdes} (Reference terminal)")
+            return False
         if source.source_type in [SourceType.CoaxPort, SourceType.CircPort, SourceType.LumpedPort]:
-            pos_pingroup_terminal.boundary_type = BoundaryType.PORT
-            neg_pingroup_terminal.boundary_type = BoundaryType.PORT
-            pos_pingroup_terminal.impedance = Value(source.impedance)
+            pos_terminal.boundary_type = terminal.BoundaryType.PORT
+            neg_terminal.boundary_type = terminal.BoundaryType.PORT
+            pos_terminal.impedance = utility.Value(source.impedance)
             if source.source_type == SourceType.CircPort:
-                pos_pingroup_terminal.is_circuit_port = True
-                neg_pingroup_terminal.is_circuit_port = True
-            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
+                pos_terminal.is_circuit_port = True
+                neg_terminal.is_circuit_port = True
+            pos_terminal.reference_terminal = neg_terminal
             try:
-                pos_pingroup_terminal.name = source.name
+                pos_terminal.name = source.name
             except:
                 name = generate_unique_name(source.name)
-                pos_pingroup_terminal.name = name
+                pos_terminal.name = name
                 self._logger.warning("%s already exists. Renaming to %s", source.name, name)
         elif source.source_type == SourceType.Isource:
-            pos_pingroup_terminal.boundary_type = BoundaryType.CURRENT_SOURCE
-            neg_pingroup_terminal.boundary_type = BoundaryType.CURRENT_SOURCE
-            pos_pingroup_terminal.source_amplitude = Value(source.magnitude)
-            pos_pingroup_terminal.source_phase = Value(source.phase)
-            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
+            pos_terminal.boundary_type = terminal.BoundaryType.CURRENT_SOURCE
+            neg_terminal.boundary_type = terminal.BoundaryType.CURRENT_SOURCE
+            pos_terminal.source_amplitude = utility.Value(source.magnitude)
+            pos_terminal.source_phase = utility.Value(source.phase)
+            pos_terminal.reference_terminal = neg_terminal
             try:
-                pos_pingroup_terminal.name = source.name
+                pos_terminal.name = source.name
             except Exception as e:
                 name = generate_unique_name(source.name)
-                pos_pingroup_terminal.name = name
+                pos_terminal.name = name
                 self._logger.warning("%s already exists. Renaming to %s", source.name, name)
 
         elif source.source_type == SourceType.Vsource:
-            pos_pingroup_terminal.boundary_type = BoundaryType.VOLTAGE_SOURCE
-            neg_pingroup_terminal.boundary_type = BoundaryType.VOLTAGE_SOURCE
-            pos_pingroup_terminal.source_amplitude = Value(source.magnitude)
-            pos_pingroup_terminal.source_phase = Value(source.phase)
-            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
+            pos_terminal.boundary_type = terminal.BoundaryType.VOLTAGE_SOURCE
+            neg_terminal.boundary_type = terminal.BoundaryType.VOLTAGE_SOURCE
+            pos_terminal.source_amplitude = utility.Value(source.magnitude)
+            pos_terminal.source_phase = utility.Value(source.phase)
+            pos_terminal.reference_terminal = neg_terminal
             try:
-                pos_pingroup_terminal.name = source.name
+                pos_terminal.name = source.name
             except:
                 name = generate_unique_name(source.name)
-                pos_pingroup_terminal.name = name
+                pos_terminal.name = name
                 self._logger.warning("%s already exists. Renaming to %s", source.name, name)
 
         elif source.source_type == SourceType.Rlc:
-            pos_pingroup_terminal.boundary_type = BoundaryType.RLC
-            neg_pingroup_terminal.boundary_type = BoundaryType.RLC
-            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
-            pos_pingroup_terminal.source_amplitude = Value(source.rvalue)
-            rlc = Rlc()
+            pos_terminal.boundary_type = terminal.BoundaryType.RLC
+            neg_terminal.boundary_type = terminal.BoundaryType.RLC
+            pos_terminal.reference_terminal = neg_terminal
+            pos_terminal.source_amplitude = utility.Value(source.rvalue)
+            rlc = utility.Rlc()
             rlc.c_enabled = False
             rlc.l_enabled = False
             rlc.r_enabled = True
-            rlc.r = Value(source.rvalue)
-            pos_pingroup_terminal.rlc_boundary_parameters(Rlc)
+            rlc.r = utility.Value(source.rvalue)
+            pos_terminal.rlc_boundary_parameters(utility.Rlc)
             try:
-                pos_pingroup_terminal.name = source.name
+                pos_terminal.name = source.name
             except:
                 name = generate_unique_name(source.name)
-                pos_pingroup_terminal.name = name
+                pos_terminal.name = name
                 self._logger.warning("%s already exists. Renaming to %s", source.name, name)
         else:
             pass
-        return pos_pingroup_terminal.name
+        return pos_terminal.name
 
     @pyedb_function_handler()
     def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
@@ -282,22 +306,22 @@ class EdbSiwave(object):
                 res, start_layer, stop_layer = pin.layer_range()
                 if res:
                     pin_instance = pin._edb_padstackinstance
-                    positive_terminal = PadstackInstanceTerminal.create(
+                    positive_terminal = terminal.PadstackInstanceTerminal.create(
                         self._active_layout, pin_instance.net, term_name, pin_instance, start_layer
                     )
-                    positive_terminal.boundary_type = BoundaryType.PORT
-                    positive_terminal.impedance = Value(impedance)
+                    positive_terminal.boundary_type = terminal.BoundaryType.PORT
+                    positive_terminal.impedance = utility.Value(impedance)
                     positive_terminal.is_circuit_port = True
                     pos = self._pedb.components.get_pin_position(pin_instance)
-                    position = PointData(Value(pos[0]), Value(pos[1]))
-                    negative_terminal = PointTerminal.create(
+                    position = geometry.PointData(utility.Value(pos[0]), utility.Value(pos[1]))
+                    negative_terminal = terminal.PointTerminal.create(
                         layout=self._active_layout,
                         net=reference_net.net_obj,
                         name="{}_ref".format(term_name),
                         point=position,
                         layer=self._pedb.stackup.signal_layers[layer_name]._edb_layer)
-                    negative_terminal.boundary_type = BoundaryType.PORT
-                    negative_terminal.impedance = Value(impedance)
+                    negative_terminal.boundary_type = terminal.BoundaryType.PORT
+                    negative_terminal.impedance = utility.Value(impedance)
                     negative_terminal.is_circuit_port = True
                     positive_terminal.reference_terminal = negative_terminal
                     return positive_terminal
@@ -341,16 +365,16 @@ class EdbSiwave(object):
         voltage_source.phase = phase_value
         if not source_name:
             source_name = "VSource_{}_{}_{}_{}".format(
-                pos_pin.component.name,
+                pos_pin.component.refdes,
                 pos_pin.net.name,
-                neg_pin.component.name,
+                neg_pin.component.refdes,
                 neg_pin.net.name,
             )
         voltage_source.name = source_name
-        voltage_source.positive_node.component_node = pos_pin.component()
+        voltage_source.positive_node.component_node = pos_pin.component
         voltage_source.positive_node.node_pins = pos_pin
-        voltage_source.negative_node.component_node = neg_pin.component()
-        voltage_source.negative_node.node_pins = pos_pin
+        voltage_source.negative_node.component_node = neg_pin.component
+        voltage_source.negative_node.node_pins = neg_pin
         return self._create_terminal_on_pins(voltage_source)
 
     @pyedb_function_handler()
@@ -879,26 +903,26 @@ class EdbSiwave(object):
         pos_node_net = self._pedb.nets.get_net_by_name(source.positive_node.net)
 
         pos_pingroup_term_name = source.name
-        pos_pingroup_terminal = PinGroupTerminal.create(self._active_layout,
-                                                        pos_node_net.net_obj,
-                                                        pos_pingroup_term_name,
-                                                        pos_pin_group,
-                                                        False)
+        pos_pingroup_terminal = terminal.PinGroupTerminal.create(layout=self._active_layout,
+                                                        net_ref=pos_node_net.net_object,
+                                                        name=pos_pingroup_term_name,
+                                                        pin_group=pos_pin_group,
+                                                        is_ref=False)
         time.sleep(0.5)
         if source.negative_node.node_pins:
             neg_pin_group = self._pedb.components.create_pingroup_from_pins(source.negative_node.node_pins)
             neg_node_net = self._pedb.nets.get_net_by_name(source.negative_node.net)
             neg_pingroup_term_name = source.name + "_N"
-            neg_pingroup_terminal = PinGroupTerminal.create(self._active_layout,
-                                                            neg_node_net.net_obj,
-                                                            neg_pingroup_term_name,
-                                                            neg_pin_group,
-                                                            False)
+            neg_pingroup_terminal = terminal.PinGroupTerminal.create(layout=self._active_layout,
+                                                            net_ref=neg_node_net.net_object,
+                                                            name=neg_pingroup_term_name,
+                                                            pin_group=neg_pin_group,
+                                                            is_ref=False)
 
         if source.source_type in [SourceType.CoaxPort, SourceType.CircPort, SourceType.LumpedPort]:
-            pos_pingroup_terminal.boundary_type = BoundaryType.PORT
-            neg_pingroup_terminal.boundary_type = BoundaryType.PORT
-            pos_pingroup_terminal.source_amplitude = Value(source.impedance)
+            pos_pingroup_terminal.boundary_type = terminal.BoundaryType.PORT
+            neg_pingroup_terminal.boundary_type = terminal.BoundaryType.PORT
+            pos_pingroup_terminal.source_amplitude = utility.Value(source.impedance)
             if source.source_type == SourceType.CircPort:
                 pos_pingroup_terminal.is_circuit_port = True
                 neg_pingroup_terminal.is_circuit_port = True
@@ -911,10 +935,10 @@ class EdbSiwave(object):
                 self._logger.warning("%s already exists. Renaming to %s", source.name, name)
 
         elif source.source_type == SourceType.Isource:
-            pos_pingroup_terminal.boundary_type = BoundaryType.CURRENT_SOURCE
-            neg_pingroup_terminal.boundary_type = BoundaryType.CURRENT_SOURCE
-            pos_pingroup_terminal.source_amplitude = Value(source.magnitude)
-            pos_pingroup_terminal.source_phase = Value(source.phase)
+            pos_pingroup_terminal.boundary_type = terminal.BoundaryType.CURRENT_SOURCE
+            neg_pingroup_terminal.boundary_type = terminal.BoundaryType.CURRENT_SOURCE
+            pos_pingroup_terminal.source_amplitude = utility.Value(source.magnitude)
+            pos_pingroup_terminal.source_phase = utility.Value(source.phase)
             pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
             try:
                 pos_pingroup_terminal.name = source.name
@@ -924,10 +948,10 @@ class EdbSiwave(object):
                 self._logger.warning("%s already exists. Renaming to %s", source.name, name)
 
         elif source.source_type == SourceType.Vsource:
-            pos_pingroup_terminal.boundary_type = BoundaryType.VOLTAGE_SOURCE
-            neg_pingroup_terminal.boundary_type = BoundaryType.VOLTAGE_SOURCE
-            pos_pingroup_terminal.source_amplitude = Value(source.magnitude)
-            pos_pingroup_terminal.source_phase = Value(source.phase)
+            pos_pingroup_terminal.boundary_type = terminal.BoundaryType.VOLTAGE_SOURCE
+            neg_pingroup_terminal.boundary_type = terminal.BoundaryType.VOLTAGE_SOURCE
+            pos_pingroup_terminal.source_amplitude = utility.Value(source.magnitude)
+            pos_pingroup_terminal.source_phase = utility.Value(source.phase)
             pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
             try:
                 pos_pingroup_terminal.name = source.name
@@ -937,18 +961,18 @@ class EdbSiwave(object):
                 self._logger.warning("%s already exists. Renaming to %s", source.name, name)
 
         elif source.source_type == SourceType.Rlc:
-            pos_pingroup_terminal.boundary_type = BoundaryType.RLC
-            neg_pingroup_terminal.boundary_type = BoundaryType.RLC
+            pos_pingroup_terminal.boundary_type = terminal.BoundaryType.RLC
+            neg_pingroup_terminal.boundary_type = terminal.BoundaryType.RLC
             pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
-            pos_pingroup_terminal.source_amplitude = Value(source.rvalue)
-            rlc = Rlc()
+            pos_pingroup_terminal.source_amplitude = utility.Value(source.rvalue)
+            rlc = utility.Rlc()
             rlc.c_enabled = False
             rlc.l_enabled = False
             rlc.r_enabled = True
-            rlc.r = Value(source.rvalue)
-            pos_pingroup_terminal.rlc_boundary_parameters(Rlc)
+            rlc.r = utility.Value(source.rvalue)
+            pos_pingroup_terminal.rlc_boundary_parameters(utility.Rlc)
         elif source.source_type == SourceType.DcTerminal:
-            pos_pingroup_terminal.boundary_type = BoundaryType.DC_TERMINAL
+            pos_pingroup_terminal.boundary_type = terminal.BoundaryType.DC_TERMINAL
         else:
             pass
         return pos_pingroup_terminal.name
@@ -1190,16 +1214,13 @@ class EdbSiwave(object):
             pin_numbers = [pin_numbers]
         pin_numbers = [str(p) for p in pin_numbers]
         if group_name is None:
-            group_name = PinGroup.unique_name(self._active_layout)
-        comp = self._pedb.components.components[reference_designator]
+            group_name = hierarchy.PinGroup.unique_name(self._active_layout)
+        comp = self._pedb.components.instances[reference_designator]
         pins = [pin.pin for name, pin in comp.pins.items() if name in pin_numbers]
-        edb_pingroup = PinGroup.create(self._active_layout, group_name, pins)
-
-        if edb_pingroup.is_null:  # pragma: no cover
-            return False
-        else:
-            edb_pingroup.net = pins[0].net
-            return group_name, self.pin_groups[group_name]
+        edb_pingroup = hierarchy.PinGroup.create(layout=self._active_layout, name=group_name, padstack_instances=pins)
+        if not edb_pingroup.is_null:
+            return PinGroup(name=group_name, edb_pin_group=edb_pingroup, pedb=self._pedb)
+        return False
 
     @pyedb_function_handler()
     def create_pin_group_on_net(self, reference_designator, net_name, group_name=None):
@@ -1219,7 +1240,7 @@ class EdbSiwave(object):
         PinGroup
         """
         pins = self._pedb.components.get_pin_from_component(reference_designator, net_name)
-        pin_names = [p.name for p in pins]
+        pin_names = [p.pin.name for p in pins]
         return self.create_pin_group(reference_designator, pin_names, group_name)
 
     @pyedb_function_handler()
@@ -1347,13 +1368,17 @@ class EdbSiwave(object):
         """
         pos_pin_group = self.pin_groups[pos_pin_group_name]
         pos_terminal = pos_pin_group.create_port_terminal(impedance)
+        if not pos_terminal:
+            return False
         if name:  # pragma: no cover
             pos_terminal.name = name
         else:
             name = generate_unique_name("port")
             pos_terminal.name = name
-        neg_pin_group_name = self.pin_groups[neg_pin_group_name]
-        neg_terminal = neg_pin_group_name.create_port_terminal(impedance)
+        neg_pin_group = self.pin_groups[neg_pin_group_name]
+        neg_terminal = neg_pin_group.create_port_terminal(impedance)
+        if not neg_terminal:
+            return False
         neg_terminal.name = name + "_ref"
         pos_terminal.reference_terminal = neg_terminal
         return True

@@ -59,7 +59,7 @@ class EdbNets(object):
     @property
     def _active_layout(self):
         """ """
-        return self._pedb.active_layout
+        return self._pedb.layout
 
     @property
     def _layout(self):
@@ -950,9 +950,10 @@ class EdbNets(object):
     @pyedb_function_handler()
     def get_net_by_name(self, net_name):
         """Find a net by name."""
-        edb_net = Net.find_by_name(self._active_layout, net_name)
-        if edb_net is not None:
-            return edb_net
+        #edb_net = Net.find_by_name(self._active_layout, net_name)
+        if net_name in self.nets:
+            return self.nets[net_name]
+        return False
 
     @pyedb_function_handler()
     def delete_nets(self, netlist):

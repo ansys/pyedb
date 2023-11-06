@@ -14,7 +14,7 @@ from pyedb.generic.general_methods import env_value
 from pyedb.generic.general_methods import is_linux
 
 
-class EdbGrpc(object):
+class EdbInit(object):
     """Edb Dot Net Class."""
 
     def __init__(self, edbversion, port):

@@ -434,7 +434,7 @@ class Components(object):
             ``True`` when successful, ``False`` when failed.
 
         """
-        edbcmp = self._pedb.cell.hierarchy.group.find(self._active_layout, name)
+        edbcmp = hierarchy.ComponentGroup.find(self._edb.layout, name)
         if edbcmp:
             return edbcmp
         else:
@@ -1495,12 +1495,12 @@ class Components(object):
             if _pins:
                 pins = _pins
         if not group_name:
-            group_name = hierarchy.PinGroup.unique_name(self._active_layout)
+            group_name = hierarchy.PinGroup.unique_name(self._edb.layout, "")
         for pin in pins:
             pin.is_layout_pin = True
         forbiden_car = "-><"
         group_name = group_name.translate({ord(i): "_" for i in forbiden_car})
-        for pgroup in list(self._pedb.active_layout.pin_groups):
+        for pgroup in self._pedb.layout.pin_groups:
             if pgroup.name == group_name:
                 pin_group_exists = True
                 if len(pgroup.pins) == len(pins):
@@ -1510,15 +1510,15 @@ class Components(object):
                             continue
                         else:
                             group_name = self._edb.cell.hierarchy.pin_group.unique_name(
-                                self._active_layout, group_name
+                                self._edb.layout, group_name
                             )
                             pin_group_exists = False
                 else:
-                    group_name = self._edb.cell.hierarchy.pin_group.unique_name(self._active_layout, group_name)
+                    group_name = hierarchy.PinGroup.unique_name(self._edb.layout, group_name)
                     pin_group_exists = False
                 if pin_group_exists:
                     return pgroup
-        pingroup = hierarchy.PinGroup.create(self._active_layout, group_name, pins)
+        pingroup = hierarchy.PinGroup.create(self._edb.layout, group_name, pins)
         if pingroup.is_null:
             return False
         else:
@@ -2026,27 +2026,30 @@ class Components(object):
 
         """
         if not isinstance(component, hierarchy.ComponentGroup):
-            component = hierarchy.ComponentGroup.find(self._active_layout, component)
+            component = hierarchy.ComponentGroup.find(self._edb.layout, component)
         if netName:
             if not isinstance(netName, list):
                 netName = [netName]
             pins = [
                 p
-                for p in list(component.layout_objs)
-                if int(p.obj_type) == 1 and p.is_layout_pin and p.net.name in netName]
+                for p in component.members if p.layout_obj_type.value == 1 and not p.net.is_null
+                                              and p.is_layout_pin and p.net.name in netName]
         elif pinName:
             if not isinstance(pinName, list):
                 pinName = [pinName]
             pins = [
                 p
-                for p in list(component.layout_objs)
-                if int(p.obj_type) == 1
+                for p in list(component.members)
+                if p.layout_obj_type.value == 1
                    and p.is_layout_pin
+                   and not p.net.is_null
                    and (self.get_aedt_pin_name(p) in pinName or p.name in pinName)
             ]
         else:
-            pins = [p for p in list(component.layout_objs) if int(p.obj_type) == 1 and p.is_layout_pin]
-        return pins
+            pins = [p for p in list(component.members) if p.layout_obj_type.value == 1 and not p.net.is_null
+                    and p.is_layout_pin]
+
+        return [EDBPadstackInstance(pin, self._pedb) for pin in pins]
 
     @pyedb_function_handler()
     def get_aedt_pin_name(self, pin):
