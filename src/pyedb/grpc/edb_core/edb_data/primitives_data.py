@@ -97,7 +97,7 @@ class EDBPrimitivesMain:
 
     @property
     def net(self):
-        return self._edb_object.net
+        return self._app.nets.nets[self.net_name]
 
     @net.setter
     def net(self, value):

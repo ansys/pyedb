@@ -54,6 +54,7 @@ class MethodNotSupportedError(Exception):
 
     pass
 
+
 def _exception(ex_info, func, args, kwargs, message="Type Error"):
     """Write the trace stack to the desktop when a Python error occurs.
 
@@ -122,6 +123,7 @@ def _exception(ex_info, func, args, kwargs, message="Type Error"):
             )
         )
 
+
 def _function_handler_wrapper(user_function):
     def wrapper(*args, **kwargs):
         if not settings.enable_error_handler:
@@ -158,7 +160,9 @@ def _function_handler_wrapper(user_function):
             except IOError:
                 _exception(sys.exc_info(), user_function, args, kwargs, "IO Error")
                 return False
+
     return wrapper
+
 
 def pyedb_function_handler(direct_func=None):
     """Provides an exception handler, logging mechanism, and argument converter for client-server
@@ -199,6 +203,7 @@ def get_filename_without_extension(path):
 
     """
     return os.path.splitext(os.path.split(path)[1])[0]
+
 
 def _write_mes(mes_text):
     mes_text = str(mes_text)
@@ -496,7 +501,7 @@ def open_file(file_path, file_options="r"):
         if os.path.exists(file_path):
             return open(file_path, file_options)
         elif settings.remote_rpc_session and settings.remote_rpc_session.filemanager.pathexists(
-            file_path
+                file_path
         ):  # pragma: no cover
             local_file = os.path.join(tempfile.gettempdir(), os.path.split(file_path)[-1])
             settings.remote_rpc_session.filemanager.download_file(file_path, local_file)
@@ -505,6 +510,7 @@ def open_file(file_path, file_options="r"):
         return open(file_path, file_options)
     else:
         settings.logger.error("The file or folder %s does not exist", dir_name)
+
 
 @pyedb_function_handler()
 def get_string_version(input_version):
@@ -522,10 +528,6 @@ def get_string_version(input_version):
         elif len(input_version) == 4:
             output_version = "20" + input_version
     return output_version
-
-
-
-
 
 
 @pyedb_function_handler()
@@ -577,7 +579,6 @@ def env_value_student(input_version):
     return "ANSYSEMSV_ROOT{0}{1}".format(
         get_version_and_release(input_version)[0], get_version_and_release(input_version)[1]
     )
-
 
 
 @pyedb_function_handler()
@@ -1299,7 +1300,7 @@ def compute_fft(time_vals, value):  # pragma: no cover
     num_points = len(time_vals)
     valueFFT = np.fft.fft(value, num_points)
     Npoints = int(len(valueFFT) / 2)
-    valueFFT = valueFFT[1 : Npoints + 1]
+    valueFFT = valueFFT[1: Npoints + 1]
     valueFFT = valueFFT / len(valueFFT)
     n = np.arange(num_points)
     freq = n / deltaT
@@ -1307,14 +1308,14 @@ def compute_fft(time_vals, value):  # pragma: no cover
 
 
 def parse_excitation_file(
-    file_name,
-    is_time_domain=True,
-    x_scale=1,
-    y_scale=1,
-    impedance=50,
-    data_format="Power",
-    encoding="utf-8",
-    out_mag="Voltage",
+        file_name,
+        is_time_domain=True,
+        x_scale=1,
+        y_scale=1,
+        impedance=50,
+        data_format="Power",
+        encoding="utf-8",
+        out_mag="Voltage",
 ):
     """Parse a csv file and convert data in list that can be applied to Hfss and Hfss3dLayout sources.
 
@@ -1599,7 +1600,7 @@ def _arg2dict(arg, dict_out):
         i = 1
         while i < len(arg):
             if arg[i][0][:5] == "NAME:" and (
-                isinstance(arg[i], (list, tuple)) or str(type(arg[i])) == r"<type 'List'>"
+                    isinstance(arg[i], (list, tuple)) or str(type(arg[i])) == r"<type 'List'>"
             ):
                 _arg2dict(list(arg[i]), dict_in)
                 i += 1
@@ -1875,5 +1876,3 @@ class Help:  # pragma: no cover
 # property = Property
 
 online_help = Help()
-
-

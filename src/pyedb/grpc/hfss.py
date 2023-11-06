@@ -2,7 +2,7 @@
 This module contains the ``EdbHfss`` class.
 """
 import math
-
+import ansys.edb.terminal.terminals as terminal
 from pyedb.grpc.edb_core.edb_data.hfss_extent_info import HfssExtentInfo
 from pyedb.grpc.edb_core.edb_data.ports import BundleWavePort
 from pyedb.grpc.edb_core.edb_data.ports import WavePort
@@ -447,26 +447,17 @@ class EdbHfss(object):
         if not isinstance(net_list, list):
             net_list = [net_list]
         for ref in ref_des_list:
-            for _, py_inst in self._pedb.components.components[ref].pins.items():
-                if py_inst.net_name in net_list and py_inst.is_pin:
-                    port_name = "{}_{}_{}".format(ref, py_inst.net_name, py_inst.pin.GetName())
-                    (
-                        res,
-                        from_layer_pos,
-                        to_layer_pos,
-                    ) = py_inst.pin.GetLayerRange()
-                    if (
-                        res
-                        and from_layer_pos
-                        and self._edb.cell.terminal.PadstackInstanceTerminal.Create(
-                            self._active_layout,
-                            py_inst.pin.GetNet(),
-                            port_name,
-                            py_inst.pin,
-                            to_layer_pos,
-                        )
-                    ):
-                        coax.append(port_name)
+            selected_pins = [pin for pin in list(self._pedb.components[ref].pins.values()) if not pin.net.is_null
+                             and pin.net_name in net_list]
+            for pin_inst in selected_pins:
+                port_name = "{}_{}_{}".format(ref, pin_inst.net_name, pin_inst.pin.name)
+                layer_range = pin_inst.pin.get_layer_range()
+                if layer_range and terminal.PadstackInstanceTerminal.create(layout=self._layout,
+                                                                        name= port_name,
+                                                                        net=pin_inst.pin.net,
+                                                                        padstack_instance=pin_inst.pin,
+                                                                        layer=layer_range[1]):
+                    coax.append(port_name)
         return coax
 
     @pyedb_function_handler

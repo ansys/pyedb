@@ -28,73 +28,11 @@ import time
 import pytest
 
 from pyedb.edb_logger import pyedb_logger
-# from pyedb.generic.settings import settings
-
-# # settings.enable_local_log_file = False
-# settings.enable_global_log_file = False
-# # settings.number_of_grpc_api_retries = 6
-# # settings.retry_n_times_time_interval = 0.5
-# settings.enable_error_handler = False
-# # settings.enable_desktop_logs = False
-# # settings.desktop_launch_timeout = 180
-
-
-# # from pyaedt import Hfss
-
-# # from pyaedt.desktop import Desktop
-# # from pyaedt.desktop import _delete_objects
-# # from pyaedt.generic.desktop_sessions import _desktop_sessions
-
-
-# # from pyaedt.generic.general_methods import inside_desktop
-# # from pyaedt.misc.misc import list_installed_ansysem
-
-# from pyedb import Edb
-from pyedb.legacy.edb import EdbLegacy
 from pyedb.legacy.generic.filesystem import Scratch
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.misc import list_installed_ansysem
+from pyedb.grpc.edb import EdbGrpc
 
-# local_path = os.path.dirname(os.path.realpath(__file__))
-# sys.path.append(local_path)
-
-# # Initialize default desktop configuration
-# desktop_version = "2023.2"
-# if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_installed_ansysem():
-#     desktop_version = list_installed_ansysem()[0][12:].replace(".", "")
-#     desktop_version = "20{}.{}".format(desktop_version[:2], desktop_version[-1])
-# os.environ["ANSYSEM_FEATURE_SS544753_ICEPAK_VIRTUALMESHREGION_PARADIGM_ENABLE"] = "1"
-
-# config = {
-#     "edb_version": desktop_version,
-#     "NonGraphical": True,
-#     "NewThread": True,
-#     "skip_desktop_test": False,
-#     "build_machine": True,
-#     "skip_space_claim": False,
-#     "skip_circuits": False,
-#     "skip_edb": False,
-#     "skip_debug": False,
-#     "local": False,
-#     "use_grpc": True,
-#     "disable_sat_bounding_box": True,
-# }
-
-# # Check for the local config file, override defaults if found
-# local_config_file = os.path.join(local_path, "local_config.json")
-# if os.path.exists(local_config_file):
-#     try:
-#         with open(local_config_file) as f:
-#             local_config = json.load(f)
-#     except:  # pragma: no cover
-#         local_config = {}
-#     config.update(local_config)
-
-# NONGRAPHICAL = config["NonGraphical"]
-# settings.disable_bounding_box_sat = config["disable_sat_bounding_box"]
-# edb_version = config["edb_version"]
-# new_thread = config["NewThread"]
-# # settings.use_grpc_api = config["use_grpc"]
 
 logger = pyedb_logger
 
@@ -146,72 +84,6 @@ def local_scratch(init_scratch):
     scratch.remove()
 
 
-# # @pytest.fixture(scope="module", autouse=True)
-# # def desktop():
-# #     _delete_objects()
-# #     keys = list(_desktop_sessions.keys())
-# #     for key in keys:
-# #         del _desktop_sessions[key]
-# #     d = Desktop(desktop_version, NONGRAPHICAL, new_thread)
-# #     d.disable_autosave()
-# #     d.odesktop.SetDesktopConfiguration("All")
-# #     d.odesktop.SetSchematicEnvironment(0)
-# #     yield d
-# #     d.release_desktop(True, True)
-# #     time.sleep(1)
-
-
-# # TODO: See if we move that to conftest in system as it may use pyaedt
-# @pytest.fixture(scope="module")
-# def add_app(local_scratch):
-#     def _method(
-#         project_name=None, design_name=None, solution_type=None, application=None, subfolder="", just_open=False
-#     ):
-#         if project_name and not just_open:
-#             example_project = os.path.join(local_path, "example_models", subfolder, project_name + ".aedt")
-#             example_folder = os.path.join(local_path, "example_models", subfolder, project_name + ".aedb")
-#             if os.path.exists(example_project):
-#                 # Copy unit test project to scratch folder. Return full file path to the project without extension.
-#                 test_project = local_scratch.copyfile(example_project)
-#             elif os.path.exists(example_project + "z"):
-#                 example_project = example_project + "z"
-#                 test_project = local_scratch.copyfile(example_project)
-#             else:
-#                 test_project = os.path.join(local_scratch.path, project_name + ".aedt")
-#             if os.path.exists(example_folder):
-#                 target_folder = os.path.join(local_scratch.path, project_name + ".aedb")
-#                 local_scratch.copyfolder(example_folder, target_folder)
-#         elif project_name and just_open:
-#             test_project = project_name
-#         else:
-#             test_project = None
-#         if not application:
-#             application = Hfss
-#         return application(
-#             projectname=test_project,
-#             designname=design_name,
-#             solution_type=solution_type,
-#             specified_version=desktop_version,
-#         )
-
-#     return _method
-
-
-# @pytest.fixture(scope="module")
-# def test_project_file(local_scratch):
-#     def _method(project_name=None, subfolder=None):
-#         if subfolder:
-#             project_file = os.path.join(local_path, "example_models", subfolder, project_name + ".aedt")
-#         else:
-#             project_file = os.path.join(local_scratch.path, project_name + ".aedt")
-#         if os.path.exists(project_file):
-#             return project_file
-#         else:
-#             return None
-
-#     return _method
-
-
 @pytest.fixture(scope="module")
 def add_edb(local_scratch):
     def _method(project_name=None, subfolder=""):
@@ -224,7 +96,7 @@ def add_edb(local_scratch):
                 target_folder = os.path.join(local_scratch.path, project_name + ".aedb")
         else:
             target_folder = os.path.join(local_scratch.path, generate_unique_name("TestEdb") + ".aedb")
-        return EdbLegacy(
+        return EdbGrpc(
             target_folder,
             edbversion=desktop_version,
         )

@@ -12,6 +12,6 @@ version = __version__
 
 # By default we use pyedb legacy implementation
 if "PYEDB_USE_LEGACY" not in os.environ:
-    os.environ["PYEDB_USE_LEGACY"] = "1"
+    os.environ["PYEDB_USE_LEGACY"] = "0"
 
 from pyedb.generic.design_types import Edb

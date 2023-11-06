@@ -935,6 +935,11 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         if not term.is_null:
             return term
 
+    @property
+    def component(self):
+        """Return Padstack Instance Component"""
+        return self._app.components.instances[self._edb_padstackinstance.component.name]
+
     @pyedb_function_handler
     def _create_terminal(self, name=None):
         """Create a padstack instance terminal"""
@@ -1307,10 +1312,10 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         self._position = []
         out = self._edb_padstackinstance.get_position_and_rotation()
         if self._edb_padstackinstance.component:
-            out2 = self._edb_padstackinstance.component.transform.transform_point(out[1])
-            self._position = [out2.x.value, out2.y.value]
+            out2 = self._edb_padstackinstance.component.transform.transform_point(geometry.PointData(out[0], out[1]))
+            self._position = [out2[0].value, out2[1].value]
         elif out[0]:
-            self._position = [out[1].x.value, out[1].y.value]
+            self._position = [out[0].value, out[1].value]
         return self._position
 
     @position.setter
@@ -1334,9 +1339,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             Rotation value for the padstack instance.
         """
         out = self._edb_padstackinstance.get_position_and_rotation()
-
-        if out[0]:
-            return out[2].value
+        return out[2].value
 
     @property
     def name(self):
