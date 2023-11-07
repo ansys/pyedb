@@ -23,7 +23,7 @@ class EDBComponentDef(object):
 
     Parameters
     ----------
-    parent : :class:`pyaedt.edb_core.components.Components`
+    parent : :class:`pyedb.legacy.edb_core.components.Components`
         Inherited AEDT object.
     comp_def : object
         Edb ComponentDef Object
@@ -73,7 +73,7 @@ class EDBComponentDef(object):
 
         Returns
         -------
-        dict of :class:`pyaedt.edb_core.edb_data.components_data.EDBComponent`
+        dict of :class:`pyedb.legacy.edb_core.edb_data.components_data.EDBComponent`
         """
         comp_list = [
             EDBComponent(self._pedb, l)
@@ -145,7 +145,7 @@ class EDBComponent(object):
 
     Parameters
     ----------
-    parent : :class:`pyaedt.edb_core.components.Components`
+    parent : :class:`pyedb.legacy.edb_core.components.Components`
         Inherited AEDT object.
     component : object
         Edb Component Object

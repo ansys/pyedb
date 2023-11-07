@@ -80,7 +80,7 @@ class EdbLayout(object):
 
         Returns
         -------
-        list of :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of primitives.
         """
         _prims = []
@@ -142,7 +142,7 @@ class EdbLayout(object):
 
         Returns
         -------
-        list of :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of rectangles.
 
         """
@@ -154,7 +154,7 @@ class EdbLayout(object):
 
         Returns
         -------
-        list of :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of circles.
 
         """
@@ -166,7 +166,7 @@ class EdbLayout(object):
 
         Returns
         -------
-        list of :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of paths.
         """
         return [i for i in self.primitives if isinstance(i, PathDotNet)]
@@ -177,7 +177,7 @@ class EdbLayout(object):
 
         Returns
         -------
-        list of :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of bondwires.
         """
         return [i for i in self.primitives if isinstance(i, BondwireDotNet)]
@@ -188,7 +188,7 @@ class EdbLayout(object):
 
         Returns
         -------
-        list of :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of polygons.
         """
         return [i for i in self.primitives if isinstance(i, PolygonDotNet)]
@@ -419,7 +419,7 @@ class EdbLayout(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
             ``True`` when successful, ``False`` when failed.
         """
         net = self._pedb.nets.find_or_create_net(net_name)
@@ -497,7 +497,7 @@ class EdbLayout(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
         """
         path = self.Shape("Polygon", points=path_list)
         primitive = self._create_path(
@@ -602,7 +602,7 @@ class EdbLayout(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
         """
         warnings.warn(
             "Use :func:`create_polygon` method instead. It now supports point lists as arguments.", DeprecationWarning
@@ -651,7 +651,7 @@ class EdbLayout(object):
 
         Returns
         -------
-         :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+         :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
             Rectangle when successful, ``False`` when failed.
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
@@ -707,7 +707,7 @@ class EdbLayout(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
             Objects of the circle created when successful.
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
@@ -851,7 +851,7 @@ class EdbLayout(object):
 
         Parameters
         ----------
-        shape : :class:`pyaedt.edb_core.layout.EdbLayout.Shape`
+        shape : :class:`pyedb.legacy.edb_core.layout.EdbLayout.Shape`
             Type of the shape to convert. Options are ``"rectangle"`` and ``"polygon"``.
         """
         if shape.type == "polygon":

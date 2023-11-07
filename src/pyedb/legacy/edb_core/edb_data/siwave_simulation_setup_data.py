@@ -724,7 +724,7 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
+        :class:`pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
         """
         return SiwaveDCAdvancedSettings(self)
 

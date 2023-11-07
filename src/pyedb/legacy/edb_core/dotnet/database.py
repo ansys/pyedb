@@ -141,7 +141,7 @@ class PolygonDataDotNet:  # pragma: no cover
         ----------
         points : list or `Edb.Geometry.PointData`
         """
-        from pyedb.legacy.generic.clr_module import Tuple
+        from pyedb.legacy.clr_module import Tuple
 
         if isinstance(points, (tuple, list)):
             points = Tuple[self._pedb.edb_api.Geometry.PointData, self._pedb.edb_api.Geometry.PointData](
@@ -655,7 +655,7 @@ class CellDotNet:
 
         Returns
         -------
-        :class:`pyaedt.edb_core.dotnet.database.CellClassDotNet`"""
+        :class:`pyedb.legacy.edb_core.dotnet.database.CellClassDotNet`"""
         return CellClassDotNet(self._app)
 
     @property
@@ -664,7 +664,7 @@ class CellDotNet:
 
         Returns
         -------
-        :class:`pyaedt.edb_core.dotnet.database.UtilityDotNet`"""
+        :class:`pyedb.legacy.edb_core.dotnet.database.UtilityDotNet`"""
 
         return UtilityDotNet(self._app)
 
@@ -674,7 +674,7 @@ class CellDotNet:
 
         Returns
         -------
-        :class:`pyaedt.edb_core.dotnet.database.GeometryDotNet`"""
+        :class:`pyedb.legacy.edb_core.dotnet.database.GeometryDotNet`"""
         return GeometryDotNet(self._app)
 
 
@@ -693,8 +693,8 @@ class EdbDotNet(object):
         self.edbversion = edbversion
         self.student_version = student_version
         """Initialize DLLs."""
-        from pyedb.legacy.generic.clr_module import _clr
-        from pyedb.legacy.generic.clr_module import edb_initialized
+        from pyedb.legacy.clr_module import _clr
+        from pyedb.legacy.clr_module import edb_initialized
 
         if settings.enable_screen_logs:
             self._logger.enable_stdout_log()
@@ -770,7 +770,7 @@ class EdbDotNet(object):
 
         Returns
         -------
-        :class:`pyaedt.aedt_logger.AedtLogger`
+        :class:`pyedb.edb_logger.EDBLogger`
         """
         return self._logger
 
@@ -780,7 +780,7 @@ class EdbDotNet(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.dotnet.database.CellDotNet`
+        :class:`pyedb.legacy.edb_core.dotnet.database.CellDotNet`
         """
         return CellDotNet(self)
 

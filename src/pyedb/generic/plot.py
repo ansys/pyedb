@@ -72,7 +72,7 @@ def get_structured_mesh(theta, phi, ff_data):
 
 
 def is_notebook():
-    """Check if pyaedt is running in Jupyter or not.
+    """Check if pyedb is running in Jupyter or not.
 
     Returns
     -------
@@ -1071,7 +1071,7 @@ class ModelPlotter(CommonPlotter):
 
     Examples
     --------
-    This Class can be instantiated within Pyaedt (with plot_model_object or different field plots
+    This Class can be instantiated within PyEDB (with plot_model_object or different field plots
     and standalone).
     Here an example of standalone project
 

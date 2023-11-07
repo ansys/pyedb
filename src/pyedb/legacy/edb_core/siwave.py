@@ -29,7 +29,7 @@ class EdbSiwave(object):
 
     Parameters
     ----------
-    edb_class : :class:`pyaedt.edb.Edb`
+    edb_class : :class:`pyedb.edb.Edb`
         Inherited parent object.
 
     Examples
@@ -825,7 +825,7 @@ class EdbSiwave(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
+        :class:`pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
             Setup object class.
         """
         setup = self._pedb.create_siwave_syz_setup()
@@ -868,7 +868,7 @@ class EdbSiwave(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.siwave_simulation_setup_data.SiwaveDCSimulationSetup`
+        :class:`pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveDCSimulationSetup`
             Setup object class.
 
         Examples
@@ -1184,7 +1184,7 @@ class EdbSiwave(object):
 
         Returns
         -------
-        class:`pyaedt.edb_core.components.Components`
+        class:`pyedb.legacy.edb_core.components.Components`
             Created EDB component.
 
         """

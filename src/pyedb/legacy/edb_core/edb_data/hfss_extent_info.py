@@ -10,8 +10,8 @@ class HfssExtentInfo:
 
     Parameters
     ----------
-    pedb : :class:`pyaedt.edb.Edb`
-        Inherited AEDT object.
+    pedb : :class:`pyedb.edb.Edb`
+        Inherited EDB object.
     """
 
     def __init__(self, pedb):
@@ -232,7 +232,7 @@ class HfssExtentInfo:
 
         Returns
         -------
-        pyaedt.edb_core.edb_data.edbvalue.EdbValue
+        pyedb.legacy.edb_core.edb_data.edbvalue.EdbValue
         """
         return EdbValue(self._edb_hfss_extent_info.OperatingFreq)
 

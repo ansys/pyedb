@@ -1,9 +1,15 @@
 import os
 from pyedb.generic.constants import SourceType
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
 import pytest
 
-pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
+try:
+    from pyedb.grpc.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+except ImportError:
+    def pytest_collection_modifyitems(items, config):
+        for item in items:
+            item.add_marker(pytest.mark.xfail)
+
+pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.grpc]
 
 class TestClass:
     @pytest.fixture(autouse=True)

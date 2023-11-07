@@ -1,4 +1,4 @@
-"""Miscellaneous Methods for PyAEDT."""
+"""Miscellaneous Methods for PyEDB."""
 import os
 import warnings
 

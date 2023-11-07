@@ -51,7 +51,7 @@ class GeometryOperators(object):
             String to convert. For example, ``"2mm"``. The default is ``None``.
         scale_to_unit : str, optional
             Units for the value to convert. For example, ``"mm"``.
-        variable_manager : :class:`pyaedt.application.Variables.VariableManager`, optional
+        variable_manager : :class:`pyedb.legacy.application.Variables.VariableManager`, optional
             Try to parse formula and returns numeric value.
             The default is ``None``.
 
@@ -64,7 +64,7 @@ class GeometryOperators(object):
         --------
         Parse `'"2mm"'`.
 
-        >>> from pyaedt.modeler.geometry_operators import GeometryOperators as go
+        >>> from pyedb.modeler.geometry_operators import GeometryOperators as go
         >>> go.parse_dim_arg('2mm')
         >>> 0.002
 

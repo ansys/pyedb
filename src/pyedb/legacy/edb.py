@@ -178,7 +178,7 @@ class EdbLegacy(Database):
         self.log_name = None
         if edbpath:
             self.log_name = os.path.join(
-                os.path.dirname(edbpath), "pyaedt_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log"
+                os.path.dirname(edbpath), "pyedb_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log"
             )
 
         if isaedtowned and (inside_desktop or settings.remote_api or settings.remote_rpc_session):
@@ -234,7 +234,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.variables.Variable`
+        :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`
 
         """
         if self.variable_exists(variable_name)[0]:
@@ -704,7 +704,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.components.Components`
+        :class:`pyedb.legacy.edb_core.components.Components`
 
         Examples
         --------
@@ -886,7 +886,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.hfss.EdbHfss`
+        :class:`pyedb.legacy.edb_core.hfss.EdbHfss`
 
         Examples
         --------
@@ -906,7 +906,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.nets.EdbNets`
+        :class:`pyedb.legacy.edb_core.nets.EdbNets`
 
         Examples
         --------
@@ -923,7 +923,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.nets.EdbNets`
+        :class:`pyedb.legacy.edb_core.nets.EdbNets`
 
         Examples
         --------
@@ -1296,7 +1296,7 @@ class EdbLegacy(Database):
             self._logger = self._global_logger
 
         self.log_name = os.path.join(
-            os.path.dirname(fname), "pyaedt_" + os.path.splitext(os.path.split(fname)[-1])[0] + ".log"
+            os.path.dirname(fname), "pyedb_" + os.path.splitext(os.path.split(fname)[-1])[0] + ".log"
         )
         if settings.enable_local_log_file:
             self._logger = self._global_logger.add_file_logger(self.log_name, "Edb")
@@ -2905,7 +2905,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.edbvalue.EdbValue`
+        :class:`pyedb.legacy.edb_core.edb_data.edbvalue.EdbValue`
         """
         var_server = self.variable_exists(variable_name)
         if var_server[0]:
@@ -3044,7 +3044,7 @@ class EdbLegacy(Database):
 
         Parameters
         ----------
-        simulation_setup : :class:`pyaedt.edb_core.edb_data.simulation_configuration.SimulationConfiguration` object.
+        simulation_setup : :class:`pyedb.legacy.edb_core.edb_data.simulation_configuration.SimulationConfiguration` object.
             SimulationConfiguration object that can be instantiated or directly loaded with a
             configuration file.
 
@@ -3308,7 +3308,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.simulation_configuration.SimulationConfiguration`
+        :class:`pyedb.legacy.edb_core.edb_data.simulation_configuration.SimulationConfiguration`
         """
         return SimulationConfiguration(filename, self)
 
@@ -3374,7 +3374,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`
+        :class:`pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`
 
         Examples
         --------
@@ -3398,7 +3398,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
+        :class:`pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
 
         Examples
         --------
@@ -3430,7 +3430,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
+        :class:`pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
 
         Examples
         --------
@@ -3648,15 +3648,15 @@ class EdbLegacy(Database):
         """Create a port between two terminals.
         Parameters
         ----------
-        terminal : class:`pyaedt.edb_core.edb_data.terminals.EdgeTerminal`,
-                   class:`pyaedt.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-                   class:`pyaedt.edb_core.edb_data.terminals.PointTerminal`,
-                   class:`pyaedt.edb_core.edb_data.terminals.PinGroupTerminal`,
+        terminal : class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
+                   class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+                   class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
+                   class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
             Positive terminal of the port.
-        ref_terminal : class:`pyaedt.edb_core.edb_data.terminals.EdgeTerminal`,
-                   class:`pyaedt.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-                   class:`pyaedt.edb_core.edb_data.terminals.PointTerminal`,
-                   class:`pyaedt.edb_core.edb_data.terminals.PinGroupTerminal`,
+        ref_terminal : class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
+                   class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+                   class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
+                   class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
                    optional
             Negative terminal of the port.
         is_circuit_port : bool, optional

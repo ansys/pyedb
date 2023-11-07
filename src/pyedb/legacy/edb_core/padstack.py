@@ -7,7 +7,7 @@ import warnings
 from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstack
 from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.legacy.generic.clr_module import Array
+from pyedb.legacy.clr_module import Array
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 
@@ -34,7 +34,7 @@ class EdbPadstacks(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.components_data.EDBComponent`
+        :class:`pyedb.legacy.edb_core.edb_data.components_data.EDBComponent`
 
         """
         if name in self.instances:
@@ -190,7 +190,7 @@ class EdbPadstacks(object):
 
         Returns
         -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
             List of padstack instances.
 
         """
@@ -250,7 +250,7 @@ class EdbPadstacks(object):
 
         Returns
         -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
             List of padstack instances.
         """
 
@@ -1069,7 +1069,7 @@ class EdbPadstacks(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.padstacks_data.EDBPadstackInstance`
+        :class:`pyedb.legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance`
         """
         padstack = None
         for pad in list(self.definitions.keys()):

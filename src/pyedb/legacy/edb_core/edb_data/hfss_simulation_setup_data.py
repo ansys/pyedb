@@ -1,5 +1,5 @@
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.legacy.generic.clr_module import Tuple
+from pyedb.legacy.clr_module import Tuple
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 
@@ -992,7 +992,7 @@ class AdaptiveSettings(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.AdaptiveSettings`
+        :class:`pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data.AdaptiveSettings`
         """
         return self._parent._edb_sim_setup_info.SimulationSettings.AdaptiveSettings
 
@@ -1002,7 +1002,7 @@ class AdaptiveSettings(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.AdaptiveFrequencyData`
+        :class:`pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data.AdaptiveFrequencyData`
         """
         return [AdaptiveFrequencyData(i) for i in list(self.adaptive_settings.AdaptiveFrequencyDataList)]
 
@@ -1827,7 +1827,7 @@ class HfssSimulationSetup(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.HfssSolverSettings`
+        :class:`pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data.HfssSolverSettings`
 
         """
         return HfssSolverSettings(self)
@@ -1838,7 +1838,7 @@ class HfssSimulationSetup(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.AdaptiveSettings`
+        :class:`pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data.AdaptiveSettings`
 
         """
         return AdaptiveSettings(self)
@@ -1849,7 +1849,7 @@ class HfssSimulationSetup(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.DefeatureSettings`
+        :class:`pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data.DefeatureSettings`
 
         """
         return DefeatureSettings(self)
@@ -1860,7 +1860,7 @@ class HfssSimulationSetup(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.ViaSettings`
+        :class:`pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data.ViaSettings`
 
         """
         return ViaSettings(self)
@@ -1871,7 +1871,7 @@ class HfssSimulationSetup(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.AdvancedMeshSettings`
+        :class:`pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data.AdvancedMeshSettings`
 
         """
         return AdvancedMeshSettings(self)
@@ -1882,7 +1882,7 @@ class HfssSimulationSetup(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.CurveApproxSettings`
+        :class:`pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data.CurveApproxSettings`
 
         """
         return CurveApproxSettings(self)
@@ -1893,7 +1893,7 @@ class HfssSimulationSetup(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.DcrSettings`
+        :class:`pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data.DcrSettings`
 
         """
         return DcrSettings(self)
@@ -1904,7 +1904,7 @@ class HfssSimulationSetup(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.HfssPortSettings`
+        :class:`pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data.HfssPortSettings`
 
         """
         return HfssPortSettings(self)
@@ -2051,7 +2051,7 @@ class HfssSimulationSetup(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.EdbFrequencySweep`
+        :class:`pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data.EdbFrequencySweep`
 
         Examples
         --------

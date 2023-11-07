@@ -45,7 +45,7 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
             base_path = env_path(edbversion)
             sys.path.append(base_path)
         else:
-            pyaedt_logger.error("No Edb installation found. Check environment variables")
+            pyedb_logger.error("No Edb installation found. Check environment variables")
             return False
         os.environ["HELIC_ROOT"] = os.path.join(base_path, "helic")
         if os.getenv("ANSYSLMD_LICENCE_FILE", None) is None:
@@ -58,7 +58,7 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
                             os.environ["ANSYSLMD_LICENSE_FILE"] = line.split("=")[1]
                             break
             else:
-                pyaedt_logger.error("ANSYSLMD_LICENSE_FILE is not defined.")
+                pyedb_logger.error("ANSYSLMD_LICENSE_FILE is not defined.")
         vlc_file_name = os.path.splitext(tech_file)[0]
         if not control_file:
             control_file = vlc_file_name + ".xml"
@@ -92,9 +92,9 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
             p = subprocess.Popen(command, env=my_env)
             p.wait()
         if os.path.exists(control_file):
-            pyaedt_logger.info("Xml file created.")
+            pyedb_logger.info("Xml file created.")
             return control_file
-    pyaedt_logger.error("Technology files are supported only in Linux. Use control file instead.")
+    pyedb_logger.error("Technology files are supported only in Linux. Use control file instead.")
     return False
 
 
@@ -246,7 +246,7 @@ class ControlFileStackup:
 
         Returns
         -------
-        list of :class:`pyaedt.edb_core.edb_data.control_file.ControlFileVia`
+        list of :class:`pyedb.legacy.edb_core.edb_data.control_file.ControlFileVia`
 
         """
         return self._vias
@@ -257,7 +257,7 @@ class ControlFileStackup:
 
         Returns
         -------
-        list of :class:`pyaedt.edb_core.edb_data.control_file.ControlFileMaterial`
+        list of :class:`pyedb.legacy.edb_core.edb_data.control_file.ControlFileMaterial`
 
         """
         return self._materials
@@ -268,7 +268,7 @@ class ControlFileStackup:
 
         Returns
         -------
-        list of :class:`pyaedt.edb_core.edb_data.control_file.ControlFileLayer`
+        list of :class:`pyedb.legacy.edb_core.edb_data.control_file.ControlFileLayer`
 
         """
         return self._dielectrics
@@ -279,7 +279,7 @@ class ControlFileStackup:
 
         Returns
         -------
-        list of :class:`pyaedt.edb_core.edb_data.control_file.ControlFileLayer`
+        list of :class:`pyedb.legacy.edb_core.edb_data.control_file.ControlFileLayer`
 
         """
         return self._layers
@@ -313,7 +313,7 @@ class ControlFileStackup:
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.control_file.ControlFileMaterial`
+        :class:`pyedb.legacy.edb_core.edb_data.control_file.ControlFileMaterial`
         """
         if isinstance(properties, dict):
             self._materials[material_name] = ControlFileMaterial(material_name, properties)
@@ -367,7 +367,7 @@ class ControlFileStackup:
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.control_file.ControlFileLayer`
+        :class:`pyedb.legacy.edb_core.edb_data.control_file.ControlFileLayer`
         """
         if isinstance(properties, dict):
             self._layers.append(ControlFileLayer(layer_name, properties))
@@ -420,7 +420,7 @@ class ControlFileStackup:
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.control_file.ControlFileDielectric`
+        :class:`pyedb.legacy.edb_core.edb_data.control_file.ControlFileDielectric`
         """
         if isinstance(properties, dict):
             self._dielectrics.append(ControlFileDielectric(layer_name, properties))
@@ -498,7 +498,7 @@ class ControlFileStackup:
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.control_file.ControlFileVia`
+        :class:`pyedb.legacy.edb_core.edb_data.control_file.ControlFileVia`
         """
         if isinstance(properties, dict):
             self._vias.append(ControlFileVia(layer_name, properties))
@@ -784,7 +784,7 @@ class ControlFileBoundaries:
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.control_file.ControlCircuitPt`
+        :class:`pyedb.legacy.edb_core.edb_data.control_file.ControlCircuitPt`
         """
         self.ports[name] = ControlCircuitPt(name, str(x1), str(y1), layer1, str(x2), str(y2), layer2, str(z0))
         return self.ports[name]
@@ -971,7 +971,7 @@ class ControlFileSetup:
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.control_file.ControlFileSweep`
+        :class:`pyedb.legacy.edb_core.edb_data.control_file.ControlFileSweep`
         """
         self.sweeps.append(ControlFileSweep(name, start, stop, step, sweep_type, step_type, use_q3d))
         return self.sweeps[-1]
@@ -992,7 +992,7 @@ class ControlFileSetup:
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.control_file.ControlFileMeshOp`
+        :class:`pyedb.legacy.edb_core.edb_data.control_file.ControlFileMeshOp`
 
         """
         mop = ControlFileMeshOp(name, region, type, nets_layers)
@@ -1062,7 +1062,7 @@ class ControlFileSetups:
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.control_file.ControlFileSetup`
+        :class:`pyedb.legacy.edb_core.edb_data.control_file.ControlFileSetup`
         """
         setup = ControlFileSetup(name)
         setup.frequency = frequency

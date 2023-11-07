@@ -28,7 +28,7 @@ aedt_file = targetfile[:-4] + "aedt"
 ###############################################################################
 # Launch EDB
 # ~~~~~~~~~~
-# Launch the :class:`pyaedt.Edb` class, using EDB 2023 R2 and SI units.
+# Launch the :class:`pyedb.Edb` class, using EDB 2023 R2 and SI units.
 edb_version = "2023.2"
 if os.path.exists(aedt_file):
     os.remove(aedt_file)
@@ -160,17 +160,3 @@ outputs = edb.export_siwave_dc_results(siw_file, setup.name, )
 # Close EDB. After EDB is closed, it can be opened by AEDT.
 
 edb.close_edb()
-
-###############################################################################
-# Postprocess in Siwave
-# ~~~~~~~~~~~~~~~~~~~~~
-# Open Siwave and generate a report. This works on Window only.
-
-# from pyaedt import Siwave
-# siwave = Siwave("2023.2")
-# siwave.open_project(siwave_file)
-# report_file = os.path.join(temp_folder,'Ansys.htm')
-#
-# siwave.export_siwave_report("myDCIR_4", report_file)
-# siwave.close_project()
-# siwave.quit_application()

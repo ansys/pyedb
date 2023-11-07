@@ -7,11 +7,8 @@ import random
 import re
 import string
 
-from pyaedt.generic.general_methods import pyedb_function_handler
-from pyaedt.generic.general_methods import settings
-from pyaedt.modeler.cad.elements3d import EdgePrimitive
-from pyaedt.modeler.cad.elements3d import FacePrimitive
-from pyaedt.modeler.cad.elements3d import VertexPrimitive
+from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import settings
 
 
 @pyedb_function_handler()
@@ -51,63 +48,6 @@ def _tuple2dict(t, d):
                 _tuple2dict(tt, d[k])
     else:
         d[k] = v
-
-
-@pyedb_function_handler()
-def _dict2arg(d, arg_out):
-    """Create a valid string of name-value pairs for the native AEDT API.
-
-    Prepend the argument string in `arg_out` using the dictionary ``d``
-    to create a valid input string as an argument for the native AEDT API.
-
-    Parameters
-    ----------
-    d : dict
-        Dictionary to use for prepending to the argument string being built
-        for the native AEDT API.
-
-    arg_out : str.
-        String of the name/value pair to be built as an argument
-        for the native AEDT API.
-
-    """
-    for k, v in d.items():
-        if "_pyaedt" in k:
-            continue
-        if k == "Point" or k == "DimUnits":
-            if isinstance(v[0], (list, tuple)):
-                for e in v:
-                    arg = ["NAME:" + k, e[0], e[1]]
-                    arg_out.append(arg)
-            else:
-                arg = ["NAME:" + k, v[0], v[1]]
-                arg_out.append(arg)
-        elif k == "Range":
-            if isinstance(v[0], (list, tuple)):
-                for e in v:
-                    arg_out.append(k + ":=")
-                    arg_out.append([i for i in e])
-            else:
-                arg_out.append(k + ":=")
-                arg_out.append([i for i in v])
-        elif isinstance(v, (OrderedDict, dict)):
-            arg = ["NAME:" + k]
-            _dict2arg(v, arg)
-            arg_out.append(arg)
-        elif v is None:
-            arg_out.append(["NAME:" + k])
-        elif type(v) is list and len(v) > 0 and isinstance(v[0], (OrderedDict, dict)):
-            for el in v:
-                arg = ["NAME:" + k]
-                _dict2arg(el, arg)
-                arg_out.append(arg)
-
-        else:
-            arg_out.append(k + ":=")
-            if type(v) is EdgePrimitive or type(v) is FacePrimitive or type(v) is VertexPrimitive:
-                arg_out.append(v.id)
-            else:
-                arg_out.append(v)
 
 
 @pyedb_function_handler()
