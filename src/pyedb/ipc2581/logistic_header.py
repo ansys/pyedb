@@ -3,13 +3,13 @@ from pyedb.generic.general_methods import ET
 
 class LogisticHeader(object):
     def __init__(self):
-        self.owner = "Pyaedt"
+        self.owner = "PyEDB"
         self.sender = "Ansys"
         self.enterprise = "Ansys"
         self.code = "UNKNOWN"
         self.person_name = "eba"
         self.enterprise_ref = "UNKNOWN"
-        self.role_ref = "Pyaedt"
+        self.role_ref = "PyEDB"
 
     def write_xml(self, root):  # pragma no cover
         logistic_header = ET.SubElement(root, "LogisticHeader")

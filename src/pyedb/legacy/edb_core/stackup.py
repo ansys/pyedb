@@ -652,7 +652,7 @@ class Stackup(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.layer_data.LayerEdbClass`
+        :class:`pyedb.legacy.edb_core.edb_data.layer_data.LayerEdbClass`
         """
         if layer_name in self.layers:
             logger.error("layer {} exists.".format(layer_name))
@@ -2191,9 +2191,9 @@ class Stackup(object):
         plot_definitions : str, list, optional
             List of padstack definitions to plot on the stackup.
             It is supported only for Laminate mode.
-        first_layer : str or :class:`pyaedt.edb_core.edb_data.layer_data.LayerEdbClass`
+        first_layer : str or :class:`pyedb.legacy.edb_core.edb_data.layer_data.LayerEdbClass`
             First layer to plot from the bottom. Default is `None` to start plotting from bottom.
-        last_layer : str or :class:`pyaedt.edb_core.edb_data.layer_data.LayerEdbClass`
+        last_layer : str or :class:`pyedb.legacy.edb_core.edb_data.layer_data.LayerEdbClass`
             Last layer to plot from the bottom. Default is `None` to plot up to top layer.
         scale_elevation : bool, optional
             The real layer thickness is scaled so that max_thickness = 3 * min_thickness.

@@ -12,13 +12,8 @@
 </p>
 
 [![PyAnsys](https://img.shields.io/badge/Py-Ansys-ffc107.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAABDklEQVQ4jWNgoDfg5mD8vE7q/3bpVyskbW0sMRUwofHD7Dh5OBkZGBgW7/3W2tZpa2tLQEOyOzeEsfumlK2tbVpaGj4N6jIs1lpsDAwMJ278sveMY2BgCA0NFRISwqkhyQ1q/Nyd3zg4OBgYGNjZ2ePi4rB5loGBhZnhxTLJ/9ulv26Q4uVk1NXV/f///////69du4Zdg78lx//t0v+3S88rFISInD59GqIH2esIJ8G9O2/XVwhjzpw5EAam1xkkBJn/bJX+v1365hxxuCAfH9+3b9/+////48cPuNehNsS7cDEzMTAwMMzb+Q2u4dOnT2vWrMHu9ZtzxP9vl/69RVpCkBlZ3N7enoDXBwEAAA+YYitOilMVAAAAAElFTkSuQmCC)](https://docs.pyansys.com/)
-[![pypi](https://img.shields.io/pypi/v/pyaedt.svg?logo=python&logoColor=white)](https://pypi.org/project/pyaedt/)
-[![PyPIact](https://static.pepy.tech/badge/pyaedt/month)](https://www.pepy.tech/projects/pyaedt)
 [![PythonVersion](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
-[![GH-CI](https://github.com/ansys/pyaedt/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/ansys/pyaedt/actions/workflows/unit_tests.yml)
-[![codecov](https://codecov.io/gh/ansys/pyaedt/branch/main/graph/badge.svg)](https://codecov.io/gh/ansys/pyaedt)
-[![MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)[![black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat)](https://github.com/psf/black)[![Anaconda](https://anaconda.org/conda-forge/pyaedt/badges/version.svg)](https://anaconda.org/conda-forge/pyaedt)
-[![pre-commit](https://results.pre-commit.ci/badge/github/ansys/pyaedt/main.svg)](https://results.pre-commit.ci/latest/github/ansys/pyaedt/main)
+[![MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)[!
 
 ## What is PyEDB ?
 
@@ -67,10 +62,9 @@ and most efficient way to handle large and complex layout.
 
 AEDB can also been parsed with and Electromagnetic simulator command line like HFSS or SIwave in bacth.
 Therefore completely non graphical flows can be deployed from layout translation up to simulatiom results.
-AEDB can also be imported in ANSYS AEDT with PyAEDT for example to display the project, combining 3D design
-or performing simulation post-processing. AEDB also supports 3D component models.
+AEDB can also be imported in ANSYS AEDT with PyAEDT for example to display the project, combining 3D design or performing simulation post-processing. AEDB also supports 3D component models.
 
-`PyEDB` is licensed under the [MIT License](https://github.com/ansys/pyaedt/blob/main/LICENSE)
+`PyEDB` is licensed under the [MIT License](https://github.com/ansys/pyedb/blob/main/LICENSE)
 
 PyEDB includes functionality for interacting with the following AEDT tools and Ansys products:
 
@@ -81,8 +75,8 @@ PyEDB includes functionality for interacting with the following AEDT tools and A
 
 ## Documentation and issues
 
-Documentation for the latest stable release of PyAEDT is hosted at
-[PyEDB documentation](https://aedt.docs.pyansys.com/version/stable/).
+Documentation for the latest stable release of PyEDB is hosted at
+[PyEDB documentation](https://aedb.docs.pyansys.com/version/stable/).
 
 In the upper right corner of the documentation's title bar, there is an option
 for switching from viewing the documentation for the latest stable release
@@ -97,9 +91,9 @@ providing syntax rules and commands for using the PyEDB API:
   PyEDB API cheat sheet.
 
 
-On the [PyEDB Issues](https://github.com/ansys-internal/pyansys-edb/issues) page, you can
+On the [PyEDB Issues](https://github.com/ansys/pyansys-edb/issues) page, you can
 create issues to report bugs and request new features. On the
-[PyAEDT Discussions](https://github.com/ansys/pyaedt/discussions) page or the
+[PyEDB Discussions](https://github.com/ansys/pyansys-edb/discussions) page or the
 [Discussions](https://discuss.ansys.com/) page on the Ansys Developer portal,
 you can post questions, share ideas, and get community feedback.
 

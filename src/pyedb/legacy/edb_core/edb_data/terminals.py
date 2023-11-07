@@ -187,7 +187,7 @@ class Terminal(Connectable):
         Returns
         -------
         :class:`legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance` or
-        :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
         """
         if not self._reference_object:
             term = self._edb_object
@@ -286,7 +286,7 @@ class Terminal(Connectable):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
         """
 
         ref_layer = self._edb_object.GetReferenceLayer()
@@ -310,7 +310,7 @@ class Terminal(Connectable):
         Returns
         -------
         :class:`legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance` or
-        :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
         """
 
         ref_term = self._edb_object.GetReferenceTerminal()  # return value is type terminal
@@ -345,7 +345,7 @@ class Terminal(Connectable):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.padstacks_data.EDBPadstackInstance`
+        :class:`pyedb.legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance`
         """
         comp_inst = self._edb_object.GetComponent()
         pins = self._pedb.components.get_pin_from_component(comp_inst.GetName())
@@ -420,7 +420,7 @@ class BundleTerminal(Terminal):
 
     Parameters
     ----------
-    pedb : pyaedt.edb.Edb
+    pedb : pyedb.edb.Edb
         EDB object from the ``Edblib`` library.
     edb_object : Ansys.Ansoft.Edb.Cell.Terminal.BundleTerminal
         BundleTerminal instance from EDB.
@@ -515,7 +515,7 @@ class PointTerminal(Terminal):
             Whether it is a reference terminal.
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.terminals.PointTerminal`
+        :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`
         """
         terminal = self._pedb.edb_api.cell.terminal.PointTerminal.Create(
             self._pedb.active_layout,
@@ -578,7 +578,7 @@ class PinGroupTerminal(Terminal):
             Whether it is a reference terminal. The default is ``False``.
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.terminals.PinGroupTerminal`
+        :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`
         """
         term = self._pedb.edb_api.cell.terminal.PinGroupTerminal.Create(
             self._pedb.active_layout,

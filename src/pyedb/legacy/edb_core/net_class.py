@@ -19,7 +19,7 @@ class EdbCommon:
 
         Returns
         -------
-        :class:` :class:`pyaedt.edb_core.dotnet.layout.LayoutDotNet`
+        :class:` :class:`pyedb.legacy.edb_core.dotnet.layout.LayoutDotNet`
         """
         return self._pedb.layout
 
@@ -66,7 +66,7 @@ class EdbNetClasses(EdbCommon, object):
 
         Returns
         -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.nets_data.EDBDifferentialPairData`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBDifferentialPairData`]
             Dictionary of extended nets.
         """
         net_classes = {}
@@ -88,7 +88,7 @@ class EdbNetClasses(EdbCommon, object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.nets_data.EDBNetClassData`
+        :class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBNetClassData`
         """
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
@@ -251,7 +251,7 @@ class EdbDifferentialPairs(EdbCommon, object):
 
         Returns
         -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.nets_data.EDBDifferentialPairData`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBDifferentialPairData`]
             Dictionary of extended nets.
         """
         diff_pairs = {}
@@ -275,7 +275,7 @@ class EdbDifferentialPairs(EdbCommon, object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.nets_data.EDBDifferentialPairData`
+        :class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBDifferentialPairData`
         """
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))

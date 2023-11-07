@@ -42,7 +42,7 @@ class Variable:
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.edbvalue.EdbValue`
+        :class:`pyedb.legacy.edb_core.edb_data.edbvalue.EdbValue`
         """
         return self._pedb.get_variable(self.name)
 

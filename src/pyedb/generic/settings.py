@@ -4,7 +4,7 @@ import time
 
 
 class Settings(object):
-    """Manages all PyAEDT environment variables and global settings."""
+    """Manages all PyEDB environment variables and global settings."""
 
     def __init__(self):
         # TODO: Remove this (not always sure)
@@ -65,7 +65,7 @@ class Settings(object):
 
     @property
     def global_log_file_size(self):
-        """Global PyAEDT log file size in MB. The default value is ``10``."""
+        """Global PyEDB log file size in MB. The default value is ``10``."""
         return self._global_log_file_size
 
     @global_log_file_size.setter
@@ -74,7 +74,7 @@ class Settings(object):
 
     @property
     def enable_global_log_file(self):
-        """Flag for enabling and disabling the global PyAEDT log file located in the global temp folder.
+        """Flag for enabling and disabling the global PyEDB log file located in the global temp folder.
         The default is ``True``."""
         return self._enable_global_log_file
 
@@ -84,8 +84,8 @@ class Settings(object):
 
     @property
     def enable_local_log_file(self):
-        """Flag for enabling and disabling the local PyAEDT log file located
-        in the ``projectname.pyaedt`` project folder. The default is ``True``."""
+        """Flag for enabling and disabling the local PyEDB log file located
+        in the ``projectname.pyedb`` project folder. The default is ``True``."""
         return self._enable_local_log_file
 
     @enable_local_log_file.setter
@@ -94,7 +94,7 @@ class Settings(object):
 
     @property
     def global_log_file_name(self):
-        """Global PyAEDT log file path. The default is ``pyaedt_username.log``."""
+        """Global PyEDB log file path. The default is ``pyedb_username.log``."""
         return self._global_log_file_name
 
     @global_log_file_name.setter
@@ -121,7 +121,7 @@ class Settings(object):
 
     @property
     def enable_error_handler(self):
-        """Flag for enabling and disabling the internal PyAEDT error handling."""
+        """Flag for enabling and disabling the internal PyEDB error handling."""
         return self._enable_error_handler
 
     @enable_error_handler.setter
@@ -148,7 +148,7 @@ class Settings(object):
 
     @property
     def logger_file_path(self):
-        """PyAEDT log file path."""
+        """PyEDB log file path."""
         return self._logger_file_path
 
     @logger_file_path.setter

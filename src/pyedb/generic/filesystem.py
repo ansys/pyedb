@@ -16,7 +16,7 @@ def search_files(dirname, pattern="*"):
     -------
     list
     """
-    from pyaedt.generic.general_methods import is_ironpython
+    from pyedb.generic.general_methods import is_ironpython
 
     if is_ironpython:
         import glob

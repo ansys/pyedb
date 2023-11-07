@@ -366,7 +366,7 @@ class RectangleDotNet(PrimitiveDotNet):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.dotnet.primitive.RectangleDotNet`
+        :class:`pyedb.legacy.edb_core.dotnet.primitive.RectangleDotNet`
 
             Rectangle that was created.
         """
@@ -490,7 +490,7 @@ class CircleDotNet(PrimitiveDotNet):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.dotnet.primitive.CircleDotNet`
+        :class:`pyedb.legacy.edb_core.dotnet.primitive.CircleDotNet`
             Circle object created.
         """
         if isinstance(net, NetDotNet):
@@ -581,7 +581,7 @@ class TextDotNet(PrimitiveDotNet):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.dotnet.primitive.TextDotNet`
+        :class:`pyedb.legacy.edb_core.dotnet.primitive.TextDotNet`
             The text Object that was created.
         """
         return TextDotNet(
@@ -658,7 +658,7 @@ class PolygonDotNet(PrimitiveDotNet):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.dotnet.primitive.PolygonDotNet`
+        :class:`pyedb.legacy.edb_core.dotnet.primitive.PolygonDotNet`
             Polygon object created.
         """
         if isinstance(net, NetDotNet):
@@ -704,7 +704,7 @@ class PathDotNet(PrimitiveDotNet):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.dotnet.primitive.PathDotNet`
+        :class:`pyedb.legacy.edb_core.dotnet.primitive.PathDotNet`
             Path object created.
         """
         if isinstance(net, NetDotNet):
@@ -892,7 +892,7 @@ class BondwireDotNet(PrimitiveDotNet):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.dotnet.primitive.BondwireDotNet`
+        :class:`pyedb.legacy.edb_core.dotnet.primitive.BondwireDotNet`
             Bondwire object created.
         """
         if isinstance(net, NetDotNet):
@@ -1145,7 +1145,7 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.dotnet.primitive.PadstackInstanceDotNet`
+        :class:`pyedb.legacy.edb_core.dotnet.primitive.PadstackInstanceDotNet`
             Padstack instance object created.
         """
         if isinstance(net, NetDotNet):

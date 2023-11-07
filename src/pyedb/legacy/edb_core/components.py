@@ -15,8 +15,8 @@ from pyedb.legacy.edb_core.edb_data.sources import Source
 from pyedb.legacy.edb_core.edb_data.sources import SourceType
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 from pyedb.legacy.edb_core.padstack import EdbPadstacks
-from pyedb.legacy.generic.clr_module import String
-from pyedb.legacy.generic.clr_module import _clr
+from pyedb.legacy.clr_module import String
+from pyedb.legacy.clr_module import _clr
 from pyedb.generic.general_methods import get_filename_without_extension
 from pyedb.generic.general_methods import is_ironpython
 from pyedb.generic.general_methods import pyedb_function_handler
@@ -56,7 +56,7 @@ class Components(object):
 
     Parameters
     ----------
-    edb_class : :class:`pyaedt.edb.Edb`
+    edb_class : :class:`pyedb.legacy.edb.Edb`
 
     Examples
     --------
@@ -75,7 +75,7 @@ class Components(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.components_data.EDBComponent`
+        :class:`pyedb.legacy.edb_core.edb_data.components_data.EDBComponent`
 
         """
         if name in self.instances:
@@ -151,7 +151,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.components_data.EDBComponent`]
             Default dictionary for the EDB component.
 
         Examples
@@ -171,7 +171,7 @@ class Components(object):
 
         Returns
         -------
-        Dict[str, :class:`pyaedt.edb_core.edb_data.components_data.EDBComponent`]
+        Dict[str, :class:`pyedb.legacy.edb_core.edb_data.components_data.EDBComponent`]
             Default dictionary for the EDB component.
 
         Examples
@@ -192,7 +192,7 @@ class Components(object):
 
         Returns
         -------
-        dict of :class:`pyaedt.edb_core.edb_data.components_data.EDBComponentDef`"""
+        dict of :class:`pyedb.legacy.edb_core.edb_data.components_data.EDBComponentDef`"""
         return {l.GetName(): EDBComponentDef(self._pedb, l) for l in list(self._pedb.component_defs)}
 
     @property
@@ -303,7 +303,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.components_data.EDBComponent`]
             Dictionary of resistors.
 
         Examples
@@ -325,7 +325,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.components_data.EDBComponent`]
             Dictionary of capacitors.
 
         Examples
@@ -347,7 +347,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.components_data.EDBComponent`]
             Dictionary of inductors.
 
         Examples
@@ -370,7 +370,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.components_data.EDBComponent`]
             Dictionary of integrated circuits.
 
         Examples
@@ -393,7 +393,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.components_data.EDBComponent`]
             Dictionary of circuit inputs and outputs.
 
         Examples
@@ -416,7 +416,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.components_data.EDBComponent`]
             Dictionary of other core components.
 
         Examples

@@ -36,7 +36,7 @@ jobs:
           cache: 'pip'
           python-version: '3.10'
 
-      - name: Install pyedb with tests dependencies
+      - name: Install pyedb
         run: |
           pip install .
 

@@ -14,15 +14,6 @@ coverage:
         if_no_uploads: error
   ignore:
     - "examples"  # ignore folders and all its contents
-    - "_unittest"  # ignore folders and all its contents
-    - "_unittest_ironpython"  # ignore folders and all its contents
-    - "legacy/third_party/**/*.py"  # ignore folders and all its contents
-    - "legacy/rpc/**/*.py"  # ignore folders and all its contents
-    - "legacy/generic/toolkit.py"  # ignore folders and all its contents
-    - "legacy/doctest_fixtures/*.py"  # ignore folders and all its contents
-    - "legacy/siwave.py"  # ignore folders and all its contents
-    - "legacy/setup.py"  # ignore folders and all its contents
-    - "legacy/setup-distutils.py"  # ignore folders and all its contents
-    - "legacy/_setup_common.py"  # ignore folders and all its contents
-    - "legacy/misc/*.py"  # ignore folders and all its contents
-    - "legacy/sbrplus/hdm_utils.py" # ignore folder and all its contents
+    - "tests"  # ignore folders and all its contents
+    - "src/pyedb/legacy/edb_core/siwave.py"  # ignore folders and all its contents
+    - "src/pyedb/misc/*.py"  # ignore folders and all its contents

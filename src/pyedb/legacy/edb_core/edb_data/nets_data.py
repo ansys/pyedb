@@ -43,7 +43,7 @@ class EDBNetsData(NetDotNet):
 
         Returns
         -------
-        list of :class:`pyaedt.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives`
         """
         return [cast(i, self._app) for i in self.net_object.Primitives]
 
@@ -53,7 +53,7 @@ class EDBNetsData(NetDotNet):
 
         Returns
         -------
-        list of :class:`pyaedt.edb_core.edb_data.padstacks_data.EDBPadstackInstance`"""
+        list of :class:`pyedb.legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance`"""
         name = self.name
         return [
             EDBPadstackInstance(i, self._app) for i in self.net_object.PadstackInstances if i.GetNet().GetName() == name
@@ -65,7 +65,7 @@ class EDBNetsData(NetDotNet):
 
         Returns
         -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.components_data.EDBComponent`]
         """
         comps = {}
         for p in self.padstack_instances:
@@ -150,7 +150,7 @@ class EDBNetsData(NetDotNet):
 
         Returns
         -------
-        :class:` :class:`pyaedt.edb_core.edb_data.nets_data.EDBExtendedNetData`
+        :class:` :class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBExtendedNetData`
 
         Examples
         --------

@@ -11,7 +11,7 @@ readme = "README.md"
 requires-python = ">=3.8,<4"
 license = {file = "LICENSE"}
 authors = [{name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"}]
-maintainers = [{name = "PyAEDT developers", email = "simon.vandenbrouck@ansys.com"}]
+maintainers = [{name = "PyEDB developers", email = "simon.vandenbrouck@ansys.com"}]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
@@ -108,26 +108,7 @@ full = [
     "numpy==1.21.6; python_version <= '3.9'",
     "numpy==1.26.0; python_version > '3.9'",
     "pandas==1.3.5; python_version == '3.7'",
-    "pandas==2.0.3; python_version == '3.8'",
-    "pandas==2.1.1; python_version > '3.9'",
-    "osmnx",
-    "pyvista==0.42.2; python_version > '3.7'",
-    "pyvista==0.38.0; python_version <= '3.7'",
-    "SRTM.py",
-    "utm",
-    "scikit-rf",
-    "openpyxl==3.1.2",
-]
-all = [
-    "imageio",
-    "matplotlib==3.5.3; python_version == '3.7'",
-    "matplotlib==3.7.3; python_version == '3.8'",
-    "matplotlib==3.8.0; python_version > '3.8'",
-    "numpy==1.21.6; python_version <= '3.9'",
-    "numpy==1.26.0; python_version > '3.9'",
-    "pandas==1.3.5; python_version == '3.7'",
     "pandas==2.0.3; python_version == '3.9'",
-    "pandas==2.0.3; python_version == '3.8'",
     "pandas==2.1.1; python_version > '3.9'",
     "osmnx",
     "pyvista==0.42.2; python_version > '3.7'",
@@ -141,44 +122,49 @@ all = [
 [tool.flit.module]
 name = "pyedb"
 
-[project.urls]
-Bugs = "https://github.com/ansys/pyansys-edb/issues"
+# TODO: update once the repo is public
+# [project.urls]
+# Bugs = "https://github.com/ansys/pyansys-edb/issues"
 # Documentation = "https://aedt.docs.pyansys.com"
-Source = "https://github.com/ansys/pyansys-edb"
-Discussions = "https://github.com/ansys/pyansys-edb/discussions"
-Releases = "https://github.com/ansys/pyansys-edb/releases"
+# Source = "https://github.com/ansys/pyansys-edb"
+# Discussions = "https://github.com/ansys/pyansys-edb/discussions"
+# Releases = "https://github.com/ansys/pyansys-edb/releases"
 
 [tool.black]
-line-length = 120
+line-length = 88
 
 [tool.isort]
 profile = "black"
 force_sort_within_sections = true
-line_length = 120
 default_section = "THIRDPARTY"
-src_paths = ["doc", "src", "_unittests"]
+src_paths = ["doc", "src", "tests"]
 
 [tool.codespell]
-ignore-words = "ignore_words.txt"
-skip = """
-*.pyc,*.aedt,*.xml,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,\
-*.ipynb,flycheck*,./.git/*,./.hypothesis/*,*.yml,./docs/build/*,./docs/images/*,./dist/*,*~,.hypothesis*,\
-./pyaedt/third_party,./docs/source/examples/*,*cover,*.dat,*.mac,PKG-INFO,*.mypy_cache/*,*.xml,*.aedt,*.svg
-"""
+skip = '*.pyc,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,*.ipynb,flycheck*,./.git/*,./.hypothesis/*,*.yml,./doc/build/*,./doc/images/*,./dist/*,*~,.hypothesis*,./doc/source/examples/*,*cover,*.dat,*.mac,*.cdb,*.CDB,build,./docker/mapdl/v*,./factory/*,./ansys/mapdl/core/mapdl_functions.py,PKG-INFO,*.mypy_cache/*,./docker/mapdl/*,./_unused/*'
+ignore-words = "doc/styles/Vocab/ANSYS/accept.txt"
 enable-colors = true
 
 [tool.coverage.run]
-source = ["pyaedt"]
+source = ["pyedb"]
 
 [tool.coverage.report]
 show_missing = true
 
 [tool.pytest.ini_options]
 minversion = "7.1"
-addopts = "-ra --cov=pyaedt --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term -vv"
-testpaths = [
-    "tests"
+filterwarnings = [
+    "ignore::DeprecationWarning",
 ]
+markers = [
+    "legacy: mark test as related to the legacy API.",
+    "unit: mark test as an unit test.",
+    "integration: mark test as an integration test.",
+    "system: mark test as a system test.",
+    "slow: mark test as slow.",
+    "no_licence: mark test that do not need a licence.",
+]
+testpaths = "tests"
+addopts = "-ra --cov=src/pyedb --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term -vv"
 
 [tool.numpydoc_validation]
 checks = [
@@ -199,10 +185,4 @@ checks = [
     # Parameters
     "PR10",  # Parameter "{param_name}" requires a space before the colon
     # separating the parameter name and type",
-]
-exclude = [
-    '\.AEDTMessageManager.add_message$',  # bad SS05
-    '\.Modeler3D\.create_choke$',  # bad RT05
-    '\._unittest\',  # missing docstring for tests
-    'HistoryProps.',  # bad RT05 because of the base class named OrderedDict
 ]
