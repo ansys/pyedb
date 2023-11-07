@@ -14,8 +14,8 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, edbapp, local_scratch):
-        self.edbapp = edbapp
+    def init(self, grpc_edb_app, local_scratch):
+        self.edbapp = grpc_edb_app
         self.local_scratch = local_scratch
 
     def test_material_properties(self):

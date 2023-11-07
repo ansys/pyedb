@@ -7,8 +7,8 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, edbapp, local_scratch, target_path, target_path2, target_path4):
-        self.edbapp = edbapp
+    def init(self, legacy_edb_app, local_scratch, target_path, target_path2, target_path4):
+        self.edbapp = legacy_edb_app
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path2 = target_path2

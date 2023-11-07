@@ -1,32 +1,51 @@
 """
 """
-import sys
+
 import os
-
+from os.path import dirname
 import pytest
-
-# from pyedb import Edb
-# from pyedb.legacy.edb_core.components import resistor_value_parser
-# from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
-# from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-# from pyedb.legacy.edb_core.edb_data.sources import Source
-# from pyedb.generic.constants import RadiationBoxType
-# from pyedb.generic.general_methods import check_numeric_equivalence
-
-# from pyedb.generic.constants import SolverType
-# from pyedb.generic.constants import SourceType
-# from tests.conftest import config
 from tests.conftest import local_path
-# from tests.conftest import edb_version
+
+from pyedb.grpc.edb import EdbGrpc
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.misc.misc import list_installed_ansysem
+
+example_models_path = os.path.join(
+    dirname(dirname(dirname(os.path.realpath(__file__)))), "example_models")
+
+# Initialize default desktop configuration
+desktop_version = "2023.2"
+if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_installed_ansysem():
+    desktop_version = list_installed_ansysem()[0][12:].replace(".", "")
+    desktop_version = "20{}.{}".format(desktop_version[:2], desktop_version[-1])
 
 test_subfolder = "TEDB"
 test_project_name = "ANSYS-HSD_V1"
 bom_example = "bom_example.csv"
 
+@pytest.fixture(scope="module")
+def add_grpc_edb(local_scratch):
+    def _method(project_name=None, subfolder=""):
+        if project_name:
+            example_folder = os.path.join(local_path, "example_models", subfolder, project_name + ".aedb")
+            if os.path.exists(example_folder):
+                target_folder = os.path.join(local_scratch.path, project_name + ".aedb")
+                local_scratch.copyfolder(example_folder, target_folder)
+            else:
+                target_folder = os.path.join(local_scratch.path, project_name + ".aedb")
+        else:
+            target_folder = os.path.join(local_scratch.path, generate_unique_name("TestEdb") + ".aedb")
+        return EdbGrpc(
+            target_folder,
+            edbversion=desktop_version,
+        )
+
+    return _method
+
 
 @pytest.fixture(scope="class")
-def edbapp(add_edb):
-    app = add_edb(test_project_name, subfolder=test_subfolder)
+def grpc_edb_app(add_grpc_edb):
+    app = add_grpc_edb(test_project_name, subfolder=test_subfolder)
     return app
 
 
