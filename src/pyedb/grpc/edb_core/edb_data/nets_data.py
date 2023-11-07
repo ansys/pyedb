@@ -121,7 +121,7 @@ class EDBNetsData(Net):
         current_value = 1e10
         for prim in self.net_object.primitives:
             if prim.primitive_type == PrimitiveType.PATH:
-                width = prim.GetWidth()
+                width = prim.width.value
                 if width < current_value:
                     current_value = width
         return current_value

@@ -393,7 +393,7 @@ class EdbGrpc(EdbInit):
     @property
     def excitations_nets(self):
         """Get all excitations net names."""
-        names = list(set([i.GetNet().GetName() for i in self.layout.terminals]))
+        names = list(set([i.net.name for i in self.layout.terminals]))
         names = [i for i in names if i]
         return names
 
@@ -610,7 +610,7 @@ class EdbGrpc(EdbInit):
         -------
         Instance of EDB API Layout Class.
         """
-        return self.layout._layout
+        return self.layout
 
     @property
     def layout_instance(self):
