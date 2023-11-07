@@ -1399,7 +1399,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         str
             Name of the net.
         """
-        return self._edb_padstackinstance.net.name
+        return self._edb_padstackinstance.GetNet().GetName()
 
     @net_name.setter
     def net_name(self, val):
