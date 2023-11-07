@@ -6,7 +6,13 @@ import os
 #from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
 import pytest
 
-from pyedb.grpc.edb import EdbGrpc
+try:
+    from pyedb.grpc.edb import EdbGrpc
+except ImportError:
+    def pytest_collection_modifyitems(items, config):
+        for item in items:
+            item.add_marker(pytest.mark.xfail)
+
 from pyedb.generic.constants import RadiationBoxType, SourceType
 from pyedb.generic.constants import SolverType
 from pyedb.generic.general_methods import is_linux

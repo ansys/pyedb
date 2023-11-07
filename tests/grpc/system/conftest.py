@@ -6,7 +6,6 @@ from os.path import dirname
 import pytest
 from tests.conftest import local_path
 
-from pyedb.grpc.edb import EdbGrpc
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.misc import list_installed_ansysem
 
@@ -25,6 +24,8 @@ bom_example = "bom_example.csv"
 
 @pytest.fixture(scope="module")
 def add_grpc_edb(local_scratch):
+    from pyedb.grpc.edb import EdbGrpc
+
     def _method(project_name=None, subfolder=""):
         if project_name:
             example_folder = os.path.join(local_path, "example_models", subfolder, project_name + ".aedb")

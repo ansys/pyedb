@@ -44,7 +44,7 @@ def add_legacy_edb(local_scratch):
 
 
 @pytest.fixture(scope="class")
-def legacy_edb_app(add_edb):
+def legacy_edb_app(add_legacy_edb):
     app = add_legacy_edb(test_project_name, subfolder=test_subfolder)
     return app
 
