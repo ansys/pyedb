@@ -18,6 +18,7 @@ import ansys.edb.geometry as geometry
 import ansys.edb.database as database
 import ansys.edb.layout_instance as layout_instance
 import pyedb.generic as generic
+import ansys.edb.utility as utility
 import ansys.edb.terminal as terminal
 import ansys.edb.simulation_setup as simulation_setup
 
@@ -852,17 +853,6 @@ class EdbGrpc(EdbInit):
         else:  # pragma: no cover
             return
 
-
-    # class Boundaries:
-    #     """Boundaries Enumerator.
-    #
-    #     Returns
-    #     -------
-    #     int
-    #     """
-    #
-    #     (Port, Pec, RLC, CurrentSource, VoltageSource, NexximGround, NexximPort, DcTerminal, VoltageProbe) = range(0, 9)
-    #
     @pyedb_function_handler()
     def point_3d(self, x, y, z=0.0):
         """Compute the Edb 3d Point Data.
@@ -880,7 +870,7 @@ class EdbGrpc(EdbInit):
         -------
         ``Geometry.Point3DData``.
         """
-        return self.edb_api.geometry.point3d_data(x, y, z)
+        return geometry.Point3DData(utility.Value(x), utility.Value(y), utility.Value(z))
 
     @pyedb_function_handler()
     def point_data(self, x, y=None):
@@ -899,9 +889,9 @@ class EdbGrpc(EdbInit):
         ``Geometry.PointData``.
         """
         if y is None:
-            return self.edb_api.geometry.point_data(x)
+            return geometry.PointData(utility.Value(x))
         else:
-            return self.edb_api.geometry.point_data(x, y)
+            return geometry.PointData(utility.Value(x), utility.Value(y))
 
     @pyedb_function_handler()
     def _is_file_existing_and_released(self, filename):
@@ -1018,10 +1008,8 @@ class EdbGrpc(EdbInit):
             self._logger = self._global_logger
 
         self.log_name = os.path.join(
-            os.path.dirname(fname), "pyaedt_" + os.path.splitext(os.path.split(fname)[-1])[0] + ".log"
+            os.path.dirname(fname), "pyedb_" + os.path.splitext(os.path.split(fname)[-1])[0] + ".log"
         )
-        if settings.enable_local_log_file:
-            self._logger = self._global_logger.add_file_logger(self.log_name, "Edb")
         return True
 
     @pyedb_function_handler()
@@ -2562,24 +2550,14 @@ class EdbGrpc(EdbInit):
         Returns
         -------
         tuple of bool and VaribleServer
-            It returns a booleand to check if the variable exists and the variable
+            It returns a boole and to check if the variable exists and the variable
             server that should contain the variable.
         """
-        if "$" in variable_name:
-            if variable_name.index("$") == 0:
-                var_server = self.active_db.GetVariableServer()
-
-            else:
-                var_server = self.active_cell.GetVariableServer()
-
-        else:
-            var_server = self.active_cell.GetVariableServer()
-
-        variables = var_server.GetAllVariableNames()
-        if variable_name in list(variables):
-            return True, var_server
-        return False, var_server
-
+        if variable_name in self.active_db.get_all_variable_names():
+            return True
+        if variable_name in self.active_cell.get_all_variable_names():
+            return True
+        return False
     @pyedb_function_handler()
     def get_variable(self, variable_name):
         """Return Variable Value if variable exists.
@@ -2630,7 +2608,11 @@ class EdbGrpc(EdbInit):
         """
         if not variable_name.startswith("$"):
             variable_name = "${}".format(variable_name)
-        return self.add_design_variable(variable_name=variable_name, variable_value=variable_value)
+        if self.variable_exists(variable_name):
+            self.logger.error("Variable %s already exists.", variable_name)
+            return False
+        self.active_db.add_variable(variable_name, utility.Value(variable_value))
+        return self.active_db.create_value(variable_name)
 
     @pyedb_function_handler()
     def add_design_variable(self, variable_name, variable_value, is_parameter=False):
@@ -2668,12 +2650,15 @@ class EdbGrpc(EdbInit):
 
 
         """
-        var_server = self.variable_exists(variable_name)
-        if not var_server[0]:
-            var_server[1].AddVariable(variable_name, self.edb_value(variable_value), is_parameter)
-            return True, var_server[1]
-        self.logger.error("Variable %s already exists.", variable_name)
-        return False, var_server[1]
+        if self.variable_exists(variable_name):
+            self.logger.error("Variable %s already exists.", variable_name)
+            return False
+        if variable_name.startswith("$"):
+            self.active_db.add_variable(variable_name, utility.Value(variable_value), is_parameter)
+            return self.active_db.create_value(variable_name)
+        else:
+            self.active_cell.add_variable(variable_name, utility.Value(variable_value), is_parameter)
+            return self.active_cell.create_value(variable_name)
 
     @pyedb_function_handler()
     def change_design_variable_value(self, variable_name, variable_value):

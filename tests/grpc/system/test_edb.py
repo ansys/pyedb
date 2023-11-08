@@ -121,28 +121,24 @@ class TestClass:
 
     def test_add_variables(self):
         """Add design and project variables."""
-        result, var_server = self.edbapp.add_design_variable("my_variable", "1mm")
-        assert result
-        assert var_server
-        result, var_server = self.edbapp.add_design_variable("my_variable", "1mm")
-        assert not result
-        assert self.edbapp.modeler.parametrize_trace_width("A0_N")
-        assert self.edbapp.modeler.parametrize_trace_width("A0_N_R")
-        result, var_server = self.edbapp.add_design_variable("my_parameter", "2mm", True)
-        assert result
-        assert var_server.IsVariableParameter("my_parameter")
-        result, var_server = self.edbapp.add_design_variable("my_parameter", "2mm", True)
-        assert not result
-        result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
-        assert result
-        assert var_server
-        result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
-        assert not result
+        assert self.edbapp.add_design_variable("my_variable", "1mm")
+        assert "my_variable" in self.edbapp.active_cell.get_all_variable_names()
+        assert self.edbapp.active_cell.get_variable_value("my_variable").value == 0.001
+        assert self.edbapp.modeler.parametrize_trace_width(nets_name="PCIe_Gen4_TX0_CAP_P")
+        assert self.edbapp.modeler.parametrize_trace_width("AVCC_1V3")
+        var = self.edbapp.add_design_variable("my_parameter", "2mm", True)
+        assert var
+        var = self.edbapp.add_design_variable("my_parameter", "2mm", True)
+        assert not var
+        var = self.edbapp.add_project_variable("$my_project_variable", "3mm")
+        assert var
+        var = self.edbapp.add_project_variable("$my_project_variable", "3mm")
+        assert not var
 
     def test_save_edb_as(self):
         """Save edb as some file."""
-        assert self.edbapp.save_edb_as(os.path.join(self.local_scratch.path, "Gelileo_new.aedb"))
-        assert os.path.exists(os.path.join(self.local_scratch.path, "Gelileo_new.aedb", "edb.def"))
+        assert self.edbapp.save_edb_as(os.path.join(self.local_scratch.path, "pyedb_test.aedb"))
+        assert os.path.exists(os.path.join(self.local_scratch.path, "pyedb_test.aedb", "edb.def"))
 
     def test_create_custom_cutout_0(self):
         """Create custom cutout 0."""

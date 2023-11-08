@@ -5,21 +5,25 @@ import math
 import warnings
 
 from ansys.edb.primitive import Bondwire
-from ansys.edb.primitive import Circle
-from ansys.edb.primitive import Path
-from ansys.edb.primitive import Polygon
-from ansys.edb.primitive import Rectangle
+import ansys.edb.primitive as primitive
+import ansys.edb.geometry as geometry
+import ansys.edb.utility as utility
+import ansys.edb.geometry.arc_data as arcdata
+#from ansys.edb.primitive import Circle
+#from ansys.edb.primitive import Path
+#from ansys.edb.primitive import Polygon
+#from ansys.edb.primitive import Rectangle
 from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitives
 from pyedb.grpc.edb_core.edb_data.primitives_data import cast
 from pyedb.grpc.edb_core.edb_data.utilities import EDBStatistics
-from ansys.edb.geometry.point_data import PointData
-from ansys.edb.geometry.polygon_data import PolygonData
-from ansys.edb.geometry.arc_data import ArcData
+#from ansys.edb.geometry.point_data import PointData
+#from ansys.edb.geometry.polygon_data import PolygonData
+#from ansys.edb.geometry.arc_data import ArcData
 from pyedb.generic.general_methods import pyedb_function_handler
-from ansys.edb.primitive.primitive import PathEndCapType, PathCornerType
-from ansys.edb.utility.value import Value
-from ansys.edb.primitive.primitive import RectangleRepresentationType
-from ansys.edb.geometry.arc_data import RotationDirection
+#from ansys.edb.primitive.primitive import PathEndCapType, PathCornerType
+#from ansys.edb.utility.value import Value
+#from ansys.edb.primitive.primitive import RectangleRepresentationType
+#from ansys.edb.geometry.arc_data import RotationDirection
 
 
 class EdbLayout(object):
@@ -426,31 +430,31 @@ class EdbLayout(object):
         """
         net = self._pedb.nets.find_or_create_net(net_name)
         if start_cap_style.lower() == "round":
-            start_cap_style = PathEndCapType.ROUND
+            start_cap_style = primitive.PathEndCapType.ROUND
         elif start_cap_style.lower() == "extended":
-            start_cap_style = PathEndCapType.EXTENDED
+            start_cap_style = primitive.PathEndCapType.EXTENDED
         else:
-            start_cap_style = PathEndCapType.FLAT
+            start_cap_style = primitive.PathEndCapType.FLAT
         if end_cap_style.lower() == "round":
-            end_cap_style = PathEndCapType.ROUND
+            end_cap_style = primitive.PathEndCapType.ROUND
         elif end_cap_style.lower() == "extended":
-            end_cap_style = PathEndCapType.EXTENDED
+            end_cap_style = primitive.PathEndCapType.EXTENDED
         else:
-            end_cap_style = PathEndCapType.FLAT
+            end_cap_style = primitive.PathEndCapType.FLAT
         if corner_style.lower() == "round":
-            corner_style = PathCornerType.ROUND
+            corner_style = primitive.PathCornerType.ROUND
         elif corner_style.lower() == "sharp":
-            corner_style = PathCornerType.SHARP
+            corner_style = primitive.PathCornerType.SHARP
         else:
-            corner_style = PathCornerType.MITER
+            corner_style = primitive.PathCornerType.MITER
 
-        pointlists = [PointData(i[0], i[1]) for i in path_list.points]
-        polygonData = PolygonData(pointlists, False)
-        polygon = Path.create(
+        pointlists = [geometry.PointData(i[0], i[1]) for i in path_list.points]
+        polygonData = geometry.PolygonData(pointlists, False)
+        polygon = primitive.Path.create(
             self._active_layout,
             layer_name,
             net,
-            Value(width),
+            utility.Value(width),
             start_cap_style,
             end_cap_style,
             corner_style,
@@ -542,13 +546,13 @@ class EdbLayout(object):
         if isinstance(main_shape, list):
             arcs = []
             for _ in range(len(main_shape)):
-                arcs.append(ArcData(PointData(), PointData()))
-            polygonData = PolygonData(arcs, False)
+                arcs.append(geometry.ArcData(geometry.PointData(), geometry.PointData()))
+            polygonData = geometry.PolygonData(arcs, False)
 
             for idx, i in enumerate(main_shape):
-                pdata_0 = Value(i[0])
-                pdata_1 = Value(i[1])
-                new_points = PointData(pdata_0, pdata_1)
+                pdata_0 = utility.Value(i[0])
+                pdata_1 = utility.Value(i[1])
+                new_points = geometry.PointData(pdata_0, pdata_1)
                 polygonData.points[idx] = new_points
 
         elif isinstance(main_shape, EdbLayout.Shape):
@@ -570,7 +574,7 @@ class EdbLayout(object):
                 self._logger.error("Failed to create void polygon data")
                 return False
             polygonData.holes.append(voidPolygonData)
-        polygon = Polygon.create(self._active_layout, layer_name, net, polygonData)
+        polygon = primitive.Polygon.create(self._active_layout, layer_name, net, polygonData)
         if polygon.is_null or polygonData is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
@@ -653,27 +657,27 @@ class EdbLayout(object):
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "LowerLeftUpperRight":
-            rep_type = RectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT
-            rect = Rectangle.create(self._active_layout, layer_name, edb_net.net_obj, rep_type,
-                                    Value(lower_left_point[0]),
-                                    Value(lower_left_point[1]),
-                                    Value(upper_right_point[0]),
-                                    Value(upper_right_point[1]),
-                                    Value(corner_radius),
-                                    Value(rotation))
+            rep_type = primitive.RectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT
+            rect = primitive.Rectangle.create(self._active_layout, layer_name, edb_net.net_obj, rep_type,
+                                    utility.Value(lower_left_point[0]),
+                                    utility.Value(lower_left_point[1]),
+                                    utility.Value(upper_right_point[0]),
+                                    utility.Value(upper_right_point[1]),
+                                    utility.Value(corner_radius),
+                                    utility.Value(rotation))
         else:
-            rep_type = RectangleRepresentationType.CENTER_WIDTH_HEIGHT
-            rect = Rectangle.create(
+            rep_type = primitive.RectangleRepresentationType.CENTER_WIDTH_HEIGHT
+            rect = primitive.Rectangle.create(
                 self._active_layout,
                 layer_name,
                 edb_net.net_obj,
                 rep_type,
-                Value(center_point[0]),
-                Value(center_point[1]),
-                Value(width),
-                Value(height),
-                Value(corner_radius),
-                Value(rotation),
+                utility.Value(center_point[0]),
+                utility.Value(center_point[1]),
+                utility.Value(width),
+                utility.Value(height),
+                utility.Value(corner_radius),
+                utility.Value(rotation),
             )
         if rect:
             return cast(rect, self._pedb)
@@ -704,13 +708,13 @@ class EdbLayout(object):
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
 
-        circle = Circle.create(
+        circle = primitive.Circle.create(
             self._active_layout,
             layer_name,
             edb_net,
-            Value(x),
-            Value(y),
-            Value(radius),
+            utility.Value(x),
+            utility.Value(y),
+            utility.Value(radius),
         )
         if circle:
             return cast(circle, self._pedb)
@@ -799,13 +803,13 @@ class EdbLayout(object):
                 radius,
             ) = void_circle.primitive_object.get_parameters()
 
-            cloned_circle = Circle.create(
+            cloned_circle = primitive.Circle.create(
                 self._active_layout,
                 void_circle.layer_name,
                 void_circle.net,
-                Value(center_x),
-                Value(center_y),
-                Value(radius),
+                utility.Value(center_x),
+                utility.Value(center_y),
+                utility.Value(radius),
             )
             if res:
                 cloned_circle.is_negative = True
@@ -875,8 +879,8 @@ class EdbLayout(object):
 
             if not self._validatePoint(endPoint):
                 return None
-            startPoint = [Value(i) for i in startPoint]
-            endPoint = [Value(i) for i in endPoint]
+            startPoint = [utility.Value(i) for i in startPoint]
+            endPoint = [utility.Value(i) for i in endPoint]
             if len(endPoint) == 2:
                 is_parametric = (
                     is_parametric
@@ -885,8 +889,8 @@ class EdbLayout(object):
                     or endPoint[0].is_parametric
                     or endPoint[1].is_parametric
                 )
-                arc = ArcData(PointData(startPoint[0].value, startPoint[1].value),
-                              PointData(endPoint[0].value, endPoint[1].value))
+                arc = geometry.ArcData(geometry.PointData(startPoint[0].value, startPoint[1].value),
+                              geometry.PointData(endPoint[0].value, endPoint[1].value))
                 arcs.append(arc)
             elif len(endPoint) == 3:
                 is_parametric = (
@@ -897,8 +901,8 @@ class EdbLayout(object):
                     or endPoint[1].is_parametric
                     or endPoint[2].is_parametric
                 )
-                arc = ArcData(PointData(startPoint[0].value, startPoint[1].value),
-                    PointData(endPoint[0].value, endPoint[1].value,
+                arc = geometry.ArcData(geometry.PointData(startPoint[0].value, startPoint[1].value),
+                    geometry.PointData(endPoint[0].value, endPoint[1].value,
                     endPoint[2].value))
                 arcs.append(arc)
             elif len(endPoint) == 5:
@@ -911,29 +915,29 @@ class EdbLayout(object):
                     or endPoint[3].is_parametric
                     or endPoint[4].is_parametric
                 )
-                rotationDirection = RotationDirection.CO_LINEAR
+                rotationDirection = arcdata.RotationDirection.CO_LINEAR
                 if str(endPoint[2].value) == "cw":
-                    rotationDirection = RotationDirection.CW
+                    rotationDirection = arcdata.RotationDirection.CW
                 elif str(endPoint[2].value) == "ccw":
-                    rotationDirection = RotationDirection.CCW
+                    rotationDirection = arcdata.RotationDirection.CCW
                 else:
                     self._logger.error("Invalid rotation direction %s is specified.", endPoint[2])
                     return None
-                arc = ArcData(
-                    PointData(startPoint[0].value, startPoint[1].value),
-                    PointData(endPoint[0].value, endPoint[1].value),
+                arc = geometry.ArcData(
+                    geometry.PointData(startPoint[0].value, startPoint[1].value),
+                    geometry.PointData(endPoint[0].value, endPoint[1].value),
                     rotationDirection,
-                    PointData(endPoint[3].value, endPoint[4].value),
+                    geometry.PointData(endPoint[3].value, endPoint[4].value),
                 )
                 arcs.append(arc)
-        polygon = PolygonData(arcs, True)
+        polygon = geometry.PolygonData(arcs, True)
         if not is_parametric:
             return polygon
         else:
             k = 0
             for pt in points:
-                point = [Value(i) for i in pt]
-                new_points = PointData(point[0], point[1])
+                point = [utility.Value(i) for i in pt]
+                new_points = geometry.PointData(point[0], point[1])
                 if len(point) > 2:
                     k += 1
                 polygon.points[k] = new_points
@@ -991,8 +995,8 @@ class EdbLayout(object):
     def _createPolygonDataFromRectangle(self, shape):
         if not self._validatePoint(shape.pointA, False) or not self._validatePoint(shape.pointB, False):
             return None
-        pointA = PointData(Value(shape.pointA[0]), Value(shape.pointA[1]))
-        pointB = PointData(Value(shape.pointB[0]), Value(shape.pointB[1]))
+        pointA = geometry.PointData(utility.Value(shape.pointA[0]), utility.Value(shape.pointA[1]))
+        pointB = geometry.PointData(utility.Value(shape.pointB[0]), utility.Value(shape.pointB[1]))
         return self._edb.geometry.polygon_data.create_from_bbox((pointA, pointB))
 
     class Shape(object):
@@ -1065,26 +1069,20 @@ class EdbLayout(object):
             nets_name = [nets_name]
         if isinstance(layers_name, str):
             layers_name = [layers_name]
-        for net_name in nets_name:
-            var_server = False
-            for p in self.paths:
-                if p.net.name == net_name:
-                    if not layers_name:
-                        if not var_server:
-                            if not variable_value:
-                                variable_value = p.width
-                            result, var_server = self._pedb.add_design_variable(
-                                parameter_name, variable_value, is_parameter=True
-                            )
-                        p.width = Value(parameter_name)
-                    elif p.layer.name in layers_name:
-                        if not var_server:
-                            if not variable_value:
-                                variable_value = p.width
-                            result, var_server = self._pedb.add_design_variable(
-                                parameter_name, variable_value, is_parameter=True
-                            )
-                        p.width = Value(parameter_name)
+        for net in nets_name:
+            selected_paths = [p for p in self.paths if p.net_name == net]
+            ind = 0
+            for path in selected_paths:
+                parameter_name = f"{net}_{str(ind)}"
+                if not layers_name:
+                        variable_value = path.width
+                        param = self._pedb.add_design_variable(parameter_name, variable_value, is_parameter=True)
+                        path.width = param
+                elif path.layer.name in layers_name:
+                    variable_value = path.width
+                    param = self._pedb.add_design_variable(parameter_name, variable_value, is_parameter=True)
+                    path.width = param
+                ind += 1
         return True
 
     @pyedb_function_handler()
@@ -1122,13 +1120,13 @@ class EdbLayout(object):
             for net in poly_by_nets:
                 list_polygon_data = [i.polygon_data() for i in poly_by_nets[net]]
                 all_voids = [i.voids for i in poly_by_nets[net]]
-                a = PolygonData.unite(list_polygon_data)
+                a = geometry.PolygonData.unite(list_polygon_data)
                 for item in a:
                     for v in all_voids:
                         for void in v:
                             if int(item.intersection_type(void.polygon_data)) == 2:
                                 item.add_hole(void.polygon_data)
-                    poly = Polygon.create(self._active_layout, lay, self._pedb.nets.nets[net], item)
+                    poly = primitive.Polygon.create(self._active_layout, lay, self._pedb.nets.nets[net], item)
                 list_to_delete = [i for i in poly_by_nets[net]]
                 for v in all_voids:
                     for void in v:
