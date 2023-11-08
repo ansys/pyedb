@@ -1,9 +1,11 @@
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 from ansys.edb.simulation_setup import SweepData
-from ansys.edb.utility.value import Value
-from ansys.edb.simulation_setup.hfss_simulation_settings import HFSSSimulationSettings
-from ansys.edb.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
+import ansys.edb.utility as utility
+#from ansys.edb.utility.value import Value
+import ansys.edb.simulation_setup as simulation_setup
+#from ansys.edb.simulation_setup.hfss_simulation_settings import HFSSSimulationSettings
+#from ansys.edb.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
 
 class EdbFrequencySweep(object):
     """Manages EDB methods for frequency sweep."""
@@ -1182,9 +1184,9 @@ class AdaptiveSettings(object):
             ``True`` if method is successful, ``False`` otherwise.
         """
         low_freq_adapt_data = AdaptiveFrequencyData()
-        low_freq_adapt_data.max_delta = Value(max_delta_s)
+        low_freq_adapt_data.max_delta = utility.Value(max_delta_s)
         low_freq_adapt_data.max_passes = max_num_passes
-        low_freq_adapt_data.adaptive_frequency = Value(frequency)
+        low_freq_adapt_data.adaptive_frequency = utility.Value(frequency)
         self.adaptive_settings.adaptive_frequency_data = ""
         self.adaptive_settings.adaptive_frequency_data = low_freq_adapt_data
         return self._parent._update_setup()
@@ -1212,13 +1214,13 @@ class AdaptiveSettings(object):
             ``True`` if method is successful, ``False`` otherwise.
         """
         low_freq_adapt_data = self._parent._edb.simsetupdata.AdaptiveFrequencyData()
-        low_freq_adapt_data.max_delta = Value(max_delta_s)
+        low_freq_adapt_data.max_delta = utility.Value(max_delta_s)
         low_freq_adapt_data.max_passes = max_num_passes
-        low_freq_adapt_data.adaptive_frequency = Value(low_frequency)
+        low_freq_adapt_data.adaptive_frequency = utility.Value(low_frequency)
         high_freq_adapt_data = self._parent._edb.simsetupdata.AdaptiveFrequencyData()
-        high_freq_adapt_data.max_delta = Value(max_delta_s)
+        high_freq_adapt_data.max_delta = utility.Value(max_delta_s)
         high_freq_adapt_data.may_passes = max_num_passes
-        high_freq_adapt_data.adaptive_fFrequency = Value(high_frequency)
+        high_freq_adapt_data.adaptive_fFrequency = utility.Value(high_frequency)
         self.adaptive_settings.adaptive_frequency_data = ""
         self.adaptive_settings.adaptive_frequency_data = [low_freq_adapt_data, high_freq_adapt_data]
         return self._parent._update_setup()
@@ -1713,7 +1715,7 @@ class HfssSimulationSetup(object):
             self._edb_sim_setup_info = edb_hfss_sim_setup.GetSimSetupInfo()
             self._name = edb_hfss_sim_setup.name
         else:
-            self._edb_sim_setup_info = HFSSSimulationSettings()
+            self._edb_sim_setup_info = simulation_setup.HfssSimulationSetup().create().settings
             if not name:
                 self._edb_sim_setup_info.Name = generate_unique_name("hfss")
             else:

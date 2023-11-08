@@ -820,8 +820,8 @@ class Components(object):
         if reference_net in net_list:
             net_list.remove(reference_net)
         cmp_pins = [
-            p for p in list(component.layout_objs) if int(p.obj_type) == 1 and p.net.name in net_list
-        ]
+            p for p in list(component.members) if not p.net.is_null and p.layout_obj_type.value == 1
+                                                  and p.net.name in net_list]
         for p in cmp_pins:  # pragma no cover
             if not p.is_layout_pin:
                 p.is_layout_pin = True
@@ -846,10 +846,8 @@ class Components(object):
 
         elif port_type == SourceType.CircPort:  # pragma no cover
             ref_pins = [
-                p
-                for p in list(component.layout_objs)
-                if int(p.obj_type) == 1 and p.net.name in reference_net
-            ]
+            p for p in list(component.members) if not p.net.is_null and p.layout_obj_type.value == 1
+                                                  and p.net.name in reference_net]
             for p in ref_pins:
                 if not p.is_layout_pin:
                     p.is_layout_pin = True
@@ -860,7 +858,7 @@ class Components(object):
                     ref_pin_group_term = self._create_terminal(ref_pins[0])
                 else:
                     ref_pin_group = self.create_pingroup_from_pins(ref_pins)
-                    if not ref_pin_group:
+                    if not ref_pin_group or ref_pin_group.is_null:
                         return False
                     ref_pin_group_term = self._create_pin_group_terminal(ref_pin_group, isref=True)
                     if not ref_pin_group_term:
@@ -874,7 +872,7 @@ class Components(object):
                                 pin_term.reference_terminal = ref_pin_group_term
                         else:
                             pin_group = self.create_pingroup_from_pins(pins)
-                            if not pin_group:
+                            if not pin_group or pin_group.is_null:
                                 return False
                             pin_group_term = self._create_pin_group_terminal(pin_group)
                             if pin_group_term:
@@ -1179,12 +1177,16 @@ class Components(object):
         -------
         Edb pin group terminal.
         """
-        pin = list(pingroup.pins)[0]
-        term_name = "{}.{}.{}".format(pin.GetComponent().name, pin.component.name, pin.net.name)
-        for t in list(self._pedb.active_layout.terminals):
+        pin = pingroup.pins[0]
+        term_name = "{}.{}.{}".format(pin.component.name, pin.component.name, pin.net.name)
+        for t in self._pedb.active_layout.terminals:
             if t.name == term_name:
                 return t
-        pingroup_term = terminal.PinGroupTerminal.create(self._active_layout, pingroup.net, term_name, pingroup, isref)
+        pingroup_term = terminal.PinGroupTerminal.create(layout=self._pedb.active_layout,
+                                                         net_ref=pingroup.net,
+                                                         name=term_name,
+                                                         pin_group=pingroup,
+                                                         is_ref=isref)
         return pingroup_term
 
     @pyedb_function_handler()

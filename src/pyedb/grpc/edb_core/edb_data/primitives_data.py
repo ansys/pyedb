@@ -97,7 +97,9 @@ class EDBPrimitivesMain:
 
     @property
     def net(self):
-        return self._app.nets.nets[self.net_name]
+        if self.net_name:
+            return self._app.nets.nets[self.net_name]
+        return False
 
     @net.setter
     def net(self, value):
@@ -118,7 +120,9 @@ class EDBPrimitivesMain:
         -------
         str
         """
-        return self.net.name
+        if not self.primitive_object.net.is_null:
+            return self.primitive_object.net.name
+        return False
 
     @net_name.setter
     def net_name(self, name):
