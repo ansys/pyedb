@@ -197,7 +197,7 @@ class EdbSiwave(object):
             rlc.l_enabled = False
             rlc.r_enabled = True
             rlc.r = utility.Value(source.rvalue)
-            pos_terminal.rlc_boundary_parameters(utility.Rlc)
+            pos_terminal.rlc_boundary_parameters = rlc
             try:
                 pos_terminal.name = source.name
             except:
@@ -460,9 +460,9 @@ class EdbSiwave(object):
         resistor.rvalue = rvalue
         if not resistor_name:
             resistor_name = "Res_{}_{}_{}_{}".format(
-                pos_pin.component.name,
+                pos_pin.component.refdes,
                 pos_pin.net.name,
-                neg_pin.component.name,
+                neg_pin.component.refdes,
                 neg_pin.net.name,
             )
         resistor.name = resistor_name

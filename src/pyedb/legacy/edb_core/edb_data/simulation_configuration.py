@@ -5,7 +5,7 @@ import os
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.legacy.edb_core.edb_data.sources import Source
 from pyedb.legacy.edb_core.edb_data.sources import SourceType
-from pyedb.legacy.generic.clr_module import Dictionary
+from pyedb.legacy.clr_module import Dictionary
 from pyedb.generic.constants import BasisOrder
 from pyedb.generic.constants import CutoutSubdesignType
 from pyedb.generic.constants import RadiationBoxType
@@ -491,7 +491,7 @@ class SimulationConfigurationBatch(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.sources.Source`
+        :class:`pyedb.legacy.edb_core.edb_data.sources.Source`
         """
         return self._sources
 
@@ -509,7 +509,7 @@ class SimulationConfigurationBatch(object):
 
         Parameters
         ----------
-        source : :class:`pyaedt.edb_core.edb_data.sources.Source`
+        source : :class:`pyedb.legacy.edb_core.edb_data.sources.Source`
 
         """
         if isinstance(source, Source):
@@ -2260,7 +2260,7 @@ class SimulationConfiguration(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.simulation_configuration.SimulationConfigurationDc`
+        :class:`pyedb.legacy.edb_core.edb_data.simulation_configuration.SimulationConfigurationDc`
         """
         return self._dc_settings
 
@@ -2271,7 +2271,7 @@ class SimulationConfiguration(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.simulation_configuration.SimulationConfigurationAc`
+        :class:`pyedb.legacy.edb_core.edb_data.simulation_configuration.SimulationConfigurationAc`
         """
         return self._ac_settings
 
@@ -2282,7 +2282,7 @@ class SimulationConfiguration(object):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.simulation_configuration.SimulationConfigurationBatch`
+        :class:`pyedb.legacy.edb_core.edb_data.simulation_configuration.SimulationConfigurationBatch`
         """
         return self._batch_solve_settings
 

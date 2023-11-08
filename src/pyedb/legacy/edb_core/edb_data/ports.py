@@ -9,7 +9,7 @@ class GapPort(EdgeTerminal):
 
     Parameters
     ----------
-    pedb : pyaedt.edb.Edb
+    pedb : pyedb.edb.Edb
         EDB object from the ``Edblib`` library.
     edb_object : Ansys.Ansoft.Edb.Cell.Terminal.EdgeTerminal
         Edge terminal instance from EDB.
@@ -58,7 +58,7 @@ class CircuitPort(GapPort):
     """Manages gap port properties.
     Parameters
     ----------
-    pedb : pyaedt.edb.Edb
+    pedb : pyedb.edb.Edb
         EDB object from the ``Edblib`` library.
     edb_object : Ansys.Ansoft.Edb.Cell.Terminal.EdgeTerminal
         Edge terminal instance from EDB.
@@ -76,7 +76,7 @@ class WavePort(EdgeTerminal):
 
     Parameters
     ----------
-    pedb : pyaedt.edb.Edb
+    pedb : pyedb.edb.Edb
         EDB object from the ``Edblib`` library.
     edb_object : Ansys.Ansoft.Edb.Cell.Terminal.EdgeTerminal
         Edge terminal instance from EDB.
@@ -154,7 +154,7 @@ class ExcitationSources(Terminal):
 
     Parameters
     ----------
-    pedb : pyaedt.edb.Edb
+    pedb : pyedb.edb.Edb
         Edb object from Edblib.
     edb_terminal : Ansys.Ansoft.Edb.Cell.Terminal.EdgeTerminal
         Edge terminal instance from Edb.
@@ -198,7 +198,7 @@ class BundleWavePort(BundleTerminal):
 
     Parameters
     ----------
-    pedb : pyaedt.edb.Edb
+    pedb : pyedb.edb.Edb
         EDB object from the ``Edblib`` library.
     edb_object : Ansys.Ansoft.Edb.Cell.Terminal.BundleTerminal
         BundleTerminal instance from EDB.
@@ -263,7 +263,7 @@ class CoaxPort(PadstackInstanceTerminal):
 
     Parameters
     ----------
-    pedb : pyaedt.edb.Edb
+    pedb : pyedb.edb.Edb
         EDB object from the ``Edblib`` library.
     edb_object : Ansys.Ansoft.Edb.Cell.Terminal.PadstackInstanceTerminal
         PadstackInstanceTerminal instance from EDB.

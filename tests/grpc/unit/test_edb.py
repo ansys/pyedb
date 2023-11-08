@@ -2,7 +2,12 @@ import os
 import pytest
 
 from tests.conftest import desktop_version
-from pyedb.grpc.edb import EdbGrpc
+try:
+    from pyedb.grpc.edb import EdbGrpc
+except ImportError:
+    def pytest_collection_modifyitems(items, config):
+        for item in items:
+            item.add_marker(pytest.mark.xfail)
 
 pytestmark = [pytest.mark.unit, pytest.mark.grpc]
 

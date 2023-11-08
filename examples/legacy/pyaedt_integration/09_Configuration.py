@@ -39,7 +39,7 @@ print("Project folder will be", target_aedb)
 ###############################################################################
 # Launch EDB
 # ~~~~~~~~~~
-# Launch the :class:`pyaedt.Edb` class, using EDB 2023 R2 and SI units.
+# Launch the :class:`pyedb.Edb` class, using EDB 2023 R2 and SI units.
 
 edbapp = pyedb.Edb(target_aedb, edbversion="2023.2")
 ###############################################################################

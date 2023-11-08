@@ -602,7 +602,7 @@ def generate_unique_folder_name(rootname=None, folder_name=None):
         else:
             rootname = tempfile.gettempdir()
     if folder_name is None:
-        folder_name = generate_unique_name("pyaedt_prj", n=3)
+        folder_name = generate_unique_name("pyedb_prj", n=3)
     temp_folder = os.path.join(rootname, folder_name)
     if settings.remote_rpc_session and not settings.remote_rpc_session.filemanager.pathexists(temp_folder):
         settings.remote_rpc_session.filemanager.makedirs(temp_folder)
@@ -1813,22 +1813,22 @@ class Help:  # pragma: no cover
         self._launch_ur(url)
 
     def getting_started(self):
-        """Open the PyAEDT User guide page."""
+        """Open the PyEDB User guide page."""
         url = self._base_path + "/User_guide/index.html"
         self._launch_ur(url)
 
     def examples(self):
-        """Open the PyAEDT Examples page."""
+        """Open the PyEDB Examples page."""
         url = self._base_path + "/examples/index.html"
         self._launch_ur(url)
 
     def github(self):
-        """Open the PyAEDT GitHub page."""
-        url = "https://github.com/ansys/pyaedt"
+        """Open the PyEDB GitHub page."""
+        url = "https://github.com/ansys/pyedb"
         self._launch_ur(url)
 
     def changelog(self, release=None):
-        """Open the PyAEDT GitHub Changelog for a given release.
+        """Open the PyEDB GitHub Changelog for a given release.
 
         Parameters
         ----------
@@ -1836,18 +1836,18 @@ class Help:  # pragma: no cover
             Release to get the changelog for. For example, ``"0.6.70"``.
         """
         if release is None:
-            from pyaedt import __version__ as release
-        url = "https://github.com/ansys/pyaedt/releases/tag/v" + release
+            from pyedb import __version__ as release
+        url = "https://github.com/ansys/pyedb/releases/tag/v" + release
         self._launch_ur(url)
 
     def issues(self):
-        """Open the PyAEDT GitHub Issues page."""
-        url = "https://github.com/ansys/pyaedt/issues"
+        """Open the PyEDB GitHub Issues page."""
+        url = "https://github.com/ansys/pyedb/issues"
         self._launch_ur(url)
 
     def ansys_forum(self):
-        """Open the PyAEDT GitHub Issues page."""
-        url = "https://discuss.ansys.com/discussions/tagged/pyaedt"
+        """Open the PyEDB GitHub Issues page."""
+        url = "https://discuss.ansys.com/discussions/tagged/pyedb"
         self._launch_ur(url)
 
     def developer_forum(self):

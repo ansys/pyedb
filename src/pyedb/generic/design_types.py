@@ -44,13 +44,13 @@ def Edb(
 
     Returns
     -------
-    :class:`pyaedt.edb.Edb`
+    :class:`pyedb.legacy.edb.EdbLegacy`, :class:`pyedb.grpc.edb.EdbLegacy`
 
     Examples
     --------
     Create an ``Edb`` object and a new EDB cell.
 
-    >>> from pyaedt import Edb
+    >>> from pyedb import Edb
     >>> app = Edb()
 
     Add a new variable named "s1" to the ``Edb`` instance.

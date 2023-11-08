@@ -35,7 +35,7 @@ class EdbNets(object):
 
         Returns
         -------
-        :class:` :class:`pyaedt.edb_core.edb_data.nets_data.EDBNetsData`
+        :class:` :class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBNetsData`
 
         """
         if name in self.nets:
@@ -100,7 +100,7 @@ class EdbNets(object):
 
         Returns
         -------
-        dict[str, :class:`pyaedt.edb_core.edb_data.nets_data.EDBNetsData`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBNetsData`]
             Dictionary of nets.
         """
 

@@ -26,7 +26,7 @@ targetfolder = download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
 ###############################################################################
 # Launch EDB
 # ~~~~~~~~~~
-# Launch the :class:`pyaedt.Edb` class, using EDB 2023 R2 and SI units.
+# Launch the :class:`pyedb.Edb` class, using EDB 2023 R2 and SI units.
 
 edb = pyedb.Edb(edbpath=targetfolder, edbversion="2023.2")
 

@@ -127,12 +127,12 @@ def _retrieve_folder(url, directory, destination=None, local_paths=[]):
 
 def _download_file(directory, filename=None, destination=None, local_paths=[]):
     if not filename:
-        # TODO: Remove this once pyedb is available in public
+        # TODO: Update this once pyedb is available in public
         if not directory.startswith("pyaedt/"):
             directory = "pyaedt/" + directory
         _retrieve_folder(EXAMPLE_REPO, directory, destination, local_paths)
     else:
-        # TODO: Remove this once pyedb is available in public
+        # TODO: Update this once pyedb is available in public
         if directory.startswith("pyaedt/"):
             url = _get_file_url(directory, filename)
             directory = directory[7:]
@@ -245,7 +245,7 @@ def download_netlist(destination=None):
     >>> import legacy
     >>> path = legacy.downloads.download_netlist()
     >>> path
-    'C:/Users/user/AppData/local/temp/pyaedtexamples/netlist_small.cir'
+    'C:/Users/user/AppData/local/temp/pyedbtexamples/netlist_small.cir'
     """
     local_paths = []
     _download_file("legacy/netlist", "netlist_small.cir", destination, local_paths)
@@ -276,7 +276,7 @@ def download_antenna_array(destination=None):
     >>> import legacy
     >>> path = legacy.downloads.download_antenna_array()
     >>> path
-    'C:/Users/user/AppData/local/temp/pyaedtexamples/FiniteArray_Radome_77GHz_3D_CADDM.aedt'
+    'C:/Users/user/AppData/local/temp/pyedbtexamples/FiniteArray_Radome_77GHz_3D_CADDM.aedt'
     """
 
     local_paths = []
@@ -307,7 +307,7 @@ def download_sbr(destination=None):
     >>> import legacy
     >>> path = legacy.downloads.download_antenna_array()
     >>> path
-    'C:/Users/user/AppData/local/temp/pyaedtexamples/FiniteArray_Radome_77GHz_3D_CADDM.aedt'
+    'C:/Users/user/AppData/local/temp/pyedbtexamples/FiniteArray_Radome_77GHz_3D_CADDM.aedt'
     """
 
     local_paths = []
@@ -338,7 +338,7 @@ def download_sbr_time(destination=None):
     >>> import legacy
     >>> path = legacy.downloads.download_sbr_time()
     >>> path
-    'C:/Users/user/AppData/local/temp/pyaedtexamples/sbr/poc_scat_small.aedt'
+    'C:/Users/user/AppData/local/temp/pyedbtexamples/sbr/poc_scat_small.aedt'
     """
 
     return _download_file("legacy/sbr", "poc_scat_small.aedt", destination)
@@ -367,7 +367,7 @@ def download_icepak(destination=None):
     >>> import legacy
     >>> path = legacy.downloads.download_icepak()
     >>> pathavoid
-    'C:/Users/user/AppData/local/temp/pyaedtexamples/Graphic_Card.aedt'
+    'C:/Users/user/AppData/local/temp/pyedbtexamples/Graphic_Card.aedt'
     """
     _download_file("legacy/icepak", "Graphics_card.aedt", destination)
     return _download_file("legacy/icepak", "Graphics_card.aedt", destination)
@@ -398,7 +398,7 @@ def download_icepak_3d_component(destination=None):  # pragma: no cover
     >>> import legacy
     >>> path1, path2 = legacy.downloads.download_icepak_3d_component()
     >>> path1
-    'C:/Users/user/AppData/local/temp/pyaedtexamples/PCBAssembly.aedt',
+    'C:/Users/user/AppData/local/temp/pyedbtexamples/PCBAssembly.aedt',
     """
     local_paths = []
     _download_file("legacy/icepak_3dcomp//PCBAssembly.aedb", destination=destination)
@@ -430,7 +430,7 @@ def download_via_wizard(destination=None):
     >>> import legacy
     >>> path = legacy.downloads.download_via_wizard()
     >>> path
-    'C:/Users/user/AppData/local/temp/pyaedtexamples/Graphic_Card.aedt'
+    'C:/Users/user/AppData/local/temp/pyedbtexamples/Graphic_Card.aedt'
     """
 
     return _download_file("legacy/via_wizard", "viawizard_vacuum_FR4.aedt", destination)
@@ -458,7 +458,7 @@ def download_touchstone(destination=None):
     >>> import legacy
     >>> path = legacy.downloads.download_touchstone()
     >>> path
-    'C:/Users/user/AppData/local/temp/pyaedtexamples/ssn_ssn.s6p'
+    'C:/Users/user/AppData/local/temp/pyedbtexamples/ssn_ssn.s6p'
     """
     local_paths = []
     _download_file("legacy/touchstone", "SSN_ssn.s6p", destination, local_paths)
@@ -746,7 +746,7 @@ def download_file(directory, filename=None, destination=None):
     >>> import legacy
     >>> path = legacy.downloads.download_file("motorcad", "IPM_Vweb_Hairpin.mot")
     >>> path
-    'C:/Users/user/AppData/local/temp/PyAEDTExamples/motorcad'
+    'C:/Users/user/AppData/local/temp/pyedbtexamples/motorcad'
     """
     local_paths = []
     _download_file(directory, filename, destination, local_paths)

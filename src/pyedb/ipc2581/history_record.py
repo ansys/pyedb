@@ -7,7 +7,7 @@ class HistoryRecord(object):
     def __init__(self):
         self.number = "1"
         self.origination = date.today()
-        self.software = "Ansys Pyaedt"
+        self.software = "Ansys PyEDB"
         self.last_changes = date.today()
         self.file_revision = "1"
         self.comment = ""

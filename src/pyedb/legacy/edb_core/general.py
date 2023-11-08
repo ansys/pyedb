@@ -7,10 +7,10 @@ from __future__ import absolute_import  # noreorder
 
 import logging
 
-from pyedb.legacy.generic.general_methods import is_ironpython
-from pyedb.legacy.generic.clr_module import Dictionary
-from pyedb.legacy.generic.clr_module import List
-from pyedb.legacy.generic.clr_module import Tuple
+from pyedb.generic.general_methods import is_ironpython
+from pyedb.legacy.clr_module import Dictionary
+from pyedb.legacy.clr_module import List
+from pyedb.legacy.clr_module import Tuple
 from pyedb.generic.general_methods import pyedb_function_handler
 
 

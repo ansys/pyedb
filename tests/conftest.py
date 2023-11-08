@@ -17,27 +17,19 @@
 # }
 
 # """
-import json
 import os
 import random
 import shutil
 import string
-import sys
 import tempfile
-import time
 import pytest
 
 from pyedb.edb_logger import pyedb_logger
-from pyedb.legacy.generic.filesystem import Scratch
+from pyedb.generic.filesystem import Scratch
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.misc import list_installed_ansysem
-from pyedb.grpc.edb import EdbGrpc
-
 
 logger = pyedb_logger
-
-# import os
-
 
 local_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -82,24 +74,3 @@ def local_scratch(init_scratch):
     scratch = Scratch(tmp_path)
     yield scratch
     scratch.remove()
-
-
-@pytest.fixture(scope="module")
-def add_edb(local_scratch):
-    def _method(project_name=None, subfolder=""):
-        if project_name:
-            example_folder = os.path.join(local_path, "example_models", subfolder, project_name + ".aedb")
-            if os.path.exists(example_folder):
-                target_folder = os.path.join(local_scratch.path, project_name + ".aedb")
-                local_scratch.copyfolder(example_folder, target_folder)
-            else:
-                target_folder = os.path.join(local_scratch.path, project_name + ".aedb")
-        else:
-            target_folder = os.path.join(local_scratch.path, generate_unique_name("TestEdb") + ".aedb")
-        return EdbGrpc(
-            target_folder,
-            edbversion=desktop_version,
-        )
-
-    return _method
-

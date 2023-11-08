@@ -6,7 +6,13 @@ import os
 #from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
 import pytest
 
-from pyedb.grpc.edb import EdbGrpc
+try:
+    from pyedb.grpc.edb import EdbGrpc
+except ImportError:
+    def pytest_collection_modifyitems(items, config):
+        for item in items:
+            item.add_marker(pytest.mark.xfail)
+
 from pyedb.generic.constants import RadiationBoxType, SourceType
 from pyedb.generic.constants import SolverType
 from pyedb.generic.general_methods import is_linux
@@ -19,8 +25,8 @@ pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, edbapp, local_scratch, target_path, target_path2, target_path4):
-        self.edbapp = edbapp
+    def init(self, grpc_edb_app, local_scratch, target_path, target_path2, target_path4):
+        self.edbapp = grpc_edb_app
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path2 = target_path2

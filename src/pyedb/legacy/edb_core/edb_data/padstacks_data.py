@@ -3,14 +3,14 @@ import math
 import re
 import warnings
 
-from pyedb.legacy.generic.general_methods import is_ironpython
+from pyedb.generic.general_methods import is_ironpython
 from pyedb.legacy.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitivesMain
 from pyedb.legacy.edb_core.general import PadGeometryTpe
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.legacy.generic.clr_module import String
-from pyedb.legacy.generic.clr_module import _clr
+from pyedb.legacy.clr_module import String
+from pyedb.legacy.clr_module import _clr
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 
@@ -1031,9 +1031,9 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         ----------
         name : str, optional
             Name of the port. The default is ``None``, in which case a name is automatically assigned.
-        reference : class:`pyaedt.edb_core.edb_data.nets_data.EDBNetsData`,
-                    class:`pyaedt.edb_core.edb_data.padstacks_data.EDBPadstackInstance`,
-                    class:`pyaedt.edb_core.edb_data.sources.PinGroup`, optional
+        reference : class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBNetsData`,
+                    class:`pyedb.legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance`,
+                    class:`pyedb.legacy.edb_core.edb_data.sources.PinGroup`, optional
             Negative terminal of the port.
         is_circuit_port : bool, optional
             Whether it is a circuit port.
@@ -1399,7 +1399,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         str
             Name of the net.
         """
-        return self._edb_padstackinstance.net.name
+        return self._edb_padstackinstance.GetNet().GetName()
 
     @net_name.setter
     def net_name(self, val):
@@ -1705,7 +1705,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
 
         Returns
         -------
-        bool, List,  :class:`pyaedt.edb_core.edb_data.primitives.EDBPrimitives`
+        bool, List,  :class:`pyedb.legacy.edb_core.edb_data.primitives.EDBPrimitives`
             Polygon when successful, ``False`` when failed, list of list if `return_points=True`.
 
         Examples

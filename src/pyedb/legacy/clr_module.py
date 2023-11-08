@@ -4,12 +4,19 @@ import sys
 import warnings
 
 modules = [tup[1] for tup in pkgutil.iter_modules()]
-pyaedt_path = os.path.dirname(os.path.dirname(__file__))
 cpython = "IronPython" not in sys.version and ".NETFramework" not in sys.version
 is_linux = os.name == "posix"
 is_windows = not is_linux
 is_clr = False
-sys.path.append(os.path.join(pyaedt_path, "dlls", "PDFReport"))
+
+try:
+    import pyaedt
+    pyaedt_path = os.path.dirname(os.path.abspath(pyaedt.__file__))
+    sys.path.append(os.path.join(pyaedt_path, "dlls", "PDFReport"))
+except ImportError:
+    pyaedt_path = None
+    warnings.warn("Cannot import pyaedt.")
+
 if is_linux and cpython:  # pragma: no cover
     try:
         if os.environ.get("DOTNET_ROOT") is None:
@@ -27,17 +34,20 @@ if is_linux and cpython:  # pragma: no cover
 
         from pythonnet import load
 
-        json_file = os.path.abspath(os.path.join(pyaedt_path, "misc", "pyaedt.runtimeconfig.json"))
-        load("coreclr", runtime_config=json_file, dotnet_root=os.environ["DOTNET_ROOT"])
-        print("DotNet Core correctly loaded.")
-        if "mono" not in os.getenv("LD_LIBRARY_PATH", ""):
-            warnings.warn("LD_LIBRARY_PATH needs to be setup to use pyaedt.")
-            warnings.warn("export ANSYSEM_ROOT232=/path/to/AnsysEM/v232/Linux64")
-            msg = "export LD_LIBRARY_PATH="
-            msg += "$ANSYSEM_ROOT232/common/mono/Linux64/lib64:$LD_LIBRARY_PATH"
-            msg += "If PyAEDT will run on AEDT<2023.2 then $ANSYSEM_ROOT222/Delcross should be added to LD_LIBRARY_PATH"
-            warnings.warn(msg)
-        is_clr = True
+        if pyaedt_path is not None:
+            json_file = os.path.abspath(os.path.join(pyaedt_path, "misc", "pyaedt.runtimeconfig.json"))
+            load("coreclr", runtime_config=json_file, dotnet_root=os.environ["DOTNET_ROOT"])
+            print("DotNet Core correctly loaded.")
+            if "mono" not in os.getenv("LD_LIBRARY_PATH", ""):
+                warnings.warn("LD_LIBRARY_PATH needs to be setup to use pyaedt.")
+                warnings.warn("export ANSYSEM_ROOT232=/path/to/AnsysEM/v232/Linux64")
+                msg = "export LD_LIBRARY_PATH="
+                msg += "$ANSYSEM_ROOT232/common/mono/Linux64/lib64:$LD_LIBRARY_PATH"
+                msg += "If PyAEDT will run on AEDT<2023.2 then $ANSYSEM_ROOT222/Delcross should be added to LD_LIBRARY_PATH"
+                warnings.warn(msg)
+            is_clr = True
+        else:
+            print("DotNet Core not correctly loaded.")
     except ImportError:
         msg = "pythonnet or dotnetcore not installed. Pyaedt will work only in client mode."
         warnings.warn(msg)

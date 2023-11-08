@@ -1,7 +1,7 @@
 """
 EDB: IPC2581 export
 -------------------
-This example shows how you can use PyAEDT to export an IPC2581 file.
+This example shows how you can use PyEDB to export an IPC2581 file.
 """
 
 ###############################################################################
@@ -33,7 +33,7 @@ print(targetfile)
 ###############################################################################
 # Launch EDB
 # ~~~~~~~~~~
-# Launch the :class:`pyaedt.Edb` class, using EDB 2023 R2 and SI units.
+# Launch the :class:`pyedb.Edb` class, using EDB 2023 R2 and SI units.
 
 edb = pyedb.Edb(edbpath=targetfile, edbversion="2023.2")
 

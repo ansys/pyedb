@@ -293,7 +293,7 @@ class PinGroup(object):
             automatically assigned.
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.terminals.PinGroupTerminal`
+        :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`
         """
         pg_term = self.terminal
         if not name:

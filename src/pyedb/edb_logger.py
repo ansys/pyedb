@@ -95,11 +95,11 @@ class EdbLogger(object):
         """Remove a file from the logger handlers list."""
         handlers = [i for i in self._global.handlers]
         for handler in self._files_handlers:
-            if "pyaedt_{}.log".format(project_name) in str(handler):
+            if "pyedb_{}.log".format(project_name) in str(handler):
                 handler.close()
                 if handler in handlers:
                     self._global.removeHandler(handler)
-                self.info("logger file pyaedt_{}.log removed from handlers.".format(project_name))
+                self.info("logger file pyedb_{}.log removed from handlers.".format(project_name))
 
     @property
     def _log_on_file(self):
@@ -253,7 +253,7 @@ class EdbLogger(object):
         if not self._std_out_handler:
             self._std_out_handler = logging.StreamHandler(sys.stdout)
             self._std_out_handler.setLevel(self.level)
-            _logger_stdout_formatter = logging.Formatter("pyaedt %(levelname)s: %(message)s")
+            _logger_stdout_formatter = logging.Formatter("pyedb %(levelname)s: %(message)s")
 
             self._std_out_handler.setFormatter(_logger_stdout_formatter)
             self._global.addHandler(self._std_out_handler)
