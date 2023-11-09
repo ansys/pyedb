@@ -525,12 +525,10 @@ class TestClass:
         """Configure HFSS analysis setup."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "lam_for_top_place_no_setups.aedb")
         target_path = os.path.join(self.local_scratch.path, "lam_for_top_place_no_setups_t116.aedb")
-        if not os.path.exists(self.local_scratch.path):
-            os.mkdir(self.local_scratch.path)
         self.local_scratch.copyfolder(source_path, target_path)
         edb = EdbGrpc(target_path, edbversion=desktop_version)
-        assert len(list(edb.active_cell.SimulationSetups)) == 0
-        sim_config = SimulationConfiguration()
+        assert len(edb.active_cell.simulation_setups) == 0
+        sim_config = edb.new_simulation_configuration()
         sim_config.enforce_causality = False
         assert sim_config.do_lambda_refinement
         sim_config.mesh_sizefactor = 0.1
@@ -538,9 +536,9 @@ class TestClass:
         assert not sim_config.do_lambda_refinement
         sim_config.start_freq = "1GHz"
         edb.hfss.configure_hfss_analysis_setup(sim_config)
-        assert len(list(edb.active_cell.SimulationSetups)) == 1
-        setup = list(edb.active_cell.SimulationSetups)[0]
-        ssi = setup.GetSimSetupInfo()
+        assert len(edb.active_cell.simulation_setups) == 1
+        setup = edb.active_cell.simulation_setups[0]
+        ssi = setup.simulation_setup_info
         assert len(list(ssi.SweepDataList)) == 1
         sweep = list(ssi.SweepDataList)[0]
         assert not sweep.EnforceCausality

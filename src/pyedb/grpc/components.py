@@ -1212,10 +1212,10 @@ class Components(object):
             return False
 
     @pyedb_function_handler()
-    def _getComponentDefinition(self, name, pins):
+    def _get_component_definition(self, name, pins):
         component_definition = definition.ComponentDef.find(self._db, name)
         if component_definition.is_null:
-            component_definition = definition.ComponentDef.create(self._db, name, None)
+            component_definition = definition.ComponentDef.create(db=self._db, comp_def_name=name, fp=None)
             if component_definition.is_null:
                 self._logger.error("Failed to create component definition {}".format(name))
                 return None
@@ -1323,12 +1323,12 @@ class Components(object):
 
         """
         if component_part_name:
-            compdef = self._getComponentDefinition(component_part_name, pins)
+            compdef = self._get_component_definition(component_part_name, pins)
         else:
-            compdef = self._getComponentDefinition(component_name, pins)
+            compdef = self._get_component_definition(component_name, pins)
         if not compdef:
             return False
-        new_cmp = hierarchy.ComponentGroup.create(self._active_layout, component_name, compdef.name)
+        new_cmp = hierarchy.ComponentGroup.create(self._layout, component_name, compdef.name)
 
         if isinstance(pins[0], EDBPadstackInstance):
             pins = [i._edb_padstackinstance for i in pins]
