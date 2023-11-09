@@ -422,7 +422,7 @@ class EdbGrpc(EdbInit):
         try:
             self._db = database.Database.open(self.edbpath, self.isreadonly)
         except Exception as e:
-            self.logger.error("EDB Builder not Initialized.")
+            self.logger.error(e.args[0])
         if not self.active_db:
             self.logger.warning("Error Opening db")
             self._active_cell = None
@@ -1134,7 +1134,7 @@ class EdbGrpc(EdbInit):
         reference_list=[],
         include_pingroups=True,
     ):
-        if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1]:
+        if extent_type in ["Conforming", geometry.ExtentType.CONFORMING, 1]:
             if use_pyaedt_extent:
                 _poly = self._create_conformal(
                     net_signals,
@@ -1149,15 +1149,15 @@ class EdbGrpc(EdbInit):
             else:
                 _poly = self.layout.expanded_extent(
                     net_signals,
-                    self.edb_api.geometry.extent_type.Conforming,
+                    geometry.ExtentType.CONFORMING,
                     expansion_size,
                     False,
                     use_round_corner,
                     1,
                 )
-        elif extent_type in ["Bounding", self.edb_api.geometry.extent_type.BoundingBox, 0]:
+        elif extent_type in ["Bounding", geometry.ExtentType.BOUNDING_BOX, 0]:
             _poly = self.layout.expanded_extent(
-                net_signals, self.edb_api.geometry.extent_type.BoundingBox, expansion_size, False, use_round_corner, 1
+                net_signals, geometry.ExtentType.BOUNDING_BOX, expansion_size, False, use_round_corner, 1
             )
         else:
             if use_pyaedt_extent:
@@ -1174,14 +1174,14 @@ class EdbGrpc(EdbInit):
             else:
                 _poly = self.layout.expanded_extent(
                     net_signals,
-                    self.edb_api.geometry.extent_type.Conforming,
+                    geometry.ExtentType.CONFORMING,
                     expansion_size,
                     False,
                     use_round_corner,
                     1,
                 )
-                _poly_list = convert_py_list_to_net_list([_poly])
-                _poly = self.edb_api.geometry.polygon_data.get_convex_hull_of_polygons(_poly_list)
+                _poly_list = [_poly]
+                _poly = geometry.PolygonData.convex_hull(_poly_list)
         return _poly
 
     @pyedb_function_handler()
@@ -1202,27 +1202,27 @@ class EdbGrpc(EdbInit):
             names.append(net.GetName())
         for prim in self.modeler.primitives:
             if prim is not None and prim.net_name in names:
-                obj_data = prim.primitive_object.GetPolygonData().Expand(
+                obj_data = prim.primitive_object.polygon_data.expand(
                     expansion_size, tolerance, round_corner, round_extension
                 )
                 if obj_data:
                     _polys.extend(list(obj_data))
         if smart_cutout:
             _polys.extend(self._smart_cut(net_signals, reference_list, include_pingroups))
-        _poly_unite = self.edb_api.geometry.polygon_data.unite(_polys)
+        _poly_unite = geometry.PolygonData.unite(_polys)
         if len(_poly_unite) == 1:
             return _poly_unite[0]
         else:
-            areas = [i.Area() for i in _poly_unite]
+            areas = [i.area for i in _poly_unite]
             return _poly_unite[areas.index(max(areas))]
 
     @pyedb_function_handler()
     def _smart_cut(self, net_signals, reference_list=[], include_pingroups=True):
         _polys = []
-        terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [0, 3, 4, 7, 8]]
+        terms = [term for term in self.layout.terminals if term.boundary_type.value in [0, 3, 4, 7, 8]]
         locations = []
         for term in terms:
-            if term.GetTerminalType().ToString() == "PadstackInstanceTerminal":
+            if term.terminal_type == "PadstackInstanceTerminal":
                 if term.GetParameters()[1].GetNet().GetName() in reference_list:
                     locations.append(self.padstacks.instances[term.GetParameters()[1].GetId()].position)
             elif term.GetTerminalType().ToString() == "PointTerminal" and term.GetNet().GetName() in reference_list:
@@ -1270,14 +1270,22 @@ class EdbGrpc(EdbInit):
         names = []
         _polys = []
         for net in net_signals:
-            names.append(net.GetName())
+            names.append(net.name)
         for prim in self.modeler.primitives:
             if prim is not None and prim.net_name in names:
-                _polys.append(prim.primitive_object.GetPolygonData())
+                if prim.type == "Path":
+                    path_polygon_data = prim.primitive_object.polygon_data # missing in edb api
+                    if path_polygon_data:
+                        _polys.append(path_polygon_data)
+                else:
+                    _polys.append(prim.primitive_object.polygon_data)
         if smart_cut:
             _polys.extend(self._smart_cut(net_signals, reference_list, include_pingroups))
-        _poly = self.edb_api.geometry.polygon_data.get_convex_hull_of_polygons(convert_py_list_to_net_list(_polys))
-        _poly = _poly.Expand(expansion_size, tolerance, round_corner, round_extension)[0]
+        _poly = geometry.PolygonData.convex_hull(_polys)
+        _poly = _poly.expand(offset=expansion_size,
+                             tol=tolerance,
+                             round_corner=round_corner,
+                             max_corner_ext=round_extension)[0]
         return _poly
 
     @pyedb_function_handler()
@@ -1527,15 +1535,13 @@ class EdbGrpc(EdbInit):
         check_terminals=False,
         include_pingroups=True,
     ):
-        expansion_size = self.edb_value(expansion_size).ToDouble()
+        expansion_size = utility.Value(expansion_size).value
 
         # validate nets in layout
-        net_signals = [net.api_object for net in self.layout.nets if net.name in signal_list]
+        net_signals = [net for net in self.layout.nets if net.name in signal_list]
 
         # validate references in layout
-        _netsClip = convert_py_list_to_net_list(
-            [net.api_object for net in self.layout.nets if net.name in reference_list]
-        )
+        _netsClip = [net for net in self.layout.nets if net.name in reference_list]
 
         _poly = self._create_extent(
             net_signals,
@@ -1550,9 +1556,8 @@ class EdbGrpc(EdbInit):
 
         # Create new cutout cell/design
         included_nets_list = signal_list + reference_list
-        included_nets = convert_py_list_to_net_list(
-            [net.api_object for net in self.layout.nets if net.name in included_nets_list]
-        )
+        included_nets = [net for net in self.layout.nets if net.name in included_nets_list]
+
         _cutout = self.active_cell.CutOut(included_nets, _netsClip, _poly, True)
         # Analysis setups do not come over with the clipped design copy,
         # so add the analysis setups from the original here.

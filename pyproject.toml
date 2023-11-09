@@ -165,7 +165,7 @@ markers = [
     "no_licence: mark test that do not need a licence.",
 ]
 testpaths = "tests"
-addopts = "-ra --cov=src/pyedb --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term -vv"
+# addopts = "-ra --cov=src/pyedb --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term -vv"
 
 [tool.numpydoc_validation]
 checks = [

@@ -2,7 +2,6 @@
 This module contains the ``EdbHfss`` class.
 """
 import math
-import ansys.edb.terminal.terminals as terminal
 from pyedb.grpc.edb_core.edb_data.hfss_extent_info import HfssExtentInfo
 from pyedb.grpc.edb_core.edb_data.ports import BundleWavePort
 from pyedb.grpc.edb_core.edb_data.ports import WavePort
@@ -12,25 +11,34 @@ from pyedb.generic.constants import RadiationBoxType
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
-from ansys.edb.utility.value import Value
-from ansys.edb.terminal.terminals import PrimitiveEdge
-from ansys.edb.terminal.terminals import EdgeTerminal
-from ansys.edb.terminal.terminals import BundleTerminal
-from ansys.edb.terminal.terminals import PadstackInstanceTerminal
-from ansys.edb.geometry.point_data import PointData
-from ansys.edb.database import ProductIdType
-from ansys.edb.net.net import Net
-from ansys.edb.layer.stackup_layer import Layer
-from ansys.edb.geometry.polygon_data import PolygonData
-from ansys.edb.primitive.primitive import PrimitiveType
-from ansys.edb.utility.hfss_extent_info import HfssExtentInfo
-from ansys.edb.hierarchy.component_group import ComponentGroup
-from ansys.edb.primitive.primitive import PadstackInstance
-from ansys.edb.terminal.terminals import Terminal
-from ansys.edb.hierarchy.component_group import ComponentType
-from ansys.edb.terminal.terminals import BoundaryType
-from ansys.edb.utility.rlc import Rlc
-from ansys.edb.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
+import ansys.edb.utility as utility
+import ansys.edb.terminal as terminal
+import ansys.edb.geometry as geometry
+import ansys.edb.primitive as primitive
+import ansys.edb.database as database
+import ansys.edb.net as net
+import ansys.edb.layer as layer
+import ansys.edb.hierarchy as hierarchy
+import ansys.edb.simulation_setup as simulation_setup
+#from ansys.edb.utility.value import Value
+#from ansys.edb.terminal.terminals import PrimitiveEdge
+#from ansys.edb.terminal.terminals import EdgeTerminal
+#from ansys.edb.terminal.terminals import BundleTerminal
+#from ansys.edb.terminal.terminals import PadstackInstanceTerminal
+#from ansys.edb.geometry.point_data import PointData
+#from ansys.edb.database import ProductIdType
+#from ansys.edb.net.net import Net
+#from ansys.edb.layer.stackup_layer import Layer
+#from ansys.edb.geometry.polygon_data import PolygonData
+#from ansys.edb.primitive.primitive import PrimitiveType
+#from ansys.edb.utility.hfss_extent_info import HfssExtentInfo
+#from ansys.edb.hierarchy.component_group import ComponentGroup
+#from ansys.edb.primitive.primitive import PadstackInstance
+#from ansys.edb.terminal.terminals import Terminal
+#from ansys.edb.hierarchy.component_group import ComponentType
+#from ansys.edb.terminal.terminals import BoundaryType
+#from ansys.edb.utility.rlc import Rlc
+#from ansys.edb.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
 
 
 class EdbHfss(object):
@@ -120,13 +128,14 @@ class EdbHfss(object):
         if not terminal_name:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, (list, tuple)):
-            point_on_edge = self._edb.geometry.point_data(Value(point_on_edge[0]), Value(point_on_edge[1]))
+            point_on_edge = self._edb.geometry.point_data(utility.Value(point_on_edge[0]),
+                                                          utility.Value(point_on_edge[1]))
         if hasattr(prim_id, "GetId"):
             prim = prim_id
         else:
             prim = [i for i in self._pedb.modeler.primitives if i.id == prim_id][0].primitive_object
-        pos_edge = PrimitiveEdge.create(prim, point_on_edge)
-        return EdgeTerminal.create(prim.layout, prim.net, terminal_name, pos_edge, is_ref=is_ref)
+        pos_edge = terminal.PrimitiveEdge.create(prim, point_on_edge)
+        return terminal.EdgeTerminal.create(prim.layout, prim.net, terminal_name, pos_edge, is_ref=is_ref)
 
     @pyedb_function_handler()
     def get_trace_width_for_traces_with_ports(self):
@@ -1128,12 +1137,9 @@ class EdbHfss(object):
         """
         if layout == None:
             return False
-        layout_obj_instances = layout.layout_instance.GetAllLayoutObjInstances()  # Missing GetAllLayoutObjInstances
-        tuple_list = []
-        for lobj in layout_obj_instances.Items:
-            lobj_bbox = lobj.layout_instance_context.get_bbox(False)
-            tuple_list.append(lobj_bbox)
-        _bbox = self._edb.geometry.polygon_data.get_bbox_of_boxes(tuple_list)
+        layout_obj_instances = layout.layout_instance.query_layout_obj_instances()
+        polygon_data_list = [lobj.layout_instance_context.get_bbox(False) for lobj in layout_obj_instances]
+        _bbox = geometry.PolygonData.bbox_of_polygons(polygon_data_list)
         layout_bbox = [
             round(_bbox[0].x.value, digit_resolution),
             round(_bbox[0].y.value, digit_resolution),
@@ -1162,9 +1168,9 @@ class EdbHfss(object):
                 "Configure HFSS extent requires edb_data.simulation_configuration.SimulationConfiguration object"
             )
             return False
-        hfss_extent = HfssExtentInfo()
+        hfss_extent = self._pedb.active_cell.hfss_extent_info
         if simulation_setup.radiation_box == RadiationBoxType.BoundingBox:
-            hfss_extent.extent_type = HfssExtentInfo.HFSSExtentInfoType.BOUNDING_BOX
+            hfss_extent.extent_type = utility.HfssExtentInfo.HFSSExtentInfoType.BOUNDING_BOX
         elif simulation_setup.radiation_box == RadiationBoxType.Conformal:
             hfss_extent.extent_type = HfssExtentInfo.HFSSExtentInfoType.CONFORMING
         else:
@@ -1181,7 +1187,7 @@ class EdbHfss(object):
         hfss_extent.honor_user_dielectric = simulation_setup.honor_user_dielectric
         hfss_extent.truncate_air_box_at_ground = simulation_setup.truncate_airbox_at_ground
         hfss_extent.use_open_region = simulation_setup.use_radiation_boundary
-        self._layout.cell.hfss_extent_info = hfss_extent
+        self._layout.cell.set_hfss_extent_info(hfss_extent)
         return True
 
     @pyedb_function_handler()

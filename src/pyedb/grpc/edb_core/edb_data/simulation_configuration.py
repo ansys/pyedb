@@ -2232,7 +2232,6 @@ class SimulationConfiguration(object):
         self._solver_type = SolverType.Hfss3dLayout
         if self._filename and os.path.splitext(self._filename)[1] == ".json":
             self.import_json(filename)
-        self._read_cfg()
         self._pedb = edb
         self.SOLVER_TYPE = SolverType
 
