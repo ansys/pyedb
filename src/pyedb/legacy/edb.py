@@ -32,16 +32,10 @@ from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationCo
 from pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data import SiwaveDCSimulationSetup
 from pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data import SiwaveSYZSimulationSetup
 from pyedb.legacy.edb_core.edb_data.sources import SourceType
-from pyedb.legacy.edb_core.edb_data.terminals import BundleTerminal
-from pyedb.legacy.edb_core.edb_data.terminals import EdgeTerminal
-from pyedb.legacy.edb_core.edb_data.terminals import PadstackInstanceTerminal
-from pyedb.legacy.edb_core.edb_data.terminals import PinGroupTerminal
 from pyedb.legacy.edb_core.edb_data.terminals import Terminal
 from pyedb.legacy.edb_core.edb_data.variables import Variable
-from pyedb.legacy.edb_core.general import BoundaryType
 from pyedb.legacy.edb_core.general import LayoutObjType
 from pyedb.legacy.edb_core.general import Primitives
-from pyedb.legacy.edb_core.general import TerminalType
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 from pyedb.legacy.edb_core.hfss import EdbHfss
 from pyedb.ipc2581.ipc2581 import Ipc2581
@@ -359,18 +353,10 @@ class EdbLegacy(Database):
     def terminals(self):
         """Get terminals belonging to active layout."""
         temp = {}
+        terminal_mapping = Terminal(self)._terminal_mapping
         for i in self.layout.terminals:
             terminal_type = i.ToString().split(".")[-1]
-            if terminal_type == TerminalType.EdgeTerminal.name:
-                ter = EdgeTerminal(self, i)
-            elif terminal_type == TerminalType.BundleTerminal.name:
-                ter = BundleTerminal(self, i)
-            elif terminal_type == TerminalType.PadstackInstanceTerminal.name:
-                ter = PadstackInstanceTerminal(self, i)
-            elif terminal_type == TerminalType.PinGroupTerminal.name:
-                ter = PinGroupTerminal(self, i)
-            else:
-                ter = Terminal(self, i)
+            ter = terminal_mapping[terminal_type](self, i)
             temp[ter.name] = ter
 
         return temp
@@ -402,15 +388,18 @@ class EdbLegacy(Database):
         ports = {}
         for t in temp:
             t2 = Terminal(self, t)
+            if not t2.boundary_type == "PortBoundary":
+                continue
+
             if t2.is_circuit_port:
                 port = CircuitPort(self, t)
                 ports[port.name] = port
-            elif t2.terminal_type == TerminalType.BundleTerminal.name:
+            elif t2.terminal_type == "BundleTerminal":
                 port = BundleWavePort(self, t)
                 ports[port.name] = port
             elif t2.hfss_type == "Wave":
                 ports[t2.name] = WavePort(self, t)
-            elif t2.terminal_type == TerminalType.PadstackInstanceTerminal.name:
+            elif t2.terminal_type == "PadstackInstanceTerminal":
                 ports[t2.name] = CoaxPort(self, t)
             else:
                 ports[t2.name] = GapPort(self, t)
@@ -434,7 +423,7 @@ class EdbLegacy(Database):
         """Get all layout sources."""
         temp = {}
         for name, val in self.terminals.items():
-            if val.boundary_type == BoundaryType.kVoltageProbe.name:
+            if val.boundary_type == "kVoltageProbe":
                 if not val.is_reference_terminal:
                     temp[name] = val
         return temp
@@ -3645,7 +3634,7 @@ class EdbLegacy(Database):
 
     @pyedb_function_handler
     def create_port(self, terminal, ref_terminal=None, is_circuit_port=False):
-        """Create a port between two terminals.
+        """Create a port.
         Parameters
         ----------
         terminal : class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
@@ -3664,13 +3653,117 @@ class EdbLegacy(Database):
         Returns
         -------
         """
-        if not ref_terminal:
-            port = CoaxPort(self, terminal._edb_object)
-        else:
-            if is_circuit_port:
-                port = CircuitPort(self, terminal._edb_object)
-            else:
-                port = GapPort(self, terminal._edb_object)
-            port.ref_terminal = ref_terminal
-            port.is_circuit_port = is_circuit_port
-        return port
+
+        terminal.boundary_type = "PortBoundary"
+        terminal.is_circuit_port = is_circuit_port
+
+        if ref_terminal:
+            ref_terminal.boundary_type = "PortBoundary"
+            terminal.ref_terminal = ref_terminal
+
+        return self.ports[terminal.name]
+
+    @pyedb_function_handler
+    def create_voltage_probe(self, terminal, ref_terminal):
+        """Create a voltage probe.
+        Parameters
+        ----------
+        terminal : :class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+            Positive terminal of the port.
+        ref_terminal : :class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+            Negative terminal of the probe.
+        Returns
+        -------
+        """
+        term = Terminal(self, terminal._edb_object)
+        term.boundary_type = "kVoltageProbe"
+
+        ref_term = Terminal(self, ref_terminal._edb_object)
+        ref_term.boundary_type = "kVoltageProbe"
+
+        term.ref_terminal = ref_terminal
+        return self.probes[term.name]
+
+    @pyedb_function_handler
+    def create_voltage_source(self, terminal, ref_terminal):
+        """Create a voltage source.
+        Parameters
+        ----------
+        terminal : :class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+            Positive terminal of the port.
+        ref_terminal : class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+            Negative terminal of the source.
+        Returns
+        -------
+        class:`pyedb.legacy.edb_core.edb_data.ports.ExcitationSources`
+        """
+        term = Terminal(self, terminal._edb_object)
+        term.boundary_type = "kVoltageSource"
+
+        ref_term = Terminal(self, ref_terminal._edb_object)
+        ref_term.boundary_type = "kVoltageProbe"
+
+        term.ref_terminal = ref_terminal
+        return self.sources[term.name]
+
+    @pyedb_function_handler
+    def create_current_source(self, terminal, ref_terminal):
+        """Create a current source.
+        Parameters
+        ----------
+        terminal : :class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+            Positive terminal of the port.
+        ref_terminal : class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
+                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+            Negative terminal of the source.
+        Returns
+        -------
+        :class:`pyedb.legacy.edb_core.edb_data.ports.ExcitationSources`
+        """
+        term = Terminal(self, terminal._edb_object)
+        term.boundary_type = "kCurrentSource"
+
+        ref_term = Terminal(self, ref_terminal._edb_object)
+        ref_term.boundary_type = "kCurrentSource"
+
+        term.ref_terminal = ref_terminal
+        return self.sources[term.name]
+
+    @pyedb_function_handler
+    def get_point_terminal(self, name, net_name, location, layer):
+        """Place a voltage probe between two points.
+        Parameters
+        ----------
+        name : str,
+            Name of the terminal.
+        net_name : str
+            Name of the net.
+        location : list
+            Location of the terminal.
+        layer : str,
+            Layer of the terminal.
+        Returns
+        -------
+        :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`
+        """
+        from pyedb.legacy.edb_core.edb_data.terminals import PointTerminal
+
+        point_terminal = PointTerminal(self)
+        return point_terminal.create(name, net_name, location, layer)

@@ -71,6 +71,10 @@ class TestClass:
         
         list(self.edbapp.sources.values())[0].phase = 1
         assert list(self.edbapp.sources.values())[0].phase == 1
+        u6 = self.edbapp.components["U6"]
+        self.edbapp.create_voltage_source(
+            u6.pins["F2"].get_terminal(create_new_terminal=True), u6.pins["F1"].get_terminal(create_new_terminal=True)
+        )
 
     def test_siwave_create_current_source(self):
         """Create a current source."""
@@ -103,6 +107,10 @@ class TestClass:
         ref_term.location = [0, 0]
         assert ref_term.layer
         ref_term.layer = "1_Top"
+        u6 = self.edbapp.components["U6"]
+        self.edbapp.create_current_source(
+            u6.pins["H8"].get_terminal(create_new_terminal=True), u6.pins["G9"].get_terminal(create_new_terminal=True)
+        )
 
     def test_siwave_create_dc_terminal(self):
         """Create a DC terminal."""

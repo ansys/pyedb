@@ -1000,11 +1000,25 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         self._pdef = None
 
     @property
-    def terminal(self):
-        """Return PadstackInstanceTerminal object."""
-        from pyedb.legacy.edb_core.edb_data.terminals import PadstackInstanceTerminal
+    def get_terminal(self, name=None, create_new_terminal=False):
+        """Return PadstackInstanceTerminal object.
+        Parameters
+        ----------
+        name : str, optional
+            Name of the terminal. Only applicable when create_new_terminal is True.
+        create_new_terminal : bool, optional
+            Whether to create a new terminal.
+        Returns
+        -------
+        :class:`pyaedt.edb_core.edb_data.terminals`
+        """
 
-        term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
+        if create_new_terminal:
+            term = self._create_terminal(name)
+        else:
+            from pyedb.legacy.edb_core.edb_data.terminals import PadstackInstanceTerminal
+
+            term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         if not term.is_null:
             return term
 
