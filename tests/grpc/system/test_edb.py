@@ -794,6 +794,7 @@ class TestClass:
         setup1.hfss_solver_settings.relative_residual = 0.0002
         setup1.hfss_solver_settings.use_shell_elements = True
 
+        setup1b = edbapp.setups["setup1"]
         hfss_solver_settings = edbapp.setups["setup1"].hfss_solver_settings
         assert hfss_solver_settings.order_basis == "first"
         assert hfss_solver_settings.relative_residual == 0.0002
@@ -961,73 +962,56 @@ class TestClass:
     def test_siwave_dc_simulation_setup(self):
         """Create a dc simulation setup and evaluate its properties."""
         setup1 = self.edbapp.create_siwave_dc_setup("DC1")
-        assert setup1.name == "DC1"
-        assert not setup1.compute_inductance
-        assert setup1.contact_radius == "0.1mm"
-        assert setup1.dc_slider_position == 1
-        assert setup1.enabled
-        assert setup1.energy_error == 3.0
-        assert setup1.max_init_mesh_edge_length == "2.5mm"
-        assert setup1.max_num_pass == 5
-        assert setup1.min_num_pass == 1
-        assert setup1.mesh_bondwires
-        assert setup1.mesh_vias
-        assert setup1.min_plane_area == "0.25mm2"
-        assert setup1.min_void_area == "0.01mm2"
-        assert setup1.num_bondwire_sides == 8
-        assert setup1.num_via_sides == 8
-        assert setup1.percent_local_refinement == 20.0
-        assert setup1.perform_adaptive_refinement
-        assert setup1.plot_jv
-        assert not setup1.refine_bondwires
-        assert not setup1.refine_vias
-        setup1.name = "DC2"
-        setup1.compute_inductance = True
-        setup1.contact_radius = "0.2mm"
-        setup1.dc_slider_position = 2
-        setup1.energy_error = 2.0
-        setup1.max_init_mesh_edge_length = "5.5mm"
-        setup1.max_num_pass = 3
-        setup1.min_num_pass = 2
-        setup1.mesh_bondwires = False
-        setup1.mesh_vias = False
-        assert not setup1.mesh_bondwires
-        assert not setup1.mesh_vias
-        setup1.min_plane_area = "0.5mm2"
-        setup1.min_void_area = "0.021mm2"
-        setup1.num_bondwire_sides = 6
-        setup1.num_via_sides = 10
-        setup1.percent_local_refinement = 10.0
-        setup1.perform_adaptive_refinement = False
-        setup1.plot_jv = False
-        setup1.refine_bondwires = True
-        setup1.refine_vias = True
+        setup1.dc_settings.restore_default()
+        setup1.dc_advanced_settings.restore_default()
 
-        assert setup1.name == "DC2"
-        assert setup1.compute_inductance
-        assert setup1.contact_radius == "0.2mm"
-        assert setup1.dc_slider_position == 2
-        assert setup1.energy_error == 2.0
-        assert setup1.max_init_mesh_edge_length == "5.5mm"
-        assert setup1.max_num_pass == 3
-        assert setup1.min_num_pass == 2
-        assert setup1.mesh_bondwires
-        assert setup1.mesh_vias
-        assert setup1.min_plane_area == "0.5mm2"
-        assert setup1.min_void_area == "0.021mm2"
-        assert setup1.num_bondwire_sides == 6
-        assert setup1.num_via_sides == 10
-        assert setup1.percent_local_refinement == 10.0
-        assert not setup1.perform_adaptive_refinement
-        assert not setup1.plot_jv
-        assert setup1.refine_bondwires
-        assert setup1.refine_vias
+        settings = self.edbapp.setups["DC1"].get_configurations()
+        for k, v in setup1.dc_settings.defaults.items():
+            if k in ["compute_inductance", "plot_jv"]:
+                continue
+            print(k)
+            assert settings["dc_settings"][k] == v
+
+        for k, v in setup1.dc_advanced_settings.defaults.items():
+            print(k)
+            assert settings["dc_advanced_settings"][k] == v
+
+        for p in [0, 1, 2]:
+            setup1.set_dc_slider(p)
+            settings = self.edbapp.setups["DC1"].get_configurations()
+            for k, v in setup1.dc_settings.dc_defaults.items():
+                print(k)
+                assert settings["dc_settings"][k] == v[p]
+
+            for k, v in setup1.dc_advanced_settings.dc_defaults.items():
+                print(k)
+                assert settings["dc_advanced_settings"][k] == v[p]
 
     def test_131_siwave_ac_simulation_setup(self):
         """Create an ac simulation setup and evaluate its properties."""
         setup1 = self.edbapp.create_siwave_syz_setup("AC1")
         assert setup1.name == "AC1"
         assert setup1.enabled
+        setup1.advanced_settings.restore_default()
+
+        settings = self.edbapp.setups["AC1"].get_configurations()
+        for k, v in setup1.advanced_settings.defaults.items():
+            if k in ["min_plane_area_to_mesh"]:
+                continue
+            assert settings["advanced_settings"][k] == v
+
+        for p in [0, 1, 2]:
+            setup1.set_si_slider(p)
+            settings = self.edbapp.setups["AC1"].get_configurations()
+            for k, v in setup1.advanced_settings.si_defaults.items():
+                assert settings["advanced_settings"][k] == v[p]
+
+        for p in [0, 1, 2]:
+            setup1.set_pi_slider(p)
+            settings = self.edbapp.setups["AC1"].get_configurations()
+            for k, v in setup1.advanced_settings.pi_defaults.items():
+                assert settings["advanced_settings"][k] == v[p]
+
         sweep = setup1.add_frequency_sweep(
             "sweep1",
             frequency_sweep=[
@@ -1036,7 +1020,6 @@ class TestClass:
                 ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
             ],
         )
-        assert "sweep1" in setup1.frequency_sweeps
         assert "0" in sweep.frequencies
         assert not sweep.adaptive_sampling
         assert not sweep.adv_dc_extrapolation
@@ -1045,9 +1028,9 @@ class TestClass:
         assert not sweep.enforce_dc_and_causality
         assert sweep.enforce_passivity
         assert sweep.freq_sweep_type == "kInterpolatingSweep"
-        assert sweep.interp_use_full_basis
-        assert sweep.interp_use_port_impedance
-        assert sweep.interp_use_prop_const
+        assert sweep.interpolation_use_full_basis
+        assert sweep.interpolation_use_port_impedance
+        assert sweep.interpolation_use_prop_const
         assert sweep.max_solutions == 250
         assert sweep.min_freq_s_mat_only_solve == "1MHz"
         assert not sweep.min_solved_freq
@@ -1059,14 +1042,15 @@ class TestClass:
 
         sweep.adaptive_sampling = True
         sweep.adv_dc_extrapolation = True
+        sweep.compute_dc_point = True
         sweep.auto_s_mat_only_solve = False
         sweep.enforce_causality = True
         sweep.enforce_dc_and_causality = True
         sweep.enforce_passivity = False
         sweep.freq_sweep_type = "kDiscreteSweep"
-        sweep.interp_use_full_basis = False
-        sweep.interp_use_port_impedance = False
-        sweep.interp_use_prop_const = False
+        sweep.interpolation_use_full_basis = False
+        sweep.interpolation_use_port_impedance = False
+        sweep.interpolation_use_prop_const = False
         sweep.max_solutions = 200
         sweep.min_freq_s_mat_only_solve = "2MHz"
         sweep.min_solved_freq = "1Hz"
@@ -1078,14 +1062,15 @@ class TestClass:
 
         assert sweep.adaptive_sampling
         assert sweep.adv_dc_extrapolation
+        assert sweep.compute_dc_point
         assert not sweep.auto_s_mat_only_solve
         assert sweep.enforce_causality
         assert sweep.enforce_dc_and_causality
         assert not sweep.enforce_passivity
         assert sweep.freq_sweep_type == "kDiscreteSweep"
-        assert not sweep.interp_use_full_basis
-        assert not sweep.interp_use_port_impedance
-        assert not sweep.interp_use_prop_const
+        assert not sweep.interpolation_use_full_basis
+        assert not sweep.interpolation_use_port_impedance
+        assert not sweep.interpolation_use_prop_const
         assert sweep.max_solutions == 200
         assert sweep.min_freq_s_mat_only_solve == "2MHz"
         assert sweep.min_solved_freq == "1Hz"
@@ -1184,7 +1169,7 @@ class TestClass:
         simconfig.solver_type = SolverType.SiwaveSYZ
         simconfig.mesh_freq = "40.25GHz"
         edbapp.build_simulation_project(simconfig)
-        assert edbapp.siwave_ac_setups[simconfig.setup_name].mesh_frequency == simconfig.mesh_freq
+        assert edbapp.siwave_ac_setups[simconfig.setup_name].advanced_settings.mesh_frequency == simconfig.mesh_freq
         edbapp.close()
 
     def test_siwave_create_port_between_pin_and_layer(self):

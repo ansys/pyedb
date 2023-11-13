@@ -269,7 +269,6 @@ class EdbLegacy(Database):
         self._siwave = None
         self._hfss = None
         self._nets = None
-        self._setups = {}
         self._layout_instance = None
         self._variables = None
         self._active_cell = None
@@ -3183,7 +3182,7 @@ class EdbLegacy(Database):
                 self.edbpath = legacy_name
                 self.open_edb()
             return True
-        except:  # pragma: no cover
+        except:
             return False
 
     @pyedb_function_handler()
@@ -3312,15 +3311,15 @@ class EdbLegacy(Database):
         Dict[str, :class:`legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
 
         """
+        setups = {}
         for i in list(self.active_cell.SimulationSetups):
-            if i.GetName() not in self._setups:
-                if i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kHFSS:
-                    self._setups[i.GetName()] = HfssSimulationSetup(self, i.GetName(), i)
-                elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWave:
-                    self._setups[i.GetName()] = SiwaveSYZSimulationSetup(self, i.GetName(), i)
-                elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWaveDCIR:
-                    self._setups[i.GetName()] = SiwaveDCSimulationSetup(self, i.GetName(), i)
-        return self._setups
+            if i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kHFSS:
+                setups[i.GetName()] = HfssSimulationSetup(self, i)
+            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWave:
+                setups[i.GetName()] = SiwaveSYZSimulationSetup(self, i)
+            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWaveDCIR:
+                setups[i.GetName()] = SiwaveDCSimulationSetup(self, i)
+        return setups
 
     @property
     def hfss_setups(self):
@@ -3341,7 +3340,7 @@ class EdbLegacy(Database):
         -------
         Dict[str, :class:`legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveDCSimulationSetup`]
         """
-        return {name: i for name, i in self.setups.items() if i.setup_type == "kSIWaveDCIR"}
+        return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveDCSimulationSetup)}
 
     @property
     def siwave_ac_setups(self):
@@ -3351,10 +3350,10 @@ class EdbLegacy(Database):
         -------
         Dict[str, :class:`legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
         """
-        return {name: i for name, i in self.setups.items() if i.setup_type == "kSIWave"}
+        return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSYZSimulationSetup)}
 
     def create_hfss_setup(self, name=None):
-        """Create a setup from a template.
+        """Create an HFSS simulation setup from a template.
 
         Parameters
         ----------
@@ -3372,8 +3371,7 @@ class EdbLegacy(Database):
         """
         if name in self.setups:
             return False
-        setup = HfssSimulationSetup(self, name)
-        self._setups[name] = setup
+        setup = HfssSimulationSetup(self).create(name)
         return setup
 
     @pyedb_function_handler()
@@ -3402,11 +3400,8 @@ class EdbLegacy(Database):
             name = generate_unique_name("Siwave_SYZ")
         if name in self.setups:
             return False
-        setup = SiwaveSYZSimulationSetup(self, name)
-        setup.si_slider_postion = 1
-        setup.pi_slider_postion = 1
-        self._setups[name] = setup
-        return setup
+        SiwaveSYZSimulationSetup(self).create(name)
+        return self.setups[name]
 
     @pyedb_function_handler()
     def create_siwave_dc_setup(self, name=None):
@@ -3431,8 +3426,7 @@ class EdbLegacy(Database):
             name = generate_unique_name("Siwave_DC")
         if name in self.setups:
             return False
-        setup = SiwaveDCSimulationSetup(self, name)
-        self._setups[name] = setup
+        setup = SiwaveDCSimulationSetup(self).create(name)
         return setup
 
     @pyedb_function_handler()
