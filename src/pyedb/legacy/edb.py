@@ -3554,7 +3554,7 @@ class EdbLegacy(Database):
         defined_ports = {}
         project_connexions = None
         for edb_path, zone_info in zone_dict.items():
-            edb = Edb(edbversion=self.edbversion, edbpath=edb_path)
+            edb = EdbLegacy(edbversion=self.edbversion, edbpath=edb_path)
             edb.cutout(use_pyaedt_cutout=True, custom_extent=zone_info[1], open_cutout_at_end=True)
             if not zone_info[0] == -1:
                 layers_to_remove = [
