@@ -919,8 +919,8 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
             Dictionary of SIwave SYZ simulation settings.
         """
         return {
-            "pi_slider_postion": self.pi_slider_position,
-            "si_slider_postion": self.si_slider_position,
+            "pi_slider_position": self.pi_slider_position,
+            "si_slider_position": self.si_slider_position,
             "use_custom_settings": self.use_si_settings,
             "use_si_settings": self.use_si_settings,
             "advanced_settings": self.advanced_settings.get_configurations(),
