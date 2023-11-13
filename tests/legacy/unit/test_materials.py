@@ -66,7 +66,6 @@ class TestClass:
     def init(self):
         self.materials = Materials(MagicMock(materials=["copper"]))
 
-    @pytest.mark.current
     @patch("pyedb.legacy.edb_core.materials.Materials.materials", new_callable=PropertyMock)
     @patch.object(builtins, "open", new_callable=mock_open, read_data=MATERIALS)
     def test_materials_read_materials(self, mock_file_open, mock_materials_property):

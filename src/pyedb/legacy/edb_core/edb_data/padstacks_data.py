@@ -999,7 +999,6 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         self._position = []
         self._pdef = None
 
-    @property
     def get_terminal(self, name=None, create_new_terminal=False):
         """Return PadstackInstanceTerminal object.
         Parameters
