@@ -76,9 +76,10 @@ class TestClass:
         assert "air" in edbapp.materials.materials
         edbapp.close()
 
-    def test_material_load_syslib_amat(self):
-        """Load material from an amat file."""
-        assert self.edbapp.materials.load_syslib_amat()
+    def test_material_load_amat(self):
+        """Load material from an AMAT file."""
+        mat_file = os.path.join(self.edbapp.base_path, "syslib", "Materials.amat")
+        assert self.edbapp.materials.load_amat(mat_file)
         material_list = list(self.edbapp.materials.materials.keys())
         assert material_list
         assert len(material_list) > 0
