@@ -68,7 +68,7 @@ class TestClass:
 
     @patch("pyaedt.edb_core.materials.Materials.materials", new_callable=PropertyMock)
     @patch.object(builtins, "open", new_callable=mock_open, read_data=MATERIALS)
-    def test_149_materials_read_materials(self, mock_file_open, mock_materials_property):
+    def test_materials_read_materials(self, mock_file_open, mock_materials_property):
         """Read materials from an AMAT file."""
         mock_materials_property.return_value = ["copper"]
         materials = Materials(MagicMock())

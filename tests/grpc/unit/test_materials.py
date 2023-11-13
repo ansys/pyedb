@@ -1,7 +1,9 @@
 import builtins
 from unittest.mock import mock_open
 import pytest
-from mock import patch, MagicMock
+from mock import MagicMock
+from mock import PropertyMock
+from mock import patch
 
 try:
     from pyedb.grpc.materials import Materials
@@ -70,16 +72,20 @@ class TestClass:
     def init(self):
         self.materials = Materials(MagicMock(materials=["copper"]))
 
+    @patch("pyaedt.edb_core.materials.Materials.materials", new_callable=PropertyMock)
     @patch.object(builtins, "open", new_callable=mock_open, read_data=MATERIALS)
-    def test_materials_read_materials(self, mock_file_open):
-        """Read materials from an amat file."""
+    def test_materials_read_materials(self, mock_file_open, mock_materials_property):
+        """Read materials from an AMAT file."""
+        mock_materials_property.return_value = ["copper"]
+        materials = Materials(MagicMock())
         expected_res = {
             "Polyflon CuFlon (tm)": {"permittivity": 2.1, "tangent_delta": 0.00045},
-            "Water(@360K)": {"thermal_conductivity": 0.6743,
-                             "mass_density": 967.4,
-                             "specific_heat": 4206,
-                             "thermal_expansion_coeffcient": 0.0006979
-                             }
+            "Water(@360K)": {
+                "thermal_conductivity": 0.6743,
+                "mass_density": 967.4,
+                "specific_heat": 4206,
+                "thermal_expansion_coeffcient": 0.0006979,
+            },
         }
-        mats = self.materials.read_materials("some path")
+        mats = materials.read_materials("some path")
         assert mats == expected_res
