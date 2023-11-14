@@ -7,6 +7,7 @@ import math
 import re
 import warnings
 import ansys.edb.definition as definition
+import ansys.edb.geometry as geometry
 import ansys.edb.hierarchy as hierarchy
 import ansys.edb.layer as layer
 import ansys.edb.terminal as terminal
@@ -833,12 +834,12 @@ class Components(object):
         pin_layers = cmp_pins[0].padstack_def.data.layer_names
         if port_type == SourceType.CoaxPort:
             pad_params = self._padstack.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
-            if not pad_params[0] == 7:
-                sball_diam = min([utility.Value(val).value for val in pad_params[1]])
-                solder_ball_height = 2 * sball_diam / 3
-            else:
-                bbox = pad_params[1]
-                sball_diam = min([abs(bbox[2] - bbox[0]), abs(bbox[3] - bbox[1])]) * 0.8
+            if isinstance(pad_params[0], definition.PadGeometryType):
+               sball_diam = min([utility.Value(val).value for val in pad_params[1]])
+               solder_ball_height = 2 * sball_diam / 3
+            elif isinstance(pad_params[0], geometry.PolygonData):
+                bbox = pad_params[0].bbox()
+                sball_diam = min([abs(bbox[1].x - bbox[0].x), abs(bbox[3] - bbox[1])]) * 0.8
                 solder_ball_height = 2 * sball_diam / 3
             self.set_solder_ball(component, solder_ball_height, sball_diam)
             for pin in cmp_pins:
@@ -1689,7 +1690,8 @@ class Components(object):
                 pad_params = self._padstack.get_pad_parameters(pin=pin1, layername=pin_layers[0], pad_type=0)
                 _sb_diam = min([utility.Value(val).value for val in pad_params[1]])
                 sball_diam = _sb_diam
-            sball_height = round(utility.Value(sball_diam).value, 9) / 2
+            if not sball_height:
+                sball_height = 2 * round(utility.Value(sball_diam).value, 9) / 3
             if not sball_mid_diam:
                 sball_mid_diam = sball_diam
 
@@ -1700,20 +1702,17 @@ class Components(object):
 
             cmp_property = edb_cmp.component_property
             if cmp_type == hierarchy.ComponentType.IC:
-                ic_die_prop = cmp_property.die_property
+                ic_die_prop = cmp_property.die_property.clone()
                 ic_die_prop.type = definition.DieType.FLIPCHIP
                 if chip_orientation.lower() == "chip_down":
                     ic_die_prop.orientation = definition.DieOrientation.CHIP_DOWN
                 if chip_orientation.lower() == "chip_up":
                     ic_die_prop.orientation = definition.DieOrientation.CHIP_UP
-                else:
-                    ic_die_prop.orientation = definition.DieOrientation.CHIP_DOWN
                 cmp_property.die_property = ic_die_prop
 
             solder_ball_prop = cmp_property.solder_ball_property
-            solder_ball_prop.diameter = (utility.Value(sball_diam), utility.Value(sball_mid_diam))
+            solder_ball_prop.set_diameter(utility.Value(sball_diam), utility.Value(sball_mid_diam))
             solder_ball_prop.height = utility.Value(sball_height)
-
             solder_ball_prop.shape = sball_shape
             cmp_property.solder_ball_property = solder_ball_prop
 

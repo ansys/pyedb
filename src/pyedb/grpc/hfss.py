@@ -131,14 +131,14 @@ class EdbHfss(object):
         if not terminal_name:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, (list, tuple)):
-            point_on_edge = self._edb.geometry.point_data(utility.Value(point_on_edge[0]),
-                                                          utility.Value(point_on_edge[1]))
+            point_on_edge = geometry.PointData(utility.Value(point_on_edge[0]), utility.Value(point_on_edge[1]))
         if hasattr(prim_id, "GetId"):
             prim = prim_id
         else:
             prim = [i for i in self._pedb.modeler.primitives if i.id == prim_id][0].primitive_object
         pos_edge = terminal.PrimitiveEdge.create(prim, point_on_edge)
-        return terminal.EdgeTerminal.create(prim.layout, prim.net, terminal_name, pos_edge, is_ref=is_ref)
+        return terminal.EdgeTerminal.create(layout=prim.layout, net_ref=prim.net, name=terminal_name, edges=[pos_edge],
+                                             is_ref=is_ref)
 
     @pyedb_function_handler()
     def get_trace_width_for_traces_with_ports(self):
@@ -782,8 +782,7 @@ class EdbHfss(object):
             prim_id = prim_id.id
 
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
-        pos_edge_term.SetImpedance(self._pedb.edb_value(impedance))
-
+        pos_edge_term.impedance = utility.Value(impedance)
         wave_port = WavePort(self._pedb, pos_edge_term)
         wave_port.horizontal_extent_factor = horizontal_extent_factor
         wave_port.vertical_extent_factor = vertical_extent_factor
@@ -842,7 +841,7 @@ class EdbHfss(object):
         if not port_name:
             port_name = generate_unique_name("Terminal_")
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
-        pos_edge_term.impedance = Value(impedance)
+        pos_edge_term.impedance = utility.Value(impedance)
         if reference_layer:
             reference_layer = self._pedb.stackup.signal_layers[reference_layer]._edb_layer
             pos_edge_term.reference_layer = reference_layer
@@ -857,7 +856,7 @@ class EdbHfss(object):
                 " 'PEC Launch Width'='{}')".format(pec_launch_width),
             ]
         )
-        pos_edge_term.product_solver_option(ProductIdType.DESIGNER, "HFSS", prop, )
+        pos_edge_term.set_product_solver_option(database.ProductIdType.DESIGNER.value, "HFSS", prop)
         if pos_edge_term:
             return port_name, self._pedb.hfss.excitations[port_name]
         else:
@@ -904,14 +903,13 @@ class EdbHfss(object):
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
         neg_edge_term = self._create_edge_terminal(ref_prim_id, point_on_ref_edge, port_name + "_ref", is_ref=True)
 
-        pos_edge_term.impedance = Value(impedance)
+        pos_edge_term.impedance = utility.Value(impedance)
         pos_edge_term.reference_terminal = neg_edge_term
         if not layer_alignment == "Upper":
             layer_alignment = "Lower"
-        pos_edge_term.product_solver_option(ProductIdType.DESIGNER, "HFSS",
+        pos_edge_term.set_product_solver_option(database.ProductIdType.DESIGNER.value, "HFSS",
                                             "HFSS('HFSS Type'='Gap(coax)', Orientation='Horizontal', 'Layer Alignment'='{}')".format(
-                                                layer_alignment),
-                                            )
+                                                layer_alignment))
         if pos_edge_term:
             return port_name
         else:
@@ -1388,22 +1386,20 @@ class EdbHfss(object):
         )
         ii = 0
         for cc in cmp_names:
-            cmp = ComponentGroup.find(self._active_layout, cc)
+            cmp = hierarchy.ComponentGroup.find(self._active_layout, cc)
             if cmp.is_null:
                 self._logger.warning("RenamePorts: could not find component {0}".format(cc))
                 continue
-            terms = [obj for obj in list(cmp.layout_objs) if obj.obj_type == Terminal]
+            terms = [p for p in cmp.members if isinstance(p, terminal.Terminal)]
             for nn in net_names:
                 for tt in [term for term in terms if term.net.name == nn]:
-                    if not tt.impedance(Value("50ohm")):
-                        self._logger.warning("Could not set terminal {0} impedance as 50ohm".format(tt.name))
-                        continue
+                    tt.impedance = utility.Value("50ohm")
                     ii += 1
 
             if not simulation_setup.use_default_coax_port_radial_extension:
                 # Set the Radial Extent Factor
                 typ = cmp.component_type
-                if typ in [ComponentType.OTHER, ComponentType.IC, ComponentType.IO]:
+                if typ in [hierarchy.ComponentType.OTHER, hierarchy.ComponentType.IC, hierarchy.ComponentType.IO]:
                     cmp_prop = cmp.component_property
                     success, diam1, diam2 = cmp_prop.solder_ball_property.diameter
                     if success and diam1 and diam2 > 0:  # pragma: no cover
@@ -1417,7 +1413,7 @@ class EdbHfss(object):
                             "'PEC Launch Width'='0mm')"
                         )
                         for tt in terms:
-                            tt.set_product_solver_option(ProductIdType.DESIGNER, "HFSS", option)
+                            tt.set_product_solver_option(database.ProductIdType.DESIGNER, "HFSS", option)
         return True
 
     @pyedb_function_handler()
@@ -1425,7 +1421,7 @@ class EdbHfss(object):
         terms_loi = []
         if terminals_only:
             term_list = [
-                obj for obj in list(comp.layout_objs) if obj.obj_type == Terminal
+                obj for obj in list(comp.layout_objs) if obj.obj_type == terminal.Terminal
             ]
             for tt in term_list:
                 success, p_inst, lyr = tt.parameters
@@ -1436,7 +1432,7 @@ class EdbHfss(object):
             pin_list = [
                 obj
                 for obj in list(comp.layout_objs)
-                if obj.obj_type == PadstackInstance
+                if obj.obj_type == primitive.PadstackInstance
             ]
             for pi in pin_list:
                 loi = l_inst.get_layout_obj_instance(pi, None)
@@ -1454,7 +1450,7 @@ class EdbHfss(object):
             # dim = 0.26 * max(abs(UR[0]-LL[0]), abs(UR[1]-LL[1]))  # 0.25 corresponds to the default 0.5
             # Radial Extent Factor, so set slightly larger to avoid validation errors
             dim = 0.30 * max(abs(ur[0] - ll[0]), abs(ur[1] - ll[1]))  # 0.25 corresponds to the default 0.5
-            terms_bbox.append(PolygonData(ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim))
+            terms_bbox.append(geometry.PolygonData(ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim))
         return self._edb.geometry.polygon_data.get_bbox_of_polygons(terms_bbox)
 
     @pyedb_function_handler()
@@ -1471,7 +1467,7 @@ class EdbHfss(object):
            Number of ports.
 
         """
-        terms = [term for term in self._layout.terminals if int(term.boundary_type) == 0]
+        terms = [term for term in self._layout.terminals if term.boundary_type.value == 0]
         return len([i for i in terms if not i.is_reference_terminal])
 
     @pyedb_function_handler()
@@ -1550,16 +1546,16 @@ class EdbHfss(object):
         if positive_pin and negative_pin:
             positive_pin_term = self._pedb.components._create_terminal(positive_pin)
             negative_pin_term = self._pedb.components._create_terminal(negative_pin)
-            positive_pin_term.SetBoundaryType(BoundaryType.RLC)
-            negative_pin_term.SetBoundaryType(BoundaryType.RLC)
-            rlc = Rlc()
+            positive_pin_term.SetBoundaryType(terminal.BoundaryType.RLC)
+            negative_pin_term.SetBoundaryType(terminal.BoundaryType.RLC)
+            rlc = utility.Rlc()
             rlc.is_parallel = True
             rlc.r_enabled = True
             rlc.l_enabled = True
             rlc.c_enabled = True
-            rlc.R = Value(rvalue)
-            rlc.L = Value(lvalue)
-            rlc.C = Value(cvalue)
+            rlc.R = utility.Value(rvalue)
+            rlc.L = utility.Value(lvalue)
+            rlc.C = utility.Value(cvalue)
             positive_pin_term.rlc_boundary_parameters = rlc
             term_name = "{}_{}_{}".format(positive_pin.component.name, positive_pin.net.name, positive_pin.name)
             positive_pin_term.name = term_name

@@ -2814,8 +2814,8 @@ class EdbGrpc(EdbInit):
                     ]
                     self.nets.delete(nets_to_remove)
             self.logger.info("Deleting existing ports.")
-            map(lambda port: port.Delete(), self.layout.terminals)
-            map(lambda pg: pg.Delete(), self.layout.pin_groups)
+            map(lambda port: port.delete(), self.layout.terminals)
+            map(lambda pg: pg.delete(), self.layout.pin_groups)
             if simulation_setup.solver_type == SolverType.Hfss3dLayout:
                 if simulation_setup.generate_excitations:
                     self.logger.info("Creating HFSS ports for signal nets.")

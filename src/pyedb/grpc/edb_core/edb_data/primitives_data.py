@@ -96,6 +96,10 @@ class EDBPrimitivesMain:
         return None
 
     @property
+    def id(self):
+        return self.primitive_object.id
+
+    @property
     def net(self):
         if self.net_name:
             return self._app.nets.nets[self.net_name]

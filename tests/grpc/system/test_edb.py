@@ -550,12 +550,12 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "test_0117.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
         edb = EdbGrpc(target_path, edbversion=desktop_version)
-        sim_setup = SimulationConfiguration()
+        sim_setup = edb.new_simulation_configuration()
         sim_setup.mesh_sizefactor = 1.9
         assert not sim_setup.do_lambda_refinement
         edb.hfss.configure_hfss_analysis_setup(sim_setup)
         mesh_size_factor = (
-            list(edb.active_cell.SimulationSetups)[0]
+            list(edb.active_cell.simulation_setups)[0]
             .GetSimSetupInfo()
             .get_SimulationSettings()
             .get_InitialMeshSettings()
@@ -583,7 +583,7 @@ class TestClass:
         assert port_ver.hfss_type == "Gap"
 
         args = {
-            "layer_name": "1_Top",
+            "layer_name": "TOP",
             "net_name": "SIGP",
             "width": "0.1mm",
             "start_cap_style": "Flat",
@@ -693,14 +693,39 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "test_0122.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = EdbGrpc(target_path, edbversion=desktop_version)
-        cfg_file = os.path.join(os.path.dirname(edbapp.edbpath), "test.cfg")
-        with open(cfg_file, "w") as f:
-            f.writelines("SolverType = 'Hfss3dLayout'\n")
-            f.writelines("PowerNets = ['GND']\n")
-            f.writelines("Components = ['U1', 'U7']")
-
-        sim_config = SimulationConfiguration(cfg_file)
-        assert edbapp.build_simulation_project(sim_config)
+        json_file = os.path.join(os.path.dirname(edbapp.edbpath), "test.json")
+        sim_config = edbapp.new_simulation_configuration()
+        sim_config.signal_nets = ["PCIe_Gen4_RX0_N",
+            "PCIe_Gen4_RX0_P",
+            "PCIe_Gen4_RX1_N",
+            "PCIe_Gen4_RX1_P",
+            "PCIe_Gen4_RX2_N",
+            "PCIe_Gen4_RX2_P",
+            "PCIe_Gen4_RX3_N",
+            "PCIe_Gen4_RX3_P",
+            "PCIe_Gen4_TX0_N",
+            "PCIe_Gen4_TX0_CAP_N",
+            "PCIe_Gen4_TX0_p",
+            "PCIe_Gen4_TX0_CAP_P",
+            "PCIe_Gen4_TX1_N",
+            "PCIe_Gen4_TX1_CAP_N",
+            "PCIe_Gen4_TX1_P",
+            "PCIe_Gen4_TX1_CAP_P",
+            "PCIe_Gen4_TX2_N",
+            "PCIe_Gen4_TX2_CAP_N",
+            "PCIe_Gen4_TX2_P",
+            "PCIe_Gen4_TX2_CAP_P",
+            "PCIe_Gen4_TX3_N",
+            "PCIe_Gen4_TX3_CAP_N",
+            "PCIe_Gen4_TX3_P",
+            "PCIe_Gen4_TX3_CAP_P"]
+        sim_config.power_nets = ["1V0", "2V5", "5V", "GND"]
+        sim_config.components = ["X1", "U1"]
+        sim_config.do_cutout_subdesign = False
+        sim_config.export_json(json_file)
+        sim_config2 = edbapp.new_simulation_configuration()
+        sim_config2.import_json(json_file)
+        assert edbapp.build_simulation_project(sim_config2)
         edbapp.close()
 
     def test_set_all_antipad_values(self):

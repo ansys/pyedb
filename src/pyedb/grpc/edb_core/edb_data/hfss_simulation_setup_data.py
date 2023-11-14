@@ -1712,18 +1712,16 @@ class HfssSimulationSetup(object):
 
         if edb_hfss_sim_setup:
             self._edb_sim_setup = edb_hfss_sim_setup
-            self._edb_sim_setup_info = edb_hfss_sim_setup.GetSimSetupInfo()
             self._name = edb_hfss_sim_setup.name
         else:
-            self._edb_sim_setup_info = simulation_setup.HfssSimulationSetup().create().settings
             if not name:
-                self._edb_sim_setup_info.Name = generate_unique_name("hfss")
+                self._name = generate_unique_name("hfss")
             else:
-                self._edb_sim_setup_info.Name = name
-            self._name = name
+                self._name = name
+            edb_hfss_sim_setup = simulation_setup.HfssSimulationSetup.create(cell=self._edb.active_cell, name=self.name)
             self.hfss_solver_settings.order_basis = "mixed"
 
-            self._edb_sim_setup = HfssSimulationSetup(self._edb_sim_setup_info)
+            self._edb_sim_setup = HfssSimulationSetup(edb_hfss_sim_setup)
             self._update_setup()
 
     @property
