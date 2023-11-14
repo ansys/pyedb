@@ -259,7 +259,6 @@ class EdbGrpc(EdbInit):
         self._siwave = None
         self._hfss = None
         self._nets = None
-        self._setups = {}
         self._layout_instance = None
         self._variables = None
         self._active_cell = None
@@ -2869,7 +2868,7 @@ class EdbGrpc(EdbInit):
                 self.edbpath = legacy_name
                 self.open_edb()
             return True
-        except:  # pragma: no cover
+        except:
             return False
 
     @pyedb_function_handler()
@@ -3027,7 +3026,7 @@ class EdbGrpc(EdbInit):
         -------
         Dict[str, :class:`pyaedt.edb_core.edb_data.siwave_simulation_setup_data.SiwaveDCSimulationSetup`]
         """
-        return {name: i for name, i in self.setups.items() if i.setup_type == "kSIWaveDCIR"}
+        return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveDCSimulationSetup)}
 
     @property
     def siwave_ac_setups(self):
@@ -3037,10 +3036,12 @@ class EdbGrpc(EdbInit):
         -------
         Dict[str, :class:`pyaedt.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
         """
-        return {name: i for name, i in self.setups.items() if i.setup_type == "kSIWave"}
+        return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSYZSimulationSetup)}
+
 
     def create_hfss_setup(self, name=None):
-        """Create a setup from a template.
+        """Create an HFSS simulation setup from a template.
+
 
         Parameters
         ----------
@@ -3058,8 +3059,7 @@ class EdbGrpc(EdbInit):
         """
         if name in self.setups:
             return False
-        setup = HfssSimulationSetup(self, name)
-        self._setups[name] = setup
+        setup = HfssSimulationSetup(self).create(name)
         return setup
 
     @pyedb_function_handler()
@@ -3115,8 +3115,7 @@ class EdbGrpc(EdbInit):
             name = generate_unique_name("Siwave_DC")
         if name in self.setups:
             return False
-        setup = SiwaveDCSimulationSetup(self, name)
-        self._setups[name] = setup
+        setup = SiwaveDCSimulationSetup(self).create(name)
         return setup
 
     @pyedb_function_handler()

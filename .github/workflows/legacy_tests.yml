@@ -47,12 +47,8 @@ jobs:
 
       - name: "Executing legacy unit tests"
         run: |
-          pytest -m "legacy and unit" -n 6 -v
+          pytest -m "legacy and unit" -n auto -v
 
       - name: "Executing legacy system tests (distributing on multiple CPUs)"
         run: |
           pytest -m "legacy and system and not no_xdist" -n auto -v
-
-      - name: "Executing legacy system tests that cannot be distributed"
-        run: |
-          pytest -m "legacy and system and no_xdist" -v

@@ -1010,7 +1010,7 @@ class Components(object):
         >>> from pyedb.grpc.edb import Edb
         >>> edb_file = r'C:\my_edb_file.aedb'
         >>> edb = Edb(edb_file)
-        >>> for cmp in list(edb.components.components.keys()):
+        >>> for cmp in list(edb.components.instances.keys()):
         >>>     edb.components.deactivate_rlc_component(component=cmp, create_circuit_port=False)
         >>> edb.save_edb()
         >>> edb.close_edb()
@@ -1031,12 +1031,10 @@ class Components(object):
             self._logger.info("Component %s passed to deactivate is not an RLC.", component.refdes)
             return False
         component.is_enabled = False
-        if create_circuit_port:
-            return self.add_port_on_rlc_component(component.refdes)
-        return True
+        return self.add_port_on_rlc_component(component=component.refdes, circuit_ports=create_circuit_port)
 
     @pyedb_function_handler()
-    def add_port_on_rlc_component(self, component=None):
+    def add_port_on_rlc_component(self, component=None, circuit_ports=True):
         """Deactivate RLC component and replace it with a circuit port.
         The circuit port supports only 2-pin components.
 
@@ -1044,6 +1042,10 @@ class Components(object):
         ----------
         component : str
             Reference designator of the RLC component.
+
+        circuit_ports : bool
+            ``True`` will replace RLC component by circuit ports, ``False`` gap ports compatible with HFSS 3D modeler
+            export.
 
         Returns
         -------
@@ -1063,31 +1065,38 @@ class Components(object):
             pin_layers = self._padstack._get_pin_layer_range(pins[0])
             pos_pin_term = terminal.PointTerminal.create(self._active_layout, pins[0].GetNet(),
                                                 "{}_{}".format(component.refdes, pins[0].GetName()),
-                                                pt,
+                                                pins[0],
                                                 pin_layers[0],
+                                                False,
                                                 )
             if not pos_pin_term:  # pragma: no cover
                 return False
             neg_pin_loc = self.get_pin_position(pins[1])
             pt = self._pedb.point_data(*neg_pin_loc)
 
-            neg_pin_term = terminal.PointTerminal.create(
+            neg_pin_term = terminal.PadstackInstanceTerminal.create(
                 self._active_layout,
                 pins[1].net,
                 "{}_{}_ref".format(component.refdes, pins[1].GetName()),
-                pt,
+                pins[1],
                 pin_layers[0],
+                False,
             )
             if not neg_pin_term:  # pragma: no cover
                 return False
             pos_pin_term.boundary_type = terminal.BoundaryType.PORT
-            pos_pin_term.is_circuit_port = True
             pos_pin_term.name = component.refdes
             neg_pin_term.boundary_type = terminal.BoundaryType.PORT
-            neg_pin_term.is_circuit_port = True
             pos_pin_term.reference_terminal = neg_pin_term
+            if circuit_ports:
+                pos_pin_term.is_circuit_port = True
+                neg_pin_term.is_circuit_port = True
+            else:
+                pos_pin_term.is_circuit_port = False
+                neg_pin_term.is_circuit_port = False
             self._logger.info("Component {} has been replaced by port".format(component.refdes))
             return True
+        return False
 
     @pyedb_function_handler()
     def add_rlc_boundary(self, component=None, circuit_type=True):
