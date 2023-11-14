@@ -54,7 +54,16 @@ class Terminal(Connectable):
     @property
     def hfss_type(self):
         """HFSS port type."""
-        return self._hfss_port_property["HFSS Type"]
+        if self.type.name == "EDGE":
+            return "Gap"
+        elif self.type.name == "POINT":
+            return "Circuit"
+        elif self.type.name == "PADSTACK_INST":
+            return "Coax"
+        elif self.type.name == "BUNDLE":
+            return "Wave"
+        else:
+            return "Terminal"
 
     @hfss_type.setter
     def hfss_type(self, value):

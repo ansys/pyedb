@@ -2232,7 +2232,6 @@ class SimulationConfiguration(object):
         self._solver_type = SolverType.Hfss3dLayout
         if self._filename and os.path.splitext(self._filename)[1] == ".json":
             self.import_json(filename)
-        self._read_cfg()
         self._pedb = edb
         self.SOLVER_TYPE = SolverType
 
@@ -2395,7 +2394,7 @@ class SimulationConfiguration(object):
                     dict_out[k[1:]] = sources_out
                 elif k == "_dc_source_terms_to_ground":
                     dc_term_gnd = {}
-                    for k2 in list(v.Keys):  # pragma: no cover
+                    for k2 in list(v.keys()):  # pragma: no cover
                         dc_term_gnd[k2] = v[k2]
                     dict_out[k[1:]] = dc_term_gnd
                 else:

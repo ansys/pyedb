@@ -2,7 +2,8 @@ from pyedb.grpc.edb_core.edb_data.terminals import BundleTerminal
 from pyedb.grpc.edb_core.edb_data.terminals import EdgeTerminal
 from pyedb.grpc.edb_core.edb_data.terminals import PadstackInstanceTerminal
 from pyedb.grpc.edb_core.edb_data.terminals import Terminal
-from ansys.edb.utility.value import Value
+import ansys.edb.utility as utility
+import ansys.edb.database as database
 
 
 class GapPort(EdgeTerminal):
@@ -84,6 +85,7 @@ class WavePort(EdgeTerminal):
 
     @horizontal_extent_factor.setter
     def horizontal_extent_factor(self, value):
+        self._edb_object.product_solver_names(database.ProductIdType.HFSS_3D_LAYOUT)
         p = self._hfss_port_property
         p["Horizontal Extent Factor"] = value
         self._hfss_port_property = p
@@ -129,7 +131,7 @@ class WavePort(EdgeTerminal):
     @deembed_length.setter
     def deembed_length(self, value):
         p = self._edb_object.port_post_processing_prop
-        p.deembed_length = Value(value)
+        p.deembed_length = utility.Value(value)
         self._edb_object.port_post_processing_prop = p
 
 
@@ -165,7 +167,7 @@ class ExcitationSources(Terminal):
 
     @magnitude.setter
     def magnitude(self, value):
-        self._edb_object.source_amplitude = Value(value)
+        self._edb_object.source_amplitude = utility.Value(value)
 
     @property
     def phase(self):
@@ -174,7 +176,7 @@ class ExcitationSources(Terminal):
 
     @phase.setter
     def phase(self, value):
-        self._edb_object.source_phase = Value(value)
+        self._edb_object.source_phase = utility.Value(value)
 
 
 class ExcitationProbes(Terminal):
