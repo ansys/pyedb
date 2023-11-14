@@ -13,7 +13,6 @@ from pyedb.legacy.edb_core.edb_data.sources import DCTerminal
 from pyedb.legacy.edb_core.edb_data.sources import PinGroup
 from pyedb.legacy.edb_core.edb_data.sources import ResistorSource
 from pyedb.legacy.edb_core.edb_data.sources import VoltageSource
-from pyedb.legacy.edb_core.general import BoundaryType
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.constants import SolverType
 from pyedb.generic.constants import SweepType
@@ -839,7 +838,7 @@ class EdbSiwave(object):
         third_arg = int(decade_count)
         if sweeptype == 0:
             third_arg = self._pedb.number_with_units(step_freq, "Hz")
-        setup.si_slider_postion = int(accuracy_level)
+        setup.si_slider_position = int(accuracy_level)
         sweep = setup.add_frequency_sweep(
             frequency_sweep=[
                 [sweep, start_freq, stop_freq, third_arg],
@@ -1418,14 +1417,6 @@ class EdbSiwave(object):
         negative_layer : str
             Layer of the negative terminal.
         """
-        from pyedb.legacy.edb_core.edb_data.terminals import PointTerminal
-
-        point_terminal = PointTerminal(self._pedb)
-        p_terminal = point_terminal.create(name, positive_net_name, positive_location, positive_layer)
-        p_terminal.boundary_type = BoundaryType.kVoltageProbe.name
-
-        n_terminal = point_terminal.create(name + "_ref", negative_net_name, negative_location, negative_layer)
-        n_terminal.boundary_type = BoundaryType.kVoltageProbe.name
-        p_terminal.ref_terminal = n_terminal
-        return self._pedb.probes[name]
-    
+        p_terminal = self._pedb.get_point_terminal(name, positive_net_name, positive_location, positive_layer)
+        n_terminal = self._pedb.get_point_terminal(name + "_ref", negative_net_name, negative_location, negative_layer)
+        return self._pedb.create_voltage_probe(p_terminal, n_terminal)
