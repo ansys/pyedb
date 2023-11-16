@@ -12,6 +12,7 @@ from pyedb.generic.general_methods import env_path
 from pyedb.generic.general_methods import env_path_student
 from pyedb.generic.general_methods import env_value
 from pyedb.generic.general_methods import is_linux
+import ansys.edb.database as database
 
 
 class EdbInit(object):
@@ -85,7 +86,7 @@ class EdbInit(object):
         -------
         Database
         """
-        self._db = self.edb_api.database.Create(db_path)
+        self._db = database.Database.create(db_path)
         return self._db
 
     def open(self, db_path, read_only):
@@ -103,10 +104,7 @@ class EdbInit(object):
         Database or None
             The opened Database object, or None if not found.
         """
-        self._db = self.edb_api.database.Open(
-            db_path,
-            read_only,
-        )
+        self._db = database.Database.open(db_path, read_only)
         return self._db
 
     def delete(self, db_path):
@@ -117,7 +115,7 @@ class EdbInit(object):
         db_path : str
             Path to top-level database folder.
         """
-        return self.edb_api.database.Delete(db_path)
+        return database.Database.delete(db_path)
 
     def save(self):
         """Save any changes into a file."""
@@ -183,6 +181,8 @@ class EdbInit(object):
         """
         return self._db.is_read_only
 
+
+
     def find_by_id(self, db_id):
         """Find a database by ID.
 
@@ -196,7 +196,7 @@ class EdbInit(object):
         Database
             The Database or Null on failure.
         """
-        self.edb_api.database.find_by_id(db_id)
+        return database.Database.find_by_id(db_id)
 
     def save_as(self, path, version=""):
         """Save this Database to a new location and older EDB version.
@@ -333,7 +333,7 @@ class EdbInit(object):
             version string
 
         """
-        return self._db.GetSourceVersion()
+        return self._db.source_version
 
     @source_version.setter
     def source_version(self, source_version):
