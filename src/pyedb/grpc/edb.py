@@ -151,6 +151,7 @@ class EdbGrpc(EdbInit):
         self.edbversion = edbversion
         self.isaedtowned = isaedtowned
         self.isreadonly = isreadonly
+        self._setups = []
         if cellname:
             self.cellname = cellname
         else:
@@ -3064,7 +3065,7 @@ class EdbGrpc(EdbInit):
         """
         if name in self.setups:
             return False
-        setup = HfssSimulationSetup(self).create(name)
+        setup = HfssSimulationSetup(self)
         return setup
 
     @pyedb_function_handler()

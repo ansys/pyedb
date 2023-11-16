@@ -1174,9 +1174,9 @@ class EdbHfss(object):
         if simulation_setup.radiation_box == RadiationBoxType.BoundingBox:
             hfss_extent.extent_type = utility.HfssExtentInfo.HFSSExtentInfoType.BOUNDING_BOX
         elif simulation_setup.radiation_box == RadiationBoxType.Conformal:
-            hfss_extent.extent_type = HfssExtentInfo.HFSSExtentInfoType.CONFORMING
+            hfss_extent.extent_type = utility.HfssExtentInfo.HFSSExtentInfoType.CONFORMING
         else:
-            hfss_extent.extent_type = HfssExtentInfo.HFSSExtentInfoType.CONVEX_HUL
+            hfss_extent.extent_type = utility.HfssExtentInfo.HFSSExtentInfoType.CONVEX_HUL
         hfss_extent.dielectric_extent_size = (simulation_setup.dielectric_extent,
                                               simulation_setup.use_dielectric_extent_multiple)
         hfss_extent.air_box_horizontal_extent = (simulation_setup.airbox_horizontal_extent,
