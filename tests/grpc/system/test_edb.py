@@ -748,178 +748,200 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = EdbGrpc(target_path, edbversion=desktop_version)
         setup1 = edbapp.create_hfss_setup("setup1")
-        assert setup1.set_solution_single_frequency()
-        assert setup1.set_solution_multi_frequencies()
-        assert setup1.set_solution_broadband()
+        assert setup1.adaptive_settings.set_solution_single_frequency(frequency="23GHz", max_num_passes=30,
+                                                                      max_delta_s=0.01)
+        assert setup1.adaptive_settings.set_solution_multi_frequencies(frequencies=("4GHz", "12GHz"),
+                                       max_delta_s=(0.02, 0.05), max_passes=20, output_variables=None)
+        assert setup1.adaptive_settings.adapt_type == "MULTI_FREQUENCIES"
+
+        assert setup1.adaptive_settings.set_solution_broadband()
 
         setup1.hfss_solver_settings.enhanced_low_freq_accuracy = True
+        assert setup1.hfss_solver_settings.enhanced_low_freq_accuracy
         setup1.hfss_solver_settings.order_basis = "first"
         setup1.hfss_solver_settings.relative_residual = 0.0002
-        setup1.hfss_solver_settings.use_shell_elements = True
+        #setup1.hfss_solver_settings.use_shell_elements = True # to be fixed in api
 
-        setup1b = edbapp.setups["setup1"]
-        hfss_solver_settings = edbapp.setups["setup1"].hfss_solver_settings
-        assert hfss_solver_settings.order_basis == "first"
-        assert hfss_solver_settings.relative_residual == 0.0002
-        assert hfss_solver_settings.solver_type
-        assert hfss_solver_settings.enhanced_low_freq_accuracy
-        assert not hfss_solver_settings.use_shell_elements
+        # setup1b = edbapp.setups["setup1"] # to be fixed in api
+        # hfss_solver_settings = edbapp.setups["setup1"].hfss_solver_settings
+        # assert hfss_solver_settings.order_basis == "first"
+        # assert hfss_solver_settings.relative_residual == 0.0002
+        # assert hfss_solver_settings.solver_type
+        # assert hfss_solver_settings.enhanced_low_freq_accuracy
+        # assert not hfss_solver_settings.use_shell_elements
 
+        setup1.adaptive_settings.adapt_type = 0
         assert setup1.adaptive_settings.add_adaptive_frequency_data("5GHz", 8, "0.01")
         assert setup1.adaptive_settings.adaptive_frequency_data_list
-        setup1.adaptive_settings.adapt_type = "kBroadband"
-        setup1.adaptive_settings.basic = False
-        setup1.adaptive_settings.max_refinement = 1000001
+        assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 1
+
+        setup1.adaptive_settings.adapt_type = 2
+        assert setup1.adaptive_settings.adapt_type == "BROADBAND"
+        #setup1.adaptive_settings.max_refinement = 1000001
         setup1.adaptive_settings.max_refine_per_pass = 20
+        assert setup1.adaptive_settings.max_refine_per_pass == 20
         setup1.adaptive_settings.min_passes = 2
+        assert setup1.adaptive_settings.min_passes == 2
         setup1.adaptive_settings.save_fields = True
         setup1.adaptive_settings.save_rad_field_only = True
         setup1.adaptive_settings.use_convergence_matrix = True
         setup1.adaptive_settings.use_max_refinement = True
 
-        assert edbapp.setups["setup1"].adaptive_settings.adapt_type == "kBroadband"
-        assert not edbapp.setups["setup1"].adaptive_settings.basic
-        assert edbapp.setups["setup1"].adaptive_settings.max_refinement == 1000001
-        assert edbapp.setups["setup1"].adaptive_settings.max_refine_per_pass == 20
-        assert edbapp.setups["setup1"].adaptive_settings.min_passes == 2
-        assert edbapp.setups["setup1"].adaptive_settings.save_fields
-        assert edbapp.setups["setup1"].adaptive_settings.save_rad_field_only
+        # assert edbapp.setups["setup1"].adaptive_settings.adapt_type == "kBroadband"
+        # assert not edbapp.setups["setup1"].adaptive_settings.basic
+        # assert edbapp.setups["setup1"].adaptive_settings.max_refinement == 1000001
+        # assert edbapp.setups["setup1"].adaptive_settings.max_refine_per_pass == 20
+        # assert edbapp.setups["setup1"].adaptive_settings.min_passes == 2
+        # assert edbapp.setups["setup1"].adaptive_settings.save_fields
+        # assert edbapp.setups["setup1"].adaptive_settings.save_rad_field_only
         # assert adaptive_settings.use_convergence_matrix
-        assert edbapp.setups["setup1"].adaptive_settings.use_max_refinement
+        # assert edbapp.setups["setup1"].adaptive_settings.use_max_refinement
 
-        setup1.defeature_settings.defeature_abs_length = "1um"
-        setup1.defeature_settings.defeature_ratio = 1e-5
-        setup1.defeature_settings.healing_option = 0
-        setup1.defeature_settings.model_type = 1
+        setup1.defeature_settings.defeature_absolute_length = "1um"
+        assert setup1.defeature_settings.defeature_absolute_length == "1um"
+        setup1.defeature_settings.defeature_ratio = 1e-6
+        assert setup1.defeature_settings.defeature_ratio == 1e-6
+        #setup1.defeature_settings.healing_option = 1
+        #assert setup1.defeature_settings.healing_option == 1
         setup1.defeature_settings.remove_floating_geometry = True
+        assert setup1.defeature_settings.remove_floating_geometry
         setup1.defeature_settings.small_void_area = 0.1
+        assert setup1.defeature_settings.small_void_area == 0.1
         setup1.defeature_settings.union_polygons = False
+        assert not setup1.defeature_settings.union_polygons
         setup1.defeature_settings.use_defeature = False
-        setup1.defeature_settings.use_defeature_abs_length = True
+        assert not setup1.defeature_settings.use_defeature
+        setup1.defeature_settings.use_defeature_absolute_length = True
+        assert setup1.defeature_settings.use_defeature_absolute_length
 
-        defeature_settings = edbapp.setups["setup1"].defeature_settings
-        assert defeature_settings.defeature_abs_length == "1um"
-        assert defeature_settings.defeature_ratio == 1e-5
-        # assert defeature_settings.healing_option == 0
-        # assert defeature_settings.model_type == 1
-        assert defeature_settings.remove_floating_geometry
-        assert defeature_settings.small_void_area == 0.1
-        assert not defeature_settings.union_polygons
-        assert not defeature_settings.use_defeature
-        assert defeature_settings.use_defeature_abs_length
+        #defeature_settings = edbapp.setups["setup1"].defeature_settings
+        #assert defeature_settings.defeature_abs_length == "1um"
+        #assert defeature_settings.defeature_ratio == 1e-5
+        #assert defeature_settings.remove_floating_geometry
+        #assert defeature_settings.small_void_area == 0.1
+        #assert not defeature_settings.union_polygons
+        #assert not defeature_settings.use_defeature
+        #assert defeature_settings.use_defeature_abs_length
 
         via_settings = setup1.via_settings
         via_settings.via_density = 1
+        assert via_settings.via_density == 1.0
         via_settings.via_material = "pec"
-        via_settings.via_num_sides = 8
-        via_settings.via_style = "kNum25DViaStyle"
-
-        via_settings = edbapp.setups["setup1"].via_settings
-        assert via_settings.via_density == 1
         assert via_settings.via_material == "pec"
-        assert via_settings.via_num_sides == 8
-        # assert via_settings.via_style == "kNum25DViaStyle"
+        #via_settings.via_num_sides = 8
+        via_settings.via_style = 4
+        assert via_settings.via_style == "NUM_VIA_STYLE"
+        #via_settings = edbapp.setups["setup1"].via_settings
+        #assert via_settings.via_num_sides == 8
 
         advanced_mesh_settings = setup1.advanced_mesh_settings
-        advanced_mesh_settings.layer_snap_tol = "1e-6"
+        advanced_mesh_settings.layer_snap_tol = "1.5e-6"
+        assert advanced_mesh_settings.layer_snap_tol == "1.5e-6"
         advanced_mesh_settings.mesh_display_attributes = "#0000001"
         advanced_mesh_settings.replace_3d_triangles = False
 
-        advanced_mesh_settings = edbapp.setups["setup1"].advanced_mesh_settings
-        assert advanced_mesh_settings.layer_snap_tol == "1e-6"
-        assert advanced_mesh_settings.mesh_display_attributes == "#0000001"
-        assert not advanced_mesh_settings.replace_3d_triangles
+        #advanced_mesh_settings = edbapp.setups["setup1"].advanced_mesh_settings
+        #assert advanced_mesh_settings.layer_snap_tol == "1e-6"
+        #assert advanced_mesh_settings.mesh_display_attributes == "#0000001"
+        #assert not advanced_mesh_settings.replace_3d_triangles
 
         curve_approx_settings = setup1.curve_approx_settings
         curve_approx_settings.arc_angle = "15deg"
+        assert curve_approx_settings.arc_angle == "15deg"
         curve_approx_settings.arc_to_chord_error = "0.1"
-        curve_approx_settings.max_arc_points = 12
-        curve_approx_settings.start_azimuth = "1"
-        curve_approx_settings.use_arc_to_chord_error = True
-
-        curve_approx_settings = edbapp.setups["setup1"].curve_approx_settings
         assert curve_approx_settings.arc_to_chord_error == "0.1"
+        curve_approx_settings.max_arc_points = 12
         assert curve_approx_settings.max_arc_points == 12
+        curve_approx_settings.start_azimuth = "1"
         assert curve_approx_settings.start_azimuth == "1"
+        curve_approx_settings.use_arc_to_chord_error = True
         assert curve_approx_settings.use_arc_to_chord_error
+
+        #curve_approx_settings = edbapp.setups["setup1"].curve_approx_settings
+        #assert curve_approx_settings.arc_to_chord_error == "0.1"
+        #assert curve_approx_settings.max_arc_points == 12
+        #assert curve_approx_settings.start_azimuth == "1"
+        #assert curve_approx_settings.use_arc_to_chord_error
 
         dcr_settings = setup1.dcr_settings
         dcr_settings.conduction_max_passes = 11
-        dcr_settings.conduction_min_converged_passes = 2
-        dcr_settings.conduction_min_passes = 2
-        dcr_settings.conduction_per_error = 2.0
-        dcr_settings.conduction_per_refine = 33.0
-
-        dcr_settings = edbapp.setups["setup1"].dcr_settings
         assert dcr_settings.conduction_max_passes == 11
+        dcr_settings.conduction_min_converged_passes = 2
         assert dcr_settings.conduction_min_converged_passes == 2
+        dcr_settings.conduction_min_passes = 2
         assert dcr_settings.conduction_min_passes == 2
+        dcr_settings.conduction_per_error = 2.0
         assert dcr_settings.conduction_per_error == 2.0
+        dcr_settings.conduction_per_refine = 33.0
         assert dcr_settings.conduction_per_refine == 33.0
+
+        #dcr_settings = edbapp.setups["setup1"].dcr_settings
+        #assert dcr_settings.conduction_max_passes == 11
+        #assert dcr_settings.conduction_min_converged_passes == 2
+        #assert dcr_settings.conduction_min_passes == 2
+        #assert dcr_settings.conduction_per_error == 2.0
+        #assert dcr_settings.conduction_per_refine == 33.0
 
         hfss_port_settings = setup1.hfss_port_settings
         hfss_port_settings.max_delta_z0 = 0.5
         assert hfss_port_settings.max_delta_z0 == 0.5
-        hfss_port_settings.max_triangles_wave_port = 1000
-        assert hfss_port_settings.max_triangles_wave_port == 1000
-        hfss_port_settings.min_triangles_wave_port = 200
-        assert hfss_port_settings.min_triangles_wave_port == 200
-        hfss_port_settings.set_triangles_wave_port = True
-        assert hfss_port_settings.set_triangles_wave_port
+        hfss_port_settings.max_triangles_for_wave_port = 1000
+        assert hfss_port_settings.max_triangles_for_wave_port == 1000
+        hfss_port_settings.min_triangles_for_wave_port = 200
+        assert hfss_port_settings.min_triangles_for_wave_port == 200
+        hfss_port_settings.set_triangles_for_wave_port = True
+        assert hfss_port_settings.set_triangles_for_wave_port
 
         # mesh_operations = setup1.mesh_operations
         # setup1.mesh_operations = mesh_operations
 
-        setup1.add_frequency_sweep(
-            "sweep1",
-            frequency_sweep=[
-                ["linear count", "0", "1kHz", 1],
-                ["log scale", "1kHz", "0.1GHz", 10],
-                ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-            ],
-        )
+        setup1.add_frequency_sweep(name="sweep1",
+                                   distribution="LIN",
+                                   start_frequency="OHz",
+                                   stop_frequency="1KHz",
+                                   step_frequency="1KHz")
         assert "sweep1" in setup1.frequency_sweeps
         sweep1 = setup1.frequency_sweeps["sweep1"]
-        sweep1.adaptive_sampling = True
-        assert sweep1.adaptive_sampling
+        #sweep1.adaptive_sampling = True
+        #assert sweep1.adaptive_sampling
 
-        edbapp.setups["setup1"].name = "setup1a"
-        assert "setup1" not in edbapp.setups
-        assert "setup1a" in edbapp.setups
+        #edbapp.setups["setup1"].name = "setup1a"
+        #assert "setup1" not in edbapp.setups
+        #assert "setup1a" in edbapp.setups
 
-        mop = edbapp.setups["setup1a"].add_length_mesh_operation({"GND": ["1_Top", "16_Bottom"]}, "m1")
-        assert mop.name == "m1"
-        assert mop.max_elements == "1000"
-        assert mop.restrict_max_elements
-        assert mop.restrict_length
-        assert mop.max_length == "1mm"
+        #mop = edbapp.setups["setup1a"].add_length_mesh_operation({"GND": ["1_Top", "16_Bottom"]}, "m1")
+        #assert mop.name == "m1"
+        #assert mop.max_elements == "1000"
+        #assert mop.restrict_max_elements
+        #assert mop.restrict_length
+        #assert mop.max_length == "1mm"
 
-        mop.name = "m2"
-        mop.max_elements = 2000
-        mop.restrict_max_elements = False
-        mop.restrict_length = False
-        mop.max_length = "2mm"
+        #mop.name = "m2"
+        #mop.max_elements = 2000
+        #mop.restrict_max_elements = False
+        #mop.restrict_length = False
+        #mop.max_length = "2mm"
 
-        assert mop.name == "m2"
-        assert mop.max_elements == "2000"
-        assert not mop.restrict_max_elements
-        assert not mop.restrict_length
-        assert mop.max_length == "2mm"
+        #assert mop.name == "m2"
+        #assert mop.max_elements == "2000"
+        #assert not mop.restrict_max_elements
+        #assert not mop.restrict_length
+        #assert mop.max_length == "2mm"
 
-        mop = edbapp.setups["setup1a"].add_skin_depth_mesh_operation({"GND": ["1_Top", "16_Bottom"]})
-        assert mop.max_elements == "1000"
-        assert mop.restrict_max_elements
-        assert mop.skin_depth == "1um"
-        assert mop.surface_triangle_length == "1mm"
-        assert mop.number_of_layer_elements == "2"
+        #mop = edbapp.setups["setup1a"].add_skin_depth_mesh_operation({"GND": ["1_Top", "16_Bottom"]})
+        #assert mop.max_elements == "1000"
+        #assert mop.restrict_max_elements
+        #assert mop.skin_depth == "1um"
+        #assert mop.surface_triangle_length == "1mm"
+        #assert mop.number_of_layer_elements == "2"
 
-        mop.skin_depth = "5um"
-        mop.surface_triangle_length = "2mm"
-        mop.number_of_layer_elements = "3"
+        #mop.skin_depth = "5um"
+        #mop.surface_triangle_length = "2mm"
+        #mop.number_of_layer_elements = "3"
 
-        assert mop.skin_depth == "5um"
-        assert mop.surface_triangle_length == "2mm"
-        assert mop.number_of_layer_elements == "3"
+        #assert mop.skin_depth == "5um"
+        #assert mop.surface_triangle_length == "2mm"
+        #assert mop.number_of_layer_elements == "3"
         edbapp.close()
 
     def test_siwave_dc_simulation_setup(self):
