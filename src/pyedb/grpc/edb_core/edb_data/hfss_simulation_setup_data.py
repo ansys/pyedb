@@ -8,23 +8,11 @@ import ansys.edb.simulation_setup as simulation_setup
 class EdbFrequencySweep(object):
     """Manages EDB methods for frequency sweep."""
 
-    def __init__(self, sim_setup, frequency_sweep=None, name=None, edb_sweep_data=None):
-        self._sim_setup = sim_setup
+    def __init__(self, parent, edb_sweep_data=None):
+        self._edb_sim_setup = parent.edb_sim_setup
         if edb_sweep_data:
             self._edb_sweep_data = edb_sweep_data
             self._name = self._edb_sweep_data.name
-        else:
-            if not name:
-                self._name = generate_unique_name("sweep")
-            else:
-                self._name = name
-            self._edb_sweep_data = simulation_setup.SweepData(name="test",
-                                                              distribution="LIN",
-                                                              start_f="0GHz",
-                                                              end_f="10GHz",
-                                                              step="10MHz",
-                                                              fast_sweep=False)
-            self._sim_setup.sweep_data = [self._edb_sweep_data]
 
     @pyedb_function_handler()
     def _update_sweep(self):
@@ -33,7 +21,7 @@ class EdbFrequencySweep(object):
 
     @property
     def edb_sweep_data(self):
-        return self._sim_setup.sweep_data
+        return self._edb_sim_setup.sweep_data
 
     @property
     def name(self):
@@ -78,12 +66,12 @@ class EdbFrequencySweep(object):
             ``True`` if advanced DC Extrapolation is used, ``False`` otherwise.
 
         """
-        return self._sim_setup.settings.option.enhanced_low_frequency_accuracy
+        return self._edb_sim_setup.settings.option.enhanced_low_frequency_accuracy
 
     @adv_dc_extrapolation.setter
     def adv_dc_extrapolation(self, value):
         if isinstance(value, bool):
-            self._sim_setup.settings.option.enhanced_low_frequency_accuracy = value
+            self._edb_sim_setup.settings.option.enhanced_low_frequency_accuracy = value
 
     @property
     def auto_s_mat_only_solve(self):
@@ -867,7 +855,6 @@ class HfssPortSettings(object):
             self._hfss_port_settings.set_triangles_for_wave_port = value
 
 
-
 class HfssSolverSettings(object):
     """Manages EDB methods for HFSS solver settings."""
 
@@ -908,7 +895,7 @@ class HfssSolverSettings(object):
     @order_basis.setter
     def order_basis(self, value):
         mapping = {"zero": 0, "first": 1, "second": 2, "mixed": 3}
-        self._edb_sim_setup.settings.options.order_basis.value = simulation_setup.BasisFunctionOrder(mapping[value])
+        self._edb_sim_setup.settings.options.order_basis = simulation_setup.BasisFunctionOrder(mapping[value])
 
     @property
     def relative_residual(self):
@@ -1048,7 +1035,11 @@ class AdaptiveSettings(object):
         -------
         :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.AdaptiveFrequencyData`
         """
-        return [AdaptiveFrequencyData(i) for i in self._edb_sim_setup.sweep_data]
+        if self.adapt_type == "SINGLE":
+            return [AdaptiveFrequencyData(self._edb_sim_setup.settings.general.single_frequency_adaptive_solution)]
+        elif self.adapt_type == "MULTI_FREQUENCIES":
+            return [AdaptiveFrequencyData(i) for i in
+                    self._edb_sim_setup.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies]
 
     @property
     def do_adaptive(self):
@@ -1152,6 +1143,82 @@ class AdaptiveSettings(object):
             self._edb_sim_setup.settings.options.use_max_refinement = value
 
     @pyedb_function_handler()
+    def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02):
+        """Set single frequency solution.
+
+        Parameters
+        ----------
+        frequency : str, float, optional
+            Adaptive frequency. The default is ``5GHz``.
+        max_num_passes : int, optional
+            Maximum number of passes. The default is ``10``.
+        max_delta_s : float, optional
+            Maximum delta S. The default is ``0.02``.
+
+        Returns
+        -------
+        bool
+        """
+        self.adapt_type = 0
+        single_adapt_solution = self._edb_sim_setup.settings.general.single_frequency_adaptive_solution
+        single_adapt_solution.adaptive_frequency = frequency
+        single_adapt_solution.max_delta = str(max_delta_s)
+        single_adapt_solution.max_passes = max_num_passes
+        self._edb_sim_setup.settings.general.single_frequency_adaptive_solution = single_adapt_solution
+        return True
+
+    @pyedb_function_handler()
+    def set_solution_multi_frequencies(self, frequencies=("5GHz", "10GHz"),
+                                       max_delta_s=(0.02, 0.01), max_passes=30, output_variables=None):
+        self.adapt_type = 1
+        multi_freq_adapt_freqs = self._edb_sim_setup.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies
+        multi_freq_adapt_freqs = []
+        for i in range(len(frequencies)):
+            if not output_variables:
+                edb_adpt_freq = simulation_setup.AdaptiveFrequency(adaptive_frequency=frequencies[i],
+                                                                   max_delta=max_delta_s[i])
+                multi_freq_adapt_freqs.append(edb_adpt_freq)
+            else:
+                output_variable = output_variables[i]
+                edb_adpt_freq = simulation_setup.AdaptiveFrequency(adaptive_frequency=frequencies[i],
+                                                                   max_delta=max_delta_s[i],
+                                                                   output_variables=output_variable)
+                multi_freq_adapt_freqs.append(edb_adpt_freq)
+        self._edb_sim_setup.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = multi_freq_adapt_freqs
+        self._edb_sim_setup.settings.general.multi_frequency_adaptive_solution.max_passes = max_passes
+        return True
+
+    @pyedb_function_handler()
+    def set_solution_broadband(
+            self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
+    ):
+        """Set broadband solution.
+
+        Parameters
+        ----------
+        low_frequency : str, float, optional
+            Low frequency. The default is ``5GHz``.
+        high_frequency : str, float, optional
+            High frequency. The default is ``10GHz``.
+        max_num_passes : int, optional
+            Maximum number of passes. The default is ``10``.
+        max_delta_s : float, optional
+            Maximum Delta S. Default is ``0.02``.
+
+        Returns
+        -------
+        bool
+        """
+        self.adapt_type = 2
+        broadband_adapt_solution = self._edb_sim_setup.settings.general.broadband_adaptive_solution
+        broadband_adapt_solution.low_frequency = str(utility.Value(low_frequency))
+        broadband_adapt_solution.high_frequency = str(utility.Value(high_frequency))
+        broadband_adapt_solution.max_num_passes = max_num_passes
+        broadband_adapt_solution.max_delta = str(max_delta_s)
+        self._edb_sim_setup.settings.general.broadband_adaptive_solution = broadband_adapt_solution
+        return True
+
+    @pyedb_function_handler()
     def add_adaptive_frequency_data(self, frequency=0, max_num_passes=10, max_delta_s=0.02, output_variable=None):
         """Add adaptive frequency point. Supports all setup types (Single, Multi-frequency)
 
@@ -1175,22 +1242,21 @@ class AdaptiveSettings(object):
             adapt_solution = self._edb_sim_setup.settings.general.single_frequency_adaptive_solution
             adapt_solution.adaptive_frequency = str(utility.Value(frequency))
             adapt_solution.max_passes = max_num_passes
-            adapt_solution.max_delta = max_delta_s
+            adapt_solution.max_delta = str(max_delta_s)
             self._edb_sim_setup.settings.general.single_frequency_adaptive_solution = adapt_solution
-        elif self.adapt_type == "MULTI_FREQUENCY":
-            multi_freq_solution = self._edb_sim_setup.settings.options.multi_frequency_adaptive_solution
+            return True
+        elif self.adapt_type == "MULTI_FREQUENCIES":
+            multi_freq_solution = self._edb_sim_setup.settings.general.multi_frequency_adaptive_solution
             adaptive_frequencies = multi_freq_solution.adaptive_frequencies
-            if frequency in [freq.adaptive_frequency for freq in adaptive_frequencies]:
-                return
-            adpt_freq = simulation_setup.AdaptiveFrequency(adaptive_frequency=frequency,
-                                                           max_delta=max_delta_s,
-                                                           )
+            adaptive_frequencies = []
+            adapt_freq = simulation_setup.AdaptiveFrequency(adaptive_frequency=frequency, max_delta=max_delta_s)
             if output_variable:
-                adpt_freq.output_variables = output_variable
-            adaptive_frequencies.append(adpt_freq)
+                adapt_freq.output_variables = output_variable
+            adaptive_frequencies.append(adapt_freq)
             multi_freq_solution.adaptive_frequencies = adaptive_frequencies
             self._edb_sim_setup.settings.options.multi_frequency_adaptive_solution = multi_freq_solution
-        return True
+            return True
+        return False
 
     @pyedb_function_handler()
     def add_broadband_adaptive_frequency_data(
@@ -1460,7 +1526,21 @@ class ViaSettings(object):
 
     @via_style.setter
     def via_style(self, value):
-        self._via_settings.via_style = simulation_setup.ViaStyle(value)
+        via_style = None
+        if isinstance(value, int):
+            via_style = simulation_setup.ViaStyle(value)
+        if isinstance(value, str):
+            via_style_mapping = {"WIREBOND": simulation_setup.ViaStyle.WIREBOND,
+                                 "RIBBON": simulation_setup.ViaStyle.RIBBON,
+                                 "MESH": simulation_setup.ViaStyle.MESH,
+                                 "FIELD": simulation_setup.ViaStyle.FIELD,
+                                 "NUM_VIA_STYLE": simulation_setup.ViaStyle.NUM_VIA_STYLE}
+            try:
+                via_style =via_style_mapping[value]
+            except:
+                pass
+        if via_style:
+            self._via_settings.via_model_type = via_style
 
 
 class AdvancedMeshSettings(object):
@@ -1686,7 +1766,7 @@ class HfssSimulationSetup(object):
         """
         sweep_data_list = {}
         for i in self.edb_sim_setup.sweep_data:
-            sweep_data_list[i.name] = EdbFrequencySweep(self, None, i.Name, i)
+            sweep_data_list[i.name] = EdbFrequencySweep(self, i)
         return sweep_data_list
 
     @property
@@ -1917,7 +1997,11 @@ class HfssSimulationSetup(object):
         return mesh_operation if self._update_setup() else False
 
     @pyedb_function_handler()
-    def add_frequency_sweep(self, name=None, frequency_sweep=None):
+    def add_frequency_sweep(self, name="sweep1",
+                            distribution="LIN",
+                            start_frequency="0GHz",
+                            stop_frequency="10GHz",
+                            step_frequency="10MHz"):
         """Add frequency sweep.
 
         Parameters
@@ -1933,91 +2017,17 @@ class HfssSimulationSetup(object):
 
         Examples
         --------
-        >>> setup1 = edbapp.create_hfss_setup("setup1")
-        >>> setup1.add_frequency_sweep(frequency_sweep=[
-        ...                           ["linear count", "0", "1kHz", 1],
-        ...                           ["log scale", "1kHz", "0.1GHz", 10],
-        ...                           ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-        ...                           ])
         """
-        if name in self.frequency_sweeps:
+        if name in [freq_data.name for freq_data in self.edb_sim_setup.sweep_data]:
             return False
-        if not name:
-            name = generate_unique_name("sweep")
-        return EdbFrequencySweep(self, frequency_sweep, name)
+        sweep_data = simulation_setup.SweepData(name=name, distribution=distribution, start_f=start_frequency,
+                                                end_f=stop_frequency, step=step_frequency)
+        sweep_data_list = self._edb_sim_setup.sweep_data
+        sweep_data_list.append(sweep_data)
+        self._edb_sim_setup.sweep_data = sweep_data_list
+        if [freq_data.name for freq_data in self.edb_sim_setup.sweep_data]:
+            return True
+        return False
 
-    @pyedb_function_handler()
-    def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02):
-        """Set single-frequency solution.
 
-        Parameters
-        ----------
-        frequency : str, float, optional
-            Adaptive frequency. The default is ``5GHz``.
-        max_num_passes : int, optional
-            Maximum number of passes. The default is ``10``.
-        max_delta_s : float, optional
-            Maximum delta S. The default is ``0.02``.
 
-        Returns
-        -------
-        bool
-
-        """
-        self.adaptive_settings.adapt_type = "kSingle"
-        self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
-        return self.adaptive_settings.add_adaptive_frequency_data(frequency, max_num_passes, max_delta_s)
-
-    @pyedb_function_handler()
-    def set_solution_multi_frequencies(self, frequencies=("5GHz", "10GHz"), max_num_passes=10, max_delta_s="0.02"):
-        """Set multi-frequency solution.
-
-        Parameters
-        ----------
-        frequencies : list, tuple, optional
-            List or tuple of adaptive frequencies. The default is ``5GHz``.
-        max_num_passes : int, optional
-            Maximum number of passes. Default is ``10``.
-        max_delta_s : float, optional
-            Maximum delta S. The default is ``0.02``.
-
-        Returns
-        -------
-        bool
-
-        """
-        self.adaptive_settings.adapt_type = "kMultiFrequencies"
-        self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
-        for i in frequencies:
-            if not self.adaptive_settings.add_adaptive_frequency_data(i, max_num_passes, max_delta_s):
-                return False
-        return True
-
-    @pyedb_function_handler()
-    def set_solution_broadband(
-            self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
-    ):
-        """Set broadband solution.
-
-        Parameters
-        ----------
-        low_frequency : str, float, optional
-            Low frequency. The default is ``5GHz``.
-        high_frequency : str, float, optional
-            High frequency. The default is ``10GHz``.
-        max_num_passes : int, optional
-            Maximum number of passes. The default is ``10``.
-        max_delta_s : float, optional
-            Maximum Delta S. Default is ``0.02``.
-
-        Returns
-        -------
-        bool
-        """
-        self.adaptive_settings.adapt_type = "kBroadband"
-        self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
-        if not self.adaptive_settings.add_broadband_adaptive_frequency_data(
-                low_frequency, high_frequency, max_num_passes, max_delta_s
-        ):  # pragma no cover
-            return False
-        return True
