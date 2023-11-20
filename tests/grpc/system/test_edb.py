@@ -1164,7 +1164,7 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = EdbGrpc(target_path, edbversion=desktop_version)
         edbapp.siwave.create_port_between_pin_and_layer(
-            component_name="U1", pins_name="A27", layer_name="16_Bottom", reference_net="GND"
+            component_name="U1", pins_name="U1-A27", layer_name="16_Bottom", reference_net="GND"
         )
         edbapp.close()
 

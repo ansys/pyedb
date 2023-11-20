@@ -2114,12 +2114,11 @@ class Components(object):
         >>> edbapp.components.get_pin_position(pin)
 
         """
-        res, pt_pos, rot_pos = pin.position_and_rotation
-
+        pin_position = geometry.PointData(pin.get_position_and_rotation()[:2])
         if pin.component.is_null:
-            transformed_pt_pos = pt_pos
+            transformed_pt_pos = pin_position
         else:
-            transformed_pt_pos = pin.component.transform.transform_point(pt_pos)
+            transformed_pt_pos = pin.component.transform.transform_point(pin_position)
         return [transformed_pt_pos.y.value, transformed_pt_pos.y.value]
 
     @pyedb_function_handler()

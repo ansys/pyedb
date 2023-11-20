@@ -486,13 +486,13 @@ class EdbPadstacks(object):
         """
         pinlist = []
         if refdes:
-            if refdes in self._pedb.components.components:
+            if refdes in self._pedb.components.instances:
                 if netname:
-                    for pin, val in self._pedb.components.components[refdes].pins.items():
+                    for pin, val in self._pedb.components.instances[refdes].pins.items():
                         if val.net_name == netname:
                             pinlist.append(val)
                 else:
-                    for pin in self._pedb.components.components[refdes].pins.values():
+                    for pin in self._pedb.components.instances[refdes].pins.values():
                         pinlist.append(pin)
             elif netname:
                 for pin in self._pedb.pins:
