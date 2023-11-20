@@ -2119,7 +2119,7 @@ class Components(object):
             transformed_pt_pos = pin_position
         else:
             transformed_pt_pos = pin.component.transform.transform_point(pin_position)
-        return [transformed_pt_pos.y.value, transformed_pt_pos.y.value]
+        return [transformed_pt_pos[0].value, transformed_pt_pos[1].value]
 
     @pyedb_function_handler()
     def get_pins_name_from_net(self, pin_list, net_name):

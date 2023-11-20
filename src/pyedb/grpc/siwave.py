@@ -319,7 +319,7 @@ class EdbSiwave(object):
                     position = geometry.PointData(utility.Value(pos[0]), utility.Value(pos[1]))
                     negative_terminal = terminal.PointTerminal.create(
                         layout=self._active_layout,
-                        net=reference_net.net_obj,
+                        net=reference_net.net_object,
                         name="{}_ref".format(term_name),
                         point=position,
                         layer=self._pedb.stackup.signal_layers[layer_name]._edb_layer)

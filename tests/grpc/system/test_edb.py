@@ -1166,6 +1166,7 @@ class TestClass:
         edbapp.siwave.create_port_between_pin_and_layer(
             component_name="U1", pins_name="U1-A27", layer_name="16_Bottom", reference_net="GND"
         )
+        assert "U1_GND_U1-A27" in edbapp.excitations
         edbapp.close()
 
     def test_siwave_source_setter(self):
