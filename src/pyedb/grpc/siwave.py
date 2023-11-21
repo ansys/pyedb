@@ -22,6 +22,7 @@ import ansys.edb.terminal as terminal
 import ansys.edb.utility as utility
 import ansys.edb.geometry as geometry
 import ansys.edb.hierarchy as hierarchy
+import ansys.edb.net.net as edb_net
 #from ansys.edb.terminal.terminals import PadstackInstanceTerminal
 #from ansys.edb.terminal.terminals import BoundaryType
 #from ansys.edb.utility.value import Value
@@ -291,7 +292,7 @@ class EdbSiwave(object):
                     self._logger.error("reference net {} not found.".format(layer_name))
                     return False
             else:
-                if not isinstance(reference_net, self._edb.cell.net.net):  # pragma no cover
+                if not isinstance(reference_net, edb_net.Net):  # pragma no cover
                     reference_net = self._pedb.nets.get_net_by_name(reference_net)
                 if not reference_net:
                     self._logger.error("Net {} not found".format(reference_net))
@@ -303,12 +304,14 @@ class EdbSiwave(object):
                     if pin.name == pin_name
                 ][0]
                 term_name = "{}_{}_{}".format(pin.component.name, pin.net.name, pin.name)
-                res, start_layer, stop_layer = pin.layer_range()
-                if res:
+                pin_edb_layer = self._edb.stackup.layers[pin.start_layer]._edb_layer
+                if pin_edb_layer:
                     pin_instance = pin._edb_padstackinstance
-                    positive_terminal = terminal.PadstackInstanceTerminal.create(
-                        self._active_layout, pin_instance.net, term_name, pin_instance, start_layer
-                    )
+                    positive_terminal = terminal.PadstackInstanceTerminal.create(layout=self._active_layout,
+                                                                                 net=pin_instance.net,
+                                                                                 name=term_name,
+                                                                                 padstack_instance=pin_instance,
+                                                                                 layer=pin_edb_layer)
                     positive_terminal.boundary_type = terminal.BoundaryType.PORT
                     positive_terminal.impedance = utility.Value(impedance)
                     positive_terminal.is_circuit_port = True
@@ -316,7 +319,7 @@ class EdbSiwave(object):
                     position = geometry.PointData(utility.Value(pos[0]), utility.Value(pos[1]))
                     negative_terminal = terminal.PointTerminal.create(
                         layout=self._active_layout,
-                        net=reference_net.net_obj,
+                        net=reference_net.net_object,
                         name="{}_ref".format(term_name),
                         point=position,
                         layer=self._pedb.stackup.signal_layers[layer_name]._edb_layer)
