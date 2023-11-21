@@ -480,7 +480,7 @@ class Stackup(object):
         return True
 
     @pyedb_function_handler()
-    def _create_stackup_layer(self, layer_name, thickness, layer_type="signal"):
+    def _create_stackup_layer(self, layer_name, thickness, layer_type="signal", material_name="copper"):
         if layer_type == "signal":
             _layer_type = layer_collection.LayerType.SIGNAL_LAYER
         else:
@@ -490,7 +490,7 @@ class Stackup(object):
                                      layer_type=_layer_type,
                                      thickness=utility.Value(thickness),
                                      elevation=utility.Value(0),
-                                     material="")
+                                     material=material_name)
         self.refresh_layer_collection()
         return result
 
@@ -626,8 +626,8 @@ class Stackup(object):
                 fillMaterial = materials_lower[fillMaterial.lower()]
 
         if layer_type in ["signal", "dielectric"]:
-            new_layer = self._create_stackup_layer(layer_name, thickness, layer_type)
-            new_layer.set_material(material)
+            new_layer = self._create_stackup_layer(layer_name, thickness, layer_type, material_name=material)
+            #new_layer.set_material(material)
             if layer_type != "dielectric":
                 new_layer.set_fill_material(fillMaterial)
             new_layer.negative = is_negative

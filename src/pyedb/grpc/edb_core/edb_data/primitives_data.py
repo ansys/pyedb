@@ -3,6 +3,7 @@ import math
 import ansys.edb.primitive as primitive
 import ansys.edb.utility as utility
 import ansys.edb.net as net
+from pyedb.generic.general_methods import generate_unique_name
 # from ansys.edb.primitive.primitive import Bondwire
 # from ansys.edb.primitive.primitive import Circle
 # from ansys.edb.primitive.primitive import Path
@@ -863,7 +864,7 @@ class EdbPath(EDBPrimitives):
         -------
         """
 
-        def getAngle(v1, v2):  # pragma: no cover
+        def get_angle(v1, v2):  # pragma: no cover
             v1_mag = math.sqrt(v1[0] ** 2 + v1[1] ** 2)
             v2_mag = math.sqrt(v2[0] ** 2 + v2[1] ** 2)
             dotsum = v1[0] * v2[0] + v1[1] * v2[1]
@@ -875,7 +876,7 @@ class EdbPath(EDBPrimitives):
 
             return dtheta
 
-        def getLocations(line, gap):  # pragma: no cover
+        def get_locations(line, gap):  # pragma: no cover
             location = [line[0]]
             residual = 0
 
@@ -896,14 +897,14 @@ class EdbPath(EDBPrimitives):
                 residual = length
             return location
 
-        def getParalletLines(pts, distance):  # pragma: no cover
+        def get_parallet_lines(pts, distance):  # pragma: no cover
             leftline = []
             rightline = []
 
             x0, y0 = pts[0]
             x1, y1 = pts[1]
             vector = (x1 - x0, y1 - y0)
-            orientation1 = getAngle((1, 0), vector)
+            orientation1 = get_angle((1, 0), vector)
 
             leftturn = orientation1 + math.pi / 2
             righrturn = orientation1 - math.pi / 2
@@ -919,8 +920,8 @@ class EdbPath(EDBPrimitives):
 
                 v1 = (x1 - x0, y1 - y0)
                 v2 = (x2 - x1, y2 - y1)
-                dtheta = getAngle(v1, v2)
-                orientation1 = getAngle((1, 0), v1)
+                dtheta = get_angle(v1, v2)
+                orientation1 = get_angle((1, 0), v1)
 
                 leftturn = orientation1 + dtheta / 2 + math.pi / 2
                 righrturn = orientation1 + dtheta / 2 - math.pi / 2
@@ -935,7 +936,7 @@ class EdbPath(EDBPrimitives):
             x1, y1 = pts[-1]
 
             vector = (x1 - x0, y1 - y0)
-            orientation1 = getAngle((1, 0), vector)
+            orientation1 = get_angle((1, 0), vector)
             leftturn = orientation1 + math.pi / 2
             righrturn = orientation1 - math.pi / 2
             leftPt = (x1 + distance * math.cos(leftturn), y1 + distance * math.sin(leftturn))
@@ -944,12 +945,13 @@ class EdbPath(EDBPrimitives):
             rightline.append(rightPt)
             return leftline, rightline
 
-        distance = self._pedb.edb_value(distance).ToDouble()
-        gap = self._pedb.edb_value(gap).ToDouble()
+        distance = utility.Value(distance).value
+        gap = utility.Value(gap).value
         center_line = self.get_center_line()
-        leftline, rightline = getParalletLines(center_line, distance)
-        for x, y in getLocations(rightline, gap) + getLocations(leftline, gap):
-            self._pedb.padstacks.place([x, y], padstack_name)
+        leftline, rightline = get_parallet_lines(center_line, distance)
+        for x, y in get_locations(rightline, gap) + get_locations(leftline, gap):
+            self._app.padstacks.place(position=[x, y], definition_name=padstack_name,
+                                                          via_name=generate_unique_name(padstack_name))
 
 class EdbRectangle(EDBPrimitives):
     def __init__(self, raw_primitive, core_app):

@@ -9,6 +9,7 @@ from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
 import ansys.edb.definition as definition
+import ansys.edb.primitive as primitive
 import ansys.edb.utility as utility
 import ansys.edb.terminal as terminal
 import ansys.edb.geometry as geometry
@@ -853,7 +854,7 @@ class EdbPadstacks(object):
             self,
             position,
             definition_name,
-            net_name="",
+            net_name="pyedb_default",
             via_name="",
             rotation=0.0,
             fromlayer=None,
@@ -916,22 +917,19 @@ class EdbPadstacks(object):
         if solderlayer:
             solderlayer = sign_layers_values[solderlayer]._edb_layer
         if padstack:
-            padstack_instance = self._edb.cell.primitive.padstack_instance.create(
-                self._active_layout,
-                net,
-                via_name,
-                padstack,
-                position,
-                rotation,
-                fromlayer,
-                tolayer,
-                solderlayer,
-                None,
-            )
-            padstack_instance.is_layout_pin(is_pin)
-            py_padstack_instance = EDBPadstackInstance(padstack_instance.api_object, self._pedb)
-
-            return py_padstack_instance
+            padstack_instance = primitive.PadstackInstance.create(layout=self._active_layout,
+                                                                  net=net,
+                                                                  name=via_name,
+                                                                  padstack_def=padstack,
+                                                                  top_layer=fromlayer,
+                                                                  bottom_layer=tolayer,
+                                                                  solder_ball_layer=solderlayer,
+                                                                  rotation=0.0,
+                                                                  layer_map=None)
+            padstack_instance.set_position_and_rotation(position.x, position.y, rotation)
+            padstack_instance.is_layout_pin = is_pin
+            pyedb_padstack_instance = EDBPadstackInstance(padstack_instance, self._pedb)
+            return pyedb_padstack_instance
         else:
             return False
 

@@ -18,6 +18,7 @@ import ansys.edb.geometry as geometry
 import ansys.edb.database as database
 import ansys.edb.layout_instance as layout_instance
 import pyedb.generic as generic
+import ansys.edb.layout as edb_layout
 import ansys.edb.utility as utility
 import ansys.edb.terminal as terminal
 import ansys.edb.simulation_setup as simulation_setup
@@ -656,7 +657,7 @@ class EdbGrpc(EdbInit):
         # if self.edbversion > "2023.1":
         #     self.standalone = False
 
-        self.run_as_standalone(self.standalone)
+        # self.run_as_standalone(self.standalone)
         self.create(self.edbpath)
         if not self.active_db:
             self.logger.warning("Error creating the database.")
@@ -664,9 +665,7 @@ class EdbGrpc(EdbInit):
             return None
         if not self.cellname:
             self.cellname = generate_unique_name("Cell")
-        self._active_cell = self.edb_api.cell.create(
-            self.active_db, self.edb_api.cell.CellType.CircuitCell, self.cellname
-        )
+        self._active_cell = database.Cell.create(self.active_db, edb_layout.CellType.CIRCUIT_CELL, self.cellname)
         if self._active_cell:
             self._init_objects()
             return True
