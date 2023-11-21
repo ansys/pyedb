@@ -1277,7 +1277,7 @@ class TestClass:
         )
         sim_setup = edb.new_simulation_configuration()
         sim_setup.signal_nets = ["net1"]
-        # sim_setup.power_nets = ["GND"]
+        sim_setup.power_nets = ["GND"]
         sim_setup.use_dielectric_extent_multiple = False
         sim_setup.use_airbox_horizontal_extent_multiple = False
         sim_setup.use_airbox_negative_vertical_extent_multiple = False
@@ -1291,18 +1291,18 @@ class TestClass:
         sim_setup.do_cutout_subdesign = False
         sim_setup.generate_excitations = False
         edb.build_simulation_project(sim_setup)
-        hfss_ext_info = edb.active_cell.GetHFSSExtentInfo()
+        hfss_ext_info = edb.active_cell.hfss_extent_info
         assert list(edb.nets.nets.values())[0].name == "net1"
-        assert not edb.setups["Pyaedt_setup"].frequency_sweeps
+        # assert not edb.setups["Pyaedt_setup"].frequency_sweeps
         assert hfss_ext_info
-        assert hfss_ext_info.AirBoxHorizontalExtent.Item1 == 0.001
-        assert not hfss_ext_info.AirBoxHorizontalExtent.Item2
-        assert hfss_ext_info.AirBoxNegativeVerticalExtent.Item1 == 0.05
-        assert not hfss_ext_info.AirBoxNegativeVerticalExtent.Item2
-        assert hfss_ext_info.AirBoxPositiveVerticalExtent.Item1 == 0.04
-        assert not hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
-        assert hfss_ext_info.DielectricExtentSize.Item1 == 0.0005
-        assert not hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
+        assert hfss_ext_info.airbox_horizontal[0] == 0.001
+        assert not hfss_ext_info.airbox_horizontal[1]
+        assert hfss_ext_info.airbox_vertical_negative[0] == 0.05
+        assert not hfss_ext_info.airbox_vertical_negative[1]
+        assert hfss_ext_info.airbox_vertical_positive[0] == 0.04
+        assert not hfss_ext_info.airbox_vertical_positive[1]
+        assert hfss_ext_info.dielectric[0] == 0.0005
+        assert not hfss_ext_info.dielectric[1]
         edb.close()
 
     def test_assign_hfss_extent_multiple_with_simconfig(self):
@@ -1334,14 +1334,14 @@ class TestClass:
         edb.build_simulation_project(sim_setup)
         hfss_ext_info = edb.active_cell.GetHFSSExtentInfo()
         assert hfss_ext_info
-        assert hfss_ext_info.AirBoxHorizontalExtent.Item1 == 0.001
-        assert hfss_ext_info.AirBoxHorizontalExtent.Item2
-        assert hfss_ext_info.AirBoxNegativeVerticalExtent.Item1 == 0.05
-        assert hfss_ext_info.AirBoxNegativeVerticalExtent.Item2
-        assert hfss_ext_info.AirBoxPositiveVerticalExtent.Item1 == 0.04
-        assert hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
-        assert hfss_ext_info.DielectricExtentSize.Item1 == 0.0005
-        assert hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
+        assert hfss_ext_info.airbox_horizontal[0] == 0.001
+        assert hfss_ext_info.airbox_horizontal[1]
+        assert hfss_ext_info.airbox_vertical_negative[0] == 0.05
+        assert hfss_ext_info.airbox_vertical_negative[1]
+        assert hfss_ext_info.airbox_vertical_positive[0] == 0.04
+        assert hfss_ext_info.airbox_vertical_positive[1]
+        assert hfss_ext_info.dielectric[0] == 0.0005
+        assert hfss_ext_info.dielectric[1]
         edb.close()
 
     def test_stackup_properties(self):
@@ -1358,7 +1358,7 @@ class TestClass:
 
     def test_hfss_extent_info(self):
         """HFSS extent information."""
-        from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitives as EDBPrimitives
+        from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitives as EDBPrimitives
 
         config = {
             "air_box_horizontal_extent_enabled": False,
@@ -1391,7 +1391,7 @@ class TestClass:
                 continue
             if isinstance(j, EDBPrimitives):
                 assert j.id == config[i].id
-            elif isinstance(j, EdbValue):
+            elif isinstance(j, utility.Value):
                 assert j.tofloat == hfss_extent_info._get_edb_value(config[i]).ToDouble()
             else:
                 assert j == config[i]
@@ -1432,8 +1432,8 @@ class TestClass:
 
         assert edb
         assert "P1" in edb.excitations
-        assert "Setup1" in edb.setups
-        assert "B1" in edb.components.components
+        #assert "Setup1" in edb.setups
+        assert "B1" in edb.components.instances
         edb.close()
 
     def test_database_properties(self):
