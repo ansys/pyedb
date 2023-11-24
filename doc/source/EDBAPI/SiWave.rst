@@ -11,7 +11,7 @@ accessed from PyAEDT in Windows only. All setups can be implemented through EDB 
   :target: https://www.ansys.com/products/electronics/ansys-siwave
 
 
-.. currentmodule:: pyaedt
+.. currentmodule:: pyedb.legacy.edb_core
 
 .. autosummary::
    :toctree: _autosummary
@@ -21,7 +21,7 @@ accessed from PyAEDT in Windows only. All setups can be implemented through EDB 
 
 .. code:: python
 
-    from pyaedt.siwave import Siwave
+    from pyedb.legacy.edb_core.siwave import Siwave
     # this call returns the Edb class initialized on 2023 R1
     siwave = Siwave(specified_version="2023.1")
     siwave.open_project("pyproject.siw")

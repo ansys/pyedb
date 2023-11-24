@@ -13,7 +13,7 @@ These classes are the containers of sources methods of the EDB for both HFSS and
     ...
 
 
-.. currentmodule:: pyaedt.edb_core.edb_data.sources
+.. currentmodule:: pyedb.legacy.edb_core.edb_data.sources
 
 .. autosummary::
    :toctree: _autosummary

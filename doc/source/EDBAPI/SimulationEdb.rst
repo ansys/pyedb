@@ -19,7 +19,7 @@ These classes are the containers of ``setup`` classes in EDB for both HFSS and S
 
 
 
-.. currentmodule:: pyaedt.edb_core.edb_data
+.. currentmodule:: pyedb.legacy.edb_core.edb_data
 
 .. autosummary::
    :toctree: _autosummary

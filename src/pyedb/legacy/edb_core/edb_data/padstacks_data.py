@@ -1009,7 +1009,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             Whether to create a new terminal.
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.terminals`
+        :class:`pyedb.legacy.edb_core.edb_data.terminals`
         """
 
         if create_new_terminal:

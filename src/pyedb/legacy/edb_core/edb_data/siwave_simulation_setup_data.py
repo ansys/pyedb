@@ -883,7 +883,7 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
 
     Parameters
     ----------
-    pedb : :class:`pyaedt.edb.Edb`
+    pedb : :class:`pyedb.legacy.edb.Edb`
         Inherited AEDT object.
     edb_setup : :class:`Ansys.Ansoft.Edb.Utility.SIWaveSimulationSetup`
         Edb object.
@@ -1077,7 +1077,7 @@ class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
     """Manages EDB methods for SIwave DC simulation setup.
     Parameters
     ----------
-    pedb : :class:`pyaedt.edb.Edb`
+    pedb : :class:`pyedb.legacy.edb.Edb`
         Inherited AEDT object.
     edb_setup : Ansys.Ansoft.Edb.Utility.SIWDCIRSimulationSettings
         EDB object. The default is ``None``.
@@ -1140,7 +1140,7 @@ class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
 
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
+        :class:`pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
         """
         return DCAdvancedSettings(self)
 

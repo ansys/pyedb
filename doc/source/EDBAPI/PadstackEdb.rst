@@ -16,7 +16,7 @@ The main padstack object is called directly from main application using the prop
     ...
 
 
-.. currentmodule:: pyaedt.edb_core.padstack
+.. currentmodule:: pyedb.legacy.edb_core.padstack
 
 .. autosummary::
    :toctree: _autosummary
@@ -30,7 +30,7 @@ Instances and definitions
 These classes are the containers of data management for padstacks instances and padstack definitions.
 
 
-.. currentmodule:: pyaedt.edb_core.edb_data.padstacks_data
+.. currentmodule:: pyedb.legacy.edb_core.edb_data.padstacks_data
 
 .. autosummary::
    :toctree: _autosummary

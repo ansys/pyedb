@@ -13,7 +13,7 @@ These classes are the containers of ports methods of the EDB for both HFSS and S
     ...
 
 
-.. currentmodule:: pyaedt.edb_core.edb_data.ports
+.. currentmodule:: pyedb.legacy.edb_core.edb_data.ports
 
 .. autosummary::
    :toctree: _autosummary

@@ -13,7 +13,7 @@ The main component object is called directly from main application using the pro
     ...
 
 
-.. currentmodule:: pyedb.edb_core.components
+.. currentmodule:: pyedb.legacy.edb_core.components
 
 .. autosummary::
    :toctree: _autosummary
@@ -27,7 +27,7 @@ Instances and definitions
 These classes are the containers of data management for components reference designator and  definitions.
 
 
-.. currentmodule:: pyaedt.edb_core.edb_data.components_data
+.. currentmodule:: pyedb.legacy.edb_core.edb_data.components_data
 
 .. autosummary::
    :toctree: _autosummary

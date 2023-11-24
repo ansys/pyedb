@@ -12,9 +12,9 @@ It can be opened and edited using the ``Edb`` class.
 .. autosummary::
    :toctree: _autosummary
 
-   pyaedt.edb.Edb
-   pyaedt.edb_core.edb_data.variables.Variable
-   pyaedt.edb_core.edb_data.edbvalue.EdbValue
+   pyedb.legacy.edb.Edb
+   pyedb.legacy.edb_core.edb_data.variables.Variable
+   pyedb.legacy.edb_core.edb_data.edbvalue.EdbValue
 
 
 .. code:: python
@@ -32,7 +32,7 @@ This section lists the core EDB modules for reading and writing information
 to AEDB files.
 
 
-.. currentmodule:: pyaedt.edb_core
+.. currentmodule:: pyedb.legacy.edb_core
 
 .. autosummary::
    :toctree: _autosummary
@@ -45,7 +45,7 @@ to AEDB files.
 
 
 
-.. currentmodule:: pyaedt.edb_core.edb_data.edbvalue
+.. currentmodule:: pyedb.legacy.edb_core.edb_data.edbvalue
 
 .. autosummary::
    :toctree: _autosummary

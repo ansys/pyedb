@@ -16,7 +16,7 @@ These classes are the containers of the layer and stackup manager of the EDB API
     ...
 
 
-.. currentmodule:: pyaedt.edb_core.stackup
+.. currentmodule:: pyedb.legacy.edb_core.stackup
 
 .. autosummary::
    :toctree: _autosummary
@@ -25,7 +25,7 @@ These classes are the containers of the layer and stackup manager of the EDB API
    Stackup
 
 
-.. currentmodule:: pyaedt.edb_core.edb_data.layer_data
+.. currentmodule:: pyedb.legacy.edb_core.edb_data.layer_data
 
 .. autosummary::
    :toctree: _autosummary
