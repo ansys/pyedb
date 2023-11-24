@@ -9,9 +9,10 @@ objects.
 .. code:: python
 
 
-    from pyedb.grpc.edb import Edb
-    edb_file = r"C:\Temp\My_edb_file.aedb"
-    edb = Edb(edbversion="2024.1", edbpath=edb_file, port=50001)
+    from pyedb.legacy.edb_core.edb import EdbLegacy
+
+    edb_file = pyedb.layout_examples.ANSYS-HSD_V1.aedb
+    edb = EdbLegacy(edbversion="2024.1", edbpath=edb_file)
 
 
 .. image:: ../Resources/starting_load_edb.png

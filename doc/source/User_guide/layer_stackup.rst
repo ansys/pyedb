@@ -7,18 +7,20 @@ This section describes how to edit layer stackup:
 
 .. code:: python
 
-    import pyaedt
-    from pyedb import Edb
+
+
+    from pyedb.legacy.edb_core.edb import EdbLegacy
 
     # Ansys release version
     desktop_version = "2024.1"
 
-    #download and copy the layout file from examples
-    temp_folder = pyaedt.generate_unique_folder_name()
-    targetfile = pyaedt.downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+    temp_folder = r"C:\Temp\stackup_example"
+    source_file = pyedb.layout_examples.ANSYS-HSD_V1.aedb
+    pyedb.misc.utilities.file_tools.copy_folder(source_file, temp_folder)
 
     # loading EDB
-    edbapp = Edb(edbpath=targetfile, edbversion=desktop_version)
+    targe_tfile = os.path.join(temp_folder, source_file)
+    edbapp = EdbLegacy(edbpath=target_file, edbversion=desktop_version)
 
     # ploting layer stackup in matplotlib
     edbapp.stackup.plot()
@@ -28,6 +30,8 @@ This section describes how to edit layer stackup:
 :alt: Layer stackup plot
 
 .. code:: python
+
+
 
     # retrieving signal layers name
     signal_layers = list(edbapp.stackup.signal_layers.keys())

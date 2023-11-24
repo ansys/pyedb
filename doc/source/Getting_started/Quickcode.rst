@@ -36,86 +36,27 @@ Connect to AEDT from a Python IDE
 PyEDB works both inside AEDT and as a standalone app.
 PyEDB also provides advanced error management. Usage examples follow.
 
-Explicit AEDT declaration and error management
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Explicit PyEDB declaration and error management
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
 
-    # Launch AEDT 2023 R1 in non-graphical mode
+    # Start EDB
 
-    from pyaedt import Desktop, Circuit
-    with Desktop(specified_version="2023.1",
-                 non_graphical=False, new_desktop_session=True,
-                 close_on_exit=True, student_version=False):
-        circuit = Circuit()
-        ...
-        # Any error here will be caught by Desktop.
-        ...
+    from pyedb.legacyedb_core.edb import EdbLegacy
 
-    # Desktop is automatically released here.
+    edb_file = pyedb.layout_examples.ANSYS-HSD_V1.aedb
+    edb = EdbLegacy(edbversion="2023.2", edbpath=edb_file)
 
-
-Implicit AEDT declaration and error management
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code:: python
-
-    # Launch the latest installed version of AEDT in graphical mode
-
-    from pyaedt import Circuit
-    with Circuit(specified_version="2023.1",
-                 non_graphical=False) as circuit:
-        ...
-        # Any error here will be caught by Desktop.
-        ...
-
-    # Desktop is automatically released here.
-
-
-Remote application call
-~~~~~~~~~~~~~~~~~~~~~~~
-You can make a remote application call on a CPython server
-or any Windows client machine.
-
-On a CPython server:
-
-.. code:: python
-
-    # Launch PyAEDT remote server on CPython
-
-    from pyaedt.common_rpc import pyaedt_service_manager
-    pyaedt_service_manager()
-
-
-On any Windows client machine:
-
-.. code:: python
-
-    from pyaedt.common_rpc import create_session
-    cl1 = create_session("server_name")
-    cl1.aedt(port=50000, non_graphical=False)
-    hfss = Hfss(machine="server_name", port=50000)
-    # your code here
 
 Variables
 ~~~~~~~~~
 
 .. code:: python
 
-    from pyaedt.HFSS import HFSS
-    with HFSS as hfss:
-         hfss["dim"] = "1mm"   # design variable
-         hfss["$dim"] = "1mm"  # project variable
+    from pyedb.legacyedb_core.edb import EdbLegacy
 
-
-Modeler
-~~~~~~~
-
-.. code:: python
-
-    # Create a box, assign variables, and assign materials.
-
-    from pyaedt.hfss import Hfss
-    with Hfss as hfss:
-         hfss.modeler.create_box([0, 0, 0], [10, "dim", 10],
-                                 "mybox", "aluminum")
+    edb_file = pyedb.layout_examples.ANSYS-HSD_V1.aedb
+    edb = EdbLegacy(edbversion="2023.2", edbpath=edb_file)
+    edb["dim"] = "1mm"   # design variable
+    edb["$dim"] = "1mm"  # project variable

@@ -26,16 +26,6 @@ After downloading the wheelhouse zip specific for your distribution and Python r
 run the script from Python terminal with providing the zip full path as argument.
 
 
-Build Toolkits with PyEDB
-~~~~~~~~~~~~~~~~~~~~~~~~~
-You can create and install external toolkits.
-The template provides a framework to create your own toolkits using PyEDB.
-The template can be found at `Template <https://aedt.toolkit.template.docs.pyansys.com/>`_.
-
-.. image:: ../Resources/template_ribbon.png
-  :width: 800
-  :alt: PyAEDT template toolkit buttons available in AEDT 2023.2
-
 Install on CPython from PyPI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 You can install PyEDB on CPython 3.7 through 3.10 from PyPI:
@@ -75,9 +65,9 @@ For example, on Windows with Python 3.7, install PyEDB and all its dependencies 
     pip install --no-cache-dir --no-index --find-links=file:///<path_to_wheelhouse>/PyEDB-v<release_version>-wheelhouse-Windows-3.7 pyaedt
 
 
-Upgrade PyAEDT to the latest version
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Upgrade PyEDB to the latest version
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: bash
 
-    pip install -U pyansys-edb
+    pip install -U pyedb-edb

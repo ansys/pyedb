@@ -1,18 +1,28 @@
 EDB Queries
 ===========
-PyEBD allows layout information queries, this section describe some basic examples:
+PyEDB allows layout information queries, this section describe some basic examples:
 
 - Load EDB
 .. code:: python
-   # loading EDB
-   edbapp = Edb(edbpath=targetfile, edbversion=desktop_version)
+
+
+    # loading EDB
+    from pyedb.legacy.edb_core import EdbLegacy
+    layout_file = pyedb.layout_examples.ANSYS-HSD_V1.aedb
+    edb = EdbLegacy(edbpath=layout_file, edbversion="2023.2")
 
 - Getting layout statistics
 .. code:: python
-   stats = edbapp.get_statistics()
+
+
+    stats = edb.get_statistics()
+
 
 - Nets
 .. code:: python
+
+
+
    # net list
    nets.netlist
    # power nets
@@ -25,6 +35,9 @@ PyEBD allows layout information queries, this section describe some basic exampl
 
 - Components
 .. code:: python
+
+
+
    # Getting all components
    nets = edbapp.components.instances
    # Getting pins from components connected to given net

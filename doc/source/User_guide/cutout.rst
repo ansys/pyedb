@@ -5,22 +5,25 @@ needs to be performed to reduce computer resources and speed up simulation. This
 how to clip a design based on nets selection.
 
 .. code:: python
-    import pyaedt
-    from pyedb import Edb, Hfss3dLayout
+
+
+
+    from pyedb.legacy.edb_core.edb import EdbLegacy
 
     # Ansys release version
-    desktop_version = "2023.2"
+    ansys_version = "2023.2"
 
     #download and copy the layout file from examples
-    temp_folder = pyaedt.generate_unique_folder_name()
-    targetfile = pyaedt.downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+    temp_folder = r"C:\Temp\cutout_example"
+    source_file = pyedb.layout_examples.ANSYS-HSD_V1.aedb
+    targetfile = pyedb.misc.utilities.copy_folder(source_file, temp_folder)
 
     # loading EDB
-    edbapp = Edb(edbpath=targetfile, edbversion=desktop_version)
+    edbapp = EdbLegacy(edbpath=targetfile, edbversion=desktop_version)
 
     # selecting signal nets to evaluate the extent for clipping the layout
     signal_nets = ["DDR4_DQ0", "DDR4_DQ1", "DDR4_DQ2", "DDR4_DQ3", "DDR4_DQ4", "DDR4_DQ5", "DDR4_DQ6", "DDR4_DQ7"]
-    # at least one reference net must be inclulded. Reference nets are included in the design but clipped.
+    # at least one reference net must be included. Reference nets are included in the design but clipped.
     reference_nets = ["GND"]
     # defining the expansion factor. The value gives the distance for evaluating the cutout extent. Here we define a cutout
     expansion = 0.01  # 1cm in this case
@@ -29,11 +32,6 @@ how to clip a design based on nets selection.
     # save and close project
     edbapp.save_edb()
     edbapp.close_edb()
-    # opening resulting in AEDT to visualize the resulting project.
-    hfss = Hfss3dLayout(projectname=targetfile, specified_version=desktop_version)
-    # After opening AEDT with PyAEDT, if you want to be able to close manually the project you have to release
-    # AEDT from PyAEDT.
-    hfss.release_desktop(close_desktop=False, close_projects=False)
 
 . image:: ../Resources/clipped_layout.png
   :width: 800
