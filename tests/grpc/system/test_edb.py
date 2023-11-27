@@ -7,6 +7,7 @@ import pytest
 
 try:
     from pyedb.grpc.edb import EdbGrpc
+    import ansys.edb.utility as utility
 except ImportError:
     def pytest_collection_modifyitems(items, config):
         for item in items:
@@ -18,7 +19,6 @@ from pyedb.generic.general_methods import is_linux
 from tests.conftest import local_path
 from tests.conftest import desktop_version
 from tests.legacy.system.conftest import test_subfolder
-import ansys.edb.utility as utility
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
