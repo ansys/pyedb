@@ -1,13 +1,12 @@
-Loading layout
-==============
-Although an entire layout can be built from scratch with PyEDB most of the time the first step is
-loading an existing aedb file. This section is showing how to load an EDB and start manipulating
-objects.
+Create resistor boundary between pins
+=====================================
+This section describes how to create resistor on pins:
 
 .. autosummary::
    :toctree: _autosummary
 
 .. code:: python
+
 
 
     from pyedb.legacy.edb import EdbLegacy
@@ -18,7 +17,7 @@ objects.
     targetfile = downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
     edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
 
-.. image:: ../Resources/starting_load_edb.png
-  :width: 600
-  :alt: Loading first EDB
+    pins = edbapp.components.get_pin_from_component("U1")
+    resistor = edbapp.siwave.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")
+
 

@@ -1,13 +1,12 @@
-Loading layout
-==============
-Although an entire layout can be built from scratch with PyEDB most of the time the first step is
-loading an existing aedb file. This section is showing how to load an EDB and start manipulating
-objects.
+Getting layout size
+===================
+This section describes how to retrieve the layout size by getting the bounding box:
 
 .. autosummary::
    :toctree: _autosummary
 
 .. code:: python
+
 
 
     from pyedb.legacy.edb import EdbLegacy
@@ -18,7 +17,8 @@ objects.
     targetfile = downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
     edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
 
-.. image:: ../Resources/starting_load_edb.png
-  :width: 600
-  :alt: Loading first EDB
+    edbapp.get_bounding_box()
 
+.. image:: ../Resources/layout_bbox.png
+    :width: 800
+    :alt: Layout bounding box

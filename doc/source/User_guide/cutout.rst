@@ -4,6 +4,9 @@ Because most of the time only a specific part of a layout must be simulated, cli
 needs to be performed to reduce computer resources and speed up simulation. This section describes
 how to clip a design based on nets selection.
 
+.. autosummary::
+   :toctree: _autosummary
+
 .. code:: python
 
 
@@ -14,12 +17,15 @@ how to clip a design based on nets selection.
     ansys_version = "2023.2"
 
     #download and copy the layout file from examples
-    temp_folder = r"C:\Temp\cutout_example"
-    source_file = pyedb.layout_examples.ANSYS-HSD_V1.aedb
-    targetfile = pyedb.misc.utilities.copy_folder(source_file, temp_folder)
+    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.generic.general_methods import generate_unique_folder_name
+    import pyedb.misc.downloads as downloads
+
+    temp_folder = generate_unique_folder_name()
+    targetfile = downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion=desktop_version)
+    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
 
     # selecting signal nets to evaluate the extent for clipping the layout
     signal_nets = ["DDR4_DQ0", "DDR4_DQ1", "DDR4_DQ2", "DDR4_DQ3", "DDR4_DQ4", "DDR4_DQ5", "DDR4_DQ6", "DDR4_DQ7"]
@@ -33,6 +39,6 @@ how to clip a design based on nets selection.
     edbapp.save_edb()
     edbapp.close_edb()
 
-. image:: ../Resources/clipped_layout.png
+.. image:: ../Resources/clipped_layout.png
   :width: 800
   :alt: Layout clipping

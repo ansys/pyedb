@@ -123,11 +123,11 @@ class TestClass:
 
     def test_siwave_add_syz_analsyis(self):
         """Add a sywave AC analysis."""
-        assert self.edbapp.siwave.add_siwave_syz_analysis()
+        assert self.edbapp.siwave.add_siwave_syz_analysis(start_freq="=GHz", stop_freq="10GHz", step_freq="10MHz")
 
     def test_siwave_add_dc_analysis(self):
         """Add a sywave DC analysis."""
-        assert self.edbapp.siwave.add_siwave_dc_analysis()
+        assert self.edbapp.siwave.add_siwave_dc_analysis(name="Test_dc")
 
     def test_hfss_mesh_operations(self):
         """Retrieve the trace width for traces with ports."""

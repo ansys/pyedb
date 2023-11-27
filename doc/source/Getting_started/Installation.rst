@@ -16,8 +16,7 @@ Install from a Python file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 AEDT already includes CPython 3.7, which can be used to run PyEDB.
 It is also possible to use CPython 3.7 (3.10 from AEDT 2023R2) as a virtual environment to run PyEDB.
-In order to do that you can download the following file
-:download:`PyAEDT Installer Python file <../Resources/PyAEDTInstallerFromDesktop.py>`
+
 
 Offline install is also possible using wheelhouses.
 A wheelhouse is a zip containing all needed packages that can be installed offline.

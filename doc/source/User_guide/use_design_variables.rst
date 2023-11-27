@@ -1,13 +1,12 @@
-Loading layout
-==============
-Although an entire layout can be built from scratch with PyEDB most of the time the first step is
-loading an existing aedb file. This section is showing how to load an EDB and start manipulating
-objects.
+Define design varaibles
+=======================
+This section shows how to use variables with EDB:
 
 .. autosummary::
    :toctree: _autosummary
 
 .. code:: python
+
 
 
     from pyedb.legacy.edb import EdbLegacy
@@ -18,7 +17,13 @@ objects.
     targetfile = downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
     edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
 
-.. image:: ../Resources/starting_load_edb.png
-  :width: 600
-  :alt: Loading first EDB
+    # adding design variable
+    edbapp.add_design_variable("my_variable", "1mm")
+
+    # parametrize trace width
+    edbapp.modeler.parametrize_trace_width("A0_N")
+    edbapp.modeler.parametrize_trace_width("A0_N_R")
+
+    # adding project variable
+    edbapp.add_project_variable("$my_project_variable", "3mm")
 

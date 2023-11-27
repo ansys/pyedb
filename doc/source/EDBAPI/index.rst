@@ -41,3 +41,4 @@ Example:
    SimulationEdb
    SimulationConfigurationEdb
    SiWave
+   PortsEdb

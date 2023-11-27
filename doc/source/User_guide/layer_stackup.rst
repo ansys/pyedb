@@ -9,23 +9,18 @@ This section describes how to edit layer stackup:
 
 
 
-    from pyedb.legacy.edb_core.edb import EdbLegacy
+    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.generic.general_methods import generate_unique_folder_name
+    import pyedb.misc.downloads as downloads
 
-    # Ansys release version
-    desktop_version = "2024.1"
-
-    temp_folder = r"C:\Temp\stackup_example"
-    source_file = pyedb.layout_examples.ANSYS-HSD_V1.aedb
-    pyedb.misc.utilities.file_tools.copy_folder(source_file, temp_folder)
-
-    # loading EDB
-    targe_tfile = os.path.join(temp_folder, source_file)
-    edbapp = EdbLegacy(edbpath=target_file, edbversion=desktop_version)
+    temp_folder = generate_unique_folder_name()
+    targetfile = downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
 
     # ploting layer stackup in matplotlib
     edbapp.stackup.plot()
 
-. image:: ../Resources/stackup.png
+.. image:: ../Resources/stackup.png
 :width: 800
 :alt: Layer stackup plot
 

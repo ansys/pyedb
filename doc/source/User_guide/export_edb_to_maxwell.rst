@@ -1,13 +1,12 @@
-Loading layout
-==============
-Although an entire layout can be built from scratch with PyEDB most of the time the first step is
-loading an existing aedb file. This section is showing how to load an EDB and start manipulating
-objects.
+Export EDB to Maxwell
+=====================
+This section describes how to export EDB to Maxwell:
 
 .. autosummary::
    :toctree: _autosummary
 
 .. code:: python
+
 
 
     from pyedb.legacy.edb import EdbLegacy
@@ -18,7 +17,10 @@ objects.
     targetfile = downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
     edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
 
-.. image:: ../Resources/starting_load_edb.png
-  :width: 600
-  :alt: Loading first EDB
+    # define export options
+    options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
+    edbapp.write_export3d_option_config_file(temp_folder, options_config)
 
+    # export to Maxwell with given net list
+    edbapp.export_maxwell(temp_folder, net_list=["ANALOG_A0", "ANALOG_A1", "ANALOG_A2"], hidden=True)
+    edbapp.close()

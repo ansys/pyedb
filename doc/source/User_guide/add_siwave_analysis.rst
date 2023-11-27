@@ -1,13 +1,12 @@
-Loading layout
-==============
-Although an entire layout can be built from scratch with PyEDB most of the time the first step is
-loading an existing aedb file. This section is showing how to load an EDB and start manipulating
-objects.
+Adding Siwave analysis
+======================
+This section shows how to add Siwave analysis:
 
 .. autosummary::
    :toctree: _autosummary
 
 .. code:: python
+
 
 
     from pyedb.legacy.edb import EdbLegacy
@@ -18,7 +17,8 @@ objects.
     targetfile = downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
     edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
 
-.. image:: ../Resources/starting_load_edb.png
-  :width: 600
-  :alt: Loading first EDB
+    # Adding Siwave SYZ analysis
+    edbapp.siwave.add_siwave_syz_analysis(start_freq="=GHz", stop_freq="10GHz", step_freq="10MHz")
 
+    # Adding DC analysis
+    edbapp.siwave.add_siwave_dc_analysis(name="Test_dc")
