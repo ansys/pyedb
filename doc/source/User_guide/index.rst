@@ -14,6 +14,9 @@ PyEDB is loading ANSYS EDB in memory meaning non graphically.
     edb_file = pyedb.layout_examples.ANSYS_HSD_v1.aedb
     edb = EdbLegacy(edb_file)
 
+.. toctree::
+   :hidden:
+   :maxdepth: 2
 
    loading_layout
    edb_queries
