@@ -20,7 +20,7 @@ It is also possible to use CPython 3.7 (3.10 from AEDT 2023R2) as a virtual envi
 
 Offline install is also possible using wheelhouses.
 A wheelhouse is a zip containing all needed packages that can be installed offline.
-PyEDB wheelhouse can be found at `Releases <https://github.com/ansys/pyaedt/releases>`_.
+PyEDB wheelhouse can be found at `Releases <https://github.com/ansys/pyedb/releases>`_.
 After downloading the wheelhouse zip specific for your distribution and Python release,
 run the script from Python terminal with providing the zip full path as argument.
 
@@ -55,13 +55,13 @@ page in the PyEDB repository, you can find the wheelhouses for a particular rele
 assets and download the wheelhouse specific to your setup.
 
 You can then install PyEDB and all of its dependencies from one single entry point that can be shared internally,
-which eases the security review of the PyAEDT package content.
+which eases the security review of the PyEDB package content.
 
 For example, on Windows with Python 3.7, install PyEDB and all its dependencies from a wheelhouse with code like this:
 
 .. code::
 
-    pip install --no-cache-dir --no-index --find-links=file:///<path_to_wheelhouse>/PyEDB-v<release_version>-wheelhouse-Windows-3.7 pyaedt
+    pip install --no-cache-dir --no-index --find-links=file:///<path_to_wheelhouse>/PyEDB-v<release_version>-wheelhouse-Windows-3.7 pyedb
 
 
 Upgrade PyEDB to the latest version

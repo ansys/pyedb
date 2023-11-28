@@ -5,7 +5,7 @@ These classes are the containers of the layer and stackup manager of the EDB API
 
 .. code:: python
 
-    from pyaedt import Edb
+    from from pyedb.legacy.edb_core.edb import Edb
     edb = Edb(myedb, edbversion="2023.1")
 
     # this call returns the EDBLayers class

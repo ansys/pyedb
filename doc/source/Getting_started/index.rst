@@ -21,7 +21,7 @@ Getting started
             :link-type: doc
             :margin: 2 2 0 0
 
-            Here's a brief example of how PyAEDT works.
+            Here's a brief example of how PyEDB works.
 
 
    .. grid-item-card:: Versions and interfaces

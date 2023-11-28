@@ -8,33 +8,33 @@ Overall guidance on contributing to a PyAnsys repository appears in
 in the *PyAnsys Developer's Guide*. Ensure that you are thoroughly familiar
 with this guide, paying particular attention to `Guidelines and Best Practices
 <https://dev.docs.pyansys.com/how-to/index.html>`_, before attempting
-to contribute to PyAEDT.
+to contribute to PyEDB.
  
-The following contribution information is specific to PyAEDT.
+The following contribution information is specific to PyEDB.
 
 Clone the repository
 --------------------
-To clone and install the latest version of PyAEDT in
+To clone and install the latest version of PyEDB in
 development mode, run:
 
 .. code::
 
-    git clone https://github.com/ansys/pyaedt
-    cd pyaedt
+    git clone https://github.com/ansys/pyedb
+    cd pyedb
     python -m pip install --upgrade pip
     pip install -e .
 
 Post issues
 -----------
-Use the `PyAEDT Issues <https://github.com/ansys/pyaedt/issues>`_
+Use the `PyAEDT Issues <https://github.com/ansys/pyedb/issues>`_
 page to submit questions, report bugs, and request new features.
 
 To reach the product support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
 
 View PyEDB documentation
 -------------------------
-Documentation for the latest stable release of PyAEDT is hosted at
-`PyAEDT Documentation <https://aedt.docs.pyansys.com>`_.  
+Documentation for the latest stable release of PyEDB is hosted at
+`PyEDB Documentation <https://aedt.docs.pyansys.com>`_.
 
 In the upper right corner of the documentation's title bar, there is an option
 for switching from viewing the documentation for the latest stable release
@@ -43,7 +43,7 @@ released versions.
 
 Adhere to code style
 --------------------
-PyAEDT is compliant with `PyAnsys code style
+PyEDB is compliant with `PyAnsys code style
 <https://dev.docs.pyansys.com/coding_style/index.html>`_. It uses the tool
 `pre-commit <https://pre-commit.com/>`_ to check the code style. You can install
 and activate this tool with:
@@ -97,9 +97,9 @@ These examples demonstrate how to write messages only to the log file:
 
 Handle exceptions
 ~~~~~~~~~~~~~~~~~
-PyAEDT uses a specific decorator, ``@pyedb_function_handler()``,
+PyEDB uses a specific decorator, ``@pyedb_function_handler()``,
 to handle exceptions caused by methods and by the AEDT API.
-This exception handler decorator makes PyAEDT fault tolerant
+This exception handler decorator makes PyEDB fault tolerant
 to errors that can occur in any method.
 
 For example:
@@ -129,7 +129,7 @@ Here is an example of an error:
    ----------------------------------------------------------------------------------
 
    (-2147352567, 'Exception occurred.', (0, None, None, None, 0, -2147024381), None)
-     File "C:\GIT\repos\AnsysAutomation\PyAEDT\Primitives.py", line 1930, in create_box
+     File "C:\GIT\repos\AnsysAutomation\PyEDB\Primitives.py", line 1930, in create_box
        o.name = self.oeditor.createbox(vArg1, vArg2)
 
    ************************************************************

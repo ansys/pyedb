@@ -1,4 +1,4 @@
-# Configuration file for the Sphinx_PyAEDT documentation builder.
+# Configuration file for the Sphinx_PyEDB documentation builder.
 
 # -- Project information -----------------------------------------------------
 import datetime

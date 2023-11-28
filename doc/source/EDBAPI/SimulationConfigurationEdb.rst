@@ -18,7 +18,7 @@ These classes are the containers of simulation configuration constructors for th
 
 .. code:: python
 
-    from pyaedt import Edb
+    from from pyedb.legacy.edb_core.edb import Edb
     edbapp = Edb(myedb, edbversion="2023.1")
 
     sim_setup = edbapp.new_simulation_configuration()
