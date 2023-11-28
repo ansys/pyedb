@@ -37,3 +37,19 @@ PyEDB is loading ANSYS EDB in memory meaning non graphically.
    create_rlc_component
    create_coax_port_on_component
    define_hfss_simulation_setup
+   create_dc_simulation_setup_2
+   create_ac_simulation_setup
+   build_ac_project
+   create_edge_port_on_polygon
+   create_rlc_boundary_on_pins
+   create_various_ports
+   set_all_antipads_value
+   use_design_variables
+   create_port_between_pin_and_layer
+   delete_pin_group
+   create_padsatck_instance
+   define_hfss_extent
+   define_layer_stackup
+   import_gds_file
+   create_edb_with_dxf
+   build_signal_integrity_project

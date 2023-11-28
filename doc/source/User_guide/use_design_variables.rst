@@ -1,4 +1,4 @@
-Define design varaibles
+Define design variables
 =======================
 This section shows how to use variables with EDB:
 

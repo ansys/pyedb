@@ -1412,7 +1412,7 @@ class TestClass:
         assert edb
         assert "P1" in edb.excitations
         assert "Setup1" in edb.setups
-        assert "B1" in edb.components.components
+        assert "B1" in edb.components.instances
         edb.close()
 
     def test_database_properties(self):
