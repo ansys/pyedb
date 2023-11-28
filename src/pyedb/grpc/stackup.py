@@ -480,7 +480,7 @@ class Stackup(object):
         return True
 
     @pyedb_function_handler()
-    def _create_stackup_layer(self, layer_name, thickness, layer_type="signal"):
+    def _create_stackup_layer(self, layer_name, thickness, layer_type="signal", material_name="copper"):
         if layer_type == "signal":
             _layer_type = layer_collection.LayerType.SIGNAL_LAYER
         else:
@@ -490,7 +490,7 @@ class Stackup(object):
                                      layer_type=_layer_type,
                                      thickness=utility.Value(thickness),
                                      elevation=utility.Value(0),
-                                     material="")
+                                     material=material_name)
         self.refresh_layer_collection()
         return result
 
@@ -626,8 +626,8 @@ class Stackup(object):
                 fillMaterial = materials_lower[fillMaterial.lower()]
 
         if layer_type in ["signal", "dielectric"]:
-            new_layer = self._create_stackup_layer(layer_name, thickness, layer_type)
-            new_layer.set_material(material)
+            new_layer = self._create_stackup_layer(layer_name, thickness, layer_type, material_name=material)
+            #new_layer.set_material(material)
             if layer_type != "dielectric":
                 new_layer.set_fill_material(fillMaterial)
             new_layer.negative = is_negative
@@ -1526,7 +1526,7 @@ class Stackup(object):
 
         Parameters
         ----------
-        fpath : str
+        file_path : str
             File path to the CSV file.
         """
         if not pd:
@@ -1539,17 +1539,17 @@ class Stackup(object):
                 logger.error("{} doesn't exist in csv".format(name))
                 return False
 
-        for name, l in df.iterrows():
-            layer_type = l.Type
+        for name, layer_info in df.iterrows():
+            layer_type = layer_info.Type
             if name in self.layers:
                 layer = self.layers[name]
                 layer.type = layer_type
             else:
                 layer = self.add_layer(name, layer_type=layer_type, material="copper", fillMaterial="copper")
 
-            layer.material = l.Material
-            layer.thickness = l.Thickness
-            layer.dielectric_fill = l.Dielectric_Fill
+            layer.material = layer_info.Material
+            layer.thickness = layer_info.Thickness
+            layer.dielectric_fill = layer_info.Dielectric_Fill
 
         lc_new = layer_collection.LayerCollection()
         for name, _ in df.iterrows():

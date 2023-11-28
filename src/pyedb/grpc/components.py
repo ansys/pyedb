@@ -7,6 +7,7 @@ import math
 import re
 import warnings
 import ansys.edb.definition as definition
+import ansys.edb.geometry as geometry
 import ansys.edb.hierarchy as hierarchy
 import ansys.edb.layer as layer
 import ansys.edb.terminal as terminal
@@ -833,12 +834,12 @@ class Components(object):
         pin_layers = cmp_pins[0].padstack_def.data.layer_names
         if port_type == SourceType.CoaxPort:
             pad_params = self._padstack.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
-            if not pad_params[0] == 7:
-                sball_diam = min([utility.Value(val).value for val in pad_params[1]])
-                solder_ball_height = 2 * sball_diam / 3
-            else:
-                bbox = pad_params[1]
-                sball_diam = min([abs(bbox[2] - bbox[0]), abs(bbox[3] - bbox[1])]) * 0.8
+            if isinstance(pad_params[0], definition.PadGeometryType):
+               sball_diam = min([utility.Value(val).value for val in pad_params[1]])
+               solder_ball_height = 2 * sball_diam / 3
+            elif isinstance(pad_params[0], geometry.PolygonData):
+                bbox = pad_params[0].bbox()
+                sball_diam = min([abs(bbox[1].x - bbox[0].x), abs(bbox[3] - bbox[1])]) * 0.8
                 solder_ball_height = 2 * sball_diam / 3
             self.set_solder_ball(component, solder_ball_height, sball_diam)
             for pin in cmp_pins:
@@ -1010,7 +1011,7 @@ class Components(object):
         >>> from pyedb.grpc.edb import Edb
         >>> edb_file = r'C:\my_edb_file.aedb'
         >>> edb = Edb(edb_file)
-        >>> for cmp in list(edb.components.components.keys()):
+        >>> for cmp in list(edb.components.instances.keys()):
         >>>     edb.components.deactivate_rlc_component(component=cmp, create_circuit_port=False)
         >>> edb.save_edb()
         >>> edb.close_edb()
@@ -1031,12 +1032,10 @@ class Components(object):
             self._logger.info("Component %s passed to deactivate is not an RLC.", component.refdes)
             return False
         component.is_enabled = False
-        if create_circuit_port:
-            return self.add_port_on_rlc_component(component.refdes)
-        return True
+        return self.add_port_on_rlc_component(component=component.refdes, circuit_ports=create_circuit_port)
 
     @pyedb_function_handler()
-    def add_port_on_rlc_component(self, component=None):
+    def add_port_on_rlc_component(self, component=None, circuit_ports=True):
         """Deactivate RLC component and replace it with a circuit port.
         The circuit port supports only 2-pin components.
 
@@ -1044,6 +1043,10 @@ class Components(object):
         ----------
         component : str
             Reference designator of the RLC component.
+
+        circuit_ports : bool
+            ``True`` will replace RLC component by circuit ports, ``False`` gap ports compatible with HFSS 3D modeler
+            export.
 
         Returns
         -------
@@ -1063,31 +1066,38 @@ class Components(object):
             pin_layers = self._padstack._get_pin_layer_range(pins[0])
             pos_pin_term = terminal.PointTerminal.create(self._active_layout, pins[0].GetNet(),
                                                 "{}_{}".format(component.refdes, pins[0].GetName()),
-                                                pt,
+                                                pins[0],
                                                 pin_layers[0],
+                                                False,
                                                 )
             if not pos_pin_term:  # pragma: no cover
                 return False
             neg_pin_loc = self.get_pin_position(pins[1])
             pt = self._pedb.point_data(*neg_pin_loc)
 
-            neg_pin_term = terminal.PointTerminal.create(
+            neg_pin_term = terminal.PadstackInstanceTerminal.create(
                 self._active_layout,
                 pins[1].net,
                 "{}_{}_ref".format(component.refdes, pins[1].GetName()),
-                pt,
+                pins[1],
                 pin_layers[0],
+                False,
             )
             if not neg_pin_term:  # pragma: no cover
                 return False
             pos_pin_term.boundary_type = terminal.BoundaryType.PORT
-            pos_pin_term.is_circuit_port = True
             pos_pin_term.name = component.refdes
             neg_pin_term.boundary_type = terminal.BoundaryType.PORT
-            neg_pin_term.is_circuit_port = True
             pos_pin_term.reference_terminal = neg_pin_term
+            if circuit_ports:
+                pos_pin_term.is_circuit_port = True
+                neg_pin_term.is_circuit_port = True
+            else:
+                pos_pin_term.is_circuit_port = False
+                neg_pin_term.is_circuit_port = False
             self._logger.info("Component {} has been replaced by port".format(component.refdes))
             return True
+        return False
 
     @pyedb_function_handler()
     def add_rlc_boundary(self, component=None, circuit_type=True):
@@ -1212,10 +1222,10 @@ class Components(object):
             return False
 
     @pyedb_function_handler()
-    def _getComponentDefinition(self, name, pins):
+    def _get_component_definition(self, name, pins):
         component_definition = definition.ComponentDef.find(self._db, name)
         if component_definition.is_null:
-            component_definition = definition.ComponentDef.create(self._db, name, None)
+            component_definition = definition.ComponentDef.create(db=self._db, comp_def_name=name, fp=None)
             if component_definition.is_null:
                 self._logger.error("Failed to create component definition {}".format(name))
                 return None
@@ -1323,12 +1333,12 @@ class Components(object):
 
         """
         if component_part_name:
-            compdef = self._getComponentDefinition(component_part_name, pins)
+            compdef = self._get_component_definition(component_part_name, pins)
         else:
-            compdef = self._getComponentDefinition(component_name, pins)
+            compdef = self._get_component_definition(component_name, pins)
         if not compdef:
             return False
-        new_cmp = hierarchy.ComponentGroup.create(self._active_layout, component_name, compdef.name)
+        new_cmp = hierarchy.ComponentGroup.create(self._layout, component_name, compdef.name)
 
         if isinstance(pins[0], EDBPadstackInstance):
             pins = [i._edb_padstackinstance for i in pins]
@@ -1689,7 +1699,8 @@ class Components(object):
                 pad_params = self._padstack.get_pad_parameters(pin=pin1, layername=pin_layers[0], pad_type=0)
                 _sb_diam = min([utility.Value(val).value for val in pad_params[1]])
                 sball_diam = _sb_diam
-            sball_height = round(utility.Value(sball_diam).value, 9) / 2
+            if not sball_height:
+                sball_height = 2 * round(utility.Value(sball_diam).value, 9) / 3
             if not sball_mid_diam:
                 sball_mid_diam = sball_diam
 
@@ -1700,20 +1711,17 @@ class Components(object):
 
             cmp_property = edb_cmp.component_property
             if cmp_type == hierarchy.ComponentType.IC:
-                ic_die_prop = cmp_property.die_property
+                ic_die_prop = cmp_property.die_property.clone()
                 ic_die_prop.type = definition.DieType.FLIPCHIP
                 if chip_orientation.lower() == "chip_down":
                     ic_die_prop.orientation = definition.DieOrientation.CHIP_DOWN
                 if chip_orientation.lower() == "chip_up":
                     ic_die_prop.orientation = definition.DieOrientation.CHIP_UP
-                else:
-                    ic_die_prop.orientation = definition.DieOrientation.CHIP_DOWN
                 cmp_property.die_property = ic_die_prop
 
             solder_ball_prop = cmp_property.solder_ball_property
-            solder_ball_prop.diameter = (utility.Value(sball_diam), utility.Value(sball_mid_diam))
+            solder_ball_prop.set_diameter(utility.Value(sball_diam), utility.Value(sball_mid_diam))
             solder_ball_prop.height = utility.Value(sball_height)
-
             solder_ball_prop.shape = sball_shape
             cmp_property.solder_ball_property = solder_ball_prop
 
@@ -2106,13 +2114,12 @@ class Components(object):
         >>> edbapp.components.get_pin_position(pin)
 
         """
-        res, pt_pos, rot_pos = pin.position_and_rotation
-
+        pin_position = geometry.PointData(pin.get_position_and_rotation()[:2])
         if pin.component.is_null:
-            transformed_pt_pos = pt_pos
+            transformed_pt_pos = pin_position
         else:
-            transformed_pt_pos = pin.component.transform.transform_point(pt_pos)
-        return [transformed_pt_pos.y.value, transformed_pt_pos.y.value]
+            transformed_pt_pos = pin.component.transform.transform_point(pin_position)
+        return [transformed_pt_pos[0].value, transformed_pt_pos[1].value]
 
     @pyedb_function_handler()
     def get_pins_name_from_net(self, pin_list, net_name):

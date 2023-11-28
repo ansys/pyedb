@@ -1,7 +1,7 @@
 """Database."""
 import os
 import sys
-import ansys.edb
+import psutil
 
 from pyedb import __version__
 from pyedb.edb_logger import pyedb_logger
@@ -12,6 +12,7 @@ from pyedb.generic.general_methods import env_path
 from pyedb.generic.general_methods import env_path_student
 from pyedb.generic.general_methods import env_value
 from pyedb.generic.general_methods import is_linux
+import ansys.edb.database as database
 
 
 class EdbInit(object):
@@ -51,16 +52,27 @@ class EdbInit(object):
         os.environ["ANSYS_OADIR"] = oaDirectory
         os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
         "Starting grpc server"
-        self.session = launch_session(self.base_path, port_num=port)
-        if self.session:
-            self.server_pid = self.session.local_server_proc.pid
-            self.logger.info("Grpc session started")
+        self.get_grpc_serveur_process()
+        if not self.server_pid:
+            try:
+                self.session = launch_session(self.base_path, port_num=port)
+                if self.session:
+                    self.server_pid = self.session.local_server_proc.pid
+                    self.logger.info("Grpc session started")
+            except:
+                self.logger.error("Failed to start EDB_RPC_server process")
+        else:
+            self.logger.info("Server already running")
 
     @property
     def db(self):
         """Active database object."""
         return self._db
 
+    def get_grpc_serveur_process(self):
+        proc = [p for p in list(psutil.process_iter()) if "edb_rpc" in p.name().lower()]
+        if proc:
+            self.server_pid = proc[0].pid
 
     def create(self, db_path):
         """Create a Database at the specified file location.
@@ -74,7 +86,7 @@ class EdbInit(object):
         -------
         Database
         """
-        self._db = self.edb_api.database.Create(db_path)
+        self._db = database.Database.create(db_path)
         return self._db
 
     def open(self, db_path, read_only):
@@ -92,10 +104,7 @@ class EdbInit(object):
         Database or None
             The opened Database object, or None if not found.
         """
-        self._db = self.edb_api.database.Open(
-            db_path,
-            read_only,
-        )
+        self._db = database.Database.open(db_path, read_only)
         return self._db
 
     def delete(self, db_path):
@@ -106,11 +115,11 @@ class EdbInit(object):
         db_path : str
             Path to top-level database folder.
         """
-        return self.edb_api.database.Delete(db_path)
+        return database.Database.delete(db_path)
 
     def save(self):
         """Save any changes into a file."""
-        return self._db.Save()
+        return self._db.save()
 
     def close(self):
         """Close the database.
@@ -118,7 +127,7 @@ class EdbInit(object):
         .. note::
             Unsaved changes will be lost.
         """
-        return self._db.Close()
+        return self._db.close()
 
     @property
     def top_circuit_cells(self):
@@ -128,7 +137,7 @@ class EdbInit(object):
         -------
         list[:class:`Cell <ansys.edb.layout.Cell>`]
         """
-        return [CellClassDotNet(self, i) for i in list(self._db.TopCircuitCells)]
+        return [i for i in self._db.top_circuit_cells]
 
     @property
     def circuit_cells(self):
@@ -138,7 +147,7 @@ class EdbInit(object):
         -------
         list[:class:`Cell <ansys.edb.layout.Cell>`]
         """
-        return [CellClassDotNet(self, i) for i in list(self._db.CircuitCells)]
+        return [i for i in self._db.circuit_cells]
 
     @property
     def footprint_cells(self):
@@ -148,7 +157,7 @@ class EdbInit(object):
         -------
         list[:class:`Cell <ansys.edb.layout.Cell>`]
         """
-        return [CellClassDotNet(self, i) for i in list(self._db.FootprintCells)]
+        return [i for i in self._db.footprint_cells]
 
     @property
     def edb_uid(self):
@@ -159,7 +168,7 @@ class EdbInit(object):
         int
             The unique EDB id of the Database.
         """
-        return self._db.GetId()
+        return self._db.id
 
     @property
     def is_read_only(self):
@@ -170,7 +179,9 @@ class EdbInit(object):
         bool
             True if Database is open with read only access, otherwise False.
         """
-        return self._db.IsReadOnly()
+        return self._db.is_read_only
+
+
 
     def find_by_id(self, db_id):
         """Find a database by ID.
@@ -185,7 +196,7 @@ class EdbInit(object):
         Database
             The Database or Null on failure.
         """
-        self.edb_api.database.FindById(db_id)
+        return database.Database.find_by_id(db_id)
 
     def save_as(self, path, version=""):
         """Save this Database to a new location and older EDB version.
@@ -225,7 +236,7 @@ class EdbInit(object):
         str
             Property value returned.
         """
-        return self._db.GetProductProperty(prod_id, attr_it)
+        return self._db.get_product_property(prod_id, attr_it)
 
     def set_product_property(self, prod_id, attr_it, prop_value):
         """Set the product property associated with the given product and attribute ids.
@@ -239,7 +250,7 @@ class EdbInit(object):
         prop_value : str
             Product property's new value
         """
-        self._db.SetProductProperty(prod_id, attr_it, prop_value)
+        self._db.set_product_property(prod_id, attr_it, prop_value)
 
     def get_product_property_ids(self, prod_id):
         """Get a list of attribute ids corresponding to a product property id.
@@ -254,7 +265,7 @@ class EdbInit(object):
         list[int]
             The attribute ids associated with this product property.
         """
-        return self._db.GetProductPropertyIds(prod_id)
+        return self._db.get_product_property_ids(prod_id)
 
     def import_material_from_control_file(self, control_file, schema_dir=None, append=True):
         """Import materials from the provided control file.
@@ -268,11 +279,7 @@ class EdbInit(object):
         append : bool
             True if the existing materials in Database are kept. False to remove existing materials in database.
         """
-        self._db.ImportMaterialFromControlFile(
-            control_file,
-            schema_dir,
-            append,
-        )
+        self._db.import_material_from_control_file(control_file, schema_dir, append)
 
     @property
     def version(self):
@@ -294,7 +301,7 @@ class EdbInit(object):
         scale_factor : float
             Amount that coordinates are multiplied by.
         """
-        return self._db.Scale(scale_factor)
+        return self._db.scale(scale_factor)
 
     @property
     def source(self):
@@ -307,12 +314,12 @@ class EdbInit(object):
         str
             name of the source
         """
-        return self._db.GetSource()
+        return self._db.source
 
     @source.setter
     def source(self, source):
         """Set source name of the database."""
-        self._db.SetSource(source)
+        self._db.source = source
 
     @property
     def source_version(self):
@@ -326,12 +333,12 @@ class EdbInit(object):
             version string
 
         """
-        return self._db.GetSourceVersion()
+        return self._db.source_version
 
     @source_version.setter
     def source_version(self, source_version):
         """Set source version of the database."""
-        self._db.SetSourceVersion(source_version)
+        self._db.source_version = source_version
 
     def copy_cells(self, cells_to_copy):
         """Copy Cells from other Databases or this Database into this Database.
@@ -348,8 +355,7 @@ class EdbInit(object):
         """
         if not isinstance(cells_to_copy, list):
             cells_to_copy = [cells_to_copy]
-        _dbCells = convert_py_list_to_net_list(cells_to_copy)
-        return self._db.CopyCells(_dbCells)
+        return self._db.copy_cells(cells_to_copy)
 
     @property
     def apd_bondwire_defs(self):
@@ -359,7 +365,7 @@ class EdbInit(object):
         -------
         list[:class:`ApdBondwireDef <ansys.edb.definition.ApdBondwireDef>`]
         """
-        return list(self._db.APDBondwireDefs)
+        return list(self._db.apd_bondwire_defs)
 
     @property
     def jedec4_bondwire_defs(self):
@@ -369,7 +375,7 @@ class EdbInit(object):
         -------
         list[:class:`Jedec4BondwireDef <ansys.edb.definition.Jedec4BondwireDef>`]
         """
-        return list(self._db.Jedec4BondwireDefs)
+        return list(self._db.jedec4_bondwire_defs)
 
     @property
     def jedec5_bondwire_defs(self):
@@ -379,7 +385,7 @@ class EdbInit(object):
         -------
         list[:class:`Jedec5BondwireDef <ansys.edb.definition.Jedec5BondwireDef>`]
         """
-        return list(self._db.Jedec5BondwireDefs)
+        return list(self._db.jedec5_bondwire_defs)
 
     @property
     def padstack_defs(self):
@@ -389,7 +395,7 @@ class EdbInit(object):
         -------
         list[:class:`PadstackDef <ansys.edb.definition.PadstackDef>`]
         """
-        return list(self._db.PadstackDefs)
+        return list(self._db.padstack_defs)
 
     @property
     def package_defs(self):
@@ -399,7 +405,7 @@ class EdbInit(object):
         -------
         list[:class:`PackageDef <ansys.edb.definition.PackageDef>`]
         """
-        return list(self._db.PackageDefs)
+        return list(self._db.package_defs)
 
     @property
     def component_defs(self):
@@ -409,7 +415,7 @@ class EdbInit(object):
         -------
         list[:class:`ComponentDef <ansys.edb.definition.ComponentDef>`]
         """
-        return list(self._db.ComponentDefs)
+        return list(self._db.component_defs)
 
     @property
     def material_defs(self):
@@ -419,7 +425,7 @@ class EdbInit(object):
         -------
         list[:class:`MaterialDef <ansys.edb.definition.MaterialDef>`]
         """
-        return list(self._db.MaterialDefs)
+        return list(self._db.material_defs)
 
     @property
     def dataset_defs(self):
@@ -429,5 +435,4 @@ class EdbInit(object):
         -------
         list[:class:`DatasetDef <ansys.edb.definition.DatasetDef>`]
         """
-        return list(self._db.DatasetDefs)
-
+        return list(self._db.dataset_defs)

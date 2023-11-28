@@ -9,17 +9,20 @@ from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
 import ansys.edb.definition as definition
+import ansys.edb.primitive as primitive
 import ansys.edb.utility as utility
 import ansys.edb.terminal as terminal
 import ansys.edb.geometry as geometry
-#from ansys.edb.definition.padstack_def_data import PadType, PadGeometryType
-#from ansys.edb.definition.padstack_def import PadstackDef, PadstackDefData
-#from ansys.edb.definition.padstack_def_data import PadstackHoleRange
-#from ansys.edb.utility.value import Value
-#from ansys.edb.definition.solder_ball_property import SolderballShape, SolderballPlacement
-#from ansys.edb.terminal.terminals import PadstackInstanceTerminal
-#from ansys.edb.geometry.polygon_data import PolygonData
-#from ansys.edb.geometry.point_data import PointData
+
+
+# from ansys.edb.definition.padstack_def_data import PadType, PadGeometryType
+# from ansys.edb.definition.padstack_def import PadstackDef, PadstackDefData
+# from ansys.edb.definition.padstack_def_data import PadstackHoleRange
+# from ansys.edb.utility.value import Value
+# from ansys.edb.definition.solder_ball_property import SolderballShape, SolderballPlacement
+# from ansys.edb.terminal.terminals import PadstackInstanceTerminal
+# from ansys.edb.geometry.polygon_data import PolygonData
+# from ansys.edb.geometry.point_data import PointData
 
 
 class EdbPadstacks(object):
@@ -88,33 +91,6 @@ class EdbPadstacks(object):
     def _layers(self):
         """ """
         return self._pedb.stackup.stackup_layers
-
-    @pyedb_function_handler()
-    def int_to_pad_type(self, val=0):
-        """Convert an integer to an EDB.PadGeometryType.
-
-        Parameters
-        ----------
-        val : int
-
-        Returns
-        -------
-        object
-            EDB.PadType enumerator value.
-        """
-
-        if val == 0:
-            return definition.PadType.REGULAR_PAD
-        elif val == 1:
-            return definition.PadType.ANTI_PAD
-        elif val == 2:
-            return definition.PadType.THERMAL_PAD
-        elif val == 3:
-            return definition.PadType.HOLE
-        elif val == 4:
-            return definition.PadType.UNKNOWN_GEOM_TYPE
-        else:
-            return val
 
     @pyedb_function_handler()
     def int_to_geometry_type(self, val=0):
@@ -331,7 +307,7 @@ class EdbPadstacks(object):
             rotation=utility.Value(0),
             type_geom=definition.PadGeometryType.PADGEOMTYPE_CIRCLE,
             sizes=[utility.Value(antipaddiam)]
-            )
+        )
         for layer in layers:
             if layer == startlayer:
                 started = True
@@ -470,20 +446,20 @@ class EdbPadstacks(object):
             port_name = "{0}_{1}_{2}".format(cmp_name, pin_name, net_name)
         if not padstackinstance.is_layout_pin:
             padstackinstance.is_layout_pin = True
-        res = padstackinstance.layer_range
+        top_bottom_layer = padstackinstance.get_layer_range()
         if name:
             port_name = name
         if self._port_exist(port_name):
             port_name = generate_unique_name(port_name, n=2)
             self._logger.info("An existing port already has this same name. Renaming to {}.".format(port_name))
-        terminal.PadstackInstanceTerminal.create(
-            self._active_layout,
-            padstackinstance.net,
-            port_name,
-            padstackinstance,
-            res[2],
+        term = terminal.PadstackInstanceTerminal.create(
+            layout=self._active_layout,
+            net=padstackinstance.net,
+            name=port_name,
+            padstack_instance=padstackinstance,
+            layer=top_bottom_layer[0],
         )
-        if res[0]:
+        if term:
             return port_name
         return ""
 
@@ -511,13 +487,13 @@ class EdbPadstacks(object):
         """
         pinlist = []
         if refdes:
-            if refdes in self._pedb.components.components:
+            if refdes in self._pedb.components.instances:
                 if netname:
-                    for pin, val in self._pedb.components.components[refdes].pins.items():
+                    for pin, val in self._pedb.components.instances[refdes].pins.items():
                         if val.net_name == netname:
                             pinlist.append(val)
                 else:
-                    for pin in self._pedb.components.components[refdes].pins.values():
+                    for pin in self._pedb.components.instances[refdes].pins.values():
                         pinlist.append(pin)
             elif netname:
                 for pin in self._pedb.pins:
@@ -547,39 +523,27 @@ class EdbPadstacks(object):
             Tuple of (GeometryType, ParameterList, OffsetX, OffsetY, Rot).
         """
 
-        if "PadstackDef" in str(type(pin)):
-            padparams = pin.data.pad_parameters(layername, self.int_to_pad_type(pad_type))
+        if isinstance(pin, definition.PadstackDef):
+            padparams = definition.PadstackDefData(pin.data).get_pad_parameters(layername, definition.PadType(pad_type))
         else:
             padparams = definition.PadstackDefData(pin.padstack_def.data).get_pad_parameters(layername,
-                                                                                  self.int_to_pad_type(pad_type))
-        if padparams[2]:
-            geometry_type = int(padparams[1])
-            parameters = [str(i) for i in padparams[2]]
-            offset_x = padparams[3].value
-            offset_y = padparams[4].value
-            rotation = padparams[5].value
-            return geometry_type, parameters, offset_x, offset_y, rotation
-        else:
-            if isinstance(pin, definition.PadstackDef):
-                padparams = definition.PadstackDefData(pin.data).get_pad_parameters(layername, self.int_to_pad_type(pad_type))
-            else:
-                padparams = definition.PadstackDefData(pin.padstack_def.data).get_pad_parameters(layername,
-                                                                                      self.int_to_pad_type(pad_type))
-            if isinstance(padparams[0], definition.PadGeometryType):
-                pad_type = padparams[0]
-                size = padparams[1]
-                offset_x = padparams[2]
-                offset_y = padparams[3]
-                rotation = padparams[4]
-                geometry_type = 7
-                return geometry_type, size, offset_x, offset_y, rotation
-            elif isinstance(padparams[0], geometry.PolygonData):
-                polygon_data = padparams[0]
-                offset_x = padparams[1]
-                offset_y = padparams[2]
-                rotation = padparams[3]
-                return polygon_data, offset_x, offset_y, rotation
-            return definition.PadType.UNKNOWN_GEOM_TYPE
+                                                                                             definition.PadType(
+                                                                                                 pad_type))
+
+        if isinstance(padparams[0], definition.PadGeometryType):
+            geometry_type = padparams[0]
+            size = padparams[1]
+            offset_x = padparams[2]
+            offset_y = padparams[3]
+            rotation = padparams[4]
+            return geometry_type, size, offset_x, offset_y, rotation
+        elif isinstance(padparams[0], geometry.PolygonData):
+            polygon_data = padparams[0]
+            offset_x = padparams[1]
+            offset_y = padparams[2]
+            rotation = padparams[3]
+            return polygon_data, offset_x, offset_y, rotation
+        return definition.PadType.UNKNOWN_GEOM_TYPE
 
     @pyedb_function_handler
     def set_all_antipad_value(self, value):
@@ -601,18 +565,16 @@ class EdbPadstacks(object):
                 layers_name = cloned_padstack_data.layer_names
                 all_succeed = True
                 for layer in layers_name:
-                    geom_type, parameters, offset_x, offset_y, rot = self.get_pad_parameters(
-                        padstack.edb_padstack, layer, 1
-                    )
-                    if geom_type == 1:  # pragma no cover
-                        params = [utility.Value(value)] * len(parameters)
-                        geom = definition.PadGeometryType.PADGEOMTYPE_CIRCLE
-                        offset_x = utility.Value(offset_x)
-                        offset_y = utility.Value(offset_y)
-                        rot = utility.Value(rot)
+                    pad_parameters = self.get_pad_parameters(padstack.edb_padstack, layer, 1)
+                    if pad_parameters[0].value == 1:  # pragma no cover
+                        size = [utility.Value(value)] * len(pad_parameters[1].value)
+                        geom_type = definition.PadGeometryType.PADGEOMTYPE_CIRCLE
+                        offset_x = utility.Value(pad_parameters[2].value)
+                        offset_y = utility.Value(pad_parameters[3].value)
+                        rot = utility.Value(pad_parameters[4].value)
                         antipad = definition.PadType.ANTI_PAD
                         if cloned_padstack_data.set_pad_parameters(
-                                layer, antipad, geom, params, offset_x, offset_y, rot
+                                layer, antipad, geom_type, size, offset_x, offset_y, rot
                         ):  # pragma no cover
                             self._logger.info(
                                 "Pad-stack definition {}, anti-pad on layer {}, has been set to {}".format(
@@ -892,7 +854,7 @@ class EdbPadstacks(object):
             self,
             position,
             definition_name,
-            net_name="",
+            net_name="pyedb_default",
             via_name="",
             rotation=0.0,
             fromlayer=None,
@@ -955,22 +917,19 @@ class EdbPadstacks(object):
         if solderlayer:
             solderlayer = sign_layers_values[solderlayer]._edb_layer
         if padstack:
-            padstack_instance = self._edb.cell.primitive.padstack_instance.create(
-                self._active_layout,
-                net,
-                via_name,
-                padstack,
-                position,
-                rotation,
-                fromlayer,
-                tolayer,
-                solderlayer,
-                None,
-            )
-            padstack_instance.is_layout_pin(is_pin)
-            py_padstack_instance = EDBPadstackInstance(padstack_instance.api_object, self._pedb)
-
-            return py_padstack_instance
+            padstack_instance = primitive.PadstackInstance.create(layout=self._active_layout,
+                                                                  net=net,
+                                                                  name=via_name,
+                                                                  padstack_def=padstack,
+                                                                  top_layer=fromlayer,
+                                                                  bottom_layer=tolayer,
+                                                                  solder_ball_layer=solderlayer,
+                                                                  rotation=0.0,
+                                                                  layer_map=None)
+            padstack_instance.set_position_and_rotation(position.x, position.y, rotation)
+            padstack_instance.is_layout_pin = is_pin
+            pyedb_padstack_instance = EDBPadstackInstance(padstack_instance, self._pedb)
+            return pyedb_padstack_instance
         else:
             return False
 
