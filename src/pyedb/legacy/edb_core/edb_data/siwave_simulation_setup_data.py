@@ -1,3 +1,5 @@
+import warnings
+
 from pyedb.legacy.edb_core.edb_data.simulation_setup import BaseSimulationSetup
 from pyedb.legacy.edb_core.general import convert_netdict_to_pydict
 from pyedb.legacy.edb_core.general import convert_pydict_to_netdict
@@ -996,11 +998,13 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
         - ``0``: Optimal speed
         - ``1``:  Balanced
         - ``2``: Optimal accuracy
+
+        .. deprecated:: 0.7.5
+           Use :property:`pi_slider_position` property instead.
+
         """
-        self.use_si_settings = False
-        self.use_custom_settings = False
+        warnings.warn("`set_pi_slider` is deprecated. Use `pi_slider_position` property instead.", DeprecationWarning)
         self.pi_slider_position = value
-        self.advanced_settings.set_pi_slider(value)
 
     @pyedb_function_handler
     def set_si_slider(self, value):
@@ -1027,9 +1031,13 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
 
+        self.use_si_settings = False
+        self.use_custom_settings = False
+        self.advanced_settings.set_pi_slider(value)
+
     @property
     def si_slider_position(self):
-        """SI solider position. Values are from ``1`` to ``3``."""
+        """SI slider position. Values are from ``1`` to ``3``."""
         return self.get_sim_setup_info.SimulationSettings.SISliderPos
 
     @si_slider_position.setter
@@ -1038,6 +1046,10 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
         edb_setup_info.SimulationSettings.SISliderPos = value
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
+
+        self.use_si_settings = True
+        self.use_custom_settings = False
+        self.advanced_settings.set_si_slider(value)
 
     @property
     def use_custom_settings(self):
