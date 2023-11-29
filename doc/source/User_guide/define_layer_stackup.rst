@@ -9,7 +9,7 @@ This section describes how create layer stackup.
 
 
 
-    from pyedb.legacy.edb_core.edb import EdbLegacy
+    from pyedb.legacy.edb import EdbLegacy
 
     edb = EdbLegacy(edbversion=desktop_version)
     edb.stackup.add_layer(layer_name="gnd", fillMaterial="AIR", thickness="10um")

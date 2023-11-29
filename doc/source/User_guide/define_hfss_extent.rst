@@ -9,7 +9,7 @@ This section describes how define HFSS extent using SimulationConfiguration clas
 
 
 
-    from pyedb.legacy.edb_core.edb import EdbLegacy
+    from pyedb.legacy.edb import EdbLegacy
     # create new EDB
     edb = EdbLegacy()
 

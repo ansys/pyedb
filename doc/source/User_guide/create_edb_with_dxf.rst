@@ -9,7 +9,7 @@ This section describes how to create EDB from DXF file.
 
 
 
-    from pyedb.legacy.edb_core.edb import EdbLegacy
+    from pyedb.legacy.edb import EdbLegacy
 
     dxf_path = os.path.join(local_path, "edb_test.dxf")
     edb = EdbLegacy(dxf_path, edbversion="2023.2")

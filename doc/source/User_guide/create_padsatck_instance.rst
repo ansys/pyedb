@@ -9,7 +9,8 @@ This section describes how create padsatck instance.
 
 
 
-    from pyedb.legacy.edb_core.edb import EdbLegacy
+    from pyedb.legacy.edb import EdbLegacy
+
 
     edb = EdbLegacy(edbversion=desktop_version)
     edb.stackup.add_layer(layer_name="1_Top", fillMaterial="AIR", thickness="30um")

@@ -11,7 +11,7 @@ Files and location must be adapted by the user.
 
     # these example shows how to work with GDS file,.
 
-    from pyedb.legacy.edb_core.edb import EdbLegacy
+    from pyedb.legacy.edb import EdbLegacy
     from pyedb.legacy.edb_core.edb_data.control_file import ControlFile
     c_file_in = os.path.join(
             local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"

@@ -9,7 +9,7 @@ This section describes how to delete pin group.
 
 
 
-    from pyedb.legacy.edb_core.edb import EdbLegacy
+    from pyedb.legacy.edb import EdbLegacy
 
     # loading EDB
     edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
