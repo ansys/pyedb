@@ -67,4 +67,3 @@ Starting from 2024R1 the EDB-core API has replaced the .NET interface with a gRP
      - | ``Python.NET``: *Default*
        | Enable gRPC: ``pyaedt.settings.use_grpc_api = True``
      - | gRPC: *Default*
-       | Enable ``Python.NET``: ``pyaedt.settings.use_grpc_api = False``

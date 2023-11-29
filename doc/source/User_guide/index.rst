@@ -28,11 +28,9 @@ PyEDB is loading ANSYS EDB in memory meaning non graphically.
    create_current_source
    create_resistor_on_pin
    add_siwave_analysis
-   add_siwave_analysis
    export_edb_to_hfss
    export_edb_to_q3d
    export_edb_to_maxwell
-   create_coax_port_on_component
    create_dc_simulation_setup
    create_rlc_component
    create_coax_port_on_component
