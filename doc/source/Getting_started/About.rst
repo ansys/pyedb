@@ -38,7 +38,7 @@ or performing simulation post-processing. AEDB also supports 3D component models
 
 
 PyEDB is licensed under the `MIT License
-<https://github.com/ansys/pyaedt/blob/main/LICENSE>`_.
+<https://github.com/ansys/pyedb/blob/main/LICENSE>`_.
 
 
 Dependencies

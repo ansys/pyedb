@@ -4,15 +4,19 @@ Although an entire layout can be built from scratch with PyEDB most of the time 
 loading an existing aedb file. This section is showing how to load an EDB and start manipulating
 objects.
 
-
+.. autosummary::
+   :toctree: _autosummary
 
 .. code:: python
 
 
-    from pyedb.grpc.edb import Edb
-    edb_file = r"C:\Temp\My_edb_file.aedb"
-    edb = Edb(edbversion="2024.1", edbpath=edb_file, port=50001)
+    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.generic.general_methods import generate_unique_folder_name
+    import pyedb.misc.downloads as downloads
 
+    temp_folder = generate_unique_folder_name()
+    targetfile = downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
 
 .. image:: ../Resources/starting_load_edb.png
   :width: 600

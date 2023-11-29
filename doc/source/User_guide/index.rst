@@ -3,59 +3,51 @@
 ==========
 User guide
 ==========
-PyAEDT works both inside AEDT and as a standalone application.
-It automatically detects whether it is running in an IronPython (limited capabilities) or CPython
-environment and initializes AEDT accordingly. PyAEDT also provides
-advanced error management.
+PyEDB is loading ANSYS EDB in memory meaning non graphically.
 
-You can start AEDT in non-graphical mode from Python:
 
 .. code:: python
 
-    # Launch AEDT 2023 R1 in non-graphical mode
+    # Load EDB
 
-    import pyaedt
-    with pyaedt.Desktop(specified_version="2023.1", non_graphical=True, new_desktop_session=True, close_on_exit=True,
-                 student_version=False):
-        circuit = pyaedt.Circuit()
-        ...
-        # Any error here will be caught by Desktop.
-        ...
-
-    # Desktop is automatically closed here.
-
-
-The preceding code launches AEDT and initializes a new Circuit design.
-
-.. image:: ../Resources/aedt_first_page.png
-  :width: 800
-  :alt: Electronics Desktop Launched
-
-
-You can obtain the same result with:
-
-.. code:: python
-
-    # Launch the latest installed version of AEDT in graphical mode.
-
-    import pyaedt
-    with pyaedt.Circuit(specified_version="2023.1", non_graphical=False) as circuit:
-        ...
-        # Any error here will be caught by Desktop.
-        ...
-
-    # Desktop is automatically released here.
-
-
+    from pyedb.legacy.edb_core.edb import EdbLegacy
+    edb_file = pyedb.layout_examples.ANSYS_HSD_v1.aedb
+    edb = EdbLegacy(edb_file)
 
 .. toctree::
    :hidden:
-   :maxdepth: 2
+   :maxdepth: 3
 
    loading_layout
    edb_queries
    cutout
    layer_stackup
-   ports
-   simulation_setup
-
+   create_coax_port_on_component
+   get_layout_bounding_box
+   create_circuit_ports_on_component
+   create_current_source
+   create_resistor_on_pin
+   add_siwave_analysis
+   export_edb_to_hfss
+   export_edb_to_q3d
+   export_edb_to_maxwell
+   create_dc_simulation_setup
+   create_rlc_component
+   create_coax_port_on_component
+   define_hfss_simulation_setup
+   create_dc_simulation_setup_2
+   create_ac_simulation_setup
+   build_ac_project
+   create_edge_port_on_polygon
+   create_rlc_boundary_on_pins
+   create_various_ports
+   set_all_antipads_value
+   use_design_variables
+   create_port_between_pin_and_layer
+   delete_pin_group
+   create_padsatck_instance
+   define_hfss_extent
+   define_layer_stackup
+   import_gds_file
+   create_edb_with_dxf
+   build_signal_integrity_project

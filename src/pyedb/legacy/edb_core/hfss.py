@@ -503,7 +503,7 @@ class EdbHfss(object):
         Returns
         -------
         tuple
-            The tuple contains: (port_name, legacy.edb_core.edb_data.sources.ExcitationDifferential).
+            The tuple contains: (port_name, pyedb.legacy.edb_core.edb_data.sources.ExcitationDifferential).
 
         Examples
         --------
@@ -572,7 +572,7 @@ class EdbHfss(object):
         Returns
         -------
         tuple
-            The tuple contains: (port_name, legacy.edb_core.edb_data.sources.ExcitationDifferential).
+            The tuple contains: (port_name, pyedb.egacy.edb_core.edb_data.sources.ExcitationDifferential).
 
         Examples
         --------
@@ -776,7 +776,7 @@ class EdbHfss(object):
         Returns
         -------
         tuple
-            The tuple contains: (Port name, legacy.edb_core.edb_data.sources.Excitation).
+            The tuple contains: (Port name, pyedb.legacy.edb_core.edb_data.sources.Excitation).
 
         Examples
         --------

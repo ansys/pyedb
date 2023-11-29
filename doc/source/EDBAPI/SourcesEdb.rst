@@ -5,7 +5,7 @@ These classes are the containers of sources methods of the EDB for both HFSS and
 
 .. code:: python
 
-    from pyaedt import Edb
+    from from pyedb.legacy.edb_core.edb import Edb
     edb = Edb(myedb, edbversion="2023.1")
 
     # this call returns the EDB excitations dictionary
@@ -13,7 +13,7 @@ These classes are the containers of sources methods of the EDB for both HFSS and
     ...
 
 
-.. currentmodule:: pyaedt.edb_core.edb_data.sources
+.. currentmodule:: pyedb.legacy.edb_core.edb_data.sources
 
 .. autosummary::
    :toctree: _autosummary

@@ -491,7 +491,7 @@ class SimulationConfigurationBatch(object):
 
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.edb_data.sources.Source`
+        :class:`legacy.edb_core.edb_data.sources.Source`
         """
         return self._sources
 

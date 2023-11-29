@@ -1,6 +1,6 @@
 """This module contains the ``Edb`` class.
 
-This module is implicitily loaded in HFSS 3D Layout when launched.
+This module is implicitly loaded in HFSS 3D Layout when launched.
 
 """
 from itertools import combinations
@@ -103,7 +103,7 @@ class EdbLegacy(Database):
     --------
     Create an ``Edb`` object and a new EDB cell.
 
-    >>> from legacy import Edb
+    >>> from pyedb.legacy.edb import EdbLegacy
     >>> app = Edb()
 
     Add a new variable named "s1" to the ``Edb`` instance.
@@ -228,7 +228,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`
+        :class:`legacy.edb_core.edb_data.variables.Variable`
 
         """
         if self.variable_exists(variable_name)[0]:
@@ -680,8 +680,9 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
-        >>> comp = self.edbapp.components.get_component_by_name("J1")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> comp = edbapp.components.get_component_by_name("J1")
         """
         warnings.warn("Use new property :func:`components` instead.", DeprecationWarning)
         return self.components
@@ -696,8 +697,9 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
-        >>> comp = self.edbapp.components.get_component_by_name("J1")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> comp = edbapp.components.get_component_by_name("J1")
         """
         if not self._components and self.active_db:
             self._components = Components(self)
@@ -738,7 +740,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
         >>> edbapp.stackup.layers["TOP"].thickness = 4e-5
         >>> edbapp.stackup.layers["TOP"].thickness == 4e-05
         >>> edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
@@ -757,7 +760,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
         >>> edbapp.materials["FR4_epoxy"].conductivity = 1
         >>> edbapp.materials.add_debye_material("My_Debye2", 5, 3, 0.02, 0.05, 1e5, 1e9)
         >>> edbapp.materials.add_djordjevicsarkar_material("MyDjord2", 3.3, 0.02, 3.3)
@@ -781,10 +785,11 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
         >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
         >>> edbapp.padstacks.get_pad_parameters(
-        >>> ... p, "TOP", self.edbapp.padstacks.pad_type.RegularPad
+        >>> ... p, "TOP", edbapp.padstacks.pad_type.RegularPad
         >>> ... )
         """
 
@@ -802,10 +807,11 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
         >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
         >>> edbapp.padstacks.get_pad_parameters(
-        >>> ... p, "TOP", self.edbapp.padstacks.pad_type.RegularPad
+        >>> ... p, "TOP", edbapp.padstacks.pad_type.RegularPad
         >>> ... )
         """
 
@@ -826,7 +832,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
         >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
         """
         warnings.warn("Use new property :func:`siwave` instead.", DeprecationWarning)
@@ -842,7 +849,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
         >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
         """
         if not self._siwave and self.active_db:
@@ -862,7 +870,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
         >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
         """
         warnings.warn("Use new property :func:`hfss` instead.", DeprecationWarning)
@@ -878,7 +887,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacyb("myproject.aedb")
         >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
         """
         if not self._hfss and self.active_db:
@@ -898,7 +908,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
         >>> edbapp.nets.find_or_create_net("GND")
         >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
         """
@@ -915,7 +926,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy"myproject.aedb")
         >>> edbapp.nets.find_or_create_net("GND")
         >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
         """
@@ -935,7 +947,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
         >>> edbapp.net_classes
         """
 
@@ -952,7 +965,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
         >>> edbapp.extended_nets
         """
 
@@ -969,7 +983,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
         >>> edbapp.differential_pairs
         """
         if self.active_db:
@@ -990,7 +1005,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
         warnings.warn("Use new property :func:`modeler` instead.", DeprecationWarning)
@@ -1006,7 +1022,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
         if not self._core_primitives and self.active_db:
@@ -1097,7 +1114,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myproject.aedb")
         >>> pin_net_name = edbapp.pins[424968329].netname
         """
         warnings.warn("Use new method :func:`edb.padstacks.pins` instead.", DeprecationWarning)
@@ -1668,7 +1686,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edb = Edb(r'C:\\test.aedb', edbversion="2022.2")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edb = EdbLegacy(r'C:\\test.aedb', edbversion="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
         >>> start = time.time()
@@ -2257,7 +2276,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> edb = Edb(r'C:\\test.aedb', edbversion="2022.2")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edb = EdbLegacy(r'C:\\test.aedb', edbversion="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
         >>> start = time.time()
@@ -2675,15 +2695,12 @@ class EdbLegacy(Database):
         Examples
         --------
 
-        >>> from legacy import Edb
-
-        >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edb = EdbLegacy(edbpath=r"C:\temp\myproject.aedb", edbversion="2023.2")
 
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
         >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
         >>> edb.export_hfss(r"C:\temp")
-        "C:\\temp\\hfss_siwave.aedt"
-
         """
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
@@ -2715,15 +2732,11 @@ class EdbLegacy(Database):
         Examples
         --------
 
-        >>> from legacy import Edb
-
-        >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
-
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edb = EdbLegacy(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
         >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
         >>> edb.export_q3d(r"C:\temp")
-        "C:\\temp\\q3d_siwave.aedt"
-
         """
 
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
@@ -2758,15 +2771,13 @@ class EdbLegacy(Database):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb.legacy.edb import EdbLegacy
 
-        >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
+        >>> edb = EdbLegacy(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
 
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
         >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
         >>> edb.export_maxwell(r"C:\temp")
-        "C:\\temp\\maxwell_siwave.aedt"
-
         """
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
         return siwave_s.export_3d_cad(
@@ -2924,8 +2935,8 @@ class EdbLegacy(Database):
         Examples
         --------
 
-        >>> from legacy import Edb
-        >>> edb_app = Edb()
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edb_app = EdbLegacy()
         >>> boolean_1, ant_length = edb_app.add_project_variable("my_local_variable", "1cm")
         >>> print(edb_app["$my_local_variable"])    #using getitem
         >>> edb_app["$my_local_variable"] = "1cm"   #using setitem
@@ -2961,8 +2972,8 @@ class EdbLegacy(Database):
         Examples
         --------
 
-        >>> from legacy import Edb
-        >>> edb_app = Edb()
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edb_app = EdbLegacy()
         >>> boolean_1, ant_length = edb_app.add_design_variable("my_local_variable", "1cm")
         >>> print(edb_app["my_local_variable"])    #using getitem
         >>> edb_app["my_local_variable"] = "1cm"   #using setitem
@@ -3000,8 +3011,8 @@ class EdbLegacy(Database):
         Examples
         --------
 
-        >>> from legacy import Edb
-        >>> edb_app = Edb()
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edb_app = EdbLegacy()
         >>> boolean, ant_length = edb_app.add_design_variable("ant_length", "1cm")
         >>> boolean, ant_length = edb_app.change_design_variable_value("ant_length", "1m")
         >>> print(edb_app["ant_length"])    #using getitem
@@ -3044,11 +3055,11 @@ class EdbLegacy(Database):
         Examples
         --------
 
-        >>> from legacy import Edb
-        >>> from legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
         >>> config_file = path_configuration_file
         >>> source_file = path_to_edb_folder
-        >>> edb = Edb(source_file)
+        >>> edb = EdbLegacy(source_file)
         >>> sim_setup = SimulationConfiguration(config_file)
         >>> edb.build_simulation_project(sim_setup)
         >>> edb.save_edb()
@@ -3215,7 +3226,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>>edb = Edb()
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>>edb = EdbLegacy()
         >>> edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
         >>> edb.hfss.create_edge_port_horizontal(
         >>> ... prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
@@ -3296,7 +3308,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.edb_data.simulation_configuration.SimulationConfiguration`
+        :class:`legacy.edb_core.edb_data.simulation_configuration.SimulationConfiguration`
         """
         return SimulationConfiguration(filename, self)
 
@@ -3362,10 +3374,12 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`
+        :class:`legacy.edb_core.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`
 
         Examples
         --------
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy()
         >>> setup1 = edbapp.create_hfss_setup("setup1")
         >>> setup1.hfss_port_settings.max_delta_z0 = 0.5
         """
@@ -3389,6 +3403,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy()
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
         >>> setup1.add_frequency_sweep(frequency_sweep=[
         ...                           ["linear count", "0", "1kHz", 1],
@@ -3414,10 +3430,12 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
+        :class:`legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
 
         Examples
         --------
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy()
         >>> setup1 = edbapp.create_siwave_dc_setup("setup1")
         >>> setup1.mesh_bondwires = True
 
@@ -3701,7 +3719,7 @@ class EdbLegacy(Database):
             Negative terminal of the source.
         Returns
         -------
-        class:`pyedb.legacy.edb_core.edb_data.ports.ExcitationSources`
+        class:`legacy.edb_core.edb_data.ports.ExcitationSources`
         """
         term = Terminal(self, terminal._edb_object)
         term.boundary_type = "kVoltageSource"
@@ -3717,19 +3735,19 @@ class EdbLegacy(Database):
         """Create a current source.
         Parameters
         ----------
-        terminal : :class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+        terminal : :class:`legacy.edb_core.edb_data.terminals.EdgeTerminal`,
+                   :class:`legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+                   :class:`legacy.edb_core.edb_data.terminals.PointTerminal`,
+                   :class:`legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
             Positive terminal of the port.
-        ref_terminal : class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+        ref_terminal : class:`legacy.edb_core.edb_data.terminals.EdgeTerminal`,
+                   :class:`legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+                   :class:`legacy.edb_core.edb_data.terminals.PointTerminal`,
+                   :class:`legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
             Negative terminal of the source.
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.edb_data.ports.ExcitationSources`
+        :class:`legacy.edb_core.edb_data.ports.ExcitationSources`
         """
         term = Terminal(self, terminal._edb_object)
         term.boundary_type = "kCurrentSource"
@@ -3755,7 +3773,7 @@ class EdbLegacy(Database):
             Layer of the terminal.
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`
+        :class:`legacy.edb_core.edb_data.terminals.PointTerminal`
         """
         from pyedb.legacy.edb_core.edb_data.terminals import PointTerminal
 

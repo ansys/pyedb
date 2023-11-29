@@ -39,7 +39,7 @@ class EdbCommon:
 
         Returns
         -------
-        :class:` :class:`legacy.edb_core.edb_data.nets_data.EDBExtendedNetsData`
+        :class:` :class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBExtendedNetsData`
 
         """
         if name in self.items:
@@ -123,7 +123,7 @@ class EdbExtendedNets(EdbCommon, object):
 
         Returns
         -------
-        dict[str, :class:`legacy.edb_core.edb_data.nets_data.EDBExtendedNetsData`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBExtendedNetsData`]
             Dictionary of extended nets.
         """
         nets = {}
@@ -145,7 +145,7 @@ class EdbExtendedNets(EdbCommon, object):
 
         Returns
         -------
-        :class:`legacy.edb_core.edb_data.nets_data.EDBExtendedNetsData`
+        :class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBExtendedNetsData`
         """
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))

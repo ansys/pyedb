@@ -10,12 +10,12 @@ is_windows = not is_linux
 is_clr = False
 
 try:
-    import pyaedt
-    pyaedt_path = os.path.dirname(os.path.abspath(pyaedt.__file__))
-    sys.path.append(os.path.join(pyaedt_path, "dlls", "PDFReport"))
+    import pyedb
+    pyedb_path = os.path.dirname(os.path.abspath(pyedb.__file__))
+    sys.path.append(os.path.join(pyedb_path, "dlls", "PDFReport"))
 except ImportError:
-    pyaedt_path = None
-    warnings.warn("Cannot import pyaedt.")
+    pyedb_path = None
+    warnings.warn("Cannot import pyedb.")
 
 if is_linux and cpython:  # pragma: no cover
     try:
@@ -34,8 +34,8 @@ if is_linux and cpython:  # pragma: no cover
 
         from pythonnet import load
 
-        if pyaedt_path is not None:
-            json_file = os.path.abspath(os.path.join(pyaedt_path, "misc", "pyaedt.runtimeconfig.json"))
+        if pyedb_path is not None:
+            json_file = os.path.abspath(os.path.join(pyedb_path, "misc", "pyaedt.runtimeconfig.json"))
             load("coreclr", runtime_config=json_file, dotnet_root=os.environ["DOTNET_ROOT"])
             print("DotNet Core correctly loaded.")
             if "mono" not in os.getenv("LD_LIBRARY_PATH", ""):

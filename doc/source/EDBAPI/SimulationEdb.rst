@@ -5,7 +5,7 @@ These classes are the containers of ``setup`` classes in EDB for both HFSS and S
 
 .. code:: python
 
-    from pyaedt import Edb
+    from from pyedb.legacy.edb_core.edb import Edb
     edb = Edb(myedb, edbversion="2023.1")
 
     # this call create a setup and returns the object
@@ -19,7 +19,7 @@ These classes are the containers of ``setup`` classes in EDB for both HFSS and S
 
 
 
-.. currentmodule:: pyaedt.edb_core.edb_data
+.. currentmodule:: pyedb.legacy.edb_core.edb_data
 
 .. autosummary::
    :toctree: _autosummary
