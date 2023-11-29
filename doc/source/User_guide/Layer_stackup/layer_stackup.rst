@@ -20,7 +20,8 @@ This section describes how to edit layer stackup:
     # ploting layer stackup in matplotlib
     edbapp.stackup.plot()
 
-.. image:: ../Resources/stackup.png
+.. image:: ../../Resources/stackup.png
+
 :width: 800
 :alt: Layer stackup plot
 
