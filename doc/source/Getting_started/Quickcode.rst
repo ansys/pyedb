@@ -43,7 +43,7 @@ Explicit PyEDB declaration and error management
 
     # Start EDB
 
-    from pyedb.legacyedb_core.edb import EdbLegacy
+    from pyedb.legacy.edb_core.edb import EdbLegacy
 
     edb_file = pyedb.layout_examples.ANSYS-HSD_V1.aedb
     edb = EdbLegacy(edbversion="2023.2", edbpath=edb_file)
