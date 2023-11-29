@@ -157,8 +157,8 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
-        >>> edbapp = Edb("myaedbfolder")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myaedbfolder")
         >>> edbapp.components.components
 
         """
@@ -177,8 +177,8 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
-        >>> edbapp = Edb("myaedbfolder")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myaedbfolder")
         >>> edbapp.components.components
 
         """

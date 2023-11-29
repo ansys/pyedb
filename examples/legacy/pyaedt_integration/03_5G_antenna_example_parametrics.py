@@ -81,7 +81,7 @@ class LinearArray:
 ###############################################################################
 # Launch EDB
 # ~~~~~~~~~~
-# PyAEDT.Edb allows to open existing Edb project or create a new empty project.
+# PyEDB.legacy.Edb allows to open existing Edb project or create a new empty project.
 
 
 tmpfold = tempfile.gettempdir()

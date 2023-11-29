@@ -839,7 +839,7 @@ class EDBPadstack(object):
 
         Returns
         -------
-        List of :class:`legacy.edb_core.padstackEDBPadstack`
+        List of :class:`pyedb.legacy.edb_core.padstackEDBPadstack`
         """
         if self.via_start_layer == self.via_stop_layer:
             self._ppadstack._pedb.logger.error("Microvias cannot be applied when Start and Stop Layers are the same.")
@@ -1009,7 +1009,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             Whether to create a new terminal.
         Returns
         -------
-        :class:`pyaedt.edb_core.edb_data.terminals`
+        :class:`pyedb.legacy.edb_core.edb_data.terminals`
         """
 
         if create_new_terminal:

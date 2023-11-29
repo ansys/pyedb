@@ -16,25 +16,14 @@ Install from a Python file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 AEDT already includes CPython 3.7, which can be used to run PyEDB.
 It is also possible to use CPython 3.7 (3.10 from AEDT 2023R2) as a virtual environment to run PyEDB.
-In order to do that you can download the following file
-:download:`PyAEDT Installer Python file <../Resources/PyAEDTInstallerFromDesktop.py>`
+
 
 Offline install is also possible using wheelhouses.
 A wheelhouse is a zip containing all needed packages that can be installed offline.
-PyEDB wheelhouse can be found at `Releases <https://github.com/ansys/pyaedt/releases>`_.
+PyEDB wheelhouse can be found at `Releases <https://github.com/ansys/pyedb/releases>`_.
 After downloading the wheelhouse zip specific for your distribution and Python release,
 run the script from Python terminal with providing the zip full path as argument.
 
-
-Build Toolkits with PyEDB
-~~~~~~~~~~~~~~~~~~~~~~~~~
-You can create and install external toolkits.
-The template provides a framework to create your own toolkits using PyEDB.
-The template can be found at `Template <https://aedt.toolkit.template.docs.pyansys.com/>`_.
-
-.. image:: ../Resources/template_ribbon.png
-  :width: 800
-  :alt: PyAEDT template toolkit buttons available in AEDT 2023.2
 
 Install on CPython from PyPI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -66,18 +55,18 @@ page in the PyEDB repository, you can find the wheelhouses for a particular rele
 assets and download the wheelhouse specific to your setup.
 
 You can then install PyEDB and all of its dependencies from one single entry point that can be shared internally,
-which eases the security review of the PyAEDT package content.
+which eases the security review of the PyEDB package content.
 
 For example, on Windows with Python 3.7, install PyEDB and all its dependencies from a wheelhouse with code like this:
 
 .. code::
 
-    pip install --no-cache-dir --no-index --find-links=file:///<path_to_wheelhouse>/PyEDB-v<release_version>-wheelhouse-Windows-3.7 pyaedt
+    pip install --no-cache-dir --no-index --find-links=file:///<path_to_wheelhouse>/PyEDB-v<release_version>-wheelhouse-Windows-3.7 pyedb
 
 
-Upgrade PyAEDT to the latest version
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Upgrade PyEDB to the latest version
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: bash
 
-    pip install -U pyansys-edb
+    pip install -U pyedb
