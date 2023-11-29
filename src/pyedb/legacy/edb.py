@@ -175,7 +175,7 @@ class EdbLegacy(Database):
                 os.path.dirname(edbpath), "pyedb_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log"
             )
 
-        if isaedtowned and (inside_desktop or settings.remote_api or settings.remote_rpc_session):
+        if isaedtowned and (inside_desktop or settings.remote_rpc_session):
             self.open_edb_inside_aedt()
         elif edbpath[-3:] in ["brd", "mcm", "gds", "xml", "dxf", "tgz"]:
             self.edbpath = edbpath[:-4] + ".aedb"
