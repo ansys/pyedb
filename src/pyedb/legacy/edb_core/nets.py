@@ -129,7 +129,7 @@ class EdbNets(object):
 
         Returns
         -------
-        dict[str, :class:`legacy.edb_core.edb_data.EDBNetsData`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.EDBNetsData`]
             Dictionary of signal nets.
         """
         warnings.warn("Use :func:`signal` instead.", DeprecationWarning)
@@ -144,7 +144,7 @@ class EdbNets(object):
 
         Returns
         -------
-        dict[str, :class:`legacy.edb_core.edb_data.EDBNetsData`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.EDBNetsData`]
             Dictionary of power nets.
         """
         warnings.warn("Use :func:`power` instead.", DeprecationWarning)
@@ -156,7 +156,7 @@ class EdbNets(object):
 
         Returns
         -------
-        dict[str, :class:`legacy.edb_core.edb_data.EDBNetsData`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.EDBNetsData`]
             Dictionary of signal nets.
         """
         nets = {}
@@ -171,7 +171,7 @@ class EdbNets(object):
 
         Returns
         -------
-        dict[str, :class:`legacy.edb_core.edb_data.EDBNetsData`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.EDBNetsData`]
             Dictionary of power nets.
         """
         nets = {}
@@ -192,7 +192,7 @@ class EdbNets(object):
 
         Returns
         -------
-        list of  :class:`legacy.edb_core.edb_data.EDBNetsData`
+        list of  :class:`pyedb.legacy.edb_core.edb_data.EDBNetsData`
         """
         pwr_gnd_nets = []
         for net in self._layout.nets[:]:

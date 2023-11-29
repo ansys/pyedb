@@ -157,7 +157,7 @@ class EdbPadstacks(object):
 
         Returns
         -------
-        dict[str, :class:`legacy.edb_core.edb_data.padstacks_data.EdbPadstack`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.padstacks_data.EdbPadstack`]
             List of definitions via padstack definitions.
 
         """
@@ -177,7 +177,7 @@ class EdbPadstacks(object):
 
         Returns
         -------
-        dict[str, :class:`legacy.edb_core.edb_data.EdbPadstack`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.EdbPadstack`]
             List of definitions via padstack definitions.
 
         """
@@ -190,7 +190,7 @@ class EdbPadstacks(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
+        dict[str, :class:`legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
             List of padstack instances.
 
         """
@@ -250,7 +250,7 @@ class EdbPadstacks(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
+        dict[str, :class:`legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
             List of padstack instances.
         """
 
@@ -1069,7 +1069,7 @@ class EdbPadstacks(object):
 
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance`
+        :class:`legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance`
         """
         padstack = None
         for pad in list(self.definitions.keys()):

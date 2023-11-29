@@ -103,7 +103,7 @@ class PrimitiveDotNet:
 
     @property
     def polygon_data(self):
-        """:class:`legacy.edb_core.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
+        """:class:`pyedb.legacy.edb_core.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
         return PolygonDataDotNet(self._app, self.prim_obj.GetPolygonData())
 
     @polygon_data.setter
@@ -123,7 +123,7 @@ class PrimitiveDotNet:
 
         Parameters
         ----------
-        point_list : list or  :class:`legacy.edb_core.edb_data.primitives_data.EDBPrimitives` or EDB Primitive Object
+        point_list : list or  :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives` or EDB Primitive Object
             Point list in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
 
         Returns

@@ -40,8 +40,8 @@ These classes are the containers of data management for components reference des
 
 .. code:: python
 
-    from pyedb.legacy.edb_core.edb import Edb
-    edb = Edb(myedb, edbversion="2023.1")
+    from pyedb.legacy.edb import EdbLegacy
+    edb = EdbLegacy(myedb, edbversion="2023.1")
 
     comp = edb.components["C1"]
 

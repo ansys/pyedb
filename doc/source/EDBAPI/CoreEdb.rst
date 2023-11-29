@@ -12,16 +12,16 @@ It can be opened and edited using the ``Edb`` class.
 .. autosummary::
    :toctree: _autosummary
 
-   pyedb.legacy.edb_core.edb
+   pyedb.legacy.edb
    pyedb.legacy.edb_core.edb_data.variables.Variable
    pyedb.legacy.edb_core.edb_data.edbvalue.EdbValue
 
 
 .. code:: python
 
-    from from pyedb.legacy.edb_core.edb import Edb
+    from pyedb.legacy.edb import EdbLegacy
     # this call returns the Edb class initialized on 2023 R1
-    edb = Edb(myedb, edbversion="2023.1")
+    edb = EdbLegacy(myedb, edbversion="2023.1")
 
     ...
 

@@ -393,7 +393,7 @@ class Stackup(object):
 
         Returns
         -------
-        Dict[str, :class:`legacy.edb_core.edb_data.layer_data.LayerEdbClass`]
+        Dict[str, :class:`pyedb.legacy.edb_core.edb_data.layer_data.LayerEdbClass`]
         """
         _lays = OrderedDict()
         for l in self._edb_layer_list:
@@ -410,7 +410,7 @@ class Stackup(object):
 
         Returns
         -------
-        Dict[str, :class:`legacy.edb_core.edb_data.layer_data.LayerEdbClass`]
+        Dict[str, :class:`pyedb.legacy.edb_core.edb_data.layer_data.LayerEdbClass`]
         """
         layer_type = self._pedb.edb_api.cell.layer_type.SignalLayer
         _lays = OrderedDict()
