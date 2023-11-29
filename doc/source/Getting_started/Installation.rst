@@ -69,4 +69,4 @@ Upgrade PyEDB to the latest version
 
 .. code:: bash
 
-    pip install -U pyedb-edb
+    pip install -U pyedb
