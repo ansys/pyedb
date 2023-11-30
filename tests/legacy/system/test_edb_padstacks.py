@@ -1,15 +1,15 @@
 """Tests related to Edb padstacks
 """
 import os
+
 import pytest
 
 from pyedb.legacy.edb import EdbLegacy
-from tests.conftest import local_path
-from tests.conftest import desktop_version
-from tests.legacy.system.conftest import target_path3
+from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -46,7 +46,7 @@ class TestClass:
         # Create myVia_vullet
         self.edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
         assert "myVia_bullet" in list(self.edbapp.padstacks.definitions.keys())
-    
+
         self.edbapp.add_design_variable("via_x", 5e-3)
         self.edbapp["via_y"] = "1mm"
         assert self.edbapp["via_y"].value == 1e-3
@@ -194,7 +194,7 @@ class TestClass:
         edbapp.close()
 
     def test_padstack_plating_ratio_fixing(self):
-        """Fix hole plating ratio."""        
+        """Fix hole plating ratio."""
         assert self.edbapp.padstacks.check_and_fix_via_plating()
 
     def test_padstack_search_reference_pins(self):

@@ -1,9 +1,9 @@
-import os
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-from pyedb.legacy.edb_core.edb_data.sources import Source
 import pytest
 
+from pyedb.legacy.edb_core.edb_data.sources import Source
+
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
+
 
 class TestClass:
     # @pytest.fixture(autouse=True)
@@ -11,7 +11,7 @@ class TestClass:
     #     self.local_scratch = local_scratch
 
     def test_source_change_values(self):
-        """Create source and change its values """
+        """Create source and change its values"""
         source = Source()
         source.l_value = 1e-9
         assert source.l_value == 1e-9

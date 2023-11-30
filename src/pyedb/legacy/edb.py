@@ -12,54 +12,68 @@ import time
 import traceback
 import warnings
 
+from pyedb.generic.constants import AEDT_UNITS, SolverType
+from pyedb.generic.general_methods import (
+    generate_unique_name,
+    get_string_version,
+    inside_desktop,
+    is_ironpython,
+    is_linux,
+    is_windows,
+    pyedb_function_handler,
+)
+from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
+from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.legacy.application.Variables import decompose_variable_value
 from pyedb.legacy.edb_core.components import Components
 from pyedb.legacy.edb_core.dotnet.database import Database
 from pyedb.legacy.edb_core.dotnet.layout import LayoutDotNet
-from pyedb.legacy.edb_core.edb_data.control_file import ControlFile
-from pyedb.legacy.edb_core.edb_data.control_file import convert_technology_file
+from pyedb.legacy.edb_core.edb_data.control_file import (
+    ControlFile,
+    convert_technology_file,
+)
 from pyedb.legacy.edb_core.edb_data.design_options import EdbDesignOptions
 from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data import HfssSimulationSetup
-from pyedb.legacy.edb_core.edb_data.ports import BundleWavePort
-from pyedb.legacy.edb_core.edb_data.ports import CircuitPort
-from pyedb.legacy.edb_core.edb_data.ports import CoaxPort
-from pyedb.legacy.edb_core.edb_data.ports import ExcitationSources
-from pyedb.legacy.edb_core.edb_data.ports import GapPort
-from pyedb.legacy.edb_core.edb_data.ports import WavePort
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-from pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data import SiwaveDCSimulationSetup
-from pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data import SiwaveSYZSimulationSetup
+from pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data import (
+    HfssSimulationSetup,
+)
+from pyedb.legacy.edb_core.edb_data.ports import (
+    BundleWavePort,
+    CircuitPort,
+    CoaxPort,
+    ExcitationSources,
+    GapPort,
+    WavePort,
+)
+from pyedb.legacy.edb_core.edb_data.simulation_configuration import (
+    SimulationConfiguration,
+)
+from pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data import (
+    SiwaveDCSimulationSetup,
+    SiwaveSYZSimulationSetup,
+)
 from pyedb.legacy.edb_core.edb_data.sources import SourceType
 from pyedb.legacy.edb_core.edb_data.terminals import Terminal
 from pyedb.legacy.edb_core.edb_data.variables import Variable
-from pyedb.legacy.edb_core.general import LayoutObjType
-from pyedb.legacy.edb_core.general import Primitives
-from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
+from pyedb.legacy.edb_core.general import (
+    LayoutObjType,
+    Primitives,
+    convert_py_list_to_net_list,
+)
 from pyedb.legacy.edb_core.hfss import EdbHfss
-from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.legacy.edb_core.layout import EdbLayout
 from pyedb.legacy.edb_core.layout_validation import LayoutValidation
 from pyedb.legacy.edb_core.materials import Materials
-from pyedb.legacy.edb_core.net_class import EdbDifferentialPairs
-from pyedb.legacy.edb_core.net_class import EdbExtendedNets
-from pyedb.legacy.edb_core.net_class import EdbNetClasses
+from pyedb.legacy.edb_core.net_class import (
+    EdbDifferentialPairs,
+    EdbExtendedNets,
+    EdbNetClasses,
+)
 from pyedb.legacy.edb_core.nets import EdbNets
 from pyedb.legacy.edb_core.padstack import EdbPadstacks
 from pyedb.legacy.edb_core.siwave import EdbSiwave
 from pyedb.legacy.edb_core.stackup import Stackup
-from pyedb.generic.constants import AEDT_UNITS
-from pyedb.generic.constants import SolverType
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import get_string_version
-from pyedb.generic.general_methods import inside_desktop
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import is_linux
-from pyedb.generic.general_methods import is_windows
-from pyedb.generic.general_methods import pyedb_function_handler
-
-from pyedb.generic.process import SiwaveSolve
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 if is_linux and is_ironpython:
@@ -172,7 +186,8 @@ class EdbLegacy(Database):
         self.log_name = None
         if edbpath:
             self.log_name = os.path.join(
-                os.path.dirname(edbpath), "pyedb_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log"
+                os.path.dirname(edbpath),
+                "pyedb_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log",
             )
 
         if isaedtowned and (inside_desktop or settings.remote_rpc_session):
@@ -228,7 +243,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`
+        variable object : :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`
 
         """
         if self.variable_exists(variable_name)[0]:
@@ -238,7 +253,10 @@ class EdbLegacy(Database):
     @pyedb_function_handler()
     def __setitem__(self, variable_name, variable_value):
         type_error_message = "Allowed values are str, numeric or two-item list with variable description."
-        if type(variable_value) in [list, tuple]:  # Two-item list or tuple. 2nd argument is a str description.
+        if type(variable_value) in [
+            list,
+            tuple,
+        ]:  # Two-item list or tuple. 2nd argument is a str description.
             if len(variable_value) == 2:
                 if type(variable_value[1]) is str:
                     description = variable_value[1] if len(variable_value[1]) > 0 else None
@@ -291,7 +309,7 @@ class EdbLegacy(Database):
         """Cell name container.
         Returns
         -------
-        list of str, cell names.
+        list of cell names : List[str]
         """
         names = []
         for cell in self.circuit_cells:
@@ -304,7 +322,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
+        variable dictionary : Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
         """
         d_var = dict()
         for i in self.active_cell.GetVariableServer().GetAllVariableNames():
@@ -317,7 +335,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Dict[str, :class:`legacy.edb_core.edb_data.variables.Variable`]
+        variables dictionary : Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
 
         """
         p_var = dict()
@@ -327,7 +345,12 @@ class EdbLegacy(Database):
 
     @property
     def layout_validation(self):
-        """:class:`pyedb.egacy.edb_core.edb_data.layout_validation.LayoutValidation`."""
+        """:class:`pyedb.legacy.edb_core.edb_data.layout_validation.LayoutValidation`.
+
+        Returns
+        -------
+        layout validation object : :class: 'pyedb.legacy.edb_core.layout_validation.LayoutValidation'
+        """
         return LayoutValidation(self)
 
     @property
@@ -336,7 +359,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
+        variables dictionary : Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
 
         """
         all_vars = dict()
@@ -348,7 +371,13 @@ class EdbLegacy(Database):
 
     @property
     def terminals(self):
-        """Get terminals belonging to active layout."""
+        """Get terminals belonging to active layout.
+
+        Returns
+        -------
+        Terminal dictionary : Dict[str, pyedb.legacy.edb_core.edb_data.terminals.Terminal]
+        """
+
         temp = {}
         terminal_mapping = Terminal(self)._terminal_mapping
         for i in self.layout.terminals:
@@ -376,8 +405,8 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Dict[str, [:class:`legacy.edb_core.edb_data.ports.GapPort`,
-                   :class:`legacy.edb_core.edb_data.ports.WavePort`,]]
+        port dictionary : Dict[str, [:class:`pyedb.legacy.edb_core.edb_data.ports.GapPort`,
+                   :class:`pyedb.legacy.edb_core.edb_data.ports.WavePort`,]]
 
         """
         temp = [term for term in self.layout.terminals if not term.IsReferenceTerminal()]
@@ -424,7 +453,7 @@ class EdbLegacy(Database):
                 if not val.is_reference_terminal:
                     temp[name] = val
         return temp
-    
+
     @pyedb_function_handler()
     def open_edb(self):
         """Open EDB.
@@ -486,7 +515,9 @@ class EdbLegacy(Database):
                 self._active_cell = None
                 return None
             self._active_cell = self.edb_api.cell.cell.FindByName(
-                self.active_db, self.edb_api.cell._cell.CellType.CircuitCell, self.cellname
+                self.active_db,
+                self.edb_api.cell._cell.CellType.CircuitCell,
+                self.cellname,
             )
             if self._active_cell is None:
                 self._active_cell = list(self.top_circuit_cells)[0]
@@ -529,7 +560,14 @@ class EdbLegacy(Database):
         return None
 
     @pyedb_function_handler()
-    def import_layout_pcb(self, input_file, working_dir, anstranslator_full_path="", use_ppe=False, control_file=None):
+    def import_layout_pcb(
+        self,
+        input_file,
+        working_dir,
+        anstranslator_full_path="",
+        use_ppe=False,
+        control_file=None,
+    ):
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
         This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM and TGZ.
@@ -681,7 +719,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class:`legacy.edb_core.Components.Components`
+        Instance of :class:`pyedb.legacy.edb_core.Components.Components`
 
         Examples
         --------
@@ -698,7 +736,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class:`legacy.edb_core.components.Components`
+        Instance of :class:`pyedb.legacy.edb_core.components.Components`
 
         Examples
         --------
@@ -731,7 +769,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class:`legacy.edb_core.edb_data.design_options.EdbDesignOptions`
+        Instance of :class:`pyedb.legacy.edb_core.edb_data.design_options.EdbDesignOptions`
         """
         return EdbDesignOptions(self.active_cell)
 
@@ -741,7 +779,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: 'legacy.edb_core.Stackup`
+        Instance of :class: 'pyedb.legacy.edb_core.Stackup`
 
         Examples
         --------
@@ -761,7 +799,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: `legacy.edb_core.Materials`
+        Instance of :class: `pyedb.legacy.edb_core.Materials`
 
         Examples
         --------
@@ -786,7 +824,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: `legacy.edb_core.padstack.EdbPadstack`
+        Instance of :class: `pyedb.legacy.edb_core.padstack.EdbPadstack`
 
         Examples
         --------
@@ -833,7 +871,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: `legacy.edb_core.siwave.EdbSiwave`
+        Instance of :class: `pyedb.legacy.edb_core.siwave.EdbSiwave`
 
         Examples
         --------
@@ -850,7 +888,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: `legacy.edb_core.siwave.EdbSiwave`
+        Instance of :class: `pyedb.legacy.edb_core.siwave.EdbSiwave`
 
         Examples
         --------
@@ -1085,7 +1123,9 @@ class EdbLegacy(Database):
         ):
             obj_type = i.GetObjType().ToString()
             if obj_type == LayoutObjType.PadstackInstance.name:
-                from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+                from pyedb.legacy.edb_core.edb_data.padstacks_data import (
+                    EDBPadstackInstance,
+                )
 
                 temp.append(EDBPadstackInstance(i, self))
             elif obj_type == LayoutObjType.Primitive.name:
@@ -1095,7 +1135,9 @@ class EdbLegacy(Database):
 
                     temp.append(EdbPath(i, self))
                 elif prim_type == Primitives.Rectangle.name:
-                    from pyedb.legacy.edb_core.edb_data.primitives_data import EdbRectangle
+                    from pyedb.legacy.edb_core.edb_data.primitives_data import (
+                        EdbRectangle,
+                    )
 
                     temp.append(EdbRectangle(i, self))
                 elif prim_type == Primitives.Circle.name:
@@ -1103,7 +1145,9 @@ class EdbLegacy(Database):
 
                     temp.append(EdbCircle(i, self))
                 elif prim_type == Primitives.Polygon.name:
-                    from pyedb.legacy.edb_core.edb_data.primitives_data import EdbPolygon
+                    from pyedb.legacy.edb_core.edb_data.primitives_data import (
+                        EdbPolygon,
+                    )
 
                     temp.append(EdbPolygon(i, self))
                 else:
@@ -1142,7 +1186,17 @@ class EdbLegacy(Database):
         int
         """
 
-        (Port, Pec, RLC, CurrentSource, VoltageSource, NexximGround, NexximPort, DcTerminal, VoltageProbe) = range(0, 9)
+        (
+            Port,
+            Pec,
+            RLC,
+            CurrentSource,
+            VoltageSource,
+            NexximGround,
+            NexximPort,
+            DcTerminal,
+            VoltageProbe,
+        ) = range(0, 9)
 
     @pyedb_function_handler()
     def edb_value(self, val):
@@ -1315,7 +1369,8 @@ class EdbLegacy(Database):
             self._logger = self._global_logger
 
         self.log_name = os.path.join(
-            os.path.dirname(fname), "pyedb_" + os.path.splitext(os.path.split(fname)[-1])[0] + ".log"
+            os.path.dirname(fname),
+            "pyedb_" + os.path.splitext(os.path.split(fname)[-1])[0] + ".log",
         )
         if settings.enable_local_log_file:
             self._logger = self._global_logger.add_file_logger(self.log_name, "Edb")
@@ -1363,7 +1418,10 @@ class EdbLegacy(Database):
 
         """
         if self.import_layout_pcb(
-            inputBrd, working_dir=WorkDir, anstranslator_full_path=anstranslator_full_path, use_ppe=use_ppe
+            inputBrd,
+            working_dir=WorkDir,
+            anstranslator_full_path=anstranslator_full_path,
+            use_ppe=use_ppe,
         ):
             return True
         else:
@@ -1444,7 +1502,11 @@ class EdbLegacy(Database):
         include_pingroups=True,
         pins_to_preserve=None,
     ):
-        if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1]:
+        if extent_type in [
+            "Conforming",
+            self.edb_api.geometry.extent_type.Conforming,
+            1,
+        ]:
             if use_pyaedt_extent:
                 _poly = self._create_conformal(
                     net_signals,
@@ -1465,9 +1527,18 @@ class EdbLegacy(Database):
                     use_round_corner,
                     1,
                 )
-        elif extent_type in ["Bounding", self.edb_api.geometry.extent_type.BoundingBox, 0]:
+        elif extent_type in [
+            "Bounding",
+            self.edb_api.geometry.extent_type.BoundingBox,
+            0,
+        ]:
             _poly = self.layout.expanded_extent(
-                net_signals, self.edb_api.geometry.extent_type.BoundingBox, expansion_size, False, use_round_corner, 1
+                net_signals,
+                self.edb_api.geometry.extent_type.BoundingBox,
+                expansion_size,
+                False,
+                use_round_corner,
+                1,
             )
         else:
             if use_pyaedt_extent:
@@ -1561,15 +1632,18 @@ class EdbLegacy(Database):
                 locations.append([pd.X.ToDouble(), pd.Y.ToDouble()])
         for point in locations:
             pointA = self.edb_api.geometry.point_data(
-                self.edb_value(point[0] - expansion_size), self.edb_value(point[1] - expansion_size)
+                self.edb_value(point[0] - expansion_size),
+                self.edb_value(point[1] - expansion_size),
             )
             pointB = self.edb_api.geometry.point_data(
-                self.edb_value(point[0] + expansion_size), self.edb_value(point[1] + expansion_size)
+                self.edb_value(point[0] + expansion_size),
+                self.edb_value(point[1] + expansion_size),
             )
 
-            points = Tuple[self.edb_api.geometry.geometry.PointData, self.edb_api.geometry.geometry.PointData](
-                pointA, pointB
-            )
+            points = Tuple[
+                self.edb_api.geometry.geometry.PointData,
+                self.edb_api.geometry.geometry.PointData,
+            ](pointA, pointB)
             _polys.append(self.edb_api.geometry.polygon_data.create_from_bbox(points))
         return _polys
 
@@ -2072,9 +2146,11 @@ class EdbLegacy(Database):
         nets_to_preserve = []
         if preserve_components_with_model:
             for el in self.components.instances.values():
-                if el.model_type in ["SPICEModel", "SParameterModel", "NetlistModel"] and list(
-                    set(el.nets[:]) & set(signal_list[:])
-                ):
+                if el.model_type in [
+                    "SPICEModel",
+                    "SParameterModel",
+                    "NetlistModel",
+                ] and list(set(el.nets[:]) & set(signal_list[:])):
                     pins_to_preserve.extend([i.id for i in el.pins.values()])
                     nets_to_preserve.extend(el.nets)
         if include_pingroups:
@@ -2120,7 +2196,10 @@ class EdbLegacy(Database):
             if custom_extent[0] != custom_extent[-1]:
                 custom_extent.append(custom_extent[0])
             custom_extent = [
-                [self.number_with_units(i[0], custom_extent_units), self.number_with_units(i[1], custom_extent_units)]
+                [
+                    self.number_with_units(i[0], custom_extent_units),
+                    self.number_with_units(i[1], custom_extent_units),
+                ]
                 for i in custom_extent
             ]
             plane = self.modeler.Shape("polygon", points=custom_extent)
@@ -2156,7 +2235,12 @@ class EdbLegacy(Database):
         def intersect(poly1, poly2):
             if not isinstance(poly2, list):
                 poly2 = [poly2]
-            return list(poly1.Intersect(convert_py_list_to_net_list(poly1), convert_py_list_to_net_list(poly2)))
+            return list(
+                poly1.Intersect(
+                    convert_py_list_to_net_list(poly1),
+                    convert_py_list_to_net_list(poly2),
+                )
+            )
 
         def subtract(poly, voids):
             return poly.Subtract(convert_py_list_to_net_list(poly), convert_py_list_to_net_list(voids))
@@ -2548,9 +2632,19 @@ class EdbLegacy(Database):
         for void_circle in voids_to_add:
             if void_circle.type == "Circle":
                 if is_ironpython:  # pragma: no cover
-                    res, center_x, center_y, radius = void_circle.primitive_object.GetParameters()
+                    (
+                        res,
+                        center_x,
+                        center_y,
+                        radius,
+                    ) = void_circle.primitive_object.GetParameters()
                 else:
-                    res, center_x, center_y, radius = void_circle.primitive_object.GetParameters(0.0, 0.0, 0.0)
+                    (
+                        res,
+                        center_x,
+                        center_y,
+                        radius,
+                    ) = void_circle.primitive_object.GetParameters(0.0, 0.0, 0.0)
                 cloned_circle = self.edb_api.cell.primitive.circle.create(
                     layout,
                     void_circle.layer_name,
@@ -2562,7 +2656,10 @@ class EdbLegacy(Database):
                 cloned_circle.SetIsNegative(True)
             elif void_circle.type == "Polygon":
                 cloned_polygon = self.edb_api.cell.primitive.polygon.create(
-                    layout, void_circle.layer_name, void_circle.net, void_circle.primitive_object.GetPolygonData()
+                    layout,
+                    void_circle.layer_name,
+                    void_circle.net,
+                    void_circle.primitive_object.GetPolygonData(),
                 )
                 cloned_polygon.SetIsNegative(True)
         layers = [i for i in list(self.stackup.signal_layers.keys())]
@@ -2713,7 +2810,14 @@ class EdbLegacy(Database):
         return os.path.join(path_to_output, "options.config")
 
     @pyedb_function_handler()
-    def export_hfss(self, path_to_output, net_list=None, num_cores=None, aedt_file_name=None, hidden=False):
+    def export_hfss(
+        self,
+        path_to_output,
+        net_list=None,
+        num_cores=None,
+        aedt_file_name=None,
+        hidden=False,
+    ):
         """Export EDB to HFSS.
 
         Parameters
@@ -2750,7 +2854,14 @@ class EdbLegacy(Database):
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
 
     @pyedb_function_handler()
-    def export_q3d(self, path_to_output, net_list=None, num_cores=None, aedt_file_name=None, hidden=False):
+    def export_q3d(
+        self,
+        path_to_output,
+        net_list=None,
+        num_cores=None,
+        aedt_file_name=None,
+        hidden=False,
+    ):
         """Export EDB to Q3D.
 
         Parameters
@@ -2785,11 +2896,23 @@ class EdbLegacy(Database):
 
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
         return siwave_s.export_3d_cad(
-            "Q3D", path_to_output, net_list, num_cores=num_cores, aedt_file_name=aedt_file_name, hidden=hidden
+            "Q3D",
+            path_to_output,
+            net_list,
+            num_cores=num_cores,
+            aedt_file_name=aedt_file_name,
+            hidden=hidden,
         )
 
     @pyedb_function_handler()
-    def export_maxwell(self, path_to_output, net_list=None, num_cores=None, aedt_file_name=None, hidden=False):
+    def export_maxwell(
+        self,
+        path_to_output,
+        net_list=None,
+        num_cores=None,
+        aedt_file_name=None,
+        hidden=False,
+    ):
         """Export EDB to Maxwell 3D.
 
         Parameters
@@ -3078,7 +3201,10 @@ class EdbLegacy(Database):
             Bounding box as a [lower-left X, lower-left Y], [upper-right X, upper-right Y]) pair in meters.
         """
         bbox = self.edbutils.HfssUtilities.GetBBox(self.active_layout)
-        return [[bbox.Item1.X.ToDouble(), bbox.Item1.Y.ToDouble()], [bbox.Item2.X.ToDouble(), bbox.Item2.Y.ToDouble()]]
+        return [
+            [bbox.Item1.X.ToDouble(), bbox.Item1.Y.ToDouble()],
+            [bbox.Item2.X.ToDouble(), bbox.Item2.Y.ToDouble()],
+        ]
 
     @pyedb_function_handler()
     def build_simulation_project(self, simulation_setup):
@@ -3087,7 +3213,7 @@ class EdbLegacy(Database):
 
         Parameters
         ----------
-        simulation_setup : :class:`pyedb.legacy.edb_core.edb_data.simulation_configuration.SimulationConfiguration` object.
+        simulation_setup : :class:`pyedb.legacy.edb_core.edb_data.simulation_configuration.SimulationConfiguration`.
             SimulationConfiguration object that can be instantiated or directly loaded with a
             configuration file.
 
@@ -3150,7 +3276,9 @@ class EdbLegacy(Database):
                     ):
                         self.logger.info("Cutout processed.")
                         old_cell = self.active_cell.FindByName(
-                            self.db, self.edb_api.cell.CellType.CircuitCell, old_cell_name
+                            self.db,
+                            self.edb_api.cell.CellType.CircuitCell,
+                            old_cell_name,
                         )
                         if old_cell:
                             old_cell.Delete()
@@ -3585,7 +3713,8 @@ class EdbLegacy(Database):
             self.save_edb()
         for zone_primitive in zone_primitives:
             edb_zone_path = os.path.join(
-                working_directory, "{}_{}".format(zone_primitive.GetId(), os.path.basename(self.edbpath))
+                working_directory,
+                "{}_{}".format(zone_primitive.GetId(), os.path.basename(self.edbpath)),
             )
             shutil.copytree(self.edbpath, edb_zone_path)
             poly_data = zone_primitive.GetPolygonData()
@@ -3629,7 +3758,11 @@ class EdbLegacy(Database):
         project_connexions = None
         for edb_path, zone_info in zone_dict.items():
             edb = EdbLegacy(edbversion=self.edbversion, edbpath=edb_path)
-            edb.cutout(use_pyaedt_cutout=True, custom_extent=zone_info[1], open_cutout_at_end=True)
+            edb.cutout(
+                use_pyaedt_cutout=True,
+                custom_extent=zone_info[1],
+                open_cutout_at_end=True,
+            )
             if not zone_info[0] == -1:
                 layers_to_remove = [
                     lay.name for lay in list(edb.stackup.layers.values()) if not lay._edb_layer.IsInZone(zone_info[0])
@@ -3637,13 +3770,19 @@ class EdbLegacy(Database):
                 for layer in layers_to_remove:
                     edb.stackup.remove_layer(layer)
             edb.stackup.stackup_mode = "Laminate"
-            edb.cutout(use_pyaedt_cutout=True, custom_extent=zone_info[1], open_cutout_at_end=True)
+            edb.cutout(
+                use_pyaedt_cutout=True,
+                custom_extent=zone_info[1],
+                open_cutout_at_end=True,
+            )
             edb.active_cell.SetName(os.path.splitext(os.path.basename(edb_path))[0])
             if common_reference_net:
                 signal_nets = list(self.nets.signal.keys())
                 defined_ports[os.path.splitext(os.path.basename(edb_path))[0]] = list(edb.excitations.keys())
                 edb_terminals_info = edb.hfss.create_vertical_circuit_port_on_clipped_traces(
-                    nets=signal_nets, reference_net=common_reference_net, user_defined_extent=zone_info[1]
+                    nets=signal_nets,
+                    reference_net=common_reference_net,
+                    user_defined_extent=zone_info[1],
                 )
                 if edb_terminals_info:
                     terminals[os.path.splitext(os.path.basename(edb_path))[0]] = edb_terminals_info
@@ -3702,13 +3841,22 @@ class EdbLegacy(Database):
                                     if port_distance < tolerance:
                                         port1_connexion = None
                                         port2_connexion = None
-                                        for project_path, port_info in terminal_info_dict.items():
+                                        for (
+                                            project_path,
+                                            port_info,
+                                        ) in terminal_info_dict.items():
                                             port1_map = [port for port in port_info if port[3] == port1[3]]
                                             if port1_map:
-                                                port1_connexion = (project_path, port1[3])
+                                                port1_connexion = (
+                                                    project_path,
+                                                    port1[3],
+                                                )
                                             port2_map = [port for port in port_info if port[3] == port2[3]]
                                             if port2_map:
-                                                port2_connexion = (project_path, port2[3])
+                                                port2_connexion = (
+                                                    project_path,
+                                                    port2[3],
+                                                )
                                         if port1_connexion and port2_connexion:
                                             if (
                                                 not port1_connexion[0] == port2_connexion[0]
