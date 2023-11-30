@@ -1,86 +1,41 @@
-2D Extractor
-2D modeler
-3D modeler
+.NET
 _static
+AC
 AEDB
 AEDT
 airbox
-airgap
 (?i)Ansys
 API
-autosave
-busbar
-busbars
-Bz
 [Cc]ircuit
 codecov
 [Cc]om
-COM interface
 [Cc]omponents
 Conda
 CPython
-DesignXploration
+DC
 docstring
 [Dd]ocstrings
-doppler
 EDB
 EDT
-efields
-EMIT
-getters
-globals
+GDS
 [Gg]gRPC
 HFSS
-Huray
 Icepak
 IronPython
 [Ll]ayout
-limitilines
 matplotlib
-Maxwell 2D
-Maxwell 3D
-Maxwell Circuit
-[Mm]echanical
-multiphysics
-multiplot
-namespaces
+Maxwell(?:\s(?:2D|3D|Circuit))?
 netlist
-Nexxim
-numpy
-numpydoc
-[Oo]ptimetrics
-padstack
-padstacks
-parametrics
-PMs
-[Pp]olyline
-polylines
-Postprocessing
-pwl
-pyaedt
-PyAEDT
+padstack(?:s)?
+(?i)Pyaedt
 (?i)PyAnsys
 [Pp]y[Pp][Ii]
 Python
 Python.NET
-pyvista
-Q2D Extractor
 Q3D
-Q3D Extractor
-RC
-reusability
-RF
-RMXprt
-scipy
-setters
+RLC
+SimulationConfiguration
 Siwave
-Slurm
-Spyder
-Stackup 3D
-stackups
-stripline
-subcircuit
-[Tt]oolkits
-Twin Builder
-Uncomment
+SYZ
+(?i)stackup(?:\s3D|s)?
 vias
