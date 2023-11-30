@@ -1,6 +1,6 @@
 Create pad-stack instance
 =========================
-This section describes how create padsatck instance.
+This section describes how to create a padstack instance.
 
 .. autosummary::
    :toctree: _autosummary

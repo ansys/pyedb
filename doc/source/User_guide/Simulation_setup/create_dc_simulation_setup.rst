@@ -23,7 +23,7 @@ This section describes how to create DC simulation setup for Siwave using Simula
     # loading EDB
     edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
 
-    # create a new simulatiom setup object
+    # create a new simulation setup object
     sim_setup = edbapp.new_simulation_configuration()
 
     # disabling cutout

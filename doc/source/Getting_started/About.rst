@@ -26,8 +26,8 @@ AEDB is running as stand alone API and opens aedb folder for directly querying a
 layout design in memory and does not require opening any User Interface (UI). Hence AEDB is the fastest
 and most efficient way to handle large and complex layout.
 
-AEDB can also been parsed with and Electromagnetic simulator command line like HFSS or SIwave in bacth.
-Therefore completely non graphical flows can be deployed from layout translation up to simulatiom results.
+AEDB can also been parsed with and Electromagnetic simulator command line like HFSS or SIwave in batch.
+Therefore completely non graphical flows can be deployed from layout translation up to simulation results.
 AEDB can also be imported in ANSYS AEDT with PyAEDT for example to display the project, combining 3D design
 or performing simulation post-processing. AEDB also supports 3D component models.
 
