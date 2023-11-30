@@ -113,6 +113,7 @@ full = [
     "osmnx",
     "pyvista==0.42.2; python_version > '3.7'",
     "pyvista==0.38.0; python_version <= '3.7'",
+    "vtk==9.2.6",
     "SRTM.py",
     "utm",
     "scikit-rf",
