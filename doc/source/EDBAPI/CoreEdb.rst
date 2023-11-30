@@ -12,7 +12,7 @@ It can be opened and edited using the ``Edb`` class.
 .. autosummary::
    :toctree: _autosummary
 
-   pyedb.legacy.edb
+   pyedb.legacy.edb.EdbLegacy
    pyedb.legacy.edb_core.edb_data.variables.Variable
    pyedb.legacy.edb_core.edb_data.edbvalue.EdbValue
 

@@ -104,7 +104,7 @@ class EdbLegacy(Database):
     Create an ``Edb`` object and a new EDB cell.
 
     >>> from pyedb.legacy.edb import EdbLegacy
-    >>> app = Edb()
+    >>> app = EdbLegacy()
 
     Add a new variable named "s1" to the ``Edb`` instance.
 
@@ -125,12 +125,12 @@ class EdbLegacy(Database):
 
     Create an ``Edb`` object and open the specified project.
 
-    >>> app = Edb("myfile.aedb")
+    >>> app = EdbLegacy("myfile.aedb")
 
     Create an ``Edb`` object from GDS and control files.
     The XML control file resides in the same directory as the GDS file: (myfile.xml).
 
-    >>> app = Edb("/path/to/file/myfile.gds")
+    >>> app = EdbLegacy("/path/to/file/myfile.gds")
 
     """
 
@@ -228,7 +228,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`legacy.edb_core.edb_data.variables.Variable`
+        :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`
 
         """
         if self.variable_exists(variable_name)[0]:
@@ -273,8 +273,6 @@ class EdbLegacy(Database):
         self._variables = None
         self._active_cell = None
         self._layout = None
-        # time.sleep(2)
-        # gc.collect()
 
     @pyedb_function_handler()
     def _init_objects(self):
@@ -306,7 +304,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Dict[str, :class:`legacy.edb_core.edb_data.variables.Variable`]
+        Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
         """
         d_var = dict()
         for i in self.active_cell.GetVariableServer().GetAllVariableNames():
@@ -329,7 +327,7 @@ class EdbLegacy(Database):
 
     @property
     def layout_validation(self):
-        """:class:`legacy.edb_core.edb_data.layout_validation.LayoutValidation`."""
+        """:class:`pyedb.egacy.edb_core.edb_data.layout_validation.LayoutValidation`."""
         return LayoutValidation(self)
 
     @property
@@ -338,7 +336,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Dict[str, :class:`legacy.edb_core.edb_data.variables.Variable`]
+        Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
 
         """
         all_vars = dict()
@@ -433,7 +431,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-
+        ``True`` when succeed ``False`` if failed : bool
         """
         # self.logger.info("EDB Path is %s", self.edbpath)
         # self.logger.info("EDB Version is %s", self.edbversion)
@@ -472,10 +470,11 @@ class EdbLegacy(Database):
 
     @pyedb_function_handler()
     def open_edb_inside_aedt(self):
-        """Open EDB inside of AEDT.
+        """Open EDB inside AEDT.
 
         Returns
         -------
+        ``True`` when succeed ``False`` if failed : bool
 
         """
         self.logger.info("Opening EDB from HDL")
@@ -504,7 +503,12 @@ class EdbLegacy(Database):
 
     @pyedb_function_handler()
     def create_edb(self):
-        """Create EDB."""
+        """Create EDB.
+
+        Returns
+        -------
+        ``True`` when succeed ``False`` if failed : bool
+        """
         # if self.edbversion > "2023.1":
         #     self.standalone = False
 
@@ -548,8 +552,8 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        str
-            Full path to the AEDB file.
+        Full path to the AEDB file : str
+
         """
         self._components = None
         self._core_primitives = None
@@ -599,7 +603,7 @@ class EdbLegacy(Database):
            The method works only in CPython because of some limitations on Ironpython in XML parsing and
            because it's time-consuming.
            This method is still being tested and may need further debugging.
-           Any feedback is welcome. Backdrills and custom pads are not supported yet.
+           Any feedback is welcome. Back drills and custom pads are not supported yet.
 
         Parameters
         ----------
@@ -614,8 +618,8 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        bool
-            ``True`` if successful, ``False`` if failed.
+        ``True`` if successful, ``False`` if failed : bool
+
         """
         if units.lower() not in ["millimeter", "inch", "micron"]:  # pragma no cover
             self.logger.warning("The wrong unit is entered. Setting to the default, millimeter.")
@@ -649,6 +653,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
+        None
 
         """
         tb_trace = traceback.format_tb(tb_data)
@@ -693,7 +698,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.components.Components`
+        Instance of :class:`legacy.edb_core.components.Components`
 
         Examples
         --------
@@ -888,8 +893,16 @@ class EdbLegacy(Database):
         Examples
         --------
         >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacyb("myproject.aedb")
+        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> sim_config = edbapp.new_simulation_configuration()
+        >>> sim_config.mesh_freq = "10Ghz"
         >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
+
+        See Also
+        --------
+        :class:`legacy.edb_core.edb_data.simulation_configuration.SimulationConfiguration`
+        for more information on configuration options.
+
         """
         if not self._hfss and self.active_db:
             self._hfss = EdbHfss(self)
@@ -922,7 +935,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.nets.EdbNets`
+        :class:`legacy.edb_core.nets.EdbNets`
 
         Examples
         --------
