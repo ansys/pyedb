@@ -20,8 +20,8 @@ class EdbNets(object):
 
     Examples
     --------
-    >>> from legacy import Edb
-    >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+    >>> from pyedb.legacy.edb import EdbLegacy
+    >>> edbapp = EdbLegacy("myaedbfolder", edbversion="2021.2")
     >>> edb_nets = edbapp.nets
     """
 
