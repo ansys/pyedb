@@ -2,14 +2,15 @@
 """
 
 import os
+
 import pytest
 
 from pyedb.legacy.edb import EdbLegacy
+from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
-from tests.legacy.system.conftest import local_path
-from tests.conftest import desktop_version
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
