@@ -1,17 +1,18 @@
-import pyaedt
-from pyaedt import Edb, Hfss3dLayout
+from pyedb.generic.general_methods import generate_unique_folder_name
+from pyedb.legacy.edb import EdbLegacy
+from pyedb.misc.downloads import download_file
 
 # Ansys release version
 desktop_version = "2023.2"
 
-#download and copy the layout file from examples
-temp_folder = pyaedt.generate_unique_folder_name()
-targetfile = pyaedt.downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+# download and copy the layout file from examples
+temp_folder = generate_unique_folder_name()
+targetfile = download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
 # loading EDB
-edbapp = Edb(edbpath=targetfile, edbversion=desktop_version)
+edbapp = EdbLegacy(edbpath=targetfile, edbversion=desktop_version)
 
-# ploting layer stackup in matplotlib
+# plotting layer stackup in matplotlib
 edbapp.stackup.plot()
 
 # retrieving signal layers name
@@ -36,5 +37,3 @@ for layer in list(edbapp.stackup.signal_layers.values()):
     layer.material = "MyMetal"
 edbapp.materials.add_material(name="SolderMask", permittivity=3.8, dielectric_loss_tangent=1e-3)
 edbapp.stackup.add_layer(layer_name="Solder_mask", base_layer="1_Top", thickness="200um", material="SolderMask")
-
-

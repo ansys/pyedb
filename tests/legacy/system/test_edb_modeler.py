@@ -1,13 +1,14 @@
 """Tests related to Edb modeler
 """
 
-from pyedb.legacy.edb import EdbLegacy
 import pytest
+
 from pyedb.generic.settings import settings
-from tests.conftest import local_path
-from tests.conftest import desktop_version
+from pyedb.legacy.edb import EdbLegacy
+from tests.conftest import desktop_version, local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -97,7 +98,6 @@ class TestClass:
         nets = ["GND", "1V0"]
         polys = self.edbapp.modeler.get_polygons_by_layer("16_Bottom", nets)
         assert polys
-
 
     def test_modeler_get_polygons_points(self):
         """Retrieve polygons points."""
@@ -221,6 +221,7 @@ class TestClass:
     def test_modeler_primitives_boolean_operation(self):
         """Evaluate modeler primitives boolean operations."""
         from pyedb.legacy.edb import EdbLegacy
+
         edb = EdbLegacy()
         edb.stackup.add_layer(layer_name="test")
         x = edb.modeler.create_polygon(
@@ -266,6 +267,7 @@ class TestClass:
 
     def test_modeler_path_convert_to_polygon(self):
         import os
+
         target_path = os.path.join(local_path, "example_models", "convert_and_merge_path.aedb")
         edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         for path in edbapp.modeler.paths:

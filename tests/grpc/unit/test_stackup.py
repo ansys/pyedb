@@ -1,14 +1,17 @@
+from mock import MagicMock, PropertyMock, patch
 import pytest
-from mock import PropertyMock, patch, MagicMock
 
 try:
     from pyedb.legacy.edb_core.stackup import Stackup
 except ImportError:
+
     def pytest_collection_modifyitems(items, config):
         for item in items:
             item.add_marker(pytest.mark.xfail)
 
+
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.grpc]
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -85,11 +88,10 @@ class TestClass:
         outline_layer = self.stackup._layer_types_to_int(self.stackup.layer_types.OutlineLayer)
         assert outline_layer == 18
 
-    @patch('pyedb.legacy.edb_core.stackup.Stackup.stackup_layers', new_callable=PropertyMock)
+    @patch("pyedb.legacy.edb_core.stackup.Stackup.stackup_layers", new_callable=PropertyMock)
     def test_110_layout_tchickness(self, mock_stackup_layers):
         """"""
-        mock_stackup_layers.return_value = {"layer": MagicMock(upper_elevation = 42, lower_elevation = 0)}
+        mock_stackup_layers.return_value = {"layer": MagicMock(upper_elevation=42, lower_elevation=0)}
         assert self.stackup.get_layout_thickness() == 42
-        mock_stackup_layers.return_value = {"layer": MagicMock(upper_elevation = 0, lower_elevation = 0)}
+        mock_stackup_layers.return_value = {"layer": MagicMock(upper_elevation=0, lower_elevation=0)}
         assert self.stackup.get_layout_thickness() == 0
-

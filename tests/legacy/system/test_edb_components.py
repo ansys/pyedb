@@ -1,19 +1,19 @@
 """Tests related to Edb components
 """
-import os
-import pytest
 import math
+import os
+
+import pytest
 
 # from pyedb import Edb
 from pyedb.legacy.edb import EdbLegacy
-
-from tests.conftest import local_path
-from tests.conftest import desktop_version
+from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 bom_example = "bom_example.csv"
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -210,7 +210,6 @@ class TestClass:
         for el in self.edbapp.modeler.polygons:
             if el.GetId() == 5954:
                 selection_poly = el
-                
         assert self.edbapp.modeler.parametrize_polygon(poly, selection_poly)
 
     def test_components_update_from_bom(self):
@@ -251,6 +250,7 @@ class TestClass:
     def test_convert_resistor_value(self):
         """Convert a resistor value."""
         from pyedb.legacy.edb_core.components import resistor_value_parser
+
         assert resistor_value_parser("100meg")
 
     def test_components_create_solder_ball_on_component(self):

@@ -22,11 +22,11 @@ import random
 import shutil
 import string
 import tempfile
+
 import pytest
 
 from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.filesystem import Scratch
-from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.misc import list_installed_ansysem
 
 logger = pyedb_logger

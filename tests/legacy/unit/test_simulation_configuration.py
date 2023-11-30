@@ -1,13 +1,21 @@
 import os
-from pyedb.generic.constants import SourceType
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+
 import pytest
+
+from pyedb.generic.constants import SourceType
+from pyedb.legacy.edb_core.edb_data.simulation_configuration import (
+    SimulationConfiguration,
+)
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
+
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self,local_scratch,):
+    def init(
+        self,
+        local_scratch,
+    ):
         self.local_scratch = local_scratch
 
     def test_simulation_configuration_export_import(self):
