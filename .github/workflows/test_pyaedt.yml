@@ -68,6 +68,7 @@ jobs:
 
       - name: "Install specific vtk version with OSMesa bundled"
         run: |
+          .\.venv\Scripts\Activate.ps1
           pip uninstall vtk -y
           # Note: the vtk-osmesa used is 9.2.X as 9.3.0 is not working
           # well with the use of pyvista in our tests atm.
