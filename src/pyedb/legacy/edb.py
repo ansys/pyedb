@@ -228,7 +228,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`
+        variable object : :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`
 
         """
         if self.variable_exists(variable_name)[0]:
@@ -291,7 +291,7 @@ class EdbLegacy(Database):
         """Cell name container.
         Returns
         -------
-        list of str, cell names.
+        list of cell names : List[str]
         """
         names = []
         for cell in self.circuit_cells:
@@ -304,7 +304,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
+        variable dictionary : Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
         """
         d_var = dict()
         for i in self.active_cell.GetVariableServer().GetAllVariableNames():
@@ -317,7 +317,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Dict[str, :class:`legacy.edb_core.edb_data.variables.Variable`]
+        variables dictionary : Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
 
         """
         p_var = dict()
@@ -327,7 +327,12 @@ class EdbLegacy(Database):
 
     @property
     def layout_validation(self):
-        """:class:`pyedb.egacy.edb_core.edb_data.layout_validation.LayoutValidation`."""
+        """:class:`pyedb.legacy.edb_core.edb_data.layout_validation.LayoutValidation`.
+
+        Returns
+        -------
+        layout validation object : :class: 'pyedb.legacy.edb_core.layout_validation.LayoutValidation'
+        """
         return LayoutValidation(self)
 
     @property
@@ -336,7 +341,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
+        variables dictionary : Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
 
         """
         all_vars = dict()
@@ -348,7 +353,13 @@ class EdbLegacy(Database):
 
     @property
     def terminals(self):
-        """Get terminals belonging to active layout."""
+        """Get terminals belonging to active layout.
+
+        Returns
+        -------
+        Terminal dictionary : Dict[str, pyedb.legacy.edb_core.edb_data.terminals.Terminal]
+        """
+
         temp = {}
         terminal_mapping = Terminal(self)._terminal_mapping
         for i in self.layout.terminals:
@@ -376,8 +387,8 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Dict[str, [:class:`legacy.edb_core.edb_data.ports.GapPort`,
-                   :class:`legacy.edb_core.edb_data.ports.WavePort`,]]
+        port dictionaries : Dict[str, [:class:`pyedb.legacy.edb_core.edb_data.ports.GapPort`,
+                   :class:`pyedb.legacy.edb_core.edb_data.ports.WavePort`,]]
 
         """
         temp = [term for term in self.layout.terminals if not term.IsReferenceTerminal()]
@@ -681,7 +692,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class:`legacy.edb_core.Components.Components`
+        Instance of :class:`pyedb.legacy.edb_core.Components.Components`
 
         Examples
         --------
@@ -698,7 +709,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class:`legacy.edb_core.components.Components`
+        Instance of :class:`pyedb.legacy.edb_core.components.Components`
 
         Examples
         --------
@@ -731,7 +742,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class:`legacy.edb_core.edb_data.design_options.EdbDesignOptions`
+        Instance of :class:`pyedb.legacy.edb_core.edb_data.design_options.EdbDesignOptions`
         """
         return EdbDesignOptions(self.active_cell)
 
@@ -741,7 +752,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: 'legacy.edb_core.Stackup`
+        Instance of :class: 'pyedb.legacy.edb_core.Stackup`
 
         Examples
         --------
@@ -761,7 +772,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: `legacy.edb_core.Materials`
+        Instance of :class: `pyedb.legacy.edb_core.Materials`
 
         Examples
         --------
@@ -786,7 +797,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: `legacy.edb_core.padstack.EdbPadstack`
+        Instance of :class: `pyedb.legacy.edb_core.padstack.EdbPadstack`
 
         Examples
         --------
@@ -833,7 +844,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: `legacy.edb_core.siwave.EdbSiwave`
+        Instance of :class: `pyedb.legacy.edb_core.siwave.EdbSiwave`
 
         Examples
         --------
@@ -850,7 +861,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: `legacy.edb_core.siwave.EdbSiwave`
+        Instance of :class: `pyedb.legacy.edb_core.siwave.EdbSiwave`
 
         Examples
         --------
