@@ -1,4 +1,4 @@
-.NET
+\.NET
 _static
 AC
 AEDB
@@ -27,6 +27,7 @@ matplotlib
 Maxwell(?:\s(?:2D|3D|Circuit))?
 netlist
 padstack(?:s)?
+(?i)Pyedb
 (?i)Pyaedt
 (?i)PyAnsys
 [Pp]y[Pp][Ii]
