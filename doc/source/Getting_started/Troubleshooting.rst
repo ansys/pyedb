@@ -38,9 +38,9 @@ Error installing PyEDB using pip
 
 If downloads from `pypi <https://pypi.org/>`_ are not allowed, you may use a
 `wheelhouse <https://pypi.org/project/Wheelhouse/>`_.
-The wheelhouse file contains all dependencies for PyAEDT and allows full installation without a need to
+The wheelhouse file contains all dependencies for PyEDB and allows full installation without a need to
 download additional files.
-The wheelhouse for PyAEDT can be found `here <https://github.com/ansys/pyaedt/releases>`_.
+The wheelhouse for PyEDB can be found `here <https://github.com/ansys/pyedb/releases>`_.
 After downloading the wheelhouse for your distribution and Python release, unzip the file to a folder and
 run the Python command:
 
@@ -65,5 +65,4 @@ Starting from 2024R1 the EDB-core API has replaced the .NET interface with a gRP
      - > 2024 R1
    * - Only ``Python.NET``
      - | ``Python.NET``: *Default*
-       | Enable gRPC: ``pyaedt.settings.use_grpc_api = True``
      - | gRPC: *Default*

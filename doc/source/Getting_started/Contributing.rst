@@ -26,7 +26,7 @@ development mode, run:
 
 Post issues
 -----------
-Use the `PyAEDT Issues <https://github.com/ansys/pyedb/issues>`_
+Use the `PyEDB Issues <https://github.com/ansys/pyedb/issues>`_
 page to submit questions, report bugs, and request new features.
 
 To reach the product support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.

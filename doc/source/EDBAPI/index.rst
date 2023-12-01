@@ -2,7 +2,7 @@
 EDB API
 =======
 
-This section describes PyAEDT EDB classes, methods, and functions
+This section describes EDB classes, methods, and functions
 for EDB apps and modules. Use the search feature or click links
 to view API documentation.
 
@@ -22,7 +22,7 @@ Example:
 
 .. code:: python
 
-    from pyaedt import Edb
+    from pyedb import Edb
 
     edb = Edb("my_project.aedb", edbversion="2023.1")
     edb.core_components.components["R1"].r_value = 40
