@@ -19,7 +19,7 @@ class EdbPadstacks(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_padstacks = edbapp.padstacks
     """

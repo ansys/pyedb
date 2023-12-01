@@ -625,7 +625,7 @@ class Materials(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb()
         >>> freq = [0, 2, 3, 4, 5, 6]
         >>> rel_perm = [1e9, 1.1e9, 1.2e9, 1.3e9, 1.5e9, 1.6e9]
@@ -673,7 +673,7 @@ class Materials(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> my_material = edb_app.materials.duplicate("copper", "my_new_copper")
 
@@ -791,7 +791,7 @@ class Materials(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> returned_tuple = edb_app.materials.get_property_by_material_name("conductivity", "copper")
         >>> edb_value = returned_tuple[0]

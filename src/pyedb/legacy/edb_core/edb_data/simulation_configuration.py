@@ -1897,7 +1897,7 @@ class SimulationConfiguration(object):
 
     The class is instantiated from an open edb:
 
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb()
     >>> sim_setup = edb.new_simulation_configuration()
 
@@ -2390,7 +2390,7 @@ class SimulationConfiguration(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> from legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
         >>> config_file = path_configuration_file
         >>> source_file = path_to_edb_folder

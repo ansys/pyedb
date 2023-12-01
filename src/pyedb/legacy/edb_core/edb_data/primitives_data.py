@@ -62,7 +62,7 @@ class EDBPrimitivesMain(Connectable):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_prim = edb.modeler.primitives[0]
     >>> edb_prim.is_void # Class Property
@@ -180,7 +180,7 @@ class EDBPrimitives(EDBPrimitivesMain):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_prim = edb.modeler.primitives[0]
     >>> edb_prim.is_void # Class Property
@@ -1082,7 +1082,7 @@ class EDBArcs(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> prim_arcs = edb.modeler.primitives[0].arcs
     >>> prim_arcs.center # arc center

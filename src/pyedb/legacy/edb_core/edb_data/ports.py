@@ -19,7 +19,7 @@ class GapPort(EdgeTerminal):
     Examples
     --------
     This example shows how to access the ``GapPort`` class.
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb("myaedb.aedb")
     >>> gap_port = edb.ports["gap_port"]
     """
@@ -87,7 +87,7 @@ class WavePort(EdgeTerminal):
     --------
     This example shows how to access the ``WavePort`` class.
 
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb("myaedb.aedb")
     >>> exc = edb.ports
     """
@@ -166,7 +166,7 @@ class ExcitationSources(Terminal):
     Examples
     --------
     This example shows how to access this class.
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb("myaedb.aedb")
     >>> all_sources = edb.sources
     >>> print(all_sources["VSource1"].name)

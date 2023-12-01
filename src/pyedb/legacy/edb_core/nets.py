@@ -273,7 +273,7 @@ class EdbNets(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.nets.get_extended_nets()
         """

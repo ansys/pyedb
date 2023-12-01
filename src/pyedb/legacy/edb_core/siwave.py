@@ -37,7 +37,7 @@ class EdbSiwave(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_siwave = edbapp.siwave
     """
@@ -227,7 +227,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.siwave.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
@@ -352,7 +352,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.siwave.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
@@ -402,7 +402,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.siwave.create_current_source_on_pin(pins[0], pins[1], 50, "source_name")
@@ -449,7 +449,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins =edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.siwave.create_resistor_on_pin(pins[0], pins[1],50,"res_name")
@@ -525,7 +525,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.siwave.create_circuit_port_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 50, "port_name")
         """
@@ -594,7 +594,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.siwave.create_voltage_source_on_net("U2A5","V1P5_S3","U2A5","GND",3.3,0,"source_name")
         """
@@ -665,7 +665,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.siwave.create_current_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 0.1, 0, "source_name")
         """
@@ -724,7 +724,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.siwave.create_dc_terminal("U2A5", "V1P5_S3", "source_name")
         """
@@ -876,7 +876,7 @@ class EdbSiwave(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb("pathtoaedb", edbversion="2021.2")
         >>> edb.siwave.add_siwave_ac_analysis()
         >>> edb.siwave.add_siwave_dc_analysis2("my_setup")

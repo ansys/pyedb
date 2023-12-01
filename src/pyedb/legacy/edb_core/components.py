@@ -56,7 +56,7 @@ class Components(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder")
     >>> edbapp.components
     """
@@ -305,7 +305,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.resistors
         """
@@ -327,7 +327,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.capacitors
         """
@@ -349,7 +349,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.inductors
 
@@ -372,7 +372,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.ICs
 
@@ -395,7 +395,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.IOs
 
@@ -418,7 +418,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.others
 
@@ -441,7 +441,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.components_by_partname
 
@@ -738,7 +738,7 @@ class Components(object):
         EDB terminal created, or False if failed to create.
 
         Example:
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb(path_to_edb_file)
         >>> pin = "AJ6"
         >>> ref_pins = ["AM7", "AM4"]
@@ -854,7 +854,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> net_list = ["M_DQ<1>", "M_DQ<2>", "M_DQ<3>", "M_DQ<4>", "M_DQ<5>"]
         >>> edbapp.components.create_port_on_component(cmp="U2A5", net_list=net_list,
@@ -1055,7 +1055,7 @@ class Components(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb(edb_file)
         >>>  for refdes, cmp in edb.components.capacitors.items():
         >>>     edb.components.replace_rlc_by_gap_boundaries(refdes)
@@ -1100,7 +1100,7 @@ class Components(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb_file = r'C:\my_edb_file.aedb'
         >>> edb = Edb(edb_file)
         >>> for cmp in list(edb.components.instances.keys()):
@@ -1425,7 +1425,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> pins = edbapp.components.get_pin_from_component("A1")
         >>> edbapp.components.create(pins, "A1New")
@@ -1523,7 +1523,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> pins = edbapp.components.get_pin_from_component("A1")
         >>> edbapp.components.create(pins, "A1New")
@@ -1562,7 +1562,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.set_component_model("A1", model_type="Spice",
         ...                                            modelpath="pathtospfile",
@@ -1646,7 +1646,7 @@ class Components(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.create_pingroup_from_pins(gndpinlist, "MyGNDPingroup")
 
@@ -1716,7 +1716,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> list_of_deleted_rlcs = edbapp.components.delete_single_pin_rlc()
         >>> print(list_of_deleted_rlcs)
@@ -1757,7 +1757,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.delete("A1")
 
@@ -1782,7 +1782,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.delete("A1")
 
@@ -1812,7 +1812,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.disable_rlc_component("A1")
 
@@ -1880,7 +1880,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.set_solder_ball("A1")
 
@@ -1970,7 +1970,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.set_component_rlc(
         ...     "R1", res_value=50, ind_value=1e-9, cap_value=1e-12, isparallel=False
@@ -2238,7 +2238,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_pin_from_component("R1", refdes)
 
@@ -2287,7 +2287,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_aedt_pin_name(pin)
 
@@ -2316,7 +2316,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_pin_position(pin)
 
@@ -2352,7 +2352,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_pins_name_from_net(pin_list, net_name)
 
@@ -2380,7 +2380,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_nets_from_pin_list(pinlist)
 
@@ -2407,7 +2407,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_component_net_connection_info(refdes)
 
@@ -2435,7 +2435,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_rats()
 
@@ -2462,7 +2462,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_through_resistor_list()
 
@@ -2501,7 +2501,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.short_component_pins("J4A2", ["G4", "9", "3"])
 

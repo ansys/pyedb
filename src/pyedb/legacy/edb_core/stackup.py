@@ -748,7 +748,7 @@ class Stackup(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.stackup.export("stackup.xml")
         """
@@ -788,7 +788,7 @@ class Stackup(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.stackup.export_stackup("stackup.xml")
         """
@@ -2129,7 +2129,7 @@ class Stackup(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.stackup.load("stackup.xml")
         """
@@ -2163,7 +2163,7 @@ class Stackup(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.stackup.import_stackup("stackup.xml")
         """

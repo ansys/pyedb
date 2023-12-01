@@ -27,7 +27,7 @@ class EdbHfss(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder")
     >>> edb_hfss = edb_3dedbapp.hfss
     """
@@ -156,7 +156,7 @@ class EdbHfss(object):
         port_name : str, optional
             Port Name
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins =edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.hfss.create_circuit_port_on_pin(pins[0], pins[1],50,"port_name")
@@ -194,7 +194,7 @@ class EdbHfss(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins =edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.hfss.create_voltage_source_on_pin(pins[0], pins[1],50,"source_name")
@@ -226,7 +226,7 @@ class EdbHfss(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins =edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.hfss.create_current_source_on_pin(pins[0], pins[1],50,"source_name")
@@ -257,7 +257,7 @@ class EdbHfss(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins =edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.hfss.create_resistor_on_pin(pins[0], pins[1],50,"res_name")
@@ -300,7 +300,7 @@ class EdbHfss(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.hfss.create_circuit_port_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 50, "port_name")
         """
@@ -352,7 +352,7 @@ class EdbHfss(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.hfss.create_voltage_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 3.3, 0, "source_name")
         """
@@ -405,7 +405,7 @@ class EdbHfss(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.hfss.create_current_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 0.1, 0, "source_name")
         """

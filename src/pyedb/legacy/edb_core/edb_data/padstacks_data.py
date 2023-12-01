@@ -32,7 +32,7 @@ class EDBPadProperties(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_pad_properties = edb.padstacks.definitions["MyPad"].pad_by_layer["TOP"]
     """
@@ -379,7 +379,7 @@ class EDBPadstack(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_padstack = edb.padstacks.definitions["MyPad"]
     """
@@ -985,7 +985,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_padstack_instance = edb.padstacks.instances[0]
     """
@@ -1559,7 +1559,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.padstacks.instances[111].get_aedt_pin_name()
 
@@ -1727,7 +1727,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
         >>> edb_layout = edbapp.modeler
         >>> list_of_padstack_instances = list(edbapp.padstacks.instances.values())

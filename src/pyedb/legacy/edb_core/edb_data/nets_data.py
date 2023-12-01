@@ -15,7 +15,7 @@ class EDBNetsData(NetDotNet):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_net = edb.nets.nets["GND"]
     >>> edb_net.name # Class Property
@@ -155,7 +155,7 @@ class EDBNetsData(NetDotNet):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.nets["BST_V3P3_S5"].extended_net
         """
@@ -174,7 +174,7 @@ class EDBNetClassData(NetClassDotNet):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb.net_classes
     """
@@ -198,7 +198,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_extended_net = edb.nets.extended_nets["GND"]
     >>> edb_extended_net.name # Class Property
@@ -253,7 +253,7 @@ class EDBDifferentialPairData(DifferentialPairDotNet):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> diff_pair = edb.differential_pairs["DQ4"]
     >>> diff_pair.positive_net
