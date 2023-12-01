@@ -39,17 +39,17 @@ if is_linux and cpython:  # pragma: no cover
             load("coreclr", runtime_config=json_file, dotnet_root=os.environ["DOTNET_ROOT"])
             print("DotNet Core correctly loaded.")
             if "mono" not in os.getenv("LD_LIBRARY_PATH", ""):
-                warnings.warn("LD_LIBRARY_PATH needs to be setup to use pyaedt.")
+                warnings.warn("LD_LIBRARY_PATH needs to be setup to use pyedb.")
                 warnings.warn("export ANSYSEM_ROOT232=/path/to/AnsysEM/v232/Linux64")
                 msg = "export LD_LIBRARY_PATH="
                 msg += "$ANSYSEM_ROOT232/common/mono/Linux64/lib64:$LD_LIBRARY_PATH"
-                msg += "If PyAEDT will run on AEDT<2023.2 then $ANSYSEM_ROOT222/Delcross should be added to LD_LIBRARY_PATH"
+                msg += "If PyEDB will run on AEDT<2023.2 then $ANSYSEM_ROOT222/Delcross should be added to LD_LIBRARY_PATH"
                 warnings.warn(msg)
             is_clr = True
         else:
             print("DotNet Core not correctly loaded.")
     except ImportError:
-        msg = "pythonnet or dotnetcore not installed. Pyaedt will work only in client mode."
+        msg = "pythonnet or dotnetcore not installed. Pyedb will work only in client mode."
         warnings.warn(msg)
 else:
     try:
