@@ -35,7 +35,7 @@ if is_linux and cpython:  # pragma: no cover
         from pythonnet import load
 
         if pyedb_path is not None:
-            json_file = os.path.abspath(os.path.join(pyedb_path, "misc", "pyaedt.runtimeconfig.json"))
+            json_file = os.path.abspath(os.path.join(pyedb_path, "misc", "pyedb.runtimeconfig.json"))
             load("coreclr", runtime_config=json_file, dotnet_root=os.environ["DOTNET_ROOT"])
             print("DotNet Core correctly loaded.")
             if "mono" not in os.getenv("LD_LIBRARY_PATH", ""):
