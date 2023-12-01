@@ -939,7 +939,6 @@ class EdbLegacy(Database):
         See Also
         --------
         :class:`legacy.edb_core.edb_data.simulation_configuration.SimulationConfiguration`
-        for more information on configuration options.
 
         """
         if not self._hfss and self.active_db:
