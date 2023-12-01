@@ -25,8 +25,8 @@ and files from the MAPDL service.
 Legacy interfaces
 =================
 
-Working with .NET interface
----------------------------
+Microsoft development framework interface
+-----------------------------------------
 
 PyEDB supports the legacy .NET interface, enabled with the settings option.
 
