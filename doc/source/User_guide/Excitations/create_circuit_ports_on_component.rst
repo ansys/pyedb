@@ -14,7 +14,7 @@ This section describes how to retrieve pins and create circuit ports on componen
     import pyedb.misc.downloads as downloads
 
     temp_folder = generate_unique_folder_name()
-    targetfile = downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+    targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
     edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
 
     edbapp.siwave.create_circuit_port_on_net("U1", "1V0", "U1", "GND", 50, "test")
@@ -23,8 +23,10 @@ This section describes how to retrieve pins and create circuit ports on componen
     # Creating pin groups
     edbapp.siwave.create_pin_group_on_net("U1", "1V0", "PG_V1P0_S0")
     # Creating port on pin group
-    edbapp.siwave.create_circuit_port_on_pin_group("PG_V1P0_S0", "PinGroup_2", impedance=50, name="test_port")
+    edbapp.siwave.create_circuit_port_on_pin_group(
+        "PG_V1P0_S0", "PinGroup_2", impedance=50, name="test_port"
+    )
     # renaming port with property setter
     edbapp.excitations["test_port"].name = "test_rename"
     # retrieving port
-    created_port =(port for port in list(edbapp.excitations) if port == "test_rename")
+    created_port = (port for port in list(edbapp.excitations) if port == "test_rename")

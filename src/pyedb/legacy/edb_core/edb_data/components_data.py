@@ -2,8 +2,8 @@ import logging
 import re
 import warnings
 
-from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.generic.general_methods import is_ironpython
+from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 
 if not is_ironpython:
     try:
@@ -13,9 +13,10 @@ if not is_ironpython:
             "The NumPy module is required to run some functionalities of EDB.\n"
             "Install with \n\npip install numpy\n\nRequires CPython."
         )
-from pyedb.generic.general_methods import get_filename_without_extension
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.generic.general_methods import (
+    get_filename_without_extension,
+    pyedb_function_handler,
+)
 
 
 class EDBComponentDef(object):

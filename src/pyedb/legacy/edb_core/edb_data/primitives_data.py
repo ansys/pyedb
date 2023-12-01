@@ -1,16 +1,18 @@
 import math
 
+from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.legacy.edb_core.dotnet.database import NetDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import BondwireDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import CircleDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import PathDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import PolygonDataDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import PolygonDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import RectangleDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import TextDotNet
+from pyedb.legacy.edb_core.dotnet.primitive import (
+    BondwireDotNet,
+    CircleDotNet,
+    PathDotNet,
+    PolygonDataDotNet,
+    PolygonDotNet,
+    RectangleDotNet,
+    TextDotNet,
+)
 from pyedb.legacy.edb_core.edb_data.connectable import Connectable
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -952,6 +954,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
         leftline, rightline = getParalletLines(center_line, distance)
         for x, y in getLocations(rightline, gap) + getLocations(leftline, gap):
             self._pedb.padstacks.place([x, y], padstack_name)
+
 
 class EdbRectangle(EDBPrimitives, RectangleDotNet):
     def __init__(self, raw_primitive, core_app):

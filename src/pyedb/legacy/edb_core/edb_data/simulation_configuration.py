@@ -2,18 +2,17 @@ from collections import OrderedDict
 import json
 import os
 
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.legacy.edb_core.edb_data.sources import Source
-from pyedb.legacy.edb_core.edb_data.sources import SourceType
+from pyedb.generic.constants import (
+    BasisOrder,
+    CutoutSubdesignType,
+    RadiationBoxType,
+    SolverType,
+    SweepType,
+    validate_enum_class_value,
+)
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 from pyedb.legacy.clr_module import Dictionary
-from pyedb.generic.constants import BasisOrder
-from pyedb.generic.constants import CutoutSubdesignType
-from pyedb.generic.constants import RadiationBoxType
-from pyedb.generic.constants import SolverType
-from pyedb.generic.constants import SweepType
-from pyedb.generic.constants import validate_enum_class_value
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.legacy.edb_core.edb_data.sources import Source, SourceType
 
 
 class SimulationConfigurationBatch(object):
@@ -604,7 +603,6 @@ class SimulationConfigurationBatch(object):
         -------
         bool
             ``True`` frequency sweep is created, ``False`` skip sweep adding. Default value is ``True``.
-
         """
         return self._add_frequency_sweep
 

@@ -2,11 +2,12 @@ from __future__ import absolute_import  # noreorder
 
 import re
 
-from pyedb.legacy.edb_core.edb_data.nets_data import EDBDifferentialPairData
-from pyedb.legacy.edb_core.edb_data.nets_data import EDBExtendedNetData
-from pyedb.legacy.edb_core.edb_data.nets_data import EDBNetClassData
 from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.legacy.edb_core.edb_data.nets_data import (
+    EDBDifferentialPairData,
+    EDBExtendedNetData,
+    EDBNetClassData,
+)
 
 
 class EdbCommon:

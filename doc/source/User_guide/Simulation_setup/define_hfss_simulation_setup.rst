@@ -7,8 +7,6 @@ This section shows how to create HFSS simulation setup.
 
 .. code:: python
 
-
-
     from pyedb.legacy.edb import EdbLegacy
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
@@ -16,9 +14,9 @@ This section shows how to create HFSS simulation setup.
     # Ansys release version
     ansys_version = "2023.2"
 
-    #download and copy the layout file from examples
+    # download and copy the layout file from examples
     temp_folder = generate_unique_folder_name()
-    targetfile = downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+    targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # loading EDB
     edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
@@ -92,10 +90,9 @@ This section shows how to create HFSS simulation setup.
     #  enable defeaturing
     setup1.defeature_settings.use_defeature = False
 
-    # enable absloute length defeaturing
+    # enable absolute length defeaturing
     setup1.defeature_settings.use_defeature_abs_length = True
 
-    via settings
     via_settings = setup1.via_settings
     via_settings.via_density = 1
     via_settings.via_material = "pec"
@@ -133,21 +130,23 @@ This section shows how to create HFSS simulation setup.
 
     # adding frequency sweep
     setup1.add_frequency_sweep(
-            "sweep1",
-            frequency_sweep=[
-                ["linear count", "0", "1kHz", 1],
-                ["log scale", "1kHz", "0.1GHz", 10],
-                ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-            ],
-        )
-        sweep1 = setup1.frequency_sweeps["sweep1"]
-        sweep1.adaptive_sampling = True
+        "sweep1",
+        frequency_sweep=[
+            ["linear count", "0", "1kHz", 1],
+            ["log scale", "1kHz", "0.1GHz", 10],
+            ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+        ],
+    )
+    sweep1 = setup1.frequency_sweeps["sweep1"]
+    sweep1.adaptive_sampling = True
 
     # changing setup name
     edbapp.setups["setup1"].name = "setup1a"
 
     # adding length based mesh operation
-    mop = edbapp.setups["setup1a"].add_length_mesh_operation({"GND": ["1_Top", "16_Bottom"]}, "m1")
+    mop = edbapp.setups["setup1a"].add_length_mesh_operation(
+        {"GND": ["1_Top", "16_Bottom"]}, "m1"
+    )
     mop.name = "m2"
     mop.max_elements = 2000
     mop.restrict_max_elements = False
@@ -156,7 +155,9 @@ This section shows how to create HFSS simulation setup.
 
 
     # adding skin depth mesh operation
-    mop = edbapp.setups["setup1a"].add_skin_depth_mesh_operation({"GND": ["1_Top", "16_Bottom"]})
+    mop = edbapp.setups["setup1a"].add_skin_depth_mesh_operation(
+        {"GND": ["1_Top", "16_Bottom"]}
+    )
     mop.skin_depth = "5um"
     mop.surface_triangle_length = "2mm"
     mop.number_of_layer_elements = "3"

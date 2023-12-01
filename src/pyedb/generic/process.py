@@ -1,8 +1,6 @@
 import os.path
 
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import is_linux
-from pyedb.generic.general_methods import env_path
+from pyedb.generic.general_methods import env_path, is_ironpython, is_linux
 
 if is_linux and is_ironpython:
     import subprocessdotnet as subprocess

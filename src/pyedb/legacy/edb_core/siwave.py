@@ -5,21 +5,25 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 import os
 import time
 
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import SourceType
-from pyedb.legacy.edb_core.edb_data.sources import CircuitPort
-from pyedb.legacy.edb_core.edb_data.sources import CurrentSource
-from pyedb.legacy.edb_core.edb_data.sources import DCTerminal
-from pyedb.legacy.edb_core.edb_data.sources import PinGroup
-from pyedb.legacy.edb_core.edb_data.sources import ResistorSource
-from pyedb.legacy.edb_core.edb_data.sources import VoltageSource
+from pyedb.generic.constants import SolverType, SweepType
+from pyedb.generic.general_methods import (
+    _retry_ntimes,
+    generate_unique_name,
+    pyedb_function_handler,
+)
+from pyedb.legacy.edb_core.edb_data.simulation_configuration import (
+    SimulationConfiguration,
+    SourceType,
+)
+from pyedb.legacy.edb_core.edb_data.sources import (
+    CircuitPort,
+    CurrentSource,
+    DCTerminal,
+    PinGroup,
+    ResistorSource,
+    VoltageSource,
+)
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.constants import SolverType
-from pyedb.generic.constants import SweepType
-from pyedb.generic.general_methods import _retry_ntimes
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
-
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 

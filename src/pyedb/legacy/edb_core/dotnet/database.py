@@ -5,13 +5,15 @@ import sys
 
 from pyedb import __version__
 from pyedb.edb_logger import pyedb_logger
+from pyedb.generic.general_methods import (
+    env_path,
+    env_path_student,
+    env_value,
+    is_ironpython,
+    is_linux,
+    settings,
+)
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import env_path
-from pyedb.generic.general_methods import env_path_student
-from pyedb.generic.general_methods import env_value
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import is_linux
-from pyedb.generic.general_methods import settings
 from pyedb.misc.misc import list_installed_ansysem
 
 
@@ -693,8 +695,7 @@ class EdbDotNet(object):
         self.edbversion = edbversion
         self.student_version = student_version
         """Initialize DLLs."""
-        from pyedb.legacy.clr_module import _clr
-        from pyedb.legacy.clr_module import edb_initialized
+        from pyedb.legacy.clr_module import _clr, edb_initialized
 
         if settings.enable_screen_logs:
             self._logger.enable_stdout_log()

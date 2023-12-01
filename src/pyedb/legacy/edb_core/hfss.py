@@ -3,19 +3,22 @@ This module contains the ``EdbHfss`` class.
 """
 import math
 
+from pyedb.generic.constants import RadiationBoxType, SweepType
+from pyedb.generic.general_methods import (
+    generate_unique_name,
+    is_ironpython,
+    pyedb_function_handler,
+)
 from pyedb.legacy.edb_core.edb_data.hfss_extent_info import HfssExtentInfo
-from pyedb.legacy.edb_core.edb_data.ports import BundleWavePort
-from pyedb.legacy.edb_core.edb_data.ports import WavePort
+from pyedb.legacy.edb_core.edb_data.ports import BundleWavePort, WavePort
 from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitives
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.legacy.edb_core.general import convert_pytuple_to_nettuple
-from pyedb.generic.constants import RadiationBoxType
-from pyedb.generic.constants import SweepType
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.legacy.edb_core.edb_data.simulation_configuration import (
+    SimulationConfiguration,
+)
+from pyedb.legacy.edb_core.general import (
+    convert_py_list_to_net_list,
+    convert_pytuple_to_nettuple,
+)
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 

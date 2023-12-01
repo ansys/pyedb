@@ -14,7 +14,7 @@ This section describes how to export EDB to HFSS:
     import pyedb.misc.downloads as downloads
 
     temp_folder = generate_unique_folder_name()
-    targetfile = downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+    targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
     edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
 
     # define export options

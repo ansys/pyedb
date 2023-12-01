@@ -11,6 +11,7 @@ is_clr = False
 
 try:
     import pyedb
+
     pyedb_path = os.path.dirname(os.path.abspath(pyedb.__file__))
     sys.path.append(os.path.join(pyedb_path, "dlls", "PDFReport"))
 except ImportError:
@@ -43,7 +44,9 @@ if is_linux and cpython:  # pragma: no cover
                 warnings.warn("export ANSYSEM_ROOT232=/path/to/AnsysEM/v232/Linux64")
                 msg = "export LD_LIBRARY_PATH="
                 msg += "$ANSYSEM_ROOT232/common/mono/Linux64/lib64:$LD_LIBRARY_PATH"
-                msg += "If PyEDB will run on AEDT<2023.2 then $ANSYSEM_ROOT222/Delcross should be added to LD_LIBRARY_PATH"
+                msg += (
+                    "If PyEDB will run on AEDT<2023.2 then $ANSYSEM_ROOT222/Delcross should be added to LD_LIBRARY_PATH"
+                )
                 warnings.warn(msg)
             is_clr = True
         else:
@@ -68,13 +71,8 @@ try:  # work around a number formatting bug in the EDB API for non-English local
     from System.Globalization import CultureInfo as _CultureInfo
 
     _CultureInfo.DefaultThreadCurrentCulture = _CultureInfo.InvariantCulture
-    from System import Array
-    from System import Convert
-    from System import Double
-    from System import String
-    from System import Tuple
-    from System.Collections.Generic import Dictionary
-    from System.Collections.Generic import List
+    from System import Array, Convert, Double, String, Tuple
+    from System.Collections.Generic import Dictionary, List
 
     edb_initialized = True
 

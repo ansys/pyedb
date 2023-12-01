@@ -5,13 +5,14 @@ import os
 import time
 import warnings
 
+from pyedb.generic.constants import CSS4_COLORS
+from pyedb.generic.general_methods import (
+    generate_unique_name,
+    is_ironpython,
+    pyedb_function_handler,
+)
 from pyedb.legacy.edb_core.edb_data.nets_data import EDBNetsData
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.constants import CSS4_COLORS
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import pyedb_function_handler
-
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -106,7 +107,7 @@ class EdbNets(object):
 
         temp = {}
         for net in self._layout.nets:
-             temp[net.name] = EDBNetsData(net.api_object, self._pedb)
+            temp[net.name] = EDBNetsData(net.api_object, self._pedb)
         return temp
 
     @property

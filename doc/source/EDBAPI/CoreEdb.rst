@@ -20,6 +20,7 @@ It can be opened and edited using the ``Edb`` class.
 .. code:: python
 
     from pyedb.legacy.edb import EdbLegacy
+
     # this call returns the Edb class initialized on 2023 R1
     edb = EdbLegacy(myedb, edbversion="2023.1")
 
@@ -57,7 +58,8 @@ to AEDB files.
 
 .. code:: python
 
-    from from pyedb.legacy.edb_core.edb import Edb
+    from pyedb.legacy.edb_core.edb import Edb
+
     edb = Edb(myedb, edbversion="2023.1")
 
     # this call returns the EdbHfss Class

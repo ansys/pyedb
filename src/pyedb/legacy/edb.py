@@ -446,7 +446,7 @@ class EdbLegacy(Database):
 
     @property
     def probes(self):
-        """Get all layout sources."""
+        """Get all layout probes."""
         temp = {}
         for name, val in self.terminals.items():
             if val.boundary_type == "kVoltageProbe":
@@ -3867,23 +3867,27 @@ class EdbLegacy(Database):
     @pyedb_function_handler
     def create_port(self, terminal, ref_terminal=None, is_circuit_port=False):
         """Create a port.
+
         Parameters
         ----------
         terminal : class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
-                   class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-                   class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
-                   class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+            class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+            class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
+            class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
             Positive terminal of the port.
         ref_terminal : class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
-                   class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-                   class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
-                   class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
-                   optional
+            class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+            class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
+            class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+            optional
             Negative terminal of the port.
         is_circuit_port : bool, optional
             Whether it is a circuit port. The default is ``False``.
+
         Returns
         -------
+        [:class:`pyedb.legacy.edb_core.edb_data.ports.GapPort`,
+            :class:`pyedb.legacy.edb_core.edb_data.ports.WavePort`,]
         """
 
         terminal.boundary_type = "PortBoundary"
@@ -3898,20 +3902,23 @@ class EdbLegacy(Database):
     @pyedb_function_handler
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
+
         Parameters
         ----------
         terminal : :class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+            :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+            :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
+            :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
             Positive terminal of the port.
         ref_terminal : :class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+            :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+            :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
+            :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
             Negative terminal of the probe.
+
         Returns
         -------
+        pyedb.legacy.edb_core.edb_data.terminals.Terminal
         """
         term = Terminal(self, terminal._edb_object)
         term.boundary_type = "kVoltageProbe"
@@ -3953,18 +3960,20 @@ class EdbLegacy(Database):
     @pyedb_function_handler
     def create_current_source(self, terminal, ref_terminal):
         """Create a current source.
+
         Parameters
         ----------
         terminal : :class:`legacy.edb_core.edb_data.terminals.EdgeTerminal`,
-                   :class:`legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-                   :class:`legacy.edb_core.edb_data.terminals.PointTerminal`,
-                   :class:`legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+            :class:`legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+            :class:`legacy.edb_core.edb_data.terminals.PointTerminal`,
+            :class:`legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
             Positive terminal of the port.
         ref_terminal : class:`legacy.edb_core.edb_data.terminals.EdgeTerminal`,
-                   :class:`legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-                   :class:`legacy.edb_core.edb_data.terminals.PointTerminal`,
-                   :class:`legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+            :class:`legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+            :class:`legacy.edb_core.edb_data.terminals.PointTerminal`,
+            :class:`legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
             Negative terminal of the source.
+
         Returns
         -------
         :class:`legacy.edb_core.edb_data.ports.ExcitationSources`

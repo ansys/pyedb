@@ -1,5 +1,4 @@
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 
 
 class BaseSimulationSetup(object):
@@ -186,23 +185,26 @@ class BaseSimulationSetup(object):
     @pyedb_function_handler()
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
+
         Parameters
         ----------
         name : str, optional
             Name of the frequency sweep. The default is ``None``.
         frequency_sweep : list, optional
             List of frequency points. The default is ``None``.
+
         Returns
         -------
         :class:`pyedb.legacy.edb_core.edb_data.simulation_setup_data.EdbFrequencySweep`
+
         Examples
         --------
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
         >>> setup1.add_frequency_sweep(frequency_sweep=[
-        ...                           ["linear count", "0", "1kHz", 1],
-        ...                           ["log scale", "1kHz", "0.1GHz", 10],
-        ...                           ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-        ...                           ])
+        ...     ["linear count", "0", "1kHz", 1],
+        ...     ["log scale", "1kHz", "0.1GHz", 10],
+        ...     ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+        ...     ])
         """
         if name in self.frequency_sweeps:
             return False
@@ -612,7 +614,7 @@ class EdbFrequencySweep(object):
         ----------
         start : str, float, optional
             Start frequency. The default is ``"1kHz"``.
-        stop : str, float, optinal
+        stop : str, float, optional
             Stop frequency. The default is ``"0.1GHz"``.
         count : int, optional
             Step frequency. The default is ``10``.

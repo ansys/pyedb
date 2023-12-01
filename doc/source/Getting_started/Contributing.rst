@@ -9,7 +9,7 @@ in the *PyAnsys Developer's Guide*. Ensure that you are thoroughly familiar
 with this guide, paying particular attention to `Guidelines and Best Practices
 <https://dev.docs.pyansys.com/how-to/index.html>`_, before attempting
 to contribute to PyEDB.
- 
+
 The following contribution information is specific to PyEDB.
 
 Clone the repository
@@ -110,7 +110,7 @@ For example:
    def my_method(self, var):
        pass
 
-Every method can return a value of ``True`` when successful or 
+Every method can return a value of ``True`` when successful or
 ``False`` when failed. When a failure occurs, the error
 handler returns information about the error in both the console and
 log file.

@@ -1,7 +1,7 @@
 Installation
 ============
 PyEDB consolidates and extends all existing capital around scripting for AEDB,
-allowing re-use of existing code, sharing of best practices, and collaboration.
+allowing reuse of existing code, sharing of best practices, and collaboration.
 
 This PyAnsys library has been tested on HFSS, Icepak, SIWave.
 
@@ -29,9 +29,9 @@ Install on CPython from PyPI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 You can install PyEDB on CPython 3.7 through 3.10 from PyPI:
 
-.. code:: python
+.. code:: shell
 
-    pip install pyansys-edb
+    pip install pyedb
 
 
 Linux support

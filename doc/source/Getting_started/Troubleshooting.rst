@@ -18,7 +18,7 @@ Here is the path to the Python 3.7 interpreter for the 2023 R1 installation:
 
 .. code:: python
 
-   path\to\AnsysEM\v231\commonfiles\CPython\3_7\winx64\Release\python"
+   "path\to\AnsysEM\v231\commonfiles\CPython\3_7\winx64\Release\python"
 
 
 Error installing PyEDB using pip
@@ -44,9 +44,9 @@ The wheelhouse for PyAEDT can be found `here <https://github.com/ansys/pyaedt/re
 After downloading the wheelhouse for your distribution and Python release, unzip the file to a folder and
 run the Python command:
 
-.. code:: python
+.. code:: shell
 
-    >>> pip install --no-cache-dir --no-index --find-links=/path/to/pyansys-edb/wheelhouse pyansys-edb
+   pip install --no-cache-dir --no-index --find-links=/path/to/pyansys-edb/wheelhouse pyansys-edb
 
 
 Run PyEDB with gRPC

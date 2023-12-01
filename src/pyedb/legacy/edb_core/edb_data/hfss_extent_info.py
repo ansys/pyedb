@@ -1,8 +1,7 @@
+from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.legacy.edb_core.edb_data.primitives_data import cast
 from pyedb.legacy.edb_core.general import convert_pytuple_to_nettuple
-from pyedb.generic.general_methods import pyedb_function_handler
-
 
 
 class HfssExtentInfo:

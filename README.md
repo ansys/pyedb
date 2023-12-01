@@ -116,8 +116,8 @@ start using EDB faster and easier.
 
 ## Example workflow
 
- 1. 
- 2. 
+ 1.
+ 2.
 
 ## Connect to PyEDB from Python IDE
 
@@ -129,10 +129,9 @@ Usage examples follow.
 ## Explicit AEDT declaration and error management
 
 ``` python
-    # Launch PyEDB 2024 R1 
+# Launch PyEDB 2024 R1
 
-    from pyedb import EDB
-    
+from pyedb import EDB
 ```
 
 ## License

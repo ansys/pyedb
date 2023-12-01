@@ -7,21 +7,17 @@ import math
 import re
 import warnings
 
-
-from pyedb.legacy.edb_core.edb_data.components_data import EDBComponent
-from pyedb.legacy.edb_core.edb_data.components_data import EDBComponentDef
+from pyedb.generic.general_methods import (
+    _retry_ntimes,
+    get_filename_without_extension,
+    pyedb_function_handler,
+)
+from pyedb.legacy.clr_module import String
+from pyedb.legacy.edb_core.edb_data.components_data import EDBComponent, EDBComponentDef
 from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.legacy.edb_core.edb_data.sources import Source
-from pyedb.legacy.edb_core.edb_data.sources import SourceType
+from pyedb.legacy.edb_core.edb_data.sources import Source, SourceType
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 from pyedb.legacy.edb_core.padstack import EdbPadstacks
-from pyedb.legacy.clr_module import String
-from pyedb.legacy.clr_module import _clr
-from pyedb.generic.general_methods import get_filename_without_extension
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.generic.general_methods import _retry_ntimes
-
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 

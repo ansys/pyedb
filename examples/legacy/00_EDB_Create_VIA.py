@@ -18,11 +18,14 @@ This example shows how you can use EDB to create a layout.
 # Import the EDB layout object and initialize it on version 2023 R2.
 ######################################################################
 
-import time
 import os
+import time
+
 import pyedb
-from pyedb.generic.general_methods import generate_unique_folder_name
-from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.general_methods import (
+    generate_unique_folder_name,
+    generate_unique_name,
+)
 
 start = time.time()
 

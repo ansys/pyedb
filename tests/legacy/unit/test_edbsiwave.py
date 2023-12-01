@@ -1,9 +1,12 @@
 import os
-import pytest
+
 from mock import Mock
+import pytest
+
 from pyedb.legacy.edb_core.siwave import EdbSiwave
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
+
 
 class TestClass:
     @pytest.fixture(autouse=True)

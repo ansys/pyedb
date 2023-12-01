@@ -4,15 +4,16 @@ import re
 import sys
 
 from pyedb.edb_logger import pyedb_logger
-from pyedb.generic.general_methods import ET
-from pyedb.generic.general_methods import env_path
-from pyedb.generic.general_methods import env_value
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import is_linux
-from pyedb.generic.general_methods import pyedb_function_handler
-
-from pyedb.misc.misc import list_installed_ansysem
+from pyedb.generic.general_methods import (
+    ET,
+    env_path,
+    env_value,
+    is_ironpython,
+    is_linux,
+    pyedb_function_handler,
+)
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
+from pyedb.misc.misc import list_installed_ansysem
 
 if is_linux and is_ironpython:
     import subprocessdotnet as subprocess

@@ -24,14 +24,17 @@ This example shows how to
 ######################################################################
 
 import os
+
 import numpy as np
+from pyaedt import Hfss3dLayout
+
 # import pyaedt
 import pyedb
+from pyedb.generic.general_methods import (
+    generate_unique_folder_name,
+    generate_unique_name,
+)
 from pyedb.legacy.downloads import download_file
-from pyaedt import Hfss3dLayout
-from pyedb.generic.general_methods import generate_unique_folder_name
-from pyedb.generic.general_methods import generate_unique_name
-
 
 ansys_version = "2023.2"
 
@@ -180,11 +183,19 @@ h3d = Hfss3dLayout(aedb_path, specified_version=ansys_version, new_desktop_sessi
 # Place 3D component
 # ~~~~~~~~~~~~~~~~~~
 
-component3d = download_file("component_3d", "SMA_RF_SURFACE_MOUNT.a3dcomp",)
+component3d = download_file(
+    "component_3d",
+    "SMA_RF_SURFACE_MOUNT.a3dcomp",
+)
 
 comp = h3d.modeler.place_3d_component(
-    component_path=component3d, number_of_terminals=1, placement_layer="TOP", component_name="my_connector",
-    pos_x="5mm", pos_y=0.000)
+    component_path=component3d,
+    number_of_terminals=1,
+    placement_layer="TOP",
+    component_name="my_connector",
+    pos_x="5mm",
+    pos_y=0.000,
+)
 
 ##########
 # Analysis

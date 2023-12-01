@@ -3,17 +3,16 @@ import math
 import re
 import warnings
 
-from pyedb.generic.general_methods import is_ironpython
+from pyedb.generic.general_methods import (
+    generate_unique_name,
+    is_ironpython,
+    pyedb_function_handler,
+)
+from pyedb.legacy.clr_module import String, _clr
 from pyedb.legacy.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitivesMain
-from pyedb.legacy.edb_core.general import PadGeometryTpe
-from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.legacy.clr_module import String
-from pyedb.legacy.clr_module import _clr
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.legacy.edb_core.general import PadGeometryTpe, convert_py_list_to_net_list
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -1015,7 +1014,9 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         if create_new_terminal:
             term = self._create_terminal(name)
         else:
-            from pyedb.legacy.edb_core.edb_data.terminals import PadstackInstanceTerminal
+            from pyedb.legacy.edb_core.edb_data.terminals import (
+                PadstackInstanceTerminal,
+            )
 
             term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         if not term.is_null:
@@ -1060,6 +1061,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             ref_terminal = None
 
         return self._pedb.create_port(terminal, ref_terminal, is_circuit_port)
+
     @property
     def _em_properties(self):
         """Get EM properties."""

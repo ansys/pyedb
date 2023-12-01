@@ -6,11 +6,9 @@ import os
 import re
 import warnings
 
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
+from pyedb.generic.general_methods import is_ironpython, pyedb_function_handler
 from pyedb.legacy.clr_module import _clr
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 
 logger = logging.getLogger(__name__)
 
@@ -358,6 +356,7 @@ class Material(object):
                 # To unset DS model if already assigned to the material in database
                 if self._edb_material_def.GetDielectricMaterialModel():
                     self._edb_material_def.SetDielectricMaterialModel(self._edb_value(None))
+
 
 # TODO: Cleanup
 class Materials(object):

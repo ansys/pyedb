@@ -5,9 +5,9 @@ from pyaedt.generic.constants import SourceType
 # Ansys release version
 desktop_version = "2023.2"
 
-#download and copy the layout file from examples
+# download and copy the layout file from examples
 temp_folder = pyaedt.generate_unique_folder_name()
-targetfile = pyaedt.downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+targetfile = pyaedt.downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
 # loading EDB
 edbapp = Edb(edbpath=targetfile, edbversion=desktop_version)
@@ -18,16 +18,19 @@ reference_nets = ["GND"]
 # processing cutout
 edbapp.cutout(signal_list=signal_nets, reference_list=reference_nets, expansion_size=0.01)
 
-if not edbapp.components.create_port_on_component(component="U1", net_list=signal_nets,
-                                                  reference_net="GND",
-                                                  port_type=SourceType.CircPort,
-                                                  ):
+if not edbapp.components.create_port_on_component(
+    component="U1",
+    net_list=signal_nets,
+    reference_net="GND",
+    port_type=SourceType.CircPort,
+):
     edbapp.logger.error("Failed to create ports on component U1")
-if not edbapp.components.create_port_on_component(component="U15",
-                                                  net_list=signal_nets,
-                                                  reference_net="GND",
-                                                  port_type=SourceType.CircPort,
-                                                  ):
+if not edbapp.components.create_port_on_component(
+    component="U15",
+    net_list=signal_nets,
+    reference_net="GND",
+    port_type=SourceType.CircPort,
+):
     edbapp.logger.error("Failed to create port on component U15")
 
 

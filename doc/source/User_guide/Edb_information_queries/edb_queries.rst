@@ -16,7 +16,7 @@ PyEDB allows layout information queries, this section describe some basic exampl
     import pyedb.misc.downloads as downloads
 
     temp_folder = generate_unique_folder_name()
-    targetfile = downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+    targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
     edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
 
 - Getting layout statistics
@@ -53,4 +53,6 @@ PyEDB allows layout information queries, this section describe some basic exampl
    # Getting all components
    nets = edbapp.components.instances
    # Getting pins from components connected to given net
-   u9_gnd_pins = [pin for pin in list(edbapp.components["U9"].pins.values()) if pin.net_name == "GND"]
+   u9_gnd_pins = [
+       pin for pin in list(edbapp.components["U9"].pins.values()) if pin.net_name == "GND"
+   ]

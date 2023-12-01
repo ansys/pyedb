@@ -1,6 +1,5 @@
-from pyedb.generic.general_methods import pyedb_function_handler, generate_unique_name
-from pyedb.generic.constants import NodeType
-from pyedb.generic.constants import SourceType
+from pyedb.generic.constants import NodeType, SourceType
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 
 
 class Node(object):

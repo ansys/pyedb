@@ -1,5 +1,5 @@
-from pyedb.ipc2581.content.content import Content
 from pyedb.generic.general_methods import ET
+from pyedb.ipc2581.content.content import Content
 
 
 class FillDesc(Content):

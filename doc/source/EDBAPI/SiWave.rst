@@ -22,6 +22,7 @@ accessed from PyEDB in Windows only. All setups can be implemented through EDB A
 .. code:: python
 
     from pyedb.legacy.edb_core.siwave import EdbSiwave
+
     # this call returns the Edb class initialized on 2023 R1
     siwave = EdbSiwave(specified_version="2023.1")
     siwave.open_project("pyproject.siw")

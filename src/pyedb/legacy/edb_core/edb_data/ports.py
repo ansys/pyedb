@@ -1,7 +1,9 @@
-from pyedb.legacy.edb_core.edb_data.terminals import BundleTerminal
-from pyedb.legacy.edb_core.edb_data.terminals import EdgeTerminal
-from pyedb.legacy.edb_core.edb_data.terminals import PadstackInstanceTerminal
-from pyedb.legacy.edb_core.edb_data.terminals import Terminal
+from pyedb.legacy.edb_core.edb_data.terminals import (
+    BundleTerminal,
+    EdgeTerminal,
+    PadstackInstanceTerminal,
+    Terminal,
+)
 
 
 class GapPort(EdgeTerminal):

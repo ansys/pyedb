@@ -1,6 +1,6 @@
+from pyedb.generic.general_methods import ET
 from pyedb.ipc2581.bom.characteristics import Characteristics
 from pyedb.ipc2581.bom.refdes import RefDes
-from pyedb.generic.general_methods import ET
 
 
 class BomItem(object):

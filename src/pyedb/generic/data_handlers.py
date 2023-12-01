@@ -7,8 +7,7 @@ import random
 import re
 import string
 
-from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.generic.general_methods import settings
+from pyedb.generic.general_methods import pyedb_function_handler, settings
 
 
 @pyedb_function_handler()
@@ -33,7 +32,7 @@ def _tuple2dict(t, d):
     elif isinstance(v, list) and len(t) == 2 and not v:
         d[k] = None
     elif (
-            isinstance(v, list) and isinstance(v[0], tuple) and len(t) == 2
+        isinstance(v, list) and isinstance(v[0], tuple) and len(t) == 2
     ):  # len check is to avoid expanding the list with a 3rd element=None
         if k in d:
             if not isinstance(d[k], list):
@@ -67,7 +66,7 @@ def _arg2dict(arg, dict_out):
         i = 1
         while i < len(arg):
             if arg[i][0][:5] == "NAME:" and (
-                    isinstance(arg[i], (list, tuple)) or str(type(arg[i])) == r"<type 'List'>"
+                isinstance(arg[i], (list, tuple)) or str(type(arg[i])) == r"<type 'List'>"
             ):
                 _arg2dict(list(arg[i]), dict_in)
                 i += 1

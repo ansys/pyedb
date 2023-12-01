@@ -4,17 +4,17 @@ This module contains these classes: `EdbLayout` and `Shape`.
 import math
 import warnings
 
-from pyedb.legacy.edb_core.dotnet.primitive import BondwireDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import CircleDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import PathDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import PolygonDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import RectangleDotNet
-from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitives
-from pyedb.legacy.edb_core.edb_data.primitives_data import cast
+from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.legacy.edb_core.dotnet.primitive import (
+    BondwireDotNet,
+    CircleDotNet,
+    PathDotNet,
+    PolygonDotNet,
+    RectangleDotNet,
+)
+from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitives, cast
 from pyedb.legacy.edb_core.edb_data.utilities import EDBStatistics
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import pyedb_function_handler
-
 
 
 class EdbLayout(object):

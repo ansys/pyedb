@@ -1,4 +1,4 @@
-\.NET
+.NET
 _static
 AC
 AEDB
