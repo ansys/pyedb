@@ -53,12 +53,10 @@ jobs:
           echo $'Examples\n========' > doc/source/examples/index.rst
           make -C doc html SPHINXOPTS="-j auto -w build_errors.txt -N"
 
-      # FIXME: uncomment this when the documentation built is working
-      # and ensure that there are no more sphinx warnings.
-      # # Verify that sphinx generates no warnings
-      # - name: Check for warnings
-      #   run: |
-      #     python doc/print_errors.py
+      # Verify that sphinx generates no warnings
+      - name: Check for warnings
+        run: |
+          python doc/print_errors.py
 
       - name: Upload Documentation
         uses: actions/upload-artifact@v3
