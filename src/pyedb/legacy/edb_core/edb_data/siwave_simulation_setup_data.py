@@ -45,6 +45,7 @@ class SettingsBase(object):
     @pyedb_function_handler
     def get_configurations(self):
         """Get all attributes.
+
         Returns
         -------
         dict
@@ -520,6 +521,7 @@ class DCSettings(SettingsBase):
     @property
     def compute_inductance(self):
         """Whether to compute Inductance.
+
         Returns
         -------
         bool
@@ -538,6 +540,7 @@ class DCSettings(SettingsBase):
     @property
     def contact_radius(self):
         """Circuit element contact radius.
+
         Returns
         -------
         str
@@ -572,6 +575,7 @@ class DCSettings(SettingsBase):
     def use_dc_custom_settings(self):
         """Whether to use DC custom settings.
         This setting is automatically enabled by other properties when needed.
+
         Returns
         -------
         bool
@@ -589,6 +593,7 @@ class DCSettings(SettingsBase):
     @property
     def plot_jv(self):
         """Plot current and voltage distributions.
+
         Returns
         -------
         bool
@@ -1010,10 +1015,11 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
     @pyedb_function_handler
     def set_si_slider(self, value):
         """Set SIwave SI simulation accuracy level.
+
         Options are:
-        - ``0``: Optimal speed
-        - ``1``:  Balanced
-        - ``2``: Optimal accuracy```
+        - ``0``: Optimal speed;
+        - ``1``:  Balanced;
+        - ``2``: Optimal accuracy```.
         """
         self.use_si_settings = True
         self.use_custom_settings = False

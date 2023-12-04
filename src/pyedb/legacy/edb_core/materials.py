@@ -854,10 +854,12 @@ class Materials(object):
     @pyedb_function_handler()
     def read_materials(amat_file):
         """Read materials from an AMAT file.
+
         Parameters
         ----------
         amat_file : str
             Full path to the AMAT file to read.
+
         Returns
         -------
         dict

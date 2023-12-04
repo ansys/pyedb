@@ -64,7 +64,7 @@ Desktop (AEDT) installed.
   :alt: AEDT Applications
   :target: https://www.ansys.com/products/electronics
 
-For more information, see `Ansys Electronics <https://https://www.ansys.com/products/electronics>`_
+For more information, see `Ansys Electronics <https://www.ansys.com/products/electronics>`_
 on the Ansys website.
 
 

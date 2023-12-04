@@ -970,6 +970,7 @@ class VariableManager(object):
         circuit_parameter : bool, optional
             Whether to define a parameter in a circuit design or a local parameter.
              The default is ``True``, in which case a circuit variable is created as a parameter default.
+
         Returns
         -------
         bool

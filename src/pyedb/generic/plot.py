@@ -1240,6 +1240,7 @@ class ModelPlotter(CommonPlotter):
             Delauny tolerance value used for interpolating points.
         header_lines : int
             Number of lines to of the file containing header info that has to be removed.
+
         Returns
         -------
         bool

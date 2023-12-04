@@ -7,8 +7,6 @@ This section describes how to retrieve the layout size by getting the bounding b
 
 .. code:: python
 
-
-
     from pyedb.legacy.edb import EdbLegacy
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads

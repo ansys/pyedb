@@ -782,6 +782,7 @@ class EdbPadstacks(object):
             rotation of antipad. The default is ``"0.0"``.
         has_hole : bool, optional
             Whether this padstack has a hole.
+
         Returns
         -------
         str
@@ -996,6 +997,7 @@ class EdbPadstacks(object):
             Name of the padstack to be duplicated.
         new_padstack_name : str, optional
             Name of the new padstack.
+
         Returns
         -------
         str
@@ -1014,6 +1016,7 @@ class EdbPadstacks(object):
             Name of the padstack to be duplicated.
         new_padstack_name : str, optional
             Name of the new padstack.
+
         Returns
         -------
         str
@@ -1315,6 +1318,7 @@ class EdbPadstacks(object):
         ----------
         net_name : str
             The net name to be used for filtering padstack instances.
+
         Returns
         -------
         list

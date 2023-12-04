@@ -289,11 +289,13 @@ class PinGroup(object):
     @pyedb_function_handler()
     def _create_terminal(self, name=None):
         """Create a terminal on the pin group.
+
         Parameters
         ----------
         name : str, optional
             Name of the terminal. The default is ``None``, in which case a name is
             automatically assigned.
+
         Returns
         -------
         :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`

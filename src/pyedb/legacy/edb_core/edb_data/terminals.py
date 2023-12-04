@@ -490,6 +490,7 @@ class PadstackInstanceTerminal(Terminal):
             default name is assigned.
         is_ref : bool, optional
             Whether it is a reference terminal. The default is ``False``.
+
         Returns
         -------
         Edb.Cell.Terminal.EdgeTerminal
@@ -527,6 +528,7 @@ class PointTerminal(Terminal):
     @pyedb_function_handler
     def create(self, name, net, location, layer, is_ref=False):
         """Create a point terminal.
+
         Parameters
         ----------
         name : str
@@ -539,6 +541,7 @@ class PointTerminal(Terminal):
             Name of the layer.
         is_ref : bool, optional
             Whether it is a reference terminal.
+
         Returns
         -------
         :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`
@@ -590,6 +593,7 @@ class PinGroupTerminal(Terminal):
     @pyedb_function_handler
     def create(self, name, net_name, pin_group_name, is_ref=False):
         """Create a pin group terminal.
+
         Parameters
         ----------
         name : str
@@ -600,6 +604,7 @@ class PinGroupTerminal(Terminal):
             Name of the pin group.
         is_ref : bool, optional
             Whether it is a reference terminal. The default is ``False``.
+
         Returns
         -------
         :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`

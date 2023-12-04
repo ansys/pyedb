@@ -84,6 +84,7 @@ class PolygonDataDotNet:  # pragma: no cover
 
     def get_points(self):
         """Get all points in polygon.
+
         Returns
         -------
         list[list[edb_value]]
@@ -93,6 +94,7 @@ class PolygonDataDotNet:  # pragma: no cover
 
     def add_point(self, x, y, incremental=False):
         """Add a point at the end of the point list of the polygon.
+
         Parameters
         ----------
         x: str, int, float
@@ -102,6 +104,7 @@ class PolygonDataDotNet:  # pragma: no cover
         incremental: bool
             Whether to add the point incrementally. The default value is ``False``. When
             ``True``, the coordinates of the added point are incremental to the last point.
+
         Returns
         -------
         bool

@@ -999,13 +999,15 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         self._pdef = None
 
     def get_terminal(self, name=None, create_new_terminal=False):
-        """Return PadstackInstanceTerminal object.
+        """Get PadstackInstanceTerminal object.
+
         Parameters
         ----------
         name : str, optional
             Name of the terminal. Only applicable when create_new_terminal is True.
         create_new_terminal : bool, optional
             Whether to create a new terminal.
+
         Returns
         -------
         :class:`pyedb.legacy.edb_core.edb_data.terminals`
@@ -1454,7 +1456,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         Returns
         -------
         list
-            List of ``[x, y]``` coordinates for the padstack instance position.
+            List of ``[x, y]`` coordinates for the padstack instance position.
         """
         self._position = []
         out = self._edb_padstackinstance.GetPositionAndRotationValue()

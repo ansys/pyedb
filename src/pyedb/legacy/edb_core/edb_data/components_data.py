@@ -114,6 +114,7 @@ class EDBComponentDef(object):
             File path of the S-parameter model.
         name : str, optional
             Name of the S-parameter model.
+
         Returns
         -------
 
@@ -132,6 +133,7 @@ class EDBComponentDef(object):
             File path of the Spice model.
         name : str, optional
             Name of the Spice model.
+
         Returns
         -------
 
@@ -963,6 +965,7 @@ class EDBComponent(object):
         ----------
         extra_soldermask_clearance : float, optional
             Extra Soldermask value in meter to be applied on component bounding box.
+
         Returns
         -------
             bool

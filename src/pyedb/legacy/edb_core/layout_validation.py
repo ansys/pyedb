@@ -121,6 +121,7 @@ class LayoutValidation:
             Default is ``False``.
         keep_disjoint_pins : bool, optional
             Whether if delete disjoints pins not connected to any other primitive or not. Default is ``False``.
+
         Returns
         -------
         List

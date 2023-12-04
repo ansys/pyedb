@@ -240,6 +240,7 @@ class Components(object):
         ----------
         file_path : str
             File path of json file.
+
         Returns
         -------
 

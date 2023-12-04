@@ -199,6 +199,7 @@ class Stackup(object):
             Whether to create soldermask layers. The default is``True``.
         soldermask_thickness : str, optional
             Thickness of soldermask layer.
+
         Returns
         -------
         bool
@@ -363,6 +364,7 @@ class Stackup(object):
 
         .. deprecated:: 0.6.52
            Use :func:`mode` method instead.
+
         Returns
         -------
         int, str
@@ -482,6 +484,7 @@ class Stackup(object):
              ``"insert_above"``, ``"add_on_top"``, ``"add_on_bottom"``, ``"non_stackup"``,  ``"add_at_elevation"``.
         base_layer : str, optional
             Name of the base layer. The default value is ``None``.
+
         Returns
         -------
 
@@ -1781,6 +1784,7 @@ class Stackup(object):
             Dictionary containing material information.
         roughness: dict
             Dictionary containing roughness information.
+
         Returns
         -------
 
@@ -2003,6 +2007,7 @@ class Stackup(object):
         ----------
         file_path: str
             Path to external XML file.
+
         Returns
         -------
         bool
@@ -2071,6 +2076,7 @@ class Stackup(object):
         ----------
         file_path: str
             Path to external XML file.
+
         Returns
         -------
         bool
@@ -2122,6 +2128,7 @@ class Stackup(object):
         ----------
         file_path : str
             Path to stackup file.
+
         Returns
         -------
         bool
@@ -2156,6 +2163,7 @@ class Stackup(object):
         ----------
         file_path : str
             Path to stackup file.
+
         Returns
         -------
         bool

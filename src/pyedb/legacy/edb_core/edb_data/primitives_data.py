@@ -199,6 +199,7 @@ class EDBPrimitives(EDBPrimitivesMain):
         include_voids : bool, optional
             Either if the voids have to be included in computation.
             The default value is ``True``.
+
         Returns
         -------
         float
@@ -737,6 +738,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
     @pyedb_function_handler()
     def add_point(self, x, y, incremental=False):
         """Add a point at the end of the path.
+
         Parameters
         ----------
         x: str, int, float
@@ -746,6 +748,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
         incremental: bool
             Add point incrementally. If True, coordinates of the added point is incremental to the last point.
             The default value is ``False``.
+
         Returns
         -------
         bool
@@ -762,6 +765,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
         ----------
         to_string : bool, optional
             Type of return. The default is ``"False"``.
+
         Returns
         -------
         list
@@ -855,6 +859,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
     @pyedb_function_handler()
     def create_via_fence(self, distance, gap, padstack_name):
         """Create via fences on both sides of the trace.
+
         Parameters
         ----------
         distance: str, float
@@ -863,6 +868,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
             Gap between vias.
         padstack_name: str
             Name of the via padstack.
+
         Returns
         -------
         """

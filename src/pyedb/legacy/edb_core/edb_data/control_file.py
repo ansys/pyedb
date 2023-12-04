@@ -1241,6 +1241,7 @@ class ControlFile:
         ----------
         xml_output : str
             Path to the output xml file.
+
         Returns
         -------
         bool

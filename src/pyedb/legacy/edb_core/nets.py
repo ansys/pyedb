@@ -266,6 +266,7 @@ class EdbNets(object):
             Whether to generate extended signal nets. The default is ``True``.
         include_power : str, optional
             Whether to generate extended power nets. The default is ``True``.
+
         Returns
         -------
         list
@@ -478,12 +479,12 @@ class EdbNets(object):
             If ``True``  the components placed on bottom layer are plotted.
             If ``False`` the components are not plotted. (default)
             If nets and/or layers is specified, only the components belonging to the specified nets/layers are plotted.
+
         Returns
         -------
-        list, str
-            list of data to be used in plot.
-            In case of remote session it will be returned a string that could be converted to list
-            using ast.literal_eval().
+        List, str: list of data to be used in plot.
+            In case of remote session it will be returned a string that could be converted \
+            to list using ast.literal_eval().
         """
         start_time = time.time()
         if not nets:
@@ -1179,6 +1180,7 @@ class EdbNets(object):
         order_by_area : bool, optional
             Whether if the naming order has to be by number of objects (fastest) or area (slowest but more accurate).
             Default is ``False``.
+
         Returns
         -------
         List

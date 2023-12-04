@@ -105,6 +105,7 @@ class EdbHfss(object):
             default name is assigned.
         is_ref : bool, optional
             Whether it is a reference terminal. The default is ``False``.
+
         Returns
         -------
         Edb.Cell.Terminal.EdgeTerminal
@@ -844,6 +845,7 @@ class EdbHfss(object):
             Radial extent factor. The default value is ``0``.
         pec_launch_width : str, optional
             Launch Width of PEC. The default value is ``"0.01mm"``.
+
         Returns
         -------
         str
@@ -910,6 +912,7 @@ class EdbHfss(object):
             Impedance of the port. The default value is ``50``.
         layer_alignment : str, optional
             Layer alignment. The default value is ``Upper``. Options are ``"Upper"``, ``"Lower"``.
+
         Returns
         -------
         str
@@ -1157,10 +1160,11 @@ class EdbHfss(object):
 
         digit_resolution : int, optional
             Digit Resolution. The default value is ``6``.
+
         Returns
         -------
         list
-            [lower left corner X, lower left corner, upper right corner X, upper right corner Y]
+            [lower left corner X, lower left corner, upper right corner X, upper right corner Y].
         """
         if layout == None:
             return False

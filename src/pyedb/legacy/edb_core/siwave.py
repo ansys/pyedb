@@ -1404,6 +1404,7 @@ class EdbSiwave(object):
         negative_layer,
     ):
         """Place a voltage probe between two points.
+
         Parameters
         ----------
         name : str,

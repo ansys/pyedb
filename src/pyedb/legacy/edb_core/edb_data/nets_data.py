@@ -85,6 +85,7 @@ class EDBNetsData(NetDotNet):
         fix : bool, optional
             If `True`, rename all the nets. (default)
             If `False`, only report dc shorts.
+
         Returns
         -------
         List[List[str, str]]

@@ -307,6 +307,7 @@ class EdbLegacy(Database):
     @property
     def cell_names(self):
         """Cell name container.
+
         Returns
         -------
         list of cell names : List[str]
@@ -928,6 +929,10 @@ class EdbLegacy(Database):
         -------
         :class:`pyedb.legacy.edb_core.hfss.EdbHfss`
 
+        See Also
+        --------
+        :class:`legacy.edb_core.edb_data.simulation_configuration.SimulationConfiguration`
+
         Examples
         --------
         >>> from pyedb.legacy.edb import EdbLegacy
@@ -935,11 +940,6 @@ class EdbLegacy(Database):
         >>> sim_config = edbapp.new_simulation_configuration()
         >>> sim_config.mesh_freq = "10Ghz"
         >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
-
-        See Also
-        --------
-        :class:`legacy.edb_core.edb_data.simulation_configuration.SimulationConfiguration`
-
         """
         if not self._hfss and self.active_db:
             self._hfss = EdbHfss(self)
@@ -3886,8 +3886,8 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        [:class:`pyedb.legacy.edb_core.edb_data.ports.GapPort`,
-            :class:`pyedb.legacy.edb_core.edb_data.ports.WavePort`,]
+        list: [:class:`pyedb.legacy.edb_core.edb_data.ports.GapPort`,
+            :class:`pyedb.legacy.edb_core.edb_data.ports.WavePort`,].
         """
 
         terminal.boundary_type = "PortBoundary"
@@ -3932,6 +3932,7 @@ class EdbLegacy(Database):
     @pyedb_function_handler
     def create_voltage_source(self, terminal, ref_terminal):
         """Create a voltage source.
+
         Parameters
         ----------
         terminal : :class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
@@ -3944,6 +3945,7 @@ class EdbLegacy(Database):
                    :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
                    :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
             Negative terminal of the source.
+
         Returns
         -------
         class:`legacy.edb_core.edb_data.ports.ExcitationSources`
@@ -3990,6 +3992,7 @@ class EdbLegacy(Database):
     @pyedb_function_handler
     def get_point_terminal(self, name, net_name, location, layer):
         """Place a voltage probe between two points.
+
         Parameters
         ----------
         name : str,
@@ -4000,6 +4003,7 @@ class EdbLegacy(Database):
             Location of the terminal.
         layer : str,
             Layer of the terminal.
+
         Returns
         -------
         :class:`legacy.edb_core.edb_data.terminals.PointTerminal`
