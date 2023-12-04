@@ -1,5 +1,6 @@
 import os.path
 
+from pyedb.generic.general_methods import ET, pyedb_function_handler
 from pyedb.ipc2581.bom.bom import Bom
 from pyedb.ipc2581.bom.bom_item import BomItem
 from pyedb.ipc2581.content.content import Content
@@ -7,9 +8,6 @@ from pyedb.ipc2581.ecad.cad_data.padstack_def import PadstackDef
 from pyedb.ipc2581.ecad.ecad import Ecad
 from pyedb.ipc2581.history_record import HistoryRecord
 from pyedb.ipc2581.logistic_header import LogisticHeader
-from pyedb.generic.general_methods import ET
-from pyedb.generic.general_methods import pyedb_function_handler
-
 
 
 class Ipc2581(object):

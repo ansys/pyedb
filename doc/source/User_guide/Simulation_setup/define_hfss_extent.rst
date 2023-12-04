@@ -10,6 +10,7 @@ This section describes how define HFSS extent using SimulationConfiguration clas
 
 
     from pyedb.legacy.edb import EdbLegacy
+
     # create new EDB
     edb = EdbLegacy()
 
@@ -19,7 +20,9 @@ This section describes how define HFSS extent using SimulationConfiguration clas
     edb.stackup.add_layer(layer_name="SIGNAL", base_layer="FR4", thickness="30um")
 
     # create trace
-    edb.modeler.create_trace(layer_name="SIGNAL", width=0.02, net_name="net1", path_list=[[-1e3, 0, 1e-3, 0]])
+    edb.modeler.create_trace(
+        layer_name="SIGNAL", width=0.02, net_name="net1", path_list=[[-1e3, 0, 1e-3, 0]]
+    )
 
     # create primitive rectangle
     edb.modeler.create_rectangle(
@@ -57,7 +60,7 @@ This section describes how define HFSS extent using SimulationConfiguration clas
     # disable cutout
     sim_setup.do_cutout_subdesign = False
 
-    # disbale port generation
+    # disable port generation
     sim_setup.generate_excitations = False
 
     # build project

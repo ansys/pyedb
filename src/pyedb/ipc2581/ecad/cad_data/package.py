@@ -1,13 +1,11 @@
 import math
 
+from pyedb.generic.general_methods import ET, pyedb_function_handler
 from pyedb.ipc2581.content.entry_line import EntryLine
 from pyedb.ipc2581.ecad.cad_data.assembly_drawing import AssemblyDrawing
 from pyedb.ipc2581.ecad.cad_data.outline import Outline
 from pyedb.ipc2581.ecad.cad_data.pin import Pin
 from pyedb.ipc2581.ecad.cad_data.polygon import PolyStep
-from pyedb.generic.general_methods import ET
-from pyedb.generic.general_methods import pyedb_function_handler
-
 
 
 class Package(object):

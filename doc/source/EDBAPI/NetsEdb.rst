@@ -5,10 +5,11 @@ The main component object is called directly from main application using the pro
 
 .. code:: python
 
-    from from pyedb.legacy.edb_core.edb import Edb
+    from pyedb.legacy.edb_core.edb import Edb
+
     edb = Edb(myedb, edbversion="2023.1")
 
-    edb.nets.plot(None,None)
+    edb.nets.plot(None, None)
 
     ...
 
@@ -40,7 +41,8 @@ The following class is the container of data management for nets, extended nets 
 
 .. code:: python
 
-    from from pyedb.legacy.edb_core.edb import Edb
+    from pyedb.legacy.edb_core.edb import Edb
+
     edb = Edb(myedb, edbversion="2023.1")
 
     edb.nets["M_MA<6>"].delete()

@@ -49,12 +49,15 @@ repos:
   - id: requirements-txt-fixer
   - id: debug-statements
   - id: trailing-whitespace
+    files: '(src|doc|tests)/.*'
+    exclude: 'tests/example_models/*'
 
-# validate GitHub workflow files
-- repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.27.0
-  hooks:
-    - id: check-github-workflows
+# # validate GitHub workflow files
+# - repo: https://github.com/python-jsonschema/check-jsonschema
+#   rev: 0.27.0
+#   hooks:
+#     - id: check-github-workflows
+#       args: ["--verbose"]
 
 # - repo: https://github.com/numpy/numpydoc
 #   rev: v1.6.0

@@ -1,8 +1,10 @@
+from pyedb.generic.general_methods import ET
 from pyedb.ipc2581.content.dictionary_color import DictionaryColor
 from pyedb.ipc2581.content.dictionary_line import DictionaryLine
 from pyedb.ipc2581.content.layer_ref import LayerRef
-from pyedb.ipc2581.content.standard_geometries_dictionary import StandardGeometriesDictionary
-from pyedb.generic.general_methods import ET
+from pyedb.ipc2581.content.standard_geometries_dictionary import (
+    StandardGeometriesDictionary,
+)
 
 
 class Content(object):

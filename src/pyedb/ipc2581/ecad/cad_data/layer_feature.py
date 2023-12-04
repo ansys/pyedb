@@ -1,10 +1,7 @@
 import math
 
-from pyedb.ipc2581.ecad.cad_data.feature import Feature
-from pyedb.ipc2581.ecad.cad_data.feature import FeatureType
-from pyedb.generic.general_methods import ET
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.generic.general_methods import ET, pyedb_function_handler
+from pyedb.ipc2581.ecad.cad_data.feature import Feature, FeatureType
 
 
 class LayerFeature(object):

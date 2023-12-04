@@ -1,6 +1,5 @@
-from pyedb.generic.general_methods import pyedb_function_handler, generate_unique_name
-from pyedb.generic.constants import NodeType
-from pyedb.generic.constants import SourceType
+from pyedb.generic.constants import NodeType, SourceType
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 
 
 class Node(object):
@@ -290,11 +289,13 @@ class PinGroup(object):
     @pyedb_function_handler()
     def _create_terminal(self, name=None):
         """Create a terminal on the pin group.
+
         Parameters
         ----------
         name : str, optional
             Name of the terminal. The default is ``None``, in which case a name is
             automatically assigned.
+
         Returns
         -------
         :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`

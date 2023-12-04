@@ -1,10 +1,8 @@
 import re
 
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitives
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
-
 
 
 class LayoutValidation:
@@ -107,7 +105,7 @@ class LayoutValidation:
         clean_disjoints_less_than=0.0,
         order_by_area=False,
         keep_disjoint_pins=False,
-        ):
+    ):
         """Find and fix disjoint nets from a given netlist.
 
         Parameters
@@ -123,6 +121,7 @@ class LayoutValidation:
             Default is ``False``.
         keep_disjoint_pins : bool, optional
             Whether if delete disjoints pins not connected to any other primitive or not. Default is ``False``.
+
         Returns
         -------
         List
@@ -237,7 +236,6 @@ class LayoutValidation:
 
         return new_nets
 
-
     def illegal_net_names(self, fix=False):
         """Find and fix illegal net names."""
         pattern = r"[\(\)\\\/:;*?<>\'\"|`~$]"
@@ -254,7 +252,6 @@ class LayoutValidation:
 
         self._pedb._logger.info("Found {} illegal net names.".format(len(renamed_nets)))
         return
-
 
     def illegal_rlc_values(self, fix=False):
         """Find and fix RLC illegal values."""

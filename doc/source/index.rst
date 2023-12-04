@@ -90,7 +90,7 @@ PyEDB is a Python library that interacts directly with the EDB-core API to make 
 
                 Contribute
                 ^^^^^^^^^^
-                Learn how to contribute to the PyAEDT codebase
+                Learn how to contribute to the pyEDB codebase
                 or documentation.
 
                 +++

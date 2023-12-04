@@ -1,10 +1,11 @@
 import warnings
 
+from pyedb.generic.general_methods import is_linux, pyedb_function_handler
 from pyedb.legacy.edb_core.edb_data.simulation_setup import BaseSimulationSetup
-from pyedb.legacy.edb_core.general import convert_netdict_to_pydict
-from pyedb.legacy.edb_core.general import convert_pydict_to_netdict
-from pyedb.generic.general_methods import is_linux
-from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.legacy.edb_core.general import (
+    convert_netdict_to_pydict,
+    convert_pydict_to_netdict,
+)
 
 
 def _parse_value(v):
@@ -29,6 +30,7 @@ def _parse_value(v):
                     pv = v
     return pv
 
+
 class SettingsBase(object):
     """Provide base settings."""
 
@@ -43,6 +45,7 @@ class SettingsBase(object):
     @pyedb_function_handler
     def get_configurations(self):
         """Get all attributes.
+
         Returns
         -------
         dict
@@ -515,10 +518,10 @@ class DCSettings(SettingsBase):
             "dc_slider_position": [0, 1, 2],
         }
 
-
     @property
     def compute_inductance(self):
         """Whether to compute Inductance.
+
         Returns
         -------
         bool
@@ -537,6 +540,7 @@ class DCSettings(SettingsBase):
     @property
     def contact_radius(self):
         """Circuit element contact radius.
+
         Returns
         -------
         str
@@ -571,6 +575,7 @@ class DCSettings(SettingsBase):
     def use_dc_custom_settings(self):
         """Whether to use DC custom settings.
         This setting is automatically enabled by other properties when needed.
+
         Returns
         -------
         bool
@@ -588,6 +593,7 @@ class DCSettings(SettingsBase):
     @property
     def plot_jv(self):
         """Plot current and voltage distributions.
+
         Returns
         -------
         bool
@@ -1009,10 +1015,11 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
     @pyedb_function_handler
     def set_si_slider(self, value):
         """Set SIwave SI simulation accuracy level.
+
         Options are:
-        - ``0``: Optimal speed
-        - ``1``:  Balanced
-        - ``2``: Optimal accuracy```
+        - ``0``: Optimal speed;
+        - ``1``:  Balanced;
+        - ``2``: Optimal accuracy```.
         """
         self.use_si_settings = True
         self.use_custom_settings = False
@@ -1085,6 +1092,7 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
 
+
 class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
     """Manages EDB methods for SIwave DC simulation setup.
     Parameters
@@ -1116,7 +1124,7 @@ class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
     @pyedb_function_handler
     def get_configurations(self):
         """Get SIwave DC simulation settings.
-        
+
         Returns
         -------
         dict

@@ -1,9 +1,9 @@
 import builtins
 from unittest.mock import mock_open
+
+from mock import MagicMock, PropertyMock, patch
 import pytest
-from mock import MagicMock
-from mock import PropertyMock
-from mock import patch
+
 from pyedb.legacy.edb_core.materials import Materials
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
@@ -60,6 +60,7 @@ $begin 'Water(@360K)'
   $end 'MaterialDef'
 $end 'Water(@360K)'
 """
+
 
 class TestClass:
     @pytest.fixture(autouse=True)

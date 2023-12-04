@@ -13,7 +13,7 @@ class Settings(object):
         self._edb_dll_path = None
         # Remove this if LoadAEDTFile.py is not kept
         self._aedt_version = None
-        # 
+        #
         self._enable_logger = True
         self._enable_file_logs = True
         self.pyedb_server_path = ""
@@ -203,7 +203,7 @@ class Settings(object):
     def enable_debug_logger(self, val):
         self._enable_debug_logger = val
 
-    # TODO: Not sure if neede, see with Simon
+    # TODO: Not sure if needed, see with Simon
     @property
     def enable_screen_logs(self):
         """Flag for enabling and disabling the logging to STDOUT."""
@@ -213,7 +213,7 @@ class Settings(object):
     def enable_screen_logs(self, val):
         self._enable_screen_logs = val
 
-    # TODO: Not sure if neede, see with Simon
+    # TODO: Not sure if needed, see with Simon
     @property
     def edb_dll_path(self):
         """Optional path for the EDB DLL file."""

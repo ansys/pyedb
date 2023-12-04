@@ -1,6 +1,5 @@
 """Primitive."""
-from pyedb.legacy.edb_core.dotnet.database import NetDotNet
-from pyedb.legacy.edb_core.dotnet.database import PolygonDataDotNet
+from pyedb.legacy.edb_core.dotnet.database import NetDotNet, PolygonDataDotNet
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -123,8 +122,8 @@ class PrimitiveDotNet:
 
         Parameters
         ----------
-        point_list : list or  :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives` or EDB Primitive Object
-            Point list in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
+        point_list : list or :class:`pyedb.legacy.edb_core.edb_data.primitives_data.EDBPrimitives` \
+            or EDB Primitive Object. Point list in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
 
         Returns
         -------

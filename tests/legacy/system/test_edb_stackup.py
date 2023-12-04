@@ -1,15 +1,17 @@
 """Tests related to Edb stackup
 """
 
-import os
 import math
+import os
+
 import pytest
+
 from pyedb.legacy.edb import EdbLegacy
-from tests.conftest import desktop_version
-from tests.conftest import local_path
+from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -303,6 +305,7 @@ class TestClass:
     def test_stackup_load(self):
         """Import stackup from a file."""
         import json
+
         fpath = os.path.join(local_path, "example_models", test_subfolder, "stackup.json")
         stackup_json = json.load(open(fpath, "r"))
 
@@ -978,6 +981,7 @@ class TestClass:
             else:
                 assert pedb_mat.permittivity_at_frequency == material["permittivity_at_frequency"]
             return 0
+
         import json
 
         target_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")

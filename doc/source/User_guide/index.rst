@@ -11,6 +11,7 @@ PyEDB is loading ANSYS EDB in memory meaning non graphically.
     # Load EDB
 
     from pyedb.legacy.edb_core.edb import EdbLegacy
+
     edb_file = pyedb.layout_examples.ANSYS_HSD_v1.aedb
     edb = EdbLegacy(edb_file)
 

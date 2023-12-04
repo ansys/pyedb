@@ -15,9 +15,9 @@ This section shows a simple example to create HFSS coaxial port on a component.
     # Ansys release version
     ansys_version = "2023.2"
 
-    #download and copy the layout file from examples
+    # download and copy the layout file from examples
     temp_folder = generate_unique_folder_name()
-    targetfile = downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+    targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # loading EDB
     edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
@@ -30,7 +30,7 @@ This section shows a simple example to create HFSS coaxial port on a component.
         "DDR4_A3",
         "DDR4_A4",
         "DDR4_A5",
-     ]
+    ]
     sim_setup.power_nets = ["GND"]
     sim_setup.do_cutout_subdesign = True
     sim_setup.components = ["U1", "U15"]
