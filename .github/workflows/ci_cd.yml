@@ -37,23 +37,24 @@ jobs:
           vale-config: "doc/.vale.ini"
           vale-version: "2.29.6"
 
-  smoke-tests:
-    name: Build and Smoke tests
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        python-version: ['3.9', '3.10', '3.11']
-        should-release:
-          - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
-    steps:
-      - name: Build wheelhouse and perform smoke test
-        uses: ansys/actions/build-wheelhouse@v4
-        with:
-          library-name: ${{ env.PACKAGE_NAME }}
-          operating-system: ${{ matrix.os }}
-          python-version: ${{ matrix.python-version }}
+  # TODO: uncomment once this repo is public
+  # smoke-tests:
+  #   name: Build and Smoke tests
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [ubuntu-latest, windows-latest]
+  #       python-version: ['3.9', '3.10', '3.11']
+  #       should-release:
+  #         - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
+  #   steps:
+  #     - name: Build wheelhouse and perform smoke test
+  #       uses: ansys/actions/build-wheelhouse@v4
+  #       with:
+  #         library-name: ${{ env.PACKAGE_NAME }}
+  #         operating-system: ${{ matrix.os }}
+  #         python-version: ${{ matrix.python-version }}
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -61,7 +62,7 @@ jobs:
 
   legacy-tests:
     name: "Check legacy tests"
-    needs: [smoke-tests]
+    # needs: [smoke-tests]
     runs-on: [ windows, pyedb, self-hosted ]
     steps:
       - name: "Install Git and clone project"
