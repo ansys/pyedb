@@ -9,6 +9,8 @@ on:
       - main
 
 env:
+  ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
+  PYEDB_USE_LEGACY: '1'
   MAIN_PYTHON_VERSION: '3.10'
   MAIN_PYTHON_VERSION_WINDOWS_SELFHOSTED: '3.9'
   PACKAGE_NAME: 'pyedb'
