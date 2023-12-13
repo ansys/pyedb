@@ -166,10 +166,17 @@ jobs:
             python $_.FullName
           }
 
-      - name: Install pyaedt
+      - name: "Clone pyaedt on specific branch"
+        uses: actions/checkout@v4
+        with:
+          repository: ansys/pyaedt
+          path: "external/pyaedt"
+          ref: "maint/use_pyedb"
+
+      - name: "Install Pyaedt"
         run: |
-          . .venv\Scripts\Activate.ps1
-          pip install pyaedt[full]
+          .\.venv\Scripts\Activate.ps1
+          pip install --no-cache-dir external/pyaedt[full]
 
       - name: Execute legacy pyaedt integration examples
         run: |
