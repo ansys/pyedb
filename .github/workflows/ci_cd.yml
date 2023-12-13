@@ -152,7 +152,7 @@ jobs:
       - name: Install pyedb
         run: |
           . .venv\Scripts\Activate.ps1
-          pip install .
+          pip install .[full]
 
       - name: "Install specific vtk version with OSMesa bundled"
         run: |
@@ -165,6 +165,7 @@ jobs:
 
       - name: Execute legacy examples (except pyaedt related and 01)
         run: |
+          . .venv\Scripts\Activate.ps1
           # Exclude example 01_edb_example.py because it is too long
           $excluded_example = "01_edb_example.py"
           # TODO: once pyaedt examples are passing, use -Recurse to cover them
