@@ -166,6 +166,20 @@ jobs:
             python $_.FullName
           }
 
+      - name: Install pyaedt
+        run: |
+          . .venv\Scripts\Activate.ps1
+          pip install pyaedt[full]
+
+      - name: Execute legacy pyaedt integration examples
+        run: |
+          . .venv\Scripts\Activate.ps1
+          Get-ChildItem -Path examples/legacy/pyaedt_integration -Filter *.py -File | ? { $_.Name -ne $excluded_example } | ForEach-Object {
+            Write-Host "Executing pyaedt integration example $($_.FullName)"
+            python $_.FullName
+          }
+
+
   docs-build:
     name: Build documentation
     runs-on: ubuntu-20.04
