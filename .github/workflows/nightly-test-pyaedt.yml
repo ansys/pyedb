@@ -75,3 +75,10 @@ jobs:
           .\.venv\Scripts\Activate.ps1
           Set-Item -Path env:PYTHONMALLOC -Value "malloc"
           pytest -n 6 --dist loadfile --durations=50 -vv --cov=pyaedt --cov-report=xml --cov-report=html --junitxml=junit/test-results.xml external\pyaedt\_unittest
+
+      - name: Count commits between branches
+        run: |
+          cd external/pyaedt
+          git fetch --all
+          COMMIT_COUNT=$(git rev-list --count origin/main...origin/maint/use_pyedb)
+          echo "Number of commits between the main branch and the one using pyedb as dependency: $COMMIT_COUNT"
