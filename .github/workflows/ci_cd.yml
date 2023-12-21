@@ -107,7 +107,7 @@ jobs:
 
       - name: Upload Coverage Results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: legacy-coverage-html
           path: .cov/html
@@ -243,7 +243,7 @@ jobs:
           python doc/print_errors.py
 
       - name: Upload Documentation
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Documentation
           path: doc/_build/html
