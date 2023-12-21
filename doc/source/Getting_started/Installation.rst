@@ -1,7 +1,7 @@
 Installation
 ============
 PyEDB consolidates and extends all existing capital around scripting for AEDB,
-allowing re-use of existing code, sharing of best practices, and collaboration.
+allowing reuse of existing code, sharing of best practices, and collaboration.
 
 This PyAnsys library has been tested on HFSS, Icepak, SIWave.
 
@@ -29,9 +29,9 @@ Install on CPython from PyPI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 You can install PyEDB on CPython 3.7 through 3.10 from PyPI:
 
-.. code:: python
+.. code:: shell
 
-    pip install pyansys-edb
+    pip install pyedb
 
 
 Linux support
@@ -50,7 +50,7 @@ Install offline from a wheelhouse
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Using a wheelhouse can be helpful if you work for a company that restricts access to external networks.
 Wheelhouses for CPython 3.7, 3.8, and 3.9 are available in the releases for PyEDB v1.0
-and later for both Windows and Linux. From the `Releases <https://github.com/ansys/pyansys-edb/releases>`_
+and later for both Windows and Linux. From the `Releases <https://github.com/ansys/pyedb/releases>`_
 page in the PyEDB repository, you can find the wheelhouses for a particular release in its
 assets and download the wheelhouse specific to your setup.
 

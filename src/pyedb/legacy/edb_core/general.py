@@ -7,12 +7,8 @@ from __future__ import absolute_import  # noreorder
 
 import logging
 
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.legacy.clr_module import Dictionary
-from pyedb.legacy.clr_module import List
-from pyedb.legacy.clr_module import Tuple
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.generic.general_methods import is_ironpython, pyedb_function_handler
+from pyedb.legacy.clr_module import Dictionary, List, Tuple
 
 if not is_ironpython:  # pragma: no cover
     try:
@@ -150,6 +146,7 @@ class DielectricExtentType(Enum):
     Conforming = 1
     ConvexHull = 2
     Polygon = 3
+
 
 class Primitives(Enum):
     Rectangle = 0

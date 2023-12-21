@@ -5,6 +5,7 @@ import pytest
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
+
 class TestClass:
     @pytest.fixture(autouse=True)
     def init(self, legacy_edb_app, local_scratch, target_path, target_path2, target_path4):
@@ -22,4 +23,3 @@ class TestClass:
         assert self.edbapp.net_classes["DDR4_ADD"].nets
         self.edbapp.net_classes["DDR4_ADD"].name = "DDR4_ADD_RENAMED"
         assert not self.edbapp.net_classes["DDR4_ADD_RENAMED"].is_null
-

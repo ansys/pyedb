@@ -4,13 +4,13 @@ This module contains the `EdbPadstacks` class.
 import math
 import warnings
 
-from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstack
-from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 from pyedb.legacy.clr_module import Array
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.legacy.edb_core.edb_data.padstacks_data import (
+    EDBPadstack,
+    EDBPadstackInstance,
+)
+from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -19,7 +19,7 @@ class EdbPadstacks(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_padstacks = edbapp.padstacks
     """
@@ -782,6 +782,7 @@ class EdbPadstacks(object):
             rotation of antipad. The default is ``"0.0"``.
         has_hole : bool, optional
             Whether this padstack has a hole.
+
         Returns
         -------
         str
@@ -996,6 +997,7 @@ class EdbPadstacks(object):
             Name of the padstack to be duplicated.
         new_padstack_name : str, optional
             Name of the new padstack.
+
         Returns
         -------
         str
@@ -1014,6 +1016,7 @@ class EdbPadstacks(object):
             Name of the padstack to be duplicated.
         new_padstack_name : str, optional
             Name of the new padstack.
+
         Returns
         -------
         str
@@ -1315,6 +1318,7 @@ class EdbPadstacks(object):
         ----------
         net_name : str
             The net name to be used for filtering padstack instances.
+
         Returns
         -------
         list

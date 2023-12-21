@@ -1,15 +1,18 @@
 import math
 
-from pyedb.legacy.edb_core.dotnet.primitive import BondwireDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import CircleDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import PathDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import PolygonDataDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import PolygonDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import RectangleDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import TextDotNet
+from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.legacy.edb_core.dotnet.database import NetDotNet
+from pyedb.legacy.edb_core.dotnet.primitive import (
+    BondwireDotNet,
+    CircleDotNet,
+    PathDotNet,
+    PolygonDataDotNet,
+    PolygonDotNet,
+    RectangleDotNet,
+    TextDotNet,
+)
 from pyedb.legacy.edb_core.edb_data.connectable import Connectable
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -59,7 +62,7 @@ class EDBPrimitivesMain(Connectable):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_prim = edb.modeler.primitives[0]
     >>> edb_prim.is_void # Class Property
@@ -82,7 +85,10 @@ class EDBPrimitivesMain(Connectable):
         -------
         str
         """
-        return self._edb_object.GetPrimitiveType().ToString()
+        try:
+            return self._edb_object.GetPrimitiveType().ToString()
+        except AttributeError:  # pragma: no cover
+            return ""
 
     @property
     def net_name(self):
@@ -101,14 +107,20 @@ class EDBPrimitivesMain(Connectable):
             self.primitive_object.SetNet(net)
         else:
             try:
-                self.net = name
-            except:
+                if isinstance(name, str):
+                    self.net = name
+                elif isinstance(name, NetDotNet):
+                    self.net = name.name
+            except:  # pragma: no cover
                 self._app.logger.error("Failed to set net name.")
 
     @property
     def layer(self):
         """Get the primitive edb layer object."""
-        return self.primitive_object.GetLayer()
+        try:
+            return self.primitive_object.GetLayer()
+        except AttributeError:  # pragma: no cover
+            return None
 
     @property
     def layer_name(self):
@@ -118,7 +130,10 @@ class EDBPrimitivesMain(Connectable):
         -------
         str
         """
-        return self.layer.GetName()
+        try:
+            return self.layer.GetName()
+        except AttributeError:  # pragma: no cover
+            return None
 
     @layer_name.setter
     def layer_name(self, val):
@@ -144,7 +159,10 @@ class EDBPrimitivesMain(Connectable):
         -------
         bool
         """
-        return self._edb_object.IsVoid()
+        try:
+            return self._edb_object.IsVoid()
+        except AttributeError:  # pragma: no cover
+            return None
 
     def get_connected_objects(self):
         """Get connected objects.
@@ -162,7 +180,7 @@ class EDBPrimitives(EDBPrimitivesMain):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_prim = edb.modeler.primitives[0]
     >>> edb_prim.is_void # Class Property
@@ -181,6 +199,7 @@ class EDBPrimitives(EDBPrimitivesMain):
         include_voids : bool, optional
             Either if the voids have to be included in computation.
             The default value is ``True``.
+
         Returns
         -------
         float
@@ -719,6 +738,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
     @pyedb_function_handler()
     def add_point(self, x, y, incremental=False):
         """Add a point at the end of the path.
+
         Parameters
         ----------
         x: str, int, float
@@ -728,6 +748,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
         incremental: bool
             Add point incrementally. If True, coordinates of the added point is incremental to the last point.
             The default value is ``False``.
+
         Returns
         -------
         bool
@@ -744,6 +765,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
         ----------
         to_string : bool, optional
             Type of return. The default is ``"False"``.
+
         Returns
         -------
         list
@@ -837,6 +859,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
     @pyedb_function_handler()
     def create_via_fence(self, distance, gap, padstack_name):
         """Create via fences on both sides of the trace.
+
         Parameters
         ----------
         distance: str, float
@@ -845,6 +868,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
             Gap between vias.
         padstack_name: str
             Name of the via padstack.
+
         Returns
         -------
         """
@@ -936,6 +960,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
         leftline, rightline = getParalletLines(center_line, distance)
         for x, y in getLocations(rightline, gap) + getLocations(leftline, gap):
             self._pedb.padstacks.place([x, y], padstack_name)
+
 
 class EdbRectangle(EDBPrimitives, RectangleDotNet):
     def __init__(self, raw_primitive, core_app):
@@ -1063,7 +1088,7 @@ class EDBArcs(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> prim_arcs = edb.modeler.primitives[0].arcs
     >>> prim_arcs.center # arc center

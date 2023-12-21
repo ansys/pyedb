@@ -1,10 +1,8 @@
 import re
 
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitives
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
-
 
 
 class LayoutValidation:
@@ -56,7 +54,10 @@ class LayoutValidation:
             else:
                 _padstacks_list[n_name] = [pad]
         dc_shorts = []
+        all_shorted_nets = []
         for net in net_list:
+            if net in all_shorted_nets:
+                continue
             objs = []
             for i in _objects_list.get(net, []):
                 objs.append(i)
@@ -69,11 +70,13 @@ class LayoutValidation:
             connected_objs = objs[0].get_connected_objects()
             connected_objs.append(objs[0])
             net_dc_shorts = [obj for obj in connected_objs]
+            all_shorted_nets.append(net)
             if net_dc_shorts:
                 dc_nets = list(set([obj.net.name for obj in net_dc_shorts if not obj.net.name == net]))
                 for dc in dc_nets:
                     if dc:
                         dc_shorts.append([net, dc])
+                        all_shorted_nets.append(dc)
                 if fix:
                     temp = []
                     for i in net_dc_shorts:
@@ -96,7 +99,12 @@ class LayoutValidation:
 
     @pyedb_function_handler()
     def disjoint_nets(
-        self, net_list=None, keep_only_main_net=False, clean_disjoints_less_than=0.0, order_by_area=False
+        self,
+        net_list=None,
+        keep_only_main_net=False,
+        clean_disjoints_less_than=0.0,
+        order_by_area=False,
+        keep_disjoint_pins=False,
     ):
         """Find and fix disjoint nets from a given netlist.
 
@@ -111,6 +119,9 @@ class LayoutValidation:
         order_by_area : bool, optional
             Whether if the naming order has to be by number of objects (fastest) or area (slowest but more accurate).
             Default is ``False``.
+        keep_disjoint_pins : bool, optional
+            Whether if delete disjoints pins not connected to any other primitive or not. Default is ``False``.
+
         Returns
         -------
         List
@@ -191,14 +202,24 @@ class LayoutValidation:
                             except KeyError:
                                 pass
                     elif len(disjoints) == 1 and (
-                        isinstance(obj_dict[disjoints[0]], EDBPadstackInstance)
-                        or clean_disjoints_less_than
+                        clean_disjoints_less_than
+                        and "area" in dir(obj_dict[disjoints[0]])
                         and obj_dict[disjoints[0]].area() < clean_disjoints_less_than
                     ):
                         try:
                             obj_dict[disjoints[0]].delete()
                         except KeyError:
                             pass
+                    elif (
+                        len(disjoints) == 1
+                        and not keep_disjoint_pins
+                        and isinstance(obj_dict[disjoints[0]], EDBPadstackInstance)
+                    ):
+                        try:
+                            obj_dict[disjoints[0]].delete()
+                        except KeyError:
+                            pass
+
                     else:
                         new_net_name = generate_unique_name(net, n=6)
                         net_obj = self._pedb.nets.find_or_create_net(new_net_name)
@@ -214,7 +235,6 @@ class LayoutValidation:
         self._pedb._logger.info_timer("Disjoint Cleanup Completed.", timer_start)
 
         return new_nets
-
 
     def illegal_net_names(self, fix=False):
         """Find and fix illegal net names."""
@@ -232,7 +252,6 @@ class LayoutValidation:
 
         self._pedb._logger.info("Found {} illegal net names.".format(len(renamed_nets)))
         return
-
 
     def illegal_rlc_values(self, fix=False):
         """Find and fix RLC illegal values."""

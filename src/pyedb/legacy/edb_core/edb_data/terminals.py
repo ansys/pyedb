@@ -1,11 +1,10 @@
 import re
 
-from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 from pyedb.legacy.edb_core.edb_data.connectable import Connectable
 from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.legacy.edb_core.edb_data.primitives_data import cast
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import generate_unique_name
 
 
 class Terminal(Connectable):
@@ -389,7 +388,7 @@ class Terminal(Connectable):
         else:
             power_ground_net_names = [net for net in self._pedb.nets.power_nets.keys()]
         comp_ref_pins = [i for i in pin_list if i.GetNet().GetName() in power_ground_net_names]
-        if len(comp_ref_pins) == 0: # pragma: no cover
+        if len(comp_ref_pins) == 0:  # pragma: no cover
             self._pedb.logger.error(
                 "Terminal with PadStack Instance Name {} component has no reference pins.".format(ref_pin.GetName())
             )
@@ -491,6 +490,7 @@ class PadstackInstanceTerminal(Terminal):
             default name is assigned.
         is_ref : bool, optional
             Whether it is a reference terminal. The default is ``False``.
+
         Returns
         -------
         Edb.Cell.Terminal.EdgeTerminal
@@ -519,7 +519,6 @@ class PadstackInstanceTerminal(Terminal):
         return terminal if not terminal.is_null else False
 
 
-
 class PointTerminal(Terminal):
     """Manages point terminal properties."""
 
@@ -529,6 +528,7 @@ class PointTerminal(Terminal):
     @pyedb_function_handler
     def create(self, name, net, location, layer, is_ref=False):
         """Create a point terminal.
+
         Parameters
         ----------
         name : str
@@ -541,6 +541,7 @@ class PointTerminal(Terminal):
             Name of the layer.
         is_ref : bool, optional
             Whether it is a reference terminal.
+
         Returns
         -------
         :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`
@@ -562,7 +563,7 @@ class PointTerminal(Terminal):
         layer = list(self._pedb.stackup.layers.values())[0]._edb_layer
         _, point_data, _ = self._edb_object.GetParameters(None, layer)
         return [point_data.X.ToDouble(), point_data.Y.ToDouble()]
-    
+
     @location.setter
     def location(self, value):
         layer = self.layer
@@ -589,10 +590,10 @@ class PinGroupTerminal(Terminal):
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
 
-
     @pyedb_function_handler
     def create(self, name, net_name, pin_group_name, is_ref=False):
         """Create a pin group terminal.
+
         Parameters
         ----------
         name : str
@@ -603,6 +604,7 @@ class PinGroupTerminal(Terminal):
             Name of the pin group.
         is_ref : bool, optional
             Whether it is a reference terminal. The default is ``False``.
+
         Returns
         -------
         :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`

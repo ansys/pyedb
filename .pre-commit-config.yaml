@@ -7,7 +7,7 @@ repos:
   hooks:
   - id: black
     args:
-      - --line-length=88
+      - --line-length=120
 
 - repo: https://github.com/adamchainz/blacken-docs
   rev: 1.16.0
@@ -25,7 +25,7 @@ repos:
   hooks:
   - id: flake8
     args: [
-      --max-line-length, "88",
+      --max-line-length, "120",
       ansys, codegen, doc, examples, tests
     ]
 
@@ -49,12 +49,15 @@ repos:
   - id: requirements-txt-fixer
   - id: debug-statements
   - id: trailing-whitespace
+    files: '(src|doc|tests)/.*'
+    exclude: 'tests/example_models/*'
 
-# validate GitHub workflow files
-- repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.27.0
-  hooks:
-    - id: check-github-workflows
+# # validate GitHub workflow files
+# - repo: https://github.com/python-jsonschema/check-jsonschema
+#   rev: 0.27.0
+#   hooks:
+#     - id: check-github-workflows
+#       args: ["--verbose"]
 
 # - repo: https://github.com/numpy/numpydoc
 #   rev: v1.6.0

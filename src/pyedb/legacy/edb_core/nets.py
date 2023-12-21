@@ -5,13 +5,14 @@ import os
 import time
 import warnings
 
+from pyedb.generic.constants import CSS4_COLORS
+from pyedb.generic.general_methods import (
+    generate_unique_name,
+    is_ironpython,
+    pyedb_function_handler,
+)
 from pyedb.legacy.edb_core.edb_data.nets_data import EDBNetsData
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.constants import CSS4_COLORS
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import pyedb_function_handler
-
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -20,8 +21,8 @@ class EdbNets(object):
 
     Examples
     --------
-    >>> from legacy import Edb
-    >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+    >>> from pyedb.legacy.edb import EdbLegacy
+    >>> edbapp = EdbLegacy("myaedbfolder", edbversion="2021.2")
     >>> edb_nets = edbapp.nets
     """
 
@@ -106,7 +107,7 @@ class EdbNets(object):
 
         temp = {}
         for net in self._layout.nets:
-             temp[net.name] = EDBNetsData(net.api_object, self._pedb)
+            temp[net.name] = EDBNetsData(net.api_object, self._pedb)
         return temp
 
     @property
@@ -265,6 +266,7 @@ class EdbNets(object):
             Whether to generate extended signal nets. The default is ``True``.
         include_power : str, optional
             Whether to generate extended power nets. The default is ``True``.
+
         Returns
         -------
         list
@@ -272,7 +274,7 @@ class EdbNets(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.nets.get_extended_nets()
         """
@@ -477,12 +479,12 @@ class EdbNets(object):
             If ``True``  the components placed on bottom layer are plotted.
             If ``False`` the components are not plotted. (default)
             If nets and/or layers is specified, only the components belonging to the specified nets/layers are plotted.
+
         Returns
         -------
-        list, str
-            list of data to be used in plot.
-            In case of remote session it will be returned a string that could be converted to list
-            using ast.literal_eval().
+        List, str: list of data to be used in plot.
+            In case of remote session it will be returned a string that could be converted \
+            to list using ast.literal_eval().
         """
         start_time = time.time()
         if not nets:
@@ -1178,6 +1180,7 @@ class EdbNets(object):
         order_by_area : bool, optional
             Whether if the naming order has to be by number of objects (fastest) or area (slowest but more accurate).
             Default is ``False``.
+
         Returns
         -------
         List

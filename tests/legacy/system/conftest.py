@@ -3,15 +3,14 @@
 
 import os
 from os.path import dirname
-import pytest
-from tests.conftest import local_path
 
-from pyedb.legacy.edb import EdbLegacy
+import pytest
+
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.legacy.edb import EdbLegacy
 from pyedb.misc.misc import list_installed_ansysem
 
-example_models_path = os.path.join(
-    dirname(dirname(dirname(os.path.realpath(__file__)))), "example_models")
+example_models_path = os.path.join(dirname(dirname(dirname(os.path.realpath(__file__)))), "example_models")
 
 # Initialize default desktop configuration
 desktop_version = "2023.2"
@@ -22,6 +21,7 @@ if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_ins
 test_subfolder = "TEDB"
 test_project_name = "ANSYS-HSD_V1"
 bom_example = "bom_example.csv"
+
 
 @pytest.fixture(scope="module")
 def add_legacy_edb(local_scratch):
@@ -63,6 +63,7 @@ def target_path2(local_scratch):
     target_path2 = os.path.join(local_scratch.path, "simple_00.aedb")
     local_scratch.copyfolder(example_project2, target_path2)
     return target_path2
+
 
 @pytest.fixture(scope="class", autouse=True)
 def target_path3(local_scratch):

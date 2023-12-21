@@ -2,19 +2,21 @@
 """
 
 import os
-from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+
 import pytest
 
-from pyedb.legacy.edb import EdbLegacy
-from pyedb.generic.constants import RadiationBoxType, SourceType
-from pyedb.generic.constants import SolverType
+from pyedb.generic.constants import RadiationBoxType, SolverType, SourceType
 from pyedb.generic.general_methods import is_linux
-from tests.conftest import local_path
-from tests.conftest import desktop_version
+from pyedb.legacy.edb import EdbLegacy
+from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
+from pyedb.legacy.edb_core.edb_data.simulation_configuration import (
+    SimulationConfiguration,
+)
+from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -67,8 +69,7 @@ class TestClass:
         pins = self.edbapp.components.get_pin_from_component("U1")
         assert "VSource_" in self.edbapp.siwave.create_voltage_source_on_pin(pins[300], pins[10], 3.3, 0)
         assert len(self.edbapp.sources) == 3
-        assert len(self.edbapp.probes) == 0  
-        
+        assert len(self.edbapp.probes) == 0
         list(self.edbapp.sources.values())[0].phase = 1
         assert list(self.edbapp.sources.values())[0].phase == 1
         u6 = self.edbapp.components["U6"]
@@ -1337,7 +1338,9 @@ class TestClass:
 
     def test_hfss_extent_info(self):
         """HFSS extent information."""
-        from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitives as EDBPrimitives
+        from pyedb.legacy.edb_core.edb_data.primitives_data import (
+            EDBPrimitives as EDBPrimitives,
+        )
 
         config = {
             "air_box_horizontal_extent_enabled": False,
@@ -1378,6 +1381,7 @@ class TestClass:
     def test_import_gds_from_tech(self):
         """Use techfile."""
         from pyedb.legacy.edb_core.edb_data.control_file import ControlFile
+
         c_file_in = os.path.join(
             local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
         )
@@ -1620,3 +1624,17 @@ class TestClass:
         assert not port1.get_pin_group_terminal_reference_pin()
         assert not port1.get_pad_edge_terminal_reference_pin()
         edbapp.close()
+
+    def test_simconfig_built_custom_sballs_height(self):
+        """Build simulation project from custom sballs JSON file."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_custom_sball_height", "ANSYS-HSD_V1.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        json_file = os.path.join(target_path, "simsetup_custom_sballs.json")
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        simconfig = edbapp.new_simulation_configuration()
+        simconfig.import_json(json_file)
+        edbapp.build_simulation_project(simconfig)
+        assert round(edbapp.components["X1"].solder_ball_height, 6) == 0.00025
+        assert round(edbapp.components["U1"].solder_ball_height, 6) == 0.00035
+        edbapp.close_edb()

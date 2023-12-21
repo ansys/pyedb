@@ -3,17 +3,16 @@ import math
 import re
 import warnings
 
-from pyedb.generic.general_methods import is_ironpython
+from pyedb.generic.general_methods import (
+    generate_unique_name,
+    is_ironpython,
+    pyedb_function_handler,
+)
+from pyedb.legacy.clr_module import String, _clr
 from pyedb.legacy.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitivesMain
-from pyedb.legacy.edb_core.general import PadGeometryTpe
-from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.legacy.clr_module import String
-from pyedb.legacy.clr_module import _clr
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.legacy.edb_core.general import PadGeometryTpe, convert_py_list_to_net_list
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -33,7 +32,7 @@ class EDBPadProperties(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_pad_properties = edb.padstacks.definitions["MyPad"].pad_by_layer["TOP"]
     """
@@ -380,7 +379,7 @@ class EDBPadstack(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_padstack = edb.padstacks.definitions["MyPad"]
     """
@@ -986,7 +985,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_padstack_instance = edb.padstacks.instances[0]
     """
@@ -1000,13 +999,15 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         self._pdef = None
 
     def get_terminal(self, name=None, create_new_terminal=False):
-        """Return PadstackInstanceTerminal object.
+        """Get PadstackInstanceTerminal object.
+
         Parameters
         ----------
         name : str, optional
             Name of the terminal. Only applicable when create_new_terminal is True.
         create_new_terminal : bool, optional
             Whether to create a new terminal.
+
         Returns
         -------
         :class:`pyedb.legacy.edb_core.edb_data.terminals`
@@ -1015,7 +1016,9 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         if create_new_terminal:
             term = self._create_terminal(name)
         else:
-            from pyedb.legacy.edb_core.edb_data.terminals import PadstackInstanceTerminal
+            from pyedb.legacy.edb_core.edb_data.terminals import (
+                PadstackInstanceTerminal,
+            )
 
             term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         if not term.is_null:
@@ -1060,6 +1063,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             ref_terminal = None
 
         return self._pedb.create_port(terminal, ref_terminal, is_circuit_port)
+
     @property
     def _em_properties(self):
         """Get EM properties."""
@@ -1452,7 +1456,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         Returns
         -------
         list
-            List of ``[x, y]``` coordinates for the padstack instance position.
+            List of ``[x, y]`` coordinates for the padstack instance position.
         """
         self._position = []
         out = self._edb_padstackinstance.GetPositionAndRotationValue()
@@ -1557,7 +1561,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.padstacks.instances[111].get_aedt_pin_name()
 
@@ -1664,7 +1668,10 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         float
             Lower elavation of the placement layer.
         """
-        return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetLowerElevation()
+        try:
+            return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetLowerElevation()
+        except AttributeError:  # pragma: no cover
+            return None
 
     @property
     def upper_elevation(self):
@@ -1675,7 +1682,10 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         float
            Upper elevation of the placement layer.
         """
-        return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetUpperElevation()
+        try:
+            return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetUpperElevation()
+        except AttributeError:  # pragma: no cover
+            return None
 
     @property
     def top_bottom_association(self):
@@ -1719,7 +1729,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
         >>> edb_layout = edbapp.modeler
         >>> list_of_padstack_instances = list(edbapp.padstacks.instances.values())

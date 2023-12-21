@@ -10,8 +10,8 @@ This example shows how you can use the ``Edb`` class to plot a net or a layout.
 # Perform required imports, which includes importing a section.
 
 import pyedb
-from pyedb.legacy.downloads import download_file
 from pyedb.generic.general_methods import generate_unique_folder_name
+from pyedb.legacy.downloads import download_file
 
 ###############################################################################
 # Download file
@@ -20,7 +20,7 @@ from pyedb.generic.general_methods import generate_unique_folder_name
 
 temp_folder = generate_unique_folder_name()
 
-targetfolder = download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+targetfolder = download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
 
 ###############################################################################
@@ -56,7 +56,7 @@ edb.nets.plot(None, ["1_Top"], color_by_net=True, plot_components_on_top=True)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Plot all nets on a layer colored by nets
 
-edb.stackup.plot(scale_elevation=False,plot_definitions=["c100hn140", "c35"])
+edb.stackup.plot(scale_elevation=False, plot_definitions=["c100hn140", "c35"])
 
 ###############################################################################
 # Close EDB

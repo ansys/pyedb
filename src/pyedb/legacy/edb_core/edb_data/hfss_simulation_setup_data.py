@@ -1,9 +1,10 @@
-from pyedb.legacy.edb_core.edb_data.simulation_setup import BaseSimulationSetup
-from pyedb.legacy.edb_core.edb_data.simulation_setup import EdbFrequencySweep
-from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 from pyedb.legacy.clr_module import Tuple
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.legacy.edb_core.edb_data.simulation_setup import (
+    BaseSimulationSetup,
+    EdbFrequencySweep,
+)
+from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 
 
 class MeshOperation(object):

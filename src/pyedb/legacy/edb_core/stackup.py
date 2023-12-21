@@ -12,14 +12,17 @@ import math
 import re
 import warnings
 
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.legacy.edb_core.edb_data.layer_data import LayerEdbClass
-from pyedb.legacy.edb_core.edb_data.layer_data import StackupLayerEdbClass
+from pyedb.generic.general_methods import (
+    ET,
+    generate_unique_name,
+    is_ironpython,
+    pyedb_function_handler,
+)
+from pyedb.legacy.edb_core.edb_data.layer_data import (
+    LayerEdbClass,
+    StackupLayerEdbClass,
+)
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import ET
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import pyedb_function_handler
-
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 
 pd = None
@@ -196,6 +199,7 @@ class Stackup(object):
             Whether to create soldermask layers. The default is``True``.
         soldermask_thickness : str, optional
             Thickness of soldermask layer.
+
         Returns
         -------
         bool
@@ -360,6 +364,7 @@ class Stackup(object):
 
         .. deprecated:: 0.6.52
            Use :func:`mode` method instead.
+
         Returns
         -------
         int, str
@@ -479,6 +484,7 @@ class Stackup(object):
              ``"insert_above"``, ``"add_on_top"``, ``"add_on_bottom"``, ``"non_stackup"``,  ``"add_at_elevation"``.
         base_layer : str, optional
             Name of the base layer. The default value is ``None``.
+
         Returns
         -------
 
@@ -745,7 +751,7 @@ class Stackup(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.stackup.export("stackup.xml")
         """
@@ -785,7 +791,7 @@ class Stackup(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.stackup.export_stackup("stackup.xml")
         """
@@ -1778,6 +1784,7 @@ class Stackup(object):
             Dictionary containing material information.
         roughness: dict
             Dictionary containing roughness information.
+
         Returns
         -------
 
@@ -2000,6 +2007,7 @@ class Stackup(object):
         ----------
         file_path: str
             Path to external XML file.
+
         Returns
         -------
         bool
@@ -2068,6 +2076,7 @@ class Stackup(object):
         ----------
         file_path: str
             Path to external XML file.
+
         Returns
         -------
         bool
@@ -2119,6 +2128,7 @@ class Stackup(object):
         ----------
         file_path : str
             Path to stackup file.
+
         Returns
         -------
         bool
@@ -2126,7 +2136,7 @@ class Stackup(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.stackup.load("stackup.xml")
         """
@@ -2153,6 +2163,7 @@ class Stackup(object):
         ----------
         file_path : str
             Path to stackup file.
+
         Returns
         -------
         bool
@@ -2160,7 +2171,7 @@ class Stackup(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.stackup.import_stackup("stackup.xml")
         """
@@ -2337,19 +2348,19 @@ class Stackup(object):
                 # create patch
                 x = [0, 0, 1, 1]
                 if ly[3] > 0:
-                    le = ly[1]  # lower elevation
-                    ue = ly[2]  # upper elevation
-                    y = [le, ue, ue, le]
+                    lower_elevation = ly[1]
+                    upper_elevation = ly[2]
+                    y = [lower_elevation, upper_elevation, upper_elevation, lower_elevation]
                     plot_data.insert(0, [x, y, color, label, signal_alpha, "fill"])
                 else:
-                    le = ly[1] - min_thickness * 0.1  # make the zero thickness layers more visible
-                    ue = ly[2] + min_thickness * 0.1
-                    y = [le, ue, ue, le]
+                    lower_elevation = ly[1] - min_thickness * 0.1  # make the zero thickness layers more visible
+                    upper_elevation = ly[2] + min_thickness * 0.1
+                    y = [lower_elevation, upper_elevation, upper_elevation, lower_elevation]
                     # put the zero thickness layers on top
                     plot_data.append([x, y, color, label, zero_thickness_alpha, "fill"])
 
                 # create annotation
-                y_pos = (le + ue) / 2
+                y_pos = (lower_elevation + upper_elevation) / 2
                 if layer.type == "dielectric":
                     x_pos = -annotation_x_margin
                     annotations.append(
@@ -2373,14 +2384,14 @@ class Stackup(object):
             min_thickness = min([i[3] for i in signal_layers if i[3] != 0])
             columns = []  # first column is x=[0,1], second column is x=[1,2] and so on...
             for ly in signal_layers:
-                le = ly[1]  # lower elevation
+                lower_elevation = ly[1]  # lower elevation
                 t = ly[3]  # thickness
                 put_in_column = 0
                 cell_position = 0
                 for c in columns:
                     uep = c[-1][0][2]  # upper elevation of the last entry of that column
                     tp = c[-1][0][3]  # thickness of the last entry of that column
-                    if le < uep or (abs(le - uep) < 1e-15 and tp == 0 and t == 0):
+                    if lower_elevation < uep or (abs(lower_elevation - uep) < 1e-15 and tp == 0 and t == 0):
                         put_in_column += 1
                         cell_position = len(c)
                     else:
@@ -2427,20 +2438,20 @@ class Stackup(object):
                         )
 
                         if ly[3] > 0:
-                            le = ly[1]  # lower elevation
-                            ue = ly[2]  # upper elevation
-                            y = [le, ue, ue, le]
+                            lower_elevation = ly[1]
+                            upper_elevation = ly[2]
+                            y = [lower_elevation, upper_elevation, upper_elevation, lower_elevation]
                             plot_data.insert(0, [x, y, color, label, signal_alpha, "fill"])
                         else:
-                            le = ly[1] - min_thickness * 0.1  # make the zero thickness layers more visible
-                            ue = ly[2] + min_thickness * 0.1
-                            y = [le, ue, ue, le]
+                            lower_elevation = ly[1] - min_thickness * 0.1  # make the zero thickness layers more visible
+                            upper_elevation = ly[2] + min_thickness * 0.1
+                            y = [lower_elevation, upper_elevation, upper_elevation, lower_elevation]
                             # put the zero thickness layers on top
                             plot_data.append([x, y, color, label, zero_thickness_alpha, "fill"])
 
                         # create annotation
                         x_pos = 1.0
-                        y_pos = (le + ue) / 2
+                        y_pos = (lower_elevation + upper_elevation) / 2
                         annotations.append([x_pos, y_pos, layer.name, {"fontsize": annotation_fontsize}])
 
             # order the annotations based on y_pos (it is necessary later to move them to avoid text overlapping)
@@ -2460,15 +2471,15 @@ class Stackup(object):
                     layer.name, layer.material, layer.thickness * 1e6, layer.lower_elevation * 1e6
                 )
                 # create the patch
-                le = ly[1]  # lower elevation
-                ue = ly[2]  # upper elevation
-                y = [le, ue, ue, le]
+                lower_elevation = ly[1]
+                upper_elevation = ly[2]
+                y = [lower_elevation, upper_elevation, upper_elevation, lower_elevation]
                 x = [0, 0, width, width]
                 plot_data.insert(0, [x, y, color, label, diel_alpha, "fill"])
 
                 # create annotation
                 x_pos = -annotation_x_margin * width
-                y_pos = (le + ue) / 2
+                y_pos = (lower_elevation + upper_elevation) / 2
                 annotations.append(
                     [x_pos, y_pos, layer.name, {"fontsize": annotation_fontsize, "horizontalalignment": "right"}]
                 )
@@ -2575,17 +2586,17 @@ class Stackup(object):
                             x_start + pad_size / 2 * scaling_f_pad,
                             x_start + pad_size / 2 * scaling_f_pad,
                         ]
-                        le = [e[1] for e in layers_data if e[0].name == layer or layer == "Default"][0]
-                        ue = [e[2] for e in layers_data if e[0].name == layer or layer == "Default"][0]
-                        y = [le, ue, ue, le]
+                        lower_elevation = [e[1] for e in layers_data if e[0].name == layer or layer == "Default"][0]
+                        upper_elevation = [e[2] for e in layers_data if e[0].name == layer or layer == "Default"][0]
+                        y = [lower_elevation, upper_elevation, upper_elevation, lower_elevation]
                         # create the patch for that signal layer
                         plot_data.append([x, y, color_keys[color_index], None, 1.0, "fill"])
                     elif stackup_mode == "Overlapping":
                         # here evaluate the x based on the column evaluated before and the pad size
                         pass
 
-                    min_le = min(le, min_le)
-                    max_ue = max(ue, max_ue)
+                    min_le = min(lower_elevation, min_le)
+                    max_ue = max(upper_elevation, max_ue)
                 if definition.hole_properties:
                     # create patch for the hole
                     hole_radius = definition.hole_properties[0] / 2 * scaling_f_pad

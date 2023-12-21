@@ -1,5 +1,4 @@
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 
 
 class BaseSimulationSetup(object):
@@ -148,6 +147,7 @@ class BaseSimulationSetup(object):
     @pyedb_function_handler
     def _add_frequency_sweep(self, sweep_data):
         """Add a frequency sweep.
+
         Parameters
         ----------
         sweep_data: EdbFrequencySweep
@@ -165,9 +165,10 @@ class BaseSimulationSetup(object):
     @pyedb_function_handler
     def delete_frequency_sweep(self, sweep_data):
         """Delete a frequency sweep.
+
         Parameters
         ----------
-        sweep_data : EdbFrequencySweep
+            sweep_data : EdbFrequencySweep.
         """
         name = sweep_data.name
         if name in self._sweep_list:
@@ -186,23 +187,26 @@ class BaseSimulationSetup(object):
     @pyedb_function_handler()
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
+
         Parameters
         ----------
         name : str, optional
             Name of the frequency sweep. The default is ``None``.
         frequency_sweep : list, optional
             List of frequency points. The default is ``None``.
+
         Returns
         -------
         :class:`pyedb.legacy.edb_core.edb_data.simulation_setup_data.EdbFrequencySweep`
+
         Examples
         --------
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
         >>> setup1.add_frequency_sweep(frequency_sweep=[
-        ...                           ["linear count", "0", "1kHz", 1],
-        ...                           ["log scale", "1kHz", "0.1GHz", 10],
-        ...                           ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-        ...                           ])
+        ...     ["linear count", "0", "1kHz", 1],
+        ...     ["log scale", "1kHz", "0.1GHz", 10],
+        ...     ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+        ...     ])
         """
         if name in self.frequency_sweeps:
             return False
@@ -284,6 +288,7 @@ class EdbFrequencySweep(object):
     @property
     def adaptive_sampling(self):
         """Flag indicating if adaptive sampling is turned on.
+
         Returns
         -------
         bool
@@ -294,6 +299,7 @@ class EdbFrequencySweep(object):
     @property
     def adv_dc_extrapolation(self):
         """Flag indicating if advanced DC extrapolation is turned on.
+
         Returns
         -------
         bool
@@ -319,6 +325,7 @@ class EdbFrequencySweep(object):
     @property
     def enforce_causality(self):
         """Flag indicating if causality is enforced.
+
         Returns
         -------
         bool
@@ -329,6 +336,7 @@ class EdbFrequencySweep(object):
     @property
     def enforce_dc_and_causality(self):
         """Flag indicating if DC point and causality are enforced.
+
         Returns
         -------
         bool
@@ -339,6 +347,7 @@ class EdbFrequencySweep(object):
     @property
     def enforce_passivity(self):
         """Flag indicating if passivity is enforced.
+
         Returns
         -------
         bool
@@ -348,10 +357,13 @@ class EdbFrequencySweep(object):
 
     @property
     def freq_sweep_type(self):
-        """Sweep type. Options are.
+        """Sweep type.
+
+        Options are:
         - ``"kInterpolatingSweep"``
         - ``"kDiscreteSweep"``
         - ``"kBroadbandFastSweep"``
+
         Returns
         -------
         str
@@ -362,6 +374,7 @@ class EdbFrequencySweep(object):
     @property
     def interpolation_use_full_basis(self):
         """Flag indicating if full-basis elements is used.
+
         Returns
         -------
         bool
@@ -372,6 +385,7 @@ class EdbFrequencySweep(object):
     @property
     def interpolation_use_port_impedance(self):
         """Flag indicating if port impedance interpolation is turned on.
+
         Returns
         -------
         bool
@@ -382,6 +396,7 @@ class EdbFrequencySweep(object):
     @property
     def interpolation_use_prop_const(self):
         """Flag indicating if propagation constants are used.
+
         Returns
         -------
         bool
@@ -392,6 +407,7 @@ class EdbFrequencySweep(object):
     @property
     def interpolation_use_s_matrix(self):
         """Flag indicating if the S matrix is used.
+
         Returns
         -------
         bool
@@ -402,6 +418,7 @@ class EdbFrequencySweep(object):
     @property
     def max_solutions(self):
         """Number of maximum solutions.
+
         Returns
         -------
         int
@@ -411,6 +428,7 @@ class EdbFrequencySweep(object):
     @property
     def min_freq_s_mat_only_solve(self):
         """Minimum frequency SMatrix only solve.
+
         Returns
         -------
         str
@@ -432,6 +450,7 @@ class EdbFrequencySweep(object):
     @property
     def passivity_tolerance(self):
         """Tolerance for passivity enforcement.
+
         Returns
         -------
         float
@@ -451,6 +470,7 @@ class EdbFrequencySweep(object):
     @property
     def save_fields(self):
         """Flag indicating if the extraction of surface current data is turned on.
+
         Returns
         -------
         bool
@@ -461,6 +481,7 @@ class EdbFrequencySweep(object):
     @property
     def save_rad_fields_only(self):
         """Flag indicating if the saving of only radiated fields is turned on.
+
         Returns
         -------
         bool
@@ -471,6 +492,7 @@ class EdbFrequencySweep(object):
     @property
     def use_q3d_for_dc(self):
         """Flag indicating if the Q3D solver is used for DC point extraction.
+
         Returns
         -------
         bool
@@ -589,6 +611,7 @@ class EdbFrequencySweep(object):
     @pyedb_function_handler()
     def set_frequencies_linear_scale(self, start="0.1GHz", stop="20GHz", step="50MHz"):
         """Set a linear scale frequency sweep.
+
         Parameters
         ----------
         start : str, float, optional
@@ -597,6 +620,7 @@ class EdbFrequencySweep(object):
             Stop frequency. The default is ``"20GHz"``.
         step : str, float, optional
             Step frequency. The default is ``"50MHz"``.
+
         Returns
         -------
         bool
@@ -608,14 +632,16 @@ class EdbFrequencySweep(object):
     @pyedb_function_handler()
     def set_frequencies_linear_count(self, start="1kHz", stop="0.1GHz", count=10):
         """Set a linear count frequency sweep.
+
         Parameters
         ----------
         start : str, float, optional
             Start frequency. The default is ``"1kHz"``.
-        stop : str, float, optinal
+        stop : str, float, optional
             Stop frequency. The default is ``"0.1GHz"``.
         count : int, optional
             Step frequency. The default is ``10``.
+
         Returns
         -------
         bool
@@ -629,6 +655,7 @@ class EdbFrequencySweep(object):
     @pyedb_function_handler()
     def set_frequencies_log_scale(self, start="1kHz", stop="0.1GHz", samples=10):
         """Set a log-count frequency sweep.
+
         Parameters
         ----------
         start : str, float, optional
@@ -637,6 +664,7 @@ class EdbFrequencySweep(object):
             Stop frequency. The default is ``"0.1GHz"``.
         samples : int, optional
             Step frequency. The default is ``10``.
+
         Returns
         -------
         bool
@@ -650,6 +678,7 @@ class EdbFrequencySweep(object):
     @pyedb_function_handler()
     def set_frequencies(self, frequency_list=None, update=True):
         """Set frequency list to the sweep frequencies.
+
         Parameters
         ----------
         frequency_list : list, optional

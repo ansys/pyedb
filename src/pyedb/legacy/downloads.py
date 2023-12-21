@@ -4,9 +4,7 @@ import shutil
 import tempfile
 import zipfile
 
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import is_linux
-from pyedb.generic.general_methods import settings
+from pyedb.generic.general_methods import is_ironpython, is_linux, settings
 from pyedb.misc.misc import list_installed_ansysem
 
 if is_ironpython:

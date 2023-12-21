@@ -10,31 +10,30 @@ This example shows how you can use PyAEDT to import a gds from an IC file.
 # Perform required imports, which includes importing a section.
 
 import os
-import tempfile
 import shutil
+import tempfile
+
 from pyedb import Edb
-from pyedb.legacy.edb_core.edb_data.control_file import ControlFile
 from pyedb.legacy.downloads import download_file
+from pyedb.legacy.edb_core.edb_data.control_file import ControlFile
 
 ###############################################################################
 # Download file
 # ~~~~~~~~~~~~~
 # Download the AEDB file and copy it in the temporary folder.
 temppath = tempfile.gettempdir()
-local_path = download_file('gds')
-c_file_in = os.path.join(
-    local_path, "sky130_fictitious_dtc_example_control_no_map.xml"
-)
+local_path = download_file("gds")
+c_file_in = os.path.join(local_path, "sky130_fictitious_dtc_example_control_no_map.xml")
 c_map = os.path.join(local_path, "dummy_layermap.map")
 gds_in = os.path.join(local_path, "sky130_fictitious_dtc_example.gds")
 gds_out = os.path.join(temppath, "example.gds")
-shutil.copy2(gds_in,gds_out )
+shutil.copy2(gds_in, gds_out)
 ###############################################################################
 # Control file
 # ~~~~~~~~~~~~
 # A Control file is an xml file which purpose if to provide additional
 # information during import phase. It can include, materials, stackup, setup, boundaries and settings.
-# In this example we will import an exising xml, integrate it with a layer mapping file of gds
+# In this example we will import an existing xml, integrate it with a layer mapping file of gds
 # and then adding setup and boundaries.
 
 c = ControlFile(c_file_in, layer_map=c_map)

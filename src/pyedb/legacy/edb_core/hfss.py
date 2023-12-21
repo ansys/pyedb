@@ -3,19 +3,22 @@ This module contains the ``EdbHfss`` class.
 """
 import math
 
+from pyedb.generic.constants import RadiationBoxType, SweepType
+from pyedb.generic.general_methods import (
+    generate_unique_name,
+    is_ironpython,
+    pyedb_function_handler,
+)
 from pyedb.legacy.edb_core.edb_data.hfss_extent_info import HfssExtentInfo
-from pyedb.legacy.edb_core.edb_data.ports import BundleWavePort
-from pyedb.legacy.edb_core.edb_data.ports import WavePort
+from pyedb.legacy.edb_core.edb_data.ports import BundleWavePort, WavePort
 from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitives
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.legacy.edb_core.general import convert_pytuple_to_nettuple
-from pyedb.generic.constants import RadiationBoxType
-from pyedb.generic.constants import SweepType
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.legacy.edb_core.edb_data.simulation_configuration import (
+    SimulationConfiguration,
+)
+from pyedb.legacy.edb_core.general import (
+    convert_py_list_to_net_list,
+    convert_pytuple_to_nettuple,
+)
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -24,7 +27,7 @@ class EdbHfss(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder")
     >>> edb_hfss = edb_3dedbapp.hfss
     """
@@ -102,6 +105,7 @@ class EdbHfss(object):
             default name is assigned.
         is_ref : bool, optional
             Whether it is a reference terminal. The default is ``False``.
+
         Returns
         -------
         Edb.Cell.Terminal.EdgeTerminal
@@ -153,7 +157,7 @@ class EdbHfss(object):
         port_name : str, optional
             Port Name
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins =edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.hfss.create_circuit_port_on_pin(pins[0], pins[1],50,"port_name")
@@ -191,7 +195,7 @@ class EdbHfss(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins =edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.hfss.create_voltage_source_on_pin(pins[0], pins[1],50,"source_name")
@@ -223,7 +227,7 @@ class EdbHfss(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins =edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.hfss.create_current_source_on_pin(pins[0], pins[1],50,"source_name")
@@ -254,7 +258,7 @@ class EdbHfss(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins =edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.hfss.create_resistor_on_pin(pins[0], pins[1],50,"res_name")
@@ -297,7 +301,7 @@ class EdbHfss(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.hfss.create_circuit_port_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 50, "port_name")
         """
@@ -349,7 +353,7 @@ class EdbHfss(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.hfss.create_voltage_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 3.3, 0, "source_name")
         """
@@ -402,7 +406,7 @@ class EdbHfss(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.hfss.create_current_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 0.1, 0, "source_name")
         """
@@ -841,6 +845,7 @@ class EdbHfss(object):
             Radial extent factor. The default value is ``0``.
         pec_launch_width : str, optional
             Launch Width of PEC. The default value is ``"0.01mm"``.
+
         Returns
         -------
         str
@@ -907,6 +912,7 @@ class EdbHfss(object):
             Impedance of the port. The default value is ``50``.
         layer_alignment : str, optional
             Layer alignment. The default value is ``Upper``. Options are ``"Upper"``, ``"Lower"``.
+
         Returns
         -------
         str
@@ -1154,10 +1160,11 @@ class EdbHfss(object):
 
         digit_resolution : int, optional
             Digit Resolution. The default value is ``6``.
+
         Returns
         -------
         list
-            [lower left corner X, lower left corner, upper right corner X, upper right corner Y]
+            [lower left corner X, lower left corner, upper right corner X, upper right corner Y].
         """
         if layout == None:
             return False
@@ -1428,9 +1435,20 @@ class EdbHfss(object):
             )
             return False
         net_names = [net.name for net in self._layout.nets if not net.IsPowerGround()]
-        cmp_names = (
-            simulation_setup.components if simulation_setup.components else [gg.GetName() for gg in self._layout.groups]
-        )
+        if simulation_setup.components and isinstance(simulation_setup.components[0], str):
+            cmp_names = (
+                simulation_setup.components
+                if simulation_setup.components
+                else [gg.GetName() for gg in self._layout.groups]
+            )
+        elif (
+            simulation_setup.components
+            and isinstance(simulation_setup.components[0], dict)
+            and "refdes" in simulation_setup.components[0]
+        ):
+            cmp_names = [cmp["refdes"] for cmp in simulation_setup.components]
+        else:
+            cmp_names = []
         ii = 0
         for cc in cmp_names:
             cmp = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, cc)

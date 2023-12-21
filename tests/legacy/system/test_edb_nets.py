@@ -2,13 +2,15 @@
 """
 
 import os
+
 import pytest
+
 from pyedb.legacy.edb import EdbLegacy
-from tests.conftest import desktop_version
-from tests.conftest import local_path
+from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -18,7 +20,6 @@ class TestClass:
         self.target_path = target_path
         self.target_path2 = target_path2
         self.target_path4 = target_path4
-
 
     def test_nets_queries(self):
         """Evaluate nets queries"""
@@ -109,9 +110,8 @@ class TestClass:
         edbapp.layout_validation.illegal_rlc_values(True)
 
         # assert len(dc_shorts) == 20
-        assert ["LVDS_CH09_N", "GND"] in dc_shorts
-        assert ["LVDS_CH09_N", "DDR4_DM3"] in dc_shorts
-        assert ["DDR4_DM3", "LVDS_CH07_N"] in dc_shorts
+        assert ["SFPA_Tx_Fault", "PCIe_Gen4_CLKREQ_L"] in dc_shorts
+        assert ["VDD_DDR", "GND"] in dc_shorts
         assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) > 0
         edbapp.nets["DDR4_DM3"].find_dc_short(True)
         assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) == 0

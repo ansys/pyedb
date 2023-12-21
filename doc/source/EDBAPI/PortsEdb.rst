@@ -7,7 +7,8 @@ These classes are the containers of ports methods of the EDB for both HFSS and S
 
 .. code:: python
 
-    from from pyedb.legacy.edb_core.edb import Edb
+    from pyedb.legacy.edb_core.edb import Edb
+
     edb = Edb(myedb, edbversion="2023.1")
 
     # this call returns the EDB excitations dictionary

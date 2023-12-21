@@ -84,20 +84,22 @@ def Edb(
     # Use EDB legacy (default choice)
     if bool(os.getenv("PYEDB_USE_LEGACY", "1")):
         from pyedb.legacy.edb import EdbLegacy as app
+
         return app(
-                edbpath=edbpath,
-                cellname=cellname,
-                isreadonly=isreadonly,
-                edbversion=edbversion,
-                isaedtowned=isaedtowned,
-                oproject=oproject,
-                student_version=student_version,
-                use_ppe=use_ppe,
-                technology_file=technology_file,
-            )
+            edbpath=edbpath,
+            cellname=cellname,
+            isreadonly=isreadonly,
+            edbversion=edbversion,
+            isaedtowned=isaedtowned,
+            oproject=oproject,
+            student_version=student_version,
+            use_ppe=use_ppe,
+            technology_file=technology_file,
+        )
     # TODO: Use EDB gRPC
     else:
         from pyedb.grpc.edb import Edb as app
+
         return app(
             edbpath=edbpath,
             cellname=cellname,
@@ -112,4 +114,3 @@ def Edb(
 
 
 app_map = {"EDB": Edb}
-

@@ -1,4 +1,4 @@
-Quick Code
+Quick code
 ==========
 
 Documentation and issues
@@ -16,7 +16,7 @@ providing syntax rules and commands for using the PyEDB API and PyEDB API:
 
 - `View PyEDB cheat sheet <https://cheatsheets.docs.pyansys.com/pyedb_API_cheat_sheet.png>`_ or
   `download PyEDB cheat sheet  <https://cheatsheets.docs.pyansys.com/pyedb_API_cheat_sheet.pdf>`_ the
-  PyAEDT API cheat sheet.
+  PyEDB API cheat sheet.
 
 
 On the `PyEDB Issues <https://github.com/ansys/Pansys-edb/issues>`_ page, you can
@@ -45,7 +45,7 @@ Explicit PyEDB declaration and error management
 
     from pyedb.legacy.edb_core.edb import EdbLegacy
 
-    edb_file = pyedb.layout_examples.ANSYS-HSD_V1.aedb
+    edb_file = pyedb.layout_examples.ANSYS - HSD_V1.aedb
     edb = EdbLegacy(edbversion="2023.2", edbpath=edb_file)
 
 
@@ -56,7 +56,7 @@ Variables
 
     from pyedb.legacy.edb_core.edb import EdbLegacy
 
-    edb_file = pyedb.layout_examples.ANSYS-HSD_V1.aedb
+    edb_file = pyedb.layout_examples.ANSYS - HSD_V1.aedb
     edb = EdbLegacy(edbversion="2023.2", edbpath=edb_file)
-    edb["dim"] = "1mm"   # design variable
+    edb["dim"] = "1mm"  # design variable
     edb["$dim"] = "1mm"  # project variable

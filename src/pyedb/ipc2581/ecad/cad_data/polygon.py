@@ -1,8 +1,6 @@
 import math
 
-from pyedb.generic.general_methods import ET
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.generic.general_methods import ET, pyedb_function_handler
 
 
 class Polygon(object):
