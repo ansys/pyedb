@@ -14,6 +14,8 @@ run anlasyis and get results.
 
 import os
 
+from pyaedt import Hfss3dLayout
+
 import pyedb
 from pyedb.generic.general_methods import generate_unique_folder_name
 from pyedb.legacy.downloads import download_file
