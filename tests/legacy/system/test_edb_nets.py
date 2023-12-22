@@ -120,3 +120,11 @@ class TestClass:
     def test_nets_eligible_power_nets(self):
         """Evaluate eligible power nets."""
         assert "GND" in [i.name for i in self.edbapp.nets.eligible_power_nets()]
+
+    def test_nets_merge_polygon(self):
+        """Convert paths from net into polygons."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "test_merge_polygon.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_merge_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = EdbLegacy(target_path, desktop_version)
+        assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
