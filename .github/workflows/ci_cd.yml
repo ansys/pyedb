@@ -121,71 +121,6 @@ jobs:
         with:
           files: .cov/xml
 
-# =================================================================================================
-# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-# =================================================================================================
-
-  legacy-examples:
-    name: "Check legacy examples"
-    needs: [legacy-tests]
-    runs-on: [ windows, pyedb, self-hosted ]
-    env:  
-      PYEDB_CI_NO_DISPLAY: '1'
-    steps:
-      - name: "Install Git and clone project"
-        uses: actions/checkout@v4
-
-      - name: "Set up Python"
-        uses: ansys/actions/_setup-python@main
-        with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION_WINDOWS_SELFHOSTED }}
-          use-cache: false
-
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-          . .venv\Scripts\Activate.ps1
-
-      - name: "Update pip"
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install -U pip
-
-      - name: Install pyedb
-        run: |
-          . .venv\Scripts\Activate.ps1
-          pip install .[full]
-
-      - name: Execute legacy examples (except pyaedt related and 01)
-        run: |
-          . .venv\Scripts\Activate.ps1
-          $excluded_example = "01_edb_example.py"
-          # TODO: once pyaedt examples are passing, use -Recurse to cover them
-          Get-ChildItem -Path examples/legacy -Filter *.py -File | ? { $_.Name -ne $excluded_example } | ForEach-Object {
-            Write-Host "Executing example $($_.FullName)"
-            python $_.FullName
-          }
-
-      # - name: "Clone pyaedt on specific branch"
-      #   uses: actions/checkout@v4
-      #   with:
-      #     repository: ansys/pyaedt
-      #     path: "external/pyaedt"
-      #     ref: "maint/use_pyedb"
-
-      # - name: "Install Pyaedt"
-      #   run: |
-      #     .\.venv\Scripts\Activate.ps1
-      #     pip install --no-cache-dir external/pyaedt[full]
-
-      # - name: Execute legacy pyaedt integration examples
-      #   run: |
-      #     . .venv\Scripts\Activate.ps1
-      #     Get-ChildItem -Path examples/legacy/pyaedt_integration -Filter *.py -File | ? { $_.Name -ne $excluded_example } | ForEach-Object {
-      #       Write-Host "Executing pyaedt integration example $($_.FullName)"
-      #       python $_.FullName
-      #     }
-
   docs-build:
     name: Build documentation
     runs-on: ubuntu-20.04
@@ -338,3 +273,4 @@ jobs:
           host-url: ${{ env.MEILISEARCH_HOST_URL }}
           api-key: ${{ env.MEILISEARCH_API_KEY }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
