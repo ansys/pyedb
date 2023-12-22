@@ -468,3 +468,17 @@ class TestClass:
         assert component.bounding_box
         assert isinstance(component.rotation, float)
         edbapp.close()
+
+    def test_pec_boundary_ports(self):
+        """Check pec boundary ports."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_custom_sball_height", "ANSYS-HSD_V1.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp.components.create_port_on_pins(refdes="U1", pins="AU38", reference_pins="AU37", pec_boundary=True)
+        assert edbapp.terminals["Port_GND_U1-AU38"].boundary_type == "PecBoundary"
+        assert edbapp.terminals["Port_GND_U1-AU38_ref"].boundary_type == "PecBoundary"
+        edbapp.components.deactivate_rlc_component(component="C5", create_circuit_port=True, pec_boundary=True)
+        edbapp.components.add_port_on_rlc_component(component="C65", circuit_ports=False, pec_boundary=True)
+        assert edbapp.terminals["C5"].boundary_type == "PecBoundary"
+        assert edbapp.terminals["C65"].boundary_type == "PecBoundary"
