@@ -20,9 +20,9 @@ from pyedb.generic.general_methods import generate_unique_name
 ##########################################################
 # Set non-graphical mode
 # ~~~~~~~~~~~~~~~~~~~~~~
-# Set non-graphical mode. The default is ``False``.
+# Set non-graphical mode. The default is ``True``.
 
-non_graphical = False
+non_graphical = True
 
 
 class Patch:

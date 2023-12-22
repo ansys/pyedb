@@ -21,9 +21,9 @@ from pyedb.generic.general_methods import generate_unique_name
 ##########################################################
 # Set non-graphical mode
 # ~~~~~~~~~~~~~~~~~~~~~~
-# Set non-graphical mode. The default is ``False``.
+# Set non-graphical mode. The default is ``True``.
 
-non_graphical = False
+non_graphical = True
 
 ##########################################################
 # Creating data classes
@@ -261,7 +261,13 @@ print("EDB saved correctly to {}. You can import in AEDT.".format(aedb_path))
 # ~~~~~~~~~~~~~~
 # Launch HFSS 3D.
 
-h3d = Hfss(specified_version="2023.2", new_desktop_session=True, close_on_exit=True, solution_type="Terminal")
+h3d = Hfss(
+    specified_version="2023.2",
+    new_desktop_session=True,
+    close_on_exit=True,
+    solution_type="Terminal",
+    non_graphical=non_graphical,
+)
 
 
 ###############################################################################
