@@ -1,4 +1,4 @@
-name: Test pyedb as pyaedt dependency
+name: Nightly test of pyedb as pyaedt dependency
 
 on:
   # Schedule this workflow every day at UTC 3:00.
