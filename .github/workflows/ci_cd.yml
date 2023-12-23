@@ -186,7 +186,7 @@ jobs:
 
   package:
     name: Package library
-    needs: [legacy-tests, legacy-examples, docs-build]
+    needs: [legacy-tests, docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
