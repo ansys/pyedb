@@ -8,11 +8,12 @@ import tempfile
 import time
 import warnings
 
-from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.generic.constants import AEDT_UNITS
-from pyedb.generic.constants import CSS4_COLORS
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import open_file
+from pyedb.generic.constants import AEDT_UNITS, CSS4_COLORS
+from pyedb.generic.general_methods import (
+    is_ironpython,
+    open_file,
+    pyedb_function_handler,
+)
 
 if not is_ironpython:
     try:
@@ -36,10 +37,12 @@ if not is_ironpython:
     try:
         from matplotlib.patches import PathPatch
         from matplotlib.path import Path
+
         # Use matplotlib agg backend (non-interactive) when the CI is running.
         if bool(int(os.getenv("PYEDB_CI_NO_DISPLAY", "0"))):
             import matplotlib
-            matplotlib.use('Agg')
+
+            matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
     except ImportError:
@@ -1237,6 +1240,7 @@ class ModelPlotter(CommonPlotter):
             Delauny tolerance value used for interpolating points.
         header_lines : int
             Number of lines to of the file containing header info that has to be removed.
+
         Returns
         -------
         bool

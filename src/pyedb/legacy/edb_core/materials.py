@@ -1,17 +1,14 @@
 from __future__ import absolute_import  # noreorder
 
 import difflib
-import fnmatch
 import logging
 import os
 import re
 import warnings
 
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
+from pyedb.generic.general_methods import is_ironpython, pyedb_function_handler
 from pyedb.legacy.clr_module import _clr
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 
 logger = logging.getLogger(__name__)
 
@@ -360,6 +357,7 @@ class Material(object):
                 if self._edb_material_def.GetDielectricMaterialModel():
                     self._edb_material_def.SetDielectricMaterialModel(self._edb_value(None))
 
+
 # TODO: Cleanup
 class Materials(object):
     """Manages EDB methods for material management accessible from `Edb.materials` property."""
@@ -627,7 +625,7 @@ class Materials(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb()
         >>> freq = [0, 2, 3, 4, 5, 6]
         >>> rel_perm = [1e9, 1.1e9, 1.2e9, 1.3e9, 1.5e9, 1.6e9]
@@ -675,7 +673,7 @@ class Materials(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> my_material = edb_app.materials.duplicate("copper", "my_new_copper")
 
@@ -793,7 +791,7 @@ class Materials(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> returned_tuple = edb_app.materials.get_property_by_material_name("conductivity", "copper")
         >>> edb_value = returned_tuple[0]
@@ -819,27 +817,32 @@ class Materials(object):
         return False
 
     @pyedb_function_handler()
-    def load_syslib_amat(self, filename="Materials.amat"):
-        """Load materials from an amat file located in the project system library.
+    def load_amat(self, amat_file):
+        """Load materials from an AMAT file.
 
         Parameters
         ----------
-        filename : str
-            Name of the amat file.
+        amat_file : str
+            Full path to the AMAT file to read and add to the Edb.
 
         Returns
         -------
         bool
         """
-        mat_file = os.path.join(self._syslib, filename)
-        if not os.path.exists(mat_file):
-            self._pedb.logger.error("File path {} does not exist.".format(mat_file))
-        material_dict = self.read_materials(mat_file)
+        if not os.path.exists(amat_file):
+            self._pedb.logger.error("File path {} does not exist.".format(amat_file))
+        material_dict = self.read_materials(amat_file)
         for material_name, material in material_dict.items():
             if not material_name in list(self.materials.keys()):
                 new_material = self.add_material(name=material_name)
-                properties = ["permittivity", "conductivity", "mass_density", "permeability",
-                              "specific_heat", "thermal_expansion_coefficient"] 
+                properties = [
+                    "permittivity",
+                    "conductivity",
+                    "mass_density",
+                    "permeability",
+                    "specific_heat",
+                    "thermal_expansion_coefficient",
+                ]
                 for mat_prop_name, mat_prop_value in material.items():
                     if mat_prop_name in properties:
                         setattr(new_material, mat_prop_name, mat_prop_value)
@@ -847,23 +850,28 @@ class Materials(object):
                         new_material.loss_tangent = mat_prop_value
         return True
 
-
     @staticmethod
     @pyedb_function_handler()
-    def read_materials(mat_file):
-        """Read materials from an amat file.
+    def read_materials(amat_file):
+        """Read materials from an AMAT file.
 
         Parameters
         ----------
-        filename : str
-            Name of the amat file.
+        amat_file : str
+            Full path to the AMAT file to read.
 
         Returns
         -------
         dict
-            {material name: dict of material property to value}
+            {material name: dict of material property to value}.
         """
+
         def get_line_float_value(line):
+            """Retrieve the float value expected in the line of an AMAT file.
+            The associated string is expected to follow one of the following cases:
+            - simple('permittivity', 12.)
+            - permittivity='12'.
+            """
             try:
                 return float(re.split(",|=", line)[-1].strip(")'"))
             except ValueError:
@@ -872,12 +880,28 @@ class Materials(object):
         res = {}
         _begin_search = re.compile(r"^\$begin '(.+)'")
         _end_search = re.compile(r"^\$end '(.+)'")
-        amat_keys = ["thermal_conductivity", "permittivity", "dielectric_loss_tangent", "permeability", "magnetic_loss_tangent",
-                     "thermal_expansion_coeffcient", "specific_heat", "mass_density"]
-        keys = ["thermal_conductivity", "permittivity", "tangent_delta", "permeability", "magnetic_loss_tangent",
-                "thermal_expansion_coeffcient", "specific_heat", "mass_density"]
+        amat_keys = [
+            "thermal_conductivity",
+            "permittivity",
+            "dielectric_loss_tangent",
+            "permeability",
+            "magnetic_loss_tangent",
+            "thermal_expansion_coeffcient",
+            "specific_heat",
+            "mass_density",
+        ]
+        keys = [
+            "thermal_conductivity",
+            "permittivity",
+            "tangent_delta",
+            "permeability",
+            "magnetic_loss_tangent",
+            "thermal_expansion_coeffcient",
+            "specific_heat",
+            "mass_density",
+        ]
 
-        with open(mat_file, "r") as amat_fh:
+        with open(amat_file, "r") as amat_fh:
             raw_lines = amat_fh.read().splitlines()
             mat_found = ""
             for line in raw_lines:
@@ -886,16 +910,16 @@ class Materials(object):
                     mat_found = b.group(1)
                     res.setdefault(mat_found, {})
                 if mat_found:
-                    for (amat_key, key) in zip(amat_keys, keys):
+                    for amat_key, key in zip(amat_keys, keys):
                         if amat_key in line:
                             value = get_line_float_value(line)
                             if value is not None:
                                 res[mat_found][key] = value
                     # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
                     if "conductivity" in line and "thermal_conductivity" not in line:
-                            value = get_line_float_value(line)
-                            if value is not None:
-                                res[mat_found]["conductivity"] = value
+                        value = get_line_float_value(line)
+                        if value is not None:
+                            res[mat_found]["conductivity"] = value
                 end = _end_search.search(line)
                 if end:
                     mat_found = ""

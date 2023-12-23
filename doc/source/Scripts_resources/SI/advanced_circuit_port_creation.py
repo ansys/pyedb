@@ -1,16 +1,16 @@
-import pyaedt
-from pyaedt import Edb, Hfss3dLayout
-from pyaedt.generic.constants import SourceType
+from pyedb.generic.general_methods import generate_unique_folder_name
+from pyedb.legacy.edb import EdbLegacy
+from pyedb.misc.downloads import download_file
 
 # Ansys release version
 desktop_version = "2023.2"
 
 # download and copy the layout file from examples
-temp_folder = pyaedt.generate_unique_folder_name()
-targetfile = pyaedt.downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+temp_folder = generate_unique_folder_name()
+targetfile = download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
 # loading EDB
-edbapp = Edb(edbpath=targetfile, edbversion=desktop_version)
+edbapp = EdbLegacy(edbpath=targetfile, edbversion=desktop_version)
 
 signal_nets = ["DDR4_DQ0", "DDR4_DQ1", "DDR4_DQ2", "DDR4_DQ3", "DDR4_DQ4", "DDR4_DQ5", "DDR4_DQ6", "DDR4_DQ7"]
 reference_nets = ["GND"]
@@ -29,5 +29,3 @@ for net in signal_nets:
 # save and close project
 edbapp.save_edb()
 edbapp.close_edb()
-hfss = Hfss3dLayout(projectname=targetfile, specified_version=desktop_version)
-hfss.release_desktop(close_desktop=False, close_projects=False)

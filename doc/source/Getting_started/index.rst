@@ -21,7 +21,7 @@ Getting started
             :link-type: doc
             :margin: 2 2 0 0
 
-            Here's a brief example of how PyAEDT works.
+            Here's a brief example of how PyEDB works.
 
 
    .. grid-item-card:: Versions and interfaces
@@ -64,7 +64,7 @@ Desktop (AEDT) installed.
   :alt: AEDT Applications
   :target: https://www.ansys.com/products/electronics
 
-For more information, see `Ansys Electronics <https://https://www.ansys.com/products/electronics>`_
+For more information, see `Ansys Electronics <https://www.ansys.com/products/electronics>`_
 on the Ansys website.
 
 

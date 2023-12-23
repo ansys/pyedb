@@ -84,7 +84,7 @@ class Variable:
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.design_variables["new_variable"].delete()
         """

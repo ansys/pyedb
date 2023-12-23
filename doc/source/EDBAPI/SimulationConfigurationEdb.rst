@@ -3,7 +3,7 @@ Simulation configuration
 These classes are the containers of simulation configuration constructors for the EDB.
 
 
-.. currentmodule:: pyaedt.edb_core.edb_data.simulation_configuration
+.. currentmodule:: pyedb.legacy.edb_core.edb_data.simulation_configuration
 
 .. autosummary::
    :toctree: _autosummary
@@ -18,7 +18,8 @@ These classes are the containers of simulation configuration constructors for th
 
 .. code:: python
 
-    from pyaedt import Edb
+    from pyedb.legacy.edb_core.edb import Edb
+
     edbapp = Edb(myedb, edbversion="2023.1")
 
     sim_setup = edbapp.new_simulation_configuration()
@@ -26,8 +27,14 @@ These classes are the containers of simulation configuration constructors for th
     sim_setup.batch_solve_settings.cutout_subdesign_expansion = 0.01
     sim_setup.batch_solve_settings.do_cutout_subdesign = True
     sim_setup.use_default_cutout = False
-    sim_setup.batch_solve_settings.signal_nets = ["PCIE0_RX0_P", "PCIE0_RX0_N", "PCIE0_TX0_P_C", "PCIE0_TX0_N_C",
-                                                  "PCIE0_TX0_P", "PCIE0_TX0_N"]
+    sim_setup.batch_solve_settings.signal_nets = [
+        "PCIE0_RX0_P",
+        "PCIE0_RX0_N",
+        "PCIE0_TX0_P_C",
+        "PCIE0_TX0_N_C",
+        "PCIE0_TX0_P",
+        "PCIE0_TX0_N",
+    ]
     sim_setup.batch_solve_settings.components = ["U2A5", "J2L1"]
     sim_setup.batch_solve_settings.power_nets = ["GND"]
     sim_setup.ac_settings.start_freq = "100Hz"

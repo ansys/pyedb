@@ -1,11 +1,12 @@
-from pyedb.legacy.edb_core.dotnet.database import DifferentialPairDotNet
-from pyedb.legacy.edb_core.dotnet.database import ExtendedNetDotNet
-from pyedb.legacy.edb_core.dotnet.database import NetClassDotNet
-from pyedb.legacy.edb_core.dotnet.database import NetDotNet
+from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.legacy.edb_core.dotnet.database import (
+    DifferentialPairDotNet,
+    ExtendedNetDotNet,
+    NetClassDotNet,
+    NetDotNet,
+)
 from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.legacy.edb_core.edb_data.primitives_data import cast
-from pyedb.generic.general_methods import pyedb_function_handler
-
 
 
 class EDBNetsData(NetDotNet):
@@ -14,7 +15,7 @@ class EDBNetsData(NetDotNet):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_net = edb.nets.nets["GND"]
     >>> edb_net.name # Class Property
@@ -84,6 +85,7 @@ class EDBNetsData(NetDotNet):
         fix : bool, optional
             If `True`, rename all the nets. (default)
             If `False`, only report dc shorts.
+
         Returns
         -------
         List[List[str, str]]
@@ -154,7 +156,7 @@ class EDBNetsData(NetDotNet):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.nets["BST_V3P3_S5"].extended_net
         """
@@ -173,7 +175,7 @@ class EDBNetClassData(NetClassDotNet):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb.net_classes
     """
@@ -197,7 +199,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_extended_net = edb.nets.extended_nets["GND"]
     >>> edb_extended_net.name # Class Property
@@ -240,7 +242,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
                 {
                     i: v
                     for i, v in self._app._nets[net].components.items()
-                    if list(set(v.nets).intersection(nets)) != [net]
+                    if list(set(v.nets).intersection(nets)) != [net] and v.type in ["Resistor", "Inductor", "Capacitor"]
                 }
             )
         return comps_common
@@ -252,7 +254,7 @@ class EDBDifferentialPairData(DifferentialPairDotNet):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> diff_pair = edb.differential_pairs["DQ4"]
     >>> diff_pair.positive_net

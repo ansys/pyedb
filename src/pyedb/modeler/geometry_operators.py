@@ -3,10 +3,7 @@ import math
 import re
 import sys
 
-from pyedb.generic.constants import AXIS
-from pyedb.generic.constants import PLANE
-from pyedb.generic.constants import SWEEPDRAFT
-from pyedb.generic.constants import scale_units
+from pyedb.generic.constants import AXIS, PLANE, SWEEPDRAFT, scale_units
 from pyedb.generic.general_methods import pyedb_function_handler
 
 

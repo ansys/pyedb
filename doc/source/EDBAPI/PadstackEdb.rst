@@ -5,18 +5,22 @@ The main padstack object is called directly from main application using the prop
 
 .. code:: python
 
-    from pyaedt import Edb
+    from pyedb.legacy.edb_core.edb import Edb
+
     edb = Edb(myedb, edbversion="2023.1")
 
     edb.padstacks.create_padstack(
-    padstackname="SVIA", holediam="$via_hole_size", antipaddiam="$antipaddiam", paddiam="$paddiam"
+        padstackname="SVIA",
+        holediam="$via_hole_size",
+        antipaddiam="$antipaddiam",
+        paddiam="$paddiam",
     )
 
 
     ...
 
 
-.. currentmodule:: pyaedt.edb_core.padstack
+.. currentmodule:: pyedb.legacy.edb_core.padstack
 
 .. autosummary::
    :toctree: _autosummary
@@ -30,7 +34,7 @@ Instances and definitions
 These classes are the containers of data management for padstacks instances and padstack definitions.
 
 
-.. currentmodule:: pyaedt.edb_core.edb_data.padstacks_data
+.. currentmodule:: pyedb.legacy.edb_core.edb_data.padstacks_data
 
 .. autosummary::
    :toctree: _autosummary

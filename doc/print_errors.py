@@ -1,7 +1,7 @@
 """Read errors output from a Sphinx build and remove duplicate groups."""
-import sys
 import os
 import pathlib
+import sys
 
 sys.tracebacklimit = 0
 my_path = pathlib.Path(__file__).parent.resolve()
@@ -26,6 +26,6 @@ if os.path.isfile(error_file):
     # There should be no errors here since sphinx will have exited
     print()
     if errors:
-        raise Exception(f"Sphinx reported unique {len(errors)} warnings\n\n")
+        raise Exception(f"Sphinx reported {len(errors)} warnings\n\n")
 
 print(f"Sphinx Reported no warnings\n\n")

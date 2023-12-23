@@ -1,14 +1,16 @@
 import os
+
 import pytest
 
-from tests.conftest import desktop_version
 from pyedb.legacy.edb import EdbLegacy
+from tests.conftest import desktop_version
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
+
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self,local_scratch):
+    def init(self, local_scratch):
         self.local_scratch = local_scratch
 
     def test_create_edb(self):
@@ -21,6 +23,7 @@ class TestClass:
     def test_create_edb_without_path(self):
         """Create EDB without path."""
         import time
+
         edbapp_without_path = EdbLegacy(edbversion=desktop_version, isreadonly=False)
         time.sleep(2)
         edbapp_without_path.close()

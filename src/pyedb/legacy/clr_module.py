@@ -10,12 +10,13 @@ is_windows = not is_linux
 is_clr = False
 
 try:
-    import pyaedt
-    pyaedt_path = os.path.dirname(os.path.abspath(pyaedt.__file__))
-    sys.path.append(os.path.join(pyaedt_path, "dlls", "PDFReport"))
+    import pyedb
+
+    pyedb_path = os.path.dirname(os.path.abspath(pyedb.__file__))
+    sys.path.append(os.path.join(pyedb_path, "dlls", "PDFReport"))
 except ImportError:
-    pyaedt_path = None
-    warnings.warn("Cannot import pyaedt.")
+    pyedb_path = None
+    warnings.warn("Cannot import pyedb.")
 
 if is_linux and cpython:  # pragma: no cover
     try:
@@ -34,22 +35,24 @@ if is_linux and cpython:  # pragma: no cover
 
         from pythonnet import load
 
-        if pyaedt_path is not None:
-            json_file = os.path.abspath(os.path.join(pyaedt_path, "misc", "pyaedt.runtimeconfig.json"))
+        if pyedb_path is not None:
+            json_file = os.path.abspath(os.path.join(pyedb_path, "misc", "pyedb.runtimeconfig.json"))
             load("coreclr", runtime_config=json_file, dotnet_root=os.environ["DOTNET_ROOT"])
             print("DotNet Core correctly loaded.")
             if "mono" not in os.getenv("LD_LIBRARY_PATH", ""):
-                warnings.warn("LD_LIBRARY_PATH needs to be setup to use pyaedt.")
+                warnings.warn("LD_LIBRARY_PATH needs to be setup to use pyedb.")
                 warnings.warn("export ANSYSEM_ROOT232=/path/to/AnsysEM/v232/Linux64")
                 msg = "export LD_LIBRARY_PATH="
                 msg += "$ANSYSEM_ROOT232/common/mono/Linux64/lib64:$LD_LIBRARY_PATH"
-                msg += "If PyAEDT will run on AEDT<2023.2 then $ANSYSEM_ROOT222/Delcross should be added to LD_LIBRARY_PATH"
+                msg += (
+                    "If PyEDB will run on AEDT<2023.2 then $ANSYSEM_ROOT222/Delcross should be added to LD_LIBRARY_PATH"
+                )
                 warnings.warn(msg)
             is_clr = True
         else:
             print("DotNet Core not correctly loaded.")
     except ImportError:
-        msg = "pythonnet or dotnetcore not installed. Pyaedt will work only in client mode."
+        msg = "pythonnet or dotnetcore not installed. Pyedb will work only in client mode."
         warnings.warn(msg)
 else:
     try:
@@ -68,13 +71,8 @@ try:  # work around a number formatting bug in the EDB API for non-English local
     from System.Globalization import CultureInfo as _CultureInfo
 
     _CultureInfo.DefaultThreadCurrentCulture = _CultureInfo.InvariantCulture
-    from System import Array
-    from System import Convert
-    from System import Double
-    from System import String
-    from System import Tuple
-    from System.Collections.Generic import Dictionary
-    from System.Collections.Generic import List
+    from System import Array, Convert, Double, String, Tuple
+    from System.Collections.Generic import Dictionary, List
 
     edb_initialized = True
 

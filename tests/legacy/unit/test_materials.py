@@ -1,7 +1,9 @@
 import builtins
 from unittest.mock import mock_open
+
+from mock import MagicMock, PropertyMock, patch
 import pytest
-from mock import patch, MagicMock
+
 from pyedb.legacy.edb_core.materials import Materials
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
@@ -59,21 +61,20 @@ $begin 'Water(@360K)'
 $end 'Water(@360K)'
 """
 
-class TestClass:
-    @pytest.fixture(autouse=True)
-    def init(self):
-        self.materials = Materials(MagicMock(materials=["copper"]))
-
-    @patch.object(builtins, "open", new_callable=mock_open, read_data=MATERIALS)
-    def test_materials_read_materials(self, mock_file_open):
-        """Read materials from an amat file."""
-        expected_res = {
-            "Polyflon CuFlon (tm)": {"permittivity": 2.1, "tangent_delta": 0.00045},
-            "Water(@360K)": {"thermal_conductivity": 0.6743,
-                             "mass_density": 967.4,
-                             "specific_heat": 4206,
-                             "thermal_expansion_coeffcient": 0.0006979
-                             }
-        }
-        mats = self.materials.read_materials("some path")
-        assert mats == expected_res
+@patch("pyedb.legacy.edb_core.materials.Materials.materials", new_callable=PropertyMock)
+@patch.object(builtins, "open", new_callable=mock_open, read_data=MATERIALS)
+def test_materials_read_materials(mock_file_open, mock_materials_property):
+    """Read materials from an AMAT file."""
+    mock_materials_property.return_value = ["copper"]
+    materials = Materials(MagicMock())
+    expected_res = {
+        "Polyflon CuFlon (tm)": {"permittivity": 2.1, "tangent_delta": 0.00045},
+        "Water(@360K)": {
+            "thermal_conductivity": 0.6743,
+            "mass_density": 967.4,
+            "specific_heat": 4206,
+            "thermal_expansion_coeffcient": 0.0006979,
+        },
+    }
+    mats = materials.read_materials("some path")
+    assert mats == expected_res

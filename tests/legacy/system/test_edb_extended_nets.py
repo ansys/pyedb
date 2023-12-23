@@ -5,6 +5,7 @@ import pytest
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
+
 class TestClass:
     @pytest.fixture(autouse=True)
     def init(self, legacy_edb_app, local_scratch, target_path, target_path2, target_path4):

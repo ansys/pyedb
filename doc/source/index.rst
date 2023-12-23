@@ -49,7 +49,7 @@ PyEDB is a Python library that interacts directly with the EDB-core API to make 
             EDB API reference
             ^^^^^^^^^^^^^^^^^
 
-            Understand PyAEDT EDB API endpoints, their capabilities,
+            Understand PyEDB API endpoints, their capabilities,
             and how to interact with them programmatically.
 
             +++
@@ -90,7 +90,7 @@ PyEDB is a Python library that interacts directly with the EDB-core API to make 
 
                 Contribute
                 ^^^^^^^^^^
-                Learn how to contribute to the PyAEDT codebase
+                Learn how to contribute to the pyEDB codebase
                 or documentation.
 
                 +++

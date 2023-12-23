@@ -10,10 +10,13 @@ This example shows how you can use PyEDB to export an IPC2581 file.
 # Perform required imports, which includes importing a section.
 
 import os
+
 import pyedb
+from pyedb.generic.general_methods import (
+    generate_unique_folder_name,
+    generate_unique_name,
+)
 from pyedb.legacy.downloads import download_file
-from pyedb.generic.general_methods import generate_unique_folder_name
-from pyedb.generic.general_methods import generate_unique_name
 
 ###############################################################################
 # Download file
@@ -22,7 +25,7 @@ from pyedb.generic.general_methods import generate_unique_name
 
 
 temp_folder = generate_unique_folder_name()
-targetfile = download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+targetfile = download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
 
 ipc2581_file = os.path.join(temp_folder, "Ansys_Hsd.xml")
@@ -43,9 +46,7 @@ edb = pyedb.Edb(edbpath=targetfile, edbversion="2023.2")
 # ~~~~~~~~~~~~~~~
 # Parametrize a net.
 
-edb.modeler.parametrize_trace_width(
-    "A0_N", parameter_name=generate_unique_name("Par"), variable_value="0.4321mm"
-)
+edb.modeler.parametrize_trace_width("A0_N", parameter_name=generate_unique_name("Par"), variable_value="0.4321mm")
 
 ###############################################################################
 # Cutout
@@ -56,14 +57,17 @@ for net in edb.nets.netlist:
     if "PCIe" in net:
         signal_list.append(net)
 power_list = ["GND"]
-edb.cutout(signal_list=signal_list, reference_list=power_list, extent_type="ConvexHull",
-           expansion_size=0.002,
-           use_round_corner=False,
-           number_of_threads=4,
-           remove_single_pin_components=True,
-           use_pyaedt_extent_computing=True,
-           extent_defeature=0,
-           )
+edb.cutout(
+    signal_list=signal_list,
+    reference_list=power_list,
+    extent_type="ConvexHull",
+    expansion_size=0.002,
+    use_round_corner=False,
+    number_of_threads=4,
+    remove_single_pin_components=True,
+    use_pyaedt_extent_computing=True,
+    extent_defeature=0,
+)
 
 ###############################################################################
 # Plot cutout

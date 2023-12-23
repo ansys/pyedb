@@ -4,17 +4,17 @@ This module contains these classes: `EdbLayout` and `Shape`.
 import math
 import warnings
 
-from pyedb.legacy.edb_core.dotnet.primitive import BondwireDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import CircleDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import PathDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import PolygonDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import RectangleDotNet
-from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitives
-from pyedb.legacy.edb_core.edb_data.primitives_data import cast
+from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.legacy.edb_core.dotnet.primitive import (
+    BondwireDotNet,
+    CircleDotNet,
+    PathDotNet,
+    PolygonDotNet,
+    RectangleDotNet,
+)
+from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitives, cast
 from pyedb.legacy.edb_core.edb_data.utilities import EDBStatistics
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import pyedb_function_handler
-
 
 
 class EdbLayout(object):
@@ -22,7 +22,7 @@ class EdbLayout(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_layout = edbapp.modeler
     """
@@ -1104,15 +1104,17 @@ class EdbLayout(object):
         return True
 
     @pyedb_function_handler()
-    def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False):
+    def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_list=[]):
         """Try to unite all Polygons on specified layer.
 
         Parameters
         ----------
         layer_name : str, optional
-            Layer Name on which unite objects. If ``None``, all layers will be taken.
+            Name of layer name to unite objects on. The default is ``None``, in which case all layers are taken.
         delete_padstack_gemometries : bool, optional
-            ``True`` to delete all padstack geometry.
+            Whether to delete all padstack geometries. The default is ``False``.
+        net_list : list[str] : optional
+            Net list filter. The default is ``[]``, in which case all nets are taken.
 
         Returns
         -------
@@ -1136,33 +1138,34 @@ class EdbLayout(object):
                         if poly.GetNet().GetName():
                             poly_by_nets[poly.GetNet().GetName()].append(poly)
             for net in poly_by_nets:
-                list_polygon_data = [i.GetPolygonData() for i in poly_by_nets[net]]
-                all_voids = [i.Voids for i in poly_by_nets[net]]
-                a = self._edb.geometry.polygon_data.unite(convert_py_list_to_net_list(list_polygon_data))
-                for item in a:
+                if net in net_list or not net_list:  # pragma no cover
+                    list_polygon_data = [i.GetPolygonData() for i in poly_by_nets[net]]
+                    all_voids = [i.Voids for i in poly_by_nets[net]]
+                    a = self._edb.geometry.polygon_data.unite(convert_py_list_to_net_list(list_polygon_data))
+                    for item in a:
+                        for v in all_voids:
+                            for void in v:
+                                if int(item.GetIntersectionType(void.GetPolygonData())) == 2:
+                                    item.AddHole(void.GetPolygonData())
+                        poly = self._edb.cell.primitive.polygon.create(
+                            self._active_layout,
+                            lay,
+                            self._pedb.nets.nets[net],
+                            item,
+                        )
+                    list_to_delete = [i for i in poly_by_nets[net]]
                     for v in all_voids:
                         for void in v:
-                            if int(item.GetIntersectionType(void.GetPolygonData())) == 2:
-                                item.AddHole(void.GetPolygonData())
-                    poly = self._edb.cell.primitive.polygon.create(
-                        self._active_layout,
-                        lay,
-                        self._pedb.nets.nets[net],
-                        item,
-                    )
-                list_to_delete = [i for i in poly_by_nets[net]]
-                for v in all_voids:
-                    for void in v:
-                        for poly in poly_by_nets[net]:
-                            if int(void.GetPolygonData().GetIntersectionType(poly.GetPolygonData())) >= 2:
-                                try:
-                                    id = list_to_delete.index(poly)
-                                except ValueError:
-                                    id = -1
-                                if id >= 0:
-                                    list_to_delete.pop(id)
+                            for poly in poly_by_nets[net]:  # pragma no cover
+                                if int(void.GetPolygonData().GetIntersectionType(poly.GetPolygonData())) >= 2:
+                                    try:
+                                        id = list_to_delete.index(poly)
+                                    except ValueError:
+                                        id = -1
+                                    if id >= 0:
+                                        list_to_delete.pop(id)
 
-                [i.Delete() for i in list_to_delete]
+                    [i.Delete() for i in list_to_delete]  # pragma no cover
 
         if delete_padstack_gemometries:
             self._logger.info("Deleting Padstack Definitions")

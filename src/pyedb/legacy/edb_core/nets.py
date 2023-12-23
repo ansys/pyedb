@@ -5,13 +5,13 @@ import os
 import time
 import warnings
 
-from pyedb.legacy.edb_core.edb_data.nets_data import EDBNetsData
-from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.constants import CSS4_COLORS
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.generic.general_methods import (
+    generate_unique_name,
+    is_ironpython,
+    pyedb_function_handler,
+)
+from pyedb.legacy.edb_core.edb_data.nets_data import EDBNetsData
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -20,8 +20,8 @@ class EdbNets(object):
 
     Examples
     --------
-    >>> from legacy import Edb
-    >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+    >>> from pyedb.legacy.edb import EdbLegacy
+    >>> edbapp = EdbLegacy("myaedbfolder", edbversion="2021.2")
     >>> edb_nets = edbapp.nets
     """
 
@@ -106,7 +106,7 @@ class EdbNets(object):
 
         temp = {}
         for net in self._layout.nets:
-             temp[net.name] = EDBNetsData(net.api_object, self._pedb)
+            temp[net.name] = EDBNetsData(net.api_object, self._pedb)
         return temp
 
     @property
@@ -129,7 +129,7 @@ class EdbNets(object):
 
         Returns
         -------
-        dict[str, :class:`legacy.edb_core.edb_data.EDBNetsData`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.EDBNetsData`]
             Dictionary of signal nets.
         """
         warnings.warn("Use :func:`signal` instead.", DeprecationWarning)
@@ -144,7 +144,7 @@ class EdbNets(object):
 
         Returns
         -------
-        dict[str, :class:`legacy.edb_core.edb_data.EDBNetsData`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.EDBNetsData`]
             Dictionary of power nets.
         """
         warnings.warn("Use :func:`power` instead.", DeprecationWarning)
@@ -156,7 +156,7 @@ class EdbNets(object):
 
         Returns
         -------
-        dict[str, :class:`legacy.edb_core.edb_data.EDBNetsData`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.EDBNetsData`]
             Dictionary of signal nets.
         """
         nets = {}
@@ -171,7 +171,7 @@ class EdbNets(object):
 
         Returns
         -------
-        dict[str, :class:`legacy.edb_core.edb_data.EDBNetsData`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.EDBNetsData`]
             Dictionary of power nets.
         """
         nets = {}
@@ -192,7 +192,7 @@ class EdbNets(object):
 
         Returns
         -------
-        list of  :class:`legacy.edb_core.edb_data.EDBNetsData`
+        list of  :class:`pyedb.legacy.edb_core.edb_data.EDBNetsData`
         """
         pwr_gnd_nets = []
         for net in self._layout.nets[:]:
@@ -265,6 +265,7 @@ class EdbNets(object):
             Whether to generate extended signal nets. The default is ``True``.
         include_power : str, optional
             Whether to generate extended power nets. The default is ``True``.
+
         Returns
         -------
         list
@@ -272,7 +273,7 @@ class EdbNets(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.nets.get_extended_nets()
         """
@@ -477,12 +478,12 @@ class EdbNets(object):
             If ``True``  the components placed on bottom layer are plotted.
             If ``False`` the components are not plotted. (default)
             If nets and/or layers is specified, only the components belonging to the specified nets/layers are plotted.
+
         Returns
         -------
-        list, str
-            list of data to be used in plot.
-            In case of remote session it will be returned a string that could be converted to list
-            using ast.literal_eval().
+        List, str: list of data to be used in plot.
+            In case of remote session it will be returned a string that could be converted \
+            to list using ast.literal_eval().
         """
         start_time = time.time()
         if not nets:
@@ -1178,6 +1179,7 @@ class EdbNets(object):
         order_by_area : bool, optional
             Whether if the naming order has to be by number of objects (fastest) or area (slowest but more accurate).
             Default is ``False``.
+
         Returns
         -------
         List
@@ -1200,45 +1202,14 @@ class EdbNets(object):
         Parameters
         ----------
         net_list : str or list[str]
-            net name of list of net name.
+            Net name of list of net name.
 
         Returns
-            list of merged polygons.
-
         -------
+        bool
+            ``True`` when successful, ``False`` when failed.
 
         """
         if isinstance(net_list, str):
             net_list = [net_list]
-        returned_poly = []
-        for net in net_list:
-            if net in self.nets:
-                net_rtree = self._edb.Geometry.RTree()
-                paths = [prim for prim in self.nets[net].primitives if prim.type == "Path"]
-                for path in paths:
-                    path.convert_to_polygon()
-                polygons = [prim for prim in self.nets[net].primitives if prim.type == "Polygon"]
-                for polygon in polygons:
-                    polygon_data = polygon.primitive_object.GetPolygonData()
-                    rtree = self._edb.Geometry.RTreeObj(polygon_data, polygon.primitive_object)
-                    net_rtree.Insert(rtree)
-                connected_polygons = net_rtree.GetConnectedGeometrySets()
-                void_list = []
-                for pp in list(connected_polygons):
-                    for _pp in list(pp):
-                        _voids = list(_pp.Obj.Voids)
-                        void_list.extend(_pp.Obj.Voids)
-                for poly_list in list(connected_polygons):
-                    layer = list(poly_list)[0].Obj.GetLayer().GetName()
-                    net = list(poly_list)[0].Obj.GetNet()
-                    _poly_list = convert_py_list_to_net_list([obj.Poly for obj in list(poly_list)])
-                    merged_polygon = list(self._edb.geometry.polygon_data.unite(_poly_list))
-                    for poly in merged_polygon:
-                        for void in void_list:
-                            poly.AddHole(void.GetPolygonData())
-                        _new_poly = self._edb.cell.primitive.polygon.create(self._active_layout, layer, net, poly)
-                        returned_poly.append(_new_poly)
-                for init_poly in list(list(connected_polygons)):
-                    for _pp in list(init_poly):
-                        _pp.Obj.Delete()
-        return returned_poly
+        return self._pedb.modeler.unite_polygons_on_layer(net_list=net_list)

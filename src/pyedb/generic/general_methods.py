@@ -1,27 +1,27 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-from functools import update_wrapper
-import os
-import sys
-import time
-import string
-import random
-from collections import OrderedDict
-import inspect
-import itertools
-import traceback
 import ast
 import codecs
+from collections import OrderedDict
 import csv
 import datetime
 import difflib
 import fnmatch
+from functools import update_wrapper
+import inspect
+import itertools
 import json
 import logging
 import math
+import os
+import random
 import re
+import string
+import sys
 import tempfile
+import time
+import traceback
 
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.settings import settings
@@ -96,7 +96,7 @@ def _exception(ex_info, func, args, kwargs, message="Type Error"):
     message_to_print = ""
     messages = ""
     if "error" in messages:
-        message_to_print = messages[messages.index("[error]"):]
+        message_to_print = messages[messages.index("[error]") :]
     # _write_mes("{} - {} -  {}.".format(ex_info[1], func.__name__, message.upper()))
 
     if message_to_print:
@@ -207,7 +207,7 @@ def get_filename_without_extension(path):
 
 def _write_mes(mes_text):
     mes_text = str(mes_text)
-    parts = [mes_text[i: i + 250] for i in range(0, len(mes_text), 250)]
+    parts = [mes_text[i : i + 250] for i in range(0, len(mes_text), 250)]
     for el in parts:
         settings.logger.error(el)
 
@@ -218,9 +218,9 @@ def _log_method(func, new_args, new_kwargs):
     if not settings.enable_debug_geometry_operator_logger and "GeometryOperators" in str(func):
         return
     if (
-            not settings.enable_debug_edb_logger
-            and "Edb" in str(func) + str(new_args)
-            or "edb_core" in str(func) + str(new_args)
+        not settings.enable_debug_edb_logger
+        and "Edb" in str(func) + str(new_args)
+        or "edb_core" in str(func) + str(new_args)
     ):
         return
     line_begin = "ARGUMENTS: "
@@ -501,7 +501,7 @@ def open_file(file_path, file_options="r"):
         if os.path.exists(file_path):
             return open(file_path, file_options)
         elif settings.remote_rpc_session and settings.remote_rpc_session.filemanager.pathexists(
-                file_path
+            file_path
         ):  # pragma: no cover
             local_file = os.path.join(tempfile.gettempdir(), os.path.split(file_path)[-1])
             settings.remote_rpc_session.filemanager.download_file(file_path, local_file)
@@ -1300,7 +1300,7 @@ def compute_fft(time_vals, value):  # pragma: no cover
     num_points = len(time_vals)
     valueFFT = np.fft.fft(value, num_points)
     Npoints = int(len(valueFFT) / 2)
-    valueFFT = valueFFT[1: Npoints + 1]
+    valueFFT = valueFFT[1 : Npoints + 1]
     valueFFT = valueFFT / len(valueFFT)
     n = np.arange(num_points)
     freq = n / deltaT
@@ -1308,14 +1308,14 @@ def compute_fft(time_vals, value):  # pragma: no cover
 
 
 def parse_excitation_file(
-        file_name,
-        is_time_domain=True,
-        x_scale=1,
-        y_scale=1,
-        impedance=50,
-        data_format="Power",
-        encoding="utf-8",
-        out_mag="Voltage",
+    file_name,
+    is_time_domain=True,
+    x_scale=1,
+    y_scale=1,
+    impedance=50,
+    data_format="Power",
+    encoding="utf-8",
+    out_mag="Voltage",
 ):
     """Parse a csv file and convert data in list that can be applied to Hfss and Hfss3dLayout sources.
 
@@ -1600,7 +1600,7 @@ def _arg2dict(arg, dict_out):
         i = 1
         while i < len(arg):
             if arg[i][0][:5] == "NAME:" and (
-                    isinstance(arg[i], (list, tuple)) or str(type(arg[i])) == r"<type 'List'>"
+                isinstance(arg[i], (list, tuple)) or str(type(arg[i])) == r"<type 'List'>"
             ):
                 _arg2dict(list(arg[i]), dict_in)
                 i += 1
@@ -1798,9 +1798,9 @@ class Help:  # pragma: no cover
         ----------
         keywords : str or list
         app_name : str, optional
-            Name of a PyAEDT app. For example, ``"Hfss"``, ``"Circuit"``, ``"Icepak"``, or any other available app.
+            Name of a PyEDB app.
         search_in_examples_only : bool, optional
-            Whether to search for the one or more keywords only in the PyAEDT examples.
+            Whether to search for the one or more keywords only in the PyEDB examples.
             The default is ``False``.
         """
         if isinstance(keywords, str):

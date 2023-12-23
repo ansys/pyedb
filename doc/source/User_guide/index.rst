@@ -3,59 +3,29 @@
 ==========
 User guide
 ==========
-PyAEDT works both inside AEDT and as a standalone application.
-It automatically detects whether it is running in an IronPython (limited capabilities) or CPython
-environment and initializes AEDT accordingly. PyAEDT also provides
-advanced error management.
+PyEDB is loading ANSYS EDB in memory meaning non graphically.
 
-You can start AEDT in non-graphical mode from Python:
 
 .. code:: python
 
-    # Launch AEDT 2023 R1 in non-graphical mode
+    # Load EDB
 
-    import pyaedt
-    with pyaedt.Desktop(specified_version="2023.1", non_graphical=True, new_desktop_session=True, close_on_exit=True,
-                 student_version=False):
-        circuit = pyaedt.Circuit()
-        ...
-        # Any error here will be caught by Desktop.
-        ...
+    from pyedb.legacy.edb_core.edb import EdbLegacy
 
-    # Desktop is automatically closed here.
-
-
-The preceding code launches AEDT and initializes a new Circuit design.
-
-.. image:: ../Resources/aedt_first_page.png
-  :width: 800
-  :alt: Electronics Desktop Launched
-
-
-You can obtain the same result with:
-
-.. code:: python
-
-    # Launch the latest installed version of AEDT in graphical mode.
-
-    import pyaedt
-    with pyaedt.Circuit(specified_version="2023.1", non_graphical=False) as circuit:
-        ...
-        # Any error here will be caught by Desktop.
-        ...
-
-    # Desktop is automatically released here.
-
-
+    edb_file = pyedb.layout_examples.ANSYS_HSD_v1.aedb
+    edb = EdbLegacy(edb_file)
 
 .. toctree::
    :hidden:
    :maxdepth: 2
 
-   loading_layout
-   edb_queries
-   cutout
-   layer_stackup
-   ports
-   simulation_setup
 
+   Excitations/index
+   Simulation_setup/index
+   Edb_information_queries/index
+   Load_export_edb/index
+   Build_simulation_project/index
+   Padstacks/index
+   Layer_stackup/index
+   Components/index
+   Parametrization/index

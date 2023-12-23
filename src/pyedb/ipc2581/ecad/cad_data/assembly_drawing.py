@@ -1,5 +1,5 @@
-from pyedb.ipc2581.ecad.cad_data.polygon import Polygon
 from pyedb.generic.general_methods import ET
+from pyedb.ipc2581.ecad.cad_data.polygon import Polygon
 
 
 class AssemblyDrawing(object):

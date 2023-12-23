@@ -2,19 +2,21 @@
 """
 
 import os
-from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+
 import pytest
 
-from pyedb.legacy.edb import EdbLegacy
-from pyedb.generic.constants import RadiationBoxType, SourceType
-from pyedb.generic.constants import SolverType
+from pyedb.generic.constants import RadiationBoxType, SolverType, SourceType
 from pyedb.generic.general_methods import is_linux
-from tests.conftest import local_path
-from tests.conftest import desktop_version
+from pyedb.legacy.edb import EdbLegacy
+from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
+from pyedb.legacy.edb_core.edb_data.simulation_configuration import (
+    SimulationConfiguration,
+)
+from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -67,10 +69,13 @@ class TestClass:
         pins = self.edbapp.components.get_pin_from_component("U1")
         assert "VSource_" in self.edbapp.siwave.create_voltage_source_on_pin(pins[300], pins[10], 3.3, 0)
         assert len(self.edbapp.sources) == 3
-        assert len(self.edbapp.probes) == 0  
-        
+        assert len(self.edbapp.probes) == 0
         list(self.edbapp.sources.values())[0].phase = 1
         assert list(self.edbapp.sources.values())[0].phase == 1
+        u6 = self.edbapp.components["U6"]
+        self.edbapp.create_voltage_source(
+            u6.pins["F2"].get_terminal(create_new_terminal=True), u6.pins["F1"].get_terminal(create_new_terminal=True)
+        )
 
     def test_siwave_create_current_source(self):
         """Create a current source."""
@@ -103,6 +108,10 @@ class TestClass:
         ref_term.location = [0, 0]
         assert ref_term.layer
         ref_term.layer = "1_Top"
+        u6 = self.edbapp.components["U6"]
+        self.edbapp.create_current_source(
+            u6.pins["H8"].get_terminal(create_new_terminal=True), u6.pins["G9"].get_terminal(create_new_terminal=True)
+        )
 
     def test_siwave_create_dc_terminal(self):
         """Create a DC terminal."""
@@ -115,11 +124,11 @@ class TestClass:
 
     def test_siwave_add_syz_analsyis(self):
         """Add a sywave AC analysis."""
-        assert self.edbapp.siwave.add_siwave_syz_analysis()
+        assert self.edbapp.siwave.add_siwave_syz_analysis(start_freq="=GHz", stop_freq="10GHz", step_freq="10MHz")
 
     def test_siwave_add_dc_analysis(self):
         """Add a sywave DC analysis."""
-        assert self.edbapp.siwave.add_siwave_dc_analysis()
+        assert self.edbapp.siwave.add_siwave_dc_analysis(name="Test_dc")
 
     def test_hfss_mesh_operations(self):
         """Retrieve the trace width for traces with ports."""
@@ -822,6 +831,7 @@ class TestClass:
         setup1.hfss_solver_settings.relative_residual = 0.0002
         setup1.hfss_solver_settings.use_shell_elements = True
 
+        setup1b = edbapp.setups["setup1"]
         hfss_solver_settings = edbapp.setups["setup1"].hfss_solver_settings
         assert hfss_solver_settings.order_basis == "first"
         assert hfss_solver_settings.relative_residual == 0.0002
@@ -989,73 +999,56 @@ class TestClass:
     def test_siwave_dc_simulation_setup(self):
         """Create a dc simulation setup and evaluate its properties."""
         setup1 = self.edbapp.create_siwave_dc_setup("DC1")
-        assert setup1.name == "DC1"
-        assert not setup1.compute_inductance
-        assert setup1.contact_radius == "0.1mm"
-        assert setup1.dc_slider_position == 1
-        assert setup1.enabled
-        assert setup1.energy_error == 3.0
-        assert setup1.max_init_mesh_edge_length == "2.5mm"
-        assert setup1.max_num_pass == 5
-        assert setup1.min_num_pass == 1
-        assert setup1.mesh_bondwires
-        assert setup1.mesh_vias
-        assert setup1.min_plane_area == "0.25mm2"
-        assert setup1.min_void_area == "0.01mm2"
-        assert setup1.num_bondwire_sides == 8
-        assert setup1.num_via_sides == 8
-        assert setup1.percent_local_refinement == 20.0
-        assert setup1.perform_adaptive_refinement
-        assert setup1.plot_jv
-        assert not setup1.refine_bondwires
-        assert not setup1.refine_vias
-        setup1.name = "DC2"
-        setup1.compute_inductance = True
-        setup1.contact_radius = "0.2mm"
-        setup1.dc_slider_position = 2
-        setup1.energy_error = 2.0
-        setup1.max_init_mesh_edge_length = "5.5mm"
-        setup1.max_num_pass = 3
-        setup1.min_num_pass = 2
-        setup1.mesh_bondwires = False
-        setup1.mesh_vias = False
-        assert not setup1.mesh_bondwires
-        assert not setup1.mesh_vias
-        setup1.min_plane_area = "0.5mm2"
-        setup1.min_void_area = "0.021mm2"
-        setup1.num_bondwire_sides = 6
-        setup1.num_via_sides = 10
-        setup1.percent_local_refinement = 10.0
-        setup1.perform_adaptive_refinement = False
-        setup1.plot_jv = False
-        setup1.refine_bondwires = True
-        setup1.refine_vias = True
+        setup1.dc_settings.restore_default()
+        setup1.dc_advanced_settings.restore_default()
 
-        assert setup1.name == "DC2"
-        assert setup1.compute_inductance
-        assert setup1.contact_radius == "0.2mm"
-        assert setup1.dc_slider_position == 2
-        assert setup1.energy_error == 2.0
-        assert setup1.max_init_mesh_edge_length == "5.5mm"
-        assert setup1.max_num_pass == 3
-        assert setup1.min_num_pass == 2
-        assert setup1.mesh_bondwires
-        assert setup1.mesh_vias
-        assert setup1.min_plane_area == "0.5mm2"
-        assert setup1.min_void_area == "0.021mm2"
-        assert setup1.num_bondwire_sides == 6
-        assert setup1.num_via_sides == 10
-        assert setup1.percent_local_refinement == 10.0
-        assert not setup1.perform_adaptive_refinement
-        assert not setup1.plot_jv
-        assert setup1.refine_bondwires
-        assert setup1.refine_vias
+        settings = self.edbapp.setups["DC1"].get_configurations()
+        for k, v in setup1.dc_settings.defaults.items():
+            if k in ["compute_inductance", "plot_jv"]:
+                continue
+            print(k)
+            assert settings["dc_settings"][k] == v
+
+        for k, v in setup1.dc_advanced_settings.defaults.items():
+            print(k)
+            assert settings["dc_advanced_settings"][k] == v
+
+        for p in [0, 1, 2]:
+            setup1.set_dc_slider(p)
+            settings = self.edbapp.setups["DC1"].get_configurations()
+            for k, v in setup1.dc_settings.dc_defaults.items():
+                print(k)
+                assert settings["dc_settings"][k] == v[p]
+
+            for k, v in setup1.dc_advanced_settings.dc_defaults.items():
+                print(k)
+                assert settings["dc_advanced_settings"][k] == v[p]
 
     def test_siwave_ac_simulation_setup(self):
         """Create an ac simulation setup and evaluate its properties."""
         setup1 = self.edbapp.create_siwave_syz_setup("AC1")
         assert setup1.name == "AC1"
         assert setup1.enabled
+        setup1.advanced_settings.restore_default()
+
+        settings = self.edbapp.setups["AC1"].get_configurations()
+        for k, v in setup1.advanced_settings.defaults.items():
+            if k in ["min_plane_area_to_mesh"]:
+                continue
+            assert settings["advanced_settings"][k] == v
+
+        for p in [0, 1, 2]:
+            setup1.set_si_slider(p)
+            settings = self.edbapp.setups["AC1"].get_configurations()
+            for k, v in setup1.advanced_settings.si_defaults.items():
+                assert settings["advanced_settings"][k] == v[p]
+
+        for p in [0, 1, 2]:
+            setup1.set_pi_slider(p)
+            settings = self.edbapp.setups["AC1"].get_configurations()
+            for k, v in setup1.advanced_settings.pi_defaults.items():
+                assert settings["advanced_settings"][k] == v[p]
+
         sweep = setup1.add_frequency_sweep(
             "sweep1",
             frequency_sweep=[
@@ -1064,7 +1057,6 @@ class TestClass:
                 ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
             ],
         )
-        assert "sweep1" in setup1.frequency_sweeps
         assert "0" in sweep.frequencies
         assert not sweep.adaptive_sampling
         assert not sweep.adv_dc_extrapolation
@@ -1073,9 +1065,9 @@ class TestClass:
         assert not sweep.enforce_dc_and_causality
         assert sweep.enforce_passivity
         assert sweep.freq_sweep_type == "kInterpolatingSweep"
-        assert sweep.interp_use_full_basis
-        assert sweep.interp_use_port_impedance
-        assert sweep.interp_use_prop_const
+        assert sweep.interpolation_use_full_basis
+        assert sweep.interpolation_use_port_impedance
+        assert sweep.interpolation_use_prop_const
         assert sweep.max_solutions == 250
         assert sweep.min_freq_s_mat_only_solve == "1MHz"
         assert not sweep.min_solved_freq
@@ -1087,14 +1079,15 @@ class TestClass:
 
         sweep.adaptive_sampling = True
         sweep.adv_dc_extrapolation = True
+        sweep.compute_dc_point = True
         sweep.auto_s_mat_only_solve = False
         sweep.enforce_causality = True
         sweep.enforce_dc_and_causality = True
         sweep.enforce_passivity = False
         sweep.freq_sweep_type = "kDiscreteSweep"
-        sweep.interp_use_full_basis = False
-        sweep.interp_use_port_impedance = False
-        sweep.interp_use_prop_const = False
+        sweep.interpolation_use_full_basis = False
+        sweep.interpolation_use_port_impedance = False
+        sweep.interpolation_use_prop_const = False
         sweep.max_solutions = 200
         sweep.min_freq_s_mat_only_solve = "2MHz"
         sweep.min_solved_freq = "1Hz"
@@ -1106,14 +1099,15 @@ class TestClass:
 
         assert sweep.adaptive_sampling
         assert sweep.adv_dc_extrapolation
+        assert sweep.compute_dc_point
         assert not sweep.auto_s_mat_only_solve
         assert sweep.enforce_causality
         assert sweep.enforce_dc_and_causality
         assert not sweep.enforce_passivity
         assert sweep.freq_sweep_type == "kDiscreteSweep"
-        assert not sweep.interp_use_full_basis
-        assert not sweep.interp_use_port_impedance
-        assert not sweep.interp_use_prop_const
+        assert not sweep.interpolation_use_full_basis
+        assert not sweep.interpolation_use_port_impedance
+        assert not sweep.interpolation_use_prop_const
         assert sweep.max_solutions == 200
         assert sweep.min_freq_s_mat_only_solve == "2MHz"
         assert sweep.min_solved_freq == "1Hz"
@@ -1122,85 +1116,6 @@ class TestClass:
         assert sweep.save_fields
         assert sweep.save_rad_fields_only
         assert sweep.use_q3d_for_dc
-
-        setup1.pi_slider_postion = 0
-        setup1.pi_slider_postion = 1
-        setup1.pi_slider_postion = 2
-        setup1.si_slider_postion = 0
-        setup1.si_slider_postion = 1
-        setup1.si_slider_postion = 2
-        assert setup1.automatic_mesh
-        assert setup1.enabled
-        assert setup1.dc_settings
-        assert setup1.ignore_non_functional_pads
-        assert setup1.include_coplane_coupling
-        assert setup1.include_fringe_coupling
-        assert not setup1.include_infinite_ground
-        assert not setup1.include_inter_plane_coupling
-        assert setup1.include_split_plane_coupling
-        assert setup1.include_trace_coupling
-        assert not setup1.include_vi_sources
-        assert setup1.infinite_ground_location == "0"
-        assert setup1.max_coupled_lines == 40
-        assert setup1.mesh_frequency == "4GHz"
-        assert setup1.min_pad_area_to_mesh == "1mm2"
-        assert setup1.min_plane_area_to_mesh == "6.25e-6mm2"
-        assert setup1.min_void_area == "2mm2"
-        assert setup1.name == "AC1"
-        assert setup1.perform_erc
-        assert setup1.return_current_distribution
-        assert setup1.snap_length_threshold == "2.5um"
-        assert setup1.use_si_settings
-        assert setup1.use_custom_settings
-        assert setup1.xtalk_threshold == "-34"
-
-        setup1.automatic_mesh = False
-        setup1.enabled = False
-        setup1.ignore_non_functional_pads = False
-        setup1.include_coplane_coupling = False
-        setup1.include_fringe_coupling = False
-        setup1.include_infinite_ground = True
-        setup1.include_inter_plane_coupling = True
-        setup1.include_split_plane_coupling = False
-        setup1.include_trace_coupling = False
-        assert setup1.use_custom_settings
-        setup1.include_vi_sources = True
-        setup1.infinite_ground_location = "0.1"
-        setup1.max_coupled_lines = 10
-        setup1.mesh_frequency = "3GHz"
-        setup1.min_pad_area_to_mesh = "2mm2"
-        setup1.min_plane_area_to_mesh = "5.25e-6mm2"
-        setup1.min_void_area = "1mm2"
-        setup1.name = "AC2"
-        setup1.perform_erc = False
-        setup1.return_current_distribution = True
-        setup1.snap_length_threshold = "3.5um"
-        setup1.use_si_settings = False
-        assert not setup1.use_custom_settings
-        setup1.xtalk_threshold = "-44"
-
-        assert not setup1.automatic_mesh
-        assert not setup1.enabled
-        assert not setup1.ignore_non_functional_pads
-        assert not setup1.include_coplane_coupling
-        assert not setup1.include_fringe_coupling
-        assert setup1.include_infinite_ground
-        assert setup1.include_inter_plane_coupling
-        assert not setup1.include_split_plane_coupling
-        assert not setup1.include_trace_coupling
-        assert setup1.include_vi_sources
-        assert setup1.infinite_ground_location == "0.1"
-        assert setup1.max_coupled_lines == 10
-        assert setup1.mesh_frequency == "3GHz"
-        assert setup1.min_pad_area_to_mesh == "2mm2"
-        assert setup1.min_plane_area_to_mesh == "5.25e-6mm2"
-        assert setup1.min_void_area == "1mm2"
-        assert setup1.name == "AC2"
-        assert not setup1.perform_erc
-        assert setup1.return_current_distribution
-        assert setup1.snap_length_threshold == "3.5um"
-        assert not setup1.use_si_settings
-        assert setup1.xtalk_threshold == "-44"
 
     def test_siwave_build_ac_project(self):
         """Build ac simulation project."""
@@ -1212,7 +1127,7 @@ class TestClass:
         simconfig.solver_type = SolverType.SiwaveSYZ
         simconfig.mesh_freq = "40.25GHz"
         edbapp.build_simulation_project(simconfig)
-        assert edbapp.siwave_ac_setups[simconfig.setup_name].mesh_frequency == simconfig.mesh_freq
+        assert edbapp.siwave_ac_setups[simconfig.setup_name].advanced_settings.mesh_frequency == simconfig.mesh_freq
         edbapp.close()
 
     def test_siwave_create_port_between_pin_and_layer(self):
@@ -1232,6 +1147,11 @@ class TestClass:
             reference_designator="U7", net_name="GND", group_name="U7_GND"
         )
         U7.pins["F7"].create_port(reference=pin_group)
+        padstack_instance_terminals = [
+            term for term in list(edbapp.terminals.values()) if "PadstackInstanceTerminal" in str(term.type)
+        ]
+        for term in padstack_instance_terminals:
+            assert term.position
         edbapp.close()
 
     def test_siwave_source_setter(self):
@@ -1318,6 +1238,11 @@ class TestClass:
         assert pad_instance3.dcir_equipotential_region
         pad_instance3.dcir_equipotential_region = False
         assert not pad_instance3.dcir_equipotential_region
+
+        trace = edb.modeler.create_trace([[0, 0], [0, 10e-3]], "1_Top", "0.1mm", "trace_with_via_fence")
+        edb.padstacks.create_padstack("via_0")
+        trace.create_via_fence("1mm", "1mm", "via_0")
+
         edb.close()
 
     def test_assign_hfss_extent_non_multiple_with_simconfig(self):
@@ -1418,7 +1343,9 @@ class TestClass:
 
     def test_hfss_extent_info(self):
         """HFSS extent information."""
-        from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitives as EDBPrimitives
+        from pyedb.legacy.edb_core.edb_data.primitives_data import (
+            EDBPrimitives as EDBPrimitives,
+        )
 
         config = {
             "air_box_horizontal_extent_enabled": False,
@@ -1459,6 +1386,7 @@ class TestClass:
     def test_import_gds_from_tech(self):
         """Use techfile."""
         from pyedb.legacy.edb_core.edb_data.control_file import ControlFile
+
         c_file_in = os.path.join(
             local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
         )
@@ -1493,7 +1421,7 @@ class TestClass:
         assert edb
         assert "P1" in edb.excitations
         assert "Setup1" in edb.setups
-        assert "B1" in edb.components.components
+        assert "B1" in edb.components.instances
         edb.close()
 
     def test_database_properties(self):
@@ -1701,3 +1629,17 @@ class TestClass:
         assert not port1.get_pin_group_terminal_reference_pin()
         assert not port1.get_pad_edge_terminal_reference_pin()
         edbapp.close()
+
+    def test_simconfig_built_custom_sballs_height(self):
+        """Build simulation project from custom sballs JSON file."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_custom_sball_height", "ANSYS-HSD_V1.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        json_file = os.path.join(target_path, "simsetup_custom_sballs.json")
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        simconfig = edbapp.new_simulation_configuration()
+        simconfig.import_json(json_file)
+        edbapp.build_simulation_project(simconfig)
+        assert round(edbapp.components["X1"].solder_ball_height, 6) == 0.00025
+        assert round(edbapp.components["U1"].solder_ball_height, 6) == 0.00035
+        edbapp.close_edb()

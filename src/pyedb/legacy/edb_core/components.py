@@ -7,21 +7,17 @@ import math
 import re
 import warnings
 
-
-from pyedb.legacy.edb_core.edb_data.components_data import EDBComponent
-from pyedb.legacy.edb_core.edb_data.components_data import EDBComponentDef
+from pyedb.generic.general_methods import (
+    _retry_ntimes,
+    get_filename_without_extension,
+    pyedb_function_handler,
+)
+from pyedb.legacy.clr_module import String
+from pyedb.legacy.edb_core.edb_data.components_data import EDBComponent, EDBComponentDef
 from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.legacy.edb_core.edb_data.sources import Source
-from pyedb.legacy.edb_core.edb_data.sources import SourceType
+from pyedb.legacy.edb_core.edb_data.sources import Source, SourceType
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
 from pyedb.legacy.edb_core.padstack import EdbPadstacks
-from pyedb.legacy.clr_module import String
-from pyedb.legacy.clr_module import _clr
-from pyedb.generic.general_methods import get_filename_without_extension
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.generic.general_methods import _retry_ntimes
-
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -60,7 +56,7 @@ class Components(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder")
     >>> edbapp.components
     """
@@ -157,8 +153,8 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
-        >>> edbapp = Edb("myaedbfolder")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myaedbfolder")
         >>> edbapp.components.components
 
         """
@@ -177,8 +173,8 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
-        >>> edbapp = Edb("myaedbfolder")
+        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> edbapp = EdbLegacy("myaedbfolder")
         >>> edbapp.components.components
 
         """
@@ -244,6 +240,7 @@ class Components(object):
         ----------
         file_path : str
             File path of json file.
+
         Returns
         -------
 
@@ -309,7 +306,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.resistors
         """
@@ -331,7 +328,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.capacitors
         """
@@ -353,7 +350,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.inductors
 
@@ -376,7 +373,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.ICs
 
@@ -399,7 +396,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.IOs
 
@@ -422,7 +419,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.others
 
@@ -445,7 +442,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.components_by_partname
 
@@ -715,7 +712,7 @@ class Components(object):
         return True
 
     @pyedb_function_handler()
-    def create_port_on_pins(self, refdes, pins, reference_pins, impedance=50.0):
+    def create_port_on_pins(self, refdes, pins, reference_pins, impedance=50.0, port_name=None, pec_boundary=False):
         """Create circuit port between pins and reference ones.
 
         Parameters
@@ -734,13 +731,20 @@ class Components(object):
             str, [str], EDBPadstackInstance, [EDBPadstackInstance]
         impedance : Port impedance
             str, float
+        port_name : str, optional
+            Port name. The default is ``None``, in which case a name is automatically assigned.
+        pec_boundary : bool, optional
+        Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
+        a perfect short is created between the pin and impedance is ignored. This
+        parameter is only supported on a port created between two pins, such as
+        when there is no pin group.
 
         Returns
         -------
         EDB terminal created, or False if failed to create.
 
         Example:
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb(path_to_edb_file)
         >>> pin = "AJ6"
         >>> ref_pins = ["AM7", "AM4"]
@@ -769,6 +773,8 @@ class Components(object):
         if not len([pin for pin in pins if isinstance(pin, EDBPadstackInstance)]) == len(pins):
             self._logger.error("Pin list must contain only pins instances")
             return
+        if not port_name:
+            port_name = "Port_{}_{}".format(pins[0].net_name, pins[0].name)
         if len([pin for pin in reference_pins if isinstance(pin, str)]) == len(reference_pins):
             ref_cmp_pins = []
             for ref_pin_name in reference_pins:
@@ -781,29 +787,56 @@ class Components(object):
         if not len([pin for pin in reference_pins if isinstance(pin, EDBPadstackInstance)]) == len(reference_pins):
             return
         if len(pins) > 1:
+            pec_boundary = False
+            self._logger.info(
+                "Disabling PEC boundary creation, this feature is supported on single pin "
+                "ports only, {} pins found".format(len(pins))
+            )
             group_name = "group_{}_{}".format(pins[0].net_name, pins[0].name)
             pin_group = self.create_pingroup_from_pins(pins, group_name)
-            term = self._create_pin_group_terminal(pingroup=pin_group)
+            term = self._create_pin_group_terminal(pingroup=pin_group, term_name=port_name)
 
         else:
-            term = self._create_terminal(pins[0])
+            term = self._create_terminal(pins[0].primitive_object, term_name=port_name)
         term.SetIsCircuitPort(True)
         if len(reference_pins) > 1:
+            pec_boundary = False
+            self._logger.info(
+                "Disabling PEC boundary creation. This feature is supported on single pin"
+                "ports only {} reference pins found.".format(len(reference_pins))
+            )
             ref_group_name = "group_{}_{}_ref".format(reference_pins[0].net_name, reference_pins[0].name)
             ref_pin_group = self.create_pingroup_from_pins(reference_pins, ref_group_name)
-            ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group)
+            ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
         else:
-            ref_term = self._create_terminal(reference_pins[0])
+            ref_term = self._create_terminal(reference_pins[0].primitive_object, term_name=port_name + "_ref")
         ref_term.SetIsCircuitPort(True)
         term.SetImpedance(self._edb.utility.value(impedance))
         term.SetReferenceTerminal(ref_term)
+        if pec_boundary:
+            term.SetIsCircuitPort(False)
+            ref_term.SetIsCircuitPort(False)
+            term.SetBoundaryType(self._edb.cell.terminal.BoundaryType.PecBoundary)
+            ref_term.SetBoundaryType(self._edb.cell.terminal.BoundaryType.PecBoundary)
+            self._logger.info(
+                "PEC boundary created between pin {} and reference pin {}".format(pins[0].name, reference_pins[0].name)
+            )
         if term:
             return term
         return False
 
     @pyedb_function_handler()
     def create_port_on_component(
-        self, component, net_list, port_type=SourceType.CoaxPort, do_pingroup=True, reference_net="gnd", port_name=None
+        self,
+        component,
+        net_list,
+        port_type=SourceType.CoaxPort,
+        do_pingroup=True,
+        reference_net="gnd",
+        port_name=None,
+        solder_balls_height=None,
+        solder_balls_size=None,
+        solder_balls_mid_size=None,
     ):
         """Create ports on a component.
 
@@ -822,12 +855,20 @@ class Components(object):
             False will take the closest reference pin and generate one port per signal pin.
         refnet : string or list of string.
             list of the reference net.
-        port_name : string
+        port_name : str
             Port name for overwriting the default port-naming convention,
             which is ``[component][net][pin]``. The port name must be unique.
             If a port with the specified name already exists, the
             default naming convention is used so that port creation does
             not fail.
+        solder_balls_height : float, optional
+            Solder balls height used for the component. When provided default value is overwritten and must be
+            provided in meter.
+        solder_balls_size : float, optional
+            Solder balls diameter. When provided auto evaluation based on padstack size will be disabled.
+        solder_balls_mid_size : float, optional
+            Solder balls mid diameter. When provided if value is different than solder balls size, spheroid shape will
+            be switched.
 
         Returns
         -------
@@ -837,7 +878,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> net_list = ["M_DQ<1>", "M_DQ<2>", "M_DQ<3>", "M_DQ<4>", "M_DQ<5>"]
         >>> edbapp.components.create_port_on_component(cmp="U2A5", net_list=net_list,
@@ -873,13 +914,36 @@ class Components(object):
         if port_type == SourceType.CoaxPort:
             pad_params = self._padstack.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
             if not pad_params[0] == 7:
-                sball_diam = min([self._pedb.edb_value(val).ToDouble() for val in pad_params[1]])
-                solder_ball_height = 2 * sball_diam / 3
-            else:
-                bbox = pad_params[1]
-                sball_diam = min([abs(bbox[2] - bbox[0]), abs(bbox[3] - bbox[1])]) * 0.8
-                solder_ball_height = 2 * sball_diam / 3
-            self.set_solder_ball(component, solder_ball_height, sball_diam)
+                if not solder_balls_size:  # pragma no cover
+                    sball_diam = min([self._pedb.edb_value(val).ToDouble() for val in pad_params[1]])
+                    sball_mid_diam = sball_diam
+                else:  # pragma no cover
+                    sball_diam = solder_balls_size
+                    if solder_balls_mid_size:
+                        sball_mid_diam = solder_balls_mid_size
+                    else:
+                        sball_mid_diam = solder_balls_size
+                if not solder_balls_height:  # pragma no cover
+                    solder_balls_height = 2 * sball_diam / 3
+            else:  # pragma no cover
+                if not solder_balls_size:
+                    bbox = pad_params[1]
+                    sball_diam = min([abs(bbox[2] - bbox[0]), abs(bbox[3] - bbox[1])]) * 0.8
+                else:
+                    if not solder_balls_mid_size:
+                        sball_mid_diam = solder_balls_size
+                if not solder_balls_height:
+                    solder_balls_height = 2 * sball_diam / 3
+            sball_shape = "Cylinder"
+            if not sball_diam == sball_mid_diam:
+                sball_shape = "Spheroid"
+            self.set_solder_ball(
+                component=component,
+                sball_height=solder_balls_height,
+                sball_diam=sball_diam,
+                sball_mid_diam=sball_mid_diam,
+                shape=sball_shape,
+            )
             for pin in cmp_pins:
                 self._padstack.create_coax_port(padstackinstance=pin, name=port_name)
 
@@ -935,30 +999,32 @@ class Components(object):
         return True
 
     @pyedb_function_handler()
-    def _create_terminal(self, pin):
+    def _create_terminal(self, pin, term_name=None):
         """Create terminal on component pin.
 
         Parameters
         ----------
         pin : Edb padstack instance.
 
+        term_name : Terminal name (Optional).
+            str.
+
         Returns
         -------
-        Edb terminal.
+        EDB terminal.
         """
 
-        pin_position = self.get_pin_position(pin)  # pragma no cover
-        pin_pos = self._pedb.point_data(*pin_position)
         res, from_layer, _ = pin.GetLayerRange()
         cmp_name = pin.GetComponent().GetName()
         net_name = pin.GetNet().GetName()
         pin_name = pin.GetName()
-        term_name = "{}.{}.{}".format(cmp_name, pin_name, net_name)
+        if term_name is None:
+            term_name = "{}.{}.{}".format(cmp_name, pin_name, net_name)
         for term in list(self._pedb.active_layout.Terminals):
             if term.GetName() == term_name:
                 return term
-        term = self._edb.cell.terminal.PointTerminal.Create(
-            pin.GetLayout(), pin.GetNet(), term_name, pin_pos, from_layer
+        term = self._edb.cell.terminal.PadstackInstanceTerminal.Create(
+            pin.GetLayout(), pin.GetNet(), term_name, pin, from_layer
         )
         return term
 
@@ -1011,7 +1077,7 @@ class Components(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb(edb_file)
         >>>  for refdes, cmp in edb.components.capacitors.items():
         >>>     edb.components.replace_rlc_by_gap_boundaries(refdes)
@@ -1037,8 +1103,8 @@ class Components(object):
         return self.add_rlc_boundary(component.refdes, False)
 
     @pyedb_function_handler()
-    def deactivate_rlc_component(self, component=None, create_circuit_port=False):
-        """Deactivate RLC component with a possibility to convert to a circuit port.
+    def deactivate_rlc_component(self, component=None, create_circuit_port=False, pec_boundary=False):
+        """Deactivate RLC component with a possibility to convert it to a circuit port.
 
         Parameters
         ----------
@@ -1048,6 +1114,11 @@ class Components(object):
         create_circuit_port : bool, optional
             Whether to replace the deactivated RLC component with a circuit port. The default
             is ``False``.
+        pec_boundary : bool, optional
+            Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
+            a perfect short is created between the pin and impedance is ignored. This
+            parameter is only supported on a port created between two pins, such as
+            when there is no pin group.
 
         Returns
         -------
@@ -1056,10 +1127,10 @@ class Components(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb_file = r'C:\my_edb_file.aedb'
         >>> edb = Edb(edb_file)
-        >>> for cmp in list(edb.components.components.keys()):
+        >>> for cmp in list(edb.components.instances.keys()):
         >>>     edb.components.deactivate_rlc_component(component=cmp, create_circuit_port=False)
         >>> edb.save_edb()
         >>> edb.close_edb()
@@ -1080,19 +1151,29 @@ class Components(object):
             self._logger.info("Component %s passed to deactivate is not an RLC.", component.refdes)
             return False
         component.is_enabled = False
-        if create_circuit_port:
-            return self.add_port_on_rlc_component(component.refdes)
-        return True
+        return self.add_port_on_rlc_component(
+            component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
+        )
 
     @pyedb_function_handler()
-    def add_port_on_rlc_component(self, component=None):
+    def add_port_on_rlc_component(self, component=None, circuit_ports=True, pec_boundary=False):
         """Deactivate RLC component and replace it with a circuit port.
-        The circuit port supports only 2-pin components.
+        The circuit port supports only two-pin components.
 
         Parameters
         ----------
         component : str
             Reference designator of the RLC component.
+
+        circuit_ports : bool
+            ``True`` will replace RLC component by circuit ports, ``False`` gap ports compatible with HFSS 3D modeler
+            export.
+
+        pec_boundary : bool, optional
+            Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
+            a perfect short is created between the pin and impedance is ignored. This
+            parameter is only supported on a port created between two pins, such as
+            when there is no pin group.
 
         Returns
         -------
@@ -1106,39 +1187,47 @@ class Components(object):
         self.set_component_rlc(component.refdes)
         pins = self.get_pin_from_component(component.refdes)
         if len(pins) == 2:  # pragma: no cover
-            pos_pin_loc = self.get_pin_position(pins[0])
-            pt = self._pedb.point_data(*pos_pin_loc)
-
             pin_layers = self._padstack._get_pin_layer_range(pins[0])
-            pos_pin_term = self._pedb.edb_api.cell.terminal.PointTerminal.Create(
+            pos_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
                 self._active_layout,
                 pins[0].GetNet(),
                 "{}_{}".format(component.refdes, pins[0].GetName()),
-                pt,
+                pins[0],
                 pin_layers[0],
+                False,
             )
             if not pos_pin_term:  # pragma: no cover
                 return False
-            neg_pin_loc = self.get_pin_position(pins[1])
-            pt = self._pedb.point_data(*neg_pin_loc)
-
-            neg_pin_term = self._pedb.edb_api.cell.terminal.PointTerminal.Create(
+            neg_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
                 self._active_layout,
                 pins[1].GetNet(),
                 "{}_{}_ref".format(component.refdes, pins[1].GetName()),
-                pt,
+                pins[1],
                 pin_layers[0],
+                False,
             )
             if not neg_pin_term:  # pragma: no cover
                 return False
-            pos_pin_term.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PortBoundary)
-            pos_pin_term.SetIsCircuitPort(True)
+            if pec_boundary:
+                pos_pin_term.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PecBoundary)
+                neg_pin_term.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PecBoundary)
+            else:
+                pos_pin_term.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PortBoundary)
+                neg_pin_term.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PortBoundary)
             pos_pin_term.SetName(component.refdes)
-            neg_pin_term.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PortBoundary)
-            neg_pin_term.SetIsCircuitPort(True)
             pos_pin_term.SetReferenceTerminal(neg_pin_term)
+            if circuit_ports and not pec_boundary:
+                pos_pin_term.SetIsCircuitPort(True)
+                neg_pin_term.SetIsCircuitPort(True)
+            elif pec_boundary:
+                pos_pin_term.SetIsCircuitPort(False)
+                neg_pin_term.SetIsCircuitPort(False)
+            else:
+                pos_pin_term.SetIsCircuitPort(False)
+                neg_pin_term.SetIsCircuitPort(False)
             self._logger.info("Component {} has been replaced by port".format(component.refdes))
             return True
+        return False
 
     @pyedb_function_handler()
     def add_rlc_boundary(self, component=None, circuit_type=True):
@@ -1215,7 +1304,7 @@ class Components(object):
             return True
 
     @pyedb_function_handler()
-    def _create_pin_group_terminal(self, pingroup, isref=False):
+    def _create_pin_group_terminal(self, pingroup, isref=False, term_name=None):
         """Creates an EDB pin group terminal from a given EDB pin group.
 
         Parameters
@@ -1224,14 +1313,16 @@ class Components(object):
 
         isref : bool
 
+        term_name : Terminal name (Optional). If not provided default name is Component name, Pin name, Net name.
+            str.
+
         Returns
         -------
         Edb pin group terminal.
         """
         pin = list(pingroup.GetPins())[0]
-        term_name = "{}.{}.{}".format(
-            pin.GetComponent().GetName(), pin.GetComponent().GetName(), pin.GetNet().GetName()
-        )
+        if term_name is None:
+            term_name = "{}.{}.{}".format(pin.GetComponent().GetName(), pin.GetName(), pin.GetNet().GetName())
         for t in list(self._pedb.active_layout.Terminals):
             if t.GetName() == term_name:
                 return t
@@ -1369,7 +1460,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> pins = edbapp.components.get_pin_from_component("A1")
         >>> edbapp.components.create(pins, "A1New")
@@ -1467,7 +1558,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> pins = edbapp.components.get_pin_from_component("A1")
         >>> edbapp.components.create(pins, "A1New")
@@ -1506,7 +1597,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.set_component_model("A1", model_type="Spice",
         ...                                            modelpath="pathtospfile",
@@ -1590,7 +1681,7 @@ class Components(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.create_pingroup_from_pins(gndpinlist, "MyGNDPingroup")
 
@@ -1643,6 +1734,7 @@ class Components(object):
     def delete_single_pin_rlc(self, deactivate_only=False):
         # type: (bool) -> list
         """Delete all RLC components with a single pin.
+        Single pin component model type will be reverted to ``"RLC"``.
 
         Parameters
         ----------
@@ -1659,7 +1751,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> list_of_deleted_rlcs = edbapp.components.delete_single_pin_rlc()
         >>> print(list_of_deleted_rlcs)
@@ -1670,6 +1762,7 @@ class Components(object):
             if val.numpins < 2 and val.type in ["Resistor", "Capacitor", "Inductor"]:
                 if deactivate_only:
                     val.is_enabled = False
+                    val.model_type = "RLC"
                 else:
                     val.edbcomponent.Delete()
                     deleted_comps.append(comp)
@@ -1699,7 +1792,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.delete("A1")
 
@@ -1724,7 +1817,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.delete("A1")
 
@@ -1754,7 +1847,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.disable_rlc_component("A1")
 
@@ -1822,7 +1915,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.set_solder_ball("A1")
 
@@ -1912,7 +2005,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.set_component_rlc(
         ...     "R1", res_value=50, ind_value=1e-9, cap_value=1e-12, isparallel=False
@@ -2180,7 +2273,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_pin_from_component("R1", refdes)
 
@@ -2229,7 +2322,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_aedt_pin_name(pin)
 
@@ -2258,7 +2351,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_pin_position(pin)
 
@@ -2294,7 +2387,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_pins_name_from_net(pin_list, net_name)
 
@@ -2322,7 +2415,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_nets_from_pin_list(pinlist)
 
@@ -2349,7 +2442,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_component_net_connection_info(refdes)
 
@@ -2377,7 +2470,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_rats()
 
@@ -2404,7 +2497,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.components.get_through_resistor_list()
 
@@ -2443,7 +2536,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.short_component_pins("J4A2", ["G4", "9", "3"])
 

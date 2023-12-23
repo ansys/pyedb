@@ -1,9 +1,6 @@
+from pyedb.generic.general_methods import ET, pyedb_function_handler
 from pyedb.ipc2581.content.entry_line import EntryLine
-from pyedb.ipc2581.ecad.cad_data.polygon import PolyStep
-from pyedb.ipc2581.ecad.cad_data.polygon import PolyType
-from pyedb.generic.general_methods import ET
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.ipc2581.ecad.cad_data.polygon import PolyStep, PolyType
 
 
 class Path(object):

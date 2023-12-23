@@ -20,16 +20,20 @@ import os
 import re
 import types
 
-from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.generic.constants import AEDT_UNITS
-from pyedb.generic.constants import SI_UNITS
-from pyedb.generic.constants import _resolve_unit_system
-from pyedb.generic.constants import unit_system
-from pyedb.generic.general_methods import GrpcApiError
-from pyedb.generic.general_methods import check_numeric_equivalence
-from pyedb.generic.general_methods import is_array
-from pyedb.generic.general_methods import is_number
-from pyedb.generic.general_methods import open_file
+from pyedb.generic.constants import (
+    AEDT_UNITS,
+    SI_UNITS,
+    _resolve_unit_system,
+    unit_system,
+)
+from pyedb.generic.general_methods import (
+    GrpcApiError,
+    check_numeric_equivalence,
+    is_array,
+    is_number,
+    open_file,
+    pyedb_function_handler,
+)
 
 
 class CSVDataset:
@@ -337,6 +341,7 @@ def generate_validation_errors(property_names, expected_settings, actual_setting
         for error in _generate_property_validation_errors(property_name, expected, actual)
     ]
     return validation_errors
+
 
 # TODO: See how we handle this (totally removed / reworked ) ?
 class VariableManager(object):
@@ -965,6 +970,7 @@ class VariableManager(object):
         circuit_parameter : bool, optional
             Whether to define a parameter in a circuit design or a local parameter.
              The default is ``True``, in which case a circuit variable is created as a parameter default.
+
         Returns
         -------
         bool
@@ -1260,6 +1266,7 @@ class VariableManager(object):
         var_list += [i for i in list(desktop_object.GetVariables()) if i not in var_list]
         var_list += [i for i in list(self._app.oproject.GetArrayVariables()) if i not in var_list]
         return var_list
+
 
 # TODO: See how we handle this (totally removed / reworked ) ?
 class Variable(object):

@@ -24,19 +24,32 @@ This example shows how to
 ######################################################################
 
 import os
+
 import numpy as np
+from pyaedt import Hfss3dLayout
+
 # import pyaedt
 import pyedb
+from pyedb.generic.general_methods import (
+    generate_unique_folder_name,
+    generate_unique_name,
+)
 from pyedb.legacy.downloads import download_file
-from pyaedt import Hfss3dLayout
-from pyedb.generic.general_methods import generate_unique_folder_name
-from pyedb.generic.general_methods import generate_unique_name
 
+##########################################################
+# Set non-graphical mode
+# ~~~~~~~~~~~~~~~~~~~~~~
+# Set non-graphical mode. The default is ``True``.
 
-ansys_version = "2023.2"
+non_graphical = True
+
+###############################################################################
+# Launch EDB
+# ~~~~~~~~~~
+# Launch the :class:`pyedb.Edb` class, using EDB 2023 R2.
 
 aedb_path = os.path.join(generate_unique_folder_name(), generate_unique_name("pcb") + ".aedb")
-edb = pyedb.Edb(edbpath=aedb_path, edbversion=ansys_version)
+edb = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
 print("EDB is located at {}".format(aedb_path))
 
 #####################
@@ -174,17 +187,25 @@ edb.close_edb()
 # Launch Hfss3dLayout
 # ~~~~~~~~~~~~~~~~~~~
 
-h3d = Hfss3dLayout(aedb_path, specified_version=ansys_version, new_desktop_session=True)
+h3d = Hfss3dLayout(aedb_path, specified_version="2023.2", new_desktop_session=True, non_graphical=non_graphical)
 
 ####################
 # Place 3D component
 # ~~~~~~~~~~~~~~~~~~
 
-component3d = download_file("component_3d", "SMA_RF_SURFACE_MOUNT.a3dcomp",)
+component3d = download_file(
+    "component_3d",
+    "SMA_RF_SURFACE_MOUNT.a3dcomp",
+)
 
 comp = h3d.modeler.place_3d_component(
-    component_path=component3d, number_of_terminals=1, placement_layer="TOP", component_name="my_connector",
-    pos_x="5mm", pos_y=0.000)
+    component_path=component3d,
+    number_of_terminals=1,
+    placement_layer="TOP",
+    component_name="my_connector",
+    pos_x="5mm",
+    pos_y=0.000,
+)
 
 ##########
 # Analysis

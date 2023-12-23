@@ -1,6 +1,6 @@
+from pyedb.generic.general_methods import ET
 from pyedb.ipc2581.bom.characteristics import Characteristics
 from pyedb.ipc2581.bom.refdes import RefDes
-from pyedb.generic.general_methods import ET
 
 
 class BomItem(object):
@@ -20,8 +20,8 @@ class BomItem(object):
         bom_item.set("category", self.category)
         bom_item.set("category", self.category)
         for refdes in self.refdes_list:
-            refdes.write_xml(bom)
-        self.charactistics.write_xml(bom)
+            refdes.write_xml(bom_item)
+        self.charactistics.write_xml(bom_item)
 
     def add_refdes(self, component_name=None, package_def=None, populate=True, placement_layer=""):  # pragma no cover
         refdes = RefDes()

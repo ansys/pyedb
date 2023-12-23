@@ -1,15 +1,18 @@
 import math
 
-from pyedb.legacy.edb_core.dotnet.primitive import BondwireDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import CircleDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import PathDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import PolygonDataDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import PolygonDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import RectangleDotNet
-from pyedb.legacy.edb_core.dotnet.primitive import TextDotNet
+from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.legacy.edb_core.dotnet.database import NetDotNet
+from pyedb.legacy.edb_core.dotnet.primitive import (
+    BondwireDotNet,
+    CircleDotNet,
+    PathDotNet,
+    PolygonDataDotNet,
+    PolygonDotNet,
+    RectangleDotNet,
+    TextDotNet,
+)
 from pyedb.legacy.edb_core.edb_data.connectable import Connectable
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -59,7 +62,7 @@ class EDBPrimitivesMain(Connectable):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_prim = edb.modeler.primitives[0]
     >>> edb_prim.is_void # Class Property
@@ -82,7 +85,10 @@ class EDBPrimitivesMain(Connectable):
         -------
         str
         """
-        return self._edb_object.GetPrimitiveType().ToString()
+        try:
+            return self._edb_object.GetPrimitiveType().ToString()
+        except AttributeError:  # pragma: no cover
+            return ""
 
     @property
     def net_name(self):
@@ -101,14 +107,20 @@ class EDBPrimitivesMain(Connectable):
             self.primitive_object.SetNet(net)
         else:
             try:
-                self.net = name
-            except:
+                if isinstance(name, str):
+                    self.net = name
+                elif isinstance(name, NetDotNet):
+                    self.net = name.name
+            except:  # pragma: no cover
                 self._app.logger.error("Failed to set net name.")
 
     @property
     def layer(self):
         """Get the primitive edb layer object."""
-        return self.primitive_object.GetLayer()
+        try:
+            return self.primitive_object.GetLayer()
+        except AttributeError:  # pragma: no cover
+            return None
 
     @property
     def layer_name(self):
@@ -118,7 +130,10 @@ class EDBPrimitivesMain(Connectable):
         -------
         str
         """
-        return self.layer.GetName()
+        try:
+            return self.layer.GetName()
+        except AttributeError:  # pragma: no cover
+            return None
 
     @layer_name.setter
     def layer_name(self, val):
@@ -144,7 +159,10 @@ class EDBPrimitivesMain(Connectable):
         -------
         bool
         """
-        return self._edb_object.IsVoid()
+        try:
+            return self._edb_object.IsVoid()
+        except AttributeError:  # pragma: no cover
+            return None
 
     def get_connected_objects(self):
         """Get connected objects.
@@ -162,7 +180,7 @@ class EDBPrimitives(EDBPrimitivesMain):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_prim = edb.modeler.primitives[0]
     >>> edb_prim.is_void # Class Property
@@ -181,6 +199,7 @@ class EDBPrimitives(EDBPrimitivesMain):
         include_voids : bool, optional
             Either if the voids have to be included in computation.
             The default value is ``True``.
+
         Returns
         -------
         float
@@ -719,6 +738,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
     @pyedb_function_handler()
     def add_point(self, x, y, incremental=False):
         """Add a point at the end of the path.
+
         Parameters
         ----------
         x: str, int, float
@@ -728,6 +748,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
         incremental: bool
             Add point incrementally. If True, coordinates of the added point is incremental to the last point.
             The default value is ``False``.
+
         Returns
         -------
         bool
@@ -744,6 +765,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
         ----------
         to_string : bool, optional
             Type of return. The default is ``"False"``.
+
         Returns
         -------
         list
@@ -819,7 +841,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
 
         Examples
         --------
-        >>> edbapp = legacy.Edb("myproject.aedb")
+        >>> edbapp = pyedb.legacy.Edb("myproject.aedb")
         >>> sig = appedb.modeler.create_trace([[0, 0], ["9mm", 0]], "TOP", "1mm", "SIG", "Flat", "Flat")
         >>> sig.create_edge_port("pcb_port", "end", "Wave", None, 8, 8)
 
@@ -833,6 +855,111 @@ class EdbPath(EDBPrimitives, PathDotNet):
             )
         else:
             return self._app.hfss.create_edge_port_vertical(self.id, pos, name, 50, reference_layer)
+
+    @pyedb_function_handler()
+    def create_via_fence(self, distance, gap, padstack_name):
+        """Create via fences on both sides of the trace.
+
+        Parameters
+        ----------
+        distance: str, float
+            Distance between via fence and trace center line.
+        gap: str, float
+            Gap between vias.
+        padstack_name: str
+            Name of the via padstack.
+
+        Returns
+        -------
+        """
+
+        def getAngle(v1, v2):  # pragma: no cover
+            v1_mag = math.sqrt(v1[0] ** 2 + v1[1] ** 2)
+            v2_mag = math.sqrt(v2[0] ** 2 + v2[1] ** 2)
+            dotsum = v1[0] * v2[0] + v1[1] * v2[1]
+            if v1[0] * v2[1] - v1[1] * v2[0] > 0:
+                scale = 1
+            else:
+                scale = -1
+            dtheta = scale * math.acos(dotsum / (v1_mag * v2_mag))
+
+            return dtheta
+
+        def getLocations(line, gap):  # pragma: no cover
+            location = [line[0]]
+            residual = 0
+
+            for n in range(len(line) - 1):
+                x0, y0 = line[n]
+                x1, y1 = line[n + 1]
+                length = math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
+                dx, dy = (x1 - x0) / length, (y1 - y0) / length
+                x = x0 - dx * residual
+                y = y0 - dy * residual
+                length = length + residual
+                while length >= gap:
+                    x += gap * dx
+                    y += gap * dy
+                    location.append((x, y))
+                    length -= gap
+
+                residual = length
+            return location
+
+        def getParalletLines(pts, distance):  # pragma: no cover
+            leftline = []
+            rightline = []
+
+            x0, y0 = pts[0]
+            x1, y1 = pts[1]
+            vector = (x1 - x0, y1 - y0)
+            orientation1 = getAngle((1, 0), vector)
+
+            leftturn = orientation1 + math.pi / 2
+            righrturn = orientation1 - math.pi / 2
+            leftPt = (x0 + distance * math.cos(leftturn), y0 + distance * math.sin(leftturn))
+            leftline.append(leftPt)
+            rightPt = (x0 + distance * math.cos(righrturn), y0 + distance * math.sin(righrturn))
+            rightline.append(rightPt)
+
+            for n in range(1, len(pts) - 1):
+                x0, y0 = pts[n - 1]
+                x1, y1 = pts[n]
+                x2, y2 = pts[n + 1]
+
+                v1 = (x1 - x0, y1 - y0)
+                v2 = (x2 - x1, y2 - y1)
+                dtheta = getAngle(v1, v2)
+                orientation1 = getAngle((1, 0), v1)
+
+                leftturn = orientation1 + dtheta / 2 + math.pi / 2
+                righrturn = orientation1 + dtheta / 2 - math.pi / 2
+
+                distance2 = distance / math.sin((math.pi - dtheta) / 2)
+                leftPt = (x1 + distance2 * math.cos(leftturn), y1 + distance2 * math.sin(leftturn))
+                leftline.append(leftPt)
+                rightPt = (x1 + distance2 * math.cos(righrturn), y1 + distance2 * math.sin(righrturn))
+                rightline.append(rightPt)
+
+            x0, y0 = pts[-2]
+            x1, y1 = pts[-1]
+
+            vector = (x1 - x0, y1 - y0)
+            orientation1 = getAngle((1, 0), vector)
+            leftturn = orientation1 + math.pi / 2
+            righrturn = orientation1 - math.pi / 2
+            leftPt = (x1 + distance * math.cos(leftturn), y1 + distance * math.sin(leftturn))
+            leftline.append(leftPt)
+            rightPt = (x1 + distance * math.cos(righrturn), y1 + distance * math.sin(righrturn))
+            rightline.append(rightPt)
+            return leftline, rightline
+
+        distance = self._pedb.edb_value(distance).ToDouble()
+        gap = self._pedb.edb_value(gap).ToDouble()
+        center_line = self.get_center_line()
+        leftline, rightline = getParalletLines(center_line, distance)
+        for x, y in getLocations(rightline, gap) + getLocations(leftline, gap):
+            self._pedb.padstacks.place([x, y], padstack_name)
 
 
 class EdbRectangle(EDBPrimitives, RectangleDotNet):
@@ -961,7 +1088,7 @@ class EDBArcs(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> prim_arcs = edb.modeler.primitives[0].arcs
     >>> prim_arcs.center # arc center

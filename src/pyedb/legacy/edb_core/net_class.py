@@ -2,11 +2,12 @@ from __future__ import absolute_import  # noreorder
 
 import re
 
-from pyedb.legacy.edb_core.edb_data.nets_data import EDBDifferentialPairData
-from pyedb.legacy.edb_core.edb_data.nets_data import EDBExtendedNetData
-from pyedb.legacy.edb_core.edb_data.nets_data import EDBNetClassData
 from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.legacy.edb_core.edb_data.nets_data import (
+    EDBDifferentialPairData,
+    EDBExtendedNetData,
+    EDBNetClassData,
+)
 
 
 class EdbCommon:
@@ -39,7 +40,7 @@ class EdbCommon:
 
         Returns
         -------
-        :class:` :class:`legacy.edb_core.edb_data.nets_data.EDBExtendedNetsData`
+        :class:` :class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBExtendedNetsData`
 
         """
         if name in self.items:
@@ -52,7 +53,7 @@ class EdbNetClasses(EdbCommon, object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_nets = edbapp.net_classes
     """
@@ -109,7 +110,7 @@ class EdbExtendedNets(EdbCommon, object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_nets = edbapp.extended_nets
     """
@@ -123,7 +124,7 @@ class EdbExtendedNets(EdbCommon, object):
 
         Returns
         -------
-        dict[str, :class:`legacy.edb_core.edb_data.nets_data.EDBExtendedNetsData`]
+        dict[str, :class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBExtendedNetsData`]
             Dictionary of extended nets.
         """
         nets = {}
@@ -145,7 +146,7 @@ class EdbExtendedNets(EdbCommon, object):
 
         Returns
         -------
-        :class:`legacy.edb_core.edb_data.nets_data.EDBExtendedNetsData`
+        :class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBExtendedNetsData`
         """
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
@@ -187,12 +188,12 @@ class EdbExtendedNets(EdbCommon, object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.extended_nets.auto_identify_signal()
         """
         return self._pedb.nets.generate_extended_nets(
-            resistor_below, inductor_below, capacitor_above, exception_list, True, False
+            resistor_below, inductor_below, capacitor_above, exception_list, True, True
         )
 
     @pyedb_function_handler()
@@ -222,12 +223,12 @@ class EdbExtendedNets(EdbCommon, object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.extended_nets.auto_identify_power()
         """
         return self._pedb.nets.generate_extended_nets(
-            resistor_below, inductor_below, capacitor_above, exception_list, False, True
+            resistor_below, inductor_below, capacitor_above, exception_list, True, True
         )
 
 
@@ -236,7 +237,7 @@ class EdbDifferentialPairs(EdbCommon, object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_nets = edbapp.differential_pairs.items
     >>> edb_nets = edbapp.differential_pairs["DQ4"]
@@ -303,7 +304,7 @@ class EdbDifferentialPairs(EdbCommon, object):
             A list containing identified differential pair names.
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", edbversion="2023.1")
         >>> edb_nets = edbapp.differential_pairs.auto_identify()
         """

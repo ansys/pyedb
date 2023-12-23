@@ -3,17 +3,16 @@ import math
 import re
 import warnings
 
-from pyedb.generic.general_methods import is_ironpython
+from pyedb.generic.general_methods import (
+    generate_unique_name,
+    is_ironpython,
+    pyedb_function_handler,
+)
+from pyedb.legacy.clr_module import String, _clr
 from pyedb.legacy.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.legacy.edb_core.edb_data.primitives_data import EDBPrimitivesMain
-from pyedb.legacy.edb_core.general import PadGeometryTpe
-from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.legacy.clr_module import String
-from pyedb.legacy.clr_module import _clr
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
-
+from pyedb.legacy.edb_core.general import PadGeometryTpe, convert_py_list_to_net_list
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -33,7 +32,7 @@ class EDBPadProperties(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_pad_properties = edb.padstacks.definitions["MyPad"].pad_by_layer["TOP"]
     """
@@ -380,7 +379,7 @@ class EDBPadstack(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_padstack = edb.padstacks.definitions["MyPad"]
     """
@@ -839,7 +838,7 @@ class EDBPadstack(object):
 
         Returns
         -------
-        List of :class:`legacy.edb_core.padstackEDBPadstack`
+        List of :class:`pyedb.legacy.edb_core.padstackEDBPadstack`
         """
         if self.via_start_layer == self.via_stop_layer:
             self._ppadstack._pedb.logger.error("Microvias cannot be applied when Start and Stop Layers are the same.")
@@ -973,6 +972,104 @@ class EDBPadstack(object):
         self._ppadstack._pedb.logger.info("Created {} new microvias.".format(i))
         return new_instances
 
+    @pyedb_function_handler()
+    def _update_layer_names(self, old_name, updated_name):
+        """Update padstack definition layer name when layer name is edited with the layer name setter.
+        Parameters
+        ----------
+        old_name
+            old name : str
+        updated_name
+            new name : str
+        Returns
+        -------
+        bool
+            ``True`` when succeed ``False`` when failed.
+        """
+        cloned_padstack_data = self._edb.definition.PadstackDefData(self.edb_padstack.GetData())
+        new_padstack_data = self._edb.definition.PadstackDefData.Create()
+        layers_name = cloned_padstack_data.GetLayerNames()
+        layers_to_add = []
+        for layer in layers_name:
+            if layer == old_name:
+                layers_to_add.append(updated_name)
+            else:
+                layers_to_add.append(layer)
+        new_padstack_data.AddLayers(convert_py_list_to_net_list(layers_to_add))
+        for layer in layers_name:
+            updated_pad = self.pad_by_layer[layer]
+            if not updated_pad.geometry_type == 0:  # pragma no cover
+                pad_type = self._edb.definition.PadType.RegularPad
+                geom_type = self.pad_by_layer[layer]._pad_parameter_value[1]
+                parameters = self.pad_by_layer[layer]._pad_parameter_value[2]
+                offset_x = self.pad_by_layer[layer]._pad_parameter_value[3]
+                offset_y = self.pad_by_layer[layer]._pad_parameter_value[4]
+                rot = self.pad_by_layer[layer]._pad_parameter_value[5]
+                if layer == old_name:  # pragma no cover
+                    new_padstack_data.SetPadParameters(
+                        updated_name, pad_type, geom_type, parameters, offset_x, offset_y, rot
+                    )
+                else:
+                    new_padstack_data.SetPadParameters(layer, pad_type, geom_type, parameters, offset_x, offset_y, rot)
+
+            updated_anti_pad = self.antipad_by_layer[layer]
+            if not updated_anti_pad.geometry_type == 0:  # pragma no cover
+                pad_type = self._edb.definition.PadType.AntiPad
+                geom_type = self.pad_by_layer[layer]._pad_parameter_value[1]
+                parameters = self.pad_by_layer[layer]._pad_parameter_value[2]
+                offset_x = self.pad_by_layer[layer]._pad_parameter_value[3]
+                offset_y = self.pad_by_layer[layer]._pad_parameter_value[4]
+                rotation = self.pad_by_layer[layer]._pad_parameter_value[5]
+                if layer == old_name:  # pragma no cover
+                    new_padstack_data.SetPadParameters(
+                        updated_name, pad_type, geom_type, parameters, offset_x, offset_y, rotation
+                    )
+                else:
+                    new_padstack_data.SetPadParameters(
+                        layer, pad_type, geom_type, parameters, offset_x, offset_y, rotation
+                    )
+
+            updated_thermal_pad = self.thermalpad_by_layer[layer]
+            if not updated_thermal_pad.geometry_type == 0:  # pragma no cover
+                pad_type = self._edb.definition.PadType.ThermalPad
+                geom_type = self.pad_by_layer[layer]._pad_parameter_value[1]
+                parameters = self.pad_by_layer[layer]._pad_parameter_value[2]
+                offset_x = self.pad_by_layer[layer]._pad_parameter_value[3]
+                offset_y = self.pad_by_layer[layer]._pad_parameter_value[4]
+                rotation = self.pad_by_layer[layer]._pad_parameter_value[5]
+                if layer == old_name:  # pragma no cover
+                    new_padstack_data.SetPadParameters(
+                        updated_name, pad_type, geom_type, parameters, offset_x, offset_y, rotation
+                    )
+                else:
+                    new_padstack_data.SetPadParameters(
+                        layer, pad_type, geom_type, parameters, offset_x, offset_y, rotation
+                    )
+
+        hole_param = cloned_padstack_data.GetHoleParameters()
+        if hole_param[0]:
+            hole_geom = hole_param[1]
+            hole_params = convert_py_list_to_net_list([self._get_edb_value(i) for i in hole_param[2]])
+            hole_off_x = self._get_edb_value(hole_param[3])
+            hole_off_y = self._get_edb_value(hole_param[4])
+            hole_rot = self._get_edb_value(hole_param[5])
+            new_padstack_data.SetHoleParameters(hole_geom, hole_params, hole_off_x, hole_off_y, hole_rot)
+
+        new_padstack_data.SetHolePlatingPercentage(self._get_edb_value(cloned_padstack_data.GetHolePlatingPercentage()))
+
+        new_padstack_data.SetHoleRange(cloned_padstack_data.GetHoleRange())
+        new_padstack_data.SetMaterial(cloned_padstack_data.GetMaterial())
+        new_padstack_data.SetSolderBallMaterial(cloned_padstack_data.GetSolderBallMaterial())
+        solder_ball_param = cloned_padstack_data.GetSolderBallParameter()
+        if solder_ball_param[0]:
+            new_padstack_data.SetSolderBallParameter(
+                self._get_edb_value(solder_ball_param[1]), self._get_edb_value(solder_ball_param[2])
+            )
+        new_padstack_data.SetSolderBallPlacement(cloned_padstack_data.GetSolderBallPlacement())
+        new_padstack_data.SetSolderBallShape(cloned_padstack_data.GetSolderBallShape())
+        self.edb_padstack.SetData(new_padstack_data)
+        return True
+
 
 class EDBPadstackInstance(EDBPrimitivesMain):
     """Manages EDB functionalities for a padstack.
@@ -986,7 +1083,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
     >>> edb_padstack_instance = edb.padstacks.instances[0]
     """
@@ -999,12 +1096,29 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         self._position = []
         self._pdef = None
 
-    @property
-    def terminal(self):
-        """Return PadstackInstanceTerminal object."""
-        from pyedb.legacy.edb_core.edb_data.terminals import PadstackInstanceTerminal
+    def get_terminal(self, name=None, create_new_terminal=False):
+        """Get PadstackInstanceTerminal object.
 
-        term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
+        Parameters
+        ----------
+        name : str, optional
+            Name of the terminal. Only applicable when create_new_terminal is True.
+        create_new_terminal : bool, optional
+            Whether to create a new terminal.
+
+        Returns
+        -------
+        :class:`pyedb.legacy.edb_core.edb_data.terminals`
+        """
+
+        if create_new_terminal:
+            term = self._create_terminal(name)
+        else:
+            from pyedb.legacy.edb_core.edb_data.terminals import (
+                PadstackInstanceTerminal,
+            )
+
+            term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         if not term.is_null:
             return term
 
@@ -1037,10 +1151,6 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             Negative terminal of the port.
         is_circuit_port : bool, optional
             Whether it is a circuit port.
-
-        Returns
-        -------
-
         """
         terminal = self._create_terminal(name)
         if reference:
@@ -1051,6 +1161,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             ref_terminal = None
 
         return self._pedb.create_port(terminal, ref_terminal, is_circuit_port)
+
     @property
     def _em_properties(self):
         """Get EM properties."""
@@ -1443,7 +1554,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         Returns
         -------
         list
-            List of ``[x, y]``` coordinates for the padstack instance position.
+            List of ``[x, y]`` coordinates for the padstack instance position.
         """
         self._position = []
         out = self._edb_padstackinstance.GetPositionAndRotationValue()
@@ -1548,7 +1659,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.padstacks.instances[111].get_aedt_pin_name()
 
@@ -1655,7 +1766,10 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         float
             Lower elavation of the placement layer.
         """
-        return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetLowerElevation()
+        try:
+            return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetLowerElevation()
+        except AttributeError:  # pragma: no cover
+            return None
 
     @property
     def upper_elevation(self):
@@ -1666,7 +1780,10 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         float
            Upper elevation of the placement layer.
         """
-        return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetUpperElevation()
+        try:
+            return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetUpperElevation()
+        except AttributeError:  # pragma: no cover
+            return None
 
     @property
     def top_bottom_association(self):
@@ -1710,7 +1827,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
         >>> edb_layout = edbapp.modeler
         >>> list_of_padstack_instances = list(edbapp.padstacks.instances.values())

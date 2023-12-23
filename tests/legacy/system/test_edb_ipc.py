@@ -2,14 +2,15 @@
 """
 
 import os
+
 import pytest
 
 from pyedb.legacy.edb import EdbLegacy
+from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
-from tests.legacy.system.conftest import local_path
-from tests.conftest import desktop_version
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -35,8 +36,7 @@ class TestClass:
         assert os.path.exists(xml_file)
         edbapp.close()
 
-    @pytest.mark.no_xdist
-    @pytest.mark.xfail(reason="This test is expected to crash (sometimes) at `ipc_edb.close()`", strict=False)
+    @pytest.mark.xfail(reason="This test is expected to crash (sometimes) at `ipc_edb.close()`")
     def test_export_to_ipc2581_1(self):
         """Export of a loaded aedb file to an XML IPC2581 file"""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")

@@ -22,11 +22,11 @@ import random
 import shutil
 import string
 import tempfile
+
 import pytest
 
 from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.filesystem import Scratch
-from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.misc import list_installed_ansysem
 
 logger = pyedb_logger
@@ -34,7 +34,7 @@ logger = pyedb_logger
 local_path = os.path.dirname(os.path.realpath(__file__))
 
 # Initialize default desktop configuration
-desktop_version = "2023.2"
+desktop_version = "2024.1"
 if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_installed_ansysem():
     desktop_version = list_installed_ansysem()[0][12:].replace(".", "")
     desktop_version = "20{}.{}".format(desktop_version[:2], desktop_version[-1])

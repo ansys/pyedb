@@ -1,6 +1,5 @@
-from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.generic.constants import NodeType
-from pyedb.generic.constants import SourceType
+from pyedb.generic.constants import NodeType, SourceType
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 
 
 class Node(object):
@@ -275,39 +274,45 @@ class PinGroup(object):
     def net_name(self):
         return self._edb_pin_group.GetNet().GetName()
 
-    @property
-    def terminal(self):
+    @pyedb_function_handler
+    def get_terminal(self, name=None, create_new_terminal=False):
         """Terminal."""
-        from pyedb.legacy.edb_core.edb_data.terminals import PinGroupTerminal
 
-        term = PinGroupTerminal(self._pedb, self._edb_pin_group.GetPinGroupTerminal())
+        if create_new_terminal:
+            term = self._create_terminal(name)
+        else:
+            from pyedb.legacy.edb_core.edb_data.terminals import PinGroupTerminal
+
+            term = PinGroupTerminal(self._pedb, self._edb_pin_group.GetPinGroupTerminal())
         return term if not term.is_null else None
 
     @pyedb_function_handler()
     def _create_terminal(self, name=None):
         """Create a terminal on the pin group.
+
         Parameters
         ----------
         name : str, optional
             Name of the terminal. The default is ``None``, in which case a name is
             automatically assigned.
+
         Returns
         -------
         :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`
         """
-        pg_term = self.terminal
+        terminal = self.get_terminal()
+        if terminal:
+            return terminal
+
         if not name:
-            name = self.name
+            name = generate_unique_name(self.name)
 
-        if pg_term:
-            return pg_term
-        else:
-            from pyedb.legacy.edb_core.edb_data.terminals import PinGroupTerminal
+        from pyedb.legacy.edb_core.edb_data.terminals import PinGroupTerminal
 
-            term = PinGroupTerminal(self._pedb)
+        term = PinGroupTerminal(self._pedb)
 
-            term = term.create(name, self.net_name, self.name)
-            return term
+        term = term.create(name, self.net_name, self.name)
+        return term
 
     @pyedb_function_handler()
     def create_current_source_terminal(self, magnitude=1, phase=0):

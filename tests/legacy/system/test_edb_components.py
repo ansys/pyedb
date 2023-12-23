@@ -1,19 +1,19 @@
 """Tests related to Edb components
 """
-import os
-import pytest
 import math
+import os
+
+import pytest
 
 # from pyedb import Edb
 from pyedb.legacy.edb import EdbLegacy
-
-from tests.conftest import local_path
-from tests.conftest import desktop_version
+from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 bom_example = "bom_example.csv"
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -37,7 +37,7 @@ class TestClass:
         coax_port.radial_extent_factor = 3
         assert coax_port.radial_extent_factor == 3
         assert coax_port.component
-        assert self.edbapp.components["U6"].pins["R3"].terminal
+        assert self.edbapp.components["U6"].pins["R3"].get_terminal()
         assert self.edbapp.components["U6"].pins["R3"].id
         assert self.edbapp.terminals
         assert self.edbapp.ports
@@ -210,7 +210,6 @@ class TestClass:
         for el in self.edbapp.modeler.polygons:
             if el.GetId() == 5954:
                 selection_poly = el
-                
         assert self.edbapp.modeler.parametrize_polygon(poly, selection_poly)
 
     def test_components_update_from_bom(self):
@@ -251,6 +250,7 @@ class TestClass:
     def test_convert_resistor_value(self):
         """Convert a resistor value."""
         from pyedb.legacy.edb_core.components import resistor_value_parser
+
         assert resistor_value_parser("100meg")
 
     def test_components_create_solder_ball_on_component(self):
@@ -284,8 +284,10 @@ class TestClass:
 
     def test_componenets_deactivate_rlc(self):
         """Deactivate RLC component and convert to a circuit port."""
-        assert self.edbapp.components.deactivate_rlc_component(component="C1", create_circuit_port=True)
+        assert self.edbapp.components.deactivate_rlc_component(component="C1", create_circuit_port=False)
+        assert self.edbapp.ports["C1"]
         assert self.edbapp.components["C1"].is_enabled is False
+        assert self.edbapp.components.deactivate_rlc_component(component="C2", create_circuit_port=True)
         self.edbapp.components["C2"].is_enabled = False
         assert self.edbapp.components["C2"].is_enabled is False
         self.edbapp.components["C2"].is_enabled = True
@@ -466,3 +468,17 @@ class TestClass:
         assert component.bounding_box
         assert isinstance(component.rotation, float)
         edbapp.close()
+
+    def test_pec_boundary_ports(self):
+        """Check pec boundary ports."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_custom_sball_height", "ANSYS-HSD_V1.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp.components.create_port_on_pins(refdes="U1", pins="AU38", reference_pins="AU37", pec_boundary=True)
+        assert edbapp.terminals["Port_GND_U1-AU38"].boundary_type == "PecBoundary"
+        assert edbapp.terminals["Port_GND_U1-AU38_ref"].boundary_type == "PecBoundary"
+        edbapp.components.deactivate_rlc_component(component="C5", create_circuit_port=True, pec_boundary=True)
+        edbapp.components.add_port_on_rlc_component(component="C65", circuit_ports=False, pec_boundary=True)
+        assert edbapp.terminals["C5"].boundary_type == "PecBoundary"
+        assert edbapp.terminals["C65"].boundary_type == "PecBoundary"

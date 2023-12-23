@@ -5,22 +5,25 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 import os
 import time
 
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import SourceType
-from pyedb.legacy.edb_core.edb_data.sources import CircuitPort
-from pyedb.legacy.edb_core.edb_data.sources import CurrentSource
-from pyedb.legacy.edb_core.edb_data.sources import DCTerminal
-from pyedb.legacy.edb_core.edb_data.sources import PinGroup
-from pyedb.legacy.edb_core.edb_data.sources import ResistorSource
-from pyedb.legacy.edb_core.edb_data.sources import VoltageSource
-from pyedb.legacy.edb_core.general import BoundaryType
+from pyedb.generic.constants import SolverType, SweepType
+from pyedb.generic.general_methods import (
+    _retry_ntimes,
+    generate_unique_name,
+    pyedb_function_handler,
+)
+from pyedb.legacy.edb_core.edb_data.simulation_configuration import (
+    SimulationConfiguration,
+    SourceType,
+)
+from pyedb.legacy.edb_core.edb_data.sources import (
+    CircuitPort,
+    CurrentSource,
+    DCTerminal,
+    PinGroup,
+    ResistorSource,
+    VoltageSource,
+)
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.constants import SolverType
-from pyedb.generic.constants import SweepType
-from pyedb.generic.general_methods import _retry_ntimes
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
-
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -34,7 +37,7 @@ class EdbSiwave(object):
 
     Examples
     --------
-    >>> from legacy import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_siwave = edbapp.siwave
     """
@@ -224,7 +227,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.siwave.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
@@ -349,7 +352,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.siwave.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
@@ -399,7 +402,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.siwave.create_current_source_on_pin(pins[0], pins[1], 50, "source_name")
@@ -446,7 +449,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins =edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.siwave.create_resistor_on_pin(pins[0], pins[1],50,"res_name")
@@ -522,7 +525,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.siwave.create_circuit_port_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 50, "port_name")
         """
@@ -591,7 +594,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.siwave.create_voltage_source_on_net("U2A5","V1P5_S3","U2A5","GND",3.3,0,"source_name")
         """
@@ -662,7 +665,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.siwave.create_current_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 0.1, 0, "source_name")
         """
@@ -721,7 +724,7 @@ class EdbSiwave(object):
         Examples
         --------
 
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.siwave.create_dc_terminal("U2A5", "V1P5_S3", "source_name")
         """
@@ -839,7 +842,7 @@ class EdbSiwave(object):
         third_arg = int(decade_count)
         if sweeptype == 0:
             third_arg = self._pedb.number_with_units(step_freq, "Hz")
-        setup.si_slider_postion = int(accuracy_level)
+        setup.si_slider_position = int(accuracy_level)
         sweep = setup.add_frequency_sweep(
             frequency_sweep=[
                 [sweep, start_freq, stop_freq, third_arg],
@@ -873,7 +876,7 @@ class EdbSiwave(object):
 
         Examples
         --------
-        >>> from legacy import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb("pathtoaedb", edbversion="2021.2")
         >>> edb.siwave.add_siwave_ac_analysis()
         >>> edb.siwave.add_siwave_dc_analysis2("my_setup")
@@ -1401,6 +1404,7 @@ class EdbSiwave(object):
         negative_layer,
     ):
         """Place a voltage probe between two points.
+
         Parameters
         ----------
         name : str,
@@ -1418,14 +1422,6 @@ class EdbSiwave(object):
         negative_layer : str
             Layer of the negative terminal.
         """
-        from pyedb.legacy.edb_core.edb_data.terminals import PointTerminal
-
-        point_terminal = PointTerminal(self._pedb)
-        p_terminal = point_terminal.create(name, positive_net_name, positive_location, positive_layer)
-        p_terminal.boundary_type = BoundaryType.kVoltageProbe.name
-
-        n_terminal = point_terminal.create(name + "_ref", negative_net_name, negative_location, negative_layer)
-        n_terminal.boundary_type = BoundaryType.kVoltageProbe.name
-        p_terminal.ref_terminal = n_terminal
-        return self._pedb.probes[name]
-    
+        p_terminal = self._pedb.get_point_terminal(name, positive_net_name, positive_location, positive_layer)
+        n_terminal = self._pedb.get_point_terminal(name + "_ref", negative_net_name, negative_location, negative_layer)
+        return self._pedb.create_voltage_probe(p_terminal, n_terminal)

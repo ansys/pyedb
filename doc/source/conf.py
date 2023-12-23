@@ -1,63 +1,70 @@
-# Configuration file for the Sphinx_PyAEDT documentation builder.
+# Configuration file for the Sphinx_PyEDB documentation builder.
 
 # -- Project information -----------------------------------------------------
 import datetime
+from importlib import import_module
+import json
 import os
 import pathlib
+from pprint import pformat
 import sys
 import warnings
 
-import pyvista
-import numpy as np
-import json
-from sphinx_gallery.sorting import FileNameSortKey
-from ansys_sphinx_theme import (ansys_favicon, 
-                                get_version_match, pyansys_logo_black,
-                                watermark, 
-                                ansys_logo_white, 
-                                ansys_logo_white_cropped, latex)
-from importlib import import_module
-from pprint import pformat
-from docutils.parsers.rst import Directive
+from ansys_sphinx_theme import (
+    ansys_favicon,
+    ansys_logo_white,
+    ansys_logo_white_cropped,
+    get_version_match,
+    latex,
+    pyansys_logo_black,
+    watermark,
+)
 from docutils import nodes
+from docutils.parsers.rst import Directive
+import numpy as np
+import pyvista
 from sphinx import addnodes
 
 # <-----------------Override the sphinx pdf builder---------------->
 # Some pages do not render properly as per the expected Sphinx LaTeX PDF signature.
 # This issue can be resolved by migrating to the autoapi format.
-# Additionally, when documenting images in formats other than the supported ones, 
+# Additionally, when documenting images in formats other than the supported ones,
 # make sure to specify their types.
 from sphinx.builders.latex import LaTeXBuilder
-LaTeXBuilder.supported_image_types = ["image/png", "image/pdf", "image/svg+xml", "image/webp" ]
+from sphinx_gallery.sorting import FileNameSortKey
 
-from sphinx.writers.latex import CR
-from sphinx.writers.latex import LaTeXTranslator
+LaTeXBuilder.supported_image_types = ["image/png", "image/pdf", "image/svg+xml", "image/webp"]
+
 from docutils.nodes import Element
+from sphinx.writers.latex import CR, LaTeXTranslator
+
 
 def visit_desc_content(self, node: Element) -> None:
-    self.body.append(CR + r'\pysigstopsignatures')
+    self.body.append(CR + r"\pysigstopsignatures")
     self.in_desc_signature = False
+
+
 LaTeXTranslator.visit_desc_content = visit_desc_content
+
 
 # <----------------- End of sphinx pdf builder override---------------->
 
+
 class PrettyPrintDirective(Directive):
     """Renders a constant using ``pprint.pformat`` and inserts into the document."""
+
     required_arguments = 1
 
     def run(self):
-        module_path, member_name = self.arguments[0].rsplit('.', 1)
+        module_path, member_name = self.arguments[0].rsplit(".", 1)
 
         member_data = getattr(import_module(module_path), member_name)
         code = pformat(member_data, 2, width=68)
 
         literal = nodes.literal_block(code, code)
-        literal['language'] = 'python'
+        literal["language"] = "python"
 
-        return [
-                addnodes.desc_name(text=member_name),
-                addnodes.desc_content('', literal)
-        ]
+        return [addnodes.desc_name(text=member_name), addnodes.desc_content("", literal)]
 
 
 def autodoc_skip_member(app, what, name, obj, skip, options):
@@ -71,8 +78,8 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
 
 
 def setup(app):
-    app.add_directive('pprint', PrettyPrintDirective)
-    app.connect('autodoc-skip-member', autodoc_skip_member)
+    app.add_directive("pprint", PrettyPrintDirective)
+    app.connect("autodoc-skip-member", autodoc_skip_member)
 
 
 local_path = os.path.dirname(os.path.realpath(__file__))
@@ -81,13 +88,11 @@ root_path = module_path.parent.parent
 try:
     from pyedb import __version__
 except ImportError:
-
     sys.path.append(os.path.abspath(os.path.join(local_path)))
     sys.path.append(os.path.join(root_path))
     from pyedb import __version__
 
-
-project = "PyAEDT"
+project = "PyEDB"
 copyright = f"(c) {datetime.datetime.now().year} ANSYS, Inc. All rights reserved"
 author = "Ansys Inc."
 cname = os.getenv("DOCUMENTATION_CNAME", "nocname.com")
@@ -102,13 +107,10 @@ else:
 
 release = version = __version__
 
-os.environ["PYAEDT_NON_GRAPHICAL"] = "1"
-os.environ["PYAEDT_DOC_GENERATION"] = "1"
-
 # -- General configuration ---------------------------------------------------
 
-# Add any Sphinx_PyAEDT extension module names here as strings. They can be
-# extensions coming with Sphinx_PyAEDT (named 'sphinx.ext.*') or your custom
+# Add any Sphinx_PyEDB extension module names here as strings. They can be
+# extensions coming with Sphinx_PyEDB (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
     "sphinx.ext.intersphinx",
@@ -139,7 +141,6 @@ intersphinx_mapping = {
     "pytest": ("https://docs.pytest.org/en/stable", None),
 }
 
-
 toc_object_entries_show_parents = "hide"
 
 html_show_sourcelink = True
@@ -157,8 +158,8 @@ numpydoc_validation_checks = {
     "GL09",  # Deprecation warning should precede extended summary
     "GL10",  # reST directives {directives} must be followed by two colons
     # Return
-    "RT04", # Return value description should start with a capital letter"
-    "RT05", # Return value description should finish with "."
+    "RT04",  # Return value description should start with a capital letter"
+    "RT05",  # Return value description should finish with "."
     # Summary
     "SS01",  # No summary found
     "SS02",  # Summary does not start with a capital letter
@@ -170,30 +171,22 @@ numpydoc_validation_checks = {
     # separating the parameter name and type",
 }
 
-numpydoc_validation_exclude = {  # set of regex
-    r"\.AEDTMessageManager.add_message$",  # bad SS05
-    r"\.Modeler3D\.create_choke$",  # bad RT05
-    r"HistoryProps.",  # bad RT05 because of the base class named OrderedDict
-}
-
 # Favicon
 html_favicon = ansys_favicon
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
-# disable generating the sphinx nested documentation
-if "PYAEDT_CI_NO_AUTODOC" in os.environ:
-    templates_path.clear()
-
+# # disable generating the sphinx nested documentation
+# if "PYEDB_CI_NO_AUTODOC" in os.environ:
+#     templates_path.clear()
 
 # Copy button customization ---------------------------------------------------
 # exclude traditional Python prompts from the copied code
 copybutton_prompt_text = r">>> ?|\.\.\. "
 copybutton_prompt_is_regexp = True
 
-
-# The language for content autogenerated by Sphinx_PyAEDT. Refer to documentation
+# The language for content autogenerated by Sphinx_PyEDB. Refer to documentation
 # for a list of supported languages.
 #
 # This is also used if you do content translation via gettext catalogs.
@@ -207,7 +200,6 @@ exclude_patterns = ["_build", "sphinx_boogergreen_theme_1", "Thumbs.db", ".DS_St
 
 inheritance_graph_attrs = dict(rankdir="RL", size='"8.0, 10.0"', fontsize=14, ratio="compress")
 inheritance_node_attrs = dict(shape="ellipse", fontsize=14, height=0.75, color="dodgerblue1", style="filled")
-
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -227,7 +219,6 @@ master_doc = "index"
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
-
 # Manage errors
 pyvista.set_error_output_file("errors.txt")
 
@@ -245,9 +236,8 @@ pyvista.FIGURE_PATH = os.path.join(os.path.abspath("./images/"), "auto-generated
 if not os.path.exists(pyvista.FIGURE_PATH):
     os.makedirs(pyvista.FIGURE_PATH)
 
-# gallery build requires AEDT install
-if os.name != "posix" and "PYAEDT_CI_NO_EXAMPLES" not in os.environ:
-
+# gallery build requires EDB install
+if os.name != "posix" and "PYEDB_CI_NO_EXAMPLES" not in os.environ:
     # suppress annoying matplotlib bug
     warnings.filterwarnings(
         "ignore",
@@ -268,7 +258,7 @@ if os.name != "posix" and "PYAEDT_CI_NO_EXAMPLES" not in os.environ:
             "examples_dirs": ["../../examples/"],
             # path where to save gallery generated examples
             "gallery_dirs": ["examples"],
-            # Patter to search for examples files
+            # Pattern to search for examples files
             "filename_pattern": r"\.py",
             # Remove the "Download all examples" button from the top level gallery
             "download_all_examples": False,
@@ -305,7 +295,7 @@ jinja_contexts = {
 # autoapi_prepare_jinja_env = prepare_jinja_env
 
 # -- Options for HTML output -------------------------------------------------
-html_short_title = html_title = "PyAEDT"
+html_short_title = html_title = "PyEDB"
 html_theme = "ansys_sphinx_theme"
 html_logo = pyansys_logo_black
 html_context = {
@@ -317,7 +307,8 @@ html_context = {
 
 # specify the location of your github repo
 html_theme_options = {
-    "github_url": "https://github.com/ansys/pyaedt",
+    "github_url": "https://github.com/ansys/pyedb",
+    "navigation_with_keys": False,
     "show_prev_next": False,
     "show_breadcrumbs": True,
     "collapse_navigation": True,
@@ -328,7 +319,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "Support",
-            "url": "https://github.com/ansys/pyaedt/discussions",
+            "url": "https://github.com/ansys/pyedb/discussions",
             "icon": "fa fa-comment fa-fw",
         },
     ],
@@ -340,7 +331,6 @@ html_theme_options = {
     "use_meilisearch": {
         "api_key": os.getenv("MEILISEARCH_PUBLIC_API_KEY", ""),
         "index_uids": {
-            f"legacy-v{get_version_match(__version__).replace('.', '-')}": "PyAEDT",
             f"legacy-v{get_version_match(__version__).replace('.', '-')}": "EDB API",
         },
     },
@@ -351,14 +341,13 @@ html_static_path = ["_static"]
 # These paths are either relative to html_static_path
 # or fully qualified paths (eg. https://...)
 html_css_files = [
-    'custom.css',
+    "custom.css",
 ]
-
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "pyaedtdoc"
+htmlhelp_basename = "pyedbdoc"
 
 # -- Options for LaTeX output ------------------------------------------------
 # additional logos for the latex coverpage

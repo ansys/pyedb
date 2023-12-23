@@ -4,9 +4,9 @@ from pyaedt import Edb, Hfss3dLayout
 # Ansys release version
 desktop_version = "2023.2"
 
-#download and copy the layout file from examples
+# download and copy the layout file from examples
 temp_folder = pyaedt.generate_unique_folder_name()
-targetfile = pyaedt.downloads.download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+targetfile = pyaedt.downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
 # loading EDB
 edbapp = Edb(edbpath=targetfile, edbversion=desktop_version)

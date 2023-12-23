@@ -5,13 +5,15 @@ import sys
 
 from pyedb import __version__
 from pyedb.edb_logger import pyedb_logger
+from pyedb.generic.general_methods import (
+    env_path,
+    env_path_student,
+    env_value,
+    is_ironpython,
+    is_linux,
+    settings,
+)
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import env_path
-from pyedb.generic.general_methods import env_path_student
-from pyedb.generic.general_methods import env_value
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import is_linux
-from pyedb.generic.general_methods import settings
 from pyedb.misc.misc import list_installed_ansysem
 
 
@@ -82,6 +84,7 @@ class PolygonDataDotNet:  # pragma: no cover
 
     def get_points(self):
         """Get all points in polygon.
+
         Returns
         -------
         list[list[edb_value]]
@@ -91,6 +94,7 @@ class PolygonDataDotNet:  # pragma: no cover
 
     def add_point(self, x, y, incremental=False):
         """Add a point at the end of the point list of the polygon.
+
         Parameters
         ----------
         x: str, int, float
@@ -100,6 +104,7 @@ class PolygonDataDotNet:  # pragma: no cover
         incremental: bool
             Whether to add the point incrementally. The default value is ``False``. When
             ``True``, the coordinates of the added point are incremental to the last point.
+
         Returns
         -------
         bool
@@ -693,8 +698,7 @@ class EdbDotNet(object):
         self.edbversion = edbversion
         self.student_version = student_version
         """Initialize DLLs."""
-        from pyedb.legacy.clr_module import _clr
-        from pyedb.legacy.clr_module import edb_initialized
+        from pyedb.legacy.clr_module import _clr, edb_initialized
 
         if settings.enable_screen_logs:
             self._logger.enable_stdout_log()

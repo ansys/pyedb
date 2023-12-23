@@ -9,15 +9,16 @@ run anlasyis and get results.
 ###############################################################################
 # Perform required imports
 # ~~~~~~~~~~~~~~~~~~~~~~~~
-# Peform required imports. Importing the ``Hfss3dlayout`` object initializes it
+# Perform required imports. Importing the ``Hfss3dlayout`` object initializes it
 # on version 2023 R2.
 
 import os
-import pyedb
-from pyedb.legacy.downloads import download_file
+
 from pyaedt import Hfss3dLayout
+
+import pyedb
 from pyedb.generic.general_methods import generate_unique_folder_name
-from pyedb.generic.general_methods import generate_unique_name
+from pyedb.legacy.downloads import download_file
 
 ##########################################################
 # Set non-graphical mode
@@ -33,7 +34,7 @@ non_graphical = True
 
 
 project_path = generate_unique_folder_name()
-target_aedb = download_file('edb/ANSYS-HSD_V1.aedb', destination=project_path)
+target_aedb = download_file("edb/ANSYS-HSD_V1.aedb", destination=project_path)
 print("Project folder will be", target_aedb)
 
 ###############################################################################
@@ -95,12 +96,9 @@ edbapp.components.import_definition(os.path.join(target_aedb, "1_comp_definition
 # +------------+-----------------------+-----------+------------+
 
 
-edbapp.components.import_bom(os.path.join(target_aedb, "0_bom.csv"),
-                                  refdes_col=0,
-                                  part_name_col=1,
-                                  comp_type_col=2,
-                                  value_col=3)
-
+edbapp.components.import_bom(
+    os.path.join(target_aedb, "0_bom.csv"), refdes_col=0, part_name_col=1, comp_type_col=2, value_col=3
+)
 
 
 ###############################################################################
@@ -141,10 +139,12 @@ sim_setup.batch_solve_settings.use_pyaedt_cutout = True
 sim_setup.ac_settings.max_arc_points = 6
 sim_setup.ac_settings.max_num_passes = 5
 
-sim_setup.batch_solve_settings.signal_nets = ['PCIe_Gen4_TX2_CAP_P',
-                                              'PCIe_Gen4_TX2_CAP_N',
-                                              'PCIe_Gen4_TX2_P',
-                                              'PCIe_Gen4_TX2_N']
+sim_setup.batch_solve_settings.signal_nets = [
+    "PCIe_Gen4_TX2_CAP_P",
+    "PCIe_Gen4_TX2_CAP_N",
+    "PCIe_Gen4_TX2_P",
+    "PCIe_Gen4_TX2_N",
+]
 sim_setup.batch_solve_settings.components = ["U1", "X1"]
 sim_setup.batch_solve_settings.power_nets = ["GND", "GND_DP"]
 sim_setup.ac_settings.start_freq = "100Hz"
@@ -164,7 +164,7 @@ edbapp.build_simulation_project(sim_setup)
 # ~~~~~~~~~~~
 # Plot cutout once finished.
 
-edbapp.nets.plot(None,None)
+edbapp.nets.plot(None, None)
 
 ###############################################################################
 # Save and Close EDB
@@ -178,7 +178,9 @@ edbapp.close_edb()
 # Open Aedt
 # ~~~~~~~~~
 # Project folder aedb will be opened in AEDT Hfss3DLayout and loaded.
-h3d = Hfss3dLayout(specified_version="2023.2", projectname=target_aedb, non_graphical=non_graphical, new_desktop_session=True)
+h3d = Hfss3dLayout(
+    specified_version="2023.2", projectname=target_aedb, non_graphical=non_graphical, new_desktop_session=True
+)
 
 ###############################################################################
 # Analyze

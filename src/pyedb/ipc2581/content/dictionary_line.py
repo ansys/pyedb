@@ -1,5 +1,5 @@
-from pyedb.ipc2581.content.entry_line import EntryLine
 from pyedb.generic.general_methods import ET
+from pyedb.ipc2581.content.entry_line import EntryLine
 
 
 class DictionaryLine(object):

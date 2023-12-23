@@ -2,13 +2,15 @@
 """
 
 import os
+
 import pytest
+
 from pyedb.legacy.edb import EdbLegacy
-from tests.conftest import desktop_version
-from tests.conftest import local_path
+from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -18,7 +20,6 @@ class TestClass:
         self.target_path = target_path
         self.target_path2 = target_path2
         self.target_path4 = target_path4
-
 
     def test_nets_queries(self):
         """Evaluate nets queries"""
@@ -109,9 +110,8 @@ class TestClass:
         edbapp.layout_validation.illegal_rlc_values(True)
 
         # assert len(dc_shorts) == 20
-        assert ["LVDS_CH09_N", "GND"] in dc_shorts
-        assert ["LVDS_CH09_N", "DDR4_DM3"] in dc_shorts
-        assert ["DDR4_DM3", "LVDS_CH07_N"] in dc_shorts
+        assert ["SFPA_Tx_Fault", "PCIe_Gen4_CLKREQ_L"] in dc_shorts
+        assert ["VDD_DDR", "GND"] in dc_shorts
         assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) > 0
         edbapp.nets["DDR4_DM3"].find_dc_short(True)
         assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) == 0
@@ -120,3 +120,73 @@ class TestClass:
     def test_nets_eligible_power_nets(self):
         """Evaluate eligible power nets."""
         assert "GND" in [i.name for i in self.edbapp.nets.eligible_power_nets()]
+
+    def test_nets_merge_polygon(self):
+        """Convert paths from net into polygons."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "test_merge_polygon.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_merge_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = EdbLegacy(target_path, desktop_version)
+        assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization(self):
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_auto_parameters", "test.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = EdbLegacy(target_path, desktop_version)
+        edbapp.auto_parametrize_design(
+            layers=True,
+            layer_filter="1_Top",
+            materials=False,
+            via_holes=False,
+            pads=False,
+            antipads=False,
+            traces=False,
+        )
+        assert "$1_Top_thick" in edbapp.variables
+        edbapp.auto_parametrize_design(
+            layers=True, materials=False, via_holes=False, pads=False, antipads=False, traces=False
+        )
+        assert len(list(edbapp.variables.keys())) == len(list(edbapp.stackup.stackup_layers.keys()))
+        edbapp.auto_parametrize_design(
+            layers=False,
+            materials=True,
+            via_holes=False,
+            pads=False,
+            antipads=False,
+            traces=False,
+            material_filter=["copper"],
+        )
+        assert "$sigma_copper" in edbapp.variables
+        edbapp.auto_parametrize_design(
+            layers=False, materials=True, via_holes=False, pads=False, antipads=False, traces=False
+        )
+        assert len(list(edbapp.variables.values())) == 26
+        edbapp.auto_parametrize_design(
+            layers=False, materials=False, via_holes=True, pads=False, antipads=False, traces=False
+        )
+        assert len(list(edbapp.variables.values())) == 65
+        edbapp.auto_parametrize_design(
+            layers=False, materials=False, via_holes=False, pads=True, antipads=False, traces=False
+        )
+        assert len(list(edbapp.variables.values())) == 469
+        edbapp.auto_parametrize_design(
+            layers=False, materials=False, via_holes=False, pads=False, antipads=True, traces=False
+        )
+        assert len(list(edbapp.variables.values())) == 469
+        edbapp.auto_parametrize_design(
+            layers=False,
+            materials=False,
+            via_holes=False,
+            pads=False,
+            antipads=False,
+            traces=True,
+            trace_net_filter=["SFPA_Tx_Fault", "SFPA_Tx_Disable", "SFPA_SDA", "SFPA_SCL", "SFPA_Rx_LOS"],
+        )
+        assert len(list(edbapp.variables.keys())) == 474
+        edbapp.auto_parametrize_design(
+            layers=False, materials=False, via_holes=False, pads=False, antipads=False, traces=True
+        )
+        assert len(list(edbapp.variables.values())) == 2308
+        edbapp.close_edb()
