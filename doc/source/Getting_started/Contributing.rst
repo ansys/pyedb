@@ -34,7 +34,7 @@ To reach the product support team, email `pyansys.core@ansys.com <pyansys.core@a
 View PyEDB documentation
 -------------------------
 Documentation for the latest stable release of PyEDB is hosted at
-`PyEDB Documentation <https://aedt.docs.pyansys.com>`_.
+`PyEDB Documentation <https://edb.docs.pyansys.com>`_.
 
 In the upper right corner of the documentation's title bar, there is an option
 for switching from viewing the documentation for the latest stable release

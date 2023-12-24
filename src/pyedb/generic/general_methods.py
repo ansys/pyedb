@@ -118,7 +118,7 @@ def _exception(ex_info, func, args, kwargs, message="Type Error"):
     args = [func.__name__] + [i for i in args_name if i not in ["self"]]
     if not func.__name__.startswith("_"):
         _write_mes(
-            "Check Online documentation on: https://aedt.docs.pyansys.com/version/stable/search.html?q={}".format(
+            "Check Online documentation on: https://edb.docs.pyansys.com/version/stable/search.html?q={}".format(
                 "+".join(args)
             )
         )
@@ -1780,7 +1780,7 @@ def install_with_pip(package_name, package_path=None, upgrade=False, uninstall=F
 
 class Help:  # pragma: no cover
     def __init__(self):
-        self._base_path = "https://aedt.docs.pyansys.com/version/stable"
+        self._base_path = "https://edb.docs.pyansys.com/version/stable"
         self.browser = "default"
 
     def _launch_ur(self, url):
