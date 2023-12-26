@@ -19,7 +19,7 @@ def Edb(
 
     Parameters
     ----------
-    edbpath : str, int, float optional
+    edbpath : str, optional
         Full path to the ``aedb`` folder. The variable can also contain
         the path to a layout to import. Allowed formats are BRD,
         XML (IPC2581), GDS, and DXF. The default is ``None``.
