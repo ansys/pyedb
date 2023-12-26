@@ -31,6 +31,18 @@ project_path = generate_unique_folder_name()
 target_aedb = download_file("edb/ANSYS-HSD_V1.aedb", destination=project_path)
 print("Project folder will be", target_aedb)
 
+##########################################################
+# Set non-graphical mode
+# ~~~~~~~~~~~~~~~~~~~~~~
+# Set non-graphical mode. The default is ``True``.
+
+non_graphical = True
+
+###############################################################################
+# Launch EDB
+# ~~~~~~~~~~
+# Launch the :class:`pyedb.Edb` class, using EDB 2023 R2.
+
 aedt_version = "2023.2"
 edb = pyedb.Edb(edbpath=target_aedb, edbversion=aedt_version)
 print("EDB is located at {}".format(target_aedb))
@@ -67,5 +79,5 @@ edb.close_edb()
 # Open project in AEDT
 # ~~~~~~~~~~~~~~~~~~~~
 
-hfss = Hfss3dLayout(projectname=target_aedb, specified_version=aedt_version)
+hfss = Hfss3dLayout(projectname=target_aedb, specified_version=aedt_version, non_graphical=non_graphical)
 hfss.release_desktop(False, False)

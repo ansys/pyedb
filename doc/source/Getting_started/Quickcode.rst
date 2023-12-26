@@ -4,7 +4,7 @@ Quick code
 Documentation and issues
 ------------------------
 Documentation for the latest stable release of PyEDB is hosted at
-`PyEDB documentation <https://aedt.docs.pyansys.com/version/stable/>`_.
+`PyEDB documentation <https://edb.docs.pyansys.com/version/stable/>`_.
 
 In the upper right corner of the documentation's title bar, there is an option
 for switching from viewing the documentation for the latest stable release

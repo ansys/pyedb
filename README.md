@@ -150,6 +150,6 @@ page on the Ansys website.
 
 ## Indices and tables
 
--  [Index](https://aedt.docs.pyansys.com/version/stable/genindex.html)
--  [Module Index](https://aedt.docs.pyansys.com/version/stable/py-modindex.html)
--  [Search Page](https://aedt.docs.pyansys.com/version/stable/search.html)
+-  [Index](https://edb.docs.pyansys.com/version/stable/genindex.html)
+-  [Module Index](https://edb.docs.pyansys.com/version/stable/py-modindex.html)
+-  [Search Page](https://edb.docs.pyansys.com/version/stable/search.html)

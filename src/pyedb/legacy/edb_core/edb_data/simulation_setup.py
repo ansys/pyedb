@@ -226,6 +226,7 @@ class BaseSimulationSetup(object):
 
 class EdbFrequencySweep(object):
     """Manages EDB methods for a frequency sweep.
+
     Parameters
     ----------
     sim_setup : :class:`pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
