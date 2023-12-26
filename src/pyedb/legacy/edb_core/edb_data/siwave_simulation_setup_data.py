@@ -1095,6 +1095,7 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
 
 class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
     """Manages EDB methods for SIwave DC simulation setup.
+
     Parameters
     ----------
     pedb : :class:`pyedb.legacy.edb.Edb`

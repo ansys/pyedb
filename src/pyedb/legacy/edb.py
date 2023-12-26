@@ -102,7 +102,7 @@ class EdbLegacy(Database):
         owned by HFSS 3D Layout. The default is ``False``.
     edbversion : str, int, float, optional
         Version of EDB to use. The default is ``None``.
-        Examples of input values are ``232``, ``23.2``,``2023.2``,``"2023.2"``.
+        Examples of input values are ``232``, ``23.2``, ``2023.2``, ``"2023.2"``.
     isaedtowned : bool, optional
         Whether to launch EDB from HFSS 3D Layout. The
         default is ``False``.
@@ -111,7 +111,8 @@ class EdbLegacy(Database):
     student_version : bool, optional
         Whether to open the AEDT student version. The default is ``False.``
     technology_file : str, optional
-        Full path to technology file to be converted to xml before importing or xml. Supported by GDS format only.
+        Full path to technology file to be converted to xml before importing or xml.
+        Supported by GDS format only.
 
     Examples
     --------
@@ -135,7 +136,6 @@ class EdbLegacy(Database):
     >>> 1.9999999999999998e-05
     >>> app['s2'].description
     >>> 'Spacing between traces'
-
 
     Create an ``Edb`` object and open the specified project.
 
@@ -3935,15 +3935,15 @@ class EdbLegacy(Database):
 
         Parameters
         ----------
-        terminal : :class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+        terminal : :class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`, \
+            :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`, \
+            :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`, \
+            :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`
             Positive terminal of the port.
-        ref_terminal : class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
-                   :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+        ref_terminal : class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`, \
+            :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`, \
+            :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`, \
+            :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`
             Negative terminal of the source.
 
         Returns
@@ -4028,29 +4028,30 @@ class EdbLegacy(Database):
         trace_net_filter=None,
     ):
         """Assign automatically design and project variables with current values.
+
         Parameters
         ----------
         layers : bool, optional
-                 ``True`` enable layer thickness parametrization. Default value is ``True``.
+            Enable layer thickness parametrization. Default value is ``True``.
         materials : bool, optional
-                 ``True`` enable material parametrization. Default value is ``True``.
+            Enable material parametrization. Default value is ``True``.
         via_holes : bool, optional
-                 ``True`` enable via diameter parametrization. Default value is ``True``.
+            Enable via diameter parametrization. Default value is ``True``.
         pads : bool, optional
-                 ``True`` enable pads size parametrization. Default value is ``True``.
+            Enable pads size parametrization. Default value is ``True``.
         antipads : bool, optional
-                 ``True`` enable anti pads size parametrization. Default value is ``True``.
+            Enable anti pads size parametrization. Default value is ``True``.
         traces : bool, optional
-                 ``True`` enable trace width parametrization. Default value is ``True``.
+            Enable trace width parametrization. Default value is ``True``.
         layer_filter : str, List(str), optional
-                 Enable layer filter. Default value is ``None``, all layers are parametrized.
+            Enable layer filter. Default value is ``None``, all layers are parametrized.
         material_filter : str, List(str), optional
-                 Enable material filter. Default value is ``None``, all material are parametrized.
+            Enable material filter. Default value is ``None``, all material are parametrized.
         padstack_definition_filter : str, List(str), optional
-                 Enable padstack definition filter. Default value is ``None``, all padsatcks are parametrized.
+            Enable padstack definition filter. Default value is ``None``, all padsatcks are parametrized.
         trace_net_filter : str, List(str), optional
-                 Enable nets filter for trace width parametrization. Default value is ``None``, all layers are
-                 parametrized.
+            Enable nets filter for trace width parametrization. Default value is ``None``, all layers are parametrized.
+
         Returns
         -------
         List(str)
