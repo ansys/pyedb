@@ -35,9 +35,19 @@ from pyedb.generic.general_methods import (
     generate_unique_name,
 )
 
+##########################################################
+# Set non-graphical mode
+# ~~~~~~~~~~~~~~~~~~~~~~
+# Set non-graphical mode. The default is ``True``.
+
+non_graphical = True
+
+###############################################################################
+# Launch EDB
+# ~~~~~~~~~~
+# Launch the :class:`pyedb.Edb` class, using EDB 2023 R2.
+
 aedb_path = os.path.join(generate_unique_folder_name(), generate_unique_name("component_example") + ".aedb")
-
-
 edb = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
 print("EDB is located at {}".format(aedb_path))
 
@@ -194,5 +204,5 @@ edb.build_simulation_project(sim_setup)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
 edb.save_edb()
 edb.close_edb()
-h3d = Hfss3dLayout(specified_version="2023.2", projectname=aedb_path, non_graphical=False)
+h3d = Hfss3dLayout(specified_version="2023.2", projectname=aedb_path, non_graphical=non_graphical)
 h3d.release_desktop(False, False)
