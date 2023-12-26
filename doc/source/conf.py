@@ -323,10 +323,10 @@ html_theme_options = {
             "icon": "fa fa-comment fa-fw",
         },
     ],
-    "switcher": {
-        "json_url": f"https://{cname}/versions.json",
-        "version_match": get_version_match(__version__),
-    },
+    # "switcher": {
+    #     "json_url": f"https://{cname}/versions.json",
+    #     "version_match": get_version_match(__version__),
+    # },
     "collapse_navigation": True,
     "use_meilisearch": {
         "api_key": os.getenv("MEILISEARCH_PUBLIC_API_KEY", ""),

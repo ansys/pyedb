@@ -1145,9 +1145,9 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         ----------
         name : str, optional
             Name of the port. The default is ``None``, in which case a name is automatically assigned.
-        reference : class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBNetsData`,
-                    class:`pyedb.legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance`,
-                    class:`pyedb.legacy.edb_core.edb_data.sources.PinGroup`, optional
+        reference : class:`pyedb.legacy.edb_core.edb_data.nets_data.EDBNetsData`, \
+            class:`pyedb.legacy.edb_core.edb_data.padstacks_data.EDBPadstackInstance`, \
+            class:`pyedb.legacy.edb_core.edb_data.sources.PinGroup`, optional
             Negative terminal of the port.
         is_circuit_port : bool, optional
             Whether it is a circuit port.
