@@ -26,6 +26,6 @@ This section shows a simple example to create HFSS coaxial port on a component.
 
 - In this example coaxial port on Nets DDR4_DSQ0_P and DDR4_DSQ0_N from componennt U1 are created.
 
-.. image:: ../../Resources/create_port_on_component_simple.png
-  :width: 800
-  :alt: Create port on component
+.. .. image:: ../../Resources/create_port_on_component_simple.png
+..   :width: 800
+..   :alt: Create port on component
