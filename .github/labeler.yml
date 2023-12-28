@@ -1,13 +1,19 @@
 documentation:
-- doc/source/**/*
-- README.md
-- README_CN.md
+- changed-files:
+  - any-glob-to-any-file: ['doc/source/**/*', 'examples/**/*', 'README.md']
+
 maintenance:
-- .github/**/*
-- .flake8
-- setup.py
-- setup-distutils.py
+- changed-files:
+  - any-glob-to-any-file: ['.github/**/*', 'codecov.yml', '.flake8', 'pyproject.toml']
+
 dependencies:
-- requirements/**/*
+- changed-files:
+  - any-glob-to-any-file: ['pyproject.toml']
+
+ci/cd:
+- changed-files:
+  - any-glob-to-any-file: ['docker/**/*', '.github/**/*', '.ci/**/*']
+
 testing:
-- tests/**/*
+- changed-files:
+  - any-glob-to-any-file: ['tests/**/*',]
