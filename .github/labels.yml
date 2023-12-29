@@ -29,3 +29,7 @@
 - name: testing
   description: Anything related to testing
   color: 5802B8
+
+- name: ci/cd
+  description: ""
+  color: b5f226

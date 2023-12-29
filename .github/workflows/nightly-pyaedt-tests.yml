@@ -81,4 +81,4 @@ jobs:
           cd external/pyaedt
           git fetch --all
           $counter = git rev-list --count origin/main...origin/maint/use_pyedb
-          Write-Host "Number of commits between the main branch and the one using pyedb as dependency: $($counter)""
+          Write-Host "Number of commits between the main branch and the one using pyedb as dependency: $($counter)"
