@@ -127,7 +127,7 @@ jobs:
 
   docs-build:
     name: Build documentation
-    runs-on: [windows-latest, pyedb, self-hosted ]
+    runs-on: [windows, pyedb, self-hosted ]
     timeout-minutes: 480
     steps:
       - uses: actions/checkout@v4
