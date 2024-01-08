@@ -10,7 +10,7 @@ This example shows how to
 # Final expected project
 # ~~~~~~~~~~~~~~~~~~~~~~
 #
-# .. image:: ../../_static/parametrized_design.png
+# .. image:: ../../doc/source/_static/parametrized_design.png
 #  :width: 600
 #  :alt: Fully automated parametrization.
 ######################################################################

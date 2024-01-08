@@ -14,7 +14,7 @@ This example shows how to
 # Final expected project
 # ~~~~~~~~~~~~~~~~~~~~~~
 #
-# .. image:: ../../_static/connector_example.png
+# .. image:: ../../doc/source/_static/connector_example.png
 #  :width: 600
 #  :alt: Connector from Vias.
 ######################################################################
