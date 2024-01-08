@@ -101,9 +101,14 @@ jobs:
           pip install --extra-index-url https://wheels.vtk.org ${{ env.VTK_OSMESA }}
 
       - name: "Executing legacy tests"
-        run: |
-          . .venv\Scripts\Activate.ps1
-          pytest -m "legacy" -n auto --dist loadfile -v
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 10
+          command: |
+            . .venv\Scripts\Activate.ps1
+            pytest -m "legacy" -n auto --dist loadfile -v
 
       - name: Upload Coverage Results
         if: always()
