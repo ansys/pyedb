@@ -2,7 +2,6 @@ PyEDB documentation  |version|
 ==============================
 
 .. toctree::
-   :hidden:
 
    getting_started/index
    user_guide/index
