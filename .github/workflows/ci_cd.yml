@@ -112,7 +112,7 @@ jobs:
 
       - name: "Create coverage files"
         run: |
-          . \.venv\Scripts\Activate.ps1
+          . .venv\Scripts\Activate.ps1
           python -m coverage html -d .cov\legacy-html
           python -m coverage xml -o .cov\legacy.xml
 
