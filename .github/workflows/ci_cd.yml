@@ -110,12 +110,17 @@ jobs:
             . .venv\Scripts\Activate.ps1
             pytest -m "legacy" -n auto --dist loadfile -v --cov
 
+      - name: "Create coverage files"
+        run: |
+          python -m coverage html -d .cov\legacy-html
+          python -m coverage xml -o .cov\legacy.xml
+
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: legacy-coverage-html
-          path: .cov/html
+          path: .cov\legacy-html
+          name: html-legacy-coverage
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -123,7 +128,7 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          files: .cov/xml
+          files: .cov/legacy.xml
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
