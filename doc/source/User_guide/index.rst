@@ -7,7 +7,8 @@ User guide
 This section provides a general overview of PyEDB and how you use it.
 
 .. toctree::
-   :titlesonly:
+   :maxdepth: 2
+   :includehidden:
 
    excitations/index
    simulation_setup/index
@@ -31,6 +32,4 @@ PyEDB is loading ANSYS EDB in memory meaning non graphically.
     edb_file = pyedb.layout_examples.ANSYS_HSD_v1.aedb
     edb = EdbLegacy(edb_file)
 
-To use PyEDB you must follow the following steps:
-
-* :ref:`_ref_install_pyedb`
+To use PyEDB you must follow the installation step :ref:`ref_install_pyedb`.
