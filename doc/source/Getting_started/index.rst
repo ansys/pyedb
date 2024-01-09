@@ -86,10 +86,10 @@ page on the Ansys website.
    :maxdepth: 2
    :includehidden:
 
-   Installation
-   Troubleshooting
+   installation
+   troubleshooting
    versioning
-   Contributing
-   Quickcode
-   About
+   contributing
+   quickcode
+   about
 

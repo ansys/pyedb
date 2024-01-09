@@ -1814,7 +1814,7 @@ class Help:  # pragma: no cover
 
     def getting_started(self):
         """Open the PyEDB User guide page."""
-        url = self._base_path + "/User_guide/index.html"
+        url = self._base_path + "/user_guide/index.html"
         self._launch_ur(url)
 
     def examples(self):

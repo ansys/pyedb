@@ -5,7 +5,7 @@ for power integrity, signal integrity, and EMI analysis of IC packages and PCB. 
 solves power delivery systems and high-speed channels in electronic devices. It can be
 accessed from PyEDB in Windows only. All setups can be implemented through EDB API.
 
-.. image:: ../Resources/siwave.png
+.. image:: ../resources/siwave.png
   :width: 800
   :alt: EdbSiwave
   :target: https://www.ansys.com/products/electronics/ansys-siwave

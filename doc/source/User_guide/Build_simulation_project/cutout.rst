@@ -49,6 +49,6 @@ how to clip a design based on nets selection.
     edbapp.save_edb()
     edbapp.close_edb()
 
-.. image:: ../../Resources/clipped_layout.png
+.. image:: ../../resources/clipped_layout.png
   :width: 800
   :alt: Layout clipping

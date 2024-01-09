@@ -18,7 +18,7 @@ objects.
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
     edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
 
-.. image:: ../../Resources/starting_load_edb.png
+.. image:: ../../resources/starting_load_edb.png
   :width: 600
   :alt: Loading first EDB
 
