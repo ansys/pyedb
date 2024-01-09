@@ -14,7 +14,7 @@ This example shows how to
 # Final expected project
 # ~~~~~~~~~~~~~~~~~~~~~~
 #
-# .. image:: ../../doc/source/_static/connector_example.png
+# .. image:: ../../_static/connector_example.png
 #  :width: 600
 #  :alt: Connector from Vias.
 ######################################################################
@@ -177,7 +177,7 @@ for padstack_instance in list(edb.padstacks.instances.values()):
     padstack_instance.is_pin = True
 
 ############################
-# create component from pins
+# Create component from pins
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 edb.components.create(component1_pins, "connector_1")
@@ -198,6 +198,13 @@ sim_setup.ac_settings.start_freq = "0GHz"
 sim_setup.ac_settings.stop_freq = "5GHz"
 sim_setup.ac_settings.step_freq = "1GHz"
 edb.build_simulation_project(sim_setup)
+
+###############################################################################
+# Plot EDB
+# ~~~~~~~~
+# Plot EDB.
+
+edb.nets.plot(None)
 
 ###########################
 # Save EDB and open in AEDT

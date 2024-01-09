@@ -10,7 +10,7 @@ This example shows how to
 # Final expected project
 # ~~~~~~~~~~~~~~~~~~~~~~
 #
-# .. image:: ../../doc/source/_static/parametrized_design.png
+# .. image:: ../../_static/parametrized_design.png
 #  :width: 600
 #  :alt: Fully automated parametrization.
 ######################################################################
@@ -72,12 +72,19 @@ edb.build_simulation_project(simulation_configuration)
 #
 
 edb.auto_parametrize_design(layers=True, materials=True, via_holes=True, pads=True, antipads=True, traces=True)
+
+###############################################################################
+# Plot EDB
+# ~~~~~~~~
+# Plot EDB.
+
+edb.nets.plot(None)
+
+###########################
+# Save EDB and open in AEDT
+# ~~~~~~~~~~~~~~~~~~~~~~~~~
+
 edb.save_edb()
 edb.close_edb()
-
-######################
-# Open project in AEDT
-# ~~~~~~~~~~~~~~~~~~~~
-
 hfss = Hfss3dLayout(projectname=target_aedb, specified_version=aedt_version, non_graphical=non_graphical)
 hfss.release_desktop(False, False)
