@@ -98,19 +98,7 @@ def Edb(
         )
     # TODO: Use EDB gRPC
     else:
-        from pyedb.grpc.edb import Edb as app
-
-        return app(
-            edbpath=edbpath,
-            cellname=cellname,
-            isreadonly=isreadonly,
-            edbversion=edbversion,
-            isaedtowned=isaedtowned,
-            oproject=oproject,
-            student_version=student_version,
-            use_ppe=use_ppe,
-            technology_file=technology_file,
-        )
+        raise Exception("not implemented yet.")
 
 
 app_map = {"EDB": Edb}
