@@ -1,6 +1,14 @@
 PyEDB documentation  |version|
 ==============================
 
+.. toctree::
+   :hidden:
+
+   getting_started/index
+   user_guide/index
+   api/index
+   examples/index
+
 PyEDB is a Python library that interacts directly with the EDB-core API to make scripting simpler.
 
 .. grid:: 2
@@ -15,7 +23,7 @@ PyEDB is a Python library that interacts directly with the EDB-core API to make 
 
             +++
 
-            .. button-link:: Getting_started/index.html
+            .. button-link:: getting_started/index.html
                :color: secondary
                :expand:
                :outline:
@@ -33,7 +41,7 @@ PyEDB is a Python library that interacts directly with the EDB-core API to make 
             modeler, mesh, setup and post-processing.
 
             +++
-            .. button-link:: User_guide/index.html
+            .. button-link:: user_guide/index.html
                :color: secondary
                :expand:
                :outline:
@@ -53,7 +61,7 @@ PyEDB is a Python library that interacts directly with the EDB-core API to make 
             and how to interact with them programmatically.
 
             +++
-            .. button-link:: EDBAPI/index.html
+            .. button-link:: api/index.html
                :color: secondary
                :expand:
                :outline:
@@ -61,64 +69,43 @@ PyEDB is a Python library that interacts directly with the EDB-core API to make 
 
                   EDB API reference
 
-.. jinja:: main_toctree
+   .. grid-item-card::
+            :img-top: _static/assets/index_examples.png
 
-    .. grid:: 2
+            Examples
+            ^^^^^^^^
 
-           {% if run_examples %}
-           .. grid-item-card::
-                    :img-top: _static/assets/index_examples.png
+            Explore examples that show how to use PyEDB to
+            perform different types of simulations.
 
-                    Examples
-                    ^^^^^^^^
+            +++
+            .. button-link:: examples/index.html
+               :color: secondary
+               :expand:
+               :outline:
+               :click-parent:
 
-                    Explore examples that show how to use PyEDB to
-                    perform different types of simulations.
+                  Examples
 
-                    +++
-                    .. button-link:: examples/index.html
-                       :color: secondary
-                       :expand:
-                       :outline:
-                       :click-parent:
+   .. grid-item-card::
+            :img-top: _static/assets/index_contribute.png
 
-                          Examples
-           {% endif %}
+            Contribute
+            ^^^^^^^^^^
+            Learn how to contribute to the PyEDB codebase
+            or documentation.
 
-        .. grid-item-card::
-                :img-top: _static/assets/index_contribute.png
+            +++
+            .. button-link:: getting_started/Contributing.html
+               :color: secondary
+               :expand:
+               :outline:
+               :click-parent:
 
-                Contribute
-                ^^^^^^^^^^
-                Learn how to contribute to the pyEDB codebase
-                or documentation.
-
-                +++
-                .. button-link:: Getting_started/Contributing.html
-                   :color: secondary
-                   :expand:
-                   :outline:
-                   :click-parent:
-
-                      Contribute
+                  Contribute
 
 Indices and tables
 ==================
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-
-.. jinja:: main_toctree
-
-    .. toctree::
-       :hidden:
-
-       Getting_started/index
-       User_guide/index
-       EDBAPI/index
-       {% if run_examples %}
-       examples/index
-       {% endif %}
-
-
