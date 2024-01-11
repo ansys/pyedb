@@ -84,6 +84,7 @@ page on the Ansys website.
 
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
    installation
    troubleshooting

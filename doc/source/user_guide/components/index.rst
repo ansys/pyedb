@@ -1,5 +1,7 @@
 .. toctree::
+   :hidden:
    :maxdepth: 2
+
 
    create_resistor_on_pin
    create_rlc_component

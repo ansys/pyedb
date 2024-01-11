@@ -8,6 +8,7 @@ This section provides a general overview of PyEDB and how you use it.
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
 
    excitations/index
    simulation_setup/index

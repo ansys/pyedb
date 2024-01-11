@@ -1,4 +1,5 @@
 .. toctree::
+   :hidden:
    :maxdepth: 2
 
    create_circuit_ports_on_component
