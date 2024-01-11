@@ -6,7 +6,6 @@ This example shows how to
 2, Create automatically parametrized design.
 """
 ######################################################################
-#
 # Final expected project
 # ~~~~~~~~~~~~~~~~~~~~~~
 #

@@ -10,7 +10,6 @@ This example shows how to
 6, Create HFSS simulation setup and excitation ports.
 """
 ######################################################################
-#
 # Final expected project
 # ~~~~~~~~~~~~~~~~~~~~~~
 #

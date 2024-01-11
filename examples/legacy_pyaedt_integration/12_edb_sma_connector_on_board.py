@@ -8,7 +8,6 @@ This example shows how to
 4, Create return loss plot
 """
 ######################################################################
-#
 # Final expected project
 # ~~~~~~~~~~~~~~~~~~~~~~
 #
