@@ -1,5 +1,7 @@
 .. _ref_install_pyedb: install_pyedb_
 
+.. _install_pyedb:
+
 Installation
 ============
 PyEDB consolidates and extends all existing capital around scripting for AEDB,
