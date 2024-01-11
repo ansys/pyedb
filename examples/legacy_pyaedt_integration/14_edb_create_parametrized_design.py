@@ -25,7 +25,7 @@ from pyaedt import Hfss3dLayout
 
 import pyedb
 from pyedb.generic.general_methods import generate_unique_folder_name
-from pyedb.legacy.downloads import download_file
+from pyedb.misc.downloads import download_file
 
 project_path = generate_unique_folder_name()
 target_aedb = download_file("edb/ANSYS-HSD_V1.aedb", destination=project_path)

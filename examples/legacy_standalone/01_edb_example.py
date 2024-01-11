@@ -13,7 +13,7 @@ import time
 
 import pyedb
 from pyedb.generic.general_methods import generate_unique_folder_name
-from pyedb.legacy.downloads import download_file
+from pyedb.misc.downloads import download_file
 
 temp_folder = generate_unique_folder_name()
 targetfile = download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)

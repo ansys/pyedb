@@ -11,7 +11,7 @@ This example shows how you can use the ``Edb`` class to plot a net or a layout.
 
 import pyedb
 from pyedb.generic.general_methods import generate_unique_folder_name
-from pyedb.legacy.downloads import download_file
+from pyedb.misc.downloads import download_file
 
 ###############################################################################
 # Download file
