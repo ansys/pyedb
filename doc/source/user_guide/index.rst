@@ -14,7 +14,7 @@ This section provides a general overview of PyEDB and how you use it.
    simulation_setup/index
    edb_information_queries/index
    load_export_edb/index
-   build_simulation_project
+   build_simulation_project/index
    padstacks/index
    layer_stackup/index
    components/index
