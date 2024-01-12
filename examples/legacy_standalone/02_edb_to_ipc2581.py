@@ -16,7 +16,7 @@ from pyedb.generic.general_methods import (
     generate_unique_folder_name,
     generate_unique_name,
 )
-from pyedb.legacy.downloads import download_file
+from pyedb.misc.downloads import download_file
 
 ###############################################################################
 # Download file

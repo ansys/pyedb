@@ -40,7 +40,7 @@ PyEDB allows layout information queries, this section describe some basic exampl
    # Plotting layout in matplotlib
    edbapp.nets.plot(None)
 
-.. image:: ../../Resources/layout_plot_all_nets.png
+.. image:: ../../resources/layout_plot_all_nets.png
    :width: 800
    :alt: Plot all nets
 

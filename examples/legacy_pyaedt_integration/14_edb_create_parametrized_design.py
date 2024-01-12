@@ -6,7 +6,6 @@ This example shows how to
 2, Create automatically parametrized design.
 """
 ######################################################################
-#
 # Final expected project
 # ~~~~~~~~~~~~~~~~~~~~~~
 #
@@ -25,7 +24,7 @@ from pyaedt import Hfss3dLayout
 
 import pyedb
 from pyedb.generic.general_methods import generate_unique_folder_name
-from pyedb.legacy.downloads import download_file
+from pyedb.misc.downloads import download_file
 
 project_path = generate_unique_folder_name()
 target_aedb = download_file("edb/ANSYS-HSD_V1.aedb", destination=project_path)
@@ -72,12 +71,19 @@ edb.build_simulation_project(simulation_configuration)
 #
 
 edb.auto_parametrize_design(layers=True, materials=True, via_holes=True, pads=True, antipads=True, traces=True)
+
+###############################################################################
+# Plot EDB
+# ~~~~~~~~
+# Plot EDB.
+
+edb.nets.plot(None)
+
+###########################
+# Save EDB and open in AEDT
+# ~~~~~~~~~~~~~~~~~~~~~~~~~
+
 edb.save_edb()
 edb.close_edb()
-
-######################
-# Open project in AEDT
-# ~~~~~~~~~~~~~~~~~~~~
-
 hfss = Hfss3dLayout(projectname=target_aedb, specified_version=aedt_version, non_graphical=non_graphical)
 hfss.release_desktop(False, False)

@@ -8,7 +8,6 @@ This example shows how to
 4, Create return loss plot
 """
 ######################################################################
-#
 # Final expected project
 # ~~~~~~~~~~~~~~~~~~~~~~
 #
@@ -34,7 +33,7 @@ from pyedb.generic.general_methods import (
     generate_unique_folder_name,
     generate_unique_name,
 )
-from pyedb.legacy.downloads import download_file
+from pyedb.misc.downloads import download_file
 
 ##########################################################
 # Set non-graphical mode
@@ -175,6 +174,13 @@ setup.add_frequency_sweep(
         ["linear scale", "0.1GHz", "5GHz", "0.1GHz"],
     ],
 )
+
+###############################################################################
+# Plot EDB
+# ~~~~~~~~
+# Plot EDB.
+
+edb.nets.plot(None)
 
 ####################
 # Save and close EDB

@@ -3,7 +3,7 @@ EDB manager
 An AEDB database is a folder that contains the database representing any part of a PCB.
 It can be opened and edited using the ``Edb`` class.
 
-.. image:: ../Resources/3dlayout_1.png
+.. image:: ../resources/3dlayout_1.png
   :width: 800
   :alt: HFSS 3D Layout is the tool used to visualize EDB content.
 

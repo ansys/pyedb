@@ -83,13 +83,13 @@ page on the Ansys website.
 
 
 .. toctree::
+   :maxdepth: 1
    :hidden:
-   :maxdepth: 2
 
-   Installation
-   Troubleshooting
+   installation
+   troubleshooting
    versioning
-   Contributing
-   Quickcode
-   About
+   contributing
+   quickcode
+   about
 
