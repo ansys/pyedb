@@ -27,6 +27,7 @@ from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.legacy.application.Variables import decompose_variable_value
 from pyedb.legacy.edb_core.components import Components
+from pyedb.legacy.edb_core.configuration import Configuration
 from pyedb.legacy.edb_core.dotnet.database import Database
 from pyedb.legacy.edb_core.dotnet.layout import LayoutDotNet
 from pyedb.legacy.edb_core.edb_data.control_file import (
@@ -679,6 +680,11 @@ class EdbLegacy(Database):
             return ipc_path
         self.logger.info("Error exporting IPC 2581.")
         return False
+
+    @property
+    def configuration(self):
+        """Edb configuration."""
+        return Configuration(self)
 
     def edb_exception(self, ex_value, tb_data):
         """Write the trace stack to AEDT when a Python error occurs.
