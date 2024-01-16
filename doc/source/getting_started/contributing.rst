@@ -115,33 +115,6 @@ Every method can return a value of ``True`` when successful or
 handler returns information about the error in both the console and
 log file.
 
-Here is an example of an error:
-
-.. code::
-
-   ----------------------------------------------------------------------------------
-   PyEDB error on method create_box:  General or EDB error. Check again
-   the arguments provided:
-       position = [0, 0, 0]
-       dimensions_list = [0, 10, 10]
-       name = None
-       matname = None
-   ----------------------------------------------------------------------------------
-
-   (-2147352567, 'Exception occurred.', (0, None, None, None, 0, -2147024381), None)
-     File "C:\GIT\repos\AnsysAutomation\PyEDB\Primitives.py", line 1930, in create_box
-       o.name = self.oeditor.createbox(vArg1, vArg2)
-
-   ************************************************************
-   Method Docstring:
-
-   Create a box.
-
-   Parameters
-   ----------
-   ...
-
-
 Hard-coded values
 ~~~~~~~~~~~~~~~~~~
 Do not write hard-coded values to the registry. Instead, use the Configuration service.
