@@ -1,3 +1,5 @@
+.. _cutout_example:
+
 Clipping layout
 ===============
 Because most of the time only a specific part of a layout must be simulated, clipping the design

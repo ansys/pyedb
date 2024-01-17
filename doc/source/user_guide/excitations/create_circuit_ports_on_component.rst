@@ -1,3 +1,5 @@
+.. _create_circuit_port_on_component_example:
+
 Create circuit ports on component
 =================================
 This section describes how to retrieve pins and create circuit ports on components:

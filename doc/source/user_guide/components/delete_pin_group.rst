@@ -1,3 +1,5 @@
+.. _delete_pingroup_example:
+
 Delete pin group
 ================
 This section describes how to delete pin group.
