@@ -30,16 +30,17 @@ class Configuration:
         with open(config_file, "r") as f:
             data = json.load(f)
 
-        for comp in data["Components"]:
-            refdes = comp["RefDes"]
-            part_type = comp["PartType"]
+        json_components = data["components"] if "components" in data else []
+        for comp in json_components:
+            refdes = comp["reference_designator"]
+            part_type = comp["part_type"]
 
             comp_layout = components[refdes]
-            comp_layout.type = part_type
+            comp_layout.type = part_type.capitalized()
 
             if part_type in ["Resistor", "Capacitor", "Inductor"]:
-                comp_layout.is_enabled = comp["Enabled"]
-                rlc_model = comp["RLCModel"] if "RLCModel" in comp else None
+                comp_layout.is_enabled = comp["enabled"]
+                rlc_model = comp["rlc_model"] if "rlc_model" in comp else None
                 # n_port_model = comp["NPortModel"] if "NPortModel" in comp else None
                 # netlist_model = comp["NetlistModel"] if "NetlistModel" in comp else None
                 # spice_model = comp["SpiceModel"] if "SpiceModel" in comp else None
@@ -47,24 +48,24 @@ class Configuration:
                 if rlc_model:
                     model_layout = comp_layout.model
 
-                    pin_pairs = rlc_model["PinPairs"] if "PinPairs" in rlc_model else None
+                    pin_pairs = rlc_model["pin_pairs"] if "pin_pairs" in rlc_model else None
                     if pin_pairs:
                         for pp in model_layout.pin_pairs:
                             model_layout.delete_pin_pair_rlc(pp)
 
                         for pp in pin_pairs:
-                            rlc_model_type = pp["Type"]
+                            rlc_model_type = pp["type"]
                             p1 = pp["p1"]
                             p2 = pp["p2"]
 
-                            r = pp["R"] if "R" in pp else None
-                            l = pp["L"] if "L" in pp else None
-                            c = pp["C"] if "C" in pp else None
+                            r = pp["resistance"] if "resistance" in pp else None
+                            l = pp["inductance"] if "inductance" in pp else None
+                            c = pp["capacitance"] if "capacitance" in pp else None
 
                             pin_pair = self._pedb.edb_api.utility.PinPair(p1, p2)
                             rlc = self._pedb.edb_api.utility.Rlc()
 
-                            rlc.IsParallel = False if rlc_model_type == "Series" else True
+                            rlc.IsParallel = False if rlc_model_type == "series" else True
                             if not r is None:
                                 rlc.REnabled = True
                                 rlc.R = self._pedb.edb_value(r)
@@ -87,12 +88,12 @@ class Configuration:
                         comp_layout.model = model_layout
 
             # Configure port properties
-            port_properties = comp["PortProperties"] if "PortProperties" in comp else None
+            port_properties = comp["port_properties"] if "port_properties" in comp else None
             if port_properties:
-                ref_offset = port_properties["ReferenceOffset"]
-                ref_size_auto = port_properties["ReferenceSizeAuto"]
-                ref_size_x = port_properties["ReferenceSizeX"]
-                ref_size_y = port_properties["ReferenceSizeY"]
+                ref_offset = port_properties["reference_offset"]
+                ref_size_auto = port_properties["reference_size_auto"]
+                ref_size_x = port_properties["reference_size_x"]
+                ref_size_y = port_properties["reference_size_y"]
             else:
                 ref_offset = 0
                 ref_size_auto = True
@@ -100,14 +101,14 @@ class Configuration:
                 ref_size_y = 0
 
             # Configure solder ball properties
-            solder_ball_properties = comp["SolderballProperties"] if "SolderballProperties" in comp else None
+            solder_ball_properties = comp["solder_ball_properties"] if "solder_ball_properties" in comp else None
             if solder_ball_properties:
-                shape = solder_ball_properties["Shape"]
-                diameter = solder_ball_properties["Diameter"]
+                shape = solder_ball_properties["shape"]
+                diameter = solder_ball_properties["diameter"]
                 mid_diameter = (
-                    solder_ball_properties["MidDiameter"] if "MidDiameter" in solder_ball_properties else diameter
+                    solder_ball_properties["mid_diameter"] if "mid_diameter" in solder_ball_properties else diameter
                 )
-                height = solder_ball_properties["Height"]
+                height = solder_ball_properties["height"]
 
                 self._pedb.components.set_solder_ball(
                     component=refdes,
@@ -122,18 +123,18 @@ class Configuration:
                 )
 
             # Configure ports
-            if "Ports" in comp:
-                for port in comp["Ports"]:
-                    port_type = port["Type"]
-                    pos = port["From"]
-                    if "Pin" in pos:
-                        pin_name = pos["Pin"]
+            if "ports" in comp:
+                for port in comp["ports"]:
+                    port_type = port["type"]
+                    pos = port["from"]
+                    if "pin" in pos:
+                        pin_name = pos["pin"]
                         port_name = "{}_{}".format(refdes, pin_name)
                         pos_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
                     else:  # Net
-                        net_name = pos["Net"]
+                        net_name = pos["net"]
                         port_name = "{}_{}".format(refdes, net_name)
-                        if port_type == "Circuit":
+                        if port_type == "circuit":
                             pg_name = "pg_{}".format(port_name)
                             _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
                             pos_terminal = pg.get_terminal(port_name, True)
@@ -143,14 +144,14 @@ class Configuration:
                                     pos_terminal = p.get_terminal(port_name, True)
                                     break
 
-                    if port_type == "Circuit":
-                        neg = port["To"]
-                        if "Pin" in neg:
-                            pin_name = neg["Pin"]
+                    if port_type == "circuit":
+                        neg = port["to"]
+                        if "pin" in neg:
+                            pin_name = neg["pin"]
                             port_name = "{}_{}_ref".format(refdes, pin_name)
                             neg_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
                         else:
-                            net_name = neg["Net"]
+                            net_name = neg["net"]
                             port_name = "{}_{}_ref".format(refdes, net_name)
                             pg_name = "pg_{}".format(port_name)
                             if pg_name not in self._pedb.siwave.pin_groups:
@@ -164,28 +165,28 @@ class Configuration:
                         self._pedb.create_port(pos_terminal)
 
             # Configure sources
-            if "Sources" in comp:
-                for src in comp["Sources"]:
-                    src_type = src["Type"]
-                    pos = src["From"]
-                    if "Pin" in pos:
-                        pin_name = pos["Pin"]
+            if "sources" in comp:
+                for src in comp["sources"]:
+                    src_type = src["type"]
+                    pos = src["from"]
+                    if "pin" in pos:
+                        pin_name = pos["pin"]
                         src_name = "{}_{}".format(refdes, pin_name)
                         pos_terminal = comp_layout.pins[pin_name].get_terminal(src_name, True)
                     else:  # Net
-                        net_name = pos["Net"]
+                        net_name = pos["net"]
                         src_name = "{}_{}".format(refdes, net_name)
                         pg_name = "pg_{}".format(src_name)
                         _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
                         pos_terminal = pg.get_terminal(src_name, True)
 
-                    neg = src["To"]
-                    if "Pin" in neg:
-                        pin_name = neg["Pin"]
+                    neg = src["to"]
+                    if "pin" in neg:
+                        pin_name = neg["pin"]
                         src_name = "{}_{}_ref".format(refdes, pin_name)
                         neg_terminal = comp_layout.pins[pin_name].get_terminal(src_name, True)
                     else:
-                        net_name = neg["Net"]
+                        net_name = neg["net"]
                         src_name = "{}_{}_ref".format(refdes, net_name)
                         pg_name = "pg_{}".format(src_name)
                         if pg_name not in self._pedb.siwave.pin_groups:
@@ -194,42 +195,42 @@ class Configuration:
                             pg = self._pedb.siwave.pin_groups[pg_name]
                         neg_terminal = pg.get_terminal(src_name, True)
 
-                    if src_type == "Voltage":
+                    if src_type == "voltage":
                         src_obj = self._pedb.create_voltage_source(pos_terminal, neg_terminal)
-                        src_obj.magnitude = src["Magnitude"]
-                    elif src_type == "Current":
+                        src_obj.magnitude = src["magnitude"]
+                    elif src_type == "current":
                         src_obj = self._pedb.create_current_source(pos_terminal, neg_terminal)
-                        src_obj.magnitude = src["Magnitude"]
+                        src_obj.magnitude = src["magnitude"]
 
         # Configure HFSS setup
-        setups = data["Setups"] if "Setups" in data else []
+        setups = data["setups"] if "setups" in data else []
         for setup in setups:
-            setup_type = setup["Type"]
+            setup_type = setup["type"]
 
             edb_setup = None
-            name = setup["Name"]
+            name = setup["name"]
 
-            if setup_type == "SIwaveDC":
+            if setup_type.lower() == "siwave_dc":
                 edb_setup = self._pedb.create_siwave_dc_setup(name)
-                edb_setup.set_dc_slider = setup["DCSliderPosition"]
+                edb_setup.set_dc_slider = setup["dc_slider_position"]
             else:
-                if setup_type == "HFSS":
+                if setup_type.lower() == "hfss":
                     edb_setup = self._pedb.create_hfss_setup(name)
                     edb_setup.set_solution_single_frequency(
-                        setup["Fadapt"], max_num_passes=setup["MaxNumPasses"], max_delta_s=setup["MaxMagDeltaS"]
+                        setup["f_adapt"], max_num_passes=setup["max_num_passes"], max_delta_s=setup["max_mag_delta_s"]
                     )
-                elif setup_type == "SIwaveSYZ":
-                    name = setup["Name"]
+                elif setup_type.lower() == "siwave_syz":
+                    name = setup["name"]
                     edb_setup = self._pedb.create_siwave_syz_setup(name)
-                    edb_setup.si_slider_position = setup["SISliderPosition"]
+                    edb_setup.si_slider_position = setup["si_slider_position"]
 
-                if "FreqSweep" in setup:
-                    for fsweep in setup["FreqSweep"]:
-                        frequencies = fsweep["Frequencies"]
+                if "freq_sweep" in setup:
+                    for fsweep in setup["freq_sweep"]:
+                        frequencies = fsweep["frequencies"]
                         freqs = []
 
                         for d in frequencies:
-                            if d["Distribution"] == "LinearStep":
+                            if d["distribution"] == "linear_step":
                                 freqs.append(
                                     [
                                         "linear scale",
@@ -238,60 +239,60 @@ class Configuration:
                                         self._pedb.edb_value(d["Step"]).ToString(),
                                     ]
                                 )
-                            elif d["Distribution"] == "LinearCount":
+                            elif d["distribution"] == "linear_count":
                                 freqs.append(
                                     [
                                         "linear count",
-                                        self._pedb.edb_value(d["Start"]).ToString(),
-                                        self._pedb.edb_value(d["Stop"]).ToString(),
-                                        int(d["Points"]),
+                                        self._pedb.edb_value(d["start"]).ToString(),
+                                        self._pedb.edb_value(d["stop"]).ToString(),
+                                        int(d["points"]),
                                     ]
                                 )
-                            elif d["Distribution"] == "LogScale":
+                            elif d["distribution"] == "log_scale":
                                 freqs.append(
                                     [
                                         "log scale",
-                                        self._pedb.edb_value(d["Start"]).ToString(),
-                                        self._pedb.edb_value(d["Stop"]).ToString(),
-                                        int(d["Samples"]),
+                                        self._pedb.edb_value(d["start"]).ToString(),
+                                        self._pedb.edb_value(d["stop"]).ToString(),
+                                        int(d["samples"]),
                                     ]
                                 )
 
                         edb_setup.add_frequency_sweep(
-                            fsweep["Name"],
+                            fsweep["name"],
                             frequency_sweep=freqs,
                         )
 
         # Configure stackup
-        stackup = data["Stackup"] if "Stackup" in data else None
+        stackup = data["stackup"] if "stackup" in data else None
         if stackup:
-            materials = stackup["Materials"] if "Materials" in stackup else []
+            materials = stackup["materials"] if "materials" in stackup else []
             materials_reformatted = {}
             for mat in materials:
                 new_mat = {}
-                new_mat["name"] = mat["Name"]
-                if "Conductivity" in mat:
-                    new_mat["conductivity"] = mat["Conductivity"]
-                if "Permittivity" in mat:
-                    new_mat["permittivity"] = mat["Permittivity"]
-                if "DielectricLossTangent" in mat:
-                    new_mat["loss_tangent"] = mat["DielectricLossTangent"]
+                new_mat["name"] = mat["name"]
+                if "conductivity" in mat:
+                    new_mat["conductivity"] = mat["conductivity"]
+                if "permittivity" in mat:
+                    new_mat["permittivity"] = mat["permittivity"]
+                if "dielectricLoss_tangent" in mat:
+                    new_mat["loss_tangent"] = mat["dielectricLoss_tangent"]
 
-                materials_reformatted[mat["Name"]] = new_mat
+                materials_reformatted[mat["name"]] = new_mat
 
-            layers = stackup["Layers"]
+            layers = stackup["layers"]
             layers_reformatted = {}
 
             for l in layers:
                 lyr = {
-                    "name": l["Name"],
-                    "type": l["Type"],
-                    "material": l["Material"],
-                    "thickness": l["Thickness"],
+                    "name": l["name"],
+                    "type": l["type"],
+                    "material": l["material"],
+                    "thickness": l["thickness"],
                 }
-                if "FillMaterial" in l:
-                    lyr["dielectric_fill"] = l["FillMaterial"]
-                layers_reformatted[l["Name"]] = lyr
+                if "fill_material" in l:
+                    lyr["dielectric_fill"] = l["fill_material"]
+                layers_reformatted[l["name"]] = lyr
             stackup_reformated = {"layers": layers_reformatted, "materials": materials_reformatted}
             self._pedb.stackup.load(stackup_reformated)
 

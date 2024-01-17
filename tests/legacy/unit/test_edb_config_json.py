@@ -30,6 +30,8 @@ class TestClass:
         self.local_scratch.copyfolder(str(example_edb), str(target_path_edb))
 
         edbapp = EdbLegacy(str(target_path_edb), desktop_version)
-        edbapp.configuration.load(example_json_folder / "edb_cfg_dc.json")
-        edbapp.configuration.load(example_json_folder / "edb_cfg_syz.json")
+        edbapp.configuration.load(example_json_folder / "stackup.json")
+        edbapp.configuration.load(example_json_folder / "components.json")
+        edbapp.configuration.load(example_json_folder / "setups.json")
+
         edbapp.close()
