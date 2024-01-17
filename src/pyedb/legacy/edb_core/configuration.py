@@ -48,7 +48,7 @@ class Configuration:
         self._load_sources(data)
 
         # Configure HFSS setup
-        self._load_hfss_setups(data)
+        self._load_setups(data)
 
         # Configure stackup
         self._load_stackup(data)
@@ -57,6 +57,7 @@ class Configuration:
 
     @pyedb_function_handler
     def _load_components(self, json_components):
+        """Imports component information from json."""
         data = load_json(json_components)
         data = data["components"] if "components" in data else []
 
@@ -165,6 +166,7 @@ class Configuration:
 
     @pyedb_function_handler
     def _load_ports(self, json_ports):
+        """Imports port information from json."""
         data = load_json(json_ports)
         data = data["ports"] if "ports" in data else []
         for port in data:
@@ -211,6 +213,7 @@ class Configuration:
 
     @pyedb_function_handler
     def _load_sources(self, json_sources):
+        """Imports source information from json."""
         data = load_json(json_sources)
         data = data["sources"] if "sources" in data else []
 
@@ -255,7 +258,8 @@ class Configuration:
                 src_obj.magnitude = src["magnitude"]
 
     @pyedb_function_handler
-    def _load_hfss_setups(self, json_hfss_setups):
+    def _load_setups(self, json_hfss_setups):
+        """Imports setup information from json."""
         data = load_json(json_hfss_setups)
         data = data["setups"] if "setups" in data else []
 
@@ -320,6 +324,7 @@ class Configuration:
 
     @pyedb_function_handler
     def _load_stackup(self, json_stackup):
+        """Imports stackup information from json."""
         data = load_json(json_stackup)
         data = data["stackup"] if "stackup" in data else None
         if data:
