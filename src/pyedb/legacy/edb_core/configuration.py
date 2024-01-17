@@ -33,10 +33,20 @@ class Configuration:
         json_components = data["components"] if "components" in data else []
         for comp in json_components:
             refdes = comp["reference_designator"]
-            part_type = comp["part_type"]
+            part_type = comp["part_type"].lower()
+            if part_type == "resistor":
+                part_type = "Resistor"
+            elif part_type == "capacitor":
+                part_type = "Capacitor"
+            elif part_type == "io":
+                part_type = "IO"
+            elif part_type == "ic":
+                part_type = "IC"
+            else:
+                part_type = "Other"
 
             comp_layout = components[refdes]
-            comp_layout.type = part_type.capitalized()
+            comp_layout.type = part_type
 
             if part_type in ["Resistor", "Capacitor", "Inductor"]:
                 comp_layout.is_enabled = comp["enabled"]
