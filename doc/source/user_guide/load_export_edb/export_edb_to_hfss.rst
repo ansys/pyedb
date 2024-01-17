@@ -1,3 +1,5 @@
+.. _export_edb_to_hfss_example:
+
 Export EDB to HFSS
 ==================
 This section describes how to export EDB to HFSS:

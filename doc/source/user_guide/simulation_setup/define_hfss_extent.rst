@@ -1,3 +1,5 @@
+.. _define_hfss_extent_example:
+
 Define HFSS extent (SimulationConfiguration)
 ============================================
 This section describes how define HFSS extent using SimulationConfiguration class.

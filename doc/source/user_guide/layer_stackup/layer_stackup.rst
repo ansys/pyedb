@@ -1,3 +1,5 @@
+.. _layer_stackup_example:
+
 Checking and editing layer stackup
 ==================================
 This section describes how to edit layer stackup:
