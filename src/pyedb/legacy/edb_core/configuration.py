@@ -1,8 +1,17 @@
 import json
+from pathlib import Path
 
 from pyedb.generic.general_methods import (
     pyedb_function_handler,
 )
+
+
+def load_json(config_file):
+    if isinstance(config_file, (str, Path)):
+        with open(config_file, "r") as f:
+            return json.load(f)
+    elif isinstance(config_file, dict):
+        return config_file
 
 
 class Configuration:
@@ -10,6 +19,7 @@ class Configuration:
 
     def __init__(self, pedb):
         self._pedb = pedb
+        self._components = self._pedb.components.components
 
     @pyedb_function_handler
     def load(self, config_file):
@@ -26,18 +36,39 @@ class Configuration:
             Config dictionary.
         """
 
-        components = self._pedb.components.components
-        with open(config_file, "r") as f:
-            data = json.load(f)
+        data = load_json(config_file)
 
-        json_components = data["components"] if "components" in data else []
-        for comp in json_components:
+        # Configure components
+        self._load_components(data)
+
+        # Configure ports
+        self._load_ports(data)
+
+        # Configure sources
+        self._load_sources(data)
+
+        # Configure HFSS setup
+        self._load_hfss_setups(data)
+
+        # Configure stackup
+        self._load_stackup(data)
+
+        return data
+
+    @pyedb_function_handler
+    def _load_components(self, json_components):
+        data = load_json(json_components)
+        data = data["components"] if "components" in data else []
+
+        for comp in data:
             refdes = comp["reference_designator"]
             part_type = comp["part_type"].lower()
             if part_type == "resistor":
                 part_type = "Resistor"
             elif part_type == "capacitor":
                 part_type = "Capacitor"
+            elif part_type == "inductor":
+                part_type = "Inductor"
             elif part_type == "io":
                 part_type = "IO"
             elif part_type == "ic":
@@ -45,7 +76,7 @@ class Configuration:
             else:
                 part_type = "Other"
 
-            comp_layout = components[refdes]
+            comp_layout = self._components[refdes]
             comp_layout.type = part_type
 
             if part_type in ["Resistor", "Capacitor", "Inductor"]:
@@ -132,89 +163,103 @@ class Configuration:
                     reference_size_y=ref_size_y,
                 )
 
-            # Configure ports
-            if "ports" in comp:
-                for port in comp["ports"]:
-                    port_type = port["type"]
-                    pos = port["from"]
-                    if "pin" in pos:
-                        pin_name = pos["pin"]
-                        port_name = "{}_{}".format(refdes, pin_name)
-                        pos_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
-                    else:  # Net
-                        net_name = pos["net"]
-                        port_name = "{}_{}".format(refdes, net_name)
-                        if port_type == "circuit":
-                            pg_name = "pg_{}".format(port_name)
-                            _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
-                            pos_terminal = pg.get_terminal(port_name, True)
-                        else:  # Coax port
-                            for _, p in comp_layout.pins.items():
-                                if p.net_name == net_name:
-                                    pos_terminal = p.get_terminal(port_name, True)
-                                    break
+    @pyedb_function_handler
+    def _load_ports(self, json_ports):
+        data = load_json(json_ports)
+        data = data["ports"] if "ports" in data else []
+        for port in data:
+            port_type = port["type"]
+            refdes = port["reference_designator"]
+            comp_layout = self._components[refdes]
+            pos = port["from"]
+            if "pin" in pos:
+                pin_name = pos["pin"]
+                port_name = "{}_{}".format(refdes, pin_name)
+                pos_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
+            else:  # Net
+                net_name = pos["net"]
+                port_name = "{}_{}".format(refdes, net_name)
+                if port_type == "circuit":
+                    pg_name = "pg_{}".format(port_name)
+                    _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
+                    pos_terminal = pg.get_terminal(port_name, True)
+                else:  # Coax port
+                    for _, p in comp_layout.pins.items():
+                        if p.net_name == net_name:
+                            pos_terminal = p.get_terminal(port_name, True)
+                            break
 
-                    if port_type == "circuit":
-                        neg = port["to"]
-                        if "pin" in neg:
-                            pin_name = neg["pin"]
-                            port_name = "{}_{}_ref".format(refdes, pin_name)
-                            neg_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
-                        else:
-                            net_name = neg["net"]
-                            port_name = "{}_{}_ref".format(refdes, net_name)
-                            pg_name = "pg_{}".format(port_name)
-                            if pg_name not in self._pedb.siwave.pin_groups:
-                                _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
-                            else:
-                                pg = self._pedb.siwave.pin_groups[pg_name]
-                            neg_terminal = pg.get_terminal(port_name, True)
-
-                        self._pedb.create_port(pos_terminal, neg_terminal, True)
-                    else:
-                        self._pedb.create_port(pos_terminal)
-
-            # Configure sources
-            if "sources" in comp:
-                for src in comp["sources"]:
-                    src_type = src["type"]
-                    pos = src["from"]
-                    if "pin" in pos:
-                        pin_name = pos["pin"]
-                        src_name = "{}_{}".format(refdes, pin_name)
-                        pos_terminal = comp_layout.pins[pin_name].get_terminal(src_name, True)
-                    else:  # Net
-                        net_name = pos["net"]
-                        src_name = "{}_{}".format(refdes, net_name)
-                        pg_name = "pg_{}".format(src_name)
+            if port_type == "circuit":
+                neg = port["to"]
+                if "pin" in neg:
+                    pin_name = neg["pin"]
+                    port_name = "{}_{}_ref".format(refdes, pin_name)
+                    neg_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
+                else:
+                    net_name = neg["net"]
+                    port_name = "{}_{}_ref".format(refdes, net_name)
+                    pg_name = "pg_{}".format(port_name)
+                    if pg_name not in self._pedb.siwave.pin_groups:
                         _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
-                        pos_terminal = pg.get_terminal(src_name, True)
-
-                    neg = src["to"]
-                    if "pin" in neg:
-                        pin_name = neg["pin"]
-                        src_name = "{}_{}_ref".format(refdes, pin_name)
-                        neg_terminal = comp_layout.pins[pin_name].get_terminal(src_name, True)
                     else:
-                        net_name = neg["net"]
-                        src_name = "{}_{}_ref".format(refdes, net_name)
-                        pg_name = "pg_{}".format(src_name)
-                        if pg_name not in self._pedb.siwave.pin_groups:
-                            _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
-                        else:
-                            pg = self._pedb.siwave.pin_groups[pg_name]
-                        neg_terminal = pg.get_terminal(src_name, True)
+                        pg = self._pedb.siwave.pin_groups[pg_name]
+                    neg_terminal = pg.get_terminal(port_name, True)
 
-                    if src_type == "voltage":
-                        src_obj = self._pedb.create_voltage_source(pos_terminal, neg_terminal)
-                        src_obj.magnitude = src["magnitude"]
-                    elif src_type == "current":
-                        src_obj = self._pedb.create_current_source(pos_terminal, neg_terminal)
-                        src_obj.magnitude = src["magnitude"]
+                self._pedb.create_port(pos_terminal, neg_terminal, True)
+            else:
+                self._pedb.create_port(pos_terminal)
 
-        # Configure HFSS setup
-        setups = data["setups"] if "setups" in data else []
-        for setup in setups:
+    @pyedb_function_handler
+    def _load_sources(self, json_sources):
+        data = load_json(json_sources)
+        data = data["sources"] if "sources" in data else []
+
+        for src in data:
+            src_type = src["type"]
+            refdes = src["reference_designator"]
+            name = src["name"]
+            comp_layout = self._components[refdes]
+
+            pos = src["from"]
+            if "pin" in pos:
+                pin_name = pos["pin"]
+                src_name = name
+                pos_terminal = comp_layout.pins[pin_name].get_terminal(src_name, True)
+            elif "net" in pos:  # Net
+                net_name = pos["net"]
+                src_name = "{}_{}".format(refdes, net_name)
+                pg_name = "pg_{}".format(src_name)
+                _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
+                pos_terminal = pg.get_terminal(src_name, True)
+
+            neg = src["to"]
+            if "pin" in neg:
+                pin_name = neg["pin"]
+                src_name = name + "_ref"
+                neg_terminal = comp_layout.pins[pin_name].get_terminal(src_name, True)
+            elif "net" in neg:
+                net_name = neg["net"]
+                src_name = name + "_ref"
+                pg_name = "pg_{}".format(src_name)
+                if pg_name not in self._pedb.siwave.pin_groups:
+                    _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
+                else:  # pragma no cover
+                    pg = self._pedb.siwave.pin_groups[pg_name]
+                neg_terminal = pg.get_terminal(src_name, True)
+
+            if src_type == "voltage":
+                src_obj = self._pedb.create_voltage_source(pos_terminal, neg_terminal)
+                src_obj.magnitude = src["magnitude"]
+            elif src_type == "current":
+                src_obj = self._pedb.create_current_source(pos_terminal, neg_terminal)
+                src_obj.magnitude = src["magnitude"]
+
+    @pyedb_function_handler
+    def _load_hfss_setups(self, json_hfss_setups):
+        data = load_json(json_hfss_setups)
+        data = data["setups"] if "setups" in data else []
+
+        for setup in data:
             setup_type = setup["type"]
 
             edb_setup = None
@@ -240,16 +285,16 @@ class Configuration:
                         freqs = []
 
                         for d in frequencies:
-                            if d["distribution"] == "linear_step":
+                            if d["distribution"] == "linear step":
                                 freqs.append(
                                     [
                                         "linear scale",
-                                        self._pedb.edb_value(d["Start"]).ToString(),
-                                        self._pedb.edb_value(d["Stop"]).ToString(),
-                                        self._pedb.edb_value(d["Step"]).ToString(),
+                                        self._pedb.edb_value(d["start"]).ToString(),
+                                        self._pedb.edb_value(d["stop"]).ToString(),
+                                        self._pedb.edb_value(d["step"]).ToString(),
                                     ]
                                 )
-                            elif d["distribution"] == "linear_count":
+                            elif d["distribution"] == "linear count":
                                 freqs.append(
                                     [
                                         "linear count",
@@ -258,7 +303,7 @@ class Configuration:
                                         int(d["points"]),
                                     ]
                                 )
-                            elif d["distribution"] == "log_scale":
+                            elif d["distribution"] == "log scale":
                                 freqs.append(
                                     [
                                         "log scale",
@@ -273,10 +318,12 @@ class Configuration:
                             frequency_sweep=freqs,
                         )
 
-        # Configure stackup
-        stackup = data["stackup"] if "stackup" in data else None
-        if stackup:
-            materials = stackup["materials"] if "materials" in stackup else []
+    @pyedb_function_handler
+    def _load_stackup(self, json_stackup):
+        data = load_json(json_stackup)
+        data = data["stackup"] if "stackup" in data else None
+        if data:
+            materials = data["materials"] if "materials" in data else []
             materials_reformatted = {}
             for mat in materials:
                 new_mat = {}
@@ -290,7 +337,7 @@ class Configuration:
 
                 materials_reformatted[mat["name"]] = new_mat
 
-            layers = stackup["layers"]
+            layers = data["layers"]
             layers_reformatted = {}
 
             for l in layers:
@@ -305,5 +352,3 @@ class Configuration:
                 layers_reformatted[l["name"]] = lyr
             stackup_reformated = {"layers": layers_reformatted, "materials": materials_reformatted}
             self._pedb.stackup.load(stackup_reformated)
-
-        return data

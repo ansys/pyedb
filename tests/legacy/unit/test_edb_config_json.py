@@ -32,6 +32,11 @@ class TestClass:
         edbapp = EdbLegacy(str(target_path_edb), desktop_version)
         edbapp.configuration.load(example_json_folder / "stackup.json")
         edbapp.configuration.load(example_json_folder / "components.json")
-        edbapp.configuration.load(example_json_folder / "setups.json")
-
+        edbapp.configuration.load(example_json_folder / "setups_hfss.json")
+        edbapp.configuration.load(example_json_folder / "setups_siwave_syz.json")
+        edbapp.configuration.load(example_json_folder / "setups_siwave_dc.json")
+        edbapp.configuration.load(example_json_folder / "ports_coax.json")
+        edbapp.configuration.load(example_json_folder / "ports_circuit.json")
+        edbapp.configuration.load(example_json_folder / "sources.json")
+        edbapp.save_edb_as(r"D:\to_delete\test.aedb")
         edbapp.close()

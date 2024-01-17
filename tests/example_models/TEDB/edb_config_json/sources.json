@@ -1,0 +1,64 @@
+{
+  "sources": [
+    {
+      "name": "VSOURCE_U2_1V0_GND",
+      "reference_designator": "U2",
+      "type": "voltage",
+      "magnitude": 1,
+      "from": {
+        "net": "1V0"
+      },
+      "to": {
+        "net": "GND"
+      }
+    },
+    {
+      "name": "ISOURCE_U2_1V0_GND",
+      "reference_designator": "U1",
+      "type": "current",
+      "magnitude": 1,
+      "from": {
+        "net": "1V0"
+      },
+      "to": {
+        "net": "GND"
+      }
+    },
+    {
+      "name": "VSOURCE_U4_2V5_GND",
+      "reference_designator": "U4",
+      "type": "voltage",
+      "magnitude": 2.5,
+      "from": {
+        "net": "2V5"
+      },
+      "to": {
+        "net": "GND"
+      }
+    },
+    {
+      "name": "ISOURCE_U1_2V5_GND",
+      "reference_designator": "U1",
+      "type": "current",
+      "magnitude": 1,
+      "from": {
+        "net": "2V5"
+      },
+      "to": {
+        "net": "GND"
+      }
+    },
+    {
+      "name": "ISOURCE_U11_1_11",
+      "reference_designator": "U11",
+      "type": "current",
+      "magnitude": 1,
+      "from": {
+        "pin": "1"
+      },
+      "to": {
+        "pin": "11"
+      }
+    }
+  ]
+}

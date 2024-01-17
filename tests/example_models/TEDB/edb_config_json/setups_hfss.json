@@ -12,7 +12,7 @@
           "type": "Interpolation",
           "frequencies": [
             {
-              "distribution": "LinearStep",
+              "distribution": "linear step",
               "start": 0,
               "stop": 5e9,
               "step": 10e7
@@ -33,10 +33,10 @@
           "type": "Interpolation",
           "frequencies": [
             {
-              "distribution": "LinearCount",
+              "distribution": "linear count",
               "start": 0,
               "stop": 5e9,
-              "Points": 10
+              "points": 10
             }
           ]
         }
@@ -54,38 +54,14 @@
           "type": "Interpolation",
           "frequencies": [
             {
-              "distribution": "LogScale",
+              "distribution": "log scale",
               "start": 1e6,
               "stop": 1e9,
-              "Samples": 10
+              "samples": 10
             }
           ]
         }
       ]
-    },
-    {
-      "name": "siwave_syz",
-      "type": "siwave_syz",
-      "si_slider_position": 1,
-      "freq_sweep": [
-        {
-          "name": "Sweep1",
-          "type": "Interpolation",
-          "frequencies": [
-            {
-              "distribution": "LinearCount",
-              "start": 0,
-              "stop": 10e9,
-              "Points": 11
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "siwave_dc",
-      "type": "siwave_dc",
-      "dc_slider_position": 1
     }
   ]
 }

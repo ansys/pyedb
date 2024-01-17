@@ -12,30 +12,38 @@
             "p2": "2"
           }
         ]
-      },
-      "ports": [
-        {
-          "type": "circuit",
-          "from": {
-            "pin": "1"
-          },
-          "to": {
-            "pin": "2"
-          }
-        }
-      ]
+      }
     },
     {
-      "reference_designator": "C376",
-      "part_type": "capacitor",
-      "enabled": true,
+      "reference_designator": "R100",
+      "part_type": "resistor",
+      "enabled": false
+    },
+    {
+      "reference_designator": "L2",
+      "part_type": "inductor",
+      "enabled": false,
       "rlc_model": {
         "pin_pairs": [
           {
             "type": "series",
             "capacitance": "100nf",
-            "resistance": 0,
-            "inductance": 0,
+            "inductance": "1nh",
+            "resistance": "0.001",
+            "p1": "1",
+            "p2": "2"
+          }
+        ]
+      }
+    },
+    {
+      "reference_designator": "C375",
+      "part_type": "capacitor",
+      "enabled": false,
+      "rlc_model": {
+        "pin_pairs": [
+          {
+            "type": "series",
             "p1": "1",
             "p2": "2"
           }
@@ -55,60 +63,15 @@
         "reference_size_auto": true,
         "reference_size_x": 0,
         "reference_size_y": 0
-      },
-      "ports": [
-        {
-          "type": "coax",
-          "from": {
-            "pin": "AM17"
-          }
-        },
-        {
-          "type": "coax",
-          "from": {
-            "net": "PCIe_Gen4_TX2_CAP_N"
-          }
-        }
-      ]
+      }
     },
     {
-      "reference_designator": "X1",
-      "part_type": "IO",
-      "ports": [
-        {
-          "type": "Circuit",
-          "from": {
-            "pin": "B8"
-          },
-          "to": {
-            "net": "GND"
-          }
-        },
-        {
-          "type": "Circuit",
-          "from": {
-            "pin": "B9"
-          },
-          "to": {
-            "net": "GND"
-          }
-        }
-      ]
+      "reference_designator": "U14",
+      "part_type": "ic"
     },
     {
-      "reference_designator": "U7",
-      "part_type": "IO",
-      "ports": [
-        {
-          "type": "Circuit",
-          "from": {
-            "net": "VDD_DDR"
-          },
-          "to": {
-            "net": "GND"
-          }
-        }
-      ]
+      "reference_designator": "U3",
+      "part_type": "other"
     }
   ]
 }
