@@ -35,7 +35,7 @@ You can install PyEDB on CPython 3.7 through 3.10 from PyPI:
 
 .. code:: shell
 
-    pip install pyansys-edb
+    pip install pyedb
 
 
 Linux support
