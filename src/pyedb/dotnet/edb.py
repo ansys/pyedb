@@ -25,21 +25,21 @@ from pyedb.generic.general_methods import (
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
-from pyedb.legacy.application.Variables import decompose_variable_value
-from pyedb.legacy.edb_core.components import Components
-from pyedb.legacy.edb_core.configuration import Configuration
-from pyedb.legacy.edb_core.dotnet.database import Database
-from pyedb.legacy.edb_core.dotnet.layout import LayoutDotNet
-from pyedb.legacy.edb_core.edb_data.control_file import (
+from pyedb.dotnet.application.Variables import decompose_variable_value
+from pyedb.dotnet.edb_core.components import Components
+from pyedb.dotnet.edb_core.configuration import Configuration
+from pyedb.dotnet.edb_core.dotnet.database import Database
+from pyedb.dotnet.edb_core.dotnet.layout import LayoutDotNet
+from pyedb.dotnet.edb_core.edb_data.control_file import (
     ControlFile,
     convert_technology_file,
 )
-from pyedb.legacy.edb_core.edb_data.design_options import EdbDesignOptions
-from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.legacy.edb_core.edb_data.hfss_simulation_setup_data import (
+from pyedb.dotnet.edb_core.edb_data.design_options import EdbDesignOptions
+from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
+from pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data import (
     HfssSimulationSetup,
 )
-from pyedb.legacy.edb_core.edb_data.ports import (
+from pyedb.dotnet.edb_core.edb_data.ports import (
     BundleWavePort,
     CircuitPort,
     CoaxPort,
@@ -47,34 +47,34 @@ from pyedb.legacy.edb_core.edb_data.ports import (
     GapPort,
     WavePort,
 )
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import (
+from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
-from pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data import (
+from pyedb.dotnet.edb_core.edb_data.siwave_simulation_setup_data import (
     SiwaveDCSimulationSetup,
     SiwaveSYZSimulationSetup,
 )
-from pyedb.legacy.edb_core.edb_data.sources import SourceType
-from pyedb.legacy.edb_core.edb_data.terminals import Terminal
-from pyedb.legacy.edb_core.edb_data.variables import Variable
-from pyedb.legacy.edb_core.general import (
+from pyedb.dotnet.edb_core.edb_data.sources import SourceType
+from pyedb.dotnet.edb_core.edb_data.terminals import Terminal
+from pyedb.dotnet.edb_core.edb_data.variables import Variable
+from pyedb.dotnet.edb_core.general import (
     LayoutObjType,
     Primitives,
     convert_py_list_to_net_list,
 )
-from pyedb.legacy.edb_core.hfss import EdbHfss
-from pyedb.legacy.edb_core.layout import EdbLayout
-from pyedb.legacy.edb_core.layout_validation import LayoutValidation
-from pyedb.legacy.edb_core.materials import Materials
-from pyedb.legacy.edb_core.net_class import (
+from pyedb.dotnet.edb_core.hfss import EdbHfss
+from pyedb.dotnet.edb_core.layout import EdbLayout
+from pyedb.dotnet.edb_core.layout_validation import LayoutValidation
+from pyedb.dotnet.edb_core.materials import Materials
+from pyedb.dotnet.edb_core.net_class import (
     EdbDifferentialPairs,
     EdbExtendedNets,
     EdbNetClasses,
 )
-from pyedb.legacy.edb_core.nets import EdbNets
-from pyedb.legacy.edb_core.padstack import EdbPadstacks
-from pyedb.legacy.edb_core.siwave import EdbSiwave
-from pyedb.legacy.edb_core.stackup import Stackup
+from pyedb.dotnet.edb_core.nets import EdbNets
+from pyedb.dotnet.edb_core.padstack import EdbPadstacks
+from pyedb.dotnet.edb_core.siwave import EdbSiwave
+from pyedb.dotnet.edb_core.stackup import Stackup
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 if is_linux and is_ironpython:
@@ -83,7 +83,7 @@ else:
     import subprocess
 
 
-class EdbLegacy(Database):
+class Edb(Database):
     """Provides the EDB application interface.
 
     This module inherits all objects that belong to EDB.
@@ -119,8 +119,8 @@ class EdbLegacy(Database):
     --------
     Create an ``Edb`` object and a new EDB cell.
 
-    >>> from pyedb.legacy.edb import EdbLegacy
-    >>> app = EdbLegacy()
+    >>> from pyedb.dotnet.edb import Edb
+    >>> app = Edb()
 
     Add a new variable named "s1" to the ``Edb`` instance.
 
@@ -140,12 +140,12 @@ class EdbLegacy(Database):
 
     Create an ``Edb`` object and open the specified project.
 
-    >>> app = EdbLegacy("myfile.aedb")
+    >>> app = Edb("myfile.aedb")
 
     Create an ``Edb`` object from GDS and control files.
     The XML control file resides in the same directory as the GDS file: (myfile.xml).
 
-    >>> app = EdbLegacy("/path/to/file/myfile.gds")
+    >>> app = Edb("/path/to/file/myfile.gds")
 
     """
 
@@ -244,7 +244,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        variable object : :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`
+        variable object : :class:`pyedb.dotnet.edb_core.edb_data.variables.Variable`
 
         """
         if self.variable_exists(variable_name)[0]:
@@ -292,6 +292,7 @@ class EdbLegacy(Database):
         self._variables = None
         self._active_cell = None
         self._layout = None
+        self._configuration = None
 
     @pyedb_function_handler()
     def _init_objects(self):
@@ -324,7 +325,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        variable dictionary : Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
+        variable dictionary : Dict[str, :class:`pyedb.dotnet.edb_core.edb_data.variables.Variable`]
         """
         d_var = dict()
         for i in self.active_cell.GetVariableServer().GetAllVariableNames():
@@ -337,7 +338,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        variables dictionary : Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
+        variables dictionary : Dict[str, :class:`pyedb.dotnet.edb_core.edb_data.variables.Variable`]
 
         """
         p_var = dict()
@@ -347,11 +348,11 @@ class EdbLegacy(Database):
 
     @property
     def layout_validation(self):
-        """:class:`pyedb.legacy.edb_core.edb_data.layout_validation.LayoutValidation`.
+        """:class:`pyedb.dotnet.edb_core.edb_data.layout_validation.LayoutValidation`.
 
         Returns
         -------
-        layout validation object : :class: 'pyedb.legacy.edb_core.layout_validation.LayoutValidation'
+        layout validation object : :class: 'pyedb.dotnet.edb_core.layout_validation.LayoutValidation'
         """
         return LayoutValidation(self)
 
@@ -361,7 +362,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        variables dictionary : Dict[str, :class:`pyedb.legacy.edb_core.edb_data.variables.Variable`]
+        variables dictionary : Dict[str, :class:`pyedb.dotnet.edb_core.edb_data.variables.Variable`]
 
         """
         all_vars = dict()
@@ -377,7 +378,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Terminal dictionary : Dict[str, pyedb.legacy.edb_core.edb_data.terminals.Terminal]
+        Terminal dictionary : Dict[str, pyedb.dotnet.edb_core.edb_data.terminals.Terminal]
         """
 
         temp = {}
@@ -407,8 +408,8 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        port dictionary : Dict[str, [:class:`pyedb.legacy.edb_core.edb_data.ports.GapPort`,
-                   :class:`pyedb.legacy.edb_core.edb_data.ports.WavePort`,]]
+        port dictionary : Dict[str, [:class:`pyedb.dotnet.edb_core.edb_data.ports.GapPort`,
+                   :class:`pyedb.dotnet.edb_core.edb_data.ports.WavePort`,]]
 
         """
         temp = [term for term in self.layout.terminals if not term.IsReferenceTerminal()]
@@ -683,8 +684,10 @@ class EdbLegacy(Database):
 
     @property
     def configuration(self):
-        """Edb configuration."""
-        return Configuration(self)
+        """Edb project configuration from file."""
+        if not self._configuration:
+            self._configuration = Configuration(self)
+        return self._configuration
 
     def edb_exception(self, ex_value, tb_data):
         """Write the trace stack to AEDT when a Python error occurs.
@@ -726,12 +729,12 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class:`pyedb.legacy.edb_core.Components.Components`
+        Instance of :class:`pyedb.dotnet.edb_core.Components.Components`
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> comp = edbapp.components.get_component_by_name("J1")
         """
         warnings.warn("Use new property :func:`components` instead.", DeprecationWarning)
@@ -743,12 +746,12 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class:`pyedb.legacy.edb_core.components.Components`
+        Instance of :class:`pyedb.dotnet.edb_core.components.Components`
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> comp = edbapp.components.get_component_by_name("J1")
         """
         if not self._components and self.active_db:
@@ -776,7 +779,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class:`pyedb.legacy.edb_core.edb_data.design_options.EdbDesignOptions`
+        Instance of :class:`pyedb.dotnet.edb_core.edb_data.design_options.EdbDesignOptions`
         """
         return EdbDesignOptions(self.active_cell)
 
@@ -786,12 +789,12 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: 'pyedb.legacy.edb_core.Stackup`
+        Instance of :class: 'pyedb.dotnet.edb_core.Stackup`
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.stackup.layers["TOP"].thickness = 4e-5
         >>> edbapp.stackup.layers["TOP"].thickness == 4e-05
         >>> edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
@@ -806,12 +809,12 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: `pyedb.legacy.edb_core.Materials`
+        Instance of :class: `pyedb.dotnet.edb_core.Materials`
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.materials["FR4_epoxy"].conductivity = 1
         >>> edbapp.materials.add_debye_material("My_Debye2", 5, 3, 0.02, 0.05, 1e5, 1e9)
         >>> edbapp.materials.add_djordjevicsarkar_material("MyDjord2", 3.3, 0.02, 3.3)
@@ -831,12 +834,12 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: `pyedb.legacy.edb_core.padstack.EdbPadstack`
+        Instance of :class: `pyedb.dotnet.edb_core.padstack.EdbPadstack`
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
         >>> edbapp.padstacks.get_pad_parameters(
         >>> ... p, "TOP", edbapp.padstacks.pad_type.RegularPad
@@ -857,8 +860,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
         >>> edbapp.padstacks.get_pad_parameters(
         >>> ... p, "TOP", edbapp.padstacks.pad_type.RegularPad
@@ -878,12 +881,12 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: `pyedb.legacy.edb_core.siwave.EdbSiwave`
+        Instance of :class: `pyedb.dotnet.edb_core.siwave.EdbSiwave`
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
         """
         warnings.warn("Use new property :func:`siwave` instead.", DeprecationWarning)
@@ -895,12 +898,12 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        Instance of :class: `pyedb.legacy.edb_core.siwave.EdbSiwave`
+        Instance of :class: `pyedb.dotnet.edb_core.siwave.EdbSiwave`
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
         """
         if not self._siwave and self.active_db:
@@ -920,8 +923,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
         """
         warnings.warn("Use new property :func:`hfss` instead.", DeprecationWarning)
@@ -933,7 +936,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.hfss.EdbHfss`
+        :class:`pyedb.dotnet.edb_core.hfss.EdbHfss`
 
         See Also
         --------
@@ -941,8 +944,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> sim_config = edbapp.new_simulation_configuration()
         >>> sim_config.mesh_freq = "10Ghz"
         >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
@@ -960,12 +963,12 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.nets.EdbNets`
+        :class:`pyedb.dotnet.edb_core.nets.EdbNets`
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.nets.find_or_create_net("GND")
         >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
         """
@@ -982,8 +985,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy"myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb"myproject.aedb")
         >>> edbapp.nets.find_or_create_net("GND")
         >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
         """
@@ -1003,8 +1006,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.net_classes
         """
 
@@ -1021,8 +1024,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.extended_nets
         """
 
@@ -1039,8 +1042,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.differential_pairs
         """
         if self.active_db:
@@ -1061,8 +1064,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
         warnings.warn("Use new property :func:`modeler` instead.", DeprecationWarning)
@@ -1078,8 +1081,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
         if not self._core_primitives and self.active_db:
@@ -1128,7 +1131,7 @@ class EdbLegacy(Database):
         ):
             obj_type = i.GetObjType().ToString()
             if obj_type == LayoutObjType.PadstackInstance.name:
-                from pyedb.legacy.edb_core.edb_data.padstacks_data import (
+                from pyedb.dotnet.edb_core.edb_data.padstacks_data import (
                     EDBPadstackInstance,
                 )
 
@@ -1136,21 +1139,21 @@ class EdbLegacy(Database):
             elif obj_type == LayoutObjType.Primitive.name:
                 prim_type = i.GetPrimitiveType().ToString()
                 if prim_type == Primitives.Path.name:
-                    from pyedb.legacy.edb_core.edb_data.primitives_data import EdbPath
+                    from pyedb.dotnet.edb_core.edb_data.primitives_data import EdbPath
 
                     temp.append(EdbPath(i, self))
                 elif prim_type == Primitives.Rectangle.name:
-                    from pyedb.legacy.edb_core.edb_data.primitives_data import (
+                    from pyedb.dotnet.edb_core.edb_data.primitives_data import (
                         EdbRectangle,
                     )
 
                     temp.append(EdbRectangle(i, self))
                 elif prim_type == Primitives.Circle.name:
-                    from pyedb.legacy.edb_core.edb_data.primitives_data import EdbCircle
+                    from pyedb.dotnet.edb_core.edb_data.primitives_data import EdbCircle
 
                     temp.append(EdbCircle(i, self))
                 elif prim_type == Primitives.Polygon.name:
-                    from pyedb.legacy.edb_core.edb_data.primitives_data import (
+                    from pyedb.dotnet.edb_core.edb_data.primitives_data import (
                         EdbPolygon,
                     )
 
@@ -1176,8 +1179,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy("myproject.aedb")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> pin_net_name = edbapp.pins[424968329].netname
         """
         warnings.warn("Use new method :func:`edb.padstacks.pins` instead.", DeprecationWarning)
@@ -1626,7 +1629,7 @@ class EdbLegacy(Database):
 
     @pyedb_function_handler()
     def _smart_cut(self, reference_list=[], expansion_size=1e-12):
-        from pyedb.legacy.clr_module import Tuple
+        from pyedb.dotnet.clr_module import Tuple
 
         _polys = []
         terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [0, 3, 4, 7, 8]]
@@ -1797,8 +1800,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edb = EdbLegacy(r'C:\\test.aedb', edbversion="2022.2")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edb = Edb(r'C:\\test.aedb', edbversion="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
         >>> start = time.time()
@@ -2409,8 +2412,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edb = EdbLegacy(r'C:\\test.aedb', edbversion="2022.2")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edb = Edb(r'C:\\test.aedb', edbversion="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
         >>> start = time.time()
@@ -2462,7 +2465,7 @@ class EdbLegacy(Database):
         """
         temp_edb_path = self.edbpath[:-5] + "_temp_aedb.aedb"
         shutil.copytree(self.edbpath, temp_edb_path)
-        temp_edb = EdbLegacy(temp_edb_path)
+        temp_edb = Edb(temp_edb_path)
         for via in list(temp_edb.padstacks.instances.values()):
             via.pin.Delete()
         if netlist:
@@ -2848,8 +2851,8 @@ class EdbLegacy(Database):
         Examples
         --------
 
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edb = EdbLegacy(edbpath=r"C:\temp\myproject.aedb", edbversion="2023.2")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2023.2")
 
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
         >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
@@ -2892,8 +2895,8 @@ class EdbLegacy(Database):
         Examples
         --------
 
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edb = EdbLegacy(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
         >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
         >>> edb.export_q3d(r"C:\temp")
@@ -2943,9 +2946,9 @@ class EdbLegacy(Database):
         Examples
         --------
 
-        >>> from pyedb.legacy.edb import EdbLegacy
+        >>> from pyedb.dotnet.edb import Edb
 
-        >>> edb = EdbLegacy(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
+        >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
 
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
         >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
@@ -3076,7 +3079,7 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.edb_data.edbvalue.EdbValue`
+        :class:`pyedb.dotnet.edb_core.edb_data.edbvalue.EdbValue`
         """
         var_server = self.variable_exists(variable_name)
         if var_server[0]:
@@ -3107,8 +3110,8 @@ class EdbLegacy(Database):
         Examples
         --------
 
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edb_app = EdbLegacy()
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edb_app = Edb()
         >>> boolean_1, ant_length = edb_app.add_project_variable("my_local_variable", "1cm")
         >>> print(edb_app["$my_local_variable"])    #using getitem
         >>> edb_app["$my_local_variable"] = "1cm"   #using setitem
@@ -3144,8 +3147,8 @@ class EdbLegacy(Database):
         Examples
         --------
 
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edb_app = EdbLegacy()
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edb_app = Edb()
         >>> boolean_1, ant_length = edb_app.add_design_variable("my_local_variable", "1cm")
         >>> print(edb_app["my_local_variable"])    #using getitem
         >>> edb_app["my_local_variable"] = "1cm"   #using setitem
@@ -3183,8 +3186,8 @@ class EdbLegacy(Database):
         Examples
         --------
 
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edb_app = EdbLegacy()
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edb_app = Edb()
         >>> boolean, ant_length = edb_app.add_design_variable("ant_length", "1cm")
         >>> boolean, ant_length = edb_app.change_design_variable_value("ant_length", "1m")
         >>> print(edb_app["ant_length"])    #using getitem
@@ -3218,7 +3221,7 @@ class EdbLegacy(Database):
 
         Parameters
         ----------
-        simulation_setup : :class:`pyedb.legacy.edb_core.edb_data.simulation_configuration.SimulationConfiguration`.
+        simulation_setup : :class:`pyedb.dotnet.edb_core.edb_data.simulation_configuration.SimulationConfiguration`.
             SimulationConfiguration object that can be instantiated or directly loaded with a
             configuration file.
 
@@ -3230,11 +3233,11 @@ class EdbLegacy(Database):
         Examples
         --------
 
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> from pyedb.legacy.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb.dotnet.edb_core.edb_data.simulation_configuration import SimulationConfiguration
         >>> config_file = path_configuration_file
         >>> source_file = path_to_edb_folder
-        >>> edb = EdbLegacy(source_file)
+        >>> edb = Edb(source_file)
         >>> sim_setup = SimulationConfiguration(config_file)
         >>> edb.build_simulation_project(sim_setup)
         >>> edb.save_edb()
@@ -3432,8 +3435,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>>edb = EdbLegacy()
+        >>> from pyedb.dotnet.edb import Edb
+        >>>edb = Edb()
         >>> edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
         >>> edb.hfss.create_edge_port_horizontal(
         >>> ... prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
@@ -3584,8 +3587,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy()
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb()
         >>> setup1 = edbapp.create_hfss_setup("setup1")
         >>> setup1.hfss_port_settings.max_delta_z0 = 0.5
         """
@@ -3605,12 +3608,12 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        :class:`pyedb.legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
+        :class:`pyedb.dotnet.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy()
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb()
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
         >>> setup1.add_frequency_sweep(frequency_sweep=[
         ...                           ["linear count", "0", "1kHz", 1],
@@ -3640,8 +3643,8 @@ class EdbLegacy(Database):
 
         Examples
         --------
-        >>> from pyedb.legacy.edb import EdbLegacy
-        >>> edbapp = EdbLegacy()
+        >>> from pyedb.dotnet.edb import Edb
+        >>> edbapp = Edb()
         >>> setup1 = edbapp.create_siwave_dc_setup("setup1")
         >>> setup1.mesh_bondwires = True
 
@@ -3762,7 +3765,7 @@ class EdbLegacy(Database):
         defined_ports = {}
         project_connexions = None
         for edb_path, zone_info in zone_dict.items():
-            edb = EdbLegacy(edbversion=self.edbversion, edbpath=edb_path)
+            edb = Edb(edbversion=self.edbversion, edbpath=edb_path)
             edb.cutout(
                 use_pyaedt_cutout=True,
                 custom_extent=zone_info[1],
@@ -3876,15 +3879,15 @@ class EdbLegacy(Database):
 
         Parameters
         ----------
-        terminal : class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
-            class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-            class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
-            class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+        terminal : class:`pyedb.dotnet.edb_core.edb_data.terminals.EdgeTerminal`,
+            class:`pyedb.dotnet.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+            class:`pyedb.dotnet.edb_core.edb_data.terminals.PointTerminal`,
+            class:`pyedb.dotnet.edb_core.edb_data.terminals.PinGroupTerminal`,
             Positive terminal of the port.
-        ref_terminal : class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
-            class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-            class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
-            class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+        ref_terminal : class:`pyedb.dotnet.edb_core.edb_data.terminals.EdgeTerminal`,
+            class:`pyedb.dotnet.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+            class:`pyedb.dotnet.edb_core.edb_data.terminals.PointTerminal`,
+            class:`pyedb.dotnet.edb_core.edb_data.terminals.PinGroupTerminal`,
             optional
             Negative terminal of the port.
         is_circuit_port : bool, optional
@@ -3892,8 +3895,8 @@ class EdbLegacy(Database):
 
         Returns
         -------
-        list: [:class:`pyedb.legacy.edb_core.edb_data.ports.GapPort`,
-            :class:`pyedb.legacy.edb_core.edb_data.ports.WavePort`,].
+        list: [:class:`pyedb.dotnet.edb_core.edb_data.ports.GapPort`,
+            :class:`pyedb.dotnet.edb_core.edb_data.ports.WavePort`,].
         """
 
         terminal.boundary_type = "PortBoundary"
@@ -3911,20 +3914,20 @@ class EdbLegacy(Database):
 
         Parameters
         ----------
-        terminal : :class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
-            :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-            :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
-            :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+        terminal : :class:`pyedb.dotnet.edb_core.edb_data.terminals.EdgeTerminal`,
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PointTerminal`,
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PinGroupTerminal`,
             Positive terminal of the port.
-        ref_terminal : :class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`,
-            :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
-            :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`,
-            :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+        ref_terminal : :class:`pyedb.dotnet.edb_core.edb_data.terminals.EdgeTerminal`,
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PointTerminal`,
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PinGroupTerminal`,
             Negative terminal of the probe.
 
         Returns
         -------
-        pyedb.legacy.edb_core.edb_data.terminals.Terminal
+        pyedb.dotnet.edb_core.edb_data.terminals.Terminal
         """
         term = Terminal(self, terminal._edb_object)
         term.boundary_type = "kVoltageProbe"
@@ -3941,15 +3944,15 @@ class EdbLegacy(Database):
 
         Parameters
         ----------
-        terminal : :class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`, \
-            :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`, \
-            :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`, \
-            :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`
+        terminal : :class:`pyedb.dotnet.edb_core.edb_data.terminals.EdgeTerminal`, \
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PadstackInstanceTerminal`, \
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PointTerminal`, \
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PinGroupTerminal`
             Positive terminal of the port.
-        ref_terminal : class:`pyedb.legacy.edb_core.edb_data.terminals.EdgeTerminal`, \
-            :class:`pyedb.legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`, \
-            :class:`pyedb.legacy.edb_core.edb_data.terminals.PointTerminal`, \
-            :class:`pyedb.legacy.edb_core.edb_data.terminals.PinGroupTerminal`
+        ref_terminal : class:`pyedb.dotnet.edb_core.edb_data.terminals.EdgeTerminal`, \
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PadstackInstanceTerminal`, \
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PointTerminal`, \
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PinGroupTerminal`
             Negative terminal of the source.
 
         Returns
@@ -4014,7 +4017,7 @@ class EdbLegacy(Database):
         -------
         :class:`legacy.edb_core.edb_data.terminals.PointTerminal`
         """
-        from pyedb.legacy.edb_core.edb_data.terminals import PointTerminal
+        from pyedb.dotnet.edb_core.edb_data.terminals import PointTerminal
 
         point_terminal = PointTerminal(self)
         return point_terminal.create(name, net_name, location, layer)

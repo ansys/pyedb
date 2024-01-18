@@ -20,15 +20,25 @@ class Configuration:
     def __init__(self, pedb):
         self._pedb = pedb
         self._components = self._pedb.components.components
+        self.data = {}
 
     @pyedb_function_handler
-    def load(self, config_file):
+    def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
         """Import configuration settings from a JSON file and apply it to the current design.
 
         Parameters
         ----------
         config_file : str
             Full path to json file.
+        append : bool, optional
+            Whether if the new file will append to existing properties or the properties will be cleared before import.
+            Default is ``True`` to keep stored properties
+        apply_file : bool, optional
+            Whether to apply the file after the load or not. Default is ``False``.
+        output_file : str, optional
+            Full path to the new aedb folder where the configured project will be saved.
+        open_at_the_end : bool, optional
+            Whether to keep the new generated file opened at the end. Default is ``True``.
 
         Returns
         -------
@@ -37,23 +47,46 @@ class Configuration:
         """
 
         data = load_json(config_file)
+        if not append:
+            self.data = {}
+        for k,v in data.items():
+            self.data[k] = v
+        if apply_file:
+            original_file = self._pedb.edbpath
+            if output_file:
+                self._pedb.save_edb_as(output_file)
+            self.run()
+            if output_file and not open_at_the_end:
+                self._pedb.save_edb()
+                self._pedb.close_edb()
+                self._pedb.edbpath = original_file
+                self._pedb.open_edb()
+        return self.data
 
+
+    @pyedb_function_handler()
+    def run(self):
         # Configure components
-        self._load_components(data)
+        if not self.data:
+            self._pedb.logger.error("No data loaded. Please load a configuration file.")
+            return False
+
+        self._load_components(self.data)
 
         # Configure ports
-        self._load_ports(data)
+        self._load_ports(self.data)
 
         # Configure sources
-        self._load_sources(data)
+        self._load_sources(self.data)
 
         # Configure HFSS setup
-        self._load_setups(data)
+        self._load_setups(self.data)
 
         # Configure stackup
-        self._load_stackup(data)
+        self._load_stackup(self.data)
 
-        return data
+        return True
+
 
     @pyedb_function_handler
     def _load_components(self, json_components):
@@ -270,17 +303,32 @@ class Configuration:
             name = setup["name"]
 
             if setup_type.lower() == "siwave_dc":
-                edb_setup = self._pedb.create_siwave_dc_setup(name)
-                edb_setup.set_dc_slider = setup["dc_slider_position"]
+                if name not in self._pedb.setups:
+                    self._pedb.logger.info("Setup {} created.".format(name))
+                    edb_setup = self._pedb.create_siwave_dc_setup(name)
+                else:
+                    self._pedb.logger.warning("Setup {} already existing. Editing it.".format(name))
+                    edb_setup = self._pedb.setups[name]
+                edb_setup.set_dc_slider(setup["dc_slider_position"])
             else:
                 if setup_type.lower() == "hfss":
-                    edb_setup = self._pedb.create_hfss_setup(name)
+                    if name not in self._pedb.setups:
+                        self._pedb.logger.info("Setup {} created.".format(name))
+                        edb_setup = self._pedb.create_hfss_setup(name)
+                    else:
+                        self._pedb.logger.warning("Setup {} already existing. Editing it.".format(name))
+                        edb_setup = self._pedb.setups[name]
                     edb_setup.set_solution_single_frequency(
                         setup["f_adapt"], max_num_passes=setup["max_num_passes"], max_delta_s=setup["max_mag_delta_s"]
                     )
                 elif setup_type.lower() == "siwave_syz":
                     name = setup["name"]
-                    edb_setup = self._pedb.create_siwave_syz_setup(name)
+                    if name not in self._pedb.setups:
+                        self._pedb.logger.info("Setup {} created.".format(name))
+                        edb_setup = self._pedb.create_siwave_syz_setup(name)
+                    else:
+                        self._pedb.logger.warning("Setup {} already existing. Editing it.".format(name))
+                        edb_setup = self._pedb.setups[name]
                     edb_setup.si_slider_position = setup["si_slider_position"]
 
                 if "freq_sweep" in setup:

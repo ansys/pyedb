@@ -3,8 +3,8 @@ import re
 import warnings
 
 from pyedb.generic.general_methods import is_ironpython
-from pyedb.legacy.edb_core.edb_data.component_model import PinPairModel
-from pyedb.legacy.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.dotnet.edb_core.edb_data.component_model import PinPairModel
+from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 
 if not is_ironpython:
     try:

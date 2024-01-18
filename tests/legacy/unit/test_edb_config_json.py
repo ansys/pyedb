@@ -4,7 +4,7 @@ import sys
 import pytest
 
 from pathlib import Path
-from pyedb.legacy.edb import EdbLegacy
+from pyedb.dotnet.edb import Edb
 from tests.conftest import desktop_version
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -26,17 +26,22 @@ class TestClass:
         example_edb = example_folder / "ANSYS-HSD_V1.aedb"
 
         target_path_edb = Path(self.local_scratch.path) / "configuration" / "test.aedb"
+        target_path_edb2 = Path(self.local_scratch.path) / "configuration" / "test_new.aedb"
 
         self.local_scratch.copyfolder(str(example_edb), str(target_path_edb))
 
-        edbapp = EdbLegacy(str(target_path_edb), desktop_version)
-        edbapp.configuration.load(example_json_folder / "stackup.json")
+        edbapp = Edb(str(target_path_edb), desktop_version)
+        assert edbapp.configuration.load(example_json_folder / "stackup.json", apply_file=True)
         edbapp.configuration.load(example_json_folder / "components.json")
-        edbapp.configuration.load(example_json_folder / "setups_hfss.json")
-        edbapp.configuration.load(example_json_folder / "setups_siwave_syz.json")
-        edbapp.configuration.load(example_json_folder / "setups_siwave_dc.json")
-        edbapp.configuration.load(example_json_folder / "ports_coax.json")
-        edbapp.configuration.load(example_json_folder / "ports_circuit.json")
-        edbapp.configuration.load(example_json_folder / "sources.json")
-        edbapp.save_edb_as(r"D:\to_delete\test.aedb")
+        assert edbapp.configuration.run()
+        assert edbapp.configuration.load(example_json_folder / "setups_hfss.json", apply_file=True)
+        assert "stackup" in edbapp.configuration.data
+        assert edbapp.configuration.load(example_json_folder / "setups_siwave_syz.json", apply_file=True, append=False)
+        assert "stackup" not in edbapp.configuration.data
+        assert edbapp.configuration.load(example_json_folder / "setups_siwave_dc.json", apply_file=True)
+        assert edbapp.configuration.load(example_json_folder / "ports_coax.json", apply_file=True,output_file=str(target_path_edb2), open_at_the_end=False)
+        assert edbapp.edbpath == str(target_path_edb)
+        assert edbapp.configuration.load(example_json_folder / "ports_circuit.json", apply_file=True,output_file=str(target_path_edb2), open_at_the_end=True)
+        assert edbapp.edbpath == str(target_path_edb2)
+        assert edbapp.configuration.load(example_json_folder / "sources.json")
         edbapp.close()

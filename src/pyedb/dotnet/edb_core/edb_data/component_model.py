@@ -1,4 +1,4 @@
-from pyedb.legacy.edb_core.edb_data.obj_base import ObjBase
+from pyedb.dotnet.edb_core.edb_data.obj_base import ObjBase
 from pyedb.generic.general_methods import pyedb_function_handler
 
 
