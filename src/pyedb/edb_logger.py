@@ -13,6 +13,42 @@ from pyedb.generic.settings import settings
 class Msg:
     (INFO, WARNING, ERROR, FATAL) = range(4)
 
+class AppFilter(logging.Filter):
+    """Specifies the destination of the logger.
+
+    AEDT exposes three different loggers, which are the global, project, and design loggers.
+
+    Parameters
+    ----------
+    destination : str, optional
+        Logger to write to. Options are ``"Global"`, ``"Project"``, and ``"Design"``.
+        The default is ``"Global"``.
+    extra : str, optional
+        Name of the design or project. The default is ``""``.
+    """
+
+    def __init__(self, destination="Global", extra=""):
+        self._destination = destination
+        self._extra = extra
+
+    def filter(self, record):
+        """
+        Modify the record sent to the logger.
+
+        Parameters
+        ----------
+        record : class:`logging.LogRecord`
+            Contains information related to the event being logged.
+        """
+        record.destination = self._destination
+
+        # This will avoid the extra '::' for Global that does not have any extra info.
+        if not self._extra:
+            record.extra = self._extra
+        else:
+            record.extra = self._extra + ":"
+        return True
+
 
 class EdbLogger(object):
     """
@@ -43,7 +79,8 @@ class EdbLogger(object):
         if not settings.enable_logger:
             self._global.addHandler(logging.NullHandler())
             return
-
+        self._global.setLevel(level)
+        self._global.addFilter(AppFilter())
         if settings.formatter:
             self.formatter = settings.formatter
         else:
@@ -60,7 +97,7 @@ class EdbLogger(object):
                 mode="a",
                 maxBytes=float(settings.global_log_file_size) * 1024 * 1024,
                 backupCount=2,
-                encoding=None,
+                encoding='utf-8',
                 delay=0,
             )
             my_handler.setFormatter(self.formatter)
@@ -100,6 +137,16 @@ class EdbLogger(object):
                 if handler in handlers:
                     self._global.removeHandler(handler)
                 self.info("logger file pyedb_{}.log removed from handlers.".format(project_name))
+
+    def remove_all_file_loggers(self):
+        """Remove all file loggers.
+
+        """
+        handlers = [i for i in self._global.handlers]
+        for handler in handlers:
+            if "pyedb_" in str(handler):
+                handler.close()
+                self._global.removeHandler(handler)
 
     @property
     def _log_on_file(self):
@@ -146,12 +193,6 @@ class EdbLogger(object):
         message_text : str
             Text to display as the error message.
 
-        Examples
-        --------
-        Add an error message to the AEDT message manager.
-
-        >>> hfss.logger.project.error("Project Error Message", "Project")
-
         """
         self.add_message(2, message_text)
 
@@ -196,23 +237,18 @@ class EdbLogger(object):
 
     def add_debug_message(self, message_text):
         """
-        Parameterized message to the message manager to specify the type and project or design level.
+        Parameterized message to the message manager.
 
         Parameters
         ----------
         message_text : str
             Text to display as the message.
-        level : str, optional
-            Level to add the info message to. Options are ``"Global"``,
-            ``"Project"``, and ``"Design"``. The default value is ``None``,
-            in which case the info message gets added to the ``"Design"``
-            level.
         """
 
         return self.add_message(3, message_text)
 
     def add_message(self, message_type, message_text):
-        """Add a message to the message manager to specify the type and project or design level.
+        """Add a message to the message manager.
 
         Parameters
         ----------
