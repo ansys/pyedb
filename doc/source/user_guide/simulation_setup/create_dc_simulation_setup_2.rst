@@ -1,3 +1,5 @@
+.. _create_dc_setup2_example:
+
 Create DC simulation setup
 ==========================
 This section describes how to create DC simulation setup for Siwave.

@@ -1,3 +1,5 @@
+.. _import_gds_example:
+
 Import GDS file
 ===============
 This section describes how to import GDS file using control file.

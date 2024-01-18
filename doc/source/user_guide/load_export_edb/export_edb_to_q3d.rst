@@ -1,3 +1,5 @@
+.. _export_edb_to_q3d_example:
+
 Export EDB to Q3D
 ==================
 This section describes how to export EDB to Q3D:

@@ -31,7 +31,7 @@ Example workflow
 ----------------
 Here’s a brief example of how PyEDB works:
 
-Connect to AEDT from a Python IDE
+Connect to EDB from a Python IDE
 ---------------------------------
 PyEDB works both inside AEDT and as a standalone app.
 PyEDB also provides advanced error management. Usage examples follow.

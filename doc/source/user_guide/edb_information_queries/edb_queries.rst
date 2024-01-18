@@ -1,3 +1,5 @@
+.. _edb_queries_example:
+
 EDB queries
 ===========
 PyEDB allows layout information queries, this section describe some basic examples:

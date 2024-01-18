@@ -1,3 +1,5 @@
+.. _build_ac_project_example:
+
 Create SYZ project (SimulationConfiguration)
 ============================================
 This section describes how to create SYZ simulation setup for Siwave using SimulationConfiguration class.

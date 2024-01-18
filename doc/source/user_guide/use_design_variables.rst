@@ -1,3 +1,5 @@
+.. _use_design_variables_example:
+
 Define design variables
 =======================
 This section shows how to use variables with EDB:

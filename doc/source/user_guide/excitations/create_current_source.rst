@@ -1,3 +1,5 @@
+.. _create_current_source_example:
+
 Create circuit ports on component
 =================================
 This section describes how to create current and voltage sources:

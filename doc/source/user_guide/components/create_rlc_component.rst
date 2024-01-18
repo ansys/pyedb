@@ -1,3 +1,5 @@
+.. _create_rlc_component_example:
+
 Create RLC boundary between pins
 ================================
 This section shows how to create RLC component with EDB:

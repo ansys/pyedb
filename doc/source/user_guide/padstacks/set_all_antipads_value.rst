@@ -1,3 +1,5 @@
+.. _set_all_antipads_value_example:
+
 Settings all anti-pads value
 ============================
 This shows how to set all anti-pads value to fixed one.

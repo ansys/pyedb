@@ -1,3 +1,5 @@
+.. _export_edb_to_maxwell_example:
+
 Export EDB to Maxwell
 =====================
 This section describes how to export EDB to Maxwell:

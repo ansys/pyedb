@@ -1,3 +1,5 @@
+.. _create_ac_setup_example:
+
 Create AC simulation setup
 ==========================
 This section describes how to create AC simulation setup for Siwave.

@@ -1,3 +1,5 @@
+.. _load_edb_example:
+
 Loading layout
 ==============
 Although an entire layout can be built from scratch with PyEDB most of the time the first step is

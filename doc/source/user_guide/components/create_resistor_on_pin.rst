@@ -1,3 +1,5 @@
+.. _create_resistor_on_pin_example:
+
 Create resistor boundary between pins
 =====================================
 This section describes how to create resistor on pins:

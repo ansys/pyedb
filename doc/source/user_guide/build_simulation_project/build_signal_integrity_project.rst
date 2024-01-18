@@ -1,3 +1,5 @@
+.. _build_si_project_example:
+
 Create coaxial port on component
 ================================
 This section shows a simple example to create HFSS coaxial port on a component.
