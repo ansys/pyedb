@@ -9,7 +9,7 @@ This section describes how to delete pin group.
 
 
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
 
     # loading EDB
     edbapp = Edb(edbpath=targetfile, edbversion="2023.2")

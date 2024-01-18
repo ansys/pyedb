@@ -9,7 +9,7 @@ This section describes how to create EDB from DXF file.
 
 
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
 
     dxf_path = os.path.join(local_path, "edb_test.dxf")
     edb = Edb(dxf_path, edbversion="2023.2")

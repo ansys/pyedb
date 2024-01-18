@@ -8,7 +8,7 @@ This section describes how create edge port on polygon.
 .. code:: python
 
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 

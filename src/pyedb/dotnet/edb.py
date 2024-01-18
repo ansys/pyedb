@@ -118,7 +118,7 @@ class Edb(Database):
     --------
     Create an ``Edb`` object and a new EDB cell.
 
-    >>> from pyedb.dotnet import Edb
+    >>> from pyedb.dotnet.edb import Edb
     >>> app = Edb()
 
     Add a new variable named "s1" to the ``Edb`` instance.
@@ -724,7 +724,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> comp = edbapp.components.get_component_by_name("J1")
         """
@@ -741,7 +741,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> comp = edbapp.components.get_component_by_name("J1")
         """
@@ -784,7 +784,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.stackup.layers["TOP"].thickness = 4e-5
         >>> edbapp.stackup.layers["TOP"].thickness == 4e-05
@@ -804,7 +804,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.materials["FR4_epoxy"].conductivity = 1
         >>> edbapp.materials.add_debye_material("My_Debye2", 5, 3, 0.02, 0.05, 1e5, 1e9)
@@ -829,7 +829,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
         >>> edbapp.padstacks.get_pad_parameters(
@@ -851,7 +851,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
         >>> edbapp.padstacks.get_pad_parameters(
@@ -876,7 +876,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
         """
@@ -893,7 +893,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
         """
@@ -914,7 +914,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
         """
@@ -935,7 +935,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> sim_config = edbapp.new_simulation_configuration()
         >>> sim_config.mesh_freq = "10Ghz"
@@ -958,7 +958,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.nets.find_or_create_net("GND")
         >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
@@ -976,7 +976,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb"myproject.aedb")
         >>> edbapp.nets.find_or_create_net("GND")
         >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
@@ -997,7 +997,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.net_classes
         """
@@ -1015,7 +1015,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.extended_nets
         """
@@ -1033,7 +1033,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.differential_pairs
         """
@@ -1055,7 +1055,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
@@ -1072,7 +1072,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
@@ -1170,7 +1170,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> pin_net_name = edbapp.pins[424968329].netname
         """
@@ -1791,7 +1791,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edb = Edb(r'C:\\test.aedb', edbversion="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
@@ -2403,7 +2403,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edb = Edb(r'C:\\test.aedb', edbversion="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
@@ -2842,7 +2842,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2023.2")
 
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
@@ -2886,7 +2886,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
         >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
@@ -2937,7 +2937,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
 
         >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
 
@@ -3101,7 +3101,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edb_app = Edb()
         >>> boolean_1, ant_length = edb_app.add_project_variable("my_local_variable", "1cm")
         >>> print(edb_app["$my_local_variable"])    #using getitem
@@ -3138,7 +3138,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edb_app = Edb()
         >>> boolean_1, ant_length = edb_app.add_design_variable("my_local_variable", "1cm")
         >>> print(edb_app["my_local_variable"])    #using getitem
@@ -3177,7 +3177,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edb_app = Edb()
         >>> boolean, ant_length = edb_app.add_design_variable("ant_length", "1cm")
         >>> boolean, ant_length = edb_app.change_design_variable_value("ant_length", "1m")
@@ -3224,7 +3224,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> from pyedb.dotnet.edb_core.edb_data.simulation_configuration import SimulationConfiguration
         >>> config_file = path_configuration_file
         >>> source_file = path_to_edb_folder
@@ -3426,7 +3426,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>>edb = Edb()
         >>> edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
         >>> edb.hfss.create_edge_port_horizontal(
@@ -3578,7 +3578,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb()
         >>> setup1 = edbapp.create_hfss_setup("setup1")
         >>> setup1.hfss_port_settings.max_delta_z0 = 0.5
@@ -3603,7 +3603,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb()
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
         >>> setup1.add_frequency_sweep(frequency_sweep=[
@@ -3634,7 +3634,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb()
         >>> setup1 = edbapp.create_siwave_dc_setup("setup1")
         >>> setup1.mesh_bondwires = True

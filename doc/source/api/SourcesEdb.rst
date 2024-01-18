@@ -5,7 +5,7 @@ These classes are the containers of sources methods of the EDB for both HFSS and
 
 .. code:: python
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 

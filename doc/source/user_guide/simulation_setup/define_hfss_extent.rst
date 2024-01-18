@@ -9,7 +9,7 @@ This section describes how define HFSS extent using SimulationConfiguration clas
 
 
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
 
     # create new EDB
     edb = Edb()

@@ -5,7 +5,7 @@ These classes are the containers of ``setup`` classes in EDB for both HFSS and S
 
 .. code:: python
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 

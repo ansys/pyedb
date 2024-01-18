@@ -153,7 +153,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.components
 
@@ -173,7 +173,7 @@ class Components(object):
         Examples
         --------
 
-        >>> from pyedb.dotnet import Edb
+        >>> from pyedb.dotnet.edb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.components
 

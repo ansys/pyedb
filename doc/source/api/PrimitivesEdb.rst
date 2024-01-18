@@ -6,7 +6,7 @@ Primitives are planes, lines, rectangles, and circles.
 
 .. code:: python
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 
@@ -43,7 +43,7 @@ These classes are the containers of data management for primitives and arcs.
 
 .. code:: python
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 

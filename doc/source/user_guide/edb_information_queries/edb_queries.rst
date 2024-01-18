@@ -11,7 +11,7 @@ PyEDB allows layout information queries, this section describe some basic exampl
 
 
     # loading EDB
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 

@@ -4,7 +4,7 @@
 import pytest
 
 from pyedb.generic.settings import settings
-from pyedb.dotnet import Edb
+from pyedb.dotnet.edb import Edb
 from tests.conftest import desktop_version, local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -220,7 +220,7 @@ class TestClass:
 
     def test_modeler_primitives_boolean_operation(self):
         """Evaluate modeler primitives boolean operations."""
-        from pyedb.dotnet import Edb
+        from pyedb.dotnet.edb import Edb
 
         edb = Edb()
         edb.stackup.add_layer(layer_name="test")

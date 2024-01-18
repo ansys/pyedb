@@ -5,7 +5,7 @@ The main padstack object is called directly from main application using the prop
 
 .. code:: python
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 

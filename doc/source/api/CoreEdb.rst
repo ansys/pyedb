@@ -19,7 +19,7 @@ It can be opened and edited using the ``Edb`` class.
 
 .. code:: python
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
 
     # this call returns the Edb class initialized on 2023 R1
     edb = Edb(myedb, edbversion="2023.1")
@@ -58,7 +58,7 @@ to AEDB files.
 
 .. code:: python
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 

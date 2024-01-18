@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from pyedb.dotnet import Edb
+from pyedb.dotnet.edb import Edb
 from tests.conftest import desktop_version
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]

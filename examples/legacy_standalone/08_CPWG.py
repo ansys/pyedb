@@ -19,7 +19,7 @@ from pyedb.generic.general_methods import (
     generate_unique_folder_name,
     generate_unique_name,
 )
-from pyedb.dotnet import Edb
+from pyedb.dotnet.edb import Edb
 
 ###############################################################################
 # Set non-graphical mode

@@ -11,7 +11,7 @@ Files and location must be adapted by the user.
 
     # these example shows how to work with GDS file,.
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
     from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
 
     c_file_in = os.path.join(

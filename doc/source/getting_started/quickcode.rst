@@ -43,7 +43,7 @@ Explicit PyEDB declaration and error management
 
     # Start EDB
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
 
     edb_file = pyedb.layout_examples.ANSYS - HSD_V1.aedb
     edb = Edb(edbversion="2023.2", edbpath=edb_file)
@@ -54,7 +54,7 @@ Variables
 
 .. code:: python
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
 
     edb_file = pyedb.layout_examples.ANSYS - HSD_V1.aedb
     edb = Edb(edbversion="2023.2", edbpath=edb_file)

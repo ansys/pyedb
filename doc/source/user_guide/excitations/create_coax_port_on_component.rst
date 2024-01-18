@@ -8,7 +8,7 @@ This section shows a simple example to create HFSS coaxial port on a component.
 .. code:: python
 
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 

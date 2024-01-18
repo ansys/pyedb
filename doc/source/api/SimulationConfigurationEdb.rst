@@ -18,7 +18,7 @@ These classes are the containers of simulation configuration constructors for th
 
 .. code:: python
 
-    from pyedb.dotnet import Edb
+    from pyedb.dotnet.edb import Edb
 
     edbapp = Edb(myedb, edbversion="2023.1")
 

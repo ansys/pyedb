@@ -7,7 +7,7 @@ from os.path import dirname
 import pytest
 
 from pyedb.generic.general_methods import generate_unique_name
-from pyedb.dotnet import Edb
+from pyedb.dotnet.edb import Edb
 from pyedb.misc.misc import list_installed_ansysem
 
 example_models_path = os.path.join(dirname(dirname(dirname(os.path.realpath(__file__)))), "example_models")
