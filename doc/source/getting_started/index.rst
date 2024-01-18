@@ -4,20 +4,20 @@ Getting started
 .. grid:: 2
 
    .. grid-item-card:: About PyAnsys and EDB
-            :link: About <https://edb.docs.pyansys.com/version/dev/getting_started/about.html>
+            :link: about
             :link-type: doc
 
             Learn more about PyAnsys and Ansys Electronics Desktop.
 
    .. grid-item-card:: Installation
-            :link: Installation <https://edb.docs.pyansys.com/version/dev/getting_started/installation.html>
+            :link: installation
             :link-type: doc
             :margin: 2 2 0 0
 
             Learn how to install PyEDB from PyPi or conda.
 
    .. grid-item-card:: Quick code
-            :link: Quickcode <https://edb.docs.pyansys.com/version/dev/getting_started/quickcode.html>
+            :link: quickcode
             :link-type: doc
             :margin: 2 2 0 0
 
@@ -25,14 +25,14 @@ Getting started
 
 
    .. grid-item-card:: Versions and interfaces
-            :link: versioning <https://edb.docs.pyansys.com/version/dev/getting_started/versioning.html>
+            :link: versioning
             :link-type: doc
             :margin: 2 2 0 0
 
             Discover the compatibility between PyEDB and Ansys AEDT versions.
 
    .. grid-item-card:: Troubleshooting
-            :link: Troubleshooting <https://edb.docs.pyansys.com/version/dev/getting_started/troubleshooting.html>
+            :link: troubleshooting
             :link-type: doc
             :margin: 2 2 0 0
 

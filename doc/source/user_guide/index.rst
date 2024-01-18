@@ -4,8 +4,79 @@
 User guide
 ==========
 
+This section provides a general overview of PyEDB and how you use it.
+PyEDB is loading ANSYS EDB in memory meaning non graphically.
+To use PyEDB you must follow the installation step :ref:`ref_install_pyedb`.
+
+.. grid:: 2
+
+   .. grid-item-card:: Load AEDB
+            :link: load_export_edb/index
+            :link-type: doc
+
+            Learn more about how to create or load an Ansys Electronic Database (aedb).
+
+   .. grid-item-card:: Queries
+            :link: edb_information_queries/index
+            :link-type: doc
+            :margin: 2 2 0 0
+
+            Learn how to run queries on the EDB.
+
+   .. grid-item-card:: Build Simulation
+            :link: build_simulation_project/index
+            :link-type: doc
+            :margin: 2 2 0 0
+
+            This section provides in-depth information on how to build a simulation project.
+
+   .. grid-item-card:: Sources
+            :link: excitations/index
+            :link-type: doc
+            :margin: 2 2 0 0
+
+            This section provides details about how to setup sources and ports.
+
+   .. grid-item-card:: Simulation Setup
+            :link: simulation_setup/index
+            :link-type: doc
+            :margin: 2 2 0 0
+
+            This section provides details about how to create a setup in HFSS or Siwave.
+
+   .. grid-item-card:: Stackup
+            :link: layer_stackup/index
+            :link-type: doc
+            :margin: 2 2 0 0
+
+            This section provides in-depth information on how to mofify the edb stackup.
+
+   .. grid-item-card:: Padstacks
+            :link: padstacks/index
+            :link-type: doc
+            :margin: 2 2 0 0
+
+            This section provides in-depth information on how to mofify the padstacks definitions and instances.
+
+   .. grid-item-card:: Components
+            :link: components/index
+            :link-type: doc
+            :margin: 2 2 0 0
+
+            This section provides in-depth information on how to play with EDB components.
+
+   .. grid-item-card:: Parametrization
+            :link: use_design_variables
+            :link-type: doc
+            :margin: 2 2 0 0
+
+            This section provides example on how to modify your layout.
+
+
+
+
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    load_export_edb/index
    edb_information_queries/index
    build_simulation_project/index
@@ -15,55 +86,6 @@ User guide
    padstacks/index
    components/index
    parametrization/index
-
-This section provides a general overview of PyEDB and how you use it.
-PyEDB is loading ANSYS EDB in memory meaning non graphically.
-To use PyEDB you must follow the installation step :ref:`ref_install_pyedb`.
-
-The first step usually is to load an existing AEDB file or create a new one.
-To open an AEDB file you will need to instantiate a new Edb class.
-
-.. code:: python
-
-    from pyedb.legacy.edb_core.edb import EdbLegacy as Edb
-
-    edb_file = r"C:\Temp\my_edb.aedb"
-    edb = Edb(edb_file)
-
-Note that if you want to create an empty one you just need to instantiate the class without providing AEDB file path
-as argument. You can also check these examples to load and export EDB.
-
-
-
-Once the EDB loaded in memory you can start performing operations on it.
-For getting general information's on the layout you can check these examples:
-
-
-To build simulation projects for SI-PI using HFSS or SIwave:
-
-
-Creating excitations:
-
-
-
-Create Simulation setup:
-
-
-Manage layer stackup:
-
-
-
-Creating and editing padstack definition's:
-
-
-Create components and query information's on them:
-
-
-Create parametrized project's:
-
-.. toctree::
-   :maxdepth: 2
-
 
 
 
