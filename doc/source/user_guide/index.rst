@@ -42,21 +42,21 @@ To use PyEDB you must follow the installation step :ref:`ref_install_pyedb`.
             :link-type: doc
             :margin: 2 2 0 0
 
-            This section provides details about how to create a setup in HFSS or Siwave.
+            This section provides details about how to create a setup in HFSS or SIwave.
 
    .. grid-item-card:: Stackup
             :link: layer_stackup/index
             :link-type: doc
             :margin: 2 2 0 0
 
-            This section provides in-depth information on how to mofify the edb stackup.
+            This section provides in-depth information on how to modify the edb stackup.
 
    .. grid-item-card:: Padstacks
             :link: padstacks/index
             :link-type: doc
             :margin: 2 2 0 0
 
-            This section provides in-depth information on how to mofify the padstacks definitions and instances.
+            This section provides in-depth information on how to modify the pad-stacks definitions and instances.
 
    .. grid-item-card:: Components
             :link: components/index
