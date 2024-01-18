@@ -11,7 +11,7 @@ This shows how to set all anti-pads value to fixed one.
 
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
@@ -23,7 +23,7 @@ This shows how to set all anti-pads value to fixed one.
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     # settings all anti-pads value to zero
     edbapp.padstacks.set_all_antipad_value(0.0)

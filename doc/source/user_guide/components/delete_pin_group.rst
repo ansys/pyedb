@@ -11,10 +11,10 @@ This section describes how to delete pin group.
 
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     for _, pingroup in edbapp.siwave.pin_groups.items():
         ingroup.delete()

@@ -13,8 +13,8 @@ Files and location must be adapted by the user.
 
     # these example shows how to work with GDS file,.
 
-    from pyedb.legacy.edb import EdbLegacy
-    from pyedb.legacy.edb_core.edb_data.control_file import ControlFile
+    from pyedb.dotnet.edb import Edb
+    from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
 
     c_file_in = os.path.join(
         local_path,
@@ -29,7 +29,7 @@ Files and location must be adapted by the user.
         local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example.gds"
     )
     gds_out = os.path.join(target_location, "sky130_fictitious_dtc_example.gds")
-    pyedb.legacy.misc.copyfile(gds_in, gds_out)
+    pyedb.dotnet.misc.copyfile(gds_in, gds_out)
 
     c = ControlFile(c_file_in, layer_map=c_map)
     setup = c.setups.add_setup("Setup1", "1GHz")
@@ -51,7 +51,7 @@ Files and location must be adapted by the user.
         via.snap_via_group = True
     c.write_xml(os.path.join(self.local_scratch.path, "test_138.xml"))
     c.import_options.import_dummy_nets = True
-    edb = EdbLegacy(
+    edb = Edb(
         gds_out,
         edbversion=desktop_version,
         technology_file=os.path.join(self.local_scratch.path, "test_138.xml"),

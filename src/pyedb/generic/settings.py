@@ -7,13 +7,9 @@ class Settings(object):
     """Manages all PyEDB environment variables and global settings."""
 
     def __init__(self):
-        # TODO: Remove this (not always sure)
         self.remote_rpc_session = False
         self._enable_screen_logs = True
         self._edb_dll_path = None
-        # Remove this if LoadAEDTFile.py is not kept
-        self._aedt_version = None
-        #
         self._enable_logger = True
         self._enable_file_logs = True
         self.pyedb_server_path = ""

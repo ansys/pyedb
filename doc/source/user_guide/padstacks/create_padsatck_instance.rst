@@ -11,10 +11,10 @@ This section describes how to create a padstack instance.
 
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
 
 
-    edb = EdbLegacy(edbversion=desktop_version)
+    edb = Edb(edbversion=desktop_version)
     edb.stackup.add_layer(layer_name="1_Top", fillMaterial="AIR", thickness="30um")
     edb.stackup.add_layer(
         layer_name="contact", fillMaterial="AIR", thickness="100um", base_layer="1_Top"

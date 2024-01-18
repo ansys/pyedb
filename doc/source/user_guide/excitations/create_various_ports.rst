@@ -9,7 +9,7 @@ This section shows a simple example to create HFSS coaxial port on a component.
 
 .. code:: python
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
@@ -21,7 +21,7 @@ This section shows a simple example to create HFSS coaxial port on a component.
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     prim_1_id = [i.id for i in edb.modeler.primitives if i.net_name == "trace_2"][0]
     assert edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")

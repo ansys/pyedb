@@ -5,7 +5,7 @@ These classes are the containers of the layer and stackup manager of the EDB API
 
 .. code:: python
 
-    from pyedb.legacy.edb_core.edb import Edb
+    from pyedb.dotnet.edb import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 
@@ -17,7 +17,7 @@ These classes are the containers of the layer and stackup manager of the EDB API
     ...
 
 
-.. currentmodule:: pyedb.legacy.edb_core.stackup
+.. currentmodule:: pyedb.dotnet.edb_core.stackup
 
 .. autosummary::
    :toctree: _autosummary
@@ -26,7 +26,7 @@ These classes are the containers of the layer and stackup manager of the EDB API
    Stackup
 
 
-.. currentmodule:: pyedb.legacy.edb_core.edb_data.layer_data
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.layer_data
 
 .. autosummary::
    :toctree: _autosummary

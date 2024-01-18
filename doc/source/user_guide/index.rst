@@ -77,6 +77,8 @@ To use PyEDB you must follow the installation step :ref:`ref_install_pyedb`.
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
+
    load_export_edb/index
    edb_information_queries/index
    build_simulation_project/index
@@ -86,6 +88,7 @@ To use PyEDB you must follow the installation step :ref:`ref_install_pyedb`.
    padstacks/index
    components/index
    parametrization/index
+
 
 
 

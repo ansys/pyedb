@@ -7,9 +7,9 @@ import pytest
 
 from pyedb.generic.constants import RadiationBoxType, SolverType, SourceType
 from pyedb.generic.general_methods import is_linux
-from pyedb.legacy.edb import EdbLegacy
-from pyedb.legacy.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import (
+from pyedb.dotnet.edb import Edb
+from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
+from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
 from tests.conftest import desktop_version, local_path
@@ -171,7 +171,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_cutou1.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         output = os.path.join(self.local_scratch.path, "cutout.aedb")
         assert edbapp.cutout(
             ["DDR4_DQS0_P", "DDR4_DQS0_N"],
@@ -227,7 +227,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_cutou2.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
         edbapp.components.instances["R8"].assign_spice_model(spice_path)
         edbapp.nets.nets
@@ -261,7 +261,7 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_cutou3.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
 
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         bounding = edbapp.get_bounding_box()
         cutout_line_x = 41
         cutout_line_y = 30
@@ -286,7 +286,7 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_cutou5.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
 
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         edbapp.components.create_port_on_component(
             "U1",
             ["5V"],
@@ -315,7 +315,7 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_cut_smart.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
 
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
 
         assert edbapp.cutout(
             signal_list=["DDR4_DQS0_P", "DDR4_DQS0_N"],
@@ -331,7 +331,7 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "MicrostripSpliGnd.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
 
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
 
         assert edbapp.cutout(
             signal_list=["trace_n"],
@@ -347,7 +347,7 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "Multizone_GroundVoids.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
 
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
 
         assert edbapp.cutout(
             signal_list=["DIFF_N", "DIFF_P"],
@@ -362,14 +362,14 @@ class TestClass:
 
     # def test_create_EdbLegacy(self):
     #     """Create EDB."""
-    #     edb = EdbLegacy(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+    #     edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
     #     assert edb
     #     assert edb.active_layout
     #     edb.close()
 
     def test_export_to_hfss(self):
         """Export EDB to HFSS."""
-        edb = EdbLegacy(
+        edb = Edb(
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
             edbversion=desktop_version,
         )
@@ -382,7 +382,7 @@ class TestClass:
 
     def test_export_to_q3d(self):
         """Export EDB to Q3D."""
-        edb = EdbLegacy(
+        edb = Edb(
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
             edbversion=desktop_version,
         )
@@ -395,7 +395,7 @@ class TestClass:
 
     def test_074_export_to_maxwell(self):
         """Export EDB to Maxwell 3D."""
-        edb = EdbLegacy(
+        edb = Edb(
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
             edbversion=desktop_version,
         )
@@ -471,7 +471,7 @@ class TestClass:
 
     def test_create_edge_port_on_polygon(self):
         """Create lumped and vertical port."""
-        edb = EdbLegacy(
+        edb = Edb(
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "edge_ports.aedb"),
             edbversion=desktop_version,
         )
@@ -519,7 +519,7 @@ class TestClass:
 
     def test_create_dc_simulation(self):
         """Create Siwave DC simulation"""
-        edb = EdbLegacy(
+        edb = Edb(
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "dc_flow.aedb"),
             edbversion=desktop_version,
         )
@@ -561,7 +561,7 @@ class TestClass:
         example_project = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_110.aedb")
         self.local_scratch.copyfolder(example_project, target_path)
-        edb = EdbLegacy(target_path, edbversion=desktop_version)
+        edb = Edb(target_path, edbversion=desktop_version)
         edb_stats = edb.get_statistics(compute_area=True)
         assert edb_stats
         assert edb_stats.num_layers
@@ -584,7 +584,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_107.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_113.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edb = EdbLegacy(target_path, edbversion=desktop_version)
+        edb = Edb(target_path, edbversion=desktop_version)
         initial_extent_info = edb.active_cell.GetHFSSExtentInfo()
         assert initial_extent_info.ExtentType == edb.edb_api.utility.utility.HFSSExtentInfoType.Conforming
         config = SimulationConfiguration()
@@ -599,7 +599,7 @@ class TestClass:
         example_project = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "ANSYS_114.aedb")
         self.local_scratch.copyfolder(example_project, target_path)
-        edb = EdbLegacy(target_path, edbversion=desktop_version)
+        edb = Edb(target_path, edbversion=desktop_version)
         pins = edb.components.get_pin_from_component("U1", "1V0")
         ref_pins = edb.components.get_pin_from_component("U1", "GND")
         assert edb.components.create([pins[0], ref_pins[0]], "test_0rlc", r_value=1.67, l_value=1e-13, c_value=1e-11)
@@ -614,7 +614,7 @@ class TestClass:
         if not os.path.exists(self.local_scratch.path):
             os.mkdir(self.local_scratch.path)
         self.local_scratch.copyfolder(example_project, target_path)
-        edb = EdbLegacy(target_path, edbversion=desktop_version)
+        edb = Edb(target_path, edbversion=desktop_version)
         pins = edb.components.get_pin_from_component("U1", "1V0")
         ref_pins = edb.components.get_pin_from_component("U1", "GND")
         assert edb.hfss.create_rlc_boundary_on_pins(pins[0], ref_pins[0], rvalue=1.05, lvalue=1.05e-12, cvalue=1.78e-13)
@@ -627,7 +627,7 @@ class TestClass:
         if not os.path.exists(self.local_scratch.path):
             os.mkdir(self.local_scratch.path)
         self.local_scratch.copyfolder(source_path, target_path)
-        edb = EdbLegacy(target_path, edbversion=desktop_version)
+        edb = Edb(target_path, edbversion=desktop_version)
         assert len(list(edb.active_cell.SimulationSetups)) == 0
         sim_config = SimulationConfiguration()
         sim_config.enforce_causality = False
@@ -650,7 +650,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_0117.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edb = EdbLegacy(target_path, edbversion=desktop_version)
+        edb = Edb(target_path, edbversion=desktop_version)
         sim_setup = SimulationConfiguration()
         sim_setup.mesh_sizefactor = 1.9
         assert not sim_setup.do_lambda_refinement
@@ -667,7 +667,7 @@ class TestClass:
 
     def test_create_various_ports_0(self):
         """Create various ports."""
-        edb = EdbLegacy(
+        edb = Edb(
             edbpath=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
             edbversion=desktop_version,
         )
@@ -746,7 +746,7 @@ class TestClass:
 
     def test_create_various_ports_1(self):
         """Create various ports."""
-        edb = EdbLegacy(
+        edb = Edb(
             edbpath=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
             edbversion=desktop_version,
         )
@@ -795,7 +795,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_0122.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         cfg_file = os.path.join(os.path.dirname(edbapp.edbpath), "test.cfg")
         with open(cfg_file, "w") as f:
             f.writelines("SolverType = 'Hfss3dLayout'\n")
@@ -811,7 +811,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_0120.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         assert edbapp.padstacks.set_all_antipad_value(0.0)
         edbapp.close()
 
@@ -820,7 +820,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_0129.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         setup1 = edbapp.create_hfss_setup("setup1")
         assert setup1.set_solution_single_frequency()
         assert setup1.set_solution_multi_frequencies()
@@ -1122,7 +1122,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_133_simconfig.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         simconfig = edbapp.new_simulation_configuration()
         simconfig.solver_type = SolverType.SiwaveSYZ
         simconfig.mesh_freq = "40.25GHz"
@@ -1135,7 +1135,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_0134.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         edbapp.siwave.create_port_between_pin_and_layer(
             component_name="U1", pins_name="A27", layer_name="16_Bottom", reference_net="GND"
         )
@@ -1159,7 +1159,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_sources.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_134_source_setter.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         sources = list(edbapp.siwave.sources.values())
         sources[0].magnitude = 1.45
         assert sources[0].magnitude == 1.45
@@ -1174,7 +1174,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_pin_group.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_135_pin_group.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         for _, pingroup in edbapp.siwave.pin_groups.items():
             assert pingroup.delete()
         assert not edbapp.siwave.pin_groups
@@ -1193,7 +1193,7 @@ class TestClass:
 
     def test_create_padstack_instance(self):
         """Create padstack instances."""
-        edb = EdbLegacy(edbversion=desktop_version)
+        edb = Edb(edbversion=desktop_version)
         edb.stackup.add_layer(layer_name="1_Top", fillMaterial="AIR", thickness="30um")
         edb.stackup.add_layer(layer_name="contact", fillMaterial="AIR", thickness="100um", base_layer="1_Top")
 
@@ -1247,7 +1247,7 @@ class TestClass:
 
     def test_assign_hfss_extent_non_multiple_with_simconfig(self):
         """Build simulation project without multiple."""
-        edb = EdbLegacy()
+        edb = Edb()
         edb.stackup.add_layer(layer_name="GND", fillMaterial="AIR", thickness="30um")
         edb.stackup.add_layer(layer_name="FR4", base_layer="gnd", thickness="250um")
         edb.stackup.add_layer(layer_name="SIGNAL", base_layer="FR4", thickness="30um")
@@ -1292,7 +1292,7 @@ class TestClass:
 
     def test_assign_hfss_extent_multiple_with_simconfig(self):
         """Build simulation project with multiple."""
-        edb = EdbLegacy()
+        edb = Edb()
         edb.stackup.add_layer(layer_name="GND", fillMaterial="AIR", thickness="30um")
         edb.stackup.add_layer(layer_name="FR4", base_layer="gnd", thickness="250um")
         edb.stackup.add_layer(layer_name="SIGNAL", base_layer="FR4", thickness="30um")
@@ -1331,7 +1331,7 @@ class TestClass:
 
     def test_stackup_properties(self):
         """Evaluate stackup properties."""
-        edb = EdbLegacy(edbversion=desktop_version)
+        edb = Edb(edbversion=desktop_version)
         edb.stackup.add_layer(layer_name="gnd", fillMaterial="AIR", thickness="10um")
         edb.stackup.add_layer(layer_name="diel1", fillMaterial="AIR", thickness="200um", base_layer="gnd")
         edb.stackup.add_layer(layer_name="sig1", fillMaterial="AIR", thickness="10um", base_layer="diel1")
@@ -1343,7 +1343,7 @@ class TestClass:
 
     def test_hfss_extent_info(self):
         """HFSS extent information."""
-        from pyedb.legacy.edb_core.edb_data.primitives_data import (
+        from pyedb.dotnet.edb_core.edb_data.primitives_data import (
             EDBPrimitives as EDBPrimitives,
         )
 
@@ -1385,7 +1385,7 @@ class TestClass:
 
     def test_import_gds_from_tech(self):
         """Use techfile."""
-        from pyedb.legacy.edb_core.edb_data.control_file import ControlFile
+        from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
 
         c_file_in = os.path.join(
             local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
@@ -1414,7 +1414,7 @@ class TestClass:
         c.write_xml(os.path.join(self.local_scratch.path, "test_138.xml"))
         c.import_options.import_dummy_nets = True
 
-        edb = EdbLegacy(
+        edb = Edb(
             gds_out, edbversion=desktop_version, technology_file=os.path.join(self.local_scratch.path, "test_138.xml")
         )
 
@@ -1444,7 +1444,7 @@ class TestClass:
 
     def test_backdrill_via_with_offset(self):
         """Set backdrill from top."""
-        edb = EdbLegacy(edbversion=desktop_version)
+        edb = Edb(edbversion=desktop_version)
         edb.stackup.add_layer(layer_name="bot")
         edb.stackup.add_layer(layer_name="diel1", base_layer="bot", layer_type="dielectric", thickness="127um")
         edb.stackup.add_layer(layer_name="signal1", base_layer="diel1")
@@ -1470,7 +1470,7 @@ class TestClass:
 
     def test_add_layer_api_with_control_file(self):
         """Add new layers with control file."""
-        from pyedb.legacy.edb_core.edb_data.control_file import ControlFile
+        from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
 
         ctrl = ControlFile()
         # Material
@@ -1533,7 +1533,7 @@ class TestClass:
         """Create EDB from dxf file."""
         src = os.path.join(local_path, "example_models", test_subfolder, "edb_test_82.dxf")
         dxf_path = self.local_scratch.copyfile(src)
-        edb3 = EdbLegacy(dxf_path, edbversion=desktop_version)
+        edb3 = Edb(dxf_path, edbversion=desktop_version)
         edb3.close()
         del edb3
 
@@ -1548,7 +1548,7 @@ class TestClass:
             f.writelines("PowerNets = ['GND']\n")
             f.writelines("Components = ['U1', 'U2']")
         sim_config = SimulationConfiguration(cfg_file)
-        assert EdbLegacy(target_path, edbversion=desktop_version).build_simulation_project(sim_config)
+        assert Edb(target_path, edbversion=desktop_version).build_simulation_project(sim_config)
 
     @pytest.mark.skipif(is_linux, reason="Not supported in IPY")
     def test_solve_siwave(self):
@@ -1556,7 +1556,7 @@ class TestClass:
         target_path = os.path.join(local_path, "example_models", "T40", "ANSYS-HSD_V1_DCIR.aedb")
         out_edb = os.path.join(self.local_scratch.path, "to_be_solved.aedb")
         self.local_scratch.copyfolder(target_path, out_edb)
-        edbapp = EdbLegacy(out_edb, edbversion=desktop_version)
+        edbapp = Edb(out_edb, edbversion=desktop_version)
         edbapp.siwave.create_exec_file(add_dc=True)
         out = edbapp.solve_siwave()
         assert os.path.exists(out)
@@ -1570,7 +1570,7 @@ class TestClass:
         target_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         out_edb = os.path.join(self.local_scratch.path, "Build_project.aedb")
         self.local_scratch.copyfolder(target_path, out_edb)
-        edbapp = EdbLegacy(out_edb, edbversion=desktop_version)
+        edbapp = Edb(out_edb, edbversion=desktop_version)
         sim_setup = SimulationConfiguration()
         sim_setup.signal_nets = [
             "DDR4_A0",
@@ -1596,7 +1596,7 @@ class TestClass:
         target_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         out_edb = os.path.join(self.local_scratch.path, "build_project2.aedb")
         self.local_scratch.copyfolder(target_path, out_edb)
-        edbapp = EdbLegacy(out_edb, edbversion=desktop_version)
+        edbapp = Edb(out_edb, edbversion=desktop_version)
         sim_setup = SimulationConfiguration()
         sim_setup.batch_solve_settings.signal_nets = [
             "DDR4_A0",
@@ -1636,7 +1636,7 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "test_custom_sball_height", "ANSYS-HSD_V1.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
         json_file = os.path.join(target_path, "simsetup_custom_sballs.json")
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         simconfig = edbapp.new_simulation_configuration()
         simconfig.import_json(json_file)
         edbapp.build_simulation_project(simconfig)

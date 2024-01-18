@@ -11,7 +11,7 @@ This section describes how to create SYZ simulation setup for Siwave using Simul
 
 
 
-    from pyedb.legacy.edb_core.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.constants import SolverType
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
@@ -26,7 +26,7 @@ This section describes how to create SYZ simulation setup for Siwave using Simul
     )
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     simconfig = edbapp.new_simulation_configuration()
     simconfig.solver_type = SolverType.SiwaveSYZ
