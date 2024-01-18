@@ -1,3 +1,5 @@
+.. _create_coaxial_port_on_component_example:
+
 Create coaxial port on component
 ================================
 This section shows a simple example to create HFSS coaxial port on a component.
@@ -8,7 +10,7 @@ This section shows a simple example to create HFSS coaxial port on a component.
 .. code:: python
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
@@ -20,7 +22,7 @@ This section shows a simple example to create HFSS coaxial port on a component.
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"])
 

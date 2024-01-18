@@ -1,3 +1,5 @@
+.. _create_edb_with_dxf_example:
+
 Create EDB with DXF file
 ========================
 This section describes how to create EDB from DXF file.
@@ -9,8 +11,8 @@ This section describes how to create EDB from DXF file.
 
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
 
     dxf_path = os.path.join(local_path, "edb_test.dxf")
-    edb = EdbLegacy(dxf_path, edbversion="2023.2")
+    edb = Edb(dxf_path, edbversion="2023.2")
     edb.close()

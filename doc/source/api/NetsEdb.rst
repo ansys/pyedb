@@ -5,7 +5,7 @@ The main component object is called directly from main application using the pro
 
 .. code:: python
 
-    from pyedb.legacy.edb_core.edb import Edb
+    from pyedb.dotnet.edb import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 
@@ -14,7 +14,7 @@ The main component object is called directly from main application using the pro
     ...
 
 
-.. currentmodule:: pyedb.legacy.edb_core.nets
+.. currentmodule:: pyedb.dotnet.edb_core.nets
 
 .. autosummary::
    :toctree: _autosummary
@@ -28,7 +28,7 @@ Net properties
 The following class is the container of data management for nets, extended nets and differential pairs.
 
 
-.. currentmodule:: pyedb.legacy.edb_core.edb_data.nets_data
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.nets_data
 
 .. autosummary::
    :toctree: _autosummary
@@ -41,7 +41,7 @@ The following class is the container of data management for nets, extended nets 
 
 .. code:: python
 
-    from pyedb.legacy.edb_core.edb import Edb
+    from pyedb.dotnet.edb import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 

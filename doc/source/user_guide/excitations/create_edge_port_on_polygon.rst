@@ -1,3 +1,5 @@
+.. _create_edge_port_on_polygon_example:
+
 Create edge port on polygon
 ===========================
 This section describes how create edge port on polygon.
@@ -8,7 +10,7 @@ This section describes how create edge port on polygon.
 .. code:: python
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
@@ -21,7 +23,7 @@ This section describes how create edge port on polygon.
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     # retrieving polygon list
     poly_list = [

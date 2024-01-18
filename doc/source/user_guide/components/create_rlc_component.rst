@@ -1,3 +1,5 @@
+.. _create_rlc_component_example:
+
 Create RLC boundary between pins
 ================================
 This section shows how to create RLC component with EDB:
@@ -9,14 +11,14 @@ This section shows how to create RLC component with EDB:
 
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
     # download and open EDB project
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     # retrieving pins from component U1 and net 1V0
     pins = edbapp.components.get_pin_from_component("U1", "1V0")

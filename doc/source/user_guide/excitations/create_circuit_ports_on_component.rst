@@ -1,3 +1,5 @@
+.. _create_circuit_port_on_component_example:
+
 Create circuit ports on component
 =================================
 This section describes how to retrieve pins and create circuit ports on components:
@@ -9,13 +11,13 @@ This section describes how to retrieve pins and create circuit ports on componen
 
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     edbapp.siwave.create_circuit_port_on_net("U1", "1V0", "U1", "GND", 50, "test")
     edbapp.components.get_pin_from_component("U1")

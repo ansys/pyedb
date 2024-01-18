@@ -5,7 +5,7 @@ import os
 
 import pytest
 
-from pyedb.legacy.edb import EdbLegacy
+from pyedb.dotnet.edb import Edb
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
@@ -102,7 +102,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_dc_shorts", "ANSYS-HSD_V1_dc_shorts.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         dc_shorts = edbapp.layout_validation.dc_shorts()
         assert dc_shorts
         edbapp.nets.nets["DDR4_A0"].name = "DDR4$A0"
@@ -126,7 +126,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_merge_polygon.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_merge_polygon", "test.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, desktop_version)
+        edbapp = Edb(target_path, desktop_version)
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
         edbapp.close_edb()
 
@@ -134,7 +134,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_auto_parameters", "test.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, desktop_version)
+        edbapp = Edb(target_path, desktop_version)
         edbapp.auto_parametrize_design(
             layers=True,
             layer_filter="1_Top",

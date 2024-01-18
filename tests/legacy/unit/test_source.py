@@ -1,6 +1,6 @@
 import pytest
 
-from pyedb.legacy.edb_core.edb_data.sources import Source
+from pyedb.dotnet.edb_core.edb_data.sources import Source
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 

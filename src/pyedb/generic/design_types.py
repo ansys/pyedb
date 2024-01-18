@@ -44,7 +44,7 @@ def Edb(
 
     Returns
     -------
-    :class:`pyedb.legacy.edb.EdbLegacy`, :class:`pyedb.grpc.edb.EdbLegacy`
+    :class:`pyedb.dotnet.edb.Edb`, :class:`pyedb.grpc.edb.Edb`
 
     Examples
     --------
@@ -83,7 +83,7 @@ def Edb(
 
     # Use EDB legacy (default choice)
     if bool(os.getenv("PYEDB_USE_LEGACY", "1")):
-        from pyedb.legacy.edb import EdbLegacy as app
+        from pyedb.dotnet.edb import Edb as app
 
         return app(
             edbpath=edbpath,

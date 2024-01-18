@@ -1,3 +1,5 @@
+.. _create_dc_setup_example:
+
 Create DC simulation setup (SimulationConfiguration)
 ====================================================
 This section describes how to create DC simulation setup for Siwave using SimulationConfiguration class.
@@ -8,7 +10,7 @@ This section describes how to create DC simulation setup for Siwave using Simula
 .. code:: python
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
     from pyedb.generic.constants import SolverType
@@ -23,7 +25,7 @@ This section describes how to create DC simulation setup for Siwave using Simula
     )
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     # create a new simulation setup object
     sim_setup = edbapp.new_simulation_configuration()

@@ -31,7 +31,7 @@ Example workflow
 ----------------
 Here’s a brief example of how PyEDB works:
 
-Connect to AEDT from a Python IDE
+Connect to EDB from a Python IDE
 ---------------------------------
 PyEDB works both inside AEDT and as a standalone app.
 PyEDB also provides advanced error management. Usage examples follow.
@@ -43,10 +43,10 @@ Explicit PyEDB declaration and error management
 
     # Start EDB
 
-    from pyedb.legacy.edb_core.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
 
     edb_file = pyedb.layout_examples.ANSYS - HSD_V1.aedb
-    edb = EdbLegacy(edbversion="2023.2", edbpath=edb_file)
+    edb = Edb(edbversion="2023.2", edbpath=edb_file)
 
 
 Variables
@@ -54,9 +54,9 @@ Variables
 
 .. code:: python
 
-    from pyedb.legacy.edb_core.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
 
     edb_file = pyedb.layout_examples.ANSYS - HSD_V1.aedb
-    edb = EdbLegacy(edbversion="2023.2", edbpath=edb_file)
+    edb = Edb(edbversion="2023.2", edbpath=edb_file)
     edb["dim"] = "1mm"  # design variable
     edb["$dim"] = "1mm"  # project variable

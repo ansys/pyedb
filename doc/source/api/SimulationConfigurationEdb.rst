@@ -3,7 +3,7 @@ Simulation configuration
 These classes are the containers of simulation configuration constructors for the EDB.
 
 
-.. currentmodule:: pyedb.legacy.edb_core.edb_data.simulation_configuration
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
 
 .. autosummary::
    :toctree: _autosummary
@@ -18,7 +18,7 @@ These classes are the containers of simulation configuration constructors for th
 
 .. code:: python
 
-    from pyedb.legacy.edb_core.edb import Edb
+    from pyedb.dotnet.edb import Edb
 
     edbapp = Edb(myedb, edbversion="2023.1")
 

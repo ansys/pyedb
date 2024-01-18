@@ -1,3 +1,5 @@
+.. _define_hfss_extent_example:
+
 Define HFSS extent (SimulationConfiguration)
 ============================================
 This section describes how define HFSS extent using SimulationConfiguration class.
@@ -9,10 +11,10 @@ This section describes how define HFSS extent using SimulationConfiguration clas
 
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
 
     # create new EDB
-    edb = EdbLegacy()
+    edb = Edb()
 
     # adding stackup layers
     edb.stackup.add_layer(layer_name="GND", fillMaterial="AIR", thickness="30um")
