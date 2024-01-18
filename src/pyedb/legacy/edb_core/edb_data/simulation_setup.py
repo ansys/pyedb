@@ -224,6 +224,13 @@ class BaseSimulationSetup(object):
         return sweep
 
 
+class SIWEMISimulationSettings(BaseSimulationSetup):
+
+    def __init__(self, pedb, edb_object):
+        self._pedb = pedb
+        self._edb_object = edb_object
+
+
 class EdbFrequencySweep(object):
     """Manages EDB methods for a frequency sweep.
 
