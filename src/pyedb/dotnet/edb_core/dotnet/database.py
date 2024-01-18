@@ -687,7 +687,6 @@ class EdbDotNet(object):
     """Edb Dot Net Class."""
 
     def __init__(self, edbversion, student_version=False):
-        self._global_logger = pyedb_logger
         self._logger = pyedb_logger
         if not edbversion:  # pragma: no cover
             try:
