@@ -1,3 +1,7 @@
+=======================
+Working with components
+=======================
+
 .. toctree::
    :hidden:
    :maxdepth: 2

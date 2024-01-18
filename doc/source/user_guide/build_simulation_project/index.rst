@@ -1,3 +1,7 @@
+========================
+Build simulation project
+========================
+
 .. toctree::
    :hidden:
    :maxdepth: 2

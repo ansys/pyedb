@@ -1,3 +1,7 @@
+=======================
+Project parametrization
+=======================
+
 .. toctree::
    :hidden:
    :maxdepth: 2

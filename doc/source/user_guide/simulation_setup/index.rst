@@ -1,3 +1,7 @@
+================
+Simulation setup
+================
+
 .. toctree::
    :hidden:
    :maxdepth: 2

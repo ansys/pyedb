@@ -1,3 +1,7 @@
+==============
+Layout queries
+==============
+
 .. toctree::
    :hidden:
    :maxdepth: 2

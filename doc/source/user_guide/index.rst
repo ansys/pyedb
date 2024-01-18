@@ -5,7 +5,7 @@ User guide
 ==========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    load_export_edb/index
    edb_information_queries/index
    build_simulation_project/index
