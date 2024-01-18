@@ -3,7 +3,7 @@ import os
 import pytest
 
 from pyedb.generic.constants import SourceType
-from pyedb.legacy.edb_core.edb_data.simulation_configuration import (
+from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
 

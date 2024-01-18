@@ -19,7 +19,7 @@ from pyedb.generic.general_methods import (
     generate_unique_folder_name,
     generate_unique_name,
 )
-from pyedb.legacy.edb import EdbLegacy
+from pyedb.dotnet import Edb
 
 ###############################################################################
 # Set non-graphical mode
@@ -35,7 +35,7 @@ non_graphical = False
 
 aedb_path = os.path.join(generate_unique_folder_name(), generate_unique_name("pcb") + ".aedb")
 print(aedb_path)
-edbapp = EdbLegacy(edbpath=aedb_path, edbversion="2023.2")
+edbapp = Edb(edbpath=aedb_path, edbversion="2023.2")
 
 ###############################################################################
 # Define parameters

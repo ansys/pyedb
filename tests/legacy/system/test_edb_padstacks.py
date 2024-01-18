@@ -4,9 +4,9 @@ import os
 
 import pytest
 
-from pyedb.legacy.edb import EdbLegacy
+from pyedb.dotnet import Edb
 from tests.conftest import desktop_version, local_path
-from tests.legacy.system.conftest import test_subfolder
+from tests.dotnet.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
@@ -181,7 +181,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_128_microvias.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         assert edbapp.padstacks.definitions["Padstack_Circle"].convert_to_3d_microvias(False)
         assert edbapp.padstacks.definitions["Padstack_Rectangle"].convert_to_3d_microvias(False, hole_wall_angle=10)
         assert edbapp.padstacks.definitions["Padstack_Polygon_p12"].convert_to_3d_microvias(False)
@@ -189,7 +189,7 @@ class TestClass:
 
     def test_split_microvias(self):
         """Convert padstack definition to multiple microvias definitions."""
-        edbapp = EdbLegacy(self.target_path4, edbversion=desktop_version)
+        edbapp = Edb(self.target_path4, edbversion=desktop_version)
         assert len(edbapp.padstacks.definitions["C4_POWER_1"].split_to_microvias()) > 0
         edbapp.close()
 
@@ -202,7 +202,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_boundaries.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         pin = edbapp.components.instances["J5"].pins["19"]
         assert pin
         ref_pins = pin.get_reference_pins(reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True)
@@ -238,7 +238,7 @@ class TestClass:
             example_model,
             os.path.join(self.local_scratch.path, "padstacks2.aedb"),
         )
-        edb = EdbLegacy(
+        edb = Edb(
             edbpath=os.path.join(self.local_scratch.path, "padstacks2.aedb"),
             edbversion=desktop_version,
             isreadonly=True,
@@ -255,7 +255,7 @@ class TestClass:
 
     def test_padstaks_plot_on_matplotlib(self):
         """Plot a Net to Matplotlib 2D Chart."""
-        edb_plot = EdbLegacy(self.target_path3, edbversion=desktop_version)
+        edb_plot = Edb(self.target_path3, edbversion=desktop_version)
 
         local_png1 = os.path.join(self.local_scratch.path, "test1.png")
         edb_plot.nets.plot(
@@ -310,7 +310,7 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "test_padstack_def_update", "ANSYS-HSD_V1.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
 
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         signal_layer_list = [layer for layer in list(edbapp.stackup.stackup_layers.values()) if layer.type == "signal"]
         old_layers = []
         for n_layer, layer in enumerate(signal_layer_list):

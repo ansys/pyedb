@@ -48,7 +48,7 @@ class GeometryOperators(object):
             String to convert. For example, ``"2mm"``. The default is ``None``.
         scale_to_unit : str, optional
             Units for the value to convert. For example, ``"mm"``.
-        variable_manager : :class:`pyedb.legacy.application.Variables.VariableManager`, optional
+        variable_manager : :class:`pyedb.dotnet.application.Variables.VariableManager`, optional
             Try to parse formula and returns numeric value.
             The default is ``None``.
 

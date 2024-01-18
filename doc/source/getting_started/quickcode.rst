@@ -43,10 +43,10 @@ Explicit PyEDB declaration and error management
 
     # Start EDB
 
-    from pyedb.legacy.edb_core.edb import EdbLegacy
+    from pyedb.dotnet import Edb
 
     edb_file = pyedb.layout_examples.ANSYS - HSD_V1.aedb
-    edb = EdbLegacy(edbversion="2023.2", edbpath=edb_file)
+    edb = Edb(edbversion="2023.2", edbpath=edb_file)
 
 
 Variables
@@ -54,9 +54,9 @@ Variables
 
 .. code:: python
 
-    from pyedb.legacy.edb_core.edb import EdbLegacy
+    from pyedb.dotnet import Edb
 
     edb_file = pyedb.layout_examples.ANSYS - HSD_V1.aedb
-    edb = EdbLegacy(edbversion="2023.2", edbpath=edb_file)
+    edb = Edb(edbversion="2023.2", edbpath=edb_file)
     edb["dim"] = "1mm"  # design variable
     edb["$dim"] = "1mm"  # project variable

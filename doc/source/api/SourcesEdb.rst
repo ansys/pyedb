@@ -5,7 +5,7 @@ These classes are the containers of sources methods of the EDB for both HFSS and
 
 .. code:: python
 
-    from pyedb.legacy.edb_core.edb import Edb
+    from pyedb.dotnet import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 
@@ -14,7 +14,7 @@ These classes are the containers of sources methods of the EDB for both HFSS and
     ...
 
 
-.. currentmodule:: pyedb.legacy.edb_core.edb_data.sources
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.sources
 
 .. autosummary::
    :toctree: _autosummary

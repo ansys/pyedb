@@ -7,7 +7,7 @@ This section shows how to create HFSS simulation setup.
 
 .. code:: python
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
@@ -19,7 +19,7 @@ This section shows how to create HFSS simulation setup.
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     # create HFSS simulation setup
     setup1 = edbapp.create_hfss_setup("setup1")

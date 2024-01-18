@@ -14,7 +14,7 @@ The main component object is called directly from main application using the pro
     ...
 
 
-.. currentmodule:: pyedb.legacy.edb_core.components
+.. currentmodule:: pyedb.dotnet.edb_core.components
 
 .. autosummary::
    :toctree: _autosummary
@@ -28,7 +28,7 @@ Instances and definitions
 These classes are the containers of data management for components reference designator and  definitions.
 
 
-.. currentmodule:: pyedb.legacy.edb_core.edb_data.components_data
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.components_data
 
 .. autosummary::
    :toctree: _autosummary
@@ -41,9 +41,9 @@ These classes are the containers of data management for components reference des
 
 .. code:: python
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet import Edb
 
-    edb = EdbLegacy(myedb, edbversion="2023.1")
+    edb = Edb(myedb, edbversion="2023.1")
 
     comp = edb.components["C1"]
 

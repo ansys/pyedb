@@ -27,9 +27,9 @@ PyEDB is loading ANSYS EDB in memory meaning non graphically.
 
     # Load EDB
 
-    from pyedb.legacy.edb_core.edb import EdbLegacy
+    from pyedb.dotnet import Edb
 
     edb_file = pyedb.layout_examples.ANSYS_HSD_v1.aedb
-    edb = EdbLegacy(edb_file)
+    edb = Edb(edb_file)
 
 To use PyEDB you must follow the installation step :ref:`ref_install_pyedb`.

@@ -7,7 +7,7 @@ These classes are the containers of ports methods of the EDB for both HFSS and S
 
 .. code:: python
 
-    from pyedb.legacy.edb_core.edb import Edb
+    from pyedb.dotnet import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 
@@ -16,7 +16,7 @@ These classes are the containers of ports methods of the EDB for both HFSS and S
     ...
 
 
-.. currentmodule:: pyedb.legacy.edb_core.edb_data.ports
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.ports
 
 .. autosummary::
    :toctree: _autosummary

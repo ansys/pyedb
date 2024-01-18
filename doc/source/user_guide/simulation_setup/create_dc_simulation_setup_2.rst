@@ -7,7 +7,7 @@ This section describes how to create DC simulation setup for Siwave.
 
 .. code:: python
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
@@ -21,7 +21,7 @@ This section describes how to create DC simulation setup for Siwave.
     )
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     setup1 = edbapp.create_siwave_dc_setup("DC1")
     setup1.dc_settings.restore_default()

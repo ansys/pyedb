@@ -6,9 +6,9 @@ import os
 import pytest
 
 # from pyedb import Edb
-from pyedb.legacy.edb import EdbLegacy
+from pyedb.dotnet import Edb
 from tests.conftest import desktop_version, local_path
-from tests.legacy.system.conftest import test_subfolder
+from tests.dotnet.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
@@ -230,7 +230,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_bom.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         edbapp.components.import_bom(os.path.join(local_path, "example_models", test_subfolder, "bom_example_2.csv"))
         assert not edbapp.components.instances["R2"].is_enabled
         assert edbapp.components.instances["U13"].partname == "SLAB-QFN-24-2550x2550TP_V"
@@ -249,7 +249,7 @@ class TestClass:
 
     def test_convert_resistor_value(self):
         """Convert a resistor value."""
-        from pyedb.legacy.edb_core.components import resistor_value_parser
+        from pyedb.dotnet.edb_core.components import resistor_value_parser
 
         assert resistor_value_parser("100meg")
 
@@ -298,7 +298,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_0126.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         assert edbapp.components.components
         assert edbapp.components.definitions
         comp_def = edbapp.components.definitions["CAPC2012X12N"]
@@ -327,7 +327,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_0136.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         components_to_change = [res for res in list(edbapp.components.Others.values()) if res.partname == "A93549-027"]
         for res in components_to_change:
             res.type = "Resistor"
@@ -351,7 +351,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_0134b.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         pin = "A24"
         ref_pins = [pin for pin in list(edbapp.components["U1"].pins.values()) if pin.net_name == "GND"]
         assert edbapp.components.create_port_on_pins(refdes="U1", pins=pin, reference_pins=ref_pins)
@@ -367,7 +367,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_boundaries.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         for refdes, cmp in edbapp.components.components.items():
             edbapp.components.replace_rlc_by_gap_boundaries(refdes)
         rlc_list = [
@@ -378,7 +378,7 @@ class TestClass:
 
     def test_components_get_component_placement_vector(self):
         """Get the placement vector between 2 components."""
-        edb2 = EdbLegacy(self.target_path4, edbversion=desktop_version)
+        edb2 = Edb(self.target_path4, edbversion=desktop_version)
         for _, cmp in edb2.components.instances.items():
             assert isinstance(cmp.solder_ball_placement, int)
         mounted_cmp = edb2.components.get_component_by_name("BGA")
@@ -428,7 +428,7 @@ class TestClass:
         sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
         spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
 
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         comp = edbapp.components.instances["R2"]
         assert not comp.assign_rlc_model()
         comp.assign_rlc_model(1, None, 3, False)
@@ -463,7 +463,7 @@ class TestClass:
         target_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         out_edb = os.path.join(self.local_scratch.path, "get_comp_bbox.aedb")
         self.local_scratch.copyfolder(target_path, out_edb)
-        edbapp = EdbLegacy(out_edb, edbversion=desktop_version)
+        edbapp = Edb(out_edb, edbversion=desktop_version)
         component = edbapp.components.instances["U1"]
         assert component.bounding_box
         assert isinstance(component.rotation, float)
@@ -474,7 +474,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_custom_sball_height", "ANSYS-HSD_V1.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         edbapp.components.create_port_on_pins(refdes="U1", pins="AU38", reference_pins="AU37", pec_boundary=True)
         assert edbapp.terminals["Port_GND_U1-AU38"].boundary_type == "PecBoundary"
         assert edbapp.terminals["Port_GND_U1-AU38_ref"].boundary_type == "PecBoundary"

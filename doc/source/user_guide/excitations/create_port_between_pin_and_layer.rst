@@ -9,7 +9,7 @@ This section describes how create port between pin and layer.
 
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
@@ -21,7 +21,7 @@ This section describes how create port between pin and layer.
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     edbapp.siwave.create_port_between_pin_and_layer(
         component_name="U1", pins_name="A27", layer_name="16_Bottom", reference_net="GND"

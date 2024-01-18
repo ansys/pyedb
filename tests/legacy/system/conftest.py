@@ -7,7 +7,7 @@ from os.path import dirname
 import pytest
 
 from pyedb.generic.general_methods import generate_unique_name
-from pyedb.legacy.edb import EdbLegacy
+from pyedb.dotnet import Edb
 from pyedb.misc.misc import list_installed_ansysem
 
 example_models_path = os.path.join(dirname(dirname(dirname(os.path.realpath(__file__)))), "example_models")
@@ -35,7 +35,7 @@ def add_legacy_edb(local_scratch):
                 target_folder = os.path.join(local_scratch.path, project_name + ".aedb")
         else:
             target_folder = os.path.join(local_scratch.path, generate_unique_name("TestEdb") + ".aedb")
-        return EdbLegacy(
+        return Edb(
             target_folder,
             edbversion=desktop_version,
         )

@@ -6,7 +6,7 @@ Primitives are planes, lines, rectangles, and circles.
 
 .. code:: python
 
-    from pyedb.legacy.edb_core.edb import Edb
+    from pyedb.dotnet import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 
@@ -16,7 +16,7 @@ Primitives are planes, lines, rectangles, and circles.
 
     ...
 
-.. currentmodule:: pyedb.legacy.edb_core.layout
+.. currentmodule:: pyedb.dotnet.edb_core.layout
 
 .. autosummary::
    :toctree: _autosummary
@@ -30,7 +30,7 @@ Primitives properties
 ---------------------
 These classes are the containers of data management for primitives and arcs.
 
-.. currentmodule:: pyedb.legacy.edb_core.edb_data.primitives_data
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.primitives_data
 
 .. autosummary::
    :toctree: _autosummary
@@ -43,7 +43,7 @@ These classes are the containers of data management for primitives and arcs.
 
 .. code:: python
 
-    from pyedb.legacy.edb_core.edb import Edb
+    from pyedb.dotnet import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 

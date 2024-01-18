@@ -4,7 +4,7 @@
 import pytest
 
 from pyedb.generic.settings import settings
-from pyedb.legacy.edb import EdbLegacy
+from pyedb.dotnet import Edb
 from tests.conftest import desktop_version, local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -220,9 +220,9 @@ class TestClass:
 
     def test_modeler_primitives_boolean_operation(self):
         """Evaluate modeler primitives boolean operations."""
-        from pyedb.legacy.edb import EdbLegacy
+        from pyedb.dotnet import Edb
 
-        edb = EdbLegacy()
+        edb = Edb()
         edb.stackup.add_layer(layer_name="test")
         x = edb.modeler.create_polygon(
             layer_name="test", main_shape=[[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]]
@@ -269,7 +269,7 @@ class TestClass:
         import os
 
         target_path = os.path.join(local_path, "example_models", "convert_and_merge_path.aedb")
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         for path in edbapp.modeler.paths:
             assert path.convert_to_polygon()
         assert edbapp.nets.merge_nets_polygons("test")

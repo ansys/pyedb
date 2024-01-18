@@ -9,13 +9,13 @@ This section describes how to create resistor on pins:
 
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     pins = edbapp.components.get_pin_from_component("U1")
     resistor = edbapp.siwave.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")

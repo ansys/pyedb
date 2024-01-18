@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from pyedb.legacy.edb import EdbLegacy
+from pyedb.dotnet import Edb
 from tests.conftest import desktop_version
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -15,7 +15,7 @@ class TestClass:
 
     def test_create_edb(self):
         """Create EDB."""
-        edb = EdbLegacy(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
         assert edb
         assert edb.active_layout
         edb.close()
@@ -24,7 +24,7 @@ class TestClass:
         """Create EDB without path."""
         import time
 
-        edbapp_without_path = EdbLegacy(edbversion=desktop_version, isreadonly=False)
+        edbapp_without_path = Edb(edbversion=desktop_version, isreadonly=False)
         time.sleep(2)
         edbapp_without_path.close()
 
@@ -32,7 +32,7 @@ class TestClass:
         """Evaluate variables value."""
         from pyedb.generic.general_methods import check_numeric_equivalence
 
-        edb = EdbLegacy(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
         edb["var1"] = 0.01
         edb["var2"] = "10um"
         edb["var3"] = [0.03, "test description"]
@@ -49,7 +49,7 @@ class TestClass:
 
     def test_add_design_variable(self):
         """Add a variable value."""
-        edb = EdbLegacy(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
         is_added, _ = edb.add_design_variable("ant_length", "1cm")
         assert is_added
         is_added, _ = edb.add_design_variable("ant_length", "1cm")
@@ -65,14 +65,14 @@ class TestClass:
 
     def test_add_design_variable_with_setitem(self):
         """Add a variable value."""
-        edb = EdbLegacy(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
         edb["ant_length"] = "1cm"
         assert edb.variable_exists("ant_length")[0]
         assert edb["ant_length"].value == 0.01
 
     def test_change_design_variable_value(self):
         """Change a variable value."""
-        edb = EdbLegacy(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
         edb.add_design_variable("ant_length", "1cm")
         edb.add_design_variable("my_parameter_default", "1mm", is_parameter=True)
         edb.add_design_variable("$my_project_variable", "1mm")
@@ -90,7 +90,7 @@ class TestClass:
 
     def test_change_design_variable_value_with_setitem(self):
         """Change a variable value."""
-        edb = EdbLegacy(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
         edb["ant_length"] = "1cm"
         assert edb["ant_length"].value == 0.01
         edb["ant_length"] = "2cm"
@@ -98,7 +98,7 @@ class TestClass:
 
     def test_create_padstack_instance(self):
         """Create padstack instances."""
-        edb = EdbLegacy(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
 
         pad_name = edb.padstacks.create(
             pad_shape="Rectangle",
