@@ -1,3 +1,5 @@
+.. _create_edb_with_dxf_example:
+
 Create EDB with DXF file
 ========================
 This section describes how to create EDB from DXF file.

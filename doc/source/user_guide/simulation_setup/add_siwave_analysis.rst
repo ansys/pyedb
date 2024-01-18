@@ -1,3 +1,5 @@
+.. _add_siwave_setup_example:
+
 Adding Siwave analysis
 ======================
 This section shows how to add Siwave analysis:

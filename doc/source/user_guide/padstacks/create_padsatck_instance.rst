@@ -1,3 +1,5 @@
+.. _create_padstack_instance_example:
+
 Create pad-stack instance
 =========================
 This section describes how to create a padstack instance.

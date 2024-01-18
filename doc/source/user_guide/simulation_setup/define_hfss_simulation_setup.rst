@@ -1,3 +1,5 @@
+.. _create_hfss_setup_example:
+
 Create HFSS simulation setup
 ============================
 This section shows how to create HFSS simulation setup.

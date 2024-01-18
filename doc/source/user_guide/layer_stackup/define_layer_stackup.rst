@@ -1,3 +1,5 @@
+.. _define_layer_stackup_example:
+
 Define layer stackup
 ====================
 This section describes how create layer stackup.

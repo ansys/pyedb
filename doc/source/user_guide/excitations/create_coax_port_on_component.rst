@@ -1,3 +1,5 @@
+.. _create_coaxial_port_on_component_example:
+
 Create coaxial port on component
 ================================
 This section shows a simple example to create HFSS coaxial port on a component.
