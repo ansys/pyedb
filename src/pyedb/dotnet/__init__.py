@@ -1,1 +1,1 @@
-from edb import Edb
+from pyedb.dotnet.edb import Edb
