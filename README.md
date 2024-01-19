@@ -103,13 +103,13 @@ start using EDB faster and easier.
 ## Example
 
 ``` python
-from pyedb.legacy.edb import EdbLegacy
+from pyedb.dotnet.edb import Edb
 from pyedb.generic.general_methods import generate_unique_folder_name
 import pyedb.misc.downloads as downloads
 
 temp_folder = generate_unique_folder_name()
 targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 ```
 ## License
 
