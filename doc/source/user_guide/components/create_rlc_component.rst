@@ -1,7 +1,7 @@
 .. _create_rlc_component_example:
 
-Create RLC boundary between pins
-================================
+Create RLC component between pins
+=================================
 This section shows how to create RLC component with EDB:
 
 .. autosummary::
@@ -30,4 +30,10 @@ This section shows how to create RLC component with EDB:
     edbapp.components.create(
         [pins[0], ref_pins[0]], "test_0rlc", r_value=1.67, l_value=1e-13, c_value=1e-11
     )
-    edbapp.close()
+    edbapp.save_edb()
+    edbapp.close_edb()
+
+
+.. image:: ../../resources/create_rlc_boundary_on_pin.png
+  :width: 800
+  :alt: Create rlc boundary
