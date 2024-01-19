@@ -21,6 +21,11 @@ This section describes how to edit layer stackup:
 
     # plotting layer stackup in matplotlib
     edbapp.stackup.plot()
+    # changing top layer thickness to 40um
+    edbapp.stackup.signal_layers["1_Top"].thickness = 40e-6
+    print(f"Top layer thickness update {edbapp.stackup.signal_layers['1_Top'].thickness}")
+    edbapp.save()
+    edbapp.close()
 
 .. image:: ../../resources/stackup.png
 
