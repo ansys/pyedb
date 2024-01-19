@@ -4,11 +4,6 @@ Build simulation project
 
 .. grid:: 2
 
-   .. grid-item-card:: Build an AC analysis project
-            :link: build_ac_project
-            :link-type: doc
-
-
    .. grid-item-card:: Signal Integrity Project
             :link: build_signal_integrity_project
             :link-type: doc
@@ -26,6 +21,5 @@ Build simulation project
 
 
 
-   build_ac_project
    build_signal_integrity_project
    cutout
