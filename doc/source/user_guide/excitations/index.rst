@@ -26,10 +26,6 @@ Create sources
             :margin: 2 2 0 0
 
 
-   .. grid-item-card:: Various ports
-            :link: create_various_ports
-            :link-type: doc
-
 
    .. grid-item-card:: Ports between pins and layers
             :link: create_port_between_pin_and_layer
@@ -45,5 +41,4 @@ Create sources
    create_coax_port_on_component
    create_current_source
    create_edge_port_on_polygon
-   create_various_ports
    create_port_between_pin_and_layer
