@@ -204,22 +204,22 @@ class Edb(Database):
                     control_file = convert_technology_file(technology_file, edbversion=edbversion)
             self.import_layout_pcb(edbpath, working_dir, use_ppe=use_ppe, control_file=control_file)
             if settings.enable_local_log_file and self.log_name:
-                self._logger = self._global_logger.add_file_logger(self.log_name, "Edb")
+                self._logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath[-2:])
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
             if settings.enable_local_log_file and self.log_name:
-                self._logger = self._global_logger.add_file_logger(self.log_name, "Edb")
+                self._logger.add_file_logger(self.log_name, "Edb")
             self.open_edb()
         elif not os.path.exists(os.path.join(self.edbpath, "edb.def")):
             self.create_edb()
             if settings.enable_local_log_file and self.log_name:
-                self._logger = self._global_logger.add_file_logger(self.log_name, "Edb")
+               self._logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s created correctly.", self.edbpath)
         elif ".aedb" in edbpath:
             self.edbpath = edbpath
             if settings.enable_local_log_file and self.log_name:
-                self._logger = self._global_logger.add_file_logger(self.log_name, "Edb")
+                self._logger.add_file_logger(self.log_name, "Edb")
             self.open_edb()
         if self.active_cell:
             self.logger.info("EDB initialized.")
@@ -1324,9 +1324,9 @@ class Edb(Database):
 
         """
         self.close()
+
         if self.log_name and settings.enable_local_log_file:
-            self._global_logger.remove_file_logger(os.path.splitext(os.path.split(self.log_name)[-1])[0])
-            self._logger = self._global_logger
+            self._logger.remove_all_file_loggers()
         start_time = time.time()
         self._wait_for_file_release()
         elapsed_time = time.time() - start_time
@@ -1366,6 +1366,7 @@ class Edb(Database):
             ``True`` when successful, ``False`` when failed.
 
         """
+        origin_name = "pyedb_" + os.path.splitext(os.path.split(self.edbpath)[-1])[0]
         self.save_as(fname)
         start_time = time.time()
         self._wait_for_file_release()
@@ -1373,15 +1374,15 @@ class Edb(Database):
         self.logger.info("EDB file save time: {0:.2f}ms".format(elapsed_time * 1000.0))
         self.edbpath = self.directory
         if self.log_name:
-            self._global_logger.remove_file_logger(os.path.splitext(os.path.split(self.log_name)[-1])[0])
-            self._logger = self._global_logger
+            self._logger.remove_file_logger(os.path.splitext(os.path.split(self.log_name)[-1])[0])
 
         self.log_name = os.path.join(
             os.path.dirname(fname),
             "pyedb_" + os.path.splitext(os.path.split(fname)[-1])[0] + ".log",
         )
         if settings.enable_local_log_file:
-            self._logger = self._global_logger.add_file_logger(self.log_name, "Edb")
+            self._logger.add_file_logger(self.log_name, "Edb")
+            self._logger.remove_file_logger(origin_name)
         return True
 
     @pyedb_function_handler()
