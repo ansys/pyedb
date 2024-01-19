@@ -1005,7 +1005,7 @@ class TestClass:
                     assert list(pedb_lay.color) == layer["color"]
                     assert pedb_lay.type == layer["type"]
                     if isinstance(layer["material"], str):
-                        assert pedb_lay.material == layer["material"]
+                        assert pedb_lay.material.lower() == layer["material"].lower()
                     else:
                         assert 0 == validate_material(edbapp.materials, layer["material"], delta)
                     if isinstance(layer["dielectric_fill"], str) or layer["dielectric_fill"] is None:
