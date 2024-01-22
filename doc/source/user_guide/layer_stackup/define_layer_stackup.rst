@@ -28,3 +28,7 @@ This section describes how create layer stackup.
         layer_name="sig3", fillMaterial="AIR", thickness="10um", base_layer="diel2"
     )
     edb.close()
+
+.. image:: ../../Resources/define_layer_stackup.png
+..   :width: 800
+..   :alt: Define layer stackup

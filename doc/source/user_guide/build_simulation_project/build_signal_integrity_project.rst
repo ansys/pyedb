@@ -1,7 +1,7 @@
 .. _build_si_project_example:
 
-Create coaxial port on component
-================================
+Build HFSS SYZ extraction project
+=================================
 This section shows a simple example to create HFSS coaxial port on a component.
 
 .. autosummary::
@@ -43,3 +43,7 @@ This section shows a simple example to create HFSS coaxial port on a component.
     sim_setup.step_freq = 10e6
     edbapp.build_simulation_project(sim_setup)
     edbapp.close()
+
+.. image:: ../../resources/build_signal_integrity_user_guide.png
+  :width: 800
+  :alt: Build signal integrity project

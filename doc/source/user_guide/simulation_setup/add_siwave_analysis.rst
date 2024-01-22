@@ -26,3 +26,10 @@ This section shows how to add Siwave analysis:
 
     # Adding DC analysis
     edbapp.siwave.add_siwave_dc_analysis(name="Test_dc")
+    edbapp.save()
+    edbapp.close()
+
+
+.. image:: ../../resources/add_siwave_setup.png
+  :width: 400
+  :alt: Add siwave setup

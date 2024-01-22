@@ -21,11 +21,6 @@ Working with components
             :link-type: doc
 
 
-   .. grid-item-card:: Delete a pingroup
-            :link: delete_pin_group
-            :link-type: doc
-            :margin: 2 2 0 0
-
 
 .. toctree::
    :hidden:
@@ -35,4 +30,3 @@ Working with components
    create_resistor_on_pin
    create_rlc_component
    create_rlc_boundary_on_pins
-   delete_pin_group

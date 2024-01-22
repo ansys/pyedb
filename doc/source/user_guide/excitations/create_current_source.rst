@@ -1,7 +1,7 @@
 .. _create_current_source_example:
 
-Create circuit ports on component
-=================================
+Create current voltage sources and probes
+=========================================
 This section describes how to create current and voltage sources:
 
 .. autosummary::
@@ -58,21 +58,11 @@ This section describes how to create current and voltage sources:
     edbapp.siwave.create_pin_group(
         reference_designator="U1", pin_numbers=["R23", "P23"], group_name="vp_neg"
     )
-    dbapp.siwave.create_voltage_probe_on_pin_group("vprobe", "vp_pos", "vp_neg")
-    edbapp.probes["vprobe"]
-    edbapp.siwave.place_voltage_probe(
-        "vprobe_2",
-        "1V0",
-        ["112mm", "24mm"],
-        "1_Top",
-        "GND",
-        ["112mm", "27mm"],
-        "Inner1(GND1)",
-    )
+    edbapp.siwave.create_voltage_probe_on_pin_group("vprobe", "vp_pos", "vp_neg")
+    edbapp.save_edb()
+    edbapp.close_edb()
 
-    # retrieving voltage probes
-    vprobe_2 = edbapp.probes["vprobe_2"]
-    ref_term = vprobe_2.ref_terminal
-    ref_term.location = [0, 0]
-    ref_term.layer
-    ref_term.layer = "1_Top"
+
+.. image:: ../../Resources/create_sources_and_probes.png
+..   :width: 800
+..   :alt: Create port on component

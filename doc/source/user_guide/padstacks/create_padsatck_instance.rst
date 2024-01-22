@@ -66,5 +66,9 @@ This section describes how to create a padstack instance.
     )
     edb.padstacks.create_padstack("via_0")
     trace.create_via_fence("1mm", "1mm", "via_0")
-
+    edb.save()
     edb.close()
+
+.. image:: ../../resources/create_padstack_instances.png
+  :width: 600
+  :alt: Loading first EDB

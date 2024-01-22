@@ -29,11 +29,13 @@ This section describes how create port between pin and layer.
         component_name="U1", pins_name="A27", layer_name="16_Bottom", reference_net="GND"
     )
     U7 = edbapp.components["U7"]
-    U7.pins["G7"].create_port()
-    port = U7.pins["F7"].create_port(reference=U7.pins["E7"])
-    port.is_circuit_port = True
     _, pin_group = edbapp.siwave.create_pin_group_on_net(
         reference_designator="U7", net_name="GND", group_name="U7_GND"
     )
     U7.pins["F7"].create_port(reference=pin_group)
-    edbapp.close()
+    edbapp.save_edb()
+    edbapp.close_edb()
+
+.. image:: ../../Resources/create_port_between_pin_and_layer.png
+..   :width: 800
+..   :alt: Create edge port on polygon and trace

@@ -32,3 +32,10 @@ This section describes how to retrieve pins and create circuit ports on componen
     edbapp.excitations["test_port"].name = "test_rename"
     # retrieving port
     created_port = (port for port in list(edbapp.excitations) if port == "test_rename")
+    edbapp.save_edb()
+    edbapp.close_edb()
+
+
+.. image:: ../../Resources/create_circuit_ports_on_component.png
+..     :width: 800
+..     :alt: Create circuit port on components
