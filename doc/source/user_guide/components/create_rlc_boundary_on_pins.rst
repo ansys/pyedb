@@ -1,8 +1,8 @@
 .. _create_rlc_boundary_on_pin_example:
 
-Create RLC component
-====================
-This section shows how to create RLC component with EDB:
+Create RLC boundary
+===================
+This section shows how to create RLC boundary with EDB:
 
 .. autosummary::
    :toctree: _autosummary
@@ -32,4 +32,10 @@ This section shows how to create RLC component with EDB:
     )
 
     # close EDB
-    edbapp.close()
+    edbapp.save_edb()
+    edbapp.close_edb()
+
+
+.. image:: ../../resources/create_rlc_boundary_on_pin.png
+  :width: 800
+  :alt: Create rlc boundary

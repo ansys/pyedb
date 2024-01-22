@@ -33,7 +33,7 @@ This section shows how to create HFSS simulation setup.
     setup1.set_solution_multi_frequencies()
 
     # set boradband solution
-    setup1.set_solution_broadband()
+    setup1.set_solution_broadband(low_frequency="1GHz", high_frequency="10GHz")
 
     # enable low frequency accuracy
     setup1.hfss_solver_settings.enhanced_low_freq_accuracy = True
@@ -155,7 +155,6 @@ This section shows how to create HFSS simulation setup.
     mop.restrict_length = False
     mop.max_length = "2mm"
 
-
     # adding skin depth mesh operation
     mop = edbapp.setups["setup1a"].add_skin_depth_mesh_operation(
         {"GND": ["1_Top", "16_Bottom"]}
@@ -163,5 +162,9 @@ This section shows how to create HFSS simulation setup.
     mop.skin_depth = "5um"
     mop.surface_triangle_length = "2mm"
     mop.number_of_layer_elements = "3"
-
+    edbapp.save()
     edbapp.close()
+
+.. image:: ../../resources/create_hfss_setup.png
+  :width: 600
+  :alt: Define HFSS setup

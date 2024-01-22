@@ -2,7 +2,7 @@
 
 Create resistor boundary between pins
 =====================================
-This section describes how to create resistor on pins:
+This section describes how to create resistor boundary on pins:
 
 .. autosummary::
    :toctree: _autosummary
@@ -21,5 +21,10 @@ This section describes how to create resistor on pins:
 
     pins = edbapp.components.get_pin_from_component("U1")
     resistor = edbapp.siwave.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")
+    edbapp.save_edb()
+    edbapp.close_edb()
 
 
+.. image:: ../../resources/create_resistor_boundary_user_guide.png
+  :width: 800
+  :alt: Create resistor boundary

@@ -39,9 +39,6 @@ This section describes how define HFSS extent using SimulationConfiguration clas
     # create SimulationConfiguration object
     sim_setup = edb.new_simulation_configuration()
 
-    # assign nets
-    sim_setup.signal_nets = ["net1"]
-    sim_setup.power_nets = ["GND"]
 
     #  define air box settings
     sim_setup.use_dielectric_extent_multiple = False
@@ -67,4 +64,9 @@ This section describes how define HFSS extent using SimulationConfiguration clas
 
     # build project
     edb.build_simulation_project(sim_setup)
+    edb.save()
     edb.close()
+
+.. image:: ../../resources/define_hfss_extent.png
+  :width: 600
+  :alt: Loading first EDB
