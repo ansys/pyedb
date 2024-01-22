@@ -166,5 +166,5 @@ This section shows how to create HFSS simulation setup.
     edbapp.close()
 
 .. image:: ../../resources/create_hfss_setup.png
-  :width: 600
+  :width: 400
   :alt: Define HFSS setup

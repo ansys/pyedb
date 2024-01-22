@@ -68,5 +68,5 @@ This section describes how define HFSS extent using SimulationConfiguration clas
     edb.close()
 
 .. image:: ../../resources/define_hfss_extent.png
-  :width: 600
+  :width: 400
   :alt: Loading first EDB
