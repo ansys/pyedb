@@ -1,7 +1,7 @@
 .. _build_si_project_example:
 
-Create coaxial port on component
-================================
+Build HFSS SYZ extraction project
+=================================
 This section shows a simple example to create HFSS coaxial port on a component.
 
 .. autosummary::
