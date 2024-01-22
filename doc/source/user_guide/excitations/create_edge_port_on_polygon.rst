@@ -95,6 +95,6 @@ This section describes how create edge port on polygon and trace.
     edbapp.save_edb()
     edbapp.close_edb()
 
-.. .. image:: ../../Resources/create_edge_port_on_polygon_and_trace.png
+.. image:: ../../Resources/create_edge_port_on_polygon_and_trace.png
 ..   :width: 800
 ..   :alt: Create edge port on polygon and trace

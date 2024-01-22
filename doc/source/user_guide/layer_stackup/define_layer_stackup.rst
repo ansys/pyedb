@@ -29,6 +29,6 @@ This section describes how create layer stackup.
     )
     edb.close()
 
-.. .. image:: ../../Resources/define_layer_stackup.png
+.. image:: ../../Resources/define_layer_stackup.png
 ..   :width: 800
 ..   :alt: Define layer stackup

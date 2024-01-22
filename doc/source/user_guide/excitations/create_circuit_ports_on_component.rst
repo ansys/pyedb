@@ -36,6 +36,6 @@ This section describes how to retrieve pins and create circuit ports on componen
     edbapp.close_edb()
 
 
-.. .. image:: ../../Resources/create_circuit_ports_on_component.png
+.. image:: ../../Resources/create_circuit_ports_on_component.png
 ..     :width: 800
 ..     :alt: Create circuit port on components

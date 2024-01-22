@@ -31,5 +31,5 @@ This section shows how to add Siwave analysis:
 
 
 .. image:: ../../resources/add_siwave_setup.png
-  :width: 600
+  :width: 400
   :alt: Add siwave setup

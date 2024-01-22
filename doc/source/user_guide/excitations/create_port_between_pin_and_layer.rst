@@ -36,6 +36,6 @@ This section describes how create port between pin and layer.
     edbapp.save_edb()
     edbapp.close_edb()
 
-.. .. image:: ../../Resources/create_port_between_pin_and_layer.png
+.. image:: ../../Resources/create_port_between_pin_and_layer.png
 ..   :width: 800
 ..   :alt: Create edge port on polygon and trace
