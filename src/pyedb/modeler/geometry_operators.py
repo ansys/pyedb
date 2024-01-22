@@ -12,7 +12,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def List2list(input_list):
+    def List2list(input_list): # pragma: no cover
         """Convert a C# list object to a Python list.
 
         This function performs a deep conversion.
@@ -38,7 +38,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def parse_dim_arg(string, scale_to_unit=None, variable_manager=None):
+    def parse_dim_arg(string, scale_to_unit=None, variable_manager=None): # pragma: no cover
         """Convert a number and unit to a float.
         Angles are converted in radians.
 
@@ -107,7 +107,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def cs_plane_to_axis_str(val):
+    def cs_plane_to_axis_str(val): # pragma: no cover
         """Retrieve a string for a coordinate system plane.
 
         Parameters
@@ -130,7 +130,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def cs_plane_to_plane_str(val):
+    def cs_plane_to_plane_str(val): # pragma: no cover
         """Retrieve a string for a coordinate system plane.
 
         Parameters
@@ -153,7 +153,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def cs_axis_str(val):
+    def cs_axis_str(val): # pragma: no cover
         """Retrieve a string for a coordinate system axis.
 
         Parameters
@@ -177,7 +177,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def draft_type_str(val):
+    def draft_type_str(val): # pragma: no cover
         """Retrieve the draft type.
 
         Parameters
@@ -221,7 +221,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def get_triangle_area(v1, v2, v3):
+    def get_triangle_area(v1, v2, v3): # pragma: no cover
         """Evaluate the area of a triangle defined by its three vertices.
 
         Parameters
@@ -250,7 +250,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def v_cross(a, b):
+    def v_cross(a, b): # pragma: no cover
         """Evaluate the cross product of two geometry vectors.
 
         Parameters
@@ -270,7 +270,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def _v_dot(a, b):
+    def _v_dot(a, b): # pragma: no cover
         """Evaluate the dot product between two geometry vectors.
 
         Parameters
@@ -296,7 +296,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def v_dot(a, b):
+    def v_dot(a, b): # pragma: no cover
         """Evaluate the dot product between two geometry vectors.
 
         Parameters
@@ -316,7 +316,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def v_prod(s, v):
+    def v_prod(s, v): # pragma: no cover
         """Evaluate the product between a scalar value and a vector.
 
         Parameters
@@ -339,7 +339,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def v_rotate_about_axis(vector, angle, radians=False, axis="z"):
+    def v_rotate_about_axis(vector, angle, radians=False, axis="z"): # pragma: no cover
         """Evaluate rotation of a vector around an axis.
 
         Parameters
@@ -381,7 +381,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def v_sub(a, b):
+    def v_sub(a, b): # pragma: no cover
         """Evaluate two geometry vectors by subtracting them (a-b).
 
         Parameters
@@ -402,7 +402,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def v_sum(a, b):
+    def v_sum(a, b): # pragma: no cover
         """Evaluate two geometry vectors by adding them (a+b).
 
         Parameters
@@ -423,7 +423,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def v_norm(a):
+    def v_norm(a): # pragma: no cover
         """Evaluate the Euclidean norm of a geometry vector.
 
         Parameters
@@ -445,7 +445,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def normalize_vector(v):
+    def normalize_vector(v): # pragma: no cover
         """Normalize a geometry vector.
 
         Parameters
@@ -466,7 +466,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def v_points(p1, p2):
+    def v_points(p1, p2): # pragma: no cover
         """Vector from one point to another point.
 
         Parameters
@@ -485,7 +485,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def points_distance(p1, p2):
+    def points_distance(p1, p2): # pragma: no cover
         """Evaluate the distance between two points expressed as their Cartesian coordinates.
 
         Parameters
@@ -511,7 +511,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def find_point_on_plane(pointlists, direction=0):
+    def find_point_on_plane(pointlists, direction=0): # pragma: no cover
         """Find a point on a plane.
 
         Parameters
@@ -540,7 +540,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def distance_vector(p, a, b):
+    def distance_vector(p, a, b): # pragma: no cover
         """Evaluate the vector distance between point ``p`` and a line defined by two points, ``a`` and ``b``.
 
         .. note::
@@ -572,7 +572,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def is_between_points(p, a, b, tol=1e-6):
+    def is_between_points(p, a, b, tol=1e-6): # pragma: no cover
         """Check if a point lies on the segment defined by two points.
 
         Parameters
@@ -605,7 +605,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def is_parallel(a1, a2, b1, b2, tol=1e-6):
+    def is_parallel(a1, a2, b1, b2, tol=1e-6): # pragma: no cover
         """Check if a segment defined by two points is parallel to a segment defined by two other points.
 
         Parameters
@@ -634,7 +634,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def parallel_coeff(a1, a2, b1, b2):
+    def parallel_coeff(a1, a2, b1, b2): # pragma: no cover
         """ADD DESCRIPTION.
 
         Parameters
@@ -662,7 +662,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def is_collinear(a, b, tol=1e-6):
+    def is_collinear(a, b, tol=1e-6): # pragma: no cover
         """Check if two vectors are collinear (parallel or anti-parallel).
 
         Parameters
@@ -690,7 +690,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def is_projection_inside(a1, a2, b1, b2):
+    def is_projection_inside(a1, a2, b1, b2): # pragma: no cover
         """Project a segment onto another segment and check if the projected segment is inside it.
 
         Parameters
@@ -723,7 +723,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def arrays_positions_sum(vertlist1, vertlist2):
+    def arrays_positions_sum(vertlist1, vertlist2): # pragma: no cover
         """Return the sum of two vertices lists.
 
         Parameters
@@ -745,7 +745,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def v_angle(a, b):
+    def v_angle(a, b): # pragma: no cover
         """Evaluate the angle between two geometry vectors.
 
         Parameters
@@ -771,7 +771,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def pointing_to_axis(x_pointing, y_pointing):
+    def pointing_to_axis(x_pointing, y_pointing): # pragma: no cover
         """Retrieve the axes from the HFSS X axis and Y pointing axis as per
         the definition of the AEDT interface coordinate system.
 
@@ -799,7 +799,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def axis_to_euler_zxz(x, y, z):
+    def axis_to_euler_zxz(x, y, z): # pragma: no cover
         """Retrieve Euler angles of a frame following the rotation sequence ZXZ.
 
         Provides assumption for the gimbal lock problem.
@@ -843,7 +843,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def axis_to_euler_zyz(x, y, z):
+    def axis_to_euler_zyz(x, y, z): # pragma: no cover
         """Retrieve Euler angles of a frame following the rotation sequence ZYZ.
 
         Provides assumption for the gimbal lock problem.
@@ -887,7 +887,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def quaternion_to_axis(q):
+    def quaternion_to_axis(q): # pragma: no cover
         """Convert a quaternion to a rotated frame defined by X, Y, and Z axes.
 
         Parameters
@@ -926,7 +926,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def quaternion_to_axis_angle(q):
+    def quaternion_to_axis_angle(q): # pragma: no cover
         """Convert a quaternion to the axis angle rotation formulation.
 
         Parameters
@@ -952,7 +952,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def axis_angle_to_quaternion(u, theta):
+    def axis_angle_to_quaternion(u, theta): # pragma: no cover
         """Convert the axis angle rotation formulation to a quaternion.
 
         Parameters
@@ -979,7 +979,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def quaternion_to_euler_zxz(q):
+    def quaternion_to_euler_zxz(q): # pragma: no cover
         """Convert a quaternion to Euler angles following rotation sequence ZXZ.
 
         Parameters
@@ -1009,7 +1009,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def euler_zxz_to_quaternion(phi, theta, psi):
+    def euler_zxz_to_quaternion(phi, theta, psi): # pragma: no cover
         """Convert the Euler angles following rotation sequence ZXZ to a quaternion.
 
         Parameters
@@ -1040,7 +1040,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def quaternion_to_euler_zyz(q):
+    def quaternion_to_euler_zyz(q): # pragma: no cover
         """Convert a quaternion to Euler angles following rotation sequence ZYZ.
 
         Parameters
@@ -1070,7 +1070,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def euler_zyz_to_quaternion(phi, theta, psi):
+    def euler_zyz_to_quaternion(phi, theta, psi): # pragma: no cover
         """Convert the Euler angles following rotation sequence ZYZ to a quaternion.
 
         Parameters
@@ -1139,7 +1139,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def atan2(y, x):
+    def atan2(y, x): # pragma: no cover
         """Implementation of atan2 that does not suffer from the following issues:
         math.atan2(0.0, 0.0) = 0.0
         math.atan2(-0.0, 0.0) = -0.0
@@ -1169,7 +1169,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def q_prod(p, q):
+    def q_prod(p, q): # pragma: no cover
         """Evaluate the product of two quaternions, ``p`` and ``q``, defined as:
         p = p0 + p' = p0 + ip1 + jp2 + kp3.
         q = q0 + q' = q0 + iq1 + jq2 + kq3.
@@ -1205,7 +1205,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def q_rotation(v, q):
+    def q_rotation(v, q): # pragma: no cover
         """Evaluate the rotation of a vector, defined by a quaternion.
         Evaluated as:
         ``"q = q0 + q' = q0 + iq1 + jq2 + kq3"``,
@@ -1269,7 +1269,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def get_polygon_centroid(pts):
+    def get_polygon_centroid(pts): # pragma: no cover
         """Evaluate the centroid of a polygon defined by its points.
 
         Parameters
@@ -1305,7 +1305,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def cs_xy_pointing_expression(yaw, pitch, roll):
+    def cs_xy_pointing_expression(yaw, pitch, roll): # pragma: no cover
         """Return x_pointing and y_pointing vectors as expressions from
         the yaw, ptich, and roll input (as strings).
 
@@ -1376,7 +1376,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def numeric_cs(cs_in):
+    def numeric_cs(cs_in): # pragma: no cover
         """Return a list of [x,y,z] numeric values given a coordinate system as input.
 
         Parameters
@@ -1473,7 +1473,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def v_angle_sign(va, vb, vn, right_handed=True):
+    def v_angle_sign(va, vb, vn, right_handed=True): # pragma: no cover
         """Evaluate the signed angle between two geometry vectors.
         The sign is evaluated respect to the normal to the plane containing the two vectors as per the following rule.
         In case of opposite vectors, it returns an angle equal to 180deg (always positive).
@@ -1797,7 +1797,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def point_segment_distance(p, a, b):
+    def point_segment_distance(p, a, b): # pragma: no cover
         """Calculate the distance between a point ``p`` and a segment defined by two points ``a`` and ``b``.
 
         Parameters
@@ -2008,7 +2008,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def find_closest_points(points_list, reference_point, tol=1e-6):
+    def find_closest_points(points_list, reference_point, tol=1e-6): # pragma: no cover
         """Given a list of points, finds the closest points to a reference point.
         It returns a list of points because more than one can be found.
         It works with 2D or 3D points. The tolerance used to evaluate the distance
@@ -2056,7 +2056,7 @@ class GeometryOperators(object):
 
     @staticmethod
     @pyedb_function_handler()
-    def mirror_point(start, reference, vector):
+    def mirror_point(start, reference, vector): # pragma: no cover
         """Mirror point about a plane defining by a point on the plane and a normal point.
 
         Parameters

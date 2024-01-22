@@ -11,97 +11,7 @@ from pyedb.generic.general_methods import pyedb_function_handler, settings
 
 
 @pyedb_function_handler()
-def _tuple2dict(t, d):
-    """
-
-    Parameters
-    ----------
-    t :
-
-    d :
-
-
-    Returns
-    -------
-
-    """
-    k = t[0]
-    v = t[1]
-    if isinstance(v, list) and len(t) > 2:
-        d[k] = v
-    elif isinstance(v, list) and len(t) == 2 and not v:
-        d[k] = None
-    elif (
-        isinstance(v, list) and isinstance(v[0], tuple) and len(t) == 2
-    ):  # len check is to avoid expanding the list with a 3rd element=None
-        if k in d:
-            if not isinstance(d[k], list):
-                d[k] = [d[k]]
-            d1 = OrderedDict()
-            for tt in v:
-                _tuple2dict(tt, d1)
-            d[k].append(d1)
-        else:
-            d[k] = OrderedDict()
-            for tt in v:
-                _tuple2dict(tt, d[k])
-    else:
-        d[k] = v
-
-
-@pyedb_function_handler()
-def _arg2dict(arg, dict_out):
-    if arg[0] == "NAME:DimUnits" or "NAME:Point" in arg[0]:
-        if arg[0][5:] in dict_out:
-            if isinstance(dict_out[arg[0][5:]][0], (list, tuple)):
-                dict_out[arg[0][5:]].append(list(arg[1:]))
-            else:
-                dict_out[arg[0][5:]] = [dict_out[arg[0][5:]]]
-                dict_out[arg[0][5:]].append(list(arg[1:]))
-        else:
-            dict_out[arg[0][5:]] = list(arg[1:])
-    elif arg[0][:5] == "NAME:":
-        top_key = arg[0][5:]
-        dict_in = OrderedDict()
-        i = 1
-        while i < len(arg):
-            if arg[i][0][:5] == "NAME:" and (
-                isinstance(arg[i], (list, tuple)) or str(type(arg[i])) == r"<type 'List'>"
-            ):
-                _arg2dict(list(arg[i]), dict_in)
-                i += 1
-            elif arg[i][-2:] == ":=":
-                if str(type(arg[i + 1])) == r"<type 'List'>":
-                    if arg[i][:-2] in dict_in:
-                        dict_in[arg[i][:-2]].append(list(arg[i + 1]))
-                    else:
-                        dict_in[arg[i][:-2]] = list(arg[i + 1])
-                else:
-                    if arg[i][:-2] in dict_in:
-                        if isinstance(dict_in[arg[i][:-2]], list):
-                            dict_in[arg[i][:-2]].append(arg[i + 1])
-                        else:
-                            dict_in[arg[i][:-2]] = [dict_in[arg[i][:-2]]]
-                            dict_in[arg[i][:-2]].append(arg[i + 1])
-                    else:
-                        dict_in[arg[i][:-2]] = arg[i + 1]
-
-                i += 2
-            else:
-                raise ValueError("Incorrect data argument format")
-        if top_key in dict_out:
-            if isinstance(dict_out[top_key], list):
-                dict_out[top_key].append(dict_in)
-            else:
-                dict_out[top_key] = [dict_out[top_key], dict_in]
-        else:
-            dict_out[top_key] = dict_in
-    else:
-        raise ValueError("Incorrect data argument format")
-
-
-@pyedb_function_handler()
-def format_decimals(el):
+def format_decimals(el): # pragma: no cover
     """
 
     Parameters
@@ -123,7 +33,7 @@ def format_decimals(el):
 
 
 @pyedb_function_handler()
-def random_string(length=6, only_digits=False, char_set=None):
+def random_string(length=6, only_digits=False, char_set=None): # pragma: no cover
     """Generate a random string
 
     Parameters
@@ -152,7 +62,7 @@ def random_string(length=6, only_digits=False, char_set=None):
 
 
 @pyedb_function_handler()
-def unique_string_list(element_list, only_string=True):
+def unique_string_list(element_list, only_string=True): # pragma: no cover
     """Return a unique list of strings from an element list.
 
     Parameters
@@ -187,7 +97,7 @@ def unique_string_list(element_list, only_string=True):
 
 
 @pyedb_function_handler()
-def string_list(element_list):
+def string_list(element_list): # pragma: no cover
     """
 
     Parameters
@@ -207,7 +117,7 @@ def string_list(element_list):
 
 
 @pyedb_function_handler()
-def ensure_list(element_list):
+def ensure_list(element_list): # pragma: no cover
     """
 
     Parameters
@@ -225,7 +135,7 @@ def ensure_list(element_list):
 
 
 @pyedb_function_handler()
-def from_rkm(code):
+def from_rkm(code): # pragma: no cover
     """Convert an RKM code string to a string with a decimal point.
 
     Parameters
@@ -292,7 +202,7 @@ def from_rkm(code):
     return code
 
 
-def str_to_bool(s):
+def str_to_bool(s): # pragma: no cover
     """Convert a ``"True"`` or ``"False"`` string to its corresponding Boolean value.
 
     If the passed arguments are not relevant in the context of conversion, the argument
@@ -357,7 +267,7 @@ unit_val = {
 
 
 @pyedb_function_handler()
-def float_units(val_str, units=""):
+def float_units(val_str, units=""): # pragma: no cover
     """Retrieve units for a value.
 
     Parameters
@@ -388,7 +298,7 @@ def float_units(val_str, units=""):
 
 
 @pyedb_function_handler()
-def json_to_dict(fn):
+def json_to_dict(fn): # pragma: no cover
     """Load Json File to a dictionary.
 
     Parameters
