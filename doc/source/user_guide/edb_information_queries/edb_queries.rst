@@ -29,7 +29,7 @@ PyEDB allows layout information queries, this section describe some basic exampl
     stats = edbapp.get_statistics()
 
 .. image:: ../../resources/layout_stats.png
-   :width: 800
+   :width: 400
    :alt: Layout stats
 
 - Nets

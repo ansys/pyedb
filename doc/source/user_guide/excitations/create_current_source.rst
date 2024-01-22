@@ -63,6 +63,6 @@ This section describes how to create current and voltage sources:
     edbapp.close_edb()
 
 
-.. .. image:: ../../Resources/create_sources_and_probes.png
+.. image:: ../../Resources/create_sources_and_probes.png
 ..   :width: 800
 ..   :alt: Create port on component
