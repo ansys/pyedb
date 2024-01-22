@@ -24,6 +24,7 @@ from pyedb.legacy.edb_core.edb_data.sources import (
     VoltageSource,
 )
 from pyedb.legacy.edb_core.general import convert_py_list_to_net_list
+from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_simulation_settings import SIWEMISimulationSettings
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -1425,3 +1426,7 @@ class EdbSiwave(object):
         p_terminal = self._pedb.get_point_terminal(name, positive_net_name, positive_location, positive_layer)
         n_terminal = self._pedb.get_point_terminal(name + "_ref", negative_net_name, negative_location, negative_layer)
         return self._pedb.create_voltage_probe(p_terminal, n_terminal)
+
+    @property
+    def emi_scanner(self):
+        return SIWEMISimulationSettings(self._pedb, self._pedb.simsetupdata.SIwave.SIWEMISimulationSettings)
