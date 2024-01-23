@@ -1,27 +1,49 @@
-class Comp:
+from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_scanner_tags.xml_generic import XmlGeneric
+
+
+class Comp(XmlGeneric):
+
     def __init__(self, element):
         self._element = element
-        self.comp_name = self._element.attrib["compName"]
-        self.comp_value = self._element.attrib["compValue"]
-        self.device_name = self._element.attrib["deviceName"]
-        self.cap_type = self._element.attrib["capType"]
-        self.is_clock_driver = self._element.attrib["isClockDriver"]
-        self.is_high_speed = self._element.attrib["isHighSpeed"]
-        self.is_IC = self._element.attrib["isIC"]
-        self.is_oscillator = self._element.attrib["isOscillator"]
-        self.x_loc = self._element.attrib["xLoc"]
-        self.y_loc = self._element.attrib["yLoc"]
+        if element is not None:
+            self.CompName = self._element.attrib["CompName"]
+            self.CompValue = self._element.attrib["CompValue"]
+            self.DeviceName = self._element.attrib["DeviceName"]
+            self.capType = self._element.attrib["capType"] if "capType" in self._element.attrib else None
+            self.isClockDriver = self._element.attrib["isClockDriver"]
+            self.isHighSpeed = self._element.attrib["isHighSpeed"]
+            self.isIC = self._element.attrib["isIC"]
+            self.isOscillator = self._element.attrib["isOscillator"]
+            self.xLoc = self._element.attrib["xLoc"]
+            self.yLoc = self._element.attrib["yLoc"]
+        else:
+            self.CompName = None
+            self.CompValue = None
+            self.DeviceName = None
+            self.capType = None
+            self.isClockDriver = None
+            self.isHighSpeed = None
+            self.isIC = None
+            self.isOscillator = None
+            self.xLoc = None
+            self.yLoc = None
 
 
-class ComponentTags:
+class ComponentTags(XmlGeneric):
     def __init__(self, element):
         self._element = element
-        self._comps = []
+        self.comps = []
 
-        for el in self._element.findall("Comp"):
-            comp = Comp(el)
-            self.comps.append(comp)
+        if element:
+            for el in self._element.findall("Comp"):
+                comp = Comp(el)
+                self.comps.append(comp)
 
-    @property
-    def comps(self):
-        return self._comps
+    @staticmethod
+    def read_element(element):
+        return ComponentTags(element)
+
+    def read_dict(self, data):
+        for i in data["comps"]:
+            comp = Comp(None)
+            self.comps.append(comp.create(i["Comp"]))
