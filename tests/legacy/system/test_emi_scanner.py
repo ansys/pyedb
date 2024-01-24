@@ -26,7 +26,6 @@ class TestClass:
         self.fdir_model = Path(local_path) / "example_models" / "TEDB"
 
     def test_001_read_write_xml(self):
-
         emi_scanner = EMCRuleCheckerSettings()
         emi_scanner.read_xml(self.fdir_model / "emi_scanner.tgs")
         emi_scanner.write_xml(self.local_temp_dir / "test_001_write_xml.tgs")
@@ -41,5 +40,4 @@ class TestClass:
         emi_scanner.add_net("0", "0", "0", "CHASSIS2", "Ground")
         emi_scanner.add_component(comp_name="U2", comp_value="", device_name="SQFP28X28_208", is_clock_driver="0",
                                   is_high_speed="0", is_ic ="1", is_oscillator="0", x_loc="-21.59", y_loc="-41.91")
-        emi_scanner.write_xml(self.fdir_model / "test_003.tgs")
-
+        emi_scanner.write_xml(self.local_temp_dir / "test_003.tgs")

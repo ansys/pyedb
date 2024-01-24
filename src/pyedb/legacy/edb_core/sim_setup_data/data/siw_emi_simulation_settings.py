@@ -4,8 +4,7 @@ from pyedb.legacy.edb_core.sim_setup_data.data.base_simulation_settings import B
 class SIWEMISimulationSettings(BaseSimulationSettings):
 
     def __init__(self, pedb, edb_object=None):
-        self._pedb = pedb
-        self._edb_object = edb_object
+        super().__init__(pedb, edb_object)
 
     @property
     def settings(self):
