@@ -2,6 +2,8 @@ from pyedb.dotnet.edb_core.edb_data.sim_setup_data.data.siw_emi_config_file.emc.
 
 
 class Net(XmlGeneric):
+    """Manages net."""
+
     def __init__(self, element=None):
         super().__init__(element)
 
@@ -20,6 +22,8 @@ class Net(XmlGeneric):
 
 
 class NetTags(XmlGeneric):
+    """Manages net tag."""
+
     CLS_MAPPING = {
         "Net": Net
     }

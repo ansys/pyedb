@@ -2,6 +2,7 @@ from pyedb.dotnet.edb_core.edb_data.sim_setup_data.data.siw_emi_config_file.emc.
 
 
 class TagType(XmlGeneric):
+    """Manages tag type."""
     def __init__(self, element):
         super().__init__(element)
 
@@ -12,11 +13,13 @@ class TagType(XmlGeneric):
 
 
 class TagConfig(XmlGeneric):
+    """Manages tag config."""
     def __init__(self, element):
         super().__init__(element)
 
 
 class Tag(XmlGeneric):
+    """Manages tag."""
     CLS_MAPPING = {
         "TagType": TagType,
         "TagConfig": TagConfig
@@ -44,6 +47,7 @@ class Tag(XmlGeneric):
 
 
 class TagLibrary(XmlGeneric):
+    """Manages tag library."""
     CLS_MAPPING = {
         "Tag": Tag,
     }
