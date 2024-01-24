@@ -15,7 +15,7 @@ import tempfile
 
 from pyedb import Edb
 from pyedb.misc.downloads import download_file
-from pyedb.legacy.edb_core.edb_data.control_file import ControlFile
+from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
 
 ###############################################################################
 # Download file

@@ -1,3 +1,5 @@
+.. _create_padstack_instance_example:
+
 Create pad-stack instance
 =========================
 This section describes how to create a padstack instance.
@@ -9,10 +11,10 @@ This section describes how to create a padstack instance.
 
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
 
 
-    edb = EdbLegacy(edbversion=desktop_version)
+    edb = Edb(edbversion=desktop_version)
     edb.stackup.add_layer(layer_name="1_Top", fillMaterial="AIR", thickness="30um")
     edb.stackup.add_layer(
         layer_name="contact", fillMaterial="AIR", thickness="100um", base_layer="1_Top"
@@ -64,5 +66,9 @@ This section describes how to create a padstack instance.
     )
     edb.padstacks.create_padstack("via_0")
     trace.create_via_fence("1mm", "1mm", "via_0")
-
+    edb.save()
     edb.close()
+
+.. image:: ../../resources/create_padstack_instances.png
+  :width: 600
+  :alt: Loading first EDB

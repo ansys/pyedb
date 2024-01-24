@@ -83,7 +83,7 @@ class LinearArray:
 ###############################################################################
 # Launch EDB
 # ~~~~~~~~~~
-# PyEDB.legacy.Edb allows to open existing Edb project or create a new empty project.
+# PyEDB.dotnet.Edb allows to open existing Edb project or create a new empty project.
 
 
 tmpfold = tempfile.gettempdir()
@@ -401,7 +401,7 @@ h3d.post.create_fieldplot_layers_nets(
 # Close AEDT
 # ~~~~~~~~~~
 # After the simulation completes, you can close AEDT or release it using the
-# :func:`legacy.Desktop.release_desktop` method.
+# :func:`dotnet.Desktop.release_desktop` method.
 # All methods provide for saving the project before closing AEDT.
 
 

@@ -1,3 +1,5 @@
+.. _create_hfss_setup_example:
+
 Create HFSS simulation setup
 ============================
 This section shows how to create HFSS simulation setup.
@@ -7,7 +9,7 @@ This section shows how to create HFSS simulation setup.
 
 .. code:: python
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
@@ -19,7 +21,7 @@ This section shows how to create HFSS simulation setup.
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     # create HFSS simulation setup
     setup1 = edbapp.create_hfss_setup("setup1")
@@ -31,7 +33,7 @@ This section shows how to create HFSS simulation setup.
     setup1.set_solution_multi_frequencies()
 
     # set boradband solution
-    setup1.set_solution_broadband()
+    setup1.set_solution_broadband(low_frequency="1GHz", high_frequency="10GHz")
 
     # enable low frequency accuracy
     setup1.hfss_solver_settings.enhanced_low_freq_accuracy = True
@@ -153,7 +155,6 @@ This section shows how to create HFSS simulation setup.
     mop.restrict_length = False
     mop.max_length = "2mm"
 
-
     # adding skin depth mesh operation
     mop = edbapp.setups["setup1a"].add_skin_depth_mesh_operation(
         {"GND": ["1_Top", "16_Bottom"]}
@@ -161,5 +162,9 @@ This section shows how to create HFSS simulation setup.
     mop.skin_depth = "5um"
     mop.surface_triangle_length = "2mm"
     mop.number_of_layer_elements = "3"
-
+    edbapp.save()
     edbapp.close()
+
+.. image:: ../../resources/create_hfss_setup.png
+  :width: 400
+  :alt: Define HFSS setup

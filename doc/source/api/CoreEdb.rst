@@ -12,17 +12,17 @@ It can be opened and edited using the ``Edb`` class.
 .. autosummary::
    :toctree: _autosummary
 
-   pyedb.legacy.edb.EdbLegacy
-   pyedb.legacy.edb_core.edb_data.variables.Variable
-   pyedb.legacy.edb_core.edb_data.edbvalue.EdbValue
+   pyedb.dotnet.edb.Edb
+   pyedb.dotnet.edb_core.edb_data.variables.Variable
+   pyedb.dotnet.edb_core.edb_data.edbvalue.EdbValue
 
 
 .. code:: python
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
 
     # this call returns the Edb class initialized on 2023 R1
-    edb = EdbLegacy(myedb, edbversion="2023.1")
+    edb = Edb(myedb, edbversion="2023.1")
 
     ...
 
@@ -33,7 +33,7 @@ This section lists the core EDB modules for reading and writing information
 to AEDB files.
 
 
-.. currentmodule:: pyedb.legacy.edb_core
+.. currentmodule:: pyedb.dotnet.edb_core
 
 .. autosummary::
    :toctree: _autosummary
@@ -46,7 +46,7 @@ to AEDB files.
 
 
 
-.. currentmodule:: pyedb.legacy.edb_core.edb_data.edbvalue
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.edbvalue
 
 .. autosummary::
    :toctree: _autosummary
@@ -58,7 +58,7 @@ to AEDB files.
 
 .. code:: python
 
-    from pyedb.legacy.edb_core.edb import Edb
+    from pyedb.dotnet.edb import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 

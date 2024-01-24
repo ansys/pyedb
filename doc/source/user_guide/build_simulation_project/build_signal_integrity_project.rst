@@ -1,5 +1,7 @@
-Create coaxial port on component
-================================
+.. _build_si_project_example:
+
+Build HFSS SYZ extraction project
+=================================
 This section shows a simple example to create HFSS coaxial port on a component.
 
 .. autosummary::
@@ -8,7 +10,7 @@ This section shows a simple example to create HFSS coaxial port on a component.
 .. code:: python
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
@@ -20,7 +22,7 @@ This section shows a simple example to create HFSS coaxial port on a component.
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     sim_setup = edbapp.new_simulation_configuration()
     sim_setup.signal_nets = [
@@ -41,3 +43,7 @@ This section shows a simple example to create HFSS coaxial port on a component.
     sim_setup.step_freq = 10e6
     edbapp.build_simulation_project(sim_setup)
     edbapp.close()
+
+.. image:: ../../resources/build_signal_integrity_user_guide.png
+  :width: 800
+  :alt: Build signal integrity project

@@ -5,7 +5,7 @@ import os
 
 import pytest
 
-from pyedb.legacy.edb import EdbLegacy
+from pyedb.dotnet.edb import Edb
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
@@ -23,7 +23,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_0127.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = EdbLegacy(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         assert isinstance(edbapp.materials.materials, dict)
         edbapp.materials["FR4_epoxy"].conductivity = 1
         assert edbapp.materials["FR4_epoxy"].conductivity == 1
@@ -72,7 +72,7 @@ class TestClass:
         loss_tan = [0.025, 0.026, 0.027, 0.028, 0.029, 0.030]
         assert edbapp.materials.add_multipole_debye_material("My_MP_Debye2", freq, rel_perm, loss_tan)
         edbapp.close()
-        edbapp = EdbLegacy(edbversion=desktop_version)
+        edbapp = Edb(edbversion=desktop_version)
         assert "air" in edbapp.materials.materials
         edbapp.close()
 

@@ -1,3 +1,5 @@
+.. _define_layer_stackup_example:
+
 Define layer stackup
 ====================
 This section describes how create layer stackup.
@@ -9,9 +11,9 @@ This section describes how create layer stackup.
 
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
 
-    edb = EdbLegacy(edbversion=desktop_version)
+    edb = Edb(edbversion=desktop_version)
     edb.stackup.add_layer(layer_name="gnd", fillMaterial="AIR", thickness="10um")
     edb.stackup.add_layer(
         layer_name="diel1", fillMaterial="AIR", thickness="200um", base_layer="gnd"
@@ -26,3 +28,7 @@ This section describes how create layer stackup.
         layer_name="sig3", fillMaterial="AIR", thickness="10um", base_layer="diel2"
     )
     edb.close()
+
+.. image:: ../../Resources/define_layer_stackup.png
+..   :width: 800
+..   :alt: Define layer stackup

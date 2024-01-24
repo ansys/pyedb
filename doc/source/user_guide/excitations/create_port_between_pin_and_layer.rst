@@ -1,3 +1,5 @@
+.. _create_port_between_pin_and_layer_example:
+
 Create port between pin and layer
 =================================
 This section describes how create port between pin and layer.
@@ -9,7 +11,7 @@ This section describes how create port between pin and layer.
 
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
@@ -21,17 +23,19 @@ This section describes how create port between pin and layer.
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     edbapp.siwave.create_port_between_pin_and_layer(
         component_name="U1", pins_name="A27", layer_name="16_Bottom", reference_net="GND"
     )
     U7 = edbapp.components["U7"]
-    U7.pins["G7"].create_port()
-    port = U7.pins["F7"].create_port(reference=U7.pins["E7"])
-    port.is_circuit_port = True
     _, pin_group = edbapp.siwave.create_pin_group_on_net(
         reference_designator="U7", net_name="GND", group_name="U7_GND"
     )
     U7.pins["F7"].create_port(reference=pin_group)
-    edbapp.close()
+    edbapp.save_edb()
+    edbapp.close_edb()
+
+.. image:: ../../Resources/create_port_between_pin_and_layer.png
+..   :width: 800
+..   :alt: Create edge port on polygon and trace

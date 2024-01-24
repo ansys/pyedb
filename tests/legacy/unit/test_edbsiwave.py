@@ -3,7 +3,7 @@ import os
 from mock import Mock
 import pytest
 
-from pyedb.legacy.edb_core.siwave import EdbSiwave
+from pyedb.dotnet.edb_core.siwave import EdbSiwave
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 

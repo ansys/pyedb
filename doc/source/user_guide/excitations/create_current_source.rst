@@ -1,5 +1,7 @@
-Create circuit ports on component
-=================================
+.. _create_current_source_example:
+
+Create current voltage sources and probes
+=========================================
 This section describes how to create current and voltage sources:
 
 .. autosummary::
@@ -9,13 +11,13 @@ This section describes how to create current and voltage sources:
 
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     # create simple current source on component U1 between net USB3_D_N and GND
     edbapp.siwave.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0) != ""
@@ -56,21 +58,11 @@ This section describes how to create current and voltage sources:
     edbapp.siwave.create_pin_group(
         reference_designator="U1", pin_numbers=["R23", "P23"], group_name="vp_neg"
     )
-    dbapp.siwave.create_voltage_probe_on_pin_group("vprobe", "vp_pos", "vp_neg")
-    edbapp.probes["vprobe"]
-    edbapp.siwave.place_voltage_probe(
-        "vprobe_2",
-        "1V0",
-        ["112mm", "24mm"],
-        "1_Top",
-        "GND",
-        ["112mm", "27mm"],
-        "Inner1(GND1)",
-    )
+    edbapp.siwave.create_voltage_probe_on_pin_group("vprobe", "vp_pos", "vp_neg")
+    edbapp.save_edb()
+    edbapp.close_edb()
 
-    # retrieving voltage probes
-    vprobe_2 = edbapp.probes["vprobe_2"]
-    ref_term = vprobe_2.ref_terminal
-    ref_term.location = [0, 0]
-    ref_term.layer
-    ref_term.layer = "1_Top"
+
+.. image:: ../../Resources/create_sources_and_probes.png
+..   :width: 800
+..   :alt: Create port on component

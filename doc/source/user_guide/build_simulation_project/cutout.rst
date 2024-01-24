@@ -1,3 +1,5 @@
+.. _cutout_example:
+
 Clipping layout
 ===============
 Because most of the time only a specific part of a layout must be simulated, clipping the design
@@ -11,7 +13,7 @@ how to clip a design based on nets selection.
 
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
@@ -24,7 +26,7 @@ how to clip a design based on nets selection.
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     # selecting signal nets to evaluate the extent for clipping the layout
     signal_nets = [

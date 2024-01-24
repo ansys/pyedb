@@ -4,20 +4,20 @@ Getting started
 .. grid:: 2
 
    .. grid-item-card:: About PyAnsys and EDB
-            :link: About
+            :link: about
             :link-type: doc
 
             Learn more about PyAnsys and Ansys Electronics Desktop.
 
    .. grid-item-card:: Installation
-            :link: Installation
+            :link: installation
             :link-type: doc
             :margin: 2 2 0 0
 
             Learn how to install PyEDB from PyPi or conda.
 
    .. grid-item-card:: Quick code
-            :link: Quickcode
+            :link: quickcode
             :link-type: doc
             :margin: 2 2 0 0
 
@@ -32,7 +32,7 @@ Getting started
             Discover the compatibility between PyEDB and Ansys AEDT versions.
 
    .. grid-item-card:: Troubleshooting
-            :link: Troubleshooting
+            :link: troubleshooting
             :link-type: doc
             :margin: 2 2 0 0
 

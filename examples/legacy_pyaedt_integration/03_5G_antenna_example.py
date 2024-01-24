@@ -279,7 +279,7 @@ solution.plot()
 # Close AEDT
 # ~~~~~~~~~~
 # After the simulation completes, you can close AEDT or release it using the
-# :func:`legacy.Desktop.release_desktop` method.
+# :func:`dotnet.Desktop.release_desktop` method.
 # All methods provide for saving the project before closing AEDT.
 
 h3d.save_project()

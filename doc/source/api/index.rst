@@ -22,7 +22,7 @@ Example:
 
 .. code:: python
 
-    from pyedb import Edb
+    from pyedb.dotnet.edb import Edb
 
     edb = Edb("my_project.aedb", edbversion="2023.1")
     edb.core_components.components["R1"].r_value = 40

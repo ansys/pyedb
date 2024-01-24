@@ -1,3 +1,27 @@
+=======================
+Working with components
+=======================
+
+
+.. grid:: 2
+
+   .. grid-item-card:: Create Resistor on pins
+            :link: create_resistor_on_pin
+            :link-type: doc
+
+
+   .. grid-item-card:: Create a new RLC component
+            :link: create_rlc_component
+            :link-type: doc
+            :margin: 2 2 0 0
+
+
+   .. grid-item-card:: Create an RLC boundary on pins
+            :link: create_rlc_boundary_on_pins
+            :link-type: doc
+
+
+
 .. toctree::
    :hidden:
    :maxdepth: 2
@@ -6,4 +30,3 @@
    create_resistor_on_pin
    create_rlc_component
    create_rlc_boundary_on_pins
-   delete_pin_group

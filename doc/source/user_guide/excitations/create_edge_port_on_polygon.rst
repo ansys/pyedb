@@ -1,6 +1,8 @@
-Create edge port on polygon
-===========================
-This section describes how create edge port on polygon.
+.. _create_edge_port_on_polygon_example:
+
+Create edge port
+================
+This section describes how create edge port on polygon and trace.
 
 .. autosummary::
    :toctree: _autosummary
@@ -8,20 +10,19 @@ This section describes how create edge port on polygon.
 .. code:: python
 
 
-    from pyedb.legacy.edb import EdbLegacy
+    from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
-
 
     # Ansys release version
     ansys_version = "2023.2"
 
     # download and copy the layout file from examples
     temp_folder = generate_unique_folder_name()
-    targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
+    targetfile = downloads.download_file("edb/edb_edge_ports.aedb", destination=temp_folder)
 
     # loading EDB
-    edbapp = EdbLegacy(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     # retrieving polygon list
     poly_list = [
@@ -73,7 +74,7 @@ This section describes how create edge port on polygon.
 
     # create trace
     sig = edbapp.modeler.create_trace(
-        [[0, 0], ["9mm", 0]], "TOP", "1mm", "SIG", "Flat", "Flat"
+        [["-55mm", "-10mm"], ["-29mm", "-10mm"]], "TOP", "1mm", "SIG", "Flat", "Flat"
     )
 
     # create wave port a the end of the trace
@@ -91,4 +92,9 @@ This section describes how create edge port on polygon.
     # changing gap to circuit port
     gap_port.is_circuit_port = True
 
-    edbapp.close()
+    edbapp.save_edb()
+    edbapp.close_edb()
+
+.. image:: ../../Resources/create_edge_port_on_polygon_and_trace.png
+..   :width: 800
+..   :alt: Create edge port on polygon and trace
