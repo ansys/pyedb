@@ -1,18 +1,13 @@
 """Tests related to the interaction between Edb and Ipc2581
 """
 
-import json
-import os
 import pytest
 from pathlib import Path
 
-from tests.conftest import desktop_version, local_path
-from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_config_file.emc_rule_checker_settings import \
+from pyedb.dotnet.edb_core.sim_setup_data.data.siw_emi_config_file.emc_rule_checker_settings import \
     EMCRuleCheckerSettings
 
-from pyedb.legacy.edb import EdbLegacy
-from tests.conftest import desktop_version, local_path
-from tests.legacy.system.conftest import test_subfolder
+from tests.conftest import local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 

@@ -1,4 +1,4 @@
-from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_config_file.emc.xml_generic import XmlGeneric
+from pyedb.dotnet.edb_core.sim_setup_data.data.siw_emi_config_file.emc.xml_generic import XmlGeneric
 
 
 class TagType(XmlGeneric):

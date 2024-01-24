@@ -24,7 +24,7 @@ from pyedb.dotnet.edb_core.edb_data.sources import (
     VoltageSource,
 )
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
-from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_simulation_settings import SIWEMISimulationSettings
+from pyedb.dotnet.edb_core.sim_setup_data.data import SIWEMISimulationSettings
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
