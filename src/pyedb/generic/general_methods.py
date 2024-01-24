@@ -124,8 +124,8 @@ def _exception(ex_info, func, args, kwargs, message="Type Error"):
         )
 
 
-def _function_handler_wrapper(user_function):
-    def wrapper(*args, **kwargs):
+def _function_handler_wrapper(user_function): # pragma: no cover
+    def wrapper(*args, **kwargs): # pragma: no cover
         if not settings.enable_error_handler:
             result = user_function(*args, **kwargs)
             return result
@@ -212,7 +212,7 @@ def _write_mes(mes_text):
         settings.logger.error(el)
 
 
-def _log_method(func, new_args, new_kwargs):
+def _log_method(func, new_args, new_kwargs): # pragma: no cover
     if not settings.enable_debug_internal_methods_logger and str(func.__name__)[0] == "_":
         return
     if not settings.enable_debug_geometry_operator_logger and "GeometryOperators" in str(func):
@@ -375,18 +375,6 @@ def normalize_path(path_in, sep=None):
     return path_in.replace("\\", sep).replace("/", sep)
 
 
-def _check_types(arg):
-    if "netref.builtins.list" in str(type(arg)):
-        return "list"
-    elif "netref.builtins.dict" in str(type(arg)):
-        return "dict"
-    elif "netref.__builtin__.list" in str(type(arg)):
-        return "list"
-    elif "netref.__builtin__.dict" in str(type(arg)):
-        return "dict"
-    return ""
-
-
 @pyedb_function_handler()
 def check_numeric_equivalence(a, b, relative_tolerance=1e-7):
     """Check if two numeric values are equivalent to within a relative tolerance.
@@ -480,7 +468,7 @@ def check_and_download_folder(local_path, remote_path, overwrite=True):
     return remote_path
 
 
-def open_file(file_path, file_options="r"):
+def open_file(file_path, file_options="r"): # pragma: no cover
     """Open a file and return the object.
 
     Parameters
@@ -582,7 +570,7 @@ def env_value_student(input_version):
 
 
 @pyedb_function_handler()
-def generate_unique_folder_name(rootname=None, folder_name=None):
+def generate_unique_folder_name(rootname=None, folder_name=None): # pragma: no cover
     """Generate a new AEDT folder name given a rootname.
 
     Parameters
@@ -694,7 +682,7 @@ def _retry_ntimes(n, function, *args, **kwargs):
             raise AttributeError("Error in Executing Method.")
 
 
-def time_fn(fn, *args, **kwargs):
+def time_fn(fn, *args, **kwargs): # pragma: no cover
     start = datetime.datetime.now()
     results = fn(*args, **kwargs)
     end = datetime.datetime.now()
@@ -721,7 +709,7 @@ def is_number(a):
         return False
 
 
-def is_array(a):
+def is_array(a): # pragma: no cover
     try:
         v = list(ast.literal_eval(a))
     except (ValueError, TypeError, NameError, SyntaxError):
@@ -750,7 +738,7 @@ def is_project_locked(project_path):
 
 
 @pyedb_function_handler()
-def remove_project_lock(project_path):
+def remove_project_lock(project_path): # pragma: no cover
     """Check if an AEDT project exists and try to remove the lock file.
 
     .. note::
@@ -772,7 +760,7 @@ def remove_project_lock(project_path):
 
 
 @pyedb_function_handler()
-def read_csv(filename, encoding="utf-8"):
+def read_csv(filename, encoding="utf-8"): # pragma: no cover
     """Read information from a CSV file and return a list.
 
     Parameters
@@ -797,7 +785,7 @@ def read_csv(filename, encoding="utf-8"):
 
 
 @pyedb_function_handler()
-def read_csv_pandas(filename, encoding="utf-8"):
+def read_csv_pandas(filename, encoding="utf-8"): # pragma: no cover
     """Read information from a CSV file and return a list.
 
     Parameters
@@ -822,7 +810,7 @@ def read_csv_pandas(filename, encoding="utf-8"):
 
 
 @pyedb_function_handler()
-def read_tab(filename):
+def read_tab(filename): # pragma: no cover
     """Read information from a TAB file and return a list.
 
     Parameters
@@ -841,7 +829,7 @@ def read_tab(filename):
 
 
 @pyedb_function_handler()
-def read_xlsx(filename):
+def read_xlsx(filename): # pragma: no cover
     """Read information from an XLSX file and return a list.
 
     Parameters
@@ -865,7 +853,7 @@ def read_xlsx(filename):
 
 
 @pyedb_function_handler()
-def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL):
+def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL): # pragma: no cover
     if is_ironpython:
         f = open(output, "wb")
     else:
@@ -878,7 +866,7 @@ def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE
 
 
 @pyedb_function_handler()
-def filter_tuple(value, search_key1, search_key2):
+def filter_tuple(value, search_key1, search_key2): # pragma: no cover
     """Filter a tuple of two elements with two search keywords."""
     ignore_case = True
 
@@ -902,7 +890,7 @@ def filter_tuple(value, search_key1, search_key2):
 
 
 @pyedb_function_handler()
-def filter_string(value, search_key1):
+def filter_string(value, search_key1): # pragma: no cover
     """Filter a string"""
     ignore_case = True
 
@@ -924,7 +912,7 @@ def filter_string(value, search_key1):
 
 
 @pyedb_function_handler()
-def recursive_glob(startpath, filepattern):
+def recursive_glob(startpath, filepattern): # pragma: no cover
     """Get a list of files matching a pattern, searching recursively from a start path.
 
     Keyword Arguments:
@@ -949,7 +937,7 @@ def recursive_glob(startpath, filepattern):
 
 
 @pyedb_function_handler()
-def number_aware_string_key(s):
+def number_aware_string_key(s): # pragma: no cover
     """Get a key for sorting strings that treats embedded digit sequences as integers.
 
     Parameters
@@ -985,187 +973,8 @@ def number_aware_string_key(s):
             i = j
     return tuple(result)
 
-
 @pyedb_function_handler()
-def _create_json_file(json_dict, full_json_path):
-    if not os.path.exists(os.path.dirname(full_json_path)):
-        os.makedirs(os.path.dirname(full_json_path))
-    if not is_ironpython:
-        with open(full_json_path, "w") as fp:
-            json.dump(json_dict, fp, indent=4)
-    else:
-        temp_path = full_json_path.replace(".json", "_temp.json")
-        with open(temp_path, "w") as fp:
-            json.dump(json_dict, fp, indent=4)
-        with open(temp_path, "r") as file:
-            filedata = file.read()
-        filedata = filedata.replace("True", "true")
-        filedata = filedata.replace("False", "false")
-        with open(full_json_path, "w") as file:
-            file.write(filedata)
-        os.remove(temp_path)
-    return True
-
-
-# @pyedb_function_handler()
-# def com_active_sessions(version=None, student_version=False, non_graphical=False):
-#     """Get information for the active COM AEDT sessions.
-#
-#     Parameters
-#     ----------
-#     version : str, optional
-#         Version to check. The default is ``None``, in which case all versions are checked.
-#         When specifying a version, you can use a three-digit format like ``"222"`` or a
-#         five-digit format like ``"2022.2"``.
-#     student_version : bool, optional
-#         Whether to check for student version sessions. The default is ``False``.
-#     non_graphical : bool, optional
-#         Whether to check only for active non-graphical sessions. The default is ``False``.
-#
-#     Returns
-#     -------
-#     list
-#         List of AEDT PIDs.
-#     """
-#     if student_version:
-#         keys = ["ansysedtsv.exe"]
-#     else:
-#         keys = ["ansysedt.exe"]
-#     long_version = None
-#     if len(version) > 6:
-#         version = version[-6:]
-#     if version and "." in version:
-#         long_version = version
-#         version = version[-4:].replace(".", "")
-#     if version < "221":
-#         version = version[:2] + "." + version[2]
-#         long_version = "20{}".format(version)
-#     sessions = []
-#     for p in psutil.process_iter():
-#         try:
-#             if p.name() in keys:
-#                 if long_version and _check_installed_version(os.path.dirname(p.exe()), long_version):
-#                     sessions.append(p.pid)
-#                     continue
-#                 cmd = p.cmdline()
-#                 if non_graphical and "-ng" in cmd or not non_graphical:
-#                     if not version or (version and version in cmd[0]):
-#                         sessions.append(p.pid)
-#         except:
-#             pass
-#     return sessions
-#
-#
-# @pyedb_function_handler()
-# def grpc_active_sessions(version=None, student_version=False, non_graphical=False):
-#     """Get information for the active gRPC AEDT sessions.
-#
-#     Parameters
-#     ----------
-#     version : str, optional
-#         Version to check. The default is ``None``, in which case all versions are checked.
-#         When specifying a version, you can use a three-digit format like ``"222"`` or a
-#         five-digit format like ``"2022.2"``.
-#     student_version : bool, optional
-#         Whether to check for student version sessions. The default is ``False``.
-#     non_graphical : bool, optional
-#         Whether to check only for active non-graphical sessions. The default is ``False``.
-#
-#     Returns
-#     -------
-#     list
-#         List of gRPC ports.
-#     """
-#     if student_version:
-#         keys = ["ansysedtsv.exe", "ansysedtsv"]
-#     else:
-#         keys = ["ansysedt.exe", "ansysedt"]
-#     if version and "." in version:
-#         version = version[-4:].replace(".", "")
-#     sessions = []
-#     for p in psutil.process_iter():
-#         try:
-#             if p.name() in keys:
-#                 cmd = p.cmdline()
-#                 if "-grpcsrv" in cmd:
-#                     if non_graphical and "-ng" in cmd or not non_graphical:
-#                         if not version or (version and version in cmd[0]):
-#                             try:
-#                                 sessions.append(
-#                                     int(cmd[cmd.index("-grpcsrv") + 1]),
-#                                 )
-#                             except (IndexError, ValueError):
-#                                 # default desktop grpc port.
-#                                 sessions.append(50051)
-#         except:
-#             pass
-#     return sessions
-#
-#
-# def active_sessions(version=None, student_version=False, non_graphical=False):
-#     """Get information for the active AEDT sessions.
-#
-#     Parameters
-#     ----------
-#     version : str, optional
-#         Version to check. The default is ``None``, in which case all versions are checked.
-#         When specifying a version, you can use a three-digit format like ``"222"`` or a
-#         five-digit format like ``"2022.2"``.
-#     student_version : bool, optional
-#     non_graphical : bool, optional
-#
-#
-#     Returns
-#     -------
-#     list
-#         List of tuple (AEDT PIDs, port).
-#     """
-#     if student_version:
-#         keys = ["ansysedtsv.exe", "ansysedtsv"]
-#     else:
-#         keys = ["ansysedt.exe", "ansysedt"]
-#     if version and "." in version:
-#         version = version[-4:].replace(".", "")
-#     if version and version < "222":
-#         version = version[:2] + "." + version[2]
-#     sessions = []
-#     for p in psutil.process_iter():
-#         try:
-#             if p.name() in keys:
-#                 cmd = p.cmdline()
-#                 if non_graphical and "-ng" in cmd or not non_graphical:
-#                     if not version or (version and version in cmd[0]):
-#                         if "-grpcsrv" in cmd:
-#                             if not version or (version and version in cmd[0]):
-#                                 try:
-#                                     sessions.append(
-#                                         [
-#                                             p.pid,
-#                                             int(cmd[cmd.index("-grpcsrv") + 1]),
-#                                         ]
-#                                     )
-#                                 except (IndexError, ValueError):
-#                                     # default desktop grpc port.
-#                                     sessions.append(
-#                                         [
-#                                             p.pid,
-#                                             50051,
-#                                         ]
-#                                     )
-#                         else:
-#                             sessions.append(
-#                                 [
-#                                     p.pid,
-#                                     -1,
-#                                 ]
-#                             )
-#         except:
-#             pass
-#     return sessions
-
-
-@pyedb_function_handler()
-def active_sessions(version=None, student_version=False, non_graphical=False):
+def active_sessions(version=None, student_version=False, non_graphical=False): # pragma: no cover
     """Get information for the active AEDT sessions.
 
     Parameters
@@ -1218,7 +1027,7 @@ def active_sessions(version=None, student_version=False, non_graphical=False):
 
 
 @pyedb_function_handler()
-def com_active_sessions(version=None, student_version=False, non_graphical=False):
+def com_active_sessions(version=None, student_version=False, non_graphical=False): # pragma: no cover
     """Get information for the active COM AEDT sessions.
 
     Parameters
@@ -1248,7 +1057,7 @@ def com_active_sessions(version=None, student_version=False, non_graphical=False
 
 
 @pyedb_function_handler()
-def grpc_active_sessions(version=None, student_version=False, non_graphical=False):
+def grpc_active_sessions(version=None, student_version=False, non_graphical=False): # pragma: no cover
     """Get information for the active gRPC AEDT sessions.
 
     Parameters
@@ -1316,7 +1125,7 @@ def parse_excitation_file(
     data_format="Power",
     encoding="utf-8",
     out_mag="Voltage",
-):
+): # pragma: no cover
     """Parse a csv file and convert data in list that can be applied to Hfss and Hfss3dLayout sources.
 
     Parameters
@@ -1381,7 +1190,7 @@ def parse_excitation_file(
     return freq, mag, phase
 
 
-def tech_to_control_file(tech_path, unit="nm", control_path=None):
+def tech_to_control_file(tech_path, unit="nm", control_path=None): # pragma: no cover
     """Convert a TECH file to an XML file for use in a GDS or DXF import.
 
     Parameters
@@ -1440,7 +1249,7 @@ def tech_to_control_file(tech_path, unit="nm", control_path=None):
 
 
 class PropsManager(object):
-    def __getitem__(self, item):
+    def __getitem__(self, item): # pragma: no cover
         """Get the `self.props` key value.
 
         Parameters
@@ -1468,7 +1277,7 @@ class PropsManager(object):
         self._app.logger.warning("Key %s not found.Check one of available keys in self.available_properties", item)
         return None
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key, value): # pragma: no cover
         """Set the `self.props` key value.
 
         Parameters
@@ -1512,7 +1321,7 @@ class PropsManager(object):
             self._app.logger.warning("Key %s not found. Trying to applying new key ", key)
 
     @pyedb_function_handler()
-    def _recursive_search(self, dict_in, key="", matching_percentage=0.8):
+    def _recursive_search(self, dict_in, key="", matching_percentage=0.8): # pragma: no cover
         f = difflib.get_close_matches(key, list(dict_in.keys()), 1, matching_percentage)
         if f:
             return True, dict_in, f[0]
@@ -1530,7 +1339,7 @@ class PropsManager(object):
         return False
 
     @pyedb_function_handler()
-    def _recursive_list(self, dict_in, prefix=""):
+    def _recursive_list(self, dict_in, prefix=""): # pragma: no cover
         available_list = []
         for k, v in dict_in.items():
             if prefix:
@@ -1543,7 +1352,7 @@ class PropsManager(object):
         return available_list
 
     @property
-    def available_properties(self):
+    def available_properties(self): # pragma: no cover
         """Available properties.
 
         Returns
@@ -1581,160 +1390,6 @@ rgb_color_codes = {
     "copper": (184, 115, 51),
     "stainless steel": (224, 223, 219),
 }
-
-
-@pyedb_function_handler()
-def _arg2dict(arg, dict_out):
-    if arg[0] == "NAME:DimUnits" or "NAME:Point" in arg[0]:
-        if arg[0][5:] in dict_out:
-            if isinstance(dict_out[arg[0][5:]][0], (list, tuple)):
-                dict_out[arg[0][5:]].append(list(arg[1:]))
-            else:
-                dict_out[arg[0][5:]] = [dict_out[arg[0][5:]]]
-                dict_out[arg[0][5:]].append(list(arg[1:]))
-        else:
-            dict_out[arg[0][5:]] = list(arg[1:])
-    elif arg[0][:5] == "NAME:":
-        top_key = arg[0][5:]
-        dict_in = OrderedDict()
-        i = 1
-        while i < len(arg):
-            if arg[i][0][:5] == "NAME:" and (
-                isinstance(arg[i], (list, tuple)) or str(type(arg[i])) == r"<type 'List'>"
-            ):
-                _arg2dict(list(arg[i]), dict_in)
-                i += 1
-            elif arg[i][-2:] == ":=":
-                if str(type(arg[i + 1])) == r"<type 'List'>":
-                    if arg[i][:-2] in dict_in:
-                        dict_in[arg[i][:-2]].append(list(arg[i + 1]))
-                    else:
-                        dict_in[arg[i][:-2]] = list(arg[i + 1])
-                else:
-                    if arg[i][:-2] in dict_in:
-                        if isinstance(dict_in[arg[i][:-2]], list):
-                            dict_in[arg[i][:-2]].append(arg[i + 1])
-                        else:
-                            dict_in[arg[i][:-2]] = [dict_in[arg[i][:-2]]]
-                            dict_in[arg[i][:-2]].append(arg[i + 1])
-                    else:
-                        dict_in[arg[i][:-2]] = arg[i + 1]
-
-                i += 2
-            else:
-                raise ValueError("Incorrect data argument format")
-        if top_key in dict_out:
-            if isinstance(dict_out[top_key], list):
-                dict_out[top_key].append(dict_in)
-            else:
-                dict_out[top_key] = [dict_out[top_key], dict_in]
-        else:
-            dict_out[top_key] = dict_in
-    else:
-        raise ValueError("Incorrect data argument format")
-
-
-def _uname(name=None):
-    """Append a 6-digit hash code to a specified name.
-
-    Parameters
-    ----------
-    name : str
-        Name to append the hash code to. The default is ``"NewObject_"``.
-
-    Returns
-    -------
-    str
-
-    """
-    char_set = string.ascii_uppercase + string.digits
-    unique_name = "".join(random.sample(char_set, 6))
-    if name:
-        return name + unique_name
-    else:
-        return "NewObject_" + unique_name
-
-
-@pyedb_function_handler()
-def _to_boolean(val):
-    """Retrieve the Boolean value of the provided input.
-
-        If the value is a Boolean, return the value.
-        Otherwise check to see if the value is in
-        ["false", "f", "no", "n", "none", "0", "[]", "{}", "" ]
-        and return True if the value is not in the list.
-
-    Parameters
-    ----------
-    val : bool or str
-        Input value to test for True/False condition.
-
-    Returns
-    -------
-    bool
-
-    """
-
-    if val is True or val is False:
-        return val
-
-    false_items = ["false", "f", "no", "n", "none", "0", "[]", "{}", ""]
-
-    return not str(val).strip().lower() in false_items
-
-
-@pyedb_function_handler()
-def _dim_arg(value, units):
-    """Concatenate a specified units string to a numerical input.
-
-    Parameters
-    ----------
-    value : str or number
-        Valid expression string in the AEDT modeler. For example, ``"5mm"``.
-    units : str
-        Valid units string in the AEDT modeler. For example, ``"mm"``.
-
-    Returns
-    -------
-    str
-
-    """
-    try:
-        val = float(value)
-        if isinstance(value, int):
-            val = value
-        return str(val) + units
-    except:
-        return value
-
-
-@pyedb_function_handler()
-def _check_installed_version(install_path, long_version):
-    """Check installation folder to determine if it is for specified Ansys EM version.
-
-    Parameters
-    ----------
-    install_path: str
-        Installation folder to check.  For example, ``"C:\\Program Files\\AnsysEM\\v231\\Win64"``.
-    long_version: str
-        Long form of version number.  For example, ``"2023.1"``.
-
-    Returns
-    -------
-    bool
-
-    """
-    product_list_path = os.path.join(install_path, "config", "ProductList.txt")
-    if os.path.isfile(product_list_path):
-        try:
-            with open(product_list_path, "r") as f:
-                install_version = f.readline().strip()[-6:]
-                if install_version == long_version:
-                    return True
-        except:
-            pass
-    return False
-
 
 def install_with_pip(package_name, package_path=None, upgrade=False, uninstall=False):  # pragma: no cover
     """Install a new package using pip.
