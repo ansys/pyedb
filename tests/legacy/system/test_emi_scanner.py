@@ -19,6 +19,7 @@ class TestClass:
         self.local_scratch = local_scratch
         self.local_temp_dir = Path(self.local_scratch.path)
         self.fdir_model = Path(local_path) / "example_models" / "TEDB"
+        print(self.local_temp_dir)
 
     def test_001_read_write_xml(self):
         emi_scanner = EMCRuleCheckerSettings()
@@ -28,7 +29,7 @@ class TestClass:
     def test_002_json(self):
         emi_scanner = EMCRuleCheckerSettings()
         emi_scanner.read_xml(self.fdir_model / "emi_scanner.tgs")
-        emi_scanner.write_json(self.local_temp_dir / "test_001_write_json.json")
+        emi_scanner.write_json(self.local_temp_dir / "test_002_write_json.json")
 
     def test_003_system(self):
         emi_scanner = EMCRuleCheckerSettings()

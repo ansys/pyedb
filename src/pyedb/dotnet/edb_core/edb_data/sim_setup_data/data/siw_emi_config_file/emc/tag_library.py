@@ -56,13 +56,3 @@ class TagLibrary(XmlGeneric):
             for el in self._element.findall("Tag"):
                 tag = Tag(el)
                 self.sub_elements.append(tag)
-
-    @staticmethod
-    def read_element(element):
-        """Read element.
-
-        Parameters
-        ----------
-        element:
-        """
-        return TagLibrary(element)

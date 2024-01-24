@@ -31,7 +31,3 @@ class NetTags(XmlGeneric):
             for el in self._element.findall("Net"):
                 net = Net(el)
                 self.sub_elements.append(net)
-
-    @staticmethod
-    def read_element(element):
-        return NetTags(element)

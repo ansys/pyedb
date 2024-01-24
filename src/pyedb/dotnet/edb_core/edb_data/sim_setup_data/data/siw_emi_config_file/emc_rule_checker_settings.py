@@ -1,5 +1,6 @@
 import json
 from pyedb.generic.general_methods import ET
+from pathlib import Path
 
 from pyedb.dotnet.edb_core.edb_data.sim_setup_data.data.siw_emi_config_file.emc.tag_library import \
     TagLibrary
@@ -41,22 +42,22 @@ class EMCRuleCheckerSettings:
 
         Parameters
         ----------
-        fpath: str
+        fpath: str, Path
             Path to file.
         """
         tree = ET.parse(fpath)
         root = tree.getroot()
 
-        self.tag_library = self.tag_library.read_element(root.find("TagLibrary"))
-        self.net_tags = self.net_tags.read_element(root.find("NetTags"))
-        self.component_tags = self.component_tags.read_element(root.find("ComponentTags"))
+        self.tag_library = TagLibrary(root.find("TagLibrary"))
+        self.net_tags = NetTags(root.find("NetTags"))
+        self.component_tags = ComponentTags(root.find("ComponentTags"))
 
     def write_xml(self, fpath):
         """Write settings to a file in xml format.
 
         Parameters
         ----------
-        fpath: str
+        fpath: str, Path
             Path to file.
         """
         self._element_tree.write(fpath, encoding=self.encoding, xml_declaration=True)
@@ -66,7 +67,7 @@ class EMCRuleCheckerSettings:
 
         Parameters
         ----------
-        fpath: str
+        fpath: str, Path
             Path to file.
         """
         data = {}
@@ -82,7 +83,7 @@ class EMCRuleCheckerSettings:
 
         Parameters
         ----------
-        fpath: str
+        fpath: str, Path
             Path to file.
         """
         self.tag_library = TagLibrary(None)

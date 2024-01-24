@@ -44,13 +44,3 @@ class ComponentTags(XmlGeneric):
             for el in self._element.findall("Comp"):
                 comp = Comp(el)
                 self.sub_elements.append(comp)
-
-    @staticmethod
-    def read_element(element):
-        """Read element.
-
-        Parameters
-        ----------
-        element:
-        """
-        return ComponentTags(element)
