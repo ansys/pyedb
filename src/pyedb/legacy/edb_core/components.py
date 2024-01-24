@@ -496,7 +496,7 @@ class Components(object):
             netlist = [netlist]
         components = list(self.instances.keys())
         for refdes in components:
-            cmpnets = self._cmp[refdes].nets
+            cmpnets = self._cmp[refdes].sub_elments
             if set(cmpnets).intersection(set(netlist)):
                 cmp_list.append(refdes)
         return cmp_list

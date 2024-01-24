@@ -230,7 +230,7 @@ class TestClass:
         edbapp = EdbLegacy(target_path, edbversion=desktop_version)
         spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
         edbapp.components.instances["R8"].assign_spice_model(spice_path)
-        edbapp.nets.nets
+        edbapp.nets.sub_elments
         assert edbapp.cutout(
             signal_list=["1V0"],
             reference_list=[
@@ -248,7 +248,7 @@ class TestClass:
             preserve_components_with_model=True,
             keep_lines_as_path=True,
         )
-        assert "A0_N" not in edbapp.nets.nets
+        assert "A0_N" not in edbapp.nets.sub_elments
         assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", order_by_area=True), list)
         assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True), list)
         assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
@@ -1277,7 +1277,7 @@ class TestClass:
         sim_setup.generate_excitations = False
         edb.build_simulation_project(sim_setup)
         hfss_ext_info = edb.active_cell.GetHFSSExtentInfo()
-        assert list(edb.nets.nets.values())[0].name == "net1"
+        assert list(edb.nets.sub_elments.values())[0].name == "net1"
         assert not edb.setups["Pyaedt_setup"].frequency_sweeps
         assert hfss_ext_info
         assert hfss_ext_info.AirBoxHorizontalExtent.Item1 == 0.001

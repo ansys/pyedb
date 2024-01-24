@@ -750,7 +750,7 @@ class EDBPadstack(object):
         layers = self._ppadstack._pedb.stackup.signal_layers
         layer_names = [i for i in list(layers.keys())]
         if convert_only_signal_vias:
-            signal_nets = [i for i in list(self._ppadstack._pedb.nets.signal_nets.keys())]
+            signal_nets = [i for i in list(self._ppadstack._pedb.sub_elments.signal_nets.keys())]
         topl, topz, bottoml, bottomz = self._ppadstack._pedb.stackup.stackup_limits(True)
         start_elevation = layers[self.via_start_layer].lower_elevation
         diel_thick = abs(start_elevation - layers[self.via_stop_layer].upper_elevation)
@@ -1519,8 +1519,8 @@ class EDBPadstackInstance(EDBPrimitivesMain):
                 self._edb_padstackinstance.SetNet(val.net_obj)
             except:
                 raise AttributeError("Value inserted not found. Input has to be net name or net object.")
-        elif val in self._pedb.nets.netlist:
-            net = self._pedb.nets.nets[val].net_object
+        elif val in self._pedb.sub_elments.netlist:
+            net = self._pedb.sub_elments.sub_elments[val].net_object
             self._edb_padstackinstance.SetNet(net)
         else:
             raise AttributeError("Value inserted not found. Input has to be net name or net object.")

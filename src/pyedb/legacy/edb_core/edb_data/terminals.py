@@ -386,7 +386,7 @@ class Terminal(Connectable):
         if gnd_net is not None:
             power_ground_net_names = [gnd_net]
         else:
-            power_ground_net_names = [net for net in self._pedb.nets.power_nets.keys()]
+            power_ground_net_names = [net for net in self._pedb.sub_elments.power_nets.keys()]
         comp_ref_pins = [i for i in pin_list if i.GetNet().GetName() in power_ground_net_names]
         if len(comp_ref_pins) == 0:  # pragma: no cover
             self._pedb.logger.error(
@@ -560,7 +560,7 @@ class PointTerminal(Terminal):
         """
         terminal = self._pedb.edb_api.cell.terminal.PointTerminal.Create(
             self._pedb.active_layout,
-            self._pedb.nets[net].net_object,
+            self._pedb.sub_elments[net].net_object,
             name,
             self._pedb.point_data(*location),
             self._pedb.stackup[layer]._edb_layer,
@@ -623,7 +623,7 @@ class PinGroupTerminal(Terminal):
         """
         term = self._pedb.edb_api.cell.terminal.PinGroupTerminal.Create(
             self._pedb.active_layout,
-            self._pedb.nets[net_name].net_object,
+            self._pedb.sub_elments[net_name].net_object,
             name,
             self._pedb.siwave.pin_groups[pin_group_name]._edb_object,
             is_ref,

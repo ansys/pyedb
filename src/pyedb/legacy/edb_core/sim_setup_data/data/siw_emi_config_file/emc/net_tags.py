@@ -1,9 +1,9 @@
-from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_scanner_tags.xml_generic import XmlGeneric
+from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_config_file.emc.xml_generic import XmlGeneric
 
 
 class Net(XmlGeneric):
-    def __init__(self, element):
-        self._element = element
+    def __init__(self, element=None):
+        super().__init__(element)
 
         if element is not None:
             self.isBus = self._element.attrib["isBus"]
@@ -20,20 +20,18 @@ class Net(XmlGeneric):
 
 
 class NetTags(XmlGeneric):
+    CLS_MAPPING = {
+        "Net": Net
+    }
+
     def __init__(self, element):
-        self._element = element
-        self.nets = []
+        super().__init__(element)
 
         if element:
             for el in self._element.findall("Net"):
                 net = Net(el)
-                self.nets.append(net)
+                self.sub_elements.append(net)
 
     @staticmethod
     def read_element(element):
         return NetTags(element)
-
-    def read_dict(self, data):
-        for i in data["nets"]:
-            net = Net(None)
-            self.nets.append(net.create(i["Net"]))

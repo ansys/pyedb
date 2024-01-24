@@ -73,7 +73,7 @@ class EDBPrimitivesMain(Connectable):
         super().__init__(core_app, raw_primitive)
         self._app = self._pedb
         self._core_stackup = core_app.stackup
-        self._core_net = core_app.nets
+        self._core_net = core_app.sub_elments
         self.primitive_object = self._edb_object
 
     @property
@@ -103,7 +103,7 @@ class EDBPrimitivesMain(Connectable):
     @net_name.setter
     def net_name(self, name):
         if isinstance(name, str):
-            net = self._app.nets.nets[name].net_object
+            net = self._app.sub_elments.sub_elments[name].net_object
             self.primitive_object.SetNet(net)
         else:
             try:
@@ -1113,7 +1113,7 @@ class EDBArcs(object):
         Examples
         --------
         >>> appedb = Edb(fpath, edbversion="2023.2")
-        >>> start_coordinate = appedb.nets["V1P0_S0"].primitives[0].arcs[0].start
+        >>> start_coordinate = appedb.sub_elments["V1P0_S0"].primitives[0].arcs[0].start
         >>> print(start_coordinate)
         [x_value, y_value]
         """
@@ -1132,7 +1132,7 @@ class EDBArcs(object):
         Examples
         --------
         >>> appedb = Edb(fpath, edbversion="2023.2")
-        >>> end_coordinate = appedb.nets["V1P0_S0"].primitives[0].arcs[0].end
+        >>> end_coordinate = appedb.sub_elments["V1P0_S0"].primitives[0].arcs[0].end
         """
         point = self.arc_object.End
         return [point.X.ToDouble(), point.Y.ToDouble()]
@@ -1150,7 +1150,7 @@ class EDBArcs(object):
         Examples
         --------
         >>> appedb = Edb(fpath, edbversion="2023.2")
-        >>> arc_height = appedb.nets["V1P0_S0"].primitives[0].arcs[0].height
+        >>> arc_height = appedb.sub_elments["V1P0_S0"].primitives[0].arcs[0].height
         """
         return self.arc_object.Height
 

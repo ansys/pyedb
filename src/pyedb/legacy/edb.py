@@ -960,8 +960,8 @@ class EdbLegacy(Database):
         --------
         >>> from pyedb.legacy.edb import EdbLegacy
         >>> edbapp = EdbLegacy("myproject.aedb")
-        >>> edbapp.nets.find_or_create_net("GND")
-        >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
+        >>> edbapp.sub_elments.find_or_create_net("GND")
+        >>> edbapp.sub_elments.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
         """
         warnings.warn("Use new property :func:`nets` instead.", DeprecationWarning)
         return self.nets
@@ -978,8 +978,8 @@ class EdbLegacy(Database):
         --------
         >>> from pyedb.legacy.edb import EdbLegacy
         >>> edbapp = EdbLegacy"myproject.aedb")
-        >>> edbapp.nets.find_or_create_net("GND")
-        >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
+        >>> edbapp.sub_elments.find_or_create_net("GND")
+        >>> edbapp.sub_elments.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
         """
 
         if not self._nets and self.active_db:
@@ -1797,15 +1797,15 @@ class EdbLegacy(Database):
         >>> edb.logger.reset_timer()
         >>> start = time.time()
         >>> signal_list = []
-        >>> for net in edb.nets.netlist:
+        >>> for net in edb.sub_elments.netlist:
         >>>      if "3V3" in net:
         >>>           signal_list.append(net)
         >>> power_list = ["PGND"]
         >>> edb.cutout(signal_list=signal_list, reference_list=power_list, extent_type="Conforming")
         >>> end_time = str((time.time() - start)/60)
         >>> edb.logger.info("Total legacy cutout time in min %s", end_time)
-        >>> edb.nets.plot(signal_list, None, color_by_net=True)
-        >>> edb.nets.plot(power_list, None, color_by_net=True)
+        >>> edb.sub_elments.plot(signal_list, None, color_by_net=True)
+        >>> edb.sub_elments.plot(power_list, None, color_by_net=True)
         >>> edb.save_edb()
         >>> edb.close_edb()
 
@@ -1940,11 +1940,11 @@ class EdbLegacy(Database):
         expansion_size = self.edb_value(expansion_size).ToDouble()
 
         # validate nets in layout
-        net_signals = [net.api_object for net in self.layout.nets if net.name in signal_list]
+        net_signals = [net.api_object for net in self.layout.sub_elments if net.name in signal_list]
 
         # validate references in layout
         _netsClip = convert_py_list_to_net_list(
-            [net.api_object for net in self.layout.nets if net.name in reference_list]
+            [net.api_object for net in self.layout.sub_elments if net.name in reference_list]
         )
 
         _poly = self._create_extent(
@@ -1961,7 +1961,7 @@ class EdbLegacy(Database):
         # Create new cutout cell/design
         included_nets_list = signal_list + reference_list
         included_nets = convert_py_list_to_net_list(
-            [net.api_object for net in self.layout.nets if net.name in included_nets_list]
+            [net.api_object for net in self.layout.sub_elments if net.name in included_nets_list]
         )
         _cutout = self.active_cell.CutOut(included_nets, _netsClip, _poly, True)
         # Analysis setups do not come over with the clipped design copy,
@@ -2149,12 +2149,12 @@ class EdbLegacy(Database):
                     "SPICEModel",
                     "SParameterModel",
                     "NetlistModel",
-                ] and list(set(el.nets[:]) & set(signal_list[:])):
+                ] and list(set(el.sub_elments[:]) & set(signal_list[:])):
                     pins_to_preserve.extend([i.id for i in el.pins.values()])
-                    nets_to_preserve.extend(el.nets)
+                    nets_to_preserve.extend(el.sub_elments)
         if include_pingroups:
             for reference in reference_list:
-                for pin in self.nets.nets[reference].padstack_instances:
+                for pin in self.nets.sub_elments[reference].padstack_instances:
                     if pin.pingroups:
                         pins_to_preserve.append(pin.id)
         if check_terminals:
@@ -2164,7 +2164,7 @@ class EdbLegacy(Database):
                     if term.GetParameters()[1].GetNet().GetName() in reference_list:
                         pins_to_preserve.append(term.GetParameters()[1].GetId())
 
-        for i in self.nets.nets.values():
+        for i in self.nets.sub_elments.values():
             name = i.name
             if name not in all_list and name not in nets_to_preserve:
                 i.net_object.Delete()
@@ -2206,7 +2206,7 @@ class EdbLegacy(Database):
         elif custom_extent:
             _poly = custom_extent
         else:
-            net_signals = [net.api_object for net in self.layout.nets if net.name in signal_list]
+            net_signals = [net.api_object for net in self.layout.sub_elments if net.name in signal_list]
             _poly = self._create_extent(
                 net_signals,
                 extent_type,
@@ -2409,15 +2409,15 @@ class EdbLegacy(Database):
         >>> edb.logger.reset_timer()
         >>> start = time.time()
         >>> signal_list = []
-        >>> for net in edb.nets.nets.keys():
+        >>> for net in edb.sub_elments.sub_elments.keys():
         >>>      if "3V3" in net:
         >>>           signal_list.append(net)
         >>> power_list = ["PGND"]
         >>> edb.create_cutout_multithread(signal_list=signal_list, reference_list=power_list, extent_type="Conforming")
         >>> end_time = str((time.time() - start)/60)
         >>> edb.logger.info("Total legacy cutout time in min %s", end_time)
-        >>> edb.nets.plot(signal_list, None, color_by_net=True)
-        >>> edb.nets.plot(power_list, None, color_by_net=True)
+        >>> edb.sub_elments.plot(signal_list, None, color_by_net=True)
+        >>> edb.sub_elments.plot(power_list, None, color_by_net=True)
         >>> edb.save_edb()
         >>> edb.close_edb()
 
@@ -2460,12 +2460,12 @@ class EdbLegacy(Database):
         for via in list(temp_edb.padstacks.instances.values()):
             via.pin.Delete()
         if netlist:
-            nets = [net.net_obj for net in temp_edb.layout.nets if net.name in netlist]
+            nets = [net.net_obj for net in temp_edb.layout.sub_elments if net.name in netlist]
             _poly = temp_edb.layout.expanded_extent(
                 nets, self.edb_api.geometry.extent_type.Conforming, 0.0, True, True, 1
             )
         else:
-            nets = [net.api_object for net in temp_edb.layout.nets if "gnd" in net.name.lower()]
+            nets = [net.api_object for net in temp_edb.layout.sub_elments if "gnd" in net.name.lower()]
             _poly = temp_edb.layout.expanded_extent(
                 nets, self.edb_api.geometry.extent_type.Conforming, 0.0, True, True, 1
             )
@@ -2562,12 +2562,12 @@ class EdbLegacy(Database):
                 if p.in_polygon(polygonData):
                     pinstance_to_add.append(p)
         # validate references in layout
-        for _ref in self.nets.nets:
+        for _ref in self.nets.sub_elments:
             if nets_to_include:
                 if _ref in nets_to_include:
-                    _ref_nets.append(self.nets.nets[_ref].net_object)
+                    _ref_nets.append(self.nets.sub_elments[_ref].net_object)
             else:
-                _ref_nets.append(self.nets.nets[_ref].net_object)  # pragma: no cover
+                _ref_nets.append(self.nets.sub_elments[_ref].net_object)  # pragma: no cover
         if keep_voids:
             voids = [p for p in self.modeler.circles if p.is_void]
             voids2 = [p for p in self.modeler.polygons if p.is_void]
@@ -3248,15 +3248,15 @@ class EdbLegacy(Database):
 
             if not simulation_setup.signal_nets and simulation_setup.components:
                 nets_to_include = []
-                pnets = list(self.nets.power.keys())[:]
+                pnets = list(self.sub_elments.power.keys())[:]
                 for el in simulation_setup.components:
-                    nets_to_include.append([i for i in self.components[el].nets if i not in pnets])
+                    nets_to_include.append([i for i in self.components[el].sub_elments if i not in pnets])
                 simulation_setup.signal_nets = [
                     i
                     for i in list(set.intersection(*map(set, nets_to_include)))
                     if i not in simulation_setup.power_nets and i != ""
                 ]
-            self.nets.classify_nets(simulation_setup.power_nets, simulation_setup.signal_nets)
+            self.sub_elments.classify_nets(simulation_setup.power_nets, simulation_setup.signal_nets)
             if not simulation_setup.power_nets or not simulation_setup.signal_nets:
                 self.logger.info("Disabling cutout as no signals or power nets have been defined.")
                 simulation_setup.do_cutout_subdesign = False
@@ -3300,9 +3300,9 @@ class EdbLegacy(Database):
                 if simulation_setup.include_only_selected_nets:
                     included_nets = simulation_setup.signal_nets + simulation_setup.power_nets
                     nets_to_remove = [
-                        net.name for net in list(self.nets.nets.values()) if not net.name in included_nets
+                        net.name for net in list(self.sub_elments.sub_elments.values()) if not net.name in included_nets
                     ]
-                    self.nets.delete(nets_to_remove)
+                    self.sub_elments.delete(nets_to_remove)
             self.logger.info("Deleting existing ports.")
             map(lambda port: port.Delete(), self.layout.terminals)
             map(lambda pg: pg.Delete(), self.layout.pin_groups)
@@ -3464,10 +3464,10 @@ class EdbLegacy(Database):
         cmps = [
             i
             for i in list(self.components.resistors.values())
-            if i.numpins == 2 and common_reference in i.nets and self._decompose_variable_value(i.res_value) <= 1
+            if i.numpins == 2 and common_reference in i.sub_elments and self._decompose_variable_value(i.res_value) <= 1
         ]
         cmps.extend(
-            [i for i in list(self.components.inductors.values()) if i.numpins == 2 and common_reference in i.nets]
+            [i for i in list(self.components.inductors.values()) if i.numpins == 2 and common_reference in i.sub_elments]
         )
 
         for cmp in cmps:

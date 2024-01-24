@@ -22,7 +22,7 @@ class EdbNets(object):
     --------
     >>> from pyedb.legacy.edb import EdbLegacy
     >>> edbapp = EdbLegacy("myaedbfolder", edbversion="2021.2")
-    >>> edb_nets = edbapp.nets
+    >>> edb_nets = edbapp.sub_elments
     """
 
     @pyedb_function_handler()
@@ -105,7 +105,7 @@ class EdbNets(object):
         """
 
         temp = {}
-        for net in self._layout.nets:
+        for net in self._layout.sub_elments:
             temp[net.name] = EDBNetsData(net.api_object, self._pedb)
         return temp
 
@@ -195,7 +195,7 @@ class EdbNets(object):
         list of  :class:`pyedb.legacy.edb_core.edb_data.EDBNetsData`
         """
         pwr_gnd_nets = []
-        for net in self._layout.nets[:]:
+        for net in self._layout.sub_elments[:]:
             total_plane_area = 0.0
             total_trace_area = 0.0
             for primitive in net.Primitives:
@@ -220,7 +220,7 @@ class EdbNets(object):
         # type: () -> dict
         """Get all nets for each component instance."""
         for comp, i in self._pedb.components.instances.items():
-            self._nets_by_comp_dict[comp] = i.nets
+            self._nets_by_comp_dict[comp] = i.sub_elments
         return self._nets_by_comp_dict
 
     @property
@@ -228,7 +228,7 @@ class EdbNets(object):
         # type: () -> dict
         """Get all component instances grouped by nets."""
         for comp, i in self._pedb.components.instances.items():
-            for n in i.nets:
+            for n in i.sub_elments:
                 if n in self._comps_by_nets_dict:
                     self._comps_by_nets_dict[n].append(comp)
                 else:
@@ -275,12 +275,12 @@ class EdbNets(object):
         --------
         >>> from pyedb import Edb
         >>> app = Edb()
-        >>> app.nets.get_extended_nets()
+        >>> app.sub_elments.get_extended_nets()
         """
         if exception_list is None:
             exception_list = []
         _extended_nets = []
-        _nets = self.nets
+        _nets = self.sub_elments
         all_nets = list(_nets.keys())[:]
         net_dicts = self._comps_by_nets_dict if self._comps_by_nets_dict else self.components_by_nets
         comp_dict = self._nets_by_comp_dict if self._nets_by_comp_dict else self.nets_by_components
@@ -518,7 +518,7 @@ class EdbNets(object):
             for comp in self._pedb.components.components.values():
                 if not comp.is_enabled:
                     continue
-                net_names = comp.nets
+                net_names = comp.sub_elments
                 if nets and not any([i in nets for i in net_names]):
                     continue
                 layer_name = comp.placement_layer
@@ -906,7 +906,7 @@ class EdbNets(object):
             numpins = comp_obj.numpins
 
             if numpins == 2:
-                nets = comp_obj.nets
+                nets = comp_obj.sub_elments
                 if not set(nets).intersection(set(ground_nets)):
                     temp_list.append(set(nets))
                 else:
@@ -915,7 +915,7 @@ class EdbNets(object):
             numpins = comp_obj.numpins
 
             if numpins == 2 and self._pedb._decompose_variable_value(comp_obj.res_value) <= res_value:
-                nets = comp_obj.nets
+                nets = comp_obj.sub_elments
                 if not set(nets).intersection(set(ground_nets)):
                     temp_list.append(set(nets))
                 else:
@@ -1022,7 +1022,7 @@ class EdbNets(object):
         Examples
         --------
 
-        >>> deleted_nets = edb_core.nets.delete(["Net1","Net2"])
+        >>> deleted_nets = edb_core.sub_elments.delete(["Net1","Net2"])
         """
         warnings.warn("Use :func:`delete` method instead.", DeprecationWarning)
         return self.delete(netlist=netlist)
@@ -1044,7 +1044,7 @@ class EdbNets(object):
         Examples
         --------
 
-        >>> deleted_nets = edb_core.nets.delete(["Net1","Net2"])
+        >>> deleted_nets = edb_core.sub_elments.delete(["Net1","Net2"])
         """
         if isinstance(netlist, str):
             netlist = [netlist]
@@ -1054,7 +1054,7 @@ class EdbNets(object):
 
         nets_deleted = []
 
-        for i in self._pedb.nets.nets.values():
+        for i in self._pedb.sub_elments.sub_elments.values():
             if i.name in netlist:
                 i.net_object.Delete()
                 nets_deleted.append(i.name)
@@ -1154,7 +1154,7 @@ class EdbNets(object):
         """
         if component_name not in self._pedb.components.components:
             return False
-        for net in self._pedb.components.components[component_name].nets:
+        for net in self._pedb.components.components[component_name].sub_elments:
             if net_name == net:
                 return True
         return False
@@ -1188,7 +1188,7 @@ class EdbNets(object):
         Examples
         --------
 
-        >>> renamed_nets = edb_core.nets.find_and_fix_disjoint_nets(["GND","Net2"])
+        >>> renamed_nets = edb_core.sub_elments.find_and_fix_disjoint_nets(["GND","Net2"])
         """
         warnings.warn("Use new function :func:`edb.layout_validation.disjoint_nets` instead.", DeprecationWarning)
         return self._pedb.layout_validation.disjoint_nets(

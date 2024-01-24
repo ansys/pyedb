@@ -192,7 +192,7 @@ class EdbExtendedNets(EdbCommon, object):
         >>> app = Edb()
         >>> app.extended_nets.auto_identify_signal()
         """
-        return self._pedb.nets.generate_extended_nets(
+        return self._pedb.sub_elments.generate_extended_nets(
             resistor_below, inductor_below, capacitor_above, exception_list, True, True
         )
 
@@ -227,7 +227,7 @@ class EdbExtendedNets(EdbCommon, object):
         >>> app = Edb()
         >>> app.extended_nets.auto_identify_power()
         """
-        return self._pedb.nets.generate_extended_nets(
+        return self._pedb.sub_elments.generate_extended_nets(
             resistor_below, inductor_below, capacitor_above, exception_list, True, True
         )
 
@@ -308,7 +308,7 @@ class EdbDifferentialPairs(EdbCommon, object):
         >>> edbapp = Edb("myaedbfolder", edbversion="2023.1")
         >>> edb_nets = edbapp.differential_pairs.auto_identify()
         """
-        nets = self._pedb.nets.nets
+        nets = self._pedb.sub_elments.sub_elments
         pos_net = []
         neg_net = []
         for name, _ in nets.items():

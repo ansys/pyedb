@@ -21,7 +21,7 @@ class TestClass:
         assert self.edbapp.extended_nets.auto_identify_power()
         extended_net_name, _ = next(iter(self.edbapp.extended_nets.items.items()))
         assert self.edbapp.extended_nets[extended_net_name]
-        assert self.edbapp.extended_nets[extended_net_name].nets
+        assert self.edbapp.extended_nets[extended_net_name].sub_elments
         assert self.edbapp.extended_nets[extended_net_name].components
         assert self.edbapp.extended_nets[extended_net_name].rlc
         assert self.edbapp.extended_nets[extended_net_name].serial_rlc

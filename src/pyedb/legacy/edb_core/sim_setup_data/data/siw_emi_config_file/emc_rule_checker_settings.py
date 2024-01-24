@@ -1,13 +1,14 @@
 import json
 import xml.etree.ElementTree as ET
 
-from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_scanner_tags.tag_library import TagLibrary
-from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_scanner_tags.net_tags import NetTags
-from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_scanner_tags.component_tags import ComponentTags
-from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_scanner_tags.xml_generic import XmlGeneric
+from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_config_file.emc.tag_library import \
+    TagLibrary
+from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_config_file.emc.net_tags import NetTags
+from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_config_file.emc.component_tags import \
+    ComponentTags
 
 
-class SIWEMIScannerTags:
+class EMCRuleCheckerSettings:
     def __init__(self):
         self.version = "1.0"
         self.encoding = "UTF-8"
@@ -68,3 +69,36 @@ class SIWEMIScannerTags:
         if component_tags:
             self.component_tags.read_dict(component_tags)
 
+    def add_net(self, is_bus, is_clock, is_critical, name, net_type):
+        kwargs = {
+            "isBus": is_bus,
+            "isClock": is_clock,
+            "isCritical": is_critical,
+            "name": name,
+            "type": net_type
+        }
+        self.net_tags.add_sub_element(kwargs, "Net")
+
+    def add_component(self,
+                      comp_name,
+                      comp_value,
+                      device_name,
+                      cap_type,
+                      is_clock_driver,
+                      is_high_speed,
+                      is_ic,
+                      is_oscillator,
+                      x_loc,
+                      y_loc
+                      ):
+        kwargs = {"CompName": comp_name,
+                  "CompValue": comp_value,
+                  "DeviceName": device_name,
+                  "capType": cap_type,
+                  "isClockDriver": is_clock_driver,
+                  "isHighSpeed": is_high_speed,
+                  "isIC": is_ic,
+                  "isOscillator": is_oscillator,
+                  "xLoc": x_loc,
+                  "yLoc": y_loc}
+        self.component_tags.add_sub_element(kwargs, "Comp")

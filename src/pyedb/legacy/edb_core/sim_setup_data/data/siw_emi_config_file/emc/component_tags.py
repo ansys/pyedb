@@ -1,10 +1,11 @@
-from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_scanner_tags.xml_generic import XmlGeneric
+from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_config_file.emc.xml_generic import \
+    XmlGeneric
 
 
 class Comp(XmlGeneric):
 
     def __init__(self, element):
-        self._element = element
+        super().__init__(element)
         if element is not None:
             self.CompName = self._element.attrib["CompName"]
             self.CompValue = self._element.attrib["CompValue"]
@@ -30,20 +31,18 @@ class Comp(XmlGeneric):
 
 
 class ComponentTags(XmlGeneric):
+    CLS_MAPPING = {
+        "Comp": Comp
+    }
+
     def __init__(self, element):
-        self._element = element
-        self.comps = []
+        super().__init__(element)
 
         if element:
             for el in self._element.findall("Comp"):
                 comp = Comp(el)
-                self.comps.append(comp)
+                self.sub_elements.append(comp)
 
     @staticmethod
     def read_element(element):
         return ComponentTags(element)
-
-    def read_dict(self, data):
-        for i in data["comps"]:
-            comp = Comp(None)
-            self.comps.append(comp.create(i["Comp"]))

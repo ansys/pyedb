@@ -283,13 +283,13 @@ class EdbSiwave(object):
                 pins_name = [pins_name]
             if not reference_net:
                 self._logger.info("no reference net provided, searching net {} instead.".format(layer_name))
-                reference_net = self._pedb.nets.get_net_by_name(layer_name)
+                reference_net = self._pedb.sub_elments.get_net_by_name(layer_name)
                 if not reference_net:  # pragma no cover
                     self._logger.error("reference net {} not found.".format(layer_name))
                     return False
             else:
                 if not isinstance(reference_net, self._edb.cell.net.net):  # pragma no cover
-                    reference_net = self._pedb.nets.get_net_by_name(reference_net)
+                    reference_net = self._pedb.sub_elments.get_net_by_name(reference_net)
                 if not reference_net:
                     self._logger.error("Net {} not found".format(reference_net))
                     return False
@@ -476,13 +476,13 @@ class EdbSiwave(object):
     @pyedb_function_handler()
     def _check_gnd(self, component_name):
         negative_net_name = None
-        if self._pedb.nets.is_net_in_component(component_name, "GND"):
+        if self._pedb.sub_elments.is_net_in_component(component_name, "GND"):
             negative_net_name = "GND"
-        elif self._pedb.nets.is_net_in_component(component_name, "PGND"):
+        elif self._pedb.sub_elments.is_net_in_component(component_name, "PGND"):
             negative_net_name = "PGND"
-        elif self._pedb.nets.is_net_in_component(component_name, "AGND"):
+        elif self._pedb.sub_elments.is_net_in_component(component_name, "AGND"):
             negative_net_name = "AGND"
-        elif self._pedb.nets.is_net_in_component(component_name, "DGND"):
+        elif self._pedb.sub_elments.is_net_in_component(component_name, "DGND"):
             negative_net_name = "DGND"
         if not negative_net_name:
             raise ValueError("No GND, PGND, AGND, DGND found. Please setup the negative net name manually.")
@@ -901,7 +901,7 @@ class EdbSiwave(object):
             source.name = generate_unique_name(source.name, n=3)
             self._logger.warning("Port already exists with same name. Renaming to {}".format(source.name))
         pos_pin_group = self._pedb.components.create_pingroup_from_pins(source.positive_node.node_pins)
-        pos_node_net = self._pedb.nets.get_net_by_name(source.positive_node.net)
+        pos_node_net = self._pedb.sub_elments.get_net_by_name(source.positive_node.net)
 
         pos_pingroup_term_name = source.name
         pos_pingroup_terminal = _retry_ntimes(
@@ -916,7 +916,7 @@ class EdbSiwave(object):
         time.sleep(0.5)
         if source.negative_node.node_pins:
             neg_pin_group = self._pedb.components.create_pingroup_from_pins(source.negative_node.node_pins)
-            neg_node_net = self._pedb.nets.get_net_by_name(source.negative_node.net)
+            neg_node_net = self._pedb.sub_elments.get_net_by_name(source.negative_node.net)
             neg_pingroup_term_name = source.name + "_N"
             neg_pingroup_terminal = _retry_ntimes(
                 20,
