@@ -29,7 +29,7 @@ class BaseSimulationSetup(object):
             "kAMI": None,
             "kAnalysisOption": None,
             "kSIwaveDCIR": self._pedb.simsetupdata.SIwave.SIWDCIRSimulationSettings,
-            "kSIwaveEMI": self._pedb.simsetupdata.SIwave.SIWEMISimulationSettings,
+            "kSIwaveEMI": None,
             "kHFSSPI": None,
             "kDDRwizard": None,
             "kQ3D": None,
