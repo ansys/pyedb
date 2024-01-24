@@ -1,0 +1,67 @@
+{
+  "setups": [
+    {
+      "name": "hfss_setup_1",
+      "type": "HFSS",
+      "f_adapt": "5GHz",
+      "max_num_passes": 10,
+      "max_mag_delta_s": 0.02,
+      "freq_sweep": [
+        {
+          "name": "Sweep1",
+          "type": "Interpolation",
+          "frequencies": [
+            {
+              "distribution": "linear step",
+              "start": 0,
+              "stop": 5e9,
+              "step": 10e7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hfss_setup_2",
+      "type": "HFSS",
+      "f_adapt": "5GHz",
+      "max_num_passes": 10,
+      "max_mag_delta_s": 0.02,
+      "freq_sweep": [
+        {
+          "name": "Sweep1",
+          "type": "Interpolation",
+          "frequencies": [
+            {
+              "distribution": "linear count",
+              "start": 0,
+              "stop": 5e9,
+              "points": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hfss_setup_3",
+      "type": "HFSS",
+      "f_adapt": "5GHz",
+      "max_num_passes": 10,
+      "max_mag_delta_s": 0.02,
+      "freq_sweep": [
+        {
+          "name": "Sweep1",
+          "type": "Interpolation",
+          "frequencies": [
+            {
+              "distribution": "log scale",
+              "start": 1e6,
+              "stop": 1e9,
+              "samples": 10
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

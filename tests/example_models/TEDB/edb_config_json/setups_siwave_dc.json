@@ -1,0 +1,9 @@
+{
+  "setups": [
+    {
+      "name": "siwave_dc",
+      "type": "siwave_dc",
+      "dc_slider_position": 1
+    }
+  ]
+}

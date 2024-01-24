@@ -1,0 +1,77 @@
+{
+  "components": [
+    {
+      "reference_designator": "C375",
+      "part_type": "capacitor",
+      "enabled": false,
+      "rlc_model": {
+        "pin_pairs": [
+          {
+            "type": "series",
+            "p1": "1",
+            "p2": "2"
+          }
+        ]
+      }
+    },
+    {
+      "reference_designator": "R100",
+      "part_type": "resistor",
+      "enabled": false
+    },
+    {
+      "reference_designator": "L2",
+      "part_type": "inductor",
+      "enabled": false,
+      "rlc_model": {
+        "pin_pairs": [
+          {
+            "type": "series",
+            "capacitance": "100nf",
+            "inductance": "1nh",
+            "resistance": "0.001",
+            "p1": "1",
+            "p2": "2"
+          }
+        ]
+      }
+    },
+    {
+      "reference_designator": "C375",
+      "part_type": "capacitor",
+      "enabled": false,
+      "rlc_model": {
+        "pin_pairs": [
+          {
+            "type": "series",
+            "p1": "1",
+            "p2": "2"
+          }
+        ]
+      }
+    },
+    {
+      "reference_designator": "U1",
+      "part_type": "io",
+      "solder_ball_properties": {
+        "shape": "cylinder",
+        "diameter": "244um",
+        "height": "406um"
+      },
+      "port_properties": {
+        "reference_offset": 0,
+        "reference_size_auto": true,
+        "reference_size_x": 0,
+        "reference_size_y": 0
+      }
+    },
+    {
+      "reference_designator": "U14",
+      "part_type": "ic"
+    },
+    {
+      "reference_designator": "U3",
+      "part_type": "other"
+    }
+  ]
+}
