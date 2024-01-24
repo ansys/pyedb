@@ -59,4 +59,10 @@ class TagLibrary(XmlGeneric):
 
     @staticmethod
     def read_element(element):
+        """Read element.
+
+        Parameters
+        ----------
+        element:
+        """
         return TagLibrary(element)

@@ -3,6 +3,7 @@ from pyedb.dotnet.edb_core.edb_data.sim_setup_data.data.siw_emi_config_file.emc.
 
 
 class Comp(XmlGeneric):
+    """Manages component tags."""
 
     def __init__(self, element):
         super().__init__(element)
@@ -31,6 +32,7 @@ class Comp(XmlGeneric):
 
 
 class ComponentTags(XmlGeneric):
+    """Manages component tags."""
     CLS_MAPPING = {
         "Comp": Comp
     }
@@ -45,4 +47,10 @@ class ComponentTags(XmlGeneric):
 
     @staticmethod
     def read_element(element):
+        """Read element.
+
+        Parameters
+        ----------
+        element:
+        """
         return ComponentTags(element)
