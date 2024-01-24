@@ -5,7 +5,8 @@ import json
 import os
 import pytest
 
-from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_config_file.emc_rule_checker_settings import EMCRuleCheckerSettings
+from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_config_file.emc_rule_checker_settings import \
+    EMCRuleCheckerSettings
 
 from pyedb.legacy.edb import EdbLegacy
 from tests.conftest import desktop_version, local_path
@@ -42,5 +43,7 @@ class TestClass:
     def test_system(self):
         fpath_2 = "d:to_delete/test_system.xml"
         emi_scanner = EMCRuleCheckerSettings()
-        emi_scanner.add_net("0", "0","0", "CHASSIS2", "Ground")
+        emi_scanner.add_net("0", "0", "0", "CHASSIS2", "Ground")
+        emi_scanner.add_component(comp_name="U2", comp_value="", device_name="SQFP28X28_208", is_clock_driver="0",
+                                  is_high_speed="0", is_ic ="1", is_oscillator="0", x_loc="-21.59", y_loc="-41.91")
         emi_scanner.write_xml(fpath_2)

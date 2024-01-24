@@ -83,13 +83,13 @@ class EMCRuleCheckerSettings:
                       comp_name,
                       comp_value,
                       device_name,
-                      cap_type,
                       is_clock_driver,
                       is_high_speed,
                       is_ic,
                       is_oscillator,
                       x_loc,
-                      y_loc
+                      y_loc,
+                      cap_type=None,
                       ):
         kwargs = {"CompName": comp_name,
                   "CompValue": comp_value,
