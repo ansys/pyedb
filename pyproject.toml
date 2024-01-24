@@ -148,6 +148,7 @@ ignore-words-list = "renabled, sie, mot"
 enable-colors = true
 
 [tool.coverage.run]
+relative_files = true
 source = ["pyedb"]
 
 [tool.coverage.report]
