@@ -4,7 +4,7 @@
 import pytest
 from pathlib import Path
 
-from pyedb.dotnet.edb_core.sim_setup_data.data.siw_emi_config_file.emc_rule_checker_settings import \
+from pyedb.dotnet.edb_core.edb_data.sim_setup_data.data.siw_emi_config_file.emc_rule_checker_settings import \
     EMCRuleCheckerSettings
 
 from tests.conftest import local_path

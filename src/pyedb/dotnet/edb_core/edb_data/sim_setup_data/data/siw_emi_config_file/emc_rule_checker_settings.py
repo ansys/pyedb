@@ -1,10 +1,10 @@
 import json
 import xml.etree.ElementTree as ET
 
-from pyedb.dotnet.edb_core.sim_setup_data.data.siw_emi_config_file.emc.tag_library import \
+from pyedb.dotnet.edb_core.edb_data.sim_setup_data.data.siw_emi_config_file.emc.tag_library import \
     TagLibrary
-from pyedb.dotnet.edb_core.sim_setup_data.data.siw_emi_config_file.emc.net_tags import NetTags
-from pyedb.dotnet.edb_core.sim_setup_data.data.siw_emi_config_file.emc.component_tags import \
+from pyedb.dotnet.edb_core.edb_data.sim_setup_data.data.siw_emi_config_file.emc.net_tags import NetTags
+from pyedb.dotnet.edb_core.edb_data.sim_setup_data.data.siw_emi_config_file.emc.component_tags import \
     ComponentTags
 
 
