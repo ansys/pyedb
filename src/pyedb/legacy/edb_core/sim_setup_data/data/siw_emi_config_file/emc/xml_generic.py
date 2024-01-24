@@ -11,7 +11,6 @@ class XmlGeneric:
         self._cls_sub_element = None
         self.sub_elements = []
 
-
     def add_sub_element(self, kwargs, elem_type):
         self._cls_sub_element = self.CLS_MAPPING[elem_type]
         obj = self._cls_sub_element(None)

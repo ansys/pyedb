@@ -4,7 +4,9 @@
 import json
 import os
 import pytest
+from pathlib import Path
 
+from tests.conftest import desktop_version, local_path
 from pyedb.legacy.edb_core.sim_setup_data.data.siw_emi_config_file.emc_rule_checker_settings import \
     EMCRuleCheckerSettings
 
@@ -20,30 +22,24 @@ class TestClass:
     def init(self, legacy_edb_app, local_scratch, target_path, target_path2, target_path4):
         self.edbapp = legacy_edb_app
         self.local_scratch = local_scratch
-        self.target_path = target_path
-        self.target_path2 = target_path2
-        self.target_path4 = target_path4
+        self.local_temp_dir = Path(self.local_scratch.path)
+        self.fdir_model = Path(local_path) / "example_models" / "TEDB"
 
-    def test_read_write_xml(self):
-        fpath_1 = r"D:\to_delete\emi_scanner_tags.xml"
-        fpath_2 = "d:to_delete/test_write_xml.xml"
-        fpath_3 = "d:to_delete/test_write_json.json"
+    def test_001_read_write_xml(self):
+
         emi_scanner = EMCRuleCheckerSettings()
-        emi_scanner.read_xml(fpath_1)
-        emi_scanner.write_xml(fpath_2)
-        emi_scanner.write_json(fpath_3)
+        emi_scanner.read_xml(self.fdir_model / "emi_scanner.tgs")
+        emi_scanner.write_xml(self.local_temp_dir / "test_001_write_xml.tgs")
 
-    def test_json(self):
-        fpath_1 = r"D:\to_delete\test_write_json.json"
-        fpath_2 = "d:to_delete/test_json_to_write.xml"
+    def test_002_json(self):
         emi_scanner = EMCRuleCheckerSettings()
-        emi_scanner.read_json(fpath_1)
-        emi_scanner.write_xml(fpath_2)
+        emi_scanner.read_xml(self.fdir_model / "emi_scanner.tgs")
+        emi_scanner.write_json(self.local_temp_dir / "test_001_write_json.json")
 
-    def test_system(self):
-        fpath_2 = "d:to_delete/test_system.xml"
+    def test_003_system(self):
         emi_scanner = EMCRuleCheckerSettings()
         emi_scanner.add_net("0", "0", "0", "CHASSIS2", "Ground")
         emi_scanner.add_component(comp_name="U2", comp_value="", device_name="SQFP28X28_208", is_clock_driver="0",
                                   is_high_speed="0", is_ic ="1", is_oscillator="0", x_loc="-21.59", y_loc="-41.91")
-        emi_scanner.write_xml(fpath_2)
+        emi_scanner.write_xml(self.fdir_model / "test_003.tgs")
+

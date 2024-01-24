@@ -18,15 +18,8 @@ class EMCRuleCheckerSettings:
         self.net_tags = NetTags(None)
         self.component_tags = ComponentTags(None)
 
-    def read_xml(self, fpath):
-        tree = ET.parse(fpath)
-        root = tree.getroot()
-
-        self.tag_library = self.tag_library.read_element(root.find("TagLibrary"))
-        self.net_tags = self.net_tags.read_element(root.find("NetTags"))
-        self.component_tags = self.component_tags.read_element(root.find("ComponentTags"))
-
-    def write_xml(self, fpath):
+    @property
+    def _element_tree(self):
         root = ET.Element("EMCRuleCheckerSettings")
 
         if self.tag_library:
@@ -38,7 +31,18 @@ class EMCRuleCheckerSettings:
 
         tree = ET.ElementTree(root)
         ET.indent(tree, space="\t", level=0)
-        tree.write(fpath, encoding=self.encoding, xml_declaration=True)
+        return tree
+
+    def read_xml(self, fpath):
+        tree = ET.parse(fpath)
+        root = tree.getroot()
+
+        self.tag_library = self.tag_library.read_element(root.find("TagLibrary"))
+        self.net_tags = self.net_tags.read_element(root.find("NetTags"))
+        self.component_tags = self.component_tags.read_element(root.find("ComponentTags"))
+
+    def write_xml(self, fpath):
+        self._element_tree.write(fpath, encoding=self.encoding, xml_declaration=True)
 
     def write_json(self, fpath):
         data = {}
