@@ -1699,7 +1699,7 @@ class Stackup(object):
                 "type": "signal",
                 "material": "copper",
                 "dielectric_fill": "fr4_epoxy",
-                "thickness": 3.5000000000000004e-05,
+                "thickness": 3.5e-05,
                 "etch_factor": 0.0,
                 "roughness_enabled": False,
                 "top_hallhuray_nodule_radius": 0.0,
