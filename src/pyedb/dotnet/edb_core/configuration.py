@@ -24,7 +24,7 @@ class Configuration:
 
     @pyedb_function_handler
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
-        """Import configuration settings from a JSON file and apply it to the current design.
+        """Import configuration settings from a JSON file.
 
         Parameters
         ----------
@@ -63,9 +63,10 @@ class Configuration:
                 self._pedb.open_edb()
         return self.data
 
-
     @pyedb_function_handler()
     def run(self):
+        """Apply configuration settings to the current design"""
+
         # Configure components
         if not self.data:
             self._pedb.logger.error("No data loaded. Please load a configuration file.")
@@ -159,7 +160,7 @@ class Configuration:
                             else:
                                 rlc.CEnabled = False
 
-                            model_layout.set_pin_pair_rlc(pin_pair, rlc)
+                            model_layout._set_pin_pair_rlc(pin_pair, rlc)
                         comp_layout.model = model_layout
 
             # Configure port properties

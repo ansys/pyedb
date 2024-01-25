@@ -41,7 +41,7 @@ class PinPairModel(Model):
         return self._edb_object.DeletePinPairRlc(pin_pair)
 
     @pyedb_function_handler
-    def set_pin_pair_rlc(self, pin_pair, pin_par_rlc):
+    def _set_pin_pair_rlc(self, pin_pair, pin_par_rlc):
         """Set resistance, inductance, capacitance to a pin pair definition.
 
         Parameters
