@@ -323,7 +323,6 @@ class EDBComponent(object):
     def model(self, value):
         if not isinstance(value, PinPairModel):
             self._pedb.logger.error("Invalid input. Set model failed.")
-            return False
 
         comp_prop = self.component_property
         comp_prop.SetModel(value._edb_object)
