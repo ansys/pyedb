@@ -14,6 +14,9 @@ def load_json(config_file):
         return config_file
 
 
+
+
+
 class Configuration:
     """Enables export and import of a JSON configuration file that can be applied to a new or existing design."""
 
@@ -49,7 +52,7 @@ class Configuration:
         data = load_json(config_file)
         if not append:
             self.data = {}
-        for k,v in data.items():
+        for k, v in data.items():
             self.data[k] = v
         if apply_file:
             original_file = self._pedb.edbpath
@@ -87,7 +90,6 @@ class Configuration:
         self._load_stackup(self.data)
 
         return True
-
 
     @pyedb_function_handler
     def _load_components(self, json_components):
