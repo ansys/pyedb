@@ -1,15 +1,8 @@
-PyEDB documentation  |version|
-==============================
+PyEDB documentation |version|
+=============================
 
-.. toctree::
-   :hidden:
-
-   getting_started/index
-   user_guide/index
-   api/index
-   examples/index
-
-PyEDB is a Python library that interacts directly with the EDB-core API to make scripting simpler.
+PyEDB is a Python library that interacts directly with the `PyEDB-Core API <https://github.com/ansys/pyedb-core>`_
+to make scripting simpler.
 
 .. grid:: 2
 
@@ -19,7 +12,8 @@ PyEDB is a Python library that interacts directly with the EDB-core API to make 
             Getting started
             ^^^^^^^^^^^^^^^
 
-            Learn how to run install PyEDB.
+            Learn more about PyEDB and how to install and use it. Also view
+            important version, interface, and troubleshooting information.
 
             +++
 
@@ -37,8 +31,7 @@ PyEDB is a Python library that interacts directly with the EDB-core API to make 
             User guide
             ^^^^^^^^^^
 
-            Understand key concepts and approaches for primitives,
-            modeler, mesh, setup and post-processing.
+            Understand how to use PyEDB.
 
             +++
             .. button-link:: user_guide/index.html
@@ -54,8 +47,8 @@ PyEDB is a Python library that interacts directly with the EDB-core API to make 
    .. grid-item-card::
             :img-top: _static/assets/index_api.png
 
-            EDB API reference
-            ^^^^^^^^^^^^^^^^^
+            API reference
+            ^^^^^^^^^^^^^
 
             Understand PyEDB API endpoints, their capabilities,
             and how to interact with them programmatically.
@@ -103,6 +96,15 @@ PyEDB is a Python library that interacts directly with the EDB-core API to make 
                :click-parent:
 
                   Contribute
+
+.. toctree::
+   :hidden:
+
+   getting_started/index
+   user_guide/index
+   api/index
+   examples/index
+   contributing
 
 Indices and tables
 ==================

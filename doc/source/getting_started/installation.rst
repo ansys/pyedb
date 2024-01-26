@@ -4,39 +4,44 @@
 
 Installation
 ============
-PyEDB consolidates and extends all existing capital around scripting for AEDB,
+PyEDB consolidates and extends all existing capital around scripting for EDB,
 allowing reuse of existing code, sharing of best practices, and collaboration.
 
-This PyAnsys library has been tested on HFSS, Icepak, SIWave.
+PyEDB has been tested on HFSS, Icepak, and SIWave.
 
 Requirements
 ~~~~~~~~~~~~
-In addition to the runtime dependencies listed in the installation information, PyEDB
-requires Ansys Electronics Desktop (AEDT) 2023 R2 or later.
+To use PyEDB, you must have a licensed copy of AEDT 2023 R2 or later.
 
+PyEDB also supports the AEDT Student version 2023 R2 or later. For more information, see the
+`Ansys Electronics Desktop Student  - Free Software Download <https://www.ansys.com/academic/students/ansys-e
+lectronics-desktop-student>`_ page on the Ansys website.
 
+Any additional runtime dependencies are listed in the following installation topics. 
 
 Install from a Python file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 AEDT already includes CPython 3.7, which can be used to run PyEDB.
-It is also possible to use CPython 3.7 (3.10 from AEDT 2023R2) as a virtual environment to run PyEDB.
+You can also use CPython 3.7 (3.10 from AEDT 2023 R2) in a virtual environment to run PyEDB.
 
+You can install PyEDB offline using a wheelhouse, which is a ZIP file containing all
+the needed packages. The `Releases <https://github.com/ansys/pyedb/releases>`_
+page of the PyEDB repository provides PyEDB wheelhouses for various
+Python releases on different operating system.
 
-Offline install is also possible using wheelhouses.
-A wheelhouse is a zip containing all needed packages that can be installed offline.
-PyEDB wheelhouse can be found at `Releases <https://github.com/ansys/pyedb/releases>`_.
-After downloading the wheelhouse zip specific for your distribution and Python release,
-run the script from Python terminal with providing the zip full path as argument.
-
+After downloading the wheelhouse for your Python release and operating system,
+run the script from the Python terminal, providing the full path to the ZIP file
+as an argument.
 
 Install on CPython from PyPI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-You can install PyEDB on CPython 3.7 through 3.10 from PyPI:
+
+You can install PyEDB on CPython 3.7 through 3.10 from PyPI, the Python Package Index,
+with this command:
 
 .. code:: shell
 
     pip install pyedb
-
 
 Linux support
 ~~~~~~~~~~~~~
@@ -52,23 +57,26 @@ However, you must set up the following environment variables:
 
 Install offline from a wheelhouse
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Using a wheelhouse can be helpful if you work for a company that restricts access to external networks.
-Wheelhouses for CPython 3.7, 3.8, and 3.9 are available in the releases for PyEDB v1.0
-and later for both Windows and Linux. From the `Releases <https://github.com/ansys/pyedb/releases>`_
-page in the PyEDB repository, you can find the wheelhouses for a particular release in its
-assets and download the wheelhouse specific to your setup.
 
-You can then install PyEDB and all of its dependencies from one single entry point that can be shared internally,
-which eases the security review of the PyEDB package content.
+Using a wheelhouse can be helpful if you work for a company that restricts access
+to external networks. A wheelhouse is a ZIP file containing all needed packages.
+Having a single file eases the security review of the package content and allows for
+easy sharing with others who need to install it.
 
-For example, on Windows with Python 3.7, install PyEDB and all its dependencies from a wheelhouse with code like this:
+On the `Releases <https://github.com/ansys-internal/pyansys-edb/releases>` page of the PyEDB repository,
+the **Assets** area shows the wheelhouses that are available. After downloading the wheelhouse for your setup,
+extract the files to a folder and run the command for install PyEDB and all of its dependencies
+from your Python terminal, providing the full path to the ZIP file as an argument.
+
+For example, on Windows with Python 3.7, install PyEDB and all its dependencies from a
+wheelhouse with code like this:
 
 .. code::
 
     pip install --no-cache-dir --no-index --find-links=file:///<path_to_wheelhouse>/PyEDB-v<release_version>-wheelhouse-Windows-3.7 pyedb
 
 
-Upgrade PyEDB to the latest version
+Update PyEDB to the latest version
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: bash

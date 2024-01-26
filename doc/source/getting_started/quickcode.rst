@@ -1,34 +1,32 @@
+.. _quick_code:
+
 Quick code
 ==========
 
-Documentation and issues
-------------------------
-Documentation for the latest stable release of PyEDB is hosted at
-`PyEDB documentation <https://edb.docs.pyansys.com/version/stable/>`_.
+You can view or download a PyEDB cheat sheet, which is a one-page reference
+providing syntax rules and commands for using the PyEDB API:
 
-In the upper right corner of the documentation's title bar, there is an option
-for switching from viewing the documentation for the latest stable release
-to viewing the documentation for the development version or previously
-released versions.
+- `View <https://cheatsheets.docs.pyansys.com/pyedb_API_cheat_sheet.png>`_ the PyEDB API cheat sheet.
+- `Download <https://cheatsheets.docs.pyansys.com/pyedb_API_cheat_sheet.pdf>`_ the PyEDB API cheat sheet.
 
-You can also view or download PyEDB cheat sheets, which are one-page references
-providing syntax rules and commands for using the PyEDB API and PyEDB API:
+Example
+-------
 
-- `View PyEDB cheat sheet <https://cheatsheets.docs.pyansys.com/pyedb_API_cheat_sheet.png>`_ or
-  `download PyEDB cheat sheet  <https://cheatsheets.docs.pyansys.com/pyedb_API_cheat_sheet.pdf>`_ the
-  PyEDB API cheat sheet.
+This example shows how to use PyEDB to load an existing AEDB file into memory:
 
+.. code:: python
+  
+    from pyedb.dotnet.edb import Edb
+    from pyedb.generic.general_methods import generate_unique_folder_name
+    import pyedb.misc.downloads as downloads
 
-On the `PyEDB Issues <https://github.com/ansys/Pansys-edb/issues>`_ page, you can
-create issues to report bugs and request new features. On the `PyEDB Discussions
-<https://github.com/ansys/pyansys-edb/discussions>`_ page or the `Discussions <https://discuss.ansys.com/>`_
-page on the Ansys Developer portal, you can post questions, share ideas, and get community feedback.
-
-To reach the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
-
+    temp_folder = generate_unique_folder_name()
+    targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
+    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
 Example workflow
 ----------------
+
 Here’s a brief example of how PyEDB works:
 
 Connect to EDB from a Python IDE
