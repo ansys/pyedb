@@ -1,0 +1,23 @@
+{
+  "setups": [
+    {
+      "name": "siwave_syz",
+      "type": "siwave_syz",
+      "si_slider_position": 1,
+      "freq_sweep": [
+        {
+          "name": "Sweep1",
+          "type": "Interpolation",
+          "frequencies": [
+            {
+              "distribution": "linear count",
+              "start": 0,
+              "stop": 10e9,
+              "points": 11
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
