@@ -2,7 +2,8 @@
 
 Getting layout size
 ===================
-This section describes how to retrieve the layout size by getting the bounding box:
+
+This tutorial shows how to retrieve the layout size by getting the bounding box.
 
 .. autosummary::
    :toctree: _autosummary

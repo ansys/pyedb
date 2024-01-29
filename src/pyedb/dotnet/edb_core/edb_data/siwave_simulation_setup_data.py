@@ -1,11 +1,11 @@
 import warnings
 
-from pyedb.generic.general_methods import is_linux, pyedb_function_handler
 from pyedb.dotnet.edb_core.edb_data.simulation_setup import BaseSimulationSetup
 from pyedb.dotnet.edb_core.general import (
     convert_netdict_to_pydict,
     convert_pydict_to_netdict,
 )
+from pyedb.generic.general_methods import is_linux, pyedb_function_handler
 
 
 def _parse_value(v):

@@ -1,22 +1,21 @@
 .. _define_hfss_extent_example:
 
-Define HFSS extent (SimulationConfiguration)
-============================================
-This section describes how define HFSS extent using SimulationConfiguration class.
+Define an HFSS extent
+=====================
+
+This page shows how to define an HFSS extent using the ``SimulationConfiguration`` class.
 
 .. autosummary::
    :toctree: _autosummary
 
 .. code:: python
 
-
-
     from pyedb.dotnet.edb import Edb
 
-    # create new EDB
+    # create EDB
     edb = Edb()
 
-    # adding stackup layers
+    # add stackup layers
     edb.stackup.add_layer(layer_name="GND", fillMaterial="AIR", thickness="30um")
     edb.stackup.add_layer(layer_name="FR4", base_layer="gnd", thickness="250um")
     edb.stackup.add_layer(layer_name="SIGNAL", base_layer="FR4", thickness="30um")
@@ -36,7 +35,7 @@ This section describes how define HFSS extent using SimulationConfiguration clas
         net_name="GND",
     )
 
-    # create SimulationConfiguration object
+    # create ``SimulationConfiguration`` object
     sim_setup = edb.new_simulation_configuration()
 
 
@@ -50,7 +49,7 @@ This section describes how define HFSS extent using SimulationConfiguration clas
     sim_setup.airbox_negative_vertical_extent = 0.05
     sim_setup.airbox_positive_vertical_extent = 0.04
 
-    # disable frequencvy sweep creation
+    # disable frequency sweep creation
     sim_setup.add_frequency_sweep = False
 
     # include only selected nets
@@ -69,4 +68,4 @@ This section describes how define HFSS extent using SimulationConfiguration clas
 
 .. image:: ../../resources/define_hfss_extent.png
   :width: 400
-  :alt: Loading first EDB
+  :alt: Load EDB

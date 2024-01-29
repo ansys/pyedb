@@ -12,17 +12,17 @@ import math
 import re
 import warnings
 
+from pyedb.dotnet.edb_core.edb_data.layer_data import (
+    LayerEdbClass,
+    StackupLayerEdbClass,
+)
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import (
     ET,
     generate_unique_name,
     is_ironpython,
     pyedb_function_handler,
 )
-from pyedb.dotnet.edb_core.edb_data.layer_data import (
-    LayerEdbClass,
-    StackupLayerEdbClass,
-)
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 
 pd = None

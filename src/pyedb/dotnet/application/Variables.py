@@ -63,7 +63,7 @@ class CSVDataset:
     """
 
     @property
-    def number_of_rows(self): # pragma: no cover
+    def number_of_rows(self):  # pragma: no cover
         """Number of rows."""
         if self._data:
             for variable, data_list in self._data.items():
@@ -72,22 +72,22 @@ class CSVDataset:
             return 0
 
     @property
-    def number_of_columns(self): # pragma: no cover
+    def number_of_columns(self):  # pragma: no cover
         """Number of columns."""
         return len(self._header)
 
     @property
-    def header(self): # pragma: no cover
+    def header(self):  # pragma: no cover
         """Header."""
         return self._header
 
     @property
-    def data(self): # pragma: no cover
+    def data(self):  # pragma: no cover
         """Data."""
         return self._data
 
     @property
-    def path(self): # pragma: no cover
+    def path(self):  # pragma: no cover
         """Path."""
         return os.path.dirname(os.path.realpath(self._csv_file))
 
@@ -99,7 +99,7 @@ class CSVDataset:
         append_dict=None,
         valid_solutions=True,
         invalid_solutions=False,
-    ): # pragma: no cover
+    ):  # pragma: no cover
         self._header = []
         self._data = {}
         self._unit_dict = {}
@@ -152,7 +152,7 @@ class CSVDataset:
         pass
 
     @pyedb_function_handler()
-    def __getitem__(self, item): # pragma: no cover
+    def __getitem__(self, item):  # pragma: no cover
         variable_list = item.split(",")
         data_out = CSVDataset()
         for variable in variable_list:
@@ -167,7 +167,7 @@ class CSVDataset:
         return data_out
 
     @pyedb_function_handler()
-    def __add__(self, other): # pragma: no cover
+    def __add__(self, other):  # pragma: no cover
         assert self.number_of_columns == other.number_of_columns, "Inconsistent number of columns"
         # Create a new object to return, avoiding changing the original inputs
         new_dataset = CSVDataset()
@@ -187,7 +187,7 @@ class CSVDataset:
 
         return new_dataset
 
-    def __iadd__(self, other): # pragma: no cover
+    def __iadd__(self, other):  # pragma: no cover
         """Incrementally add the dataset in one CSV file to a dataset in another CSV file.
 
         .. note:
@@ -213,12 +213,12 @@ class CSVDataset:
         return self
 
     # Called when iteration is initialized
-    def __iter__(self): # pragma: no cover
+    def __iter__(self):  # pragma: no cover
         self._index = 0
         return self
 
     # Create an iterator to yield the row data as a string as we loop through the object
-    def __next__(self): # pragma: no cover
+    def __next__(self):  # pragma: no cover
         if self._index < (self.number_of_rows - 1):
             output = []
             for column in self._header:
@@ -231,13 +231,13 @@ class CSVDataset:
 
         return output_string
 
-    def next(self): # pragma: no cover
+    def next(self):  # pragma: no cover
         """Yield the next row."""
         return self.__next__()
 
 
 @pyedb_function_handler()
-def _find_units_in_dependent_variables(variable_value, full_variables={}): # pragma: no cover
+def _find_units_in_dependent_variables(variable_value, full_variables={}):  # pragma: no cover
     m2 = re.findall(r"[0-9.]+ *([a-z_A-Z]+)", variable_value)
     if len(m2) > 0:
         if len(set(m2)) <= 1:
@@ -256,7 +256,7 @@ def _find_units_in_dependent_variables(variable_value, full_variables={}): # pra
 
 
 @pyedb_function_handler()
-def decompose_variable_value(variable_value, full_variables={}): # pragma: no cover
+def decompose_variable_value(variable_value, full_variables={}):  # pragma: no cover
     """Decompose a variable value.
 
     Parameters
@@ -299,7 +299,7 @@ def decompose_variable_value(variable_value, full_variables={}): # pragma: no co
 
 
 @pyedb_function_handler()
-def _generate_property_validation_errors(property_name, expected, actual): # pragma: no cover
+def _generate_property_validation_errors(property_name, expected, actual):  # pragma: no cover
     expected_value, expected_unit = decompose_variable_value(expected)
     actual_value, actual_unit = decompose_variable_value(actual)
 
@@ -314,7 +314,7 @@ def _generate_property_validation_errors(property_name, expected, actual): # pra
 
 
 @pyedb_function_handler()
-def generate_validation_errors(property_names, expected_settings, actual_settings): # pragma: no cover
+def generate_validation_errors(property_names, expected_settings, actual_settings):  # pragma: no cover
     """From the given property names, expected settings and actual settings, return a list of validation errors.
     If no errors are found, an empty list is returned. The validation of values such as "10mm"
     ensures that they are close to within a relative tolerance.
@@ -440,7 +440,7 @@ class VariableManager(object):
     """
 
     @property
-    def variables(self): # pragma: no cover
+    def variables(self):  # pragma: no cover
         """Variables.
 
         Returns
@@ -460,7 +460,7 @@ class VariableManager(object):
         return self._variable_dict([self._odesign, self._oproject])
 
     @pyedb_function_handler()
-    def decompose(self, variable_value): # pragma: no cover
+    def decompose(self, variable_value):  # pragma: no cover
         """Decompose a variable string to a floating with its unit.
 
         Parameters
@@ -493,7 +493,7 @@ class VariableManager(object):
         return val, unit
 
     @property
-    def design_variables(self): # pragma: no cover
+    def design_variables(self):  # pragma: no cover
         """Design variables.
 
         Returns
@@ -510,7 +510,7 @@ class VariableManager(object):
         return self._variable_dict([self._odesign])
 
     @property
-    def project_variables(self): # pragma: no cover
+    def project_variables(self):  # pragma: no cover
         """Project variables.
 
         Returns
@@ -527,7 +527,7 @@ class VariableManager(object):
         return self._variable_dict([self._oproject])
 
     @property
-    def post_processing_variables(self): # pragma: no cover
+    def post_processing_variables(self):  # pragma: no cover
         """Post Processing variables.
 
         Returns
@@ -556,7 +556,7 @@ class VariableManager(object):
         return post_vars
 
     @property
-    def independent_variables(self): # pragma: no cover
+    def independent_variables(self):  # pragma: no cover
         """Independent variables.
 
         Returns
@@ -576,7 +576,7 @@ class VariableManager(object):
         return self._variable_dict([self._odesign, self._oproject], dependent=False)
 
     @property
-    def independent_project_variables(self): # pragma: no cover
+    def independent_project_variables(self):  # pragma: no cover
         """Independent project variables.
 
         Returns
@@ -593,7 +593,7 @@ class VariableManager(object):
         return self._variable_dict([self._oproject], dependent=False)
 
     @property
-    def independent_design_variables(self): # pragma: no cover
+    def independent_design_variables(self):  # pragma: no cover
         """Independent design variables.
 
         Returns
@@ -611,7 +611,7 @@ class VariableManager(object):
         return self._variable_dict([self._odesign], dependent=False)
 
     @property
-    def dependent_variables(self): # pragma: no cover
+    def dependent_variables(self):  # pragma: no cover
         """Dependent variables.
 
         Returns
@@ -631,7 +631,7 @@ class VariableManager(object):
         return self._variable_dict([self._odesign, self._oproject], independent=False)
 
     @property
-    def dependent_project_variables(self): # pragma: no cover
+    def dependent_project_variables(self):  # pragma: no cover
         """Dependent project variables.
 
         Returns
@@ -648,7 +648,7 @@ class VariableManager(object):
         return self._variable_dict([self._oproject], independent=False)
 
     @property
-    def dependent_design_variables(self): # pragma: no cover
+    def dependent_design_variables(self):  # pragma: no cover
         """Dependent design variables.
 
         Returns
@@ -666,12 +666,12 @@ class VariableManager(object):
         return self._variable_dict([self._odesign], independent=False)
 
     @property
-    def variable_names(self): # pragma: no cover
+    def variable_names(self):  # pragma: no cover
         """List of variables."""
         return [var_name for var_name in self.variables]
 
     @property
-    def project_variable_names(self): # pragma: no cover
+    def project_variable_names(self):  # pragma: no cover
         """List of project variables.
 
         References
@@ -683,7 +683,7 @@ class VariableManager(object):
         return [var_name for var_name in self.project_variables]
 
     @property
-    def design_variable_names(self): # pragma: no cover
+    def design_variable_names(self):  # pragma: no cover
         """List of design variables.
 
         References
@@ -694,7 +694,7 @@ class VariableManager(object):
         return [var_name for var_name in self.design_variables]
 
     @property
-    def independent_project_variable_names(self): # pragma: no cover
+    def independent_project_variable_names(self):  # pragma: no cover
         """List of independent project variables.
 
         References
@@ -706,7 +706,7 @@ class VariableManager(object):
         return [var_name for var_name in self.independent_project_variables]
 
     @property
-    def independent_design_variable_names(self): # pragma: no cover
+    def independent_design_variable_names(self):  # pragma: no cover
         """List of independent design variables.
 
         References
@@ -717,7 +717,7 @@ class VariableManager(object):
         return [var_name for var_name in self.independent_design_variables]
 
     @property
-    def independent_variable_names(self): # pragma: no cover
+    def independent_variable_names(self):  # pragma: no cover
         """List of independent variables.
 
         References
@@ -730,7 +730,7 @@ class VariableManager(object):
         return [var_name for var_name in self.independent_variables]
 
     @property
-    def dependent_project_variable_names(self): # pragma: no cover
+    def dependent_project_variable_names(self):  # pragma: no cover
         """List of dependent project variables.
 
         References
@@ -742,7 +742,7 @@ class VariableManager(object):
         return [var_name for var_name in self.dependent_project_variables]
 
     @property
-    def dependent_design_variable_names(self): # pragma: no cover
+    def dependent_design_variable_names(self):  # pragma: no cover
         """List of dependent design variables.
 
         References
@@ -753,7 +753,7 @@ class VariableManager(object):
         return [var_name for var_name in self.dependent_design_variables]
 
     @property
-    def dependent_variable_names(self): # pragma: no cover
+    def dependent_variable_names(self):  # pragma: no cover
         """List of dependent variables.
 
         References
@@ -766,17 +766,17 @@ class VariableManager(object):
         return [var_name for var_name in self.dependent_variables]
 
     @property
-    def _oproject(self): # pragma: no cover
+    def _oproject(self):  # pragma: no cover
         """Project."""
         return self._app._oproject
 
     @property
-    def _odesign(self): # pragma: no cover
+    def _odesign(self):  # pragma: no cover
         """Design."""
         return self._app._odesign
 
     @property
-    def _logger(self): # pragma: no cover
+    def _logger(self):  # pragma: no cover
         """Logger."""
         return self._app.logger
 
@@ -789,14 +789,14 @@ class VariableManager(object):
         self._dependent_project_variables = {}
 
     @property
-    def _independent_variables(self): # pragma: no cover
+    def _independent_variables(self):  # pragma: no cover
         all = {}
         all.update(self._independent_project_variables)
         all.update(self._independent_design_variables)
         return all
 
     @property
-    def _dependent_variables(self): # pragma: no cover
+    def _dependent_variables(self):  # pragma: no cover
         all = {}
         for k, v in self._dependent_project_variables.items():
             all[k] = v
@@ -805,28 +805,28 @@ class VariableManager(object):
         return all
 
     @property
-    def _all_variables(self): # pragma: no cover
+    def _all_variables(self):  # pragma: no cover
         all = {}
         all.update(self._independent_variables)
         all.update(self._dependent_variables)
         return all
 
     @pyedb_function_handler()
-    def __delitem__(self, key): # pragma: no cover
+    def __delitem__(self, key):  # pragma: no cover
         """Implement del with array name or index."""
         self.delete_variable(key)
 
     @pyedb_function_handler()
-    def __getitem__(self, variable_name): # pragma: no cover
+    def __getitem__(self, variable_name):  # pragma: no cover
         return self.variables[variable_name]
 
     @pyedb_function_handler()
-    def __setitem__(self, variable, value): # pragma: no cover
+    def __setitem__(self, variable, value):  # pragma: no cover
         self.set_variable(variable, value)
         return True
 
     @pyedb_function_handler()
-    def _cleanup_variables(self): # pragma: no cover
+    def _cleanup_variables(self):  # pragma: no cover
         variables = self._get_var_list_from_aedt(self._app.odesign) + self._get_var_list_from_aedt(self._app.oproject)
         all_dicts = [
             self._independent_project_variables,
@@ -840,7 +840,7 @@ class VariableManager(object):
                     del dict_var[var_name]
 
     @pyedb_function_handler()
-    def _variable_dict(self, object_list, dependent=True, independent=True): # pragma: no cover
+    def _variable_dict(self, object_list, dependent=True, independent=True):  # pragma: no cover
         """Retrieve the variable dictionary.
 
         Parameters
@@ -896,7 +896,7 @@ class VariableManager(object):
 
     # TODO: Should be renamed to "evaluate"
     @pyedb_function_handler()
-    def get_expression(self, variable_name): # pragma: no cover
+    def get_expression(self, variable_name):  # pragma: no cover
         """Retrieve the variable value of a project or design variable as a string.
 
         References
@@ -915,7 +915,7 @@ class VariableManager(object):
             return False
 
     @pyedb_function_handler()
-    def aedt_object(self, variable): # pragma: no cover
+    def aedt_object(self, variable):  # pragma: no cover
         """Retrieve an AEDT object.
 
         Parameters
@@ -940,7 +940,7 @@ class VariableManager(object):
         overwrite=True,
         postprocessing=False,
         circuit_parameter=True,
-    ): # pragma: no cover
+    ):  # pragma: no cover
         """Set the value of a design property or project variable.
 
         Parameters
@@ -1159,7 +1159,7 @@ class VariableManager(object):
         return True
 
     @pyedb_function_handler()
-    def delete_separator(self, separator_name): # pragma: no cover
+    def delete_separator(self, separator_name):  # pragma: no cover
         """Delete a separator from either the active project or design.
 
         Parameters
@@ -1200,7 +1200,7 @@ class VariableManager(object):
         return False
 
     @pyedb_function_handler()
-    def delete_variable(self, var_name): # pragma: no cover
+    def delete_variable(self, var_name):  # pragma: no cover
         """Delete a variable.
 
         Parameters
@@ -1244,7 +1244,7 @@ class VariableManager(object):
         return False
 
     @pyedb_function_handler()
-    def _get_var_list_from_aedt(self, desktop_object): # pragma: no cover
+    def _get_var_list_from_aedt(self, desktop_object):  # pragma: no cover
         var_list = []
         if self._app._is_object_oriented_enabled() and self._app.design_type != "Maxwell Circuit":
             # To retrieve local variables
@@ -1314,7 +1314,7 @@ class Variable(object):
         description=None,
         postprocessing=False,
         circuit_parameter=True,
-    ): # pragma: no cover
+    ):  # pragma: no cover
         if not full_variables:
             full_variables = {}
         self._variable_name = name
@@ -1355,7 +1355,7 @@ class Variable(object):
                 self._value = self._value * scale
 
     @property
-    def _aedt_obj(self): # pragma: no cover
+    def _aedt_obj(self):  # pragma: no cover
         if "$" in self._variable_name and self._app:
             return self._app._oproject
         elif self._app:
@@ -1363,7 +1363,7 @@ class Variable(object):
         return None
 
     @pyedb_function_handler()
-    def _update_var(self): # pragma: no cover
+    def _update_var(self):  # pragma: no cover
         if self._app:
             return self._app.variable_manager.set_variable(
                 self._variable_name,
@@ -1377,7 +1377,7 @@ class Variable(object):
         return False
 
     @pyedb_function_handler()
-    def _set_prop_val(self, prop, val, n_times=10): # pragma: no cover
+    def _set_prop_val(self, prop, val, n_times=10):  # pragma: no cover
         if self._app.design_type == "Maxwell Circuit":
             return
         try:
@@ -1409,7 +1409,7 @@ class Variable(object):
             pass
 
     @pyedb_function_handler()
-    def _get_prop_val(self, prop): # pragma: no cover
+    def _get_prop_val(self, prop):  # pragma: no cover
         if self._app.design_type == "Maxwell Circuit":
             return
         try:
@@ -1431,12 +1431,12 @@ class Variable(object):
             pass
 
     @property
-    def name(self): # pragma: no cover
+    def name(self):  # pragma: no cover
         """Variable name."""
         return self._variable_name
 
     @name.setter
-    def name(self, value): # pragma: no cover
+    def name(self, value):  # pragma: no cover
         fallback_val = self._variable_name
         self._variable_name = value
         if not self._update_var():
@@ -1445,16 +1445,16 @@ class Variable(object):
                 self._app.logger.error('"Failed to update property "name".')
 
     @property
-    def is_optimization_enabled(self): # pragma: no cover
+    def is_optimization_enabled(self):  # pragma: no cover
         """ "Check if optimization is enabled."""
         return self._get_prop_val("Optimization/Included")
 
     @is_optimization_enabled.setter
-    def is_optimization_enabled(self, value): # pragma: no cover
+    def is_optimization_enabled(self, value):  # pragma: no cover
         self._set_prop_val("Optimization/Included", value, 10)
 
     @property
-    def optimization_min_value(self): # pragma: no cover
+    def optimization_min_value(self):  # pragma: no cover
         """ "Optimization min value."""
         return self._get_prop_val("Optimization/Min")
 

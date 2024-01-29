@@ -3,10 +3,11 @@ About PyEDB
 
 PyEDB is part of the larger `PyAnsys <https://docs.pyansys.com>`_ effort to facilitate the use
 of Ansys technologies directly from Python. It is intended to consolidate and extend all existing
-functionalities around scripting for the Ansys Electronics Database (EDB) format to allow reuse
+functionalities around scripting for the Ansys Electronics Database (EDB) to allow reuse
 of existing code, sharing of best practices, and increased collaboration.
 
-PyEDB includes functionality for interacting with these AEDT products:
+PyEDB includes functionality for interacting with these
+`Ansys Electronics Desktop <https://www.ansys.com/products/electronics>`_ (AEDT) products:
 
 - EDB
 - HFSS 3D Layout
@@ -17,7 +18,7 @@ What is EDB?
 
 EDB provides a proprietary database file format (AEDB) for efficient and fast layout design
 handling and processing for building ready-to-solve projects. EDB addresses signal integrity
-(SI), power integrity (PI-DC), and electro-thermal work flows. You can import an AEDB file
+(SI), power integrity (PI-DC), and electro-thermal workflows. You can import an AEDB file
 into AEDT to modify the layout, assign materials, and define ports, simulations, and constraints.
 You can then launch any of the Ansys electromagnetic simulators: HFSS, HFSS 3D Layout, Icepak,
 Maxwell, Q3D, and SIwave.
@@ -40,7 +41,7 @@ combine 3D designs, or perform simulation postprocessing. EDB also supports 3D c
 
 Why use PyEDB?
 --------------
-PyEDB interacts with the `PyEDB-Core <https://github.com/ansys/pyedb-core>` API to make scripting simpler.
+PyEDB interacts with the `PyEDB-Core <https://github.com/ansys/pyedb-core>`_ API to make scripting simpler.
 It provides application-oriented, high-level methods and properties. The PyEDB API's ``Edb`` class and methods 
 simplify operations while reusing information as much as possible across the API.
 
@@ -48,11 +49,10 @@ Because PyEDB runs in memory, it does not require a user interface. Its API is e
 handling and editing large and complex layout designs. PyEDB is the best choice for addressing layout
 design automation. Its headless architecture also makes it well suited on both Windows and Linux.
 
-PyEDB loads and saves AEDB files, which can natively be read by `Ansys Electronics Desktop <https://www.ansys.com/products/electronics>`_ (AEDT) 
-and Ansys SIwave to visualize and edit projects, run simulations, or perform postprocessing.
-AEDB files are project self-contained, meaning that ready-to-solve projects can be written with PyEDB.
-Therefore Ansys solvers can directly load AEDB files graphically or in batch non-graphically to
-support submission for job scheduling on a cluster.
+PyEDB loads and saves AEDB files, which can natively be read by AEDT and Ansys SIwave to visualize
+and edit projects, run simulations, or perform postprocessing. AEDB files are project self-contained,
+meaning that ready-to-solve projects can be written with PyEDB. Therefore Ansys solvers can directly
+load AEDB files graphically or in batch non-graphically to support submission for job scheduling on a cluster.
 
 .. image:: ../Resources/aedt_3.png
   :width: 800

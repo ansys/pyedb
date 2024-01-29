@@ -1,14 +1,14 @@
 ===================
-Load and export EDB
+Load a layout file
 ===================
 
 .. grid:: 2
 
-   .. grid-item-card:: Load a layout
+   .. grid-item-card:: Load a layout file
             :link: loading_layout
             :link-type: doc
 
-            Learn more about how to load a layout in EDB.
+            Learn how to load an AEDB layout file in EDB.
 
 
 

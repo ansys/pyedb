@@ -1,9 +1,8 @@
-.. _ref_install_pyedb: install_pyedb_
-
 .. _install_pyedb:
 
 Installation
 ============
+
 PyEDB consolidates and extends all existing capital around scripting for EDB,
 allowing reuse of existing code, sharing of best practices, and collaboration.
 
@@ -11,6 +10,7 @@ PyEDB has been tested on HFSS, Icepak, and SIWave.
 
 Requirements
 ~~~~~~~~~~~~
+
 To use PyEDB, you must have a licensed copy of AEDT 2023 R2 or later.
 
 PyEDB also supports the AEDT Student version 2023 R2 or later. For more information, see the
@@ -21,13 +21,14 @@ Any additional runtime dependencies are listed in the following installation top
 
 Install from a Python file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-AEDT already includes CPython 3.7, which can be used to run PyEDB.
-You can also use CPython 3.7 (3.10 from AEDT 2023 R2) in a virtual environment to run PyEDB.
+
+AEDT already includes CPython 3.7, which can be used to run PyEDB. In a virtual environment,
+you can run PyEDT using CPython 3.7 9or CPython 3.7 through 3.10 from AEDT 2023 R2).
 
 You can install PyEDB offline using a wheelhouse, which is a ZIP file containing all
-the needed packages. The `Releases <https://github.com/ansys/pyedb/releases>`_
-page of the PyEDB repository provides PyEDB wheelhouses for various
-Python releases on different operating system.
+the needed packages. The `Releases <https://github.com/ansys-internal/pyansys-edb/releases>`_
+page of the PyEDB repository provides an **Assets** ares with the PyEDB wheelhouses for
+various Python releases on different operating system.
 
 After downloading the wheelhouse for your Python release and operating system,
 run the script from the Python terminal, providing the full path to the ZIP file
@@ -54,19 +55,25 @@ However, you must set up the following environment variables:
     export ANSYSEM_ROOT222=/path/to/AedtRoot/AnsysEM/v222/Linux64
     export LD_LIBRARY_PATH=$ANSYSEM_ROOT222/common/mono/Linux64/lib64:$ANSYSEM_ROOT222/Delcross:$LD_LIBRARY_PATH
 
+.. _install_pyedb_from_wheelhouse:
 
 Install offline from a wheelhouse
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Using a wheelhouse can be helpful if you work for a company that restricts access
-to external networks. A wheelhouse is a ZIP file containing all needed packages.
+to external networks. A wheelhouse is a ZIP file that contains all dependencies
+for package and allows full installation without a need to download additional files.
 Having a single file eases the security review of the package content and allows for
 easy sharing with others who need to install it.
 
-On the `Releases <https://github.com/ansys-internal/pyansys-edb/releases>` page of the PyEDB repository,
+On the `Releases <https://github.com/ansys-internal/pyansys-edb/releases>`_ page of the PyEDB repository,
 the **Assets** area shows the wheelhouses that are available. After downloading the wheelhouse for your setup,
-extract the files to a folder and run the command for install PyEDB and all of its dependencies
+extract the files to a folder and run the command for installing PyEDB and all of its dependencies
 from your Python terminal, providing the full path to the ZIP file as an argument.
+
+.. code:: shell
+
+   pip install --no-cache-dir --no-index --find-links=/path/to/pyansys-edb/wheelhouse pyansys-edb
 
 For example, on Windows with Python 3.7, install PyEDB and all its dependencies from a
 wheelhouse with code like this:
@@ -78,6 +85,8 @@ wheelhouse with code like this:
 
 Update PyEDB to the latest version
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+After installingPyEDT, upgrade it to the latest version with this command:
 
 .. code:: bash
 

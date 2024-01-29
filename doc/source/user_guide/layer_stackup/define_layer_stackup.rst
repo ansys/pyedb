@@ -1,15 +1,14 @@
 .. _define_layer_stackup_example:
 
-Define layer stackup
-====================
-This section describes how create layer stackup.
+Add a layer in a layout stackup
+===============================
+
+This page shows how to add a layer in the current layer stackup.
 
 .. autosummary::
    :toctree: _autosummary
 
 .. code:: python
-
-
 
     from pyedb.dotnet.edb import Edb
 
@@ -31,4 +30,4 @@ This section describes how create layer stackup.
 
 .. image:: ../../Resources/define_layer_stackup.png
 ..   :width: 800
-..   :alt: Define layer stackup
+..   :alt: Layer added to the layer stackup

@@ -3,16 +3,16 @@
 Quick code
 ==========
 
-You can view or download a PyEDB cheat sheet, which is a one-page reference
-providing syntax rules and commands for using the PyEDB API:
+To help you begin using PyEDB, you can view or download the PyEDB API cheat sheet. This one-page reference
+provides syntax rules and commands for using the PyEDB API:
 
 - `View <https://cheatsheets.docs.pyansys.com/pyedb_API_cheat_sheet.png>`_ the PyEDB API cheat sheet.
 - `Download <https://cheatsheets.docs.pyansys.com/pyedb_API_cheat_sheet.pdf>`_ the PyEDB API cheat sheet.
 
-Example
--------
+Load an AEDB file into memory
+-----------------------------
 
-This example shows how to use PyEDB to load an existing AEDB file into memory:
+This code shows how to use PyEDB to load an existing AEDB file into memory:
 
 .. code:: python
   
@@ -24,15 +24,12 @@ This example shows how to use PyEDB to load an existing AEDB file into memory:
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
     edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
-Example workflow
-----------------
-
-Here’s a brief example of how PyEDB works:
-
 Connect to EDB from a Python IDE
----------------------------------
-PyEDB works both inside AEDT and as a standalone app.
-PyEDB also provides advanced error management. Usage examples follow.
+--------------------------------
+
+PyEDB works both inside AEDT and as a standalone app. PyEDB also provides
+advanced error management. The following code examples provide a brief
+example of how PyEDB works.
 
 Explicit PyEDB declaration and error management
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

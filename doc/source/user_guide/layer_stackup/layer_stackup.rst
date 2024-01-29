@@ -1,15 +1,14 @@
 .. _layer_stackup_example:
 
-Checking and editing layer stackup
-==================================
-This section describes how to edit layer stackup:
+Edit a layer stackup in a layout stackup
+========================================
+
+This page shows how edit a layer in the current layer stackup.
 
 .. autosummary::
    :toctree: _autosummary
 
 .. code:: python
-
-
 
     from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
@@ -19,34 +18,31 @@ This section describes how to edit layer stackup:
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
     edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
-    # plotting layer stackup in matplotlib
+    # plot layer stackup in Matplotlib
     edbapp.stackup.plot()
-    # changing top layer thickness to 40um
+    # change top layer thickness to 40um
     edbapp.stackup.signal_layers["1_Top"].thickness = 40e-6
     print(f"Top layer thickness update {edbapp.stackup.signal_layers['1_Top'].thickness}")
     edbapp.save()
     edbapp.close()
 
 .. image:: ../../resources/stackup.png
-
-:width: 800
-:alt: Layer stackup plot
+   :width: 800
+   :alt: Layer stackup plot
 
 .. code:: python
 
-
-
-    # retrieving signal layers name
+    # retrieve list of signal layer names
     signal_layers = list(edbapp.stackup.signal_layers.keys())
 
-    # selecting top layer
+    # select top layer
     top_layer = edbapp.stackup.signal_layers[signal_layers[0]]
 
-    # Stackup total thickness
+    # get stackup total thickness
     layout_stats = edbapp.get_statistics()
     layout_stats.stackup_thickness
 
-    # setting all signal layers thickness to 20um
+    # set thickness of all signal layers to ``20um``
     for layer_name, layer in edbapp.stackup.signal_layers.items():
         layer.thickness = "20um"
 
@@ -67,7 +63,3 @@ This section describes how to edit layer stackup:
         thickness="200um",
         material="SolderMask",
     )
-
-
-
-

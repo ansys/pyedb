@@ -1,8 +1,8 @@
 PyEDB documentation |version|
 =============================
 
-PyEDB is a Python library that interacts directly with the `PyEDB-Core API <https://github.com/ansys/pyedb-core>`_
-to make scripting simpler.
+PyEDB is a Python library that interacts directly with the `PyEDB-Core <https://github.com/ansys/pyedb-core>`_
+API to make scripting simpler.
 
 .. grid:: 2
 
@@ -31,7 +31,7 @@ to make scripting simpler.
             User guide
             ^^^^^^^^^^
 
-            Understand how to use PyEDB.
+            Understand how to use PyEDB by looking at some simple tutorials.
 
             +++
             .. button-link:: user_guide/index.html

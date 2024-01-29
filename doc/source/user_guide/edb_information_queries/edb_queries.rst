@@ -1,18 +1,26 @@
 .. _edb_queries_example:
 
-EDB queries
-===========
-PyEDB allows layout information queries, this section describe some basic examples:
+Get layout statistics
+=====================
+
+PyEDB allows you to query a layout for statistics. This page shows how to perform
+these tasks:
+
+- Load a layout.
+- Get statistics.
+- Get nets and plot them in Matplotlib.
+- Get all components and then get pins from components connected to a given net.
 
 .. autosummary::
    :toctree: _autosummary
 
-- Load EDB
+Load a layout
+~~~~~~~~~~~~~
 
 .. code:: python
 
 
-    # loading EDB
+    # import EDB and load a layout
     from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
@@ -21,10 +29,10 @@ PyEDB allows layout information queries, this section describe some basic exampl
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
     edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
-- Getting layout statistics
+Get statistics
+~~~~~~~~~~~~~~
 
 .. code:: python
-
 
     stats = edbapp.get_statistics()
 
@@ -32,32 +40,30 @@ PyEDB allows layout information queries, this section describe some basic exampl
    :width: 400
    :alt: Layout stats
 
-- Nets
+Get nets and plot them in Matplotlib
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
-
-
 
    # net list
    edbapp.nets.netlist
    # power nets
    nets.power
-   # Plotting layout in matplotlib
+   # Plot nets in Matplotlib
    edbapp.nets.plot(None)
 
 .. image:: ../../resources/layout_plot_all_nets.png
    :width: 800
-   :alt: Plot all nets
+   :alt: Plot all nets in Matplotlib
 
-- Components
+Get all components and then get pins from components connected to a given net
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
 
-
-
-   # Getting all components
+   # Get all components
    nets = edbapp.components.instances
-   # Getting pins from components connected to given net
+   # Get pins from components connected to a given net
    u9_gnd_pins = [
        pin for pin in list(edbapp.components["U9"].pins.values()) if pin.net_name == "GND"
    ]

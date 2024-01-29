@@ -1,8 +1,9 @@
 .. _create_edge_port_on_polygon_example:
 
-Create edge port
-================
-This section describes how create edge port on polygon and trace.
+Create an edge port
+===================
+
+This page shows how to create an edge port on a polygon and trace.
 
 .. autosummary::
    :toctree: _autosummary
@@ -21,23 +22,23 @@ This section describes how create edge port on polygon and trace.
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/edb_edge_ports.aedb", destination=temp_folder)
 
-    # loading EDB
+    # load EDB
     edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
-    # retrieving polygon list
+    # retrieve polygon list
     poly_list = [
         poly for poly in edbapp.layout.primitives if int(poly.GetPrimitiveType()) == 2
     ]
 
-    # selecting specific polygons
+    # select specific polygons
     port_poly = [poly for poly in poly_list if poly.GetId() == 17][0]
     ref_poly = [poly for poly in poly_list if poly.GetId() == 19][0]
 
-    #  defining port location
+    #  define port location
     port_location = [-65e-3, -13e-3]
     ref_location = [-63e-3, -13e-3]
 
-    # creating edge port
+    # create edge port
     edbapp.hfss.create_edge_port_on_polygon(
         polygon=port_poly,
         reference_polygon=ref_poly,
@@ -45,15 +46,15 @@ This section describes how create edge port on polygon and trace.
         reference_point=ref_location,
     )
 
-    # selecting specific polygon
+    # select specific polygon
     port_poly = [poly for poly in poly_list if poly.GetId() == 23][0]
     ref_poly = [poly for poly in poly_list if poly.GetId() == 22][0]
 
-    # port location
+    # define port location
     port_location = [-65e-3, -10e-3]
     ref_location = [-65e-3, -10e-3]
 
-    #  create port on polygon
+    # create port on polygon
     edbapp.hfss.create_edge_port_on_polygon(
         polygon=port_poly,
         reference_polygon=ref_poly,
@@ -61,10 +62,10 @@ This section describes how create edge port on polygon and trace.
         reference_point=ref_location,
     )
 
-    # selecting polygon
+    # select polygon
     port_poly = [poly for poly in poly_list if poly.GetId() == 25][0]
 
-    # port location
+    # define port location
     port_location = [-65e-3, -7e-3]
 
     # create edge port with defining reference layer
@@ -77,19 +78,19 @@ This section describes how create edge port on polygon and trace.
         [["-55mm", "-10mm"], ["-29mm", "-10mm"]], "TOP", "1mm", "SIG", "Flat", "Flat"
     )
 
-    # create wave port a the end of the trace
+    # create wave port at the end of the trace
     sig.create_edge_port("pcb_port_1", "end", "Wave", None, 8, 8)
 
     # create gap port at the beginning of the trace
     sig.create_edge_port("pcb_port_2", "start", "gap")
 
-    # retrieving existing port
+    # retrieve existing port
     gap_port = edbapp.ports["pcb_port_2"]
 
-    # renaming port
+    # rename port
     gap_port.name = "gap_port"
 
-    # changing gap to circuit port
+    # change gap to circuit port
     gap_port.is_circuit_port = True
 
     edbapp.save_edb()
@@ -97,4 +98,4 @@ This section describes how create edge port on polygon and trace.
 
 .. image:: ../../Resources/create_edge_port_on_polygon_and_trace.png
 ..   :width: 800
-..   :alt: Create edge port on polygon and trace
+..   :alt: Edge port created on a polygon and trace

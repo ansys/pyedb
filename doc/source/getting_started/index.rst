@@ -8,7 +8,7 @@ Getting started
             :link: about
             :link-type: doc
 
-            Learn more about PyEDB.
+            Understand what PyEDB is and why you would use it.
 
    .. grid-item-card:: Installation
             :link: installation
@@ -20,7 +20,7 @@ Getting started
             :link: quickcode
             :link-type: doc
 
-            See a brief example of how PyEDB works.
+            See some brief code examples of how to use PyEDB.
 
 
    .. grid-item-card:: Versions and interfaces
@@ -34,7 +34,7 @@ Getting started
             :link-type: doc
             :margin: 2 2 0 0
 
-            Any questions? See the information onn this page before submitting an issue.
+            Any questions or issues? See the information on this page before creating an issue.
 
 .. toctree::
    :maxdepth: 1

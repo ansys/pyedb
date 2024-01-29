@@ -1,36 +1,26 @@
-================
-Simulation setup
-================
+=========================
+Build simulation projects
+=========================
 
 .. grid:: 2
 
-   .. grid-item-card:: Siwave SYZ analysis
-            :link: add_siwave_analysis
+   .. grid-item-card:: Clip a design
+            :link: cutout
             :link-type: doc
 
-            Learn more about how to create an Siwave setup.
+            Learn how to clip a design based on net selection to reduce computer resources and speed up the simulation.
 
 
-   .. grid-item-card:: HFSS simulation
-            :link: define_hfss_simulation_setup
-            :link-type: doc
-            :margin: 2 2 0 0
-
-            Learn more about how to create an HFSS setup.
-
-   .. grid-item-card:: Hfss extent
-            :link: define_hfss_extent
+   .. grid-item-card:: Build a signal integrity project
+            :link: build_signal_integrity_project
             :link-type: doc
             :margin: 2 2 0 0
 
-            Learn how to define HFSS extent.
+            Learn build an signal integrity project.
 
 .. toctree::
    :hidden:
    :maxdepth: 2
 
-
-
-   add_siwave_analysis
-   define_hfss_simulation_setup
-   define_hfss_extent
+   cutout
+   build_signal_integrity_project

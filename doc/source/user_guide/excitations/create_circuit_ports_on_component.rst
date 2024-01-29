@@ -1,8 +1,9 @@
 .. _create_circuit_port_on_component_example:
 
-Create circuit ports on component
-=================================
-This section describes how to retrieve pins and create circuit ports on components:
+Create a circuit port
+=====================
+
+This page shows how to retrieve pins and create a circuit port on a component.
 
 .. autosummary::
    :toctree: _autosummary
@@ -22,15 +23,15 @@ This section describes how to retrieve pins and create circuit ports on componen
     edbapp.siwave.create_circuit_port_on_net("U1", "1V0", "U1", "GND", 50, "test")
     edbapp.components.get_pin_from_component("U1")
 
-    # Creating pin groups
+    # create pin groups
     edbapp.siwave.create_pin_group_on_net("U1", "1V0", "PG_V1P0_S0")
-    # Creating port on pin group
+    # create port on pin group
     edbapp.siwave.create_circuit_port_on_pin_group(
         "PG_V1P0_S0", "PinGroup_2", impedance=50, name="test_port"
     )
-    # renaming port with property setter
+    # rename port with property setter
     edbapp.excitations["test_port"].name = "test_rename"
-    # retrieving port
+    # retrieve port
     created_port = (port for port in list(edbapp.excitations) if port == "test_rename")
     edbapp.save_edb()
     edbapp.close_edb()
@@ -38,4 +39,4 @@ This section describes how to retrieve pins and create circuit ports on componen
 
 .. image:: ../../Resources/create_circuit_ports_on_component.png
 ..     :width: 800
-..     :alt: Create circuit port on components
+..     :alt: Circuit port created on a component
