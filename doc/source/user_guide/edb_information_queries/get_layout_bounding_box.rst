@@ -1,7 +1,7 @@
 .. _edb_queries_layout_bbox_example:
 
-Getting layout size
-===================
+Get layout size
+===============
 
 This tutorial shows how to retrieve the layout size by getting the bounding box.
 

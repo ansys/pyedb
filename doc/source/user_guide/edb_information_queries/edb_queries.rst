@@ -56,8 +56,8 @@ Get nets and plot them in Matplotlib
    :width: 800
    :alt: Plot all nets in Matplotlib
 
-Get all components and then get pins from components connected to a given net
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Get all components and then pins from components connected to a net
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
 
