@@ -20,6 +20,6 @@ class TestClass:
         assert self.edbapp.net_classes.items
         assert self.edbapp.net_classes.create("DDR4_ADD", ["DDR4_A0", "DDR4_A1"])
         assert self.edbapp.net_classes["DDR4_ADD"].name == "DDR4_ADD"
-        assert self.edbapp.net_classes["DDR4_ADD"].sub_elments
+        assert self.edbapp.net_classes["DDR4_ADD"].nets
         self.edbapp.net_classes["DDR4_ADD"].name = "DDR4_ADD_RENAMED"
         assert not self.edbapp.net_classes["DDR4_ADD_RENAMED"].is_null

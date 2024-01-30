@@ -23,14 +23,14 @@ class TestClass:
 
     def test_nets_queries(self):
         """Evaluate nets queries"""
-        assert len(self.edbapp.sub_elments.netlist) > 0
-        signalnets = self.edbapp.sub_elments.signal
+        assert len(self.edbapp.nets.netlist) > 0
+        signalnets = self.edbapp.nets.signal
         assert not signalnets[list(signalnets.keys())[0]].is_power_ground
         assert not signalnets[list(signalnets.keys())[0]].IsPowerGround()
         assert len(list(signalnets[list(signalnets.keys())[0]].primitives)) > 0
         assert len(signalnets) > 2
 
-        powernets = self.edbapp.sub_elments.power
+        powernets = self.edbapp.nets.power
         assert len(powernets) > 2
         assert powernets["AVCC_1V3"].is_power_ground
         powernets["AVCC_1V3"].is_power_ground = False
@@ -41,14 +41,14 @@ class TestClass:
         assert len(list(powernets["AVCC_1V3"].components.keys())) > 0
         assert len(powernets["AVCC_1V3"].primitives) > 0
 
-        assert self.edbapp.sub_elments.find_or_create_net("GND")
-        assert self.edbapp.sub_elments.find_or_create_net(start_with="gn")
-        assert self.edbapp.sub_elments.find_or_create_net(start_with="g", end_with="d")
-        assert self.edbapp.sub_elments.find_or_create_net(end_with="d")
-        assert self.edbapp.sub_elments.find_or_create_net(contain="usb")
-        assert self.edbapp.sub_elments["AVCC_1V3"].extended_net is None
+        assert self.edbapp.nets.find_or_create_net("GND")
+        assert self.edbapp.nets.find_or_create_net(start_with="gn")
+        assert self.edbapp.nets.find_or_create_net(start_with="g", end_with="d")
+        assert self.edbapp.nets.find_or_create_net(end_with="d")
+        assert self.edbapp.nets.find_or_create_net(contain="usb")
+        assert self.edbapp.nets["AVCC_1V3"].extended_net is None
         self.edbapp.extended_nets.auto_identify_power()
-        assert self.edbapp.sub_elments["AVCC_1V3"].extended_net
+        assert self.edbapp.nets["AVCC_1V3"].extended_net
 
     def test_nets_get_power_tree(self):
         """Evaluate nets get powertree."""
@@ -58,44 +58,44 @@ class TestClass:
             component_list,
             component_list_columns,
             net_group,
-        ) = self.edbapp.sub_elments.get_powertree(OUTPUT_NET, GROUND_NETS)
+        ) = self.edbapp.nets.get_powertree(OUTPUT_NET, GROUND_NETS)
         assert component_list
         assert component_list_columns
         assert net_group
 
     def test_nets_delete(self):
         """Delete a net."""
-        assert "JTAG_TDI" in self.edbapp.sub_elments
-        self.edbapp.sub_elments["JTAG_TCK"].delete()
-        nets_deleted = self.edbapp.sub_elments.delete("JTAG_TDI")
+        assert "JTAG_TDI" in self.edbapp.nets
+        self.edbapp.nets["JTAG_TCK"].delete()
+        nets_deleted = self.edbapp.nets.delete("JTAG_TDI")
         assert "JTAG_TDI" in nets_deleted
-        assert "JTAG_TDI" not in self.edbapp.sub_elments
+        assert "JTAG_TDI" not in self.edbapp.nets
 
     def test_nets_classify_nets(self):
         """Reassign power based on list of nets."""
-        assert "SFPA_SDA" in self.edbapp.sub_elments.signal
-        assert "SFPA_SCL" in self.edbapp.sub_elments.signal
-        assert "SFPA_VCCR" in self.edbapp.sub_elments.power
+        assert "SFPA_SDA" in self.edbapp.nets.signal
+        assert "SFPA_SCL" in self.edbapp.nets.signal
+        assert "SFPA_VCCR" in self.edbapp.nets.power
 
-        assert self.edbapp.sub_elments.classify_nets(["SFPA_SDA", "SFPA_SCL"], ["SFPA_VCCR"])
-        assert "SFPA_SDA" in self.edbapp.sub_elments.power
-        assert "SFPA_SDA" not in self.edbapp.sub_elments.signal
-        assert "SFPA_SCL" in self.edbapp.sub_elments.power
-        assert "SFPA_SCL" not in self.edbapp.sub_elments.signal
-        assert "SFPA_VCCR" not in self.edbapp.sub_elments.power
-        assert "SFPA_VCCR" in self.edbapp.sub_elments.signal
+        assert self.edbapp.nets.classify_nets(["SFPA_SDA", "SFPA_SCL"], ["SFPA_VCCR"])
+        assert "SFPA_SDA" in self.edbapp.nets.power
+        assert "SFPA_SDA" not in self.edbapp.nets.signal
+        assert "SFPA_SCL" in self.edbapp.nets.power
+        assert "SFPA_SCL" not in self.edbapp.nets.signal
+        assert "SFPA_VCCR" not in self.edbapp.nets.power
+        assert "SFPA_VCCR" in self.edbapp.nets.signal
 
-        assert self.edbapp.sub_elments.classify_nets(["SFPA_VCCR"], ["SFPA_SDA", "SFPA_SCL"])
-        assert "SFPA_SDA" in self.edbapp.sub_elments.signal
-        assert "SFPA_SCL" in self.edbapp.sub_elments.signal
-        assert "SFPA_VCCR" in self.edbapp.sub_elments.power
+        assert self.edbapp.nets.classify_nets(["SFPA_VCCR"], ["SFPA_SDA", "SFPA_SCL"])
+        assert "SFPA_SDA" in self.edbapp.nets.signal
+        assert "SFPA_SCL" in self.edbapp.nets.signal
+        assert "SFPA_VCCR" in self.edbapp.nets.power
 
     def test_nets_arc_data(self):
         """Evaluate primitive arc data."""
-        assert len(self.edbapp.sub_elments["1.2V_DVDDL"].primitives[0].arcs) > 0
-        assert self.edbapp.sub_elments["1.2V_DVDDL"].primitives[0].arcs[0].start
-        assert self.edbapp.sub_elments["1.2V_DVDDL"].primitives[0].arcs[0].end
-        assert self.edbapp.sub_elments["1.2V_DVDDL"].primitives[0].arcs[0].height
+        assert len(self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs) > 0
+        assert self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs[0].start
+        assert self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs[0].end
+        assert self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
 
     @pytest.mark.slow
     def test_nets_dc_shorts(self):
@@ -105,7 +105,7 @@ class TestClass:
         edbapp = Edb(target_path, edbversion=desktop_version)
         dc_shorts = edbapp.layout_validation.dc_shorts()
         assert dc_shorts
-        edbapp.nets.sub_elments["DDR4_A0"].name = "DDR4$A0"
+        edbapp.nets.nets["DDR4_A0"].name = "DDR4$A0"
         edbapp.layout_validation.illegal_net_names(True)
         edbapp.layout_validation.illegal_rlc_values(True)
 
@@ -119,7 +119,7 @@ class TestClass:
 
     def test_nets_eligible_power_nets(self):
         """Evaluate eligible power nets."""
-        assert "GND" in [i.name for i in self.edbapp.sub_elments.eligible_power_nets()]
+        assert "GND" in [i.name for i in self.edbapp.nets.eligible_power_nets()]
 
     def test_nets_merge_polygon(self):
         """Convert paths from net into polygons."""
