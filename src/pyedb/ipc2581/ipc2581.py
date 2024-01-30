@@ -304,7 +304,7 @@ class Ipc2581(object):
 
     @pyedb_function_handler()
     def add_logical_nets(self):
-        nets = [i for i in self._pedb.sub_elments.sub_elments.values()]
+        nets = [i for i in self._pedb.nets.nets.values()]
         for net in nets:
             self.ecad.cad_data.cad_data_step.add_logical_net(net)
 

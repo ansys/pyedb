@@ -93,7 +93,7 @@ class Connectable(LayoutObj):
     @net.setter
     def net(self, value):
         """Set net."""
-        net = self._pedb.sub_elments[value]
+        net = self._pedb.nets[value]
         self._edb_object.SetNet(net.net_object)
 
     @property

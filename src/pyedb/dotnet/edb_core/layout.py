@@ -113,7 +113,7 @@ class EdbLayout(object):
             Dictionary of primitives with nat names as keys.
         """
         _prim_by_net = {}
-        for net, net_obj in self._pedb.sub_elments.sub_elments.items():
+        for net, net_obj in self._pedb.nets.nets.items():
             _prim_by_net[net] = [cast(i, self._pedb) for i in net_obj.primitives]
         return _prim_by_net
 
@@ -422,7 +422,7 @@ class EdbLayout(object):
         :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
             ``True`` when successful, ``False`` when failed.
         """
-        net = self._pedb.sub_elments.find_or_create_net(net_name)
+        net = self._pedb.nets.find_or_create_net(net_name)
         if start_cap_style.lower() == "round":
             start_cap_style = self._edb.cell.primitive.PathEndCapStyle.Round
         elif start_cap_style.lower() == "extended":
@@ -536,7 +536,7 @@ class EdbLayout(object):
         bool, :class:`dotnet.edb_core.edb_data.primitives.EDBPrimitives`
             Polygon when successful, ``False`` when failed.
         """
-        net = self._pedb.sub_elments.find_or_create_net(net_name)
+        net = self._pedb.nets.find_or_create_net(net_name)
         if isinstance(main_shape, list):
             arcs = []
             for _ in range(len(main_shape)):
@@ -654,7 +654,7 @@ class EdbLayout(object):
          :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
             Rectangle when successful, ``False`` when failed.
         """
-        edb_net = self._pedb.sub_elments.find_or_create_net(net_name)
+        edb_net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "LowerLeftUpperRight":
             rep_type = self._edb.cell.primitive.RectangleRepresentationType.LowerLeftUpperRight
             rect = self._edb.cell.primitive.rectangle.create(
@@ -710,7 +710,7 @@ class EdbLayout(object):
         :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
             Objects of the circle created when successful.
         """
-        edb_net = self._pedb.sub_elments.find_or_create_net(net_name)
+        edb_net = self._pedb.nets.find_or_create_net(net_name)
 
         circle = self._edb.cell.primitive.circle.create(
             self._active_layout,
@@ -1150,7 +1150,7 @@ class EdbLayout(object):
                         poly = self._edb.cell.primitive.polygon.create(
                             self._active_layout,
                             lay,
-                            self._pedb.sub_elments.sub_elments[net],
+                            self._pedb.nets.nets[net],
                             item,
                         )
                     list_to_delete = [i for i in poly_by_nets[net]]
@@ -1227,14 +1227,14 @@ class EdbLayout(object):
         stat_model.num_inductors = len(self._pedb.components.inductors)
         stat_model.num_resistors = len(self._pedb.components.resistors)
         stat_model.num_capacitors = len(self._pedb.components.capacitors)
-        stat_model.num_nets = len(self._pedb.sub_elments.sub_elments)
+        stat_model.num_nets = len(self._pedb.nets.nets)
         stat_model.num_traces = len(self._pedb.modeler.paths)
         stat_model.num_polygons = len(self._pedb.modeler.polygons)
         stat_model.num_vias = len(self._pedb.padstacks.instances)
         stat_model.stackup_thickness = self._pedb.stackup.get_layout_thickness()
         if evaluate_area:
             if net_list:
-                netlist = list(self._pedb.sub_elments.sub_elments.keys())
+                netlist = list(self._pedb.nets.nets.keys())
                 _poly = self._pedb.get_conformal_polygon_from_netlist(netlist)
             else:
                 _poly = self._pedb.get_conformal_polygon_from_netlist()

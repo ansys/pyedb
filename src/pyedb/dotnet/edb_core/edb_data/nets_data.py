@@ -17,7 +17,7 @@ class EDBNetsData(NetDotNet):
     --------
     >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
-    >>> edb_net = edb.sub_elments.sub_elments["GND"]
+    >>> edb_net = edb.nets.nets["GND"]
     >>> edb_net.name # Class Property
     >>> edb_net.name # EDB Object Property
     """
@@ -120,7 +120,7 @@ class EDBNetsData(NetDotNet):
             Image size in pixel (width, height).
         """
 
-        self._app.sub_elments.plot(
+        self._app.nets.plot(
             self.name,
             layers=layers,
             show_legend=show_legend,
@@ -158,7 +158,7 @@ class EDBNetsData(NetDotNet):
         --------
         >>> from pyedb import Edb
         >>> app = Edb()
-        >>> app.sub_elments["BST_V3P3_S5"].extended_net
+        >>> app.nets["BST_V3P3_S5"].extended_net
         """
         api_extended_net = self._api_get_extended_net
         obj = EDBExtendedNetData(self._app, api_extended_net)
@@ -185,7 +185,7 @@ class EDBNetClassData(NetClassDotNet):
         self._app = core_app
         self._core_components = core_app.components
         self._core_primitive = core_app.modeler
-        self._core_nets = core_app.sub_elments
+        self._core_nets = core_app.nets
 
     @property
     def nets(self):
@@ -201,7 +201,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
     --------
     >>> from pyedb import Edb
     >>> edb = Edb(myedb, edbversion="2021.2")
-    >>> edb_extended_net = edb.sub_elments.extended_nets["GND"]
+    >>> edb_extended_net = edb.nets.extended_nets["GND"]
     >>> edb_extended_net.name # Class Property
     """
 
@@ -209,7 +209,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
         self._app = core_app
         self._core_components = core_app.components
         self._core_primitive = core_app.modeler
-        self._core_nets = core_app.sub_elments
+        self._core_nets = core_app.nets
         ExtendedNetDotNet.__init__(self, self._app, raw_extended_net)
 
     @property
@@ -242,7 +242,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
                 {
                     i: v
                     for i, v in self._app._nets[net].components.items()
-                    if list(set(v.sub_elments).intersection(nets)) != [net] and v.type in ["Resistor", "Inductor", "Capacitor"]
+                    if list(set(v.nets).intersection(nets)) != [net] and v.type in ["Resistor", "Inductor", "Capacitor"]
                 }
             )
         return comps_common
@@ -265,7 +265,7 @@ class EDBDifferentialPairData(DifferentialPairDotNet):
         self._app = core_app
         self._core_components = core_app.components
         self._core_primitive = core_app.modeler
-        self._core_nets = core_app.sub_elments
+        self._core_nets = core_app.nets
         DifferentialPairDotNet.__init__(self, self._app, api_object)
 
     @property

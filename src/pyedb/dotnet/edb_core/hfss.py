@@ -137,9 +137,9 @@ class EdbHfss(object):
         """
         nets = {}
         for net in self._pedb.excitations_nets:
-            smallest = self._pedb.sub_elments[net].get_smallest_trace_width()
+            smallest = self._pedb.nets[net].get_smallest_trace_width()
             if smallest < 1e10:
-                nets[net] = self._pedb.sub_elments[net].get_smallest_trace_width()
+                nets[net] = self._pedb.nets[net].get_smallest_trace_width()
         return nets
 
     @pyedb_function_handler()
@@ -991,7 +991,7 @@ class EdbHfss(object):
             if not isinstance(reference_layer, self._edb.Cell.ILayerReadOnly):
                 return False
             layout = nets[0].GetLayout()
-            layout_bbox = self._pedb.get_conformal_polygon_from_netlist(self._pedb.sub_elments.netlist)
+            layout_bbox = self._pedb.get_conformal_polygon_from_netlist(self._pedb.nets.netlist)
             layout_extent_segments = [pt for pt in list(layout_bbox.GetArcData()) if pt.IsSegment()]
             first_pt = layout_extent_segments[0]
             layout_extent_points = [
@@ -1003,7 +1003,7 @@ class EdbHfss(object):
                 layout_extent_points[0].append(end_point[0])
                 layout_extent_points[1].append(end_point[1])
             for net in nets:
-                net_primitives = self._pedb.sub_elments[net.name].primitives
+                net_primitives = self._pedb.nets[net.name].primitives
                 net_paths = [pp for pp in net_primitives if pp.type == "Path"]
                 for path in net_paths:
                     trace_path_pts = list(path.center_line.Points)
@@ -1074,12 +1074,12 @@ class EdbHfss(object):
         """
         if not isinstance(nets, list):
             if isinstance(nets, str):
-                nets = list(self._pedb.sub_elments.signal.values())
+                nets = list(self._pedb.nets.signal.values())
         else:
-            nets = [self._pedb.sub_elments.signal[net] for net in nets]
+            nets = [self._pedb.nets.signal[net] for net in nets]
         if nets:
             if isinstance(reference_net, str):
-                reference_net = self._pedb.sub_elments[reference_net]
+                reference_net = self._pedb.nets[reference_net]
             if not reference_net:
                 self._logger.error("No reference net provided for creating port")
                 return False
@@ -1434,7 +1434,7 @@ class EdbHfss(object):
             as argument."
             )
             return False
-        net_names = [net.name for net in self._layout.sub_elments if not net.IsPowerGround()]
+        net_names = [net.name for net in self._layout.nets if not net.IsPowerGround()]
         if simulation_setup.components and isinstance(simulation_setup.components[0], str):
             cmp_names = (
                 simulation_setup.components

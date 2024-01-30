@@ -68,7 +68,10 @@ class BaseSimulationSetup(object):
             "kAMI": None,
             "kAnalysisOption": None,
             "kSIwaveDCIR": utility.SIWaveDCIRSimulationSetup,
-            "kSIwaveNearField": None,
+            "kSIwaveEMI": None,
+            "kHFSSPI": None,
+            "kDDRwizard": None,
+            "kQ3D": None,
             "kNumSetupTypes": None,
         }
         setup_utility = setup_type_mapping[self._setup_type]

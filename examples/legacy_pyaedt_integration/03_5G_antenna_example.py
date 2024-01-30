@@ -226,7 +226,7 @@ h3d = Hfss3dLayout(
 # ~~~~~~~~~~~~~~~~~
 # Plot the geometry. The EDB methods are also accessible from the ``Hfss3dlayout`` class.
 
-h3d.modeler.edb.sub_elments.plot(None)
+h3d.modeler.edb.nets.plot(None)
 
 ###############################################################################
 # Create setup and sweeps

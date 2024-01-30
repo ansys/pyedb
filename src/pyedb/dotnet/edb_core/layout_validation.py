@@ -36,7 +36,7 @@ class LayoutValidation:
 
         """
         if not net_list:
-            net_list = list(self._pedb.sub_elments.sub_elments.keys())
+            net_list = list(self._pedb.nets.nets.keys())
         elif isinstance(net_list, str):
             net_list = [net_list]
         _objects_list = {}
@@ -64,7 +64,7 @@ class LayoutValidation:
             for i in _padstacks_list.get(net, []):
                 objs.append(i)
             if not len(objs):
-                self._pedb.sub_elments[net].delete()
+                self._pedb.nets[net].delete()
                 continue
 
             connected_objs = objs[0].get_connected_objects()
@@ -135,7 +135,7 @@ class LayoutValidation:
         timer_start = self._pedb._logger.reset_timer()
 
         if not net_list:
-            net_list = list(self._pedb.sub_elments.keys())
+            net_list = list(self._pedb.nets.keys())
         elif isinstance(net_list, str):
             net_list = [net_list]
         _objects_list = {}
@@ -222,7 +222,7 @@ class LayoutValidation:
 
                     else:
                         new_net_name = generate_unique_name(net, n=6)
-                        net_obj = self._pedb.sub_elments.find_or_create_net(new_net_name)
+                        net_obj = self._pedb.nets.find_or_create_net(new_net_name)
                         if net_obj:
                             new_nets.append(net_obj.GetName())
                             for geo in disjoints:
@@ -240,7 +240,7 @@ class LayoutValidation:
         """Find and fix illegal net names."""
         pattern = r"[\(\)\\\/:;*?<>\'\"|`~$]"
 
-        nets = self._pedb.sub_elments.sub_elments
+        nets = self._pedb.nets.nets
 
         renamed_nets = []
         for net, val in nets.items():
