@@ -1,11 +1,10 @@
 import json
 from pyedb.generic.general_methods import ET
-from pathlib import Path
 
-from pyedb.dotnet.edb_core.edb_data.sim_setup_data.data.siw_emi_config_file.emc.tag_library import \
+from pyedb.misc.siw_feature_config.emc.tag_library import \
     TagLibrary
-from pyedb.dotnet.edb_core.edb_data.sim_setup_data.data.siw_emi_config_file.emc.net_tags import NetTags
-from pyedb.dotnet.edb_core.edb_data.sim_setup_data.data.siw_emi_config_file.emc.component_tags import \
+from pyedb.misc.siw_feature_config.emc.net_tags import NetTags
+from pyedb.misc.siw_feature_config.emc.component_tags import \
     ComponentTags
 
 
