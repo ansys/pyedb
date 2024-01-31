@@ -32,11 +32,8 @@ of Ansys technologies directly from Python. It is intended to consolidate and ex
 functionalities around scripting for EDB to allow reuse of existing code, sharing of best practices,
 and increased collaboration.
 
-PyEDB includes functionality for interacting with these AEDT products:
-
-- EDB
-- HFSS 3D Layout
-- Icepak
+PyEDB includes functionality for interacting with Ansys electromagnetic simulators: : HFSS,
+HFSS 3D Layout, Icepak, Maxwell, Q3D, and SIwave.
 
 ## What is EDB?
 
@@ -44,8 +41,7 @@ EDB provides a proprietary database file format (AEDB) for efficient and fast la
 handling and processing for building ready-to-solve projects. EDB addresses signal integrity
 (SI), power integrity (PI-DC), and electro-thermal work flows. You can import an AEDB file
 into AEDT to modify the layout, assign materials, and define ports, simulations, and constraints.
-You can then launch any of the Ansys electromagnetic simulators: HFSS, HFSS 3D Layout, Icepak,
-Maxwell, Q3D, and SIwave.
+You can then launch any of the Ansys electromagnetic simulators.
 
 EDB runs as a standalone API, which means that you don't need to open a user interface (UI).
 Because EDB opens the ``aedb`` folder for directly querying and manipulating layout design in
