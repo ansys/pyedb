@@ -126,11 +126,11 @@ name = "pyedb"
 
 # TODO: update once the repo is public
 # [project.urls]
-# Bugs = "https://github.com/ansys/pyansys-edb/issues"
+# Bugs = "https://github.com/ansys/pyedb/issues"
 # Documentation = "https://aedt.docs.pyansys.com"
-# Source = "https://github.com/ansys/pyansys-edb"
-# Discussions = "https://github.com/ansys/pyansys-edb/discussions"
-# Releases = "https://github.com/ansys/pyansys-edb/releases"
+# Source = "https://github.com/ansys/pyedb"
+# Discussions = "https://github.com/ansys/pyedb/discussions"
+# Releases = "https://github.com/ansys/pyedb/releases"
 
 [tool.black]
 line-length = 88

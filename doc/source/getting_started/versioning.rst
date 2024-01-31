@@ -21,17 +21,17 @@ Legacy interface
 
 EDB API is natively written in C#.
 
-This is the interface actually used in pyansys-edb.
+This is the interface actually used in PyEDB.
 Interfaces will be changed by simply setting an environment variable.
-It is not needed to set the ``PYEDB_USE_LEGACY`` variable to 0 as it is the default value.
+It is not needed to set the ``PYEDB_USE_DOTNET`` variable to 0 as it is the default value.
 
 .. code:: python
 
 
     # Set gRPC interface (future implementation)
     import os
-    os.environ["PYEDB_USE_LEGACY"] = "1"
+    os.environ["PYEDB_USE_DOTNET"] = "1"
 
     # Set DotNet interface (actual implementation)
     import os
-    os.environ["PYEDB_USE_LEGACY"] = "0"
+    os.environ["PYEDB_USE_DOTNET"] = "0"

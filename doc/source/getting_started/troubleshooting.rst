@@ -46,7 +46,7 @@ run the Python command:
 
 .. code:: shell
 
-   pip install --no-cache-dir --no-index --find-links=/path/to/pyansys-edb/wheelhouse pyansys-edb
+   pip install --no-cache-dir --no-index --find-links=/path/to/pyedb/wheelhouse pyedb
 
 
 Run PyEDB with gRPC

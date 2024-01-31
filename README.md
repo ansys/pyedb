@@ -66,16 +66,16 @@ PyEDB includes functionality for interacting with the following AEDT tools and A
 ## Documentation and issues
 
 Documentation for the latest stable release of PyEDB is hosted at
-[PyEDB documentation](https://edb.docs.pyansys.com/version/dev/index.html).
+[PyEDB documentation](https://edb.docs.pyansys.com/version/stable/index.html).
 
 In the upper right corner of the documentation's title bar, there is an option
 for switching from viewing the documentation for the latest stable release
 to viewing the documentation for the development version or previously
 released versions.
 
-On the [PyEDB Issues](https://github.com/ansys/pyansys-edb/issues) page, you can
+On the [PyEDB Issues](https://github.com/ansys/pyedb/issues) page, you can
 create issues to report bugs and request new features. On the
-[PyEDB Discussions](https://github.com/ansys/pyansys-edb/discussions) page or the
+[PyEDB Discussions](https://github.com/ansys/pyedb/discussions) page or the
 [Discussions](https://discuss.ansys.com/) page on the Ansys Developer portal,
 you can post questions, share ideas, and get community feedback.
 

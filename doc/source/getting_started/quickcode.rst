@@ -19,9 +19,9 @@ providing syntax rules and commands for using the PyEDB API and PyEDB API:
   PyEDB API cheat sheet.
 
 
-On the `PyEDB Issues <https://github.com/ansys/Pansys-edb/issues>`_ page, you can
+On the `PyEDB Issues <https://github.com/ansys/pyedb/issues>`_ page, you can
 create issues to report bugs and request new features. On the `PyEDB Discussions
-<https://github.com/ansys/pyansys-edb/discussions>`_ page or the `Discussions <https://discuss.ansys.com/>`_
+<https://github.com/ansys/pyedb/discussions>`_ page or the `Discussions <https://discuss.ansys.com/>`_
 page on the Ansys Developer portal, you can post questions, share ideas, and get community feedback.
 
 To reach the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
