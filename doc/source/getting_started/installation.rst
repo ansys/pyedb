@@ -23,7 +23,7 @@ Install from a Python file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ANSYS AEDT installation already provides a python interpreter, which can be used to run PyEDB in a virtual environment,
-you can run PyEDT using CPython 3.7 9or CPython 3.7 through 3.10 from AEDT 2023 R2).
+you can run PyEDB using CPython from 3.9 to 3.11. Note that ANSYS AEDT install CPython 3.10 with the release 2024R1.
 
 You can install PyEDB offline using a wheelhouse, which is a ZIP file containing all
 the needed packages. The `Releases <https://github.com/ansys-internal/pyansys-edb/releases>`_
@@ -86,7 +86,7 @@ wheelhouse with code like this:
 Update PyEDB to the latest version
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-After installingPyEDT, upgrade it to the latest version with this command:
+After installing PyEDB, upgrade it to the latest version with this command:
 
 .. code:: bash
 
