@@ -6,7 +6,7 @@ if os.name == "nt":
 
 pyedb_path = os.path.dirname(__file__)
 
-__version__ = "0.0.1"
+__version__ = "0.1.dev0"
 
 version = __version__
 
