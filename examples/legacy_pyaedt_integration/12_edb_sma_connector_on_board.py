@@ -38,9 +38,9 @@ from pyedb.misc.downloads import download_file
 ##########################################################
 # Set non-graphical mode
 # ~~~~~~~~~~~~~~~~~~~~~~
-# Set non-graphical mode. The default is ``True``.
+# Set non-graphical mode. The default is ``False``.
 
-non_graphical = True
+non_graphical = False
 
 ###############################################################################
 # Launch EDB
