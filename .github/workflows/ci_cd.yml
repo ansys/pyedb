@@ -28,7 +28,7 @@ concurrency:
 
 jobs:
 
-  docs-style:
+  doc-style:
     name: Documentation style check
     runs-on: ubuntu-latest
     steps:
@@ -39,24 +39,23 @@ jobs:
           vale-config: "doc/.vale.ini"
           vale-version: "2.29.6"
 
-  # TODO: uncomment once this repo is public
-  # smoke-tests:
-  #   name: Build and Smoke tests
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       os: [ubuntu-latest, windows-latest]
-  #       python-version: ['3.9', '3.10', '3.11']
-  #       should-release:
-  #         - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
-  #   steps:
-  #     - name: Build wheelhouse and perform smoke test
-  #       uses: ansys/actions/build-wheelhouse@v4
-  #       with:
-  #         library-name: ${{ env.PACKAGE_NAME }}
-  #         operating-system: ${{ matrix.os }}
-  #         python-version: ${{ matrix.python-version }}
+  smoke-tests:
+    name: Build and Smoke tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.9', '3.10', '3.11']
+        should-release:
+          - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
+    steps:
+      - name: Build wheelhouse and perform smoke test
+        uses: ansys/actions/build-wheelhouse@v5
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          operating-system: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -179,12 +178,17 @@ jobs:
           . .venv\Scripts\Activate.ps1
           pip install pyaedt
 
-      # Run doc build, without creating the examples directory.
-      # NOTE: we have to add the examples file here since it won't be created as gallery is disabled on linux.
-      - name: Documentation Build
+      - name: Build the documentation (HTML)
         run: |
-          . .venv\Scripts\Activate.ps1
-          sphinx-build -j auto -w build_errors.txt -N -b html -a doc/source doc/_build/html
+          .\.venv\Scripts\Activate.ps1
+          cd doc
+          .\make.bat html
+
+      - name: Build the documentation (PDF)
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          cd doc
+          .\make.bat pdf
 
       # Verify that sphinx generates no warnings
       - name: Check for warnings
@@ -233,20 +237,20 @@ jobs:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  # doc-index-dev:
-  #   name: "Deploy dev index docs"
-  #   if: github.ref == 'refs/heads/main'
-  #   runs-on: ubuntu-latest
-  #   needs: upload-dev-docs
-  #   steps:
-  #     - name: "Deploy the latest documentation index"
-  #       uses: ansys/actions/doc-deploy-index@v5
-  #       with:
-  #         cname: ${{ env.DOCUMENTATION_CNAME }}/version/dev
-  #         index-name: pyedb-vdev
-  #         host-url: ${{ env.MEILISEARCH_HOST_URL }}
-  #         api-key: ${{ env.MEILISEARCH_API_KEY }}
-  #         python-version: ${{ env.MAIN_PYTHON_VERSION }}
+  doc-index-dev:
+    name: "Deploy dev index docs"
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: upload-dev-docs
+    steps:
+      - name: "Deploy the latest documentation index"
+        uses: ansys/actions/doc-deploy-index@v5
+        with:
+          cname: ${{ env.DOCUMENTATION_CNAME }}/version/dev
+          index-name: pyedb-vdev
+          host-url: ${{ env.MEILISEARCH_HOST_URL }}
+          api-key: ${{ env.MEILISEARCH_API_KEY }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
   upload-docs-release:
     name: Upload release documentation
@@ -260,32 +264,32 @@ jobs:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  # doc-index-stable:
-  #   name: "Deploy stable docs index"
-  #   runs-on: ubuntu-latest
-  #   needs: upload-docs-release
-  #   steps:
-  #     - name: "Install Git and clone project"
-  #       uses: actions/checkout@v4
+  doc-index-stable:
+    name: "Deploy stable docs index"
+    runs-on: ubuntu-latest
+    needs: upload-docs-release
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v4
 
-  #     - name: "Install the package requirements"
-  #       run: pip install -e .
+      - name: "Install the package requirements"
+        run: pip install -e .
 
-  #     - name: "Get the version to PyMeilisearch"
-  #       run: |
-  #         VERSION=$(python -c "from pyedb import __version__; print('.'.join(__version__.split('.')[:2]))")
-  #         VERSION_MEILI=$(python -c "from pyedb import __version__; print('-'.join(__version__.split('.')[:2]))")
-  #         echo "Calculated VERSION: $VERSION"
-  #         echo "Calculated VERSION_MEILI: $VERSION_MEILI"
-  #         echo "VERSION=$VERSION" >> $GITHUB_ENV
-  #         echo "VERSION_MEILI=$VERSION_MEILI" >> $GITHUB_ENV
+      - name: "Get the version to PyMeilisearch"
+        run: |
+          VERSION=$(python -c "from pyedb import __version__; print('.'.join(__version__.split('.')[:2]))")
+          VERSION_MEILI=$(python -c "from pyedb import __version__; print('-'.join(__version__.split('.')[:2]))")
+          echo "Calculated VERSION: $VERSION"
+          echo "Calculated VERSION_MEILI: $VERSION_MEILI"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "VERSION_MEILI=$VERSION_MEILI" >> $GITHUB_ENV
 
-  #     - name: "Deploy the latest documentation index"
-  #       uses: ansys/actions/doc-deploy-index@v5
-  #       with:
-  #         cname: ${{ env.DOCUMENTATION_CNAME }}/version/${{ env.VERSION }}
-  #         index-name: pyedb-v${{ env.VERSION_MEILI }}
-  #         host-url: ${{ env.MEILISEARCH_HOST_URL }}
-  #         api-key: ${{ env.MEILISEARCH_API_KEY }}
-  #         python-version: ${{ env.MAIN_PYTHON_VERSION }}
+      - name: "Deploy the latest documentation index"
+        uses: ansys/actions/doc-deploy-index@v5
+        with:
+          cname: ${{ env.DOCUMENTATION_CNAME }}/version/${{ env.VERSION }}
+          index-name: pyedb-v${{ env.VERSION_MEILI }}
+          host-url: ${{ env.MEILISEARCH_HOST_URL }}
+          api-key: ${{ env.MEILISEARCH_API_KEY }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
