@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 
 [project]
-name = "pyansys-edb"
+name = "pyedb"
 dynamic = ["version"]
 description = "Higher-Level Pythonic Ansys Electronics Data Base"
 readme = "README.md"
