@@ -11,7 +11,7 @@ concurrency:
 
 env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
-  PYEDB_USE_LEGACY: '1'
+  PYEDB_USE_DOTNET: '1'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
