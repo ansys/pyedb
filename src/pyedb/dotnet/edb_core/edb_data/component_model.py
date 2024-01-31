@@ -54,3 +54,13 @@ class PinPairModel(Model):
         bool
         """
         return self._edb_object.SetPinPairRlc(pin_pair, pin_par_rlc)
+
+
+class SParameterModel(Model):
+    """Manages S-parameter model class."""
+
+    def __init__(self, pedb, edb_object=None):
+        super().__init__(pedb, edb_object)
+
+    def component_model_name(self):
+        self._edb_object.GetComponentModelName()
