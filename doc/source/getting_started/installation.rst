@@ -22,7 +22,7 @@ Any additional runtime dependencies are listed in the following installation top
 Install from a Python file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ANSYS AEDT installation already provides a python interpreter, which can be used to run PyEDB in a virtual environment,
+The AEDT installation already provides a Python interpreter that you can use to run PyEDB. In a virtual environment,
 you can run PyEDB using CPython from 3.9 to 3.11. Note that ANSYS AEDT install CPython 3.10 with the release 2024R1.
 
 You can install PyEDB offline using a wheelhouse, which is a ZIP file containing all
