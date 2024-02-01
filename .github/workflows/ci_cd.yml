@@ -29,7 +29,7 @@ concurrency:
 jobs:
 
   docs-style:
-    name: Check documentation style
+    name: Documentation style check
     runs-on: ubuntu-latest
     steps:
       - name: Check documentation style
@@ -63,7 +63,7 @@ jobs:
 # =================================================================================================
 
   legacy-tests:
-    name: "Check legacy tests"
+    name: Test dotnet
     # needs: [smoke-tests]
     runs-on: [ windows, pyedb, self-hosted ]
     steps:
@@ -198,69 +198,6 @@ jobs:
           name: documentation-html
           path: doc/_build/html
           retention-days: 1
-
-  # docs-build:
-  #   name: Build documentation
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - uses: actions/checkout@v4
-
-  #     - name: "Set up Python"
-  #       uses: ansys/actions/_setup-python@main
-  #       with:
-  #         python-version: ${{ env.MAIN_PYTHON_VERSION }}
-  #         use-cache: false
-
-  #     - name: Create Python venv
-  #       run: |
-  #         python -m venv .venv
-
-  #     - name: "Update pip"
-  #       run: |
-  #         . .venv/bin/activate
-  #         python -m pip install -U pip
-
-  #     - name: Install pyedb with doc dependencies
-  #       run: |
-  #         . .venv/bin/activate
-  #         pip install .[doc]
-
-  #     - name: Verify that pyedb can be imported
-  #       run: |
-  #         . .venv/bin/activate
-  #         python -c "import pyedb"
-
-  #     - name: Retrieve pyedb version
-  #       run: |
-  #         . .venv/bin/activate
-  #         echo "Pyedb version: $(python -c "from pyedb import __version__; print(); print(__version__)" | tail -1)"
-
-  #     - name: Install doc build requirements
-  #       run: |
-  #         sudo apt install graphviz
-
-  #     # Run doc build, without creating the examples directory.
-  #     # NOTE: we have to add the examples file here since it won't be created as gallery is disabled on linux.
-  #     - name: Documentation Build
-  #       run: |
-  #         . .venv/bin/activate
-  #         make -C doc clean
-  #         mkdir doc/source/examples -p
-  #         echo $'Examples\n========' > doc/source/examples/index.rst
-  #         make -C doc html SPHINXOPTS="-j auto -w build_errors.txt -N"
-
-  #     # Verify that sphinx generates no warnings
-  #     - name: Check for warnings
-  #       run: |
-  #         . .venv/bin/activate
-  #         python doc/print_errors.py
-
-  #     - name: Upload Documentation
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: documentation-html
-  #         path: doc/_build/html
-  #         retention-days: 1
 
   package:
     name: Package library
