@@ -5,13 +5,13 @@ import os
 
 import pytest
 
-from pyedb.generic.constants import RadiationBoxType, SolverType, SourceType
-from pyedb.generic.general_methods import is_linux
 from pyedb.dotnet.edb import Edb
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
+from pyedb.generic.constants import RadiationBoxType, SolverType, SourceType
+from pyedb.generic.general_methods import is_linux
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 

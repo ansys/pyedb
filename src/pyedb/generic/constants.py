@@ -15,7 +15,7 @@ MILS2METER = 39370.078740157
 SpeedOfLight = 299792458.0
 
 
-def db20(x, inverse=True): # pragma: no cover
+def db20(x, inverse=True):  # pragma: no cover
     """Convert db20 to decimal and vice versa."""
     if inverse:
         return 20 * math.log10(x)
@@ -23,7 +23,7 @@ def db20(x, inverse=True): # pragma: no cover
         return math.pow(10, x / 20.0)
 
 
-def db10(x, inverse=True): # pragma: no cover
+def db10(x, inverse=True):  # pragma: no cover
     """Convert db10 to decimal and vice versa."""
     if inverse:
         return 10 * math.log10(x)
@@ -31,7 +31,7 @@ def db10(x, inverse=True): # pragma: no cover
         return math.pow(10, x / 10.0)
 
 
-def dbw(x, inverse=True): # pragma: no cover
+def dbw(x, inverse=True):  # pragma: no cover
     """Convert W to decimal and vice versa."""
     if inverse:
         return 10 * math.log10(x)
@@ -39,7 +39,7 @@ def dbw(x, inverse=True): # pragma: no cover
         return math.pow(10, x / 10.0)
 
 
-def dbm(x, inverse=True): # pragma: no cover
+def dbm(x, inverse=True):  # pragma: no cover
     """Convert W to decimal and vice versa."""
     if inverse:
         return 10 * math.log10(x) + 30
@@ -47,7 +47,7 @@ def dbm(x, inverse=True): # pragma: no cover
         return math.pow(10, x / 10.0) / 1000
 
 
-def fah2kel(val, inverse=True): # pragma: no cover
+def fah2kel(val, inverse=True):  # pragma: no cover
     """Convert a temperature from Fahrenheit to Kelvin.
 
     Parameters
@@ -69,7 +69,7 @@ def fah2kel(val, inverse=True): # pragma: no cover
         return (val - 32) * 5 / 9 + 273.15
 
 
-def cel2kel(val, inverse=True): # pragma: no cover
+def cel2kel(val, inverse=True):  # pragma: no cover
     """Convert a temperature from Celsius to Kelvin.
 
     Parameters
@@ -92,7 +92,7 @@ def cel2kel(val, inverse=True): # pragma: no cover
         return val + 273.15
 
 
-def unit_system(units): # pragma: no cover
+def unit_system(units):  # pragma: no cover
     """Retrieve the name of the unit system associated with a unit string.
 
     Parameters
@@ -115,7 +115,7 @@ def unit_system(units): # pragma: no cover
     return False
 
 
-def _resolve_unit_system(unit_system_1, unit_system_2, operation): # pragma: no cover
+def _resolve_unit_system(unit_system_1, unit_system_2, operation):  # pragma: no cover
     """Retrieve the unit string of an arithmetic operation on ``Variable`` objects. If no resulting unit system
     is defined for a specific operation (in unit_system_operations), an empty string is returned
 
@@ -142,7 +142,7 @@ def _resolve_unit_system(unit_system_1, unit_system_2, operation): # pragma: no 
         return ""
 
 
-def unit_converter(values, unit_system="Length", input_units="meter", output_units="mm"): # pragma: no cover
+def unit_converter(values, unit_system="Length", input_units="meter", output_units="mm"):  # pragma: no cover
     """Convert unit in specified unit system.
 
     Parameters
@@ -203,7 +203,7 @@ def unit_converter(values, unit_system="Length", input_units="meter", output_uni
     return values
 
 
-def scale_units(scale_to_unit): # pragma: no cover
+def scale_units(scale_to_unit):  # pragma: no cover
     """Find the scale_to_unit into main system unit.
 
     Parameters
@@ -228,7 +228,7 @@ def scale_units(scale_to_unit): # pragma: no cover
     return sunit
 
 
-def validate_enum_class_value(cls, value): # pragma: no cover
+def validate_enum_class_value(cls, value):  # pragma: no cover
     """Check whether the value for the class ``enumeration-class`` is valid.
 
     Parameters

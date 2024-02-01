@@ -1,15 +1,14 @@
 .. _create_resistor_on_pin_example:
 
-Create resistor boundary between pins
-=====================================
-This section describes how to create resistor boundary on pins:
+Create a resistor boundary on pins
+==================================
+
+This page shows how to create a resistor boundary on pins:
 
 .. autosummary::
    :toctree: _autosummary
 
 .. code:: python
-
-
 
     from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
@@ -27,4 +26,4 @@ This section describes how to create resistor boundary on pins:
 
 .. image:: ../../resources/create_resistor_boundary_user_guide.png
   :width: 800
-  :alt: Create resistor boundary
+  :alt: Created resistor boundary

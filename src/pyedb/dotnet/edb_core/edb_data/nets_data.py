@@ -1,4 +1,3 @@
-from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.dotnet.edb_core.dotnet.database import (
     DifferentialPairDotNet,
     ExtendedNetDotNet,
@@ -7,6 +6,7 @@ from pyedb.dotnet.edb_core.dotnet.database import (
 )
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class EDBNetsData(NetDotNet):

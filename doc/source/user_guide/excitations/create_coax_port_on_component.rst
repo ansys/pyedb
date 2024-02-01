@@ -1,8 +1,9 @@
 .. _create_coaxial_port_on_component_example:
 
-Create coaxial port on component
-================================
-This section shows a simple example to create HFSS coaxial port on a component.
+Create a coaxial port
+=====================
+
+This page shows how to create an HFSS coaxial port on a component.
 
 .. autosummary::
    :toctree: _autosummary
@@ -21,15 +22,15 @@ This section shows a simple example to create HFSS coaxial port on a component.
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
-    # loading EDB
+    # load EDB
     edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"])
     edbapp.save_edb()
     edbapp.close_edb()
 
-- In this example coaxial port on Nets DDR4_DSQ0_P and DDR4_DSQ0_N from componennt U1 are created.
+The preceding code creates a coaxial port on nets ``DDR4_DSQ0_P`` and ``DDR4_DSQ0_N`` from component ``U1``:
 
 .. image:: ../../Resources/create_port_on_component_simple.png
 ..   :width: 800
-..   :alt: Create port on component
+..   :alt: HFSS coaxial port created on a component

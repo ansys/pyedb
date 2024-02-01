@@ -1,10 +1,10 @@
-from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 from pyedb.dotnet.clr_module import Tuple
 from pyedb.dotnet.edb_core.edb_data.simulation_setup import (
     BaseSimulationSetup,
     EdbFrequencySweep,
 )
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 
 
 class MeshOperation(object):

@@ -4,40 +4,39 @@
 User guide
 ==========
 
-This section provides a general overview of PyEDB and how you use it.
-PyEDB is loading ANSYS EDB in memory meaning non graphically.
-To use PyEDB you must follow the installation step :ref:`ref_install_pyedb`.
+This section shows you how to use PyEDB.
+PyEDB loads EDB in memory, meaning non-graphically.
 
 .. grid:: 2
 
-   .. grid-item-card:: Load AEDB
+   .. grid-item-card:: Load a layout
             :link: load_export_edb/index
             :link-type: doc
 
-            Learn more about how to create or load an Ansys Electronic Database (aedb).
+            Learn how to load a layout (AEDB file) in EDB.
 
-   .. grid-item-card:: Queries
+   .. grid-item-card:: Run layout queries
             :link: edb_information_queries/index
             :link-type: doc
             :margin: 2 2 0 0
 
-            Learn how to run queries on the EDB.
+            Learn how to run EDB layout queries.
 
-   .. grid-item-card:: Build Simulation
+   .. grid-item-card:: Build simulation projects
             :link: build_simulation_project/index
             :link-type: doc
             :margin: 2 2 0 0
 
-            This section provides in-depth information on how to build a simulation project.
+            Learn how to build various types of simulation projects.
 
-   .. grid-item-card:: Sources
+   .. grid-item-card:: Create sources
             :link: excitations/index
             :link-type: doc
             :margin: 2 2 0 0
 
-            This section provides details about how to setup sources and ports.
+            Learn how to create and set up current sources and ports.
 
-   .. grid-item-card:: Simulation Setup
+   .. grid-item-card:: Set up simulations
             :link: simulation_setup/index
             :link-type: doc
             :margin: 2 2 0 0

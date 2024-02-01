@@ -5,13 +5,13 @@ import os
 import time
 import warnings
 
+from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.general_methods import (
     generate_unique_name,
     is_ironpython,
     pyedb_function_handler,
 )
-from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 

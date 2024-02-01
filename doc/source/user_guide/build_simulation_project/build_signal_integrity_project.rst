@@ -1,8 +1,9 @@
 .. _build_si_project_example:
 
-Build HFSS SYZ extraction project
-=================================
-This section shows a simple example to create HFSS coaxial port on a component.
+Build a signal integrity project
+================================
+
+This page shows how to build an signal integrity project.
 
 .. autosummary::
    :toctree: _autosummary
@@ -21,7 +22,7 @@ This section shows a simple example to create HFSS coaxial port on a component.
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
-    # loading EDB
+    # load EDB
     edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     sim_setup = edbapp.new_simulation_configuration()
@@ -46,4 +47,4 @@ This section shows a simple example to create HFSS coaxial port on a component.
 
 .. image:: ../../resources/build_signal_integrity_user_guide.png
   :width: 800
-  :alt: Build signal integrity project
+  :alt: Built signal integrity project

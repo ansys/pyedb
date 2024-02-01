@@ -2,14 +2,13 @@
 
 Define design variables
 =======================
-This section shows how to use variables with EDB:
+
+This page shows how to define design variables for use by EDB.
 
 .. autosummary::
    :toctree: _autosummary
 
 .. code:: python
-
-
 
     from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name

@@ -1,6 +1,5 @@
 import math
 
-from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.dotnet.edb_core.dotnet.database import NetDotNet
 from pyedb.dotnet.edb_core.dotnet.primitive import (
     BondwireDotNet,
@@ -13,6 +12,7 @@ from pyedb.dotnet.edb_core.dotnet.primitive import (
 )
 from pyedb.dotnet.edb_core.edb_data.connectable import Connectable
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 

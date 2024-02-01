@@ -5,12 +5,6 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 import os
 import time
 
-from pyedb.generic.constants import SolverType, SweepType
-from pyedb.generic.general_methods import (
-    _retry_ntimes,
-    generate_unique_name,
-    pyedb_function_handler,
-)
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
     SourceType,
@@ -24,6 +18,12 @@ from pyedb.dotnet.edb_core.edb_data.sources import (
     VoltageSource,
 )
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.generic.constants import SolverType, SweepType
+from pyedb.generic.general_methods import (
+    _retry_ntimes,
+    generate_unique_name,
+    pyedb_function_handler,
+)
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 

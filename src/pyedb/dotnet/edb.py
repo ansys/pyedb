@@ -12,19 +12,6 @@ import time
 import traceback
 import warnings
 
-from pyedb.generic.constants import AEDT_UNITS, SolverType
-from pyedb.generic.general_methods import (
-    generate_unique_name,
-    get_string_version,
-    inside_desktop,
-    is_ironpython,
-    is_linux,
-    is_windows,
-    pyedb_function_handler,
-)
-from pyedb.generic.process import SiwaveSolve
-from pyedb.generic.settings import settings
-from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.dotnet.application.Variables import decompose_variable_value
 from pyedb.dotnet.edb_core.components import Components
 from pyedb.dotnet.edb_core.configuration import Configuration
@@ -75,6 +62,19 @@ from pyedb.dotnet.edb_core.nets import EdbNets
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 from pyedb.dotnet.edb_core.siwave import EdbSiwave
 from pyedb.dotnet.edb_core.stackup import Stackup
+from pyedb.generic.constants import AEDT_UNITS, SolverType
+from pyedb.generic.general_methods import (
+    generate_unique_name,
+    get_string_version,
+    inside_desktop,
+    is_ironpython,
+    is_linux,
+    is_windows,
+    pyedb_function_handler,
+)
+from pyedb.generic.process import SiwaveSolve
+from pyedb.generic.settings import settings
+from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 if is_linux and is_ironpython:
@@ -214,7 +214,7 @@ class Edb(Database):
         elif not os.path.exists(os.path.join(self.edbpath, "edb.def")):
             self.create_edb()
             if settings.enable_local_log_file and self.log_name:
-               self._logger.add_file_logger(self.log_name, "Edb")
+                self._logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s created correctly.", self.edbpath)
         elif ".aedb" in edbpath:
             self.edbpath = edbpath
