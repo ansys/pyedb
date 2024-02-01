@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<EMCRuleCheckerSettings>
+
+  <TagLibrary>
+    <Tag label="Critical Nets" name="FEFF0043007200690074006900630061006C0020004E006500740073">
+      <TagType name="NetCategory"/>
+      <TagConfig/>
+    </Tag>
+    <Tag label="Decoupling Capacitors" name="FEFF004400650063006F00750070006C0069006E006700200043006100700061006300690074006F00720073">
+      <TagType name="ComponentCategory"/>
+      <TagConfig/>
+    </Tag>
+    <Tag label="Ground Nets" name="FEFF00470072006F0075006E00640020004E006500740073">
+      <TagType name="NetCategory"/>
+      <TagConfig/>
+    </Tag>
+    <Tag label="ICs" name="FEFF004900430073">
+      <TagType name="ComponentCategory"/>
+      <TagConfig/>
+    </Tag>
+    <Tag label="Power Nets" name="FEFF0050006F0077006500720020004E006500740073">
+      <TagType name="NetCategory"/>
+      <TagConfig/>
+    </Tag>
+    <Tag label="Stitching Capacitors" name="FEFF0053007400690074006300680069006E006700200043006100700061006300690074006F00720073">
+      <TagType name="ComponentCategory"/>
+      <TagConfig/>
+    </Tag>
+  </TagLibrary>
+
+  <NetTags>
+    <Net isBus="0" isClock="0" isCritical="0" name="CHASSIS2" type="Ground"/>
+    <Net isBus="0" isClock="0" isCritical="0" name="CHASSIS3" type="Ground"/>
+    <Net isBus="0" isClock="0" isCritical="0" name="CHASSIS4" type="Ground"/>
+    <Net isBus="0" isClock="0" isCritical="1" name="A-MII-RXD1"/>
+    <Net isBus="0" isClock="0" isCritical="1" name="A-MII-RXD3"/>
+    <Net isBus="0" isClock="0" isCritical="1" name="A-MII-RXD2"/>
+    <Net isBus="0" isClock="0" isCritical="0" name="CHASSIS6" type="Ground"/>
+    <Net isBus="0" isClock="0" isCritical="0" name="VCC" type="Power"/>
+    <Net isBus="0" isClock="0" isCritical="0" name="GND" type="Ground"/>
+    <Net isBus="0" isClock="0" isCritical="0" name="VINPUT" type="Ground"/>
+    <Net isBus="0" isClock="0" isCritical="0" name="VCCA" type="Power"/>
+    <Net isBus="0" isClock="0" isCritical="0" name="VCCB" type="Power"/>
+    <Net isBus="0" isClock="0" isCritical="0" name="CHASSIS5" type="Ground"/>
+    <Net isBus="0" isClock="0" isCritical="0" name="GNDB" type="Ground"/>
+    <Net isBus="0" isClock="0" isCritical="0" name="GNDA" type="Ground"/>
+    <Net isBus="0" isClock="0" isCritical="0" name="EARTH" type="Ground"/>
+  </NetTags>
+
+  <ComponentTags>
+    <Comp CompName="C42" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-17.78" yLoc="-22.225"/>
+    <Comp CompName="C43" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-15.875" yLoc="-22.225"/>
+    <Comp CompName="C23" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-28.829" yLoc="-60.325"/>
+    <Comp CompName="C34" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-39.37" yLoc="-35.687"/>
+    <Comp CompName="C28" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-3.81" yLoc="-43.18"/>
+    <Comp CompName="C3" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-62.484" yLoc="-60.325"/>
+    <Comp CompName="C30" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-3.81" yLoc="-36.703"/>
+    <Comp CompName="C35" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-39.37" yLoc="-51.181"/>
+    <Comp CompName="C29" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-3.81" yLoc="-39.243"/>
+    <Comp CompName="C24" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-20.574" yLoc="-60.325"/>
+    <Comp CompName="C36" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-39.37" yLoc="-53.213"/>
+    <Comp CompName="C22" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-59.69" yLoc="-22.225"/>
+    <Comp CompName="C33" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-3.81" yLoc="-31.496"/>
+    <Comp CompName="C20" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-63.5" yLoc="-22.225"/>
+    <Comp CompName="C27" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-3.2512" yLoc="-53.4416"/>
+    <Comp CompName="C21" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-61.595" yLoc="-22.225"/>
+    <Comp CompName="C26" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-9.271" yLoc="-60.325"/>
+    <Comp CompName="C31" CompValue="0.1uF" DeviceName="CC_TAJ-C" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-78.105" yLoc="-20.32"/>
+    <Comp CompName="C32" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-3.81" yLoc="-33.147"/>
+    <Comp CompName="C25" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-17.399" yLoc="-60.325"/>
+    <Comp CompName="C45" CompValue="0.1uF" DeviceName="CC1812" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-90.932" yLoc="27.178"/>
+    <Comp CompName="C39" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-25.4" yLoc="-22.225"/>
+    <Comp CompName="C41" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-19.685" yLoc="-22.225"/>
+    <Comp CompName="C37" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-29.21" yLoc="-22.225"/>
+    <Comp CompName="C4" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-53.34" yLoc="-60.325"/>
+    <Comp CompName="C40" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-21.59" yLoc="-22.225"/>
+    <Comp CompName="C38" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-27.305" yLoc="-22.225"/>
+    <Comp CompName="C19" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-65.405" yLoc="-22.225"/>
+    <Comp CompName="C10" CompValue="0.1uF" DeviceName="CC_TAJ-C" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-56.515" yLoc="-20.32"/>
+    <Comp CompName="C1" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-74.549" yLoc="-62.23"/>
+    <Comp CompName="C11" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-49.657" yLoc="-31.496"/>
+    <Comp CompName="C17" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-71.12" yLoc="-22.225"/>
+    <Comp CompName="C12" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-85.09" yLoc="-35.687"/>
+    <Comp CompName="C16" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-73.025" yLoc="-22.225"/>
+    <Comp CompName="C18" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-67.31" yLoc="-22.225"/>
+    <Comp CompName="C14" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-85.09" yLoc="-53.213"/>
+    <Comp CompName="C2" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-66.548" yLoc="-60.325"/>
+    <Comp CompName="C15" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-74.93" yLoc="-22.225"/>
+    <Comp CompName="C13" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-85.09" yLoc="-51.181"/>
+    <Comp CompName="C44" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-13.97" yLoc="-22.225"/>
+    <Comp CompName="D19" CompValue="" DeviceName="LED_T1TRIPLE_RA" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="49.7299" yLoc="-102.634"/>
+    <Comp CompName="C52" CompValue="0.1uF" DeviceName="CC1812" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-30.988" yLoc="27.178"/>
+    <Comp CompName="C7" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-49.657" yLoc="-39.243"/>
+    <Comp CompName="C50" CompValue="0.1uF" DeviceName="CC1812" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-46.863" yLoc="27.178"/>
+    <Comp CompName="C63" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="29.21" yLoc="-50.8"/>
+    <Comp CompName="C78" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="45.72" yLoc="-75.565"/>
+    <Comp CompName="C61" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="24.13" yLoc="-37.465"/>
+    <Comp CompName="C8" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-49.657" yLoc="-36.703"/>
+    <Comp CompName="C66" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="52.07" yLoc="-41.275"/>
+    <Comp CompName="C48" CompValue="0.1uF" DeviceName="CC1812" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-63.373" yLoc="27.178"/>
+    <Comp CompName="C51" CompValue="0.1uF" DeviceName="CC1812" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-42.672" yLoc="27.178"/>
+    <Comp CompName="C83" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-88.265" yLoc="-13.5128"/>
+    <Comp CompName="C88" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-47.625" yLoc="-13.5128"/>
+    <Comp CompName="C89" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-41.275" yLoc="-13.5128"/>
+    <Comp CompName="C90" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-34.925" yLoc="-13.5128"/>
+    <Comp CompName="C91" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="71.755" yLoc="-46.355"/>
+    <Comp CompName="C49" CompValue="0.1uF" DeviceName="CC1812" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-58.547" yLoc="27.178"/>
+    <Comp CompName="C62" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="24.13" yLoc="-41.275"/>
+    <Comp CompName="C64" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="39.116" yLoc="-52.832"/>
+    <Comp CompName="C77" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="26.67" yLoc="-75.565"/>
+    <Comp CompName="D12" CompValue="" DeviceName="LED_T1TRIPLE_RA" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="7.72998" yLoc="-102.634"/>
+    <Comp CompName="C80" CompValue="0.1uF" DeviceName="CC0603" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="73.66" yLoc="-40.64"/>
+    <Comp CompName="C82" CompValue="0.1uF" DeviceName="C_RAD_0200_13DIA" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="85.725" yLoc="-6.35"/>
+    <Comp CompName="C74" CompValue="0.1uF" DeviceName="CC0603" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="43.18" yLoc="-70.3072"/>
+    <Comp CompName="D13" CompValue="" DeviceName="LED_T1TRIPLE_RA" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="13.73" yLoc="-102.634"/>
+    <Comp CompName="D15" CompValue="" DeviceName="LED_T1TRIPLE_RA" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="25.7299" yLoc="-102.634"/>
+    <Comp CompName="C70" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-5.715" yLoc="-80.645"/>
+    <Comp CompName="C55" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="47.625" yLoc="-16.51"/>
+    <Comp CompName="C65" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="49.1744" yLoc="-49.53"/>
+    <Comp CompName="C75" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-84.455" yLoc="-82.55"/>
+    <Comp CompName="C76" CompValue="0.1uF" DeviceName="CC_TAJ-C" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-9.5758" yLoc="-93.6498"/>
+    <Comp CompName="C9" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-49.657" yLoc="-33.147"/>
+    <Comp CompName="C56" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="47.625" yLoc="-2.1844"/>
+    <Comp CompName="C47" CompValue="0.1uF" DeviceName="CC1812" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-74.93" yLoc="27.178"/>
+    <Comp CompName="C59" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="29.21" yLoc="-22.86"/>
+    <Comp CompName="C68" CompValue="0.1uF" DeviceName="CC1206" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="75.7936" yLoc="-17.145"/>
+    <Comp CompName="C87" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-53.975" yLoc="-13.5128"/>
+    <Comp CompName="C57" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="46.99" yLoc="-22.86"/>
+    <Comp CompName="D1" CompValue="" DeviceName="LED_T134SINGLE_RA" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="-92.71" yLoc="-100.831"/>
+    <Comp CompName="C67" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="52.07" yLoc="-33.02"/>
+    <Comp CompName="C72" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="45.72" yLoc="-62.865"/>
+    <Comp CompName="D14" CompValue="" DeviceName="LED_T1TRIPLE_RA" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="19.73" yLoc="-102.634"/>
+    <Comp CompName="D16" CompValue="" DeviceName="LED_T1TRIPLE_RA" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="31.7299" yLoc="-102.634"/>
+    <Comp CompName="C58" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="38.1" yLoc="-22.86"/>
+    <Comp CompName="D17" CompValue="" DeviceName="LED_T1TRIPLE_RA" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="37.7299" yLoc="-102.634"/>
+    <Comp CompName="C73" CompValue="0.1uF" DeviceName="CC0603" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="52.07" yLoc="-70.3072"/>
+    <Comp CompName="D21" CompValue="" DeviceName="1N5822" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="64.77" yLoc="-11.43"/>
+    <Comp CompName="D22" CompValue="" DeviceName="1N5822" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="70.485" yLoc="-11.43"/>
+    <Comp CompName="D2" CompValue="" DeviceName="LED_T1TRIPLE_RA" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="-82.2701" yLoc="-103.904"/>
+    <Comp CompName="C71" CompValue="0.1uF" DeviceName="CC1206" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="85.725" yLoc="-24.13"/>
+    <Comp CompName="C54" CompValue="0.1uF" DeviceName="CC0603" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="57.3278" yLoc="-22.86"/>
+    <Comp CompName="C86" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-69.215" yLoc="-13.5128"/>
+    <Comp CompName="C81" CompValue="0.1uF" DeviceName="C_RAD_0200_10DIA" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="85.725" yLoc="-53.975"/>
+    <Comp CompName="D18" CompValue="" DeviceName="LED_T1TRIPLE_RA" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="43.7299" yLoc="-102.634"/>
+    <Comp CompName="D20" CompValue="" DeviceName="DO35" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="75.565" yLoc="-13.97"/>
+    <Comp CompName="C6" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-49.657" yLoc="-43.307"/>
+    <Comp CompName="C5" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-49.1236" yLoc="-53.3146"/>
+    <Comp CompName="C60" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="22.86" yLoc="-32.385"/>
+    <Comp CompName="C53" CompValue="0.1uF" DeviceName="CC_TAJ-C" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-10.795" yLoc="-20.32"/>
+    <Comp CompName="C46" CompValue="0.1uF" DeviceName="CC1812" capType="Stitching" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-79.248" yLoc="27.178"/>
+    <Comp CompName="C69" CompValue="0.1uF" DeviceName="CC_TAJ-C" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-32.385" yLoc="-20.32"/>
+    <Comp CompName="C84" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-81.915" yLoc="-13.5128"/>
+    <Comp CompName="C79" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="26.67" yLoc="-62.865"/>
+    <Comp CompName="C85" CompValue="0.1uF" DeviceName="CC0603" capType="Decoupling" isClockDriver="0" isHighSpeed="0" isIC="0" isOscillator="0" xLoc="-75.565" yLoc="-13.5128"/>
+    <Comp CompName="L6" CompValue="" DeviceName="L_DIP8" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="85.09" yLoc="37.465"/>
+    <Comp CompName="D3" CompValue="" DeviceName="LED_T1TRIPLE_RA" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="-70.2701" yLoc="-102.634"/>
+    <Comp CompName="L5" CompValue="" DeviceName="L_DIP8" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="74.93" yLoc="-53.34"/>
+    <Comp CompName="U3" CompValue="" DeviceName="SO14" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="-1.905" yLoc="-86.36"/>
+    <Comp CompName="U5" CompValue="" DeviceName="SOJ32_300" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="38.1" yLoc="-10.16"/>
+    <Comp CompName="U7" CompValue="" DeviceName="SQFP20X20_144" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="38.1" yLoc="-36.83"/>
+    <Comp CompName="U8" CompValue="" DeviceName="SO14" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="30.48" yLoc="-68.58"/>
+    <Comp CompName="U12" CompValue="" DeviceName="SO8" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="74.93" yLoc="-6.35"/>
+    <Comp CompName="U14" CompValue="" DeviceName="SO8" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="47.625" yLoc="-68.58"/>
+    <Comp CompName="U6" CompValue="" DeviceName="SOJ32_300" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="38.1" yLoc="4.1656"/>
+    <Comp CompName="U4" CompValue="" DeviceName="SO8" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="58.42" yLoc="-26.67"/>
+    <Comp CompName="U9" CompValue="" DeviceName="SO20_BW_A" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="32.385" yLoc="-82.55"/>
+    <Comp CompName="U10" CompValue="" DeviceName="SO20_BW_A" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="51.435" yLoc="-82.55"/>
+    <Comp CompName="U11" CompValue="" DeviceName="SO14" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="75.565" yLoc="-21.59"/>
+    <Comp CompName="U13" CompValue="" DeviceName="SO28_BW_A" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="11.811" yLoc="-75.438"/>
+    <Comp CompName="U1" CompValue="" DeviceName="SQFP28X28_208" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="-67.31" yLoc="-41.91"/>
+    <Comp CompName="U2" CompValue="" DeviceName="SQFP28X28_208" isClockDriver="0" isHighSpeed="0" isIC="1" isOscillator="0" xLoc="-21.59" yLoc="-41.91"/>
+  </ComponentTags>
+
+</EMCRuleCheckerSettings>
