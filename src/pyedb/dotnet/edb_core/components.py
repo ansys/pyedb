@@ -13,9 +13,10 @@ from pyedb.generic.general_methods import (
     pyedb_function_handler,
 )
 from pyedb.dotnet.clr_module import String
-from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent, EDBComponentDef
+from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.sources import Source, SourceType
+from pyedb.dotnet.edb_core.definition.component_def import EDBComponentDef
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 from pyedb.modeler.geometry_operators import GeometryOperators
@@ -188,7 +189,7 @@ class Components(object):
 
         Returns
         -------
-        dict of :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponentDef`"""
+        dict of :class:`EDBComponentDef`"""
         return {l.GetName(): EDBComponentDef(self._pedb, l) for l in list(self._pedb.component_defs)}
 
     @property
@@ -2179,7 +2180,7 @@ class Components(object):
                     else:
                         pinlist = self.get_pin_from_component(refdes)
                         if not part_name in self.definitions:
-                            footprint_cell = self.definitions[comp.partname]._edb_comp_def.GetFootprintCell()
+                            footprint_cell = self.definitions[comp.partname]._edb_object.GetFootprintCell()
                             comp_def = self._edb.definition.ComponentDef.Create(self._db, part_name, footprint_cell)
                             for pin in pinlist:
                                 self._edb.definition.ComponentDefPin.Create(comp_def, pin.GetName())

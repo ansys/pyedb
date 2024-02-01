@@ -3,7 +3,7 @@ from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class Model(ObjBase):
-    """Manages component model class."""
+    """Manages model class."""
 
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
