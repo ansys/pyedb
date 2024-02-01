@@ -23,9 +23,9 @@ from pyedb.generic.general_methods import (
 ##########################################################
 # Set non-graphical mode
 # ~~~~~~~~~~~~~~~~~~~~~~
-# Set non-graphical mode. The default is ``True``.
+# Set non-graphical mode. The default is ``False``.
 
-non_graphical = True
+non_graphical = False
 
 ##########################################################
 # Launch EDB
