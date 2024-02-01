@@ -107,6 +107,11 @@ else:
 
 release = version = __version__
 
+# Specify environment variable to build the doc without grpahical mode while
+# keeping examples graphical mode activated. 
+os.environ["PYAEDT_NON_GRAPHICAL"] = "1"
+os.environ["PYAEDT_DOC_GENERATION"] = "1"
+
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx_PyEDB extension module names here as strings. They can be
