@@ -1,15 +1,14 @@
 .. _create_port_between_pin_and_layer_example:
 
-Create port between pin and layer
-=================================
-This section describes how create port between pin and layer.
+Create port between a pin and layer
+===================================
+
+This page shows how to create a port between a pin and a layer.
 
 .. autosummary::
    :toctree: _autosummary
 
 .. code:: python
-
-
 
     from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
@@ -22,7 +21,7 @@ This section describes how create port between pin and layer.
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
-    # loading EDB
+    # load EDB
     edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
     edbapp.siwave.create_port_between_pin_and_layer(
@@ -38,4 +37,4 @@ This section describes how create port between pin and layer.
 
 .. image:: ../../Resources/create_port_between_pin_and_layer.png
 ..   :width: 800
-..   :alt: Create edge port on polygon and trace
+..   :alt: Port created between a pin and layer

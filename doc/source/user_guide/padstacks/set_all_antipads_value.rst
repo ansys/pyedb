@@ -1,15 +1,14 @@
 .. _set_all_antipads_value_example:
 
-Settings all anti-pads value
-============================
-This shows how to set all anti-pads value to fixed one.
+Edit a padstack definition
+==========================
+
+This page shows how to edit a padstack definition, setting all anti-pad values to a fixed value.
 
 .. autosummary::
    :toctree: _autosummary
 
 .. code:: python
-
-
 
     from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
@@ -22,9 +21,9 @@ This shows how to set all anti-pads value to fixed one.
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
-    # loading EDB
+    # load EDB
     edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
-    # settings all anti-pads value to zero
+    # sets all anti-pads value to zero
     edbapp.padstacks.set_all_antipad_value(0.0)
     edbapp.close()

@@ -1,8 +1,9 @@
 .. _edb_queries_layout_bbox_example:
 
-Getting layout size
-===================
-This section describes how to retrieve the layout size by getting the bounding box:
+Get layout size
+===============
+
+This tutorial shows how to retrieve the layout size by getting the bounding box.
 
 .. autosummary::
    :toctree: _autosummary

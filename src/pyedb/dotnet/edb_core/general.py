@@ -7,8 +7,8 @@ from __future__ import absolute_import  # noreorder
 
 import logging
 
-from pyedb.generic.general_methods import is_ironpython, pyedb_function_handler
 from pyedb.dotnet.clr_module import Dictionary, List, Tuple
+from pyedb.generic.general_methods import is_ironpython, pyedb_function_handler
 
 if not is_ironpython:  # pragma: no cover
     try:

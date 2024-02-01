@@ -7,17 +7,17 @@ import math
 import re
 import warnings
 
-from pyedb.generic.general_methods import (
-    _retry_ntimes,
-    get_filename_without_extension,
-    pyedb_function_handler,
-)
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent, EDBComponentDef
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.sources import Source, SourceType
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
+from pyedb.generic.general_methods import (
+    _retry_ntimes,
+    get_filename_without_extension,
+    pyedb_function_handler,
+)
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 

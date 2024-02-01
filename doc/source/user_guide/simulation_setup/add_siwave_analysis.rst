@@ -1,15 +1,14 @@
 .. _add_siwave_setup_example:
 
-Adding Siwave analysis
-======================
-This section shows how to add Siwave analysis:
+Set up a SIwave analysis
+========================
+
+This page shows how to create and set up a SIwave SYZ analysis.
 
 .. autosummary::
    :toctree: _autosummary
 
 .. code:: python
-
-
 
     from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
@@ -19,12 +18,12 @@ This section shows how to add Siwave analysis:
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
     edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
-    # Adding Siwave SYZ analysis
+    # Add SIwave SYZ analysis
     edbapp.siwave.add_siwave_syz_analysis(
         start_freq="=GHz", stop_freq="10GHz", step_freq="10MHz"
     )
 
-    # Adding DC analysis
+    # Add DC analysis
     edbapp.siwave.add_siwave_dc_analysis(name="Test_dc")
     edbapp.save()
     edbapp.close()
@@ -32,4 +31,4 @@ This section shows how to add Siwave analysis:
 
 .. image:: ../../resources/add_siwave_setup.png
   :width: 400
-  :alt: Add siwave setup
+  :alt: Add SIwave setup

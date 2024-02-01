@@ -15,7 +15,7 @@ from pyedb.generic.general_methods import (
     pyedb_function_handler,
 )
 
-if not is_ironpython: # pragma: no cover
+if not is_ironpython:  # pragma: no cover
     try:
         import numpy as np
     except ImportError:
@@ -39,7 +39,7 @@ if not is_ironpython: # pragma: no cover
         from matplotlib.path import Path
 
         # Use matplotlib agg backend (non-interactive) when the CI is running.
-        if bool(int(os.getenv("PYEDB_CI_NO_DISPLAY", "0"))): # pragma: no cover
+        if bool(int(os.getenv("PYEDB_CI_NO_DISPLAY", "0"))):  # pragma: no cover
             import matplotlib
 
             matplotlib.use("Agg")
@@ -55,7 +55,7 @@ if not is_ironpython: # pragma: no cover
 
 
 @pyedb_function_handler()
-def get_structured_mesh(theta, phi, ff_data): # pragma: no cover
+def get_structured_mesh(theta, phi, ff_data):  # pragma: no cover
     if ff_data.min() < 0:
         ff_data_renorm = ff_data + np.abs(ff_data.min())
     else:
@@ -74,7 +74,7 @@ def get_structured_mesh(theta, phi, ff_data): # pragma: no cover
     return ff_mesh
 
 
-def is_notebook(): # pragma: no cover
+def is_notebook():  # pragma: no cover
     """Check if pyedb is running in Jupyter or not.
 
     Returns
@@ -91,7 +91,7 @@ def is_notebook(): # pragma: no cover
         return False  # Probably standard Python interpreter
 
 
-def is_float(istring): # pragma: no cover
+def is_float(istring):  # pragma: no cover
     """Convert a string to a float.
 
     Parameters
@@ -110,7 +110,7 @@ def is_float(istring): # pragma: no cover
         return 0
 
 
-def _triangle_vertex(elements_nodes, num_nodes_per_element, take_all_nodes=True): # pragma: no cover
+def _triangle_vertex(elements_nodes, num_nodes_per_element, take_all_nodes=True):  # pragma: no cover
     trg_vertex = []
     if num_nodes_per_element == 10 and take_all_nodes:
         for e in elements_nodes:
@@ -165,7 +165,7 @@ def _triangle_vertex(elements_nodes, num_nodes_per_element, take_all_nodes=True)
     return trg_vertex
 
 
-def _parse_aedtplt(filepath): # pragma: no cover
+def _parse_aedtplt(filepath):  # pragma: no cover
     lines = []
     vertices = []
     faces = []
@@ -284,7 +284,7 @@ def _parse_aedtplt(filepath): # pragma: no cover
 @pyedb_function_handler()
 def plot_polar_chart(
     plot_data, size=(2000, 1000), show_legend=True, xlabel="", ylabel="", title="", snapshot_path=None
-): # pragma: no cover
+):  # pragma: no cover
     """Create a matplotlib polar plot based on a list of data.
 
     Parameters
@@ -339,7 +339,7 @@ def plot_polar_chart(
 
 
 @pyedb_function_handler()
-def plot_3d_chart(plot_data, size=(2000, 1000), xlabel="", ylabel="", title="", snapshot_path=None): # pragma: no cover
+def plot_3d_chart(plot_data, size=(2000, 1000), xlabel="", ylabel="", title="", snapshot_path=None):  # pragma: no cover
     """Create a matplotlib 3D plot based on a list of data.
 
     Parameters
@@ -392,7 +392,9 @@ def plot_3d_chart(plot_data, size=(2000, 1000), xlabel="", ylabel="", title="", 
 
 
 @pyedb_function_handler()
-def plot_2d_chart(plot_data, size=(2000, 1000), show_legend=True, xlabel="", ylabel="", title="", snapshot_path=None): # pragma: no cover
+def plot_2d_chart(
+    plot_data, size=(2000, 1000), show_legend=True, xlabel="", ylabel="", title="", snapshot_path=None
+):  # pragma: no cover
     """Create a matplotlib plot based on a list of data.
 
     Parameters
@@ -564,7 +566,9 @@ def plot_matplotlib(
 
 
 @pyedb_function_handler()
-def plot_contour(qty_to_plot, x, y, size=(2000, 1600), xlabel="", ylabel="", title="", levels=64, snapshot_path=None): # pragma: no cover
+def plot_contour(
+    qty_to_plot, x, y, size=(2000, 1600), xlabel="", ylabel="", title="", levels=64, snapshot_path=None
+):  # pragma: no cover
     """Create a matplotlib contour plot.
 
     Parameters
@@ -635,7 +639,7 @@ class ObjClass(object):
 
     """
 
-    def __init__(self, path, color, opacity, units): # pragma: no cover
+    def __init__(self, path, color, opacity, units):  # pragma: no cover
         self.path = path
         self._color = (0, 0, 0)
         self.color = color
@@ -693,7 +697,7 @@ class FieldClass(object):
         tolerance=1e-3,
         headers=2,
         show_edge=True,
-    ): # pragma: no cover
+    ):  # pragma: no cover
         self.path = path
         self.log_scale = log_scale
         self.units = coordinate_units
@@ -713,7 +717,7 @@ class FieldClass(object):
 
 
 class CommonPlotter(object):
-    def __init__(self): # pragma: no cover
+    def __init__(self):  # pragma: no cover
         self._objects = []
         self._fields = []
         self._frames = []
@@ -1201,7 +1205,7 @@ class ModelPlotter(CommonPlotter):
         label_name="Field",
         surface_mapping_tolerance=1e-3,
         header_lines=2,
-    ): # pragma: no cover
+    ):  # pragma: no cover
         """Add a field file to the scenario. It can be aedtplt, fld or csv file.
 
         Parameters
@@ -1255,7 +1259,7 @@ class ModelPlotter(CommonPlotter):
         label_name="Field",
         surface_mapping_tolerance=1e-3,
         show_edges=True,
-    ): # pragma: no cover
+    ):  # pragma: no cover
         """Add field data to the scenario.
 
         Parameters
@@ -1293,7 +1297,7 @@ class ModelPlotter(CommonPlotter):
         self.fields[-1]._cached_polydata = filedata
 
     @pyedb_function_handler()
-    def _read_mesh_files(self, read_frames=False): # pragma: no cover
+    def _read_mesh_files(self, read_frames=False):  # pragma: no cover
         for cad in self.objects:
             if not cad._cached_polydata:
                 filedata = pv.read(cad.path)
@@ -1389,7 +1393,7 @@ class ModelPlotter(CommonPlotter):
                         field._cached_polydata = filedata
 
     @pyedb_function_handler()
-    def _add_buttons(self): # pragma: no cover
+    def _add_buttons(self):  # pragma: no cover
         size = int(self.pv.window_size[1] / 40)
         startpos = self.pv.window_size[1] - 2 * size
         endpos = 100
@@ -1492,7 +1496,7 @@ class ModelPlotter(CommonPlotter):
             )
 
     @pyedb_function_handler()
-    def plot(self, export_image_path=None): # pragma: no cover
+    def plot(self, export_image_path=None):  # pragma: no cover
         """Plot the current available Data. With `s` key a screenshot is saved in export_image_path or in tempdir.
 
         Parameters
@@ -1620,7 +1624,7 @@ class ModelPlotter(CommonPlotter):
         return True
 
     @pyedb_function_handler()
-    def clean_cache_and_files(self, remove_objs=True, remove_fields=True, clean_cache=False): # pragma: no cover
+    def clean_cache_and_files(self, remove_objs=True, remove_fields=True, clean_cache=False):  # pragma: no cover
         """Clean downloaded files, and, on demand, also the cached meshes.
 
         Parameters
@@ -1650,7 +1654,7 @@ class ModelPlotter(CommonPlotter):
         return True
 
     @pyedb_function_handler()
-    def animate(self): # pragma: no cover
+    def animate(self):  # pragma: no cover
         """Animate the current field plot.
 
         Returns
@@ -1817,7 +1821,7 @@ class ModelPlotter(CommonPlotter):
             return True
 
     @pyedb_function_handler()
-    def generate_geometry_mesh(self): # pragma: no cover
+    def generate_geometry_mesh(self):  # pragma: no cover
         """Generate mesh for objects only.
 
         Returns

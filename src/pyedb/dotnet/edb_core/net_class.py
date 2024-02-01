@@ -2,12 +2,12 @@ from __future__ import absolute_import  # noreorder
 
 import re
 
-from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.dotnet.edb_core.edb_data.nets_data import (
     EDBDifferentialPairData,
     EDBExtendedNetData,
     EDBNetClassData,
 )
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class EdbCommon:
