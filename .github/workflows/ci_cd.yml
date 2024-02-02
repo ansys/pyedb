@@ -206,9 +206,9 @@ jobs:
       - name: Upload PDF Documentation artifact
         uses: actions/upload-artifact@v4
         with:
-        name: documentation-pdf
-        path: doc/_build/latex/*.pdf
-        retention-days: 7
+          name: documentation-pdf
+          path: doc/_build/latex/*.pdf
+          retention-days: 7
 
   package:
     name: Package library
