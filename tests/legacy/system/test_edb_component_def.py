@@ -30,4 +30,3 @@ class TestClass:
 
         self.edbapp.definitions.components["CAPC3216X180X55ML20T25"].add_n_port_model(sparam_path, "GRM32_DC0V_25degC_series")
         self.edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
-        self.edbapp.close()

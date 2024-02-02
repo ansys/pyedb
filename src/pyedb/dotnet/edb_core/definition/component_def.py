@@ -133,12 +133,13 @@ class EDBComponentDef(ObjBase):
 
     @property
     def component_models(self):
-        temp_list = []
+        temp = {}
         for i in list(self._edb_object.GetComponentModels()):
             temp_type = i.ToString().split(".")[0]
             if temp_type == "NPortComponentModel":
-                temp_list.append(NPortComponentModel(self._pedb, i))
-        return temp_list
+                edb_object = NPortComponentModel(self._pedb, i)
+                temp[edb_object.name] = edb_object
+        return temp
 
     @pyedb_function_handler
     def _add_component_model(self, value):

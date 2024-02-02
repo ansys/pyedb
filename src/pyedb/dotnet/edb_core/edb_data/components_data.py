@@ -818,20 +818,26 @@ class EDBComponent(object):
 
     @pyedb_function_handler()
     def use_s_parameter_model(self, name, reference_net=None):
-        """
+        """Use S-parameter model on the component.
 
         Parameters
         ----------
-        name
-        reference_net
+        name: str
+            Name of the S-parameter model.
+        reference_net: str, optional
+            Reference net of the model.
 
         Returns
         -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
         Examples
         --------
-        >>> from pyedb import Edb
-        >>> app = Edb()
-        >>> app.definition
+        >>> edbapp = Edb()
+        >>>comp_def = edbapp.definitions.components["CAPC3216X180X55ML20T25"]
+        >>>comp_def.add_n_port_model("c:GRM32_DC0V_25degC_series.s2p", "GRM32_DC0V_25degC_series")
+        >>>edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
         """
         model = self._edb.cell.hierarchy._hierarchy.SParameterModel()
         model.SetComponentModelName(name)
