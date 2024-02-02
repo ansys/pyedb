@@ -72,33 +72,37 @@ class Configuration:
             self._pedb.logger.error("No data loaded. Please load a configuration file.")
             return False
 
-        self._load_components(self.data)
+        if "components" in self.data:
+            self._load_components()
 
         # Configure ports
-        self._load_ports(self.data)
+        if "ports" in self.data:
+            self._load_ports()
 
         # Configure sources
-        self._load_sources(self.data)
+        if "sources" in self.data:
+            self._load_sources()
 
         # Configure HFSS setup
-        self._load_setups(self.data)
+        if "setups" in self.data:
+            self._load_setups()
 
         # Configure stackup
-        self._load_stackup(self.data)
+        if "stackup" in self.data:
+            self._load_stackup()
 
         # Configure S-parameter
-        self._load_s_parameter(self.data)
+        if "s_parameters" in self.data:
+            self._load_s_parameter()
 
         return True
 
 
     @pyedb_function_handler
-    def _load_components(self, json_components):
+    def _load_components(self):
         """Imports component information from json."""
-        data = load_json(json_components)
-        data = data["components"] if "components" in data else []
 
-        for comp in data:
+        for comp in self.data["components"] :
             refdes = comp["reference_designator"]
             part_type = comp["part_type"].lower()
             if part_type == "resistor":
@@ -202,11 +206,9 @@ class Configuration:
                 )
 
     @pyedb_function_handler
-    def _load_ports(self, json_ports):
+    def _load_ports(self):
         """Imports port information from json."""
-        data = load_json(json_ports)
-        data = data["ports"] if "ports" in data else []
-        for port in data:
+        for port in self.data["ports"]:
             port_type = port["type"]
             refdes = port["reference_designator"]
             comp_layout = self._components[refdes]
@@ -249,12 +251,10 @@ class Configuration:
                 self._pedb.create_port(pos_terminal)
 
     @pyedb_function_handler
-    def _load_sources(self, json_sources):
+    def _load_sources(self):
         """Imports source information from json."""
-        data = load_json(json_sources)
-        data = data["sources"] if "sources" in data else []
 
-        for src in data:
+        for src in self.data["sources"]:
             src_type = src["type"]
             refdes = src["reference_designator"]
             name = src["name"]
@@ -295,12 +295,9 @@ class Configuration:
                 src_obj.magnitude = src["magnitude"]
 
     @pyedb_function_handler
-    def _load_setups(self, json_hfss_setups):
+    def _load_setups(self):
         """Imports setup information from json."""
-        data = load_json(json_hfss_setups)
-        data = data["setups"] if "setups" in data else []
-
-        for setup in data:
+        for setup in self.data["setups"]:
             setup_type = setup["type"]
 
             edb_setup = None
@@ -375,51 +372,49 @@ class Configuration:
                         )
 
     @pyedb_function_handler
-    def _load_stackup(self, json_stackup):
+    def _load_stackup(self):
         """Imports stackup information from json."""
-        data = load_json(json_stackup)
-        data = data["stackup"] if "stackup" in data else None
-        if data:
-            materials = data["materials"] if "materials" in data else []
-            materials_reformatted = {}
-            for mat in materials:
-                new_mat = {}
-                new_mat["name"] = mat["name"]
-                if "conductivity" in mat:
-                    new_mat["conductivity"] = mat["conductivity"]
-                if "permittivity" in mat:
-                    new_mat["permittivity"] = mat["permittivity"]
-                if "dielectricLoss_tangent" in mat:
-                    new_mat["loss_tangent"] = mat["dielectricLoss_tangent"]
+        data = self.data["stackup"]
+        materials = data["materials"] if "materials" in data else []
+        materials_reformatted = {}
+        for mat in materials:
+            new_mat = {}
+            new_mat["name"] = mat["name"]
+            if "conductivity" in mat:
+                new_mat["conductivity"] = mat["conductivity"]
+            if "permittivity" in mat:
+                new_mat["permittivity"] = mat["permittivity"]
+            if "dielectricLoss_tangent" in mat:
+                new_mat["loss_tangent"] = mat["dielectricLoss_tangent"]
 
-                materials_reformatted[mat["name"]] = new_mat
+            materials_reformatted[mat["name"]] = new_mat
 
-            layers = data["layers"]
-            layers_reformatted = {}
+        layers = data["layers"]
+        layers_reformatted = {}
 
-            for l in layers:
-                lyr = {
-                    "name": l["name"],
-                    "type": l["type"],
-                    "material": l["material"],
-                    "thickness": l["thickness"],
-                }
-                if "fill_material" in l:
-                    lyr["dielectric_fill"] = l["fill_material"]
-                layers_reformatted[l["name"]] = lyr
-            stackup_reformated = {"layers": layers_reformatted, "materials": materials_reformatted}
-            self._pedb.stackup.load(stackup_reformated)
+        for l in layers:
+            lyr = {
+                "name": l["name"],
+                "type": l["type"],
+                "material": l["material"],
+                "thickness": l["thickness"],
+            }
+            if "fill_material" in l:
+                lyr["dielectric_fill"] = l["fill_material"]
+            layers_reformatted[l["name"]] = lyr
+        stackup_reformated = {"layers": layers_reformatted, "materials": materials_reformatted}
+        self._pedb.stackup.load(stackup_reformated)
 
     @pyedb_function_handler
-    def _load_s_parameter(self, json_s_param):
+    def _load_s_parameter(self):
         """Imports s-parameter information from json."""
-        data = load_json(json_s_param)
-        data = data["s_parameters"] if "s_parameters" in data else []
-        for sp in data:
+
+        for sp in self.data["s_parameters"]:
+            fpath = sp["file_path"]
             sp_name = sp["name"]
             comp_def_name = sp["component_definition"]
             comp_def = self._pedb.definitions.component[comp_def_name]
-            comp_def.add_n_port_model(sp["file_path"], sp_name)
+            comp_def.add_n_port_model(fpath, sp_name)
             if sp["apply_to_all"]:
                 for refdes, comp in comp_def.components.items():
                     if refdes not in sp["components"]:
