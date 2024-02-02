@@ -7,5 +7,6 @@ class Definitions:
         self._pedb = pedb
 
     @property
-    def components(self):
+    def component(self):
+        """Component definitions"""
         return {l.GetName(): EDBComponentDef(self._pedb, l) for l in list(self._pedb.active_db.ComponentDefs)}

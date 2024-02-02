@@ -1,0 +1,12 @@
+{
+  "s_parameters": [
+    {
+      "directory_type": "use_path",
+      "name": "GRM32_DC0V_25degC_series",
+      "component_definition": "CAPC3216X180X55ML20T25",
+      "file_path": "",
+      "apply_to_all": true,
+      "components": []
+    }
+  ]
+}

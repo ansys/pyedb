@@ -86,6 +86,9 @@ class Configuration:
         # Configure stackup
         self._load_stackup(self.data)
 
+        # Configure S-parameter
+        self._load_s_parameter(self.data)
+
         return True
 
 
@@ -406,3 +409,22 @@ class Configuration:
                 layers_reformatted[l["name"]] = lyr
             stackup_reformated = {"layers": layers_reformatted, "materials": materials_reformatted}
             self._pedb.stackup.load(stackup_reformated)
+
+    @pyedb_function_handler
+    def _load_s_parameter(self, json_s_param):
+        """Imports s-parameter information from json."""
+        data = load_json(json_s_param)
+        data = data["s_parameters"] if "s_parameters" in data else []
+        for sp in data:
+            sp_name = sp["name"]
+            comp_def_name = sp["component_definition"]
+            comp_def = self._pedb.definitions.component[comp_def_name]
+            comp_def.add_n_port_model(sp["file_path"], sp_name)
+            if sp["apply_to_all"]:
+                for refdes, comp in comp_def.components.items():
+                    if refdes not in sp["components"]:
+                        comp.use_s_parameter_model(sp_name)
+            else:
+                for refdes, comp in comp_def.components.items():
+                    if refdes in sp["components"]:
+                        comp.use_s_parameter_model(sp_name)

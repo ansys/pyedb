@@ -4222,5 +4222,6 @@ class Edb(Database):
 
     @property
     def definitions(self):
+        """Definitions class."""
         from pyedb.dotnet.edb_core.definition.definitions import Definitions
         return Definitions(self)
