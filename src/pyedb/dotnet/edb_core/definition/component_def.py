@@ -1,5 +1,8 @@
 from pyedb.dotnet.edb_core.edb_data.obj_base import ObjBase
 from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.dotnet.edb_core.definition.component_model import (
+    NPortComponentModel
+)
 
 
 class EDBComponentDef(ObjBase):
@@ -125,3 +128,22 @@ class EDBComponentDef(ObjBase):
         for comp in list(self.components.values()):
             comp.assign_spice_model(file_path, model_name)
         return True
+
+    @property
+    def component_models(self):
+        temp_list = []
+        for i in list(self._edb_object.GetComponentModels()):
+            temp_type = i.ToString().split(".")[0]
+            if temp_type == "NPortComponentModel":
+                temp_list.append(NPortComponentModel(self._pedb, i))
+        return temp_list
+
+    @pyedb_function_handler
+    def _add_component_model(self, value):
+        self._edb_object.AddComponentModel(value)
+
+    @pyedb_function_handler
+    def add_n_port_model(self):
+        pass
+        #todo
+

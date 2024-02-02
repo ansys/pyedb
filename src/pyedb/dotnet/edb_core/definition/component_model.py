@@ -9,3 +9,17 @@ class ComponentModel(ObjBase):
         super().__init__(pedb, edb_object)
         self._model_type_mapping = {"PinPairModel": self._pedb.edb_api.cell}
 
+
+class NPortComponentModel(ComponentModel):
+    """Class for n-port component models."""
+
+    def __init__(self, pedb, edb_object):
+        super().__init__(pedb, edb_object)
+
+    @property
+    def reference_file(self):
+        return self._edb_object.GetReferenceFile()
+
+    @reference_file.setter
+    def reference_file(self, value):
+        self._edb_object.SetReferenceFile(value)
