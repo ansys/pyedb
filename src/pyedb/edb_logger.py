@@ -115,7 +115,7 @@ class EdbLogger(object):
             settings.enable_screen_logs = True
             self._std_out_handler = logging.StreamHandler(sys.stdout)
             self._std_out_handler.setLevel(level)
-            _logger_stdout_formatter = logging.Formatter("PyANSYS-edb %(levelname)s: %(message)s")
+            _logger_stdout_formatter = logging.Formatter("PyEDB %(levelname)s: %(message)s")
 
             self._std_out_handler.setFormatter(_logger_stdout_formatter)
             self._global.addHandler(self._std_out_handler)

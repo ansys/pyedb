@@ -19,20 +19,17 @@ Legacy interface
 ================
 
 PyEDB currently connects to EDB using the native C# interface for the EDB API.
-You do not need to set the ``PYEDB_USE_LEGACY`` environment variable to ``0`` to
+You do not need to set the ``PYEDB_USE_DOTNET`` environment variable to ``0`` to
 use the legacy interface because it is the default value. Once the gRPC interface is
-available, to use it, simply set the ``PYEDB_USE_LEGACY`` environment variable to ``1``. 
+available, to use it, simply set the ``PYEDB_USE_DOTNET`` environment variable to ``1``. 
 
 .. code:: python
 
 
     # Set gRPC interface (future implementation)
     import os
-
-    os.environ["PYEDB_USE_LEGACY"] = "1"
+    os.environ["PYEDB_USE_DOTNET"] = "1"
 
     # Set DotNet interface (actual implementation)
     import os
-
-    os.environ["PYEDB_USE_LEGACY"] = "0"
-
+    os.environ["PYEDB_USE_DOTNET"] = "0"

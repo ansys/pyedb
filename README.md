@@ -57,18 +57,18 @@ combine 3D designs, or perform simulation postprocessing. EDB also supports 3D c
 ## Documentation and issues
 
 Documentation for the latest stable release of PyEDB is hosted at
-[PyEDB documentation](https://edb.docs.pyansys.com/version/dev/index.html).
+[PyEDB documentation](https://edb.docs.pyansys.com/version/stable/index.html).
 The documentation has five sections:
 
-- `Getting started <https://edb.docs.pyansys.com/version/version/dev/getting_started/index.html#>`_: Describes
+- `Getting started <https://edb.docs.pyansys.com/version/version/stable/getting_started/index.html#>`_: Describes
   how to install PyEDB in user mode.
-- `User guide <https:edb.docs.pyansys.com/version/version/dev/user_guide/index.html>`_: Describes how to
+- `User guide <https:edb.docs.pyansys.com/version/version/stable/user_guide/index.html>`_: Describes how to
   use PyEDB.
-- `API reference <edb.docs.pyansys.com/version/version/dev/api/index.html>`_: Provides API member descriptions
+- `API reference <edb.docs.pyansys.com/version/version/stable/api/index.html>`_: Provides API member descriptions
   and usage examples.
-- `Examples <https://edb.docs.pyansys.com/version/version/dev/examples/index.html>`_: Provides examples showing
+- `Examples <https://edb.docs.pyansys.com/version/version/stable/examples/index.html>`_: Provides examples showing
   end-to-end workflows for using PyEDB.
-- `Contribute <https://edb.docs.pyansys.com/version/version/dev/contribute.html>`_: Describes how to install
+- `Contribute <https://edb.docs.pyansys.com/version/version/stable/contribute.html>`_: Describes how to install
   PyEDB in developer mode and how to contribute to this PyAnsys library.
 
 In the upper right corner of the documentation's title bar, there is an option
@@ -76,9 +76,9 @@ for switching from viewing the documentation for the latest stable release
 to viewing the documentation for the development version or previously
 released versions.
 
-On the [PyEDB Issues](https://github.com/ansys/pyansys-edb/issues) page, you can
+On the [PyEDB Issues](https://github.com/ansys/pyedb/issues) page, you can
 create issues to report bugs and request new features. On the
-[PyEDB Discussions](https://github.com/ansys/pyansys-edb/discussions) page or the
+[PyEDB Discussions](https://github.com/ansys/pyedb/discussions) page or the
 [Discussions](https://discuss.ansys.com/) page on the Ansys Developer portal,
 you can post questions, share ideas, and get community feedback.
 
