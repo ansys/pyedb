@@ -43,6 +43,8 @@ API to make scripting simpler.
         :link: getting_started/contributing
         :link-type: doc
 
+        Learn how to contribute to the PyEDB codebase or documentation.
+
 .. toctree::
    :hidden:
 
