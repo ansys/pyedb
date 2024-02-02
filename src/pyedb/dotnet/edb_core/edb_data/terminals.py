@@ -1,10 +1,10 @@
 import re
 
-from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 from pyedb.dotnet.edb_core.edb_data.connectable import Connectable
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 
 
 class Terminal(Connectable):

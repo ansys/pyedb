@@ -15,7 +15,6 @@ class TestClass:
         self.local_scratch = local_scratch
 
     def test_create_edb(self):
-
         example_folder = local_path / "example_models" / "TEDB"
         example_json_folder = example_folder / "edb_config_json"
         example_edb = example_folder / "ANSYS-HSD_V1.aedb"

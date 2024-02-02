@@ -1,8 +1,9 @@
 .. _create_current_source_example:
 
-Create current voltage sources and probes
-=========================================
-This section describes how to create current and voltage sources:
+Create current and voltage sources
+==================================
+
+This page shows how to create current and voltage sources on a component.
 
 .. autosummary::
    :toctree: _autosummary
@@ -19,31 +20,31 @@ This section describes how to create current and voltage sources:
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
     edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
 
-    # create simple current source on component U1 between net USB3_D_N and GND
+    # create simple current source on ``U1`` component between ``USB3_D_N`` and ``GND`` nets
     edbapp.siwave.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0) != ""
 
-    # retrieve pins from component U1
+    # retrieve pins from ``U1`` component
     pins = edbapp.components.get_pin_from_component("U1")
 
     # create current source on specific pins
     edbapp.siwave.create_current_source_on_pin(pins[301], pins[10], 0.1, 0, "I22")
 
-    # creating pin group on net GND from component U1
+    # create pin group on ``GND`` net from ``U1`` component
     edbapp.siwave.create_pin_group_on_net(
         reference_designator="U1", net_name="GND", group_name="gnd"
     )
 
-    # creating pin group on specific pins
+    # creat pin group on specific pins
     edbapp.siwave.create_pin_group(
         reference_designator="U1", pin_numbers=["A27", "A28"], group_name="vrm_pos"
     )
 
-    # creating current source on pin group
+    # create current source on pin group
     edbapp.siwave.create_current_source_on_pin_group(
         pos_pin_group_name="vrm_pos", neg_pin_group_name="gnd", name="vrm_current_source"
     )
 
-    #  creating voltage source
+    #  create voltage source
     edbapp.siwave.create_pin_group(
         reference_designator="U1", pin_numbers=["R23", "P23"], group_name="sink_pos"
     )
@@ -51,7 +52,7 @@ This section describes how to create current and voltage sources:
         "sink_pos", "gnd", name="vrm_voltage_source"
     )
 
-    # creating voltage probe
+    # create voltage probe
     edbapp.siwave.create_pin_group(
         reference_designator="U1", pin_numbers=["A27", "A28"], group_name="vp_pos"
     )
@@ -65,4 +66,4 @@ This section describes how to create current and voltage sources:
 
 .. image:: ../../Resources/create_sources_and_probes.png
 ..   :width: 800
-..   :alt: Create port on component
+..   :alt: Current and voltage sources created on a component

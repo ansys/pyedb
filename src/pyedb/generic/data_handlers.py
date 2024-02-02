@@ -11,7 +11,7 @@ from pyedb.generic.general_methods import pyedb_function_handler, settings
 
 
 @pyedb_function_handler()
-def format_decimals(el): # pragma: no cover
+def format_decimals(el):  # pragma: no cover
     """
 
     Parameters
@@ -33,7 +33,7 @@ def format_decimals(el): # pragma: no cover
 
 
 @pyedb_function_handler()
-def random_string(length=6, only_digits=False, char_set=None): # pragma: no cover
+def random_string(length=6, only_digits=False, char_set=None):  # pragma: no cover
     """Generate a random string
 
     Parameters
@@ -62,7 +62,7 @@ def random_string(length=6, only_digits=False, char_set=None): # pragma: no cove
 
 
 @pyedb_function_handler()
-def unique_string_list(element_list, only_string=True): # pragma: no cover
+def unique_string_list(element_list, only_string=True):  # pragma: no cover
     """Return a unique list of strings from an element list.
 
     Parameters
@@ -97,7 +97,7 @@ def unique_string_list(element_list, only_string=True): # pragma: no cover
 
 
 @pyedb_function_handler()
-def string_list(element_list): # pragma: no cover
+def string_list(element_list):  # pragma: no cover
     """
 
     Parameters
@@ -117,7 +117,7 @@ def string_list(element_list): # pragma: no cover
 
 
 @pyedb_function_handler()
-def ensure_list(element_list): # pragma: no cover
+def ensure_list(element_list):  # pragma: no cover
     """
 
     Parameters
@@ -135,7 +135,7 @@ def ensure_list(element_list): # pragma: no cover
 
 
 @pyedb_function_handler()
-def from_rkm(code): # pragma: no cover
+def from_rkm(code):  # pragma: no cover
     """Convert an RKM code string to a string with a decimal point.
 
     Parameters
@@ -202,7 +202,7 @@ def from_rkm(code): # pragma: no cover
     return code
 
 
-def str_to_bool(s): # pragma: no cover
+def str_to_bool(s):  # pragma: no cover
     """Convert a ``"True"`` or ``"False"`` string to its corresponding Boolean value.
 
     If the passed arguments are not relevant in the context of conversion, the argument
@@ -267,7 +267,7 @@ unit_val = {
 
 
 @pyedb_function_handler()
-def float_units(val_str, units=""): # pragma: no cover
+def float_units(val_str, units=""):  # pragma: no cover
     """Retrieve units for a value.
 
     Parameters
@@ -298,7 +298,7 @@ def float_units(val_str, units=""): # pragma: no cover
 
 
 @pyedb_function_handler()
-def json_to_dict(fn): # pragma: no cover
+def json_to_dict(fn):  # pragma: no cover
     """Load Json File to a dictionary.
 
     Parameters

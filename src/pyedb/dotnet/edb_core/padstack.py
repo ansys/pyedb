@@ -4,13 +4,13 @@ This module contains the `EdbPadstacks` class.
 import math
 import warnings
 
-from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 from pyedb.dotnet.clr_module import Array
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import (
     EDBPadstack,
     EDBPadstackInstance,
 )
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 

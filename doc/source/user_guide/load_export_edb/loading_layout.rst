@@ -1,10 +1,11 @@
 .. _load_edb_example:
 
-Loading layout
-==============
-Although an entire layout can be built from scratch with PyEDB most of the time the first step is
-loading an existing aedb file. This section is showing how to load an EDB and start manipulating
-objects.
+Load a layout
+=============
+
+Although you can use PyEDB to build an entire layout from scratch, most of the time you
+load an layout in an existing AEDB file. This page shows how to load a layout in EDB and
+start manipulating objects.
 
 .. autosummary::
    :toctree: _autosummary
@@ -22,5 +23,5 @@ objects.
 
 .. image:: ../../resources/starting_load_edb.png
   :width: 600
-  :alt: Loading first EDB
+  :alt: Load layout in EDB
 

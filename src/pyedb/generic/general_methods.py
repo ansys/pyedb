@@ -124,8 +124,8 @@ def _exception(ex_info, func, args, kwargs, message="Type Error"):
         )
 
 
-def _function_handler_wrapper(user_function): # pragma: no cover
-    def wrapper(*args, **kwargs): # pragma: no cover
+def _function_handler_wrapper(user_function):  # pragma: no cover
+    def wrapper(*args, **kwargs):  # pragma: no cover
         if not settings.enable_error_handler:
             result = user_function(*args, **kwargs)
             return result
@@ -212,7 +212,7 @@ def _write_mes(mes_text):
         settings.logger.error(el)
 
 
-def _log_method(func, new_args, new_kwargs): # pragma: no cover
+def _log_method(func, new_args, new_kwargs):  # pragma: no cover
     if not settings.enable_debug_internal_methods_logger and str(func.__name__)[0] == "_":
         return
     if not settings.enable_debug_geometry_operator_logger and "GeometryOperators" in str(func):
@@ -468,7 +468,7 @@ def check_and_download_folder(local_path, remote_path, overwrite=True):
     return remote_path
 
 
-def open_file(file_path, file_options="r"): # pragma: no cover
+def open_file(file_path, file_options="r"):  # pragma: no cover
     """Open a file and return the object.
 
     Parameters
@@ -570,7 +570,7 @@ def env_value_student(input_version):
 
 
 @pyedb_function_handler()
-def generate_unique_folder_name(rootname=None, folder_name=None): # pragma: no cover
+def generate_unique_folder_name(rootname=None, folder_name=None):  # pragma: no cover
     """Generate a new AEDT folder name given a rootname.
 
     Parameters
@@ -682,7 +682,7 @@ def _retry_ntimes(n, function, *args, **kwargs):
             raise AttributeError("Error in Executing Method.")
 
 
-def time_fn(fn, *args, **kwargs): # pragma: no cover
+def time_fn(fn, *args, **kwargs):  # pragma: no cover
     start = datetime.datetime.now()
     results = fn(*args, **kwargs)
     end = datetime.datetime.now()
@@ -709,7 +709,7 @@ def is_number(a):
         return False
 
 
-def is_array(a): # pragma: no cover
+def is_array(a):  # pragma: no cover
     try:
         v = list(ast.literal_eval(a))
     except (ValueError, TypeError, NameError, SyntaxError):
@@ -738,7 +738,7 @@ def is_project_locked(project_path):
 
 
 @pyedb_function_handler()
-def remove_project_lock(project_path): # pragma: no cover
+def remove_project_lock(project_path):  # pragma: no cover
     """Check if an AEDT project exists and try to remove the lock file.
 
     .. note::
@@ -760,7 +760,7 @@ def remove_project_lock(project_path): # pragma: no cover
 
 
 @pyedb_function_handler()
-def read_csv(filename, encoding="utf-8"): # pragma: no cover
+def read_csv(filename, encoding="utf-8"):  # pragma: no cover
     """Read information from a CSV file and return a list.
 
     Parameters
@@ -785,7 +785,7 @@ def read_csv(filename, encoding="utf-8"): # pragma: no cover
 
 
 @pyedb_function_handler()
-def read_csv_pandas(filename, encoding="utf-8"): # pragma: no cover
+def read_csv_pandas(filename, encoding="utf-8"):  # pragma: no cover
     """Read information from a CSV file and return a list.
 
     Parameters
@@ -810,7 +810,7 @@ def read_csv_pandas(filename, encoding="utf-8"): # pragma: no cover
 
 
 @pyedb_function_handler()
-def read_tab(filename): # pragma: no cover
+def read_tab(filename):  # pragma: no cover
     """Read information from a TAB file and return a list.
 
     Parameters
@@ -829,7 +829,7 @@ def read_tab(filename): # pragma: no cover
 
 
 @pyedb_function_handler()
-def read_xlsx(filename): # pragma: no cover
+def read_xlsx(filename):  # pragma: no cover
     """Read information from an XLSX file and return a list.
 
     Parameters
@@ -853,7 +853,7 @@ def read_xlsx(filename): # pragma: no cover
 
 
 @pyedb_function_handler()
-def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL): # pragma: no cover
+def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL):  # pragma: no cover
     if is_ironpython:
         f = open(output, "wb")
     else:
@@ -866,7 +866,7 @@ def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE
 
 
 @pyedb_function_handler()
-def filter_tuple(value, search_key1, search_key2): # pragma: no cover
+def filter_tuple(value, search_key1, search_key2):  # pragma: no cover
     """Filter a tuple of two elements with two search keywords."""
     ignore_case = True
 
@@ -890,7 +890,7 @@ def filter_tuple(value, search_key1, search_key2): # pragma: no cover
 
 
 @pyedb_function_handler()
-def filter_string(value, search_key1): # pragma: no cover
+def filter_string(value, search_key1):  # pragma: no cover
     """Filter a string"""
     ignore_case = True
 
@@ -912,7 +912,7 @@ def filter_string(value, search_key1): # pragma: no cover
 
 
 @pyedb_function_handler()
-def recursive_glob(startpath, filepattern): # pragma: no cover
+def recursive_glob(startpath, filepattern):  # pragma: no cover
     """Get a list of files matching a pattern, searching recursively from a start path.
 
     Keyword Arguments:
@@ -937,7 +937,7 @@ def recursive_glob(startpath, filepattern): # pragma: no cover
 
 
 @pyedb_function_handler()
-def number_aware_string_key(s): # pragma: no cover
+def number_aware_string_key(s):  # pragma: no cover
     """Get a key for sorting strings that treats embedded digit sequences as integers.
 
     Parameters
@@ -973,8 +973,9 @@ def number_aware_string_key(s): # pragma: no cover
             i = j
     return tuple(result)
 
+
 @pyedb_function_handler()
-def active_sessions(version=None, student_version=False, non_graphical=False): # pragma: no cover
+def active_sessions(version=None, student_version=False, non_graphical=False):  # pragma: no cover
     """Get information for the active AEDT sessions.
 
     Parameters
@@ -1027,7 +1028,7 @@ def active_sessions(version=None, student_version=False, non_graphical=False): #
 
 
 @pyedb_function_handler()
-def com_active_sessions(version=None, student_version=False, non_graphical=False): # pragma: no cover
+def com_active_sessions(version=None, student_version=False, non_graphical=False):  # pragma: no cover
     """Get information for the active COM AEDT sessions.
 
     Parameters
@@ -1057,7 +1058,7 @@ def com_active_sessions(version=None, student_version=False, non_graphical=False
 
 
 @pyedb_function_handler()
-def grpc_active_sessions(version=None, student_version=False, non_graphical=False): # pragma: no cover
+def grpc_active_sessions(version=None, student_version=False, non_graphical=False):  # pragma: no cover
     """Get information for the active gRPC AEDT sessions.
 
     Parameters
@@ -1125,7 +1126,7 @@ def parse_excitation_file(
     data_format="Power",
     encoding="utf-8",
     out_mag="Voltage",
-): # pragma: no cover
+):  # pragma: no cover
     """Parse a csv file and convert data in list that can be applied to Hfss and Hfss3dLayout sources.
 
     Parameters
@@ -1190,7 +1191,7 @@ def parse_excitation_file(
     return freq, mag, phase
 
 
-def tech_to_control_file(tech_path, unit="nm", control_path=None): # pragma: no cover
+def tech_to_control_file(tech_path, unit="nm", control_path=None):  # pragma: no cover
     """Convert a TECH file to an XML file for use in a GDS or DXF import.
 
     Parameters
@@ -1249,7 +1250,7 @@ def tech_to_control_file(tech_path, unit="nm", control_path=None): # pragma: no 
 
 
 class PropsManager(object):
-    def __getitem__(self, item): # pragma: no cover
+    def __getitem__(self, item):  # pragma: no cover
         """Get the `self.props` key value.
 
         Parameters
@@ -1277,7 +1278,7 @@ class PropsManager(object):
         self._app.logger.warning("Key %s not found.Check one of available keys in self.available_properties", item)
         return None
 
-    def __setitem__(self, key, value): # pragma: no cover
+    def __setitem__(self, key, value):  # pragma: no cover
         """Set the `self.props` key value.
 
         Parameters
@@ -1321,7 +1322,7 @@ class PropsManager(object):
             self._app.logger.warning("Key %s not found. Trying to applying new key ", key)
 
     @pyedb_function_handler()
-    def _recursive_search(self, dict_in, key="", matching_percentage=0.8): # pragma: no cover
+    def _recursive_search(self, dict_in, key="", matching_percentage=0.8):  # pragma: no cover
         f = difflib.get_close_matches(key, list(dict_in.keys()), 1, matching_percentage)
         if f:
             return True, dict_in, f[0]
@@ -1339,7 +1340,7 @@ class PropsManager(object):
         return False
 
     @pyedb_function_handler()
-    def _recursive_list(self, dict_in, prefix=""): # pragma: no cover
+    def _recursive_list(self, dict_in, prefix=""):  # pragma: no cover
         available_list = []
         for k, v in dict_in.items():
             if prefix:
@@ -1352,7 +1353,7 @@ class PropsManager(object):
         return available_list
 
     @property
-    def available_properties(self): # pragma: no cover
+    def available_properties(self):  # pragma: no cover
         """Available properties.
 
         Returns
@@ -1390,6 +1391,7 @@ rgb_color_codes = {
     "copper": (184, 115, 51),
     "stainless steel": (224, 223, 219),
 }
+
 
 def install_with_pip(package_name, package_path=None, upgrade=False, uninstall=False):  # pragma: no cover
     """Install a new package using pip.

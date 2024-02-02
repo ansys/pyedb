@@ -29,7 +29,7 @@ def _get_file_url(directory, filename=None):
         return EXAMPLE_REPO + "/".join([directory, filename])
 
 
-def _retrieve_file(url, filename, directory, destination=None, local_paths=[]): # pragma: no cover
+def _retrieve_file(url, filename, directory, destination=None, local_paths=[]):  # pragma: no cover
     """Download a file from a url"""
     # First check if file has already been downloaded
     if not destination:
@@ -83,7 +83,7 @@ def _retrieve_file(url, filename, directory, destination=None, local_paths=[]): 
     local_paths.append(local_path)
 
 
-def _retrieve_folder(url, directory, destination=None, local_paths=[]): # pragma: no cover
+def _retrieve_folder(url, directory, destination=None, local_paths=[]):  # pragma: no cover
     """Download a folder from a url"""
     # First check if folder exists
     import json
@@ -123,7 +123,7 @@ def _retrieve_folder(url, directory, destination=None, local_paths=[]): # pragma
         return False
 
 
-def _download_file(directory, filename=None, destination=None, local_paths=[]): # pragma: no cover
+def _download_file(directory, filename=None, destination=None, local_paths=[]):  # pragma: no cover
     if not filename:
         if not directory.startswith("pyaedt/"):
             directory = "pyaedt/" + directory
@@ -148,7 +148,7 @@ def _download_file(directory, filename=None, destination=None, local_paths=[]): 
 # front-facing functions
 
 
-def download_aedb(destination=None): # pragma: no cover
+def download_aedb(destination=None):  # pragma: no cover
     """Download an example of AEDB File and return the def path.
 
     Examples files are downloaded to a persistent cache to avoid
@@ -178,7 +178,7 @@ def download_aedb(destination=None): # pragma: no cover
     return local_paths[-1]
 
 
-def download_edb_merge_utility(force_download=False, destination=None): # pragma: no cover
+def download_edb_merge_utility(force_download=False, destination=None):  # pragma: no cover
     """Download an example of WPF Project which allows to merge 2aedb files.
 
     Examples files are downloaded to a persistent cache to avoid
@@ -219,7 +219,7 @@ def download_edb_merge_utility(force_download=False, destination=None): # pragma
     return local_paths[0]
 
 
-def download_via_wizard(destination=None): # pragma: no cover
+def download_via_wizard(destination=None):  # pragma: no cover
     """Download an example of Hfss Via Wizard and return the def path.
 
     Examples files are downloaded to a persistent cache to avoid
@@ -248,7 +248,7 @@ def download_via_wizard(destination=None): # pragma: no cover
     return _download_file("pyaedt/via_wizard", "viawizard_vacuum_FR4.aedt", destination)
 
 
-def download_touchstone(destination=None): # pragma: no cover
+def download_touchstone(destination=None):  # pragma: no cover
     """Download an example of touchstone File and return the def path.
 
     Examples files are downloaded to a persistent cache to avoid
@@ -277,7 +277,7 @@ def download_touchstone(destination=None): # pragma: no cover
     return local_paths[0]
 
 
-def download_file(directory, filename=None, destination=None): # pragma: no cover
+def download_file(directory, filename=None, destination=None):  # pragma: no cover
     """
     Download file from directory.
 

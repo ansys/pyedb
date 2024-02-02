@@ -13,6 +13,7 @@ from pyedb.generic.settings import settings
 class Msg:
     (INFO, WARNING, ERROR, FATAL) = range(4)
 
+
 class AppFilter(logging.Filter):
     """Specifies the destination of the logger.
 
@@ -97,7 +98,7 @@ class EdbLogger(object):
                 mode="a",
                 maxBytes=float(settings.global_log_file_size) * 1024 * 1024,
                 backupCount=2,
-                encoding='utf-8',
+                encoding="utf-8",
                 delay=0,
             )
             my_handler.setFormatter(self.formatter)
@@ -114,7 +115,7 @@ class EdbLogger(object):
             settings.enable_screen_logs = True
             self._std_out_handler = logging.StreamHandler(sys.stdout)
             self._std_out_handler.setLevel(level)
-            _logger_stdout_formatter = logging.Formatter("PyANSYS-edb %(levelname)s: %(message)s")
+            _logger_stdout_formatter = logging.Formatter("PyEDB %(levelname)s: %(message)s")
 
             self._std_out_handler.setFormatter(_logger_stdout_formatter)
             self._global.addHandler(self._std_out_handler)
@@ -139,9 +140,7 @@ class EdbLogger(object):
                 self.info("logger file pyedb_{}.log removed from handlers.".format(project_name))
 
     def remove_all_file_loggers(self):
-        """Remove all file loggers.
-
-        """
+        """Remove all file loggers."""
         handlers = [i for i in self._global.handlers]
         for handler in handlers:
             if "pyedb_" in str(handler):

@@ -3,8 +3,8 @@
 
 import pytest
 
-from pyedb.generic.settings import settings
 from pyedb.dotnet.edb import Edb
+from pyedb.generic.settings import settings
 from tests.conftest import desktop_version, local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]

@@ -1,8 +1,9 @@
 .. _create_rlc_component_example:
 
-Create RLC component between pins
-=================================
-This section shows how to create RLC component with EDB:
+Create an RLC component between pins
+====================================
+
+This page shows how to create an RLC component between pins:
 
 .. autosummary::
    :toctree: _autosummary

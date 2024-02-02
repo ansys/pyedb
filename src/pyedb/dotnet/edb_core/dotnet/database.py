@@ -4,6 +4,7 @@ import re
 import sys
 
 from pyedb import __version__
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import (
     env_path,
@@ -13,7 +14,6 @@ from pyedb.generic.general_methods import (
     is_linux,
     settings,
 )
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.misc.misc import list_installed_ansysem
 
 

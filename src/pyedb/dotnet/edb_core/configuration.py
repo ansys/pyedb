@@ -1,9 +1,7 @@
 import json
 from pathlib import Path
 
-from pyedb.generic.general_methods import (
-    pyedb_function_handler,
-)
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
 def load_json(config_file):
@@ -49,7 +47,7 @@ class Configuration:
         data = load_json(config_file)
         if not append:
             self.data = {}
-        for k,v in data.items():
+        for k, v in data.items():
             self.data[k] = v
         if apply_file:
             original_file = self._pedb.edbpath

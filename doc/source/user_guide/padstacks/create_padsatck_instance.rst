@@ -1,15 +1,14 @@
 .. _create_padstack_instance_example:
 
-Create pad-stack instance
-=========================
-This section describes how to create a padstack instance.
+Create a padstack instance
+==========================
+
+This page shows how to create a padstack instance.
 
 .. autosummary::
    :toctree: _autosummary
 
 .. code:: python
-
-
 
     from pyedb.dotnet.edb import Edb
 
@@ -71,4 +70,4 @@ This section describes how to create a padstack instance.
 
 .. image:: ../../resources/create_padstack_instances.png
   :width: 600
-  :alt: Loading first EDB
+  :alt: Created padstack instance

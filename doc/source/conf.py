@@ -92,10 +92,12 @@ except ImportError:
     sys.path.append(os.path.join(root_path))
     from pyedb import __version__
 
-project = "PyEDB"
+project = "ansys-edb"
 copyright = f"(c) {datetime.datetime.now().year} ANSYS, Inc. All rights reserved"
 author = "Ansys Inc."
+release = version = __version__
 cname = os.getenv("DOCUMENTATION_CNAME", "nocname.com")
+switcher_version = get_version_match(__version__)
 
 # Check for the local config file, otherwise use default desktop configuration
 local_config_file = os.path.join(local_path, "local_config.json")
@@ -105,7 +107,6 @@ if os.path.exists(local_config_file):
 else:
     config = {"run_examples": True}
 
-release = version = __version__
 
 # Specify environment variable to build the doc without grpahical mode while
 # keeping examples graphical mode activated. 
@@ -312,6 +313,11 @@ html_context = {
 
 # specify the location of your github repo
 html_theme_options = {
+    "switcher": {
+        "json_url": f"https://{cname}/versions.json",
+        "version_match": switcher_version,
+    },
+    "check_switcher": False,
     "github_url": "https://github.com/ansys/pyedb",
     "navigation_with_keys": False,
     "show_prev_next": False,
@@ -327,11 +333,12 @@ html_theme_options = {
             "url": "https://github.com/ansys/pyedb/discussions",
             "icon": "fa fa-comment fa-fw",
         },
+        {
+            "name": "Download documentation in PDF",
+            "url": f"https://{cname}/version/{switcher_version}/_static/assets/download/ansys-geometry-core.pdf",  # noqa: E501
+            "icon": "fa fa-file-pdf fa-fw",
+        },
     ],
-    # "switcher": {
-    #     "json_url": f"https://{cname}/versions.json",
-    #     "version_match": get_version_match(__version__),
-    # },
     "collapse_navigation": True,
     "use_meilisearch": {
         "api_key": os.getenv("MEILISEARCH_PUBLIC_API_KEY", ""),
@@ -361,16 +368,3 @@ latex_additional_files = [watermark, ansys_logo_white, ansys_logo_white_cropped]
 # change the preamble of latex with customized title page
 # variables are the title of pdf, watermark
 latex_elements = {"preamble": latex.generate_preamble(html_title)}
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title,
-#  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    (
-        master_doc,
-        f"{project}-Documentation-{__version__}.tex",
-        f"{project} Documentation",
-        author,
-        "manual",
-    ),
-]

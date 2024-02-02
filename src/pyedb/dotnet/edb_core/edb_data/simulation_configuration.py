@@ -2,6 +2,8 @@ from collections import OrderedDict
 import json
 import os
 
+from pyedb.dotnet.clr_module import Dictionary
+from pyedb.dotnet.edb_core.edb_data.sources import Source, SourceType
 from pyedb.generic.constants import (
     BasisOrder,
     CutoutSubdesignType,
@@ -11,8 +13,6 @@ from pyedb.generic.constants import (
     validate_enum_class_value,
 )
 from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
-from pyedb.dotnet.clr_module import Dictionary
-from pyedb.dotnet.edb_core.edb_data.sources import Source, SourceType
 
 
 class SimulationConfigurationBatch(object):
