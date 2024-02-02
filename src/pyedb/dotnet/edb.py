@@ -4219,3 +4219,8 @@ class Edb(Database):
         if "+" in variable_name:
             variable_name = variable_name.replace("+", "p")
         return variable_name
+
+    @property
+    def definitions(self):
+        from pyedb.dotnet.edb_core.definition.definitions import Definitions
+        return Definitions(self)

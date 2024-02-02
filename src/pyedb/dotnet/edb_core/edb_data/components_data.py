@@ -817,6 +817,30 @@ class EDBComponent(object):
         return self._set_model(model)
 
     @pyedb_function_handler()
+    def use_s_parameter_model(self, name, reference_net=None):
+        """
+
+        Parameters
+        ----------
+        name
+        reference_net
+
+        Returns
+        -------
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> app = Edb()
+        >>> app.definition
+        """
+        model = self._edb.cell.hierarchy._hierarchy.SParameterModel()
+        model.SetComponentModelName(name)
+        if reference_net:
+            model.SetReferenceNet(reference_net)
+        return self._set_model(model)
+
+
+    @pyedb_function_handler()
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
         """Assign RLC to this component.
 

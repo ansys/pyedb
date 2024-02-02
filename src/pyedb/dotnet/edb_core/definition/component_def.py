@@ -1,3 +1,5 @@
+import os
+
 from pyedb.dotnet.edb_core.edb_data.obj_base import ObjBase
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.dotnet.edb_core.definition.component_model import (
@@ -16,7 +18,7 @@ class EDBComponentDef(ObjBase):
         Edb ComponentDef Object
     """
 
-    def __init__(self, pedb, edb_object):
+    def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
         self._pedb = pedb
 
@@ -140,10 +142,24 @@ class EDBComponentDef(ObjBase):
 
     @pyedb_function_handler
     def _add_component_model(self, value):
-        self._edb_object.AddComponentModel(value)
+        self._edb_object.AddComponentModel(value._edb_object)
 
     @pyedb_function_handler
-    def add_n_port_model(self):
-        pass
-        #todo
+    def add_n_port_model(self, fpath, name=None):
+        if not name:
+            name = os.path.splitext(os.path.basename(fpath)[0])
 
+        from pyedb.dotnet.edb_core.definition.component_model import NPortComponentModel
+
+        edb_object = self._pedb.definition.NPortComponentModel.Create(name)
+        n_port_comp_model = NPortComponentModel(self._pedb, edb_object)
+        n_port_comp_model.reference_file = fpath
+
+        self._add_component_model(n_port_comp_model)
+
+    @pyedb_function_handler
+    def create(self, name):
+        cell_type = self._pedb.edb_api.cell.CellType.FootprintCell
+        footprint_cell = self._pedb._active_cell.cell.Create(self._pedb.active_db, cell_type, name)
+        edb_object = self._pedb.edb_api.definition.ComponentDef.Create(self._pedb.active_db, name, footprint_cell)
+        return EDBComponentDef(self._pedb, edb_object)
