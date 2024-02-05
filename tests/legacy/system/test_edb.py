@@ -1643,3 +1643,23 @@ class TestClass:
         assert round(edbapp.components["X1"].solder_ball_height, 6) == 0.00025
         assert round(edbapp.components["U1"].solder_ball_height, 6) == 0.00035
         edbapp.close_edb()
+
+    def test_cutout_return_clipping_extent(self):
+        """"""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_return_clipping_extent", "test.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, desktop_version)
+        extent = edbapp.cutout(
+            signal_list=["PCIe_Gen4_RX0_P", "PCIe_Gen4_RX0_N", "PCIe_Gen4_RX1_P", "PCIe_Gen4_RX1_N"],
+            reference_list=["GND"],
+        )
+        assert extent
+        assert len(extent) == 55
+        assert extent[0] == [0.011025799702099603, 0.04451508810211455]
+        assert extent[10] == [0.022142311790681247, 0.02851039231475559]
+        assert extent[20] == [0.06722930398844625, 0.026054683772800503]
+        assert extent[30] == [0.06793706863503707, 0.02961898962849831]
+        assert extent[40] == [0.06550327418370948, 0.031478931749766806]
+        assert extent[54] == [0.01102500189, 0.044555027391504444]
+        edbapp.close_edb()
