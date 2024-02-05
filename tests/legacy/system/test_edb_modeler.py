@@ -142,6 +142,22 @@ class TestClass:
         assert self.edbapp.modeler.create_polygon(points, "1_Top")
         settings.enable_error_handler = False
 
+    def test_modeler_create_polygon_from_shape(self):
+        """Create polygon from shape."""
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        edbapp.modeler.create_polygon(
+            main_shape=[[0.0, 0.0], [0.0, 10e-3], [10e-3, 10e-3], [10e-3, 0]], layer_name="1_Top", net_name="test"
+        )
+        poly_test = [poly for poly in edbapp.modeler.polygons if poly.net_name == "test"]
+        assert len(poly_test) == 1
+        assert poly_test[0].center == [0.005, 0.005]
+        assert poly_test[0].bbox == [0.0, 0.0, 0.01, 0.01]
+        edbapp.close_edb()
+
     def test_modeler_create_trace(self):
         """Create a trace based on a list of points."""
         points = [

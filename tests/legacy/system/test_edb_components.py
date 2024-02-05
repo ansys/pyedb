@@ -511,3 +511,4 @@ class TestClass:
         assert edbapp.components.instances["Test"].ind_value == "0"
         assert edbapp.components.instances["Test"].cap_value == "0"
         assert edbapp.components.instances["Test"].center == [0.06800000116, 0.01649999875]
+        edbapp.close_edb()
