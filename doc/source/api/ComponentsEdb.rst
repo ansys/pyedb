@@ -36,7 +36,6 @@ These classes are the containers of data management for components reference des
 
 
    EDBComponent
-   EDBComponentDef
 
 
 .. code:: python

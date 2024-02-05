@@ -1,16 +1,11 @@
-import os
-from pathlib import Path
-import sys
-
 import pytest
 
+from pathlib import Path
 from pyedb.dotnet.edb import Edb
 from tests.conftest import desktop_version
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
-# local_path = os.path.dirname(os.path.realpath(__file__))
-# sys.path.append(local_path)
 local_path = Path(__file__).parent.parent.parent
 
 
@@ -38,19 +33,12 @@ class TestClass:
         assert edbapp.configuration.load(example_json_folder / "setups_siwave_syz.json", apply_file=True, append=False)
         assert "stackup" not in edbapp.configuration.data
         assert edbapp.configuration.load(example_json_folder / "setups_siwave_dc.json", apply_file=True)
-        assert edbapp.configuration.load(
-            example_json_folder / "ports_coax.json",
-            apply_file=True,
-            output_file=str(target_path_edb2),
-            open_at_the_end=False,
-        )
+        assert edbapp.configuration.load(example_json_folder / "s_parameter.json", apply_file=True)
+        assert edbapp.configuration.load(example_json_folder / "ports_coax.json", apply_file=True,
+                                         output_file=str(target_path_edb2), open_at_the_end=False)
         assert edbapp.edbpath == str(target_path_edb)
-        assert edbapp.configuration.load(
-            example_json_folder / "ports_circuit.json",
-            apply_file=True,
-            output_file=str(target_path_edb2),
-            open_at_the_end=True,
-        )
+        assert edbapp.configuration.load(example_json_folder / "ports_circuit.json", apply_file=True,
+                                         output_file=str(target_path_edb2), open_at_the_end=True)
         assert edbapp.edbpath == str(target_path_edb2)
         assert edbapp.configuration.load(example_json_folder / "sources.json")
         edbapp.close()
