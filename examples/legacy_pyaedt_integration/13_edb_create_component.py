@@ -208,7 +208,8 @@ edb.nets.plot(None)
 ###########################
 # Save EDB and open in AEDT
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
+
 edb.save_edb()
 edb.close_edb()
-h3d = Hfss3dLayout(specified_version="2023.2", projectname=aedb_path, non_graphical=non_graphical)
+h3d = Hfss3dLayout(specified_version="2023.2", projectname=aedb_path, non_graphical=non_graphical, new_desktop_session=True)
 h3d.release_desktop(False, False)
