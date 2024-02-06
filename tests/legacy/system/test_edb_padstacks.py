@@ -45,6 +45,7 @@ class TestClass:
         assert self.edbapp.padstacks.definitions["myVia"].hole_range == "through"
         # Create myVia_vullet
         self.edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
+        assert isinstance(self.edbapp.padstacks.definitions["myVia"].instances, list)
         assert "myVia_bullet" in list(self.edbapp.padstacks.definitions.keys())
 
         self.edbapp.add_design_variable("via_x", 5e-3)
@@ -185,6 +186,18 @@ class TestClass:
         assert edbapp.padstacks.definitions["Padstack_Circle"].convert_to_3d_microvias(False)
         assert edbapp.padstacks.definitions["Padstack_Rectangle"].convert_to_3d_microvias(False, hole_wall_angle=10)
         assert edbapp.padstacks.definitions["Padstack_Polygon_p12"].convert_to_3d_microvias(False)
+        assert edbapp.padstacks.definitions["MyVia"].convert_to_3d_microvias(
+            convert_only_signal_vias=False, delete_padstack_def=False
+        )
+        assert edbapp.padstacks.definitions["MyVia_square"].convert_to_3d_microvias(
+            convert_only_signal_vias=False, delete_padstack_def=False
+        )
+        assert edbapp.padstacks.definitions["MyVia_rectangle"].convert_to_3d_microvias(
+            convert_only_signal_vias=False, delete_padstack_def=False
+        )
+        assert not edbapp.padstacks.definitions["MyVia_poly"].convert_to_3d_microvias(
+            convert_only_signal_vias=False, delete_padstack_def=False
+        )
         edbapp.close()
 
     def test_split_microvias(self):

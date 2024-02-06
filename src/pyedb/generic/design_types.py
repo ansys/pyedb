@@ -82,7 +82,7 @@ def Edb(
     """
 
     # Use EDB legacy (default choice)
-    if bool(os.getenv("PYEDB_USE_LEGACY", "1")):
+    if bool(os.getenv("PYEDB_USE_DOTNET", "1")):
         from pyedb.dotnet.edb import Edb as app
 
         return app(

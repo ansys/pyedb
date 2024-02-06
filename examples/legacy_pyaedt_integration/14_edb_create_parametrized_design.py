@@ -85,5 +85,7 @@ edb.nets.plot(None)
 
 edb.save_edb()
 edb.close_edb()
-hfss = Hfss3dLayout(projectname=target_aedb, specified_version=aedt_version, non_graphical=non_graphical)
-hfss.release_desktop(False, False)
+
+# Uncomment the following line to open the design in HFSS 3D Layout
+hfss = Hfss3dLayout(projectname=target_aedb, specified_version=aedt_version, non_graphical=non_graphical, new_desktop_session=True)
+hfss.release_desktop()
