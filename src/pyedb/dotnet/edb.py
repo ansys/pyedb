@@ -742,11 +742,6 @@ class Edb(Database):
         return self.components
 
     @property
-    def configuration(self):
-        """Edb configuration."""
-        return Configuration(self)
-
-    @property
     def components(self):
         """Edb Components methods and properties.
 
