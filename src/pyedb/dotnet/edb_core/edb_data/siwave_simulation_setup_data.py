@@ -913,7 +913,7 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
         """
         self._name = name
         self._create(name)
-        self.set_si_slider(1)
+        self.si_slider_position = 1
 
         return self
 

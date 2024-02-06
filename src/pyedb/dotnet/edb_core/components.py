@@ -8,9 +8,10 @@ import re
 import warnings
 
 from pyedb.dotnet.clr_module import String
-from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent, EDBComponentDef
+from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.sources import Source, SourceType
+from pyedb.dotnet.edb_core.definition.component_def import EDBComponentDef
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 from pyedb.generic.general_methods import (
@@ -188,7 +189,7 @@ class Components(object):
 
         Returns
         -------
-        dict of :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponentDef`"""
+        dict of :class:`EDBComponentDef`"""
         return {l.GetName(): EDBComponentDef(self._pedb, l) for l in list(self._pedb.component_defs)}
 
     @property
@@ -764,7 +765,9 @@ class Components(object):
         if len([pin for pin in pins if isinstance(pin, str)]) == len(pins):
             cmp_pins = []
             for pin_name in pins:
-                cmp_pin = [pin for pin in list(refdes.pins.values()) if pin_name in pin.name]
+                cmp_pin = [pin for pin in list(refdes.pins.values()) if pin_name == pin.name]
+                if not cmp_pin:
+                    cmp_pin = [pin for pin in list(refdes.pins.values()) if pin_name == pin.name.split("-")[1]]
                 if cmp_pin:
                     cmp_pins.append(cmp_pin[0])
             if not cmp_pins:
@@ -778,7 +781,9 @@ class Components(object):
         if len([pin for pin in reference_pins if isinstance(pin, str)]) == len(reference_pins):
             ref_cmp_pins = []
             for ref_pin_name in reference_pins:
-                cmp_ref_pin = [pin for pin in list(refdes.pins.values()) if ref_pin_name in pin.name]
+                cmp_ref_pin = [pin for pin in list(refdes.pins.values()) if ref_pin_name == pin.name]
+                if not cmp_ref_pin:
+                    cmp_ref_pin = [pin for pin in list(refdes.pins.values()) if ref_pin_name == pin.name.split("-")[1]]
                 if cmp_ref_pin:
                     ref_cmp_pins.append(cmp_ref_pin[0])
             if not ref_cmp_pins:
@@ -792,7 +797,7 @@ class Components(object):
                 "Disabling PEC boundary creation, this feature is supported on single pin "
                 "ports only, {} pins found".format(len(pins))
             )
-            group_name = "group_{}_{}".format(pins[0].net_name, pins[0].name)
+            group_name = "group_{}".format(port_name)
             pin_group = self.create_pingroup_from_pins(pins, group_name)
             term = self._create_pin_group_terminal(pingroup=pin_group, term_name=port_name)
 
@@ -805,7 +810,7 @@ class Components(object):
                 "Disabling PEC boundary creation. This feature is supported on single pin"
                 "ports only {} reference pins found.".format(len(reference_pins))
             )
-            ref_group_name = "group_{}_{}_ref".format(reference_pins[0].net_name, reference_pins[0].name)
+            ref_group_name = "group_{}_ref".format(port_name)
             ref_pin_group = self.create_pingroup_from_pins(reference_pins, ref_group_name)
             ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
         else:
@@ -1427,9 +1432,9 @@ class Components(object):
         placement_layer=None,
         component_part_name=None,
         is_rlc=False,
-        r_value=1.0,
-        c_value=1e-9,
-        l_value=1e-9,
+        r_value=0,
+        c_value=0,
+        l_value=0,
         is_parallel=False,
     ):
         """Create a component from pins.
@@ -1481,6 +1486,7 @@ class Components(object):
 
         if isinstance(pins[0], EDBPadstackInstance):
             pins = [i._edb_padstackinstance for i in pins]
+        hosting_component_location = pins[0].GetComponent().GetTransform()
         for pin in pins:
             pin.SetIsLayoutPin(True)
             new_cmp.AddMember(pin)
@@ -1491,9 +1497,8 @@ class Components(object):
             new_cmp_layer_name = placement_layer
         new_cmp_placement_layer = self._edb.cell.layer.FindByName(self._layout.layer_collection, new_cmp_layer_name)
         new_cmp.SetPlacementLayer(new_cmp_placement_layer)
-        hosting_component_location = pins[0].GetComponent().GetTransform()
 
-        if is_rlc:
+        if is_rlc and len(pins) == 2:
             rlc = self._edb.utility.utility.Rlc()
             rlc.IsParallel = is_parallel
             if r_value:
@@ -2182,7 +2187,7 @@ class Components(object):
                     else:
                         pinlist = self.get_pin_from_component(refdes)
                         if not part_name in self.definitions:
-                            footprint_cell = self.definitions[comp.partname]._edb_comp_def.GetFootprintCell()
+                            footprint_cell = self.definitions[comp.partname]._edb_object.GetFootprintCell()
                             comp_def = self._edb.definition.ComponentDef.Create(self._db, part_name, footprint_cell)
                             for pin in pinlist:
                                 self._edb.definition.ComponentDefPin.Create(comp_def, pin.GetName())
