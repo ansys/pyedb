@@ -1,11 +1,13 @@
 """Tests related to Edb modeler
 """
 
+import os
 import pytest
 
 from pyedb.dotnet.edb import Edb
 from pyedb.generic.settings import settings
 from tests.conftest import desktop_version, local_path
+from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
@@ -140,6 +142,22 @@ class TestClass:
         assert self.edbapp.modeler.create_polygon(points, "1_Top")
         settings.enable_error_handler = False
 
+    def test_modeler_create_polygon_from_shape(self):
+        """Create polygon from shape."""
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        edbapp.modeler.create_polygon(
+            main_shape=[[0.0, 0.0], [0.0, 10e-3], [10e-3, 10e-3], [10e-3, 0]], layer_name="1_Top", net_name="test"
+        )
+        poly_test = [poly for poly in edbapp.modeler.polygons if poly.net_name == "test"]
+        assert len(poly_test) == 1
+        assert poly_test[0].center == [0.005, 0.005]
+        assert poly_test[0].bbox == [0.0, 0.0, 0.01, 0.01]
+        edbapp.close_edb()
+
     def test_modeler_create_trace(self):
         """Create a trace based on a list of points."""
         points = [
@@ -266,11 +284,42 @@ class TestClass:
         edb.close()
 
     def test_modeler_path_convert_to_polygon(self):
-        import os
-
         target_path = os.path.join(local_path, "example_models", "convert_and_merge_path.aedb")
         edbapp = Edb(target_path, edbversion=desktop_version)
         for path in edbapp.modeler.paths:
             assert path.convert_to_polygon()
         assert edbapp.nets.merge_nets_polygons("test")
         edbapp.close()
+
+    def test_156_check_path_length(self):
+        """"""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "test_path_length.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_path_length", "test.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, desktop_version)
+        net1 = [path for path in edbapp.modeler.paths if path.net_name == "loop1"]
+        net1_length = 0
+        for path in net1:
+            net1_length += path.length
+        assert net1_length == 0.01814480090225562
+        net2 = [path for path in edbapp.modeler.paths if path.net_name == "line1"]
+        net2_length = 0
+        for path in net2:
+            net2_length += path.length
+        assert net2_length == 0.007
+        net3 = [path for path in edbapp.modeler.paths if path.net_name == "lin2"]
+        net3_length = 0
+        for path in net3:
+            net3_length += path.length
+        assert net3_length == 0.04860555127546401
+        net4 = [path for path in edbapp.modeler.paths if path.net_name == "lin3"]
+        net4_length = 0
+        for path in net4:
+            net4_length += path.length
+        assert net4_length == 7.6e-3
+        net5 = [path for path in edbapp.modeler.paths if path.net_name == "lin4"]
+        net5_length = 0
+        for path in net5:
+            net5_length += path.length
+        assert net5_length == 0.026285623899038543
+        edbapp.close_edb()

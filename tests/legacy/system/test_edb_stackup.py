@@ -304,17 +304,10 @@ class TestClass:
 
     def test_stackup_load(self):
         """Import stackup from a file."""
-        import json
-
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         fpath = os.path.join(local_path, "example_models", test_subfolder, "stackup.json")
-        stackup_json = json.load(open(fpath, "r"))
-
-        edbapp = Edb(edbversion=desktop_version)
+        edbapp = Edb(source_path, edbversion=desktop_version)
         edbapp.stackup.load(fpath)
-        edbapp.close()
-
-        edbapp = Edb(edbversion=desktop_version)
-        edbapp.stackup.load(stackup_json)
         edbapp.close()
 
     def test_stackup_place_in_3d_with_flipped_stackup(self):
@@ -989,7 +982,7 @@ class TestClass:
         self.local_scratch.copyfolder(target_path, out_edb)
         json_path = os.path.join(local_path, "example_models", test_subfolder, "test_mat.json")
         edbapp = Edb(out_edb, edbversion=desktop_version)
-        edbapp.stackup.import_stackup(json_path)
+        edbapp.stackup.load(json_path)
         edbapp.save_edb()
         delta = 1e-6
         f = open(json_path)
