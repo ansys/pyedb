@@ -15,7 +15,7 @@
 
 PyEDB is Python client library for processing complex and large layout designs in the
 Ansys Electronics Database (EDB) format, which stores information describing designs for
-[Ansys Electronics Desktop](https://www.ansys.com/products/electronics)(AEDT).
+[Ansys Electronics Desktop](https://www.ansys.com/products/electronics) (AEDT).
 
 While you can also use the [PyEDB-Core](https://github.com/ansys/pyedb-core) API to automate EDB workflows,
 using it requires a deep comprehension of the EDB architecture and class inheritances, resulting in
@@ -60,15 +60,15 @@ Documentation for the latest stable release of PyEDB is hosted at
 [PyEDB documentation](https://edb.docs.pyansys.com/version/stable/index.html).
 The documentation has five sections:
 
-- `Getting started <https://edb.docs.pyansys.com/version/version/stable/getting_started/index.html#>`_: Describes
+- [Getting started](https://edb.docs.pyansys.com/version/version/stable/getting_started/index.html): Describes
   how to install PyEDB in user mode.
-- `User guide <https:edb.docs.pyansys.com/version/version/stable/user_guide/index.html>`_: Describes how to
+- [User guide](https://edb.docs.pyansys.com/version/version/stable/user_guide/index.html): Describes how to
   use PyEDB.
-- `API reference <edb.docs.pyansys.com/version/version/stable/api/index.html>`_: Provides API member descriptions
+- [API reference](https://edb.docs.pyansys.com/version/version/stable/api/index.html): Provides API member descriptions
   and usage examples.
-- `Examples <https://edb.docs.pyansys.com/version/version/stable/examples/index.html>`_: Provides examples showing
+- [Examples](https://edb.docs.pyansys.com/version/version/stable/examples/index.html): Provides examples showing
   end-to-end workflows for using PyEDB.
-- `Contribute <https://edb.docs.pyansys.com/version/version/stable/contribute.html>`_: Describes how to install
+- [Contribute](https://edb.docs.pyansys.com/version/version/stable/contribute.html): Describes how to install
   PyEDB in developer mode and how to contribute to this PyAnsys library.
 
 In the upper right corner of the documentation's title bar, there is an option
