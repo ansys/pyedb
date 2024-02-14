@@ -945,11 +945,11 @@ class ViaSettings(object):
 
     @property
     def via_mesh_plating(self):
-        """Via density.
+        """Via mesh plating.
 
         Returns
         -------
-        float
+        bool
         """
         return self._via_settings.ViaMeshPlating
 
