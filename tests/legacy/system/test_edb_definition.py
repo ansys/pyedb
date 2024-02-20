@@ -20,7 +20,8 @@ class TestClass:
         self.target_path4 = target_path4
 
     def test_definitions(self):
-        assert self.edbapp.definitions
+        assert isinstance(self.edbapp.definitions.component, dict)
+        assert isinstance(self.edbapp.definitions.package, dict)
 
     def test_component_s_parameter(self):
         sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
@@ -29,11 +30,12 @@ class TestClass:
         self.edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
 
     def test_package_def(self):
+        assert self.edbapp.definitions.add_package_def("package_1")
+        self.edbapp.definitions.package['package_1'].maximum_power = 1
+        assert self.edbapp.definitions.package['package_1'].maximum_power == 1
+        self.edbapp.definitions.package['package_1'].name = "package_1b"
+        assert self.edbapp.definitions.package['package_1b']
 
         assert self.edbapp.components["C200"].create_package_def()
         assert not self.edbapp.components["C200"].create_package_def()
         assert self.edbapp.components["C200"].package_def.name == 'C200_CAPC3216X180X55ML20T25'
-        self.edbapp.definitions.package['C200_CAPC3216X180X55ML20T25'].name = "test_package_def"
-        assert self.edbapp.definitions.package['test_package_def']
-        self.edbapp.definitions.package['test_package_def'].maximum_power = 1
-        assert self.edbapp.definitions.package['test_package_def'].maximum_power == 1
