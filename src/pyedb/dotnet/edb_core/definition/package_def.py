@@ -2,9 +2,7 @@ import os
 
 from pyedb.dotnet.edb_core.edb_data.obj_base import ObjBase
 from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.dotnet.edb_core.definition.component_model import (
-    NPortComponentModel
-)
+from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 
 
 class PackageDef(ObjBase):
@@ -46,4 +44,11 @@ class PackageDef(ObjBase):
 
         """
         edb_object = self._pedb.edb_api.definition.PackageDef.Create(self._pedb.active_db, name)
+        pointA = self._pedb.edb_api.geometry.point_data(
+            self._pedb.edb_value(0),
+            self._pedb.edb_value(0),
+        )
+
+        polygon = PolygonDataDotNet(self._pedb).create_from_bbox([pointA, pointA])
+        edb_object.SetExteriorBoundary(polygon)
         return PackageDef(self._pedb, edb_object)
