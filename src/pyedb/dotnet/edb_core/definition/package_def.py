@@ -20,16 +20,6 @@ class PackageDef(ObjBase):
         self._pedb = pedb
         self._edb_object = edb_object
 
-    @property
-    def maximum_power(self):
-        """Maximum power of the package."""
-        return self._edb_object.GetMaximumPower().ToDouble()
-
-    @maximum_power.setter
-    def maximum_power(self, value):
-        value = self._pedb.edb_value(value)
-        self._edb_object.SetMaximumPower(value)
-
     @pyedb_function_handler
     def create(self, name):
         """Create a package defininitiion.
@@ -52,3 +42,13 @@ class PackageDef(ObjBase):
         polygon = PolygonDataDotNet(self._pedb).create_from_bbox([pointA, pointA])
         edb_object.SetExteriorBoundary(polygon)
         return PackageDef(self._pedb, edb_object)
+
+    @property
+    def maximum_power(self):
+        """Maximum power of the package."""
+        return self._edb_object.GetMaximumPower().ToDouble()
+
+    @maximum_power.setter
+    def maximum_power(self, value):
+        value = self._pedb.edb_value(value)
+        self._edb_object.SetMaximumPower(value)

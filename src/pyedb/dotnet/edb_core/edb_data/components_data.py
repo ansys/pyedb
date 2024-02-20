@@ -240,6 +240,10 @@ class EDBComponent(object):
         if name not in self._pedb.definitions.package:
             self._pedb.definitions.add_package_def(name)
             self.package_def = name
+
+            from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
+            polygon = PolygonDataDotNet(self._pedb).create_from_bbox(self.component_instance.GetBBox())
+            self.package_def._edb_object.SetExteriorBoundary(polygon)
             return True
         else:
             return False
