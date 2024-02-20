@@ -104,7 +104,7 @@ class EMCRuleCheckerSettings:
         if component_tags:
             self.component_tags.read_dict(component_tags)
 
-    def add_net(self, is_bus, is_clock, is_critical, name, net_type):
+    def add_net(self, name, is_bus="0", is_clock="0", is_critical="0", net_type="Single-Ended", diff_mate_name=""):
         """Assign tags to a net.
 
         Parameters
@@ -119,15 +119,33 @@ class EMCRuleCheckerSettings:
             Name of the net.
         net_type: str
             Type of the net.
+        diff_mate_name: str, optional
+            differential mate name.
         """
         kwargs = {
             "isBus": is_bus,
             "isClock": is_clock,
             "isCritical": is_critical,
             "name": name,
-            "type": net_type
+            "type": net_type,
+            "Diffmatename": diff_mate_name
         }
-        self.net_tags.add_sub_element(kwargs, "Net")
+
+        if net_type == "Differential":
+            p = name
+            n = diff_mate_name
+            kwargs_p = kwargs
+            kwargs_n = kwargs
+
+            kwargs_p["name"] = p
+            kwargs_p["Diffmatename"] = n
+            self.net_tags.add_sub_element(kwargs_p, "Net")
+
+            kwargs_n["name"] = n
+            kwargs_n["Diffmatename"] = p
+            self.net_tags.add_sub_element(kwargs_n, "Net")
+        else:
+            self.net_tags.add_sub_element(kwargs, "Net")
 
     def add_component(self,
                       comp_name,
