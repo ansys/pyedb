@@ -22,8 +22,16 @@ class TestClass:
     def test_definitions(self):
         assert self.edbapp.definitions
 
-    def test_s_parameter(self):
+    def test_component_s_parameter(self):
         sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
 
         self.edbapp.definitions.component["CAPC3216X180X55ML20T25"].add_n_port_model(sparam_path, "GRM32_DC0V_25degC_series")
         self.edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
+
+    def test_package_def(self):
+        package_def = self.edbapp.definitions.add_package_def("test_package_def")
+        assert package_def.name == "test_package_def"
+        package_def.name = "test_package_def_2"
+        assert package_def.name == "test_package_def_2"
+        package_def.maximum_power = 1
+        assert package_def.maximum_power == 1

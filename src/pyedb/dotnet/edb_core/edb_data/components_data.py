@@ -2,6 +2,7 @@ import logging
 import re
 import warnings
 
+from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.dotnet.edb_core.cell.hierarchy.model import PinPairModel
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.generic.general_methods import is_ironpython
@@ -203,6 +204,11 @@ class EDBComponent(object):
         comp_prop = self.component_property
         comp_prop.SetModel(value._edb_object)
         self.edbcomponent.SetComponentProperty(comp_prop)
+
+    @property
+    def package_def(self):
+        edb_object = self.component_property.GetPackageDef()
+        return PackageDef(self._pedb, edb_object)
 
     @property
     def is_enabled(self):
