@@ -32,8 +32,18 @@ class PackageDef(ObjBase):
         value = self._pedb.edb_value(value)
         self._edb_object.SetMaximumPower(value)
 
-
     @pyedb_function_handler
     def create(self, name):
+        """Create a package defininitiion.
+
+        Parameters
+        ----------
+        name: str
+            Name of the package definition.
+
+        Returns
+        -------
+
+        """
         edb_object = self._pedb.edb_api.definition.PackageDef.Create(self._pedb.active_db, name)
         return PackageDef(self._pedb, edb_object)

@@ -207,8 +207,42 @@ class EDBComponent(object):
 
     @property
     def package_def(self):
+        """Package definition."""
         edb_object = self.component_property.GetPackageDef()
-        return PackageDef(self._pedb, edb_object)
+
+        package_def = PackageDef(self._pedb, edb_object)
+        if not package_def.is_null:
+            return package_def
+
+    @package_def.setter
+    def package_def(self, value):
+        package_def = self._pedb.definitions.package[value]
+        comp_prop = self.component_property
+        comp_prop.SetPackageDef(package_def._edb_object)
+        self.edbcomponent.SetComponentProperty(comp_prop)
+
+    @pyedb_function_handler
+    def create_package_def(self, name=""):
+        """Create a package definition and assigned it to this component.
+
+        Parameters
+        ----------
+        name: str, optional
+            Name of the package definition
+
+        Returns
+        -------
+        bool
+            ``True`` if succeeded, ``False`` otherwise.
+        """
+        if not name:
+            name = "{}_{}".format(self.refdes, self.part_name)
+        if name not in self._pedb.definitions.package:
+            self._pedb.definitions.add_package_def(name)
+            self.package_def = name
+            return True
+        else:
+            return False
 
     @property
     def is_enabled(self):
