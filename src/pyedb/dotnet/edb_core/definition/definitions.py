@@ -33,4 +33,3 @@ class Definitions:
         """
         package_def = PackageDef(self._pedb)
         return package_def.create(name)
-
