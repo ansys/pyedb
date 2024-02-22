@@ -33,6 +33,13 @@ class TestClass:
         assert self.edbapp.definitions.add_package_def("package_1")
         self.edbapp.definitions.package['package_1'].maximum_power = 1
         assert self.edbapp.definitions.package['package_1'].maximum_power == 1
+        self.edbapp.definitions.package['package_1'].therm_cond = 1
+        assert self.edbapp.definitions.package['package_1'].therm_cond == 1
+        self.edbapp.definitions.package['package_1'].theta_jb = 1
+        assert self.edbapp.definitions.package['package_1'].theta_jb == 1
+        self.edbapp.definitions.package['package_1'].theta_jc = 1
+        assert self.edbapp.definitions.package['package_1'].theta_jc == 1
+
         self.edbapp.definitions.package['package_1'].name = "package_1b"
         assert self.edbapp.definitions.package['package_1b']
 

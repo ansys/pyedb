@@ -52,3 +52,31 @@ class PackageDef(ObjBase):
     def maximum_power(self, value):
         value = self._pedb.edb_value(value)
         self._edb_object.SetMaximumPower(value)
+
+    @property
+    def therm_cond(self):
+        """Thermal conductivity."""
+        return self._edb_object.GetTherm_Cond().ToDouble()
+
+    @therm_cond.setter
+    def therm_cond(self, value):
+        value = self._pedb.edb_value(value)
+        self._edb_object.SetTherm_Cond(value)
+
+    @property
+    def theta_jb(self):
+        return self._edb_object.GetTheta_JB().ToDouble()
+
+    @theta_jb.setter
+    def theta_jb(self, value):
+        value = self._pedb.edb_value(value)
+        self._edb_object.SetTheta_JB(value)
+
+    @property
+    def theta_jc(self):
+        return self._edb_object.GetTheta_JC().ToDouble()
+
+    @theta_jc.setter
+    def theta_jc(self,value):
+        value = self._pedb.edb_value(value)
+        return self._edb_object.SetTheta_JC(value)
