@@ -31,5 +31,5 @@ class Definitions:
         -------
 
         """
-        package_def = PackageDef(self._pedb)
-        return package_def.create(name)
+        package_def = PackageDef(self._pedb, name=name)
+        return package_def

@@ -27,7 +27,7 @@ class EDBComponent(object):
     Parameters
     ----------
     parent : :class:`pyedb.dotnet.edb_core.components.Components`
-        Inherited AEDT object.
+        Components object.
     component : object
         Edb Component Object
 

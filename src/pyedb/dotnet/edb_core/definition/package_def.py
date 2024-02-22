@@ -11,17 +11,20 @@ class PackageDef(ObjBase):
     Parameters
     ----------
     pedb : :class:`pyedb.edb`
-        Inherited AEDT object.
+        Edb object.
     edb_object : object
         Edb PackageDef Object
     """
 
-    def __init__(self, pedb, edb_object=None):
+    def __init__(self, pedb, edb_object=None, name=None):
         self._pedb = pedb
-        self._edb_object = edb_object
+        if edb_object is None:
+            self._edb_object = self._create(name)
+        else:
+            self._edb_object = edb_object
 
     @pyedb_function_handler
-    def create(self, name):
+    def _create(self, name):
         """Create a package defininitiion.
 
         Parameters
@@ -41,7 +44,7 @@ class PackageDef(ObjBase):
 
         polygon = PolygonDataDotNet(self._pedb).create_from_bbox([pointA, pointA])
         edb_object.SetExteriorBoundary(polygon)
-        return PackageDef(self._pedb, edb_object)
+        return edb_object
 
     @property
     def maximum_power(self):
