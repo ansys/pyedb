@@ -1,4 +1,6 @@
 import json
+import numpy as np
+
 from pyedb.generic.general_methods import ET
 
 from pyedb.misc.siw_feature_config.emc.tag_library import \
@@ -41,7 +43,7 @@ class EMCRuleCheckerSettings:
 
         Parameters
         ----------
-        fpath: str, Path
+        fpath: str
             Path to file.
         """
         tree = ET.parse(fpath)
@@ -66,7 +68,7 @@ class EMCRuleCheckerSettings:
 
         Parameters
         ----------
-        fpath: str, Path
+        fpath: str
             Path to file.
         """
         data = {}
@@ -82,7 +84,7 @@ class EMCRuleCheckerSettings:
 
         Parameters
         ----------
-        fpath: str, Path
+        fpath: str
             Path to file.
         """
         self.tag_library = TagLibrary(None)
@@ -104,14 +106,14 @@ class EMCRuleCheckerSettings:
         if component_tags:
             self.component_tags.read_dict(component_tags)
 
-    def add_net(self, name, is_bus="0", is_clock="0", is_critical="0", net_type="Single-Ended", diff_mate_name=""):
+    def add_net(self, name, is_bus=False, is_clock="0", is_critical="0", net_type="Single-Ended", diff_mate_name=""):
         """Assign tags to a net.
 
         Parameters
         ----------
-        is_bus: str
+        is_bus: str, int
             Whether the net is a bus.
-        is_clock: str
+        is_clock: str, int
             Whether the net is a clock.
         is_critical: str
             Whether the net is critical.
@@ -130,6 +132,10 @@ class EMCRuleCheckerSettings:
             "type": net_type,
             "Diffmatename": diff_mate_name
         }
+
+        kwargs = {i: False if j == np.nan else j for i, j in kwargs.items()}
+        kwargs = {i: int(j) if isinstance(j, bool) else j for i, j in kwargs.items()}
+        kwargs = {i: str(j) for i, j in kwargs.items()}
 
         if net_type == "Differential":
             p = name
