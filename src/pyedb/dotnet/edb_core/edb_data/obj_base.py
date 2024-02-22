@@ -17,12 +17,3 @@ class ObjBase(object):
             return self._edb_object.GetType()
         except AttributeError:  # pragma: no cover
             return None
-
-    @property
-    def name(self):
-        """Name of the definition."""
-        return self._edb_object.GetName()
-
-    @name.setter
-    def name(self, value):
-        self._edb_object.SetName(value)
