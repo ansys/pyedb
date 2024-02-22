@@ -79,4 +79,13 @@ class PackageDef(ObjBase):
     @theta_jc.setter
     def theta_jc(self,value):
         value = self._pedb.edb_value(value)
-        return self._edb_object.SetTheta_JC(value)
+        self._edb_object.SetTheta_JC(value)
+
+    @property
+    def height(self):
+        return self._edb_object.GetHeight().ToDouble()
+
+    @height.setter
+    def height(self, value):
+        value = self._pedb.edb_value(value)
+        self._edb_object.SetHeight(value)

@@ -39,6 +39,8 @@ class TestClass:
         assert self.edbapp.definitions.package['package_1'].theta_jb == 1
         self.edbapp.definitions.package['package_1'].theta_jc = 1
         assert self.edbapp.definitions.package['package_1'].theta_jc == 1
+        self.edbapp.definitions.package['package_1'].height = 1
+        assert self.edbapp.definitions.package['package_1'].height == 1
 
         self.edbapp.definitions.package['package_1'].name = "package_1b"
         assert self.edbapp.definitions.package['package_1b']
