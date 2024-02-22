@@ -223,7 +223,7 @@ class EDBComponent(object):
 
     @pyedb_function_handler
     def create_package_def(self, name=""):
-        """Create a package definition and assigned it to this component.
+        """Create a package definition and assign it to the component.
 
         Parameters
         ----------
