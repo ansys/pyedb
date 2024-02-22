@@ -119,7 +119,9 @@ full = [
     "scikit-rf",
     "openpyxl==3.1.2",
 ]
-grpc = ["ansys-edb@git+ssh://git@github.com/ansys/pyedb-core"]
+grpc = [
+    "ansys-edb-core"
+]
 
 [tool.flit.module]
 name = "pyedb"
