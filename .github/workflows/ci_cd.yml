@@ -63,7 +63,7 @@ jobs:
 
   legacy-tests:
     name: Test dotnet
-    runs-on: [ windows-latest, pyaedt ]
+    runs-on: [ Windows, pyaedt ]
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@v4
@@ -135,7 +135,7 @@ jobs:
 
   docs-build:
     name: Build documentation
-    runs-on: [ windows-latest, pyaedt ]
+    runs-on: [ Windows, pyaedt ]
     timeout-minutes: 480
     steps:
       - uses: actions/checkout@v4
