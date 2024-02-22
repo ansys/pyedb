@@ -63,8 +63,7 @@ jobs:
 
   legacy-tests:
     name: Test dotnet
-    # needs: [smoke-tests]
-    runs-on: [ windows, pyedb, self-hosted ]
+    runs-on: [ windows-latest, pyaedt ]
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@v4
@@ -136,7 +135,7 @@ jobs:
 
   docs-build:
     name: Build documentation
-    runs-on: [ windows, pyedb, self-hosted ]
+    runs-on: [ windows-latest, pyaedt ]
     timeout-minutes: 480
     steps:
       - uses: actions/checkout@v4
