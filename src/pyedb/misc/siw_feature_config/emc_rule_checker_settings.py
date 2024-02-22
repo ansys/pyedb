@@ -1,5 +1,6 @@
 import json
 import numpy as np
+from copy import deepcopy as copy
 
 from pyedb.generic.general_methods import ET
 
@@ -8,6 +9,14 @@ from pyedb.misc.siw_feature_config.emc.tag_library import \
 from pyedb.misc.siw_feature_config.emc.net_tags import NetTags
 from pyedb.misc.siw_feature_config.emc.component_tags import \
     ComponentTags
+
+
+def kwargs_parser(kwargs):
+    kwargs = copy(kwargs)
+    kwargs = {i: False if j == np.nan else j for i, j in kwargs.items()}
+    kwargs = {i: int(j) if isinstance(j, bool) else j for i, j in kwargs.items()}
+    kwargs = {i: str(j) for i, j in kwargs.items()}
+    return kwargs
 
 
 class EMCRuleCheckerSettings:
@@ -106,7 +115,7 @@ class EMCRuleCheckerSettings:
         if component_tags:
             self.component_tags.read_dict(component_tags)
 
-    def add_net(self, name, is_bus=False, is_clock="0", is_critical="0", net_type="Single-Ended", diff_mate_name=""):
+    def add_net(self, name, is_bus=False, is_clock=False, is_critical=False, net_type="Single-Ended", diff_mate_name=""):
         """Assign tags to a net.
 
         Parameters
@@ -133,9 +142,7 @@ class EMCRuleCheckerSettings:
             "Diffmatename": diff_mate_name
         }
 
-        kwargs = {i: False if j == np.nan else j for i, j in kwargs.items()}
-        kwargs = {i: int(j) if isinstance(j, bool) else j for i, j in kwargs.items()}
-        kwargs = {i: str(j) for i, j in kwargs.items()}
+        kwargs = kwargs_parser(kwargs)
 
         if net_type == "Differential":
             p = name
@@ -200,4 +207,5 @@ class EMCRuleCheckerSettings:
                   "isOscillator": is_oscillator,
                   "xLoc": x_loc,
                   "yLoc": y_loc}
+        kwargs = kwargs_parser(kwargs)
         self.component_tags.add_sub_element(kwargs, "Comp")
