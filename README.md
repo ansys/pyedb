@@ -9,13 +9,13 @@
 
 [![PyAnsys](https://img.shields.io/badge/Py-Ansys-ffc107.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAABDklEQVQ4jWNgoDfg5mD8vE7q/3bpVyskbW0sMRUwofHD7Dh5OBkZGBgW7/3W2tZpa2tLQEOyOzeEsfumlK2tbVpaGj4N6jIs1lpsDAwMJ278sveMY2BgCA0NFRISwqkhyQ1q/Nyd3zg4OBgYGNjZ2ePi4rB5loGBhZnhxTLJ/9ulv26Q4uVk1NXV/f///////69du4Zdg78lx//t0v+3S88rFISInD59GqIH2esIJ8G9O2/XVwhjzpw5EAam1xkkBJn/bJX+v1365hxxuCAfH9+3b9/+////48cPuNehNsS7cDEzMTAwMMzb+Q2u4dOnT2vWrMHu9ZtzxP9vl/69RVpCkBlZ3N7enoDXBwEAAA+YYitOilMVAAAAAElFTkSuQmCC)](https://docs.pyansys.com/)
 [![PythonVersion](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
-[![MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)[!
+[![MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## What is PyEDB?
 
 PyEDB is Python client library for processing complex and large layout designs in the
 Ansys Electronics Database (EDB) format, which stores information describing designs for
-[Ansys Electronics Desktop](https://www.ansys.com/products/electronics)(AEDT).
+[Ansys Electronics Desktop](https://www.ansys.com/products/electronics) (AEDT).
 
 While you can also use the [PyEDB-Core](https://github.com/ansys/pyedb-core) API to automate EDB workflows,
 using it requires a deep comprehension of the EDB architecture and class inheritances, resulting in
@@ -60,15 +60,15 @@ Documentation for the latest stable release of PyEDB is hosted at
 [PyEDB documentation](https://edb.docs.pyansys.com/version/stable/index.html).
 The documentation has five sections:
 
-- `Getting started <https://edb.docs.pyansys.com/version/version/stable/getting_started/index.html#>`_: Describes
+- [Getting started](https://edb.docs.pyansys.com/version/version/stable/getting_started/index.html): Describes
   how to install PyEDB in user mode.
-- `User guide <https:edb.docs.pyansys.com/version/version/stable/user_guide/index.html>`_: Describes how to
+- [User guide](https://edb.docs.pyansys.com/version/version/stable/user_guide/index.html): Describes how to
   use PyEDB.
-- `API reference <edb.docs.pyansys.com/version/version/stable/api/index.html>`_: Provides API member descriptions
+- [API reference](https://edb.docs.pyansys.com/version/version/stable/api/index.html): Provides API member descriptions
   and usage examples.
-- `Examples <https://edb.docs.pyansys.com/version/version/stable/examples/index.html>`_: Provides examples showing
+- [Examples](https://edb.docs.pyansys.com/version/version/stable/examples/index.html): Provides examples showing
   end-to-end workflows for using PyEDB.
-- `Contribute <https://edb.docs.pyansys.com/version/version/stable/contribute.html>`_: Describes how to install
+- [Contribute](https://edb.docs.pyansys.com/version/version/stable/contribute.html): Describes how to install
   PyEDB in developer mode and how to contribute to this PyAnsys library.
 
 In the upper right corner of the documentation's title bar, there is an option
