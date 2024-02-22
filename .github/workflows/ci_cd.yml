@@ -63,14 +63,13 @@ jobs:
 
   legacy-tests:
     name: Test dotnet
-    # needs: [smoke-tests]
-    runs-on: [ windows, pyedb, self-hosted ]
+    runs-on: [ Windows, pyaedt ]
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@v4
 
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@main
+        uses: ansys/actions/_setup-python@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION_WINDOWS_SELFHOSTED }}
           use-cache: false
@@ -136,13 +135,13 @@ jobs:
 
   docs-build:
     name: Build documentation
-    runs-on: [ windows, pyedb, self-hosted ]
+    runs-on: [ Windows, pyaedt ]
     timeout-minutes: 480
     steps:
       - uses: actions/checkout@v4
 
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@main
+        uses: ansys/actions/_setup-python@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           use-cache: false
@@ -227,6 +226,13 @@ jobs:
     needs: [package]
     runs-on: ubuntu-latest
     steps:
+      - name: Release to the public PyPI repository
+        uses: ansys/actions/release-pypi-public@v5
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          twine-username: "__token__"
+          twine-token: ${{ secrets.PYPI_TOKEN }}
+
       - name: Release to GitHub
         uses: ansys/actions/release-github@v5
         with:
