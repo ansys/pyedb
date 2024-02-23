@@ -10,7 +10,6 @@ env:
   PYEDB_USE_DOTNET: '1'
   PYEDB_CI_NO_DISPLAY: '1'
   MAIN_PYTHON_VERSION_WINDOWS_SELFHOSTED: '3.9'
-  VTK_OSMESA: 'vtk-osmesa==9.2.20230527.dev0'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -59,14 +58,15 @@ jobs:
           .\.venv\Scripts\Activate.ps1
           pip install --no-cache-dir external/pyaedt[full]
 
-      - name: "Install specific vtk version with OSMesa bundled"
+      - name: Uninstall conflicting CI packages
         run: |
           .\.venv\Scripts\Activate.ps1
           pip uninstall vtk -y
-          # Note: the vtk-osmesa used is 9.2.X as 9.3.0 is not working
-          # well with the use of pyvista in our tests atm.
-          # TODO: update once a stable versio is working
-          pip install --extra-index-url https://wheels.vtk.org ${{ env.VTK_OSMESA }}
+
+      - name: Install CI related dependencies
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          pip install --extra-index-url https://wheels.vtk.org .[ci]
 
       - name: Execute legacy examples (except pyaedt related and 01)
         run: |

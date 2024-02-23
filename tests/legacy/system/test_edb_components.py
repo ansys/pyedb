@@ -200,7 +200,6 @@ class TestClass:
             modelname="GRM32ER72A225KA35_25C_0V",
         )
 
-    # TODO: Maybe rework this test if #25 is accepted
     def test_modeler_parametrize_layout(self):
         """Parametrize a polygon"""
         assert len(self.edbapp.modeler.polygons) > 0
