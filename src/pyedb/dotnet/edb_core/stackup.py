@@ -672,12 +672,7 @@ class Stackup(object):
         if not fillMaterial:
             fillMaterial = "fr4_epoxy"
 
-        # TODO: Remove
         if material.lower() not in materials_lower:
-            # if material in self._pedb.materials.materials_in_aedt:
-            #     self._pedb.materials.add_material_from_aedt("material")
-            # else:
-            #     logger.error(material + " does not exist in material library")
             logger.error(material + " does not exist in material library")
         else:
             material = materials_lower[material.lower()]
