@@ -19,12 +19,12 @@ class PackageDef(ObjBase):
     def __init__(self, pedb, edb_object=None, name=None):
         self._pedb = pedb
         if edb_object is None and name is not None:
-            self.__edb_object = self.__create(name)
+            self.__edb_object = self.__create_from_name(name)
         else:
             self.__edb_object = edb_object
 
     @pyedb_function_handler
-    def __create(self, name):
+    def __create_from_name(self, name):
         """Create a package defininitiion.
 
         Parameters
