@@ -12,7 +12,6 @@ env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   PYEDB_USE_DOTNET: '1'
   MAIN_PYTHON_VERSION: '3.10'
-  MAIN_PYTHON_VERSION_WINDOWS_SELFHOSTED: '3.9'
   PACKAGE_NAME: 'pyedb'
   DOCUMENTATION_CNAME: 'edb.docs.pyansys.com'
   VTK_OSMESA: 'vtk-osmesa==9.2.20230527.dev0'
@@ -63,16 +62,15 @@ jobs:
 
   legacy-tests:
     name: Test dotnet
-    # needs: [smoke-tests]
-    runs-on: [ windows, pyedb, self-hosted ]
+    runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@v4
 
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@main
+        uses: ansys/actions/_setup-python@v4
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION_WINDOWS_SELFHOSTED }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
           use-cache: false
 
       - name: Create Python venv
@@ -136,13 +134,13 @@ jobs:
 
   docs-build:
     name: Build documentation
-    runs-on: [ windows, pyedb, self-hosted ]
+    runs-on: [ Windows, self-hosted, pyedb ]
     timeout-minutes: 480
     steps:
       - uses: actions/checkout@v4
 
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@main
+        uses: ansys/actions/_setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           use-cache: false
@@ -227,6 +225,13 @@ jobs:
     needs: [package]
     runs-on: ubuntu-latest
     steps:
+      - name: Release to the public PyPI repository
+        uses: ansys/actions/release-pypi-public@v5
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          twine-username: "__token__"
+          twine-token: ${{ secrets.PYPI_TOKEN }}
+
       - name: Release to GitHub
         uses: ansys/actions/release-github@v5
         with:
