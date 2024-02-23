@@ -246,7 +246,8 @@ class EDBComponent(object):
             self.package_def._edb_object.SetExteriorBoundary(polygon)
             return True
         else:
-            return logging.error(f"Package definition {name} already exists")
+            logging.error(f"Package definition {name} already exists")
+            return False
 
     @property
     def is_enabled(self):
