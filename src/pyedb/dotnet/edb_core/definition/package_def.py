@@ -19,9 +19,9 @@ class PackageDef(ObjBase):
     def __init__(self, pedb, edb_object=None, name=None):
         self._pedb = pedb
         if edb_object is None and name is not None:
-            self.__edb_object = self.__create_from_name(name)
+            self._edb_object = self.__create_from_name(name)
         else:
-            self.__edb_object = edb_object
+            self._edb_object = edb_object
 
     @pyedb_function_handler
     def __create_from_name(self, name):
@@ -48,56 +48,51 @@ class PackageDef(ObjBase):
         return edb_object
 
     @property
-    def edb_object(self):
-        """EDB package definition object of the package."""
-        return self.__edb_object
-
-    @property
     def maximum_power(self):
         """Maximum power of the package."""
-        return self.__edb_object.GetMaximumPower().ToDouble()
+        return self._edb_object.GetMaximumPower().ToDouble()
 
     @maximum_power.setter
     def maximum_power(self, value):
         value = self._pedb.edb_value(value)
-        self.__edb_object.SetMaximumPower(value)
+        self._edb_object.SetMaximumPower(value)
 
     @property
     def therm_cond(self):
         """Thermal conductivity of the package."""
-        return self.__edb_object.GetTherm_Cond().ToDouble()
+        return self._edb_object.GetTherm_Cond().ToDouble()
 
     @therm_cond.setter
     def therm_cond(self, value):
         value = self._pedb.edb_value(value)
-        self.__edb_object.SetTherm_Cond(value)
+        self._edb_object.SetTherm_Cond(value)
 
     @property
     def theta_jb(self):
         """Theta Junction-to-Board of the package."""
-        return self.__edb_object.GetTheta_JB().ToDouble()
+        return self._edb_object.GetTheta_JB().ToDouble()
 
     @theta_jb.setter
     def theta_jb(self, value):
         value = self._pedb.edb_value(value)
-        self.__edb_object.SetTheta_JB(value)
+        self._edb_object.SetTheta_JB(value)
 
     @property
     def theta_jc(self):
         """Theta Junction-to-Case of the package."""
-        return self.__edb_object.GetTheta_JC().ToDouble()
+        return self._edb_object.GetTheta_JC().ToDouble()
 
     @theta_jc.setter
     def theta_jc(self,value):
         value = self._pedb.edb_value(value)
-        self.__edb_object.SetTheta_JC(value)
+        self._edb_object.SetTheta_JC(value)
 
     @property
     def height(self):
         """Height of the package."""
-        return self.__edb_object.GetHeight().ToDouble()
+        return self._edb_object.GetHeight().ToDouble()
 
     @height.setter
     def height(self, value):
         value = self._pedb.edb_value(value)
-        self.__edb_object.SetHeight(value)
+        self._edb_object.SetHeight(value)
