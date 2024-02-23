@@ -119,9 +119,6 @@ full = [
     "scikit-rf",
     "openpyxl==3.1.2",
 ]
-grpc = [
-    "ansys-edb-core"
-]
 ci = [
     "vtk-osmesa==9.2.20230527.dev0",
 ]
