@@ -12,9 +12,9 @@ class EDBComponentDef(ObjBase):
 
     Parameters
     ----------
-    parent : :class:`pyedb.dotnet.edb_core.components.Components`
+    pedb : :class:`pyedb.edb`
         Inherited AEDT object.
-    comp_def : object
+    edb_object : object
         Edb ComponentDef Object
     """
 
