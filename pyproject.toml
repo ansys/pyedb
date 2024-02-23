@@ -126,13 +126,12 @@ grpc = [
 [tool.flit.module]
 name = "pyedb"
 
-# TODO: update once the repo is public
-# [project.urls]
-# Bugs = "https://github.com/ansys/pyedb/issues"
-# Documentation = "https://aedt.docs.pyansys.com"
-# Source = "https://github.com/ansys/pyedb"
-# Discussions = "https://github.com/ansys/pyedb/discussions"
-# Releases = "https://github.com/ansys/pyedb/releases"
+[project.urls]
+Bugs = "https://github.com/ansys/pyedb/issues"
+Documentation = "https://aedt.docs.pyansys.com"
+Source = "https://github.com/ansys/pyedb"
+Discussions = "https://github.com/ansys/pyedb/discussions"
+ Releases = "https://github.com/ansys/pyedb/releases"
 
 [tool.black]
 line-length = 88
