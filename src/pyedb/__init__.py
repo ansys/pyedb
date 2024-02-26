@@ -15,3 +15,4 @@ if "PYEDB_USE_DOTNET" not in os.environ:
     os.environ["PYEDB_USE_DOTNET"] = "0"
 
 from pyedb.generic.design_types import Edb
+from pyedb.generic.design_types import Siwave

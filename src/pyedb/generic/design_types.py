@@ -100,5 +100,14 @@ def Edb(
     else:
         raise Exception("not implemented yet.")
 
+def Siwave(
+    specified_version=None,
+):
+    """Siwave Class."""
+    from pyedb.siwave import Siwave as app
+
+    return app(
+        specified_version=specified_version,
+    )
 
 app_map = {"EDB": Edb}
