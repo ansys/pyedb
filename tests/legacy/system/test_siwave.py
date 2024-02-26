@@ -1,4 +1,5 @@
 import os
+import time
 
 import pytest
 
@@ -16,6 +17,7 @@ class TestClass:
     def test_siwave(self):
         """Create Siwave."""
         siw = Siwave(desktop_version)
+        time.sleep(10)
         example_project = os.path.join(local_path, "example_models", "siwave", "siw_dc.siw")
         target_path = os.path.join(self.local_scratch.path, "siw_dc.siw")
         self.local_scratch.copyfile(example_project, target_path)
