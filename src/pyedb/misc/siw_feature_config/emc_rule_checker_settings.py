@@ -33,7 +33,10 @@ class EMCRuleCheckerSettings:
             self.component_tags.write_xml(root)
 
         tree = ET.ElementTree(root)
-        ET.indent(tree, space="\t", level=0)
+        try:
+            ET.indent(tree, space="\t", level=0)
+        except:  # pragma no cover
+            pass
         return tree
 
     def read_xml(self, fpath):
