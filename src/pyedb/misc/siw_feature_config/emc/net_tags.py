@@ -13,12 +13,14 @@ class Net(XmlGeneric):
             self.isCritical = self._element.attrib["isCritical"]
             self.name = self._element.attrib["name"]
             self.type = self._element.attrib["type"] if "type" in self._element.attrib else None
+            self.Diffmatename = self._element.attrib["Diffmatename"] if "Diffmatename" in self._element.attrib else None
         else:
             self.isBus = None
             self.isClock = None
             self.isCritical = None
             self.name = None
             self.type = None
+            self.Diffmatename = None
 
 
 class NetTags(XmlGeneric):

@@ -1,4 +1,7 @@
 import json
+import numpy as np
+from copy import deepcopy as copy
+
 from pyedb.generic.general_methods import ET
 
 from pyedb.misc.siw_feature_config.emc.tag_library import \
@@ -6,6 +9,14 @@ from pyedb.misc.siw_feature_config.emc.tag_library import \
 from pyedb.misc.siw_feature_config.emc.net_tags import NetTags
 from pyedb.misc.siw_feature_config.emc.component_tags import \
     ComponentTags
+
+
+def kwargs_parser(kwargs):
+    kwargs = copy(kwargs)
+    kwargs = {i: False if j == np.nan else j for i, j in kwargs.items()}
+    kwargs = {i: int(j) if isinstance(j, bool) else j for i, j in kwargs.items()}
+    kwargs = {i: str(j) for i, j in kwargs.items()}
+    return kwargs
 
 
 class EMCRuleCheckerSettings:
@@ -44,7 +55,7 @@ class EMCRuleCheckerSettings:
 
         Parameters
         ----------
-        fpath: str, Path
+        fpath: str
             Path to file.
         """
         tree = ET.parse(fpath)
@@ -69,7 +80,7 @@ class EMCRuleCheckerSettings:
 
         Parameters
         ----------
-        fpath: str, Path
+        fpath: str
             Path to file.
         """
         data = {}
@@ -85,7 +96,7 @@ class EMCRuleCheckerSettings:
 
         Parameters
         ----------
-        fpath: str, Path
+        fpath: str
             Path to file.
         """
         self.tag_library = TagLibrary(None)
@@ -107,14 +118,14 @@ class EMCRuleCheckerSettings:
         if component_tags:
             self.component_tags.read_dict(component_tags)
 
-    def add_net(self, is_bus, is_clock, is_critical, name, net_type):
+    def add_net(self, name, is_bus=False, is_clock=False, is_critical=False, net_type="Single-Ended", diff_mate_name=""):
         """Assign tags to a net.
 
         Parameters
         ----------
-        is_bus: str
+        is_bus: str, int
             Whether the net is a bus.
-        is_clock: str
+        is_clock: str, int
             Whether the net is a clock.
         is_critical: str
             Whether the net is critical.
@@ -122,15 +133,35 @@ class EMCRuleCheckerSettings:
             Name of the net.
         net_type: str
             Type of the net.
+        diff_mate_name: str, optional
+            differential mate name.
         """
         kwargs = {
             "isBus": is_bus,
             "isClock": is_clock,
             "isCritical": is_critical,
             "name": name,
-            "type": net_type
+            "type": net_type,
+            "Diffmatename": diff_mate_name
         }
-        self.net_tags.add_sub_element(kwargs, "Net")
+
+        kwargs = kwargs_parser(kwargs)
+
+        if net_type == "Differential":
+            p = name
+            n = diff_mate_name
+            kwargs_p = kwargs
+            kwargs_n = kwargs
+
+            kwargs_p["name"] = p
+            kwargs_p["Diffmatename"] = n
+            self.net_tags.add_sub_element(kwargs_p, "Net")
+
+            kwargs_n["name"] = n
+            kwargs_n["Diffmatename"] = p
+            self.net_tags.add_sub_element(kwargs_n, "Net")
+        else:
+            self.net_tags.add_sub_element(kwargs, "Net")
 
     def add_component(self,
                       comp_name,
@@ -179,4 +210,5 @@ class EMCRuleCheckerSettings:
                   "isOscillator": is_oscillator,
                   "xLoc": x_loc,
                   "yLoc": y_loc}
+        kwargs = kwargs_parser(kwargs)
         self.component_tags.add_sub_element(kwargs, "Comp")

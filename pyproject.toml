@@ -119,18 +119,19 @@ full = [
     "scikit-rf",
     "openpyxl==3.1.2",
 ]
-grpc = ["ansys-edb@git+ssh://git@github.com/ansys/pyedb-core"]
+ci = [
+    "vtk-osmesa==9.2.20230527.dev0",
+]
 
 [tool.flit.module]
 name = "pyedb"
 
-# TODO: update once the repo is public
-# [project.urls]
-# Bugs = "https://github.com/ansys/pyedb/issues"
-# Documentation = "https://aedt.docs.pyansys.com"
-# Source = "https://github.com/ansys/pyedb"
-# Discussions = "https://github.com/ansys/pyedb/discussions"
-# Releases = "https://github.com/ansys/pyedb/releases"
+[project.urls]
+Bugs = "https://github.com/ansys/pyedb/issues"
+Documentation = "https://aedt.docs.pyansys.com"
+Source = "https://github.com/ansys/pyedb"
+Discussions = "https://github.com/ansys/pyedb/discussions"
+ Releases = "https://github.com/ansys/pyedb/releases"
 
 [tool.black]
 line-length = 88
