@@ -13,7 +13,7 @@ from pyedb.misc.misc import list_installed_ansysem
 example_models_path = os.path.join(dirname(dirname(dirname(os.path.realpath(__file__)))), "example_models")
 
 # Initialize default desktop configuration
-desktop_version = "2024.1"
+desktop_version = "2023.2"
 if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_installed_ansysem():
     desktop_version = list_installed_ansysem()[0][12:].replace(".", "")
     desktop_version = "20{}.{}".format(desktop_version[:2], desktop_version[-1])
