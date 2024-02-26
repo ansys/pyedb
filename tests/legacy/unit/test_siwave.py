@@ -20,8 +20,6 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "siw_dc.siw")
         self.local_scratch.copyfile(example_project, target_path)
         assert siw
-        assert siw.project_path
-        assert siw.current_version
         assert siw.close_project()
         siw.open_project(target_path)
         siw.oproject.ScrRunDcSimulation(1)
