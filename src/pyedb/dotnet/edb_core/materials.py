@@ -358,7 +358,6 @@ class Material(object):
                     self._edb_material_def.SetDielectricMaterialModel(self._edb_value(None))
 
 
-# TODO: Cleanup
 class Materials(object):
     """Manages EDB methods for material management accessible from `Edb.materials` property."""
 

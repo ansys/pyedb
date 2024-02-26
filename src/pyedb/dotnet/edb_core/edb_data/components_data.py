@@ -2,6 +2,7 @@ import logging
 import re
 import warnings
 
+from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.dotnet.edb_core.cell.hierarchy.model import PinPairModel
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.generic.general_methods import is_ironpython
@@ -26,7 +27,7 @@ class EDBComponent(object):
     Parameters
     ----------
     parent : :class:`pyedb.dotnet.edb_core.components.Components`
-        Inherited AEDT object.
+        Components object.
     component : object
         Edb Component Object
 
@@ -203,6 +204,50 @@ class EDBComponent(object):
         comp_prop = self.component_property
         comp_prop.SetModel(value._edb_object)
         self.edbcomponent.SetComponentProperty(comp_prop)
+
+    @property
+    def package_def(self):
+        """Package definition."""
+        edb_object = self.component_property.GetPackageDef()
+
+        package_def = PackageDef(self._pedb, edb_object)
+        if not package_def.is_null:
+            return package_def
+
+    @package_def.setter
+    def package_def(self, value):
+        package_def = self._pedb.definitions.package[value]
+        comp_prop = self.component_property
+        comp_prop.SetPackageDef(package_def._edb_object)
+        self.edbcomponent.SetComponentProperty(comp_prop)
+
+    @pyedb_function_handler
+    def create_package_def(self, name=""):
+        """Create a package definition and assign it to the component.
+
+        Parameters
+        ----------
+        name: str, optional
+            Name of the package definition
+
+        Returns
+        -------
+        bool
+            ``True`` if succeeded, ``False`` otherwise.
+        """
+        if not name:
+            name = "{}_{}".format(self.refdes, self.part_name)
+        if name not in self._pedb.definitions.package:
+            self._pedb.definitions.add_package_def(name)
+            self.package_def = name
+
+            from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
+            polygon = PolygonDataDotNet(self._pedb).create_from_bbox(self.component_instance.GetBBox())
+            self.package_def._edb_object.SetExteriorBoundary(polygon)
+            return True
+        else:
+            logging.error(f"Package definition {name} already exists")
+            return False
 
     @property
     def is_enabled(self):

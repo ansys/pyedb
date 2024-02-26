@@ -12,10 +12,8 @@ env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   PYEDB_USE_DOTNET: '1'
   MAIN_PYTHON_VERSION: '3.10'
-  MAIN_PYTHON_VERSION_WINDOWS_SELFHOSTED: '3.9'
   PACKAGE_NAME: 'pyedb'
   DOCUMENTATION_CNAME: 'edb.docs.pyansys.com'
-  VTK_OSMESA: 'vtk-osmesa==9.2.20230527.dev0'
   IS_WORKFLOW_RUNNING: True
   ARTIFACTORY_VERSION: v242
   MEILISEARCH_API_KEY: ${{ secrets.MEILISEARCH_API_KEY }}
@@ -63,16 +61,15 @@ jobs:
 
   legacy-tests:
     name: Test dotnet
-    # needs: [smoke-tests]
-    runs-on: [ windows, pyedb, self-hosted ]
+    runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@v4
 
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@main
+        uses: ansys/actions/_setup-python@v5
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION_WINDOWS_SELFHOSTED }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
           use-cache: false
 
       - name: Create Python venv
@@ -90,17 +87,18 @@ jobs:
           . .venv\Scripts\Activate.ps1
           python -m pip install .[tests]
 
-      - name: "Install specific vtk version with OSMesa bundled"
+      - name: Uninstall conflicting CI packages
         run: |
-          . .venv\Scripts\Activate.ps1
+          .\.venv\Scripts\Activate.ps1
           pip uninstall vtk -y
-          # Note: the vtk-osmesa used is 9.2.X as 9.3.0 is not working
-          # well with the use of pyvista in our tests atm.
-          # TODO: update once a stable versio is working
-          pip install --extra-index-url https://wheels.vtk.org ${{ env.VTK_OSMESA }}
+
+      - name: Install CI related dependencies
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          pip install --extra-index-url https://wheels.vtk.org .[ci]
 
       - name: "Executing legacy tests"
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           max_attempts: 3
           retry_on: error
@@ -136,13 +134,13 @@ jobs:
 
   docs-build:
     name: Build documentation
-    runs-on: [ windows, pyedb, self-hosted ]
+    runs-on: [ Windows, self-hosted, pyedb ]
     timeout-minutes: 480
     steps:
       - uses: actions/checkout@v4
 
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@main
+        uses: ansys/actions/_setup-python@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           use-cache: false
@@ -177,6 +175,16 @@ jobs:
         run: |
           . .venv\Scripts\Activate.ps1
           pip install pyaedt
+
+      - name: Uninstall conflicting CI packages
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          pip uninstall vtk -y
+
+      - name: Install CI related dependencies
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          pip install --extra-index-url https://wheels.vtk.org .[ci]
 
       - name: Build the documentation (HTML)
         run: |
@@ -227,6 +235,13 @@ jobs:
     needs: [package]
     runs-on: ubuntu-latest
     steps:
+      - name: Release to the public PyPI repository
+        uses: ansys/actions/release-pypi-public@v5
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          twine-username: "__token__"
+          twine-token: ${{ secrets.PYPI_TOKEN }}
+
       - name: Release to GitHub
         uses: ansys/actions/release-github@v5
         with:
