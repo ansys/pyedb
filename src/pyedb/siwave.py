@@ -21,7 +21,7 @@ from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.misc.misc import list_installed_ansysem
 
 
-class Siwave(object):
+class Siwave(object):  # pragma no cover
     """Initializes SIwave based on the inputs provided and manages SIwave release and closing.
 
     Parameters
