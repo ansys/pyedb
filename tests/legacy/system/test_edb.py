@@ -884,7 +884,7 @@ class TestClass:
 
         via_settings = setup1.via_settings
         via_settings.via_density = 1
-        if edbapp.version[0] >= 9:
+        if edbapp.version[0] >= 10:
             via_settings.via_mesh_plating = True
         via_settings.via_material = "pec"
         via_settings.via_num_sides = 8
@@ -892,7 +892,7 @@ class TestClass:
 
         via_settings = edbapp.setups["setup1"].via_settings
         assert via_settings.via_density == 1
-        if edbapp.version[0] >= 9:
+        if edbapp.version[0] >= 10:
             assert via_settings.via_mesh_plating
         assert via_settings.via_material == "pec"
         assert via_settings.via_num_sides == 8
