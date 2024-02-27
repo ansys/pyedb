@@ -91,16 +91,6 @@ jobs:
           . .venv\Scripts\Activate.ps1
           python -m pip install .[tests]
 
-      - name: Uninstall conflicting CI packages
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          pip uninstall vtk -y
-
-      - name: Install CI related dependencies
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          pip install --extra-index-url https://wheels.vtk.org .[ci]
-
       - name: "Executing legacy tests"
         uses: nick-fields/retry@v3
         with:
@@ -179,16 +169,6 @@ jobs:
         run: |
           . .venv\Scripts\Activate.ps1
           pip install pyaedt
-
-      - name: Uninstall conflicting CI packages
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          pip uninstall vtk -y
-
-      - name: Install CI related dependencies
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          pip install --extra-index-url https://wheels.vtk.org .[ci]
 
       - name: Build the documentation (HTML)
         run: |
