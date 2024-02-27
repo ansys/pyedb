@@ -130,7 +130,7 @@ name = "pyedb"
 
 [project.urls]
 Bugs = "https://github.com/ansys/pyedb/issues"
-Documentation = "https://aedt.docs.pyansys.com"
+Documentation = "https://edb.docs.pyansys.com"
 Source = "https://github.com/ansys/pyedb"
 Discussions = "https://github.com/ansys/pyedb/discussions"
  Releases = "https://github.com/ansys/pyedb/releases"
