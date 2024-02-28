@@ -946,6 +946,7 @@ class ViaSettings(object):
     @property
     def via_mesh_plating(self):
         """Via mesh plating.
+
         Returns
         -------
         bool
