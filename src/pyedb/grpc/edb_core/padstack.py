@@ -8,11 +8,11 @@ from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
-import ansys.edb.definition as definition
-import ansys.edb.primitive as primitive
-import ansys.edb.utility as utility
-import ansys.edb.terminal as terminal
-import ansys.edb.geometry as geometry
+import ansys.edb.core.definition as definition
+import ansys.edb.core.primitive as primitive
+import ansys.edb.core.utility as utility
+import ansys.edb.core.terminal as terminal
+import ansys.edb.core.geometry as geometry
 
 
 # from ansys.edb.definition.padstack_def_data import PadType, PadGeometryType

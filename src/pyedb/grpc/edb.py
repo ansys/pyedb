@@ -12,18 +12,15 @@ import time
 import traceback
 import warnings
 
-import pyedb.grpc.edb_core.edb_data as edb_data
-from pyedb.grpc.grpc_init.database import EdbInit
-import ansys.edb.geometry as geometry
-import ansys.edb.database as database
-import ansys.edb.layout_instance as layout_instance
-import pyedb.generic as generic
-import ansys.edb.layout as edb_layout
-import ansys.edb.utility as utility
-import ansys.edb.terminal as terminal
-import ansys.edb.simulation_setup as simulation_setup
+from pyedb.grpc.edb_init import EdbInit
+import ansys.edb.core.geometry as geometry
+import ansys.edb.core.database as database
+import ansys.edb.core.layout as edb_layout
+import ansys.edb.core.utility as utility
+import ansys.edb.core.terminal as terminal
+import ansys.edb.core.simulation_setup as simulation_setup
 
-from pyedb.grpc.components import Components
+from pyedb.grpc.edb_core.components import Components
 from pyedb.grpc.edb_core.edb_data.control_file import ControlFile
 from pyedb.grpc.edb_core.edb_data.control_file import convert_technology_file
 from pyedb.grpc.edb_core.edb_data.design_options import EdbDesignOptions
@@ -44,17 +41,16 @@ from pyedb.grpc.edb_core.edb_data.terminals import PadstackInstanceTerminal
 from pyedb.grpc.edb_core.edb_data.terminals import Terminal
 from pyedb.grpc.edb_core.edb_data.variables import Variable
 #from pyedb.grpc.general import TerminalType
-from pyedb.grpc.hfss import EdbHfss
+from pyedb.grpc.edb_core.hfss import EdbHfss
 from pyedb.ipc2581.ipc2581 import Ipc2581
-from pyedb.grpc.layout import EdbLayout
-from pyedb.grpc.materials import Materials
-from pyedb.grpc.net_class import EdbDifferentialPairs
-from pyedb.grpc.net_class import EdbExtendedNets
-from pyedb.grpc.net_class import EdbNetClasses
-from pyedb.grpc.nets import EdbNets
-from pyedb.grpc.padstack import EdbPadstacks
-from pyedb.grpc.siwave import EdbSiwave
-from pyedb.grpc.stackup import Stackup
+from pyedb.grpc.edb_core.layout import EdbLayout
+from pyedb.grpc.edb_core.materials import Materials
+from pyedb.grpc.edb_core.net_class import EdbDifferentialPairs
+from pyedb.grpc.edb_core.net_class import EdbExtendedNets
+from pyedb.grpc.edb_core.nets import EdbNets
+from pyedb.grpc.edb_core.padstack import EdbPadstacks
+from pyedb.grpc.edb_core.siwave import EdbSiwave
+from pyedb.grpc.edb_core.stackup import Stackup
 from pyedb.generic.constants import AEDT_UNITS
 from pyedb.generic.constants import SolverType
 from pyedb.generic.general_methods import generate_unique_name
@@ -844,7 +840,7 @@ class EdbGrpc(EdbInit):
 
         Examples
         --------
-        >>> edbapp = pyaedt.Edb("myproject.aedb")
+        >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.differential_pairs
         """
         if self.active_db:
@@ -1240,9 +1236,7 @@ class EdbGrpc(EdbInit):
                 self.edb_value(point[0] + 1e-12), self.edb_value(point[1] + 1e-12)
             )
 
-            points = Tuple[self.edb_api.geometry.geometry.PointData, self.edb_api.geometry.geometry.PointData](
-                pointA, pointB
-            )
+            points = (pointA, pointB)
             _polys.append(self.edb_api.geometry.polygon_data.create_from_bbox(points))
         for cname, c in self.components.instances.items():
             if (
@@ -1580,7 +1574,7 @@ class EdbGrpc(EdbInit):
         if output_aedb_path:
             db2 = self.create(output_aedb_path)
             _success = db2.Save()
-            _dbCells = convert_py_list_to_net_list(_dbCells)
+            #_dbCells = convert_py_list_to_net_list(_dbCells)
             db2.CopyCells(_dbCells)  # Copies cutout cell/design to db2 project
             if len(list(db2.CircuitCells)) > 0:
                 for net in list(list(db2.CircuitCells)[0].GetLayout().Nets):

@@ -3,10 +3,10 @@ from __future__ import absolute_import
 import re
 
 from pyedb.generic.general_methods import pyedb_function_handler
-import ansys.edb.utility as utility
-import ansys.edb.layer as layer
+import ansys.edb.core.utility as utility
+import ansys.edb.core.layer as layer
 
-import ansys.edb.definition as definition
+import ansys.edb.core.definition as definition
 
 
 class LayerEdbClass(object):

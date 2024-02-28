@@ -4,13 +4,13 @@ import re
 import warnings
 
 from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitivesMain
-from ansys.edb.layer.layer import LayerType
+from ansys.edb.core.layer.layer import LayerType
 from pyedb.grpc.edb_core.edb_data.terminals import PadstackInstanceTerminal
-import ansys.edb.utility as utility
-import ansys.edb.geometry as geometry
-import ansys.edb.definition as definition
-import ansys.edb.database as database
-import ansys.edb.hierarchy as hierachy
+import ansys.edb.core.utility as utility
+import ansys.edb.core.geometry as geometry
+import ansys.edb.core.definition as definition
+import ansys.edb.core.database as database
+import ansys.edb.core.hierarchy as hierachy
 #from ansys.edb.utility import Value
 #from ansys.edb.geometry.point_data import PointData
 #from ansys.edb.database import ProductIdType

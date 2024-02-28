@@ -18,11 +18,11 @@ from pyedb.generic.constants import SweepType
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
-import ansys.edb.terminal as terminal
-import ansys.edb.utility as utility
-import ansys.edb.geometry as geometry
-import ansys.edb.hierarchy as hierarchy
-import ansys.edb.net.net as edb_net
+import ansys.edb.core.terminal as terminal
+import ansys.edb.core.utility as utility
+import ansys.edb.core.geometry as geometry
+import ansys.edb.core.hierarchy as hierarchy
+import ansys.edb.core.net.net as edb_net
 #from ansys.edb.terminal.terminals import PadstackInstanceTerminal
 #from ansys.edb.terminal.terminals import BoundaryType
 #from ansys.edb.utility.value import Value

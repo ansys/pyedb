@@ -4,11 +4,11 @@ This module contains these classes: `EdbLayout` and `Shape`.
 import math
 import warnings
 
-from ansys.edb.primitive import Bondwire
-import ansys.edb.primitive as primitive
-import ansys.edb.geometry as geometry
-import ansys.edb.utility as utility
-import ansys.edb.geometry.arc_data as arcdata
+from ansys.edb.core.primitive import Bondwire
+import ansys.edb.core.primitive as primitive
+import ansys.edb.core.geometry as geometry
+import ansys.edb.core.utility as utility
+import ansys.edb.core.geometry.arc_data as arcdata
 #from ansys.edb.primitive import Circle
 #from ansys.edb.primitive import Path
 #from ansys.edb.primitive import Polygon

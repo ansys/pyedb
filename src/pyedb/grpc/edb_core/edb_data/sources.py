@@ -1,8 +1,8 @@
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.generic.constants import NodeType
 from pyedb.generic.constants import SourceType
-import ansys.edb.terminal as terminal
-import ansys.edb.utility as utility
+import ansys.edb.core.terminal as terminal
+import ansys.edb.core.utility as utility
 #from ansys.edb.terminal.terminals import BoundaryType
 #from ansys.edb.utility.value import Value
 

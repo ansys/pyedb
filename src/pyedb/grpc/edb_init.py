@@ -5,14 +5,12 @@ import psutil
 
 from pyedb import __version__
 from pyedb.edb_logger import pyedb_logger
-from pyedb.generic.general_methods import settings
-from ansys.edb.session import launch_session
+from ansys.edb.core.session import launch_session
 from pyedb.misc.misc import list_installed_ansysem
 from pyedb.generic.general_methods import env_path
-from pyedb.generic.general_methods import env_path_student
 from pyedb.generic.general_methods import env_value
 from pyedb.generic.general_methods import is_linux
-import ansys.edb.database as database
+import ansys.edb.core.database as database
 
 
 class EdbInit(object):

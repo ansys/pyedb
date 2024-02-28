@@ -1,8 +1,8 @@
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
-from ansys.edb.simulation_setup import SweepData
-import ansys.edb.utility as utility
-import ansys.edb.simulation_setup as simulation_setup
+from ansys.edb.core.simulation_setup import SweepData
+import ansys.edb.core.utility as utility
+import ansys.edb.core.simulation_setup as simulation_setup
 
 
 class EdbFrequencySweep(object):

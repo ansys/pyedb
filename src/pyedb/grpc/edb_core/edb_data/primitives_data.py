@@ -1,8 +1,8 @@
 import math
 
-import ansys.edb.primitive as primitive
-import ansys.edb.utility as utility
-import ansys.edb.net as net
+import ansys.edb.core.primitive as primitive
+import ansys.edb.core.utility as utility
+import ansys.edb.core.net as net
 from pyedb.generic.general_methods import generate_unique_name
 # from ansys.edb.primitive.primitive import Bondwire
 # from ansys.edb.primitive.primitive import Circle

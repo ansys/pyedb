@@ -12,10 +12,10 @@ from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
-from ansys.edb.primitive.primitive import PrimitiveType
-from ansys.edb.net.net import Net
-from ansys.edb.geometry.r_tree import RTree
-from ansys.edb.primitive.primitive import Polygon
+from ansys.edb.core.primitive.primitive import PrimitiveType
+from ansys.edb.core.net.net import Net
+from ansys.edb.core.geometry.r_tree import RTree
+from ansys.edb.core.primitive.primitive import Polygon
 
 class EdbNets(object):
     """Manages EDB methods for nets management accessible from `Edb.nets` property.

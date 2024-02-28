@@ -6,20 +6,20 @@ import json
 import math
 import re
 import warnings
-import ansys.edb.definition as definition
-import ansys.edb.geometry as geometry
-import ansys.edb.hierarchy as hierarchy
-import ansys.edb.layer as layer
-import ansys.edb.terminal as terminal
-import ansys.edb.utility as utility
-import ansys.edb.database as database
+import ansys.edb.core.definition as definition
+import ansys.edb.core.geometry as geometry
+import ansys.edb.core.hierarchy as hierarchy
+import ansys.edb.core.layer as layer
+import ansys.edb.core.terminal as terminal
+import ansys.edb.core.utility as utility
+import ansys.edb.core.database as database
 
 from pyedb.grpc.edb_core.edb_data.components_data import EDBComponent
 from pyedb.grpc.edb_core.edb_data.components_data import EDBComponentDef
 from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.grpc.edb_core.edb_data.sources import Source
 from pyedb.grpc.edb_core.edb_data.sources import SourceType
-from pyedb.grpc.padstack import EdbPadstacks
+from pyedb.grpc.edb_core.padstack import EdbPadstacks
 from pyedb.generic.general_methods import get_filename_without_extension
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators

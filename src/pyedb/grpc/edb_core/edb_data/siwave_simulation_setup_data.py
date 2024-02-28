@@ -1,7 +1,7 @@
 from pyedb.grpc.edb_core.edb_data.hfss_simulation_setup_data import EdbFrequencySweep
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
-import ansys.edb.simulation_setup as simulation_setup
+import ansys.edb.core.simulation_setup as simulation_setup
 #from ansys.edb.simulation_setup.simulation_setup import SIWaveSimulationSetup
 
 

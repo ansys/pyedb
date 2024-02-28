@@ -96,9 +96,8 @@ def Edb(
             use_ppe=use_ppe,
             technology_file=technology_file,
         )
-    # TODO: Use EDB gRPC
     else:
-        raise Exception("not implemented yet.")
+        from pyedb.grpc.edb import EdbGrpc as app
 
 
 app_map = {"EDB": Edb}

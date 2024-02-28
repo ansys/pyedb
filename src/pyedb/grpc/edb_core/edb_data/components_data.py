@@ -7,8 +7,8 @@ import numpy as np
 from pyedb.generic.general_methods import get_filename_without_extension
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
-import ansys.edb.hierarchy as hierarchy
-import ansys.edb.utility as utility
+import ansys.edb.core.hierarchy as hierarchy
+import ansys.edb.core.utility as utility
 
 
 class EDBComponentDef(object):

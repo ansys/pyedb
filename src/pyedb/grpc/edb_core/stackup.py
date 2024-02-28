@@ -17,14 +17,14 @@ from pyedb.grpc.edb_core.edb_data.layer_data import StackupLayerEdbClass
 from pyedb.generic.general_methods import ET
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
-import ansys.edb.layer.layer as layer
-import ansys.edb.layer.layer_collection as layer_collection
-import ansys.edb.layer.stackup_layer as stackup_layer
-import ansys.edb.utility as utility
-import ansys.edb.definition as definition
-import ansys.edb.hierarchy as hierarchy
-import ansys.edb.geometry as geometry
-import ansys.edb.layout as layout
+import ansys.edb.core.layer.layer as layer
+import ansys.edb.core.layer.layer_collection as layer_collection
+import ansys.edb.core.layer.stackup_layer as stackup_layer
+import ansys.edb.core.utility as utility
+import ansys.edb.core.definition as definition
+import ansys.edb.core.hierarchy as hierarchy
+import ansys.edb.core.geometry as geometry
+import ansys.edb.core.layout as layout
 #from ansys.edb.layer.layer import LayerType, Layer, TopBottomAssociation
 #from ansys.edb.layer.stackup_layer import StackupLayer
 #from ansys.edb.layer.layer_collection import LayerTypeSet, LayerCollection, LayerCollectionMode
