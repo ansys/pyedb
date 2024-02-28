@@ -72,7 +72,8 @@ class LayoutValidation:
             net_dc_shorts = [obj for obj in connected_objs]
             all_shorted_nets.append(net)
             if net_dc_shorts:
-                dc_nets = list(set([obj.net.name for obj in net_dc_shorts if not obj.net.name == net]))
+                dc_nets = list(set([obj.net.name for obj in net_dc_shorts]))
+                dc_nets =  [i for i in dc_nets if i != net]
                 for dc in dc_nets:
                     if dc:
                         dc_shorts.append([net, dc])
@@ -92,9 +93,10 @@ class LayoutValidation:
                             break
                         elif len(temp) == 0:
                             break
-                    for i in net_dc_shorts:
-                        if not i.net.name == temp_name:
-                            i.net = temp_name
+                    rename_shorts = [i for i in net_dc_shorts if i._edb_object.GetNet().GetName() != temp_name]
+                    for i in rename_shorts:
+                        i._edb_object.SetNet(self._pedb.nets.nets[temp_name].net_obj)
+                        #i.net = temp_name
         return dc_shorts
 
     @pyedb_function_handler()

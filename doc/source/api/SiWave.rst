@@ -11,21 +11,22 @@ accessed from PyEDB in Windows only. All setups can be implemented through EDB A
   :target: https://www.ansys.com/products/electronics/ansys-siwave
 
 
-.. currentmodule:: pyedb.dotnet.edb_core
+.. currentmodule:: pyedb.siwave
 
 .. autosummary::
    :toctree: _autosummary
 
-   siwave.EdbSiwave
+   Siwave
 
 
 .. code:: python
 
-    from pyedb.dotnet.edb_core.siwave import EdbSiwave
+    from pyedb.siwave import Siwave
 
     # this call returns the Edb class initialized on 2023 R1
-    siwave = EdbSiwave(specified_version="2023.1")
+    siwave = Siwave("2024.1")
     siwave.open_project("pyproject.siw")
     siwave.export_element_data("mydata.txt")
     siwave.close_project()
     ...
+
