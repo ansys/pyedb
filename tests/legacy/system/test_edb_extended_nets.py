@@ -25,4 +25,5 @@ class TestClass:
         assert self.edbapp.extended_nets[extended_net_name].components
         assert self.edbapp.extended_nets[extended_net_name].rlc
         assert self.edbapp.extended_nets[extended_net_name].serial_rlc
+        assert self.edbapp.extended_nets["1V0"].shunt_rlc
         assert self.edbapp.extended_nets.create("new_ex_net", "DDR4_A1")

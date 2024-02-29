@@ -234,18 +234,27 @@ class EDBExtendedNetData(ExtendedNetDotNet):
 
     @property
     def serial_rlc(self):
-        """Dictionary of series components."""
-        comps_common = {}
+        """Dictionary of series RLC components."""
+        temp = {}
         nets = self.nets
-        for net in nets:
-            comps_common.update(
-                {
-                    i: v
-                    for i, v in self._app._nets[net].components.items()
-                    if list(set(v.nets).intersection(nets)) != [net] and v.type in ["Resistor", "Inductor", "Capacitor"]
-                }
-            )
-        return comps_common
+        for comp_name, comp_obj in self.components.items():
+            if comp_obj.type not in ["Resistor", "Inductor", "Capacitor"]:
+                continue
+            if set(comp_obj.nets).issubset(set(nets)):
+                temp[comp_name] = comp_obj
+        return temp
+    
+    @property
+    def shunt_rlc(self):
+        """Dictionary of shunt RLC components."""
+        temp = {}
+        nets = self.nets
+        for comp_name, comp_obj in self.components.items():
+            if comp_obj.type not in ["Resistor", "Inductor", "Capacitor"]:
+                continue
+            if not set(comp_obj.nets).issubset(set(nets)):
+                temp[comp_name] = comp_obj
+        return temp
 
 
 class EDBDifferentialPairData(DifferentialPairDotNet):
