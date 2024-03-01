@@ -36,5 +36,6 @@ class TestClass:
         emi_scanner.add_net("CHASSIS2")
         emi_scanner.add_net("LVDS_CH01_P", diff_mate_name="LVDS_CH01_N", net_type="Differential")
         emi_scanner.add_component(comp_name="U2", comp_value="", device_name="SQFP28X28_208", is_clock_driver="0",
-                                  is_high_speed="0", is_ic="1", is_oscillator="0", x_loc="-21.59", y_loc="-41.91")
+                                  is_high_speed="0", is_ic="1", is_oscillator="0", x_loc="-21.59", y_loc="-41.91",
+                                  cap_type="Decoupling")
         emi_scanner.write_xml(self.local_temp_dir / "test_003.tgs")
