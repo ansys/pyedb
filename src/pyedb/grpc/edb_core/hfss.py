@@ -459,7 +459,7 @@ class EdbHfss(object):
         if not isinstance(net_list, list):
             net_list = [net_list]
         for ref in ref_des_list:
-            selected_pins = [pin for pin in list(self._pedb.components[ref].pins.values()) if not pin.net.is_null
+            selected_pins = [pin for pin in list(self._pedb.components[ref].pins.values()) if pin.net
                              and pin.net_name in net_list]
             for pin_inst in selected_pins:
                 port_name = "{}_{}_{}".format(ref, pin_inst.net_name, pin_inst.pin.name)

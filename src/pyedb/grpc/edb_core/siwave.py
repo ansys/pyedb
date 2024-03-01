@@ -906,7 +906,7 @@ class EdbSiwave(object):
         pos_node_net = self._pedb.nets.get_net_by_name(source.positive_node.net)
         pos_pingroup_term_name = source.name
         pos_pingroup_terminal = terminal.PinGroupTerminal.create(layout=self._active_layout,
-                                                        net_ref=pos_node_net.net_object,
+                                                        net=pos_node_net.net_object,
                                                         name=pos_pingroup_term_name,
                                                         pin_group=pos_pin_group,
                                                         is_ref=False)
@@ -915,7 +915,7 @@ class EdbSiwave(object):
             neg_node_net = self._pedb.nets.get_net_by_name(source.negative_node.net)
             neg_pingroup_term_name = source.name + "_N"
             neg_pingroup_terminal = terminal.PinGroupTerminal.create(layout=self._active_layout,
-                                                            net_ref=neg_node_net.net_object,
+                                                            net=neg_node_net.net_object,
                                                             name=neg_pingroup_term_name,
                                                             pin_group=neg_pin_group,
                                                             is_ref=False)

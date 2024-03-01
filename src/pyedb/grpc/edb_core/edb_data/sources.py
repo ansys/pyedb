@@ -288,7 +288,7 @@ class PinGroup(object):
                 return False
             return terminal.PinGroupTerminal.create(
                 layout=self._active_layout,
-                net_ref=pin_group_net,
+                net=pin_group_net,
                 name=self.name,
                 pin_group=self._edb_pin_group,
                 is_ref=is_reference,
