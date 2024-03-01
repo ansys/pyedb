@@ -227,7 +227,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
 
     @property
     def rlc(self):
-        """Dictionary of rlc components."""
+        """Dictionary of RLC components."""
         return {
             name: comp for name, comp in self.components.items() if comp.type in ["Inductor", "Resistor", "Capacitor"]
         }
