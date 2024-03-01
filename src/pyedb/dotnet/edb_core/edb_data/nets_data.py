@@ -234,7 +234,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
 
     @property
     def serial_rlc(self):
-        """Dictionary of series RLC components."""
+        """Dictionary of serial RLC components."""
         temp = {}
         nets = self.nets
         for comp_name, comp_obj in self.components.items():
