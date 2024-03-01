@@ -247,14 +247,14 @@ class EDBExtendedNetData(ExtendedNetDotNet):
     @property
     def shunt_rlc(self):
         """Dictionary of shunt RLC components."""
-        temp = {}
+        res = {}
         nets = self.nets
         for comp_name, comp_obj in self.components.items():
             if comp_obj.type not in ["Resistor", "Inductor", "Capacitor"]:
                 continue
             if not set(comp_obj.nets).issubset(set(nets)):
-                temp[comp_name] = comp_obj
-        return temp
+                res[comp_name] = comp_obj
+        return res
 
 
 class EDBDifferentialPairData(DifferentialPairDotNet):
