@@ -235,7 +235,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
     @property
     def serial_rlc(self):
         """Dictionary of serial RLC components."""
-        temp = {}
+        res = {}
         nets = self.nets
         for comp_name, comp_obj in self.components.items():
             if comp_obj.type not in ["Resistor", "Inductor", "Capacitor"]:
