@@ -241,8 +241,8 @@ class EDBExtendedNetData(ExtendedNetDotNet):
             if comp_obj.type not in ["Resistor", "Inductor", "Capacitor"]:
                 continue
             if set(comp_obj.nets).issubset(set(nets)):
-                temp[comp_name] = comp_obj
-        return temp
+                res[comp_name] = comp_obj
+        return res
     
     @property
     def shunt_rlc(self):
