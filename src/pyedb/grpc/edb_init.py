@@ -51,16 +51,19 @@ class EdbInit(object):
         os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
         "Starting grpc server"
         self.get_grpc_serveur_process()
-        if not self.server_pid:
-            try:
-                self.session = launch_session(self.base_path, port_num=port)
-                if self.session:
-                    self.server_pid = self.session.local_server_proc.pid
-                    self.logger.info("Grpc session started")
-            except:
-                self.logger.error("Failed to start EDB_RPC_server process")
-        else:
+        if self.server_pid:
             self.logger.info("Server already running")
+            self.logger.info("Restarting server a work around of issue #372")
+            p = psutil.Process(self.server_pid)
+            p.terminate()
+        try:
+            self.session = launch_session(self.base_path, port_num=port)
+            if self.session:
+                self.server_pid = self.session.local_server_proc.pid
+                self.logger.info("Grpc session started")
+        except:
+            self.logger.error("Failed to start EDB_RPC_server process")
+
 
     @property
     def db(self):
