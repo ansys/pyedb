@@ -2232,7 +2232,8 @@ class Edb(Database):
             )
             if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1] and extent_defeature > 0:
                 _poly = _poly.Defeature(extent_defeature)
-
+            if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1]:
+                _poly = _poly.CreateFromArcs(_poly.GetArcData(), True)
         if not _poly or _poly.IsNull():
             self._logger.error("Failed to create Extent.")
             return []
