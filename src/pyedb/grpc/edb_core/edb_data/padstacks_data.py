@@ -11,15 +11,15 @@ import ansys.edb.core.geometry as geometry
 import ansys.edb.core.definition as definition
 import ansys.edb.core.database as database
 import ansys.edb.core.hierarchy as hierachy
-#from ansys.edb.utility import Value
-#from ansys.edb.geometry.point_data import PointData
-#from ansys.edb.database import ProductIdType
-#from ansys.edb.definition.padstack_def_data import PadType
+# from ansys.edb.utility import Value
+# from ansys.edb.geometry.point_data import PointData
+# from ansys.edb.database import ProductIdType
+# from ansys.edb.definition.padstack_def_data import PadType
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
-#from ansys.edb.geometry.polygon_data import PolygonData
-#from ansys.edb.hierarchy import MeshClosure
-#from ansys.edb.definition.padstack_def_data import PadGeometryType
+# from ansys.edb.geometry.polygon_data import PolygonData
+# from ansys.edb.hierarchy import MeshClosure
+# from ansys.edb.definition.padstack_def_data import PadGeometryType
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -153,14 +153,16 @@ class EDBPadProperties(object):
             return OrderedDict({"XSize": utility.Value(value[0]), "YSize": utility.Value(value[1])})
         elif self.shape in [definition.PadGeometryType.PADGEOMTYPE_OVAL, definition.PadGeometryType.PADGEOMTYPE_BULLET]:
             return OrderedDict(
-                {"XSize": utility.Value(value[0]), "YSize": utility.Value(value[1]), "CornerRadius": utility.Value(value[2])}
+                {"XSize": utility.Value(value[0]), "YSize": utility.Value(value[1]),
+                 "CornerRadius": utility.Value(value[2])}
             )
         elif self.shape == definition.PadGeometryType.PADGEOMTYPE_NSIDED_POLYGON.name:
             return OrderedDict({"Size": utility.Value(value[0]), "NumSides": utility.Value(value[1])})
         elif self.shape in [definition.PadGeometryType.PADGEOMTYPE_ROUND45,
                             definition.PadGeometryType.PADGEOMTYPE_ROUND90]:  # pragma: no cover
             return OrderedDict(
-                {"Inner": utility.Value(value[0]), "ChannelWidth": utility.Value(value[1]), "IsolationGap": utility.Value(value[2])}
+                {"Inner": utility.Value(value[0]), "ChannelWidth": utility.Value(value[1]),
+                 "IsolationGap": utility.Value(value[2])}
             )
         else:
             return OrderedDict()  # pragma: no cover
@@ -189,11 +191,14 @@ class EDBPadProperties(object):
                 params = [utility.Value(value["Size"])]
             elif self.shape == definition.PadGeometryType.PADGEOMTYPE_RECTANGLE:
                 params = [utility.Value(value["XSize"]), utility.Value(value["YSize"])]
-            elif self.shape == [definition.PadGeometryType.PADGEOMTYPE_OVAL, definition.PadGeometryType.PADGEOMTYPE_BULLET]:
-                params = [utility.Value(value["XSize"]), utility.Value(value["YSize"]), utility.Value(value["CornerRadius"])]
+            elif self.shape == [definition.PadGeometryType.PADGEOMTYPE_OVAL,
+                                definition.PadGeometryType.PADGEOMTYPE_BULLET]:
+                params = [utility.Value(value["XSize"]), utility.Value(value["YSize"]),
+                          utility.Value(value["CornerRadius"])]
             elif self.shape in [definition.PadGeometryType.PADGEOMTYPE_ROUND45,
                                 definition.PadGeometryType.PADGEOMTYPE_ROUND90]:  # pragma: no cover
-                params = [utility.Value(value["Inner"]), utility.Value(value["ChannelWidth"]), utility.Value(value["IsolationGap"])]
+                params = [utility.Value(value["Inner"]), utility.Value(value["ChannelWidth"]),
+                          utility.Value(value["IsolationGap"])]
             else:  # pragma: no cover
                 params = None
         elif isinstance(value, list):
@@ -921,7 +926,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         super().__init__(edb_padstackinstance, _pedb)
         self._edb_padstackinstance = self._edb_object
         self._pedb = _pedb
-        #self._edb_padstackinstance = edb_padstackinstance
+        # self._edb_padstackinstance = edb_padstackinstance
         self._bounding_box = []
         self._object_instance = None
         self._position = []
@@ -944,7 +949,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     def _create_terminal(self, name=None):
         """Create a padstack instance terminal"""
 
-        term = PadstackInstanceTerminal(self._pedb, self._edb_padstackinstance.get_padstack_instance_terminal())
+        term = PadstackInstanceTerminal(self._pedb, self._edb_padstackinstance)
         return term.create(self, name)
 
     @pyedb_function_handler
@@ -1003,13 +1008,13 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         -------
         bool
         """
-        pass # not working with grpc
-        #pattern = r"'DCIR Equipotential Region'='([^']+)'"
-        #em_pp = self._em_properties
-        #result = re.search(pattern, em_pp).group(1)
-        #if result == "true":
+        pass  # not working with grpc
+        # pattern = r"'DCIR Equipotential Region'='([^']+)'"
+        # em_pp = self._em_properties
+        # result = re.search(pattern, em_pp).group(1)
+        # if result == "true":
         #    return True
-        #else:
+        # else:
         #    return False
 
     @dcir_equipotential_region.setter
@@ -1026,7 +1031,8 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         """Return Ansys.Ansoft.Edb.LayoutInstance.LayoutObjInstance object."""
         if not self._object_instance:
             self._object_instance = (
-                self._edb_padstackinstance.layout.layout_instance.get_layout_obj_instance_in_context(self._edb_padstackinstance, None)
+                self._edb_padstackinstance.layout.layout_instance.get_layout_obj_instance_in_context(
+                    self._edb_padstackinstance, None)
             )
         return self._object_instance
 
@@ -1178,7 +1184,6 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             else:
                 return drill_to_layer.name, diameter.value
         return False
-
 
     def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from bottom.
@@ -1793,3 +1798,29 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             max_limit=max_limit,
             component_only=component_only,
         )
+    @pyedb_function_handler()
+    def get_terminal(self, name=None, create_new_terminal=False):
+        """Get PadstackInstanceTerminal object.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the terminal. Only applicable when create_new_terminal is True.
+        create_new_terminal : bool, optional
+            Whether to create a new terminal.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.terminals`
+        """
+
+        if create_new_terminal:
+            term = self._create_terminal(name)
+        else:
+            from pyedb.grpc.edb_core.edb_data.terminals import (
+                PadstackInstanceTerminal,
+            )
+
+            term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
+        if not term.is_null:
+            return term

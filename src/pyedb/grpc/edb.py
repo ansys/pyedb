@@ -13,12 +13,12 @@ import traceback
 import warnings
 
 from pyedb.grpc.edb_init import EdbInit
-import ansys.edb.core.geometry as geometry
-import ansys.edb.core.database as database
+import ansys.edb.core.geometry as edb_geometry
+import ansys.edb.core.database as edb_database
 import ansys.edb.core.layout as edb_layout
-import ansys.edb.core.utility as utility
-import ansys.edb.core.terminal as terminal
-import ansys.edb.core.simulation_setup as simulation_setup
+import ansys.edb.core.utility as edb_utility
+import ansys.edb.core.terminal as edb_terminal
+import ansys.edb.core.simulation_setup as edb_simulation_setup
 
 from pyedb.grpc.edb_core.components import Components
 from pyedb.grpc.edb_core.edb_data.control_file import ControlFile
@@ -341,11 +341,11 @@ class EdbGrpc(EdbInit):
         terminal_dict = {}
         for i in self.layout.terminals:
             terminal_type = i.type
-            if terminal_type == terminal.TerminalType.EDGE:
+            if terminal_type == edb_terminal.TerminalType.EDGE:
                 ter = EdgeTerminal(self, i)
             elif not i.bundle_terminal.is_null:
                 ter = BundleTerminal(self, i)
-            elif terminal_type == terminal.TerminalType.PADSTACK_INST:
+            elif terminal_type == edb_terminal.TerminalType.PADSTACK_INST:
                 ter = PadstackInstanceTerminal(self, i)
             else:
                 ter = Terminal(self, i)
@@ -377,12 +377,12 @@ class EdbGrpc(EdbInit):
         terminals = [term for term in self.layout.terminals if not term.is_reference_terminal]
         ports = {}
         for t in terminals:
-            if t.type == terminal.TerminalType.BUNDLE:
+            if t.type == edb_terminal.TerminalType.BUNDLE:
                 bundle_ter = BundleWavePort(self, t)
                 ports[bundle_ter.name] = bundle_ter
-            elif t.type == terminal.TerminalType.BUNDLE:
+            elif t.type == edb_terminal.TerminalType.BUNDLE:
                 ports[t.name] = WavePort(self, t)
-            elif t.type == terminal.TerminalType.PADSTACK_INST:
+            elif t.type == edb_terminal.TerminalType.PADSTACK_INST:
                 ports[t.name] = CoaxPort(self, t)
             else:
                 ports[t.name] = GapPort(self, t)
@@ -417,7 +417,7 @@ class EdbGrpc(EdbInit):
         """
         self.standalone = self.standalone
         try:
-            self._db = database.Database.open(self.edbpath, self.isreadonly)
+            self._db = edb_database.Database.open(self.edbpath, self.isreadonly)
         except Exception as e:
             self.logger.error(e.args[0])
         if not self.active_db:
@@ -661,7 +661,7 @@ class EdbGrpc(EdbInit):
             return None
         if not self.cellname:
             self.cellname = generate_unique_name("Cell")
-        self._active_cell = database.Cell.create(self.active_db, edb_layout.CellType.CIRCUIT_CELL, self.cellname)
+        self._active_cell = edb_database.Cell.create(self.active_db, edb_layout.CellType.CIRCUIT_CELL, self.cellname)
         if self._active_cell:
             self._init_objects()
             return True
@@ -865,7 +865,7 @@ class EdbGrpc(EdbInit):
         -------
         ``Geometry.Point3DData``.
         """
-        return geometry.Point3DData(utility.Value(x), utility.Value(y), utility.Value(z))
+        return edb_geometry.Point3DData(edb_utility.Value(x), edb_utility.Value(y), edb_utility.Value(z))
 
     @pyedb_function_handler()
     def point_data(self, x, y=None):
@@ -884,9 +884,9 @@ class EdbGrpc(EdbInit):
         ``Geometry.PointData``.
         """
         if y is None:
-            return geometry.PointData(utility.Value(x))
+            return edb_geometry.PointData(edb_utility.Value(x))
         else:
-            return geometry.PointData(utility.Value(x), utility.Value(y))
+            return edb_geometry.PointData(edb_utility.Value(x), edb_utility.Value(y))
 
     @pyedb_function_handler()
     def _is_file_existing_and_released(self, filename):
@@ -1129,7 +1129,7 @@ class EdbGrpc(EdbInit):
         reference_list=[],
         include_pingroups=True,
     ):
-        if extent_type in ["Conforming", geometry.ExtentType.CONFORMING, 1]:
+        if extent_type in ["Conforming", edb_geometry.ExtentType.CONFORMING, 1]:
             if use_pyaedt_extent:
                 _poly = self._create_conformal(
                     net_signals,
@@ -1144,15 +1144,15 @@ class EdbGrpc(EdbInit):
             else:
                 _poly = self.layout.expanded_extent(
                     net_signals,
-                    geometry.ExtentType.CONFORMING,
+                    edb_geometry.ExtentType.CONFORMING,
                     expansion_size,
                     False,
                     use_round_corner,
                     1,
                 )
-        elif extent_type in ["Bounding", geometry.ExtentType.BOUNDING_BOX, 0]:
+        elif extent_type in ["Bounding", edb_geometry.ExtentType.BOUNDING_BOX, 0]:
             _poly = self.layout.expanded_extent(
-                net_signals, geometry.ExtentType.BOUNDING_BOX, expansion_size, False, use_round_corner, 1
+                net_signals, edb_geometry.ExtentType.BOUNDING_BOX, expansion_size, False, use_round_corner, 1
             )
         else:
             if use_pyaedt_extent:
@@ -1169,14 +1169,14 @@ class EdbGrpc(EdbInit):
             else:
                 _poly = self.layout.expanded_extent(
                     net_signals,
-                    geometry.ExtentType.CONFORMING,
+                    edb_geometry.ExtentType.CONFORMING,
                     expansion_size,
                     False,
                     use_round_corner,
                     1,
                 )
                 _poly_list = [_poly]
-                _poly = geometry.PolygonData.convex_hull(_poly_list)
+                _poly = edb_geometry.PolygonData.convex_hull(_poly_list)
         return _poly
 
     @pyedb_function_handler()
@@ -1204,7 +1204,7 @@ class EdbGrpc(EdbInit):
                     _polys.extend(list(obj_data))
         if smart_cutout:
             _polys.extend(self._smart_cut(net_signals, reference_list, include_pingroups))
-        _poly_unite = geometry.PolygonData.unite(_polys)
+        _poly_unite = edb_geometry.PolygonData.unite(_polys)
         if len(_poly_unite) == 1:
             return _poly_unite[0]
         else:
@@ -1229,15 +1229,12 @@ class EdbGrpc(EdbInit):
                     if pin.pingroups:
                         locations.append(pin.position)
         for point in locations:
-            pointA = self.edb_api.geometry.point_data(
-                self.edb_value(point[0] - 1e-12), self.edb_value(point[1] - 1e-12)
-            )
-            pointB = self.edb_api.geometry.point_data(
-                self.edb_value(point[0] + 1e-12), self.edb_value(point[1] + 1e-12)
-            )
-
+            pointA = edb_geometry.PointData(edb_utility.Value(point[0] - 1e-12),
+                                            edb_utility.Value(point[1] - 1e-12))
+            pointB = edb_geometry.PointData(edb_utility.Value(point[0] + 1e-12),
+                                            edb_utility.Value(point[1] + 1e-12))
             points = (pointA, pointB)
-            _polys.append(self.edb_api.geometry.polygon_data.create_from_bbox(points))
+            _polys.append(edb_geometry.PolygonData.create_from_bbox(points))
         for cname, c in self.components.instances.items():
             if (
                 set(net_signals).intersection(c.nets)
@@ -1274,7 +1271,7 @@ class EdbGrpc(EdbInit):
                     _polys.append(prim.primitive_object.polygon_data)
         if smart_cut:
             _polys.extend(self._smart_cut(net_signals, reference_list, include_pingroups))
-        _poly = geometry.PolygonData.convex_hull(_polys)
+        _poly = edb_geometry.PolygonData.convex_hull(_polys)
         _poly = _poly.expand(offset=expansion_size,
                              tol=tolerance,
                              round_corner=round_corner,
@@ -1528,7 +1525,7 @@ class EdbGrpc(EdbInit):
         check_terminals=False,
         include_pingroups=True,
     ):
-        expansion_size = utility.Value(expansion_size).value
+        expansion_size = edb_utility.Value(expansion_size).value
 
         # validate nets in layout
         net_signals = [net for net in self.layout.nets if net.name in signal_list]
@@ -1716,7 +1713,7 @@ class EdbGrpc(EdbInit):
         if output_aedb_path:
             self.save_edb_as(output_aedb_path)
         self.logger.info("Cutout Multithread started.")
-        expansion_size = self.edb_value(expansion_size).ToDouble()
+        expansion_size = edb_utility.Value(expansion_size).value
 
         timer_start = self.logger.reset_timer()
         if custom_extent:
@@ -1792,7 +1789,7 @@ class EdbGrpc(EdbInit):
             return False
         self.logger.info_timer("Expanded Net Polygon Creation")
         self.logger.reset_timer()
-        _poly_list = convert_py_list_to_net_list([_poly])
+        _poly_list = [_poly]
         prims_to_delete = []
         poly_to_create = []
         pins_to_delete = []
@@ -1800,14 +1797,14 @@ class EdbGrpc(EdbInit):
         def intersect(poly1, poly2):
             if not isinstance(poly2, list):
                 poly2 = [poly2]
-            return list(poly1.Intersect(convert_py_list_to_net_list(poly1), convert_py_list_to_net_list(poly2)))
+            return list(poly1.intersect([poly1], [poly2]))
 
         def subtract(poly, voids):
-            return poly.Subtract(convert_py_list_to_net_list(poly), convert_py_list_to_net_list(voids))
+            return poly.subtract([poly], [voids])
 
         def clean_prim(prim_1):  # pragma: no cover
             pdata = prim_1.polygon_data.edb_api
-            int_data = _poly.GetIntersectionType(pdata)
+            int_data = _poly.get_intersection_type(pdata)
             if int_data == 2:
                 return
             elif int_data == 0:
@@ -1992,7 +1989,7 @@ class EdbGrpc(EdbInit):
         """
         temp_edb_path = self.edbpath[:-5] + "_temp_aedb.aedb"
         shutil.copytree(self.edbpath, temp_edb_path)
-        temp_edb = Edb(temp_edb_path)
+        temp_edb = EdbGrpc(temp_edb_path)
         for via in list(temp_edb.padstacks.instances.values()):
             via.pin.Delete()
         if netlist:
@@ -2115,7 +2112,7 @@ class EdbGrpc(EdbInit):
             if polygonData.GetIntersectionType(circle.primitive_object.GetPolygonData()) >= 3:
                 voids_to_add.append(circle)
 
-        _netsClip = convert_py_list_to_net_list(_ref_nets)
+        _netsClip = [_ref_nets]
         # net_signals = convert_py_list_to_net_list([], type(_ref_nets[0]))
 
         # Create new cutout cell/design
@@ -3313,3 +3310,89 @@ class EdbGrpc(EdbInit):
                                             ):
                                                 connected_ports_list.append((port1_connexion, port2_connexion))
             return connected_ports_list
+
+    @pyedb_function_handler
+    def create_voltage_source(self, terminal, ref_terminal):
+        """Create a voltage source.
+
+        Parameters
+        ----------
+        terminal : :class:`pyedb.grpc.edb_core.edb_data.terminals.EdgeTerminal`, \
+            :class:`pyedb.grpc.edb_core.edb_data.terminals.PadstackInstanceTerminal`, \
+            :class:`pyedb.grpc.edb_core.edb_data.terminals.PointTerminal`, \
+            :class:`pyedb.grpc.edb_core.edb_data.terminals.PinGroupTerminal`
+            Positive terminal of the port.
+        ref_terminal : class:`pyedb.grpc.edb_core.edb_data.terminals.EdgeTerminal`, \
+            :class:`pyedb.grpc.edb_core.edb_data.terminals.PadstackInstanceTerminal`, \
+            :class:`pyedb.grpc.edb_core.edb_data.terminals.PointTerminal`, \
+            :class:`pyedb.grpc.edb_core.edb_data.terminals.PinGroupTerminal`
+            Negative terminal of the source.
+
+        Returns
+        -------
+        class:`grpc.edb_core.edb_data.ports.ExcitationSources`
+        """
+        terminal._edb_object.boundary_type = terminal.BoundaryType.VOLTAGE_SOURCE
+        ref_terminal._edb_object.boundary_type = terminal.BoundaryType.VOLTAGE_SOURCE
+        terminal._edb_object.ref_terminal = ref_terminal
+        return self.sources[terminal.name]
+
+    @pyedb_function_handler
+    def create_voltage_probe(self, terminal, ref_terminal):
+        """Create a voltage probe.
+
+        Parameters
+        ----------
+        terminal : :class:`pyedb.dotnet.edb_core.edb_data.terminals.EdgeTerminal`,
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PointTerminal`,
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PinGroupTerminal`,
+            Positive terminal of the port.
+        ref_terminal : :class:`pyedb.dotnet.edb_core.edb_data.terminals.EdgeTerminal`,
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PointTerminal`,
+            :class:`pyedb.dotnet.edb_core.edb_data.terminals.PinGroupTerminal`,
+            Negative terminal of the probe.
+
+        Returns
+        -------
+        pyedb.dotnet.edb_core.edb_data.terminals.Terminal
+        """
+        term = Terminal(self, terminal._edb_object)
+        term.boundary_type = edb_terminal.BoundaryType.VOLTAGE_PROBE
+
+        ref_term = Terminal(self, ref_terminal._edb_object)
+        ref_term.boundary_type = edb_terminal.BoundaryType.VOLTAGE_PROBE
+
+        term.ref_terminal = ref_terminal
+        return self.probes[term.name]
+
+    @pyedb_function_handler
+    def create_current_source(self, terminal, ref_terminal):
+        """Create a current source.
+
+        Parameters
+        ----------
+        terminal : :class:`legacy.edb_core.edb_data.terminals.EdgeTerminal`,
+            :class:`legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+            :class:`legacy.edb_core.edb_data.terminals.PointTerminal`,
+            :class:`legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+            Positive terminal of the port.
+        ref_terminal : class:`legacy.edb_core.edb_data.terminals.EdgeTerminal`,
+            :class:`legacy.edb_core.edb_data.terminals.PadstackInstanceTerminal`,
+            :class:`legacy.edb_core.edb_data.terminals.PointTerminal`,
+            :class:`legacy.edb_core.edb_data.terminals.PinGroupTerminal`,
+            Negative terminal of the source.
+
+        Returns
+        -------
+        :class:`legacy.edb_core.edb_data.ports.ExcitationSources`
+        """
+        term = Terminal(self, terminal._edb_object)
+        term.boundary_type = edb_terminal.BoundaryType.CURRENT_SOURCE
+
+        ref_term = Terminal(self, ref_terminal._edb_object)
+        ref_term.boundary_type = edb_terminal.BoundaryType.CURRENT_SOURCE
+
+        term.ref_terminal = ref_terminal
+        return self.sources[term.name]

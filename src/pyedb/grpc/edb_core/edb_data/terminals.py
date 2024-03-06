@@ -1,6 +1,6 @@
 import re
 
-from pyedb.generic.general_methods import  pyedb_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.grpc.edb_core.edb_data.connectable import Connectable
 #from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.grpc.edb_core.edb_data.primitives_data import cast
@@ -10,6 +10,7 @@ from ansys.edb.core.utility.value import Value
 from ansys.edb.core.terminal.terminals import TerminalType, EdgeType
 from ansys.edb.core.geometry.point_data import PointData
 from ansys.edb.core.terminal.terminals import BundleTerminal
+from ansys.edb.core.terminal.terminals import PadstackInstanceTerminal as GrpcPadstackInstanceTerminal
 
 class Terminal(Connectable):
     def __init__(self, pedb, edb_object):
@@ -144,6 +145,10 @@ class Terminal(Connectable):
         """
         return self._edb_object.boundary_type
 
+    @boundary_type.setter
+    def boundary_type(self, value):
+        self._edb_object.boundary_type = value
+
     @property
     def impedance(self):
         """Impedance of the port."""
@@ -152,6 +157,23 @@ class Terminal(Connectable):
     @impedance.setter
     def impedance(self, value):
         self._edb_object.impedance = Value(value)
+
+    @property
+    def is_reference_terminal(self):
+        """Whether it is a reference terminal."""
+        return self._edb_object.is_reference_terminal
+
+    @property
+    def ref_terminal(self):
+        """Get reference terminal."""
+
+        terminal = Terminal(self._pedb, self._edb_object.reference_terminal)
+        if not terminal.is_null:
+            return terminal
+
+    @ref_terminal.setter
+    def ref_terminal(self, value):
+        self._edb_object.reference_terminal = value._edb_object
 
     @property
     def reference_object(self):  # pragma : no cover
@@ -452,8 +474,13 @@ class PadstackInstanceTerminal(Terminal):
 
         layer_obj = self._pedb.stackup.signal_layers[layer]
 
-        terminal = PadstackInstanceTerminal.create(
-            self._layout, self.net.net_object, name, padstack_instance._edb_object, layer_obj._edb_layer, isRef=is_ref
+        terminal = GrpcPadstackInstanceTerminal.create(
+            layout=self._layout,
+            net=self.net.net_object,
+            padstack_instance=padstack_instance._edb_object,
+            name=name,
+            layer=layer_obj._edb_layer,
+            is_ref=is_ref
         )
         terminal = PadstackInstanceTerminal(self._pedb, terminal)
 

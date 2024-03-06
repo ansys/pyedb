@@ -1,8 +1,8 @@
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.generic.constants import NodeType
 from pyedb.generic.constants import SourceType
-import ansys.edb.core.terminal as terminal
-import ansys.edb.core.utility as utility
+import ansys.edb.core.terminal as edb_terminal
+import ansys.edb.core.utility as edb_utility
 #from ansys.edb.terminal.terminals import BoundaryType
 #from ansys.edb.utility.value import Value
 
@@ -286,7 +286,7 @@ class PinGroup(object):
                 pin_group_net = pin_group_net[0]
             else:
                 return False
-            return terminal.PinGroupTerminal.create(
+            return edb_terminal.PinGroupTerminal.create(
                 layout=self._active_layout,
                 net=pin_group_net,
                 name=self.name,
@@ -300,34 +300,34 @@ class PinGroup(object):
     def create_current_source_terminal(self, magnitude=1, phase=0):
         edb_terminal = self._create_pin_group_terminal()
         if not edb_terminal.is_null:
-            edb_terminal.boundary_type = terminal.BoundaryType.CURRENT_SOURCE
-            edb_terminal.source_amplitude = utility.Value(magnitude)
-            edb_terminal.source_phase = utility.Value(phase)
+            edb_terminal.boundary_type = edb_terminal.boundary_type.CURRENT_SOURCE
+            edb_terminal.source_amplitude = edb_utility.Value(magnitude)
+            edb_terminal.source_phase = edb_utility.Value(phase)
             return edb_terminal
         return False
 
     @pyedb_function_handler()
     def create_voltage_source_terminal(self, magnitude=1, phase=0, impedance=0.001):
         edb_terminal = self._create_pin_group_terminal()
-        edb_terminal.boundary_type = terminal.BoundaryType.VOLTAGE_SOURCE
-        edb_terminal.source_amplitude = utility.Value(magnitude)
-        edb_terminal.source_phase = utility.Value(phase)
-        edb_terminal.impedance = utility.Value(impedance)
+        edb_terminal.boundary_type = edb_terminal.boundary_type.VOLTAGE_SOURCE
+        edb_terminal.source_amplitude = edb_utility.Value(magnitude)
+        edb_terminal.source_phase = edb_utility.Value(phase)
+        edb_terminal.impedance = edb_utility.Value(impedance)
         return edb_terminal
 
     @pyedb_function_handler()
     def create_voltage_probe_terminal(self, impedance=1000000):
         edb_terminal = self._create_pin_group_terminal()
-        edb_terminal.boundary_type = terminal.BoundaryType.VOLTAGE_PROBE
-        edb_terminal.impedance = utility.Value(impedance)
+        edb_terminal.boundary_type = edb_terminal.boundary_type.VOLTAGE_PROBE
+        edb_terminal.impedance = edb_utility.Value(impedance)
         return edb_terminal
 
     @pyedb_function_handler()
     def create_port_terminal(self, impedance=50):
         edb_terminal = self._create_pin_group_terminal()
         if not edb_terminal.is_null:
-            edb_terminal.boundary_type = terminal.BoundaryType.PORT
-            edb_terminal.impedance = utility.Value(impedance)
+            edb_terminal.boundary_type = edb_terminal.boundary_type.PORT
+            edb_terminal.impedance = edb_utility.Value(impedance)
             edb_terminal.is_circuit_port = True
             return edb_terminal
         return False
