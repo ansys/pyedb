@@ -64,7 +64,7 @@ Run PyEDB with gRPC
 
 `gRPC <https://grpc.io/>`_ is a modern open source, high-performance RPC (remote procedure call)
 framework that can run in any environment and supports client/server remote calls.
-Starting from 2024 R1, the EDB-Core API with a gRPC interface is available as Beta. Both .NET and gRPC interfaces will be maintained during the Beta phase. Once gRPC is officially released PyEDB will use it by default and .NET version will be set as legacy.
+Starting from 2024 R1, the EDB-Core API with a gRPC interface is available as Beta. During the Beta phase, both .NET and gRPC interfaces are set to be maintained. Once gRPC is officially released PyEDB will use it by default and .NET version will be set as legacy.
 
 .. list-table:: *gRPC compatibility:*
    :widths: 65 65 65
