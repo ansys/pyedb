@@ -327,5 +327,33 @@ class TestClass:
 
 
     def test_duplicate(self):
-        pass
-
+        import pyedb
+        import os
+        from pyedb.dotnet.edb import Edb
+        edbapp = Edb()
+        edbapp["$H"] = "0.65mil"
+        edbapp["$S_D"] = "10.65mil"
+        edbapp["$T"] = "21.3mil"
+        edbapp["$Antipad_R"] = "24mil"
+        edbapp["Via_S"] = "40mil"
+        edbapp.stackup.add_layer("bot_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d1", layer_type="dielectric", thickness="$S_D", material="FR4_epoxy")
+        edbapp.stackup.add_layer("trace2", thickness="$H")
+        edbapp.stackup.add_layer("d2", layer_type="dielectric", thickness="$T-$S_D", material="FR4_epoxy")
+        edbapp.stackup.add_layer("mid_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d3", layer_type="dielectric", thickness="13mil", material="FR4_epoxy")
+        edbapp.stackup.add_layer("top_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d4", layer_type="dielectric", thickness="13mil", material="FR4_epoxy")
+        edbapp.stackup.add_layer("trace1", thickness="$H")
+        r1 = edbapp.modeler.create_rectangle(center_point=("0,0"), width="200mil", height="200mil",layer_name="top_gnd", representation_type="CenterWidthHeight",net_name="r1")
+        r2 = edbapp.modeler.create_rectangle(center_point=("0,0"), width="40mil", height="$Antipad_R*2",layer_name="top_gnd", representation_type="CenterWidthHeight",net_name="r2")
+        c1 = edbapp.modeler.create_circle(layer_name="top_gnd", x="Via_S/2", y="0mil", radius="$Antipad_R",net_name="c1")
+        c2 = edbapp.modeler.create_circle(layer_name="top_gnd", x="-Via_S/2", y="0mil", radius="$Antipad_R",net_name="c2")
+        r = [r2, c1, c2]
+        r1.subtract(r)
+        lay_list = ["bot_gnd", "mid_gnd"]
+        edbapp.modeler.primitives[0].clone()
+        edbapp.modeler.primitives[0].duplcate_across_layers(lay_list)
+        edbapp.modeler.primitives[0]
+        edbapp.modeler.primitives_by_layer
+        edbapp.close()
