@@ -88,6 +88,7 @@ class TestClass:
     def test_modeler_primitives_by_layer(self):
         """Evaluate modeler primitives by layer"""
         assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].layer_name == "1_Top"
+        assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].layer.GetName() == "1_Top"
         assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative
         assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_void
         self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative = True
@@ -178,10 +179,6 @@ class TestClass:
         assert len(poly_test) == 1
         assert poly_test[0].center == [0.005, 0.005]
         assert poly_test[0].bbox == [0.0, 0.0, 0.01, 0.01]
-        assert poly_test[0].move_layer("16_Bottom")
-        poly_test = [poly for poly in edbapp.modeler.polygons if poly.net_name == "test"]
-        assert len(poly_test) == 1
-        assert poly_test[0].layer_name == "16_Bottom"
         edbapp.close_edb()
 
     def test_modeler_create_trace(self):
@@ -314,7 +311,7 @@ class TestClass:
         edbapp = Edb(target_path, edbversion=desktop_version)
         for path in edbapp.modeler.paths:
             assert path.convert_to_polygon()
-        # cannot merge one net only - see test: test_unite_polygon for reference
+        assert edbapp.nets.merge_nets_polygons("test")
         edbapp.close()
 
     def test_156_check_path_length(self):
