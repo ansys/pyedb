@@ -32,8 +32,6 @@ is_windows = not is_linux
 _pythonver = sys.version_info[0]
 inside_desktop = True if is_ironpython and "4.0.30319.42000" in sys.version else False
 
-if not is_ironpython:
-    import psutil
 
 try:
     import xml.etree.cElementTree as ET
@@ -973,117 +971,6 @@ def number_aware_string_key(s):  # pragma: no cover
             i = j
     return tuple(result)
 
-
-@pyedb_function_handler()
-def active_sessions(version=None, student_version=False, non_graphical=False):  # pragma: no cover
-    """Get information for the active AEDT sessions.
-
-    Parameters
-    ----------
-    version : str, optional
-        Version to check. The default is ``None``, in which case all versions are checked.
-        When specifying a version, you can use a three-digit format like ``"222"`` or a
-        five-digit format like ``"2022.2"``.
-    student_version : bool, optional
-    non_graphical : bool, optional
-
-
-    Returns
-    -------
-    dict
-        {AEDT PID: port}
-        If the PID corresponds to a COM session port is set to -1
-    """
-    return_dict = {}
-    if student_version:
-        keys = ["ansysedtsv.exe", "ansysedtsv"]
-    else:
-        keys = ["ansysedt.exe", "ansysedt"]
-    if version and "." in version:
-        version = version[-4:].replace(".", "")
-    if version and version < "221":
-        version = version[:2] + "." + version[2]
-    for p in psutil.process_iter():
-        try:
-            if p.name() in keys:
-                cmd = p.cmdline()
-                if non_graphical and "-ng" in cmd or not non_graphical:
-                    if not version or (version and version in cmd[0]):
-                        if "-grpcsrv" in cmd:
-                            if not version or (version and version in cmd[0]):
-                                try:
-                                    return_dict[p.pid] = int(cmd[cmd.index("-grpcsrv") + 1])
-                                except (IndexError, ValueError):
-                                    # default desktop grpc port.
-                                    return_dict[p.pid] = 50051
-                        else:
-                            return_dict[p.pid] = -1
-                            for i in psutil.net_connections():
-                                if i.pid == p.pid and (i.laddr.port > 50050 and i.laddr.port < 50200):
-                                    return_dict[p.pid] = i.laddr.port
-                                    break
-        except:
-            pass
-    return return_dict
-
-
-@pyedb_function_handler()
-def com_active_sessions(version=None, student_version=False, non_graphical=False):  # pragma: no cover
-    """Get information for the active COM AEDT sessions.
-
-    Parameters
-    ----------
-    version : str, optional
-        Version to check. The default is ``None``, in which case all versions are checked.
-        When specifying a version, you can use a three-digit format like ``"222"`` or a
-        five-digit format like ``"2022.2"``.
-    student_version : bool, optional
-        Whether to check for student version sessions. The default is ``False``.
-    non_graphical : bool, optional
-        Whether to check only for active non-graphical sessions. The default is ``False``.
-
-    Returns
-    -------
-    List
-        List of AEDT process IDs.
-    """
-
-    all_sessions = active_sessions(version, student_version, non_graphical)
-
-    return_list = []
-    for s, p in all_sessions.items():
-        if p == -1:
-            return_list.append(s)
-    return return_list
-
-
-@pyedb_function_handler()
-def grpc_active_sessions(version=None, student_version=False, non_graphical=False):  # pragma: no cover
-    """Get information for the active gRPC AEDT sessions.
-
-    Parameters
-    ----------
-    version : str, optional
-        Version to check. The default is ``None``, in which case all versions are checked.
-        When specifying a version, you can use a three-digit format like ``"222"`` or a
-        five-digit format like ``"2022.2"``.
-    student_version : bool, optional
-        Whether to check for student version sessions. The default is ``False``.
-    non_graphical : bool, optional
-        Whether to check only for active non-graphical sessions. The default is ``False``.
-
-    Returns
-    -------
-    List
-        List of gRPC ports.
-    """
-    all_sessions = active_sessions(version, student_version, non_graphical)
-
-    return_list = []
-    for _, p in all_sessions.items():
-        if p > -1:
-            return_list.append(p)
-    return return_list
 
 
 @pyedb_function_handler()
