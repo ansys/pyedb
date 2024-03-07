@@ -327,7 +327,6 @@ class TestClass:
 
 
     def test_duplicate(self):
-        from pyedb.dotnet.edb import Edb
         edbapp = Edb()
         edbapp["$H"] = "0.65mil"
         assert edbapp["$H"].value_string == "0.65mil"
