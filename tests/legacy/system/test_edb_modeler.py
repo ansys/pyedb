@@ -323,3 +323,9 @@ class TestClass:
             net5_length += path.length
         assert net5_length == 0.026285623899038543
         edbapp.close_edb()
+
+
+
+    def test_duplicate(self):
+        pass
+
