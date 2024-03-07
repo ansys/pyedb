@@ -1020,15 +1020,19 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
             ``True`` when successful, ``False`` when failed.
         """
         for lay in layers:
-            dupli_poly = self._app.edb_api.cell.primitive.polygon.create(
-                self._app.active_layout, lay, self.net, self.polygon_data.edb_api
-            )
-            if dupli_poly:
-                for void in self.voids:
-                    dupli_void = self._app.edb_api.cell.primitive.polygon.create(
-                        self._app.active_layout, lay, self.net, void.polygon_data.edb_api
-                    )
-                    dupli_poly.prim_obj.AddVoid(dupli_void.prim_obj)
+            if lay in self._pedb.stackup.layers:
+                dupli_poly = self._app.edb_api.cell.primitive.polygon.create(
+                    self._app.active_layout, lay, self.net, self.polygon_data.edb_api
+                )
+                if dupli_poly:
+                    for void in self.voids:
+                        dupli_void = self._app.edb_api.cell.primitive.polygon.create(
+                            self._app.active_layout, lay, self.net, void.polygon_data.edb_api
+                        )
+                        dupli_poly.prim_obj.AddVoid(dupli_void.prim_obj)
+            else:
+                return False
+        return True
 
     @pyedb_function_handler
     def move(self, vector):
