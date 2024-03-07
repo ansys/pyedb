@@ -331,11 +331,10 @@ class TestClass:
 
 
     def test_duplicate(self):
-        import pyedb
-        import os
         from pyedb.dotnet.edb import Edb
         edbapp = Edb()
         edbapp["$H"] = "0.65mil"
+        assert edbapp["$H"].value_string == "0.65mil"
         edbapp["$S_D"] = "10.65mil"
         edbapp["$T"] = "21.3mil"
         edbapp["$Antipad_R"] = "24mil"
@@ -352,11 +351,15 @@ class TestClass:
         r1 = edbapp.modeler.create_rectangle(center_point=("0,0"), width="200mil", height="200mil", layer_name="top_gnd", representation_type="CenterWidthHeight", net_name="r1")
         r2 = edbapp.modeler.create_rectangle(center_point=("0,0"), width="40mil", height="$Antipad_R*2", layer_name="top_gnd", representation_type="CenterWidthHeight", net_name="r2")
         c1 = edbapp.modeler.create_circle(layer_name="top_gnd", x="Via_S/2", y="0mil", radius="$Antipad_R", net_name="c1")
+        assert c1
         c2 = edbapp.modeler.create_circle(layer_name="top_gnd", x="-Via_S/2", y="0mil", radius="$Antipad_R", net_name="c2")
+        assert c2
         r = [r2, c1, c2]
-        r1.subtract(r)
+        assert r1.subtract(r)
         lay_list = ["bot_gnd", "mid_gnd"]
         edbapp.modeler.primitives_by_layer
-        edbapp.modeler.primitives[0].duplicate_across_layers(lay_list)
+        assert edbapp.modeler.primitives[0].duplicate_across_layers(lay_list)
+        if edbapp.modeler.primitives_by_layer["mid_gnd"]: print("True")
+        if edbapp.modeler.primitives_by_layer["bot_gnd"]: print("True")
         edbapp.modeler.primitives_by_layer
         edbapp.close()
