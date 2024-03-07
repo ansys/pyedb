@@ -517,3 +517,35 @@ class TestClass:
         assert self.edbapp.components["C200"].create_package_def()
         assert not self.edbapp.components["C200"].create_package_def()
         assert self.edbapp.components["C200"].package_def.name == 'C200_CAPC3216X180X55ML20T25'
+
+    def test_solder_ball_getter_setter(self):
+        cmp = self.edbapp.components["U1"]
+        assert cmp.solder_ball_height == 0.0
+        cmp.solder_ball_height = "100um"
+        assert cmp.solder_ball_height == 100e-6
+        assert cmp.solder_ball_shape
+        cmp.solder_ball_shape = "Cylinder"
+        assert cmp.solder_ball_shape == "Cylinder"
+        cmp.solder_ball_shape = 0
+        assert cmp.solder_ball_shape == "None"
+        cmp.solder_ball_shape = "Cylinder"
+        cmp.solder_ball_shape = 1
+        assert cmp.solder_ball_shape == "Cylinder"
+        cmp.solder_ball_shape = "Spheroid"
+        assert cmp.solder_ball_shape == "Spheroid"
+        cmp.solder_ball_shape = "Cylinder"
+        cmp.solder_ball_shape = 2
+        assert cmp.solder_ball_shape == "Spheroid"
+        assert cmp.solder_ball_diameter == (0.0, 0.0)
+        cmp.solder_ball_diameter = "200um"
+        diam1, diam2 = cmp.solder_ball_diameter
+        assert round(diam1, 6) == 200e-6
+        assert round(diam2, 6) == 200e-6
+        cmp.solder_ball_diameter = ("100um", "100um")
+        diam1, diam2 = cmp.solder_ball_diameter
+        assert round(diam1, 6) == 100e-6
+        assert round(diam2, 6) == 100e-6
+
+
+
+
