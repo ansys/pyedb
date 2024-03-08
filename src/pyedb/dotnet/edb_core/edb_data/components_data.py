@@ -368,10 +368,10 @@ class EDBComponent(object):
             elif len(value) == 1:
                 val1 = self._get_edb_value(value[0])
                 val2 = self._get_edb_value(value[0])
-        if isinstance(value, str):
+        elif isinstance(value, str):
             val1 = self._get_edb_value(value)
             val2 = self._get_edb_value(value)
-        if val1 and val2:
+        elif val1 and val2:
             cmp_property = self.component_property
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
             solder_ball_prop.SetDiameter(val1, val2)
