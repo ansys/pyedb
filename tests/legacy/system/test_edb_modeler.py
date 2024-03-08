@@ -345,6 +345,7 @@ class TestClass:
         edbapp.stackup.add_layer("trace1", thickness="$H")
         r1 = edbapp.modeler.create_rectangle(center_point=("0,0"), width="200mil", height="200mil", layer_name="top_gnd", representation_type="CenterWidthHeight", net_name="r1")
         r2 = edbapp.modeler.create_rectangle(center_point=("0,0"), width="40mil", height="$Antipad_R*2", layer_name="top_gnd", representation_type="CenterWidthHeight", net_name="r2")
+        assert r2
         assert r1.subtract(r2)
         lay_list = ["bot_gnd", "mid_gnd"]
         assert edbapp.modeler.primitives[0].duplicate_across_layers(lay_list)
