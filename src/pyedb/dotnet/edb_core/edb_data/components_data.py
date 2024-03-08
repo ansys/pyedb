@@ -304,14 +304,13 @@ class EDBComponent(object):
 
     @solder_ball_height.setter
     def solder_ball_height(self, value):
-        if "GetSolderBallProperty" in dir(self.component_property):
-            if value:
-                sball_height = round(self._edb.utility.Value(value).ToDouble(), 9)
-                cmp_property = self.component_property
-                solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
-                solder_ball_prop.SetHeight(self._get_edb_value(sball_height))
-                cmp_property.SetSolderBallProperty(solder_ball_prop)
-                self.component_property = cmp_property
+        if "GetSolderBallProperty" in dir(self.component_property) and value:
+            sball_height = round(self._edb.utility.Value(value).ToDouble(), 9)
+            cmp_property = self.component_property
+            solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
+            solder_ball_prop.SetHeight(self._get_edb_value(sball_height))
+            cmp_property.SetSolderBallProperty(solder_ball_prop)
+            self.component_property = cmp_property
 
     @property
     def solder_ball_shape(self):
