@@ -1005,35 +1005,6 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
             return cloned_poly
         return False
 
-    @pyedb_function_handler()
-    def duplicate_across_layers(self, layers):
-        """Duplicate across layer a primitive object.
-
-        Parameters:
-
-        layer: list
-            list of str, with layer names
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-        """
-        for lay in layers:
-            if lay in self._pedb.stackup.layers:
-                dupli_poly = self._app.edb_api.cell.primitive.polygon.create(
-                    self._app.active_layout, lay, self.net, self.polygon_data.edb_api
-                )
-                if dupli_poly:
-                    for void in self.voids:
-                        dupli_void = self._app.edb_api.cell.primitive.polygon.create(
-                            self._app.active_layout, lay, self.net, void.polygon_data.edb_api
-                        )
-                        dupli_poly.prim_obj.AddVoid(dupli_void.prim_obj)
-            else:
-                return False
-        return True
-
     @pyedb_function_handler
     def move(self, vector):
         """Move polygon along a vector.
