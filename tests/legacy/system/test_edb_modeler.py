@@ -3,6 +3,7 @@
 
 import os
 import pytest
+
 from pyedb.dotnet.edb import Edb
 from pyedb.generic.settings import settings
 from tests.conftest import desktop_version, local_path
