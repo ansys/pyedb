@@ -3,7 +3,6 @@
 
 import os
 import pytest
-
 from pyedb.dotnet.edb import Edb
 from pyedb.generic.settings import settings
 from tests.conftest import desktop_version, local_path
@@ -329,20 +328,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layer_name(self):
-        from pyedb.dotnet.edb import Edb
-        edbapp = Edb()
-        edbapp["$H"] = "0.65mil"
-        assert edbapp["$H"].value_string == "0.65mil"
-        edbapp.stackup.add_layer("bot_gnd", thickness="0.65mil")
-        edbapp.stackup.add_layer("d1", layer_type="dielectric", thickness="$S_D", material="FR4_epoxy")
-        edbapp.stackup.add_layer("trace2", thickness="$H")
-        edbapp.stackup.add_layer("d2", layer_type="dielectric", thickness="$T-$S_D", material="FR4_epoxy")
-        edbapp.stackup.add_layer("mid_gnd", thickness="0.65mil")
-        edbapp.stackup.add_layer("d3", layer_type="dielectric", thickness="13mil", material="FR4_epoxy")
-        edbapp.stackup.add_layer("top_gnd", thickness="0.65mil")
-        edbapp.stackup.add_layer("d4", layer_type="dielectric", thickness="13mil", material="FR4_epoxy")
-        edbapp.stackup.add_layer("trace1", thickness="$H")
-        r1 = edbapp.modeler.create_rectangle(center_point=("0,0"), width="200mil", height="200mil", layer_name="top_gnd", representation_type="CenterWidthHeight", net_name="r1")
-        r1.layer_name = "mid_gnd"
-        r1.layer_name
-        edbapp.close()
+        rect = self.edbapp.modeler.create_rectangle("1_Top", "SIG1", ["0", "0"], ["2mm", "3mm"])
+        assert rect
+        rect.layer_name = "GND"
+        assert rect.layer_name == "GND"
