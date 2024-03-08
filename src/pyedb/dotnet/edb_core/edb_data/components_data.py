@@ -337,9 +337,9 @@ class EDBComponent(object):
         if isinstance(value, int):
             if value == 0:
                 shape = self._edb.definition.SolderballShape.NoSolderball
-            if value == 1:
+            elif value == 1:
                 shape = self._edb.definition.SolderballShape.Cylinder
-            if value == 2:
+            elif value == 2:
                 shape = self._edb.definition.SolderballShape.Spheroid
         if shape:
             cmp_property = self.component_property
