@@ -1011,7 +1011,7 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
 
         Parameters:
 
-        layer: list
+        layers: list
             list of str, with layer names
 
         Returns
@@ -1021,15 +1021,15 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
         """
         for layer in layers:
             if layer in self._pedb.stackup.layers:
-                dupli_poly = self._app.edb_api.cell.primitive.polygon.create(
+                duplicate_polygon = self._app.edb_api.cell.primitive.polygon.create(
                     self._app.active_layout, layer, self.net, self.polygon_data.edb_api
                 )
-                if dupli_poly:
+                if duplicate_polygon:
                     for void in self.voids:
-                        dupli_void = self._app.edb_api.cell.primitive.polygon.create(
+                        duplicate_void = self._app.edb_api.cell.primitive.polygon.create(
                             self._app.active_layout, layer, self.net, void.polygon_data.edb_api
                         )
-                        dupli_poly.prim_obj.AddVoid(dupli_void.prim_obj)
+                        duplicate_polygon.prim_obj.AddVoid(duplicate_void.prim_obj)
             else:
                 return False
         return True
