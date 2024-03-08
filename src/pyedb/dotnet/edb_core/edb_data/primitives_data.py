@@ -135,6 +135,8 @@ class EDBPrimitivesMain(Connectable):
         except AttributeError:  # pragma: no cover
             return None
 
+
+    @layer_name.setter
     def layer_name(self, val):
         layer_list = list(self._core_stackup.layers.keys())
         if isinstance(val, str) and val in layer_list:
