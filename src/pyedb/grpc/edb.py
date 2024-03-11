@@ -3111,7 +3111,7 @@ class EdbGrpc(EdbInit):
             name = generate_unique_name("Siwave_DC")
         if name in self.setups:
             return False
-        setup = SiwaveDCSimulationSetup(self).create(name)
+        setup = SiwaveDCSimulationSetup(self, name)
         return setup
 
     @pyedb_function_handler()

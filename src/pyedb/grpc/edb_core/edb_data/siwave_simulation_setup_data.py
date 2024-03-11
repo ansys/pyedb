@@ -2,7 +2,8 @@ from pyedb.grpc.edb_core.edb_data.hfss_simulation_setup_data import EdbFrequency
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.general_methods import pyedb_function_handler
 import ansys.edb.core.simulation_setup as simulation_setup
-#from ansys.edb.simulation_setup.simulation_setup import SIWaveSimulationSetup
+from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetupType
+from ansys.edb.core.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup
 
 
 class SiwaveAdvancedSettings(object):
@@ -705,7 +706,7 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
         if simulation_configuration:
             _get_edb_setup_info(simulation_configuration, self.edb_simulation_setup)
         #self._update_setup()
-        self.setup_type = "SIWave"
+        self.setup_type = SimulationSetupType.SI_WAVE
         SiwaveAdvancedSettings.__init__(self, self)
 
     @property
@@ -933,7 +934,7 @@ class SiwaveDCSimulationSetup(SiwaveDCAdvancedSettings, object):
     def __init__(self, edb, name=None, edb_siwave_sim_setup=None):
         self._edb = edb
         self._mesh_operations = {}
-        self._edb_sim_setup_info = SiwaveDCSimulationSetup()
+        self._edb_sim_setup_info = simulation_setup.SIWaveSimulationSetup.create(self._edb.active_cell, name)
         if edb_siwave_sim_setup:
             _get_edb_setup_info(edb_siwave_sim_setup, self.simulation_setup)
 
@@ -942,8 +943,8 @@ class SiwaveDCSimulationSetup(SiwaveDCAdvancedSettings, object):
                 self._edb_sim_setup_info.name = generate_unique_name("siwave")
             else:
                 self._edb_sim_setup_info.name = name
-            self._update_setup()
-        self.setup_type = "kSIWaveDCIR"
+            #self._update_setup()
+        self.setup_type = SimulationSetupType.SI_WAVE_DCIR
 
         SiwaveDCAdvancedSettings.__init__(self, self)
 
