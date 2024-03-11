@@ -304,14 +304,13 @@ class EDBComponent(object):
 
     @solder_ball_height.setter
     def solder_ball_height(self, value):
-        if "GetSolderBallProperty" in dir(self.component_property):
-            if value:
-                sball_height = round(self._edb.utility.Value(value).ToDouble(), 9)
-                cmp_property = self.component_property
-                solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
-                solder_ball_prop.SetHeight(self._get_edb_value(sball_height))
-                cmp_property.SetSolderBallProperty(solder_ball_prop)
-                self.component_property = cmp_property
+        if "GetSolderBallProperty" in dir(self.component_property) and value:
+            sball_height = round(self._edb.utility.Value(value).ToDouble(), 9)
+            cmp_property = self.component_property
+            solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
+            solder_ball_prop.SetHeight(self._get_edb_value(sball_height))
+            cmp_property.SetSolderBallProperty(solder_ball_prop)
+            self.component_property = cmp_property
 
     @property
     def solder_ball_shape(self):
@@ -338,9 +337,9 @@ class EDBComponent(object):
         if isinstance(value, int):
             if value == 0:
                 shape = self._edb.definition.SolderballShape.NoSolderball
-            if value == 1:
+            elif value == 1:
                 shape = self._edb.definition.SolderballShape.Cylinder
-            if value == 2:
+            elif value == 2:
                 shape = self._edb.definition.SolderballShape.Spheroid
         if shape:
             cmp_property = self.component_property
@@ -377,7 +376,7 @@ class EDBComponent(object):
         if diameter and mid_diameter:
             cmp_property = self.component_property
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
-            solder_ball_prop.SetDiameter(diameter, mid_diameter)
+            solder_ball_prop.SetDiameter(val1, val2)
             cmp_property.SetSolderBallProperty(solder_ball_prop)
             self.component_property = cmp_property
 
@@ -683,8 +682,8 @@ class EDBComponent(object):
             p
             for p in self.edbcomponent.LayoutObjs
             if p.GetObjType() == self._edb.cell.layout_object_type.PadstackInstance
-               and p.IsLayoutPin()
-               and p.GetComponent().GetName() == self.refdes
+            and p.IsLayoutPin()
+            and p.GetComponent().GetName() == self.refdes
         ]
         return pins
 
@@ -986,6 +985,7 @@ class EDBComponent(object):
         if reference_net:
             model.SetReferenceNet(reference_net)
         return self._set_model(model)
+
 
     @pyedb_function_handler()
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
