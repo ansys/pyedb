@@ -86,7 +86,8 @@ class TestClass:
         assert "I22" == self.edbapp.siwave.create_current_source_on_pin(pins[301], pins[10], 0.1, 0, "I22")
 
         assert self.edbapp.siwave.create_pin_group_on_net(reference_designator="U1", net_name="GND", group_name="gnd")
-        assert self.edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["A27", "A28"], group_name="vrm_pos")
+        assert self.edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["A27", "A28"],
+                                                   group_name="vrm_pos")
         assert self.edbapp.siwave.create_current_source_on_pin_group(
             pos_pin_group_name="vrm_pos", neg_pin_group_name="gnd", name="vrm_current_source"
         )
@@ -106,10 +107,10 @@ class TestClass:
         )
         vprobe_2 = self.edbapp.probes["vprobe"]
         ref_term = vprobe_2.ref_terminal
-        #assert isinstance(ref_term.location, list)
-        #ref_term.location = [0, 0]
-        #assert ref_term.layer
-        #ref_term.layer = "1_Top"
+        # assert isinstance(ref_term.location, list)
+        # ref_term.location = [0, 0]
+        # assert ref_term.layer
+        # ref_term.layer = "1_Top"
         u6 = self.edbapp.components["U6"]
         assert self.edbapp.create_current_source(
             u6.pins["H8"].get_terminal(create_new_terminal=True), u6.pins["G9"].get_terminal(create_new_terminal=True)
@@ -159,12 +160,12 @@ class TestClass:
 
     def test_create_custom_cutout_0(self):
         """Create custom cutout 0."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1_cut.aedb")
-        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_cutou1.aedb")
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_cutout.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edb = Edb(target_path, edbversion=desktop_version)
         output = os.path.join(self.local_scratch.path, "cutout.aedb")
-        assert edbapp.cutout(
+        assert edb.cutout(
             ["DDR4_DQS0_P", "DDR4_DQS0_N"],
             ["GND"],
             output_aedb_path=output,
@@ -172,7 +173,7 @@ class TestClass:
             use_pyaedt_extent_computing=True,
             use_pyaedt_cutout=False,
         )
-        assert edbapp.cutout(
+        assert edb.cutout(
             ["DDR4_DQS0_P", "DDR4_DQS0_N"],
             ["GND"],
             output_aedb_path=output,
@@ -181,7 +182,7 @@ class TestClass:
             use_pyaedt_cutout=False,
         )
         assert os.path.exists(os.path.join(output, "edb.def"))
-        bounding = edbapp.get_bounding_box()
+        bounding = edb.get_bounding_box()
         cutout_line_x = 41
         cutout_line_y = 30
         points = [[bounding[0][0], bounding[0][1]]]
@@ -191,7 +192,7 @@ class TestClass:
         points.append([bounding[0][0], bounding[0][1]])
         output = os.path.join(self.local_scratch.path, "cutout2.aedb")
 
-        assert edbapp.cutout(
+        assert edb.cutout(
             custom_extent=points,
             signal_list=["GND", "1V0"],
             output_aedb_path=output,
@@ -202,7 +203,7 @@ class TestClass:
         assert os.path.exists(os.path.join(output, "edb.def"))
         output = os.path.join(self.local_scratch.path, "cutout3.aedb")
 
-        assert edbapp.cutout(
+        assert edb.cutout(
             custom_extent=points,
             signal_list=["GND", "1V0"],
             output_aedb_path=output,
@@ -211,7 +212,7 @@ class TestClass:
             use_pyaedt_cutout=False,
         )
         assert os.path.exists(os.path.join(output, "edb.def"))
-        edbapp.close()
+        edb.close()
 
     def test_create_custom_cutout_1(self):
         """Create custom cutout 1."""

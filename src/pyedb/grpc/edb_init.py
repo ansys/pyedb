@@ -30,7 +30,6 @@ class EdbInit(object):
         self.logger.info("legacy v%s", __version__)
         self.logger.info("Python version %s", sys.version)
         self.session = None
-        self.server_pid = 0
         if is_linux:  # pragma: no cover
             if env_value(self.edbversion) in os.environ:
                 self.base_path = env_path(self.edbversion)
@@ -53,16 +52,14 @@ class EdbInit(object):
         self.get_grpc_serveur_process()
         if self.server_pid:
             self.logger.info("Server already running")
-            self.logger.info("Restarting server a work around of issue #372")
-            p = psutil.Process(self.server_pid)
-            p.terminate()
-        try:
-            self.session = launch_session(self.base_path, port_num=port)
-            if self.session:
-                self.server_pid = self.session.local_server_proc.pid
-                self.logger.info("Grpc session started")
-        except:
-            self.logger.error("Failed to start EDB_RPC_server process")
+        else:
+            try:
+                self.session = launch_session(self.base_path, port_num=port)
+                if self.session:
+                    self.server_pid = self.session.local_server_proc.pid
+                    self.logger.info("Grpc session started")
+            except:
+                self.logger.error("Failed to start EDB_RPC_server process")
 
 
     @property
@@ -74,6 +71,8 @@ class EdbInit(object):
         proc = [p for p in list(psutil.process_iter()) if "edb_rpc" in p.name().lower()]
         if proc:
             self.server_pid = proc[0].pid
+        else:
+            self.server_pid = 0
 
     def create(self, db_path):
         """Create a Database at the specified file location.
