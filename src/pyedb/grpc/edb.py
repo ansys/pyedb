@@ -148,7 +148,7 @@ class EdbGrpc(EdbInit):
         self.edbversion = edbversion
         self.isaedtowned = isaedtowned
         self.isreadonly = isreadonly
-        self._setups = []
+        self._setups = {}
         if cellname:
             self.cellname = cellname
         else:
@@ -2995,11 +2995,11 @@ class EdbGrpc(EdbInit):
         """
         for i in self.active_cell.simulation_setups:
             if i.name not in self._setups:
-                if i.type == simulation_setup.SimulationSetupType.HFSS:
+                if i.type == edb_simulation_setup.SimulationSetupType.HFSS:
                     self._setups[i.name] = HfssSimulationSetup(self, i.name, i)
-                elif i.type == simulation_setup.SimulationSetupType.SI_WAVE:
+                elif i.type == edb_simulation_setup.SimulationSetupType.SI_WAVE:
                     self._setups[i.name] = SiwaveSYZSimulationSetup(self, i.name, i)
-                elif i.type == simulation_setup.SimulationSetupType.SI_WAVE_DCIR:
+                elif i.type == edb_simulation_setup.SimulationSetupType.SI_WAVE_DCIR:
                     self._setups[i.name] = SiwaveDCSimulationSetup(self, i.name, i)
         return self._setups
 

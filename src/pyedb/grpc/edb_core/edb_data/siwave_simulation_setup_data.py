@@ -704,7 +704,7 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
         self._edb_simulation_setup = simulation_setup.SIWaveSimulationSetup.create(self._edb.active_cell, name)
         if simulation_configuration:
             _get_edb_setup_info(simulation_configuration, self.edb_simulation_setup)
-        self._update_setup()
+        #self._update_setup()
         self.setup_type = "SIWave"
         SiwaveAdvancedSettings.__init__(self, self)
 
@@ -715,7 +715,7 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
 
     @pyedb_function_handler()
     def _update_setup(self):
-        if self.name in self._edb.setups:
+        if self.edb_simulation_setup.name in self._edb.setups:
             self._edb.layout.cell.delete_simulation_setup(self.name)
         self._edb.layout.cell.add_simulation_setup(self._edb_simulation_setup)
         return True
@@ -773,7 +773,7 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
     def pi_slider_postion(self, value):
         self.simulation_setup.settings.general.use_custom_settings = False
         self.simulation_setup.settings.general.pi_slider_pos = value
-        self._update_setup()
+        #self._update_setup()
 
     @property
     def si_slider_postion(self):
@@ -784,7 +784,7 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
     def si_slider_postion(self, value):
         self.simulation_setup.settings.general.use_custom_settings = False
         self.simulation_setup.settings.general.si_slider_pos = value
-        self._update_setup()
+        #self._update_setup()
 
     @property
     def use_custom_settings(self):

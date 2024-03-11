@@ -8,11 +8,11 @@ import ansys.edb.core.simulation_setup as simulation_setup
 class EdbFrequencySweep(object):
     """Manages EDB methods for frequency sweep."""
 
-    def __init__(self, parent, edb_sweep_data=None):
-        self._edb_sim_setup = parent.edb_sim_setup
+    def __init__(self, parent, edb_sweep_data=None, name=""):
+        self._edb_sim_setup = parent._edb_simulation_setup
         if edb_sweep_data:
             self._edb_sweep_data = edb_sweep_data
-            self._name = self._edb_sweep_data.name
+            self._name = name
 
     @pyedb_function_handler()
     def _update_sweep(self):
