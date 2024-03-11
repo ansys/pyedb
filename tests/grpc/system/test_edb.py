@@ -145,23 +145,12 @@ class TestClass:
 
     def test_add_variables(self):
         """Add design and project variables."""
-        result, var_server = self.edbapp.add_design_variable("my_variable", "1mm")
-        assert result
-        assert var_server
-        result, var_server = self.edbapp.add_design_variable("my_variable", "1mm")
-        assert not result
+        assert self.edbapp.add_design_variable("my_variable", "1mm")
         assert self.edbapp.modeler.parametrize_trace_width("A0_N")
         assert self.edbapp.modeler.parametrize_trace_width("A0_N_R")
-        result, var_server = self.edbapp.add_design_variable("my_parameter", "2mm", True)
-        assert result
-        assert var_server.IsVariableParameter("my_parameter")
-        result, var_server = self.edbapp.add_design_variable("my_parameter", "2mm", True)
-        assert not result
-        result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
-        assert result
-        assert var_server
-        result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
-        assert not result
+        var_server = self.edbapp.add_design_variable("my_parameter", "2mm", True)
+        assert var_server.is_parametric
+        assert self.edbapp.add_project_variable("$my_project_variable", "3mm")
 
     def test_save_edb_as(self):
         """Save edb as some file."""

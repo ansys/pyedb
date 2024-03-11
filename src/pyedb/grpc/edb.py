@@ -2606,7 +2606,7 @@ class EdbGrpc(EdbInit):
         if self.variable_exists(variable_name):
             self.logger.error("Variable %s already exists.", variable_name)
             return False
-        self.active_db.add_variable(variable_name, utility.Value(variable_value))
+        self.active_db.add_variable(variable_name, edb_utility.Value(variable_value))
         return self.active_db.create_value(variable_name)
 
     @pyedb_function_handler()
@@ -2649,10 +2649,10 @@ class EdbGrpc(EdbInit):
             self.logger.error("Variable %s already exists.", variable_name)
             return False
         if variable_name.startswith("$"):
-            self.active_db.add_variable(variable_name, utility.Value(variable_value), is_parameter)
+            self.active_db.add_variable(variable_name, edb_utility.Value(variable_value), is_parameter)
             return self.active_db.create_value(variable_name)
         else:
-            self.active_cell.add_variable(variable_name, utility.Value(variable_value), is_parameter)
+            self.active_cell.add_variable(variable_name, edb_utility.Value(variable_value), is_parameter)
             return self.active_cell.create_value(variable_name)
 
     @pyedb_function_handler()
@@ -2685,7 +2685,7 @@ class EdbGrpc(EdbInit):
         """
         var_server = self.variable_exists(variable_name)
         if var_server[0]:
-            var_server[1].SetVariableValue(variable_name, self.edb_value(variable_value))
+            var_server[1].SetVariableValue(variable_name, edb_utility.Value(variable_value))
             return True, var_server[1]
         self.logger.error("Variable %s does not exists.", variable_name)
         return False, var_server[1]
@@ -2702,7 +2702,7 @@ class EdbGrpc(EdbInit):
         layout_inst = self.layout.layout_instance
         all_layout_obj_inst = layout_inst.query_layout_obj_instances()
         obj_poly_data = [obj.get_bbox(False) for obj in all_layout_obj_inst]
-        layout_bbox = geometry.polygon_data.PolygonData.bbox_of_polygons(obj_poly_data)
+        layout_bbox = edb_geometry.polygon_data.PolygonData.bbox_of_polygons(obj_poly_data)
         if layout_bbox:
             return [[layout_bbox[0].x.value, layout_bbox[0].y.value], [layout_bbox[1].x.value, layout_bbox[1].y.value]]
         return False
