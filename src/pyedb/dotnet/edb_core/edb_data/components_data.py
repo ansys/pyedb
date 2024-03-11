@@ -354,27 +354,30 @@ class EDBComponent(object):
         """Solder ball diameter"""
         if "GetSolderBallProperty" in dir(self.component_property):
             result = self.component_property.GetSolderBallProperty().GetDiameter()
-            if result[0]:
-                return result[1], result[2]
+            succeed = result[0]
+            diameter = result[1]
+            mid_diameter = result[2]
+            if succeed:
+                return diameter, mid_diameter
 
     @solder_ball_diameter.setter
     def solder_ball_diameter(self, value):
-        val1 = None
-        val2 = None
+        diameter = None
+        mid_diameter = None  # used with spheroid shape
         if isinstance(value, tuple) or isinstance(value, list):
             if len(value) == 2:
-                val1 = self._get_edb_value(value[0])
-                val2 = self._get_edb_value(value[1])
+                diameter = self._get_edb_value(value[0])
+                mid_diameter = self._get_edb_value(value[1])
             elif len(value) == 1:
-                val1 = self._get_edb_value(value[0])
-                val2 = self._get_edb_value(value[0])
+                diameter = self._get_edb_value(value[0])
+                mid_diameter = self._get_edb_value(value[0])
         if isinstance(value, str):
-            val1 = self._get_edb_value(value)
-            val2 = self._get_edb_value(value)
-        if val1 and val2:
+            diameter = self._get_edb_value(value)
+            mid_diameter = self._get_edb_value(value)
+        if diameter and mid_diameter:
             cmp_property = self.component_property
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
-            solder_ball_prop.SetDiameter(val1, val2)
+            solder_ball_prop.SetDiameter(diameter, mid_diameter)
             cmp_property.SetSolderBallProperty(solder_ball_prop)
             self.component_property = cmp_property
 
@@ -680,8 +683,8 @@ class EDBComponent(object):
             p
             for p in self.edbcomponent.LayoutObjs
             if p.GetObjType() == self._edb.cell.layout_object_type.PadstackInstance
-            and p.IsLayoutPin()
-            and p.GetComponent().GetName() == self.refdes
+               and p.IsLayoutPin()
+               and p.GetComponent().GetName() == self.refdes
         ]
         return pins
 
@@ -983,7 +986,6 @@ class EDBComponent(object):
         if reference_net:
             model.SetReferenceNet(reference_net)
         return self._set_model(model)
-
 
     @pyedb_function_handler()
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
