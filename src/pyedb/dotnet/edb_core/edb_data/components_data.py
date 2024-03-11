@@ -376,7 +376,7 @@ class EDBComponent(object):
         if diameter and mid_diameter:
             cmp_property = self.component_property
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
-            solder_ball_prop.SetDiameter(val1, val2)
+            solder_ball_prop.SetDiameter(diameter, mid_diameter)
             cmp_property.SetSolderBallProperty(solder_ball_prop)
             self.component_property = cmp_property
 
