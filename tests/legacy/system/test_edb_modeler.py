@@ -178,6 +178,10 @@ class TestClass:
         assert len(poly_test) == 1
         assert poly_test[0].center == [0.005, 0.005]
         assert poly_test[0].bbox == [0.0, 0.0, 0.01, 0.01]
+        assert poly_test[0].move_layer("16_Bottom")
+        poly_test = [poly for poly in edbapp.modeler.polygons if poly.net_name == "test"]
+        assert len(poly_test) == 1
+        assert poly_test[0].layer_name == "16_Bottom"
         edbapp.close_edb()
 
     def test_modeler_create_trace(self):
