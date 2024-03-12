@@ -1175,14 +1175,6 @@ class EdbLayout(object):
                     self._pedb.padstacks.remove_pads_from_padstack(pad)
         return True
 
-
-    @pyedb_function_handler()
-    def unite_polygons_on_layer_new(self, layer=""):
-        #length = len(self.primitives_by_layer[layer])
-        for i in self.primitives_by_layer[layer]:
-            i.unite(next(i))
-
-
     @pyedb_function_handler()
     def defeature_polygon(self, poly, tolerance=0.001):
         """Defeature the polygon based on the maximum surface deviation criteria.
