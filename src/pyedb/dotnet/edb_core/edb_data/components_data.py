@@ -197,6 +197,11 @@ class EDBComponent(object):
         """``ComponentProperty`` object."""
         return self.edbcomponent.GetComponentProperty().Clone()
 
+    @component_property.setter
+    def component_property(self, value):
+        if value:
+            self.edbcomponent.SetComponentProperty(value)
+
     @property
     def _edb_model(self):  # pragma: no cover
         return self.component_property.GetModel().Clone()
@@ -318,6 +323,84 @@ class EDBComponent(object):
         if "GetSolderBallProperty" in dir(self.component_property):
             return self.component_property.GetSolderBallProperty().GetHeight()
         return None
+
+    @solder_ball_height.setter
+    def solder_ball_height(self, value):
+        if "GetSolderBallProperty" in dir(self.component_property) and value:
+            sball_height = round(self._edb.utility.Value(value).ToDouble(), 9)
+            cmp_property = self.component_property
+            solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
+            solder_ball_prop.SetHeight(self._get_edb_value(sball_height))
+            cmp_property.SetSolderBallProperty(solder_ball_prop)
+            self.component_property = cmp_property
+
+    @property
+    def solder_ball_shape(self):
+        """Solder ball shape."""
+        if "GetSolderBallProperty" in dir(self.component_property):
+            shape = self.component_property.GetSolderBallProperty().GetShape()
+            if shape.value__ == 0:
+                return "None"
+            elif shape.value__ == 1:
+                return "Cylinder"
+            elif shape.value__ == 2:
+                return "Spheroid"
+
+    @solder_ball_shape.setter
+    def solder_ball_shape(self, value):
+        shape = None
+        if isinstance(value, str):
+            if value.lower() == "cylinder":
+                shape = self._edb.definition.SolderballShape.Cylinder
+            elif value.lower() == "none":
+                shape = self._edb.definition.SolderballShape.NoSolderball
+            elif value.lower() == "spheroid":
+                shape = self._edb.definition.SolderballShape.Spheroid
+        if isinstance(value, int):
+            if value == 0:
+                shape = self._edb.definition.SolderballShape.NoSolderball
+            elif value == 1:
+                shape = self._edb.definition.SolderballShape.Cylinder
+            elif value == 2:
+                shape = self._edb.definition.SolderballShape.Spheroid
+        if shape:
+            cmp_property = self.component_property
+            solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
+            solder_ball_prop.SetShape(shape)
+            cmp_property.SetSolderBallProperty(solder_ball_prop)
+            self.component_property = cmp_property
+
+    @property
+    def solder_ball_diameter(self):
+        """Solder ball diameter"""
+        if "GetSolderBallProperty" in dir(self.component_property):
+            result = self.component_property.GetSolderBallProperty().GetDiameter()
+            succeed = result[0]
+            diameter = result[1]
+            mid_diameter = result[2]
+            if succeed:
+                return diameter, mid_diameter
+
+    @solder_ball_diameter.setter
+    def solder_ball_diameter(self, value):
+        diameter = None
+        mid_diameter = None  # used with spheroid shape
+        if isinstance(value, tuple) or isinstance(value, list):
+            if len(value) == 2:
+                diameter = self._get_edb_value(value[0])
+                mid_diameter = self._get_edb_value(value[1])
+            elif len(value) == 1:
+                diameter = self._get_edb_value(value[0])
+                mid_diameter = self._get_edb_value(value[0])
+        if isinstance(value, str):
+            diameter = self._get_edb_value(value)
+            mid_diameter = self._get_edb_value(value)
+        if diameter and mid_diameter:
+            cmp_property = self.component_property
+            solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
+            solder_ball_prop.SetDiameter(diameter, mid_diameter)
+            cmp_property.SetSolderBallProperty(solder_ball_prop)
+            self.component_property = cmp_property
 
     @property
     def solder_ball_placement(self):
