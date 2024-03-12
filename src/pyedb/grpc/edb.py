@@ -60,6 +60,7 @@ from pyedb.generic.general_methods import is_linux
 from pyedb.generic.general_methods import is_windows
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
+
 import subprocess
 
 
@@ -2323,10 +2324,10 @@ class EdbGrpc(EdbInit):
         if config_dictionaries:
             for el, val in config_dictionaries.items():
                 option_config[el] = val
-        with open(os.path.join(path_to_output, "options.config"), "w") as f:
+        with open(os.path.join(path_to_output.path, "options.config"), "w") as f:
             for el, val in option_config.items():
                 f.write(el + " " + str(val) + "\n")
-        return os.path.join(path_to_output, "options.config")
+        return os.path.join(path_to_output.path, "options.config")
 
     @pyedb_function_handler()
     def export_hfss(self, path_to_output, net_list=None, num_cores=None, aedt_file_name=None, hidden=False):
