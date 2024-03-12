@@ -329,7 +329,15 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layer_name(self):
-        rect = self.edbapp.modeler.create_rectangle("1_Top", "SIG1", ["0", "0"], ["2mm", "3mm"])
-        assert rect
-        rect.layer_name = "GND"
-        assert rect.layer_name == "GND"
+        edbapp = Edb()
+        edbapp["$H"] = "0.65mil"
+        assert edbapp["$H"].value_string == "0.65mil"
+        edbapp["Via_S"] = "40mil"
+        edbapp["MS_W"] = "4.75mil"
+        edbapp.stackup.add_layer("trace1", thickness="$H")
+        edbapp.stackup.add_layer("bot_gnd", thickness="0.65mil")
+        t1_1 = edbapp.modeler.create_trace(width="MS_W", layer_name="trace1", path_list=[("-Via_S/2", "0"), ("-MS_S/2-MS_W/2", "-16 mil"),("-MS_S/2-MS_W/2", "-100 mil")], start_cap_style="FLat",end_cap_style="FLat", net_name="t1_1")
+        assert t1_1.layer_name == "trace1"
+        t1_1.layer_name = "bot_gnd"
+        assert t1_1.layer_name == "bot_gnd"
+        edbapp.close()
