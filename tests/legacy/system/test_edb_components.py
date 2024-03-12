@@ -551,7 +551,6 @@ class TestClass:
         assert cmp.solder_ball_shape == "Cylinder"
         cmp.solder_ball_shape = 0
         assert cmp.solder_ball_shape == "None"
-        cmp.solder_ball_shape = "Cylinder"
         cmp.solder_ball_shape = 1
         assert cmp.solder_ball_shape == "Cylinder"
         cmp.solder_ball_shape = "Spheroid"
