@@ -519,7 +519,8 @@ class TestClass:
         assert self.edbapp.components["C200"].package_def.name == 'C200_CAPC3216X180X55ML20T25'
 
     def test_solder_ball_getter_setter(self):
-        cmp = self.edbapp.components["U1"]
+        cmp = self.edbapp.components["X1"]
+        cmp.solder_ball_height = 0.0
         assert cmp.solder_ball_height == 0.0
         cmp.solder_ball_height = "100um"
         assert cmp.solder_ball_height == 100e-6
