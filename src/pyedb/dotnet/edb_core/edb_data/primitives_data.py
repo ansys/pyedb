@@ -140,9 +140,8 @@ class EDBPrimitivesMain(Connectable):
     def layer(self):
         """Get the primitive edb layer object."""
         try:
-            layer_name = self.primitive_object.GetLayer().GetName()
-            return self._pedb.stackup.layers[layer_name]
-        except (KeyError, AttributeError):  # pragma: no cover
+            return self.primitive_object.GetLayer()
+        except AttributeError:  # pragma: no cover
             return None
 
     @property
@@ -154,8 +153,8 @@ class EDBPrimitivesMain(Connectable):
         str
         """
         try:
-            return self.layer.name
-        except (KeyError, AttributeError):  # pragma: no cover
+            return self.layer.GetName()
+        except AttributeError:  # pragma: no cover
             return None
 
     @layer_name.setter
@@ -403,8 +402,7 @@ class EDBPrimitives(EDBPrimitivesMain):
 
         Returns
         -------
-        bool, :class:`dotnet.edb_core.edb_data.primitives.EDBPrimitives`
-            Polygon when successful, ``False`` when failed.
+        Converted polygon.
 
         """
         if self.type == "Path":
@@ -412,8 +410,6 @@ class EDBPrimitives(EDBPrimitivesMain):
             polygon = self._app.modeler.create_polygon(polygon_data, self.layer_name, [], self.net_name)
             self.primitive_object.Delete()
             return polygon
-        else:
-            return False
 
     @pyedb_function_handler()
     def subtract(self, primitives):
@@ -1137,12 +1133,12 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
             Scaling factor.
         center : List of float or str [x,y], optional
             If None scaling is done from polygon center.
-
+        
         Returns
         -------
         bool
            ``True`` when successful, ``False`` when failed.
-
+        
         Examples
         --------
         >>> edbapp = pyaedt.Edb("myproject.aedb")
@@ -1169,12 +1165,12 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
     @pyedb_function_handler
     def move_layer(self, layer):
         """Move polygon to given layer.
-
+        
         Parameters
         ----------
         layer : str
             layer name.
-
+        
         Returns
         -------
         bool
