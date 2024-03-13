@@ -328,14 +328,23 @@ class TestClass:
         assert net5_length == 0.026285623899038543
         edbapp.close_edb()
 
-    def test_convert_to_polugon_error(self):
+    def unite_polygons_on_layer_bug(self):
         edbapp = Edb()
         edbapp["$H"] = "0.65mil"
         assert edbapp["$H"].value_string == "0.65mil"
         edbapp["Via_S"] = "40mil"
         edbapp["MS_W"] = "4.75mil"
+        edbapp["MS_S"] = "5mil"
+        edbapp["SL_W"] = "6.75mil"
+        edbapp["SL_S"] = "8mil"
         edbapp.stackup.add_layer("trace1", thickness="$H")
-        edbapp.modeler.create_trace(width="MS_W", layer_name="trace1",path_list=[("-Via_S/2", "0"), ("-MS_S/2-MS_W/2", "-16 mil"),("-MS_S/2-MS_W/2", "-100 mil")], start_cap_style="FLat",end_cap_style="FLat", net_name="t1_1")
-        assert edbapp.modeler.primitives[0].convert_to_polygon()
-        assert not edbapp.modeler.primitives[0].convert_to_polygon()
+        t1_1 = edbapp.modeler.create_trace(width="MS_W", layer_name="trace1",path_list=[("-Via_S/2", "0"), ("-MS_S/2-MS_W/2", "-16 mil"),("-MS_S/2-MS_W/2", "-100 mil")], start_cap_style="FLat",end_cap_style="FLat", net_name="t1_1")
+        t2_1 = edbapp.modeler.create_trace(width="MS_W", layer_name="trace1",path_list=[("-Via_S/2", "0"), ("-SL_S/2-SL_W/2", "16 mil"),("-SL_S/2-SL_W/2", "100 mil")], start_cap_style="FLat",end_cap_style="FLat", net_name="t2_1")
+        t3_1 = edbapp.modeler.create_trace(width="MS_W", layer_name="trace1",path_list=[("-Via_S/2", "0"), ("-SL_S/2-SL_W/2", "16 mil"),("+SL_S/2+MS_W/2", "100 mil")], start_cap_style="FLat",end_cap_style="FLat", net_name="t3_1")
+        assert t1_1.convert_to_polygon()
+        t2_1.convert_to_polygon()
+        t3_1.convert_to_polygon()
+        assert edbapp.modeler.unite_polygons_on_layer("trace1")
+        edbapp.modeler.polygons_by_layer
+        assert len(edbapp.modeler.polygons_by_layer["trace1"]) == 1
         edbapp.close()
