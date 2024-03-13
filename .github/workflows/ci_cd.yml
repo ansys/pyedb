@@ -192,7 +192,7 @@ jobs:
         run: |
           zip -r documentation-html.zip .\doc\_build\html
           mv documentation-html.zip .\doc\_build\html\_static\assets\download\
-          cp doc/_build/latex/ansys-edb.pdf.pdf .\doc\_build\html\_static\assets\download\
+          cp doc/_build/latex/ansys-edb.pdf .\doc\_build\html\_static\assets\download\
 
       - name: Upload HTML Documentation artifact
         uses: actions/upload-artifact@v4
