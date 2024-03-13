@@ -1,0 +1,35 @@
+$begin 'ConnectionParameters'
+	DesktopProcessID=30488
+	DesktopProcessPath='C:\\Program Files\\AnsysEM\\v241\\Win64\\ansysedt.exe'
+	LaunchedByWB=false
+	GRPCPort=50051
+	$begin 'DesktopStubBlock'
+		$begin 'CommDetails'
+			TransportType=1
+			IPAddress='10.105.60.69'
+			ListenPort='63574'
+		$end 'CommDetails'
+		$begin 'Marshall'
+			InstanceID=503
+			ProcID=30488
+			InterfaceID=1
+			FactoryIntID='DesktopInterfaceForWBProxyStubFactory'
+		$end 'Marshall'
+	$end 'DesktopStubBlock'
+	$begin 'DesktopBackgroundObjStubBlock'
+		$begin 'CommDetails'
+			TransportType=1
+			IPAddress='10.105.60.69'
+			ListenPort='63574'
+		$end 'CommDetails'
+		$begin 'Marshall'
+			InstanceID=505
+			ProcID=30488
+			InterfaceID=2
+			FactoryIntID='DesktopInterfaceForWBProxyStubFactory'
+		$end 'Marshall'
+	$end 'DesktopBackgroundObjStubBlock'
+	$begin 'WebClientBlock'
+		Url='http://AAP2l5CFOcMsaJL.win.ansys.com:21240/?server=AAP2l5CFOcMsaJL.win.ansys.com:20984&startTab=monitor/graph'
+	$end 'WebClientBlock'
+$end 'ConnectionParameters'

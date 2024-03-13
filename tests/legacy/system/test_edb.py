@@ -1715,3 +1715,11 @@ class TestClass:
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
+
+    def test_loading_aedb_with_aedt_file_existing(self):
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "loading_locked_edb")
+        target_path = os.path.join(self.local_scratch.path, "test_loading_locked_edb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(os.path.join(target_path, "test.aedb"), edbversion=desktop_version)
+        assert edbapp.stackup.signal_layers["top"].material == "copper"
+        assert len(edbapp.modeler.polygons) == 1
