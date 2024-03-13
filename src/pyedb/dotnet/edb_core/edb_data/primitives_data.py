@@ -402,8 +402,8 @@ class EDBPrimitives(EDBPrimitivesMain):
 
         Returns
         -------
-        Converted polygon, when successful
-        Error message: Object type is not path, when not successful
+        bool, :class:`dotnet.edb_core.edb_data.primitives.EDBPrimitives`
+            Polygon when successful, ``False`` when failed.
 
         """
         if self.type == "Path":
