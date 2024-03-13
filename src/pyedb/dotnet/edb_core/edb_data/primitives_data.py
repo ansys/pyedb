@@ -412,7 +412,7 @@ class EDBPrimitives(EDBPrimitivesMain):
             self.primitive_object.Delete()
             return polygon
         else:
-            raise AttributeError("Object type is not path")
+            return False
 
     @pyedb_function_handler()
     def subtract(self, primitives):
