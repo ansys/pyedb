@@ -1130,7 +1130,10 @@ class EdbLayout(object):
             self._logger.info("Uniting Objects on layer %s.", lay)
             poly_by_nets = {}
             if lay in list(self.polygons_by_layer.keys()):
+                list_polygon_data = []
+                delete_list = []
                 for poly in self.polygons_by_layer[lay]:
+                    delete_list.append(poly)
                     if not poly.GetNet().GetName() in list(poly_by_nets.keys()):
                         if poly.GetNet().GetName():
                             poly_by_nets[poly.GetNet().GetName()] = [poly]
@@ -1139,33 +1142,33 @@ class EdbLayout(object):
                             poly_by_nets[poly.GetNet().GetName()].append(poly)
             for net in poly_by_nets:
                 if net in net_list or not net_list:  # pragma no cover
-                    list_polygon_data = [i.GetPolygonData() for i in poly_by_nets[net]]
+                    for i in poly_by_nets[net]:
+                        list_polygon_data.append(i.GetPolygonData())
                     all_voids = [i.Voids for i in poly_by_nets[net]]
-                    a = self._edb.geometry.polygon_data.unite(convert_py_list_to_net_list(list_polygon_data))
-                    for item in a:
-                        for v in all_voids:
-                            for void in v:
-                                if int(item.GetIntersectionType(void.GetPolygonData())) == 2:
-                                    item.AddHole(void.GetPolygonData())
-                        poly = self._edb.cell.primitive.polygon.create(
-                            self._active_layout,
-                            lay,
-                            self._pedb.nets.nets[net],
-                            item,
-                        )
-                    list_to_delete = [i for i in poly_by_nets[net]]
-                    for v in all_voids:
-                        for void in v:
-                            for poly in poly_by_nets[net]:  # pragma no cover
-                                if int(void.GetPolygonData().GetIntersectionType(poly.GetPolygonData())) >= 2:
-                                    try:
-                                        id = list_to_delete.index(poly)
-                                    except ValueError:
-                                        id = -1
-                                    if id >= 0:
-                                        list_to_delete.pop(id)
-
-                    [i.Delete() for i in list_to_delete]  # pragma no cover
+            a = self._edb.geometry.polygon_data.unite(convert_py_list_to_net_list(list_polygon_data))
+            for item in a:
+                for v in all_voids:
+                    for void in v:
+                        if int(item.GetIntersectionType(void.GetPolygonData())) == 2:
+                            item.AddHole(void.GetPolygonData())
+                poly = self._edb.cell.primitive.polygon.create(
+                    self._active_layout,
+                    lay,
+                    self._pedb.nets.nets[net],
+                    item,
+                )
+            for v in all_voids:
+                for void in v:
+                    for poly in poly_by_nets[net]:  # pragma no cover
+                        if int(void.GetPolygonData().GetIntersectionType(poly.GetPolygonData())) >= 2:
+                            try:
+                                id = delete_list.index(poly)
+                            except ValueError:
+                                id = -1
+                            if id >= 0:
+                                delete_list.pop(id)
+            for poly in delete_list:
+                poly.Delete()
 
         if delete_padstack_gemometries:
             self._logger.info("Deleting Padstack Definitions")
