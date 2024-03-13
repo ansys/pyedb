@@ -381,7 +381,6 @@ class EDBPrimitives(EDBPrimitivesMain):
         Returns
         -------
         Converted polygon, when successful
-        Error message: Object type is not path, when not successful
 
         """
         if self.type == "Path":
@@ -389,8 +388,6 @@ class EDBPrimitives(EDBPrimitivesMain):
             polygon = self._app.modeler.create_polygon(polygon_data, self.layer_name, [], self.net_name)
             self.primitive_object.Delete()
             return polygon
-        else:
-            raise AttributeError("Object type is not path")
 
     @pyedb_function_handler()
     def subtract(self, primitives):
