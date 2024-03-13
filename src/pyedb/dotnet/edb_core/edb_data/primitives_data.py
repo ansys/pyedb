@@ -380,7 +380,7 @@ class EDBPrimitives(EDBPrimitivesMain):
 
         Returns
         -------
-        Converted polygon, when successful
+        Converted polygon.
 
         """
         if self.type == "Path":
