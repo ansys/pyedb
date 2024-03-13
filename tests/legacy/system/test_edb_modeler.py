@@ -345,6 +345,5 @@ class TestClass:
         t2_1.convert_to_polygon()
         t3_1.convert_to_polygon()
         assert edbapp.modeler.unite_polygons_on_layer("trace1")
-        edbapp.modeler.polygons_by_layer
         assert len(edbapp.modeler.polygons_by_layer["trace1"]) == 1
         edbapp.close()
