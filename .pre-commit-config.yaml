@@ -50,7 +50,7 @@ repos:
   - id: debug-statements
   - id: trailing-whitespace
     files: '(src|doc|tests)/.*'
-    exclude: 'tests/example_models/*'
+    exclude: 'tests/example_models/.*'
 
 # # validate GitHub workflow files
 # - repo: https://github.com/python-jsonschema/check-jsonschema
