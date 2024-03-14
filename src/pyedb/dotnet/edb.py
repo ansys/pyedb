@@ -218,7 +218,7 @@ class Edb(Database):
             for file in files:
                 if os.path.isfile(file):
                     try:
-                        shutil.rmtree(self.filename)
+                        shutil.rmtree(file)
                         self.logger.info(f"Removing {file} to allow loading EDB file.")
                     except:
                         self.logger.info(f"Failed to delete {file} which is located at the same location as the EDB file.")
