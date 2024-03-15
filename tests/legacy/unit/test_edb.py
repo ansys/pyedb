@@ -20,8 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 import os
 
+from mock import MagicMock, PropertyMock, patch
 import pytest
 
 from pyedb.dotnet.edb import Edb
@@ -147,3 +149,40 @@ class TestClass:
         )
         pad_name == "test2"
         edb.close()
+
+    @patch("os.path.isfile")
+    @patch("shutil.rmtree")
+    @patch("pyedb.dotnet.edb_core.dotnet.database.EdbDotNet.logger", new_callable=PropertyMock)
+    def test_conflict_files_removal_success(self, mock_logger, mock_rmtree, mock_isfile):
+        logger_mock = MagicMock()
+        mock_logger.return_value = logger_mock
+        mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
+
+        edbpath = "file.edb"
+        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+        files = [aedt_file, aedt_file + ".lock"]
+        _ = Edb(edbpath)
+
+        for file in files:
+            mock_rmtree.assert_any_call(file)
+            logger_mock.info.assert_any_call(f"Removing {file} to allow loading EDB file.")
+
+    @patch("os.path.isfile")
+    @patch("shutil.rmtree")
+    @patch("pyedb.dotnet.edb_core.dotnet.database.EdbDotNet.logger", new_callable=PropertyMock)
+    def test_conflict_files_removal_failure(self, mock_logger, mock_rmtree, mock_isfile):
+        logger_mock = MagicMock()
+        mock_logger.return_value = logger_mock
+        mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
+        mock_rmtree.side_effect = Exception("Could not delete file")
+
+        edbpath = "file.edb"
+        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+        files = [aedt_file, aedt_file + ".lock"]
+        _ = Edb(edbpath)
+
+        for file in files:
+            mock_rmtree.assert_any_call(file)
+            logger_mock.info.assert_any_call(
+                f"Failed to delete {file} which is located at the same location as the EDB file."
+            )
