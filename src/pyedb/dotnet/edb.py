@@ -213,6 +213,15 @@ class Edb(Database):
                 os.path.dirname(edbpath),
                 "pyedb_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log",
             )
+            aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+            files = [aedt_file, aedt_file + ".lock"]
+            for file in files:
+                if os.path.isfile(file):
+                    try:
+                        shutil.rmtree(file)
+                        self.logger.info(f"Removing {file} to allow loading EDB file.")
+                    except:
+                        self.logger.info(f"Failed to delete {file} which is located at the same location as the EDB file.")
 
         if isaedtowned and (inside_desktop or settings.remote_rpc_session):
             self.open_edb_inside_aedt()
