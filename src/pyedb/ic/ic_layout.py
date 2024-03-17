@@ -28,7 +28,7 @@ class ICLayout:
     def __init__(self, gds_file):
         self.editable = True
         self._klayout = kdb.Layout(self.editable)
-        self.db = ICLayoutData([])
+        self.db = ICLayoutData(klayout=self._klayout, layers=[])
         if gds_file:
             self._klayout.read(gds_file)
             self._read_layer_info()
@@ -38,5 +38,6 @@ class ICLayout:
         for layer_index in range(self._klayout.layers()):
             layer_info = self._klayout.get_info(layer_index)
             if not layer_info.layer == -1:
-                layer = ICLayerData(name=layer_info.name, index=layer_info.layer, data_type=layer_info.datatype)
+                layer = ICLayerData(klayout=self._klayout, name=layer_info.name, index=layer_info.layer,
+                                    data_type=layer_info.datatype)
                 self.db.layers.append(layer)

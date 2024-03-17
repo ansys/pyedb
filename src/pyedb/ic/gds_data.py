@@ -22,7 +22,8 @@
 
 
 class ICLayoutData:
-    def __init__(self, layers):
+    def __init__(self, klayout, layers):
+        self._klayout = klayout
         self._layers = layers
 
     @property
@@ -36,7 +37,8 @@ class ICLayoutData:
 
 
 class ICLayerData:
-    def __init__(self, name, index, data_type):
+    def __init__(self, klayout, name, index, data_type):
+        self._klayout = klayout
         self._name = name
         self._index = index
         self._data_type = data_type
@@ -48,6 +50,9 @@ class ICLayerData:
     @name.setter
     def name(self, value):
         if isinstance(value, str):
+            info = self._klayout.get_info(self.index)
+            info.name = value
+            self._klayout.set_info(self.index, info)
             self._name = value
 
     @property
@@ -57,6 +62,9 @@ class ICLayerData:
     @index.setter
     def index(self, value):
         if isinstance(value, int):
+            info = self._klayout.get_info(self.index)
+            info.layer = value
+            self._klayout.set_info(self.index, info)
             self._index = value
 
     @property
@@ -66,4 +74,7 @@ class ICLayerData:
     @data_type.setter
     def data_type(self, value):
         if isinstance(value, int):
+            info = self._klayout.get_info(self.index)
+            info.data_type = value
+            self._klayout.set_info(self.index, info)
             self._data_type = value
