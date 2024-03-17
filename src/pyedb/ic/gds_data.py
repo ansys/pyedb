@@ -20,6 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from dataclasses import dataclass
+
+
+@dataclass
+class CellShapes:
+    polygons: list
+    paths: list
+    texts: list
+    boxes: list
+
 
 class ICLayoutData:
     def __init__(self, klayout, layers):
@@ -42,6 +52,7 @@ class ICLayerData:
         self._name = name
         self._index = index
         self._data_type = data_type
+        self._shapes = {}
 
     @property
     def name(self):
@@ -78,3 +89,28 @@ class ICLayerData:
             info.data_type = value
             self._klayout.set_info(self.index, info)
             self._data_type = value
+
+    @property
+    def shapes(self):
+        if not self._shapes:
+            self._update_shapes()
+        return self._shapes
+
+    def _update_shapes(self):
+        self._shapes = {}
+        top_cells = [cell for cell in self._klayout.top_cells()]
+        for kcell in top_cells:
+            cell = CellShapes(polygons=[], paths=[], texts=[], boxes=[])
+            if not kcell.name in self._shapes:
+                self._shapes[kcell.name] = cell
+            for layer_id in self._klayout.layer_indexes():
+                shape_list = kcell.shapes(layer_id)
+                for shape in shape_list.each():
+                    if shape.is_polygon():
+                        cell.polygons.append(shape)
+                    elif shape.is_path():
+                        cell.paths.append(shape)
+                    elif shape.is_text():
+                        cell.texts.append(shape)
+                    elif shape.is_box():
+                        cell.boxes.append(shape)

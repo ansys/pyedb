@@ -20,14 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import klayout.db as kdb
+import pya
 from pyedb.ic.gds_data import ICLayoutData, ICLayerData
 
 
 class ICLayout:
     def __init__(self, gds_file):
         self.editable = True
-        self._klayout = kdb.Layout(self.editable)
+        self._klayout = pya.Layout(self.editable)
         self.db = ICLayoutData(klayout=self._klayout, layers=[])
         if gds_file:
             self._klayout.read(gds_file)
