@@ -41,3 +41,9 @@ class ICLayout:
                 layer = ICLayerData(klayout=self._klayout, name=layer_info.name, index=layer_info.layer,
                                     data_type=layer_info.datatype)
                 self.db.layers.append(layer)
+
+    def save(self, file_name=None):
+        if file_name:
+            self._klayout.write(filename=file_name)
+            return True
+        return False
