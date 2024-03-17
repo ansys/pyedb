@@ -47,8 +47,8 @@ from pyedb.dotnet.edb_core.edb_data.control_file import (
 from pyedb.dotnet.edb_core.edb_data.design_options import EdbDesignOptions
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data import (
-    HfssSimulationSetup,
-)
+    HfssSimulationSetup)
+from pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data import RaptorXSimulationSetup
 from pyedb.dotnet.edb_core.edb_data.ports import (
     BundleWavePort,
     CircuitPort,
@@ -3628,6 +3628,25 @@ class Edb(Database):
             return False
         setup = HfssSimulationSetup(self).create(name)
         return setup
+
+    def create_raptorx_setup(self, name=None):
+        """Create an RaptorX simulation setup from a template.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name.
+
+        Returns
+        -------
+        :class:`legacy.edb_core.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
+
+        """
+        if name in self.setups:
+            return False
+        setup = RaptorXSimulationSetup(self).create(name)
+        return setup
+
 
     @pyedb_function_handler()
     def create_siwave_syz_setup(self, name=None):

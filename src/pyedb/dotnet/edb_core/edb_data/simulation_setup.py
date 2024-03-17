@@ -56,6 +56,7 @@ class BaseSimulationSetup(object):
             "kDDRwizard": None,
             "kQ3D": None,
             "kNumSetupTypes": None,
+            "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings
         }
         if self._edb_object:
             self._name = self._edb_object.GetName()
