@@ -24,6 +24,7 @@ from pyedb.dotnet.edb_core.edb_data.simulation_setup import (
     BaseSimulationSetup,
     EdbFrequencySweep,
 )
+from pyedb.generic.data_handlers import pyedb_function_handler
 
 
 class RaptorXSimulationSetup(BaseSimulationSetup):
@@ -31,7 +32,7 @@ class RaptorXSimulationSetup(BaseSimulationSetup):
 
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
-        self._setup_type = "kRAPTORX"
+        self._setup_type = "kRaptorX"
 
     @pyedb_function_handler
     def create(self, name=None):

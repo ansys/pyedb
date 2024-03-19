@@ -1715,3 +1715,6 @@ class TestClass:
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
+
+    def test_add_raptorx_simluatiomn_setup(self):
+        self.edbapp.create_raptorx_setup("test")
