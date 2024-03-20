@@ -24,6 +24,7 @@
 """
 
 import os
+
 import pytest
 
 from pyedb.dotnet.edb import Edb
@@ -357,7 +358,14 @@ class TestClass:
         edbapp["Via_S"] = "40mil"
         edbapp["MS_W"] = "4.75mil"
         edbapp.stackup.add_layer("trace1", thickness="$H")
-        edbapp.modeler.create_trace(width="MS_W", layer_name="trace1",path_list=[("-Via_S/2", "0"), ("-MS_S/2-MS_W/2", "-16 mil"),("-MS_S/2-MS_W/2", "-100 mil")], start_cap_style="FLat",end_cap_style="FLat", net_name="t1_1")
+        edbapp.modeler.create_trace(
+            width="MS_W",
+            layer_name="trace1",
+            path_list=[("-Via_S/2", "0"), ("-MS_S/2-MS_W/2", "-16 mil"), ("-MS_S/2-MS_W/2", "-100 mil")],
+            start_cap_style="FLat",
+            end_cap_style="FLat",
+            net_name="t1_1",
+        )
         assert edbapp.modeler.primitives[0].convert_to_polygon()
         assert not edbapp.modeler.primitives[0].convert_to_polygon()
         edbapp.close()

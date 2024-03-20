@@ -21,7 +21,6 @@ from ansys_sphinx_theme import (
 )
 from docutils import nodes
 from docutils.parsers.rst import Directive
-import numpy as np
 from sphinx import addnodes
 
 # <-----------------Override the sphinx pdf builder---------------->
@@ -108,7 +107,7 @@ else:
 
 
 # Specify environment variable to build the doc without grpahical mode while
-# keeping examples graphical mode activated. 
+# keeping examples graphical mode activated.
 os.environ["PYAEDT_NON_GRAPHICAL"] = "1"
 os.environ["PYAEDT_DOC_GENERATION"] = "1"
 
@@ -233,7 +232,6 @@ if os.name != "posix" and "PYEDB_CI_NO_EXAMPLES" not in os.environ:
         category=UserWarning,
         message="Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.",
     )
-
 
     if config["run_examples"]:
         extensions.append("sphinx_gallery.gen_gallery")
