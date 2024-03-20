@@ -403,7 +403,8 @@ class EDBPrimitives(EDBPrimitivesMain):
 
         Returns
         -------
-        Converted polygon.
+        bool, :class:`dotnet.edb_core.edb_data.primitives.EDBPrimitives`
+            Polygon when successful, ``False`` when failed.
 
         """
         if self.type == "Path":
@@ -411,6 +412,8 @@ class EDBPrimitives(EDBPrimitivesMain):
             polygon = self._app.modeler.create_polygon(polygon_data, self.layer_name, [], self.net_name)
             self.primitive_object.Delete()
             return polygon
+        else:
+            return False
 
     @pyedb_function_handler()
     def subtract(self, primitives):
