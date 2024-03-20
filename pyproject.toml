@@ -49,6 +49,7 @@ tests = [
     "pytest-xdist==3.3.1",
 ]
 doc = [
+    "pyaedt>=0.8.2,<0.8.3",
     "ansys-sphinx-theme==0.13.1",
     "imageio==2.34.0",
     "imageio-ffmpeg==0.4.9",
