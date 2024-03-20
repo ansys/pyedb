@@ -404,7 +404,8 @@ class EDBPrimitives(EDBPrimitivesMain):
 
         Returns
         -------
-        Converted polygon.
+        bool, :class:`dotnet.edb_core.edb_data.primitives.EDBPrimitives`
+            Polygon when successful, ``False`` when failed.
 
         """
         if self.type == "Path":
@@ -412,6 +413,8 @@ class EDBPrimitives(EDBPrimitivesMain):
             polygon = self._app.modeler.create_polygon(polygon_data, self.layer_name, [], self.net_name)
             self.primitive_object.Delete()
             return polygon
+        else:
+            return False
 
     @pyedb_function_handler()
     def subtract(self, primitives):
@@ -1028,6 +1031,35 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
                 cloned_poly.prim_obj.AddVoid(cloned_void.prim_obj)
             return cloned_poly
         return False
+
+    @pyedb_function_handler()
+    def duplicate_across_layers(self, layers):
+        """Duplicate across layer a primitive object.
+
+        Parameters:
+
+        layers: list
+            list of str, with layer names
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        for layer in layers:
+            if layer in self._pedb.stackup.layers:
+                duplicate_polygon = self._app.edb_api.cell.primitive.polygon.create(
+                    self._app.active_layout, layer, self.net, self.polygon_data.edb_api
+                )
+                if duplicate_polygon:
+                    for void in self.voids:
+                        duplicate_void = self._app.edb_api.cell.primitive.polygon.create(
+                            self._app.active_layout, layer, self.net, void.polygon_data.edb_api
+                        )
+                        duplicate_polygon.prim_obj.AddVoid(duplicate_void.prim_obj)
+            else:
+                return False
+        return True
 
     @pyedb_function_handler
     def move(self, vector):
