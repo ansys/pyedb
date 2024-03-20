@@ -135,7 +135,7 @@ jobs:
         uses: SMoraisAnsys/actions/doc-build@feat/doc-build-os-compatible
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          os: "windows"
+          os: 'windows'
       # - name: Add assets to HTML docs
       #   run: |
       #     zip -r documentation-html.zip .\doc\_build\html
