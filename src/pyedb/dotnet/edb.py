@@ -173,16 +173,16 @@ class Edb(Database):
     """
 
     def __init__(
-            self,
-            edbpath=None,
-            cellname=None,
-            isreadonly=False,
-            edbversion=None,
-            isaedtowned=False,
-            oproject=None,
-            student_version=False,
-            use_ppe=False,
-            technology_file=None,
+        self,
+        edbpath=None,
+        cellname=None,
+        isreadonly=False,
+        edbversion=None,
+        isaedtowned=False,
+        oproject=None,
+        student_version=False,
+        use_ppe=False,
+        technology_file=None,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
@@ -587,12 +587,12 @@ class Edb(Database):
 
     @pyedb_function_handler()
     def import_layout_pcb(
-            self,
-            input_file,
-            working_dir,
-            anstranslator_full_path="",
-            use_ppe=False,
-            control_file=None,
+        self,
+        input_file,
+        working_dir,
+        anstranslator_full_path="",
+        use_ppe=False,
+        control_file=None,
     ):
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
