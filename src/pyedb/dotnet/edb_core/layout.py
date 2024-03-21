@@ -1113,7 +1113,7 @@ class EdbLayout(object):
             Name of layer name to unite objects on. The default is ``None``, in which case all layers are taken.
         delete_padstack_gemometries : bool, optional
             Whether to delete all padstack geometries. The default is ``False``.
-        net_list : list[str] : optional
+        net_names_list : list[str] : optional
             Net names list filter. The default is ``[]``, in which case all nets are taken.
 
         Returns
