@@ -2,14 +2,11 @@ import ast
 import os
 import warnings
 
-from pyedb.generic.general_methods import (
-    is_ironpython,
-    pyedb_function_handler,
-)
+from pyedb.generic.general_methods import is_ironpython, pyedb_function_handler
 
 if not is_ironpython:  # pragma: no cover
     try:
-        import numpy # noqa: F401
+        import numpy  # noqa: F401
     except ImportError:
         warnings.warn(
             "The NumPy module is required to run some functionalities of PostProcess.\n"
