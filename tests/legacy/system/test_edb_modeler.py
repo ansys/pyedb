@@ -359,7 +359,7 @@ class TestClass:
         t3_1.convert_to_polygon()
         net_list = ["t1_1", "t2_1"]
         assert len(edbapp.modeler.polygons) == 3
-        edbapp.nets.merge_nets_polygons(net_names_list=net_list)
+        edbapp.modeler.unite_polygons_on_layer("trace1", net_names_list=net_list)
         assert len(edbapp.modeler.polygons) == 2
         edbapp.modeler.unite_polygons_on_layer("trace1")
         assert len(edbapp.modeler.polygons) == 1
