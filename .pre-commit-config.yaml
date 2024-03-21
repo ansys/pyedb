@@ -1,4 +1,3 @@
-fail_fast: True
 ci:
     autofix_commit_msg: |
         MISC: Auto fixes from pre-commit.com hooks
