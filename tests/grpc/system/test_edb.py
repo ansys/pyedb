@@ -392,69 +392,6 @@ class TestClass:
         assert os.path.exists(out)
         edb.close()
 
-    # def test_change_design_variable_value(self):
-    #     """Change a variable value."""
-    #     self.edbapp.add_design_variable("ant_length", "1cm")
-    #     self.edbapp.add_design_variable("my_parameter_default", "1mm", is_parameter=True)
-    #     self.edbapp.add_design_variable("$my_project_variable", "1mm")
-    #     changed_variable_1 = self.edbapp.change_design_variable_value("ant_length", "1m")
-    #     if isinstance(changed_variable_1, tuple):
-    #         changed_variable_done, ant_length_value = changed_variable_1
-    #         assert changed_variable_done
-    #     else:
-    #         assert changed_variable_1
-    #     changed_variable_2 = self.edbapp.change_design_variable_value("elephant_length", "1m")
-    #     if isinstance(changed_variable_2, tuple):
-    #         changed_variable_done, elephant_length_value = changed_variable_2
-    #         assert not changed_variable_done
-    #     else:
-    #         assert not changed_variable_2
-    #     changed_variable_3 = self.edbapp.change_design_variable_value("my_parameter_default", "1m")
-    #     if isinstance(changed_variable_3, tuple):
-    #         changed_variable_done, my_parameter_value = changed_variable_3
-    #         assert changed_variable_done
-    #     else:
-    #         assert changed_variable_3
-    #     changed_variable_4 = self.edbapp.change_design_variable_value("$my_project_variable", "1m")
-    #     if isinstance(changed_variable_4, tuple):
-    #         changed_variable_done, my_project_variable_value = changed_variable_4
-    #         assert changed_variable_done
-    #     else:
-    #         assert changed_variable_4
-    #     changed_variable_5 = self.edbapp.change_design_variable_value("$my_parameter", "1m")
-    #     if isinstance(changed_variable_5, tuple):
-    #         changed_variable_done, my_project_variable_value = changed_variable_5
-    #         assert not changed_variable_done
-    #     else:
-    #         assert not changed_variable_5
-
-    # def test_variables_value(self):
-    #     """Evaluate variables value."""
-    #     from pyedb.generic.general_methods import check_numeric_equivalence
-
-    #     variables = {
-    #         "var1": 0.01,
-    #         "var2": "10um",
-    #         "var3": [0.03, "test description"],
-    #         "$var4": ["1mm", "Project variable."],
-    #         "$var5": 0.1,
-    #     }
-    #     for key, val in variables.items():
-    #         self.edbapp[key] = val
-    #         if key == "var1":
-    #             assert self.edbapp[key].value == val
-    #         elif key == "var2":
-    #             assert check_numeric_equivalence(self.edbapp[key].value, 1.0e-5)
-    #         elif key == "var3":
-    #             assert self.edbapp[key].value == val[0]
-    #             assert self.edbapp[key].description == val[1]
-    #         elif key == "$var4":
-    #             assert self.edbapp[key].value == 0.001
-    #             assert self.edbapp[key].description == val[1]
-    #         elif key == "$var5":
-    #             assert self.edbapp[key].value == 0.1
-    #             assert self.edbapp.project_variables[key].delete()
-
     def test_create_edge_port_on_polygon(self):
         """Create lumped and vertical port."""
         edb = Edb(
@@ -607,13 +544,14 @@ class TestClass:
 
     def test_configure_hfss_analysis_setup_enforce_causality(self):
         """Configure HFSS analysis setup."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "lam_for_top_place_no_setups.aedb")
-        target_path = os.path.join(self.local_scratch.path, "lam_for_top_place_no_setups_t116.aedb")
-        if not os.path.exists(self.local_scratch.path):
-            os.mkdir(self.local_scratch.path)
-        self.local_scratch.copyfolder(source_path, target_path)
-        edb = Edb(target_path, edbversion=desktop_version)
-        assert len(list(edb.active_cell.SimulationSetups)) == 0
+        # source_path = os.path.join(local_path, "example_models", test_subfolder, "lam_for_top_place_no_setups.aedb")
+        # target_path = os.path.join(self.local_scratch.path, "lam_for_top_place_no_setups_t116.aedb")
+        # if not os.path.exists(self.local_scratch.path):
+        #    os.mkdir(self.local_scratch.path)
+        # self.local_scratch.copyfolder(source_path, target_path)
+        # edb = Edb(target_path, edbversion=desktop_version)
+        edb = Edb(edbversion=desktop_version)
+        assert len(edb.active_cell.simulation_setups) == 0
         sim_config = SimulationConfiguration()
         sim_config.enforce_causality = False
         assert sim_config.do_lambda_refinement

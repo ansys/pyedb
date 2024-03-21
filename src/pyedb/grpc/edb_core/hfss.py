@@ -11,6 +11,7 @@ import ansys.edb.core.net as edb_net
 import ansys.edb.core.primitive as edb_primitive
 import ansys.edb.core.terminal as edb_terminal
 import ansys.edb.core.utility as edb_utility
+import ansys.edb.core.simulation_setup.simulation_setup as edb_simulation_setup
 
 from pyedb.generic.constants import RadiationBoxType
 from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler

@@ -53,12 +53,12 @@ class EdbInit(object):
         self.get_grpc_serveur_process()
         if self.server_pid:
             self.logger.info("Server already running")
-            # p = psutil.Process(self.server_pid)
-            # p.terminate()  # or p.kill()
-            # self.session = launch_session(self.base_path, port_num=port)
-            # if self.session:
-            #    self.server_pid = self.session.local_server_proc.pid
-            #    self.logger.info("Grpc session started")
+            #p = psutil.Process(self.server_pid)
+            #p.terminate()  # or p.kill()
+            #self.session = launch_session(self.base_path, port_num=port)
+            #if self.session:
+            #   self.server_pid = self.session.local_server_proc.pid
+            #   self.logger.info("Grpc session started")
         else:
             try:
                 self.session = launch_session(self.base_path, port_num=port)
