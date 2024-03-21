@@ -23,11 +23,13 @@
 """Tests related to the interaction between Edb and Ipc2581
 """
 
-import pytest
 from pathlib import Path
 
-from pyedb.misc.siw_feature_config.emc_rule_checker_settings import EMCRuleCheckerSettings
+import pytest
 
+from pyedb.misc.siw_feature_config.emc_rule_checker_settings import (
+    EMCRuleCheckerSettings,
+)
 from tests.conftest import local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
