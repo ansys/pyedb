@@ -1,23 +1,15 @@
 import ast
-from collections import defaultdict
-import csv
-from datetime import datetime
-import math
 import os
-import tempfile
-import time
 import warnings
 
-from pyedb.generic.constants import AEDT_UNITS, CSS4_COLORS
 from pyedb.generic.general_methods import (
     is_ironpython,
-    open_file,
     pyedb_function_handler,
 )
 
 if not is_ironpython:  # pragma: no cover
     try:
-        import numpy as np
+        import numpy # noqa: F401
     except ImportError:
         warnings.warn(
             "The NumPy module is required to run some functionalities of PostProcess.\n"
