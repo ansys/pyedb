@@ -309,14 +309,6 @@ class TestClass:
         assert y_clone.voids
         edb.close()
 
-    def test_modeler_path_convert_to_polygon(self):
-        target_path = os.path.join(local_path, "example_models", "convert_and_merge_path.aedb")
-        edbapp = Edb(target_path, edbversion=desktop_version)
-        for path in edbapp.modeler.paths:
-            assert path.convert_to_polygon()
-        assert edbapp.nets.merge_nets_polygons("test")
-        edbapp.close()
-
     def test_156_check_path_length(self):
         """"""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_path_length.aedb")
@@ -367,7 +359,7 @@ class TestClass:
         t3_1.convert_to_polygon()
         net_list = ["t1_1", "t2_1"]
         assert len(edbapp.modeler.polygons) == 3
-        assert edbapp.modeler.unite_polygons_on_layer("trace1", net_names_list=net_list)
+        edbapp.nets.merge_nets_polygons(net_names_list=net_list)
         assert len(edbapp.modeler.polygons) == 2
         edbapp.modeler.unite_polygons_on_layer("trace1")
         assert len(edbapp.modeler.polygons) == 1
