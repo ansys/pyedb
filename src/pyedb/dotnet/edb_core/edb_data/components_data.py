@@ -269,6 +269,7 @@ class EDBComponent(object):
             self.package_def = name
 
             from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
+
             polygon = PolygonDataDotNet(self._pedb).create_from_bbox(self.component_instance.GetBBox())
             self.package_def._edb_object.SetExteriorBoundary(polygon)
             return True
@@ -1007,7 +1008,6 @@ class EDBComponent(object):
         if reference_net:
             model.SetReferenceNet(reference_net)
         return self._set_model(model)
-
 
     @pyedb_function_handler()
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):

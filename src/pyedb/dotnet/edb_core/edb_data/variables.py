@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 class Variable:
     """Manages EDB methods for variable accessible from `Edb.Utility.VariableServer` property."""
 

@@ -117,12 +117,11 @@ class Configuration:
 
         return True
 
-
     @pyedb_function_handler
     def _load_components(self):
         """Imports component information from json."""
 
-        for comp in self.data["components"] :
+        for comp in self.data["components"]:
             refdes = comp["reference_designator"]
             part_type = comp["part_type"].lower()
             if part_type == "resistor":

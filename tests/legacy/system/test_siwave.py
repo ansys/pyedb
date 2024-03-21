@@ -28,6 +28,7 @@ import pytest
 from pyedb.siwave import Siwave
 from tests.conftest import desktop_version
 from tests.conftest import local_path
+
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
