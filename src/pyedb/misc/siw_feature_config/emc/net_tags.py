@@ -26,9 +26,7 @@ class Net(XmlGeneric):
 class NetTags(XmlGeneric):
     """Manages net tag."""
 
-    CLS_MAPPING = {
-        "Net": Net
-    }
+    CLS_MAPPING = {"Net": Net}
 
     def __init__(self, element):
         super().__init__(element)

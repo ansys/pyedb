@@ -1137,12 +1137,12 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
             Scaling factor.
         center : List of float or str [x,y], optional
             If None scaling is done from polygon center.
-        
+
         Returns
         -------
         bool
            ``True`` when successful, ``False`` when failed.
-        
+
         Examples
         --------
         >>> edbapp = pyaedt.Edb("myproject.aedb")
@@ -1169,12 +1169,12 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
     @pyedb_function_handler
     def move_layer(self, layer):
         """Move polygon to given layer.
-        
+
         Parameters
         ----------
         layer : str
             layer name.
-        
+
         Returns
         -------
         bool

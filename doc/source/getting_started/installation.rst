@@ -17,7 +17,7 @@ PyEDB also supports the AEDT Student version 2023 R2 or later. For more informat
 `Ansys Electronics Desktop Student  - Free Software Download <https://www.ansys.com/academic/students/ansys-e
 lectronics-desktop-student>`_ page on the Ansys website.
 
-Any additional runtime dependencies are listed in the following installation topics. 
+Any additional runtime dependencies are listed in the following installation topics.
 
 Install from a Python file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
