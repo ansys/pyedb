@@ -24,8 +24,7 @@ import sys
 from unittest.mock import patch
 import warnings
 
-from pyedb import LATEST_DEPRECATED_PYTHON_VERSION
-from pyedb import deprecation_warning
+from pyedb import LATEST_DEPRECATED_PYTHON_VERSION, deprecation_warning
 
 
 @patch.object(warnings, "warn")

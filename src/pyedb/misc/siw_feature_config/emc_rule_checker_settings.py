@@ -20,15 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import json
-import numpy as np
 from copy import deepcopy as copy
+import json
+
+import numpy as np
 
 from pyedb.generic.general_methods import ET
-
-from pyedb.misc.siw_feature_config.emc.tag_library import TagLibrary
-from pyedb.misc.siw_feature_config.emc.net_tags import NetTags
 from pyedb.misc.siw_feature_config.emc.component_tags import ComponentTags
+from pyedb.misc.siw_feature_config.emc.net_tags import NetTags
+from pyedb.misc.siw_feature_config.emc.tag_library import TagLibrary
 
 
 def kwargs_parser(kwargs):
