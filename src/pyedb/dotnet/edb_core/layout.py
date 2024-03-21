@@ -1256,8 +1256,6 @@ class EdbLayout(object):
         stat_model.stackup_thickness = self._pedb.stackup.get_layout_thickness()
         if evaluate_area:
             outline_surface = stat_model.layout_size[0] * stat_model.layout_size[1]
-            #occupying_surface = {}
-            #accupying_ratio = {}
             if net_list:
                 netlist = list(self._pedb.nets.nets.keys())
                 _poly = self._pedb.get_conformal_polygon_from_netlist(netlist)
