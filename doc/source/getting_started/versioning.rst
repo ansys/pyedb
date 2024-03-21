@@ -28,8 +28,10 @@ available, to use it, simply set the ``PYEDB_USE_DOTNET`` environment variable t
 
     # Set gRPC interface (future implementation)
     import os
+
     os.environ["PYEDB_USE_DOTNET"] = "1"
 
     # Set DotNet interface (actual implementation)
     import os
+
     os.environ["PYEDB_USE_DOTNET"] = "0"
