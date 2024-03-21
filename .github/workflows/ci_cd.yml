@@ -38,13 +38,13 @@ jobs:
           vale-version: "2.29.6"
 
   smoke-tests:
-    name: Build and Smoke tests
+    name: Build and Smoke tests (${{ matrix.os }} | Python ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ['3.9', '3.10', '3.11']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
         should-release:
           - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
     steps:
@@ -54,6 +54,10 @@ jobs:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
+
+      - name: Import python package
+        run: |
+          python -c "import pyedb; from pyedb import __version__"
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -86,16 +90,6 @@ jobs:
         run: |
           . .venv\Scripts\Activate.ps1
           python -m pip install .[tests]
-
-      - name: Uninstall conflicting CI packages
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          pip uninstall vtk -y
-
-      - name: Install CI related dependencies
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          pip install --extra-index-url https://wheels.vtk.org .[ci]
 
       - name: "Executing legacy tests"
         uses: nick-fields/retry@v3
@@ -176,16 +170,6 @@ jobs:
           . .venv\Scripts\Activate.ps1
           pip install pyaedt
 
-      - name: Uninstall conflicting CI packages
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          pip uninstall vtk -y
-
-      - name: Install CI related dependencies
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          pip install --extra-index-url https://wheels.vtk.org .[ci]
-
       - name: Build the documentation (HTML)
         run: |
           .\.venv\Scripts\Activate.ps1
@@ -204,6 +188,12 @@ jobs:
           . .venv\Scripts\Activate.ps1
           python doc/print_errors.py
 
+      - name: Add assets to HTML docs
+        run: |
+          zip -r documentation-html.zip .\doc\_build\html
+          mv documentation-html.zip .\doc\_build\html\_static\assets\download\
+          cp doc/_build/latex/ansys-edb.pdf .\doc\_build\html\_static\assets\download\
+
       - name: Upload HTML Documentation artifact
         uses: actions/upload-artifact@v4
         with:
@@ -215,7 +205,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: documentation-pdf
-          path: doc/_build/latex/*.pdf
+          path: doc/_build/latex/pyedb*.pdf
           retention-days: 7
 
   package:

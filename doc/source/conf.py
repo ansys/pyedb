@@ -22,7 +22,6 @@ from ansys_sphinx_theme import (
 from docutils import nodes
 from docutils.parsers.rst import Directive
 import numpy as np
-import pyvista
 from sphinx import addnodes
 
 # <-----------------Override the sphinx pdf builder---------------->
@@ -225,22 +224,6 @@ master_doc = "index"
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
-# Manage errors
-pyvista.set_error_output_file("errors.txt")
-
-# Ensure that offscreen rendering is used for docs generation
-pyvista.OFF_SCREEN = True
-
-# Preferred plotting style for documentation
-# pyvista.set_plot_theme('document')
-
-# must be less than or equal to the XVFB window size
-pyvista.global_theme["window_size"] = np.array([1024, 768])
-
-# Save figures in specified directory
-pyvista.FIGURE_PATH = os.path.join(os.path.abspath("./images/"), "auto-generated/")
-if not os.path.exists(pyvista.FIGURE_PATH):
-    os.makedirs(pyvista.FIGURE_PATH)
 
 # gallery build requires EDB install
 if os.name != "posix" and "PYEDB_CI_NO_EXAMPLES" not in os.environ:
@@ -251,8 +234,6 @@ if os.name != "posix" and "PYEDB_CI_NO_EXAMPLES" not in os.environ:
         message="Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.",
     )
 
-    # necessary for pyvista when building the sphinx gallery
-    pyvista.BUILDING_GALLERY = True
 
     if config["run_examples"]:
         extensions.append("sphinx_gallery.gen_gallery")
@@ -274,12 +255,9 @@ if os.name != "posix" and "PYEDB_CI_NO_EXAMPLES" not in os.environ:
             "backreferences_dir": None,
             # Modules for which function level galleries are created.  In
             "doc_module": "ansys-legacy",
-            "image_scrapers": ("pyvista", "matplotlib"),
+            "image_scrapers": ("matplotlib"),
             "ignore_pattern": "flycheck*",
             "thumbnail_size": (350, 350),
-            # 'first_notebook_cell': ("%matplotlib inline\n"
-            #                         "from pyvista import set_plot_theme\n"
-            #                         "set_plot_theme('document')"),
         }
 
 jinja_contexts = {
@@ -335,7 +313,7 @@ html_theme_options = {
         },
         {
             "name": "Download documentation in PDF",
-            "url": f"https://{cname}/version/{switcher_version}/_static/assets/download/ansys-geometry-core.pdf",  # noqa: E501
+            "url": f"https://{cname}/version/{switcher_version}/_static/assets/download/pyedb.pdf",  # noqa: E501
             "icon": "fa fa-file-pdf fa-fw",
         },
     ],

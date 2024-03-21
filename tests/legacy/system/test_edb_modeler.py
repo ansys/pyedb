@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Tests related to Edb modeler
 """
 
@@ -156,6 +178,10 @@ class TestClass:
         assert len(poly_test) == 1
         assert poly_test[0].center == [0.005, 0.005]
         assert poly_test[0].bbox == [0.0, 0.0, 0.01, 0.01]
+        assert poly_test[0].move_layer("16_Bottom")
+        poly_test = [poly for poly in edbapp.modeler.polygons if poly.net_name == "test"]
+        assert len(poly_test) == 1
+        assert poly_test[0].layer_name == "16_Bottom"
         edbapp.close_edb()
 
     def test_modeler_create_trace(self):
@@ -323,3 +349,30 @@ class TestClass:
             net5_length += path.length
         assert net5_length == 0.026285623899038543
         edbapp.close_edb()
+        
+    def test_duplicate(self):
+        edbapp = Edb()
+        edbapp["$H"] = "0.65mil"
+        assert edbapp["$H"].value_string == "0.65mil"
+        edbapp["$S_D"] = "10.65mil"
+        edbapp["$T"] = "21.3mil"
+        edbapp["$Antipad_R"] = "24mil"
+        edbapp["Via_S"] = "40mil"
+        edbapp.stackup.add_layer("bot_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d1", layer_type="dielectric", thickness="$S_D", material="FR4_epoxy")
+        edbapp.stackup.add_layer("trace2", thickness="$H")
+        edbapp.stackup.add_layer("d2", layer_type="dielectric", thickness="$T-$S_D", material="FR4_epoxy")
+        edbapp.stackup.add_layer("mid_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d3", layer_type="dielectric", thickness="13mil", material="FR4_epoxy")
+        edbapp.stackup.add_layer("top_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d4", layer_type="dielectric", thickness="13mil", material="FR4_epoxy")
+        edbapp.stackup.add_layer("trace1", thickness="$H")
+        r1 = edbapp.modeler.create_rectangle(center_point=("0,0"), width="200mil", height="200mil", layer_name="top_gnd", representation_type="CenterWidthHeight", net_name="r1")
+        r2 = edbapp.modeler.create_rectangle(center_point=("0,0"), width="40mil", height="$Antipad_R*2", layer_name="top_gnd", representation_type="CenterWidthHeight", net_name="r2")
+        assert r2
+        assert r1.subtract(r2)
+        lay_list = ["bot_gnd", "mid_gnd"]
+        assert edbapp.modeler.primitives[0].duplicate_across_layers(lay_list)
+        assert edbapp.modeler.primitives_by_layer["mid_gnd"]
+        assert edbapp.modeler.primitives_by_layer["bot_gnd"]
+        edbapp.close()

@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """This module contains the ``Edb`` class.
 
 This module is implicitly loaded in HFSS 3D Layout when launched.
@@ -191,10 +213,19 @@ class Edb(Database):
                 os.path.dirname(edbpath),
                 "pyedb_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log",
             )
+            aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+            files = [aedt_file, aedt_file + ".lock"]
+            for file in files:
+                if os.path.isfile(file):
+                    try:
+                        shutil.rmtree(file)
+                        self.logger.info(f"Removing {file} to allow loading EDB file.")
+                    except:
+                        self.logger.info(f"Failed to delete {file} which is located at the same location as the EDB file.")
 
         if isaedtowned and (inside_desktop or settings.remote_rpc_session):
             self.open_edb_inside_aedt()
-        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz"]:
+        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
             control_file = None
@@ -2230,9 +2261,10 @@ class Edb(Database):
                 include_pingroups=include_pingroups,
                 pins_to_preserve=pins_to_preserve,
             )
-            if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1] and extent_defeature > 0:
-                _poly = _poly.Defeature(extent_defeature)
-
+            if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1]:
+                if extent_defeature > 0:
+                    _poly = _poly.Defeature(extent_defeature)
+                _poly = _poly.CreateFromArcs(_poly.GetArcData(), True)
         if not _poly or _poly.IsNull():
             self._logger.error("Failed to create Extent.")
             return []
