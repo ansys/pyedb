@@ -1,14 +1,16 @@
 import logging
 import re
-import warnings
 
-from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-import numpy as np
-from pyedb.generic.general_methods import get_filename_without_extension
-from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.modeler.geometry_operators import GeometryOperators
 import ansys.edb.core.hierarchy as hierarchy
 import ansys.edb.core.utility as utility
+import numpy as np
+
+from pyedb.generic.general_methods import (
+    get_filename_without_extension,
+    pyedb_function_handler,
+)
+from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 class EDBComponentDef(object):
@@ -48,9 +50,7 @@ class EDBComponentDef(object):
         """
         comp_list = [
             EDBComponent(self._pedb, l)
-            for l in self._pedb.hierarchy.component.find_by_def(
-                self._pedb.layout, self.part_name
-            )
+            for l in self._pedb.hierarchy.component.find_by_def(self._pedb.layout, self.part_name)
         ]
         return {comp.refdes: comp for comp in comp_list}
 
@@ -410,7 +410,6 @@ class EDBComponent(object):
         pair = model.rlc(self._pin_pairs[0])
         return [pair.r.value, pair.l.value, pair.c.value]
 
-
     @rlc_values.setter
     def rlc_values(self, value):
         if isinstance(value, list):  # pragma no cover
@@ -648,8 +647,11 @@ class EDBComponent(object):
         list
             List of Pins of Component.
         """
-        pins = [p for p in self.edbcomponent.members if p.layout_obj_type.value == 1 and p.is_layout_pin
-                and p.component.name == self.refdes]
+        pins = [
+            p
+            for p in self.edbcomponent.members
+            if p.layout_obj_type.value == 1 and p.is_layout_pin and p.component.name == self.refdes
+        ]
         return pins
 
     @property
@@ -673,7 +675,14 @@ class EDBComponent(object):
         dic[str, :class:`pyaedt.edb_core.edb_data.definitions.EDBPadstackInstance`]
             Dictionary of EDBPadstackInstance Components.
         """
-        return {pin.name: EDBPadstackInstance(pin, self._pedb) for pin in self.pinlist}
+        # return {pin.name: EDBPadstackInstance(pin, self._pedb) for pin in self.pinlist}
+        pins = {}
+        for pin in self.pinlist:
+            pin_name = pin.name
+            pin_obj = EDBPadstackInstance(pin, self._pedb)
+            pins[pin_name] = pin_obj
+        return pins
+        # return {pin.name: EDBPadstackInstance(pin, self._pedb) for pin in self.pinlist}
 
     @property
     def type(self):

@@ -1,16 +1,17 @@
 """Database."""
 import os
 import sys
+
+import ansys.edb.core.database as database
+from ansys.edb.core.session import launch_session
 import psutil
 
 from pyedb import __version__
 from pyedb.edb_logger import pyedb_logger
-from ansys.edb.core.session import launch_session
+from pyedb.generic.general_methods import env_path, env_value, is_linux
 from pyedb.misc.misc import list_installed_ansysem
-from pyedb.generic.general_methods import env_path
-from pyedb.generic.general_methods import env_value
-from pyedb.generic.general_methods import is_linux
-import ansys.edb.core.database as database
+
+# from signal import SIGHUP
 
 
 class EdbInit(object):
@@ -52,6 +53,12 @@ class EdbInit(object):
         self.get_grpc_serveur_process()
         if self.server_pid:
             self.logger.info("Server already running")
+            # p = psutil.Process(self.server_pid)
+            # p.terminate()  # or p.kill()
+            # self.session = launch_session(self.base_path, port_num=port)
+            # if self.session:
+            #    self.server_pid = self.session.local_server_proc.pid
+            #    self.logger.info("Grpc session started")
         else:
             try:
                 self.session = launch_session(self.base_path, port_num=port)
@@ -60,7 +67,6 @@ class EdbInit(object):
                     self.logger.info("Grpc session started")
             except:
                 self.logger.error("Failed to start EDB_RPC_server process")
-
 
     @property
     def db(self):
@@ -180,8 +186,6 @@ class EdbInit(object):
             True if Database is open with read only access, otherwise False.
         """
         return self._db.is_read_only
-
-
 
     def find_by_id(self, db_id):
         """Find a database by ID.

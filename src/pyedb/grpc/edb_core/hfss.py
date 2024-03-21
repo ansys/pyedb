@@ -2,25 +2,31 @@
 This module contains the ``EdbHfss`` class.
 """
 import math
-from pyedb.grpc.edb_core.edb_data.hfss_extent_info import HfssExtentInfo
-from pyedb.grpc.edb_core.edb_data.ports import BundleWavePort
-from pyedb.grpc.edb_core.edb_data.ports import WavePort
-from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitives
-from pyedb.grpc.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+
+import ansys.edb.core.database as edb_database
+import ansys.edb.core.geometry as edb_geometry
+import ansys.edb.core.hierarchy as edb_hierarchy
+import ansys.edb.core.layer as edb_layer
+import ansys.edb.core.net as edb_net
+import ansys.edb.core.primitive as edb_primitive
+import ansys.edb.core.terminal as edb_terminal
+import ansys.edb.core.utility as edb_utility
+
 from pyedb.generic.constants import RadiationBoxType
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+from pyedb.grpc.edb_core.edb_data.hfss_extent_info import HfssExtentInfo
+from pyedb.grpc.edb_core.edb_data.ports import BundleWavePort, WavePort
+from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitives
+from pyedb.grpc.edb_core.edb_data.simulation_configuration import (
+    SimulationConfiguration,
+)
+from pyedb.grpc.edb_core.edb_data.terminals import (
+    BundleTerminal,
+    PadstackInstanceTerminal,
+)
 from pyedb.modeler.geometry_operators import GeometryOperators
-import ansys.edb.core.utility as utility
-import ansys.edb.core.terminal as terminal
-import ansys.edb.core.geometry as geometry
-import ansys.edb.core.simulation_setup as simulation_setup
-import ansys.edb.core.primitive as primitive
-import ansys.edb.core.database as database
-import ansys.edb.core.net as net
-import ansys.edb.core.layer as layer
-import ansys.edb.core.hierarchy as hierarchy
-import ansys.edb.core.simulation_setup as edb_simulation_setup
+
+# import ansys.edb.core.simulation_setup as edb_simulation_setup
 
 
 # from ansys.edb.utility.value import Value
@@ -131,14 +137,17 @@ class EdbHfss(object):
         if not terminal_name:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, (list, tuple)):
-            point_on_edge = geometry.PointData(utility.Value(point_on_edge[0]), utility.Value(point_on_edge[1]))
+            point_on_edge = edb_geometry.PointData(
+                edb_utility.Value(point_on_edge[0]), edb_utility.Value(point_on_edge[1])
+            )
         if hasattr(prim_id, "GetId"):
             prim = prim_id
         else:
             prim = [i for i in self._pedb.modeler.primitives if i.id == prim_id][0].primitive_object
-        pos_edge = terminal.PrimitiveEdge.create(prim, point_on_edge)
-        return terminal.EdgeTerminal.create(layout=prim.layout, net_ref=prim.net, name=terminal_name, edges=[pos_edge],
-                                             is_ref=is_ref)
+        pos_edge = edb_terminal.PrimitiveEdge.create(prim, point_on_edge)
+        return edb_terminal.EdgeTerminal.create(
+            layout=prim.layout, net_ref=prim.net, name=terminal_name, edges=[pos_edge], is_ref=is_ref
+        )
 
     @pyedb_function_handler()
     def get_trace_width_for_traces_with_ports(self):
@@ -281,13 +290,13 @@ class EdbHfss(object):
 
     @pyedb_function_handler()
     def create_circuit_port_on_net(
-            self,
-            positive_component_name,
-            positive_net_name,
-            negative_component_name=None,
-            negative_net_name="GND",
-            impedance_value=50,
-            port_name="",
+        self,
+        positive_component_name,
+        positive_net_name,
+        negative_component_name=None,
+        negative_net_name="GND",
+        impedance_value=50,
+        port_name="",
     ):
         """Create a circuit port on a NET.
         It groups all pins belonging to the specified net and then applies the port on PinGroups.
@@ -330,14 +339,14 @@ class EdbHfss(object):
 
     @pyedb_function_handler()
     def create_voltage_source_on_net(
-            self,
-            positive_component_name,
-            positive_net_name,
-            negative_component_name=None,
-            negative_net_name="GND",
-            voltage_value=3.3,
-            phase_value=0,
-            source_name="",
+        self,
+        positive_component_name,
+        positive_net_name,
+        negative_component_name=None,
+        negative_net_name="GND",
+        voltage_value=3.3,
+        phase_value=0,
+        source_name="",
     ):
         """Create a voltage source.
 
@@ -383,14 +392,14 @@ class EdbHfss(object):
 
     @pyedb_function_handler()
     def create_current_source_on_net(
-            self,
-            positive_component_name,
-            positive_net_name,
-            negative_component_name=None,
-            negative_net_name="GND",
-            current_value=0.1,
-            phase_value=0,
-            source_name="",
+        self,
+        positive_component_name,
+        positive_net_name,
+        negative_component_name=None,
+        negative_net_name="GND",
+        current_value=0.1,
+        phase_value=0,
+        source_name="",
     ):
         """Create a current source.
 
@@ -459,30 +468,37 @@ class EdbHfss(object):
         if not isinstance(net_list, list):
             net_list = [net_list]
         for ref in ref_des_list:
-            selected_pins = [pin for pin in list(self._pedb.components[ref].pins.values()) if pin.net
-                             and pin.net_name in net_list]
+            # pins_with_nets = [pin for pin in self._pedb.components[ref].edbcomponent.members if not pin.net.is_null]
+            # test_selected_pins = [pin for pin in pins_with_nets if pin.net.name in net_list]
+            cmp_pins = [pin for pin in list(self._pedb.components[ref].pins.values()) if pin.net]
+            pins_with_nets = [pin for pin in cmp_pins if not pin.net.is_null]
+            selected_pins = [pin for pin in pins_with_nets if pin.net_name in net_list]
+            # selected_pins = [pin for pin in list(self._pedb.components[ref].pins.values()) if pin.net
+            #                 and pin.net_name in net_list]
             for pin_inst in selected_pins:
                 port_name = "{}_{}_{}".format(ref, pin_inst.net_name, pin_inst.pin.name)
                 layer_range = pin_inst.pin.get_layer_range()
-                if layer_range and terminal.PadstackInstanceTerminal.create(layout=self._layout,
-                                                                            name=port_name,
-                                                                            net=pin_inst.pin.net,
-                                                                            padstack_instance=pin_inst.pin,
-                                                                            layer=layer_range[1]):
+                if layer_range and edb_terminal.PadstackInstanceTerminal.create(
+                    layout=self._layout,
+                    name=port_name,
+                    net=pin_inst.pin.net,
+                    padstack_instance=pin_inst.pin,
+                    layer=layer_range[1],
+                ):
                     coax.append(port_name)
         return coax
 
     @pyedb_function_handler
     def create_differential_wave_port(
-            self,
-            positive_primitive_id,
-            positive_points_on_edge,
-            negative_primitive_id,
-            negative_points_on_edge,
-            port_name=None,
-            horizontal_extent_factor=5,
-            vertical_extent_factor=3,
-            pec_launch_width="0.01mm",
+        self,
+        positive_primitive_id,
+        positive_points_on_edge,
+        negative_primitive_id,
+        negative_points_on_edge,
+        port_name=None,
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
     ):
         """Create a differential wave port.
 
@@ -547,13 +563,13 @@ class EdbHfss(object):
 
     @pyedb_function_handler
     def create_bundle_wave_port(
-            self,
-            primitives_id,
-            points_on_edge,
-            port_name=None,
-            horizontal_extent_factor=5,
-            vertical_extent_factor=3,
-            pec_launch_width="0.01mm",
+        self,
+        primitives_id,
+        points_on_edge,
+        port_name=None,
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
     ):
         """Create a bundle wave port.
 
@@ -635,15 +651,15 @@ class EdbHfss(object):
 
     @pyedb_function_handler()
     def create_edge_port_on_polygon(
-            self,
-            polygon=None,
-            reference_polygon=None,
-            terminal_point=None,
-            reference_point=None,
-            reference_layer=None,
-            port_name=None,
-            port_impedance=50.0,
-            force_circuit_port=False,
+        self,
+        polygon=None,
+        reference_polygon=None,
+        terminal_point=None,
+        reference_point=None,
+        reference_layer=None,
+        port_name=None,
+        port_impedance=50.0,
+        force_circuit_port=False,
     ):
         """Create lumped port between two edges from two different polygons. Can also create a vertical port when
         the reference layer name is only provided. When a port is created between two edge from two polygons which don't
@@ -703,25 +719,30 @@ class EdbHfss(object):
         if not isinstance(terminal_point, list):
             self._logger.error("Terminal point must be a list of float with providing the point location in meter")
             return False
-        terminal_point = PointData(Value(terminal_point[0]), Value(terminal_point[1]))
+        terminal_point = edb_geometry.PointData(
+            edb_utility.Value(terminal_point[0]), edb_utility.Value(terminal_point[1])
+        )
         if reference_point and isinstance(reference_point, list):
-            reference_point = PointData(Value(reference_point[0]), Value(reference_point[1]))
+            reference_point = edb_geometry.PointData(
+                edb_utility.Value(reference_point[0]), edb_utility.Value(reference_point[1])
+            )
         if not port_name:
             port_name = generate_unique_name("Port_")
-        edge = PrimitiveEdge.create(polygon.prim_obj, (terminal_point.x.value, terminal_point.y.value))
-        edge_term = EdgeTerminal.create(polygon.layout, polygon.net, port_name, [edge], is_ref=False)
+        edge = edb_terminal.PrimitiveEdge.create(polygon.prim_obj, (terminal_point.x.value, terminal_point.y.value))
+        edge_term = edb_terminal.EdgeTerminal.create(polygon.layout, polygon.net, port_name, [edge], is_ref=False)
         if force_circuit_port:
             edge_term.is_circuit_port = True
         else:
             edge_term.is_circuit_port = False
 
         if port_impedance:
-            edge_term.impedance = Value(port_impedance)
+            edge_term.impedance = edb_utility.Value(port_impedance)
         edge_term.name = port_name
         if reference_polygon and reference_point:
-            ref_edge = PrimitiveEdge.create(reference_polygon.prim_obj, reference_point)
-            ref_edge_term = EdgeTerminal.create(reference_polygon.layout, reference_polygon.net, port_name + "_ref",
-                                                ref_edge, is_ref=True)
+            ref_edge = edb_terminal.PrimitiveEdge.create(reference_polygon.prim_obj, reference_point)
+            ref_edge_term = edb_terminal.EdgeTerminal.create(
+                reference_polygon.layout, reference_polygon.net, port_name + "_ref", ref_edge, is_ref=True
+            )
             if reference_layer:
                 ref_edge_term.reference_layer = reference_layer
             if force_circuit_port:
@@ -730,20 +751,20 @@ class EdbHfss(object):
                 ref_edge_term.is_circuit_port = False
 
             if port_impedance:
-                ref_edge_term.impedance = Value(port_impedance)
+                ref_edge_term.impedance = edb_utility.Value(port_impedance)
             edge_term.reference_terminal = ref_edge_term
         return True
 
     @pyedb_function_handler()
     def create_wave_port(
-            self,
-            prim_id,
-            point_on_edge,
-            port_name=None,
-            impedance=50,
-            horizontal_extent_factor=5,
-            vertical_extent_factor=3,
-            pec_launch_width="0.01mm",
+        self,
+        prim_id,
+        point_on_edge,
+        port_name=None,
+        impedance=50,
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
     ):
         """Create a wave port.
 
@@ -782,7 +803,7 @@ class EdbHfss(object):
             prim_id = prim_id.id
 
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
-        pos_edge_term.impedance = utility.Value(impedance)
+        pos_edge_term.impedance = edb_utility.Value(impedance)
         wave_port = WavePort(self._pedb, pos_edge_term)
         wave_port.horizontal_extent_factor = horizontal_extent_factor
         wave_port.vertical_extent_factor = vertical_extent_factor
@@ -796,16 +817,16 @@ class EdbHfss(object):
 
     @pyedb_function_handler()
     def create_edge_port_vertical(
-            self,
-            prim_id,
-            point_on_edge,
-            port_name=None,
-            impedance=50,
-            reference_layer=None,
-            hfss_type="Gap",
-            horizontal_extent_factor=5,
-            vertical_extent_factor=3,
-            pec_launch_width="0.01mm",
+        self,
+        prim_id,
+        point_on_edge,
+        port_name=None,
+        impedance=50,
+        reference_layer=None,
+        hfss_type="Gap",
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
     ):
         """Create a vertical edge port.
 
@@ -841,7 +862,7 @@ class EdbHfss(object):
         if not port_name:
             port_name = generate_unique_name("Terminal_")
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
-        pos_edge_term.impedance = utility.Value(impedance)
+        pos_edge_term.impedance = edb_utility.Value(impedance)
         if reference_layer:
             reference_layer = self._pedb.stackup.signal_layers[reference_layer]._edb_layer
             pos_edge_term.reference_layer = reference_layer
@@ -856,7 +877,7 @@ class EdbHfss(object):
                 " 'PEC Launch Width'='{}')".format(pec_launch_width),
             ]
         )
-        pos_edge_term.set_product_solver_option(database.ProductIdType.DESIGNER.value, "HFSS", prop)
+        pos_edge_term.set_product_solver_option(edb_database.ProductIdType.DESIGNER.value, "HFSS", prop)
         if pos_edge_term:
             return port_name, self._pedb.hfss.excitations[port_name]
         else:
@@ -864,14 +885,14 @@ class EdbHfss(object):
 
     @pyedb_function_handler()
     def create_edge_port_horizontal(
-            self,
-            prim_id,
-            point_on_edge,
-            ref_prim_id=None,
-            point_on_ref_edge=None,
-            port_name=None,
-            impedance=50,
-            layer_alignment="Upper",
+        self,
+        prim_id,
+        point_on_edge,
+        ref_prim_id=None,
+        point_on_ref_edge=None,
+        port_name=None,
+        impedance=50,
+        layer_alignment="Upper",
     ):
         """Create a horizontal edge port.
 
@@ -903,13 +924,15 @@ class EdbHfss(object):
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
         neg_edge_term = self._create_edge_terminal(ref_prim_id, point_on_ref_edge, port_name + "_ref", is_ref=True)
 
-        pos_edge_term.impedance = utility.Value(impedance)
+        pos_edge_term.impedance = edb_utility.Value(impedance)
         pos_edge_term.reference_terminal = neg_edge_term
         if not layer_alignment == "Upper":
             layer_alignment = "Lower"
-        pos_edge_term.set_product_solver_option(database.ProductIdType.DESIGNER.value, "HFSS",
-                                            "HFSS('HFSS Type'='Gap(coax)', Orientation='Horizontal', 'Layer Alignment'='{}')".format(
-                                                layer_alignment))
+        pos_edge_term.set_product_solver_option(
+            edb_database.ProductIdType.DESIGNER.value,
+            "HFSS",
+            "HFSS('HFSS Type'='Gap(coax)', Orientation='Horizontal', 'Layer Alignment'='{}')".format(layer_alignment),
+        )
         if pos_edge_term:
             return port_name
         else:
@@ -917,7 +940,7 @@ class EdbHfss(object):
 
     @pyedb_function_handler()
     def create_lumped_port_on_net(
-            self, nets=None, reference_layer=None, return_points_only=False, digit_resolution=6, at_bounding_box=True
+        self, nets=None, reference_layer=None, return_points_only=False, digit_resolution=6, at_bounding_box=True
     ):
         """Create an edge port on nets. This command looks for traces and polygons on the
         nets and tries to assign vertical lumped port.
@@ -949,15 +972,15 @@ class EdbHfss(object):
         """
         if not isinstance(nets, list):
             if isinstance(nets, str):
-                nets = [Net.find_by_name(self._active_layout, nets)]
-            elif isinstance(nets, Net):
+                nets = [edb_net.Net.find_by_name(self._active_layout, nets)]
+            elif isinstance(nets, edb_net.Net):
                 nets = [nets]
         else:
             temp_nets = []
             for nn in nets:
                 if isinstance(nn, str):
-                    temp_nets.append(Net.find_by_name(self._active_layout, nn))
-                elif isinstance(nn, Net):
+                    temp_nets.append(edb_net.Net.find_by_name(self._active_layout, nn))
+                elif isinstance(nn, edb_net.Net):
                     temp_nets.append(nn)
             nets = temp_nets
         port_created = False
@@ -968,7 +991,7 @@ class EdbHfss(object):
                     reference_layer = self._pedb.stackup.signal_layers[reference_layer]._edb_layer
                 except:
                     raise Exception("Failed to get the layer {}".format(reference_layer))
-            if not isinstance(reference_layer, Layer):
+            if not isinstance(reference_layer, edb_layer.Layer):
                 return False
             layout_bbox = self._pedb.get_conformal_polygon_from_netlist(self._pedb.nets.netlist)
             layout_extent_segments = [pt for pt in list(layout_bbox.arc_data) if pt.is_segment]
@@ -1012,10 +1035,10 @@ class EdbHfss(object):
                     poly_segment = [aa for aa in poly.arcs if aa.is_segment]
                     for segment in poly_segment:
                         if (
-                                GeometryOperators.point_in_polygon(
-                                    [segment.mid_point.x.value, segment.mid_point.y.value], layout_extent_points
-                                )
-                                == 0
+                            GeometryOperators.point_in_polygon(
+                                [segment.mid_point.x.value, segment.mid_point.y.value], layout_extent_points
+                            )
+                            == 0
                         ):
                             if return_points_only:
                                 edges_pts.append(segment.mid_point)
@@ -1063,7 +1086,7 @@ class EdbHfss(object):
                 self._logger.error("No reference net provided for creating port")
                 return False
             if user_defined_extent:
-                if isinstance(user_defined_extent, PolygonData):
+                if isinstance(user_defined_extent, edb_geometry.PolygonData):
                     _points = [pt for pt in list(user_defined_extent.points)]
                     _x = []
                     _y = []
@@ -1074,11 +1097,7 @@ class EdbHfss(object):
                     user_defined_extent = [_x, _y]
             terminal_info = []
             for net in nets:
-                net_polygons = [
-                    pp
-                    for pp in net.primitives
-                    if pp.primitive_type == PrimitiveType.POLYGON
-                ]
+                net_polygons = [pp for pp in net.primitives if pp.primitive_type == edb_primitive.PrimitiveType.POLYGON]
                 for poly in net_polygons:
                     mid_points = [[arc.mid_point.x.value, arc.mid_point.y.value] for arc in poly.arcs]
                     for mid_point in mid_points:
@@ -1089,7 +1108,9 @@ class EdbHfss(object):
                                 self._logger.info("Terminal {} created".format(term.name))
                                 term.is_circuit_port = True
                                 terminal_info.append([poly.net.name, mid_point[0], mid_point[1], term.name])
-                                mid_pt_data = PointData(Value(mid_point[0]), Value(mid_point[1]))
+                                mid_pt_data = edb_geometry.PointData(
+                                    edb_utility.Value(mid_point[0]), edb_utility.Value(mid_point[1])
+                                )
                                 ref_prim = [
                                     prim
                                     for prim in reference_net.primitives
@@ -1104,7 +1125,9 @@ class EdbHfss(object):
                                         (mid_point[0] + mid_point[0] * 1e-3, mid_point[1] - mid_point[1] * 1e-3),
                                     ]
                                     for new_point in scanning_zone:
-                                        mid_pt_data = PointData(Value(new_point[0]), Value(new_point[1]))
+                                        mid_pt_data = edb_geometry.PointData(
+                                            edb_utility.Value(new_point[0]), edb_utility.Value(new_point[1])
+                                        )
                                         ref_prim = [
                                             prim
                                             for prim in reference_net.primitives
@@ -1141,7 +1164,7 @@ class EdbHfss(object):
             return False
         layout_obj_instances = layout.layout_instance.query_layout_obj_instances()
         polygon_data_list = [lobj.layout_instance_context.get_bbox(False) for lobj in layout_obj_instances]
-        _bbox = geometry.PolygonData.bbox_of_polygons(polygon_data_list)
+        _bbox = edb_geometry.PolygonData.bbox_of_polygons(polygon_data_list)
         layout_bbox = [
             round(_bbox[0].x.value, digit_resolution),
             round(_bbox[0].y.value, digit_resolution),
@@ -1172,20 +1195,28 @@ class EdbHfss(object):
             return False
         hfss_extent = self._pedb.active_cell.hfss_extent_info
         if simulation_setup.radiation_box == RadiationBoxType.BoundingBox:
-            hfss_extent.extent_type = utility.HfssExtentInfo.HFSSExtentInfoType.BOUNDING_BOX
+            hfss_extent.extent_type = edb_utility.HfssExtentInfo.HFSSExtentInfoType.BOUNDING_BOX
         elif simulation_setup.radiation_box == RadiationBoxType.Conformal:
-            hfss_extent.extent_type = utility.HfssExtentInfo.HFSSExtentInfoType.CONFORMING
+            hfss_extent.extent_type = edb_utility.HfssExtentInfo.HFSSExtentInfoType.CONFORMING
         else:
-            hfss_extent.extent_type = utility.HfssExtentInfo.HFSSExtentInfoType.CONVEX_HUL
-        hfss_extent.dielectric_extent_size = (simulation_setup.dielectric_extent,
-                                              simulation_setup.use_dielectric_extent_multiple)
-        hfss_extent.air_box_horizontal_extent = (simulation_setup.airbox_horizontal_extent,
-                                                 simulation_setup.use_airbox_horizontal_extent_multiple)
-        hfss_extent.air_box_negative_vertical_extent = (simulation_setup.airbox_negative_vertical_extent,
-                                                        simulation_setup.use_airbox_negative_vertical_extent_multiple)
+            hfss_extent.extent_type = edb_utility.HfssExtentInfo.HFSSExtentInfoType.CONVEX_HUL
+        hfss_extent.dielectric_extent_size = (
+            simulation_setup.dielectric_extent,
+            simulation_setup.use_dielectric_extent_multiple,
+        )
+        hfss_extent.air_box_horizontal_extent = (
+            simulation_setup.airbox_horizontal_extent,
+            simulation_setup.use_airbox_horizontal_extent_multiple,
+        )
+        hfss_extent.air_box_negative_vertical_extent = (
+            simulation_setup.airbox_negative_vertical_extent,
+            simulation_setup.use_airbox_negative_vertical_extent_multiple,
+        )
 
-        hfss_extent.air_box_positive_vertical_extent = (simulation_setup.airbox_positive_vertical_extent,
-                                                        simulation_setup.use_airbox_positive_vertical_extent_multiple)
+        hfss_extent.air_box_positive_vertical_extent = (
+            simulation_setup.airbox_positive_vertical_extent,
+            simulation_setup.use_airbox_positive_vertical_extent_multiple,
+        )
         hfss_extent.honor_user_dielectric = simulation_setup.honor_user_dielectric
         hfss_extent.truncate_air_box_at_ground = simulation_setup.truncate_airbox_at_ground
         hfss_extent.use_open_region = simulation_setup.use_radiation_boundary
@@ -1213,8 +1244,9 @@ class EdbHfss(object):
                                as argument"
             )
             return False
-        edb_simsetup = edb_simulation_setup.HfssSimulationSetup.create(self._pedb.active_cell,
-                                                                       simulation_setup.setup_name)
+        edb_simsetup = edb_simulation_setup.HfssSimulationSetup.create(
+            self._pedb.active_cell, simulation_setup.setup_name
+        )
         edb_simsetup.settings.advanced_meshing.arc_step_size = simulation_setup.arc_angle
         edb_simsetup.settings.advanced_meshing.use_arc_chord_error_approx = simulation_setup.use_arc_to_chord_error
         edb_simsetup.settings.advanced_meshing.arc_to_chord_error = simulation_setup.arc_to_chord_error
@@ -1223,13 +1255,14 @@ class EdbHfss(object):
         edb_simsetup.settings.general.single_frequency_adaptive_solution.max_passes = simulation_setup.max_num_passes
         edb_simsetup.settings.options.do_lamda_refine = simulation_setup.do_lambda_refinement
 
-        sweep_data = edb_simulation_setup.SweepData(name=simulation_setup.sweep_name,
-                                                    distribution=self._get_edb_compatible_freq_sweep_type(
-                                                        simulation_setup),
-                                                    start_f=simulation_setup.start_freq,
-                                                    end_f=simulation_setup.stop_freq,
-                                                    step=simulation_setup.step_freq,
-                                                    fast_sweep=False)
+        sweep_data = edb_simulation_setup.SweepData(
+            name=simulation_setup.sweep_name,
+            distribution=self._get_edb_compatible_freq_sweep_type(simulation_setup),
+            start_f=simulation_setup.start_freq,
+            end_f=simulation_setup.stop_freq,
+            step=simulation_setup.step_freq,
+            fast_sweep=False,
+        )
         # to add when supported
         # sweep_data.use_q3d_for_dc = simulation_setup.use_q3d_for_dc
         # sweep_data.enforce_causality = simulation_setup.enforce_causality
@@ -1324,7 +1357,7 @@ class EdbHfss(object):
         l_inst = layout.layout_instance
 
         for inst in simulation_setup.components:  # pragma: no cover
-            comp = ComponentGroup.find(layout, inst)
+            comp = edb_hierarchy.ComponentGroup.find(layout, inst)
             if comp.is_null:
                 continue
 
@@ -1336,11 +1369,7 @@ class EdbHfss(object):
 
             if trim_to_terminals:
                 # Remove any pins that aren't interior to the Terminals bbox
-                pin_list = [
-                    obj
-                    for obj in list(comp.layout_objs)
-                    if obj.obj_type == PadstackInstance
-                ]
+                pin_list = [obj for obj in list(comp.layout_objs) if obj.obj_type == edb_primitive.PadstackInstance]
                 for pin in pin_list:
                     loi = l_inst.get_layout_obj_instance(pin, None)
                     bb_c = loi.center
@@ -1386,20 +1415,24 @@ class EdbHfss(object):
         )
         ii = 0
         for cc in cmp_names:
-            cmp = hierarchy.ComponentGroup.find(self._active_layout, cc)
+            cmp = edb_hierarchy.ComponentGroup.find(self._active_layout, cc)
             if cmp.is_null:
                 self._logger.warning("RenamePorts: could not find component {0}".format(cc))
                 continue
-            terms = [p for p in cmp.members if isinstance(p, terminal.Terminal)]
+            terms = [p for p in cmp.members if isinstance(p, edb_terminal.Terminal)]
             for nn in net_names:
                 for tt in [term for term in terms if term.net.name == nn]:
-                    tt.impedance = utility.Value("50ohm")
+                    tt.impedance = edb_utility.Value("50ohm")
                     ii += 1
 
             if not simulation_setup.use_default_coax_port_radial_extension:
                 # Set the Radial Extent Factor
                 typ = cmp.component_type
-                if typ in [hierarchy.ComponentType.OTHER, hierarchy.ComponentType.IC, hierarchy.ComponentType.IO]:
+                if typ in [
+                    edb_hierarchy.ComponentType.OTHER,
+                    edb_hierarchy.ComponentType.IC,
+                    edb_hierarchy.ComponentType.IO,
+                ]:
                     cmp_prop = cmp.component_property
                     success, diam1, diam2 = cmp_prop.solder_ball_property.diameter
                     if success and diam1 and diam2 > 0:  # pragma: no cover
@@ -1413,27 +1446,21 @@ class EdbHfss(object):
                             "'PEC Launch Width'='0mm')"
                         )
                         for tt in terms:
-                            tt.set_product_solver_option(database.ProductIdType.DESIGNER, "HFSS", option)
+                            tt.set_product_solver_option(edb_database.ProductIdType.DESIGNER, "HFSS", option)
         return True
 
     @pyedb_function_handler()
     def _get_terminals_bbox(self, comp, l_inst, terminals_only):
         terms_loi = []
         if terminals_only:
-            term_list = [
-                obj for obj in list(comp.layout_objs) if obj.obj_type == terminal.Terminal
-            ]
+            term_list = [obj for obj in list(comp.layout_objs) if obj.obj_type == edb_terminal.Terminal]
             for tt in term_list:
                 success, p_inst, lyr = tt.parameters
                 if success and lyr:
                     loi = l_inst.get_layout_obj_instance(p_inst, None)
                     terms_loi.append(loi)
         else:
-            pin_list = [
-                obj
-                for obj in list(comp.layout_objs)
-                if obj.obj_type == primitive.PadstackInstance
-            ]
+            pin_list = [obj for obj in list(comp.layout_objs) if obj.obj_type == edb_primitive.PadstackInstance]
             for pi in pin_list:
                 loi = l_inst.get_layout_obj_instance(pi, None)
                 terms_loi.append(loi)
@@ -1450,7 +1477,7 @@ class EdbHfss(object):
             # dim = 0.26 * max(abs(UR[0]-LL[0]), abs(UR[1]-LL[1]))  # 0.25 corresponds to the default 0.5
             # Radial Extent Factor, so set slightly larger to avoid validation errors
             dim = 0.30 * max(abs(ur[0] - ll[0]), abs(ur[1] - ll[1]))  # 0.25 corresponds to the default 0.5
-            terms_bbox.append(geometry.PolygonData(ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim))
+            terms_bbox.append(edb_geometry.PolygonData(ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim))
         return self._edb.geometry.polygon_data.get_bbox_of_polygons(terms_bbox)
 
     @pyedb_function_handler()
@@ -1508,9 +1535,7 @@ class EdbHfss(object):
                             )
                         )
                     else:
-                        self._logger.info(
-                            "Defeaturing polygon {0}: void {1}".format(str(_poly.id), str(void.id))
-                        )
+                        self._logger.info("Defeaturing polygon {0}: void {1}".format(str(_poly.id), str(void.id)))
                         new_void_data = self._pedb.core_layout.defeature_polygon(
                             setup_info=simulation_setup, poly=void_data
                         )
@@ -1546,16 +1571,16 @@ class EdbHfss(object):
         if positive_pin and negative_pin:
             positive_pin_term = self._pedb.components._create_terminal(positive_pin)
             negative_pin_term = self._pedb.components._create_terminal(negative_pin)
-            positive_pin_term.SetBoundaryType(terminal.BoundaryType.RLC)
-            negative_pin_term.SetBoundaryType(terminal.BoundaryType.RLC)
-            rlc = utility.Rlc()
+            positive_pin_term.SetBoundaryType(edb_terminal.BoundaryType.RLC)
+            negative_pin_term.SetBoundaryType(edb_terminal.BoundaryType.RLC)
+            rlc = edb_utility.Rlc()
             rlc.is_parallel = True
             rlc.r_enabled = True
             rlc.l_enabled = True
             rlc.c_enabled = True
-            rlc.R = utility.Value(rvalue)
-            rlc.L = utility.Value(lvalue)
-            rlc.C = utility.Value(cvalue)
+            rlc.R = edb_utility.Value(rvalue)
+            rlc.L = edb_utility.Value(lvalue)
+            rlc.C = edb_utility.Value(cvalue)
             positive_pin_term.rlc_boundary_parameters = rlc
             term_name = "{}_{}_{}".format(positive_pin.component.name, positive_pin.net.name, positive_pin.name)
             positive_pin_term.name = term_name
