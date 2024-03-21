@@ -105,7 +105,7 @@ class PackageDef(ObjBase):
         return self._edb_object.GetTheta_JC().ToDouble()
 
     @theta_jc.setter
-    def theta_jc(self,value):
+    def theta_jc(self, value):
         value = self._pedb.edb_value(value)
         self._edb_object.SetTheta_JC(value)
 

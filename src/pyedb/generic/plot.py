@@ -43,6 +43,7 @@ if not is_ironpython:  # pragma: no cover
     except:
         pass
 
+
 @pyedb_function_handler()
 def plot_matplotlib(
     plot_data,

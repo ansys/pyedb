@@ -24,9 +24,7 @@ import os
 
 from pyedb.dotnet.edb_core.edb_data.obj_base import ObjBase
 from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.dotnet.edb_core.definition.component_model import (
-    NPortComponentModel
-)
+from pyedb.dotnet.edb_core.definition.component_model import NPortComponentModel
 
 
 class EDBComponentDef(ObjBase):
@@ -87,6 +85,7 @@ class EDBComponentDef(ObjBase):
         dict of :class:`EDBComponent`
         """
         from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
+
         comp_list = [
             EDBComponent(self._pedb, l)
             for l in self._pedb.edb_api.cell.hierarchy.component.FindByComponentDef(

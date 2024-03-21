@@ -994,7 +994,6 @@ def number_aware_string_key(s):  # pragma: no cover
     return tuple(result)
 
 
-
 @pyedb_function_handler()
 def compute_fft(time_vals, value):  # pragma: no cover
     """Compute FFT of input transient data.
