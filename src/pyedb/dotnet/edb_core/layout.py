@@ -1114,7 +1114,7 @@ class EdbLayout(object):
         delete_padstack_gemometries : bool, optional
             Whether to delete all padstack geometries. The default is ``False``.
         net_list : list[str] : optional
-            Polygon list filter. The default is ``[]``, in which case all nets are taken.
+            Net names list filter. The default is ``[]``, in which case all nets are taken.
 
         Returns
         -------
