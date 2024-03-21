@@ -50,7 +50,9 @@ tests = [
 ]
 doc = [
     #"pyaedt>=0.8.2,<0.8.3",
-    "pyaedt@git+https://github.com/ansys/pyaedt",
+    #pyaedt = { git = "git@github.com:ansys/pyaedt.git", branch = "fix/pyedb_version"}
+    "pyaedt@git+https://github.com/ansys/pyaedt@fix/pyedb_version",
+    #"pyaedt @ git+ssh://git@github.com/ansys/pyaedt#fix/pyedb_version",
     "ansys-sphinx-theme==0.13.1",
     "imageio==2.34.0",
     "imageio-ffmpeg==0.4.9",
