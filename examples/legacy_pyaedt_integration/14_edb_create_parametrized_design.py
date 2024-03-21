@@ -109,5 +109,7 @@ edb.save_edb()
 edb.close_edb()
 
 # Uncomment the following line to open the design in HFSS 3D Layout
-hfss = Hfss3dLayout(projectname=target_aedb, specified_version=aedt_version, non_graphical=non_graphical, new_desktop_session=True)
+hfss = Hfss3dLayout(
+    projectname=target_aedb, specified_version=aedt_version, non_graphical=non_graphical, new_desktop_session=True
+)
 hfss.release_desktop()

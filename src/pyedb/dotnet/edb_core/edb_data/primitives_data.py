@@ -140,7 +140,8 @@ class EDBPrimitivesMain(Connectable):
     def layer(self):
         """Get the primitive edb layer object."""
         try:
-            return self.primitive_object.GetLayer()
+            layer_name = self.primitive_object.GetLayer().GetName()
+            return self._pedb.stackup.layers[layer_name]
         except AttributeError:  # pragma: no cover
             return None
 
@@ -153,7 +154,7 @@ class EDBPrimitivesMain(Connectable):
         str
         """
         try:
-            return self.layer.GetName()
+            return self.layer.name
         except AttributeError:  # pragma: no cover
             return None
 
