@@ -1196,13 +1196,13 @@ class EdbNets(object):
         )
 
     @pyedb_function_handler()
-    def merge_nets_polygons(self, net_list):
+    def merge_nets_polygons(self, net_names_list):
         """Convert paths from net into polygons, evaluate all connected polygons and perform the merge.
 
         Parameters
         ----------
-        net_list : str or list[str]
-            Net name of list of net name.
+        net_names_list : str or list[str]
+            Net name or list of net name.
 
         Returns
         -------
@@ -1210,6 +1210,6 @@ class EdbNets(object):
             ``True`` when successful, ``False`` when failed.
 
         """
-        if isinstance(net_list, str):
-            net_list = [net_list]
-        return self._pedb.modeler.unite_polygons_on_layer(net_list=net_list)
+        if isinstance(net_names_list, str):
+            net_names_list = [net_names_list]
+        return self._pedb.modeler.unite_polygons_on_layer(net_names_list=net_names_list)
