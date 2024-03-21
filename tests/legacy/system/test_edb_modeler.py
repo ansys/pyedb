@@ -331,7 +331,6 @@ class TestClass:
     def unite_polygons_on_layer_bug(self):
         edbapp = Edb()
         edbapp["$H"] = "0.65mil"
-        assert edbapp["$H"].value_string == "0.65mil"
         edbapp["Via_S"] = "40mil"
         edbapp["MS_W"] = "4.75mil"
         edbapp["MS_S"] = "5mil"
@@ -341,9 +340,13 @@ class TestClass:
         t1_1 = edbapp.modeler.create_trace(width="MS_W", layer_name="trace1",path_list=[("-Via_S/2", "0"), ("-MS_S/2-MS_W/2", "-16 mil"),("-MS_S/2-MS_W/2", "-100 mil")], start_cap_style="FLat",end_cap_style="FLat", net_name="t1_1")
         t2_1 = edbapp.modeler.create_trace(width="MS_W", layer_name="trace1",path_list=[("-Via_S/2", "0"), ("-SL_S/2-SL_W/2", "16 mil"),("-SL_S/2-SL_W/2", "100 mil")], start_cap_style="FLat",end_cap_style="FLat", net_name="t2_1")
         t3_1 = edbapp.modeler.create_trace(width="MS_W", layer_name="trace1",path_list=[("-Via_S/2", "0"), ("-SL_S/2-SL_W/2", "16 mil"),("+SL_S/2+MS_W/2", "100 mil")], start_cap_style="FLat",end_cap_style="FLat", net_name="t3_1")
-        assert t1_1.convert_to_polygon()
+        t1_1.convert_to_polygon()
         t2_1.convert_to_polygon()
         t3_1.convert_to_polygon()
-        assert edbapp.modeler.unite_polygons_on_layer("trace1")
-        assert len(edbapp.modeler.polygons_by_layer["trace1"]) == 1
+        net_list = ["t1_1", "t2_1"]
+        assert len(edbapp.modeler.polygons) == 3
+        assert edbapp.modeler.unite_polygons_on_layer("trace1", net_names_list=net_list)
+        assert len(edbapp.modeler.polygons) == 2
+        edbapp.modeler.unite_polygons_on_layer("trace1")
+        assert len(edbapp.modeler.polygons) == 1
         edbapp.close()

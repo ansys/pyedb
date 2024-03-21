@@ -1104,7 +1104,7 @@ class EdbLayout(object):
         return True
 
     @pyedb_function_handler()
-    def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_list=[]):
+    def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_names_list=[]):
         """Try to unite all Polygons on specified layer.
 
         Parameters
@@ -1114,7 +1114,7 @@ class EdbLayout(object):
         delete_padstack_gemometries : bool, optional
             Whether to delete all padstack geometries. The default is ``False``.
         net_list : list[str] : optional
-            Net list filter. The default is ``[]``, in which case all nets are taken.
+            Polygon list filter. The default is ``[]``, in which case all nets are taken.
 
         Returns
         -------
@@ -1129,11 +1129,11 @@ class EdbLayout(object):
         for lay in layer_name:
             self._logger.info("Uniting Objects on layer %s.", lay)
             poly_by_nets = {}
+            all_voids = []
+            list_polygon_data = []
+            delete_list = []
             if lay in list(self.polygons_by_layer.keys()):
-                list_polygon_data = []
-                delete_list = []
                 for poly in self.polygons_by_layer[lay]:
-                    delete_list.append(poly)
                     if not poly.GetNet().GetName() in list(poly_by_nets.keys()):
                         if poly.GetNet().GetName():
                             poly_by_nets[poly.GetNet().GetName()] = [poly]
@@ -1141,10 +1141,11 @@ class EdbLayout(object):
                         if poly.GetNet().GetName():
                             poly_by_nets[poly.GetNet().GetName()].append(poly)
             for net in poly_by_nets:
-                if net in net_list or not net_list:  # pragma no cover
+                if net in net_names_list or not net_names_list:
                     for i in poly_by_nets[net]:
                         list_polygon_data.append(i.GetPolygonData())
-                    all_voids = [i.Voids for i in poly_by_nets[net]]
+                        delete_list.append(i)
+                        all_voids.append(i.Voids)
             a = self._edb.geometry.polygon_data.unite(convert_py_list_to_net_list(list_polygon_data))
             for item in a:
                 for v in all_voids:
