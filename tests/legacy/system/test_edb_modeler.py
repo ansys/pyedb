@@ -328,7 +328,7 @@ class TestClass:
         assert net5_length == 0.026285623899038543
         edbapp.close_edb()
 
-    def unite_polygons_on_layer_bug(self):
+    def test_unite_polygon(self):
         edbapp = Edb()
         edbapp["$H"] = "0.65mil"
         edbapp["Via_S"] = "40mil"
