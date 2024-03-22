@@ -231,7 +231,7 @@ class Configuration:
             port_type = port["type"]
             refdes = port["reference_designator"]
             comp_layout = self._components[refdes]
-            pos = port["from"]
+            pos = port["positive_terminal"]
             if "pin" in pos:
                 pin_name = pos["pin"]
                 port_name = "{}_{}".format(refdes, pin_name)
@@ -250,7 +250,7 @@ class Configuration:
                             break
 
             if port_type == "circuit":
-                neg = port["to"]
+                neg = port["negative_terminal"]
                 if "pin" in neg:
                     pin_name = neg["pin"]
                     port_name = "{}_{}_ref".format(refdes, pin_name)
@@ -279,7 +279,7 @@ class Configuration:
             name = src["name"]
             comp_layout = self._components[refdes]
 
-            pos = src["from"]
+            pos = src["positive_terminal"]
             if "pin" in pos:
                 pin_name = pos["pin"]
                 src_name = name
@@ -291,7 +291,7 @@ class Configuration:
                 _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
                 pos_terminal = pg.get_terminal(src_name, True)
 
-            neg = src["to"]
+            neg = src["negative_terminal"]
             if "pin" in neg:
                 pin_name = neg["pin"]
                 src_name = name + "_ref"
