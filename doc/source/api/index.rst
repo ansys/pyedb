@@ -44,4 +44,3 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
    SimulationConfigurationEdb
    SiWave
    PortsEdb
-   
