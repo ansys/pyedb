@@ -69,7 +69,7 @@ This page shows how to set up an HFSS simulation.
     # enable save radiate fields only
     setup1.adaptive_settings.save_rad_field_only = True
 
-    # enable defeature based on absloute length
+    # enable defeature based on absolute length
     setup1.defeature_settings.defeature_abs_length = "1um"
 
     # enable defeature based on aspect ratio

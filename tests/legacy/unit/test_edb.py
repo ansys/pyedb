@@ -1,5 +1,29 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
 import os
 
+from mock import MagicMock, PropertyMock, patch
 import pytest
 
 from pyedb.dotnet.edb import Edb
@@ -125,3 +149,40 @@ class TestClass:
         )
         pad_name == "test2"
         edb.close()
+
+    @patch("os.path.isfile")
+    @patch("shutil.rmtree")
+    @patch("pyedb.dotnet.edb_core.dotnet.database.EdbDotNet.logger", new_callable=PropertyMock)
+    def test_conflict_files_removal_success(self, mock_logger, mock_rmtree, mock_isfile):
+        logger_mock = MagicMock()
+        mock_logger.return_value = logger_mock
+        mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
+
+        edbpath = "file.edb"
+        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+        files = [aedt_file, aedt_file + ".lock"]
+        _ = Edb(edbpath)
+
+        for file in files:
+            mock_rmtree.assert_any_call(file)
+            logger_mock.info.assert_any_call(f"Removing {file} to allow loading EDB file.")
+
+    @patch("os.path.isfile")
+    @patch("shutil.rmtree")
+    @patch("pyedb.dotnet.edb_core.dotnet.database.EdbDotNet.logger", new_callable=PropertyMock)
+    def test_conflict_files_removal_failure(self, mock_logger, mock_rmtree, mock_isfile):
+        logger_mock = MagicMock()
+        mock_logger.return_value = logger_mock
+        mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
+        mock_rmtree.side_effect = Exception("Could not delete file")
+
+        edbpath = "file.edb"
+        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+        files = [aedt_file, aedt_file + ".lock"]
+        _ = Edb(edbpath)
+
+        for file in files:
+            mock_rmtree.assert_any_call(file)
+            logger_mock.info.assert_any_call(
+                f"Failed to delete {file} which is located at the same location as the EDB file."
+            )

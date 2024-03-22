@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 EDB: SYZ analysis
 -------------------
@@ -13,7 +35,9 @@ receiver components.
 # Perform required imports, which includes importing a section.
 
 import time
+
 from pyaedt import Hfss3dLayout
+
 import pyedb
 from pyedb.generic.general_methods import generate_unique_folder_name
 from pyedb.misc.downloads import download_file
@@ -24,7 +48,7 @@ from pyedb.misc.downloads import download_file
 # Download the AEDB file and copy it in the temporary folder.
 
 temp_folder = generate_unique_folder_name()
-targetfile = download_file('edb/ANSYS-HSD_V1.aedb', destination=temp_folder)
+targetfile = download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 time.sleep(5)
 
 print(targetfile)
@@ -72,16 +96,16 @@ ports = []
 for net_name, net_obj in diff_p.extended_net.nets.items():
     for comp_name, comp_obj in net_obj.components.items():
         if comp_obj.type not in ["Resistor", "Capacitor", "Inductor"]:
-            ports.append({"port_name": "{}_{}".format(comp_name, net_name),
-                          "comp_name":comp_name,
-                          "net_name":net_name})
+            ports.append(
+                {"port_name": "{}_{}".format(comp_name, net_name), "comp_name": comp_name, "net_name": net_name}
+            )
 
 for net_name, net_obj in diff_n.extended_net.nets.items():
     for comp_name, comp_obj in net_obj.components.items():
         if comp_obj.type not in ["Resistor", "Capacitor", "Inductor"]:
-            ports.append({"port_name": "{}_{}".format(comp_name, net_name),
-                          "comp_name":comp_name,
-                          "net_name":net_name})
+            ports.append(
+                {"port_name": "{}_{}".format(comp_name, net_name), "comp_name": comp_name, "net_name": net_name}
+            )
 
 print(*ports, sep="\n")
 
@@ -94,10 +118,7 @@ for d in ports:
     port_name = d["port_name"]
     comp_name = d["comp_name"]
     net_name = d["net_name"]
-    edbapp.components.create_port_on_component(component=comp_name,
-                                               net_list=net_name,
-                                               port_name=port_name
-                                               )
+    edbapp.components.create_port_on_component(component=comp_name, net_list=net_name, port_name=port_name)
 
 ###############################################################################
 # Cutout
@@ -117,11 +138,13 @@ edbapp.cutout(signal_list=nets, reference_list=["GND"], extent_type="Bounding")
 # Create SIwave SYZ setup.
 
 setup = edbapp.create_siwave_syz_setup("setup1")
-setup.add_frequency_sweep(frequency_sweep=[
-                               ["linear count", "0", "1kHz", 1],
-                               ["log scale", "1kHz", "0.1GHz", 10],
-                               ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-                               ])
+setup.add_frequency_sweep(
+    frequency_sweep=[
+        ["linear count", "0", "1kHz", 1],
+        ["log scale", "1kHz", "0.1GHz", 10],
+        ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+    ]
+)
 
 ###############################################################################
 # Save and close AEDT
@@ -143,8 +166,12 @@ h3d = Hfss3dLayout(targetfile, specified_version="2023.2", new_desktop_session=T
 # ~~~~~~~~~~~~~~~~~~~~~
 # Set differential pair.
 
-h3d.set_differential_pair(positive_terminal="U1_PCIe_Gen4_TX3_CAP_P", negative_terminal="U1_PCIe_Gen4_TX3_CAP_N", diff_name="PAIR_U1")
-h3d.set_differential_pair(positive_terminal="X1_PCIe_Gen4_TX3_P", negative_terminal="X1_PCIe_Gen4_TX3_N", diff_name="PAIR_X1")
+h3d.set_differential_pair(
+    positive_terminal="U1_PCIe_Gen4_TX3_CAP_P", negative_terminal="U1_PCIe_Gen4_TX3_CAP_N", diff_name="PAIR_U1"
+)
+h3d.set_differential_pair(
+    positive_terminal="X1_PCIe_Gen4_TX3_P", negative_terminal="X1_PCIe_Gen4_TX3_N", diff_name="PAIR_X1"
+)
 
 ###############################################################################
 # Solve and plot results

@@ -3,6 +3,7 @@ from pyedb.misc.siw_feature_config.emc.xml_generic import XmlGeneric
 
 class TagType(XmlGeneric):
     """Manages tag type."""
+
     def __init__(self, element):
         super().__init__(element)
 
@@ -14,16 +15,15 @@ class TagType(XmlGeneric):
 
 class TagConfig(XmlGeneric):
     """Manages tag config."""
+
     def __init__(self, element):
         super().__init__(element)
 
 
 class Tag(XmlGeneric):
     """Manages tag."""
-    CLS_MAPPING = {
-        "TagType": TagType,
-        "TagConfig": TagConfig
-    }
+
+    CLS_MAPPING = {"TagType": TagType, "TagConfig": TagConfig}
 
     def __init__(self, element):
         super().__init__(element)
@@ -48,6 +48,7 @@ class Tag(XmlGeneric):
 
 class TagLibrary(XmlGeneric):
     """Manages tag library."""
+
     CLS_MAPPING = {
         "Tag": Tag,
     }

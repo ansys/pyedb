@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import re
 
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
@@ -73,7 +95,7 @@ class LayoutValidation:
             all_shorted_nets.append(net)
             if net_dc_shorts:
                 dc_nets = list(set([obj.net.name for obj in net_dc_shorts]))
-                dc_nets =  [i for i in dc_nets if i != net]
+                dc_nets = [i for i in dc_nets if i != net]
                 for dc in dc_nets:
                     if dc:
                         dc_shorts.append([net, dc])
@@ -96,7 +118,7 @@ class LayoutValidation:
                     rename_shorts = [i for i in net_dc_shorts if i._edb_object.GetNet().GetName() != temp_name]
                     for i in rename_shorts:
                         i._edb_object.SetNet(self._pedb.nets.nets[temp_name].net_obj)
-                        #i.net = temp_name
+                        # i.net = temp_name
         return dc_shorts
 
     @pyedb_function_handler()

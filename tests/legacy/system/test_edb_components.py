@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Tests related to Edb components
 """
 import math
@@ -516,4 +538,32 @@ class TestClass:
         """Check the creation of package definition."""
         assert self.edbapp.components["C200"].create_package_def()
         assert not self.edbapp.components["C200"].create_package_def()
-        assert self.edbapp.components["C200"].package_def.name == 'C200_CAPC3216X180X55ML20T25'
+        assert self.edbapp.components["C200"].package_def.name == "C200_CAPC3216X180X55ML20T25"
+
+    def test_solder_ball_getter_setter(self):
+        cmp = self.edbapp.components["X1"]
+        cmp.solder_ball_height = 0.0
+        assert cmp.solder_ball_height == 0.0
+        cmp.solder_ball_height = "100um"
+        assert cmp.solder_ball_height == 100e-6
+        assert cmp.solder_ball_shape
+        cmp.solder_ball_shape = "Cylinder"
+        assert cmp.solder_ball_shape == "Cylinder"
+        cmp.solder_ball_shape = 0
+        assert cmp.solder_ball_shape == "None"
+        cmp.solder_ball_shape = 1
+        assert cmp.solder_ball_shape == "Cylinder"
+        cmp.solder_ball_shape = "Spheroid"
+        assert cmp.solder_ball_shape == "Spheroid"
+        cmp.solder_ball_shape = "Cylinder"
+        cmp.solder_ball_shape = 2
+        assert cmp.solder_ball_shape == "Spheroid"
+        assert cmp.solder_ball_diameter == (0.0, 0.0)
+        cmp.solder_ball_diameter = "200um"
+        diam1, diam2 = cmp.solder_ball_diameter
+        assert round(diam1, 6) == 200e-6
+        assert round(diam2, 6) == 200e-6
+        cmp.solder_ball_diameter = ("100um", "100um")
+        diam1, diam2 = cmp.solder_ball_diameter
+        assert round(diam1, 6) == 100e-6
+        assert round(diam2, 6) == 100e-6

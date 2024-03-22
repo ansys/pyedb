@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """This module contains the ``Edb`` class.
 
 This module is implicitly loaded in HFSS 3D Layout when launched.
@@ -191,10 +213,21 @@ class Edb(Database):
                 os.path.dirname(edbpath),
                 "pyedb_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log",
             )
+            aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+            files = [aedt_file, aedt_file + ".lock"]
+            for file in files:
+                if os.path.isfile(file):
+                    try:
+                        shutil.rmtree(file)
+                        self.logger.info(f"Removing {file} to allow loading EDB file.")
+                    except:
+                        self.logger.info(
+                            f"Failed to delete {file} which is located at the same location as the EDB file."
+                        )
 
         if isaedtowned and (inside_desktop or settings.remote_rpc_session):
             self.open_edb_inside_aedt()
-        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz"]:
+        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
             control_file = None
@@ -2290,9 +2323,9 @@ class Edb(Database):
                             list_prims = subtract(p, voids_data)
                             for prim in list_prims:
                                 if not prim.IsNull():
-                                    poly_to_create.append([prim, prim_1.layer_name, net, list_void])
+                                    poly_to_create.append([prim, prim_1.layer.name, net, list_void])
                         else:
-                            poly_to_create.append([p, prim_1.layer_name, net, list_void])
+                            poly_to_create.append([p, prim_1.layer.name, net, list_void])
 
                 prims_to_delete.append(prim_1)
 
@@ -2318,8 +2351,10 @@ class Edb(Database):
 
         for item in reference_paths:
             clip_path(item)
-        with ThreadPoolExecutor(number_of_threads) as pool:
-            pool.map(lambda item: clean_prim(item), reference_prims)
+        for prim in reference_prims:  # removing multithreading as failing with new layer from primitive
+            clean_prim(prim)
+        # with ThreadPoolExecutor(number_of_threads) as pool:
+        #    pool.map(lambda item: clean_prim(item), reference_prims)
 
         for el in poly_to_create:
             self.modeler.create_polygon(el[0], el[1], net_name=el[2], voids=el[3])
@@ -4235,4 +4270,5 @@ class Edb(Database):
     def definitions(self):
         """Definitions class."""
         from pyedb.dotnet.edb_core.definition.definitions import Definitions
+
         return Definitions(self)

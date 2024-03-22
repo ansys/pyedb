@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
@@ -1233,12 +1255,19 @@ class EdbLayout(object):
         stat_model.num_vias = len(self._pedb.padstacks.instances)
         stat_model.stackup_thickness = self._pedb.stackup.get_layout_thickness()
         if evaluate_area:
+            outline_surface = stat_model.layout_size[0] * stat_model.layout_size[1]
             if net_list:
                 netlist = list(self._pedb.nets.nets.keys())
                 _poly = self._pedb.get_conformal_polygon_from_netlist(netlist)
             else:
-                _poly = self._pedb.get_conformal_polygon_from_netlist()
-            stat_model.occupying_surface = _poly.Area()
-            outline_surface = stat_model.layout_size[0] * stat_model.layout_size[1]
-            stat_model.occupying_ratio = stat_model.occupying_surface / outline_surface
+                for layer in list(self._pedb.stackup.signal_layers.keys()):
+                    surface = 0.0
+                    primitives = self.primitives_by_layer[layer]
+                    for prim in primitives:
+                        if prim.type == "Path":
+                            surface += prim.length * prim.width
+                        if prim.type == "Polygon":
+                            surface += prim.polygon_data.edb_api.Area()
+                            stat_model.occupying_surface[layer] = surface
+                            stat_model.occupying_ratio[layer] = surface / outline_surface
         return stat_model

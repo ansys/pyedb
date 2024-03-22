@@ -1,4 +1,3 @@
-import re
 from pyedb.generic.general_methods import ET
 
 

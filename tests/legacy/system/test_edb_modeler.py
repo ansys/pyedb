@@ -1,7 +1,30 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Tests related to Edb modeler
 """
 
 import os
+
 import pytest
 
 from pyedb.dotnet.edb import Edb
@@ -328,14 +351,43 @@ class TestClass:
         assert net5_length == 0.026285623899038543
         edbapp.close_edb()
 
-    def test_convert_to_polugon_error(self):
+    def test_duplicate(self):
         edbapp = Edb()
         edbapp["$H"] = "0.65mil"
         assert edbapp["$H"].value_string == "0.65mil"
+        edbapp["$S_D"] = "10.65mil"
+        edbapp["$T"] = "21.3mil"
+        edbapp["$Antipad_R"] = "24mil"
         edbapp["Via_S"] = "40mil"
-        edbapp["MS_W"] = "4.75mil"
+        edbapp.stackup.add_layer("bot_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d1", layer_type="dielectric", thickness="$S_D", material="FR4_epoxy")
+        edbapp.stackup.add_layer("trace2", thickness="$H")
+        edbapp.stackup.add_layer("d2", layer_type="dielectric", thickness="$T-$S_D", material="FR4_epoxy")
+        edbapp.stackup.add_layer("mid_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d3", layer_type="dielectric", thickness="13mil", material="FR4_epoxy")
+        edbapp.stackup.add_layer("top_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d4", layer_type="dielectric", thickness="13mil", material="FR4_epoxy")
         edbapp.stackup.add_layer("trace1", thickness="$H")
-        edbapp.modeler.create_trace(width="MS_W", layer_name="trace1",path_list=[("-Via_S/2", "0"), ("-MS_S/2-MS_W/2", "-16 mil"),("-MS_S/2-MS_W/2", "-100 mil")], start_cap_style="FLat",end_cap_style="FLat", net_name="t1_1")
-        assert edbapp.modeler.primitives[0].convert_to_polygon()
-        assert not edbapp.modeler.primitives[0].convert_to_polygon()
+        r1 = edbapp.modeler.create_rectangle(
+            center_point=("0,0"),
+            width="200mil",
+            height="200mil",
+            layer_name="top_gnd",
+            representation_type="CenterWidthHeight",
+            net_name="r1",
+        )
+        r2 = edbapp.modeler.create_rectangle(
+            center_point=("0,0"),
+            width="40mil",
+            height="$Antipad_R*2",
+            layer_name="top_gnd",
+            representation_type="CenterWidthHeight",
+            net_name="r2",
+        )
+        assert r2
+        assert r1.subtract(r2)
+        lay_list = ["bot_gnd", "mid_gnd"]
+        assert edbapp.modeler.primitives[0].duplicate_across_layers(lay_list)
+        assert edbapp.modeler.primitives_by_layer["mid_gnd"]
+        assert edbapp.modeler.primitives_by_layer["bot_gnd"]
         edbapp.close()

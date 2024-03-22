@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import math
 
 from pyedb.dotnet.edb_core.dotnet.database import NetDotNet
@@ -118,7 +140,8 @@ class EDBPrimitivesMain(Connectable):
     def layer(self):
         """Get the primitive edb layer object."""
         try:
-            return self.primitive_object.GetLayer()
+            layer_name = self.primitive_object.GetLayer().GetName()
+            return self._pedb.stackup.layers[layer_name]
         except AttributeError:  # pragma: no cover
             return None
 
@@ -131,7 +154,7 @@ class EDBPrimitivesMain(Connectable):
         str
         """
         try:
-            return self.layer.GetName()
+            return self.layer.name
         except AttributeError:  # pragma: no cover
             return None
 
@@ -380,8 +403,8 @@ class EDBPrimitives(EDBPrimitivesMain):
 
         Returns
         -------
-        Converted polygon, when successful
-        Error message: Object type is not path, when not successful
+        bool, :class:`dotnet.edb_core.edb_data.primitives.EDBPrimitives`
+            Polygon when successful, ``False`` when failed.
 
         """
         if self.type == "Path":
@@ -390,7 +413,7 @@ class EDBPrimitives(EDBPrimitivesMain):
             self.primitive_object.Delete()
             return polygon
         else:
-            raise AttributeError("Object type is not path")
+            return False
 
     @pyedb_function_handler()
     def subtract(self, primitives):
@@ -1008,6 +1031,35 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
             return cloned_poly
         return False
 
+    @pyedb_function_handler()
+    def duplicate_across_layers(self, layers):
+        """Duplicate across layer a primitive object.
+
+        Parameters:
+
+        layers: list
+            list of str, with layer names
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        for layer in layers:
+            if layer in self._pedb.stackup.layers:
+                duplicate_polygon = self._app.edb_api.cell.primitive.polygon.create(
+                    self._app.active_layout, layer, self.net, self.polygon_data.edb_api
+                )
+                if duplicate_polygon:
+                    for void in self.voids:
+                        duplicate_void = self._app.edb_api.cell.primitive.polygon.create(
+                            self._app.active_layout, layer, self.net, void.polygon_data.edb_api
+                        )
+                        duplicate_polygon.prim_obj.AddVoid(duplicate_void.prim_obj)
+            else:
+                return False
+        return True
+
     @pyedb_function_handler
     def move(self, vector):
         """Move polygon along a vector.
@@ -1085,12 +1137,12 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
             Scaling factor.
         center : List of float or str [x,y], optional
             If None scaling is done from polygon center.
-        
+
         Returns
         -------
         bool
            ``True`` when successful, ``False`` when failed.
-        
+
         Examples
         --------
         >>> edbapp = pyaedt.Edb("myproject.aedb")
@@ -1117,12 +1169,12 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
     @pyedb_function_handler
     def move_layer(self, layer):
         """Move polygon to given layer.
-        
+
         Parameters
         ----------
         layer : str
             layer name.
-        
+
         Returns
         -------
         bool
