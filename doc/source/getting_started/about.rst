@@ -42,7 +42,7 @@ combine 3D designs, or perform simulation postprocessing. EDB also supports 3D c
 Why use PyEDB?
 --------------
 PyEDB interacts with the `PyEDB-Core <https://github.com/ansys/pyedb-core>`_ API to make scripting simpler.
-It provides application-oriented, high-level methods and properties. The PyEDB API's ``Edb`` class and methods 
+It provides application-oriented, high-level methods and properties. The PyEDB API's ``Edb`` class and methods
 simplify operations while reusing information as much as possible across the API.
 
 Because PyEDB runs in memory, it does not require a user interface. Its API is extremely efficient at

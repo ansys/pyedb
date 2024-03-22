@@ -265,7 +265,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
             if set(comp_obj.nets).issubset(set(nets)):
                 res[comp_name] = comp_obj
         return res
-    
+
     @property
     def shunt_rlc(self):
         """Dictionary of shunt RLC components."""

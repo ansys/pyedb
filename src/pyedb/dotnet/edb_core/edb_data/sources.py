@@ -338,9 +338,7 @@ class PinGroup(object):
 
     @pyedb_function_handler()
     def _json_format(self):
-        dict_out = {"component": self.component,
-                    "name": self.name, "net": self.net,
-                    "node_type": self.node_type}
+        dict_out = {"component": self.component, "name": self.name, "net": self.net, "node_type": self.node_type}
         return dict_out
 
     @pyedb_function_handler()

@@ -24,6 +24,7 @@
 """
 
 import os
+
 import pytest
 
 from pyedb.dotnet.edb import Edb
@@ -86,8 +87,7 @@ class TestClass:
 
     def test_modeler_primitives_by_layer(self):
         """Evaluate modeler primitives by layer"""
-        assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].layer_name == "1_Top"
-        assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].layer.GetName() == "1_Top"
+        assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].layer.name == "1_Top"
         assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative
         assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_void
         self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative = True
@@ -350,14 +350,43 @@ class TestClass:
         assert net5_length == 0.026285623899038543
         edbapp.close_edb()
 
-    def test_convert_to_polugon_error(self):
+    def test_duplicate(self):
         edbapp = Edb()
         edbapp["$H"] = "0.65mil"
         assert edbapp["$H"].value_string == "0.65mil"
+        edbapp["$S_D"] = "10.65mil"
+        edbapp["$T"] = "21.3mil"
+        edbapp["$Antipad_R"] = "24mil"
         edbapp["Via_S"] = "40mil"
-        edbapp["MS_W"] = "4.75mil"
+        edbapp.stackup.add_layer("bot_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d1", layer_type="dielectric", thickness="$S_D", material="FR4_epoxy")
+        edbapp.stackup.add_layer("trace2", thickness="$H")
+        edbapp.stackup.add_layer("d2", layer_type="dielectric", thickness="$T-$S_D", material="FR4_epoxy")
+        edbapp.stackup.add_layer("mid_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d3", layer_type="dielectric", thickness="13mil", material="FR4_epoxy")
+        edbapp.stackup.add_layer("top_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d4", layer_type="dielectric", thickness="13mil", material="FR4_epoxy")
         edbapp.stackup.add_layer("trace1", thickness="$H")
-        edbapp.modeler.create_trace(width="MS_W", layer_name="trace1",path_list=[("-Via_S/2", "0"), ("-MS_S/2-MS_W/2", "-16 mil"),("-MS_S/2-MS_W/2", "-100 mil")], start_cap_style="FLat",end_cap_style="FLat", net_name="t1_1")
-        assert edbapp.modeler.primitives[0].convert_to_polygon()
-        assert not edbapp.modeler.primitives[0].convert_to_polygon()
+        r1 = edbapp.modeler.create_rectangle(
+            center_point=("0,0"),
+            width="200mil",
+            height="200mil",
+            layer_name="top_gnd",
+            representation_type="CenterWidthHeight",
+            net_name="r1",
+        )
+        r2 = edbapp.modeler.create_rectangle(
+            center_point=("0,0"),
+            width="40mil",
+            height="$Antipad_R*2",
+            layer_name="top_gnd",
+            representation_type="CenterWidthHeight",
+            net_name="r2",
+        )
+        assert r2
+        assert r1.subtract(r2)
+        lay_list = ["bot_gnd", "mid_gnd"]
+        assert edbapp.modeler.primitives[0].duplicate_across_layers(lay_list)
+        assert edbapp.modeler.primitives_by_layer["mid_gnd"]
+        assert edbapp.modeler.primitives_by_layer["bot_gnd"]
         edbapp.close()

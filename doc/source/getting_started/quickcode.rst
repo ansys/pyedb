@@ -15,7 +15,7 @@ Load an AEDB file into memory
 This code shows how to use PyEDB to load an existing AEDB file into memory:
 
 .. code:: python
-  
+
     from pyedb.dotnet.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
