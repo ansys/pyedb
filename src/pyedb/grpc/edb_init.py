@@ -3,7 +3,7 @@ import os
 import sys
 
 import ansys.edb.core.database as database
-from ansys.edb.core.session import launch_session
+from ansys.edb.core.session import launch_session, attach_session
 import psutil
 
 from pyedb import __version__
@@ -17,7 +17,7 @@ from pyedb.misc.misc import list_installed_ansysem
 class EdbInit(object):
     """Edb Dot Net Class."""
 
-    def __init__(self, edbversion, port):
+    def __init__(self, edbversion, port, restart_server):
         self._global_logger = pyedb_logger
         self.logger = pyedb_logger
         if not edbversion:  # pragma: no cover
@@ -53,15 +53,14 @@ class EdbInit(object):
         self.get_grpc_serveur_process()
         if self.server_pid:
             self.logger.info("Server already running")
-            #p = psutil.Process(self.server_pid)
-            #p.terminate()  # or p.kill()
-            #self.session = launch_session(self.base_path, port_num=port)
-            #if self.session:
-            #   self.server_pid = self.session.local_server_proc.pid
-            #   self.logger.info("Grpc session started")
+            self.session = attach_session(port_num=port)
+        elif self.server_pid and restart_server:
+            p = psutil.Process(self.server_pid)
+            p.terminate()  # or p.kill()
+            self.start_rpc_sever(port)
         else:
             try:
-                self.session = launch_session(self.base_path, port_num=port)
+                self.start_rpc_sever(port)
                 if self.session:
                     self.server_pid = self.session.local_server_proc.pid
                     self.logger.info("Grpc session started")
@@ -72,6 +71,12 @@ class EdbInit(object):
     def db(self):
         """Active database object."""
         return self._db
+
+    def start_rpc_sever(self, port):
+        self.session = launch_session(self.base_path, port_num=port)
+        if self.session:
+            self.server_pid = self.session.local_server_proc.pid
+            self.logger.info("Grpc session started")
 
     def get_grpc_serveur_process(self):
         proc = [p for p in list(psutil.process_iter()) if "edb_rpc" in p.name().lower()]

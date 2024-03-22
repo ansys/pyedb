@@ -92,6 +92,10 @@ class EdbGrpc(EdbInit):
         Reference to the AEDT project object.
     technology_file : str, optional
         Full path to technology file to be converted to xml before importing or xml. Supported by GDS format only.
+    restart_rpc_server : bool, optional
+        ``True`` RPC server is terminated and restarted. This will close all open EDB. RPC server is running on single
+        instance loading all EDB, enabling this option should be used with caution but can be a solution to release
+        memory in case the server is draining resources. Default value is ``False``.
 
     Examples
     --------
@@ -139,10 +143,11 @@ class EdbGrpc(EdbInit):
             port=50051,
             use_ppe=False,
             technology_file=None,
+            restart_rpc_server=False
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
-        EdbInit.__init__(self, edbversion=edbversion, port=port)
+        EdbInit.__init__(self, edbversion=edbversion, port=port, restart_server=restart_rpc_server)
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
