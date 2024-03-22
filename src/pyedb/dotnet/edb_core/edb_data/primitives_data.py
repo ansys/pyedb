@@ -140,7 +140,8 @@ class EDBPrimitivesMain(Connectable):
     def layer(self):
         """Get the primitive edb layer object."""
         try:
-            return self.primitive_object.GetLayer()
+            layer_name = self.primitive_object.GetLayer().GetName()
+            return self._pedb.stackup.layers[layer_name]
         except AttributeError:  # pragma: no cover
             return None
 
@@ -153,7 +154,7 @@ class EDBPrimitivesMain(Connectable):
         str
         """
         try:
-            return self.layer.GetName()
+            return self.layer.name
         except AttributeError:  # pragma: no cover
             return None
 
@@ -1138,12 +1139,12 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
             Scaling factor.
         center : List of float or str [x,y], optional
             If None scaling is done from polygon center.
-        
+
         Returns
         -------
         bool
            ``True`` when successful, ``False`` when failed.
-        
+
         Examples
         --------
         >>> edbapp = pyaedt.Edb("myproject.aedb")
@@ -1170,12 +1171,12 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
     @pyedb_function_handler
     def move_layer(self, layer):
         """Move polygon to given layer.
-        
+
         Parameters
         ----------
         layer : str
             layer name.
-        
+
         Returns
         -------
         bool

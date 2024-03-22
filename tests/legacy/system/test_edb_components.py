@@ -538,7 +538,7 @@ class TestClass:
         """Check the creation of package definition."""
         assert self.edbapp.components["C200"].create_package_def()
         assert not self.edbapp.components["C200"].create_package_def()
-        assert self.edbapp.components["C200"].package_def.name == 'C200_CAPC3216X180X55ML20T25'
+        assert self.edbapp.components["C200"].package_def.name == "C200_CAPC3216X180X55ML20T25"
 
     def test_solder_ball_getter_setter(self):
         cmp = self.edbapp.components["X1"]
@@ -567,7 +567,3 @@ class TestClass:
         diam1, diam2 = cmp.solder_ball_diameter
         assert round(diam1, 6) == 100e-6
         assert round(diam2, 6) == 100e-6
-
-
-
-
