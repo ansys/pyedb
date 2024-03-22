@@ -20,11 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import os
-
+from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.obj_base import ObjBase
 from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 
 
 class PackageDef(ObjBase):
@@ -105,7 +103,7 @@ class PackageDef(ObjBase):
         return self._edb_object.GetTheta_JC().ToDouble()
 
     @theta_jc.setter
-    def theta_jc(self,value):
+    def theta_jc(self, value):
         value = self._pedb.edb_value(value)
         self._edb_object.SetTheta_JC(value)
 

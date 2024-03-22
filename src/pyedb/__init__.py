@@ -49,5 +49,4 @@ version = __version__
 
 #
 
-from pyedb.generic.design_types import Edb
-from pyedb.generic.design_types import Siwave
+from pyedb.generic.design_types import Edb, Siwave

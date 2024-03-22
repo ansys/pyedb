@@ -20,9 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pathlib import Path
+
 import pytest
 
-from pathlib import Path
 from pyedb.dotnet.edb import Edb
 from tests.conftest import desktop_version
 
@@ -56,11 +57,19 @@ class TestClass:
         assert "stackup" not in edbapp.configuration.data
         assert edbapp.configuration.load(example_json_folder / "setups_siwave_dc.json", apply_file=True)
         assert edbapp.configuration.load(example_json_folder / "s_parameter.json", apply_file=True)
-        assert edbapp.configuration.load(example_json_folder / "ports_coax.json", apply_file=True,
-                                         output_file=str(target_path_edb2), open_at_the_end=False)
+        assert edbapp.configuration.load(
+            example_json_folder / "ports_coax.json",
+            apply_file=True,
+            output_file=str(target_path_edb2),
+            open_at_the_end=False,
+        )
         assert edbapp.edbpath == str(target_path_edb)
-        assert edbapp.configuration.load(example_json_folder / "ports_circuit.json", apply_file=True,
-                                         output_file=str(target_path_edb2), open_at_the_end=True)
+        assert edbapp.configuration.load(
+            example_json_folder / "ports_circuit.json",
+            apply_file=True,
+            output_file=str(target_path_edb2),
+            open_at_the_end=True,
+        )
         assert edbapp.edbpath == str(target_path_edb2)
         assert edbapp.configuration.load(example_json_folder / "sources.json")
         edbapp.close()

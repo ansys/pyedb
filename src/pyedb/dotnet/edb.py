@@ -221,11 +221,13 @@ class Edb(Database):
                         shutil.rmtree(file)
                         self.logger.info(f"Removing {file} to allow loading EDB file.")
                     except:
-                        self.logger.info(f"Failed to delete {file} which is located at the same location as the EDB file.")
+                        self.logger.info(
+                            f"Failed to delete {file} which is located at the same location as the EDB file."
+                        )
 
         if isaedtowned and (inside_desktop or settings.remote_rpc_session):
             self.open_edb_inside_aedt()
-        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz"]:
+        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
             control_file = None
@@ -2321,9 +2323,9 @@ class Edb(Database):
                             list_prims = subtract(p, voids_data)
                             for prim in list_prims:
                                 if not prim.IsNull():
-                                    poly_to_create.append([prim, prim_1.layer_name, net, list_void])
+                                    poly_to_create.append([prim, prim_1.layer.name, net, list_void])
                         else:
-                            poly_to_create.append([p, prim_1.layer_name, net, list_void])
+                            poly_to_create.append([p, prim_1.layer.name, net, list_void])
 
                 prims_to_delete.append(prim_1)
 
@@ -2349,8 +2351,10 @@ class Edb(Database):
 
         for item in reference_paths:
             clip_path(item)
-        with ThreadPoolExecutor(number_of_threads) as pool:
-            pool.map(lambda item: clean_prim(item), reference_prims)
+        for prim in reference_prims:  # removing multithreading as failing with new layer from primitive
+            clean_prim(prim)
+        # with ThreadPoolExecutor(number_of_threads) as pool:
+        #    pool.map(lambda item: clean_prim(item), reference_prims)
 
         for el in poly_to_create:
             self.modeler.create_polygon(el[0], el[1], net_name=el[2], voids=el[3])
@@ -4266,4 +4270,5 @@ class Edb(Database):
     def definitions(self):
         """Definitions class."""
         from pyedb.dotnet.edb_core.definition.definitions import Definitions
+
         return Definitions(self)
