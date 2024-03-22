@@ -599,6 +599,9 @@ class TestClass:
         assert edb_stats.num_inductors
         assert edb_stats.num_capacitors
         assert edb_stats.num_resistors
+        assert edb_stats.occupying_ratio["1_Top"] == 0.3016820127679697
+        assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.9374673461236078
+        assert edb_stats.occupying_ratio["16_Bottom"] == 0.20492545496020312
         edb.close()
 
     def test_hfss_set_bounding_box_extent(self):
