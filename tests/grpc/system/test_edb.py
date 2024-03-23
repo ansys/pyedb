@@ -20,45 +20,60 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 class TestClass:
     @pytest.fixture(autouse=True)
     def init(self, grpc_edb_app, local_scratch, target_path, target_path2, target_path4):
-        self.edbapp = grpc_edb_app
+        #self.edbapp = grpc_edb_app
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path2 = target_path2
+
         self.target_path4 = target_path4
 
     def test_hfss_create_coax_port_on_component_from_hfss(self):
         """Create a coaxial port on a component from its pin."""
-        assert self.edbapp.hfss.create_coax_port_on_component("U1", "DDR4_DQS0_P")
-        assert self.edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"])
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test1.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edb = Edb(target_path, edbversion=desktop_version)
+        assert edb.hfss.create_coax_port_on_component("U1", "DDR4_DQS0_P")
+        assert edb.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"])
+        edb.close()
 
     def test_layout_bounding_box(self):
         """Evaluate layout bounding box"""
-        assert len(self.edbapp.get_bounding_box()) == 2
-        self.edbapp.close()
-        #assert self.edbapp.get_bounding_box() == [[-0.01426004895, -0.00455000106], [0.15010507444, 0.08000000002]]
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test2.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edb = Edb(target_path, edbversion=desktop_version)
+        assert len(edb.get_bounding_box()) == 2
+        assert edb.get_bounding_box() == [[-0.01426004895, -0.00455000106], [0.15010507444, 0.08000000002]]
+        edb.close()
 
     def test_siwave_create_circuit_port_on_net(self):
         """Create a circuit port on a net."""
-        initial_len = len(self.edbapp.padstacks.pingroups)
-        assert self.edbapp.siwave.create_circuit_port_on_net("U1", "1V0", "U1", "GND", 50, "test") == "test"
-        p2 = self.edbapp.siwave.create_circuit_port_on_net("U1", "PLL_1V8", "U1", "GND", 50, "test")
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test3.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edb = Edb(target_path, edbversion=desktop_version)
+        initial_len = len(edb.padstacks.pingroups)
+        assert edb.siwave.create_circuit_port_on_net("U1", "1V0", "U1", "GND", 50, "test") == "test"
+        p2 = edb.siwave.create_circuit_port_on_net("U1", "PLL_1V8", "U1", "GND", 50, "test")
         assert p2 != "test" and "test" in p2
-        pins = self.edbapp.components.get_pin_from_component("U1")
-        p3 = self.edbapp.siwave.create_circuit_port_on_pin(pins[200], pins[0], 45)
+        pins = edb.components.get_pin_from_component("U1")
+        p3 = edb.siwave.create_circuit_port_on_pin(pins[200], pins[0], 45)
         assert p3 != ""
-        p4 = self.edbapp.hfss.create_circuit_port_on_net("U1", "USB3_D_P")
-        assert len(self.edbapp.padstacks.pingroups) == initial_len + 6
+        p4 = edb.hfss.create_circuit_port_on_net("U1", "USB3_D_P")
+        assert len(edb.padstacks.pingroups) == initial_len + 6
         assert "GND" in p4 and "USB3_D_P" in p4
 
         # TODO: Moves this piece of code in another place
-        assert "test" in self.edbapp.terminals
-        assert self.edbapp.siwave.create_pin_group_on_net("U1", "1V0", "PG_V1P0_S0")
-        assert self.edbapp.siwave.create_pin_group_on_net("U1", "GND", "PG_GND")
-        assert self.edbapp.siwave.create_circuit_port_on_pin_group(
+        assert "test" in edb.terminals
+        assert edb.siwave.create_pin_group_on_net("U1", "1V0", "PG_V1P0_S0")
+        assert edb.siwave.create_pin_group_on_net("U1", "GND", "PG_GND")
+        assert edb.siwave.create_circuit_port_on_pin_group(
             pos_pin_group_name="PG_V1P0_S0", neg_pin_group_name="PG_GND", impedance=50, name="test_port"
         )
-        self.edbapp.excitations["test_port"].name = "test_rename"
-        assert any(port for port in list(self.edbapp.excitations) if port == "test_rename")
+        edb.excitations["test_port"].name = "test_rename"
+        assert any(port for port in list(edb.excitations) if port == "test_rename")
+        edb.close()
 
     def test_siwave_create_voltage_source(self):
         """Create a voltage source."""
