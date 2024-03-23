@@ -73,3 +73,17 @@ class TestClass:
         assert edbapp.edbpath == str(target_path_edb2)
         assert edbapp.configuration.load(example_json_folder / "sources.json")
         edbapp.close()
+
+    def test_create_port_on_pin_groups(self):
+        example_folder = local_path / "example_models" / "TEDB"
+        example_json_folder = example_folder / "edb_config_json"
+        example_edb = example_folder / "ANSYS-HSD_V1.aedb"
+
+        target_path_edb = Path(self.local_scratch.path) / "configuration" / "test.aedb"
+        target_path_edb2 = Path(self.local_scratch.path) / "configuration" / "test_new.aedb"
+
+        self.local_scratch.copyfolder(str(example_edb), str(target_path_edb))
+
+        edbapp = Edb(str(target_path_edb), desktop_version)
+        assert edbapp.configuration.load(example_json_folder / "pin_groups.json", apply_file=True)
+        edbapp.close()
