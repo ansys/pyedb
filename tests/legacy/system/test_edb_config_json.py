@@ -62,7 +62,7 @@ class TestClass:
             "s_parameter.json",
             "sources.json",
             "ports_coax.json",
-            "ports_circuit.json"
+            "ports_circuit.json",
         ]:
             with open(self.local_input_folder / i) as f:
                 data.update(json.load(f))
