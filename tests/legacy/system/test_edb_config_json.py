@@ -19,16 +19,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+import json
 import os
 import sys
 from pathlib import Path
 import pytest
 
-
 from pyedb.dotnet.edb import Edb
 from tests.conftest import desktop_version
-
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
@@ -42,38 +40,34 @@ class TestClass:
         src_edb = example_folder / "ANSYS-HSD_V1.aedb"
         src_input_folder = example_folder / "edb_config_json"
 
-        self.local_edb = Path(self.local_scratch.path) /  "ansys.aedb"
+        self.local_edb = Path(self.local_scratch.path) / "ansys.aedb"
         self.local_input_folder = Path(self.local_scratch.path) / "input_files"
         self.local_scratch.copyfolder(str(src_edb), str(self.local_edb))
         self.local_scratch.copyfolder(str(src_input_folder), str(self.local_input_folder))
 
     def test_01_create_edb(self):
+        edbapp = Edb(str(self.local_edb), desktop_version)
+        temp = dict()
+        for i in [
+            "stackup.json",
+            "components.json",
+            "setups_hfss.json",
+            "setups_siwave_syz.json",
+            "setups_siwave_dc.json",
+            "s_parameter.json",
+            "sources.json",
+            "ports_coax.json",
+            "ports_circuit.json"
+        ]:
+            with open(self.local_input_folder / i) as f:
+                temp.update(json.load(f))
+
+        assert edbapp.configuration.load(temp, apply_file=True)
+        edbapp.close()
 
         edbapp = Edb(str(self.local_edb), desktop_version)
-        assert edbapp.configuration.load(self.local_input_folder / "stackup.json", apply_file=True)
-        edbapp.configuration.load(self.local_input_folder / "components.json")
-        assert edbapp.configuration.run()
-        assert edbapp.configuration.load(self.local_input_folder / "setups_hfss.json", apply_file=True)
-        assert "stackup" in edbapp.configuration.data
-        assert edbapp.configuration.load(self.local_input_folder / "setups_siwave_syz.json", apply_file=True, append=False)
-        assert "stackup" not in edbapp.configuration.data
-        assert edbapp.configuration.load(self.local_input_folder / "setups_siwave_dc.json", apply_file=True)
-        assert edbapp.configuration.load(self.local_input_folder / "s_parameter.json", apply_file=True)
-        assert edbapp.configuration.load(
-            self.local_input_folder / "ports_coax.json",
-            apply_file=True,
-            output_file=str(os.path.join(self.local_scratch.path, "exported_1.aedb")),
-            open_at_the_end=False,
-        )
-        assert Path(self.local_scratch.path, "exported_1.aedb").exists()
-        assert edbapp.configuration.load(
-            self.local_input_folder / "ports_circuit.json",
-            apply_file=True,
-            output_file=str(os.path.join(self.local_scratch.path, "exported_2.aedb")),
-            open_at_the_end=True,
-        )
-        assert Path(self.local_scratch.path, "exported_2.aedb").exists()
-        assert edbapp.configuration.load(self.local_input_folder / "sources.json")
+        assert not edbapp.configuration.run()
+        assert edbapp.configuration.load(temp, apply_file=False)
         edbapp.close()
 
     def test_02_create_port_on_pin_groups(self):
@@ -95,3 +89,20 @@ class TestClass:
         assert edbapp.nets["1.2V_DVDDL"].is_power_ground
         assert not edbapp.nets["SFPA_VCCR"].is_power_ground
         edbapp.close()
+
+    def test_05_ports(self):
+        edbapp = Edb(str(self.local_edb), desktop_version)
+        assert edbapp.configuration.load(
+            self.local_input_folder / "ports_coax.json",
+            apply_file=True,
+            output_file=str(os.path.join(self.local_scratch.path, "exported_1.aedb")),
+            open_at_the_end=False,
+        )
+        assert Path(self.local_scratch.path, "exported_1.aedb").exists()
+        assert edbapp.configuration.load(
+            self.local_input_folder / "ports_circuit.json",
+            apply_file=True,
+            output_file=str(os.path.join(self.local_scratch.path, "exported_2.aedb")),
+            open_at_the_end=True,
+        )
+        assert Path(self.local_scratch.path, "exported_2.aedb").exists()
