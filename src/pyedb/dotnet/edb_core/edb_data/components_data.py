@@ -24,8 +24,7 @@ import logging
 import re
 import warnings
 
-from pyedb.dotnet.edb_core.cell.hierarchy.model import SPICEModel
-from pyedb.dotnet.edb_core.cell.hierarchy.model import PinPairModel
+from pyedb.dotnet.edb_core.cell.hierarchy.model import PinPairModel, SPICEModel
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.generic.general_methods import is_ironpython
