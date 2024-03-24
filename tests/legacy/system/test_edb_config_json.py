@@ -92,3 +92,13 @@ class TestClass:
         assert edbapp.components["R107"].model.spice_file_path
         assert edbapp.components["R106"].model.spice_file_path
         edbapp.close()
+
+    def test_04_nets(self):
+        edb_path = Path(self.local_scratch.path) / "04" / "test.aedb"
+        self.local_scratch.copyfolder(str(example_edb), str(edb_path))
+
+        edbapp = Edb(str(edb_path), desktop_version)
+        assert edbapp.configuration.load(example_json_folder / "nets.json", apply_file=True)
+        assert edbapp.nets["1.2V_DVDDL"].is_power_ground
+        assert not edbapp.nets["SFPA_VCCR"].is_power_ground
+        edbapp.close()

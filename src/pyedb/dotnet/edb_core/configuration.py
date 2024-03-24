@@ -92,6 +92,11 @@ class Configuration:
             self._pedb.logger.error("No data loaded. Please load a configuration file.")
             return False
 
+        # Configure nets
+        if "nets" in self.data:
+            self._load_nets()
+
+        # Configure components
         if "components" in self.data:
             self._load_components()
 
@@ -502,3 +507,13 @@ class Configuration:
                 self._pedb.siwave.create_pin_group(refdes, pg["pins"], name)
             elif "net" in pg:
                 self._pedb.siwave.create_pin_group_on_net(refdes, pg["net"], name)
+
+    @pyedb_function_handler
+    def _load_nets(self):
+        """Imports nets information from JSON."""
+        nets = self._pedb.nets.nets
+        for i in self.data["nets"]["power_ground_nets"]:
+            nets[i].is_power_ground = True
+
+        for i in self.data["nets"]["signal_nets"]:
+            nets[i].is_power_ground = False
