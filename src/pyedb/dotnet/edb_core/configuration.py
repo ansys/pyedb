@@ -41,6 +41,8 @@ class Configuration:
         self._pedb = pedb
         self._components = self._pedb.components.components
         self.data = {}
+        self._s_parameter_library = ""
+        self._spice_model_library = ""
 
     @pyedb_function_handler
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
@@ -91,6 +93,10 @@ class Configuration:
         if not self.data:
             self._pedb.logger.error("No data loaded. Please load a configuration file.")
             return False
+
+        # Configure general settings
+        if "general" in self.data:
+            self._load_general()
 
         # Configure nets
         if "nets" in self.data:
@@ -464,6 +470,8 @@ class Configuration:
 
         for sp in self.data["s_parameters"]:
             fpath = sp["file_path"]
+            if not Path(fpath).anchor:
+                fpath = str(Path(self._s_parameter_library) / fpath)
             sp_name = sp["name"]
             comp_def_name = sp["component_definition"]
             comp_def = self._pedb.definitions.component[comp_def_name]
@@ -483,6 +491,8 @@ class Configuration:
 
         for sp in self.data["spice_models"]:
             fpath = sp["file_path"]
+            if not Path(fpath).anchor:
+                fpath = str(Path(self._spice_model_library) / fpath)
             sp_name = sp["name"]
             sub_circuit_name = sp["sub_circuit_name"] if sp["sub_circuit_name"] else None
             comp_def_name = sp["component_definition"]
@@ -517,3 +527,12 @@ class Configuration:
 
         for i in self.data["nets"]["signal_nets"]:
             nets[i].is_power_ground = False
+
+    @pyedb_function_handler
+    def _load_general(self):
+        """Imports general information from JSON."""
+        general = self.data["general"]
+        if "s_parameter_library" in general:
+            self._s_parameter_library = general["s_parameter_library"]
+        if "spice_model_library" in general:
+            self._spice_model_library = general["spice_model_library"]

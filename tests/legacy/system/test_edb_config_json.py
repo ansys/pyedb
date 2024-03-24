@@ -45,10 +45,14 @@ class TestClass:
         self.local_input_folder = Path(self.local_scratch.path) / "input_files"
         self.local_scratch.copyfolder(str(src_edb), str(self.local_edb))
         self.local_scratch.copyfolder(str(src_input_folder), str(self.local_input_folder))
+        self.local_scratch.copyfile(str(example_folder / "GRM32_DC0V_25degC_series.s2p"),
+                                    str(self.local_input_folder/ "GRM32_DC0V_25degC_series.s2p"))
+        self.local_scratch.copyfile(str(example_folder / "GRM32ER72A225KA35_25C_0V.sp"),
+                                    str(self.local_input_folder / "GRM32ER72A225KA35_25C_0V.sp"))
 
     def test_01_create_edb(self):
         edbapp = Edb(str(self.local_edb), desktop_version)
-        temp = dict()
+        data = dict()
         for i in [
             "stackup.json",
             "components.json",
@@ -61,14 +65,15 @@ class TestClass:
             "ports_circuit.json"
         ]:
             with open(self.local_input_folder / i) as f:
-                temp.update(json.load(f))
-
-        assert edbapp.configuration.load(temp, apply_file=True)
+                data.update(json.load(f))
+        data["general"]["s_parameter_library"] = self.local_input_folder
+        data["general"]["spice_model_library"] = self.local_input_folder
+        assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
         edbapp = Edb(str(self.local_edb), desktop_version)
         assert not edbapp.configuration.run()
-        assert edbapp.configuration.load(temp, apply_file=False)
+        assert edbapp.configuration.load(data, apply_file=False)
         edbapp.close()
 
     def test_02_create_port_on_pin_groups(self):
@@ -77,8 +82,12 @@ class TestClass:
         edbapp.close()
 
     def test_03_spice_models(self):
+        with open(self.local_input_folder / "spice.json") as f:
+            data = json.load(f)
+        data["general"]["spice_model_library"] = self.local_input_folder
+
         edbapp = Edb(str(self.local_edb), desktop_version)
-        assert edbapp.configuration.load(str(self.local_input_folder / "spice.json"), apply_file=True)
+        assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.components["R107"].model.model_name
         assert edbapp.components["R107"].model.spice_file_path
         assert edbapp.components["R106"].model.spice_file_path
