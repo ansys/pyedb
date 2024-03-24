@@ -21,14 +21,13 @@
 # SOFTWARE.
 
 import os
-import sys
 from pathlib import Path
-import pytest
+import sys
 
+import pytest
 
 from pyedb.dotnet.edb import Edb
 from tests.conftest import desktop_version
-
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
@@ -42,20 +41,21 @@ class TestClass:
         src_edb = example_folder / "ANSYS-HSD_V1.aedb"
         src_input_folder = example_folder / "edb_config_json"
 
-        self.local_edb = Path(self.local_scratch.path) /  "ansys.aedb"
+        self.local_edb = Path(self.local_scratch.path) / "ansys.aedb"
         self.local_input_folder = Path(self.local_scratch.path) / "input_files"
         self.local_scratch.copyfolder(str(src_edb), str(self.local_edb))
         self.local_scratch.copyfolder(str(src_input_folder), str(self.local_input_folder))
 
     def test_01_create_edb(self):
-
         edbapp = Edb(str(self.local_edb), desktop_version)
         assert edbapp.configuration.load(self.local_input_folder / "stackup.json", apply_file=True)
         edbapp.configuration.load(self.local_input_folder / "components.json")
         assert edbapp.configuration.run()
         assert edbapp.configuration.load(self.local_input_folder / "setups_hfss.json", apply_file=True)
         assert "stackup" in edbapp.configuration.data
-        assert edbapp.configuration.load(self.local_input_folder / "setups_siwave_syz.json", apply_file=True, append=False)
+        assert edbapp.configuration.load(
+            self.local_input_folder / "setups_siwave_syz.json", apply_file=True, append=False
+        )
         assert "stackup" not in edbapp.configuration.data
         assert edbapp.configuration.load(self.local_input_folder / "setups_siwave_dc.json", apply_file=True)
         assert edbapp.configuration.load(self.local_input_folder / "s_parameter.json", apply_file=True)
