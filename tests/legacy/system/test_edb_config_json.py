@@ -45,10 +45,14 @@ class TestClass:
         self.local_input_folder = Path(self.local_scratch.path) / "input_files"
         self.local_scratch.copyfolder(str(src_edb), str(self.local_edb))
         self.local_scratch.copyfolder(str(src_input_folder), str(self.local_input_folder))
-        self.local_scratch.copyfile(str(example_folder / "GRM32_DC0V_25degC_series.s2p"),
-                                    str(self.local_input_folder/ "GRM32_DC0V_25degC_series.s2p"))
-        self.local_scratch.copyfile(str(example_folder / "GRM32ER72A225KA35_25C_0V.sp"),
-                                    str(self.local_input_folder / "GRM32ER72A225KA35_25C_0V.sp"))
+        self.local_scratch.copyfile(
+            str(example_folder / "GRM32_DC0V_25degC_series.s2p"),
+            str(self.local_input_folder / "GRM32_DC0V_25degC_series.s2p"),
+        )
+        self.local_scratch.copyfile(
+            str(example_folder / "GRM32ER72A225KA35_25C_0V.sp"),
+            str(self.local_input_folder / "GRM32ER72A225KA35_25C_0V.sp"),
+        )
 
     def test_01_create_edb(self):
         edbapp = Edb(str(self.local_edb), desktop_version)
