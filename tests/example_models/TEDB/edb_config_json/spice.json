@@ -1,0 +1,20 @@
+{
+  "spice_models": [
+    {
+      "name": "GRM32ER72A225KA35_25C_0V",
+      "component_definition": "RESC1005X40X25LL05T05",
+      "file_path": "C:/ansysdev/pycharm_projects/pyansys-edb/tests/example_models/TEDB/GRM32ER72A225KA35_25C_0V.sp",
+      "sub_circuit_name": "GRM32ER72A225KA35_25C_0V",
+      "apply_to_all": true,
+      "components": []
+    },
+    {
+      "name": "GRM32ER72A225KA35_25C_0V",
+      "component_definition": "RESC1005X40X25NL05T05",
+      "file_path": "C:/ansysdev/pycharm_projects/pyansys-edb/tests/example_models/TEDB/GRM32ER72A225KA35_25C_0V.sp",
+      "sub_circuit_name": "GRM32ER72A225KA35_25C_0V",
+      "apply_to_all": false,
+      "components": ["R106"]
+    }
+  ]
+}

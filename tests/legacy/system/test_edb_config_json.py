@@ -30,6 +30,10 @@ from tests.conftest import desktop_version
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 local_path = Path(__file__).parent.parent.parent
+example_folder = local_path / "example_models" / "TEDB"
+example_json_folder = example_folder / "edb_config_json"
+example_json_folder = example_folder / "edb_config_json"
+example_edb = example_folder / "ANSYS-HSD_V1.aedb"
 
 
 class TestClass:
@@ -37,11 +41,7 @@ class TestClass:
     def init(self, local_scratch):
         self.local_scratch = local_scratch
 
-    def test_create_edb(self):
-        example_folder = local_path / "example_models" / "TEDB"
-        example_json_folder = example_folder / "edb_config_json"
-        example_edb = example_folder / "ANSYS-HSD_V1.aedb"
-
+    def test_01_create_edb(self):
         target_path_edb = Path(self.local_scratch.path) / "configuration" / "test.aedb"
         target_path_edb2 = Path(self.local_scratch.path) / "configuration" / "test_new.aedb"
 
@@ -74,16 +74,21 @@ class TestClass:
         assert edbapp.configuration.load(example_json_folder / "sources.json")
         edbapp.close()
 
-    def test_create_port_on_pin_groups(self):
-        example_folder = local_path / "example_models" / "TEDB"
-        example_json_folder = example_folder / "edb_config_json"
-        example_edb = example_folder / "ANSYS-HSD_V1.aedb"
+    def test_02_create_port_on_pin_groups(self):
+        edb_path = Path(self.local_scratch.path) / "02" / "test.aedb"
+        self.local_scratch.copyfolder(str(example_edb), str(edb_path))
 
-        target_path_edb = Path(self.local_scratch.path) / "configuration" / "test.aedb"
-        target_path_edb2 = Path(self.local_scratch.path) / "configuration" / "test_new.aedb"
-
-        self.local_scratch.copyfolder(str(example_edb), str(target_path_edb))
-
-        edbapp = Edb(str(target_path_edb), desktop_version)
+        edbapp = Edb(str(edb_path), desktop_version)
         assert edbapp.configuration.load(example_json_folder / "pin_groups.json", apply_file=True)
+        edbapp.close()
+
+    def test_03_spice_models(self):
+        edb_path = Path(self.local_scratch.path) / "03" / "test.aedb"
+        self.local_scratch.copyfolder(str(example_edb), str(edb_path))
+
+        edbapp = Edb(str(edb_path), desktop_version)
+        assert edbapp.configuration.load(example_json_folder / "spice.json", apply_file=True)
+        assert edbapp.components["R107"].model.model_name
+        assert edbapp.components["R107"].model.spice_file_path
+        assert edbapp.components["R106"].model.spice_file_path
         edbapp.close()

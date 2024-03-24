@@ -119,6 +119,10 @@ class Configuration:
         if "s_parameters" in self.data:
             self._load_s_parameter()
 
+        # Configure SPICE models
+        if "spice_models" in self.data:
+            self._load_spice_models()
+
         return True
 
     @pyedb_function_handler
@@ -467,6 +471,26 @@ class Configuration:
                 for refdes, comp in comp_def.components.items():
                     if refdes in sp["components"]:
                         comp.use_s_parameter_model(sp_name)
+
+    @pyedb_function_handler
+    def _load_spice_models(self):
+        """Imports SPICE information from json."""
+
+        for sp in self.data["spice_models"]:
+            fpath = sp["file_path"]
+            sp_name = sp["name"]
+            sub_circuit_name = sp["sub_circuit_name"] if sp["sub_circuit_name"] else None
+            comp_def_name = sp["component_definition"]
+            comp_def = self._pedb.definitions.component[comp_def_name]
+            comps = comp_def.components
+            if sp["apply_to_all"]:
+                for refdes, comp in comps.items():
+                    if refdes not in sp["components"]:
+                        comp.assign_spice_model(fpath, sp_name, sub_circuit_name)
+            else:
+                for refdes, comp in comps.items():
+                    if refdes in sp["components"]:
+                        comp.assign_spice_model(fpath, sp_name, sub_circuit_name)
 
     @pyedb_function_handler
     def _load_pin_groups(self):
