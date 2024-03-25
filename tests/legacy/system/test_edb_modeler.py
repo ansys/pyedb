@@ -85,6 +85,21 @@ class TestClass:
         self.edbapp.modeler.paths[0].width = "1mm"
         assert self.edbapp.modeler.paths[0].width == 0.001
 
+    def test_modeler_primitives_by_layer(self):
+        """Evaluate modeler primitives by layer"""
+        assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].layer_name == "1_Top"
+        assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].layer.GetName() == "1_Top"
+        assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative
+        assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_void
+        self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative = True
+        assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative
+        self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative = False
+        assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].has_voids
+        assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_parameterized
+        assert isinstance(self.edbapp.modeler.primitives_by_layer["1_Top"][0].get_hfss_prop(), tuple)
+        assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_zone_primitive
+        assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].can_be_zone_primitive
+
     def test_modeler_primitives(self):
         """Evaluate modeler primitives"""
         assert len(self.edbapp.modeler.rectangles) > 0
