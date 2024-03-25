@@ -166,7 +166,7 @@ class EDBPrimitivesMain(Connectable):
             if layer:
                 self.primitive_object.SetLayer(layer)
             else:
-                raise AttributeError("Layer {} not found in layer".format(val))
+                raise AttributeError("Layer {} not found.".format(val))
         elif isinstance(val, type(self._core_stackup.layers[layer_list[0]])):
             try:
                 self.primitive_object.SetLayer(val._edb_layer)
