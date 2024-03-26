@@ -145,6 +145,11 @@ class EDBPadProperties(object):
         return [i.tofloat for i in self.parameters.values()]
 
     @property
+    def parameters_values_string(self):
+        """Parameters."""
+        return [i.tostring for i in self.parameters.values()]
+
+    @property
     def polygon_data(self):
         """Parameters.
 
@@ -508,6 +513,11 @@ class EDBPadstack(object):
     def hole_diameter(self, value):
         params = convert_py_list_to_net_list([self._get_edb_value(value)])
         self._update_hole_parameters(params=params)
+
+    @property
+    def hole_diameter_string(self):
+        """Hole diameter in string format."""
+        return list(self.hole_params[2])[0].ToString()
 
     @pyedb_function_handler()
     def _update_hole_parameters(self, hole_type=None, params=None, offsetx=None, offsety=None, rotation=None):
