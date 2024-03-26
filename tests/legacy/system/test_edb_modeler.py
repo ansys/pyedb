@@ -391,14 +391,15 @@ class TestClass:
         assert edbapp.modeler.primitives_by_layer["bot_gnd"]
         edbapp.close()
 
-    def test_layer_name(self):
+    def test_unite_polygon(self):
         edbapp = Edb()
         edbapp["$H"] = "0.65mil"
-        assert edbapp["$H"].value_string == "0.65mil"
         edbapp["Via_S"] = "40mil"
         edbapp["MS_W"] = "4.75mil"
+        edbapp["MS_S"] = "5mil"
+        edbapp["SL_W"] = "6.75mil"
+        edbapp["SL_S"] = "8mil"
         edbapp.stackup.add_layer("trace1", thickness="$H")
-        edbapp.stackup.add_layer("bot_gnd", thickness="0.65mil")
         t1_1 = edbapp.modeler.create_trace(
             width="MS_W",
             layer_name="trace1",
@@ -407,7 +408,40 @@ class TestClass:
             end_cap_style="FLat",
             net_name="t1_1",
         )
-        assert t1_1.layer_name == "trace1"
-        t1_1.layer_name = "bot_gnd"
-        assert t1_1.layer_name == "bot_gnd"
+        t2_1 = edbapp.modeler.create_trace(
+            width="MS_W",
+            layer_name="trace1",
+            path_list=[("-Via_S/2", "0"), ("-SL_S/2-SL_W/2", "16 mil"), ("-SL_S/2-SL_W/2", "100 mil")],
+            start_cap_style="FLat",
+            end_cap_style="FLat",
+            net_name="t2_1",
+        )
+        t3_1 = edbapp.modeler.create_trace(
+            width="MS_W",
+            layer_name="trace1",
+            path_list=[("-Via_S/2", "0"), ("-SL_S/2-SL_W/2", "16 mil"), ("+SL_S/2+MS_W/2", "100 mil")],
+            start_cap_style="FLat",
+            end_cap_style="FLat",
+            net_name="t3_1",
+        )
+        t1_1.convert_to_polygon()
+        t2_1.convert_to_polygon()
+        t3_1.convert_to_polygon()
+        net_list = ["t1_1", "t2_1"]
+        assert len(edbapp.modeler.polygons) == 3
+        edbapp.nets.merge_nets_polygons(net_names_list=net_list)
+        assert len(edbapp.modeler.polygons) == 2
+        edbapp.modeler.unite_polygons_on_layer("trace1")
+        assert len(edbapp.modeler.polygons) == 1
+        edbapp.close()
+
+    def test_layer_name(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        assert edbapp.modeler.polygons[50].layer_name == "1_Top"
+        edbapp.modeler.polygons[50].layer_name = "16_Bottom"
+        assert edbapp.modeler.polygons[50].layer_name == "16_Bottom"
         edbapp.close()
