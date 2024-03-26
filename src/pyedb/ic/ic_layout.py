@@ -37,7 +37,8 @@ class ICLayout:
         if gds_file:
             self._klayout.read(gds_file)
             self._read_layer_info()
-        self._top_cell = self._klayout.top_cell()
+        self._top_cell = [self._klayout.top_cell().name]
+        self._update_layers()
 
     def _read_layer_info(self):
         for layer_index in range(self._klayout.layers()):
@@ -46,7 +47,7 @@ class ICLayout:
                 if [layer for layer in self.db.layers if layer.index == str(layer_info.layer)]:
                     if not [lay for lay in self.db.layers if lay.data_type == str(layer_info.datatype)]:
                         _layer = ICLayerData(klayout=self._klayout, name=layer_info.name, index=layer_info.layer,
-                        data_type = layer_info.datatype, purpose="drawing")
+                                             data_type=layer_info.datatype, purpose="drawing")
                         self.db.layers.append(_layer)
 
     def _read_layer_map(self):
@@ -60,6 +61,11 @@ class ICLayout:
                         layer = ICLayerData(klayout=self._klayout, name=data[0], purpose=data[1],
                                             index=data[2], data_type=data[3])
                         self.db.layers.append(layer)
+
+    def _update_layers(self):
+        for cell in self._top_cell:
+            self.db.layers = [layer for layer in self.db.layers if not layer.shapes[cell].is_empty]
+
 
     def save(self, file_name=None):
         if file_name:

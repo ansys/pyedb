@@ -27,8 +27,27 @@ from dataclasses import dataclass
 class CellShapes:
     polygons: list
     paths: list
-    texts: list
+    labels: list
     boxes: list
+    pins: list
+    nets: list
+
+    @property
+    def is_empty(self):
+        if self.polygons:
+            return False
+        if self.paths:
+            return False
+        if self.labels:
+            return False
+        if self.boxes:
+            return False
+        if self.pins:
+            return False
+        if self.nets:
+            return False
+        return True
+
 
 
 class ICLayoutData:
@@ -47,13 +66,14 @@ class ICLayoutData:
 
 
 class ICLayerData:
-    def __init__(self, klayout, name, index, data_type, purpose):
+    def __init__(self, klayout, name, index, data_type, purpose, skip_labels=True):
         self._klayout = klayout
         self._name = name
         self._index = index
         self._data_type = data_type
         self._shapes = {}
         self._purpose = purpose
+        self._skip_labels = skip_labels
 
     @property
     def name(self):
@@ -106,21 +126,43 @@ class ICLayerData:
         if isinstance(value, str):
             self._purpose = value
 
+    @property
+    def skip_labels(self):
+        return self._skip_labels
+
+    @skip_labels.setter
+    def skip_labels(self, value):
+        if isinstance(value, bool):
+            self._skip_labels = value
+
     def _update_shapes(self):
         self._shapes = {}
         top_cells = [cell for cell in self._klayout.top_cells()]
         for kcell in top_cells:
-            cell = CellShapes(polygons=[], paths=[], texts=[], boxes=[])
+            cell = CellShapes(polygons=[], paths=[], labels=[], boxes=[], pins=[], nets=[])
             if not kcell.name in self._shapes:
                 self._shapes[kcell.name] = cell
-            for layer_id in self._klayout.layer_indexes():
-                shape_list = kcell.shapes(layer_id)
+            layer = self._klayout.layer(int(self.index), int(self.data_type))
+            shape_list = kcell.shapes(layer)
+            if "pin" in self.purpose.lower():
+                for shape in shape_list.each():
+                    if shape.is_box():
+                        pin_position = shape.dbox.center()
+                        cell.pins.append([pin_position.x, pin_position.y])
+                    if shape.is_polygon():
+                        pass
+            if not self.skip_labels:
+                for shape in shape_list.each():
+                    if shape.is_text():
+                        cell.labels.append(shape)
+            if "net" in self.purpose.lower():
+                for shape in shape_list.each():
+                    cell.nets.append(shape)
+            if "drawing" in self.purpose.lower():
                 for shape in shape_list.each():
                     if shape.is_polygon():
                         cell.polygons.append(shape)
-                    elif shape.is_path():
-                        cell.paths.append(shape)
-                    elif shape.is_text():
-                        cell.texts.append(shape)
                     elif shape.is_box():
                         cell.boxes.append(shape)
+                    elif shape.is_path():
+                        cell.paths.append(shape)
