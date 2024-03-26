@@ -499,6 +499,16 @@ class EDBPadstack(object):
         self._hole_parameters = self.hole_params[2]
         return self._hole_parameters
 
+    @property
+    def hole_diameter(self):
+        """Hole diameter."""
+        return list(self.hole_params[2])[0].ToDouble()
+
+    @hole_diameter.setter
+    def hole_diameter(self, value):
+        params = convert_py_list_to_net_list([self._get_edb_value(value)])
+        self._update_hole_parameters(params=params)
+
     @pyedb_function_handler()
     def _update_hole_parameters(self, hole_type=None, params=None, offsetx=None, offsety=None, rotation=None):
         """Update hole parameters.
