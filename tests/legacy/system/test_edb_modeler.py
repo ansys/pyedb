@@ -88,7 +88,6 @@ class TestClass:
     def test_modeler_primitives_by_layer(self):
         """Evaluate modeler primitives by layer"""
         assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].layer_name == "1_Top"
-        # assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].layer.GetName() == "1_Top"
         assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative
         assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_void
         self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative = True
