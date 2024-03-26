@@ -142,7 +142,7 @@ class EDBPrimitivesMain(Connectable):
         try:
             layer_name = self.primitive_object.GetLayer().GetName()
             return self._pedb.stackup.layers[layer_name]
-        except AttributeError:  # pragma: no cover
+        except (KeyError, AttributeError):  # pragma: no cover
             return None
 
     @property
@@ -155,7 +155,7 @@ class EDBPrimitivesMain(Connectable):
         """
         try:
             return self.layer.name
-        except AttributeError:  # pragma: no cover
+        except (KeyError, AttributeError):  # pragma: no cover
             return None
 
     @layer_name.setter
