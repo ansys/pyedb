@@ -22,13 +22,18 @@
 
 import pya
 from pyedb.ic.gds_data import ICLayoutData, ICLayerData
+import os
 
 
 class ICLayout:
-    def __init__(self, gds_file):
+    def __init__(self, gds_file, layermap=None):
         self.editable = True
         self._klayout = pya.Layout(self.editable)
+        self._layermap = layermap
         self.db = ICLayoutData(klayout=self._klayout, layers=[])
+        if layermap:
+            if os.path.splitext(layermap)[-1] == ".layermap":
+                self._read_layer_map()
         if gds_file:
             self._klayout.read(gds_file)
             self._read_layer_info()
@@ -38,9 +43,23 @@ class ICLayout:
         for layer_index in range(self._klayout.layers()):
             layer_info = self._klayout.get_info(layer_index)
             if not layer_info.layer == -1:
-                layer = ICLayerData(klayout=self._klayout, name=layer_info.name, index=layer_info.layer,
-                                    data_type=layer_info.datatype)
-                self.db.layers.append(layer)
+                if [layer for layer in self.db.layers if layer.index == str(layer_info.layer)]:
+                    if not [lay for lay in self.db.layers if lay.data_type == str(layer_info.datatype)]:
+                        _layer = ICLayerData(klayout=self._klayout, name=layer_info.name, index=layer_info.layer,
+                        data_type = layer_info.datatype, purpose="drawing")
+                        self.db.layers.append(_layer)
+
+    def _read_layer_map(self):
+        with open(self._layermap, mode='r') as file:
+            lines = file.readlines()
+            header = ["layer_name", "layer_purpose", "layer_stream_number", "data_type"]
+            for line in lines[1:]:
+                if line.strip():
+                    data = line.replace("\t", " ").split()
+                    if len(data) == len(header):
+                        layer = ICLayerData(klayout=self._klayout, name=data[0], purpose=data[1],
+                                            index=data[2], data_type=data[3])
+                        self.db.layers.append(layer)
 
     def save(self, file_name=None):
         if file_name:

@@ -47,12 +47,13 @@ class ICLayoutData:
 
 
 class ICLayerData:
-    def __init__(self, klayout, name, index, data_type):
+    def __init__(self, klayout, name, index, data_type, purpose):
         self._klayout = klayout
         self._name = name
         self._index = index
         self._data_type = data_type
         self._shapes = {}
+        self._purpose = purpose
 
     @property
     def name(self):
@@ -95,6 +96,15 @@ class ICLayerData:
         if not self._shapes:
             self._update_shapes()
         return self._shapes
+
+    @property
+    def purpose(self):
+        return self._purpose
+
+    @purpose.setter
+    def purpose(self, value):
+        if isinstance(value, str):
+            self._purpose = value
 
     def _update_shapes(self):
         self._shapes = {}
