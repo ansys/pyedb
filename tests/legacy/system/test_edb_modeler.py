@@ -434,3 +434,14 @@ class TestClass:
         edbapp.modeler.unite_polygons_on_layer("trace1")
         assert len(edbapp.modeler.polygons) == 1
         edbapp.close()
+
+    def test_layer_name(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        assert edbapp.modeler.polygons[50].layer_name == "1_Top"
+        edbapp.modeler.polygons[50].layer_name = "16_Bottom"
+        assert edbapp.modeler.polygons[50].layer_name == "16_Bottom"
+        edbapp.close()
