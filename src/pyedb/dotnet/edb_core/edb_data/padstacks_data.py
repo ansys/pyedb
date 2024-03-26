@@ -146,7 +146,7 @@ class EDBPadProperties(object):
 
     @property
     def parameters_values_string(self):
-        """Parameters."""
+        """Parameters value in string format."""
         return [i.tostring for i in self.parameters.values()]
 
     @property
