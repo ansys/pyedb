@@ -141,7 +141,7 @@ class Configuration:
         """Imports component information from json."""
 
         for comp in self.data["components"]:
-            refdes = comp["reference_designator"]
+            ref_designator = comp["reference_designator"]
             part_type = comp["part_type"].lower()
             if part_type == "resistor":
                 part_type = "Resistor"
@@ -156,7 +156,7 @@ class Configuration:
             else:
                 part_type = "Other"
 
-            comp_layout = self._components[refdes]
+            comp_layout = self._components[ref_designator]
             comp_layout.type = part_type
 
             if part_type in ["Resistor", "Capacitor", "Inductor"]:
@@ -232,7 +232,7 @@ class Configuration:
                 height = solder_ball_properties["height"]
 
                 self._pedb.components.set_solder_ball(
-                    component=refdes,
+                    component=ref_designator,
                     sball_diam=diameter,
                     sball_mid_diam=mid_diameter,
                     sball_height=height,
@@ -249,25 +249,25 @@ class Configuration:
         for port in self.data["ports"]:
             port_type = port["type"]
 
-            pos = port["positive_terminal"]
+            positive_terminal_json = port["positive_terminal"]
             pos_terminal = ""
-            if "pin_group" in pos:
-                pin_group = self._pedb.siwave.pin_groups[pos["pin_group"]]
+            if "pin_group" in positive_terminal_json:
+                pin_group = self._pedb.siwave.pin_groups[positive_terminal_json["pin_group"]]
                 pos_terminal = pin_group.get_terminal(pin_group.name, True)
             else:
-                refdes = port["reference_designator"]
-                comp_layout = self._components[refdes]
+                ref_designator = port["reference_designator"]
+                comp_layout = self._components[ref_designator]
 
-                if "pin" in pos:
-                    pin_name = pos["pin"]
-                    port_name = "{}_{}".format(refdes, pin_name)
+                if "pin" in positive_terminal_json:
+                    pin_name = positive_terminal_json["pin"]
+                    port_name = "{}_{}".format(ref_designator, pin_name)
                     pos_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
                 else:  # Net
-                    net_name = pos["net"]
-                    port_name = "{}_{}".format(refdes, net_name)
+                    net_name = positive_terminal_json["net"]
+                    port_name = "{}_{}".format(ref_designator, net_name)
                     if port_type == "circuit":
                         pg_name = "pg_{}".format(port_name)
-                        _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
+                        _, pg = self._pedb.siwave.create_pin_group_on_net(ref_designator, net_name, pg_name)
                         pos_terminal = pg.get_terminal(port_name, True)
                     else:  # Coax port
                         for _, p in comp_layout.pins.items():
@@ -276,20 +276,20 @@ class Configuration:
                                 break
 
             if port_type == "circuit":
-                neg = port["negative_terminal"]
-                if "pin_group" in neg:
-                    pin_group = self._pedb.siwave.pin_groups[neg["pin_group"]]
+                negative_terminal_json = port["negative_terminal"]
+                if "pin_group" in negative_terminal_json:
+                    pin_group = self._pedb.siwave.pin_groups[negative_terminal_json["pin_group"]]
                     neg_terminal = pin_group.get_terminal(pin_group.name + "_ref", True)
-                elif "pin" in neg:
-                    pin_name = neg["pin"]
-                    port_name = "{}_{}_ref".format(refdes, pin_name)
+                elif "pin" in negative_terminal_json:
+                    pin_name = negative_terminal_json["pin"]
+                    port_name = "{}_{}_ref".format(ref_designator, pin_name)
                     neg_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
                 else:
-                    net_name = neg["net"]
-                    port_name = "{}_{}_ref".format(refdes, net_name)
+                    net_name = negative_terminal_json["net"]
+                    port_name = "{}_{}_ref".format(ref_designator, net_name)
                     pg_name = "pg_{}".format(port_name)
                     if pg_name not in self._pedb.siwave.pin_groups:
-                        _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
+                        _, pg = self._pedb.siwave.create_pin_group_on_net(ref_designator, net_name, pg_name)
                     else:
                         pg = self._pedb.siwave.pin_groups[pg_name]
                     neg_terminal = pg.get_terminal(port_name, True)
@@ -306,42 +306,42 @@ class Configuration:
             src_type = src["type"]
             name = src["name"]
 
-            pos = src["positive_terminal"]
-            if "pin_group" in pos:
-                pin_group = self._pedb.siwave.pin_groups[pos["pin_group"]]
+            positive_terminal_json = src["positive_terminal"]
+            if "pin_group" in positive_terminal_json:
+                pin_group = self._pedb.siwave.pin_groups[positive_terminal_json["pin_group"]]
                 pos_terminal = pin_group.get_terminal(pin_group.name, True)
             else:
-                refdes = src["reference_designator"]
-                comp_layout = self._components[refdes]
+                ref_designator = src["reference_designator"]
+                comp_layout = self._components[ref_designator]
 
-                if "pin" in pos:
-                    pin_name = pos["pin"]
+                if "pin" in positive_terminal_json:
+                    pin_name = positive_terminal_json["pin"]
                     src_name = name
                     pos_terminal = comp_layout.pins[pin_name].get_terminal(src_name, True)
-                elif "net" in pos:  # Net
-                    net_name = pos["net"]
-                    src_name = "{}_{}".format(refdes, net_name)
+                elif "net" in positive_terminal_json:  # Net
+                    net_name = positive_terminal_json["net"]
+                    src_name = "{}_{}".format(ref_designator, net_name)
                     pg_name = "pg_{}".format(src_name)
-                    _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
+                    _, pg = self._pedb.siwave.create_pin_group_on_net(ref_designator, net_name, pg_name)
                     pos_terminal = pg.get_terminal(src_name, True)
 
-            neg = src["negative_terminal"]
-            if "pin_group" in neg:
-                pin_group = self._pedb.siwave.pin_groups[neg["pin_group"]]
+            negative_terminal_json = src["negative_terminal"]
+            if "pin_group" in negative_terminal_json:
+                pin_group = self._pedb.siwave.pin_groups[negative_terminal_json["pin_group"]]
                 neg_terminal = pin_group.get_terminal(pin_group.name + "_ref", True)
             else:
-                refdes = src["reference_designator"]
-                comp_layout = self._components[refdes]
-                if "pin" in neg:
-                    pin_name = neg["pin"]
+                ref_designator = src["reference_designator"]
+                comp_layout = self._components[ref_designator]
+                if "pin" in negative_terminal_json:
+                    pin_name = negative_terminal_json["pin"]
                     src_name = name + "_ref"
                     neg_terminal = comp_layout.pins[pin_name].get_terminal(src_name, True)
-                elif "net" in neg:
-                    net_name = neg["net"]
+                elif "net" in negative_terminal_json:
+                    net_name = negative_terminal_json["net"]
                     src_name = name + "_ref"
                     pg_name = "pg_{}".format(src_name)
                     if pg_name not in self._pedb.siwave.pin_groups:
-                        _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
+                        _, pg = self._pedb.siwave.create_pin_group_on_net(ref_designator, net_name, pg_name)
                     else:  # pragma no cover
                         pg = self._pedb.siwave.pin_groups[pg_name]
                     neg_terminal = pg.get_terminal(src_name, True)
@@ -512,11 +512,11 @@ class Configuration:
         """Imports pin groups information from JSON."""
         for pg in self.data["pin_groups"]:
             name = pg["name"]
-            refdes = pg["reference_designator"]
+            ref_designator = pg["reference_designator"]
             if "pins" in pg:
-                self._pedb.siwave.create_pin_group(refdes, pg["pins"], name)
+                self._pedb.siwave.create_pin_group(ref_designator, pg["pins"], name)
             elif "net" in pg:
-                self._pedb.siwave.create_pin_group_on_net(refdes, pg["net"], name)
+                self._pedb.siwave.create_pin_group_on_net(ref_designator, pg["net"], name)
 
     @pyedb_function_handler
     def _load_nets(self):

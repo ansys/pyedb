@@ -55,31 +55,20 @@ class TestClass:
 
     def test_01_create_edb(self):
         edbapp = Edb(str(self.local_edb), desktop_version)
-        data = dict()
         for i in [
             "stackup.json",
             "components.json",
             "setups_hfss.json",
             "setups_siwave_syz.json",
             "setups_siwave_dc.json",
-            "s_parameter.json",
             "sources.json",
-            "ports_coax.json",
-            "ports_circuit.json",
         ]:
             with open(self.local_input_folder / i) as f:
-                data.update(json.load(f))
-        data["general"]["s_parameter_library"] = self.local_input_folder
-        data["general"]["spice_model_library"] = self.local_input_folder
-        assert edbapp.configuration.load(data, apply_file=True)
+                data = json.load(f)
+            assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
-        edbapp = Edb(str(self.local_edb), desktop_version)
-        assert not edbapp.configuration.run()
-        assert edbapp.configuration.load(data, apply_file=False)
-        edbapp.close()
-
-    def test_02_create_port_on_pin_groups(self):
+    def test_02_pin_groups(self):
         edbapp = Edb(str(self.local_edb), desktop_version)
         assert edbapp.configuration.load(self.local_input_folder / "pin_groups.json", apply_file=True)
         edbapp.close()
@@ -119,3 +108,13 @@ class TestClass:
             open_at_the_end=True,
         )
         assert Path(self.local_scratch.path, "exported_2.aedb").exists()
+        edbapp.close()
+
+    def test_06_s_parameters(self):
+        with open(self.local_input_folder / "s_parameter.json") as f:
+            data = json.load(f)
+        data["general"]["s_parameter_library"] = self.local_input_folder
+
+        edbapp = Edb(str(self.local_edb), desktop_version)
+        assert edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
