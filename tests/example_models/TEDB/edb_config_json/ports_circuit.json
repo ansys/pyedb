@@ -4,10 +4,10 @@
       "name": "CIRCUIT_C375_1_2",
       "reference_designator": "C375",
       "type": "circuit",
-      "from": {
+      "positive_terminal": {
         "pin": "1"
       },
-      "to": {
+      "negative_terminal": {
         "pin": "2"
       }
     },
@@ -15,10 +15,10 @@
       "name": "CIRCUIT_X1_B8_GND",
       "reference_designator": "X1",
       "type": "circuit",
-      "from": {
+      "positive_terminal": {
         "pin": "B8"
       },
-      "to": {
+      "negative_terminal": {
         "net": "GND"
       }
     },
@@ -26,10 +26,10 @@
       "name": "CIRCUIT_X1_B9_GND",
       "reference_designator": "X1",
       "type": "circuit",
-      "from": {
+      "positive_terminal": {
         "net": "PCIe_Gen4_TX2_N"
       },
-      "to": {
+      "negative_terminal": {
         "net": "GND"
       }
     },
@@ -37,10 +37,10 @@
       "name": "CIRCUIT_U7_VDD_DDR_GND",
       "reference_designator": "U7",
       "type": "circuit",
-      "from": {
+      "positive_terminal": {
         "net": "VDD_DDR"
       },
-      "to": {
+      "negative_terminal": {
         "net": "GND"
       }
     }
