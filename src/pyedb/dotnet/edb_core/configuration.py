@@ -494,7 +494,7 @@ class Configuration:
             if not Path(fpath).anchor:
                 fpath = str(Path(self._spice_model_library) / fpath)
             sp_name = sp["name"]
-            sub_circuit_name = sp["sub_circuit_name"] if sp["sub_circuit_name"] else None
+            sub_circuit_name = sp.get("sub_circuit_name", None)
             comp_def_name = sp["component_definition"]
             comp_def = self._pedb.definitions.component[comp_def_name]
             comps = comp_def.components
