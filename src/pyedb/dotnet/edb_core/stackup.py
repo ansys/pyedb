@@ -878,6 +878,7 @@ class Stackup(object):
         else:
             return False
 
+    # TODO: This method might need some refactoring
     @pyedb_function_handler()
     def _import_layer_stackup(self, input_file=None):
         if input_file:
@@ -886,7 +887,8 @@ class Stackup(object):
             for k, v in json_dict.items():
                 if k == "materials":
                     for material in v.values():
-                        self._pedb.materials._load_materials(material)
+                        if material is not None:
+                            self._pedb.materials.add_material(**material)
                 if k == "layers":
                     if len(list(v.values())) == len(list(self.stackup_layers.values())):
                         imported_layers_list = [l_dict["name"] for l_dict in list(v.values())]
@@ -1667,12 +1669,14 @@ class Stackup(object):
         temp_data = {name: area / outline_area * 100 for name, area in temp_data.items()}
         return temp_data
 
+    # TODO: This method might need some refactoring
     @pyedb_function_handler()
     def _import_dict(self, json_dict):
         """Import stackup from a dictionary."""
         mats = json_dict["materials"]
         for material in mats.values():
-            self._pedb.materials._load_materials(material)
+            if material is not None:
+                self._pedb.materials.add_material(**material)
 
         temp = {i: j for i, j in json_dict["layers"].items() if j["type"] in ["signal", "dielectric"]}
         for name in list(self.stackup_layers.keys()):
