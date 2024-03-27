@@ -389,6 +389,20 @@ class Material(object):
         for property in self.__properties.model_dump().keys():
             _ = getattr(self, property)
 
+    @pyedb_function_handler()
+    def __property_value(self, material_property_id):
+        """Get property value from a material property id."""
+        if is_ironpython:  # pragma: no cover
+            property_box = _clr.StrongBox[float]()
+            self.__material_def.GetProperty(material_property_id, property_box)
+            return float(property_box)
+        else:
+            _, property_box = self.__material_def.GetProperty(material_property_id)
+            if isinstance(property_box, float):
+                return property_box
+            else:
+                return property_box.ToDouble()
+
     # def __reset_property(self, name):
     #     """Reset a property using the default value of the EDB API.
     #
