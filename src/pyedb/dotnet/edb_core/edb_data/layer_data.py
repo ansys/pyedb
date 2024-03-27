@@ -553,6 +553,7 @@ class StackupLayerEdbClass(LayerEdbClass):
                 dict_out[k[1:]] = v
         return dict_out
 
+    # TODO: This method might need some refactoring
     def _load_layer(self, layer):
         if layer:
             self.color = layer["color"]
@@ -560,13 +561,17 @@ class StackupLayerEdbClass(LayerEdbClass):
             if isinstance(layer["material"], str):
                 self.material = layer["material"]
             else:
-                self._pclass._pedb.materials._load_materials(layer["material"])
-                self.material = layer["material"]["name"]
+                material_data = layer["material"]
+                if material_data is not None:
+                    self._pclass._pedb.materials.add_material(**material_data)
+                    self.material = layer["material"]["name"]
             if layer["dielectric_fill"]:
                 if isinstance(layer["dielectric_fill"], str):
                     self.dielectric_fill = layer["dielectric_fill"]
                 else:
-                    self._pclass._pedb.materials._load_materials(layer["dielectric_fill"])
+                    dielectric_data = layer["dielectric_fill"]
+                    if dielectric_data is not None:
+                        self._pclass._pedb.materials.add_material(**dielectric_data)
                     self.dielectric_fill = layer["dielectric_fill"]["name"]
             self.thickness = layer["thickness"]
             self.etch_factor = layer["etch_factor"]
