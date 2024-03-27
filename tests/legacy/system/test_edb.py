@@ -1732,4 +1732,3 @@ class TestClass:
         assert defined_ports
         assert project_connexions
         edb.close_edb()
-
