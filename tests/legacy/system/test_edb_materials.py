@@ -34,15 +34,32 @@ from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
-PROPERTIES = ("conductivity", "dielectric_loss_tangent", "magnetic_loss_tangent", "mass_density",
-                          "permittivity", "permeability", "poisson_ratio", "specific_heat",
-                          "thermal_conductivity", "youngs_modulus", "thermal_expansion_coefficient")
-DC_PROPERTIES = ("dielectric_model_frequency", "loss_tangent_at_frequency", "permittivity_at_frequency", "dc_conductivity", "dc_permittivity")
-FLOAT_VALUE = 12.
+PROPERTIES = (
+    "conductivity",
+    "dielectric_loss_tangent",
+    "magnetic_loss_tangent",
+    "mass_density",
+    "permittivity",
+    "permeability",
+    "poisson_ratio",
+    "specific_heat",
+    "thermal_conductivity",
+    "youngs_modulus",
+    "thermal_expansion_coefficient",
+)
+DC_PROPERTIES = (
+    "dielectric_model_frequency",
+    "loss_tangent_at_frequency",
+    "permittivity_at_frequency",
+    "dc_conductivity",
+    "dc_permittivity",
+)
+FLOAT_VALUE = 12.0
 INT_VALUE = 12
 STR_VALUE = "12"
 VALUES = (FLOAT_VALUE, INT_VALUE, STR_VALUE)
 MATERIAL_NAME = "dummy_material"
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -87,7 +104,7 @@ class TestClass:
             if property == "loss_tangent_at_frequency":
                 setattr(material, property, STR_VALUE)
                 assert float(STR_VALUE) == getattr(material, property)
-        
+
         material_def.Delete()
 
     def test_material_to_dict(self):
@@ -98,12 +115,14 @@ class TestClass:
         material = Material(self.edbapp, material_def)
         for property in PROPERTIES + DC_PROPERTIES:
             setattr(material, property, FLOAT_VALUE)
-        material_dict = material.to_dict() 
-        expected_result = MaterialProperties(**{field: FLOAT_VALUE for field in MaterialProperties.__annotations__}).model_dump()
+        material_dict = material.to_dict()
+        expected_result = MaterialProperties(
+            **{field: FLOAT_VALUE for field in MaterialProperties.__annotations__}
+        ).model_dump()
         expected_result["name"] = MATERIAL_NAME
 
         assert expected_result == material_dict
-        
+
         material_def.Delete()
 
     def test_material_update_properties(self):
@@ -116,10 +135,11 @@ class TestClass:
             setattr(material, property, FLOAT_VALUE)
         expected_value = FLOAT_VALUE + 1
 
-        material_dict = MaterialProperties(**{field: expected_value for field in MaterialProperties.__annotations__}).model_dump()
+        material_dict = MaterialProperties(
+            **{field: expected_value for field in MaterialProperties.__annotations__}
+        ).model_dump()
         material.update(material_dict)
         for property in PROPERTIES + DC_PROPERTIES:
             assert expected_value == getattr(material, property)
 
         material_def.Delete()
-

@@ -27,17 +27,19 @@ import logging
 import os
 import re
 
+from pydantic import BaseModel
+
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import is_ironpython, pyedb_function_handler
-from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
-from pydantic import BaseModel, confloat
 from typing import Optional, Union
-  
+
+from pydantic import BaseModel, confloat
+
 # TODO: Once we are Python3.9+ change PositiveInt implementation like
 # from annotated_types import Gt
 # from typing_extensions import Annotated
@@ -45,31 +47,36 @@ from typing import Optional, Union
 try:
     from annotated_types import Gt
     from typing_extensions import Annotated
+
     PositiveFloat = Annotated[float, Gt(0)]
 except:
     PositiveFloat = confloat(gt=0)
 
+
 class MaterialProperties(BaseModel):
     """Store material properties."""
-    conductivity : Optional[PositiveFloat] = None
-    dielectric_loss_tangent : Optional[PositiveFloat] = None
-    magnetic_loss_tangent : Optional[PositiveFloat] = None
-    mass_density : Optional[PositiveFloat] = None
-    permittivity : Optional[PositiveFloat] = None
-    permeability : Optional[PositiveFloat] = None
-    poisson_ratio : Optional[PositiveFloat] = None
-    specific_heat : Optional[PositiveFloat] = None
-    thermal_conductivity : Optional[PositiveFloat] = None
-    youngs_modulus : Optional[PositiveFloat] = None
-    thermal_expansion_coefficient : Optional[PositiveFloat] = None
-    dc_conductivity : Optional[PositiveFloat] = None
-    dc_permittivity : Optional[PositiveFloat] = None
-    dielectric_model_frequency : Optional[PositiveFloat] = None
-    loss_tangent_at_frequency : Optional[PositiveFloat] = None
-    permittivity_at_frequency : Optional[PositiveFloat] = None
+
+    conductivity: Optional[PositiveFloat] = None
+    dielectric_loss_tangent: Optional[PositiveFloat] = None
+    magnetic_loss_tangent: Optional[PositiveFloat] = None
+    mass_density: Optional[PositiveFloat] = None
+    permittivity: Optional[PositiveFloat] = None
+    permeability: Optional[PositiveFloat] = None
+    poisson_ratio: Optional[PositiveFloat] = None
+    specific_heat: Optional[PositiveFloat] = None
+    thermal_conductivity: Optional[PositiveFloat] = None
+    youngs_modulus: Optional[PositiveFloat] = None
+    thermal_expansion_coefficient: Optional[PositiveFloat] = None
+    dc_conductivity: Optional[PositiveFloat] = None
+    dc_permittivity: Optional[PositiveFloat] = None
+    dielectric_model_frequency: Optional[PositiveFloat] = None
+    loss_tangent_at_frequency: Optional[PositiveFloat] = None
+    permittivity_at_frequency: Optional[PositiveFloat] = None
+
 
 class MaterialModelException(Exception):
     """Exception triggered when handling material model."""
+
 
 class Material(object):
     """Manage EDB methods for material property management."""
@@ -79,7 +86,7 @@ class Material(object):
         self.__name: str = material_def.GetName()
         self.__material_def = material_def
         self.__dc_model = material_def.GetDielectricMaterialModel()
-        self.__properties : MaterialProperties = MaterialProperties()
+        self.__properties: MaterialProperties = MaterialProperties()
 
     @property
     def name(self):
@@ -163,7 +170,7 @@ class Material(object):
         return self.__properties.dc_conductivity
 
     @dc_conductivity.setter
-    def dc_conductivity(self, value: Union[int,float]):
+    def dc_conductivity(self, value: Union[int, float]):
         """Set material dielectric conductivity."""
         if self.__dc_model:
             self.__dc_model.SetDCConductivity(value)
@@ -177,7 +184,7 @@ class Material(object):
         return self.__properties.dc_permittivity
 
     @dc_permittivity.setter
-    def dc_permittivity(self, value: Union[int,float]):
+    def dc_permittivity(self, value: Union[int, float]):
         """Set material dielectric relative permittivity"""
         if self.__dc_model:
             self.__dc_model.SetDCRelativePermitivity(value)
@@ -190,9 +197,8 @@ class Material(object):
             self.__properties.dielectric_model_frequency = self.__dc_model.GetFrequency()
         return self.__properties.dielectric_model_frequency
 
-
     @dielectric_model_frequency.setter
-    def dielectric_model_frequency(self, value: Union[int,float]):
+    def dielectric_model_frequency(self, value: Union[int, float]):
         """Get material frequency in GHz."""
         if self.__dc_model:
             self.__dc_model.SetFrequency(value)
@@ -221,7 +227,7 @@ class Material(object):
         return self.__properties.permittivity_at_frequency
 
     @permittivity_at_frequency.setter
-    def permittivity_at_frequency(self, value: Union[int,float]):
+    def permittivity_at_frequency(self, value: Union[int, float]):
         """Set material relative permittivity at frequency."""
         if self.__dc_model:
             self.__dc_model.SetRelativePermitivityAtFrequency(value)
@@ -352,14 +358,30 @@ class Material(object):
     def update(self, input_dict: dict):
         if input_dict:
             # Update attributes
-            attributes = ["conductivity", "dielectric_loss_tangent", "magnetic_loss_tangent", "mass_density",
-                          "permittivity", "permeability", "poisson_ratio", "specific_heat",
-                          "thermal_conductivity", "youngs_modulus", "thermal_expansion_coefficient"]
+            attributes = [
+                "conductivity",
+                "dielectric_loss_tangent",
+                "magnetic_loss_tangent",
+                "mass_density",
+                "permittivity",
+                "permeability",
+                "poisson_ratio",
+                "specific_heat",
+                "thermal_conductivity",
+                "youngs_modulus",
+                "thermal_expansion_coefficient",
+            ]
             for attribute in attributes:
                 if attribute in input_dict:
                     setattr(self, attribute, input_dict[attribute])
 
-            dc_attributes = ["dielectric_model_frequency", "loss_tangent_at_frequency", "permittivity_at_frequency", "dc_conductivity", "dc_permittivity"]
+            dc_attributes = [
+                "dielectric_model_frequency",
+                "loss_tangent_at_frequency",
+                "permittivity_at_frequency",
+                "dc_conductivity",
+                "dc_permittivity",
+            ]
             # Update DS model
             # NOTE: Contrary to before we don't test 'dielectric_model_frequency' only
             if any(map(lambda attribute: input_dict.get(attribute, None) is not None, dc_attributes)):
@@ -386,8 +408,7 @@ class Material(object):
 
     @pyedb_function_handler()
     def __load_all_properties(self):
-        """Load all properties of the material.
-        """
+        """Load all properties of the material."""
         for property in self.__properties.model_dump().keys():
             _ = getattr(self, property)
 
@@ -418,6 +439,7 @@ class Material(object):
     #     # Trigger get value on the property
     #     _ = getattr(self, name)
 
+
 class Materials(object):
     """Manages EDB methods for material management accessible from `Edb.materials` property."""
 
@@ -425,7 +447,8 @@ class Materials(object):
         self.__edb = edb
         self.__syslib = os.path.join(self.__edb.base_path, "syslib")
         self.__materials: dict[str, Material] = {
-            material_def.GetName(): Material(self, material_def) for material_def in list(self.__edb.active_db.MaterialDefs)
+            material_def.GetName(): Material(self, material_def)
+            for material_def in list(self.__edb.active_db.MaterialDefs)
         }
 
     def __contains__(self, item):
@@ -442,7 +465,6 @@ class Materials(object):
         """Get the project sys library."""
         return self.__syslib
 
-
     @property
     def materials(self):
         """Get materials."""
@@ -458,7 +480,7 @@ class Materials(object):
         return self.__edb.edb_value(value)
 
     @pyedb_function_handler()
-    def add_material(self, name:str, **kwargs):
+    def add_material(self, name: str, **kwargs):
         """Add a new material.
 
         Parameters
@@ -552,7 +574,16 @@ class Materials(object):
     #     return material.dc_model
 
     @pyedb_function_handler()
-    def add_djordjevicsarkar_dielectric(self, name, permittivity_at_frequency, loss_tangent_at_frequency, dielectric_model_frequency, dc_conductivity=None, dc_permittivity=None, **kwargs):
+    def add_djordjevicsarkar_dielectric(
+        self,
+        name,
+        permittivity_at_frequency,
+        loss_tangent_at_frequency,
+        dielectric_model_frequency,
+        dc_conductivity=None,
+        dc_permittivity=None,
+        **kwargs,
+    ):
         """Add a dielectric using the Djordjevic-Sarkar model.
 
         Parameters
@@ -629,7 +660,9 @@ class Materials(object):
         """
         material_model = self.__edb.edb_api.definition.DebyeModel()
         material_model.SetFrequencyRange(self.__edb_value(lower_freqency), self.__edb_value(higher_frequency))
-        material_model.SetLossTangentAtHighLowFrequency(self.__edb_value(loss_tangent_low), self.__edb_value(loss_tangent_high))
+        material_model.SetLossTangentAtHighLowFrequency(
+            self.__edb_value(loss_tangent_low), self.__edb_value(loss_tangent_high)
+        )
         material_model.SetRelativePermitivityAtHighLowFrequency(
             self.__edb_value(permittivity_low), self.__edb_value(permittivity_high)
         )
@@ -731,9 +764,19 @@ class Materials(object):
         :class:`pyedb.dotnet.edb_core.materials.Material`
         """
         material = self.materials[material_name]
-        attributes = ["conductivity", "dielectric_loss_tangent", "magnetic_loss_tangent", "mass_density",
-                "permittivity", "permeability", "poisson_ratio", "specific_heat",
-                "thermal_conductivity", "youngs_modulus", "thermal_expansion_coefficient"]
+        attributes = [
+            "conductivity",
+            "dielectric_loss_tangent",
+            "magnetic_loss_tangent",
+            "mass_density",
+            "permittivity",
+            "permeability",
+            "poisson_ratio",
+            "specific_heat",
+            "thermal_conductivity",
+            "youngs_modulus",
+            "thermal_expansion_coefficient",
+        ]
         material_model = material.dc_model
         material_def = self.__edb.edb_api.definition.MaterialDef.Create(self.__edb.active_db, new_material_name)
         material_def.SetDielectricMaterialModel(material_model)
@@ -742,7 +785,13 @@ class Materials(object):
             value = getattr(material, attribute)
             setattr(new_material, attribute, value)
 
-        dc_attributes = ["dielectric_model_frequency", "loss_tangent_at_frequency", "permittivity_at_frequency", "dc_conductivity", "dc_permittivity"]
+        dc_attributes = [
+            "dielectric_model_frequency",
+            "loss_tangent_at_frequency",
+            "permittivity_at_frequency",
+            "dc_conductivity",
+            "dc_permittivity",
+        ]
         if new_material.dc_model:
             for attribute in dc_attributes:
                 value = getattr(material, attribute)
@@ -831,7 +880,6 @@ class Materials(object):
     #     float
     #         The float value of the property.
 
-
     #     Examples
     #     --------
     #     >>> from pyedb import Edb
@@ -903,7 +951,7 @@ class Materials(object):
 
         def get_line_float_value(line):
             """Retrieve the float value expected in the line of an AMAT file.
-            
+
             The associated string is expected to follow one of the following cases:
             - simple('permittivity', 12.)
             - permittivity='12'.
@@ -956,4 +1004,3 @@ class Materials(object):
                 del res[key]
 
         return res
-
