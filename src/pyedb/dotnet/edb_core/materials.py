@@ -363,16 +363,13 @@ class Material(object):
             # Update DS model
             # NOTE: Contrary to before we don't test 'dielectric_model_frequency' only
             if any(map(lambda attribute: input_dict.get(attribute, None) is not None, dc_attributes)):
-                if self.__dc_model:
-                    for attribute in dc_attributes:
-                        if attribute in input_dict:
-                            if attribute == "dc_permittivity" and input_dict[attribute] is not None:
-                                self.__dc_model.SetUseDCRelativePermitivity(True)
-                            setattr(self, attribute, input_dict[attribute])
-                else:
-                    data = {attribute: input_dict.get(attribute, None) for attribute in dc_attributes}
-                    data["name"] = self.name
-                    self.notify(data)
+                if not self.__dc_model:
+                    self.__dc_model = self.__edb.edb_api.definition.DjordjecvicSarkarModel()
+                for attribute in dc_attributes:
+                    if attribute in input_dict:
+                        if attribute == "dc_permittivity" and input_dict[attribute] is not None:
+                            self.__dc_model.SetUseDCRelativePermitivity(True)
+                        setattr(self, attribute, input_dict[attribute])
             # Unset DS model if it is already assigned to the material in the database
             elif self.__dc_model:
                 self.__material_def.SetDielectricMaterialModel(self.__edb_value(None))
