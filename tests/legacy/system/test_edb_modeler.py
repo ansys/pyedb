@@ -434,3 +434,14 @@ class TestClass:
         edbapp.modeler.unite_polygons_on_layer("trace1")
         assert len(edbapp.modeler.polygons) == 1
         edbapp.close()
+
+    def test_287_circuit_ports(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        cap = edbapp.components.capacitors["C1"]
+        assert cap
+        assert edbapp.siwave.create_circuit_port_on_pin(pos_pin=cap.pins["1"], neg_pin=cap.pins["2"])
+        edbapp.close()

@@ -152,7 +152,7 @@ class EdbSiwave(object):
             self._active_layout,
             pos_pin.GetNet(),
             pos_pin.GetName(),
-            pos_pin,
+            pos_pin._edb_padstackinstance,
             toLayer_pos,
         )
         time.sleep(0.5)
@@ -162,7 +162,7 @@ class EdbSiwave(object):
             self._active_layout,
             neg_pin.GetNet(),
             neg_pin.GetName(),
-            neg_pin,
+            neg_pin._edb_padstackinstance,
             toLayer_neg,
         )
         if source.source_type in [SourceType.CoaxPort, SourceType.CircPort, SourceType.LumpedPort]:
