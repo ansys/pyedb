@@ -374,6 +374,7 @@ class Material(object):
             elif self.__dc_model:
                 self.__material_def.SetDielectricMaterialModel(self.__edb_value(None))
 
+    @pyedb_function_handler()
     def __edb_value(self, value):
         """Convert a value to an EDB value.
 
@@ -383,6 +384,7 @@ class Material(object):
         """
         return self.__edb.edb_value(value)
 
+    @pyedb_function_handler()
     def __load_all_properties(self):
         """Load all properties of the material.
         """
@@ -440,32 +442,6 @@ class Materials(object):
         """Get the project sys library."""
         return self.__syslib
 
-    def update(self, event: DjordjevicSarkarMaterialAddEvent):
-        try:
-            self.add_djordjevicsarkar_dielectric(event.name,
-                                                 event.permittivity_at_frequency,
-                                                 event.loss_tangent_at_frequency,
-                                                 event.dielectric_model_frequency,
-                                                 event.dc_conductivity,
-                                                 event.dc_permittivity
-            )
-        except ValueError:
-            raise MaterialModelException(f"Cannot set DS model for material {event.name}." \
-                                      "Check for realistic values that define DS model.")
-
-    # def __db(self):
-    #     return self.__edb.active_db
-    # @pyedb_function_handler()
-    # def _edb_value(self, value):
-    #     return self._pedb.edb_value(value)
-
-#     @property
-#     def _edb(self):
-#         return self._pedb.edb_api
-
-#     @property
-#     def _db(self):
-#         return self._pedb.active_db
 
     @property
     def materials(self):
@@ -704,8 +680,8 @@ class Materials(object):
         frequencies = [self.__edb_value(i) for i in frequencies]
         permittivities = [self.__edb_value(i) for i in permittivities]
         loss_tangents = [self.__edb_value(i) for i in loss_tangents]
-        material_def = self.__edb.edb_api.definition.MultipoleDebyeModel()
-        material_def.SetParameters(
+        material_model = self.__edb.edb_api.definition.MultipoleDebyeModel()
+        material_model.SetParameters(
             convert_py_list_to_net_list(frequencies),
             convert_py_list_to_net_list(permittivities),
             convert_py_list_to_net_list(loss_tangents),
