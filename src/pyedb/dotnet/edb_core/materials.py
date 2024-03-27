@@ -35,50 +35,47 @@ from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, confloat
+from typing import Optional, Union
   
 # TODO: Once we are Python3.9+ change PositiveInt implementation like
 # from annotated_types import Gt
 # from typing_extensions import Annotated
-# PositiveInt = Annotated[int, Gt(0)]
-class PositiveInt:
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-    @classmethod
-    def validate(cls, v):
-        if v is not None and (not isinstance(v, (int, float)) or v <= 0):
-            raise ValueError('value must be None or a positive int or float')
-        return v
+# PositiveFloat = Annotated[float, Gt(0)]
+try:
+    from annotated_types import Gt
+    from typing_extensions import Annotated
+    PositiveFloat = Annotated[float, Gt(0)]
+except:
+    PositiveFloat = confloat(gt=0)
 
 class MaterialProperties(BaseModel):
     """Store material properties."""
-    conductivity : Optional[PositiveInt] = None
-    dielectric_loss_tangent : Optional[PositiveInt] = None
-    magnetic_loss_tangent : Optional[PositiveInt] = None
-    mass_density : Optional[PositiveInt] = None
-    permittivity : Optional[PositiveInt] = None
-    permeability : Optional[PositiveInt] = None
-    poisson_ratio : Optional[PositiveInt] = None
-    specific_heat : Optional[PositiveInt] = None
-    thermal_conductivity : Optional[PositiveInt] = None
-    youngs_modulus : Optional[PositiveInt] = None
-    thermal_expansion_coefficient : Optional[PositiveInt] = None
-    dc_conductivity : Optional[PositiveInt] = None
-    dc_permittivity : Optional[PositiveInt] = None
-    dielectric_model_frequency : Optional[PositiveInt] = None
-    loss_tangent_at_frequency : Optional[PositiveInt] = None
-    permittivity_at_frequency : Optional[PositiveInt] = None
+    conductivity : Optional[PositiveFloat] = None
+    dielectric_loss_tangent : Optional[PositiveFloat] = None
+    magnetic_loss_tangent : Optional[PositiveFloat] = None
+    mass_density : Optional[PositiveFloat] = None
+    permittivity : Optional[PositiveFloat] = None
+    permeability : Optional[PositiveFloat] = None
+    poisson_ratio : Optional[PositiveFloat] = None
+    specific_heat : Optional[PositiveFloat] = None
+    thermal_conductivity : Optional[PositiveFloat] = None
+    youngs_modulus : Optional[PositiveFloat] = None
+    thermal_expansion_coefficient : Optional[PositiveFloat] = None
+    dc_conductivity : Optional[PositiveFloat] = None
+    dc_permittivity : Optional[PositiveFloat] = None
+    dielectric_model_frequency : Optional[PositiveFloat] = None
+    loss_tangent_at_frequency : Optional[PositiveFloat] = None
+    permittivity_at_frequency : Optional[PositiveFloat] = None
 
 class DjordjevicSarkarMaterialAddEvent(BaseModel):
     """Store Djordjevic-Sarkar properties"""
     name: str
-    dc_conductivity : Optional[PositiveInt] = None
-    dc_permittivity : Optional[PositiveInt] = None
-    dielectric_model_frequency : Optional[PositiveInt] = None
-    loss_tangent_at_frequency : Optional[PositiveInt] = None
-    permittivity_at_frequency : Optional[PositiveInt] = None
+    dc_conductivity : Optional[PositiveFloat] = None
+    dc_permittivity : Optional[PositiveFloat] = None
+    dielectric_model_frequency : Optional[PositiveFloat] = None
+    loss_tangent_at_frequency : Optional[PositiveFloat] = None
+    permittivity_at_frequency : Optional[PositiveFloat] = None
 
 class MaterialModelException(Exception):
     """Exception triggered when handling material model."""
