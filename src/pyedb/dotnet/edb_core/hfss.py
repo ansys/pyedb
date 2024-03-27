@@ -1165,7 +1165,7 @@ class EdbHfss(object):
                                     if not ref_prim:
                                         self._logger.error("Failed to collect valid reference primitives for terminal")
                                 if ref_prim:
-                                    reference_layer = ref_prim[0].layer
+                                    reference_layer = ref_prim[0].layer._edb_layer
                                     if term.SetReferenceLayer(reference_layer):  # pragma no cover
                                         self._logger.info("Port {} created".format(port_name))
             return terminal_info
