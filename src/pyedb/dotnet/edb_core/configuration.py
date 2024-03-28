@@ -138,7 +138,7 @@ class Configuration:
         if "spice_models" in self.data:
             self._load_spice_models()
 
-        # Condigure operations
+        # Configure operations
         if "operations" in self.data:
             self._load_operations()
 
