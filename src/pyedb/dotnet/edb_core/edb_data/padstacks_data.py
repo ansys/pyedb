@@ -688,6 +688,7 @@ class EDBPadstack(object):
         float
             Thickness of the hole plating if present.
         """
+        value = self._get_edb_value(value).ToDouble()
         hr = 200 * float(value) / float(self.hole_properties[0])
         self.hole_plating_ratio = hr
 
