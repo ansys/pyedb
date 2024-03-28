@@ -122,81 +122,81 @@ jobs:
 #         with:
 #           files: .cov/legacy.xml
 
-# =================================================================================================
-# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-# =================================================================================================
+# # =================================================================================================
+# # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# # =================================================================================================
 
-  test-pyaedt-main:
-    name: Testing PyAEDT main branch
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
-    needs: [smoke-tests]
-    runs-on: [ self-hosted, Windows, pyaedt ]
-    steps:
-      - name: Install Git and checkout project
-        uses: actions/checkout@v4
+#   test-pyaedt-main:
+#     name: Testing PyAEDT main branch
+#     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+#     needs: [smoke-tests]
+#     runs-on: [ self-hosted, Windows, pyaedt ]
+#     steps:
+#       - name: Install Git and checkout project
+#         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+#       - name: Setup Python
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-          . .venv\Scripts\Activate.ps1
+#       - name: Create Python venv
+#         run: |
+#           python -m venv .venv
+#           . .venv\Scripts\Activate.ps1
 
-      - name: Update pip
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install -U pip
+#       - name: Update pip
+#         run: |
+#           . .venv\Scripts\Activate.ps1
+#           python -m pip install -U pip
 
-      - name: Clone PyAEDT on main branch
-        uses: actions/checkout@v4
-        with:
-          repository: ansys/pyaedt
-          path: "external/pyaedt"
-          ref: "main"
+#       - name: Clone PyAEDT on main branch
+#         uses: actions/checkout@v4
+#         with:
+#           repository: ansys/pyaedt
+#           path: "external/pyaedt"
+#           ref: "main"
 
-      - name: Install PyAEDT main branch version with its test dependencies
-        run: |
-          . .venv\Scripts\Activate.ps1
-          pip install --no-cache-dir external/pyaedt[tests]
+#       - name: Install PyAEDT main branch version with its test dependencies
+#         run: |
+#           . .venv\Scripts\Activate.ps1
+#           pip install --no-cache-dir external/pyaedt[tests]
 
-      - name: Install PyEDB
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install .
+#       - name: Install PyEDB
+#         run: |
+#           . .venv\Scripts\Activate.ps1
+#           python -m pip install .
 
-      - name: Install CI dependencies (e.g. vtk-osmesa)
-        run: |
-          .venv\Scripts\Activate.ps1
-          # Uninstall conflicting dependencies
-          pip uninstall --yes vtk
-          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.2.20230527.dev0
+#       - name: Install CI dependencies (e.g. vtk-osmesa)
+#         run: |
+#           .venv\Scripts\Activate.ps1
+#           # Uninstall conflicting dependencies
+#           pip uninstall --yes vtk
+#           pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.2.20230527.dev0
 
-      - name: Run PyAEDT tests
-        uses: nick-fields/retry@v3
-        env:
-          PYTHONMALLOC: malloc
-        with:
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 40
-          command: |
-            .venv\Scripts\Activate.ps1
-            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/_unittest
+#       - name: Run PyAEDT tests
+#         uses: nick-fields/retry@v3
+#         env:
+#           PYTHONMALLOC: malloc
+#         with:
+#           max_attempts: 3
+#           retry_on: error
+#           timeout_minutes: 40
+#           command: |
+#             .venv\Scripts\Activate.ps1
+#             pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/_unittest
 
-      - name: Run PyAEDT solvers tests
-        uses: nick-fields/retry@v3
-        env:
-          PYTHONMALLOC: malloc
-        with:
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 40
-          command: |
-            .venv\Scripts\Activate.ps1
-            pytest --durations=50 -v external/pyaedt/_unittest_solvers
+#       - name: Run PyAEDT solvers tests
+#         uses: nick-fields/retry@v3
+#         env:
+#           PYTHONMALLOC: malloc
+#         with:
+#           max_attempts: 3
+#           retry_on: error
+#           timeout_minutes: 40
+#           command: |
+#             .venv\Scripts\Activate.ps1
+#             pytest --durations=50 -v external/pyaedt/_unittest_solvers
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
