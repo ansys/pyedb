@@ -642,9 +642,13 @@ class Configuration:
                 inst = padstack_instances[value["name"]]
                 backdrill_top = value.get("backdrill_top", None)
                 if backdrill_top:
-                    inst.set_backdrill_top(backdrill_top["drill_to_layer"], backdrill_top["drill_diameter"],
-                                           backdrill_top["stub_length"])
+                    inst.set_backdrill_top(
+                        backdrill_top["drill_to_layer"], backdrill_top["drill_diameter"], backdrill_top["stub_length"]
+                    )
                 backdrill_bottom = value.get("backdrill_bottom", None)
                 if backdrill_top:
-                    inst.set_backdrill_bottom(backdrill_bottom["drill_to_layer"], backdrill_bottom["drill_diameter"],
-                                           backdrill_bottom["stub_length"])
+                    inst.set_backdrill_bottom(
+                        backdrill_bottom["drill_to_layer"],
+                        backdrill_bottom["drill_diameter"],
+                        backdrill_bottom["stub_length"],
+                    )
