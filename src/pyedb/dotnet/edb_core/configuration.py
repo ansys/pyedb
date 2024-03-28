@@ -110,6 +110,10 @@ class Configuration:
         if "components" in self.data:
             self._load_components()
 
+        # Configure padstacks
+        if "padstacks" in self.data:
+            self._load_padstacks()
+
         # Configure pin groups
         if "pin_groups" in self.data:
             self._load_pin_groups()
@@ -613,3 +617,34 @@ class Configuration:
         cutout = operations.get("cutout", None)
         if cutout:
             self._pedb.cutout(**cutout)
+
+    @pyedb_function_handler
+    def _load_padstacks(self):
+        """Imports padstack information from JSON."""
+        padstacks = self.data["padstacks"]
+        definitions = padstacks.get("definitions", None)
+        if definitions:
+            padstack_defs = self._pedb.padstacks.definitions
+            for value in definitions:
+                pdef = padstack_defs[value["name"]]
+                if "hole_diameter" in value:
+                    pdef.hole_diameter = value["hole_diameter"]
+                if "hole_plating_thickness" in value:
+                    pdef.hole_plating_thickness = value["hole_plating_thickness"]
+                if "hole_material" in value:
+                    pdef.material = value["hole_material"]
+                if "hole_range" in value:
+                    pdef.hole_range = value["hole_range"]
+        instances = padstacks.get("instances", None)
+        if instances:
+            padstack_instances = self._pedb.padstacks.instances_by_name
+            for value in instances:
+                inst = padstack_instances[value["name"]]
+                backdrill_top = value.get("backdrill_top", None)
+                if backdrill_top:
+                    inst.set_backdrill_top(backdrill_top["drill_to_layer"], backdrill_top["drill_diameter"],
+                                           backdrill_top["stub_length"])
+                backdrill_bottom = value.get("backdrill_bottom", None)
+                if backdrill_top:
+                    inst.set_backdrill_bottom(backdrill_bottom["drill_to_layer"], backdrill_bottom["drill_diameter"],
+                                           backdrill_bottom["stub_length"])

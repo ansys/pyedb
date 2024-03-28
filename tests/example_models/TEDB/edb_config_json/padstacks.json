@@ -8,21 +8,21 @@
         "hole_material": "copper",
         "hole_range": "through"
       }
-    ]
-  },
-  "instances": [
-    {
-      "name": "Via998",
-      "backdrill_top": {
-        "drill_to_layer": "inner4",
-        "drill_diameter": "0.5mm",
-        "stub_length": "0.2mm"
-      },
-      "backdrill_bottom": {
-        "drill_to_layer": "inner3",
-        "drill_diameter": "0.5mm",
-        "stub_length": "0.2mm"
+    ],
+    "instances": [
+      {
+        "name": "Via998",
+        "backdrill_top": {
+          "drill_to_layer": "Inner3(Sig1)",
+          "drill_diameter": "0.5mm",
+          "stub_length": "0.2mm"
+        },
+        "backdrill_bottom": {
+          "drill_to_layer": "Inner4(Sig2)",
+          "drill_diameter": "0.5mm",
+          "stub_length": "0.2mm"
+        }
       }
-    }
-  ]
+    ]
+  }
 }
