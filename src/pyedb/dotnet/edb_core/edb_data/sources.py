@@ -117,18 +117,7 @@ class Source(object):
     @property
     def source_type(self):  # pragma: no cover
         """Source type."""
-        if self._source_type == 1:
-            return "CircuitPort"
-        elif self._source_type == 3:
-            return "VoltageSource"
-        if self._source_type == 1:
-            return "CurrentSource"
-        elif self._source_type == 5:
-            return "ResistorSource"
-        elif self._source_type == 6:
-            return "DCTerminal"
-        else:
-            return self._source_type
+        return self._source_type
 
     @source_type.setter
     def source_type(self, value):  # pragma: no cover

@@ -146,10 +146,6 @@ class EdbSiwave(object):
         res, fromLayer_pos, toLayer_pos = pos_pin.GetLayerRange()
         res, fromLayer_neg, toLayer_neg = neg_pin.GetLayerRange()
 
-        if source.source_type == "CircuitPort":
-            pos_pin = pos_pin._edb_padstackinstance
-            neg_pin = neg_pin._edb_padstackinstance
-
         pos_pingroup_terminal = _retry_ntimes(
             10,
             self._edb.cell.terminal.PadstackInstanceTerminal.Create,

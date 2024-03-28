@@ -52,6 +52,7 @@ class Settings(object):
         self._force_error_on_missing_project = False
         self._enable_pandas_output = False
         self.time_tick = time.time()
+        self.retry_n_times_time_interval = 0.1
         self._global_log_file_name = "pyedb_{}.log".format(os.path.split(os.path.expanduser("~"))[-1])
         self._enable_global_log_file = True
         self._enable_local_log_file = False
@@ -239,6 +240,15 @@ class Settings(object):
     def edb_dll_path(self, value):
         if os.path.exists(value):
             self._edb_dll_path = value
+
+    @property
+    def retry_n_times_time_interval(self):
+        """Time interval between the retries by the ``_retry_n_times`` method."""
+        return self._retry_n_times_time_interval
+
+    @retry_n_times_time_interval.setter
+    def retry_n_times_time_interval(self, value):
+        self._retry_n_times_time_interval = float(value)
 
 
 settings = Settings()
