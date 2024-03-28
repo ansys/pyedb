@@ -41,6 +41,8 @@ class Configuration:
         self._pedb = pedb
         self._components = self._pedb.components.components
         self.data = {}
+        self._s_parameter_library = ""
+        self._spice_model_library = ""
 
     @pyedb_function_handler
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
@@ -92,8 +94,21 @@ class Configuration:
             self._pedb.logger.error("No data loaded. Please load a configuration file.")
             return False
 
+        # Configure general settings
+        if "general" in self.data:
+            self._load_general()
+
+        # Configure nets
+        if "nets" in self.data:
+            self._load_nets()
+
+        # Configure components
         if "components" in self.data:
             self._load_components()
+
+        # Configure pin groups
+        if "pin_groups" in self.data:
+            self._load_pin_groups()
 
         # Configure ports
         if "ports" in self.data:
@@ -115,15 +130,18 @@ class Configuration:
         if "s_parameters" in self.data:
             self._load_s_parameter()
 
-        return True
+        # Configure SPICE models
+        if "spice_models" in self.data:
+            self._load_spice_models()
 
+        return True
 
     @pyedb_function_handler
     def _load_components(self):
         """Imports component information from json."""
 
-        for comp in self.data["components"] :
-            refdes = comp["reference_designator"]
+        for comp in self.data["components"]:
+            ref_designator = comp["reference_designator"]
             part_type = comp["part_type"].lower()
             if part_type == "resistor":
                 part_type = "Resistor"
@@ -138,7 +156,7 @@ class Configuration:
             else:
                 part_type = "Other"
 
-            comp_layout = self._components[refdes]
+            comp_layout = self._components[ref_designator]
             comp_layout.type = part_type
 
             if part_type in ["Resistor", "Capacitor", "Inductor"]:
@@ -214,7 +232,7 @@ class Configuration:
                 height = solder_ball_properties["height"]
 
                 self._pedb.components.set_solder_ball(
-                    component=refdes,
+                    component=ref_designator,
                     sball_diam=diameter,
                     sball_mid_diam=mid_diameter,
                     sball_height=height,
@@ -230,38 +248,48 @@ class Configuration:
         """Imports port information from json."""
         for port in self.data["ports"]:
             port_type = port["type"]
-            refdes = port["reference_designator"]
-            comp_layout = self._components[refdes]
-            pos = port["from"]
-            if "pin" in pos:
-                pin_name = pos["pin"]
-                port_name = "{}_{}".format(refdes, pin_name)
-                pos_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
-            else:  # Net
-                net_name = pos["net"]
-                port_name = "{}_{}".format(refdes, net_name)
-                if port_type == "circuit":
-                    pg_name = "pg_{}".format(port_name)
-                    _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
-                    pos_terminal = pg.get_terminal(port_name, True)
-                else:  # Coax port
-                    for _, p in comp_layout.pins.items():
-                        if p.net_name == net_name:
-                            pos_terminal = p.get_terminal(port_name, True)
-                            break
+
+            positive_terminal_json = port["positive_terminal"]
+            pos_terminal = ""
+            if "pin_group" in positive_terminal_json:
+                pin_group = self._pedb.siwave.pin_groups[positive_terminal_json["pin_group"]]
+                pos_terminal = pin_group.get_terminal(pin_group.name, True)
+            else:
+                ref_designator = port["reference_designator"]
+                comp_layout = self._components[ref_designator]
+
+                if "pin" in positive_terminal_json:
+                    pin_name = positive_terminal_json["pin"]
+                    port_name = "{}_{}".format(ref_designator, pin_name)
+                    pos_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
+                else:  # Net
+                    net_name = positive_terminal_json["net"]
+                    port_name = "{}_{}".format(ref_designator, net_name)
+                    if port_type == "circuit":
+                        pg_name = "pg_{}".format(port_name)
+                        _, pg = self._pedb.siwave.create_pin_group_on_net(ref_designator, net_name, pg_name)
+                        pos_terminal = pg.get_terminal(port_name, True)
+                    else:  # Coax port
+                        for _, p in comp_layout.pins.items():
+                            if p.net_name == net_name:
+                                pos_terminal = p.get_terminal(port_name, True)
+                                break
 
             if port_type == "circuit":
-                neg = port["to"]
-                if "pin" in neg:
-                    pin_name = neg["pin"]
-                    port_name = "{}_{}_ref".format(refdes, pin_name)
+                negative_terminal_json = port["negative_terminal"]
+                if "pin_group" in negative_terminal_json:
+                    pin_group = self._pedb.siwave.pin_groups[negative_terminal_json["pin_group"]]
+                    neg_terminal = pin_group.get_terminal(pin_group.name + "_ref", True)
+                elif "pin" in negative_terminal_json:
+                    pin_name = negative_terminal_json["pin"]
+                    port_name = "{}_{}_ref".format(ref_designator, pin_name)
                     neg_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
                 else:
-                    net_name = neg["net"]
-                    port_name = "{}_{}_ref".format(refdes, net_name)
+                    net_name = negative_terminal_json["net"]
+                    port_name = "{}_{}_ref".format(ref_designator, net_name)
                     pg_name = "pg_{}".format(port_name)
                     if pg_name not in self._pedb.siwave.pin_groups:
-                        _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
+                        _, pg = self._pedb.siwave.create_pin_group_on_net(ref_designator, net_name, pg_name)
                     else:
                         pg = self._pedb.siwave.pin_groups[pg_name]
                     neg_terminal = pg.get_terminal(port_name, True)
@@ -276,36 +304,47 @@ class Configuration:
 
         for src in self.data["sources"]:
             src_type = src["type"]
-            refdes = src["reference_designator"]
             name = src["name"]
-            comp_layout = self._components[refdes]
 
-            pos = src["from"]
-            if "pin" in pos:
-                pin_name = pos["pin"]
-                src_name = name
-                pos_terminal = comp_layout.pins[pin_name].get_terminal(src_name, True)
-            elif "net" in pos:  # Net
-                net_name = pos["net"]
-                src_name = "{}_{}".format(refdes, net_name)
-                pg_name = "pg_{}".format(src_name)
-                _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
-                pos_terminal = pg.get_terminal(src_name, True)
+            positive_terminal_json = src["positive_terminal"]
+            if "pin_group" in positive_terminal_json:
+                pin_group = self._pedb.siwave.pin_groups[positive_terminal_json["pin_group"]]
+                pos_terminal = pin_group.get_terminal(pin_group.name, True)
+            else:
+                ref_designator = src["reference_designator"]
+                comp_layout = self._components[ref_designator]
 
-            neg = src["to"]
-            if "pin" in neg:
-                pin_name = neg["pin"]
-                src_name = name + "_ref"
-                neg_terminal = comp_layout.pins[pin_name].get_terminal(src_name, True)
-            elif "net" in neg:
-                net_name = neg["net"]
-                src_name = name + "_ref"
-                pg_name = "pg_{}".format(src_name)
-                if pg_name not in self._pedb.siwave.pin_groups:
-                    _, pg = self._pedb.siwave.create_pin_group_on_net(refdes, net_name, pg_name)
-                else:  # pragma no cover
-                    pg = self._pedb.siwave.pin_groups[pg_name]
-                neg_terminal = pg.get_terminal(src_name, True)
+                if "pin" in positive_terminal_json:
+                    pin_name = positive_terminal_json["pin"]
+                    src_name = name
+                    pos_terminal = comp_layout.pins[pin_name].get_terminal(src_name, True)
+                elif "net" in positive_terminal_json:  # Net
+                    net_name = positive_terminal_json["net"]
+                    src_name = "{}_{}".format(ref_designator, net_name)
+                    pg_name = "pg_{}".format(src_name)
+                    _, pg = self._pedb.siwave.create_pin_group_on_net(ref_designator, net_name, pg_name)
+                    pos_terminal = pg.get_terminal(src_name, True)
+
+            negative_terminal_json = src["negative_terminal"]
+            if "pin_group" in negative_terminal_json:
+                pin_group = self._pedb.siwave.pin_groups[negative_terminal_json["pin_group"]]
+                neg_terminal = pin_group.get_terminal(pin_group.name + "_ref", True)
+            else:
+                ref_designator = src["reference_designator"]
+                comp_layout = self._components[ref_designator]
+                if "pin" in negative_terminal_json:
+                    pin_name = negative_terminal_json["pin"]
+                    src_name = name + "_ref"
+                    neg_terminal = comp_layout.pins[pin_name].get_terminal(src_name, True)
+                elif "net" in negative_terminal_json:
+                    net_name = negative_terminal_json["net"]
+                    src_name = name + "_ref"
+                    pg_name = "pg_{}".format(src_name)
+                    if pg_name not in self._pedb.siwave.pin_groups:
+                        _, pg = self._pedb.siwave.create_pin_group_on_net(ref_designator, net_name, pg_name)
+                    else:  # pragma no cover
+                        pg = self._pedb.siwave.pin_groups[pg_name]
+                    neg_terminal = pg.get_terminal(src_name, True)
 
             if src_type == "voltage":
                 src_obj = self._pedb.create_voltage_source(pos_terminal, neg_terminal)
@@ -431,6 +470,8 @@ class Configuration:
 
         for sp in self.data["s_parameters"]:
             fpath = sp["file_path"]
+            if not Path(fpath).anchor:
+                fpath = str(Path(self._s_parameter_library) / fpath)
             sp_name = sp["name"]
             comp_def_name = sp["component_definition"]
             comp_def = self._pedb.definitions.component[comp_def_name]
@@ -443,3 +484,55 @@ class Configuration:
                 for refdes, comp in comp_def.components.items():
                     if refdes in sp["components"]:
                         comp.use_s_parameter_model(sp_name)
+
+    @pyedb_function_handler
+    def _load_spice_models(self):
+        """Imports SPICE information from json."""
+
+        for sp in self.data["spice_models"]:
+            fpath = sp["file_path"]
+            if not Path(fpath).anchor:
+                fpath = str(Path(self._spice_model_library) / fpath)
+            sp_name = sp["name"]
+            sub_circuit_name = sp.get("sub_circuit_name", None)
+            comp_def_name = sp["component_definition"]
+            comp_def = self._pedb.definitions.component[comp_def_name]
+            comps = comp_def.components
+            if sp["apply_to_all"]:
+                for refdes, comp in comps.items():
+                    if refdes not in sp["components"]:
+                        comp.assign_spice_model(fpath, sp_name, sub_circuit_name)
+            else:
+                for refdes, comp in comps.items():
+                    if refdes in sp["components"]:
+                        comp.assign_spice_model(fpath, sp_name, sub_circuit_name)
+
+    @pyedb_function_handler
+    def _load_pin_groups(self):
+        """Imports pin groups information from JSON."""
+        for pg in self.data["pin_groups"]:
+            name = pg["name"]
+            ref_designator = pg["reference_designator"]
+            if "pins" in pg:
+                self._pedb.siwave.create_pin_group(ref_designator, pg["pins"], name)
+            elif "net" in pg:
+                self._pedb.siwave.create_pin_group_on_net(ref_designator, pg["net"], name)
+
+    @pyedb_function_handler
+    def _load_nets(self):
+        """Imports nets information from JSON."""
+        nets = self._pedb.nets.nets
+        for i in self.data["nets"]["power_ground_nets"]:
+            nets[i].is_power_ground = True
+
+        for i in self.data["nets"]["signal_nets"]:
+            nets[i].is_power_ground = False
+
+    @pyedb_function_handler
+    def _load_general(self):
+        """Imports general information from JSON."""
+        general = self.data["general"]
+        if "s_parameter_library" in general:
+            self._s_parameter_library = general["s_parameter_library"]
+        if "spice_model_library" in general:
+            self._spice_model_library = general["spice_model_library"]

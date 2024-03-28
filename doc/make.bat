@@ -71,7 +71,7 @@ goto end
 cd "%BUILDDIR%\latex"
 for %%f in (*.tex) do (
 xelatex "%%f" --interaction=nonstopmode)
-if NOT EXIST ansys-edb.pdf (
+if NOT EXIST pyedb.pdf (
 	Echo "no pdf generated!"
 	exit /b 1)
 Echo "pdf generated!"

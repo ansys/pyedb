@@ -44,10 +44,9 @@ deprecation_warning()
 #
 
 pyedb_path = os.path.dirname(__file__)
-__version__ = "0.6.dev0"
+__version__ = "0.8.dev0"
 version = __version__
 
 #
 
-from pyedb.generic.design_types import Edb
-from pyedb.generic.design_types import Siwave
+from pyedb.generic.design_types import Edb, Siwave

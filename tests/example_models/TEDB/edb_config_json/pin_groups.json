@@ -1,0 +1,47 @@
+{
+  "pin_groups": [
+    {
+      "name": "U9_5V_1",
+      "reference_designator": "U9",
+      "pins": [
+        "32",
+        "33"
+      ]
+    },
+    {
+      "name": "U9_GND",
+      "reference_designator": "U9",
+      "net": "GND"
+    },
+    {
+      "name": "U9_AVDD_PLL",
+      "reference_designator": "U9",
+      "pins": ["44"]
+    }
+  ],
+  "ports": [
+    {
+      "name": "U9_pin_group_port",
+      "type": "circuit",
+      "positive_terminal": {
+        "pin_group": "U9_5V_1"
+      },
+      "negative_terminal": {
+        "pin_group": "U9_GND"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "name": "U9_pin_group_source",
+      "type": "voltage",
+      "magnitude": 1.2,
+      "positive_terminal": {
+        "pin_group": "U9_AVDD_PLL"
+      },
+      "negative_terminal": {
+        "pin_group": "U9_GND"
+      }
+    }
+  ]
+}

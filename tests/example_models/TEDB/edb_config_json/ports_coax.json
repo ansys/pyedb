@@ -4,7 +4,7 @@
       "name": "COAX_U1_AM17",
       "reference_designator": "U1",
       "type": "coax",
-      "from": {
+      "positive_terminal": {
         "pin": "AM17"
       }
     },
@@ -12,7 +12,7 @@
       "name": "COAX_U1_PCIe_Gen4_TX2_CAP_N",
       "reference_designator": "U1",
       "type": "coax",
-      "from": {
+      "positive_terminal": {
         "net": "PCIe_Gen4_TX2_CAP_N"
       }
     }

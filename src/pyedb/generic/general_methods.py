@@ -33,7 +33,6 @@ import fnmatch
 from functools import update_wrapper
 import inspect
 import itertools
-import json
 import logging
 import math
 import os
@@ -992,7 +991,6 @@ def number_aware_string_key(s):  # pragma: no cover
             result.append(key)
             i = j
     return tuple(result)
-
 
 
 @pyedb_function_handler()

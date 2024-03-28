@@ -599,6 +599,9 @@ class TestClass:
         assert edb_stats.num_inductors
         assert edb_stats.num_capacitors
         assert edb_stats.num_resistors
+        assert edb_stats.occupying_ratio["1_Top"] == 0.3016820127679697
+        assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.9374673461236078
+        assert edb_stats.occupying_ratio["16_Bottom"] == 0.20492545496020312
         edb.close()
 
     def test_hfss_set_bounding_box_extent(self):
@@ -1715,3 +1718,17 @@ class TestClass:
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
+
+    def test_multizone(self):
+        edb = Edb(
+            edbpath=os.path.join(local_path, "example_models", "multi_zone_project.aedb"),
+            edbversion=desktop_version,
+        )
+        common_reference_net = "gnd"
+        edb_zones = edb.copy_zones()
+        assert edb_zones
+        defined_ports, project_connexions = edb.cutout_multizone_layout(edb_zones, common_reference_net)
+
+        assert defined_ports
+        assert project_connexions
+        edb.close_edb()

@@ -140,8 +140,9 @@ class EDBPrimitivesMain(Connectable):
     def layer(self):
         """Get the primitive edb layer object."""
         try:
-            return self.primitive_object.GetLayer()
-        except AttributeError:  # pragma: no cover
+            layer_name = self.primitive_object.GetLayer().GetName()
+            return self._pedb.stackup.layers[layer_name]
+        except (KeyError, AttributeError):  # pragma: no cover
             return None
 
     @property
@@ -153,8 +154,8 @@ class EDBPrimitivesMain(Connectable):
         str
         """
         try:
-            return self.layer.GetName()
-        except AttributeError:  # pragma: no cover
+            return self.layer.name
+        except (KeyError, AttributeError):  # pragma: no cover
             return None
 
     @layer_name.setter
@@ -1030,6 +1031,35 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
             return cloned_poly
         return False
 
+    @pyedb_function_handler()
+    def duplicate_across_layers(self, layers):
+        """Duplicate across layer a primitive object.
+
+        Parameters:
+
+        layers: list
+            list of str, with layer names
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        for layer in layers:
+            if layer in self._pedb.stackup.layers:
+                duplicate_polygon = self._app.edb_api.cell.primitive.polygon.create(
+                    self._app.active_layout, layer, self.net, self.polygon_data.edb_api
+                )
+                if duplicate_polygon:
+                    for void in self.voids:
+                        duplicate_void = self._app.edb_api.cell.primitive.polygon.create(
+                            self._app.active_layout, layer, self.net, void.polygon_data.edb_api
+                        )
+                        duplicate_polygon.prim_obj.AddVoid(duplicate_void.prim_obj)
+            else:
+                return False
+        return True
+
     @pyedb_function_handler
     def move(self, vector):
         """Move polygon along a vector.
@@ -1107,12 +1137,12 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
             Scaling factor.
         center : List of float or str [x,y], optional
             If None scaling is done from polygon center.
-        
+
         Returns
         -------
         bool
            ``True`` when successful, ``False`` when failed.
-        
+
         Examples
         --------
         >>> edbapp = pyaedt.Edb("myproject.aedb")
@@ -1139,12 +1169,12 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
     @pyedb_function_handler
     def move_layer(self, layer):
         """Move polygon to given layer.
-        
+
         Parameters
         ----------
         layer : str
             layer name.
-        
+
         Returns
         -------
         bool

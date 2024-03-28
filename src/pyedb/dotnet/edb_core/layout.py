@@ -1126,7 +1126,7 @@ class EdbLayout(object):
         return True
 
     @pyedb_function_handler()
-    def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_list=[]):
+    def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_names_list=[]):
         """Try to unite all Polygons on specified layer.
 
         Parameters
@@ -1135,8 +1135,8 @@ class EdbLayout(object):
             Name of layer name to unite objects on. The default is ``None``, in which case all layers are taken.
         delete_padstack_gemometries : bool, optional
             Whether to delete all padstack geometries. The default is ``False``.
-        net_list : list[str] : optional
-            Net list filter. The default is ``[]``, in which case all nets are taken.
+        net_names_list : list[str] : optional
+            Net names list filter. The default is ``[]``, in which case all nets are taken.
 
         Returns
         -------
@@ -1151,6 +1151,9 @@ class EdbLayout(object):
         for lay in layer_name:
             self._logger.info("Uniting Objects on layer %s.", lay)
             poly_by_nets = {}
+            all_voids = []
+            list_polygon_data = []
+            delete_list = []
             if lay in list(self.polygons_by_layer.keys()):
                 for poly in self.polygons_by_layer[lay]:
                     if not poly.GetNet().GetName() in list(poly_by_nets.keys()):
@@ -1160,34 +1163,35 @@ class EdbLayout(object):
                         if poly.GetNet().GetName():
                             poly_by_nets[poly.GetNet().GetName()].append(poly)
             for net in poly_by_nets:
-                if net in net_list or not net_list:  # pragma no cover
-                    list_polygon_data = [i.GetPolygonData() for i in poly_by_nets[net]]
-                    all_voids = [i.Voids for i in poly_by_nets[net]]
-                    a = self._edb.geometry.polygon_data.unite(convert_py_list_to_net_list(list_polygon_data))
-                    for item in a:
-                        for v in all_voids:
-                            for void in v:
-                                if int(item.GetIntersectionType(void.GetPolygonData())) == 2:
-                                    item.AddHole(void.GetPolygonData())
-                        poly = self._edb.cell.primitive.polygon.create(
-                            self._active_layout,
-                            lay,
-                            self._pedb.nets.nets[net],
-                            item,
-                        )
-                    list_to_delete = [i for i in poly_by_nets[net]]
-                    for v in all_voids:
-                        for void in v:
-                            for poly in poly_by_nets[net]:  # pragma no cover
-                                if int(void.GetPolygonData().GetIntersectionType(poly.GetPolygonData())) >= 2:
-                                    try:
-                                        id = list_to_delete.index(poly)
-                                    except ValueError:
-                                        id = -1
-                                    if id >= 0:
-                                        list_to_delete.pop(id)
-
-                    [i.Delete() for i in list_to_delete]  # pragma no cover
+                if net in net_names_list or not net_names_list:
+                    for i in poly_by_nets[net]:
+                        list_polygon_data.append(i.GetPolygonData())
+                        delete_list.append(i)
+                        all_voids.append(i.Voids)
+            a = self._edb.geometry.polygon_data.unite(convert_py_list_to_net_list(list_polygon_data))
+            for item in a:
+                for v in all_voids:
+                    for void in v:
+                        if int(item.GetIntersectionType(void.GetPolygonData())) == 2:
+                            item.AddHole(void.GetPolygonData())
+                poly = self._edb.cell.primitive.polygon.create(
+                    self._active_layout,
+                    lay,
+                    self._pedb.nets.nets[net],
+                    item,
+                )
+            for v in all_voids:
+                for void in v:
+                    for poly in poly_by_nets[net]:  # pragma no cover
+                        if int(void.GetPolygonData().GetIntersectionType(poly.GetPolygonData())) >= 2:
+                            try:
+                                id = delete_list.index(poly)
+                            except ValueError:
+                                id = -1
+                            if id >= 0:
+                                delete_list.pop(id)
+            for poly in delete_list:
+                poly.Delete()
 
         if delete_padstack_gemometries:
             self._logger.info("Deleting Padstack Definitions")
@@ -1255,12 +1259,19 @@ class EdbLayout(object):
         stat_model.num_vias = len(self._pedb.padstacks.instances)
         stat_model.stackup_thickness = self._pedb.stackup.get_layout_thickness()
         if evaluate_area:
+            outline_surface = stat_model.layout_size[0] * stat_model.layout_size[1]
             if net_list:
                 netlist = list(self._pedb.nets.nets.keys())
                 _poly = self._pedb.get_conformal_polygon_from_netlist(netlist)
             else:
-                _poly = self._pedb.get_conformal_polygon_from_netlist()
-            stat_model.occupying_surface = _poly.Area()
-            outline_surface = stat_model.layout_size[0] * stat_model.layout_size[1]
-            stat_model.occupying_ratio = stat_model.occupying_surface / outline_surface
+                for layer in list(self._pedb.stackup.signal_layers.keys()):
+                    surface = 0.0
+                    primitives = self.primitives_by_layer[layer]
+                    for prim in primitives:
+                        if prim.type == "Path":
+                            surface += prim.length * prim.width
+                        if prim.type == "Polygon":
+                            surface += prim.polygon_data.edb_api.Area()
+                            stat_model.occupying_surface[layer] = surface
+                            stat_model.occupying_ratio[layer] = surface / outline_surface
         return stat_model
