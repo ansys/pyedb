@@ -31,16 +31,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check PR title format
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const title = github.context.payload.pull_request.title;
-            const validPrefixes = ["FEATURE:", "REFACT:", "IMPROVE:", "TEST:", "DOC:", "MAINT:", "FIX:", "CHORE:", "CI:"];
-            const validPrefixRegex = new RegExp("^(" + validPrefixes.join("|") + ")");
-            if (!validPrefixRegex.test(title)) {
-              core.setFailed("Pull Request title does not start with one of the valid prefixes: FEATURE:, REFACT:, IMPROVE:, TEST:, DOC:, MAINT:, FIX:, CHORE:, CI:");
-            }
+        run: |
+          PR_NAME=$(jq -r '.pull_request.title' "$GITHUB_EVENT_PATH")
+          if ! [[ $PR_NAME =~ ^(FEATURE:|REFACT:|IMPROVE:|TEST:|DOC:|MAINT:|FIX:|CHORE:|CI:).* ]]; then
+            echo "ERROR: Pull Request title does not start with one of the valid prefixes: FEATURE:, REFACT:, IMPROVE:, TEST:, DOC:, MAINT:, FIX:, CHORE:, or CI:"
+            exit 1
+          fi
 
   doc-style:
     name: Documentation style check
@@ -87,7 +83,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           use-cache: false
