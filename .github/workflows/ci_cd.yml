@@ -83,7 +83,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: "Set up Python"
-        uses: SMoraisAnsys:fix/windows_extract_cpython_release
+        uses: SMoraisAnsys/setup-python@fix/windows_extract_cpython_release
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -221,7 +221,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: "Set up Python"
-        uses: SMoraisAnsys:fix/windows_extract_cpython_release
+        uses: SMoraisAnsys/setup-python@fix/windows_extract_cpython_release
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           use-cache: false
