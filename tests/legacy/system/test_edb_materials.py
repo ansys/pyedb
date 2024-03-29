@@ -24,13 +24,10 @@
 """
 
 import os
-
 import pytest
 
-from pyedb.dotnet.edb import Edb
-from src.pyedb.dotnet.edb_core.materials import Material, MaterialProperties
-from tests.conftest import desktop_version, local_path
-from tests.legacy.system.conftest import test_subfolder
+from src.pyedb.dotnet.edb_core.materials import Material, MaterialProperties, Materials
+from tests.conftest import local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
@@ -58,28 +55,33 @@ FLOAT_VALUE = 12.0
 INT_VALUE = 12
 STR_VALUE = "12"
 VALUES = (FLOAT_VALUE, INT_VALUE, STR_VALUE)
-MATERIAL_NAME = "dummy_material"
+MATERIAL_NAME = "DummyMaterial"
 
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, legacy_edb_app, local_scratch):
+    def init(self, legacy_edb_app):
         self.edbapp = legacy_edb_app
-        self.local_scratch = local_scratch
         self.definition = self.edbapp.edb_api.definition
 
-    def test_material_name(self):
+    def __remove_material(self):
+        """Remove material using EDB calls."""
+        material_def = self.edbapp._edb.edb_api.definition.MaterialDef.FindByName(MATERIAL_NAME)
+        material_def.Delete()
+
+
+    def test_material_name(self, legacy_edb_app):
         """Evaluate material properties."""
-        material_def = self.edbapp.edb_api.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
+        material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
         material = Material(self.edbapp, material_def)
 
         assert MATERIAL_NAME == material.name
 
         material_def.Delete()
 
-    def test_material_properties(self):
+    def test_material_properties(self, legacy_edb_app):
         """Evaluate material properties."""
-        material_def = self.edbapp.edb_api.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
+        material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
         material = Material(self.edbapp, material_def)
 
         for property in PROPERTIES:
@@ -89,9 +91,9 @@ class TestClass:
 
         material_def.Delete()
 
-    def test_material_dc_properties(self):
+    def test_material_dc_properties(self, legacy_edb_app):
         """Evaluate material DC properties."""
-        material_def = self.edbapp.edb_api.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
+        material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
         material_model = self.definition.DjordjecvicSarkarModel()
         material_def.SetDielectricMaterialModel(material_model)
         material = Material(self.edbapp, material_def)
@@ -109,7 +111,7 @@ class TestClass:
 
     def test_material_to_dict(self):
         """Evaluate material convertion into a dictionary."""
-        material_def = self.edbapp.edb_api.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
+        material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
         material_model = self.definition.DjordjecvicSarkarModel()
         material_def.SetDielectricMaterialModel(material_model)
         material = Material(self.edbapp, material_def)
@@ -127,7 +129,7 @@ class TestClass:
 
     def test_material_update_properties(self):
         """Evaluate material properties update."""
-        material_def = self.edbapp.edb_api.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
+        material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
         material_model = self.definition.DjordjecvicSarkarModel()
         material_def.SetDielectricMaterialModel(material_model)
         material = Material(self.edbapp, material_def)
@@ -143,3 +145,163 @@ class TestClass:
             assert expected_value == getattr(material, property)
 
         material_def.Delete()
+
+    def test_materials_syslib(self):
+        """Evaluate system library."""
+        materials = Materials(self.edbapp)
+
+        assert materials.syslib
+
+    def test_materials_materials(self):
+        """Evaluate materials."""
+        materials = Materials(self.edbapp)
+
+        assert not materials.materials
+
+    def test_materials_add_material(self):
+        """Evalue add material."""
+        materials = Materials(self.edbapp)
+
+        material = materials.add_material(MATERIAL_NAME, permittivity=12)
+        assert material
+        material.name == materials[MATERIAL_NAME].name
+        with pytest.raises(ValueError):
+            _ = materials.add_material(MATERIAL_NAME, permittivity=12)
+
+        self.__remove_material()
+
+    def test_materials_add_conductor_material(self):
+        """Evalue add conductor material."""
+        materials = Materials(self.edbapp)
+
+        material = materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
+        assert material
+        _ = materials[MATERIAL_NAME]
+        with pytest.raises(ValueError):
+            _ = materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
+
+        self.__remove_material()
+
+    def test_materials_add_dielectric_material(self):
+        """Evalue add dielectric material."""
+        materials = Materials(self.edbapp)
+
+        material = materials.add_dielectric_material(MATERIAL_NAME, 12, 12, conductivity=12)
+        assert material
+        _ = materials[MATERIAL_NAME]
+        with pytest.raises(ValueError):
+            _ = materials.add_dielectric_material(MATERIAL_NAME, 12, conductivity=12)
+
+        self.__remove_material()
+
+    def test_materials_add_djordjevicsarkar_dielectric(self):
+        """Evalue add djordjevicsarkar dielectric material."""
+        materials = Materials(self.edbapp)
+
+        material = materials.add_djordjevicsarkar_dielectric(MATERIAL_NAME, 12, 12, 12, dc_conductivity=12, dc_permittivity=12, conductivity=12)
+        assert material
+        _ = materials[MATERIAL_NAME]
+        with pytest.raises(ValueError):
+            _ = materials.add_djordjevicsarkar_dielectric(MATERIAL_NAME, 12, 12, 12, dc_conductivity=12, dc_permittivity=12, conductivity=12)
+
+        self.__remove_material()
+
+    def test_materials_add_debye_material(self):
+        """Evalue add debye material material."""
+        materials = Materials(self.edbapp)
+
+        material = materials.add_debye_material(MATERIAL_NAME, 12, 12, 12, 12, 12, 12, conductivity=12)
+        assert material
+        _ = materials[MATERIAL_NAME]
+        with pytest.raises(ValueError):
+            _ = materials.add_debye_material(MATERIAL_NAME, 12, 12, 12, 12, 12, 12, conductivity=12)
+
+        self.__remove_material()
+
+    def test_materials_add_multipole_debye_material(self):
+        """Evalue add multipole debye material."""
+        materials = Materials(self.edbapp)
+
+        material = materials.add_multipole_debye_material(MATERIAL_NAME, 12, 12, 12, conductivity=12)
+        assert material
+        _ = materials[MATERIAL_NAME]
+        with pytest.raises(ValueError):
+            _ = materials.add_multipole_debye_material(MATERIAL_NAME, 12, 12, 12, conductivity=12)
+
+        self.__remove_material()
+
+    def test_materials_duplicate(self):
+        """Evalue duplicate material."""
+        materials = Materials(self.edbapp)
+        kwargs = MaterialProperties(
+            **{field: 12 for field in MaterialProperties.__annotations__}
+        ).model_dump()
+        material = materials.add_material(MATERIAL_NAME, **kwargs)
+        other_name = "OtherMaterial"
+
+        new_material = materials.duplicate(MATERIAL_NAME, other_name)
+        for mat_attribute in MaterialProperties.__annotations__.keys():
+            assert getattr(material, mat_attribute) == getattr(new_material, mat_attribute)
+        with pytest.raises(ValueError):
+            _ = materials.duplicate(MATERIAL_NAME, other_name)
+
+        self.__remove_material()
+
+    def test_materials_delete_material(self):
+        """Evaluate delete material."""
+        materials = Materials(self.edbapp)
+
+        _ = materials.add_material(MATERIAL_NAME)
+        materials.delete_material(MATERIAL_NAME)
+        assert MATERIAL_NAME not in materials
+        with pytest.raises(ValueError):
+            materials.delete_material(MATERIAL_NAME)
+
+    def test_materials_material_property_to_id(self):
+        """Evaluate materials map between material property and id."""
+        materials = Materials(self.edbapp)
+        permittivity_id = self.edbapp.edb_api.definition.MaterialPropertyId.Permittivity
+        invalid_id = self.edbapp.edb_api.definition.MaterialPropertyId.InvalidProperty
+
+        assert permittivity_id == materials.material_property_to_id("permittivity")
+        assert invalid_id == materials.material_property_to_id("azertyuiop")
+
+    def test_material_load_amat(self):
+        """Evaluate load material from an AMAT file."""
+        materials = Materials(self.edbapp)
+        nb_materials = len(materials.materials)
+        mat_file = os.path.join(self.edbapp.base_path, "syslib", "Materials.amat")
+
+        assert materials.load_amat(mat_file)
+        assert nb_materials != len(materials.materials)
+        assert 0.0013 == materials["Rogers RO3003 (tm)"].dielectric_loss_tangent
+        assert 3.0 == materials["Rogers RO3003 (tm)"].permittivity
+
+    def test_materials_read_materials(self):
+        """Evaluate read materials."""
+        materials = Materials(self.edbapp)
+        mat_file = os.path.join(local_path, "example_models", "syslib", "Materials.amat")
+        name_to_material = materials.read_materials(mat_file)
+
+        key = "FC-78"
+        assert key in name_to_material
+        assert name_to_material[key]["thermal_conductivity"] == 0.062
+        assert name_to_material[key]["mass_density"] == 1700
+        assert name_to_material[key]["specific_heat"] == 1050
+        assert name_to_material[key]["thermal_expansion_coeffcient"] == 0.0016
+        key = "Polyflon CuFlon (tm)"
+        assert key in name_to_material
+        assert name_to_material[key]["permittivity"] == 2.1
+        assert name_to_material[key]["tangent_delta"] == 0.00045
+        key = "Water(@360K)"
+        assert key in name_to_material
+        assert name_to_material[key]["thermal_conductivity"] == 0.6743
+        assert name_to_material[key]["mass_density"] == 967.4
+        assert name_to_material[key]["specific_heat"] == 4206
+        assert name_to_material[key]["thermal_expansion_coeffcient"] == 0.0006979
+        key = "steel_stainless"
+        assert name_to_material[key]["conductivity"] == 1100000
+        assert name_to_material[key]["thermal_conductivity"] == 13.8
+        assert name_to_material[key]["mass_density"] == 8055
+        assert name_to_material[key]["specific_heat"] == 480
+        assert name_to_material[key]["thermal_expansion_coeffcient"] == 1.08e-005
