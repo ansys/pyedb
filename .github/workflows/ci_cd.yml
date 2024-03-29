@@ -26,6 +26,22 @@ concurrency:
 
 jobs:
 
+  check_title:
+    name: Check PR title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR title format
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const title = github.context.payload.pull_request.title;
+            const validPrefixes = ["FEATURE:", "REFACT:", "IMPROVE:", "TEST:", "DOC:", "MAINT:", "FIX:", "CHORE:", "CI:"];
+            const validPrefixRegex = new RegExp("^(" + validPrefixes.join("|") + ")");
+            if (!validPrefixRegex.test(title)) {
+              core.setFailed("Pull Request title does not start with one of the valid prefixes: FEATURE:, REFACT:, IMPROVE:, TEST:, DOC:, MAINT:, FIX:, CHORE:, CI:");
+            }
+
   doc-style:
     name: Documentation style check
     runs-on: ubuntu-latest
