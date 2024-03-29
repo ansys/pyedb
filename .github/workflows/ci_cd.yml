@@ -204,8 +204,8 @@ jobs:
 
   docs-build:
     name: Build documentation
-    # runs-on: [ Windows, self-hosted, pyedb ]
-    runs-on: windows-latest
+    runs-on: [ Windows, self-hosted, pyedb ]
+    # runs-on: windows-latest
     timeout-minutes: 480
     steps:
       - name: Run doc build action
