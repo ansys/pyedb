@@ -24,6 +24,7 @@
 """
 
 import os
+
 import pytest
 
 from src.pyedb.dotnet.edb_core.materials import Material, MaterialProperties, Materials
@@ -68,7 +69,6 @@ class TestClass:
         """Remove material using EDB calls."""
         material_def = self.edbapp._edb.edb_api.definition.MaterialDef.FindByName(MATERIAL_NAME)
         material_def.Delete()
-
 
     def test_material_name(self, legacy_edb_app):
         """Evaluate material properties."""
@@ -198,11 +198,15 @@ class TestClass:
         """Evalue add djordjevicsarkar dielectric material."""
         materials = Materials(self.edbapp)
 
-        material = materials.add_djordjevicsarkar_dielectric(MATERIAL_NAME, 12, 12, 12, dc_conductivity=12, dc_permittivity=12, conductivity=12)
+        material = materials.add_djordjevicsarkar_dielectric(
+            MATERIAL_NAME, 12, 12, 12, dc_conductivity=12, dc_permittivity=12, conductivity=12
+        )
         assert material
         _ = materials[MATERIAL_NAME]
         with pytest.raises(ValueError):
-            _ = materials.add_djordjevicsarkar_dielectric(MATERIAL_NAME, 12, 12, 12, dc_conductivity=12, dc_permittivity=12, conductivity=12)
+            _ = materials.add_djordjevicsarkar_dielectric(
+                MATERIAL_NAME, 12, 12, 12, dc_conductivity=12, dc_permittivity=12, conductivity=12
+            )
 
         self.__remove_material()
 
@@ -233,9 +237,7 @@ class TestClass:
     def test_materials_duplicate(self):
         """Evalue duplicate material."""
         materials = Materials(self.edbapp)
-        kwargs = MaterialProperties(
-            **{field: 12 for field in MaterialProperties.__annotations__}
-        ).model_dump()
+        kwargs = MaterialProperties(**{field: 12 for field in MaterialProperties.__annotations__}).model_dump()
         material = materials.add_material(MATERIAL_NAME, **kwargs)
         other_name = "OtherMaterial"
 
