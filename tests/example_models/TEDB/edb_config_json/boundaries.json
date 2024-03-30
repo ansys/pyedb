@@ -1,0 +1,19 @@
+{
+  "boundaries": {
+    "open_region": true,
+    "open_region_type": "radiation",
+    "pml_visible": false,
+    "pml_operation_frequency": "5ghz",
+    "pml_radiation_factor": 10,
+    "dielectric_extents_type": "bounding_box",
+    "dielectric_base_polygon": "",
+    "horizontal_padding": 0,
+    "honor_primitives_on_dielectric_layers": true,
+    "air_box_extents_type": "bounding_box",
+    "air_box_base_polygon": "",
+    "air_box_truncate_model_ground_layers": false,
+    "air_box_horizontal_padding": 0.15,
+    "air_box_positive_vertical_padding": 1,
+    "air_box_negative_vertical_padding": 1
+  }
+}
