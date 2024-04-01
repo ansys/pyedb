@@ -691,7 +691,7 @@ def _retry_ntimes(n, function, *args, **kwargs):
             ret_val = function(*args, **kwargs)
         except:
             retry += 1
-            time.sleep(1)
+            time.sleep(settings.retry_n_times_time_interval)
         else:
             return ret_val
     if retry == n:
