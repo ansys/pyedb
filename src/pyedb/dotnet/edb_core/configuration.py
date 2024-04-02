@@ -22,10 +22,9 @@
 
 import json
 import os
-import toml
 from pathlib import Path
 
-
+import toml
 
 from pyedb.generic.general_methods import pyedb_function_handler
 
