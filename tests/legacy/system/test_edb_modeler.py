@@ -434,3 +434,13 @@ class TestClass:
         edbapp.modeler.unite_polygons_on_layer("trace1")
         assert len(edbapp.modeler.polygons) == 1
         edbapp.close()
+
+    def rlc_component_302(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        pins = edbapp.components.get_pin_from_component("C31")
+        assert edbapp.components.create_rlc_component([pins[0], pins[1]], r_value=0, component_name="TEST")
+        edbapp.close()
