@@ -27,7 +27,6 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 import os
 import time
 
-from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
     SourceType,
@@ -146,11 +145,6 @@ class EdbSiwave(object):
 
         res, fromLayer_pos, toLayer_pos = pos_pin.GetLayerRange()
         res, fromLayer_neg, toLayer_neg = neg_pin.GetLayerRange()
-
-        if isinstance(pos_pin, EDBPadstackInstance):
-            pos_pin = pos_pin._edb_padstackinstance
-        if isinstance(neg_pin, EDBPadstackInstance):
-            neg_pin = neg_pin._edb_padstackinstance
 
         pos_pingroup_terminal = _retry_ntimes(
             10,
