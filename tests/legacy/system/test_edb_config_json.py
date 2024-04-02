@@ -21,6 +21,7 @@
 # SOFTWARE.
 import json
 import os
+import toml
 from pathlib import Path
 
 import pytest
@@ -114,6 +115,14 @@ class TestClass:
         with open(self.local_input_folder / "s_parameter.json") as f:
             data = json.load(f)
         data["general"]["s_parameter_library"] = self.local_input_folder
+
+        edbapp = Edb(str(self.local_edb), desktop_version)
+        assert edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
+    def test_07_general(self):
+        with open(self.local_input_folder / "general.toml") as f:
+            data = toml.load(f)
 
         edbapp = Edb(str(self.local_edb), desktop_version)
         assert edbapp.configuration.load(data, apply_file=True)

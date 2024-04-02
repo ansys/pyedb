@@ -21,17 +21,10 @@
 # SOFTWARE.
 
 import json
+import toml
 from pathlib import Path
 
 from pyedb.generic.general_methods import pyedb_function_handler
-
-
-def load_json(config_file):
-    if isinstance(config_file, (str, Path)):
-        with open(config_file, "r") as f:
-            return json.load(f)
-    elif isinstance(config_file, dict):
-        return config_file
 
 
 class Configuration:
@@ -67,8 +60,15 @@ class Configuration:
         dict
             Config dictionary.
         """
+        if isinstance(config_file, dict):
+            data = config_file
+        else:
+            with open(config_file, "r") as f:
+                if config_file.endswith(".json"):
+                    data = json.load(f)
+                elif config_file.endswith(".toml"):
+                    data = toml.load(f)
 
-        data = load_json(config_file)
         if not append:
             self.data = {}
         for k, v in data.items():
