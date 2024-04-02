@@ -458,7 +458,7 @@ class TestClass:
         edbapp.components.capacitors["C3"].pins
         edbapp.padstacks.pins
         edbapp.close()
-  
+
     def rlc_component_302(self):
         example_folder = os.path.join(local_path, "example_models", test_subfolder)
         source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
