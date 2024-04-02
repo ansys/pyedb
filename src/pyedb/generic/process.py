@@ -95,7 +95,10 @@ class SiwaveSolve(object):
             command.append(self._project_path)
             command.append(exec_file)
             command.append("-formatOutput -useSubdir")
-            p = subprocess.Popen(" ".join(command))
+            if os.name == "posix":
+                p = subprocess.Popen(command)
+            else:
+                p = subprocess.Popen(" ".join(command))
             p.wait()
 
     def export_3d_cad(
