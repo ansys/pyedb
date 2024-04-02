@@ -814,7 +814,7 @@ class EDBPadstack(object):
         except KeyError:  # pragma: no cover
             start_elevation = layers[self.instances[0].start_layer].lower_elevation
         try:
-            stop_elevation = layers[self.via_start_layer].upper_elevation
+            stop_elevation = layers[self.via_stop_layer].upper_elevation
         except KeyError:  # pragma: no cover
             stop_elevation = layers[self.instances[0].stop_layer].upper_elevation
 
