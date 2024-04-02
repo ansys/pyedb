@@ -70,6 +70,7 @@ def legacy_edb_app(add_legacy_edb):
     app = add_legacy_edb(test_project_name, subfolder=test_subfolder)
     return app
 
+
 @pytest.fixture(scope="class")
 def legacy_edb_app_without_material(add_legacy_edb):
     app = add_legacy_edb()

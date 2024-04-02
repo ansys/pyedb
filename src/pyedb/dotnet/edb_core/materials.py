@@ -815,8 +815,7 @@ class Materials(object):
 
     @pyedb_function_handler()
     def delete_material(self, material_name):
-        """Remove a material from the database.
-        """
+        """Remove a material from the database."""
         material_def = self.__edb_definition.MaterialDef.FindByName(self.__edb.active_db, material_name)
         if material_def.IsNull():
             raise ValueError(f"Cannot find material {material_name}.")
@@ -987,9 +986,9 @@ class Materials(object):
 
         return res
 
+
 if __name__ == "__main__":
     edb = Edb()
     materials = Materials(edb)
     mat_file = os.path.join(edb.base_path, "syslib", "Materials.amat")
     assert materials.load_amat(mat_file)
-
