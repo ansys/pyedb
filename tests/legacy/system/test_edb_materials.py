@@ -27,7 +27,8 @@ import os
 
 import pytest
 
-from src.pyedb.dotnet.edb_core.materials import Material, MaterialProperties, Materials
+from pyedb import Edb
+from pyedb.dotnet.edb_core.materials import Material, MaterialProperties, Materials
 from tests.conftest import local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -61,16 +62,17 @@ MATERIAL_NAME = "DummyMaterial"
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, legacy_edb_app):
-        self.edbapp = legacy_edb_app
+    def init(self, legacy_edb_app_without_material):
+        self.edbapp = legacy_edb_app_without_material
         self.definition = self.edbapp.edb_api.definition
 
     def __remove_material(self):
         """Remove material using EDB calls."""
-        material_def = self.edbapp._edb.edb_api.definition.MaterialDef.FindByName(MATERIAL_NAME)
-        material_def.Delete()
+        material_def = self.definition.MaterialDef.FindByName(self.edbapp.active_db, MATERIAL_NAME)
+        if not material_def.IsNull():
+            material_def.Delete()
 
-    def test_material_name(self, legacy_edb_app):
+    def test_material_name(self):
         """Evaluate material properties."""
         material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
         material = Material(self.edbapp, material_def)
@@ -79,7 +81,7 @@ class TestClass:
 
         material_def.Delete()
 
-    def test_material_properties(self, legacy_edb_app):
+    def test_material_properties(self):
         """Evaluate material properties."""
         material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
         material = Material(self.edbapp, material_def)
@@ -91,7 +93,7 @@ class TestClass:
 
         material_def.Delete()
 
-    def test_material_dc_properties(self, legacy_edb_app):
+    def test_material_dc_properties(self):
         """Evaluate material DC properties."""
         material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
         material_model = self.definition.DjordjecvicSarkarModel()
@@ -165,8 +167,8 @@ class TestClass:
         material = materials.add_material(MATERIAL_NAME, permittivity=12)
         assert material
         material.name == materials[MATERIAL_NAME].name
-        with pytest.raises(ValueError):
-            _ = materials.add_material(MATERIAL_NAME, permittivity=12)
+        material = materials.add_material(MATERIAL_NAME, permittivity=12)
+        assert not material
 
         self.__remove_material()
 
@@ -177,8 +179,8 @@ class TestClass:
         material = materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
         assert material
         _ = materials[MATERIAL_NAME]
-        with pytest.raises(ValueError):
-            _ = materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
+        material = materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
+        assert not material
 
         self.__remove_material()
 
@@ -189,8 +191,8 @@ class TestClass:
         material = materials.add_dielectric_material(MATERIAL_NAME, 12, 12, conductivity=12)
         assert material
         _ = materials[MATERIAL_NAME]
-        with pytest.raises(ValueError):
-            _ = materials.add_dielectric_material(MATERIAL_NAME, 12, conductivity=12)
+        material = materials.add_dielectric_material(MATERIAL_NAME, 12, conductivity=12)
+        assert not material
 
         self.__remove_material()
 
@@ -199,14 +201,14 @@ class TestClass:
         materials = Materials(self.edbapp)
 
         material = materials.add_djordjevicsarkar_dielectric(
-            MATERIAL_NAME, 12, 12, 12, dc_conductivity=12, dc_permittivity=12, conductivity=12
+            MATERIAL_NAME, 4.3, 0.02, 9, dc_conductivity=1e-12, dc_permittivity=5, conductivity=0
         )
         assert material
         _ = materials[MATERIAL_NAME]
-        with pytest.raises(ValueError):
-            _ = materials.add_djordjevicsarkar_dielectric(
-                MATERIAL_NAME, 12, 12, 12, dc_conductivity=12, dc_permittivity=12, conductivity=12
-            )
+        material = materials.add_djordjevicsarkar_dielectric(
+            MATERIAL_NAME, 4.3, 0.02, 9, dc_conductivity=1e-12, dc_permittivity=5, conductivity=0
+        )
+        assert not material
 
         self.__remove_material()
 
@@ -214,23 +216,30 @@ class TestClass:
         """Evalue add debye material material."""
         materials = Materials(self.edbapp)
 
-        material = materials.add_debye_material(MATERIAL_NAME, 12, 12, 12, 12, 12, 12, conductivity=12)
+        material = materials.add_debye_material(MATERIAL_NAME, 6, 4, 0.02, 0.05, 1e9, 10e9, conductivity=0)
         assert material
         _ = materials[MATERIAL_NAME]
-        with pytest.raises(ValueError):
-            _ = materials.add_debye_material(MATERIAL_NAME, 12, 12, 12, 12, 12, 12, conductivity=12)
+        material = materials.add_debye_material(MATERIAL_NAME, 6, 4, 0.02, 0.05, 1e9, 10e9, conductivity=0)
+        assert not material
 
         self.__remove_material()
 
     def test_materials_add_multipole_debye_material(self):
         """Evalue add multipole debye material."""
         materials = Materials(self.edbapp)
+        frequencies = [0, 2, 3, 4, 5, 6]
+        relative_permitivities = [1e9, 1.1e9, 1.2e9, 1.3e9, 1.5e9, 1.6e9]
+        loss_tangents = [0.025, 0.026, 0.027, 0.028, 0.029, 0.030]
 
-        material = materials.add_multipole_debye_material(MATERIAL_NAME, 12, 12, 12, conductivity=12)
+        material = materials.add_multipole_debye_material(
+            MATERIAL_NAME, frequencies, relative_permitivities, loss_tangents, conductivity=0
+        )
         assert material
         _ = materials[MATERIAL_NAME]
-        with pytest.raises(ValueError):
-            _ = materials.add_multipole_debye_material(MATERIAL_NAME, 12, 12, 12, conductivity=12)
+        material = materials.add_multipole_debye_material(
+            MATERIAL_NAME, frequencies, relative_permitivities, loss_tangents, conductivity=0
+        )
+        assert not material
 
         self.__remove_material()
 
@@ -244,8 +253,8 @@ class TestClass:
         new_material = materials.duplicate(MATERIAL_NAME, other_name)
         for mat_attribute in MaterialProperties.__annotations__.keys():
             assert getattr(material, mat_attribute) == getattr(new_material, mat_attribute)
-        with pytest.raises(ValueError):
-            _ = materials.duplicate(MATERIAL_NAME, other_name)
+        material = materials.duplicate(MATERIAL_NAME, other_name)
+        assert not material
 
         self.__remove_material()
 
@@ -256,8 +265,7 @@ class TestClass:
         _ = materials.add_material(MATERIAL_NAME)
         materials.delete_material(MATERIAL_NAME)
         assert MATERIAL_NAME not in materials
-        with pytest.raises(ValueError):
-            materials.delete_material(MATERIAL_NAME)
+        assert not materials.delete_material(MATERIAL_NAME)
 
     def test_materials_material_property_to_id(self):
         """Evaluate materials map between material property and id."""
@@ -294,7 +302,7 @@ class TestClass:
         key = "Polyflon CuFlon (tm)"
         assert key in name_to_material
         assert name_to_material[key]["permittivity"] == 2.1
-        assert name_to_material[key]["tangent_delta"] == 0.00045
+        assert name_to_material[key]["dielectric_loss_tangent"] == 0.00045
         key = "Water(@360K)"
         assert key in name_to_material
         assert name_to_material[key]["thermal_conductivity"] == 0.6743
