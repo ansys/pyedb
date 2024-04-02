@@ -806,6 +806,17 @@ class Materials(object):
                     new_material.dc_model.SetUseDCRelativePermitivity(True)
                 setattr(new_material, attribute, value)
 
+
+    @pyedb_function_handler()
+    def delete_material(self, material_name):
+        """Remove a material from the database.
+        """
+        material_def = self.__edb_definition.MaterialDef.FindByName(self.__edb.active_db, material_name)
+        if material_def.IsNull():
+            raise ValueError(f"Cannot find material {material_name}.")
+        material_def.Delete()
+        del self.__materials[material_name]
+
     # @pyedb_function_handler()
     # def load_material(self, material):
     #     """
