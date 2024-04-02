@@ -24,6 +24,11 @@ from dataclasses import dataclass
 
 
 @dataclass
+class Cell:
+    cells: dict
+
+
+@dataclass
 class CellShapes:
     polygons: list
     paths: list
@@ -47,7 +52,6 @@ class CellShapes:
         if self.nets:
             return False
         return True
-
 
 
 class ICLayoutData:

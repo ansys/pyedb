@@ -1,0 +1,6 @@
+{
+  "nets": {
+    "power_ground_nets": ["1.2V_DVDDL"],
+    "signal_nets": ["SFPA_VCCR"]
+  }
+}

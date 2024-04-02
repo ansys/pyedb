@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 class EDBStatistics(object):
     """Statistics object
 
@@ -46,8 +47,8 @@ class EDBStatistics(object):
         self._nb_layer = 0
         self._stackup_thickness = 0.0
         self._nb_vias = 0
-        self._occupying_ratio = 0.0
-        self._occupying_surface = 0.0
+        self._occupying_ratio = {}
+        self._occupying_surface = {}
         self._layout_size = [0.0, 0.0, 0.0, 0.0]
         self._nb_polygons = 0
         self._nb_traces = 0

@@ -20,15 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import pya
-from pyedb.ic.gds_data import ICLayoutData, ICLayerData
 import os
+
+import pya
+
+from pyedb.ic.gds_data import ICLayerData, ICLayoutData
 
 
 class ICLayout:
     def __init__(self, gds_file, layermap=None):
         self.editable = True
         self._klayout = pya.Layout(self.editable)
+        self._cells = {}
         self._layermap = layermap
         self.db = ICLayoutData(klayout=self._klayout, layers=[])
         if layermap:
@@ -37,8 +40,17 @@ class ICLayout:
         if gds_file:
             self._klayout.read(gds_file)
             self._read_layer_info()
-        self._top_cell = [self._klayout.top_cell().name]
+        self._top_cells = self._klayout.top_cells()
+        self._get_layout_cells()
         self._update_layers()
+
+    @property
+    def top_cells(self):
+        return self._top_cells
+
+    @property
+    def cells(self):
+        return self._cells
 
     def _read_layer_info(self):
         for layer_index in range(self._klayout.layers()):
@@ -46,26 +58,37 @@ class ICLayout:
             if not layer_info.layer == -1:
                 if [layer for layer in self.db.layers if layer.index == str(layer_info.layer)]:
                     if not [lay for lay in self.db.layers if lay.data_type == str(layer_info.datatype)]:
-                        _layer = ICLayerData(klayout=self._klayout, name=layer_info.name, index=layer_info.layer,
-                                             data_type=layer_info.datatype, purpose="drawing")
+                        _layer = ICLayerData(
+                            klayout=self._klayout,
+                            name=layer_info.name,
+                            index=layer_info.layer,
+                            data_type=layer_info.datatype,
+                            purpose="drawing",
+                        )
                         self.db.layers.append(_layer)
 
     def _read_layer_map(self):
-        with open(self._layermap, mode='r') as file:
+        with open(self._layermap, mode="r") as file:
             lines = file.readlines()
             header = ["layer_name", "layer_purpose", "layer_stream_number", "data_type"]
             for line in lines[1:]:
                 if line.strip():
                     data = line.replace("\t", " ").split()
                     if len(data) == len(header):
-                        layer = ICLayerData(klayout=self._klayout, name=data[0], purpose=data[1],
-                                            index=data[2], data_type=data[3])
+                        layer = ICLayerData(
+                            klayout=self._klayout, name=data[0], purpose=data[1], index=data[2], data_type=data[3]
+                        )
                         self.db.layers.append(layer)
 
     def _update_layers(self):
-        for cell in self._top_cell:
-            self.db.layers = [layer for layer in self.db.layers if not layer.shapes[cell].is_empty]
+        for top_cell in self._top_cells:
+            self.db.layers = [layer for layer in self.db.layers if not layer.shapes[top_cell.name].is_empty]
 
+    def _get_layout_cells(self):
+        for cell in self._klayout.each_cell():
+            if not cell.is_ghost_cell() and not cell.name in [top_cell.name for top_cell in self._top_cells]:
+                if not cell.name in self._cells:
+                    self._cells[cell.name] = cell
 
     def save(self, file_name=None):
         if file_name:

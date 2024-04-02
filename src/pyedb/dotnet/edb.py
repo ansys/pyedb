@@ -47,8 +47,8 @@ from pyedb.dotnet.edb_core.edb_data.control_file import (
 from pyedb.dotnet.edb_core.edb_data.design_options import EdbDesignOptions
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data import (
-    HfssSimulationSetup)
-from pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data import RaptorXSimulationSetup
+    HfssSimulationSetup,
+)
 from pyedb.dotnet.edb_core.edb_data.ports import (
     BundleWavePort,
     CircuitPort,
@@ -56,6 +56,9 @@ from pyedb.dotnet.edb_core.edb_data.ports import (
     ExcitationSources,
     GapPort,
     WavePort,
+)
+from pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data import (
+    RaptorXSimulationSetup,
 )
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
@@ -213,10 +216,21 @@ class Edb(Database):
                 os.path.dirname(edbpath),
                 "pyedb_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log",
             )
+            aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+            files = [aedt_file, aedt_file + ".lock"]
+            for file in files:
+                if os.path.isfile(file):
+                    try:
+                        shutil.rmtree(file)
+                        self.logger.info(f"Removing {file} to allow loading EDB file.")
+                    except:
+                        self.logger.info(
+                            f"Failed to delete {file} which is located at the same location as the EDB file."
+                        )
 
         if isaedtowned and (inside_desktop or settings.remote_rpc_session):
             self.open_edb_inside_aedt()
-        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz"]:
+        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
             control_file = None
@@ -2312,9 +2326,9 @@ class Edb(Database):
                             list_prims = subtract(p, voids_data)
                             for prim in list_prims:
                                 if not prim.IsNull():
-                                    poly_to_create.append([prim, prim_1.layer_name, net, list_void])
+                                    poly_to_create.append([prim, prim_1.layer.name, net, list_void])
                         else:
-                            poly_to_create.append([p, prim_1.layer_name, net, list_void])
+                            poly_to_create.append([p, prim_1.layer.name, net, list_void])
 
                 prims_to_delete.append(prim_1)
 
@@ -2340,8 +2354,10 @@ class Edb(Database):
 
         for item in reference_paths:
             clip_path(item)
-        with ThreadPoolExecutor(number_of_threads) as pool:
-            pool.map(lambda item: clean_prim(item), reference_prims)
+        for prim in reference_prims:  # removing multithreading as failing with new layer from primitive
+            clean_prim(prim)
+        # with ThreadPoolExecutor(number_of_threads) as pool:
+        #    pool.map(lambda item: clean_prim(item), reference_prims)
 
         for el in poly_to_create:
             self.modeler.create_polygon(el[0], el[1], net_name=el[2], voids=el[3])
@@ -3647,7 +3663,6 @@ class Edb(Database):
         setup = RaptorXSimulationSetup(self).create(name)
         return setup
 
-
     @pyedb_function_handler()
     def create_siwave_syz_setup(self, name=None):
         """Create a setup from a template.
@@ -4182,7 +4197,7 @@ class Edb(Database):
                 if via_holes:  # pragma no cover
                     hole_variable = self._clean_string_for_variable_name("$hole_diam_{}".format(def_name))
                     if hole_variable not in self.variables:
-                        self.add_design_variable(hole_variable, padstack_def.hole_properties[0])
+                        self.add_design_variable(hole_variable, padstack_def.hole_diameter_string)
                     padstack_def.hole_properties = hole_variable
                     parameters.append(hole_variable)
             if pads:
@@ -4192,7 +4207,7 @@ class Edb(Database):
                             "$pad_diam_{}_{}".format(def_name, layer)
                         )
                         if pad_diameter_variable not in self.variables:
-                            self.add_design_variable(pad_diameter_variable, pad.parameters_values[0])
+                            self.add_design_variable(pad_diameter_variable, pad.parameters_values_string[0])
                         pad.parameters = {"Diameter": pad_diameter_variable}
                         parameters.append(pad_diameter_variable)
                     if pad.geometry_type == 2:  # pragma no cover
@@ -4200,7 +4215,7 @@ class Edb(Database):
                             "$pad_size_{}_{}".format(def_name, layer)
                         )
                         if pad_size_variable not in self.variables:
-                            self.add_design_variable(pad_size_variable, pad.parameters_values[0])
+                            self.add_design_variable(pad_size_variable, pad.parameters_values_string[0])
                         pad.parameters = {"Size": pad_size_variable}
                         parameters.append(pad_size_variable)
                     elif pad.geometry_type == 3:  # pragma no cover
@@ -4211,8 +4226,8 @@ class Edb(Database):
                             "$pad_size_y_{}_{}".format(def_name, layer)
                         )
                         if pad_size_variable_x not in self.variables and pad_size_variable_y not in self.variables:
-                            self.add_design_variable(pad_size_variable_x, pad.parameters_values[0])
-                            self.add_design_variable(pad_size_variable_y, pad.parameters_values[1])
+                            self.add_design_variable(pad_size_variable_x, pad.parameters_values_string[0])
+                            self.add_design_variable(pad_size_variable_y, pad.parameters_values_string[1])
                         pad.parameters = {"XSize": pad_size_variable_x, "YSize": pad_size_variable_y}
                         parameters.append(pad_size_variable_x)
                         parameters.append(pad_size_variable_y)
@@ -4223,7 +4238,7 @@ class Edb(Database):
                             "$antipad_diam_{}_{}".format(def_name, layer)
                         )
                         if antipad_diameter_variable not in self.variables:  # pragma no cover
-                            self.add_design_variable(antipad_diameter_variable, antipad.parameters_values[0])
+                            self.add_design_variable(antipad_diameter_variable, antipad.parameters_values_string[0])
                         antipad.parameters = {"Diameter": antipad_diameter_variable}
                         parameters.append(antipad_diameter_variable)
                     if antipad.geometry_type == 2:  # pragma no cover
@@ -4231,7 +4246,7 @@ class Edb(Database):
                             "$antipad_size_{}_{}".format(def_name, layer)
                         )
                         if antipad_size_variable not in self.variables:  # pragma no cover
-                            self.add_design_variable(antipad_size_variable, antipad.parameters_values[0])
+                            self.add_design_variable(antipad_size_variable, antipad.parameters_values_string[0])
                         antipad.parameters = {"Size": antipad_size_variable}
                         parameters.append(antipad_size_variable)
                     elif antipad.geometry_type == 3:  # pragma no cover
@@ -4245,8 +4260,8 @@ class Edb(Database):
                             antipad_size_variable_x not in self.variables
                             and antipad_size_variable_y not in self.variables
                         ):  # pragma no cover
-                            self.add_design_variable(antipad_size_variable_x, antipad.parameters_values[0])
-                            self.add_design_variable(antipad_size_variable_y, antipad.parameters_values[1])
+                            self.add_design_variable(antipad_size_variable_x, antipad.parameters_values_string[0])
+                            self.add_design_variable(antipad_size_variable_y, antipad.parameters_values_string[1])
                         antipad.parameters = {"XSize": antipad_size_variable_x, "YSize": antipad_size_variable_y}
                         parameters.append(antipad_size_variable_x)
                         parameters.append(antipad_size_variable_y)
@@ -4276,4 +4291,5 @@ class Edb(Database):
     def definitions(self):
         """Definitions class."""
         from pyedb.dotnet.edb_core.definition.definitions import Definitions
+
         return Definitions(self)

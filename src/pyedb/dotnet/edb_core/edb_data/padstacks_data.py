@@ -145,6 +145,11 @@ class EDBPadProperties(object):
         return [i.tofloat for i in self.parameters.values()]
 
     @property
+    def parameters_values_string(self):
+        """Parameters value in string format."""
+        return [i.tostring for i in self.parameters.values()]
+
+    @property
     def polygon_data(self):
         """Parameters.
 
@@ -499,6 +504,21 @@ class EDBPadstack(object):
         self._hole_parameters = self.hole_params[2]
         return self._hole_parameters
 
+    @property
+    def hole_diameter(self):
+        """Hole diameter."""
+        return list(self.hole_params[2])[0].ToDouble()
+
+    @hole_diameter.setter
+    def hole_diameter(self, value):
+        params = convert_py_list_to_net_list([self._get_edb_value(value)])
+        self._update_hole_parameters(params=params)
+
+    @property
+    def hole_diameter_string(self):
+        """Hole diameter in string format."""
+        return list(self.hole_params[2])[0].ToString()
+
     @pyedb_function_handler()
     def _update_hole_parameters(self, hole_type=None, params=None, offsetx=None, offsety=None, rotation=None):
         """Update hole parameters.
@@ -668,6 +688,7 @@ class EDBPadstack(object):
         float
             Thickness of the hole plating if present.
         """
+        value = self._get_edb_value(value).ToDouble()
         hr = 200 * float(value) / float(self.hole_properties[0])
         self.hole_plating_ratio = hr
 
