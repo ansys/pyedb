@@ -714,10 +714,13 @@ class Materials(object):
         >>> loss_tan = [0.025, 0.026, 0.027, 0.028, 0.029, 0.030]
         >>> diel = edb.materials.add_multipole_debye_material("My_MP_Debye", freq, rel_perm, loss_tan)
         """
-        frequencies = [self.__edb_value(i) for i in frequencies]
-        permittivities = [self.__edb_value(i) for i in permittivities]
-        loss_tangents = [self.__edb_value(i) for i in loss_tangents]
-        material_model = self.__edb.edb_api.definition.MultipoleDebyeModel()
+        if name in self.__materials:
+            raise ValueError(f"Material {name} already exists in material library.")
+
+        frequencies = [float(i) for i in frequencies]
+        permittivities = [float(i) for i in permittivities]
+        loss_tangents = [float(i) for i in loss_tangents]
+        material_model = self.__edb_definition.MultipoleDebyeModel()
         material_model.SetParameters(
             convert_py_list_to_net_list(frequencies),
             convert_py_list_to_net_list(permittivities),
