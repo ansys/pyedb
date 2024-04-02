@@ -70,11 +70,11 @@ jobs:
       - name: "Install Git and clone project"
         uses: actions/checkout@v4
 
+      # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          use-cache: false
 
       - name: Create Python venv
         run: |
@@ -135,8 +135,9 @@ jobs:
       - name: Install Git and checkout project
         uses: actions/checkout@v4
 
+      # Revert to previous verison due too setup-python#819
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -209,11 +210,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          use-cache: false
 
       - name: 'Create virtual env'
         run: |
