@@ -21,10 +21,10 @@
 # SOFTWARE.
 import json
 import os
-import toml
 from pathlib import Path
 
 import pytest
+import toml
 
 from pyedb.dotnet.edb import Edb
 from tests.conftest import desktop_version

@@ -21,8 +21,9 @@
 # SOFTWARE.
 
 import json
-import toml
 from pathlib import Path
+
+import toml
 
 from pyedb.generic.general_methods import pyedb_function_handler
 
