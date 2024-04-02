@@ -120,7 +120,31 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
-    def test_07_general(self):
+    def test_07_boundaries(self):
+        with open(self.local_input_folder / "boundaries.json") as f:
+            data = json.load(f)
+
+        edbapp = Edb(str(self.local_edb), desktop_version)
+        assert edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
+    def test_08a_operations_cutout(self):
+        with open(self.local_input_folder / "operations_cutout.json") as f:
+            data = json.load(f)
+
+        edbapp = Edb(str(self.local_edb), desktop_version)
+        assert edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
+    def test_09_padstacks(self):
+        with open(self.local_input_folder / "padstacks.json") as f:
+            data = json.load(f)
+
+        edbapp = Edb(str(self.local_edb), desktop_version)
+        assert edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
+    def test_10_general(self):
         with open(self.local_input_folder / "general.toml") as f:
             data = toml.load(f)
 
