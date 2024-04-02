@@ -139,6 +139,8 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "numpydoc",
     "ansys_sphinx_theme.extension.linkcode",
+    # TODO: Remove once we switch for new example format.
+    "recommonmark",
 ]
 
 # Intersphinx mapping
