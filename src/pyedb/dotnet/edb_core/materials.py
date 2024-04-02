@@ -659,11 +659,14 @@ class Materials(object):
         -------
         :class:`pyedb.dotnet.edb_core.materials.Material`
         """
-        material_model = self.__edb.edb_api.definition.DebyeModel()
-        material_model.SetFrequencyRange(self.__edb_value(lower_freqency), self.__edb_value(higher_frequency))
-        material_model.SetLossTangentAtHighLowFrequency(
-            self.__edb_value(loss_tangent_low), self.__edb_value(loss_tangent_high)
-        )
+        if name in self.__materials:
+            raise ValueError(f"Material {name} already exists in material library.")
+
+        material_model = self.__edb_definition.DebyeModel()
+        # FIXME: Seems like there is a bug here (we need to provide higher value for
+        # lower_freqency than higher_frequency)
+        material_model.SetFrequencyRange(lower_freqency, higher_frequency)
+        material_model.SetLossTangentAtHighLowFrequency(loss_tangent_low, loss_tangent_high)
         material_model.SetRelativePermitivityAtHighLowFrequency(
             self.__edb_value(permittivity_low), self.__edb_value(permittivity_high)
         )
