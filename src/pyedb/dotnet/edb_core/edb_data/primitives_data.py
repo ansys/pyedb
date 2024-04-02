@@ -159,13 +159,14 @@ class EDBPrimitivesMain(Connectable):
 
     @layer_name.setter
     def layer_name(self, val):
-        if isinstance(val, str) and val in list(self._core_stackup.layers.keys()):
-            lay = self._core_stackup.layers["TOP"]._edb_layer
-            if lay:
-                self.primitive_object.SetLayer(lay)
+        layer_list = list(self._core_stackup.layers.keys())
+        if isinstance(val, str) and val in layer_list:
+            layer = self._core_stackup.layers[val]._edb_layer
+            if layer:
+                self.primitive_object.SetLayer(layer)
             else:
-                raise AttributeError("Layer {} not found in layer".format(val))
-        elif isinstance(val, type(self._core_stackup.layers["TOP"])):
+                raise AttributeError("Layer {} not found.".format(val))
+        elif isinstance(val, type(self._core_stackup.layers[layer_list[0]])):
             try:
                 self.primitive_object.SetLayer(val._edb_layer)
             except:
