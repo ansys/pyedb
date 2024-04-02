@@ -32,6 +32,7 @@ from pydantic import BaseModel
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.exceptions import MaterialModelException
 from pyedb.generic.general_methods import is_ironpython, pyedb_function_handler
 
 logger = logging.getLogger(__name__)
