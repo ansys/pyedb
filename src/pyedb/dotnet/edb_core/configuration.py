@@ -70,10 +70,18 @@ class Configuration:
                 elif config_file.endswith(".toml"):
                     data = toml.load(f)
 
-        if not append:
+        if not append:  # pragma: no cover
             self.data = {}
         for k, v in data.items():
-            self.data[k] = v
+            if k in self.data:
+                if isinstance(v, list):
+                    self.data[k].extend(v)
+                elif isinstance(v, dict):  # pragma: no cover
+                    self.data[k].update(v)
+                else:  # pragma: no cover
+                    self.data[k] = v
+            else:
+                self.data[k] = v
         if apply_file:
             original_file = self._pedb.edbpath
             if output_file:

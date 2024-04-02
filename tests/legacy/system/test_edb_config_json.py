@@ -145,9 +145,6 @@ class TestClass:
         edbapp.close()
 
     def test_10_general(self):
-        with open(self.local_input_folder / "general.toml") as f:
-            data = toml.load(f)
-
         edbapp = Edb(str(self.local_edb), desktop_version)
-        assert edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.configuration.load(str(self.local_input_folder / "general.toml"), apply_file=True)
         edbapp.close()
