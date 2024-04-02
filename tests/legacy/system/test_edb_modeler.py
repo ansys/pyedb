@@ -445,3 +445,14 @@ class TestClass:
         edbapp.modeler.polygons[50].layer_name = "16_Bottom"
         assert edbapp.modeler.polygons[50].layer_name == "16_Bottom"
         edbapp.close()
+
+    def test_xml(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        path_xml = os.path.join(example_folder, "289.xml")
+        assert edbapp.stackup.export(path_xml)
+        assert edbapp.stackup.load(path_xml)
+        edbapp.close()

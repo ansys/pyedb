@@ -2080,6 +2080,19 @@ class Stackup(object):
         bool
             ``True`` when successful, ``False`` when failed.
         """
+        m = [
+            "Measures",
+            "SIwave Regions",
+            "Top Overlay",
+            "Top Solder",
+            "Bottom Solder",
+            "Bottom Overlay",
+            "Outline",
+            "Rats",
+            "Errors",
+            "Symbols",
+            "Postprocessing",
+        ]
         tree = ET.parse(file_path)
         material_dict = {}
         root = tree.getroot()
@@ -2108,7 +2121,7 @@ class Stackup(object):
             dumy_layers[i.GetName()] = i.Clone()
 
         for name in self.layers.keys():
-            if not name in dumy_layers:
+            if not name in dumy_layers and name in m:
                 logger.error("{} doesn't exist in xml".format(name))
                 return False
 
