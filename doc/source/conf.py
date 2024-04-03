@@ -141,6 +141,7 @@ extensions = [
     "ansys_sphinx_theme.extension.linkcode",
     # TODO: Remove once we switch for new example format.
     "recommonmark",
+    "sphinx_jinja",
 ]
 
 # Intersphinx mapping
