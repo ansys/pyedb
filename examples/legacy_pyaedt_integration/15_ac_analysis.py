@@ -58,7 +58,7 @@ print(targetfile)
 # ~~~~~~~~~~~~~
 # Launch the :class:`pyedb.Edb` class, using EDB 2023 R2.
 
-edbapp = pyedb.Edb(edbpath=targetfile, edbversion="2023.2")
+edbapp = pyedb.Edb(edbpath=targetfile, edbversion="2024.1")
 
 ###############################################################################
 # Generate extended nets
@@ -159,7 +159,7 @@ edbapp.close_edb()
 # ~~~~~~~~~~~~~~~~~~~
 # To do SYZ analysis, you must launch HFSS 3D Layout and import EDB into it.
 
-h3d = Hfss3dLayout(targetfile, specified_version="2023.2", new_desktop_session=True)
+h3d = Hfss3dLayout(targetfile, specified_version="2024.1", new_desktop_session=True)
 
 ###############################################################################
 # Set differential pair

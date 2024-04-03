@@ -60,7 +60,7 @@ print(targetfile)
 # ~~~~~~~~~~
 # Launch the :class:`pyedb.Edb` class, using EDB 2023 R2 and SI units.
 
-edb = pyedb.Edb(edbpath=targetfile, edbversion="2023.2")
+edb = pyedb.Edb(edbpath=targetfile, edbversion="2024.1")
 
 
 ###############################################################################
