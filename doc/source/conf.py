@@ -267,11 +267,11 @@ if os.name != "posix" and "PYEDB_CI_NO_EXAMPLES" not in os.environ:
             "thumbnail_size": (350, 350),
         }
 
-jinja_contexts = {
-    "main_toctree": {
-        "run_examples": config["run_examples"],
-    },
-}
+# jinja_contexts = {
+#     "main_toctree": {
+#         "run_examples": config["run_examples"],
+#     },
+# }
 # def prepare_jinja_env(jinja_env) -> None:
 #     """
 #     Customize the jinja env.
