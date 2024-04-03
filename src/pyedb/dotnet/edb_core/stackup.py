@@ -2080,6 +2080,19 @@ class Stackup(object):
         bool
             ``True`` when successful, ``False`` when failed.
         """
+        additional_layers = [
+            "Measures",
+            "SIwave Regions",
+            "Top Overlay",
+            "Top Solder",
+            "Bottom Solder",
+            "Bottom Overlay",
+            "Outline",
+            "Rats",
+            "Errors",
+            "Symbols",
+            "Postprocessing",
+        ]
         tree = ET.parse(file_path)
         material_dict = {}
         root = tree.getroot()
@@ -2105,21 +2118,34 @@ class Stackup(object):
 
         dumy_layers = OrderedDict()
         for i in list(lc_import.Layers(self._pedb.edb_api.cell.layer_type_set.AllLayerSet)):
-            dumy_layers[i.GetName()] = i.Clone()
+            if not i.GetName() in additional_layers:
+                dumy_layers[i.GetName()] = i.Clone()
+
+        design_layers_list = [*self.layers]
+        for i in additional_layers:
+            if i in design_layers_list:
+                design_layers_list.remove(i)
+        i = 0
+        if len(design_layers_list) != len(dumy_layers.items()):
+            logger.error("Mismatch in layers number")
+            return False
 
         for name, l in dumy_layers.items():
             layer_type = re.sub(r"Layer$", "", l.GetLayerType().ToString()).lower()
-            if name in self.layers:
-                layer = self.layers[name]
+            if l.GetThicknessValue().ToDouble() == self.layers[design_layers_list[i]].thickness:
+                layer = self.layers[design_layers_list[i]]
                 layer.type = layer_type
-            else:
-                layer = self.add_layer(name, layer_type=layer_type, material="copper", fillMaterial="copper")
 
-            if l.IsStackupLayer():
-                layer.material = l.GetMaterial()
-                layer.thickness = l.GetThicknessValue().ToDouble()
-                layer.dielectric_fill = l.GetFillMaterial()
-                layer.etch_factor = l.GetEtchFactor().ToDouble()
+                if l.IsStackupLayer():
+                    layer.name = l.GetName()
+                    layer.material = l.GetMaterial()
+                    layer.thickness = l.GetThicknessValue().ToDouble()
+                    layer.dielectric_fill = l.GetFillMaterial()
+                    layer.etch_factor = l.GetEtchFactor().ToDouble()
+            else:
+                logger.error("Mismatch in stackups thicknesses")
+                return False
+            i = i + 1
 
         lc_new = self._pedb.edb_api.Cell.LayerCollection()
         for name, _ in dumy_layers.items():
