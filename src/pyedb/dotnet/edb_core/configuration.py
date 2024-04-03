@@ -21,17 +21,12 @@
 # SOFTWARE.
 
 import json
+import os
 from pathlib import Path
 
+import toml
+
 from pyedb.generic.general_methods import pyedb_function_handler
-
-
-def load_json(config_file):
-    if isinstance(config_file, (str, Path)):
-        with open(config_file, "r") as f:
-            return json.load(f)
-    elif isinstance(config_file, dict):
-        return config_file
 
 
 class Configuration:
@@ -46,12 +41,12 @@ class Configuration:
 
     @pyedb_function_handler
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
-        """Import configuration settings from a JSON file.
+        """Import configuration settings from a configure file.
 
         Parameters
         ----------
-        config_file : str
-            Full path to json file.
+        config_file : str, dict
+            Full path to configure file in JSON or TOML format. Dictionary is also supported.
         append : bool, optional
             Whether if the new file will append to existing properties or the properties will be cleared before import.
             Default is ``True`` to keep stored properties
@@ -67,12 +62,29 @@ class Configuration:
         dict
             Config dictionary.
         """
+        if isinstance(config_file, dict):
+            data = config_file
+        elif os.path.isfile(config_file):
+            with open(config_file, "r") as f:
+                if config_file.endswith(".json"):
+                    data = json.load(f)
+                elif config_file.endswith(".toml"):
+                    data = toml.load(f)
+        else:  # pragma: no cover
+            return False
 
-        data = load_json(config_file)
-        if not append:
+        if not append:  # pragma: no cover
             self.data = {}
         for k, v in data.items():
-            self.data[k] = v
+            if k in self.data:
+                if isinstance(v, list):
+                    self.data[k].extend(v)
+                elif isinstance(v, dict):  # pragma: no cover
+                    self.data[k].update(v)
+                else:  # pragma: no cover
+                    self.data[k] = v
+            else:
+                self.data[k] = v
         if apply_file:
             original_file = self._pedb.edbpath
             if output_file:

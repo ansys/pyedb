@@ -445,3 +445,26 @@ class TestClass:
         edbapp.modeler.polygons[50].layer_name = "16_Bottom"
         assert edbapp.modeler.polygons[50].layer_name == "16_Bottom"
         edbapp.close()
+
+    def test_287_circuit_ports(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        cap = edbapp.components.capacitors["C1"]
+        edbapp.siwave.create_circuit_port_on_pin(pos_pin=cap.pins["1"], neg_pin=cap.pins["2"])
+        edbapp.save_edb_as(r"C:\Users\gkorompi\Downloads\AFT")
+        edbapp.components.capacitors["C3"].pins
+        edbapp.padstacks.pins
+        edbapp.close()
+
+    def rlc_component_302(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        pins = edbapp.components.get_pin_from_component("C31")
+        assert edbapp.components.create_rlc_component([pins[0], pins[1]], r_value=0, component_name="TEST")
+        edbapp.close()
