@@ -469,7 +469,7 @@ class TestClass:
         assert edbapp.components.create_rlc_component([pins[0], pins[1]], r_value=0, component_name="TEST")
         edbapp.close()
 
-    def test_xml(self):
+    def test_xml_TEST(self):
         example_folder = os.path.join(local_path, "example_models", test_subfolder)
         source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
         target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
