@@ -41,12 +41,12 @@ class Configuration:
 
     @pyedb_function_handler
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
-        """Import configuration settings from a JSON file.
+        """Import configuration settings from a configure file.
 
         Parameters
         ----------
-        config_file : str
-            Full path to json file.
+        config_file : str, dict
+            Full path to configure file in JSON or TOML format. Dictionary is also supported.
         append : bool, optional
             Whether if the new file will append to existing properties or the properties will be cleared before import.
             Default is ``True`` to keep stored properties
