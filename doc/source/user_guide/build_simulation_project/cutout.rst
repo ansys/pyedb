@@ -18,14 +18,14 @@ This page shows how to clip a design based on net selection.
 
 
     # Ansys release version
-    ansys_version = "2023.2"
+    ansys_version = "2024.1"
 
     # download and copy the layout file from examples
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # load EDB
-    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2024.1")
 
     # select signal nets to evaluate the extent for clipping the layout
     signal_nets = [

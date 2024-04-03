@@ -30,7 +30,7 @@ This example shows how you can use EDB to create a layout component parametrics 
 # Perform required imports
 # ~~~~~~~~~~~~~~~~~~~~~~~~
 # Perform required imports, which includes importing the ``Hfss3dlayout`` object
-# and initializing it on version 2023 R2.
+# and initializing it on version 2024 R1.
 
 import os
 import tempfile
@@ -111,7 +111,7 @@ class LinearArray:
 tmpfold = tempfile.gettempdir()
 aedb_path = os.path.join(tmpfold, generate_unique_name("pcb") + ".aedb")
 print(aedb_path)
-edb = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
+edb = pyedb.Edb(edbpath=aedb_path, edbversion="2024.1")
 
 ###############################################################################
 # Add stackup layers
@@ -284,7 +284,7 @@ print("EDB saved correctly to {}. You can import in AEDT.".format(aedb_path))
 # Launch HFSS 3D.
 
 h3d = Hfss(
-    specified_version="2023.2",
+    specified_version="2024.1",
     new_desktop_session=True,
     close_on_exit=True,
     solution_type="Terminal",
