@@ -16,14 +16,14 @@ This page shows how to build an signal integrity project.
     import pyedb.misc.downloads as downloads
 
     # Ansys release version
-    ansys_version = "2023.2"
+    ansys_version = "2024.1"
 
     # download and copy the layout file from examples
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # load EDB
-    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2024.1")
 
     sim_setup = edbapp.new_simulation_configuration()
     sim_setup.signal_nets = [

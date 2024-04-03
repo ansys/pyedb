@@ -57,7 +57,7 @@ non_graphical = False
 
 aedb_path = os.path.join(generate_unique_folder_name(), generate_unique_name("pcb") + ".aedb")
 print(aedb_path)
-edbapp = Edb(edbpath=aedb_path, edbversion="2023.2")
+edbapp = Edb(edbpath=aedb_path, edbversion="2024.1")
 
 ###############################################################################
 # Define parameters

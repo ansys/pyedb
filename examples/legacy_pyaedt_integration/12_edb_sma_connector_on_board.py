@@ -70,7 +70,7 @@ non_graphical = False
 # Launch the :class:`pyedb.Edb` class, using EDB 2023 R2.
 
 aedb_path = os.path.join(generate_unique_folder_name(), generate_unique_name("pcb") + ".aedb")
-edb = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
+edb = pyedb.Edb(edbpath=aedb_path, edbversion="2024.1")
 print("EDB is located at {}".format(aedb_path))
 
 #####################
@@ -215,7 +215,7 @@ edb.close_edb()
 # Launch Hfss3dLayout
 # ~~~~~~~~~~~~~~~~~~~
 
-h3d = Hfss3dLayout(aedb_path, specified_version="2023.2", new_desktop_session=True, non_graphical=non_graphical)
+h3d = Hfss3dLayout(aedb_path, specified_version="2024.1", new_desktop_session=True, non_graphical=non_graphical)
 
 ####################
 # Place 3D component

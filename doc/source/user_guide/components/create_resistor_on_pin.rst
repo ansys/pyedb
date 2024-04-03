@@ -16,7 +16,7 @@ This page shows how to create a resistor boundary on pins:
 
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2024.1")
 
     pins = edbapp.components.get_pin_from_component("U1")
     resistor = edbapp.siwave.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")
