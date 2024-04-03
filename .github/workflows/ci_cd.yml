@@ -26,6 +26,18 @@ concurrency:
 
 jobs:
 
+  check_title:
+    name: Check PR title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR title format
+        run: |
+          PR_NAME=$(jq -r '.pull_request.title' "$GITHUB_EVENT_PATH")
+          if ! [[ $PR_NAME =~ ^(FEATURE:|REFACT:|IMPROVE:|TEST:|DOC:|MAINT:|FIX:|CHORE:|CI:).* ]]; then
+            echo "ERROR: Pull Request title does not start with one of the valid prefixes: FEATURE:, REFACT:, IMPROVE:, TEST:, DOC:, MAINT:, FIX:, CHORE:, or CI:"
+            exit 1
+          fi
+
   doc-style:
     name: Documentation style check
     runs-on: ubuntu-latest
@@ -71,10 +83,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          use-cache: false
 
       - name: Create Python venv
         run: |
@@ -136,7 +147,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -210,10 +221,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          use-cache: false
 
       - name: 'Create virtual env'
         run: |

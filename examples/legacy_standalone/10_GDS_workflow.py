@@ -108,7 +108,7 @@ c.write_xml(os.path.join(temppath, "output.xml"))
 # ~~~~~~~~~
 # Import the gds and open the edb.
 
-edb = Edb(gds_out, edbversion="2023.2", technology_file=os.path.join(temppath, "output.xml"))
+edb = Edb(gds_out, edbversion="2024.1", technology_file=os.path.join(temppath, "output.xml"))
 
 ###############################################################################
 # Plot Stackup

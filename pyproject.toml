@@ -31,6 +31,7 @@ dependencies = [
     "pywin32 >= 303;platform_system=='Windows'",
     "ansys-pythonnet >= 3.1.0rc3",
     "dotnetcore2 ==3.1.23;platform_system=='Linux'",
+    "toml == 0.10.2",
 ]
 
 [project.optional-dependencies]
