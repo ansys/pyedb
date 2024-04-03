@@ -64,7 +64,7 @@ non_graphical = False
 # ~~~~~~~~~~
 # Launch the :class:`pyedb.Edb` class, using EDB 2023 R2.
 
-aedt_version = "2023.2"
+aedt_version = "2024.1"
 edb = pyedb.Edb(edbpath=target_aedb, edbversion=aedt_version)
 print("EDB is located at {}".format(target_aedb))
 

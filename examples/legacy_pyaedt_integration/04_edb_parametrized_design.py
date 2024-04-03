@@ -56,7 +56,7 @@ non_graphical = False
 
 aedb_path = os.path.join(generate_unique_folder_name(), generate_unique_name("pcb") + ".aedb")
 print(aedb_path)
-edb = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
+edb = pyedb.Edb(edbpath=aedb_path, edbversion="2024.1")
 
 ######################################################################
 # Define parameters
@@ -322,7 +322,7 @@ edb.close_edb()
 # Open EDB in AEDT.
 
 h3d = Hfss3dLayout(
-    projectname=aedb_path, specified_version="2023.2", non_graphical=non_graphical, new_desktop_session=True
+    projectname=aedb_path, specified_version="2024.1", non_graphical=non_graphical, new_desktop_session=True
 )
 
 ###############################################################################

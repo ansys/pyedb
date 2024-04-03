@@ -50,7 +50,7 @@ targetfolder = download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 # ~~~~~~~~~~
 # Launch the :class:`pyedb.Edb` class, using EDB 2023 R2 and SI units.
 
-edb = pyedb.Edb(edbpath=targetfolder, edbversion="2023.2")
+edb = pyedb.Edb(edbpath=targetfolder, edbversion="2024.1")
 
 ###############################################################################
 # Plot custom set of nets colored by layer
