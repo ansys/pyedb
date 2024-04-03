@@ -277,18 +277,20 @@ class Configuration:
             pos_terminal = ""
             if "pin_group" in positive_terminal_json:
                 pin_group = self._pedb.siwave.pin_groups[positive_terminal_json["pin_group"]]
-                pos_terminal = pin_group.get_terminal(pin_group.name, True)
+                port_name = pin_group.name if "name" not in port else port["name"]
+                pos_terminal = pin_group.get_terminal(port_name, True)
+
             else:
                 ref_designator = port["reference_designator"]
                 comp_layout = self._components[ref_designator]
 
                 if "pin" in positive_terminal_json:
                     pin_name = positive_terminal_json["pin"]
-                    port_name = "{}_{}".format(ref_designator, pin_name)
+                    port_name = "{}_{}".format(ref_designator, pin_name) if "name" not in port else port["name"]
                     pos_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
                 else:  # Net
                     net_name = positive_terminal_json["net"]
-                    port_name = "{}_{}".format(ref_designator, net_name)
+                    port_name = "{}_{}".format(ref_designator, net_name) if "name" not in port else port["name"]
                     if port_type == "circuit":
                         pg_name = "pg_{}".format(port_name)
                         _, pg = self._pedb.siwave.create_pin_group_on_net(ref_designator, net_name, pg_name)
@@ -413,7 +415,10 @@ class Configuration:
                     else:
                         self._pedb.logger.warning("Setup {} already existing. Editing it.".format(name))
                         edb_setup = self._pedb.setups[name]
-                    edb_setup.si_slider_position = setup["si_slider_position"]
+                    if "si_slider_position" in setup:
+                        edb_setup.si_slider_position = setup["si_slider_position"]
+                    if "pi_slider_position" in setup:
+                        edb_setup.pi_slider_position = setup["pi_slider_position"]
 
                 if "freq_sweep" in setup:
                     for fsweep in setup["freq_sweep"]:
