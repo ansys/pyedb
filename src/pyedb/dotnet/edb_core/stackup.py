@@ -31,8 +31,9 @@ from collections import OrderedDict
 import json
 import logging
 import math
-import re
 import warnings
+
+import matplotlib.colors
 
 from pyedb.dotnet.edb_core.edb_data.layer_data import (
     LayerEdbClass,
@@ -1670,9 +1671,16 @@ class Stackup(object):
     @pyedb_function_handler()
     def _import_dict(self, json_dict):
         """Import stackup from a dictionary."""
-        mats = json_dict["materials"]
-        for material in mats.values():
-            self._pedb.materials._load_materials(material)
+        if not "materials" in json_dict:
+            self._logger.warning("Configuration file does not have material definition")
+            self._logger.warning(
+                "Please check your json or xml file, if no material are defined your project will"
+                "likely fail to simulate"
+            )
+        else:
+            mats = json_dict["materials"]
+            for material in mats.values():
+                self._pedb.materials._load_materials(material)
 
         temp = {i: j for i, j in json_dict["layers"].items() if j["type"] in ["signal", "dielectric"]}
         for name in list(self.stackup_layers.keys()):
@@ -2065,10 +2073,10 @@ class Stackup(object):
 
     @pyedb_function_handler()
     def _import_xml(self, file_path):
-        """Read external xml file and update stackup.
-        1, all existing layers must exist in xml file.
-        2, xml can have more layers than the existing stackup.
-        3, if xml has different layer order, reorder the layers according to xml definition.
+        """Read external xml file and convert into json file.
+        You can use xml file to import layer stackup but using json file is recommended.
+        see :class:`pyedb.dotnet.edb_core.edb_data.simulation_configuration.SimulationConfiguration´ class to
+        generate files`.
 
         Parameters
         ----------
@@ -2081,59 +2089,38 @@ class Stackup(object):
             ``True`` when successful, ``False`` when failed.
         """
         tree = ET.parse(file_path)
-        material_dict = {}
         root = tree.getroot()
         stackup = root.find("Stackup")
-        for m in stackup.find("Materials").findall("Material"):
-            material = {}
-            for i in list(m):
-                material[i.tag] = list(i)[0].text
-            material_dict[m.attrib["Name"]] = material
-
-        self._add_materials_from_dictionary(material_dict)
-
-        lc_import = self._pedb.edb_api.Cell.LayerCollection()
-
-        if not lc_import.ImportFromControlFile(file_path):  # pragma: no cover
-            logger.error("Import xml failed. Please check xml content.")
-            return False
-
-        if not len(self.stackup_layers):
-            self._pedb.layout.layer_collection = lc_import
-            self.refresh_layer_collection()
-            return True
-
-        dumy_layers = OrderedDict()
-        for i in list(lc_import.Layers(self._pedb.edb_api.cell.layer_type_set.AllLayerSet)):
-            dumy_layers[i.GetName()] = i.Clone()
-
-        for name in self.layers.keys():
-            if not name in dumy_layers:
-                logger.error("{} doesn't exist in xml".format(name))
-                return False
-
-        for name, l in dumy_layers.items():
-            layer_type = re.sub(r"Layer$", "", l.GetLayerType().ToString()).lower()
-            if name in self.layers:
-                layer = self.layers[name]
-                layer.type = layer_type
-            else:
-                layer = self.add_layer(name, layer_type=layer_type, material="copper", fillMaterial="copper")
-
-            if l.IsStackupLayer():
-                layer.material = l.GetMaterial()
-                layer.thickness = l.GetThicknessValue().ToDouble()
-                layer.dielectric_fill = l.GetFillMaterial()
-                layer.etch_factor = l.GetEtchFactor().ToDouble()
-
-        lc_new = self._pedb.edb_api.Cell.LayerCollection()
-        for name, _ in dumy_layers.items():
-            layer = self.layers[name]
-            lc_new.AddLayerBottom(layer._edb_layer)
-
-        self._pedb.layout.layer_collection = lc_new
-        self.refresh_layer_collection()
-        return True
+        stackup_dict = {}
+        if stackup.find("Materials"):
+            stackup_dict["materials"] = {}
+            for m in stackup.find("Materials").findall("Material"):
+                material = {"name": m.attrib["Name"]}
+                for i in list(m):
+                    material[i.tag.lower()] = float(list(i)[0].text)
+                if material:
+                    stackup_dict["materials"][material["name"]] = material
+        stackup_section = stackup.find("Layers")
+        if stackup_section:
+            length_unit = stackup_section.attrib["LengthUnit"]
+            stackup_dict["layers"] = {}
+            for l in stackup.find("Layers").findall("Layer"):
+                layer = {"name": l.attrib["Name"]}
+                for k, v in l.attrib.items():
+                    if k == "Color":
+                        layer[k.lower()] = [int(x * 255) for x in list(matplotlib.colors.to_rgb(v))]
+                    elif k == "Thickness":
+                        layer[k.lower()] = v + length_unit
+                    elif v == "conductor":
+                        layer[k.lower()] = "signal"
+                    elif k == "FillMaterial":
+                        layer["dielectric_fill"] = v
+                    else:
+                        layer[k.lower()] = v
+                if layer:
+                    if layer["type"] == "signal" or layer["type"] == "dielectric":
+                        stackup_dict["layers"][layer["name"]] = layer
+        return self._import_dict(stackup_dict)
 
     @pyedb_function_handler()
     def _export_xml(self, file_path):
