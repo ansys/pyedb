@@ -59,6 +59,7 @@ jobs:
             }`)
             const title = response.repository.pullRequest.title;
             core.setOutput('pr_title', title)
+            console.log(title)
 
       - name: Check PR title format
         run: |
