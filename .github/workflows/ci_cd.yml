@@ -59,15 +59,13 @@ jobs:
             }`)
             const title = response.repository.pullRequest.title;
             core.setOutput('pr_title', title)
-            console.log(title)
 
       - name: Check PR title format
         run: |
-          echo "${{ steps.pr_title.outputs.pr_title }}"
-          echo "${{ env.PR_TITLE }}"
+          echo "pr_title: ${{ steps.pr_title.outputs.pr_title }}"
+          echo "env.PR_TITLE: ${{ env.PR_TITLE }}"
+          echo "PR_TITLE: ${{ PR_TITLE }}"
           title="${{ steps.pr_title.outputs.pr_title }}"
-          # echo "Title : ${{ steps.pr_title.outputs.pr_title }}"
-          # echo "Title : ${{ steps.check_title.outputs.pr_title }}"
           if ! [[ $title =~ ^(FEATURE:|REFACT:|IMPROVE:|TEST:|DOC:|MAINT:|FIX:|CHORE:|CI:).* ]]; then
             echo "ERROR: Pull Request title does not start with one of the valid prefixes: FEATURE:, REFACT:, IMPROVE:, TEST:, DOC:, MAINT:, FIX:, CHORE:, or CI:"
             exit 1
