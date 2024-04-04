@@ -278,7 +278,7 @@ class PinGroup(object):
 
     @property
     def pins(self):
-        """Gets the pins inside the pin group."""
+        """Gets the pins belong to this pin group."""
         from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
         return {i.GetName(): EDBPadstackInstance(i, self._pedb) for i in list(self._edb_object.GetPins())}
 
