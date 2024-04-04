@@ -41,7 +41,7 @@ jobs:
                   title
                 }
               }
-            } )
+            }`)
             const title = response.repository.pullRequest.title;
             core.setOutput('pr_title', title)
 
