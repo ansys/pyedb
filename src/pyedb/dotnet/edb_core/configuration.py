@@ -505,14 +505,22 @@ class Configuration:
             comp_def_name = sp["component_definition"]
             comp_def = self._pedb.definitions.component[comp_def_name]
             comp_def.add_n_port_model(fpath, sp_name)
+            comp_list = dict()
             if sp["apply_to_all"]:
-                for refdes, comp in comp_def.components.items():
-                    if refdes not in sp["components"]:
-                        comp.use_s_parameter_model(sp_name)
+                comp_list.update(
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in sp["components"]})
             else:
-                for refdes, comp in comp_def.components.items():
-                    if refdes in sp["components"]:
-                        comp.use_s_parameter_model(sp_name)
+                comp_list.update(
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes in sp["components"]})
+
+            for refdes, comp in comp_list.items():
+                if "reference_net_per_component" in sp:
+                    ref_net_per_comp = sp["reference_net_per_component"]
+                    ref_net = ref_net_per_comp[refdes] if refdes in ref_net_per_comp else sp[
+                        "reference_net"]
+                else:
+                    ref_net = sp["reference_net"]
+                comp.use_s_parameter_model(sp_name, reference_net=ref_net)
 
     @pyedb_function_handler
     def _load_spice_models(self):
