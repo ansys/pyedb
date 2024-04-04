@@ -848,12 +848,11 @@ class Edb(Database):
         Examples
         --------
         >>> from pyedb.dotnet.edb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> edbapp.materials["FR4_epoxy"].conductivity = 1
-        >>> edbapp.materials.add_debye_material("My_Debye2", 5, 3, 0.02, 0.05, 1e5, 1e9)
-        >>> edbapp.materials.add_djordjevicsarkar_material("MyDjord2", 3.3, 0.02, 3.3)
+        >>> edbapp = Edb()
+        >>> edbapp.materials.add_material("air", permittivity=1.0)
+        >>> edbapp.materials.add_debye_material("debye_mat", 5, 3, 0.02, 0.05, 1e5, 1e9)
+        >>> edbapp.materials.add_djordjevicsarkar_material("djord_mat", 3.3, 0.02, 3.3)
         """
-
         if not self._materials and self.active_db:
             self._materials = Materials(self)
         return self._materials
