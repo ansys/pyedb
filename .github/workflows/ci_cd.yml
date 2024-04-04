@@ -64,7 +64,6 @@ jobs:
         run: |
           echo "pr_title: ${{ steps.pr_title.outputs.pr_title }}"
           echo "env.PR_TITLE: ${{ env.PR_TITLE }}"
-          echo "PR_TITLE: ${{ PR_TITLE }}"
           title="${{ steps.pr_title.outputs.pr_title }}"
           if ! [[ $title =~ ^(FEATURE:|REFACT:|IMPROVE:|TEST:|DOC:|MAINT:|FIX:|CHORE:|CI:).* ]]; then
             echo "ERROR: Pull Request title does not start with one of the valid prefixes: FEATURE:, REFACT:, IMPROVE:, TEST:, DOC:, MAINT:, FIX:, CHORE:, or CI:"
