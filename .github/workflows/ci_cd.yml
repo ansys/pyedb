@@ -45,7 +45,6 @@ jobs:
 
       - name: Get PR title
         uses: actions/github-script@v7
-        id: pr_title
         with:
           script: |
             const response = await github.graphql(`query {
@@ -56,17 +55,11 @@ jobs:
               }
             }`)
             const title = response.repository.pullRequest.title;
-            core.setOutput('pr_title', title)
             core.exportVariable('PR_TITLE', title);
 
       - name: Check PR title format
-        # env:
-        #   PR_TITLE: "${{ github.event.pull_request.title }}"
         run: |
-          echo "pr_title: ${{ steps.pr_title.outputs.pr_title }}"
-          echo "env.PR_TITLE: ${{ env.PR_TITLE }}"
-          title="${{ steps.pr_title.outputs.pr_title }}"
-          if ! [[ $title =~ ^(FEATURE:|REFACT:|IMPROVE:|TEST:|DOC:|MAINT:|FIX:|CHORE:|CI:).* ]]; then
+          if ! [[ ${{ env.PR_TITLE }} =~ ^(FEATURE:|REFACT:|IMPROVE:|TEST:|DOC:|MAINT:|FIX:|CHORE:|CI:).* ]]; then
             echo "ERROR: Pull Request title does not start with one of the valid prefixes: FEATURE:, REFACT:, IMPROVE:, TEST:, DOC:, MAINT:, FIX:, CHORE:, or CI:"
             exit 1
           fi
