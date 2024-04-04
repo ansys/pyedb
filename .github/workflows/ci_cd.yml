@@ -31,19 +31,11 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Extract information
-        run: |
-          echo "REPOSITORY_OWNER=${{ github.event.repository.owner.login }}" >> $GITHUB_ENV
-          echo "REPOSITORY_NAME=${{ github.event.repository.name }}" >> $GITHUB_ENV
-          echo "PULL_REQUEST_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-
-      - name: Show extracted information
-        run: |
-          echo "REPOSITORY_OWNER = ${{ env.REPOSITORY_OWNER }}"
-          echo "REPOSITORY_NAME = ${{ env.REPOSITORY_NAME }}"
-          echo "PULL_REQUEST_NUMBER = ${{ env.PULL_REQUEST_NUMBER }}"
-
       - name: Get PR title
+        env:
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
+          PULL_REQUEST_NUMBER: ${{ github.event.number }}
         uses: actions/github-script@v7
         with:
           script: |
@@ -56,7 +48,6 @@ jobs:
             }`)
             const title = response.repository.pullRequest.title;
             core.exportVariable('PR_TITLE', title);
-
       - name: Check PR title format
         run: |
           if ! [[ ${{ env.PR_TITLE }} =~ ^(FEATURE:|REFACT:|IMPROVE:|TEST:|DOC:|MAINT:|FIX:|CHORE:|CI:).* ]]; then
