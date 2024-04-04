@@ -31,13 +31,19 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
+      - name: Extract information
+        run: |
+          echo "REPOSITORY_OWNER=${{ github.event.repository.owner.login }}" >> $GITHUB_ENV
+          echo "REPOSITORY_NAME=${{ github.event.repository.name }}" >> $GITHUB_ENV
+          echo "PULL_REQUEST_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+
       - name: Get PR title
         uses: actions/github-script@v7
         with:
           script: |
             const response = await github.graphql(`query {
-              repository(owner: "${{ github.repository.owner }}", name: "${{ github.repository_name }}") {
-                pullRequest(number: ${{ github.event.pull_request.number }}) {
+              repository(owner: "${{ env.REPOSITORY_OWNER }}", name: "${{ env.REPOSITORY_NAME }}") {
+                pullRequest(number: ${{ env.PULL_REQUEST_NUMBER }}) {
                   title
                 }
               }
