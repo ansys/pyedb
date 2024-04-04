@@ -44,6 +44,7 @@ jobs:
           echo "PULL_REQUEST_NUMBER = ${{ env.PULL_REQUEST_NUMBER }}"
 
       - name: Get PR title
+        id: pr_title
         uses: actions/github-script@v7
         with:
           script: |
@@ -60,7 +61,9 @@ jobs:
 
       - name: Check PR title format
         run: |
-          title="${{ steps.check_title.outputs.pr_title }}"
+          # title="${{ steps.check_title.outputs.pr_title }}"
+          echo "Title : ${{ steps.pr_title.outputs.pr_title }}"
+          echo "Title : ${{ steps.check_title.outputs.pr_title }}"
           if ! [[ $title =~ ^(FEATURE:|REFACT:|IMPROVE:|TEST:|DOC:|MAINT:|FIX:|CHORE:|CI:).* ]]; then
             echo "ERROR: Pull Request title does not start with one of the valid prefixes: FEATURE:, REFACT:, IMPROVE:, TEST:, DOC:, MAINT:, FIX:, CHORE:, or CI:"
             exit 1
