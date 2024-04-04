@@ -30,6 +30,13 @@ jobs:
     name: Check PR title
     runs-on: ubuntu-latest
     steps:
+      - name: Display GITHUB_EVENT_PATH
+        run: |
+          echo "Env var GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
+      - name: Display PR_NAME
+        run: |
+          PR_NAME=$(jq -r '.pull_request.title' "$GITHUB_EVENT_PATH")
+          echo "PR name: $PR_NAME"
       - name: Check PR title format
         run: |
           PR_NAME=$(jq -r '.pull_request.title' "$GITHUB_EVENT_PATH")
