@@ -28,6 +28,7 @@ jobs:
 
   check_title:
     name: Check PR title
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Display GITHUB_EVENT_PATH
