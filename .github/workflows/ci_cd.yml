@@ -57,10 +57,11 @@ jobs:
             }`)
             const title = response.repository.pullRequest.title;
             core.setOutput('pr_title', title)
+            core.exportVariable(PR_TITLE, title);
 
       - name: Check PR title format
-        env:
-          PR_TITLE: "${{ github.event.pull_request.title }}"
+        # env:
+        #   PR_TITLE: "${{ github.event.pull_request.title }}"
         run: |
           echo "pr_title: ${{ steps.pr_title.outputs.pr_title }}"
           echo "env.PR_TITLE: ${{ env.PR_TITLE }}"
