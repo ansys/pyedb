@@ -33,8 +33,7 @@ jobs:
     steps:
       - name: Check PR title format
         run: |
-          title=$(echo "${{ github.event.pull_request.title }}")
-          if [[ ! $title =~ ^((FEATURE:)|(REFACT:)|(IMPROVE:)|(TEST:)|(DOC:)|(MAINT:)|(FIX:)|(CHORE:)|(CI:)) ]]; then
+          if ! [[ $title =~ ^(FEATURE:|REFACT:|IMPROVE:|TEST:|DOC:|MAINT:|FIX:|CHORE:|CI:).* ]]; then
             echo "ERROR: Pull Request title does not start with one of the valid prefixes: FEATURE:, REFACT:, IMPROVE:, TEST:, DOC:, MAINT:, FIX:, CHORE:, or CI:"
             exit 1
           fi
