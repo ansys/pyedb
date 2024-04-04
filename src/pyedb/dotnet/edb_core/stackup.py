@@ -1681,30 +1681,44 @@ class Stackup(object):
             mats = json_dict["materials"]
             for material in mats.values():
                 self._pedb.materials._load_materials(material)
-
         temp = {i: j for i, j in json_dict["layers"].items() if j["type"] in ["signal", "dielectric"]}
+        config_file_layers = list(temp.keys())
+        layout_layers = list(self.stackup_layers.keys())
+        renamed_layers = {}
+        if len(config_file_layers) == len(layout_layers):
+            for lay_ind in range(len(list(temp.keys()))):
+                if not config_file_layers[lay_ind] == layout_layers[lay_ind]:
+                    renamed_layers[layout_layers[lay_ind]] = config_file_layers[lay_ind]
         for name in list(self.stackup_layers.keys()):
+            layer = None
             if name in temp:
                 layer = temp[name]
-                default_layer = {
-                    "name": "default",
-                    "type": "signal",
-                    "material": "copper",
-                    "dielectric_fill": "fr4_epoxy",
-                    "thickness": 3.5e-05,
-                    "etch_factor": 0.0,
-                    "roughness_enabled": False,
-                    "top_hallhuray_nodule_radius": 0.0,
-                    "top_hallhuray_surface_ratio": 0.0,
-                    "bottom_hallhuray_nodule_radius": 0.0,
-                    "bottom_hallhuray_surface_ratio": 0.0,
-                    "side_hallhuray_nodule_radius": 0.0,
-                    "side_hallhuray_surface_ratio": 0.0,
-                    "upper_elevation": 0.0,
-                    "lower_elevation": 0.0,
-                    "color": [242, 140, 102],
-                }
-
+            elif name in renamed_layers:
+                layer = temp[renamed_layers[name]]
+                self.stackup_layers[name].name = renamed_layers[name]
+                name = renamed_layers[name]
+            else:  # Remove layers not in config file.
+                self.remove_layer(name)
+                self._logger.warning(f"Layer {name} were not found in configuration file, removing layer")
+            default_layer = {
+                "name": "default",
+                "type": "signal",
+                "material": "copper",
+                "dielectric_fill": "fr4_epoxy",
+                "thickness": 3.5e-05,
+                "etch_factor": 0.0,
+                "roughness_enabled": False,
+                "top_hallhuray_nodule_radius": 0.0,
+                "top_hallhuray_surface_ratio": 0.0,
+                "bottom_hallhuray_nodule_radius": 0.0,
+                "bottom_hallhuray_surface_ratio": 0.0,
+                "side_hallhuray_nodule_radius": 0.0,
+                "side_hallhuray_surface_ratio": 0.0,
+                "upper_elevation": 0.0,
+                "lower_elevation": 0.0,
+                "color": [242, 140, 102],
+            }
+            if layer:
                 if "color" in layer:
                     default_layer["color"] = layer["color"]
                 elif not layer["type"] == "signal":
@@ -1712,15 +1726,11 @@ class Stackup(object):
 
                 for k, v in layer.items():
                     default_layer[k] = v
-
                 self.stackup_layers[name]._load_layer(default_layer)
-            else:  # Remove layers not in config file.
-                self.remove_layer(name)
-
-        for layer_name, layer in temp.items():
+        for layer_name, layer in temp.items():  # looping over potential new layers to add
             if layer_name in self.stackup_layers:
                 continue  # if layer exist, skip
-
+            # adding layer
             default_layer = {
                 "name": "default",
                 "type": "signal",
