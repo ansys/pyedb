@@ -508,16 +508,17 @@ class Configuration:
             comp_list = dict()
             if sp["apply_to_all"]:
                 comp_list.update(
-                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in sp["components"]})
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in sp["components"]}
+                )
             else:
                 comp_list.update(
-                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes in sp["components"]})
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes in sp["components"]}
+                )
 
             for refdes, comp in comp_list.items():
                 if "reference_net_per_component" in sp:
                     ref_net_per_comp = sp["reference_net_per_component"]
-                    ref_net = ref_net_per_comp[refdes] if refdes in ref_net_per_comp else sp[
-                        "reference_net"]
+                    ref_net = ref_net_per_comp[refdes] if refdes in ref_net_per_comp else sp["reference_net"]
                 else:
                     ref_net = sp["reference_net"]
                 comp.use_s_parameter_model(sp_name, reference_net=ref_net)
