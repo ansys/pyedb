@@ -44,8 +44,10 @@ jobs:
           echo "PULL_REQUEST_NUMBER = ${{ env.PULL_REQUEST_NUMBER }}"
 
       - name: Get PR title
-        id: pr_title
         uses: actions/github-script@v7
+        id: pr_title
+        env:
+          PR_TITLE: ${{ steps.pr_title.outputs.pr_title }}
         with:
           script: |
             const response = await github.graphql(`query {
@@ -56,11 +58,13 @@ jobs:
               }
             }`)
             const title = response.repository.pullRequest.title;
-            core.setOutput('pr_title', title)
+            # core.setOutput('pr_title', title)
             console.log(title)
 
       - name: Check PR title format
         run: |
+          echo "${{ steps.pr_title.outputs.pr_title }}"
+          echo "${{ env.PR_TITLE }}"
           title="${{ steps.pr_title.outputs.pr_title }}"
           # echo "Title : ${{ steps.pr_title.outputs.pr_title }}"
           # echo "Title : ${{ steps.check_title.outputs.pr_title }}"
