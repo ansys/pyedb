@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import warnings
+
 from pyedb.generic.constants import NodeType, SourceType
 from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 
@@ -275,8 +277,15 @@ class PinGroup(object):
         self._component = value
 
     @property
+    def pins(self):
+        """Gets the pins inside the pin group."""
+        from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+        return {i.GetName(): EDBPadstackInstance(i, self._pedb) for i in list(self._edb_object.GetPins())}
+
+    @property
     def node_pins(self):
         """Node pins."""
+        warnings.warn("`node_pins` is deprecated. Use `pins` method instead.", DeprecationWarning)
         return self._node_pins
 
     @node_pins.setter
