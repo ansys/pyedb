@@ -57,7 +57,7 @@ jobs:
             }`)
             const title = response.repository.pullRequest.title;
             core.setOutput('pr_title', title)
-            core.exportVariable(PR_TITLE, title);
+            core.exportVariable('PR_TITLE', title);
 
       - name: Check PR title format
         # env:
