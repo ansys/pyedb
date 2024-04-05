@@ -26,6 +26,35 @@ concurrency:
 
 jobs:
 
+  check_title:
+    name: Check PR title
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get PR title
+        env:
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
+          PULL_REQUEST_NUMBER: ${{ github.event.number }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const response = await github.graphql(`query {
+              repository(owner: "${{ env.REPOSITORY_OWNER }}", name: "${{ env.REPOSITORY_NAME }}") {
+                pullRequest(number: ${{ env.PULL_REQUEST_NUMBER }}) {
+                  title
+                }
+              }
+            }`)
+            const title = response.repository.pullRequest.title;
+            core.exportVariable('PR_TITLE', title);
+      - name: Check PR title format
+        run: |
+          if ! [[ "${{ env.PR_TITLE }}" =~ ^(FEATURE:|REFACT:|IMPROVE:|TEST:|DOC:|MAINT:|FIX:|CHORE:|CI:).* ]]; then
+            echo "ERROR: Pull Request title does not start with one of the valid prefixes: FEATURE:, REFACT:, IMPROVE:, TEST:, DOC:, MAINT:, FIX:, CHORE:, or CI:"
+            exit 1
+          fi
+
   doc-style:
     name: Documentation style check
     runs-on: ubuntu-latest

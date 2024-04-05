@@ -24,7 +24,7 @@ import logging
 import re
 import warnings
 
-from pyedb.dotnet.edb_core.cell.hierarchy.model import PinPairModel
+from pyedb.dotnet.edb_core.cell.hierarchy.model import PinPairModel, SPICEModel
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.generic.general_methods import is_ironpython
@@ -222,6 +222,8 @@ class EDBComponent(object):
         model_type = edb_object.ToString().split(".")[-1]
         if model_type == "PinPairModel":
             return PinPairModel(self._pedb, edb_object)
+        elif model_type == "SPICEModel":
+            return SPICEModel(self._pedb, edb_object)
 
     @model.setter
     def model(self, value):
@@ -373,7 +375,7 @@ class EDBComponent(object):
 
     @property
     def solder_ball_diameter(self):
-        """Solder ball diameter"""
+        """Solder ball diameter."""
         if "GetSolderBallProperty" in dir(self.component_property):
             result = self.component_property.GetSolderBallProperty().GetDiameter()
             succeed = result[0]
@@ -848,6 +850,7 @@ class EDBComponent(object):
     @property
     def is_top_mounted(self):
         """Check if a component is mounted on top or bottom of the layout.
+
         Returns
         -------
         bool
@@ -912,7 +915,7 @@ class EDBComponent(object):
         return True
 
     @pyedb_function_handler()
-    def assign_spice_model(self, file_path, name=None):
+    def assign_spice_model(self, file_path, name=None, sub_circuit_name=None):
         """Assign Spice model to this component.
 
         Parameters
@@ -940,6 +943,8 @@ class EDBComponent(object):
             model = self._edb.cell.hierarchy._hierarchy.SPICEModel()
             model.SetModelPath(file_path)
             model.SetModelName(name)
+            if sub_circuit_name:
+                model.SetSubCkt(sub_circuit_name)
             terminal = 1
             for pn in pinNames:
                 model.AddTerminalPinPair(pn, str(terminal))

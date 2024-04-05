@@ -86,3 +86,20 @@ class SParameterModel(Model):
 
     def component_model_name(self):
         self._edb_object.GetComponentModelName()
+
+
+class SPICEModel(Model):
+    """Manages SPICE model class."""
+
+    def __init__(self, pedb, edb_object=None):
+        super().__init__(pedb, edb_object)
+
+    @property
+    def model_name(self):
+        """SPICE model name."""
+        return self._edb_object.GetModelName()
+
+    @property
+    def spice_file_path(self):
+        """SPICE file path."""
+        return self._edb_object.GetSPICEFilePath()
