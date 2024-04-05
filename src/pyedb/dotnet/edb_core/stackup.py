@@ -2185,7 +2185,7 @@ class Stackup(object):
         return True
 
     @pyedb_function_handler()
-    def load(self, file_path, mode=0):
+    def load(self, file_path, rename=False):
         """Import stackup from a file. The file format can be XML, CSV, or JSON.
 
 
