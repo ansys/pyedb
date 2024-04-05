@@ -1685,11 +1685,10 @@ class Stackup(object):
         config_file_layers = list(temp.keys())
         layout_layers = list(self.stackup_layers.keys())
         renamed_layers = {}
-        if mode == 1:
-            if len(config_file_layers) == len(layout_layers):
-                for lay_ind in range(len(list(temp.keys()))):
-                    if not config_file_layers[lay_ind] == layout_layers[lay_ind]:
-                        renamed_layers[layout_layers[lay_ind]] = config_file_layers[lay_ind]
+        if rename and len(config_file_layers) == len(layout_layers):
+            for lay_ind in range(len(list(temp.keys()))):
+                if not config_file_layers[lay_ind] == layout_layers[lay_ind]:
+                    renamed_layers[layout_layers[lay_ind]] = config_file_layers[lay_ind]
         for name in list(self.stackup_layers.keys()):
             layer = None
             if name in temp:
