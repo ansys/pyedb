@@ -337,7 +337,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         fpath = os.path.join(local_path, "example_models", test_subfolder, "stackup_renamed.json")
         edbapp = Edb(source_path, edbversion=desktop_version)
-        edbapp.stackup.load(fpath, mode=1)
+        edbapp.stackup.load(fpath, rename=True)
         assert "1_Top_renamed" in edbapp.stackup.layers
         assert "DE1_renamed" in edbapp.stackup.layers
         assert "16_Bottom_renamed" in edbapp.stackup.layers
