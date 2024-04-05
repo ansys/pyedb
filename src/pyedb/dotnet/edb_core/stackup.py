@@ -2215,7 +2215,7 @@ class Stackup(object):
         elif file_path.endswith(".csv"):
             return self._import_csv(file_path)
         elif file_path.endswith(".json"):
-            return self._import_json(file_path, mode=mode)
+            return self._import_json(file_path, rename=rename)
         elif file_path.endswith(".xml"):
             return self._import_xml(file_path, rename=rename)
         else:
