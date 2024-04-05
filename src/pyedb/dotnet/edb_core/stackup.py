@@ -2039,7 +2039,7 @@ class Stackup(object):
                     material["Conductivity"] = val.conductivity
             else:
                 material["Permittivity"] = val.permittivity
-                material["DielectricLossTangent"] = val.loss_tangent
+                material["DielectricLossTangent"] = val.dielectric_loss_tangent
             materials[name] = material
 
         return layers, materials, roughness_models, non_stackup_layers

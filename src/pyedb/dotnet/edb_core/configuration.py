@@ -472,6 +472,7 @@ class Configuration:
                 new_mat["conductivity"] = mat["conductivity"]
             if "permittivity" in mat:
                 new_mat["permittivity"] = mat["permittivity"]
+            # FIXME: Rename into dielectric_loss_tangent ?
             if "dielectricLoss_tangent" in mat:
                 new_mat["loss_tangent"] = mat["dielectricLoss_tangent"]
 

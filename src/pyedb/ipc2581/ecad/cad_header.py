@@ -44,6 +44,7 @@ class CadHeader(object):
         spec.conductivity = conductivity
         spec.dielectric_constant = dielectric_constant
         spec.layer_type = layer_type
+        # FIXME: Rename into dielectric_loss_tangent ?
         spec.loss_tangent = loss_tg
         spec.embedded = embedded
         self.specs.append(spec)

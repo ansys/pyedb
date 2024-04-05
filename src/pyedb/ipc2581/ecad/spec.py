@@ -32,6 +32,7 @@ class Spec(object):
         self.layer_type = ""
         self.conductivity = ""
         self.dielectric_constant = ""
+        # FIXME: Rename into dielectric_loss_tangent ?
         self.loss_tangent = ""
         self.embedded = ""
 
