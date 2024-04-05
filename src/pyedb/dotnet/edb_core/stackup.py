@@ -1669,7 +1669,7 @@ class Stackup(object):
         return temp_data
 
     @pyedb_function_handler()
-    def _import_dict(self, json_dict, mode=0):
+    def _import_dict(self, json_dict, rename=False):
         """Import stackup from a dictionary."""
         if not "materials" in json_dict:
             self._logger.warning("Configuration file does not have material definition")
