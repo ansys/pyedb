@@ -1805,7 +1805,7 @@ class Stackup(object):
         return True
 
     @pyedb_function_handler()
-    def _import_json(self, file_path, mode=0):
+    def _import_json(self, file_path, rename=False):
         """Import stackup from a json file."""
         if file_path:
             f = open(file_path)
