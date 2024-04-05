@@ -1810,7 +1810,7 @@ class Stackup(object):
         if file_path:
             f = open(file_path)
             json_dict = json.load(f)  # pragma: no cover
-            return self._import_dict(json_dict, mode)
+            return self._import_dict(json_dict, rename)
 
     @pyedb_function_handler()
     def _import_csv(self, file_path):
