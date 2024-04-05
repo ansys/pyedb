@@ -2130,7 +2130,7 @@ class Stackup(object):
                 if layer:
                     if layer["type"] == "signal" or layer["type"] == "dielectric":
                         stackup_dict["layers"][layer["name"]] = layer
-        return self._import_dict(stackup_dict, mode=mode)
+        return self._import_dict(stackup_dict, rename=rename)
 
     @pyedb_function_handler()
     def _export_xml(self, file_path):
