@@ -2083,7 +2083,7 @@ class Stackup(object):
         return True
 
     @pyedb_function_handler()
-    def _import_xml(self, file_path, mode=0):
+    def _import_xml(self, file_path, rename=False):
         """Read external xml file and convert into json file.
         You can use xml file to import layer stackup but using json file is recommended.
         see :class:`pyedb.dotnet.edb_core.edb_data.simulation_configuration.SimulationConfiguration´ class to
