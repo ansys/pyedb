@@ -134,13 +134,13 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx_copybutton",
     "sphinx_design",
-    "sphinx_jinja",
-    "recommonmark",
     "sphinx.ext.graphviz",
     "sphinx.ext.mathjax",
     "sphinx.ext.inheritance_diagram",
     "numpydoc",
     "ansys_sphinx_theme.extension.linkcode",
+    # TODO: Remove once we switch for new example format.
+    "recommonmark",
 ]
 
 # Intersphinx mapping
@@ -267,11 +267,11 @@ if os.name != "posix" and "PYEDB_CI_NO_EXAMPLES" not in os.environ:
             "thumbnail_size": (350, 350),
         }
 
-jinja_contexts = {
-    "main_toctree": {
-        "run_examples": config["run_examples"],
-    },
-}
+# jinja_contexts = {
+#     "main_toctree": {
+#         "run_examples": config["run_examples"],
+#     },
+# }
 # def prepare_jinja_env(jinja_env) -> None:
 #     """
 #     Customize the jinja env.
