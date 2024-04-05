@@ -1669,7 +1669,7 @@ class Stackup(object):
         return temp_data
 
     @pyedb_function_handler()
-    def _import_dict(self, json_dict):
+    def _import_dict(self, json_dict, mode=0):
         """Import stackup from a dictionary."""
         if not "materials" in json_dict:
             self._logger.warning("Configuration file does not have material definition")
@@ -1685,10 +1685,11 @@ class Stackup(object):
         config_file_layers = list(temp.keys())
         layout_layers = list(self.stackup_layers.keys())
         renamed_layers = {}
-        if len(config_file_layers) == len(layout_layers):
-            for lay_ind in range(len(list(temp.keys()))):
-                if not config_file_layers[lay_ind] == layout_layers[lay_ind]:
-                    renamed_layers[layout_layers[lay_ind]] = config_file_layers[lay_ind]
+        if mode == 1:
+            if len(config_file_layers) == len(layout_layers):
+                for lay_ind in range(len(list(temp.keys()))):
+                    if not config_file_layers[lay_ind] == layout_layers[lay_ind]:
+                        renamed_layers[layout_layers[lay_ind]] = config_file_layers[lay_ind]
         for name in list(self.stackup_layers.keys()):
             layer = None
             if name in temp:
@@ -1804,12 +1805,12 @@ class Stackup(object):
         return True
 
     @pyedb_function_handler()
-    def _import_json(self, file_path):
+    def _import_json(self, file_path, mode=0):
         """Import stackup from a json file."""
         if file_path:
             f = open(file_path)
             json_dict = json.load(f)  # pragma: no cover
-            return self._import_dict(json_dict)
+            return self._import_dict(json_dict, mode)
 
     @pyedb_function_handler()
     def _import_csv(self, file_path):
@@ -2082,7 +2083,7 @@ class Stackup(object):
         return True
 
     @pyedb_function_handler()
-    def _import_xml(self, file_path):
+    def _import_xml(self, file_path, mode=0):
         """Read external xml file and convert into json file.
         You can use xml file to import layer stackup but using json file is recommended.
         see :class:`pyedb.dotnet.edb_core.edb_data.simulation_configuration.SimulationConfiguration´ class to
@@ -2130,7 +2131,7 @@ class Stackup(object):
                 if layer:
                     if layer["type"] == "signal" or layer["type"] == "dielectric":
                         stackup_dict["layers"][layer["name"]] = layer
-        return self._import_dict(stackup_dict)
+        return self._import_dict(stackup_dict, mode=mode)
 
     @pyedb_function_handler()
     def _export_xml(self, file_path):
@@ -2184,7 +2185,7 @@ class Stackup(object):
         return True
 
     @pyedb_function_handler()
-    def load(self, file_path):
+    def load(self, file_path, mode=0):
         """Import stackup from a file. The file format can be XML, CSV, or JSON.
 
 
@@ -2192,6 +2193,10 @@ class Stackup(object):
         ----------
         file_path : str
             Path to stackup file.
+        mode : int
+            mode=`0` layer in layout not found in the stackup file are deleted and, mode=`1` if the number of layer
+            in the stackup file equals the number of stackup layer in the layout, layers are renamed according the the
+            file. Note that layer order matters, and has to be writtent from top to bottom layer in the file.
 
         Returns
         -------
@@ -2210,9 +2215,9 @@ class Stackup(object):
         elif file_path.endswith(".csv"):
             return self._import_csv(file_path)
         elif file_path.endswith(".json"):
-            return self._import_json(file_path)
+            return self._import_json(file_path, mode=mode)
         elif file_path.endswith(".xml"):
-            return self._import_xml(file_path)
+            return self._import_xml(file_path, mode=mode)
         else:
             return False
 
