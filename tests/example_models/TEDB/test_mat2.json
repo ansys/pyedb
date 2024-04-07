@@ -3,7 +3,7 @@
         "AIR": {
             "name": "AIR",
             "conductivity": 0.0,
-            "loss_tangent": 0.0,
+            "dielectric_loss_tangent": 0.0,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 1.0,
@@ -22,7 +22,7 @@
         "BOTTOM_FILL": {
             "name": "BOTTOM_FILL",
             "conductivity": 0.0,
-            "loss_tangent": 0.0,
+            "dielectric_loss_tangent": 0.0,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 4.5,
@@ -41,7 +41,7 @@
         "COPPER": {
             "name": "COPPER",
             "conductivity": 59590000.0,
-            "loss_tangent": 0.0,
+            "dielectric_loss_tangent": 0.0,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 0.0,
@@ -60,7 +60,7 @@
         "COPPER_1": {
             "name": "COPPER_1",
             "conductivity": 59590000.0,
-            "loss_tangent": 0.0,
+            "dielectric_loss_tangent": 0.0,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 0.0,
@@ -79,7 +79,7 @@
         "FR-4": {
             "name": "FR-4",
             "conductivity": 0.0,
-            "loss_tangent": 0.024,
+            "dielectric_loss_tangent": 0.024,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 3.86,
@@ -98,7 +98,7 @@
         "FR-4_1": {
             "name": "FR-4_1",
             "conductivity": 0.0,
-            "loss_tangent": 0.035,
+            "dielectric_loss_tangent": 0.035,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 4.5,
@@ -117,7 +117,7 @@
         "FR-4_2": {
             "name": "FR-4_2",
             "conductivity": 0.0,
-            "loss_tangent": 0.018,
+            "dielectric_loss_tangent": 0.018,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 4.34,
@@ -136,7 +136,7 @@
         "FR-4_3": {
             "name": "FR-4_3",
             "conductivity": 0.0,
-            "loss_tangent": 0.024,
+            "dielectric_loss_tangent": 0.024,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 3.86,
@@ -155,7 +155,7 @@
         "FR4_epoxy_DS": {
             "name": "FR4_epoxy_DS",
             "conductivity": 0.0,
-            "loss_tangent": 0.02,
+            "dielectric_loss_tangent": 0.02,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 1900.0,
             "permittivity": 4.4,
@@ -174,7 +174,7 @@
         "GND_FILL": {
             "name": "GND_FILL",
             "conductivity": 0.0,
-            "loss_tangent": 0.035,
+            "dielectric_loss_tangent": 0.035,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 4.5,
@@ -193,7 +193,7 @@
         "LYR_1_FILL": {
             "name": "LYR_1_FILL",
             "conductivity": 0.0,
-            "loss_tangent": 0.035,
+            "dielectric_loss_tangent": 0.035,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 4.5,
@@ -212,7 +212,7 @@
         "LYR_2_FILL": {
             "name": "LYR_2_FILL",
             "conductivity": 0.0,
-            "loss_tangent": 0.035,
+            "dielectric_loss_tangent": 0.035,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 4.5,
@@ -231,7 +231,7 @@
         "myMaterial": {
             "name": "myMaterial",
             "conductivity": 100.0,
-            "loss_tangent": 0.0,
+            "dielectric_loss_tangent": 0.0,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 4.1,
@@ -250,7 +250,7 @@
         "pec": {
             "name": "pec",
             "conductivity": 1e+30,
-            "loss_tangent": 0.0,
+            "dielectric_loss_tangent": 0.0,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 0.0,
@@ -269,7 +269,7 @@
         "PWR_FILL": {
             "name": "PWR_FILL",
             "conductivity": 0.0,
-            "loss_tangent": 0.035,
+            "dielectric_loss_tangent": 0.035,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 4.5,
@@ -288,7 +288,7 @@
         "solder": {
             "name": "solder",
             "conductivity": 7000000.0,
-            "loss_tangent": 0.0,
+            "dielectric_loss_tangent": 0.0,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 8000.0,
             "permittivity": 0.0,
@@ -307,7 +307,7 @@
         "TOP_FILL": {
             "name": "TOP_FILL",
             "conductivity": 0.0,
-            "loss_tangent": 0.0,
+            "dielectric_loss_tangent": 0.0,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 4.5,
@@ -326,7 +326,7 @@
         "vacuum": {
             "name": "vacuum",
             "conductivity": 0.0,
-            "loss_tangent": 0.0,
+            "dielectric_loss_tangent": 0.0,
             "magnetic_loss_tangent": 0.0,
             "mass_density": 0.0,
             "permittivity": 1.0,

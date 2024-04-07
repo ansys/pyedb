@@ -966,7 +966,7 @@ class TestClass:
             if not material["dielectric_model_frequency"]:
                 assert (pedb_mat.conductivity - material["conductivity"]) < delta
                 assert (pedb_mat.permittivity - material["permittivity"]) < delta
-                assert (pedb_mat.loss_tangent - material["dielectric_loss_tangent"]) < delta
+                assert (pedb_mat.dielectric_loss_tangent - material["dielectric_loss_tangent"]) < delta
                 assert (pedb_mat.permeability - material["permeability"]) < delta
                 assert (pedb_mat.magnetic_loss_tangent - material["magnetic_loss_tangent"]) < delta
             assert (pedb_mat.mass_density - material["mass_density"]) < delta
