@@ -241,6 +241,65 @@ class EdbLayout(object):
         return objinst
 
     @pyedb_function_handler()
+    def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):
+        """Return primitive given coordinate point [x, y], layer name and nets.
+
+        Parameters
+        ----------
+        point : list
+            Coordinate [x, y]
+
+        layer : list or str, optional
+            list of layer name or layer name applied on filter.
+
+        nets : list or str, optional
+            list of net name or single net name applied on filter
+
+        Returns
+        -------
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+            List of primitives, polygons, paths and rectangles.
+        """
+        if isinstance(layer, str):
+            if layer not in list(self._pedb.stackup.signal_layers.keys()):
+                layer = None
+        if not isinstance(point, list) and len(point) == 2:
+            return False
+        pt = self._edb.geometry.point_data(point[0], point[1])
+        if isinstance(nets, str):
+            nets = [nets]
+        elif nets and not isinstance(nets, list) and len(nets) == len([net for net in nets if isinstance(net, str)]):
+            _nets = []
+            for net in nets:
+                if net not in self._pedb.nets:
+                    self._logger.error(
+                        f"Net {net} used to find primitive from layer point and net not found, skipping " f"net"
+                    )
+                else:
+                    _nets.append(self._pedb.nets[net].net_obj)
+            if _nets:
+                nets = _nets
+        _obj_instances = list(self._pedb.layout_instance.FindLayoutObjInstance(pt, None, nets).Items)
+        returned_obj = []
+        if layer:
+            selected_obj = [obj for obj in _obj_instances if layer in [lay.GetName() for lay in list(obj.GetLayers())]]
+            for obj in selected_obj:
+                prim = obj.GetLayoutObj()
+                obj_id = prim.GetId()
+                prim_type = str(prim.GetPrimitiveType())
+                if prim_type == "Polygon":
+                    [returned_obj.append(p) for p in [poly for poly in self.polygons if poly.id == obj_id]]
+                elif prim_type == "Path":
+                    [returned_obj.append(p) for p in [t for t in self.paths if t.id == obj_id]]
+                elif prim_type == "Rectangle":
+                    [returned_obj.append(p) for p in [t for t in self.rectangles if t.id == obj_id]]
+        else:
+            for obj in _obj_instances:
+                obj_id = obj.GetLayoutObj().GetId()
+                map(lambda p: returned_obj.append(p), [obj for obj in self.primitives if obj.id == obj_id])
+        return returned_obj
+
+    @pyedb_function_handler()
     def get_polygon_bounding_box(self, polygon):
         """Retrieve a polygon bounding box.
 
