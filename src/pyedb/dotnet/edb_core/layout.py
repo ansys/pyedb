@@ -273,7 +273,7 @@ class EdbLayout(object):
             for net in nets:
                 if net not in self._pedb.nets:
                     self._logger.error(
-                        f"Net {net} used to find primitive from layer point and net not found, skipping " f"net"
+                        f"Net {net} used to find primitive from layer point and net not found, skipping it."
                     )
                 else:
                     _nets.append(self._pedb.nets[net].net_obj)
