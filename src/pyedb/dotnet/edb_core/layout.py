@@ -296,7 +296,7 @@ class EdbLayout(object):
         else:
             for obj in _obj_instances:
                 obj_id = obj.GetLayoutObj().GetId()
-                map(lambda p: returned_obj.append(p), [obj for obj in self.primitives if obj.id == obj_id])
+                [returned_obj.append(p) for p in [obj for obj in self.primitives if obj.id == obj_id]]
         return returned_obj
 
     @pyedb_function_handler()
