@@ -263,6 +263,7 @@ class EdbLayout(object):
         if isinstance(layer, str) and layer not in list(self._pedb.stackup.signal_layers.keys()):
             layer = None
         if not isinstance(point, list) and len(point) == 2:
+            self._logger.error("Provided point must be a list of two values")
             return False
         pt = self._edb.geometry.point_data(point[0], point[1])
         if isinstance(nets, str):
