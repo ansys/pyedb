@@ -2193,9 +2193,10 @@ class Stackup(object):
         file_path : str
             Path to stackup file.
         rename : bool
-            If rename is ``False`` then layer in layout not found in the stackup file are deleted. Otherwise, if the number of layer
-            in the stackup file equals the number of stackup layer in the layout, layers are renamed according the the
-            file. Note that layer order matters, and has to be writtent from top to bottom layer in the file.
+            If rename is ``False`` then layer in layout not found in the stackup file are deleted.
+            Otherwise, if the number of layer in the stackup file equals the number of stackup layer
+            in the layout, layers are renamed according the the file.
+            Note that layer order matters, and has to be writtent from top to bottom layer in the file.
 
         Returns
         -------
