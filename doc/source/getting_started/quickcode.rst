@@ -22,7 +22,7 @@ This code shows how to use PyEDB to load an existing AEDB file into memory:
 
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2024.1")
 
 Connect to EDB from a Python IDE
 --------------------------------
@@ -41,7 +41,7 @@ Explicit PyEDB declaration and error management
     from pyedb.dotnet.edb import Edb
 
     edb_file = pyedb.layout_examples.ANSYS - HSD_V1.aedb
-    edb = Edb(edbversion="2023.2", edbpath=edb_file)
+    edb = Edb(edbversion="2024.1", edbpath=edb_file)
 
 
 Variables
@@ -52,6 +52,6 @@ Variables
     from pyedb.dotnet.edb import Edb
 
     edb_file = pyedb.layout_examples.ANSYS - HSD_V1.aedb
-    edb = Edb(edbversion="2023.2", edbpath=edb_file)
+    edb = Edb(edbversion="2024.1", edbpath=edb_file)
     edb["dim"] = "1mm"  # design variable
     edb["$dim"] = "1mm"  # project variable
