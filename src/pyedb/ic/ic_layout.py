@@ -24,16 +24,16 @@ import os
 
 import pya
 
-from pyedb.ic.gds_data import ICLayerData, ICLayoutData
+from pyedb.ic.gds_data import CellData, ICLayerData, ICLayoutData
 
 
 class ICLayout:
     def __init__(self, gds_file, layermap=None):
         self.editable = True
         self._klayout = pya.Layout(self.editable)
-        self._cells = {}
+        # self._cells = {}
         self._layermap = layermap
-        self.db = ICLayoutData(klayout=self._klayout, layers=[])
+        self.db = ICLayoutData(klayout=self._klayout, layers=[], cells={})
         if layermap:
             if os.path.splitext(layermap)[-1] == ".layermap":
                 self._read_layer_map()
@@ -41,16 +41,16 @@ class ICLayout:
             self._klayout.read(gds_file)
             self._read_layer_info()
         self._top_cells = self._klayout.top_cells()
-        self._get_layout_cells()
+        self._get_cells()
         self._update_layers()
 
     @property
     def top_cells(self):
         return self._top_cells
 
-    @property
-    def cells(self):
-        return self._cells
+    # @property
+    # def cells(self):
+    #    return self._cells
 
     def _read_layer_info(self):
         for layer_index in range(self._klayout.layers()):
@@ -84,11 +84,11 @@ class ICLayout:
         for top_cell in self._top_cells:
             self.db.layers = [layer for layer in self.db.layers if not layer.shapes[top_cell.name].is_empty]
 
-    def _get_layout_cells(self):
+    def _get_cells(self):
         for cell in self._klayout.each_cell():
             if not cell.is_ghost_cell() and not cell.name in [top_cell.name for top_cell in self._top_cells]:
-                if not cell.name in self._cells:
-                    self._cells[cell.name] = cell
+                if not cell.name in self.db.cells:
+                    self.db.cells[cell.name] = CellData(self._klayout, cell.name)
 
     def save(self, file_name=None):
         if file_name:

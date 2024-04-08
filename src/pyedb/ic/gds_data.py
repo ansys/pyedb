@@ -24,11 +24,6 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Cell:
-    cells: dict
-
-
-@dataclass
 class CellShapes:
     polygons: list
     paths: list
@@ -55,9 +50,10 @@ class CellShapes:
 
 
 class ICLayoutData:
-    def __init__(self, klayout, layers):
+    def __init__(self, klayout, layers, cells):
         self._klayout = klayout
         self._layers = layers
+        self._cells = cells
 
     @property
     def layers(self):
@@ -67,6 +63,71 @@ class ICLayoutData:
     def layers(self, value):
         if isinstance(value, list):
             self._layers = value
+
+    @property
+    def cells(self):
+        return self._cells
+
+    @cells.setter
+    def cells(self, value):
+        if isinstance(value, list):
+            self._cells = value
+
+
+class CellData:
+    def __init__(self, klayout, name, skip_labels=True):
+        self._klayout = klayout
+        self._name = name
+        self._skip_labels = skip_labels
+        self._shapes = {}
+        self._layer_info = {}
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        if isinstance(value, str):
+            pass
+
+    @property
+    def kcell(self):
+        return self._klayout.cell(self.name)
+
+    @property
+    def layer_info(self):
+        if not self._layer_info:
+            for layer_index in range(self._klayout.layers()):
+                layer_info = self._klayout.get_info(layer_index)
+                if not layer_info.layer == -1:
+                    if not layer_info.name in self._layer_info:
+                        self._layer_info[layer_info.name] = (layer_info.layer, layer_info.datatype)
+        return self._layer_info
+
+    @property
+    def bbox(self):
+        return self.kcell.dbbox()
+
+    @property
+    def shapes(self):
+        if not self._shapes:
+            for layer_name, layer in self.layer_info.items():
+                layer = self._klayout.layer(int(layer[0]), int(layer[1]))
+                shape_list = self.kcell.shapes(layer)
+                cell = CellShapes(polygons=[], paths=[], labels=[], boxes=[], pins=[], nets=[])
+                for shape in shape_list.each():
+                    if shape.is_box():
+                        cell.boxes.append(shape)
+                    if not self._skip_labels:
+                        if shape.is_text():
+                            cell.labels.append(shape)
+                    if shape.is_polygon():
+                        cell.polygons.append(shape)
+                    if shape.is_path():
+                        cell.paths.append(shape)
+                self._shapes[layer] = cell
+        return self._shapes
 
 
 class ICLayerData:
@@ -138,6 +199,9 @@ class ICLayerData:
     def skip_labels(self, value):
         if isinstance(value, bool):
             self._skip_labels = value
+
+    def _update_cell_shapes(self, kcell):
+        pass
 
     def _update_shapes(self):
         self._shapes = {}
