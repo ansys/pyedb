@@ -118,6 +118,8 @@ class TestClass:
         # TODO: Moves this piece of code in another place
         assert self.edbapp.siwave.create_voltage_source_on_pin_group("sink_pos", "gnd", name="vrm_voltage_source")
         self.edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["A27", "A28"], group_name="vp_pos")
+        assert self.edbapp.siwave.pin_groups["vp_pos"]
+        assert self.edbapp.siwave.pin_groups["vp_pos"].pins
         self.edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["R23", "P23"], group_name="vp_neg")
         assert self.edbapp.siwave.create_voltage_probe_on_pin_group("vprobe", "vp_pos", "vp_neg")
         assert self.edbapp.probes["vprobe"]
@@ -1387,11 +1389,11 @@ class TestClass:
             "dielectric_base_polygon": self.edbapp.modeler.polygons[1],
             "dielectric_extent_size": 0.1,
             "dielectric_extent_size_enabled": False,
-            "dielectric_extent_type": "Conforming",
-            "extent_type": "Conforming",
+            "dielectric_extent_type": "conforming",
+            "extent_type": "conforming",
             "honor_user_dielectric": False,
             "is_pml_visible": False,
-            "open_region_type": "PML",
+            "open_region_type": "pml",
             "operating_freq": "2GHz",
             "radiation_level": 1,
             "sync_air_box_vertical_extent": False,

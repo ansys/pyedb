@@ -375,7 +375,7 @@ class EDBComponent(object):
 
     @property
     def solder_ball_diameter(self):
-        """Solder ball diameter"""
+        """Solder ball diameter."""
         if "GetSolderBallProperty" in dir(self.component_property):
             result = self.component_property.GetSolderBallProperty().GetDiameter()
             succeed = result[0]
@@ -850,6 +850,7 @@ class EDBComponent(object):
     @property
     def is_top_mounted(self):
         """Check if a component is mounted on top or bottom of the layout.
+
         Returns
         -------
         bool

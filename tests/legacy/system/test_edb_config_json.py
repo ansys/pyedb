@@ -70,7 +70,7 @@ class TestClass:
 
     def test_02_pin_groups(self):
         edbapp = Edb(str(self.local_edb), desktop_version)
-        assert edbapp.configuration.load(self.local_input_folder / "pin_groups.json", apply_file=True)
+        assert edbapp.configuration.load(str(self.local_input_folder / "pin_groups.json"), apply_file=True)
         edbapp.close()
 
     def test_03_spice_models(self):
@@ -87,7 +87,7 @@ class TestClass:
 
     def test_04_nets(self):
         edbapp = Edb(str(self.local_edb), desktop_version)
-        assert edbapp.configuration.load(self.local_input_folder / "nets.json", apply_file=True)
+        assert edbapp.configuration.load(str(self.local_input_folder / "nets.json"), apply_file=True)
         assert edbapp.nets["1.2V_DVDDL"].is_power_ground
         assert not edbapp.nets["SFPA_VCCR"].is_power_ground
         edbapp.close()
@@ -95,14 +95,14 @@ class TestClass:
     def test_05_ports(self):
         edbapp = Edb(str(self.local_edb), desktop_version)
         assert edbapp.configuration.load(
-            self.local_input_folder / "ports_coax.json",
+            str(self.local_input_folder / "ports_coax.json"),
             apply_file=True,
             output_file=str(os.path.join(self.local_scratch.path, "exported_1.aedb")),
             open_at_the_end=False,
         )
         assert Path(self.local_scratch.path, "exported_1.aedb").exists()
         assert edbapp.configuration.load(
-            self.local_input_folder / "ports_circuit.json",
+            str(self.local_input_folder / "ports_circuit.json"),
             apply_file=True,
             output_file=str(os.path.join(self.local_scratch.path, "exported_2.aedb")),
             open_at_the_end=True,
@@ -117,4 +117,33 @@ class TestClass:
 
         edbapp = Edb(str(self.local_edb), desktop_version)
         assert edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
+    def test_07_boundaries(self):
+        with open(self.local_input_folder / "boundaries.json") as f:
+            data = json.load(f)
+
+        edbapp = Edb(str(self.local_edb), desktop_version)
+        assert edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
+    def test_08a_operations_cutout(self):
+        with open(self.local_input_folder / "operations_cutout.json") as f:
+            data = json.load(f)
+
+        edbapp = Edb(str(self.local_edb), desktop_version)
+        assert edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
+    def test_09_padstacks(self):
+        with open(self.local_input_folder / "padstacks.json") as f:
+            data = json.load(f)
+
+        edbapp = Edb(str(self.local_edb), desktop_version)
+        assert edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
+    def test_10_general(self):
+        edbapp = Edb(str(self.local_edb), desktop_version)
+        assert edbapp.configuration.load(str(self.local_input_folder / "general.toml"), apply_file=True)
         edbapp.close()
