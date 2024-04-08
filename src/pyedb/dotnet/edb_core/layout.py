@@ -260,9 +260,8 @@ class EdbLayout(object):
         list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of primitives, polygons, paths and rectangles.
         """
-        if isinstance(layer, str):
-            if layer not in list(self._pedb.stackup.signal_layers.keys()):
-                layer = None
+        if isinstance(layer, str) and layer not in list(self._pedb.stackup.signal_layers.keys()):
+            layer = None
         if not isinstance(point, list) and len(point) == 2:
             return False
         pt = self._edb.geometry.point_data(point[0], point[1])
