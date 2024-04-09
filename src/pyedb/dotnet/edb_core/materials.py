@@ -823,6 +823,19 @@ class Materials(object):
         material_def.Delete()
         del self.__materials[material_name]
 
+    def update_material(self, material_name, input_dict):
+        material = self[material_name]
+        attributes_input_dict = {key: val for (key,val) in input_dict.items() if key in ATTRIBUTES}
+        if attributes_input_dict:
+            material.update(attributes_input_dict)
+
+        dc_attributes_input_dict = {key: val for (key,val) in input_dict.items() if key in DC_ATTRIBUTES}
+        if dc_attributes_input_dict:
+            material.update(dc_attributes_input_dict)
+
+        self.__materials[material_name] = material
+        return material
+
     # @pyedb_function_handler()
     # def load_material(self, material):
     #     """
