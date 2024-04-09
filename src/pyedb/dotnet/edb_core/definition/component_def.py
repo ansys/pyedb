@@ -153,6 +153,15 @@ class EDBComponentDef(ObjBase):
         return True
 
     @property
+    def reference_file(self):
+        ref_files = []
+        for comp_model in self._comp_model:
+            model_type = str(comp_model.GetComponentModelType())
+            if model_type == "NPortComponentModel" or model_type == "DynamicLinkComponentModel":
+                ref_files.append(comp_model.GetReferenceFile())
+        return ref_files
+
+    @property
     def component_models(self):
         temp = {}
         for i in list(self._edb_object.GetComponentModels()):
