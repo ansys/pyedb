@@ -1,10 +1,11 @@
-from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.generic.constants import NodeType
-from pyedb.generic.constants import SourceType
 import ansys.edb.core.terminal as edb_terminal
 import ansys.edb.core.utility as edb_utility
-#from ansys.edb.terminal.terminals import BoundaryType
-#from ansys.edb.utility.value import Value
+
+from pyedb.generic.constants import NodeType, SourceType
+from pyedb.generic.general_methods import pyedb_function_handler
+
+# from ansys.edb.terminal.terminals import BoundaryType
+# from ansys.edb.utility.value import Value
 
 
 class Node(object):

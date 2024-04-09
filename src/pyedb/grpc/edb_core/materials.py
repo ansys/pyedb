@@ -4,14 +4,15 @@ import difflib
 import logging
 import warnings
 
-
-from pyedb.generic.general_methods import pyedb_function_handler
 import ansys.edb.core.definition as definition
 import ansys.edb.core.utility as utility
-#from ansys.edb.definition.material_def import MaterialDef
-#from ansys.edb.definition.djordjecvic_sarkar_model import DjordjecvicSarkarModel
-#from ansys.edb.definition.multipole_debye_model import MultipoleDebyeModel
-#from ansys.edb.definition.debye_model import DebyeModel
+
+from pyedb.generic.general_methods import pyedb_function_handler
+
+# from ansys.edb.definition.material_def import MaterialDef
+# from ansys.edb.definition.djordjecvic_sarkar_model import DjordjecvicSarkarModel
+# from ansys.edb.definition.multipole_debye_model import MultipoleDebyeModel
+# from ansys.edb.definition.debye_model import DebyeModel
 logger = logging.getLogger(__name__)
 
 
@@ -38,7 +39,6 @@ class Material(object):
         self._dielectric_model_frequency = 0.0
         self._loss_tangent_at_frequency = 0.0
         self._permittivity_at_frequency = 0.0
-
 
     @property
     def name(self):
@@ -239,12 +239,16 @@ class Material(object):
     @property
     def thermal_expansion_coefficient(self):
         """Retrieve material Thermal Coefficient.."""
-        self._thermal_expansion_coefficient = self._get_property(definition.MaterialProperty.THERMAL_EXPANSION_COEFFICIENT)
+        self._thermal_expansion_coefficient = self._get_property(
+            definition.MaterialProperty.THERMAL_EXPANSION_COEFFICIENT
+        )
         return self._thermal_expansion_coefficient
 
     @thermal_expansion_coefficient.setter
     def thermal_expansion_coefficient(self, value):
-        self._edb_material_def.set_property(definition.MaterialProperty.THERMAL_EXPANSION_COEFFICIENT, utility.Value(value))
+        self._edb_material_def.set_property(
+            definition.MaterialProperty.THERMAL_EXPANSION_COEFFICIENT, utility.Value(value)
+        )
         self._thermal_expansion_coefficient = value
 
     @pyedb_function_handler()
@@ -542,8 +546,9 @@ class Materials(object):
         material_def = definition.DebyeModel()
         material_def.frequency_range = (lower_freqency, higher_frequency)
         material_def.loss_tangent_at_high_low_frequency = (loss_tangent_low, loss_tangent_high)
-        material_def.relative_permitivity_at_high_low_frequency = (utility.Value(permittivity_low),
-                                                                   utility.Value(permittivity_high)
+        material_def.relative_permitivity_at_high_low_frequency = (
+            utility.Value(permittivity_low),
+            utility.Value(permittivity_high),
         )
         return self._add_dielectric_material_model(name, material_def)
 
@@ -644,7 +649,9 @@ class Materials(object):
             edb_material.set_property(definition.MaterialProperty.CONDUCTIVITY, conductivity)
             edb_material.set_property(definition.MaterialProperty.DIELECTRIC_LOSS_TANGENT, dielectric_loss_tangent)
             edb_material.set_property(definition.MaterialProperty.THERMAL_CONDUCTIVITY, thermal_conductivity)
-            edb_material.set_property(definition.MaterialProperty.THERMAL_EXPANSION_COEFFICIENT, thermal_expansion_coefficient)
+            edb_material.set_property(
+                definition.MaterialProperty.THERMAL_EXPANSION_COEFFICIENT, thermal_expansion_coefficient
+            )
             edb_material.set_property(definition.MaterialProperty.MASS_DENSITY, mass_density)
             edb_material.set_property(definition.MaterialProperty.YOUNGS_MODULUS, youngs_modulus)
             edb_material.set_property(definition.MaterialProperty.POISSONS_RATIO, poisson_ratio)

@@ -1,6 +1,6 @@
 from ansys.edb.core.utility import Value
+
 from pyedb.generic.general_methods import pyedb_function_handler
-from ansys.edb.core.utility import Value
 
 
 class HfssExtentInfo:

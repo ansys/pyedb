@@ -2,11 +2,11 @@ from __future__ import absolute_import
 
 import re
 
-from pyedb.generic.general_methods import pyedb_function_handler
-import ansys.edb.core.utility as utility
-import ansys.edb.core.layer as layer
-
 import ansys.edb.core.definition as definition
+import ansys.edb.core.layer as layer
+import ansys.edb.core.utility as utility
+
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class LayerEdbClass(object):
@@ -65,7 +65,7 @@ class LayerEdbClass(object):
     @color.setter
     def color(self, rgb):
         layer_clone = self._edb_layer
-        layer_clone.color = (rgb)
+        layer_clone.color = rgb
         self._pclass._set_layout_stackup(layer_clone, "change_attribute")
         self._color = rgb
 
