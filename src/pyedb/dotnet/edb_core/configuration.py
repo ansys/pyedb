@@ -26,6 +26,7 @@ from pathlib import Path
 
 import toml
 
+from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.generic.general_methods import pyedb_function_handler
 
 
@@ -691,7 +692,6 @@ class Configuration:
             name = pkgd["name"]
             if name in self._pedb.definitions.package:
                 self._pedb.definitions.package[name].delete()
-            from pyedb.dotnet.edb_core.definition.package_def import PackageDef
             package_def = PackageDef(self._pedb, name=name)
             package_def.maximum_power = pkgd["maximum_power"]
             package_def.therm_cond = pkgd["therm_cond"]
