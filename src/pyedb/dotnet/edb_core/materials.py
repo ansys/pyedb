@@ -800,9 +800,7 @@ class Materials(object):
             raise ValueError(f"Material {material_name} does not exist in material library.")
 
         material = self[material_name]
-        attributes_input_dict = {
-            key: val for (key, val) in input_dict.items() if key in ATTRIBUTES + DC_ATTRIBUTES
-        }
+        attributes_input_dict = {key: val for (key, val) in input_dict.items() if key in ATTRIBUTES + DC_ATTRIBUTES}
         if attributes_input_dict:
             material.update(attributes_input_dict)
         self.__materials[material_name] = material
