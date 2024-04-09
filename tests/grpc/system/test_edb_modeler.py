@@ -2,6 +2,7 @@
 """
 
 import os
+
 import pytest
 
 from pyedb.dotnet.edb import Edb

@@ -5,31 +5,35 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 import os
 import time
 
-from pyedb.grpc.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-from pyedb.grpc.edb_core.edb_data.simulation_configuration import SourceType
-from pyedb.grpc.edb_core.edb_data.sources import CircuitPort
-from pyedb.grpc.edb_core.edb_data.sources import CurrentSource
-from pyedb.grpc.edb_core.edb_data.sources import DCTerminal
-from pyedb.grpc.edb_core.edb_data.sources import PinGroup
-from pyedb.grpc.edb_core.edb_data.sources import ResistorSource
-from pyedb.grpc.edb_core.edb_data.sources import VoltageSource
-from pyedb.generic.constants import SolverType
-from pyedb.generic.constants import SweepType
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.modeler.geometry_operators import GeometryOperators
-import ansys.edb.core.terminal as edb_terminal
-import ansys.edb.core.utility as edb_utility
 import ansys.edb.core.geometry as edb_geometry
 import ansys.edb.core.hierarchy as edb_hierarchy
 import ansys.edb.core.net.net as edb_net
-#from ansys.edb.terminal.terminals import PadstackInstanceTerminal
-#from ansys.edb.terminal.terminals import BoundaryType
-#from ansys.edb.utility.value import Value
-#from ansys.edb.utility.rlc import Rlc
-#from ansys.edb.geometry.point_data import PointData
-#from ansys.edb.terminal.terminals import PointTerminal, PinGroupTerminal
-#from ansys.edb.hierarchy.pin_group import PinGroup
+import ansys.edb.core.terminal as edb_terminal
+import ansys.edb.core.utility as edb_utility
+
+from pyedb.generic.constants import SolverType, SweepType
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+from pyedb.grpc.edb_core.edb_data.simulation_configuration import (
+    SimulationConfiguration,
+    SourceType,
+)
+from pyedb.grpc.edb_core.edb_data.sources import (
+    CircuitPort,
+    CurrentSource,
+    DCTerminal,
+    PinGroup,
+    ResistorSource,
+    VoltageSource,
+)
+from pyedb.modeler.geometry_operators import GeometryOperators
+
+# from ansys.edb.terminal.terminals import PadstackInstanceTerminal
+# from ansys.edb.terminal.terminals import BoundaryType
+# from ansys.edb.utility.value import Value
+# from ansys.edb.utility.rlc import Rlc
+# from ansys.edb.geometry.point_data import PointData
+# from ansys.edb.terminal.terminals import PointTerminal, PinGroupTerminal
+# from ansys.edb.hierarchy.pin_group import PinGroup
 
 
 class EdbSiwave(object):
@@ -125,28 +129,36 @@ class EdbSiwave(object):
         fromLayer_pos, toLayer_pos = pos_pin.primitive_object.get_layer_range()
         fromLayer_neg, toLayer_neg = neg_pin.primitive_object.get_layer_range()
 
-        pos_terminal = edb_terminal.PadstackInstanceTerminal.create(layout=self._active_layout,
-                                                                         name=source.name,
-                                                                         padstack_instance=pos_pin.pin,
-                                                                         layer=fromLayer_pos,
-                                                                         net=pos_pin.net.net_object,
-                                                                         is_ref=False)
+        pos_terminal = edb_terminal.PadstackInstanceTerminal.create(
+            layout=self._active_layout,
+            name=source.name,
+            padstack_instance=pos_pin.pin,
+            layer=fromLayer_pos,
+            net=pos_pin.net.net_object,
+            is_ref=False,
+        )
         if pos_terminal.is_null:
-            self._logger.error(f"Failed to create voltage source on pin {pos_pin.name}, "
-                               f"component {pos_pin.component.refdes} (Positive terminal)")
+            self._logger.error(
+                f"Failed to create voltage source on pin {pos_pin.name}, "
+                f"component {pos_pin.component.refdes} (Positive terminal)"
+            )
             return False
         ref_term_name = neg_pin.name
         if ref_term_name == pos_pin.name:
             ref_term_name = f"{pos_pin.name}_ref"
-        neg_terminal = edb_terminal.PadstackInstanceTerminal.create(layout=self._active_layout,
-                                                                         name=ref_term_name,
-                                                                         padstack_instance=neg_pin.pin,
-                                                                         layer=fromLayer_neg,
-                                                                         net=neg_pin.net.net_object,
-                                                                         is_ref=True)
+        neg_terminal = edb_terminal.PadstackInstanceTerminal.create(
+            layout=self._active_layout,
+            name=ref_term_name,
+            padstack_instance=neg_pin.pin,
+            layer=fromLayer_neg,
+            net=neg_pin.net.net_object,
+            is_ref=True,
+        )
         if neg_terminal.is_null:
-            self._logger.error(f"Failed to create voltage source on pin {neg_pin.name}, "
-                               f"component {neg_pin.component.refdes} (Reference terminal)")
+            self._logger.error(
+                f"Failed to create voltage source on pin {neg_pin.name}, "
+                f"component {neg_pin.component.refdes} (Reference terminal)"
+            )
             return False
         if source.source_type in [SourceType.CoaxPort, SourceType.CircPort, SourceType.LumpedPort]:
             pos_terminal.boundary_type = edb_terminal.BoundaryType.PORT
@@ -307,11 +319,13 @@ class EdbSiwave(object):
                 pin_edb_layer = self._edb.stackup.layers[pin.start_layer]._edb_layer
                 if pin_edb_layer:
                     pin_instance = pin._edb_padstackinstance
-                    positive_terminal = terminal.PadstackInstanceTerminal.create(layout=self._active_layout,
-                                                                                 net=pin_instance.net,
-                                                                                 name=term_name,
-                                                                                 padstack_instance=pin_instance,
-                                                                                 layer=pin_edb_layer)
+                    positive_terminal = terminal.PadstackInstanceTerminal.create(
+                        layout=self._active_layout,
+                        net=pin_instance.net,
+                        name=term_name,
+                        padstack_instance=pin_instance,
+                        layer=pin_edb_layer,
+                    )
                     positive_terminal.boundary_type = terminal.BoundaryType.PORT
                     positive_terminal.impedance = utility.Value(impedance)
                     positive_terminal.is_circuit_port = True
@@ -322,7 +336,8 @@ class EdbSiwave(object):
                         net=reference_net.net_object,
                         name="{}_ref".format(term_name),
                         point=position,
-                        layer=self._pedb.stackup.signal_layers[layer_name]._edb_layer)
+                        layer=self._pedb.stackup.signal_layers[layer_name]._edb_layer,
+                    )
                     negative_terminal.boundary_type = terminal.BoundaryType.PORT
                     negative_terminal.impedance = utility.Value(impedance)
                     negative_terminal.is_circuit_port = True
@@ -905,20 +920,24 @@ class EdbSiwave(object):
         pos_pin_group = self._pedb.components.create_pingroup_from_pins(source.positive_node.node_pins)
         pos_node_net = self._pedb.nets.get_net_by_name(source.positive_node.net)
         pos_pingroup_term_name = source.name
-        pos_pingroup_terminal = edb_terminal.PinGroupTerminal.create(layout=self._active_layout,
-                                                        net=pos_node_net.net_object,
-                                                        name=pos_pingroup_term_name,
-                                                        pin_group=pos_pin_group,
-                                                        is_ref=False)
+        pos_pingroup_terminal = edb_terminal.PinGroupTerminal.create(
+            layout=self._active_layout,
+            net=pos_node_net.net_object,
+            name=pos_pingroup_term_name,
+            pin_group=pos_pin_group,
+            is_ref=False,
+        )
         if source.negative_node.node_pins:
             neg_pin_group = self._pedb.components.create_pingroup_from_pins(source.negative_node.node_pins)
             neg_node_net = self._pedb.nets.get_net_by_name(source.negative_node.net)
             neg_pingroup_term_name = source.name + "_N"
-            neg_pingroup_terminal = edb_terminal.PinGroupTerminal.create(layout=self._active_layout,
-                                                            net=neg_node_net.net_object,
-                                                            name=neg_pingroup_term_name,
-                                                            pin_group=neg_pin_group,
-                                                            is_ref=False)
+            neg_pingroup_terminal = edb_terminal.PinGroupTerminal.create(
+                layout=self._active_layout,
+                net=neg_node_net.net_object,
+                name=neg_pingroup_term_name,
+                pin_group=neg_pin_group,
+                is_ref=False,
+            )
 
         if source.source_type in [SourceType.CoaxPort, SourceType.CircPort, SourceType.LumpedPort]:
             pos_pingroup_terminal.boundary_type = edb_terminal.BoundaryType.PORT
@@ -1218,7 +1237,9 @@ class EdbSiwave(object):
             group_name = edb_hierarchy.PinGroup.unique_name(self._active_layout)
         comp = self._pedb.components.instances[reference_designator]
         pins = [pin.pin for name, pin in comp.pins.items() if name in pin_numbers]
-        edb_pingroup = edb_hierarchy.PinGroup.create(layout=self._active_layout, name=group_name, padstack_instances=pins)
+        edb_pingroup = edb_hierarchy.PinGroup.create(
+            layout=self._active_layout, name=group_name, padstack_instances=pins
+        )
         if not edb_pingroup.is_null:
             return PinGroup(name=group_name, edb_pin_group=edb_pingroup, pedb=self._pedb)
         return False

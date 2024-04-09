@@ -9,9 +9,9 @@ import ansys.edb.core.hierarchy as edb_hierarchy
 import ansys.edb.core.layer as edb_layer
 import ansys.edb.core.net as edb_net
 import ansys.edb.core.primitive as edb_primitive
+import ansys.edb.core.simulation_setup as edb_simulation_setup
 import ansys.edb.core.terminal as edb_terminal
 import ansys.edb.core.utility as edb_utility
-import ansys.edb.core.simulation_setup as edb_simulation_setup
 
 from pyedb.generic.constants import RadiationBoxType
 from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
@@ -1245,8 +1245,9 @@ class EdbHfss(object):
                                as argument"
             )
             return False
-        edb_simsetup = edb_simulation_setup.HfssSimulationSetup.create(self._pedb.active_cell,
-                                                                       simulation_setup.setup_name)
+        edb_simsetup = edb_simulation_setup.HfssSimulationSetup.create(
+            self._pedb.active_cell, simulation_setup.setup_name
+        )
         edb_simsetup.settings.advanced_meshing.arc_step_size = simulation_setup.arc_angle
         edb_simsetup.settings.advanced_meshing.use_arc_chord_error_approx = simulation_setup.use_arc_to_chord_error
         edb_simsetup.settings.advanced_meshing.arc_to_chord_error = simulation_setup.arc_to_chord_error

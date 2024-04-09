@@ -4,26 +4,28 @@ This module contains these classes: `EdbLayout` and `Shape`.
 import math
 import warnings
 
-from ansys.edb.core.primitive import Bondwire
-import ansys.edb.core.primitive as primitive
 import ansys.edb.core.geometry as geometry
-import ansys.edb.core.utility as utility
 import ansys.edb.core.geometry.arc_data as arcdata
-#from ansys.edb.primitive import Circle
-#from ansys.edb.primitive import Path
-#from ansys.edb.primitive import Polygon
-#from ansys.edb.primitive import Rectangle
-from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitives
-from pyedb.grpc.edb_core.edb_data.primitives_data import cast
-from pyedb.grpc.edb_core.edb_data.utilities import EDBStatistics
-#from ansys.edb.geometry.point_data import PointData
-#from ansys.edb.geometry.polygon_data import PolygonData
-#from ansys.edb.geometry.arc_data import ArcData
+import ansys.edb.core.primitive as primitive
+from ansys.edb.core.primitive import Bondwire
+import ansys.edb.core.utility as utility
+
+# from ansys.edb.geometry.point_data import PointData
+# from ansys.edb.geometry.polygon_data import PolygonData
+# from ansys.edb.geometry.arc_data import ArcData
 from pyedb.generic.general_methods import pyedb_function_handler
-#from ansys.edb.primitive.primitive import PathEndCapType, PathCornerType
-#from ansys.edb.utility.value import Value
-#from ansys.edb.primitive.primitive import RectangleRepresentationType
-#from ansys.edb.geometry.arc_data import RotationDirection
+
+# from ansys.edb.primitive import Circle
+# from ansys.edb.primitive import Path
+# from ansys.edb.primitive import Polygon
+# from ansys.edb.primitive import Rectangle
+from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitives, cast
+from pyedb.grpc.edb_core.edb_data.utilities import EDBStatistics
+
+# from ansys.edb.primitive.primitive import PathEndCapType, PathCornerType
+# from ansys.edb.utility.value import Value
+# from ansys.edb.primitive.primitive import RectangleRepresentationType
+# from ansys.edb.geometry.arc_data import RotationDirection
 
 
 class EdbLayout(object):
@@ -658,13 +660,18 @@ class EdbLayout(object):
         edb_net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "LowerLeftUpperRight":
             rep_type = primitive.RectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT
-            rect = primitive.Rectangle.create(self._active_layout, layer_name, edb_net.net_obj, rep_type,
-                                    utility.Value(lower_left_point[0]),
-                                    utility.Value(lower_left_point[1]),
-                                    utility.Value(upper_right_point[0]),
-                                    utility.Value(upper_right_point[1]),
-                                    utility.Value(corner_radius),
-                                    utility.Value(rotation))
+            rect = primitive.Rectangle.create(
+                self._active_layout,
+                layer_name,
+                edb_net.net_obj,
+                rep_type,
+                utility.Value(lower_left_point[0]),
+                utility.Value(lower_left_point[1]),
+                utility.Value(upper_right_point[0]),
+                utility.Value(upper_right_point[1]),
+                utility.Value(corner_radius),
+                utility.Value(rotation),
+            )
         else:
             rep_type = primitive.RectangleRepresentationType.CENTER_WIDTH_HEIGHT
             rect = primitive.Rectangle.create(
@@ -889,8 +896,10 @@ class EdbLayout(object):
                     or endPoint[0].is_parametric
                     or endPoint[1].is_parametric
                 )
-                arc = geometry.ArcData(geometry.PointData(startPoint[0].value, startPoint[1].value),
-                              geometry.PointData(endPoint[0].value, endPoint[1].value))
+                arc = geometry.ArcData(
+                    geometry.PointData(startPoint[0].value, startPoint[1].value),
+                    geometry.PointData(endPoint[0].value, endPoint[1].value),
+                )
                 arcs.append(arc)
             elif len(endPoint) == 3:
                 is_parametric = (
@@ -901,9 +910,10 @@ class EdbLayout(object):
                     or endPoint[1].is_parametric
                     or endPoint[2].is_parametric
                 )
-                arc = geometry.ArcData(geometry.PointData(startPoint[0].value, startPoint[1].value),
-                    geometry.PointData(endPoint[0].value, endPoint[1].value,
-                    endPoint[2].value))
+                arc = geometry.ArcData(
+                    geometry.PointData(startPoint[0].value, startPoint[1].value),
+                    geometry.PointData(endPoint[0].value, endPoint[1].value, endPoint[2].value),
+                )
                 arcs.append(arc)
             elif len(endPoint) == 5:
                 is_parametric = (
@@ -1075,9 +1085,9 @@ class EdbLayout(object):
             for path in selected_paths:
                 parameter_name = f"{net}_{str(ind)}"
                 if not layers_name:
-                        variable_value = path.width
-                        param = self._pedb.add_design_variable(parameter_name, variable_value, is_parameter=True)
-                        path.width = param
+                    variable_value = path.width
+                    param = self._pedb.add_design_variable(parameter_name, variable_value, is_parameter=True)
+                    path.width = param
                 elif path.layer.name in layers_name:
                     variable_value = path.width
                     param = self._pedb.add_design_variable(parameter_name, variable_value, is_parameter=True)

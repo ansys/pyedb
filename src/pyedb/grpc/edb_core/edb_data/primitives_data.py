@@ -1,9 +1,9 @@
 import math
 
+import ansys.edb.core.net as net
 import ansys.edb.core.primitive as primitive
 import ansys.edb.core.utility as utility
-import ansys.edb.core.net as net
-from pyedb.generic.general_methods import generate_unique_name
+
 # from ansys.edb.primitive.primitive import Bondwire
 # from ansys.edb.primitive.primitive import Circle
 # from ansys.edb.primitive.primitive import Path
@@ -12,7 +12,7 @@ from pyedb.generic.general_methods import generate_unique_name
 # from ansys.edb.primitive.primitive import Text
 # from ansys.edb.primitive.primitive import PrimitiveType
 # from ansys.edb.utility.value import Value
-from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -184,9 +184,11 @@ class EDBPrimitivesMain:
         -------
         bool
         """
-        if self._edb_object.layout_obj_type in [primitive.PrimitiveType.CIRCLE,
-                                                primitive.PrimitiveType.POLYGON,
-                                                primitive.PrimitiveType.RECTANGLE]:
+        if self._edb_object.layout_obj_type in [
+            primitive.PrimitiveType.CIRCLE,
+            primitive.PrimitiveType.POLYGON,
+            primitive.PrimitiveType.RECTANGLE,
+        ]:
             return self._edb_object.is_void
         else:
             return False
@@ -798,14 +800,14 @@ class EdbPath(EDBPrimitives):
     # @pyedb_function_handler()
     @pyedb_function_handler
     def create_edge_port(
-            self,
-            name,
-            position="End",
-            port_type="Wave",
-            reference_layer=None,
-            horizontal_extent_factor=5,
-            vertical_extent_factor=3,
-            pec_launch_width="0.01mm",
+        self,
+        name,
+        position="End",
+        port_type="Wave",
+        reference_layer=None,
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
     ):
         """
 
@@ -950,8 +952,10 @@ class EdbPath(EDBPrimitives):
         center_line = self.get_center_line()
         leftline, rightline = get_parallet_lines(center_line, distance)
         for x, y in get_locations(rightline, gap) + get_locations(leftline, gap):
-            self._app.padstacks.place(position=[x, y], definition_name=padstack_name,
-                                                          via_name=generate_unique_name(padstack_name))
+            self._app.padstacks.place(
+                position=[x, y], definition_name=padstack_name, via_name=generate_unique_name(padstack_name)
+            )
+
 
 class EdbRectangle(EDBPrimitives):
     def __init__(self, raw_primitive, core_app):
@@ -991,9 +995,9 @@ class EdbPolygon(EDBPrimitives):
 
     @pyedb_function_handler()
     def in_polygon(
-            self,
-            point_data,
-            include_partial=True,
+        self,
+        point_data,
+        include_partial=True,
     ):
         """Check if padstack Instance is in given polygon data.
 
@@ -1009,8 +1013,7 @@ class EdbPolygon(EDBPrimitives):
             ``True`` when successful, ``False`` when failed.
         """
         if isinstance(point_data, list):
-            point_data = self._app.geometry.point_data(Value(point_data[0]), Value(point_data[1])
-                                                       )
+            point_data = self._app.geometry.point_data(Value(point_data[0]), Value(point_data[1]))
         int_val = int(self.polygon_data.in_polygon(point_data))
 
         # Intersection type:

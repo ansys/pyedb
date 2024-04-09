@@ -1,9 +1,11 @@
-from pyedb.grpc.edb_core.edb_data.hfss_simulation_setup_data import EdbFrequencySweep
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
 import ansys.edb.core.simulation_setup as simulation_setup
 from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetupType
-from ansys.edb.core.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup
+from ansys.edb.core.simulation_setup.siwave_simulation_setup import (
+    SIWaveSimulationSetup,
+)
+
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+from pyedb.grpc.edb_core.edb_data.hfss_simulation_setup_data import EdbFrequencySweep
 
 
 class SiwaveAdvancedSettings(object):
@@ -705,7 +707,7 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
         self._edb_simulation_setup = simulation_setup.SIWaveSimulationSetup.create(self._edb.active_cell, name)
         if simulation_configuration:
             _get_edb_setup_info(simulation_configuration, self.edb_simulation_setup)
-        #self._update_setup()
+        # self._update_setup()
         self.setup_type = SimulationSetupType.SI_WAVE
         SiwaveAdvancedSettings.__init__(self, self)
 
@@ -774,7 +776,7 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
     def pi_slider_postion(self, value):
         self.simulation_setup.settings.general.use_custom_settings = False
         self.simulation_setup.settings.general.pi_slider_pos = value
-        #self._update_setup()
+        # self._update_setup()
 
     @property
     def si_slider_postion(self):
@@ -785,7 +787,7 @@ class SiwaveSYZSimulationSetup(SiwaveAdvancedSettings, object):
     def si_slider_postion(self, value):
         self.simulation_setup.settings.general.use_custom_settings = False
         self.simulation_setup.settings.general.si_slider_pos = value
-        #self._update_setup()
+        # self._update_setup()
 
     @property
     def use_custom_settings(self):
@@ -943,7 +945,7 @@ class SiwaveDCSimulationSetup(SiwaveDCAdvancedSettings, object):
                 self._edb_sim_setup_info.name = generate_unique_name("siwave")
             else:
                 self._edb_sim_setup_info.name = name
-            #self._update_setup()
+            # self._update_setup()
         self.setup_type = SimulationSetupType.SI_WAVE_DCIR
 
         SiwaveDCAdvancedSettings.__init__(self, self)

@@ -20,7 +20,7 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 class TestClass:
     @pytest.fixture(autouse=True)
     def init(self, grpc_edb_app, local_scratch, target_path, target_path2, target_path4):
-        #self.edbapp = grpc_edb_app
+        # self.edbapp = grpc_edb_app
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path2 = target_path2
@@ -566,7 +566,7 @@ class TestClass:
         #    os.mkdir(self.local_scratch.path)
         # self.local_scratch.copyfolder(source_path, target_path)
         # edb = Edb(target_path, edbversion=desktop_version)
-        #edb = Edb(edbversion=desktop_version)
+        # edb = Edb(edbversion=desktop_version)
         assert len(self.edbapp.active_cell.simulation_setups) == 0
         sim_config = SimulationConfiguration()
         sim_config.enforce_causality = False

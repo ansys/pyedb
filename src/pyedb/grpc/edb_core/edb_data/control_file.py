@@ -1,17 +1,14 @@
 import copy
 import os
 import re
-import sys
-
-import xml.etree.cElementTree as ET
-from pyedb.generic.general_methods import env_path
-from pyedb.generic.general_methods import env_value
-from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.edb_logger import pyedb_logger
-from pyedb.misc.misc import list_installed_ansysem
-from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
-
 import subprocess
+import sys
+import xml.etree.cElementTree as ET
+
+from pyedb.edb_logger import pyedb_logger
+from pyedb.generic.general_methods import env_path, env_value, pyedb_function_handler
+from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
+from pyedb.misc.misc import list_installed_ansysem
 
 
 @pyedb_function_handler()

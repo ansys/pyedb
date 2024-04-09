@@ -6,22 +6,23 @@ import json
 import math
 import re
 import warnings
+
+import ansys.edb.core.database as database
 import ansys.edb.core.definition as definition
 import ansys.edb.core.geometry as geometry
 import ansys.edb.core.hierarchy as hierarchy
 import ansys.edb.core.layer as layer
 import ansys.edb.core.terminal as terminal
 import ansys.edb.core.utility as utility
-import ansys.edb.core.database as database
 
-from pyedb.grpc.edb_core.edb_data.components_data import EDBComponent
-from pyedb.grpc.edb_core.edb_data.components_data import EDBComponentDef
+from pyedb.generic.general_methods import (
+    get_filename_without_extension,
+    pyedb_function_handler,
+)
+from pyedb.grpc.edb_core.edb_data.components_data import EDBComponent, EDBComponentDef
 from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.grpc.edb_core.edb_data.sources import Source
-from pyedb.grpc.edb_core.edb_data.sources import SourceType
+from pyedb.grpc.edb_core.edb_data.sources import Source, SourceType
 from pyedb.grpc.edb_core.padstack import EdbPadstacks
-from pyedb.generic.general_methods import get_filename_without_extension
-from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -479,14 +480,14 @@ class Components(object):
 
     @pyedb_function_handler()
     def get_component_placement_vector(
-            self,
-            mounted_component,
-            hosting_component,
-            mounted_component_pin1,
-            mounted_component_pin2,
-            hosting_component_pin1,
-            hosting_component_pin2,
-            flipped=False,
+        self,
+        mounted_component,
+        hosting_component,
+        mounted_component_pin1,
+        mounted_component_pin2,
+        hosting_component_pin1,
+        hosting_component_pin2,
+        flipped=False,
     ):
         """Get the placement vector between 2 components.
 
@@ -764,8 +765,7 @@ class Components(object):
 
     @pyedb_function_handler()
     def create_port_on_component(
-            self, component, net_list, port_type=SourceType.CoaxPort, do_pingroup=True, reference_net="gnd",
-            port_name=None
+        self, component, net_list, port_type=SourceType.CoaxPort, do_pingroup=True, reference_net="gnd", port_name=None
     ):
         """Create ports on a component.
 
@@ -821,8 +821,10 @@ class Components(object):
         if reference_net in net_list:
             net_list.remove(reference_net)
         cmp_pins = [
-            p for p in list(component.members) if not p.net.is_null and p.layout_obj_type.value == 1
-                                                  and p.net.name in net_list]
+            p
+            for p in list(component.members)
+            if not p.net.is_null and p.layout_obj_type.value == 1 and p.net.name in net_list
+        ]
         for p in cmp_pins:  # pragma no cover
             if not p.is_layout_pin:
                 p.is_layout_pin = True
@@ -835,8 +837,8 @@ class Components(object):
         if port_type == SourceType.CoaxPort:
             pad_params = self._padstack.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
             if isinstance(pad_params[0], definition.PadGeometryType):
-               sball_diam = min([utility.Value(val).value for val in pad_params[1]])
-               solder_ball_height = 2 * sball_diam / 3
+                sball_diam = min([utility.Value(val).value for val in pad_params[1]])
+                solder_ball_height = 2 * sball_diam / 3
             elif isinstance(pad_params[0], geometry.PolygonData):
                 bbox = pad_params[0].bbox()
                 sball_diam = min([abs(bbox[1].x - bbox[0].x), abs(bbox[3] - bbox[1])]) * 0.8
@@ -847,8 +849,10 @@ class Components(object):
 
         elif port_type == SourceType.CircPort:  # pragma no cover
             ref_pins = [
-            p for p in list(component.members) if not p.net.is_null and p.layout_obj_type.value == 1
-                                                  and p.net.name in reference_net]
+                p
+                for p in list(component.members)
+                if not p.net.is_null and p.layout_obj_type.value == 1 and p.net.name in reference_net
+            ]
             for p in ref_pins:
                 if not p.is_layout_pin:
                     p.is_layout_pin = True
@@ -979,9 +983,9 @@ class Components(object):
                 return False
         component_type = component.edbcomponent.component_type
         if (
-                component_type == hierarchy.ComponentType.OTHER
-                or component_type == hierarchy.ComponentType.IC
-                or component_type == hierarchy.ComponentType.IO
+            component_type == hierarchy.ComponentType.OTHER
+            or component_type == hierarchy.ComponentType.IC
+            or component_type == hierarchy.ComponentType.IO
         ):
             self._logger.info("Component %s passed to deactivate is not an RLC.", component.refdes)
             return False
@@ -1025,9 +1029,9 @@ class Components(object):
                 return False
         component_type = component.edbcomponent.component_type
         if (
-                component_type == hierarchy.ComponentType.OTHER
-                or component_type == hierarchy.ComponentType.IC
-                or component_type == hierarchy.ComponentType.IO
+            component_type == hierarchy.ComponentType.OTHER
+            or component_type == hierarchy.ComponentType.IC
+            or component_type == hierarchy.ComponentType.IO
         ):
             self._logger.info("Component %s passed to deactivate is not an RLC.", component.refdes)
             return False
@@ -1064,12 +1068,14 @@ class Components(object):
             pt = self._pedb.point_data(*pos_pin_loc)
 
             pin_layers = self._padstack._get_pin_layer_range(pins[0])
-            pos_pin_term = terminal.PointTerminal.create(self._active_layout, pins[0].GetNet(),
-                                                "{}_{}".format(component.refdes, pins[0].GetName()),
-                                                pins[0],
-                                                pin_layers[0],
-                                                False,
-                                                )
+            pos_pin_term = terminal.PointTerminal.create(
+                self._active_layout,
+                pins[0].GetNet(),
+                "{}_{}".format(component.refdes, pins[0].GetName()),
+                pins[0],
+                pin_layers[0],
+                False,
+            )
             if not pos_pin_term:  # pragma: no cover
                 return False
             neg_pin_loc = self.get_pin_position(pins[1])
@@ -1192,11 +1198,9 @@ class Components(object):
         for t in self._pedb.active_layout.terminals:
             if t.name == term_name:
                 return t
-        pingroup_term = terminal.PinGroupTerminal.create(layout=self._pedb.active_layout,
-                                                         net_ref=pingroup.net,
-                                                         name=term_name,
-                                                         pin_group=pingroup,
-                                                         is_ref=isref)
+        pingroup_term = terminal.PinGroupTerminal.create(
+            layout=self._pedb.active_layout, net_ref=pingroup.net, name=term_name, pin_group=pingroup, is_ref=isref
+        )
         return pingroup_term
 
     @pyedb_function_handler()
@@ -1244,7 +1248,7 @@ class Components(object):
 
     @pyedb_function_handler()
     def create_rlc_component(
-            self, pins, component_name="", r_value=1.0, c_value=1e-9, l_value=1e-9, is_parallel=False
+        self, pins, component_name="", r_value=1.0, c_value=1e-9, l_value=1e-9, is_parallel=False
     ):  # pragma: no cover
         """Create physical Rlc component.
 
@@ -1284,16 +1288,16 @@ class Components(object):
 
     @pyedb_function_handler()
     def create(
-            self,
-            pins,
-            component_name,
-            placement_layer=None,
-            component_part_name=None,
-            is_rlc=False,
-            r_value=1.0,
-            c_value=1e-9,
-            l_value=1e-9,
-            is_parallel=False,
+        self,
+        pins,
+        component_name,
+        placement_layer=None,
+        component_part_name=None,
+        is_rlc=False,
+        r_value=1.0,
+        c_value=1e-9,
+        l_value=1e-9,
+        is_parallel=False,
     ):
         """Create a component from pins.
 
@@ -1457,7 +1461,9 @@ class Components(object):
         elif model_type == "Touchstone":  # pragma: no cover
             nPortModelName = modelname
             edbComponentDef = edb_component.component_def
-            nPortModel = definition.NPortComponentModel.find(edbComponentDef, nPortModelName)  # -> Missing command in pyedb
+            nPortModel = definition.NPortComponentModel.find(
+                edbComponentDef, nPortModelName
+            )  # -> Missing command in pyedb
             if nPortModel.IsNull():
                 nPortModel = definition.NPortComponentModel.create(nPortModelName)
                 nPortModel.reference_file(modelpath)
@@ -1521,9 +1527,7 @@ class Components(object):
                         if p.name in pnames:
                             continue
                         else:
-                            group_name = self._edb.cell.hierarchy.pin_group.unique_name(
-                                self._edb.layout, group_name
-                            )
+                            group_name = self._edb.cell.hierarchy.pin_group.unique_name(self._edb.layout, group_name)
                             pin_group_exists = False
                 else:
                     group_name = hierarchy.PinGroup.unique_name(self._edb.layout, group_name)
@@ -1645,13 +1649,13 @@ class Components(object):
 
     @pyedb_function_handler()
     def set_solder_ball(
-            self,
-            component="",
-            sball_diam="100um",
-            sball_height="150um",
-            shape="Cylinder",
-            sball_mid_diam=None,
-            chip_orientation="chip_down",
+        self,
+        component="",
+        sball_diam="100um",
+        sball_height="150um",
+        shape="Cylinder",
+        sball_mid_diam=None,
+        chip_orientation="chip_down",
     ):
         """Set cylindrical solder balls on a given component.
 
@@ -1735,12 +1739,12 @@ class Components(object):
 
     @pyedb_function_handler()
     def set_component_rlc(
-            self,
-            componentname,
-            res_value=None,
-            ind_value=None,
-            cap_value=None,
-            isparallel=False,
+        self,
+        componentname,
+        res_value=None,
+        ind_value=None,
+        cap_value=None,
+        isparallel=False,
     ):
         """Update values for an RLC component.
 
@@ -1817,12 +1821,12 @@ class Components(object):
 
     @pyedb_function_handler()
     def update_rlc_from_bom(
-            self,
-            bom_file,
-            delimiter=";",
-            valuefield="Func des",
-            comptype="Prod name",
-            refdes="Pos / Place",
+        self,
+        bom_file,
+        delimiter=";",
+        valuefield="Func des",
+        comptype="Prod name",
+        refdes="Pos / Place",
     ):
         """Update the EDC core component values (RLCs) with values coming from a BOM file.
 
@@ -1887,13 +1891,13 @@ class Components(object):
 
     @pyedb_function_handler()
     def import_bom(
-            self,
-            bom_file,
-            delimiter=",",
-            refdes_col=0,
-            part_name_col=1,
-            comp_type_col=2,
-            value_col=3,
+        self,
+        bom_file,
+        delimiter=",",
+        refdes_col=0,
+        part_name_col=1,
+        comp_type_col=2,
+        value_col=3,
     ):
         """Load external BOM file.
 
@@ -2042,8 +2046,9 @@ class Components(object):
                 netName = [netName]
             pins = [
                 p
-                for p in component.members if p.layout_obj_type.value == 1 and not p.net.is_null
-                                              and p.is_layout_pin and p.net.name in netName]
+                for p in component.members
+                if p.layout_obj_type.value == 1 and not p.net.is_null and p.is_layout_pin and p.net.name in netName
+            ]
         elif pinName:
             if not isinstance(pinName, list):
                 pinName = [pinName]
@@ -2051,13 +2056,16 @@ class Components(object):
                 p
                 for p in list(component.members)
                 if p.layout_obj_type.value == 1
-                   and p.is_layout_pin
-                   and not p.net.is_null
-                   and (self.get_aedt_pin_name(p) in pinName or p.name in pinName)
+                and p.is_layout_pin
+                and not p.net.is_null
+                and (self.get_aedt_pin_name(p) in pinName or p.name in pinName)
             ]
         else:
-            pins = [p for p in list(component.members) if p.layout_obj_type.value == 1 and not p.net.is_null
-                    and p.is_layout_pin]
+            pins = [
+                p
+                for p in list(component.members)
+                if p.layout_obj_type.value == 1 and not p.net.is_null and p.is_layout_pin
+            ]
 
         return [EDBPadstackInstance(pin, self._pedb) for pin in pins]
 
@@ -2316,9 +2324,7 @@ class Components(object):
             if placement_layer in self._pedb.padstacks.definitions[pin.pin.padstack_def.name].pad_by_layer:
                 pad = self._pedb.padstacks.definitions[pin.pin.padstack_def.name].pad_by_layer[placement_layer]
             else:
-                layer = list(self._pedb.padstacks.definitions[pin.pin.padstack_def().name].pad_by_layer.keys())[
-                    0
-                ]
+                layer = list(self._pedb.padstacks.definitions[pin.pin.padstack_def().name].pad_by_layer.keys())[0]
                 pad = self._pedb.padstacks.definitions[pin.pin.padstack_def.name].pad_by_layer[layer]
             pars = pad.parameters_values
             geom = pad.geometry_type

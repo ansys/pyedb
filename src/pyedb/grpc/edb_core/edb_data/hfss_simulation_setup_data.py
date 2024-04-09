@@ -1,8 +1,8 @@
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
+import ansys.edb.core.simulation_setup as simulation_setup
 from ansys.edb.core.simulation_setup import SweepData
 import ansys.edb.core.utility as utility
-import ansys.edb.core.simulation_setup as simulation_setup
+
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 
 
 class EdbFrequencySweep(object):
@@ -403,12 +403,9 @@ class EdbFrequencySweep(object):
             sweep_name = generate_unique_name("pyedb_sweep")
         else:
             sweep_name = self.edb_sweep_data.name
-        self.edb_sweep_data = simulation_setup.SweepData(name=sweep_name,
-                                                         distribution="LIN",
-                                                         start_f=start,
-                                                         end_f=stop,
-                                                         step=step,
-                                                         fast_sweep=False)
+        self.edb_sweep_data = simulation_setup.SweepData(
+            name=sweep_name, distribution="LIN", start_f=start, end_f=stop, step=step, fast_sweep=False
+        )
         return self.edb_sweep_data.frequency_string
 
     @pyedb_function_handler()
@@ -434,12 +431,9 @@ class EdbFrequencySweep(object):
             sweep_name = generate_unique_name("pyedb_sweep")
         else:
             sweep_name = self.edb_sweep_data.name
-        self.edb_sweep_data = simulation_setup.SweepData(name=sweep_name,
-                                                         distribution="LINC",
-                                                         start_f=start,
-                                                         end_f=stop,
-                                                         step=count,
-                                                         fast_sweep=False)
+        self.edb_sweep_data = simulation_setup.SweepData(
+            name=sweep_name, distribution="LINC", start_f=start, end_f=stop, step=count, fast_sweep=False
+        )
         return self.edb_sweep_data.frequency_string
 
     @pyedb_function_handler()
@@ -464,12 +458,9 @@ class EdbFrequencySweep(object):
             sweep_name = generate_unique_name("pyedb_sweep")
         else:
             sweep_name = self.edb_sweep_data.name
-        self.edb_sweep_data = simulation_setup.SweepData(name=sweep_name,
-                                                         distribution="DEC",
-                                                         start_f=start,
-                                                         end_f=stop,
-                                                         step=samples,
-                                                         fast_sweep=False)
+        self.edb_sweep_data = simulation_setup.SweepData(
+            name=sweep_name, distribution="DEC", start_f=start, end_f=stop, step=samples, fast_sweep=False
+        )
         return self.edb_sweep_data.frequency_string
 
     # @pyedb_function_handler()
@@ -928,8 +919,10 @@ class HfssSolverSettings(object):
 
     @solver_type.setter
     def solver_type(self, value):
-        mapping = {"direct": simulation_setup.SolverType.DIRECT_SOLVER,
-                   "iterative": simulation_setup.SolverType.ITERATIVE_SOLVER}
+        mapping = {
+            "direct": simulation_setup.SolverType.DIRECT_SOLVER,
+            "iterative": simulation_setup.SolverType.ITERATIVE_SOLVER,
+        }
         self._edb_sim_setup.settings.options.solver_type = mapping[value]
 
     @property
@@ -1038,8 +1031,10 @@ class AdaptiveSettings(object):
         if self.adapt_type == "SINGLE":
             return [AdaptiveFrequencyData(self._edb_sim_setup.settings.general.single_frequency_adaptive_solution)]
         elif self.adapt_type == "MULTI_FREQUENCIES":
-            return [AdaptiveFrequencyData(i) for i in
-                    self._edb_sim_setup.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies]
+            return [
+                AdaptiveFrequencyData(i)
+                for i in self._edb_sim_setup.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies
+            ]
 
     @property
     def do_adaptive(self):
@@ -1168,29 +1163,35 @@ class AdaptiveSettings(object):
         return True
 
     @pyedb_function_handler()
-    def set_solution_multi_frequencies(self, frequencies=("5GHz", "10GHz"),
-                                       max_delta_s=(0.02, 0.01), max_passes=30, output_variables=None):
+    def set_solution_multi_frequencies(
+        self, frequencies=("5GHz", "10GHz"), max_delta_s=(0.02, 0.01), max_passes=30, output_variables=None
+    ):
         self.adapt_type = 1
-        multi_freq_adapt_freqs = self._edb_sim_setup.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies
+        multi_freq_adapt_freqs = (
+            self._edb_sim_setup.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies
+        )
         multi_freq_adapt_freqs = []
         for i in range(len(frequencies)):
             if not output_variables:
-                edb_adpt_freq = simulation_setup.AdaptiveFrequency(adaptive_frequency=frequencies[i],
-                                                                   max_delta=max_delta_s[i])
+                edb_adpt_freq = simulation_setup.AdaptiveFrequency(
+                    adaptive_frequency=frequencies[i], max_delta=max_delta_s[i]
+                )
                 multi_freq_adapt_freqs.append(edb_adpt_freq)
             else:
                 output_variable = output_variables[i]
-                edb_adpt_freq = simulation_setup.AdaptiveFrequency(adaptive_frequency=frequencies[i],
-                                                                   max_delta=max_delta_s[i],
-                                                                   output_variables=output_variable)
+                edb_adpt_freq = simulation_setup.AdaptiveFrequency(
+                    adaptive_frequency=frequencies[i], max_delta=max_delta_s[i], output_variables=output_variable
+                )
                 multi_freq_adapt_freqs.append(edb_adpt_freq)
-        self._edb_sim_setup.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = multi_freq_adapt_freqs
+        self._edb_sim_setup.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = (
+            multi_freq_adapt_freqs
+        )
         self._edb_sim_setup.settings.general.multi_frequency_adaptive_solution.max_passes = max_passes
         return True
 
     @pyedb_function_handler()
     def set_solution_broadband(
-            self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
+        self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
     ):
         """Set broadband solution.
 
@@ -1260,7 +1261,7 @@ class AdaptiveSettings(object):
 
     @pyedb_function_handler()
     def add_broadband_adaptive_frequency_data(
-            self, low_frequency=0, high_frequency=10e9, max_num_passes=10, max_delta_s=0.02
+        self, low_frequency=0, high_frequency=10e9, max_num_passes=10, max_delta_s=0.02
     ):
         """Add a setup for frequency data.
 
@@ -1280,10 +1281,12 @@ class AdaptiveSettings(object):
         bool
             ``True`` if method is successful, ``False`` otherwise.
         """
-        broad_band_adaptive_setup = simulation_setup.BroadbandAdaptiveSolution(low_frequency=low_frequency,
-                                                                               high_frequency=high_frequency,
-                                                                               max_delta=max_delta_s,
-                                                                               max_num_passes=max_num_passes)
+        broad_band_adaptive_setup = simulation_setup.BroadbandAdaptiveSolution(
+            low_frequency=low_frequency,
+            high_frequency=high_frequency,
+            max_delta=max_delta_s,
+            max_num_passes=max_num_passes,
+        )
         self._edb_sim_setup.settings.general.broadband_adaptive_solution = broad_band_adaptive_setup
         return True
 
@@ -1530,13 +1533,15 @@ class ViaSettings(object):
         if isinstance(value, int):
             via_style = simulation_setup.ViaStyle(value)
         if isinstance(value, str):
-            via_style_mapping = {"WIREBOND": simulation_setup.ViaStyle.WIREBOND,
-                                 "RIBBON": simulation_setup.ViaStyle.RIBBON,
-                                 "MESH": simulation_setup.ViaStyle.MESH,
-                                 "FIELD": simulation_setup.ViaStyle.FIELD,
-                                 "NUM_VIA_STYLE": simulation_setup.ViaStyle.NUM_VIA_STYLE}
+            via_style_mapping = {
+                "WIREBOND": simulation_setup.ViaStyle.WIREBOND,
+                "RIBBON": simulation_setup.ViaStyle.RIBBON,
+                "MESH": simulation_setup.ViaStyle.MESH,
+                "FIELD": simulation_setup.ViaStyle.FIELD,
+                "NUM_VIA_STYLE": simulation_setup.ViaStyle.NUM_VIA_STYLE,
+            }
             try:
-                via_style =via_style_mapping[value]
+                via_style = via_style_mapping[value]
             except:
                 pass
         if via_style:
@@ -1889,15 +1894,15 @@ class HfssSimulationSetup(object):
 
     @pyedb_function_handler()
     def add_length_mesh_operation(
-            self,
-            net_layer_list,
-            name=None,
-            max_elements=1000,
-            max_length="1mm",
-            restrict_elements=True,
-            restrict_length=True,
-            refine_inside=False,
-            mesh_region=None,
+        self,
+        net_layer_list,
+        name=None,
+        max_elements=1000,
+        max_length="1mm",
+        restrict_elements=True,
+        restrict_length=True,
+        refine_inside=False,
+        mesh_region=None,
     ):
         """Add a mesh operation to the setup.
 
@@ -1926,15 +1931,17 @@ class HfssSimulationSetup(object):
         """
         if not name:
             name = generate_unique_name("skin")
-        edb_mesh_op = simulation_setup.LengthMeshOperation(name=name,
-                                                           net_layer_info=net_layer_list,
-                                                           enabled=True,
-                                                           refine_inside=refine_inside,
-                                                           mesh_region=mesh_region,
-                                                           max_length=max_length,
-                                                           restrict_max_length=restrict_length,
-                                                           max_elements=max_elements,
-                                                           restrict_max_elements=restrict_elements)
+        edb_mesh_op = simulation_setup.LengthMeshOperation(
+            name=name,
+            net_layer_info=net_layer_list,
+            enabled=True,
+            refine_inside=refine_inside,
+            mesh_region=mesh_region,
+            max_length=max_length,
+            restrict_max_length=restrict_length,
+            max_elements=max_elements,
+            restrict_max_elements=restrict_elements,
+        )
         mesh_operation = MeshOperationLength(self, edb_mesh_op)
         setup_mesh_op = self.edb_sim_setup.mesh_operations
         setup_mesh_op.append(edb_mesh_op)
@@ -1943,16 +1950,16 @@ class HfssSimulationSetup(object):
 
     @pyedb_function_handler()
     def add_skin_depth_mesh_operation(
-            self,
-            net_layer_list,
-            name=None,
-            max_elements=1000,
-            skin_depth="1um",
-            restrict_elements=True,
-            surface_triangle_length="1mm",
-            number_of_layers=2,
-            refine_inside=False,
-            mesh_region=None,
+        self,
+        net_layer_list,
+        name=None,
+        max_elements=1000,
+        skin_depth="1um",
+        restrict_elements=True,
+        surface_triangle_length="1mm",
+        number_of_layers=2,
+        refine_inside=False,
+        mesh_region=None,
     ):
         """Add a mesh operation to the setup.
 
@@ -1997,11 +2004,9 @@ class HfssSimulationSetup(object):
         return mesh_operation if self._update_setup() else False
 
     @pyedb_function_handler()
-    def add_frequency_sweep(self, name="sweep1",
-                            distribution="LIN",
-                            start_frequency="0GHz",
-                            stop_frequency="10GHz",
-                            step_frequency="10MHz"):
+    def add_frequency_sweep(
+        self, name="sweep1", distribution="LIN", start_frequency="0GHz", stop_frequency="10GHz", step_frequency="10MHz"
+    ):
         """Add frequency sweep.
 
         Parameters
@@ -2020,14 +2025,12 @@ class HfssSimulationSetup(object):
         """
         if name in [freq_data.name for freq_data in self.edb_sim_setup.sweep_data]:
             return False
-        sweep_data = simulation_setup.SweepData(name=name, distribution=distribution, start_f=start_frequency,
-                                                end_f=stop_frequency, step=step_frequency)
+        sweep_data = simulation_setup.SweepData(
+            name=name, distribution=distribution, start_f=start_frequency, end_f=stop_frequency, step=step_frequency
+        )
         sweep_data_list = self._edb_sim_setup.sweep_data
         sweep_data_list.append(sweep_data)
         self._edb_sim_setup.sweep_data = sweep_data_list
         if [freq_data.name for freq_data in self.edb_sim_setup.sweep_data]:
             return True
         return False
-
-
-

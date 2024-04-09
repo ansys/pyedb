@@ -3,7 +3,7 @@ import os
 import sys
 
 import ansys.edb.core.database as database
-from ansys.edb.core.session import launch_session, attach_session
+from ansys.edb.core.session import attach_session, launch_session
 import psutil
 
 from pyedb import __version__

@@ -1,11 +1,9 @@
-from ansys.edb.core.layout.layout import DifferentialPair
-from ansys.edb.core.layout.layout import ExtendedNet
-from ansys.edb.core.layout.layout import NetClass
-from ansys.edb.core.layout.layout import Net
+from ansys.edb.core.layout.layout import DifferentialPair, ExtendedNet, Net, NetClass
 from ansys.edb.core.primitive.primitive import PrimitiveType
+
+from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.grpc.edb_core.edb_data.primitives_data import cast
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class EDBNetsData(Net):
@@ -53,9 +51,7 @@ class EDBNetsData(Net):
         -------
         list of :class:`edb_core.edb_data.padstacks_data.EDBPadstackInstance`"""
         name = self.name
-        return [
-            EDBPadstackInstance(i, self._app) for i in self.net_object.padstack_instances if i.net.name == name
-        ]
+        return [EDBPadstackInstance(i, self._app) for i in self.net_object.padstack_instances if i.net.name == name]
 
     @property
     def components(self):

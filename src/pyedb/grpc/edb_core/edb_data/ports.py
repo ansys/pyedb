@@ -1,9 +1,12 @@
-from pyedb.grpc.edb_core.edb_data.terminals import BundleTerminal
-from pyedb.grpc.edb_core.edb_data.terminals import EdgeTerminal
-from pyedb.grpc.edb_core.edb_data.terminals import PadstackInstanceTerminal
-from pyedb.grpc.edb_core.edb_data.terminals import Terminal
-import ansys.edb.core.utility as utility
 import ansys.edb.core.database as database
+import ansys.edb.core.utility as utility
+
+from pyedb.grpc.edb_core.edb_data.terminals import (
+    BundleTerminal,
+    EdgeTerminal,
+    PadstackInstanceTerminal,
+    Terminal,
+)
 
 
 class GapPort(EdgeTerminal):

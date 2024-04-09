@@ -5,17 +5,17 @@ import os
 import time
 import warnings
 
+from ansys.edb.core.geometry.r_tree import RTree
+from ansys.edb.core.net.net import Net
+from ansys.edb.core.primitive.primitive import Polygon, PrimitiveType
+
+from pyedb.generic.constants import CSS4_COLORS
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 from pyedb.grpc.edb_core.edb_data.nets_data import EDBNetsData
 from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.grpc.edb_core.edb_data.primitives_data import EDBPrimitives
-from pyedb.generic.constants import CSS4_COLORS
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
-from ansys.edb.core.primitive.primitive import PrimitiveType
-from ansys.edb.core.net.net import Net
-from ansys.edb.core.geometry.r_tree import RTree
-from ansys.edb.core.primitive.primitive import Polygon
+
 
 class EdbNets(object):
     """Manages EDB methods for nets management accessible from `Edb.nets` property.
@@ -950,7 +950,7 @@ class EdbNets(object):
     @pyedb_function_handler()
     def get_net_by_name(self, net_name):
         """Find a net by name."""
-        #edb_net = Net.find_by_name(self._active_layout, net_name)
+        # edb_net = Net.find_by_name(self._active_layout, net_name)
         if net_name in self.nets:
             return self.nets[net_name]
         return False

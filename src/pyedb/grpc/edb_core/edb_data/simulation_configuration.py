@@ -2,16 +2,17 @@ from collections import OrderedDict
 import json
 import os
 
-from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.constants import (
+    BasisOrder,
+    CutoutSubdesignType,
+    RadiationBoxType,
+    SolverType,
+    SourceType,
+    SweepType,
+    validate_enum_class_value,
+)
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 from pyedb.grpc.edb_core.edb_data.sources import Source
-from pyedb.generic.constants import SourceType
-from pyedb.generic.constants import BasisOrder
-from pyedb.generic.constants import CutoutSubdesignType
-from pyedb.generic.constants import RadiationBoxType
-from pyedb.generic.constants import SolverType
-from pyedb.generic.constants import SweepType
-from pyedb.generic.constants import validate_enum_class_value
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class SimulationConfigurationBatch(object):
