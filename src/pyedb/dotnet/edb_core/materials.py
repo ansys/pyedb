@@ -53,6 +53,26 @@ try:
 except:
     PositiveFloat = confloat(gt=0)
 
+ATTRIBUTES = [
+    "conductivity",
+    "dielectric_loss_tangent",
+    "magnetic_loss_tangent",
+    "mass_density",
+    "permittivity",
+    "permeability",
+    "poisson_ratio",
+    "specific_heat",
+    "thermal_conductivity",
+    "youngs_modulus",
+    "thermal_expansion_coefficient",
+]
+DC_ATTRIBUTES =  [
+    "dielectric_model_frequency",
+    "loss_tangent_at_frequency",
+    "permittivity_at_frequency",
+    "dc_conductivity",
+    "dc_permittivity",
+]
 
 class MaterialProperties(BaseModel):
     """Store material properties."""
@@ -356,36 +376,16 @@ class Material(object):
     def update(self, input_dict: dict):
         if input_dict:
             # Update attributes
-            attributes = [
-                "conductivity",
-                "dielectric_loss_tangent",
-                "magnetic_loss_tangent",
-                "mass_density",
-                "permittivity",
-                "permeability",
-                "poisson_ratio",
-                "specific_heat",
-                "thermal_conductivity",
-                "youngs_modulus",
-                "thermal_expansion_coefficient",
-            ]
-            for attribute in attributes:
+            for attribute in ATTRIBUTES:
                 if attribute in input_dict:
                     setattr(self, attribute, input_dict[attribute])
 
-            dc_attributes = [
-                "dielectric_model_frequency",
-                "loss_tangent_at_frequency",
-                "permittivity_at_frequency",
-                "dc_conductivity",
-                "dc_permittivity",
-            ]
             # Update DS model
             # NOTE: Contrary to before we don't test 'dielectric_model_frequency' only
-            if any(map(lambda attribute: input_dict.get(attribute, None) is not None, dc_attributes)):
+            if any(map(lambda attribute: input_dict.get(attribute, None) is not None, DC_ATTRIBUTES)):
                 if not self.__dc_model:
                     self.__dc_model = self.__edb_definition.DjordjecvicSarkarModel()
-                for attribute in dc_attributes:
+                for attribute in DC_ATTRIBUTES:
                     if attribute in input_dict:
                         if attribute == "dc_permittivity" and input_dict[attribute] is not None:
                             self.__dc_model.SetUseDCRelativePermitivity(True)
@@ -776,36 +776,16 @@ class Materials(object):
             raise ValueError(f"Material {new_material_name} already exists in material library.")
 
         material = self.materials[material_name]
-        attributes = [
-            "conductivity",
-            "dielectric_loss_tangent",
-            "magnetic_loss_tangent",
-            "mass_density",
-            "permittivity",
-            "permeability",
-            "poisson_ratio",
-            "specific_heat",
-            "thermal_conductivity",
-            "youngs_modulus",
-            "thermal_expansion_coefficient",
-        ]
         material_model = material.dc_model
         material_def = self.__edb_definition.MaterialDef.Create(self.__edb.active_db, new_material_name)
         material_def.SetDielectricMaterialModel(material_model)
         new_material = Material(self.__edb, material_def)
-        for attribute in attributes:
+        for attribute in ATTRIBUTES:
             value = getattr(material, attribute)
             setattr(new_material, attribute, value)
 
-        dc_attributes = [
-            "dielectric_model_frequency",
-            "loss_tangent_at_frequency",
-            "permittivity_at_frequency",
-            "dc_conductivity",
-            "dc_permittivity",
-        ]
         if new_material.dc_model:
-            for attribute in dc_attributes:
+            for attribute in DC_ATTRIBUTES:
                 value = getattr(material, attribute)
                 if attribute == "dc_permittivity" and value is not None:
                     new_material.dc_model.SetUseDCRelativePermitivity(True)
@@ -917,10 +897,7 @@ class Materials(object):
                 if "tangent_delta" in material_properties:
                     material_properties["dielectric_loss_tangent"] = material_properties["tangent_delta"]
                     del material_properties["tangent_delta"]
-                for key, value in material_properties.items():
-                    # if value is None:
-                    print(material_name, key, value)
-                self.add_material(name=material_name, **material_properties)
+                self.add_material(material_name, **material_properties)
             else:
                 self.__edb.logger.warning(f"Material {material_name} already exist and was not loaded from AMAT file.")
         return True
