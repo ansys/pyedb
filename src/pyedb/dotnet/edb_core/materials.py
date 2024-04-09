@@ -803,6 +803,7 @@ class Materials(object):
         material_def.Delete()
         del self.__materials[material_name]
 
+    @pyedb_function_handler()
     def update_material(self, material_name, input_dict):
         material = self[material_name]
         attributes_input_dict = {key: val for (key,val) in input_dict.items() if key in ATTRIBUTES}
@@ -875,7 +876,7 @@ class Materials(object):
         else:
             return property_name_to_id["InvalidProperty"]
 
-    # @pyedb_function_handler()
+    @pyedb_function_handler()
     def load_amat(self, amat_file):
         """Load materials from an AMAT file.
 
