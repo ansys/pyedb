@@ -528,7 +528,7 @@ class Materials(object):
             raise ValueError(f"Material {name} already exists in material library.")
 
         extended_kwargs = {key: value for (key, value) in kwargs.items()}
-        extended_kwargs["conductivity":conductivity]
+        extended_kwargs["conductivity"] = conductivity
         material = self.add_material(name, **extended_kwargs)
         self.__materials[name] = material
         return material
@@ -554,8 +554,8 @@ class Materials(object):
             raise ValueError(f"Material {name} already exists in material library.")
 
         extended_kwargs = {key: value for (key, value) in kwargs.items()}
-        extended_kwargs["permittivity":permittivity]
-        extended_kwargs["dielectric_loss_tangent":dielectric_loss_tangent]
+        extended_kwargs["permittivity"] = permittivity
+        extended_kwargs["dielectric_loss_tangent"] = dielectric_loss_tangent
         material = self.add_material(name, **extended_kwargs)
         return material
 
