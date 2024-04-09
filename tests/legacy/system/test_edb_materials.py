@@ -27,7 +27,6 @@ import os
 
 import pytest
 
-from pyedb import Edb
 from pyedb.dotnet.edb_core.materials import Material, MaterialProperties, Materials
 from tests.conftest import local_path
 
@@ -112,7 +111,7 @@ class TestClass:
         material_def.Delete()
 
     def test_material_to_dict(self):
-        """Evaluate material convertion into a dictionary."""
+        """Evaluate material conversion into a dictionary."""
         material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
         material_model = self.definition.DjordjecvicSarkarModel()
         material_def.SetDielectricMaterialModel(material_model)

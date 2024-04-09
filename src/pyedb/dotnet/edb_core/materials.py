@@ -366,7 +366,7 @@ class Material(object):
 
     @pyedb_function_handler()
     def to_dict(self):
-        """Convert material into dictionnary."""
+        """Convert material into dictionary."""
         self.__load_all_properties()
 
         res = {"name": self.name}
@@ -429,7 +429,7 @@ class Material(object):
     # def __reset_property(self, name):
     #     """Reset a property using the default value of the EDB API.
     #
-    #     This method consists in reseting the value of a property by updating the inner property
+    #     This method consists in resetting the value of a property by updating the inner property
     #     to ``None`` and accessing the property afterward. When one wants to access a property
     #     whose stored inner value is ``None``, the value is updated to the EDB API default value
     #     associated to that property.
