@@ -120,6 +120,7 @@ class PackageDef(ObjBase):
     @pyedb_function_handler
     def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness):
         from pyedb.dotnet.edb_core.utilities.heatsink import HeatSink
+
         heatsink = HeatSink(self._pedb)
         heatsink.fin_base_height = fin_base_height
         heatsink.fin_height = fin_height
