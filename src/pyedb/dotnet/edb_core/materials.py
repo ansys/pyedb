@@ -498,13 +498,9 @@ class Materials(object):
 
         material_def = self.__edb_definition.MaterialDef.Create(self.__edb.active_db, name)
         material = Material(self.__edb, material_def)
-
-        attributes_input_dict = {key: val for (key, val) in kwargs.items() if key in ATTRIBUTES}
+        attributes_input_dict = {key: val for (key, val) in kwargs.items() if key in ATTRIBUTES + DC_ATTRIBUTES}
         if attributes_input_dict:
             material.update(attributes_input_dict)
-        dc_attributes_input_dict = {key: val for (key, val) in kwargs.items() if key in DC_ATTRIBUTES}
-        if dc_attributes_input_dict:
-            material.update(dc_attributes_input_dict)
 
         self.__materials[name] = material
         return material
@@ -531,6 +527,7 @@ class Materials(object):
         extended_kwargs = {key: value for (key, value) in kwargs.items()}
         extended_kwargs["conductivity"] = conductivity
         material = self.add_material(name, **extended_kwargs)
+
         self.__materials[name] = material
         return material
 
@@ -558,6 +555,8 @@ class Materials(object):
         extended_kwargs["permittivity"] = permittivity
         extended_kwargs["dielectric_loss_tangent"] = dielectric_loss_tangent
         material = self.add_material(name, **extended_kwargs)
+
+        self.__materials[name] = material
         return material
 
     # @pyedb_function_handler()
@@ -778,20 +777,10 @@ class Materials(object):
             raise ValueError(f"Material {new_material_name} already exists in material library.")
 
         material = self.materials[material_name]
-        material_model = material.dc_model
         material_def = self.__edb_definition.MaterialDef.Create(self.__edb.active_db, new_material_name)
-        material_def.SetDielectricMaterialModel(material_model)
+        material_dict = material.to_dict()
         new_material = Material(self.__edb, material_def)
-        for attribute in ATTRIBUTES:
-            value = getattr(material, attribute)
-            setattr(new_material, attribute, value)
-
-        if new_material.dc_model:
-            for attribute in DC_ATTRIBUTES:
-                value = getattr(material, attribute)
-                if attribute == "dc_permittivity" and value is not None:
-                    new_material.dc_model.SetUseDCRelativePermitivity(True)
-                setattr(new_material, attribute, value)
+        new_material.update(material_dict)
 
         self.__materials[new_material_name] = new_material
         return new_material
@@ -807,15 +796,15 @@ class Materials(object):
 
     @pyedb_function_handler()
     def update_material(self, material_name, input_dict):
+        if material_name not in self.__materials:
+            raise ValueError(f"Material {material_name} does not exist in material library.")
+
         material = self[material_name]
-        attributes_input_dict = {key: val for (key, val) in input_dict.items() if key in ATTRIBUTES}
+        attributes_input_dict = {
+            key: val for (key, val) in input_dict.items() if key in ATTRIBUTES + DC_ATTRIBUTES
+        }
         if attributes_input_dict:
             material.update(attributes_input_dict)
-
-        dc_attributes_input_dict = {key: val for (key, val) in input_dict.items() if key in DC_ATTRIBUTES}
-        if dc_attributes_input_dict:
-            material.update(dc_attributes_input_dict)
-
         self.__materials[material_name] = material
         return material
 
