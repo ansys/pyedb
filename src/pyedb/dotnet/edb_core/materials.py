@@ -66,13 +66,14 @@ ATTRIBUTES = [
     "youngs_modulus",
     "thermal_expansion_coefficient",
 ]
-DC_ATTRIBUTES =  [
+DC_ATTRIBUTES = [
     "dielectric_model_frequency",
     "loss_tangent_at_frequency",
     "permittivity_at_frequency",
     "dc_conductivity",
     "dc_permittivity",
 ]
+
 
 class MaterialProperties(BaseModel):
     """Store material properties."""
@@ -497,10 +498,10 @@ class Materials(object):
         material_def = self.__edb_definition.MaterialDef.Create(self.__edb.active_db, name)
         material = Material(self.__edb, material_def)
 
-        attributes_input_dict = {key: val for (key,val) in kwargs.items() if key in ATTRIBUTES}
+        attributes_input_dict = {key: val for (key, val) in kwargs.items() if key in ATTRIBUTES}
         if attributes_input_dict:
             material.update(attributes_input_dict)
-        dc_attributes_input_dict = {key: val for (key,val) in kwargs.items() if key in DC_ATTRIBUTES}
+        dc_attributes_input_dict = {key: val for (key, val) in kwargs.items() if key in DC_ATTRIBUTES}
         if dc_attributes_input_dict:
             material.update(dc_attributes_input_dict)
 
@@ -526,8 +527,8 @@ class Materials(object):
         if name in self.__materials:
             raise ValueError(f"Material {name} already exists in material library.")
 
-        extended_kwargs = {key: value for (key,value) in kwargs.items()}
-        extended_kwargs["conductivity": conductivity]
+        extended_kwargs = {key: value for (key, value) in kwargs.items()}
+        extended_kwargs["conductivity":conductivity]
         material = self.add_material(name, **extended_kwargs)
         self.__materials[name] = material
         return material
@@ -552,9 +553,9 @@ class Materials(object):
         if name in self.__materials:
             raise ValueError(f"Material {name} already exists in material library.")
 
-        extended_kwargs = {key: value for (key,value) in kwargs.items()}
-        extended_kwargs["permittivity": permittivity]
-        extended_kwargs["dielectric_loss_tangent": dielectric_loss_tangent]
+        extended_kwargs = {key: value for (key, value) in kwargs.items()}
+        extended_kwargs["permittivity":permittivity]
+        extended_kwargs["dielectric_loss_tangent":dielectric_loss_tangent]
         material = self.add_material(name, **extended_kwargs)
         return material
 
@@ -806,11 +807,11 @@ class Materials(object):
     @pyedb_function_handler()
     def update_material(self, material_name, input_dict):
         material = self[material_name]
-        attributes_input_dict = {key: val for (key,val) in input_dict.items() if key in ATTRIBUTES}
+        attributes_input_dict = {key: val for (key, val) in input_dict.items() if key in ATTRIBUTES}
         if attributes_input_dict:
             material.update(attributes_input_dict)
 
-        dc_attributes_input_dict = {key: val for (key,val) in input_dict.items() if key in DC_ATTRIBUTES}
+        dc_attributes_input_dict = {key: val for (key, val) in input_dict.items() if key in DC_ATTRIBUTES}
         if dc_attributes_input_dict:
             material.update(dc_attributes_input_dict)
 

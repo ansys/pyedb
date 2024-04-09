@@ -1685,14 +1685,14 @@ class Stackup(object):
                 "likely fail to simulate"
             )
         else:
-          mats = json_dict["materials"]
-          for material in mats.values():
-              material_name = material["name"]
-              del material["name"]
-              if material_name not in self._pedb.materials:
-                  self._pedb.materials.add_material(material_name, **material)
-              else:
-                  self._pedb.materials.update_material(material_name, material)
+            mats = json_dict["materials"]
+            for material in mats.values():
+                material_name = material["name"]
+                del material["name"]
+                if material_name not in self._pedb.materials:
+                    self._pedb.materials.add_material(material_name, **material)
+                else:
+                    self._pedb.materials.update_material(material_name, material)
         temp = {i: j for i, j in json_dict["layers"].items() if j["type"] in ["signal", "dielectric"]}
         config_file_layers = list(temp.keys())
         layout_layers = list(self.stackup_layers.keys())
