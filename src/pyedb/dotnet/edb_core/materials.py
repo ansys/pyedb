@@ -496,8 +496,14 @@ class Materials(object):
 
         material_def = self.__edb_definition.MaterialDef.Create(self.__edb.active_db, name)
         material = Material(self.__edb, material_def)
-        for key, value in kwargs.items():
-            setattr(material, key, value)
+
+        attributes_input_dict = {key: val for (key,val) in kwargs.items() if key in ATTRIBUTES}
+        if attributes_input_dict:
+            material.update(attributes_input_dict)
+        dc_attributes_input_dict = {key: val for (key,val) in kwargs.items() if key in DC_ATTRIBUTES}
+        if dc_attributes_input_dict:
+            material.update(dc_attributes_input_dict)
+
         self.__materials[name] = material
         return material
 
