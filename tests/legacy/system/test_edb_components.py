@@ -339,6 +339,8 @@ class TestClass:
         assert edbapp.components.definitions["CAPC3216X180X20ML20"].assign_rlc_model(1, 2, 3)
         sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
         assert edbapp.components.definitions["CAPC3216X180X55ML20T25"].assign_s_param_model(sparam_path)
+        ref_file = edbapp.components.definitions["CAPC3216X180X55ML20T25"].reference_file
+        assert ref_file
         spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
         assert edbapp.components.definitions["CAPMP7343X31N"].assign_spice_model(spice_path)
         edbapp.close()

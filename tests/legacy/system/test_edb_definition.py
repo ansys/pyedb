@@ -66,6 +66,11 @@ class TestClass:
         assert self.edbapp.definitions.package["package_1"].theta_jc == 1
         package.height = 1
         assert self.edbapp.definitions.package["package_1"].height == 1
-
+        package.set_heatsink("1mm", "2mm", "x_oriented", "3mm", "4mm")
+        assert package.heatsink.fin_base_height == 0.001
+        assert package.heatsink.fin_height == 0.002
+        assert package.heatsink.fin_orientation == "x_oriented"
+        assert package.heatsink.fin_spacing == 0.003
+        assert package.heatsink.fin_thickness == 0.004
         package.name = "package_1b"
         assert self.edbapp.definitions.package["package_1b"]
