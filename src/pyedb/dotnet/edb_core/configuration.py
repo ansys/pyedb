@@ -706,7 +706,7 @@ class Configuration:
                     heatsink["fin_height"],
                     heatsink["fin_orientation"],
                     heatsink["fin_spacing"],
-                    heatsink["fin_thickness"]
+                    heatsink["fin_thickness"],
                 )
             json_comps = pkgd["components"] if isinstance(pkgd["components"], list) else [pkgd["components"]]
             for i in json_comps:
