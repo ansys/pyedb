@@ -887,8 +887,12 @@ class Stackup(object):
             for k, v in json_dict.items():
                 if k == "materials":
                     for material in v.values():
-                        if material is not None:
-                            self._pedb.materials.add_material(**material)
+                        material_name = material["name"]
+                        del material["name"]
+                        if material_name not in self._pedb.materials:
+                            self._pedb.materials.add_material(material_name, **material)
+                        else:
+                            self._pedb.materials.update_material(material_name, material)
                 if k == "layers":
                     if len(list(v.values())) == len(list(self.stackup_layers.values())):
                         imported_layers_list = [l_dict["name"] for l_dict in list(v.values())]
@@ -1675,8 +1679,12 @@ class Stackup(object):
         """Import stackup from a dictionary."""
         mats = json_dict["materials"]
         for material in mats.values():
-            if material is not None:
-                self._pedb.materials.add_material(**material)
+            material_name = material["name"]
+            del material["name"]
+            if material_name not in self._pedb.materials:
+                self._pedb.materials.add_material(material_name, **material)
+            else:
+                self._pedb.materials.update_material(material_name, material)
 
         temp = {i: j for i, j in json_dict["layers"].items() if j["type"] in ["signal", "dielectric"]}
         for name in list(self.stackup_layers.keys()):
