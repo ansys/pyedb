@@ -31,8 +31,9 @@ from collections import OrderedDict
 import json
 import logging
 import math
-import re
 import warnings
+
+import matplotlib.colors
 
 from pyedb.dotnet.edb_core.edb_data.layer_data import (
     LayerEdbClass,
@@ -1675,40 +1676,61 @@ class Stackup(object):
 
     # TODO: This method might need some refactoring
     @pyedb_function_handler()
-    def _import_dict(self, json_dict):
+    def _import_dict(self, json_dict, rename=False):
         """Import stackup from a dictionary."""
-        mats = json_dict["materials"]
-        for material in mats.values():
-            material_name = material["name"]
-            del material["name"]
-            if material_name not in self._pedb.materials:
-                self._pedb.materials.add_material(material_name, **material)
-            else:
-                self._pedb.materials.update_material(material_name, material)
-
+        if not "materials" in json_dict:
+            self._logger.warning("Configuration file does not have material definition")
+            self._logger.warning(
+                "Please check your json or xml file, if no material are defined your project will"
+                "likely fail to simulate"
+            )
+        else:
+          mats = json_dict["materials"]
+          for material in mats.values():
+              material_name = material["name"]
+              del material["name"]
+              if material_name not in self._pedb.materials:
+                  self._pedb.materials.add_material(material_name, **material)
+              else:
+                  self._pedb.materials.update_material(material_name, material)
         temp = {i: j for i, j in json_dict["layers"].items() if j["type"] in ["signal", "dielectric"]}
+        config_file_layers = list(temp.keys())
+        layout_layers = list(self.stackup_layers.keys())
+        renamed_layers = {}
+        if rename and len(config_file_layers) == len(layout_layers):
+            for lay_ind in range(len(list(temp.keys()))):
+                if not config_file_layers[lay_ind] == layout_layers[lay_ind]:
+                    renamed_layers[layout_layers[lay_ind]] = config_file_layers[lay_ind]
         for name in list(self.stackup_layers.keys()):
+            layer = None
             if name in temp:
                 layer = temp[name]
-                default_layer = {
-                    "name": "default",
-                    "type": "signal",
-                    "material": "copper",
-                    "dielectric_fill": "fr4_epoxy",
-                    "thickness": 3.5e-05,
-                    "etch_factor": 0.0,
-                    "roughness_enabled": False,
-                    "top_hallhuray_nodule_radius": 0.0,
-                    "top_hallhuray_surface_ratio": 0.0,
-                    "bottom_hallhuray_nodule_radius": 0.0,
-                    "bottom_hallhuray_surface_ratio": 0.0,
-                    "side_hallhuray_nodule_radius": 0.0,
-                    "side_hallhuray_surface_ratio": 0.0,
-                    "upper_elevation": 0.0,
-                    "lower_elevation": 0.0,
-                    "color": [242, 140, 102],
-                }
-
+            elif name in renamed_layers:
+                layer = temp[renamed_layers[name]]
+                self.stackup_layers[name].name = renamed_layers[name]
+                name = renamed_layers[name]
+            else:  # Remove layers not in config file.
+                self.remove_layer(name)
+                self._logger.warning(f"Layer {name} were not found in configuration file, removing layer")
+            default_layer = {
+                "name": "default",
+                "type": "signal",
+                "material": "copper",
+                "dielectric_fill": "fr4_epoxy",
+                "thickness": 3.5e-05,
+                "etch_factor": 0.0,
+                "roughness_enabled": False,
+                "top_hallhuray_nodule_radius": 0.0,
+                "top_hallhuray_surface_ratio": 0.0,
+                "bottom_hallhuray_nodule_radius": 0.0,
+                "bottom_hallhuray_surface_ratio": 0.0,
+                "side_hallhuray_nodule_radius": 0.0,
+                "side_hallhuray_surface_ratio": 0.0,
+                "upper_elevation": 0.0,
+                "lower_elevation": 0.0,
+                "color": [242, 140, 102],
+            }
+            if layer:
                 if "color" in layer:
                     default_layer["color"] = layer["color"]
                 elif not layer["type"] == "signal":
@@ -1716,15 +1738,11 @@ class Stackup(object):
 
                 for k, v in layer.items():
                     default_layer[k] = v
-
                 self.stackup_layers[name]._load_layer(default_layer)
-            else:  # Remove layers not in config file.
-                self.remove_layer(name)
-
-        for layer_name, layer in temp.items():
+        for layer_name, layer in temp.items():  # looping over potential new layers to add
             if layer_name in self.stackup_layers:
                 continue  # if layer exist, skip
-
+            # adding layer
             default_layer = {
                 "name": "default",
                 "type": "signal",
@@ -1798,12 +1816,12 @@ class Stackup(object):
         return True
 
     @pyedb_function_handler()
-    def _import_json(self, file_path):
+    def _import_json(self, file_path, rename=False):
         """Import stackup from a json file."""
         if file_path:
             f = open(file_path)
             json_dict = json.load(f)  # pragma: no cover
-            return self._import_dict(json_dict)
+            return self._import_dict(json_dict, rename)
 
     @pyedb_function_handler()
     def _import_csv(self, file_path):
@@ -2076,11 +2094,11 @@ class Stackup(object):
         return True
 
     @pyedb_function_handler()
-    def _import_xml(self, file_path):
-        """Read external xml file and update stackup.
-        1, all existing layers must exist in xml file.
-        2, xml can have more layers than the existing stackup.
-        3, if xml has different layer order, reorder the layers according to xml definition.
+    def _import_xml(self, file_path, rename=False):
+        """Read external xml file and convert into json file.
+        You can use xml file to import layer stackup but using json file is recommended.
+        see :class:`pyedb.dotnet.edb_core.edb_data.simulation_configuration.SimulationConfiguration´ class to
+        generate files`.
 
         Parameters
         ----------
@@ -2093,59 +2111,38 @@ class Stackup(object):
             ``True`` when successful, ``False`` when failed.
         """
         tree = ET.parse(file_path)
-        material_dict = {}
         root = tree.getroot()
         stackup = root.find("Stackup")
-        for m in stackup.find("Materials").findall("Material"):
-            material = {}
-            for i in list(m):
-                material[i.tag] = list(i)[0].text
-            material_dict[m.attrib["Name"]] = material
-
-        self._add_materials_from_dictionary(material_dict)
-
-        lc_import = self._pedb.edb_api.Cell.LayerCollection()
-
-        if not lc_import.ImportFromControlFile(file_path):  # pragma: no cover
-            logger.error("Import xml failed. Please check xml content.")
-            return False
-
-        if not len(self.stackup_layers):
-            self._pedb.layout.layer_collection = lc_import
-            self.refresh_layer_collection()
-            return True
-
-        dumy_layers = OrderedDict()
-        for i in list(lc_import.Layers(self._pedb.edb_api.cell.layer_type_set.AllLayerSet)):
-            dumy_layers[i.GetName()] = i.Clone()
-
-        for name in self.layers.keys():
-            if not name in dumy_layers:
-                logger.error("{} doesn't exist in xml".format(name))
-                return False
-
-        for name, l in dumy_layers.items():
-            layer_type = re.sub(r"Layer$", "", l.GetLayerType().ToString()).lower()
-            if name in self.layers:
-                layer = self.layers[name]
-                layer.type = layer_type
-            else:
-                layer = self.add_layer(name, layer_type=layer_type, material="copper", fillMaterial="copper")
-
-            if l.IsStackupLayer():
-                layer.material = l.GetMaterial()
-                layer.thickness = l.GetThicknessValue().ToDouble()
-                layer.dielectric_fill = l.GetFillMaterial()
-                layer.etch_factor = l.GetEtchFactor().ToDouble()
-
-        lc_new = self._pedb.edb_api.Cell.LayerCollection()
-        for name, _ in dumy_layers.items():
-            layer = self.layers[name]
-            lc_new.AddLayerBottom(layer._edb_layer)
-
-        self._pedb.layout.layer_collection = lc_new
-        self.refresh_layer_collection()
-        return True
+        stackup_dict = {}
+        if stackup.find("Materials"):
+            stackup_dict["materials"] = {}
+            for m in stackup.find("Materials").findall("Material"):
+                material = {"name": m.attrib["Name"]}
+                for i in list(m):
+                    material[i.tag.lower()] = float(list(i)[0].text)
+                if material:
+                    stackup_dict["materials"][material["name"]] = material
+        stackup_section = stackup.find("Layers")
+        if stackup_section:
+            length_unit = stackup_section.attrib["LengthUnit"]
+            stackup_dict["layers"] = {}
+            for l in stackup.find("Layers").findall("Layer"):
+                layer = {"name": l.attrib["Name"]}
+                for k, v in l.attrib.items():
+                    if k == "Color":
+                        layer[k.lower()] = [int(x * 255) for x in list(matplotlib.colors.to_rgb(v))]
+                    elif k == "Thickness":
+                        layer[k.lower()] = v + length_unit
+                    elif v == "conductor":
+                        layer[k.lower()] = "signal"
+                    elif k == "FillMaterial":
+                        layer["dielectric_fill"] = v
+                    else:
+                        layer[k.lower()] = v
+                if layer:
+                    if layer["type"] == "signal" or layer["type"] == "dielectric":
+                        stackup_dict["layers"][layer["name"]] = layer
+        return self._import_dict(stackup_dict, rename=rename)
 
     @pyedb_function_handler()
     def _export_xml(self, file_path):
@@ -2199,7 +2196,7 @@ class Stackup(object):
         return True
 
     @pyedb_function_handler()
-    def load(self, file_path):
+    def load(self, file_path, rename=False):
         """Import stackup from a file. The file format can be XML, CSV, or JSON.
 
 
@@ -2207,6 +2204,11 @@ class Stackup(object):
         ----------
         file_path : str
             Path to stackup file.
+        rename : bool
+            If rename is ``False`` then layer in layout not found in the stackup file are deleted.
+            Otherwise, if the number of layer in the stackup file equals the number of stackup layer
+            in the layout, layers are renamed according the the file.
+            Note that layer order matters, and has to be writtent from top to bottom layer in the file.
 
         Returns
         -------
@@ -2225,9 +2227,9 @@ class Stackup(object):
         elif file_path.endswith(".csv"):
             return self._import_csv(file_path)
         elif file_path.endswith(".json"):
-            return self._import_json(file_path)
+            return self._import_json(file_path, rename=rename)
         elif file_path.endswith(".xml"):
-            return self._import_xml(file_path)
+            return self._import_xml(file_path, rename=rename)
         else:
             return False
 
