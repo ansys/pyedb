@@ -692,6 +692,7 @@ class Configuration:
             if name in self._pedb.definitions.package:
                 self._pedb.definitions.package[name].delete()
             from pyedb.dotnet.edb_core.definition.package_def import PackageDef
+
             package_def = PackageDef(self._pedb, name=name)
             package_def.maximum_power = pkgd["maximum_power"]
             package_def.therm_cond = pkgd["therm_cond"]
@@ -706,7 +707,7 @@ class Configuration:
                     heatsink["fin_height"],
                     heatsink["fin_orientation"],
                     heatsink["fin_spacing"],
-                    heatsink["fin_thickness"]
+                    heatsink["fin_thickness"],
                 )
             json_comps = pkgd["components"] if isinstance(pkgd["components"], list) else [pkgd["components"]]
             for i in json_comps:
