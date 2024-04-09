@@ -391,6 +391,7 @@ class Material(object):
                         if attribute == "dc_permittivity" and input_dict[attribute] is not None:
                             self.__dc_model.SetUseDCRelativePermitivity(True)
                         setattr(self, attribute, input_dict[attribute])
+                self.__material_def.SetDielectricMaterialModel(self.__dc_model)
             # Unset DS model if it is already assigned to the material in the database
             elif self.__dc_model:
                 self.__material_def.SetDielectricMaterialModel(self.__edb_value(None))
