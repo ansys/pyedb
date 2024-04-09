@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 from pyedb.dotnet.clr_module import Tuple
-from pyedb.dotnet.edb_core.edb_data.simulation_setup import (
+from pyedb.dotnet.edb_core.utilities.simulation_setup import (
     BaseSimulationSetup,
     EdbFrequencySweep,
 )

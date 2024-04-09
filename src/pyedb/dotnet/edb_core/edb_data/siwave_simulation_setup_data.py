@@ -22,7 +22,7 @@
 
 import warnings
 
-from pyedb.dotnet.edb_core.edb_data.simulation_setup import BaseSimulationSetup
+from pyedb.dotnet.edb_core.utilities.simulation_setup import BaseSimulationSetup
 from pyedb.dotnet.edb_core.general import (
     convert_netdict_to_pydict,
     convert_pydict_to_netdict,
