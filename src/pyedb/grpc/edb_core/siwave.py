@@ -3,33 +3,42 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 ``PinGroup``, ``ResistorSource``, ``Source``, ``SourceType``, and ``VoltageSource``.
 """
 import os
-import time
 
-from pyedb.grpc.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-from pyedb.grpc.edb_core.edb_data.simulation_configuration import SourceType
-from pyedb.grpc.edb_core.edb_data.sources import CircuitPort
-from pyedb.grpc.edb_core.edb_data.sources import CurrentSource
-from pyedb.grpc.edb_core.edb_data.sources import DCTerminal
-from pyedb.grpc.edb_core.edb_data.sources import PinGroup
-from pyedb.grpc.edb_core.edb_data.sources import ResistorSource
-from pyedb.grpc.edb_core.edb_data.sources import VoltageSource
-from pyedb.generic.constants import SolverType
-from pyedb.generic.constants import SweepType
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.modeler.geometry_operators import GeometryOperators
-import ansys.edb.core.terminal as edb_terminal
-import ansys.edb.core.utility as edb_utility
-import ansys.edb.core.geometry as edb_geometry
+# import ansys.edb.core.geometry as edb_geometry
 import ansys.edb.core.hierarchy as edb_hierarchy
 import ansys.edb.core.net.net as edb_net
-#from ansys.edb.terminal.terminals import PadstackInstanceTerminal
-#from ansys.edb.terminal.terminals import BoundaryType
-#from ansys.edb.utility.value import Value
-#from ansys.edb.utility.rlc import Rlc
-#from ansys.edb.geometry.point_data import PointData
-#from ansys.edb.terminal.terminals import PointTerminal, PinGroupTerminal
-#from ansys.edb.hierarchy.pin_group import PinGroup
+import ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup as siwave_dc
+
+# import ansys.edb.core.simulation_setup.siwave_simulation_setup as siwave_simulation_setup
+import ansys.edb.core.terminal as edb_terminal
+import ansys.edb.core.utility as edb_utility
+
+from pyedb.generic.constants import SolverType, SweepType
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+from pyedb.grpc.edb_core.edb_data.simulation_configuration import (
+    SimulationConfiguration,
+    SourceType,
+)
+from pyedb.grpc.edb_core.edb_data.sources import (
+    CircuitPort,
+    CurrentSource,
+    DCTerminal,
+    PinGroup,
+    ResistorSource,
+    VoltageSource,
+)
+from pyedb.modeler.geometry_operators import GeometryOperators
+
+# import time
+
+
+# from ansys.edb.terminal.terminals import PadstackInstanceTerminal
+# from ansys.edb.terminal.terminals import BoundaryType
+# from ansys.edb.utility.value import Value
+# from ansys.edb.utility.rlc import Rlc
+# from ansys.edb.geometry.point_data import PointData
+# from ansys.edb.terminal.terminals import PointTerminal, PinGroupTerminal
+# from ansys.edb.hierarchy.pin_group import PinGroup
 
 
 class EdbSiwave(object):
@@ -125,28 +134,36 @@ class EdbSiwave(object):
         fromLayer_pos, toLayer_pos = pos_pin.primitive_object.get_layer_range()
         fromLayer_neg, toLayer_neg = neg_pin.primitive_object.get_layer_range()
 
-        pos_terminal = edb_terminal.PadstackInstanceTerminal.create(layout=self._active_layout,
-                                                                         name=source.name,
-                                                                         padstack_instance=pos_pin.pin,
-                                                                         layer=fromLayer_pos,
-                                                                         net=pos_pin.net.net_object,
-                                                                         is_ref=False)
+        pos_terminal = edb_terminal.PadstackInstanceTerminal.create(
+            layout=self._active_layout,
+            name=source.name,
+            padstack_instance=pos_pin.pin,
+            layer=fromLayer_pos,
+            net=pos_pin.net.net_object,
+            is_ref=False,
+        )
         if pos_terminal.is_null:
-            self._logger.error(f"Failed to create voltage source on pin {pos_pin.name}, "
-                               f"component {pos_pin.component.refdes} (Positive terminal)")
+            self._logger.error(
+                f"Failed to create voltage source on pin {pos_pin.name}, "
+                f"component {pos_pin.component.refdes} (Positive terminal)"
+            )
             return False
         ref_term_name = neg_pin.name
         if ref_term_name == pos_pin.name:
             ref_term_name = f"{pos_pin.name}_ref"
-        neg_terminal = edb_terminal.PadstackInstanceTerminal.create(layout=self._active_layout,
-                                                                         name=ref_term_name,
-                                                                         padstack_instance=neg_pin.pin,
-                                                                         layer=fromLayer_neg,
-                                                                         net=neg_pin.net.net_object,
-                                                                         is_ref=True)
+        neg_terminal = edb_terminal.PadstackInstanceTerminal.create(
+            layout=self._active_layout,
+            name=ref_term_name,
+            padstack_instance=neg_pin.pin,
+            layer=fromLayer_neg,
+            net=neg_pin.net.net_object,
+            is_ref=True,
+        )
         if neg_terminal.is_null:
-            self._logger.error(f"Failed to create voltage source on pin {neg_pin.name}, "
-                               f"component {neg_pin.component.refdes} (Reference terminal)")
+            self._logger.error(
+                f"Failed to create voltage source on pin {neg_pin.name}, "
+                f"component {neg_pin.component.refdes} (Reference terminal)"
+            )
             return False
         if source.source_type in [SourceType.CoaxPort, SourceType.CircPort, SourceType.LumpedPort]:
             pos_terminal.boundary_type = edb_terminal.BoundaryType.PORT
@@ -307,11 +324,13 @@ class EdbSiwave(object):
                 pin_edb_layer = self._edb.stackup.layers[pin.start_layer]._edb_layer
                 if pin_edb_layer:
                     pin_instance = pin._edb_padstackinstance
-                    positive_terminal = terminal.PadstackInstanceTerminal.create(layout=self._active_layout,
-                                                                                 net=pin_instance.net,
-                                                                                 name=term_name,
-                                                                                 padstack_instance=pin_instance,
-                                                                                 layer=pin_edb_layer)
+                    positive_terminal = terminal.PadstackInstanceTerminal.create(
+                        layout=self._active_layout,
+                        net=pin_instance.net,
+                        name=term_name,
+                        padstack_instance=pin_instance,
+                        layer=pin_edb_layer,
+                    )
                     positive_terminal.boundary_type = terminal.BoundaryType.PORT
                     positive_terminal.impedance = utility.Value(impedance)
                     positive_terminal.is_circuit_port = True
@@ -322,7 +341,8 @@ class EdbSiwave(object):
                         net=reference_net.net_object,
                         name="{}_ref".format(term_name),
                         point=position,
-                        layer=self._pedb.stackup.signal_layers[layer_name]._edb_layer)
+                        layer=self._pedb.stackup.signal_layers[layer_name]._edb_layer,
+                    )
                     negative_terminal.boundary_type = terminal.BoundaryType.PORT
                     negative_terminal.impedance = utility.Value(impedance)
                     negative_terminal.is_circuit_port = True
@@ -905,20 +925,24 @@ class EdbSiwave(object):
         pos_pin_group = self._pedb.components.create_pingroup_from_pins(source.positive_node.node_pins)
         pos_node_net = self._pedb.nets.get_net_by_name(source.positive_node.net)
         pos_pingroup_term_name = source.name
-        pos_pingroup_terminal = edb_terminal.PinGroupTerminal.create(layout=self._active_layout,
-                                                        net=pos_node_net.net_object,
-                                                        name=pos_pingroup_term_name,
-                                                        pin_group=pos_pin_group,
-                                                        is_ref=False)
+        pos_pingroup_terminal = edb_terminal.PinGroupTerminal.create(
+            layout=self._active_layout,
+            net=pos_node_net.net_object,
+            name=pos_pingroup_term_name,
+            pin_group=pos_pin_group,
+            is_ref=False,
+        )
         if source.negative_node.node_pins:
             neg_pin_group = self._pedb.components.create_pingroup_from_pins(source.negative_node.node_pins)
             neg_node_net = self._pedb.nets.get_net_by_name(source.negative_node.net)
             neg_pingroup_term_name = source.name + "_N"
-            neg_pingroup_terminal = edb_terminal.PinGroupTerminal.create(layout=self._active_layout,
-                                                            net=neg_node_net.net_object,
-                                                            name=neg_pingroup_term_name,
-                                                            pin_group=neg_pin_group,
-                                                            is_ref=False)
+            neg_pingroup_terminal = edb_terminal.PinGroupTerminal.create(
+                layout=self._active_layout,
+                net=neg_node_net.net_object,
+                name=neg_pingroup_term_name,
+                pin_group=neg_pin_group,
+                is_ref=False,
+            )
 
         if source.source_type in [SourceType.CoaxPort, SourceType.CircPort, SourceType.LumpedPort]:
             pos_pingroup_terminal.boundary_type = edb_terminal.BoundaryType.PORT
@@ -1070,62 +1094,52 @@ class EdbSiwave(object):
                 self._cell.DeleteSimulationSetup(setup.GetName())
                 self._logger.warning("Setup {} has been deleted".format(setup.GetName()))
             return self._cell.AddSimulationSetup(edb_sim_setup)
-        if simulation_setup.solver_type == SolverType.SiwaveDC:  # pragma: no cover
-            dcir_setup = self._pedb.simsetupdata.SimSetupInfo[
-                self._pedb.simsetupdata.SIwave.SIWDCIRSimulationSettings
-            ]()
-            dcir_setup.Name = simulation_setup.setup_name
-            dcir_setup.SimulationSettings.DCSettings.ComputeInductance = simulation_setup.dc_compute_inductance
-            dcir_setup.SimulationSettings.DCSettings.ContactRadius = simulation_setup.dc_contact_radius
-            dcir_setup.SimulationSettings.DCSettings.DCSliderPos = simulation_setup.dc_slide_position
-            dcir_setup.SimulationSettings.DCSettings.PlotJV = simulation_setup.dc_plot_jv
-            dcir_setup.SimulationSettings.DCSettings.UseDCCustomSettings = simulation_setup.dc_use_dc_custom_settings
-            dcir_setup.SimulationSettings.DCAdvancedSettings.DcMinPlaneAreaToMesh = (
-                simulation_setup.dc_min_plane_area_to_mesh
+        if simulation_setup.solver_type == SolverType.SiwaveDC:
+            # pragma: no cover
+            for setup in self._cell.simulation_setups:
+                self._cell.delete_simulation_setup(setup.name)
+                self._logger.warning("Setup {} has been delete".format(setup.name))
+            dcir_setup = siwave_dc.SIWaveDCIRSimulationSetup.create(
+                cell=self._pedb.active_cell, name=simulation_setup.setup_name
             )
-            dcir_setup.SimulationSettings.DCAdvancedSettings.DcMinVoidAreaToMesh = (
-                simulation_setup.dc_min_void_area_to_mesh
+            dcir_setup.settings.dc.compute_inductance = simulation_setup.dc_compute_inductance
+            dcir_setup.settings.dc.contact_radius = simulation_setup.dc_contact_radius
+            dcir_setup.settings.dc.dc_slider_pos = simulation_setup.dc_slide_position
+            dcir_setup.settings.dc.plot_jv = simulation_setup.dc_plot_jv
+            dcir_setup.settings.dc.use_dc_custom_settings = simulation_setup.dc_use_dc_custom_settings
+            dcir_setup.settings.advanced.min_plane_area_to_mesh = simulation_setup.dc_min_plane_area_to_mesh
+            dcir_setup.settings.advanced.min_void_area = simulation_setup.dc_min_void_area_to_mesh
+            dcir_setup.settings.dc_advanced.energy_error = simulation_setup.dc_error_energy
+            dcir_setup.settings.dc_advanced.max_init_mesh_edge_length = simulation_setup.dc_max_init_mesh_edge_length
+            dcir_setup.settings.dc_advanced.max_num_passes = simulation_setup.dc_max_num_pass
+            dcir_setup.settings.dc_advanced.mesh_bws = simulation_setup.dc_mesh_bondwires
+            dcir_setup.settings.dc_advanced.mesh_vias = simulation_setup.dc_mesh_vias
+            dcir_setup.settings.dc_advanced.min_num_passes = simulation_setup.dc_min_num_pass
+            dcir_setup.settings.dc_advanced.num_bw_sides = simulation_setup.dc_num_bondwire_sides
+            dcir_setup.settings.dc_advanced.num_via_sides = simulation_setup.dc_num_via_sides
+            dcir_setup.settings.dc_advanced.percent_local_refinement = int(
+                simulation_setup.dc_percent_local_refinement * 100
             )
-            dcir_setup.SimulationSettings.DCAdvancedSettings.EnergyError = simulation_setup.dc_error_energy
-            dcir_setup.SimulationSettings.DCAdvancedSettings.MaxInitMeshEdgeLength = (
-                simulation_setup.dc_max_init_mesh_edge_length
-            )
-            dcir_setup.SimulationSettings.DCAdvancedSettings.MaxNumPasses = simulation_setup.dc_max_num_pass
-            dcir_setup.SimulationSettings.DCAdvancedSettings.MeshBws = simulation_setup.dc_mesh_bondwires
-            dcir_setup.SimulationSettings.DCAdvancedSettings.MeshVias = simulation_setup.dc_mesh_vias
-            dcir_setup.SimulationSettings.DCAdvancedSettings.MinNumPasses = simulation_setup.dc_min_num_pass
-            dcir_setup.SimulationSettings.DCAdvancedSettings.NumBwSides = simulation_setup.dc_num_bondwire_sides
-            dcir_setup.SimulationSettings.DCAdvancedSettings.NumViaSides = simulation_setup.dc_num_via_sides
-            dcir_setup.SimulationSettings.DCAdvancedSettings.PercentLocalRefinement = (
-                simulation_setup.dc_percent_local_refinement
-            )
-            dcir_setup.SimulationSettings.DCAdvancedSettings.PerformAdaptiveRefinement = (
+            dcir_setup.settings.dc_advanced.perform_adaptive_refinement = (
                 simulation_setup.dc_perform_adaptive_refinement
             )
-            dcir_setup.SimulationSettings.DCAdvancedSettings.RefineBws = simulation_setup.dc_refine_bondwires
-            dcir_setup.SimulationSettings.DCAdvancedSettings.RefineVias = simulation_setup.dc_refine_vias
+            dcir_setup.settings.dc_advanced.refine_bws = simulation_setup.dc_refine_bondwires
+            dcir_setup.settings.dc_advanced.refine_vias = simulation_setup.dc_refine_vias
 
-            dcir_setup.SimulationSettings.DCIRSettings.DCReportConfigFile = simulation_setup.dc_report_config_file
-            dcir_setup.SimulationSettings.DCIRSettings.DCReportShowActiveDevices = (
-                simulation_setup.dc_report_show_Active_devices
-            )
-            dcir_setup.SimulationSettings.DCIRSettings.ExportDCThermalData = simulation_setup.dc_export_thermal_data
-            dcir_setup.SimulationSettings.DCIRSettings.FullDCReportPath = simulation_setup.dc_full_report_path
-            dcir_setup.SimulationSettings.DCIRSettings.IcepakTempFile = simulation_setup.dc_icepak_temp_file
-            dcir_setup.SimulationSettings.DCIRSettings.ImportThermalData = simulation_setup.dc_import_thermal_data
-            dcir_setup.SimulationSettings.DCIRSettings.PerPinResPath = simulation_setup.dc_per_pin_res_path
-            dcir_setup.SimulationSettings.DCIRSettings.PerPinUsePinFormat = simulation_setup.dc_per_pin_use_pin_format
-            dcir_setup.SimulationSettings.DCIRSettings.UseLoopResForPerPin = (
-                simulation_setup.dc_use_loop_res_for_per_pin
-            )
-            dcir_setup.SimulationSettings.DCIRSettings.ViaReportPath = simulation_setup.dc_via_report_path
-            dcir_setup.SimulationSettings.DCIRSettings.SourceTermsToGround = simulation_setup.dc_source_terms_to_ground
-            dcir_setup.Name = simulation_setup.setup_name
-            sim_setup = self._edb.utility.utility.SIWaveDCIRSimulationSetup(dcir_setup)
-            for setup in self._cell.SimulationSetups:
-                self._cell.DeleteSimulationSetup(setup.GetName())
-                self._logger.warning("Setup {} has been delete".format(setup.GetName()))
-            return self._cell.AddSimulationSetup(sim_setup)
+            dcir_setup.settings.dc_report_config_file = simulation_setup.dc_report_config_file
+            dcir_setup.settings.dc_report_show_active_devices = simulation_setup.dc_report_show_Active_devices
+            dcir_setup.settings.export_dc_thermal_data = simulation_setup.dc_export_thermal_data
+            dcir_setup.settings.full_dc_report_path = simulation_setup.dc_full_report_path
+            dcir_setup.settings.icepak_temp_file = simulation_setup.dc_icepak_temp_file
+            dcir_setup.settings.import_thermal_data = simulation_setup.dc_import_thermal_data
+            dcir_setup.settings.per_pin_res_path = simulation_setup.dc_per_pin_res_path
+            dcir_setup.settings.per_pin_use_pin_format = simulation_setup.dc_per_pin_use_pin_format
+            dcir_setup.settings.use_loop_res_for_per_pin = simulation_setup.dc_use_loop_res_for_per_pin
+            dcir_setup.settings.via_report_path = simulation_setup.dc_via_report_path
+            dcir_setup.settings.source_terms_to_ground = (
+                simulation_setup.dc_source_terms_to_ground
+            )  # make sure we pass dict
+            dcir_setup.name = simulation_setup.setup_name
 
     @pyedb_function_handler()
     def _setup_decade_count_sweep(self, sweep, start_freq, stop_freq, decade_count):
@@ -1218,7 +1232,9 @@ class EdbSiwave(object):
             group_name = edb_hierarchy.PinGroup.unique_name(self._active_layout)
         comp = self._pedb.components.instances[reference_designator]
         pins = [pin.pin for name, pin in comp.pins.items() if name in pin_numbers]
-        edb_pingroup = edb_hierarchy.PinGroup.create(layout=self._active_layout, name=group_name, padstack_instances=pins)
+        edb_pingroup = edb_hierarchy.PinGroup.create(
+            layout=self._active_layout, name=group_name, padstack_instances=pins
+        )
         if not edb_pingroup.is_null:
             return PinGroup(name=group_name, edb_pin_group=edb_pingroup, pedb=self._pedb)
         return False

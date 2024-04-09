@@ -1,9 +1,12 @@
-from pyedb.grpc.edb_core.edb_data.terminals import BundleTerminal
-from pyedb.grpc.edb_core.edb_data.terminals import EdgeTerminal
-from pyedb.grpc.edb_core.edb_data.terminals import PadstackInstanceTerminal
-from pyedb.grpc.edb_core.edb_data.terminals import Terminal
-import ansys.edb.core.utility as utility
 import ansys.edb.core.database as database
+import ansys.edb.core.utility as utility
+
+from pyedb.grpc.edb_core.edb_data.terminals import (
+    BundleTerminal,
+    EdgeTerminal,
+    PadstackInstanceTerminal,
+    Terminal,
+)
 
 
 class GapPort(EdgeTerminal):
@@ -85,7 +88,7 @@ class WavePort(EdgeTerminal):
 
     @horizontal_extent_factor.setter
     def horizontal_extent_factor(self, value):
-        self._edb_object.product_solver_names(database.ProductIdType.HFSS_3D_LAYOUT)
+        self._edb_object.product_solver_names = database.ProductIdType.HFSS_3D_LAYOUT
         p = self._hfss_port_property
         p["Horizontal Extent Factor"] = value
         self._hfss_port_property = p

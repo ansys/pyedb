@@ -9,9 +9,9 @@ import ansys.edb.core.hierarchy as edb_hierarchy
 import ansys.edb.core.layer as edb_layer
 import ansys.edb.core.net as edb_net
 import ansys.edb.core.primitive as edb_primitive
+import ansys.edb.core.simulation_setup as edb_simulation_setup
 import ansys.edb.core.terminal as edb_terminal
 import ansys.edb.core.utility as edb_utility
-import ansys.edb.core.simulation_setup as edb_simulation_setup
 
 from pyedb.generic.constants import RadiationBoxType
 from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
@@ -147,7 +147,7 @@ class EdbHfss(object):
             prim = [i for i in self._pedb.modeler.primitives if i.id == prim_id][0].primitive_object
         pos_edge = edb_terminal.PrimitiveEdge.create(prim, point_on_edge)
         return edb_terminal.EdgeTerminal.create(
-            layout=prim.layout, net_ref=prim.net, name=terminal_name, edges=[pos_edge], is_ref=is_ref
+            layout=prim.layout, net=prim.net, name=terminal_name, edges=[pos_edge], is_ref=is_ref
         )
 
     @pyedb_function_handler()
@@ -729,8 +729,10 @@ class EdbHfss(object):
             )
         if not port_name:
             port_name = generate_unique_name("Port_")
-        edge = edb_terminal.PrimitiveEdge.create(polygon.prim_obj, (terminal_point.x.value, terminal_point.y.value))
-        edge_term = edb_terminal.EdgeTerminal.create(polygon.layout, polygon.net, port_name, [edge], is_ref=False)
+        edge = edb_terminal.PrimitiveEdge.create(polygon._edb_object, terminal_point)
+        edge_term = edb_terminal.EdgeTerminal.create(
+            layout=polygon._edb_object.layout, name=port_name, edges=[edge], net=polygon._edb_object.net, is_ref=False
+        )
         if force_circuit_port:
             edge_term.is_circuit_port = True
         else:
@@ -740,9 +742,13 @@ class EdbHfss(object):
             edge_term.impedance = edb_utility.Value(port_impedance)
         edge_term.name = port_name
         if reference_polygon and reference_point:
-            ref_edge = edb_terminal.PrimitiveEdge.create(reference_polygon.prim_obj, reference_point)
+            ref_edge = edb_terminal.PrimitiveEdge.create(reference_polygon._edb_object, reference_point)
             ref_edge_term = edb_terminal.EdgeTerminal.create(
-                reference_polygon.layout, reference_polygon.net, port_name + "_ref", ref_edge, is_ref=True
+                layout=reference_polygon._edb_object.layout,
+                name=port_name + "_ref",
+                edges=[ref_edge],
+                net=reference_polygon._edb_object.net,
+                is_ref=True,
             )
             if reference_layer:
                 ref_edge_term.reference_layer = reference_layer
@@ -1245,8 +1251,9 @@ class EdbHfss(object):
                                as argument"
             )
             return False
-        edb_simsetup = edb_simulation_setup.HfssSimulationSetup.create(self._pedb.active_cell,
-                                                                       simulation_setup.setup_name)
+        edb_simsetup = edb_simulation_setup.HfssSimulationSetup.create(
+            self._pedb.active_cell, simulation_setup.setup_name
+        )
         edb_simsetup.settings.advanced_meshing.arc_step_size = simulation_setup.arc_angle
         edb_simsetup.settings.advanced_meshing.use_arc_chord_error_approx = simulation_setup.use_arc_to_chord_error
         edb_simsetup.settings.advanced_meshing.arc_to_chord_error = simulation_setup.arc_to_chord_error

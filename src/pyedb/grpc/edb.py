@@ -6,62 +6,72 @@ This module is implicitly loaded in HFSS 3D Layout when launched.
 from itertools import combinations
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
 import traceback
 import warnings
 
-from pyedb.grpc.edb_init import EdbInit
-import ansys.edb.core.geometry as edb_geometry
 import ansys.edb.core.database as edb_database
+import ansys.edb.core.geometry as edb_geometry
 import ansys.edb.core.layout as edb_layout
-import ansys.edb.core.utility as edb_utility
-import ansys.edb.core.terminal as edb_terminal
 import ansys.edb.core.simulation_setup as edb_simulation_setup
+import ansys.edb.core.terminal as edb_terminal
+import ansys.edb.core.utility as edb_utility
 
+from pyedb.generic.constants import AEDT_UNITS, SolverType
+from pyedb.generic.general_methods import (
+    generate_unique_name,
+    get_string_version,
+    inside_desktop,
+    is_linux,
+    is_windows,
+    pyedb_function_handler,
+)
 from pyedb.grpc.edb_core.components import Components
-from pyedb.grpc.edb_core.edb_data.control_file import ControlFile
-from pyedb.grpc.edb_core.edb_data.control_file import convert_technology_file
+from pyedb.grpc.edb_core.edb_data.control_file import (
+    ControlFile,
+    convert_technology_file,
+)
 from pyedb.grpc.edb_core.edb_data.design_options import EdbDesignOptions
 from pyedb.grpc.edb_core.edb_data.hfss_simulation_setup_data import HfssSimulationSetup
-from pyedb.grpc.edb_core.edb_data.ports import BundleWavePort
-from pyedb.grpc.edb_core.edb_data.ports import CoaxPort
-from pyedb.grpc.edb_core.edb_data.ports import ExcitationProbes
-from pyedb.grpc.edb_core.edb_data.ports import ExcitationSources
-from pyedb.grpc.edb_core.edb_data.ports import GapPort
-from pyedb.grpc.edb_core.edb_data.ports import WavePort
-from pyedb.grpc.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-from pyedb.grpc.edb_core.edb_data.siwave_simulation_setup_data import SiwaveDCSimulationSetup
-from pyedb.grpc.edb_core.edb_data.siwave_simulation_setup_data import SiwaveSYZSimulationSetup
+from pyedb.grpc.edb_core.edb_data.ports import (
+    BundleWavePort,
+    CoaxPort,
+    ExcitationProbes,
+    ExcitationSources,
+    GapPort,
+    WavePort,
+)
+from pyedb.grpc.edb_core.edb_data.simulation_configuration import (
+    SimulationConfiguration,
+)
+from pyedb.grpc.edb_core.edb_data.siwave_simulation_setup_data import (
+    SiwaveDCSimulationSetup,
+    SiwaveSYZSimulationSetup,
+)
 from pyedb.grpc.edb_core.edb_data.sources import SourceType
-from pyedb.grpc.edb_core.edb_data.terminals import BundleTerminal
-from pyedb.grpc.edb_core.edb_data.terminals import EdgeTerminal
-from pyedb.grpc.edb_core.edb_data.terminals import PadstackInstanceTerminal
-from pyedb.grpc.edb_core.edb_data.terminals import Terminal
+from pyedb.grpc.edb_core.edb_data.terminals import (
+    BundleTerminal,
+    EdgeTerminal,
+    PadstackInstanceTerminal,
+    Terminal,
+)
 from pyedb.grpc.edb_core.edb_data.variables import Variable
-#from pyedb.grpc.general import TerminalType
+
+# from pyedb.grpc.general import TerminalType
 from pyedb.grpc.edb_core.hfss import EdbHfss
-from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.grpc.edb_core.layout import EdbLayout
 from pyedb.grpc.edb_core.materials import Materials
-from pyedb.grpc.edb_core.net_class import EdbDifferentialPairs
-from pyedb.grpc.edb_core.net_class import EdbExtendedNets
+from pyedb.grpc.edb_core.net_class import EdbDifferentialPairs, EdbExtendedNets
 from pyedb.grpc.edb_core.nets import EdbNets
 from pyedb.grpc.edb_core.padstack import EdbPadstacks
 from pyedb.grpc.edb_core.siwave import EdbSiwave
 from pyedb.grpc.edb_core.stackup import Stackup
-from pyedb.generic.constants import AEDT_UNITS
-from pyedb.generic.constants import SolverType
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.generic.general_methods import get_string_version
-from pyedb.generic.general_methods import inside_desktop
-from pyedb.generic.general_methods import is_linux
-from pyedb.generic.general_methods import is_windows
-from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.grpc.edb_init import EdbInit
+from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
-
-import subprocess
 
 
 class EdbGrpc(EdbInit):
@@ -133,17 +143,17 @@ class EdbGrpc(EdbInit):
     """
 
     def __init__(
-            self,
-            edbpath=None,
-            cellname=None,
-            isreadonly=False,
-            edbversion=None,
-            isaedtowned=False,
-            oproject=None,
-            port=50051,
-            use_ppe=False,
-            technology_file=None,
-            restart_rpc_server=False
+        self,
+        edbpath=None,
+        cellname=None,
+        isreadonly=False,
+        edbversion=None,
+        isaedtowned=False,
+        oproject=None,
+        port=50051,
+        use_ppe=False,
+        technology_file=None,
+        restart_rpc_server=False,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
@@ -637,9 +647,7 @@ class EdbGrpc(EdbInit):
                 self.logger.warning("Error getting the database.")
                 self._active_cell = None
                 return None
-            self._active_cell = self.cell.cell.find(
-                self.active_db, self.cell._cell.CellType.CircuitCell, self.cellname
-            )
+            self._active_cell = self.cell.cell.find(self.active_db, self.cell._cell.CellType.CircuitCell, self.cellname)
             if self._active_cell is None:
                 self._active_cell = list(self.top_circuit_cells)[0]
             if self._active_cell:
@@ -1235,10 +1243,8 @@ class EdbGrpc(EdbInit):
                     if pin.pingroups:
                         locations.append(pin.position)
         for point in locations:
-            pointA = edb_geometry.PointData(edb_utility.Value(point[0] - 1e-12),
-                                            edb_utility.Value(point[1] - 1e-12))
-            pointB = edb_geometry.PointData(edb_utility.Value(point[0] + 1e-12),
-                                            edb_utility.Value(point[1] + 1e-12))
+            pointA = edb_geometry.PointData(edb_utility.Value(point[0] - 1e-12), edb_utility.Value(point[1] - 1e-12))
+            pointB = edb_geometry.PointData(edb_utility.Value(point[0] + 1e-12), edb_utility.Value(point[1] + 1e-12))
             points = (pointA, pointB)
             _polys.append(edb_geometry.PolygonData.create_from_bbox(points))
         for cname, c in self.components.instances.items():
@@ -1270,7 +1276,7 @@ class EdbGrpc(EdbInit):
         for prim in self.modeler.primitives:
             if prim is not None and prim.net_name in names:
                 if prim.type == "Path":
-                    path_polygon_data = prim.primitive_object.polygon_data # missing in edb api
+                    path_polygon_data = prim.primitive_object.polygon_data  # missing in edb api
                     if path_polygon_data:
                         _polys.append(path_polygon_data)
                 else:
@@ -1278,10 +1284,9 @@ class EdbGrpc(EdbInit):
         if smart_cut:
             _polys.extend(self._smart_cut(net_signals, reference_list, include_pingroups))
         _poly = edb_geometry.PolygonData.convex_hull(_polys)
-        _poly = _poly.expand(offset=expansion_size,
-                             tol=tolerance,
-                             round_corner=round_corner,
-                             max_corner_ext=round_extension)[0]
+        _poly = _poly.expand(
+            offset=expansion_size, tol=tolerance, round_corner=round_corner, max_corner_ext=round_extension
+        )[0]
         return _poly
 
     @pyedb_function_handler()
@@ -1577,7 +1582,7 @@ class EdbGrpc(EdbInit):
         if output_aedb_path:
             db2 = self.create(output_aedb_path)
             _success = db2.Save()
-            #_dbCells = convert_py_list_to_net_list(_dbCells)
+            # _dbCells = convert_py_list_to_net_list(_dbCells)
             db2.CopyCells(_dbCells)  # Copies cutout cell/design to db2 project
             if len(list(db2.CircuitCells)) > 0:
                 for net in list(list(db2.CircuitCells)[0].GetLayout().Nets):
@@ -2559,6 +2564,7 @@ class EdbGrpc(EdbInit):
         if variable_name in self.active_cell.get_all_variable_names():
             return True
         return False
+
     @pyedb_function_handler()
     def get_variable(self, variable_name):
         """Return Variable Value if variable exists.
@@ -3040,7 +3046,6 @@ class EdbGrpc(EdbInit):
         """
         return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSYZSimulationSetup)}
 
-
     def create_hfss_setup(self, name=None):
         """Create an HFSS simulation setup from a template.
 
@@ -3402,3 +3407,30 @@ class EdbGrpc(EdbInit):
 
         term.ref_terminal = ref_terminal
         return self.sources[term.name]
+
+    @pyedb_function_handler
+    def get_point_terminal(self, name, net_name, location, layer):
+        """Place a voltage probe between two points.
+
+        Parameters
+        ----------
+        name : str,
+            Name of the terminal.
+        net_name : str
+            Name of the net.
+        location : list
+            Location of the terminal.
+        layer : str,
+            Layer of the terminal.
+
+        Returns
+        -------
+        :class:`G.edb_core.edb_data.terminals.PointTerminal`
+        """
+        from ansys.edb.core.geometry.point_data import PointData
+        from ansys.edb.core.terminal.terminals import PointTerminal
+
+        pt = PointData(location[0], location[1])
+
+        point_terminal = PointTerminal.create(layout=self.layout, net=net_name, layer=layer, point=pt, name=name)
+        return point_terminal

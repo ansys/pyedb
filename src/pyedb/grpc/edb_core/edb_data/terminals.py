@@ -1,16 +1,20 @@
 import re
 
-from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.grpc.edb_core.edb_data.connectable import Connectable
-#from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.grpc.edb_core.edb_data.primitives_data import cast
-#from pyaedt.edb_core.general import TerminalType
-from pyedb.generic.general_methods import generate_unique_name
-from ansys.edb.core.utility.value import Value
-from ansys.edb.core.terminal.terminals import TerminalType, EdgeType
 from ansys.edb.core.geometry.point_data import PointData
-from ansys.edb.core.terminal.terminals import BundleTerminal
-from ansys.edb.core.terminal.terminals import PadstackInstanceTerminal as GrpcPadstackInstanceTerminal
+from ansys.edb.core.terminal.terminals import (
+    PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
+)
+from ansys.edb.core.terminal.terminals import BundleTerminal, EdgeType
+from ansys.edb.core.terminal.terminals import TerminalType
+from ansys.edb.core.utility.value import Value
+
+# from pyaedt.edb_core.general import TerminalType
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+from pyedb.grpc.edb_core.edb_data.connectable import Connectable
+
+# from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.grpc.edb_core.edb_data.primitives_data import cast
+
 
 class Terminal(Connectable):
     def __init__(self, pedb, edb_object):
@@ -76,6 +80,11 @@ class Terminal(Connectable):
     def is_circuit_port(self):
         """Whether it is a circuit port."""
         return self._edb_object.is_tircuit_port
+
+    @is_circuit_port.setter
+    def is_circuit_port(self, value):
+        if isinstance(value, bool):
+            self._edb_object.is_tircuit_port = value
 
     @property
     def _port_post_processing_prop(self):
@@ -259,9 +268,7 @@ class Terminal(Connectable):
             pingroup = refTerm.pin_group
             refPinList = pingroup.pins
             return self._get_closest_pin(padStackInstance, refPinList, gnd_net_name_preference)
-        elif (
-            self._edb_object.terminal_type == TerminalType.PADSTACK_INST
-        ):
+        elif self._edb_object.terminal_type == TerminalType.PADSTACK_INST:
             _, padStackInstance, _ = self._edb_object.get_parameters()
             if refTerm.terminal_type == TerminalType.PIN_GROUP:
                 pingroup = refTerm.pin_group
@@ -480,7 +487,7 @@ class PadstackInstanceTerminal(Terminal):
             padstack_instance=padstack_instance._edb_object,
             name=name,
             layer=layer_obj._edb_layer,
-            is_ref=is_ref
+            is_ref=is_ref,
         )
         terminal = PadstackInstanceTerminal(self._pedb, terminal)
 

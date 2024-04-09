@@ -24,6 +24,7 @@
 """
 
 import os
+
 import pytest
 
 from pyedb.dotnet.edb import Edb
@@ -349,7 +350,7 @@ class TestClass:
             net5_length += path.length
         assert net5_length == 0.026285623899038543
         edbapp.close_edb()
-        
+
     def test_duplicate(self):
         edbapp = Edb()
         edbapp["$H"] = "0.65mil"
@@ -367,8 +368,22 @@ class TestClass:
         edbapp.stackup.add_layer("top_gnd", thickness="0.65mil")
         edbapp.stackup.add_layer("d4", layer_type="dielectric", thickness="13mil", material="FR4_epoxy")
         edbapp.stackup.add_layer("trace1", thickness="$H")
-        r1 = edbapp.modeler.create_rectangle(center_point=("0,0"), width="200mil", height="200mil", layer_name="top_gnd", representation_type="CenterWidthHeight", net_name="r1")
-        r2 = edbapp.modeler.create_rectangle(center_point=("0,0"), width="40mil", height="$Antipad_R*2", layer_name="top_gnd", representation_type="CenterWidthHeight", net_name="r2")
+        r1 = edbapp.modeler.create_rectangle(
+            center_point=("0,0"),
+            width="200mil",
+            height="200mil",
+            layer_name="top_gnd",
+            representation_type="CenterWidthHeight",
+            net_name="r1",
+        )
+        r2 = edbapp.modeler.create_rectangle(
+            center_point=("0,0"),
+            width="40mil",
+            height="$Antipad_R*2",
+            layer_name="top_gnd",
+            representation_type="CenterWidthHeight",
+            net_name="r2",
+        )
         assert r2
         assert r1.subtract(r2)
         lay_list = ["bot_gnd", "mid_gnd"]

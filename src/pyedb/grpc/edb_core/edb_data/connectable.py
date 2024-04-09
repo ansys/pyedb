@@ -89,7 +89,7 @@ class Connectable(LayoutObj):
         -------
         :class:`pyaedt.edb_core.edb_data.nets_data.EDBComponent`
         """
-        from edb_core.edb_data.components_data import EDBComponent
+        from pyedb.grpc.edb_core.edb_data.components_data import EDBComponent
 
         edb_comp = self._edb_object.component
         if edb_comp.is_null:
