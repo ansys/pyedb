@@ -125,7 +125,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 10
+          timeout_minutes: 15
           command: |
             . .venv\Scripts\Activate.ps1
             pytest -m "legacy" -n auto --dist loadfile -v --cov

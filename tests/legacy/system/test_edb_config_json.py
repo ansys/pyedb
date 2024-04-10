@@ -147,3 +147,18 @@ class TestClass:
         edbapp = Edb(str(self.local_edb), desktop_version)
         assert edbapp.configuration.load(str(self.local_input_folder / "general.toml"), apply_file=True)
         edbapp.close()
+
+    def test_11_package_definitions(self):
+        edbapp = Edb(str(self.local_edb), desktop_version)
+        assert edbapp.configuration.load(str(self.local_input_folder / "package_def.json"), apply_file=True)
+        assert edbapp.definitions.package["package_1"].maximum_power == 1
+        assert edbapp.definitions.package["package_1"].therm_cond == 1
+        assert edbapp.definitions.package["package_1"].theta_jb == 1
+        assert edbapp.definitions.package["package_1"].theta_jc == 1
+        assert edbapp.definitions.package["package_1"].height == 1
+        assert edbapp.definitions.package["package_1"].heatsink.fin_base_height == 0.001
+        assert edbapp.definitions.package["package_1"].heatsink.fin_height == 0.001
+        assert edbapp.definitions.package["package_1"].heatsink.fin_orientation == "x_oriented"
+        assert edbapp.definitions.package["package_1"].heatsink.fin_spacing == 0.001
+        assert edbapp.definitions.package["package_1"].heatsink.fin_thickness == 0.004
+        edbapp.close()

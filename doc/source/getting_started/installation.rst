@@ -26,7 +26,7 @@ The AEDT installation already provides a Python interpreter that you can use to 
 you can run PyEDB using CPython 3.9 through 3.11. Note that AEDT 2024 R1 installs CPython 3.10.
 
 You can install PyEDB offline using a wheelhouse, which is a ZIP file containing all
-the needed packages. The `Releases <https://github.com/ansys-internal/pyansys-edb/releases>`_
+the needed packages. The `Releases <https://github.com/ansys/pyedb/releases>`_
 page of the PyEDB repository provides an **Assets** ares with the PyEDB wheelhouses for
 various Python releases on different operating system.
 
@@ -66,14 +66,14 @@ for package and allows full installation without a need to download additional f
 Having a single file eases the security review of the package content and allows for
 easy sharing with others who need to install it.
 
-On the `Releases <https://github.com/ansys-internal/pyansys-edb/releases>`_ page of the PyEDB repository,
+On the `Releases <https://github.com/ansys/pyedb/releases>`_ page of the PyEDB repository,
 the **Assets** area shows the wheelhouses that are available. After downloading the wheelhouse for your setup,
 extract the files to a folder and run the command for installing PyEDB and all of its dependencies
 from your Python terminal, providing the full path to the ZIP file as an argument.
 
 .. code:: shell
 
-   pip install --no-cache-dir --no-index --find-links=/path/to/pyansys-edb/wheelhouse pyansys-edb
+   pip install --no-cache-dir --no-index --find-links=/path/to/pyedb/wheelhouse pyedb
 
 For example, on Windows with Python 3.8, install PyEDB and all its dependencies from a
 wheelhouse with code like this:
