@@ -67,6 +67,11 @@ class PackageDef(ObjBase):
         edb_object.SetExteriorBoundary(polygon)
         return edb_object
 
+    @pyedb_function_handler
+    def delete(self):
+        """Delete a package definition object from the database."""
+        return self._edb_object.Delete()
+
     @property
     def maximum_power(self):
         """Maximum power of the package."""

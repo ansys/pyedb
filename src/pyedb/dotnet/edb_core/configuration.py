@@ -26,6 +26,7 @@ from pathlib import Path
 
 import toml
 
+from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.generic.general_methods import pyedb_function_handler
 
 
@@ -153,6 +154,10 @@ class Configuration:
         # Configure SPICE models
         if "spice_models" in self.data:
             self._load_spice_models()
+
+        # Configure package definitions
+        if "package_definitions" in self.data:
+            self._load_package_def()
 
         # Configure operations
         if "operations" in self.data:
@@ -678,3 +683,31 @@ class Configuration:
                         backdrill_bottom["drill_diameter"],
                         backdrill_bottom["stub_length"],
                     )
+
+    @pyedb_function_handler
+    def _load_package_def(self):
+        """Imports package definition information from JSON."""
+        comps = self._pedb.components.components
+        for pkgd in self.data["package_definitions"]:
+            name = pkgd["name"]
+            if name in self._pedb.definitions.package:
+                self._pedb.definitions.package[name].delete()
+            package_def = PackageDef(self._pedb, name=name)
+            package_def.maximum_power = pkgd["maximum_power"]
+            package_def.therm_cond = pkgd["therm_cond"]
+            package_def.theta_jb = pkgd["theta_jb"]
+            package_def.theta_jc = pkgd["theta_jc"]
+            package_def.height = pkgd["height"]
+
+            heatsink = pkgd.get("heatsink", None)
+            if heatsink:
+                package_def.set_heatsink(
+                    heatsink["fin_base_height"],
+                    heatsink["fin_height"],
+                    heatsink["fin_orientation"],
+                    heatsink["fin_spacing"],
+                    heatsink["fin_thickness"],
+                )
+            json_comps = pkgd["components"] if isinstance(pkgd["components"], list) else [pkgd["components"]]
+            for i in json_comps:
+                comps[i].package_def = name
