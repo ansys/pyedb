@@ -26,16 +26,16 @@ import difflib
 import logging
 import os
 import re
-from pydantic import BaseModel, confloat
 from typing import Optional, Union
 import warnings
+
+from pydantic import BaseModel, confloat
 
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.exceptions import MaterialModelException
 from pyedb.generic.general_methods import is_ironpython, pyedb_function_handler
-
 
 logger = logging.getLogger(__name__)
 
@@ -167,7 +167,7 @@ class Material(object):
     def loss_tangent(self):
         """Get material loss tangent."""
         warnings.warn(
-            "This method is deprecated in versions >0.7.0 and will soon be removed. " \
+            "This method is deprecated in versions >0.7.0 and will soon be removed. "
             "Use property dielectric_loss_tangent instead.",
             DeprecationWarning,
         )
@@ -186,7 +186,7 @@ class Material(object):
     def loss_tangent(self, value):
         """Set material loss tangent."""
         warnings.warn(
-            "This method is deprecated in versions >0.7.0 and will soon be removed. " \
+            "This method is deprecated in versions >0.7.0 and will soon be removed. "
             "Use property dielectric_loss_tangent instead.",
             DeprecationWarning,
         )
@@ -523,7 +523,7 @@ class Materials(object):
         attributes_input_dict = {key: val for (key, val) in kwargs.items() if key in ATTRIBUTES + DC_ATTRIBUTES}
         if "loss_tangent" in kwargs:
             warnings.warn(
-                "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                "This key is deprecated in versions >0.7.0 and will soon be removed. "
                 "Use key dielectric_loss_tangent instead.",
                 DeprecationWarning,
             )
@@ -634,7 +634,7 @@ class Materials(object):
                 setattr(material, key, value)
             if "loss_tangent" in kwargs:
                 warnings.warn(
-                    "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                    "This key is deprecated in versions >0.7.0 and will soon be removed. "
                     "Use key dielectric_loss_tangent instead.",
                     DeprecationWarning,
                 )
@@ -700,7 +700,7 @@ class Materials(object):
                 setattr(material, key, value)
             if "loss_tangent" in kwargs:
                 warnings.warn(
-                    "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                    "This key is deprecated in versions >0.7.0 and will soon be removed. "
                     "Use key dielectric_loss_tangent instead.",
                     DeprecationWarning,
                 )
@@ -763,7 +763,7 @@ class Materials(object):
                 setattr(material, key, value)
             if "loss_tangent" in kwargs:
                 warnings.warn(
-                    "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                    "This key is deprecated in versions >0.7.0 and will soon be removed. "
                     "Use key dielectric_loss_tangent instead.",
                     DeprecationWarning,
                 )
@@ -839,7 +839,7 @@ class Materials(object):
         attributes_input_dict = {key: val for (key, val) in input_dict.items() if key in ATTRIBUTES + DC_ATTRIBUTES}
         if "loss_tangent" in input_dict:
             warnings.warn(
-                "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                "This key is deprecated in versions >0.7.0 and will soon be removed. "
                 "Use key dielectric_loss_tangent instead.",
                 DeprecationWarning,
             )
@@ -851,8 +851,7 @@ class Materials(object):
 
     @pyedb_function_handler()
     def load_material(self, material):
-        """Load material.
-        """
+        """Load material."""
         if self.materials:
             mat_keys = [i.lower() for i in self.materials.keys()]
             mat_keys_case = [i for i in self.materials.keys()]
@@ -882,7 +881,7 @@ class Materials(object):
                 material_permittivity = material["permittivity"]
                 if "loss_tangent" in material:
                     warnings.warn(
-                        "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                        "This key is deprecated in versions >0.7.0 and will soon be removed. "
                         "Use key dielectric_loss_tangent instead.",
                         DeprecationWarning,
                     )
@@ -890,7 +889,6 @@ class Materials(object):
                 else:
                     material_dlt = material["dielectric_loss_tangent"]
                 self.add_dielectric_material(material_name, material_permittivity, material_dlt)
-
 
     @pyedb_function_handler()
     def material_property_to_id(self, property_name):
@@ -923,7 +921,7 @@ class Materials(object):
 
         if property_name == "loss_tangent":
             warnings.warn(
-                "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                "This key is deprecated in versions >0.7.0 and will soon be removed. "
                 "Use key dielectric_loss_tangent instead.",
                 DeprecationWarning,
             )
@@ -957,7 +955,7 @@ class Materials(object):
                     del material_properties["tangent_delta"]
                 elif "loss_tangent" in material_properties:
                     warnings.warn(
-                        "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                        "This key is deprecated in versions >0.7.0 and will soon be removed. "
                         "Use key dielectric_loss_tangent instead.",
                         DeprecationWarning,
                     )
@@ -1033,10 +1031,13 @@ class Materials(object):
                         if value is not None:
                             res[material_name]["conductivity"] = value
                     # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
-                    if "loss_tangent" in line and "dielectric_loss_tangent" not in line and \
-                            "magnetic_loss_tangent" not in line:
+                    if (
+                        "loss_tangent" in line
+                        and "dielectric_loss_tangent" not in line
+                        and "magnetic_loss_tangent" not in line
+                    ):
                         warnings.warn(
-                            "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                            "This key is deprecated in versions >0.7.0 and will soon be removed. "
                             "Use key dielectric_loss_tangent instead.",
                             DeprecationWarning,
                         )
@@ -1053,4 +1054,3 @@ class Materials(object):
                 del res[key]
 
         return res
-
