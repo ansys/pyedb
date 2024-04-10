@@ -1268,17 +1268,15 @@ class EdbHfss(object):
             start_f=simulation_setup.start_freq,
             end_f=simulation_setup.stop_freq,
             step=simulation_setup.step_freq,
-            fast_sweep=False,
         )
-        # to add when supported
-        # sweep_data.use_q3d_for_dc = simulation_setup.use_q3d_for_dc
-        # sweep_data.enforce_causality = simulation_setup.enforce_causality
-        # sweep_data.enforce_passivity = simulation_setup.enforce_passivity
+        sweep_data.use_q3d_for_dc = simulation_setup.ac_settings.use_q3d_for_dc
+        sweep_data.interpolation_data.enforce_causality = simulation_setup.ac_settings.enforce_causality
+        sweep_data.interpolation_data.enforce_passivity = simulation_setup.ac_settings.enforce_passivity
         edb_simsetup.sweep_data = [sweep_data]
 
-        # if simulation_setup.mesh_sizefactor > 0.0:
-        # simsetup_info.SimulationSettings.InitialMeshSettings.MeshSizefactor = simulation_setup.mesh_sizefactor
-        # simsetup_info.SimulationSettings.InitialMeshSettings.LambdaRefine = False
+        if simulation_setup.mesh_sizefactor > 0.0:
+            edb_simsetup.settings.options.mesh_size_factor = simulation_setup.mesh_sizefactor
+            edb_simsetup.settings.options.do_lamda_refine = False
 
         edb_simsetup.settings.options.min_passes = simulation_setup.min_num_passes
         edb_simsetup.settings.options.min_converged_passes = 1

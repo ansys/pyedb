@@ -3,7 +3,7 @@ import os
 import sys
 
 import ansys.edb.core.database as database
-from ansys.edb.core.session import attach_session, launch_session
+from ansys.edb.core.session import launch_session
 import psutil
 
 from pyedb import __version__
@@ -52,19 +52,17 @@ class EdbInit(object):
         "Starting grpc server"
         self.get_grpc_serveur_process()
         if self.server_pid:
+            if restart_server:
+                self.logger.info("Restarting RPC server")
+                self.kill_rpc_server()
+                self.start_rpc_server(port)
             self.logger.info("Server already running")
-            self.session = attach_session(port_num=port)
-        elif self.server_pid and restart_server:
-            p = psutil.Process(self.server_pid)
-            p.terminate()  # or p.kill()
-            self.start_rpc_sever(port)
         else:
-            try:
-                self.start_rpc_sever(port)
-                if self.session:
-                    self.server_pid = self.session.local_server_proc.pid
-                    self.logger.info("Grpc session started")
-            except:
+            self.start_rpc_server(port)
+            if self.session:
+                self.server_pid = self.session.local_server_proc.pid
+                self.logger.info(f"Grpc session started: pid={self.server_pid}")
+            else:
                 self.logger.error("Failed to start EDB_RPC_server process")
 
     @property
@@ -72,11 +70,15 @@ class EdbInit(object):
         """Active database object."""
         return self._db
 
-    def start_rpc_sever(self, port):
+    def start_rpc_server(self, port):
         self.session = launch_session(self.base_path, port_num=port)
         if self.session:
             self.server_pid = self.session.local_server_proc.pid
             self.logger.info("Grpc session started")
+
+    def kill_rpc_server(self):
+        p = psutil.Process(self.server_pid)
+        p.terminate()  # or p.kill()
 
     def get_grpc_serveur_process(self):
         proc = [p for p in list(psutil.process_iter()) if "edb_rpc" in p.name().lower()]

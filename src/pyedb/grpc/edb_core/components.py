@@ -912,7 +912,7 @@ class Components(object):
         """
 
         pin_position = self.get_pin_position(pin)  # pragma no cover
-        pin_pos = self._pedb.point_data(*pin_position)
+        pin_pos = self._pedb.point_data(pin_position)
         res, from_layer, _ = pin.layer_range
         cmp_name = pin.component.name
         net_name = pin.net.name
@@ -1342,7 +1342,7 @@ class Components(object):
             compdef = self._get_component_definition(component_name, pins)
         if not compdef:
             return False
-        new_cmp = hierarchy.ComponentGroup.create(self._layout, component_name, compdef.name)
+        new_cmp = hierarchy.ComponentGroup.create(self._layout, component_name)
 
         if isinstance(pins[0], EDBPadstackInstance):
             pins = [i._edb_padstackinstance for i in pins]
@@ -1354,9 +1354,10 @@ class Components(object):
             new_cmp_layer_name = pins[0].padstack_def.data.layer_names[0]
         else:
             new_cmp_layer_name = placement_layer
-        new_cmp_placement_layer = self._edb.cell.layer_collection.find_by_name(new_cmp_layer_name)
+        new_cmp_placement_layer = self._edb.active_layout.layer_collection.find_by_name(new_cmp_layer_name)
         new_cmp.placement_layer = new_cmp_placement_layer
-        hosting_component_location = pins[0].component.transform
+        # TODO check issue 384 fix
+        # hosting_component_location = pins[0].component.transform
 
         if is_rlc:
             rlc = utility.Rlc()
@@ -1385,12 +1386,13 @@ class Components(object):
             else:
                 new_cmp.component_type = hierarchy.ComponentType.RESISTOR
 
-            pin_pair = utility.Rlc(pins[0].name, pins[1].name)
-            rlc_model = hierarchy.PinPairModel(pin_pair)
-            edb_rlc_component_property = definition.RLCComponentProperty()
+            rlc_model = hierarchy.PinPairModel.create()
+            rlc_model.set_rlc((pins[0].name, pins[1].name), rlc)
+            edb_rlc_component_property = definition.RLCComponentProperty.create()
             edb_rlc_component_property.model = rlc_model
             new_cmp.component_property = edb_rlc_component_property
-        new_cmp.transform = hosting_component_location
+        # TODO wait for issue 383 fix
+        # new_cmp.transform = hosting_component_location
         new_edb_comp = EDBComponent(self._pedb, new_cmp)
         self._cmp[new_cmp.name] = new_edb_comp
         return new_edb_comp
@@ -2122,7 +2124,7 @@ class Components(object):
         >>> edbapp.components.get_pin_position(pin)
 
         """
-        pin_position = geometry.PointData(pin.get_position_and_rotation()[:2])
+        pin_position = geometry.PointData(pin.position)
         if pin.component.is_null:
             transformed_pt_pos = pin_position
         else:
