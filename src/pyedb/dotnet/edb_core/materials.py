@@ -26,8 +26,9 @@ import difflib
 import logging
 import os
 import re
-
-from pydantic import BaseModel
+from pydantic import BaseModel, confloat
+from typing import Optional, Union
+import warnings
 
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
@@ -35,11 +36,8 @@ from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.exceptions import MaterialModelException
 from pyedb.generic.general_methods import is_ironpython, pyedb_function_handler
 
+
 logger = logging.getLogger(__name__)
-
-from typing import Optional, Union
-
-from pydantic import BaseModel, confloat
 
 # TODO: Once we are Python3.9+ change PositiveInt implementation like
 # from annotated_types import Gt
@@ -166,12 +164,34 @@ class Material(object):
         self.__properties.permeability = edb_value.ToDouble()
 
     @property
+    def loss_tangent(self):
+        """Get material loss tangent."""
+        warnings.warn(
+            "This method is deprecated in versions >0.7.0 and will soon be removed. " \
+            "Use property dielectric_loss_tangent instead.",
+            DeprecationWarning,
+        )
+
+        return self.dielectric_loss_tangent
+
+    @property
     def dielectric_loss_tangent(self):
         """Get material loss tangent."""
         if self.__properties.dielectric_loss_tangent is None:
             material_property_id = self.__edb_definition.MaterialPropertyId.DielectricLossTangent
             self.__properties.dielectric_loss_tangent = self.__property_value(material_property_id)
         return self.__properties.dielectric_loss_tangent
+
+    @loss_tangent.setter
+    def loss_tangent(self, value):
+        """Set material loss tangent."""
+        warnings.warn(
+            "This method is deprecated in versions >0.7.0 and will soon be removed. " \
+            "Use property dielectric_loss_tangent instead.",
+            DeprecationWarning,
+        )
+
+        return self.dielectric_loss_tangent(value)
 
     @dielectric_loss_tangent.setter
     def dielectric_loss_tangent(self, value):
@@ -380,6 +400,8 @@ class Material(object):
             for attribute in ATTRIBUTES:
                 if attribute in input_dict:
                     setattr(self, attribute, input_dict[attribute])
+            if "loss_tangent" in input_dict:
+                setattr(self, "loss_tangent", input_dict["loss_tangent"])
 
             # Update DS model
             # NOTE: Contrary to before we don't test 'dielectric_model_frequency' only
@@ -499,6 +521,13 @@ class Materials(object):
         material_def = self.__edb_definition.MaterialDef.Create(self.__edb.active_db, name)
         material = Material(self.__edb, material_def)
         attributes_input_dict = {key: val for (key, val) in kwargs.items() if key in ATTRIBUTES + DC_ATTRIBUTES}
+        if "loss_tangent" in kwargs:
+            warnings.warn(
+                "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                "Use key dielectric_loss_tangent instead.",
+                DeprecationWarning,
+            )
+            attributes_input_dict["dielectric_loss_tangent"] = kwargs["loss_tangent"]
         if attributes_input_dict:
             material.update(attributes_input_dict)
 
@@ -559,21 +588,6 @@ class Materials(object):
         self.__materials[name] = material
         return material
 
-    # @pyedb_function_handler()
-    # def get_material_djordjevicsarkar_model(self, name):
-    #     """Get material Djordjevic-Sarkar model if any.
-
-    #     Parameters
-    #     ----------
-    #     material_name : str
-
-    #     Returns
-    #     -------
-    #     Any
-    #     """
-    #     material = self.materials[name]
-    #     return material.dc_model
-
     @pyedb_function_handler()
     def add_djordjevicsarkar_dielectric(
         self,
@@ -618,6 +632,13 @@ class Materials(object):
             material = self.__add_dielectric_material_model(name, material_model)
             for key, value in kwargs.items():
                 setattr(material, key, value)
+            if "loss_tangent" in kwargs:
+                warnings.warn(
+                    "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                    "Use key dielectric_loss_tangent instead.",
+                    DeprecationWarning,
+                )
+                setattr(material, "dielectric_loss_tangent", kwargs["loss_tangent"])
             self.__materials[name] = material
             return material
         except MaterialModelException:
@@ -677,6 +698,13 @@ class Materials(object):
             material = self.__add_dielectric_material_model(name, material_model)
             for key, value in kwargs.items():
                 setattr(material, key, value)
+            if "loss_tangent" in kwargs:
+                warnings.warn(
+                    "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                    "Use key dielectric_loss_tangent instead.",
+                    DeprecationWarning,
+                )
+                setattr(material, "dielectric_loss_tangent", kwargs["loss_tangent"])
             self.__materials[name] = material
             return material
         except MaterialModelException:
@@ -733,6 +761,13 @@ class Materials(object):
             material = self.__add_dielectric_material_model(name, material_model)
             for key, value in kwargs.items():
                 setattr(material, key, value)
+            if "loss_tangent" in kwargs:
+                warnings.warn(
+                    "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                    "Use key dielectric_loss_tangent instead.",
+                    DeprecationWarning,
+                )
+                setattr(material, "dielectric_loss_tangent", kwargs["loss_tangent"])
             self.__materials[name] = material
             return material
         except MaterialModelException:
@@ -796,39 +831,66 @@ class Materials(object):
 
     @pyedb_function_handler()
     def update_material(self, material_name, input_dict):
+        """Update material attributes."""
         if material_name not in self.__materials:
             raise ValueError(f"Material {material_name} does not exist in material library.")
 
         material = self[material_name]
         attributes_input_dict = {key: val for (key, val) in input_dict.items() if key in ATTRIBUTES + DC_ATTRIBUTES}
+        if "loss_tangent" in input_dict:
+            warnings.warn(
+                "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                "Use key dielectric_loss_tangent instead.",
+                DeprecationWarning,
+            )
+            attributes_input_dict["dielectric_loss_tangent"] = input_dict["loss_tangent"]
         if attributes_input_dict:
             material.update(attributes_input_dict)
         self.__materials[material_name] = material
         return material
 
-    # @pyedb_function_handler()
-    # def load_material(self, material):
-    #     """
-    #     """
-    #     if self.materials:
-    #         mat_keys = [i.lower() for i in self.materials.keys()]
-    #         mat_keys_case = [i for i in self.materials.keys()]
-    #     else:
-    #         mat_keys = []
-    #         mat_keys_case = []
+    @pyedb_function_handler()
+    def load_material(self, material):
+        """Load material.
+        """
+        if self.materials:
+            mat_keys = [i.lower() for i in self.materials.keys()]
+            mat_keys_case = [i for i in self.materials.keys()]
+        else:
+            mat_keys = []
+            mat_keys_case = []
 
-    #     if not material:
-    #         return
-    #     if material["name"].lower() not in mat_keys:
-    #         if "conductivity" not in material:
-    #             self.add_dielectric_material(material["name"], material["permittivity"], material["loss_tangent"])
-    #         elif material["conductivity"] > 1e4:
-    #             self.add_conductor_material(material["name"], material["conductivity"])
-    #         else:
-    #             self.add_dielectric_material(material["name"], material["permittivity"], material["loss_tangent"])
-    #         self.materials[material["name"]]._load(material)
-    #     else:
-    #         self.materials[mat_keys_case[mat_keys.index(material["name"].lower())]]._load(material)
+        if not material:
+            return
+        if material["name"].lower() not in mat_keys:
+            if "conductivity" not in material:
+                self.add_dielectric_material(material["name"], material["permittivity"], material["loss_tangent"])
+            elif material["conductivity"] > 1e4:
+                self.add_conductor_material(material["name"], material["conductivity"])
+            else:
+                self.add_dielectric_material(material["name"], material["permittivity"], material["loss_tangent"])
+            self.materials[material["name"]]._load(material)
+        else:
+            self.materials[mat_keys_case[mat_keys.index(material["name"].lower())]]._load(material)
+
+        if material:
+            material_name = material["name"]
+            material_conductivity = material.get("conductivity", None)
+            if material_conductivity and material_conductivity > 1e4:
+                self.add_conductor_material(material_name, material_conductivity)
+            else:
+                material_permittivity = material["permittivity"]
+                if "loss_tangent" in material:
+                    warnings.warn(
+                        "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                        "Use key dielectric_loss_tangent instead.",
+                        DeprecationWarning,
+                    )
+                    material_dlt = material["loss_tangent"]
+                else:
+                    material_dlt = material["dielectric_loss_tangent"]
+                self.add_dielectric_material(material_name, material_permittivity, material_dlt)
+
 
     @pyedb_function_handler()
     def material_property_to_id(self, property_name):
@@ -859,6 +921,13 @@ class Materials(object):
             "InvalidProperty": material_property_id.InvalidProperty,
         }
 
+        if property_name == "loss_tangent":
+            warnings.warn(
+                "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                "Use key dielectric_loss_tangent instead.",
+                DeprecationWarning,
+            )
+            property_name = "dielectric_loss_tangent"
         match = difflib.get_close_matches(property_name, property_name_to_id, 1, 0.7)
         if match:
             return property_name_to_id[match[0]]
@@ -883,10 +952,17 @@ class Materials(object):
         materials_dict = self.read_materials(amat_file)
         for material_name, material_properties in materials_dict.items():
             if not material_name in self:
-                # FIXME: Shouldn't we remove that if statement ?
                 if "tangent_delta" in material_properties:
                     material_properties["dielectric_loss_tangent"] = material_properties["tangent_delta"]
                     del material_properties["tangent_delta"]
+                elif "loss_tangent" in material_properties:
+                    warnings.warn(
+                        "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                        "Use key dielectric_loss_tangent instead.",
+                        DeprecationWarning,
+                    )
+                    material_properties["dielectric_loss_tangent"] = material_properties["loss_tangent"]
+                    del material_properties["loss_tangent"]
                 self.add_material(material_name, **material_properties)
             else:
                 self.__edb.logger.warning(f"Material {material_name} already exist and was not loaded from AMAT file.")
@@ -956,6 +1032,17 @@ class Materials(object):
                         value = get_line_float_value(line)
                         if value is not None:
                             res[material_name]["conductivity"] = value
+                    # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
+                    if "loss_tangent" in line and "dielectric_loss_tangent" not in line and \
+                            "magnetic_loss_tangent" not in line:
+                        warnings.warn(
+                            "This key is deprecated in versions >0.7.0 and will soon be removed. " \
+                            "Use key dielectric_loss_tangent instead.",
+                            DeprecationWarning,
+                        )
+                        value = get_line_float_value(line)
+                        if value is not None:
+                            res[material_name]["dielectric_loss_tangent"] = value
                 end = _end_search.search(line)
                 if end:
                     material_name = ""
@@ -967,9 +1054,3 @@ class Materials(object):
 
         return res
 
-
-if __name__ == "__main__":
-    edb = Edb()
-    materials = Materials(edb)
-    mat_file = os.path.join(edb.base_path, "syslib", "Materials.amat")
-    assert materials.load_amat(mat_file)
