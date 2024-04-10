@@ -31,6 +31,7 @@ import pytest
 from pyedb.dotnet.edb import Edb
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.misc import list_installed_ansysem
+from tests.conftest import generate_random_string
 
 example_models_path = os.path.join(dirname(dirname(dirname(os.path.realpath(__file__)))), "example_models")
 
@@ -43,6 +44,29 @@ if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_ins
 test_subfolder = "TEDB"
 test_project_name = "ANSYS-HSD_V1"
 bom_example = "bom_example.csv"
+
+
+class EdbExamples:
+    def __init__(self, local_scratch):
+        self.local_scratch = local_scratch
+        self.local_folder = os.path.join(self.local_scratch.path, generate_random_string(6))
+
+    def _get_folder(self, name):
+        src = os.path.join(example_models_path, name)
+        dst = self.local_scratch.copyfolder(
+            src,
+            os.path.join(self.local_folder, os.path.split(src)[-1])
+        )
+        return dst
+
+    def get_si_verse(self):
+        aedb = self._get_folder("TEDB/ANSYS-HSD_V1.aedb")
+        return Edb(aedb, edbversion=desktop_version)
+
+    def get_multizone_pcb(self):
+        aedb = self._get_folder("multi_zone_project.aedb")
+        return Edb(aedb, edbversion=desktop_version)
+
 
 
 @pytest.fixture(scope="module")
@@ -101,3 +125,8 @@ def target_path4(local_scratch):
     target_path4 = os.path.join(local_scratch.path, "Package_00.aedb")
     local_scratch.copyfolder(example_project4, target_path4)
     return target_path4
+
+
+@pytest.fixture(scope="class", autouse=True)
+def edb_examples(local_scratch):
+    return EdbExamples(local_scratch)
