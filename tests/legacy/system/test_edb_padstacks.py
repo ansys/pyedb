@@ -168,7 +168,11 @@ class TestClass:
         pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1, "CornerRadius": 1}
         pad.pad_by_layer[pad.via_stop_layer].parameters = [1, 1, 1]
 
-    def test_padstack_get_instance_by_name(self):
+    def test_padstack_get_instance(self):
+        assert self.edbapp.padstacks.get_instances(name="Via1961")
+        assert self.edbapp.padstacks.get_instances(definition_name="v35h15")
+        assert self.edbapp.padstacks.get_instances(net_name="1V0")
+
         """Access padstack instance by name."""
         padstack_instances = self.edbapp.padstacks.get_padstack_instance_by_net_name("GND")
         assert len(padstack_instances)
