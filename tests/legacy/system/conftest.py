@@ -49,13 +49,16 @@ bom_example = "bom_example.csv"
 class EdbExamples:
     def __init__(self, local_scratch):
         self.local_scratch = local_scratch
-        self.local_folder = os.path.join(self.local_scratch.path, generate_random_string(6))
+
+    @property
+    def _local_folder(self):
+        return os.path.join(self.local_scratch.path, generate_random_string(6))
 
     def _get_folder(self, name):
         src = os.path.join(example_models_path, name)
         dst = self.local_scratch.copyfolder(
             src,
-            os.path.join(self.local_folder, os.path.split(src)[-1])
+            os.path.join(self._local_folder, os.path.split(src)[-1])
         )
         return dst
 
