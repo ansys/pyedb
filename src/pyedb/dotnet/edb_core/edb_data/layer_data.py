@@ -151,7 +151,6 @@ class StackupLayerEdbClass(LayerEdbClass):
         self._material = ""
         self._conductivity = 0.0
         self._permittivity = 0.0
-        # FIXME: Rename into dielectric_loss_tangent ?
         self._loss_tangent = 0.0
         self._dielectric_fill = ""
         self._thickness = 0.0
@@ -259,7 +258,6 @@ class StackupLayerEdbClass(LayerEdbClass):
             return self._permittivity
         return None
 
-    # FIXME: Rename into dielectric_loss_tangent ?
     @property
     def loss_tangent(self):
         """Get the material loss_tangent.
@@ -273,7 +271,6 @@ class StackupLayerEdbClass(LayerEdbClass):
             return self._loss_tangent
         return None
 
-    # FIXME: Rename into dielectric_loss_tangent ?
     @property
     def dielectric_fill(self):
         """Retrieve material name of the layer dielectric fill."""

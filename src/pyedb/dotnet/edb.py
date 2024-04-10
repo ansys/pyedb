@@ -4138,7 +4138,6 @@ class Edb(Database):
                         self.add_design_variable(epsr_variable, material.permittivity)
                     material.permittivity = epsr_variable
                     parameters.append(epsr_variable)
-                    # FIXME: Rename into dielectric_loss_tangent_ ?
                     loss_tg_variable = "$loss_tangent_{}".format(mat_name)
                     loss_tg_variable = self._clean_string_for_variable_name(loss_tg_variable)
                     if not loss_tg_variable in self.variables:
