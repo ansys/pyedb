@@ -848,12 +848,11 @@ class Edb(Database):
         Examples
         --------
         >>> from pyedb.dotnet.edb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> edbapp.materials["FR4_epoxy"].conductivity = 1
-        >>> edbapp.materials.add_debye_material("My_Debye2", 5, 3, 0.02, 0.05, 1e5, 1e9)
-        >>> edbapp.materials.add_djordjevicsarkar_material("MyDjord2", 3.3, 0.02, 3.3)
+        >>> edbapp = Edb()
+        >>> edbapp.materials.add_material("air", permittivity=1.0)
+        >>> edbapp.materials.add_debye_material("debye_mat", 5, 3, 0.02, 0.05, 1e5, 1e9)
+        >>> edbapp.materials.add_djordjevicsarkar_material("djord_mat", 3.3, 0.02, 3.3)
         """
-
         if not self._materials and self.active_db:
             self._materials = Materials(self)
         return self._materials
@@ -4142,8 +4141,8 @@ class Edb(Database):
                     loss_tg_variable = "$loss_tangent_{}".format(mat_name)
                     loss_tg_variable = self._clean_string_for_variable_name(loss_tg_variable)
                     if not loss_tg_variable in self.variables:
-                        self.add_design_variable(loss_tg_variable, material.loss_tangent)
-                    material.loss_tangent = loss_tg_variable
+                        self.add_design_variable(loss_tg_variable, material.dielectric_loss_tangent)
+                    material.dielectric_loss_tangent = loss_tg_variable
                     parameters.append(loss_tg_variable)
                 else:
                     sigma_variable = "$sigma_{}".format(mat_name)
