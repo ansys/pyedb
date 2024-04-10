@@ -71,6 +71,12 @@ def legacy_edb_app(add_legacy_edb):
     return app
 
 
+@pytest.fixture(scope="class")
+def legacy_edb_app_without_material(add_legacy_edb):
+    app = add_legacy_edb()
+    return app
+
+
 @pytest.fixture(scope="class", autouse=True)
 def target_path(local_scratch):
     example_project = os.path.join(example_models_path, test_subfolder, "example_package.aedb")

@@ -6,12 +6,12 @@
     },
     "fr4_epoxy": {
       "name": "fr4_epoxy",
-      "loss_tangent": 0.02,
+      "dielectric_loss_tangent": 0.02,
       "permittivity": 4.4
     },
     "solder_mask": {
       "name": "solder_mask",
-      "loss_tangent": 0.035,
+      "dielectric_loss_tangent": 0.035,
       "permittivity": 3.1
     }
   },
