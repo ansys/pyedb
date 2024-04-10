@@ -53,10 +53,7 @@ class EdbExamples:
 
     def _get_folder(self, name):
         src = os.path.join(example_models_path, name)
-        dst = self.local_scratch.copyfolder(
-            src,
-            os.path.join(self.local_folder, os.path.split(src)[-1])
-        )
+        dst = self.local_scratch.copyfolder(src, os.path.join(self.local_folder, os.path.split(src)[-1]))
         return dst
 
     def get_si_verse(self):
@@ -66,7 +63,6 @@ class EdbExamples:
     def get_multizone_pcb(self):
         aedb = self._get_folder("multi_zone_project.aedb")
         return Edb(aedb, edbversion=desktop_version)
-
 
 
 @pytest.fixture(scope="module")
