@@ -69,7 +69,7 @@ non_graphical = False
 # Launch the :class:`pyedb.Edb` class, using EDB 2023 R2.
 
 aedb_path = os.path.join(generate_unique_folder_name(), generate_unique_name("component_example") + ".aedb")
-edb = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
+edb = pyedb.Edb(edbpath=aedb_path, edbversion="2024.1")
 print("EDB is located at {}".format(aedb_path))
 
 ######################

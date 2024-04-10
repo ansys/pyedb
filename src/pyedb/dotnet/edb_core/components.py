@@ -30,10 +30,10 @@ import re
 import warnings
 
 from pyedb.dotnet.clr_module import String
+from pyedb.dotnet.edb_core.definition.component_def import EDBComponentDef
 from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.sources import Source, SourceType
-from pyedb.dotnet.edb_core.definition.component_def import EDBComponentDef
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 from pyedb.generic.general_methods import (
@@ -1408,7 +1408,7 @@ class Components(object):
 
     @pyedb_function_handler()
     def create_rlc_component(
-        self, pins, component_name="", r_value=1.0, c_value=1e-9, l_value=1e-9, is_parallel=False
+        self, pins, component_name="", r_value=None, c_value=None, l_value=None, is_parallel=False
     ):  # pragma: no cover
         """Create physical Rlc component.
 
@@ -1454,9 +1454,9 @@ class Components(object):
         placement_layer=None,
         component_part_name=None,
         is_rlc=False,
-        r_value=0,
-        c_value=0,
-        l_value=0,
+        r_value=None,
+        c_value=None,
+        l_value=None,
         is_parallel=False,
     ):
         """Create a component from pins.
@@ -1523,21 +1523,21 @@ class Components(object):
         if is_rlc and len(pins) == 2:
             rlc = self._edb.utility.utility.Rlc()
             rlc.IsParallel = is_parallel
-            if r_value:
+            if r_value is None:
+                rlc.REnabled = False
+            else:
                 rlc.REnabled = True
                 rlc.R = self._get_edb_value(r_value)
+            if l_value is None:
+                rlc.LEnabled = False
             else:
-                rlc.REnabled = False
-            if l_value:
                 rlc.LEnabled = True
                 rlc.L = self._get_edb_value(l_value)
+            if c_value is None:
+                rlc.CEnabled = False
             else:
-                rlc.LEnabled = False
-            if c_value:
                 rlc.CEnabled = True
                 rlc.C = self._get_edb_value(c_value)
-            else:
-                rlc.CEnabled = False
             if rlc.REnabled and not rlc.CEnabled and not rlc.CEnabled:
                 new_cmp.SetComponentType(self._edb.definition.ComponentType.Resistor)
             elif rlc.CEnabled and not rlc.REnabled and not rlc.LEnabled:

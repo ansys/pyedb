@@ -20,11 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import os
-
+from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.obj_base import ObjBase
 from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 
 
 class PackageDef(ObjBase):
@@ -105,7 +103,7 @@ class PackageDef(ObjBase):
         return self._edb_object.GetTheta_JC().ToDouble()
 
     @theta_jc.setter
-    def theta_jc(self,value):
+    def theta_jc(self, value):
         value = self._pedb.edb_value(value)
         self._edb_object.SetTheta_JC(value)
 
@@ -118,3 +116,25 @@ class PackageDef(ObjBase):
     def height(self, value):
         value = self._pedb.edb_value(value)
         self._edb_object.SetHeight(value)
+
+    @pyedb_function_handler
+    def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness):
+        from pyedb.dotnet.edb_core.utilities.heatsink import HeatSink
+
+        heatsink = HeatSink(self._pedb)
+        heatsink.fin_base_height = fin_base_height
+        heatsink.fin_height = fin_height
+        heatsink.fin_orientation = fin_orientation
+        heatsink.fin_spacing = fin_spacing
+        heatsink.fin_thickness = fin_thickness
+        self._edb_object.SetHeatSink(heatsink._edb_object)
+
+    @property
+    def heatsink(self):
+        from pyedb.dotnet.edb_core.utilities.heatsink import HeatSink
+
+        flag, edb_object = self._edb_object.GetHeatSink()
+        if flag:
+            return HeatSink(self._pedb, edb_object)
+        else:
+            return None

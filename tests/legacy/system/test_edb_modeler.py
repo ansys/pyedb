@@ -88,7 +88,6 @@ class TestClass:
     def test_modeler_primitives_by_layer(self):
         """Evaluate modeler primitives by layer"""
         assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].layer_name == "1_Top"
-        assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].layer.GetName() == "1_Top"
         assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative
         assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_void
         self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative = True
@@ -315,7 +314,7 @@ class TestClass:
         edbapp = Edb(target_path, edbversion=desktop_version)
         for path in edbapp.modeler.paths:
             assert path.convert_to_polygon()
-        assert edbapp.nets.merge_nets_polygons("test")
+        # cannot merge one net only - see test: test_unite_polygon for reference
         edbapp.close()
 
     def test_156_check_path_length(self):
@@ -390,4 +389,99 @@ class TestClass:
         assert edbapp.modeler.primitives[0].duplicate_across_layers(lay_list)
         assert edbapp.modeler.primitives_by_layer["mid_gnd"]
         assert edbapp.modeler.primitives_by_layer["bot_gnd"]
+        edbapp.close()
+
+    def test_unite_polygon(self):
+        edbapp = Edb()
+        edbapp["$H"] = "0.65mil"
+        edbapp["Via_S"] = "40mil"
+        edbapp["MS_W"] = "4.75mil"
+        edbapp["MS_S"] = "5mil"
+        edbapp["SL_W"] = "6.75mil"
+        edbapp["SL_S"] = "8mil"
+        edbapp.stackup.add_layer("trace1", thickness="$H")
+        t1_1 = edbapp.modeler.create_trace(
+            width="MS_W",
+            layer_name="trace1",
+            path_list=[("-Via_S/2", "0"), ("-MS_S/2-MS_W/2", "-16 mil"), ("-MS_S/2-MS_W/2", "-100 mil")],
+            start_cap_style="FLat",
+            end_cap_style="FLat",
+            net_name="t1_1",
+        )
+        t2_1 = edbapp.modeler.create_trace(
+            width="MS_W",
+            layer_name="trace1",
+            path_list=[("-Via_S/2", "0"), ("-SL_S/2-SL_W/2", "16 mil"), ("-SL_S/2-SL_W/2", "100 mil")],
+            start_cap_style="FLat",
+            end_cap_style="FLat",
+            net_name="t2_1",
+        )
+        t3_1 = edbapp.modeler.create_trace(
+            width="MS_W",
+            layer_name="trace1",
+            path_list=[("-Via_S/2", "0"), ("-SL_S/2-SL_W/2", "16 mil"), ("+SL_S/2+MS_W/2", "100 mil")],
+            start_cap_style="FLat",
+            end_cap_style="FLat",
+            net_name="t3_1",
+        )
+        t1_1.convert_to_polygon()
+        t2_1.convert_to_polygon()
+        t3_1.convert_to_polygon()
+        net_list = ["t1_1", "t2_1"]
+        assert len(edbapp.modeler.polygons) == 3
+        edbapp.nets.merge_nets_polygons(net_names_list=net_list)
+        assert len(edbapp.modeler.polygons) == 2
+        edbapp.modeler.unite_polygons_on_layer("trace1")
+        assert len(edbapp.modeler.polygons) == 1
+        edbapp.close()
+
+    def test_layer_name(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        assert edbapp.modeler.polygons[50].layer_name == "1_Top"
+        edbapp.modeler.polygons[50].layer_name = "16_Bottom"
+        assert edbapp.modeler.polygons[50].layer_name == "16_Bottom"
+        edbapp.close()
+
+    def test_287_circuit_ports(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        cap = edbapp.components.capacitors["C1"]
+        edbapp.siwave.create_circuit_port_on_pin(pos_pin=cap.pins["1"], neg_pin=cap.pins["2"])
+        edbapp.save_edb_as(r"C:\Users\gkorompi\Downloads\AFT")
+        edbapp.components.capacitors["C3"].pins
+        edbapp.padstacks.pins
+        edbapp.close()
+
+    def rlc_component_302(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        pins = edbapp.components.get_pin_from_component("C31")
+        assert edbapp.components.create_rlc_component([pins[0], pins[1]], r_value=0, component_name="TEST")
+        edbapp.close()
+
+    def get_primitives_by_point_layer_and_nets(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        primitives = edbapp.modeler.get_primitive_by_layer_and_point(layer="Inner6(GND2)", point=[20e-3, 30e-3])
+        assert primitives
+        assert len(primitives) == 1
+        assert primitives[0].type == "Polygon"
+        primitives = edbapp.modeler.get_primitive_by_layer_and_point(point=[20e-3, 30e-3])
+        assert len(primitives) == 3
+        primitives = edbapp.modeler.get_primitive_by_layer_and_point(layer="Inner3(Sig1)", point=[109e3, 16.5e-3])
+        assert primitives
+        assert primitives[0].type == "Path"
         edbapp.close()

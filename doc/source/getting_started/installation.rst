@@ -17,7 +17,7 @@ PyEDB also supports the AEDT Student version 2023 R2 or later. For more informat
 `Ansys Electronics Desktop Student  - Free Software Download <https://www.ansys.com/academic/students/ansys-e
 lectronics-desktop-student>`_ page on the Ansys website.
 
-Any additional runtime dependencies are listed in the following installation topics. 
+Any additional runtime dependencies are listed in the following installation topics.
 
 Install from a Python file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -37,7 +37,7 @@ as an argument.
 Install on CPython from PyPI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can install PyEDB on CPython 3.7 through 3.10 from PyPI, the Python Package Index,
+You can install PyEDB on CPython 3.8 through 3.11 from PyPI, the Python Package Index,
 with this command:
 
 .. code:: shell
@@ -47,7 +47,7 @@ with this command:
 Linux support
 ~~~~~~~~~~~~~
 
-PyEDB works with CPython 3.7 through 3.10 on Linux in AEDT 2022 R2 and later.
+PyEDB works with CPython 3.8 through 3.10 on Linux in AEDT 2022 R2 and later.
 However, you must set up the following environment variables:
 
 .. code::
@@ -75,12 +75,12 @@ from your Python terminal, providing the full path to the ZIP file as an argumen
 
    pip install --no-cache-dir --no-index --find-links=/path/to/pyansys-edb/wheelhouse pyansys-edb
 
-For example, on Windows with Python 3.7, install PyEDB and all its dependencies from a
+For example, on Windows with Python 3.8, install PyEDB and all its dependencies from a
 wheelhouse with code like this:
 
 .. code::
 
-    pip install --no-cache-dir --no-index --find-links=file:///<path_to_wheelhouse>/PyEDB-v<release_version>-wheelhouse-Windows-3.7 pyedb
+    pip install --no-cache-dir --no-index --find-links=file:///<path_to_wheelhouse>/PyEDB-v<release_version>-wheelhouse-Windows-3.8 pyedb
 
 
 Update PyEDB to the latest version

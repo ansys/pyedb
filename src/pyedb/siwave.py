@@ -14,10 +14,12 @@ import sys
 import time
 
 from pyedb.dotnet.clr_module import _clr
-from pyedb.generic.general_methods import _pythonver
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import is_windows
-from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.generic.general_methods import (
+    _pythonver,
+    is_ironpython,
+    is_windows,
+    pyedb_function_handler,
+)
 from pyedb.misc.misc import list_installed_ansysem
 
 

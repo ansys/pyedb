@@ -26,6 +26,35 @@ concurrency:
 
 jobs:
 
+  check_title:
+    name: Check PR title
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get PR title
+        env:
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
+          PULL_REQUEST_NUMBER: ${{ github.event.number }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const response = await github.graphql(`query {
+              repository(owner: "${{ env.REPOSITORY_OWNER }}", name: "${{ env.REPOSITORY_NAME }}") {
+                pullRequest(number: ${{ env.PULL_REQUEST_NUMBER }}) {
+                  title
+                }
+              }
+            }`)
+            const title = response.repository.pullRequest.title;
+            core.exportVariable('PR_TITLE', title);
+      - name: Check PR title format
+        run: |
+          if ! [[ "${{ env.PR_TITLE }}" =~ ^(FEATURE:|REFACT:|IMPROVE:|TEST:|DOC:|MAINT:|FIX:|CHORE:|CI:).* ]]; then
+            echo "ERROR: Pull Request title does not start with one of the valid prefixes: FEATURE:, REFACT:, IMPROVE:, TEST:, DOC:, MAINT:, FIX:, CHORE:, or CI:"
+            exit 1
+          fi
+
   doc-style:
     name: Documentation style check
     runs-on: ubuntu-latest
@@ -44,7 +73,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.8', '3.9', '3.10', '3.11']
         should-release:
           - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
     steps:
@@ -70,11 +99,11 @@ jobs:
       - name: "Install Git and clone project"
         uses: actions/checkout@v4
 
+      # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          use-cache: false
 
       - name: Create Python venv
         run: |
@@ -126,6 +155,83 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
+  test-pyaedt-main:
+    name: Testing PyAEDT main branch
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    needs: [smoke-tests]
+    runs-on: [ self-hosted, Windows, pyaedt ]
+    steps:
+      - name: Install Git and checkout project
+        uses: actions/checkout@v4
+
+      # Revert to previous verison due too setup-python#819
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+          . .venv\Scripts\Activate.ps1
+
+      - name: Update pip
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install -U pip
+
+      - name: Clone PyAEDT on main branch
+        uses: actions/checkout@v4
+        with:
+          repository: ansys/pyaedt
+          path: "external/pyaedt"
+          ref: "main"
+
+      - name: Install PyAEDT main branch version with its test dependencies
+        run: |
+          . .venv\Scripts\Activate.ps1
+          pip install --no-cache-dir external/pyaedt[tests]
+
+      - name: Install PyEDB
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install .
+
+      - name: Install CI dependencies (e.g. vtk-osmesa)
+        run: |
+          .venv\Scripts\Activate.ps1
+          # Uninstall conflicting dependencies
+          pip uninstall --yes vtk
+          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.2.20230527.dev0
+
+      - name: Run PyAEDT tests
+        uses: nick-fields/retry@v3
+        env:
+          PYTHONMALLOC: malloc
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            .venv\Scripts\Activate.ps1
+            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/_unittest
+
+      - name: Run PyAEDT solvers tests
+        uses: nick-fields/retry@v3
+        env:
+          PYTHONMALLOC: malloc
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            .venv\Scripts\Activate.ps1
+            pytest --durations=50 -v external/pyaedt/_unittest_solvers
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
   docs-build:
     name: Build documentation
     runs-on: [ Windows, self-hosted, pyedb ]
@@ -133,11 +239,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          use-cache: false
 
       - name: 'Create virtual env'
         run: |
@@ -192,7 +298,7 @@ jobs:
         run: |
           zip -r documentation-html.zip .\doc\_build\html
           mv documentation-html.zip .\doc\_build\html\_static\assets\download\
-          cp doc/_build/latex/ansys-edb.pdf .\doc\_build\html\_static\assets\download\
+          cp doc/_build/latex/pyedb.pdf .\doc\_build\html\_static\assets\download\
 
       - name: Upload HTML Documentation artifact
         uses: actions/upload-artifact@v4
@@ -205,7 +311,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: documentation-pdf
-          path: doc/_build/latex/pyedb*.pdf
+          path: doc/_build/latex/pyedb.pdf
           retention-days: 7
 
   package:

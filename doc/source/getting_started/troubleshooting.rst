@@ -27,14 +27,13 @@ use the Python interpreter available in the AEDT installation.
 
 .. note::
 
-   Python 3.7 is available in AEDT 2023 R1 and earlier. Python 3.10 is available in AEDT 2023 R2
-   and later.
+   Python 3.10 is available in AEDT 2023 R2 and later.
 
-Here is the path to the Python 3.7 interpreter for the 2023 R1 installation:
+Here is the path to the Python 3.10 interpreter for the 2023 R1 installation:
 
 .. code:: python
 
-   "path\to\AnsysEM\v231\commonfiles\CPython\3_7\winx64\Release\python"
+   "path\to\AnsysEM\v231\commonfiles\CPython\3_10\winx64\Release\python"
 
 
 Error installing PyEDB using ``pip``
