@@ -71,7 +71,6 @@ class EdbExamples:
         return Edb(aedb, edbversion=desktop_version)
 
 
-
 @pytest.fixture(scope="module")
 def add_legacy_edb(local_scratch):
     def _method(project_name=None, subfolder=""):
@@ -95,6 +94,12 @@ def add_legacy_edb(local_scratch):
 @pytest.fixture(scope="class")
 def legacy_edb_app(add_legacy_edb):
     app = add_legacy_edb(test_project_name, subfolder=test_subfolder)
+    return app
+
+
+@pytest.fixture(scope="class")
+def legacy_edb_app_without_material(add_legacy_edb):
+    app = add_legacy_edb()
     return app
 
 

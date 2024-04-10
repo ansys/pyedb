@@ -123,6 +123,7 @@ class Scratch:
 
         """
         from distutils.dir_util import copy_tree
+
         if destfolder:
             copy_tree(src_folder, destfolder)
         else:
