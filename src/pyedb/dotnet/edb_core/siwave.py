@@ -1196,7 +1196,7 @@ class EdbSiwave(object):
 
         Parameters
         ----------
-        pins : list[Edb.Primitive.PadstackInstance]
+        pins : list[Edb.Cell.Primitive.PadstackInstance]
              List of EDB pins, length must be 2, since only 2 pins component are currently supported.
 
         component_name : str
