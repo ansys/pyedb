@@ -466,7 +466,7 @@ class TestClass:
         self.local_scratch.copyfolder(source_path_edb, target_path_edb)
         edbapp = Edb(target_path_edb, desktop_version)
         pins = edbapp.components.get_pin_from_component("C31")
-        assert edbapp.components.create_rlc_component([pins[0], pins[1]])
+        assert edbapp.siwave.create_rlc_component([pins[0], pins[1]])
         edbapp.close()
 
     def get_primitives_by_point_layer_and_nets(self):
