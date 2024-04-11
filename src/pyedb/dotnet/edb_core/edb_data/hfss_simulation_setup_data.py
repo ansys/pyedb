@@ -981,7 +981,7 @@ class ViaSettings(object):
 
     @via_mesh_plating.setter
     def via_mesh_plating(self, value):
-        if self._parent._pedb.version[0] >= 10:
+        if int(self._parent._pedb.edbversion.split(".")[0]) >= 2024:
             self._via_settings.ViaMeshPlating = value
             self._parent._update_setup()
         else:
