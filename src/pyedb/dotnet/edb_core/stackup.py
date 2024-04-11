@@ -879,6 +879,7 @@ class Stackup(object):
         else:
             return False
 
+    # TODO: This method might need some refactoring
     @pyedb_function_handler()
     def _import_layer_stackup(self, input_file=None):
         if input_file:
@@ -887,7 +888,12 @@ class Stackup(object):
             for k, v in json_dict.items():
                 if k == "materials":
                     for material in v.values():
-                        self._pedb.materials._load_materials(material)
+                        material_name = material["name"]
+                        del material["name"]
+                        if material_name not in self._pedb.materials:
+                            self._pedb.materials.add_material(material_name, **material)
+                        else:
+                            self._pedb.materials.update_material(material_name, material)
                 if k == "layers":
                     if len(list(v.values())) == len(list(self.stackup_layers.values())):
                         imported_layers_list = [l_dict["name"] for l_dict in list(v.values())]
@@ -1668,6 +1674,7 @@ class Stackup(object):
         temp_data = {name: area / outline_area * 100 for name, area in temp_data.items()}
         return temp_data
 
+    # TODO: This method might need some refactoring
     @pyedb_function_handler()
     def _import_dict(self, json_dict, rename=False):
         """Import stackup from a dictionary."""
@@ -1680,7 +1687,12 @@ class Stackup(object):
         else:
             mats = json_dict["materials"]
             for material in mats.values():
-                self._pedb.materials._load_materials(material)
+                material_name = material["name"]
+                del material["name"]
+                if material_name not in self._pedb.materials:
+                    self._pedb.materials.add_material(material_name, **material)
+                else:
+                    self._pedb.materials.update_material(material_name, material)
         temp = {i: j for i, j in json_dict["layers"].items() if j["type"] in ["signal", "dielectric"]}
         config_file_layers = list(temp.keys())
         layout_layers = list(self.stackup_layers.keys())
@@ -2053,7 +2065,7 @@ class Stackup(object):
                     material["Conductivity"] = val.conductivity
             else:
                 material["Permittivity"] = val.permittivity
-                material["DielectricLossTangent"] = val.loss_tangent
+                material["DielectricLossTangent"] = val.dielectric_loss_tangent
             materials[name] = material
 
         return layers, materials, roughness_models, non_stackup_layers

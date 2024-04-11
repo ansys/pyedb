@@ -1721,16 +1721,13 @@ class TestClass:
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
 
-    def test_multizone(self):
-        edb = Edb(
-            edbpath=os.path.join(local_path, "example_models", "multi_zone_project.aedb"),
-            edbversion=desktop_version,
-        )
+    def test_multizone(self, edb_examples):
+        edbapp = edb_examples.get_multizone_pcb()
         common_reference_net = "gnd"
-        edb_zones = edb.copy_zones()
+        edb_zones = edbapp.copy_zones()
         assert edb_zones
-        defined_ports, project_connexions = edb.cutout_multizone_layout(edb_zones, common_reference_net)
+        defined_ports, project_connexions = edbapp.cutout_multizone_layout(edb_zones, common_reference_net)
 
         assert defined_ports
         assert project_connexions
-        edb.close_edb()
+        edbapp.close_edb()

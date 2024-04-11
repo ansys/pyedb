@@ -1351,6 +1351,42 @@ class EdbPadstacks(object):
         return True
 
     @pyedb_function_handler()
+    def get_instances(self, name=None, pid=None, definition_name=None, net_name=None):
+        """Get padstack instances by conditions.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the padstack.
+        pid : int, optional
+            Id of the padstack.
+        definition_name : str, list, optional
+            Name of the padstack definition.
+        net_name : str, optional
+            The net name to be used for filtering padstack instances.
+
+        Returns
+        -------
+        list
+            List of :class:`dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`.
+        """
+
+        instances_by_id = self.instances
+        if pid:
+            return instances_by_id[pid]
+        elif name:
+            return self.instances_by_name[name]
+        else:
+            instances = list(instances_by_id.values())
+            if definition_name:
+                definition_name = definition_name if isinstance(definition_name, list) else [definition_name]
+                instances = [inst for inst in instances if inst.padstack_definition in definition_name]
+            if net_name:
+                net_name = net_name if isinstance(net_name, list) else [net_name]
+                instances = [inst for inst in instances if inst.net_name in net_name]
+            return instances
+
+    @pyedb_function_handler()
     def get_padstack_instance_by_net_name(self, net_name):
         """Get a list of padstack instances by net name.
 
@@ -1364,11 +1400,8 @@ class EdbPadstacks(object):
         list
             List of :class:`dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`.
         """
-        padstack_instances = []
-        for inst_id, inst in self.instances.items():
-            if inst.net_name == net_name:
-                padstack_instances.append(inst)
-        return padstack_instances
+        warnings.warn("Use new property :func:`get_padstack_instance` instead.", DeprecationWarning)
+        return self.get_instances(net_name=net_name)
 
     @pyedb_function_handler()
     def get_reference_pins(

@@ -977,7 +977,7 @@ class TestClass:
             if not material["dielectric_model_frequency"]:
                 assert (pedb_mat.conductivity - material["conductivity"]) < delta
                 assert (pedb_mat.permittivity - material["permittivity"]) < delta
-                assert (pedb_mat.loss_tangent - material["loss_tangent"]) < delta
+                assert (pedb_mat.dielectric_loss_tangent - material["dielectric_loss_tangent"]) < delta
                 assert (pedb_mat.permeability - material["permeability"]) < delta
                 assert (pedb_mat.magnetic_loss_tangent - material["magnetic_loss_tangent"]) < delta
             assert (pedb_mat.mass_density - material["mass_density"]) < delta
@@ -1006,7 +1006,6 @@ class TestClass:
                 assert (pedb_mat.permittivity_at_frequency - material["permittivity_at_frequency"]) < delta
             else:
                 assert pedb_mat.permittivity_at_frequency == material["permittivity_at_frequency"]
-            return 0
 
         import json
 
@@ -1020,10 +1019,9 @@ class TestClass:
         delta = 1e-6
         f = open(json_path)
         json_dict = json.load(f)
-        for k, v in json_dict.items():
-            if k == "materials":
-                for material in v.values():
-                    assert 0 == validate_material(edbapp.materials, material, delta)
+        dict_materials = json_dict["materials"]
+        for material_dict in dict_materials.values():
+            validate_material(edbapp.materials, material_dict, delta)
         for k, v in json_dict.items():
             if k == "layers":
                 for layer_name, layer in v.items():
