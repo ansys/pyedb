@@ -72,6 +72,7 @@ DC_ATTRIBUTES = [
     "dc_permittivity",
 ]
 
+
 def get_line_float_value(line):
     """Retrieve the float value expected in the line of an AMAT file.
 
@@ -83,6 +84,7 @@ def get_line_float_value(line):
         return float(re.split(",|=", line)[-1].strip(")'"))
     except ValueError:
         return None
+
 
 class MaterialProperties(BaseModel):
     """Store material properties."""
