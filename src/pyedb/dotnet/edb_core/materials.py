@@ -994,6 +994,7 @@ class Materials(object):
                         material_description = {}
                     # Extend material definition if possible
                     else:
+                        print("LINE", line)
                         for material_property in material_properties:
                             if material_property in line:
                                 value = get_line_float_value(line)
