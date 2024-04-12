@@ -3637,6 +3637,7 @@ class Edb(Database):
         >>> setup1.hfss_port_settings.max_delta_z0 = 0.5
         """
         if name in self.setups:
+            self.logger.info("setup already exists")
             return False
         setup = HfssSimulationSetup(self).create(name)
         return setup
