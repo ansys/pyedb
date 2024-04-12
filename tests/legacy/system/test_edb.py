@@ -849,8 +849,7 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = Edb(target_path, edbversion=desktop_version)
         setup1 = edbapp.create_hfss_setup("setup1")
-        setup2 = edbapp.create_hfss_setup("setup1")
-        assert setup2 == None
+        assert not edbapp.create_hfss_setup("setup1")
         assert setup1.set_solution_single_frequency()
         assert setup1.set_solution_multi_frequencies()
         assert setup1.set_solution_broadband()
