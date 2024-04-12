@@ -959,7 +959,7 @@ class Materials(object):
                 self.__edb.logger.warning(f"Material {material_name} already exist and was not loaded from AMAT file.")
         return True
 
-    @pyedb_function_handler()
+    # @pyedb_function_handler()
     def iterate_materials_in_amat(self, amat_file=None):
         """Iterate over material description in an AMAT file.
 
@@ -990,6 +990,7 @@ class Materials(object):
                     if end_regex.search(line):
                         in_material_def = False
                         yield material_description
+                        print(f"Fin de description")
                         material_description = {}
                     # Extend material definition if possible
                     else:
@@ -998,12 +999,14 @@ class Materials(object):
                                 value = get_line_float_value(line)
                                 if value is not None:
                                     material_description[material_property] = value
+                                    print(f"Found material property {material_property} with value {value}")
                                 break
                         # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
                         if "conductivity" in line and "thermal_conductivity" not in line:
                             value = get_line_float_value(line)
                             if value is not None:
                                 material_description["conductivity"] = value
+                                print(f"Found material property conductivity with value {value}")
                         # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
                         if (
                             "loss_tangent" in line
@@ -1018,18 +1021,20 @@ class Materials(object):
                             value = get_line_float_value(line)
                             if value is not None:
                                 material_description["dielectric_loss_tangent"] = value
+                                print(f"Found material property dielectric_loss_tangent with value {value}")
                 # Check if we reach the begining of a material description
                 else:
                     match = begin_regex.search(line)
                     if match:
                         material_name = match.group(1)
+                        print("Found material", material_name)
                         # Skip unwanted data
                         if material_name in ("$index$", "$base_index$"):
                             continue
                         material_description["name"] = match.group(1)
                         in_material_def = True
 
-    @pyedb_function_handler()
+    # @pyedb_function_handler()
     def read_materials(self, amat_file):
         """Read materials from an AMAT file.
 
