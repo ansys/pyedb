@@ -1084,8 +1084,10 @@ class Materials(object):
         self.__edb.logger.warning(f"Material {material_name} does not exist in syslib AMAT file.")
         return res
 
+
 if __name__ == "__main__":
     from pyedb import Edb
+
     materials = Materials(Edb())
     mat_file = os.path.join("C:\\Users\\smorais\\src\\pyedb\\tests\\example_models\\syslib\\Materials.amat")
     name_to_material = materials.read_materials(mat_file)
