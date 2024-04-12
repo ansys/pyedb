@@ -20,6 +20,36 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.dotnet.clr_module import Tuple
+from pyedb.dotnet.edb_core.geometry.point_data import PointData
+
+
+class BBox:
+    """Bounding box."""
+
+    def __init__(self, pedb, edb_object=None, point_1=None, point_2=None):
+        self._pedb = pedb
+        if edb_object:
+            self._edb_object = edb_object
+        else:
+            point_1 = PointData(self._pedb, x=point_1[0], y=point_1[1])
+            point_2 = PointData(self._pedb, x=point_2[0], y=point_2[1])
+            self._edb_object = Tuple[self._pedb.edb_api.Geometry.PointData, self._pedb.edb_api.Geometry.PointData](
+                point_1._edb_object, point_2._edb_object
+            )
+
+    @property
+    def point_1(self):
+        return [self._edb_object.Item1.X.ToDouble(), self._edb_object.Item1.Y.ToDouble()]
+
+    @property
+    def point_2(self):
+        return [self._edb_object.Item2.X.ToDouble(), self._edb_object.Item2.Y.ToDouble()]
+
+    @property
+    def corner_points(self):
+        return [self.point_1, self.point_2]
+
 
 class ObjBase(object):
     """Manages EDB functionalities for a base object."""
@@ -49,3 +79,16 @@ class ObjBase(object):
     @name.setter
     def name(self, value):
         self._edb_object.SetName(value)
+
+    @property
+    def bounding_box(self):
+        """Bounding box.
+
+        Returns
+        -------
+        List[float]
+            List of coordinates for the component's bounding box, with the list of
+            coordinates in this order: [X lower left corner, Y lower left corner,
+            X upper right corner, Y upper right corner].
+        """
+        return BBox(self._pedb, self._edb_object.GetBBox()).corner_points
