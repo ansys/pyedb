@@ -1,5 +1,6 @@
 import ansys.edb.core.simulation_setup as simulation_setup
-from ansys.edb.core.simulation_setup import SweepData
+
+# from ansys.edb.core.simulation_setup import SweepData
 import ansys.edb.core.utility as utility
 
 from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
@@ -9,7 +10,7 @@ class EdbFrequencySweep(object):
     """Manages EDB methods for frequency sweep."""
 
     def __init__(self, parent, edb_sweep_data=None, name=""):
-        self._edb_sim_setup = parent._edb_simulation_setup
+        self._edb_sim_setup = parent._edb_sim_setup
         if edb_sweep_data:
             self._edb_sweep_data = edb_sweep_data
             self._name = name
@@ -53,8 +54,10 @@ class EdbFrequencySweep(object):
         bool
             ``True`` if adaptive sampling is used, ``False`` otherwise.
         """
-        # return self._edb_sweep_data.adaptive_sampling
-        pass
+        for sweep in self.edb_sweep_data:
+            if not sweep.interpolation_data.adaptive_sampling:
+                return False
+        return True
 
     @property
     def adv_dc_extrapolation(self):
@@ -508,9 +511,9 @@ class EdbFrequencySweep(object):
 class MeshOperation(object):
     """Mesh Operation Class."""
 
-    def __init__(self, parent, edb_mesh_operation):
+    def __init__(self, edb_sim_setup, edb_mesh_operation):
         self._edb_mesh_operation = edb_mesh_operation
-        self._edb_sim_setup = parent.edb_sim_setup
+        self._edb_sim_setup = edb_sim_setup
 
     @property
     def mesh_operation_object(self):
@@ -644,9 +647,10 @@ class MeshOperationLength(MeshOperation):
     >>> mop.max_elements = 3000
     """
 
-    def __init__(self, edb_mesh_operation):
-        MeshOperation.__init__(self, edb_mesh_operation)
+    def __init__(self, edb_sim_setup, edb_mesh_operation):
+        MeshOperation.__init__(self, edb_sim_setup, edb_mesh_operation)
         self._edb_mesh_operation = edb_mesh_operation
+        self._edb_sim_setup = edb_sim_setup
 
     @property
     def max_length(self):
@@ -1005,9 +1009,10 @@ class AdaptiveSettings(object):
     def adapt_type(self):
         """Adaptive type.
         Options:
-        1- ``SINGLE``.
-        2- ``MULTI_FREQUENCIES``.
-        3- ``BROADBAND``.
+        0- ``SINGLE``.
+        1- ``MULTI_FREQUENCIES``.
+        2- ``BROADBAND``.
+        3- ``NUM_ADAPT_TYPE``.
 
         Returns
         -------
@@ -1017,8 +1022,22 @@ class AdaptiveSettings(object):
 
     @adapt_type.setter
     def adapt_type(self, value):
+        if isinstance(value, str):
+            value = value.upper()
+            if value == "SINGLE":
+                value = 0
+            elif value == "MULTI_FREQUENCIES":
+                value = 1
+            elif value == "BROADBAND":
+                value = 2
+            elif value == "NUM_ADAPT_TYPE":
+                value = 3
+            else:
+                value = 0
         adapt_solution_type = simulation_setup.AdaptType(value)
+        setup_name = self._edb_sim_setup.name
         self._edb_sim_setup.settings.general.adaptive_solution_type = adapt_solution_type
+        self._edb_sim_setup.name = setup_name
 
     @property
     def adaptive_frequency_data_list(self):
@@ -1038,7 +1057,7 @@ class AdaptiveSettings(object):
 
     @property
     def do_adaptive(self):
-        """Whether if adpative mesh is on.
+        """Whether if adaptive mesh is on.
 
         Returns
         -------
@@ -1742,7 +1761,7 @@ class HfssSimulationSetup(object):
 
     def __init__(self, edb, name=None, edb_hfss_sim_setup=None):
         self._edb = edb
-        self._name = None
+        self._name = name
         self._mesh_operations = {}
 
         if edb_hfss_sim_setup:
@@ -1753,8 +1772,7 @@ class HfssSimulationSetup(object):
                 self._name = generate_unique_name("hfss")
             else:
                 self._name = name
-            self._edb_sim_setup = simulation_setup.HfssSimulationSetup.create(self._edb.active_cell, "test")
-            pass
+            self._edb_sim_setup = simulation_setup.HfssSimulationSetup.create(self._edb.active_cell, self._name)
 
     @property
     def edb_sim_setup(self):
@@ -1886,11 +1904,10 @@ class HfssSimulationSetup(object):
         List of :class:`pyaedt.edb_core.edb_data.hfss_simulation_setup_data.MeshOperation`
 
         """
-
-        mesh_op_list = {}
+        self.mesh_operations = {}
         for i in self.edb_sim_setup.mesh_operations:
-            mesh_op_list[i.name] = MeshOperation(self, i)
-        return mesh_op_list
+            self.mesh_operations[i.name] = MeshOperation(self, i)
+        return self.mesh_operations
 
     @pyedb_function_handler()
     def add_length_mesh_operation(
@@ -1931,7 +1948,8 @@ class HfssSimulationSetup(object):
         """
         if not name:
             name = generate_unique_name("skin")
-        edb_mesh_op = simulation_setup.LengthMeshOperation(
+
+        _mesh_op = simulation_setup.LengthMeshOperation(
             name=name,
             net_layer_info=net_layer_list,
             enabled=True,
@@ -1942,11 +1960,11 @@ class HfssSimulationSetup(object):
             max_elements=max_elements,
             restrict_max_elements=restrict_elements,
         )
-        mesh_operation = MeshOperationLength(self, edb_mesh_op)
-        setup_mesh_op = self.edb_sim_setup.mesh_operations
-        setup_mesh_op.append(edb_mesh_op)
-        self.edb_sim_setup.mesh_operations = setup_mesh_op
-        self.mesh_operations[name] = mesh_operation
+        # mesh_operation = MeshOperationLength(self, edb_mesh_op)
+        # setup_mesh_op = self.edb_sim_setup.mesh_operations
+        self.edb_sim_setup.mesh_operations.append(_mesh_op)
+        # self.edb_sim_setup.mesh_operations = setup_mesh_op
+        # self.mesh_operations[name] = mesh_operation
 
     @pyedb_function_handler()
     def add_skin_depth_mesh_operation(

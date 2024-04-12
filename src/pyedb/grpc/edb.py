@@ -3066,7 +3066,7 @@ class EdbGrpc(EdbInit):
         """
         if name in self.setups:
             return False
-        setup = HfssSimulationSetup(self)
+        setup = HfssSimulationSetup(self, name=name)
         return setup
 
     @pyedb_function_handler()

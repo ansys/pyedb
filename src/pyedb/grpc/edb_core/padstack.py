@@ -565,33 +565,41 @@ class EdbPadstacks(object):
             ``True`` when successful, ``False`` if an anti-pad value fails to be assigned.
         """
         if self.definitions:
+            all_succeed = True
             for padstack in list(self.definitions.values()):
                 cloned_padstack_data = definition.PadstackDefData(padstack.edb_padstack.data)
                 layers_name = cloned_padstack_data.layer_names
-                all_succeed = True
                 for layer in layers_name:
-                    pad_parameters = self.get_pad_parameters(padstack.edb_padstack, layer, 1)
-                    if pad_parameters[0].value == 1:  # pragma no cover
-                        size = [utility.Value(value)] * len(pad_parameters[1].value)
+                    antipad = None
+                    try:
+                        antipad = cloned_padstack_data.get_pad_parameters(layer, definition.PadType.ANTI_PAD)
+                    except:
+                        self._logger.info(
+                            f"No antipad definition found for padstack definition {padstack.name}, " f"layer {layer}"
+                        )
+                        self._logger.info("Creating antipad definition")
+                    size = [utility.Value(value)]
+                    if antipad:  # pragma no cover
+                        geom_type = antipad[0]
+                        offset_x = antipad[2]
+                        offset_y = antipad[3]
+                        rot = antipad[4]
+                    else:
                         geom_type = definition.PadGeometryType.PADGEOMTYPE_CIRCLE
-                        offset_x = utility.Value(pad_parameters[2].value)
-                        offset_y = utility.Value(pad_parameters[3].value)
-                        rot = utility.Value(pad_parameters[4].value)
-                        antipad = definition.PadType.ANTI_PAD
-                        if cloned_padstack_data.set_pad_parameters(
-                            layer, antipad, geom_type, size, offset_x, offset_y, rot
-                        ):  # pragma no cover
-                            self._logger.info(
-                                "Pad-stack definition {}, anti-pad on layer {}, has been set to {}".format(
-                                    padstack.edb_padstack.name, layer, str(value)
-                                )
-                            )
-                        else:  # pragma no cover
-                            self._logger.error(
-                                "Failed to reassign anti-pad value {} on Pads-stack definition {},"
-                                " layer{}".format(str(value), padstack.edb_padstack.name, layer)
-                            )
-                            all_succeed = False
+                        offset_x = utility.Value(0.0)
+                        offset_y = utility.Value(0.0)
+                        rot = utility.Value(0.0)
+                    pad_type = definition.PadType.ANTI_PAD
+                    cloned_padstack_data.set_pad_parameters(
+                        layer=layer,
+                        pad_type=pad_type,
+                        type_geom=geom_type,
+                        sizes=size,
+                        offset_x=offset_x,
+                        offset_y=offset_y,
+                        rotation=rot,
+                    )
+                # all_succeed = False
                 padstack.edb_padstack.data = cloned_padstack_data
             return all_succeed
 
