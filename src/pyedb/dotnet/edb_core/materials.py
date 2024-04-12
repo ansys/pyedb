@@ -863,26 +863,6 @@ class Materials(object):
     @pyedb_function_handler()
     def load_material(self, material):
         """Load material."""
-        if self.materials:
-            mat_keys = [i.lower() for i in self.materials.keys()]
-            mat_keys_case = [i for i in self.materials.keys()]
-        else:
-            mat_keys = []
-            mat_keys_case = []
-
-        if not material:
-            return
-        if material["name"].lower() not in mat_keys:
-            if "conductivity" not in material:
-                self.add_dielectric_material(material["name"], material["permittivity"], material["loss_tangent"])
-            elif material["conductivity"] > 1e4:
-                self.add_conductor_material(material["name"], material["conductivity"])
-            else:
-                self.add_dielectric_material(material["name"], material["permittivity"], material["loss_tangent"])
-            self.materials[material["name"]]._load(material)
-        else:
-            self.materials[mat_keys_case[mat_keys.index(material["name"].lower())]]._load(material)
-
         if material:
             material_name = material["name"]
             material_conductivity = material.get("conductivity", None)
