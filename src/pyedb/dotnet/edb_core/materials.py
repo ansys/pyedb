@@ -1028,5 +1028,26 @@ class Materials(object):
                         material_description["name"] = match.group(1)
                         in_material_def = True
 
+    @pyedb_function_handler()
+    def read_materials(self, amat_file):
+        """Read materials from an AMAT file.
+
+        Parameters
+        ----------
+        amat_file : str
+            Full path to the AMAT file to read.
+
+        Returns
+        -------
+        dict
+            {material name: dict of material properties}.
+        """
+        res = {}
+        for material in self.iterate_materials_in_amat(amat_file):
+            material_name = material["name"]
+            res[material_name] = {}
+            for material_property, value in material.items():
+                if material_property != "name":
+                    res[material_name][material_property] = value
 
         return res
