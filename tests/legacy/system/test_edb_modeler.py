@@ -465,6 +465,8 @@ class TestClass:
         target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
         self.local_scratch.copyfolder(source_path_edb, target_path_edb)
         edbapp = Edb(target_path_edb, desktop_version)
+        pins = edbapp.components.get_pin_from_component("C31")
+        assert edbapp.components.create_rlc_component([pins[0], pins[1]], r_value=0, component_name="TEST")
         pl = edbapp.components.get_pin_from_component("B1")
         pins = [pl[0], pl[1], pl[2], pl[3]]
         assert edbapp.siwave.create_rlc_component(pins, component_name="random")
