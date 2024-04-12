@@ -29,7 +29,7 @@ dependencies = [
     "pywin32 >= 303;platform_system=='Windows'",
     "ansys-pythonnet >= 3.1.0rc3",
     "dotnetcore2 ==3.1.23;platform_system=='Linux'",
-    "pydantic>=2.6.4,<2.7",
+    "pydantic>=2.6.4,<2.8",
     "toml == 0.10.2",
 ]
 
