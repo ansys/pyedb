@@ -980,7 +980,6 @@ class Materials(object):
         material_properties = ATTRIBUTES.copy()
         # Remove cases manually handled
         material_properties.remove("conductivity")
-        material_properties.remove("loss_tangent")
 
         with open(amat_file, "r") as amat_fh:
             in_material_def = False
