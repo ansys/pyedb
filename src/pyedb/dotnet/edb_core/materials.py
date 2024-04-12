@@ -72,6 +72,17 @@ DC_ATTRIBUTES = [
     "dc_permittivity",
 ]
 
+def get_line_float_value(line):
+    """Retrieve the float value expected in the line of an AMAT file.
+
+    The associated string is expected to follow one of the following cases:
+    - simple('permittivity', 12.)
+    - permittivity='12'.
+    """
+    try:
+        return float(re.split(",|=", line)[-1].strip(")'"))
+    except ValueError:
+        return None
 
 class MaterialProperties(BaseModel):
     """Store material properties."""
@@ -966,91 +977,76 @@ class Materials(object):
                 self.__edb.logger.warning(f"Material {material_name} already exist and was not loaded from AMAT file.")
         return True
 
-    @staticmethod
     @pyedb_function_handler()
-    def read_materials(amat_file):
-        """Read materials from an AMAT file.
+    def iterate_materials_in_amat(self, amat_file=None):
+        """Iterate over material description in an AMAT file.
 
         Parameters
         ----------
         amat_file : str
             Full path to the AMAT file to read.
 
-        Returns
-        -------
+        Yields
+        ------
         dict
-            {material name: dict of material properties}.
         """
+        if amat_file is None:
+            amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")
 
-        def get_line_float_value(line):
-            """Retrieve the float value expected in the line of an AMAT file.
-
-            The associated string is expected to follow one of the following cases:
-            - simple('permittivity', 12.)
-            - permittivity='12'.
-            """
-            try:
-                return float(re.split(",|=", line)[-1].strip(")'"))
-            except ValueError:
-                return None
-
-        res = {}
-        _begin_search = re.compile(r"^\$begin '(.+)'")
-        _end_search = re.compile(r"^\$end '(.+)'")
-        material_properties = [
-            "thermal_conductivity",
-            "permittivity",
-            "dielectric_loss_tangent",
-            "permeability",
-            "magnetic_loss_tangent",
-            "thermal_expansion_coeffcient",
-            "specific_heat",
-            "mass_density",
-        ]
+        begin_regex = re.compile(r"^\$begin '(.+)'")
+        end_regex = re.compile(r"^\$end '(.+)'")
+        material_properties = ATTRIBUTES.copy()
+        # Remove cases manually handled
+        material_properties.remove("conductivity")
+        material_properties.remove("loss_tangent")
 
         with open(amat_file, "r") as amat_fh:
-            raw_lines = amat_fh.read().splitlines()
-            material_name = ""
-            for line in raw_lines:
-                b = _begin_search.search(line)
-                if b:  # walk down a level
-                    material_name = b.group(1)
-                    res.setdefault(material_name, {})
-                    if len(res) > 165:
-                        pass
-                if material_name:
-                    for material_property in material_properties:
-                        if material_property in line:
+            in_material_def = False
+            material_description = {}
+            for line in amat_fh:
+                if in_material_def:
+                    # Yield material definition
+                    if end_regex.search(line):
+                        in_material_def = False
+                        yield material_description
+                        material_description = {}
+                    # Extend material definition if possible
+                    else:
+                        for material_property in material_properties:
+                            if material_property in line:
+                                value = get_line_float_value(line)
+                                if value is not None:
+                                    material_description[material_property] = value
+                                break
+                        # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
+                        if "conductivity" in line and "thermal_conductivity" not in line:
                             value = get_line_float_value(line)
                             if value is not None:
-                                res[material_name][material_property] = value
-                            break
-                    # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
-                    if "conductivity" in line and "thermal_conductivity" not in line:
-                        value = get_line_float_value(line)
-                        if value is not None:
-                            res[material_name]["conductivity"] = value
-                    # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
-                    if (
-                        "loss_tangent" in line
-                        and "dielectric_loss_tangent" not in line
-                        and "magnetic_loss_tangent" not in line
-                    ):
-                        warnings.warn(
-                            "This key is deprecated in versions >0.7.0 and will soon be removed. "
-                            "Use key dielectric_loss_tangent instead.",
-                            DeprecationWarning,
-                        )
-                        value = get_line_float_value(line)
-                        if value is not None:
-                            res[material_name]["dielectric_loss_tangent"] = value
-                end = _end_search.search(line)
-                if end:
-                    material_name = ""
+                                material_description["conductivity"] = value
+                        # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
+                        if (
+                            "loss_tangent" in line
+                            and "dielectric_loss_tangent" not in line
+                            and "magnetic_loss_tangent" not in line
+                        ):
+                            warnings.warn(
+                                "This key is deprecated in versions >0.7.0 and will soon be removed. "
+                                "Use key dielectric_loss_tangent instead.",
+                                DeprecationWarning,
+                            )
+                            value = get_line_float_value(line)
+                            if value is not None:
+                                material_description["dielectric_loss_tangent"] = value
+                # Check if we reach the begining of a material description
+                else:
+                    match = begin_regex.search(line)
+                    if match:
+                        material_name = match.group(1)
+                        # Skip unwanted data
+                        if material_name in ("$index$", "$base_index$"):
+                            continue
+                        material_description["name"] = match.group(1)
+                        in_material_def = True
 
-        # Clean unwanted data
-        for key in ("$index$", "$base_index$"):
-            if key in res:
-                del res[key]
 
         return res
