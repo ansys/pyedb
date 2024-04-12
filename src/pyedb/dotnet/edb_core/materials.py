@@ -81,7 +81,7 @@ def get_line_float_value(line):
     - permittivity='12'.
     """
     try:
-        return float(re.split(",|=", line)[-1].strip(")'"))
+        return float(re.split(",|=", line)[-1].strip("'\n)"))
     except ValueError:
         return None
 
@@ -990,24 +990,25 @@ class Materials(object):
                     if end_regex.search(line):
                         in_material_def = False
                         yield material_description
-                        print(f"Fin de description")
                         material_description = {}
                     # Extend material definition if possible
                     else:
-                        print("LINE", line)
                         for material_property in material_properties:
                             if material_property in line:
                                 value = get_line_float_value(line)
                                 if value is not None:
                                     material_description[material_property] = value
-                                    print(f"Found material property {material_property} with value {value}")
                                 break
+                        # Extra case to cover bug in syslib AMAT file (see #364)
+                        if "thermal_expansion_coeffcient" in line:
+                            value = get_line_float_value(line)
+                            if value is not None:
+                                material_description["thermal_expansion_coefficient"] = value
                         # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
                         if "conductivity" in line and "thermal_conductivity" not in line:
                             value = get_line_float_value(line)
                             if value is not None:
                                 material_description["conductivity"] = value
-                                print(f"Found material property conductivity with value {value}")
                         # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
                         if (
                             "loss_tangent" in line
@@ -1022,13 +1023,11 @@ class Materials(object):
                             value = get_line_float_value(line)
                             if value is not None:
                                 material_description["dielectric_loss_tangent"] = value
-                                print(f"Found material property dielectric_loss_tangent with value {value}")
                 # Check if we reach the begining of a material description
                 else:
                     match = begin_regex.search(line)
                     if match:
                         material_name = match.group(1)
-                        print("Found material", material_name)
                         # Skip unwanted data
                         if material_name in ("$index$", "$base_index$"):
                             continue
@@ -1084,3 +1083,9 @@ class Materials(object):
 
         self.__edb.logger.warning(f"Material {material_name} does not exist in syslib AMAT file.")
         return res
+
+if __name__ == "__main__":
+    from pyedb import Edb
+    materials = Materials(Edb())
+    mat_file = os.path.join("C:\\Users\\smorais\\src\\pyedb\\tests\\example_models\\syslib\\Materials.amat")
+    name_to_material = materials.read_materials(mat_file)

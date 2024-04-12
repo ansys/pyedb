@@ -297,7 +297,7 @@ class TestClass:
         assert name_to_material[key]["thermal_conductivity"] == 0.062
         assert name_to_material[key]["mass_density"] == 1700
         assert name_to_material[key]["specific_heat"] == 1050
-        assert name_to_material[key]["thermal_expansion_coeffcient"] == 0.0016
+        assert name_to_material[key]["thermal_expansion_coefficient"] == 0.0016
         key = "Polyflon CuFlon (tm)"
         assert key in name_to_material
         assert name_to_material[key]["permittivity"] == 2.1
@@ -307,10 +307,10 @@ class TestClass:
         assert name_to_material[key]["thermal_conductivity"] == 0.6743
         assert name_to_material[key]["mass_density"] == 967.4
         assert name_to_material[key]["specific_heat"] == 4206
-        assert name_to_material[key]["thermal_expansion_coeffcient"] == 0.0006979
+        assert name_to_material[key]["thermal_expansion_coefficient"] == 0.0006979
         key = "steel_stainless"
         assert name_to_material[key]["conductivity"] == 1100000
         assert name_to_material[key]["thermal_conductivity"] == 13.8
         assert name_to_material[key]["mass_density"] == 8055
         assert name_to_material[key]["specific_heat"] == 480
-        assert name_to_material[key]["thermal_expansion_coeffcient"] == 1.08e-005
+        assert name_to_material[key]["thermal_expansion_coefficient"] == 1.08e-005
