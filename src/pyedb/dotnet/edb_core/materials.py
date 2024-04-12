@@ -1051,3 +1051,29 @@ class Materials(object):
                     res[material_name][material_property] = value
 
         return res
+
+    def read_syslib_material(self, material_name):
+        """Read a specific material from syslib AMAT file.
+
+        Parameters
+        ----------
+        material_name : str
+            Name of the material.
+
+        Returns
+        -------
+        dict
+            {material name: dict of material properties}.
+        """
+        res = {}
+        amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")
+        for material in self.iterate_materials_in_amat(amat_file):
+            iter_material_name = material["name"]
+            if iter_material_name == material_name:
+                for material_property, value in material.items():
+                    if material_property != "name":
+                        res[material_name][material_property] = value
+                return res
+
+        self.__edb.logger.warning(f"Material {material_name} does not exist in syslib AMAT file.")
+        return res
