@@ -47,6 +47,10 @@ class Definitions:
         ----------
         name: str
             Name of the package definition.
+        component_part_name : str, optional
+            Part name of the component.
+        boundary_points : list, optional
+            Boundary points which define the shape of the package.
 
         Returns
         -------

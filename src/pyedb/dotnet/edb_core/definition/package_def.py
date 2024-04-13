@@ -33,7 +33,12 @@ class PackageDef(ObjBase):
     pedb : :class:`pyedb.edb`
         Edb object.
     edb_object : object
-        Edb PackageDef Object
+    Edb PackageDef Object
+        component_part_name : str, optional
+        Part name of the component.
+    extent_bounding_box : list, optional
+        Bounding box defines the shape of the package. For example, [[0, 0], ["2mm", "2mm"].
+
     """
 
     def __init__(self, pedb, edb_object=None, name=None, component_part_name=None, extent_bounding_box=None):
