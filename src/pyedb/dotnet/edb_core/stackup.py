@@ -694,15 +694,17 @@ class Stackup(object):
 
         materials = self._pedb.materials
         if material not in materials:
-            logger.warning(f"Material '{material}' does not exist in material library." \
-                           "Intempt to create it from syslib.")
+            logger.warning(
+                f"Material '{material}' does not exist in material library." "Intempt to create it from syslib."
+            )
             material_properties = self._pedb.materials.read_syslib_material(material)
             materials.add_material(material, **material_properties)
         material = materials[material]
 
         if layer_type != "dielectric" and fillMaterial not in materials:
-            logger.warning(f"Material '{fillMaterial}' does not exist in material library." \
-                           "Intempt to create it from syslib.")
+            logger.warning(
+                f"Material '{fillMaterial}' does not exist in material library." "Intempt to create it from syslib."
+            )
             material_properties = self._pedb.materials.read_syslib_material(fillMaterial)
             materials.add_material(material, material_properties)
         fill_material = materials[fillMaterial]
