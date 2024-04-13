@@ -634,6 +634,7 @@ class Stackup(object):
         else:
             return False
 
+    # TODO: Update optionnal argument material into material_name and fillMaterial into fill_material_name
     @pyedb_function_handler()
     def add_layer(
         self,
@@ -642,7 +643,7 @@ class Stackup(object):
         method="add_on_top",
         layer_type="signal",
         material="copper",
-        fillMaterial="fr4_epoxy",
+        fillMaterial="FR4_epoxy",
         thickness="35um",
         etch_factor=None,
         is_negative=False,
@@ -686,31 +687,31 @@ class Stackup(object):
         if layer_name in self.layers:
             logger.error("layer {} exists.".format(layer_name))
             return False
-        materials_lower = {m.lower(): m for m in list(self._pedb.materials.materials.keys())}
         if not material:
-            if layer_type == "signal":
-                material = "copper"
-            else:
-                material = "fr4_epoxy"
+            material = "copper" if layer_type == "signal" else "FR4_epoxy"
         if not fillMaterial:
-            fillMaterial = "fr4_epoxy"
+            fillMaterial = "FR4_epoxy"
 
-        if material.lower() not in materials_lower:
-            logger.error(material + " does not exist in material library")
-        else:
-            material = materials_lower[material.lower()]
+        materials = self._pedb.materials
+        if material not in materials:
+            logger.warning(f"Material '{material}' does not exist in material library." \
+                           "Intempt to create it from syslib.")
+            material_properties = self._pedb.materials.read_syslib_material(material)
+            materials.add_material(material, **material_properties)
+        material = materials[material]
 
-        if layer_type != "dielectric":
-            if fillMaterial.lower() not in materials_lower:
-                logger.error(fillMaterial + " does not exist in material library")
-            else:
-                fillMaterial = materials_lower[fillMaterial.lower()]
+        if layer_type != "dielectric" and fillMaterial not in materials:
+            logger.warning(f"Material '{fillMaterial}' does not exist in material library." \
+                           "Intempt to create it from syslib.")
+            material_properties = self._pedb.materials.read_syslib_material(fillMaterial)
+            materials.add_material(material, material_properties)
+        fill_material = materials[fillMaterial]
 
         if layer_type in ["signal", "dielectric"]:
             new_layer = self._create_stackup_layer(layer_name, thickness, layer_type)
             new_layer.SetMaterial(material)
             if layer_type != "dielectric":
-                new_layer.SetFillMaterial(fillMaterial)
+                new_layer.SetFillMaterial(fill_material)
             new_layer.SetNegative(is_negative)
             l1 = len(self.layers)
             if method == "add_at_elevation" and elevation:
