@@ -1078,7 +1078,7 @@ class Materials(object):
             if iter_material_name == material_name:
                 for material_property, value in material.items():
                     if material_property != "name":
-                        res[material_name][material_property] = value
+                        res[material_property] = value
                 return res
 
         self.__edb.logger.warning(f"Material {material_name} does not exist in syslib AMAT file.")
