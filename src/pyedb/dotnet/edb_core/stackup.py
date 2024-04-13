@@ -200,7 +200,7 @@ class Stackup(object):
         inner_layer_thickness="17um",
         outer_layer_thickness="50um",
         dielectric_thickness="100um",
-        dielectric_material="fr4_epoxy",
+        dielectric_material="FR4_epoxy",
         soldermask=True,
         soldermask_thickness="20um",
     ):  # pragma: no cover
@@ -243,7 +243,7 @@ class Stackup(object):
         self.add_layer(
             "D" + str(int(layer_count / 2)),
             None,
-            material="fr4_epoxy",
+            material="FR4_epoxy",
             thickness=dielectric_thickness,
             layer_type="dielectric",
             fillMaterial=dielectric_material,
@@ -259,7 +259,7 @@ class Stackup(object):
             self.add_layer(
                 "SMT",
                 None,
-                material="solder_mask",
+                material="SolderMask",
                 thickness=soldermask_thickness,
                 layer_type="dielectric",
                 fillMaterial=dielectric_material,
@@ -267,14 +267,14 @@ class Stackup(object):
             self.add_layer(
                 "SMB",
                 None,
-                material="solder_mask",
+                material="SolderMask",
                 thickness=soldermask_thickness,
                 layer_type="dielectric",
                 fillMaterial=dielectric_material,
                 method="add_on_bottom",
             )
-            self.stackup_layers["TOP"].dielectric_fill = "solder_mask"
-            self.stackup_layers["BOT"].dielectric_fill = "solder_mask"
+            self.stackup_layers["TOP"].dielectric_fill = "SolderMask"
+            self.stackup_layers["BOT"].dielectric_fill = "SolderMask"
 
         for layer_num in np.arange(int(layer_count / 2), 1, -1):
             # Generate upper half
@@ -1717,7 +1717,7 @@ class Stackup(object):
                 "name": "default",
                 "type": "signal",
                 "material": "copper",
-                "dielectric_fill": "fr4_epoxy",
+                "dielectric_fill": "FR4_epoxy",
                 "thickness": 3.5e-05,
                 "etch_factor": 0.0,
                 "roughness_enabled": False,
@@ -1748,7 +1748,7 @@ class Stackup(object):
                 "name": "default",
                 "type": "signal",
                 "material": "copper",
-                "dielectric_fill": "fr4_epoxy",
+                "dielectric_fill": "FR4_epoxy",
                 "thickness": 3.5e-05,
                 "etch_factor": 0.0,
                 "roughness_enabled": False,
@@ -2073,25 +2073,24 @@ class Stackup(object):
 
     @pyedb_function_handler()
     def _add_materials_from_dictionary(self, material_dict):
-        mat_keys = [i.lower() for i in self._pedb.materials.materials.keys()]
-        mat_keys_case = [i for i in self._pedb.materials.materials.keys()]
-        for name, attr in material_dict.items():
-            if not name.lower() in mat_keys:
-                if "Conductivity" in attr:
-                    self._pedb.materials.add_conductor_material(name, attr["Conductivity"])
+        materials = self.self._pedb.materials.materials
+        for name, material_properties in material_dict.items():
+            if not name in materials:
+                if "Conductivity" in material_properties:
+                    materials.add_conductor_material(name, material_properties["Conductivity"])
                 else:
-                    self._pedb.materials.add_dielectric_material(
+                    materials.add_dielectric_material(
                         name,
-                        attr["Permittivity"],
-                        attr["DielectricLossTangent"],
+                        material_properties["Permittivity"],
+                        material_properties["DielectricLossTangent"],
                     )
             else:
-                local_material = self._pedb.materials[mat_keys_case[mat_keys.index(name.lower())]]
-                if "Conductivity" in attr:
-                    local_material.conductivity = attr["Conductivity"]
+                material = materials[name]
+                if "Conductivity" in material_properties:
+                    material.conductivity = material_properties["Conductivity"]
                 else:
-                    local_material.permittivity = attr["Permittivity"]
-                    local_material.loss_tanget = attr["DielectricLossTangent"]
+                    material.permittivity = material_properties["Permittivity"]
+                    material.loss_tanget = material_properties["DielectricLossTangent"]
         return True
 
     @pyedb_function_handler()
