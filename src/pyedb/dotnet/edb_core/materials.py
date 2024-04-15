@@ -945,7 +945,7 @@ class Materials(object):
                 self.__edb.logger.warning(f"Material {material_name} already exist and was not loaded from AMAT file.")
         return True
 
-    # @pyedb_function_handler()
+    @pyedb_function_handler()
     def iterate_materials_in_amat(self, amat_file=None):
         """Iterate over material description in an AMAT file.
 
@@ -1020,7 +1020,7 @@ class Materials(object):
                         material_description["name"] = match.group(1)
                         in_material_def = True
 
-    # @pyedb_function_handler()
+    @pyedb_function_handler()
     def read_materials(self, amat_file):
         """Read materials from an AMAT file.
 
@@ -1044,6 +1044,7 @@ class Materials(object):
 
         return res
 
+    @pyedb_function_handler()
     def read_syslib_material(self, material_name):
         """Read a specific material from syslib AMAT file.
 
@@ -1069,11 +1070,3 @@ class Materials(object):
 
         self.__edb.logger.error(f"Material {material_name} does not exist in syslib AMAT file.")
         return res
-
-
-if __name__ == "__main__":
-    from pyedb import Edb
-
-    materials = Materials(Edb())
-    mat_file = os.path.join("C:\\Users\\smorais\\src\\pyedb\\tests\\example_models\\syslib\\Materials.amat")
-    name_to_material = materials.read_materials(mat_file)
