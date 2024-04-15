@@ -634,7 +634,7 @@ class Stackup(object):
         else:
             return False
 
-    # TODO: Update optionnal argument material into material_name and fillMaterial into fill_material_name
+    # TODO: Update optional argument material into material_name and fillMaterial into fill_material_name
     @pyedb_function_handler()
     def add_layer(
         self,

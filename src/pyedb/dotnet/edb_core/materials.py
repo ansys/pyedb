@@ -1009,7 +1009,7 @@ class Materials(object):
                             value = get_line_float_value(line)
                             if value is not None:
                                 material_description["dielectric_loss_tangent"] = value
-                # Check if we reach the begining of a material description
+                # Check if we reach the beginning of a material description
                 else:
                     match = begin_regex.search(line)
                     if match:
