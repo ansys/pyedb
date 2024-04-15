@@ -712,7 +712,7 @@ class TestClass:
         port_hori = edb.ports["port_hori"]
         assert port_hori.ref_terminal
 
-        args = {
+        kwargs = {
             "layer_name": "1_Top",
             "net_name": "SIGP",
             "width": "0.1mm",
@@ -726,7 +726,7 @@ class TestClass:
             [["-40mm", "-10.4mm"], ["-30mm", "-10.4mm"]],
         ]
         for p in trace_paths:
-            t = edb.modeler.create_trace(path_list=p, **args)
+            t = edb.modeler.create_trace(path_list=p, **kwargs)
             traces.append(t)
 
         assert edb.hfss.create_wave_port(traces[0].id, trace_paths[0][0], "wave_port")
@@ -777,7 +777,7 @@ class TestClass:
             edbpath=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
             edbversion=desktop_version,
         )
-        args = {
+        kwargs = {
             "layer_name": "1_Top",
             "net_name": "SIGP",
             "width": "0.1mm",
@@ -791,7 +791,7 @@ class TestClass:
             [["-40mm", "-10.4mm"], ["-30mm", "-10.4mm"]],
         ]
         for p in trace_pathes:
-            t = edb.modeler.create_trace(path_list=p, **args)
+            t = edb.modeler.create_trace(path_list=p, **kwargs)
             traces.append(t)
 
         assert edb.hfss.create_wave_port(traces[0], trace_pathes[0][0], "wave_port")

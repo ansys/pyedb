@@ -36,18 +36,18 @@ class PolygonData:
         create_from_circle=None,
         create_from_rectangle=None,
         create_from_bounding_box=None,
-        **args,
+        **kwargs,
     ):
         self._pedb = pedb
 
         if create_from_points:
-            self._edb_object = self.create_from_points(**args)
+            self._edb_object = self.create_from_points(**kwargs)
         elif create_from_circle:
-            x_center, y_center, radius = args
+            x_center, y_center, radius = kwargs
         elif create_from_rectangle:
-            x_lower_left, y_lower_left, x_upper_right, y_upper_right = args
+            x_lower_left, y_lower_left, x_upper_right, y_upper_right = kwargs
         elif create_from_bounding_box:
-            self._edb_object = self.create_from_bounding_box(**args)
+            self._edb_object = self.create_from_bounding_box(**kwargs)
         else:  # pragma: no cover
             self._edb_object = edb_object
 
