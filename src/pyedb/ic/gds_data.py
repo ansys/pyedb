@@ -205,7 +205,7 @@ class ICLayerData:
 
     def _update_shapes(self):
         self._shapes = {}
-        top_cells = [cell for cell in self._klayout.top_cells()]
+        top_cells = [cell for cell in self._klayout.each_cell()]
         for kcell in top_cells:
             cell = CellShapes(polygons=[], paths=[], labels=[], boxes=[], pins=[], nets=[])
             if not kcell.name in self._shapes:
