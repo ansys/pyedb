@@ -641,6 +641,7 @@ class Materials(object):
                     DeprecationWarning,
                 )
                 setattr(material, "dielectric_loss_tangent", kwargs["loss_tangent"])
+            self.__materials[name] = material
             return material
         except MaterialModelException:
             raise ValueError("Use realistic values to define DS model.")
@@ -706,6 +707,7 @@ class Materials(object):
                     DeprecationWarning,
                 )
                 setattr(material, "dielectric_loss_tangent", kwargs["loss_tangent"])
+            self.__materials[name] = material
             return material
         except MaterialModelException:
             raise ValueError("Use realistic values to define Debye model.")
@@ -768,6 +770,7 @@ class Materials(object):
                     DeprecationWarning,
                 )
                 setattr(material, "dielectric_loss_tangent", kwargs["loss_tangent"])
+            self.__materials[name] = material
             return material
         except MaterialModelException:
             raise ValueError("Use realistic values to define Multipole Debye model.")
