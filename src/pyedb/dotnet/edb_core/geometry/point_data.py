@@ -28,6 +28,8 @@ class PointData:
         if edb_object:
             self._edb_object = edb_object
         else:
+            x = x if x else 0
+            y = y if y else 0
             self._edb_object = self._pedb.edb_api.geometry.point_data(
                 self._pedb.edb_value(x),
                 self._pedb.edb_value(y),
