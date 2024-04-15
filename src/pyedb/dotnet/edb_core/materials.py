@@ -621,6 +621,9 @@ class Materials(object):
         -------
         :class:`pyedb.dotnet.edb_core.materials.Material`
         """
+        if name in self.__materials:
+            raise ValueError(f"Material {name} already exists in material library.")
+
         material_model = self.__edb_definition.DjordjecvicSarkarModel()
         material_model.SetRelativePermitivityAtFrequency(permittivity_at_frequency)
         material_model.SetLossTangentAtFrequency(self.__edb_value(loss_tangent_at_frequency))
