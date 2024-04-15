@@ -705,7 +705,7 @@ class Stackup(object):
                 f"Material '{fillMaterial}' does not exist in material library. Intempt to create it from syslib."
             )
             material_properties = self._pedb.materials.read_syslib_material(fillMaterial)
-            materials.add_material(material, **material_properties)
+            materials.add_material(fillMaterial, **material_properties)
 
         if layer_type in ["signal", "dielectric"]:
             new_layer = self._create_stackup_layer(layer_name, thickness, layer_type)
@@ -2732,18 +2732,3 @@ class Stackup(object):
         else:
             plt.show()
         return plt
-
-
-if __name__ == "__main__":
-    from pyedb import Edb
-
-    edbapp = Edb(
-        edbversion="2023.2",
-    )
-    assert edbapp.stackup.add_outline_layer("Outline1")
-    assert not edbapp.stackup.add_outline_layer("Outline1")
-    edbapp.stackup.add_layer("1_Top")
-    assert edbapp.stackup.layers["1_Top"].thickness == 3.5e-05
-    edbapp.stackup.layers["1_Top"].thickness = 4e-5
-    assert edbapp.stackup.layers["1_Top"].thickness == 4e-05
-    edbapp.close()
