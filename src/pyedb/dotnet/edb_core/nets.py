@@ -483,8 +483,8 @@ class EdbNets(object):
 
         Parameters
         ----------
-        nets : str, list
-            Name of the net or list of nets to plot. If `None` all nets will be plotted.
+        nets : str, list, optional
+            Name of the net or list of nets to plot. If `None` all nets will be plotted. (default)
         layers : str, list, optional
             Name of the layers to include in the plot. If `None` all the signal layers will be considered.
         color_by_net : bool, optional
