@@ -563,8 +563,9 @@ class StackupLayerEdbClass(LayerEdbClass):
             else:
                 material_data = layer["material"]
                 if material_data is not None:
-                    self._pclass._pedb.materials.add_material(**material_data)
-                    self.material = layer["material"]["name"]
+                    material_name = layer["material"]["name"]
+                    self._pclass._pedb.materials.add_material(material_name, **material_data)
+                    self.material = material_name
             if layer["dielectric_fill"]:
                 if isinstance(layer["dielectric_fill"], str):
                     self.dielectric_fill = layer["dielectric_fill"]

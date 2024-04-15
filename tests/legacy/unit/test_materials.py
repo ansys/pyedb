@@ -95,8 +95,8 @@ def test_materials_read_materials(mock_file_open, mock_materials_property):
         "Water(@360K)": {
             "thermal_conductivity": 0.6743,
             "mass_density": 967.4,
-            "specific_heat": 4206,
-            "thermal_expansion_coeffcient": 0.0006979,
+            "specific_heat": 4206.0,
+            "thermal_expansion_coefficient": 0.0006979,
         },
     }
     mats = materials.read_materials("some path")

@@ -1226,8 +1226,8 @@ class TestClass:
     def test_create_padstack_instance(self):
         """Create padstack instances."""
         edb = Edb(edbversion=desktop_version)
-        edb.stackup.add_layer(layer_name="1_Top", fillMaterial="AIR", thickness="30um")
-        edb.stackup.add_layer(layer_name="contact", fillMaterial="AIR", thickness="100um", base_layer="1_Top")
+        edb.stackup.add_layer(layer_name="1_Top", fillMaterial="air", thickness="30um")
+        edb.stackup.add_layer(layer_name="contact", fillMaterial="air", thickness="100um", base_layer="1_Top")
 
         assert edb.padstacks.create(
             pad_shape="Rectangle",
@@ -1280,7 +1280,7 @@ class TestClass:
     def test_assign_hfss_extent_non_multiple_with_simconfig(self):
         """Build simulation project without multiple."""
         edb = Edb()
-        edb.stackup.add_layer(layer_name="GND", fillMaterial="AIR", thickness="30um")
+        edb.stackup.add_layer(layer_name="GND", fillMaterial="air", thickness="30um")
         edb.stackup.add_layer(layer_name="FR4", base_layer="gnd", thickness="250um")
         edb.stackup.add_layer(layer_name="SIGNAL", base_layer="FR4", thickness="30um")
         edb.modeler.create_trace(layer_name="SIGNAL", width=0.02, net_name="net1", path_list=[[-1e3, 0, 1e-3, 0]])
@@ -1325,7 +1325,7 @@ class TestClass:
     def test_assign_hfss_extent_multiple_with_simconfig(self):
         """Build simulation project with multiple."""
         edb = Edb()
-        edb.stackup.add_layer(layer_name="GND", fillMaterial="AIR", thickness="30um")
+        edb.stackup.add_layer(layer_name="GND", fillMaterial="air", thickness="30um")
         edb.stackup.add_layer(layer_name="FR4", base_layer="gnd", thickness="250um")
         edb.stackup.add_layer(layer_name="SIGNAL", base_layer="FR4", thickness="30um")
         edb.modeler.create_trace(layer_name="SIGNAL", width=0.02, net_name="net1", path_list=[[-1e3, 0, 1e-3, 0]])
@@ -1364,11 +1364,11 @@ class TestClass:
     def test_stackup_properties(self):
         """Evaluate stackup properties."""
         edb = Edb(edbversion=desktop_version)
-        edb.stackup.add_layer(layer_name="gnd", fillMaterial="AIR", thickness="10um")
-        edb.stackup.add_layer(layer_name="diel1", fillMaterial="AIR", thickness="200um", base_layer="gnd")
-        edb.stackup.add_layer(layer_name="sig1", fillMaterial="AIR", thickness="10um", base_layer="diel1")
-        edb.stackup.add_layer(layer_name="diel2", fillMaterial="AIR", thickness="200um", base_layer="sig1")
-        edb.stackup.add_layer(layer_name="sig3", fillMaterial="AIR", thickness="10um", base_layer="diel2")
+        edb.stackup.add_layer(layer_name="gnd", fillMaterial="air", thickness="10um")
+        edb.stackup.add_layer(layer_name="diel1", fillMaterial="air", thickness="200um", base_layer="gnd")
+        edb.stackup.add_layer(layer_name="sig1", fillMaterial="air", thickness="10um", base_layer="diel1")
+        edb.stackup.add_layer(layer_name="diel2", fillMaterial="air", thickness="200um", base_layer="sig1")
+        edb.stackup.add_layer(layer_name="sig3", fillMaterial="air", thickness="10um", base_layer="diel2")
         assert edb.stackup.thickness == 0.00043
         assert edb.stackup.num_layers == 5
         edb.close()
