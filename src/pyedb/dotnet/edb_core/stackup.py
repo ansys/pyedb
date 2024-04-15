@@ -2736,6 +2736,7 @@ class Stackup(object):
 
 if __name__ == "__main__":
     from pyedb import Edb
+
     edbapp = Edb(
         edbversion="2023.2",
     )
