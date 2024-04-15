@@ -563,14 +563,10 @@ class Materials(object):
         :class:`pyedb.dotnet.edb_core.materials.Material`
 
         """
-        if name in self.__materials:
-            raise ValueError(f"Material {name} already exists in material library.")
-
         extended_kwargs = {key: value for (key, value) in kwargs.items()}
         extended_kwargs["conductivity"] = conductivity
         material = self.add_material(name, **extended_kwargs)
 
-        self.__materials[name] = material
         return material
 
     @pyedb_function_handler()
@@ -590,15 +586,11 @@ class Materials(object):
         -------
         :class:`pyedb.dotnet.edb_core.materials.Material`
         """
-        if name in self.__materials:
-            raise ValueError(f"Material {name} already exists in material library.")
-
         extended_kwargs = {key: value for (key, value) in kwargs.items()}
         extended_kwargs["permittivity"] = permittivity
         extended_kwargs["dielectric_loss_tangent"] = dielectric_loss_tangent
         material = self.add_material(name, **extended_kwargs)
 
-        self.__materials[name] = material
         return material
 
     @pyedb_function_handler()
@@ -629,9 +621,6 @@ class Materials(object):
         -------
         :class:`pyedb.dotnet.edb_core.materials.Material`
         """
-        if name in self.__materials:
-            raise ValueError(f"Material {name} already exists in material library.")
-
         material_model = self.__edb_definition.DjordjecvicSarkarModel()
         material_model.SetRelativePermitivityAtFrequency(permittivity_at_frequency)
         material_model.SetLossTangentAtFrequency(self.__edb_value(loss_tangent_at_frequency))
@@ -652,7 +641,6 @@ class Materials(object):
                     DeprecationWarning,
                 )
                 setattr(material, "dielectric_loss_tangent", kwargs["loss_tangent"])
-            self.__materials[name] = material
             return material
         except MaterialModelException:
             raise ValueError("Use realistic values to define DS model.")
@@ -718,7 +706,6 @@ class Materials(object):
                     DeprecationWarning,
                 )
                 setattr(material, "dielectric_loss_tangent", kwargs["loss_tangent"])
-            self.__materials[name] = material
             return material
         except MaterialModelException:
             raise ValueError("Use realistic values to define Debye model.")
@@ -781,7 +768,6 @@ class Materials(object):
                     DeprecationWarning,
                 )
                 setattr(material, "dielectric_loss_tangent", kwargs["loss_tangent"])
-            self.__materials[name] = material
             return material
         except MaterialModelException:
             raise ValueError("Use realistic values to define Multipole Debye model.")
@@ -1081,7 +1067,7 @@ class Materials(object):
                         res[material_property] = value
                 return res
 
-        self.__edb.logger.warning(f"Material {material_name} does not exist in syslib AMAT file.")
+        self.__edb.logger.error(f"Material {material_name} does not exist in syslib AMAT file.")
         return res
 
 
