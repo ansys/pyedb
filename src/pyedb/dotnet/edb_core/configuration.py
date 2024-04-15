@@ -692,7 +692,11 @@ class Configuration:
             name = pkgd["name"]
             if name in self._pedb.definitions.package:
                 self._pedb.definitions.package[name].delete()
-            package_def = PackageDef(self._pedb, name=name)
+            extent_bounding_box = pkgd.get("extent_bounding_box", None)
+            if extent_bounding_box:
+                package_def = PackageDef(self._pedb, name=name, extent_bounding_box=extent_bounding_box)
+            else:
+                package_def = PackageDef(self._pedb, name=name, component_part_name=pkgd["component_definition"])
             package_def.maximum_power = pkgd["maximum_power"]
             package_def.therm_cond = pkgd["therm_cond"]
             package_def.theta_jb = pkgd["theta_jb"]
@@ -708,6 +712,18 @@ class Configuration:
                     heatsink["fin_spacing"],
                     heatsink["fin_thickness"],
                 )
-            json_comps = pkgd["components"] if isinstance(pkgd["components"], list) else [pkgd["components"]]
-            for i in json_comps:
-                comps[i].package_def = name
+
+            comp_def_name = pkgd["component_definition"]
+            comp_def = self._pedb.definitions.component[comp_def_name]
+
+            comp_list = dict()
+            if pkgd["apply_to_all"]:
+                comp_list.update(
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in pkgd["components"]}
+                )
+            else:
+                comp_list.update(
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes in pkgd["components"]}
+                )
+            for _, i in comp_list.items():
+                i.package_def = name
