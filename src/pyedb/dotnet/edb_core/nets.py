@@ -472,7 +472,7 @@ class EdbNets(object):
     @pyedb_function_handler()
     def get_plot_data(
         self,
-        nets,
+        nets=None,
         layers=None,
         color_by_net=False,
         outline=None,
