@@ -53,19 +53,20 @@ class TestClass:
         )
         self.edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
 
-    def test_add_package_def(self):
-        package = self.edbapp.definitions.add_package_def("package_1")
+    def test_add_package_def(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        package = edbapp.definitions.add_package_def("package_1", "SMTC-MECT-110-01-M-D-RA1_V")
         assert package
         package.maximum_power = 1
-        assert self.edbapp.definitions.package["package_1"].maximum_power == 1
+        assert edbapp.definitions.package["package_1"].maximum_power == 1
         package.therm_cond = 1
-        assert self.edbapp.definitions.package["package_1"].therm_cond == 1
+        assert edbapp.definitions.package["package_1"].therm_cond == 1
         package.theta_jb = 1
-        assert self.edbapp.definitions.package["package_1"].theta_jb == 1
+        assert edbapp.definitions.package["package_1"].theta_jb == 1
         package.theta_jc = 1
-        assert self.edbapp.definitions.package["package_1"].theta_jc == 1
+        assert edbapp.definitions.package["package_1"].theta_jc == 1
         package.height = 1
-        assert self.edbapp.definitions.package["package_1"].height == 1
+        assert edbapp.definitions.package["package_1"].height == 1
         package.set_heatsink("1mm", "2mm", "x_oriented", "3mm", "4mm")
         assert package.heatsink.fin_base_height == 0.001
         assert package.heatsink.fin_height == 0.002
@@ -73,4 +74,9 @@ class TestClass:
         assert package.heatsink.fin_spacing == 0.003
         assert package.heatsink.fin_thickness == 0.004
         package.name = "package_1b"
-        assert self.edbapp.definitions.package["package_1b"]
+        assert edbapp.definitions.package["package_1b"]
+
+        assert edbapp.definitions.add_package_def("package_2", boundary_points=[["-1mm", "-1mm"], ["1mm", "1mm"]])
+        edbapp.components["J5"].package_def = "package_2"
+        assert edbapp.components["J5"].package_def.name == "package_2"
+        edbapp.close()

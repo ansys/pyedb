@@ -200,7 +200,7 @@ class Stackup(object):
         inner_layer_thickness="17um",
         outer_layer_thickness="50um",
         dielectric_thickness="100um",
-        dielectric_material="fr4_epoxy",
+        dielectric_material="FR4_epoxy",
         soldermask=True,
         soldermask_thickness="20um",
     ):  # pragma: no cover
@@ -243,7 +243,7 @@ class Stackup(object):
         self.add_layer(
             "D" + str(int(layer_count / 2)),
             None,
-            material="fr4_epoxy",
+            material="FR4_epoxy",
             thickness=dielectric_thickness,
             layer_type="dielectric",
             fillMaterial=dielectric_material,
@@ -259,7 +259,7 @@ class Stackup(object):
             self.add_layer(
                 "SMT",
                 None,
-                material="solder_mask",
+                material="SolderMask",
                 thickness=soldermask_thickness,
                 layer_type="dielectric",
                 fillMaterial=dielectric_material,
@@ -267,14 +267,14 @@ class Stackup(object):
             self.add_layer(
                 "SMB",
                 None,
-                material="solder_mask",
+                material="SolderMask",
                 thickness=soldermask_thickness,
                 layer_type="dielectric",
                 fillMaterial=dielectric_material,
                 method="add_on_bottom",
             )
-            self.stackup_layers["TOP"].dielectric_fill = "solder_mask"
-            self.stackup_layers["BOT"].dielectric_fill = "solder_mask"
+            self.stackup_layers["TOP"].dielectric_fill = "SolderMask"
+            self.stackup_layers["BOT"].dielectric_fill = "SolderMask"
 
         for layer_num in np.arange(int(layer_count / 2), 1, -1):
             # Generate upper half
@@ -634,6 +634,7 @@ class Stackup(object):
         else:
             return False
 
+    # TODO: Update optional argument material into material_name and fillMaterial into fill_material_name
     @pyedb_function_handler()
     def add_layer(
         self,
@@ -642,7 +643,7 @@ class Stackup(object):
         method="add_on_top",
         layer_type="signal",
         material="copper",
-        fillMaterial="fr4_epoxy",
+        fillMaterial="FR4_epoxy",
         thickness="35um",
         etch_factor=None,
         is_negative=False,
@@ -686,25 +687,25 @@ class Stackup(object):
         if layer_name in self.layers:
             logger.error("layer {} exists.".format(layer_name))
             return False
-        materials_lower = {m.lower(): m for m in list(self._pedb.materials.materials.keys())}
         if not material:
-            if layer_type == "signal":
-                material = "copper"
-            else:
-                material = "fr4_epoxy"
+            material = "copper" if layer_type == "signal" else "FR4_epoxy"
         if not fillMaterial:
-            fillMaterial = "fr4_epoxy"
+            fillMaterial = "FR4_epoxy"
 
-        if material.lower() not in materials_lower:
-            logger.error(material + " does not exist in material library")
-        else:
-            material = materials_lower[material.lower()]
+        materials = self._pedb.materials
+        if material not in materials:
+            logger.warning(
+                f"Material '{material}' does not exist in material library. Intempt to create it from syslib."
+            )
+            material_properties = self._pedb.materials.read_syslib_material(material)
+            materials.add_material(material, **material_properties)
 
-        if layer_type != "dielectric":
-            if fillMaterial.lower() not in materials_lower:
-                logger.error(fillMaterial + " does not exist in material library")
-            else:
-                fillMaterial = materials_lower[fillMaterial.lower()]
+        if layer_type != "dielectric" and fillMaterial not in materials:
+            logger.warning(
+                f"Material '{fillMaterial}' does not exist in material library. Intempt to create it from syslib."
+            )
+            material_properties = self._pedb.materials.read_syslib_material(fillMaterial)
+            materials.add_material(fillMaterial, **material_properties)
 
         if layer_type in ["signal", "dielectric"]:
             new_layer = self._create_stackup_layer(layer_name, thickness, layer_type)
@@ -1716,7 +1717,7 @@ class Stackup(object):
                 "name": "default",
                 "type": "signal",
                 "material": "copper",
-                "dielectric_fill": "fr4_epoxy",
+                "dielectric_fill": "FR4_epoxy",
                 "thickness": 3.5e-05,
                 "etch_factor": 0.0,
                 "roughness_enabled": False,
@@ -1747,7 +1748,7 @@ class Stackup(object):
                 "name": "default",
                 "type": "signal",
                 "material": "copper",
-                "dielectric_fill": "fr4_epoxy",
+                "dielectric_fill": "FR4_epoxy",
                 "thickness": 3.5e-05,
                 "etch_factor": 0.0,
                 "roughness_enabled": False,
@@ -2072,25 +2073,24 @@ class Stackup(object):
 
     @pyedb_function_handler()
     def _add_materials_from_dictionary(self, material_dict):
-        mat_keys = [i.lower() for i in self._pedb.materials.materials.keys()]
-        mat_keys_case = [i for i in self._pedb.materials.materials.keys()]
-        for name, attr in material_dict.items():
-            if not name.lower() in mat_keys:
-                if "Conductivity" in attr:
-                    self._pedb.materials.add_conductor_material(name, attr["Conductivity"])
+        materials = self.self._pedb.materials.materials
+        for name, material_properties in material_dict.items():
+            if not name in materials:
+                if "Conductivity" in material_properties:
+                    materials.add_conductor_material(name, material_properties["Conductivity"])
                 else:
-                    self._pedb.materials.add_dielectric_material(
+                    materials.add_dielectric_material(
                         name,
-                        attr["Permittivity"],
-                        attr["DielectricLossTangent"],
+                        material_properties["Permittivity"],
+                        material_properties["DielectricLossTangent"],
                     )
             else:
-                local_material = self._pedb.materials[mat_keys_case[mat_keys.index(name.lower())]]
-                if "Conductivity" in attr:
-                    local_material.conductivity = attr["Conductivity"]
+                material = materials[name]
+                if "Conductivity" in material_properties:
+                    material.conductivity = material_properties["Conductivity"]
                 else:
-                    local_material.permittivity = attr["Permittivity"]
-                    local_material.loss_tanget = attr["DielectricLossTangent"]
+                    material.permittivity = material_properties["Permittivity"]
+                    material.loss_tanget = material_properties["DielectricLossTangent"]
         return True
 
     @pyedb_function_handler()
