@@ -41,16 +41,12 @@ class ICLayout:
             self._klayout.read(gds_file)
             self._read_layer_info()
         self._top_cells = self._klayout.top_cells()
-        self._get_cells()
         self._update_layers()
+        self._update_cells()
 
     @property
     def top_cells(self):
         return self._top_cells
-
-    # @property
-    # def cells(self):
-    #    return self._cells
 
     def _read_layer_info(self):
         for layer_index in range(self._klayout.layers()):
@@ -84,11 +80,20 @@ class ICLayout:
         for top_cell in self._top_cells:
             self.db.layers = [layer for layer in self.db.layers if not layer.shapes[top_cell.name].is_empty]
 
-    def _get_cells(self):
-        for cell in self._klayout.each_cell():
-            if not cell.is_ghost_cell() and not cell.name in [top_cell.name for top_cell in self._top_cells]:
-                if not cell.name in self.db.cells:
-                    self.db.cells[cell.name] = CellData(self._klayout, cell.name)
+    def _update_cells(self):
+        cells_name = [cell.name for cell in self._klayout.each_cell()]
+        for cell in cells_name:
+            cell_data = CellData(self._klayout, cell)
+            for layer in self.db.layers:
+                if cell in layer.shapes:
+                    cell_info = layer.shapes[cell]
+                    cell_data.polygons[layer.name] = cell_info.polygons
+                    cell_data.nets.append(cell_info.nets)
+                    cell_data.pins[layer.name] = cell_info.pins
+                    cell_data.boxes[layer.name] = cell_info.boxes
+                    cell_data.paths[layer.name] = cell_info.paths
+                    cell_data.labels[layer.name] = cell_info.labels
+            self.db.cells[cell] = cell_data
 
     def save(self, file_name=None):
         if file_name:

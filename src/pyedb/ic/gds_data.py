@@ -75,12 +75,15 @@ class ICLayoutData:
 
 
 class CellData:
-    def __init__(self, klayout, name, skip_labels=True):
+    def __init__(self, klayout, name):
         self._klayout = klayout
         self._name = name
-        self._skip_labels = skip_labels
-        self._shapes = {}
-        self._layer_info = {}
+        self._polygons = {}
+        self._labels = {}
+        self._boxes = {}
+        self._paths = {}
+        self._pins = {}
+        self._nets = []
 
     @property
     def name(self):
@@ -96,38 +99,32 @@ class CellData:
         return self._klayout.cell(self.name)
 
     @property
-    def layer_info(self):
-        if not self._layer_info:
-            for layer_index in range(self._klayout.layers()):
-                layer_info = self._klayout.get_info(layer_index)
-                if not layer_info.layer == -1:
-                    if not layer_info.name in self._layer_info:
-                        self._layer_info[layer_info.name] = (layer_info.layer, layer_info.datatype)
-        return self._layer_info
+    def polygons(self):
+        return self._polygons
+
+    @property
+    def labels(self):
+        return self._labels
+
+    @property
+    def boxes(self):
+        return self._boxes
+
+    @property
+    def paths(self):
+        return self._paths
+
+    @property
+    def pins(self):
+        return self._pins
 
     @property
     def bbox(self):
         return self.kcell.dbbox()
 
     @property
-    def shapes(self):
-        if not self._shapes:
-            for layer_name, layer in self.layer_info.items():
-                layer = self._klayout.layer(int(layer[0]), int(layer[1]))
-                shape_list = self.kcell.shapes(layer)
-                cell = CellShapes(polygons=[], paths=[], labels=[], boxes=[], pins=[], nets=[])
-                for shape in shape_list.each():
-                    if shape.is_box():
-                        cell.boxes.append(shape)
-                    if not self._skip_labels:
-                        if shape.is_text():
-                            cell.labels.append(shape)
-                    if shape.is_polygon():
-                        cell.polygons.append(shape)
-                    if shape.is_path():
-                        cell.paths.append(shape)
-                self._shapes[layer] = cell
-        return self._shapes
+    def nets(self):
+        return self._nets
 
 
 class ICLayerData:
