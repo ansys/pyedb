@@ -29,7 +29,7 @@ dependencies = [
     "pywin32 >= 303;platform_system=='Windows'",
     "ansys-pythonnet >= 3.1.0rc3",
     "dotnetcore2 ==3.1.23;platform_system=='Linux'",
-    "pydantic>=2.6.4,<2.7",
+    "pydantic>=2.6.4,<2.8",
     "toml == 0.10.2",
 ]
 
@@ -44,7 +44,7 @@ tests = [
     "pytest-xdist>=3.5.0,<3.6",
 ]
 doc = [
-    "ansys-sphinx-theme>=0.10.0,<0.15",
+    "ansys-sphinx-theme>=0.10.0,<0.16",
     "imageio>=2.30.0,<2.35",
     "ipython>=8.13.0,<8.24",
     "jupyterlab>=4.0.0,<4.3",
