@@ -56,7 +56,7 @@ class BaseSimulationSetup(object):
             "kDDRwizard": None,
             "kQ3D": None,
             "kNumSetupTypes": None,
-            "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings
+            "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings,
         }
         if self._edb_object:
             self._name = self._edb_object.GetName()
@@ -73,6 +73,8 @@ class BaseSimulationSetup(object):
         setup_type = self._setup_type_mapping[self._setup_type]
         edb_setup_info = self._pedb.simsetupdata.SimSetupInfo[setup_type]()
         edb_setup_info.Name = name
+        if edb_setup_info.get_SimSetupType().ToString() == "kRaptorX":
+            self._edb_setup_info = edb_setup_info
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
 
@@ -96,6 +98,7 @@ class BaseSimulationSetup(object):
             "kDDRwizard": None,
             "kQ3D": None,
             "kNumSetupTypes": None,
+            "kRaptorX": utility.RaptorXSimulationSetup,
         }
         setup_utility = setup_type_mapping[self._setup_type]
         return setup_utility(edb_setup_info)
@@ -123,7 +126,7 @@ class BaseSimulationSetup(object):
 
     @enabled.setter
     def enabled(self, value):
-        edb_setup_info = self.get_sim_setup_info
+        # edb_setup_info = self.get_sim_setup_info
         edb_setup_info.SimulationSettings.Enabled = value
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()

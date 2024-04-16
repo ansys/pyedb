@@ -3659,9 +3659,15 @@ class Edb(Database):
 
         """
         if name in self.setups:
+            self.logger.error("Setup name already used in the layout")
             return False
-        setup = RaptorXSimulationSetup(self).create(name)
-        return setup
+        version = self.edbversion.split(".")
+        if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
+            setup = RaptorXSimulationSetup(self).create(name)
+            return setup
+        else:
+            self.logger.error("RaptorX simulation only supported with Ansys release 2024R2 and higher")
+            return False
 
     @pyedb_function_handler()
     def create_siwave_syz_setup(self, name=None):

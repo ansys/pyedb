@@ -14,16 +14,15 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# FITNE SS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.edb_data.simulation_setup import (
-    BaseSimulationSetup,
-    EdbFrequencySweep,
-)
+from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
+from pyedb.dotnet.edb_core.edb_data.simulation_setup import BaseSimulationSetup
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.data_handlers import pyedb_function_handler
 
 
@@ -33,6 +32,7 @@ class RaptorXSimulationSetup(BaseSimulationSetup):
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
         self._setup_type = "kRaptorX"
+        self._edb_setup_info = None
 
     @pyedb_function_handler
     def create(self, name=None):
@@ -40,3 +40,300 @@ class RaptorXSimulationSetup(BaseSimulationSetup):
         self._name = name
         self._create(name)
         return self
+
+    @property
+    def setup_type(self):
+        pass
+
+    @property
+    def simulation_settings(self):
+        return RaptorXSimulationSetup(self._edb_setup_info)
+
+    class RaptorXSimulationSettings(object):
+        def __init__(self, edb_setup_info):
+            self._edb_setup_info = edb_setup_info
+
+        @property
+        def auto_removal_sliver_poly(self):
+            return self._edb_setup_info.AutoRemovalSliverPoly
+
+        @auto_removal_sliver_poly.setter
+        def auto_removal_sliver_poly(self, value):
+            self._edb_setup_info.AutoRemovalSliverPoly = EdbValue(value).tofloat
+
+        @property
+        def cell_per_wave_length(self):
+            """This setting describes the number of cells that fit under each wavelength. The wavelength is
+            calculated according to the Max Frequency or the Mesh Frequency, unless specified by user through
+            this setting. E.g. Setting Cells/Wavelength to 20 means that an object will be divided into 10 cells
+            if its width or length is 1/2 wavelengths.
+            Units: unitless.
+            """
+            return self._edb_setup_info.CellsPerWavelength
+
+        @cell_per_wave_length.setter
+        def cell_per_wave_length(self, value):
+            if isinstance(value, int):
+                self._edb_setup_info.CellsPerWavelength = value
+
+        @property
+        def edge_mesh(self):
+            """This option controls both, the thickness and the width of the exterior conductor filament.
+            When specified, it prevails over the Mesh Frequency or Max Frequency during mesh calculation.
+            Example: "0.8um".
+            """
+            return self._edb_setup_info.EdgeMesh
+
+        @edge_mesh.setter
+        def edge_mesh(self, value):
+            self._edb_setup_info.EdgeMesh = EdbValue(value).tostring
+
+        @property
+        def eliminate_slit_per_hole(self):
+            """This is a setting that internally simplifies layouts with strain relief or thermal relief slits and
+            holes. It will examine each hole separately against the whole polygon it belongs to.
+            If the area of the hole is below the threshold defined in this setting, then the hole will be filled.
+            Units: unitless.
+            """
+            return self._edb_setup_info.EliminateSlitPerHoles
+
+        @eliminate_slit_per_hole.setter
+        def eliminate_slit_per_hole(self, value):
+            self._edb_setup_info.EliminateSlitPerHoles = EdbValue(value).tofloat
+
+        @property
+        def mesh_frequency(self):
+            """User can override the default meshing applied by setting a custom frequency for mesh generation.
+            Example: "1GHz".
+            """
+            return self._edb_setup_info.MeshFrequency
+
+        @mesh_frequency.setter
+        def mesh_frequency(self, value):
+            self._edb_setup_info.MeshFrequency = EdbValue(value).tostring
+
+        @property
+        def net_settings_options(self):
+            """A list of Name, Value pairs that stores advanced option."""
+            return [val for val in list(self._edb_setup_info.NetSettingsOptions)]
+
+        @net_settings_options.setter
+        def net_settings_options(self, value):
+            if isinstance(value, list):
+                self._edb_setup_info.NetSettingsOptions = convert_py_list_to_net_list(value)
+
+        @property
+        def override_shrink_fac(self):
+            """Set the shrink factor explicitly, that is, review what-if scenarios of migrating to half-node
+            technologies.
+            Units: unitless.
+            """
+            return self._edb_setup_info.OverrideShrinkFac
+
+        @override_shrink_fac.setter
+        def override_shrink_fac(self, value):
+            self._edb_setup_info.OverrideShrinkFac = EdbValue(value).tofloat
+
+        @property
+        def plane_projection_factor(self):
+            """To eliminate unnecessary mesh complexity of "large" metal planes and improve overall extraction time,
+            user can define the mesh of certain planes using a combination of the Plane Projection Factor and
+            settings of the Nets Advanced Options.
+            Units: unitless.
+            """
+            return self._edb_setup_info.PlaneProjectionFactor
+
+        @plane_projection_factor.setter
+        def plane_projection_factor(self, value):
+            self._edb_setup_info.PlaneProjectionFactor = EdbValue(value).tofloat
+
+        @property
+        def use_accelerate_via_extraction(self):
+            """Setting this option will simplify/merge neighboring vias before sending the layout for processing
+            to the mesh engine and to the EM engine.
+            """
+            return self._edb_setup_info.UseAccelerateViaExtraction
+
+        @use_accelerate_via_extraction.setter
+        def use_accelerate_via_extraction(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseAccelerateViaExtraction = value
+
+        @property
+        def use_auto_removal_sliver_poly(self):
+            """Setting this option simplifies layouts by aligning slightly misaligned overlapping polygons."""
+            return self._edb_setup_info.UseAutoRemovalSliverPoly
+
+        @use_auto_removal_sliver_poly.setter
+        def use_auto_removal_sliver_poly(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseAutoRemovalSliverPoly = value
+
+        @property
+        def use_cells_per_wavelength(self):
+            """This setting describes the number of cells that fit under each wavelength. The wavelength is calculated
+            according to the Max Frequency or the Mesh Frequency, unless specified by user through this setting.
+            """
+            return self._edb_setup_info.UseCellsPerWavelength
+
+        @use_cells_per_wavelength.setter
+        def use_cells_per_wavelength(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseCellsPerWavelength = value
+
+        @property
+        def use_edge_mesh(self):
+            """This option controls both, the thickness and the width of the exterior conductor filament.
+            When checked, it prevails over the Mesh Frequency or Max Frequency during mesh calculation.
+            """
+            return self._edb_setup_info.UseEdgeMesh
+
+        @use_edge_mesh.setter
+        def use_edge_mesh(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseEdgeMesh = value
+
+        @property
+        def use_eliminate_slit_per_holes(self):
+            """This is a setting that internally simplifies layouts with strain relief or thermal relief slits and
+            holes.
+            """
+            return self._edb_setup_info.UseEliminateSlitPerHoles
+
+        @use_eliminate_slit_per_holes.setter
+        def use_eliminate_slit_per_holes(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseEliminateSlitPerHoles = value
+
+        @property
+        def use_enable_advanced_cap_effects(self):
+            """Applies all the capacitance related effects such as Conformal Dielectrics, Loading Effect,
+            Dielectric Damage.
+            """
+            return self._edb_setup_info.UseEnableAdvancedCapEffects
+
+        @use_enable_advanced_cap_effects.setter
+        def use_enable_advanced_cap_effects(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseEnableAdvancedCapEffects = value
+
+        @property
+        def use_enable_etch_transform(self):
+            """Pre-distorts the layout based on the foundry rules, applying the conductor's bias (positive/negative –
+            deflation/inflation) at the conductor edges due to unavoidable optical effects in the manufacturing process.
+            """
+            return self._edb_setup_info.UseEnableEtchTransform
+
+        @use_enable_etch_transform.setter
+        def use_enable_etch_transform(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseEnableEtchTransform = value
+
+        @property
+        def use_enable_hybrid_extraction(self):
+            """This setting allows the modelling engine to separate the layout into two parts in an attempt to
+            decrease the complexity of EM modelling.
+            """
+            return self._edb_setup_info.UseEnableHybridExtraction
+
+        @use_enable_hybrid_extraction.setter
+        def use_enable_hybrid_extraction(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseEnableHybridExtraction = value
+
+        @property
+        def use_enable_substrate_network_extraction(self):
+            """This setting models substrate coupling effects using an equivalent distributed RC network."""
+            return self._edb_setup_info.UseEnableSubstrateNetworkExtraction
+
+        @use_enable_substrate_network_extraction.setter
+        def use_enable_substrate_network_extraction(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseEnableSubstrateNetworkExtraction = value
+
+        @property
+        def use_extract_floating_metals_dummy(self):
+            """Enables modeling of floating metals as dummy fills. Captures the effect of dummy fill by extracting
+            the effective capacitance between any pairs of metal segments in the design, in the presence of each
+            individual dummy metal islands. This setting cannot be used with UseExtractFloatingMetalsFloating.
+            """
+            return self._edb_setup_info.UseExtractFloatingMetalsDummy
+
+        @use_extract_floating_metals_dummy.setter
+        def use_extract_floating_metals_dummy(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseExtractFloatingMetalsDummy = value
+
+        @property
+        def use_extract_floating_metals_floating(self):
+            """Enables modeling of floating metals as floating nets. Floating metal are grouped into a single entity
+            and treated as an independent net. This setting cannot be used with UseExtractFloatingMetalsDummy.
+            """
+            return self._edb_setup_info.UseExtractFloatingMetalsFloating
+
+        @use_extract_floating_metals_floating.setter
+        def use_extract_floating_metals_floating(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseExtractFloatingMetalsFloating = value
+
+        @property
+        def use_lde(self):
+            """
+            Takes into account the variation of resistivity as a function of a conductor’s drawn width and spacing to
+            its neighbors or as a function of its local density, due to dishing, slotting, cladding thickness, and so
+            on.
+            """
+            return self._edb_setup_info.UseLDE
+
+        @use_lde.setter
+        def use_lde(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseLDE = value
+
+        @property
+        def use_mesh_frequency(self):
+            """
+            User can override the default meshing applied by the mesh engine by checking this option and setting a
+            custom frequency for mesh generation.
+            """
+            return self._edb_setup_info.UseMeshFrequency
+
+        @use_mesh_frequency.setter
+        def use_mesh_frequency(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseMeshFrequency = value
+
+        @property
+        def use_override_shrink_fac(self):
+            """Set the shrink factor explicitly, that is, review what-if scenarios of migrating to half-node
+            technologies.
+            """
+            return self._edb_setup_info.UseOverrideShrinkFac
+
+        @use_override_shrink_fac.setter
+        def use_override_shrink_fac(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseOverrideShrinkFac = value
+
+        @property
+        def use_plane_projection_factor(self):
+            """To eliminate unnecessary mesh complexity of "large" metal planes and improve overall
+            extraction time, user can define the mesh of certain planes using a combination of the Plane Projection
+            Factor and settings of the Nets Advanced Options.
+            """
+            return self._edb_setup_info.UsePlaneProjectionFactor
+
+        @use_plane_projection_factor.setter
+        def use_plane_projection_factor(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UsePlaneProjectionFactor = value
+
+        @property
+        def use_relaxed_z_axis(self):
+            """Enabling this option provides a simplified mesh along the z-axis."""
+            return self._edb_setup_info.UseRelaxedZAxis
+
+        @use_relaxed_z_axis.setter
+        def use_relaxed_z_axis(self, value):
+            if isinstance(value, bool):
+                self._edb_setup_info.UseRelaxedZAxis = value
