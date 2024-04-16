@@ -33,8 +33,6 @@ import logging
 import math
 import warnings
 
-import matplotlib.colors
-
 from pyedb.dotnet.edb_core.edb_data.layer_data import (
     LayerEdbClass,
     StackupLayerEdbClass,
@@ -48,9 +46,15 @@ from pyedb.generic.general_methods import (
 )
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 
+colors = None
 pd = None
 np = None
 if not is_ironpython:
+    try:
+        import matplotlib.colors as colors
+    except ImportError:
+        colors = None
+
     try:
         import numpy as np
     except ImportError:
@@ -2130,7 +2134,7 @@ class Stackup(object):
                 layer = {"name": l.attrib["Name"]}
                 for k, v in l.attrib.items():
                     if k == "Color":
-                        layer[k.lower()] = [int(x * 255) for x in list(matplotlib.colors.to_rgb(v))]
+                        layer[k.lower()] = [int(x * 255) for x in list(colors.to_rgb(v))]
                     elif k == "Thickness":
                         layer[k.lower()] = v + length_unit
                     elif v == "conductor":
