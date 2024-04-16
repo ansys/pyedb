@@ -2114,6 +2114,9 @@ class Stackup(object):
         bool
             ``True`` when successful, ``False`` when failed.
         """
+        if not colors:
+            self._pedb.logger.error("Matplotlib is needed. Please, install it first.")
+            return False
         tree = ET.parse(file_path)
         root = tree.getroot()
         stackup = root.find("Stackup")
