@@ -1698,8 +1698,12 @@ class Stackup(object):
         config_file_layers = list(temp.keys())
         layout_layers = list(self.stackup_layers.keys())
         renamed_layers = {}
-        if rename and len(config_file_layers) == len(layout_layers):
-            for lay_ind in range(len(list(temp.keys()))):
+        if rename and len(config_file_layers) >= len(layout_layers):
+            for lay_ind in range(len(layout_layers)):
+                if not config_file_layers[lay_ind] == layout_layers[lay_ind]:
+                    renamed_layers[layout_layers[lay_ind]] = config_file_layers[lay_ind]
+        elif rename and len(config_file_layers) < len(layout_layers):
+            for lay_ind in range(len(config_file_layers)):
                 if not config_file_layers[lay_ind] == layout_layers[lay_ind]:
                     renamed_layers[layout_layers[lay_ind]] = config_file_layers[lay_ind]
         for name in list(self.stackup_layers.keys()):
@@ -1712,7 +1716,7 @@ class Stackup(object):
                 name = renamed_layers[name]
             else:  # Remove layers not in config file.
                 self.remove_layer(name)
-                self._logger.warning(f"Layer {name} were not found in configuration file, removing layer")
+                self._logger.warning(f"Layer {name} was not found in configuration file, removing layer")
             default_layer = {
                 "name": "default",
                 "type": "signal",
