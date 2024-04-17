@@ -14,13 +14,13 @@ import sys
 import time
 
 from pyedb.dotnet.clr_module import _clr
+from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import (
     _pythonver,
     is_ironpython,
     is_windows,
     pyedb_function_handler,
 )
-from pyedb.edb_logger import pyedb_logger
 from pyedb.misc.misc import list_installed_ansysem
 
 
@@ -368,7 +368,7 @@ class Siwave(object):  # pragma no cover
         self.oproject.ScrExportDcPowerDataToIcepak(True)
         self._logger.info("Exporting Icepak project.")
         code = self.oproject.ScrExportIcepakProject(file_path, dc_simulation_name)
-        return True if code==0 else False
+        return True if code == 0 else False
 
     @pyedb_function_handler
     def run_icepak_simulation(self, icepak_simulation_name, dc_simulation_name):
