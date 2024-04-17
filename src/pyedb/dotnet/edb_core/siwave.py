@@ -27,6 +27,7 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 import os
 import time
 
+from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
     SourceType,
@@ -140,8 +141,14 @@ class EdbSiwave(object):
             Name of the source.
 
         """
-        pos_pin = source.positive_node.node_pins
-        neg_pin = source.negative_node.node_pins
+        if isinstance(source.positive_node.node_pins, EDBPadstackInstance):
+            pos_pin = source.positive_node.node_pins._edb_padstackinstance
+        else:
+            pos_pin = source.positive_node.node_pins
+        if isinstance(source.negative_node.node_pins, EDBPadstackInstance):
+            neg_pin = source.negative_node.node_pins._edb_padstackinstance
+        else:
+            neg_pin = source.negative_node.node_pins
 
         res, fromLayer_pos, toLayer_pos = pos_pin.GetLayerRange()
         res, fromLayer_neg, toLayer_neg = neg_pin.GetLayerRange()
@@ -1189,8 +1196,8 @@ class EdbSiwave(object):
 
         Parameters
         ----------
-        pins : list[Edb.Primitive.PadstackInstance]
-             List of EDB pins, length must be 2, since only 2 pins component are currently supported.
+        pins : list[Edb.Cell.Primitive.PadstackInstance]
+             List of EDB pins.
 
         component_name : str
             Component name.

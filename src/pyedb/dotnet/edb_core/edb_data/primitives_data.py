@@ -160,13 +160,14 @@ class EDBPrimitivesMain(Connectable):
 
     @layer_name.setter
     def layer_name(self, val):
-        if isinstance(val, str) and val in list(self._core_stackup.layers.keys()):
-            lay = self._core_stackup.layers["TOP"]._edb_layer
-            if lay:
-                self.primitive_object.SetLayer(lay)
+        layer_list = list(self._core_stackup.layers.keys())
+        if isinstance(val, str) and val in layer_list:
+            layer = self._core_stackup.layers[val]._edb_layer
+            if layer:
+                self.primitive_object.SetLayer(layer)
             else:
-                raise AttributeError("Layer {} not found in layer".format(val))
-        elif isinstance(val, type(self._core_stackup.layers["TOP"])):
+                raise AttributeError("Layer {} not found.".format(val))
+        elif isinstance(val, type(self._core_stackup.layers[layer_list[0]])):
             try:
                 self.primitive_object.SetLayer(val._edb_layer)
             except:
@@ -887,7 +888,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
             return self._app.hfss.create_edge_port_vertical(self.id, pos, name, 50, reference_layer)
 
     @pyedb_function_handler()
-    def create_via_fence(self, distance, gap, padstack_name):
+    def create_via_fence(self, distance, gap, padstack_name, net_name="GND"):
         """Create via fences on both sides of the trace.
 
         Parameters
@@ -898,6 +899,8 @@ class EdbPath(EDBPrimitives, PathDotNet):
             Gap between vias.
         padstack_name: str
             Name of the via padstack.
+        net_name: str, optional
+            Name of the net.
 
         Returns
         -------
@@ -989,7 +992,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
         center_line = self.get_center_line()
         leftline, rightline = getParalletLines(center_line, distance)
         for x, y in getLocations(rightline, gap) + getLocations(leftline, gap):
-            self._pedb.padstacks.place([x, y], padstack_name)
+            self._pedb.padstacks.place([x, y], padstack_name, net_name=net_name)
 
 
 class EdbRectangle(EDBPrimitives, RectangleDotNet):
@@ -1301,7 +1304,7 @@ class EDBArcs(object):
 
         Examples
         --------
-        >>> appedb = Edb(fpath, edbversion="2023.2")
+        >>> appedb = Edb(fpath, edbversion="2024.1")
         >>> start_coordinate = appedb.nets["V1P0_S0"].primitives[0].arcs[0].start
         >>> print(start_coordinate)
         [x_value, y_value]
@@ -1320,7 +1323,7 @@ class EDBArcs(object):
 
         Examples
         --------
-        >>> appedb = Edb(fpath, edbversion="2023.2")
+        >>> appedb = Edb(fpath, edbversion="2024.1")
         >>> end_coordinate = appedb.nets["V1P0_S0"].primitives[0].arcs[0].end
         """
         point = self.arc_object.End
@@ -1338,7 +1341,7 @@ class EDBArcs(object):
 
         Examples
         --------
-        >>> appedb = Edb(fpath, edbversion="2023.2")
+        >>> appedb = Edb(fpath, edbversion="2024.1")
         >>> arc_height = appedb.nets["V1P0_S0"].primitives[0].arcs[0].height
         """
         return self.arc_object.Height

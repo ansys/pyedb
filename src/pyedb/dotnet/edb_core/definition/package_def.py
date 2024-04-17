@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
-from pyedb.dotnet.edb_core.edb_data.obj_base import ObjBase
+from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
+from pyedb.dotnet.edb_core.obj_base import ObjBase
 from pyedb.generic.general_methods import pyedb_function_handler
 
 
@@ -33,19 +33,24 @@ class PackageDef(ObjBase):
     pedb : :class:`pyedb.edb`
         Edb object.
     edb_object : object
-        Edb PackageDef Object
+    Edb PackageDef Object
+        component_part_name : str, optional
+        Part name of the component.
+    extent_bounding_box : list, optional
+        Bounding box defines the shape of the package. For example, [[0, 0], ["2mm", "2mm"].
+
     """
 
-    def __init__(self, pedb, edb_object=None, name=None):
-        self._pedb = pedb
-        if edb_object is None and name is not None:
-            self._edb_object = self.__create_from_name(name)
+    def __init__(self, pedb, edb_object=None, name=None, component_part_name=None, extent_bounding_box=None):
+        super().__init__(pedb, edb_object)
+        if self._edb_object is None and name is not None:
+            self._edb_object = self.__create_from_name(name, component_part_name, extent_bounding_box)
         else:
             self._edb_object = edb_object
 
     @pyedb_function_handler
-    def __create_from_name(self, name):
-        """Create a package defininitiion.
+    def __create_from_name(self, name, component_part_name=None, extent_bounding_box=None):
+        """Create a package definition.
 
         Parameters
         ----------
@@ -58,14 +63,33 @@ class PackageDef(ObjBase):
             EDB PackageDef Object
         """
         edb_object = self._pedb.edb_api.definition.PackageDef.Create(self._pedb.active_db, name)
-        pointA = self._pedb.edb_api.geometry.point_data(
-            self._pedb.edb_value(0),
-            self._pedb.edb_value(0),
-        )
+        if component_part_name:
+            x_pt1, y_pt1, x_pt2, y_pt2 = list(
+                self._pedb.components.definitions[component_part_name].components.values()
+            )[0].bounding_box
+            x_mid = (x_pt1 + x_pt2) / 2
+            y_mid = (y_pt1 + y_pt2) / 2
+            bbox = [[y_pt1 - y_mid, x_pt1 - x_mid], [y_pt2 - y_mid, x_pt2 - x_mid]]
+        else:
+            bbox = extent_bounding_box
+        polygon_data = PolygonData(self._pedb, create_from_bounding_box=True, points=bbox)
 
-        polygon = PolygonDataDotNet(self._pedb).create_from_bbox([pointA, pointA])
-        edb_object.SetExteriorBoundary(polygon)
+        edb_object.SetExteriorBoundary(polygon_data._edb_object)
         return edb_object
+
+    @pyedb_function_handler
+    def delete(self):
+        """Delete a package definition object from the database."""
+        return self._edb_object.Delete()
+
+    @property
+    def exterior_boundary(self):
+        """Get the exterior boundary of a package definition."""
+        return PolygonData(self._pedb, self._edb_object.GetExteriorBoundary()).points
+
+    @exterior_boundary.setter
+    def exterior_boundary(self, value):
+        self._edb_object.SetExteriorBoundary(value._edb_object)
 
     @property
     def maximum_power(self):
@@ -116,3 +140,25 @@ class PackageDef(ObjBase):
     def height(self, value):
         value = self._pedb.edb_value(value)
         self._edb_object.SetHeight(value)
+
+    @pyedb_function_handler
+    def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness):
+        from pyedb.dotnet.edb_core.utilities.heatsink import HeatSink
+
+        heatsink = HeatSink(self._pedb)
+        heatsink.fin_base_height = fin_base_height
+        heatsink.fin_height = fin_height
+        heatsink.fin_orientation = fin_orientation
+        heatsink.fin_spacing = fin_spacing
+        heatsink.fin_thickness = fin_thickness
+        self._edb_object.SetHeatSink(heatsink._edb_object)
+
+    @property
+    def heatsink(self):
+        from pyedb.dotnet.edb_core.utilities.heatsink import HeatSink
+
+        flag, edb_object = self._edb_object.GetHeatSink()
+        if flag:
+            return HeatSink(self._pedb, edb_object)
+        else:
+            return None

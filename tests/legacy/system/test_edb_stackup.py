@@ -332,6 +332,17 @@ class TestClass:
         edbapp.stackup.load(fpath)
         edbapp.close()
 
+    def test_stackup_load_layer_renamed(self):
+        """Import stackup from a file."""
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        fpath = os.path.join(local_path, "example_models", test_subfolder, "stackup_renamed.json")
+        edbapp = Edb(source_path, edbversion=desktop_version)
+        edbapp.stackup.load(fpath, rename=True)
+        assert "1_Top_renamed" in edbapp.stackup.layers
+        assert "DE1_renamed" in edbapp.stackup.layers
+        assert "16_Bottom_renamed" in edbapp.stackup.layers
+        edbapp.close()
+
     def test_stackup_place_in_3d_with_flipped_stackup(self):
         """Place into another cell using 3d placement method with and
         without flipping the current layer stackup.
@@ -966,7 +977,7 @@ class TestClass:
             if not material["dielectric_model_frequency"]:
                 assert (pedb_mat.conductivity - material["conductivity"]) < delta
                 assert (pedb_mat.permittivity - material["permittivity"]) < delta
-                assert (pedb_mat.loss_tangent - material["loss_tangent"]) < delta
+                assert (pedb_mat.dielectric_loss_tangent - material["dielectric_loss_tangent"]) < delta
                 assert (pedb_mat.permeability - material["permeability"]) < delta
                 assert (pedb_mat.magnetic_loss_tangent - material["magnetic_loss_tangent"]) < delta
             assert (pedb_mat.mass_density - material["mass_density"]) < delta
@@ -995,7 +1006,6 @@ class TestClass:
                 assert (pedb_mat.permittivity_at_frequency - material["permittivity_at_frequency"]) < delta
             else:
                 assert pedb_mat.permittivity_at_frequency == material["permittivity_at_frequency"]
-            return 0
 
         import json
 
@@ -1009,10 +1019,9 @@ class TestClass:
         delta = 1e-6
         f = open(json_path)
         json_dict = json.load(f)
-        for k, v in json_dict.items():
-            if k == "materials":
-                for material in v.values():
-                    assert 0 == validate_material(edbapp.materials, material, delta)
+        dict_materials = json_dict["materials"]
+        for material_dict in dict_materials.values():
+            validate_material(edbapp.materials, material_dict, delta)
         for k, v in json_dict.items():
             if k == "layers":
                 for layer_name, layer in v.items():

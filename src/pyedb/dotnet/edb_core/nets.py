@@ -472,7 +472,7 @@ class EdbNets(object):
     @pyedb_function_handler()
     def get_plot_data(
         self,
-        nets,
+        nets=None,
         layers=None,
         color_by_net=False,
         outline=None,
@@ -483,8 +483,8 @@ class EdbNets(object):
 
         Parameters
         ----------
-        nets : str, list
-            Name of the net or list of nets to plot. If `None` all nets will be plotted.
+        nets : str, list, optional
+            Name of the net or list of nets to plot. If `None` (default value) all nets will be plotted.
         layers : str, list, optional
             Name of the layers to include in the plot. If `None` all the signal layers will be considered.
         color_by_net : bool, optional

@@ -21,17 +21,13 @@
 # SOFTWARE.
 
 import json
+import os
 from pathlib import Path
 
+import toml
+
+from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.generic.general_methods import pyedb_function_handler
-
-
-def load_json(config_file):
-    if isinstance(config_file, (str, Path)):
-        with open(config_file, "r") as f:
-            return json.load(f)
-    elif isinstance(config_file, dict):
-        return config_file
 
 
 class Configuration:
@@ -46,12 +42,12 @@ class Configuration:
 
     @pyedb_function_handler
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
-        """Import configuration settings from a JSON file.
+        """Import configuration settings from a configure file.
 
         Parameters
         ----------
-        config_file : str
-            Full path to json file.
+        config_file : str, dict
+            Full path to configure file in JSON or TOML format. Dictionary is also supported.
         append : bool, optional
             Whether if the new file will append to existing properties or the properties will be cleared before import.
             Default is ``True`` to keep stored properties
@@ -67,12 +63,29 @@ class Configuration:
         dict
             Config dictionary.
         """
+        if isinstance(config_file, dict):
+            data = config_file
+        elif os.path.isfile(config_file):
+            with open(config_file, "r") as f:
+                if config_file.endswith(".json"):
+                    data = json.load(f)
+                elif config_file.endswith(".toml"):
+                    data = toml.load(f)
+        else:  # pragma: no cover
+            return False
 
-        data = load_json(config_file)
-        if not append:
+        if not append:  # pragma: no cover
             self.data = {}
         for k, v in data.items():
-            self.data[k] = v
+            if k in self.data:
+                if isinstance(v, list):
+                    self.data[k].extend(v)
+                elif isinstance(v, dict):  # pragma: no cover
+                    self.data[k].update(v)
+                else:  # pragma: no cover
+                    self.data[k] = v
+            else:
+                self.data[k] = v
         if apply_file:
             original_file = self._pedb.edbpath
             if output_file:
@@ -141,6 +154,10 @@ class Configuration:
         # Configure SPICE models
         if "spice_models" in self.data:
             self._load_spice_models()
+
+        # Configure package definitions
+        if "package_definitions" in self.data:
+            self._load_package_def()
 
         # Configure operations
         if "operations" in self.data:
@@ -265,18 +282,20 @@ class Configuration:
             pos_terminal = ""
             if "pin_group" in positive_terminal_json:
                 pin_group = self._pedb.siwave.pin_groups[positive_terminal_json["pin_group"]]
-                pos_terminal = pin_group.get_terminal(pin_group.name, True)
+                port_name = pin_group.name if "name" not in port else port["name"]
+                pos_terminal = pin_group.get_terminal(port_name, True)
+
             else:
                 ref_designator = port["reference_designator"]
                 comp_layout = self._components[ref_designator]
 
                 if "pin" in positive_terminal_json:
                     pin_name = positive_terminal_json["pin"]
-                    port_name = "{}_{}".format(ref_designator, pin_name)
+                    port_name = "{}_{}".format(ref_designator, pin_name) if "name" not in port else port["name"]
                     pos_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
                 else:  # Net
                     net_name = positive_terminal_json["net"]
-                    port_name = "{}_{}".format(ref_designator, net_name)
+                    port_name = "{}_{}".format(ref_designator, net_name) if "name" not in port else port["name"]
                     if port_type == "circuit":
                         pg_name = "pg_{}".format(port_name)
                         _, pg = self._pedb.siwave.create_pin_group_on_net(ref_designator, net_name, pg_name)
@@ -401,7 +420,10 @@ class Configuration:
                     else:
                         self._pedb.logger.warning("Setup {} already existing. Editing it.".format(name))
                         edb_setup = self._pedb.setups[name]
-                    edb_setup.si_slider_position = setup["si_slider_position"]
+                    if "si_slider_position" in setup:
+                        edb_setup.si_slider_position = setup["si_slider_position"]
+                    if "pi_slider_position" in setup:
+                        edb_setup.pi_slider_position = setup["pi_slider_position"]
 
                 if "freq_sweep" in setup:
                     for fsweep in setup["freq_sweep"]:
@@ -488,14 +510,23 @@ class Configuration:
             comp_def_name = sp["component_definition"]
             comp_def = self._pedb.definitions.component[comp_def_name]
             comp_def.add_n_port_model(fpath, sp_name)
+            comp_list = dict()
             if sp["apply_to_all"]:
-                for refdes, comp in comp_def.components.items():
-                    if refdes not in sp["components"]:
-                        comp.use_s_parameter_model(sp_name)
+                comp_list.update(
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in sp["components"]}
+                )
             else:
-                for refdes, comp in comp_def.components.items():
-                    if refdes in sp["components"]:
-                        comp.use_s_parameter_model(sp_name)
+                comp_list.update(
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes in sp["components"]}
+                )
+
+            for refdes, comp in comp_list.items():
+                if "reference_net_per_component" in sp:
+                    ref_net_per_comp = sp["reference_net_per_component"]
+                    ref_net = ref_net_per_comp[refdes] if refdes in ref_net_per_comp else sp["reference_net"]
+                else:
+                    ref_net = sp["reference_net"]
+                comp.use_s_parameter_model(sp_name, reference_net=ref_net)
 
     @pyedb_function_handler
     def _load_spice_models(self):
@@ -652,3 +683,47 @@ class Configuration:
                         backdrill_bottom["drill_diameter"],
                         backdrill_bottom["stub_length"],
                     )
+
+    @pyedb_function_handler
+    def _load_package_def(self):
+        """Imports package definition information from JSON."""
+        comps = self._pedb.components.components
+        for pkgd in self.data["package_definitions"]:
+            name = pkgd["name"]
+            if name in self._pedb.definitions.package:
+                self._pedb.definitions.package[name].delete()
+            extent_bounding_box = pkgd.get("extent_bounding_box", None)
+            if extent_bounding_box:
+                package_def = PackageDef(self._pedb, name=name, extent_bounding_box=extent_bounding_box)
+            else:
+                package_def = PackageDef(self._pedb, name=name, component_part_name=pkgd["component_definition"])
+            package_def.maximum_power = pkgd["maximum_power"]
+            package_def.therm_cond = pkgd["therm_cond"]
+            package_def.theta_jb = pkgd["theta_jb"]
+            package_def.theta_jc = pkgd["theta_jc"]
+            package_def.height = pkgd["height"]
+
+            heatsink = pkgd.get("heatsink", None)
+            if heatsink:
+                package_def.set_heatsink(
+                    heatsink["fin_base_height"],
+                    heatsink["fin_height"],
+                    heatsink["fin_orientation"],
+                    heatsink["fin_spacing"],
+                    heatsink["fin_thickness"],
+                )
+
+            comp_def_name = pkgd["component_definition"]
+            comp_def = self._pedb.definitions.component[comp_def_name]
+
+            comp_list = dict()
+            if pkgd["apply_to_all"]:
+                comp_list.update(
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in pkgd["components"]}
+                )
+            else:
+                comp_list.update(
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes in pkgd["components"]}
+                )
+            for _, i in comp_list.items():
+                i.package_def = name

@@ -44,6 +44,7 @@ import tempfile
 import time
 import traceback
 
+from pyedb.exceptions import MaterialModelException
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.settings import settings
 
@@ -178,6 +179,9 @@ def _function_handler_wrapper(user_function):  # pragma: no cover
                 return False
             except IOError:
                 _exception(sys.exc_info(), user_function, args, kwargs, "IO Error")
+                return False
+            except MaterialModelException:
+                _exception(sys.exc_info(), user_function, args, kwargs, "Material Model")
                 return False
 
     return wrapper
