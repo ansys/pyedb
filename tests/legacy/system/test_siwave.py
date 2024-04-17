@@ -39,6 +39,7 @@ class TestClass:
 
     def test_siwave(self):
         """Create Siwave."""
+
         siw = Siwave(desktop_version)
         time.sleep(10)
         example_project = os.path.join(local_path, "example_models", "siwave", "siw_dc.siw")
@@ -47,9 +48,11 @@ class TestClass:
         assert siw
         assert siw.close_project()
         siw.open_project(target_path)
-        siw.oproject.ScrRunDcSimulation(1)
+        siw.run_dc_simulation()
         export_report = os.path.join(siw.results_directory, "test.htm")
         assert siw.export_siwave_report("DC IR Sim 3", export_report)
         export_data = os.path.join(siw.results_directory, "test.txt")
         assert siw.export_element_data("DC IR Sim 3", export_data)
+        export_icepak = os.path.join(siw.results_directory, "icepak.aedt")
+        assert siw.export_icepak_project(export_icepak, "DC IR Sim 3")
         assert siw.quit_application()

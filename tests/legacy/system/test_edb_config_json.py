@@ -162,3 +162,7 @@ class TestClass:
         assert edbapp.definitions.package["package_1"].heatsink.fin_spacing == 0.001
         assert edbapp.definitions.package["package_1"].heatsink.fin_thickness == 0.004
         edbapp.close()
+
+    def test_12_setup_siwave_dc(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(str(self.local_input_folder / "setups_siwave_dc.json"), apply_file=True)

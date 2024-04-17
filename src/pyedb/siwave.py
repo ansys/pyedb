@@ -20,6 +20,7 @@ from pyedb.generic.general_methods import (
     is_windows,
     pyedb_function_handler,
 )
+from pyedb.edb_logger import pyedb_logger
 from pyedb.misc.misc import list_installed_ansysem
 
 
@@ -65,6 +66,7 @@ class Siwave(object):  # pragma no cover
         return self.version_keys[0]
 
     def __init__(self, specified_version=None):
+        self._logger = pyedb_logger
         if is_ironpython:
             _com = "pythonnet"
             import System
@@ -327,7 +329,6 @@ class Siwave(object):  # pragma no cover
         bkground_color : str, optional
             Color of the report's background. The default is ``"White"``.
 
-
         Returns
         -------
         bool
@@ -339,3 +340,51 @@ class Siwave(object):  # pragma no cover
         while not os.path.exists(file_path):
             time.sleep(0.1)
         return True
+
+    @pyedb_function_handler
+    def run_dc_simulation(self):
+        """Run DC simulation."""
+        self._logger.info("Running DC simulation.")
+        return self.oproject.ScrRunDcSimulation(1)
+
+    @pyedb_function_handler
+    def export_icepak_project(self, file_path, dc_simulation_name):
+        """Exports an Icepak project for standalone use.
+
+        Parameters
+        ----------
+        file_path : str,
+            Path of the Icepak project.
+        dc_simulation_name : str
+            Name of the DC simulation.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        """
+
+        self.oproject.ScrExportDcPowerDataToIcepak(True)
+        self._logger.info("Exporting Icepak project.")
+        code = self.oproject.ScrExportIcepakProject(file_path, dc_simulation_name)
+        return True if code==0 else False
+
+    @pyedb_function_handler
+    def run_icepak_simulation(self, icepak_simulation_name, dc_simulation_name):
+        """Runs an Icepak simulation.
+
+        Parameters
+        ----------
+        icepak_simulation_name : str
+            Name of the Icepak simulation.
+        dc_simulation_name : str
+            Name of the DC simulation.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        """
+        return self.oproject.ScrRunIcepakSimulation(icepak_simulation_name, dc_simulation_name)
