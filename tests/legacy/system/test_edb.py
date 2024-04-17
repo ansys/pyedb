@@ -710,7 +710,7 @@ class TestClass:
         port_hori = edb.ports["port_hori"]
         assert port_hori.ref_terminal
 
-        args = {
+        kwargs = {
             "layer_name": "1_Top",
             "net_name": "SIGP",
             "width": "0.1mm",
@@ -724,7 +724,7 @@ class TestClass:
             [["-40mm", "-10.4mm"], ["-30mm", "-10.4mm"]],
         ]
         for p in trace_paths:
-            t = edb.modeler.create_trace(path_list=p, **args)
+            t = edb.modeler.create_trace(path_list=p, **kwargs)
             traces.append(t)
 
         assert edb.hfss.create_wave_port(traces[0].id, trace_paths[0][0], "wave_port")
@@ -775,7 +775,7 @@ class TestClass:
             edbpath=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
             edbversion=desktop_version,
         )
-        args = {
+        kwargs = {
             "layer_name": "1_Top",
             "net_name": "SIGP",
             "width": "0.1mm",
@@ -789,7 +789,7 @@ class TestClass:
             [["-40mm", "-10.4mm"], ["-30mm", "-10.4mm"]],
         ]
         for p in trace_pathes:
-            t = edb.modeler.create_trace(path_list=p, **args)
+            t = edb.modeler.create_trace(path_list=p, **kwargs)
             traces.append(t)
 
         assert edb.hfss.create_wave_port(traces[0], trace_pathes[0][0], "wave_port")
@@ -847,6 +847,7 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = Edb(target_path, edbversion=desktop_version)
         setup1 = edbapp.create_hfss_setup("setup1")
+        assert not edbapp.create_hfss_setup("setup1")
         assert setup1.set_solution_single_frequency()
         assert setup1.set_solution_multi_frequencies()
         assert setup1.set_solution_broadband()
@@ -1223,8 +1224,8 @@ class TestClass:
     def test_create_padstack_instance(self):
         """Create padstack instances."""
         edb = Edb(edbversion=desktop_version)
-        edb.stackup.add_layer(layer_name="1_Top", fillMaterial="AIR", thickness="30um")
-        edb.stackup.add_layer(layer_name="contact", fillMaterial="AIR", thickness="100um", base_layer="1_Top")
+        edb.stackup.add_layer(layer_name="1_Top", fillMaterial="air", thickness="30um")
+        edb.stackup.add_layer(layer_name="contact", fillMaterial="air", thickness="100um", base_layer="1_Top")
 
         assert edb.padstacks.create(
             pad_shape="Rectangle",
@@ -1277,7 +1278,7 @@ class TestClass:
     def test_assign_hfss_extent_non_multiple_with_simconfig(self):
         """Build simulation project without multiple."""
         edb = Edb()
-        edb.stackup.add_layer(layer_name="GND", fillMaterial="AIR", thickness="30um")
+        edb.stackup.add_layer(layer_name="GND", fillMaterial="air", thickness="30um")
         edb.stackup.add_layer(layer_name="FR4", base_layer="gnd", thickness="250um")
         edb.stackup.add_layer(layer_name="SIGNAL", base_layer="FR4", thickness="30um")
         edb.modeler.create_trace(layer_name="SIGNAL", width=0.02, net_name="net1", path_list=[[-1e3, 0, 1e-3, 0]])
@@ -1322,7 +1323,7 @@ class TestClass:
     def test_assign_hfss_extent_multiple_with_simconfig(self):
         """Build simulation project with multiple."""
         edb = Edb()
-        edb.stackup.add_layer(layer_name="GND", fillMaterial="AIR", thickness="30um")
+        edb.stackup.add_layer(layer_name="GND", fillMaterial="air", thickness="30um")
         edb.stackup.add_layer(layer_name="FR4", base_layer="gnd", thickness="250um")
         edb.stackup.add_layer(layer_name="SIGNAL", base_layer="FR4", thickness="30um")
         edb.modeler.create_trace(layer_name="SIGNAL", width=0.02, net_name="net1", path_list=[[-1e3, 0, 1e-3, 0]])
@@ -1361,11 +1362,11 @@ class TestClass:
     def test_stackup_properties(self):
         """Evaluate stackup properties."""
         edb = Edb(edbversion=desktop_version)
-        edb.stackup.add_layer(layer_name="gnd", fillMaterial="AIR", thickness="10um")
-        edb.stackup.add_layer(layer_name="diel1", fillMaterial="AIR", thickness="200um", base_layer="gnd")
-        edb.stackup.add_layer(layer_name="sig1", fillMaterial="AIR", thickness="10um", base_layer="diel1")
-        edb.stackup.add_layer(layer_name="diel2", fillMaterial="AIR", thickness="200um", base_layer="sig1")
-        edb.stackup.add_layer(layer_name="sig3", fillMaterial="AIR", thickness="10um", base_layer="diel2")
+        edb.stackup.add_layer(layer_name="gnd", fillMaterial="air", thickness="10um")
+        edb.stackup.add_layer(layer_name="diel1", fillMaterial="air", thickness="200um", base_layer="gnd")
+        edb.stackup.add_layer(layer_name="sig1", fillMaterial="air", thickness="10um", base_layer="diel1")
+        edb.stackup.add_layer(layer_name="diel2", fillMaterial="air", thickness="200um", base_layer="sig1")
+        edb.stackup.add_layer(layer_name="sig3", fillMaterial="air", thickness="10um", base_layer="diel2")
         assert edb.stackup.thickness == 0.00043
         assert edb.stackup.num_layers == 5
         edb.close()
@@ -1387,11 +1388,11 @@ class TestClass:
             "dielectric_base_polygon": self.edbapp.modeler.polygons[1],
             "dielectric_extent_size": 0.1,
             "dielectric_extent_size_enabled": False,
-            "dielectric_extent_type": "Conforming",
-            "extent_type": "Conforming",
+            "dielectric_extent_type": "conforming",
+            "extent_type": "conforming",
             "honor_user_dielectric": False,
             "is_pml_visible": False,
-            "open_region_type": "PML",
+            "open_region_type": "pml",
             "operating_freq": "2GHz",
             "radiation_level": 1,
             "sync_air_box_vertical_extent": False,
@@ -1718,6 +1719,17 @@ class TestClass:
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
+
+    def test_multizone(self, edb_examples):
+        edbapp = edb_examples.get_multizone_pcb()
+        common_reference_net = "gnd"
+        edb_zones = edbapp.copy_zones()
+        assert edb_zones
+        defined_ports, project_connexions = edbapp.cutout_multizone_layout(edb_zones, common_reference_net)
+
+        assert defined_ports
+        assert project_connexions
+        edbapp.close_edb()
 
     @pytest.mark.skipif(not desktop_version == "2024.2", reason="Only supported with 2024.2 and higher")
     def test_add_raptorx_setup(self):
