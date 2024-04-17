@@ -401,6 +401,13 @@ class Configuration:
                     self._pedb.logger.warning("Setup {} already existing. Editing it.".format(name))
                     edb_setup = self._pedb.setups[name]
                 edb_setup.set_dc_slider(setup["dc_slider_position"])
+                dc_ir_settings = setup.get("dc_ir_settings", None)
+                if dc_ir_settings:
+                    for k, v in dc_ir_settings.items():
+                        if k not in dir(edb_setup.dc_ir_settings):
+                            self._pedb.logger.error(f"Invalid keyword {k}")
+                        else:
+                            setattr(edb_setup.dc_ir_settings, k, v)
             else:
                 if setup_type.lower() == "hfss":
                     if name not in self._pedb.setups:
