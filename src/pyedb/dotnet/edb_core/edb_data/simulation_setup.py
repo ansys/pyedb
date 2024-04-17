@@ -115,7 +115,7 @@ class BaseSimulationSetup(object):
         if self._name in self._pedb.setups:
             self._pedb.layout.cell.DeleteSimulationSetup(self._name)
         if not self._pedb.layout.cell.AddSimulationSetup(self._edb_object):
-            raise Exception("Updating setup {} failed.".format(self._name))
+            self._pedb.logger.error("Updating setup {} failed.".format(self._name))
         else:
             return True
 
@@ -179,9 +179,12 @@ class BaseSimulationSetup(object):
         sweep_data: EdbFrequencySweep
         """
         self._sweep_list[sweep_data.name] = sweep_data
-        edb_setup_info = self.get_sim_setup_info
+        if self.setup_type == "kRaptorX":
+            edb_setup_info = self._edb_setup_info
+        else:
+            edb_setup_info = self.sim_setup_info
 
-        if self._setup_type in ["kSIwave", "kHFSS"]:
+        if self._setup_type in ["kSIwave", "kHFSS", "kRaptorX"]:
             for _, v in self._sweep_list.items():
                 edb_setup_info.SweepDataList.Add(v._edb_object)
 
@@ -201,14 +204,15 @@ class BaseSimulationSetup(object):
             self._sweep_list.pop(name)
 
         fsweep = []
-        for k, val in self.frequency_sweeps.items():
-            if not k == name:
-                fsweep.append(val)
-        self.get_sim_setup_info.SweepDataList.Clear()
-        for i in fsweep:
-            self.get_sim_setup_info.SweepDataList.Add(i._edb_object)
-        self._update_setup()
-        return True if name in self.frequency_sweeps else False
+        if self.frequency_sweeps:
+            for k, val in self.frequency_sweeps.items():
+                if not k == name:
+                    fsweep.append(val)
+            self.get_sim_setup_info.SweepDataList.Clear()
+            for i in fsweep:
+                self.get_sim_setup_info.SweepDataList.Add(i._edb_object)
+            self._update_setup()
+            return True if name in self.frequency_sweeps else False
 
     @pyedb_function_handler()
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
@@ -726,6 +730,9 @@ class EdbFrequencySweep(object):
                 ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
             ]
         temp = []
+        if isinstance(frequency_list, list):
+            if not isinstance(frequency_list[0], list):
+                frequency_list = [frequency_list]
         for i in frequency_list:
             if i[0] == "linear count":
                 temp.extend(list(self._edb_sweep_data.SetFrequencies(i[1], i[2], i[3])))

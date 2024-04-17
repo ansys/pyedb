@@ -21,9 +21,13 @@
 # SOFTWARE.
 
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.edb_core.edb_data.simulation_setup import BaseSimulationSetup
+from pyedb.dotnet.edb_core.edb_data.simulation_setup import (
+    BaseSimulationSetup,
+    EdbFrequencySweep,
+)
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.data_handlers import pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name
 
 
 class RaptorXSimulationSetup(BaseSimulationSetup):
@@ -69,6 +73,36 @@ class RaptorXSimulationSetup(BaseSimulationSetup):
     @property
     def frequency_sweeps(self):
         return list(self._edb_setup_info.SweepDataList)
+
+    @pyedb_function_handler()
+    def add_frequency_sweep(self, name=None, frequency_sweep=None):
+        """Add frequency sweep.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the frequency sweep.
+        frequency_sweep : list, optional
+            List of frequency points.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.EdbFrequencySweep`
+
+        Examples
+        --------
+        >>> setup1 = edbapp.create_hfss_setup("setup1")
+        >>> setup1.add_frequency_sweep(frequency_sweep=[
+        ...                           ["linear count", "0", "1kHz", 1],
+        ...                           ["log scale", "1kHz", "0.1GHz", 10],
+        ...                           ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+        ...                           ])
+        """
+        if name in self.frequency_sweeps:
+            return False
+        if not name:
+            name = generate_unique_name("sweep")
+        return EdbFrequencySweep(self, frequency_sweep, name)
 
 
 class RaptorXSimulationSettings(object):
