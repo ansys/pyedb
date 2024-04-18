@@ -413,7 +413,7 @@ class Material(object):
             for attribute in ATTRIBUTES:
                 if attribute in input_dict:
                     setattr(self, attribute, input_dict[attribute])
-            if "loss_tangent" in input_dict: # pragma: no cover
+            if "loss_tangent" in input_dict:  # pragma: no cover
                 setattr(self, "loss_tangent", input_dict["loss_tangent"])
 
             # Update DS model
@@ -534,7 +534,7 @@ class Materials(object):
         material_def = self.__edb_definition.MaterialDef.Create(self.__edb.active_db, name)
         material = Material(self.__edb, material_def)
         attributes_input_dict = {key: val for (key, val) in kwargs.items() if key in ATTRIBUTES + DC_ATTRIBUTES}
-        if "loss_tangent" in kwargs: # pragma: no cover
+        if "loss_tangent" in kwargs:  # pragma: no cover
             warnings.warn(
                 "This key is deprecated in versions >0.7.0 and will soon be removed. "
                 "Use key dielectric_loss_tangent instead.",
@@ -637,7 +637,7 @@ class Materials(object):
             material = self.__add_dielectric_material_model(name, material_model)
             for key, value in kwargs.items():
                 setattr(material, key, value)
-            if "loss_tangent" in kwargs: # pragma: no cover
+            if "loss_tangent" in kwargs:  # pragma: no cover
                 warnings.warn(
                     "This key is deprecated in versions >0.7.0 and will soon be removed. "
                     "Use key dielectric_loss_tangent instead.",
@@ -703,7 +703,7 @@ class Materials(object):
             material = self.__add_dielectric_material_model(name, material_model)
             for key, value in kwargs.items():
                 setattr(material, key, value)
-            if "loss_tangent" in kwargs: # pragma: no cover
+            if "loss_tangent" in kwargs:  # pragma: no cover
                 warnings.warn(
                     "This key is deprecated in versions >0.7.0 and will soon be removed. "
                     "Use key dielectric_loss_tangent instead.",
@@ -766,7 +766,7 @@ class Materials(object):
             material = self.__add_dielectric_material_model(name, material_model)
             for key, value in kwargs.items():
                 setattr(material, key, value)
-            if "loss_tangent" in kwargs: # pragma: no cover
+            if "loss_tangent" in kwargs:  # pragma: no cover
                 warnings.warn(
                     "This key is deprecated in versions >0.7.0 and will soon be removed. "
                     "Use key dielectric_loss_tangent instead.",
@@ -842,7 +842,7 @@ class Materials(object):
 
         material = self[material_name]
         attributes_input_dict = {key: val for (key, val) in input_dict.items() if key in ATTRIBUTES + DC_ATTRIBUTES}
-        if "loss_tangent" in input_dict: # pragma: no cover
+        if "loss_tangent" in input_dict:  # pragma: no cover
             warnings.warn(
                 "This key is deprecated in versions >0.7.0 and will soon be removed. "
                 "Use key dielectric_loss_tangent instead.",
@@ -864,7 +864,7 @@ class Materials(object):
                 self.add_conductor_material(material_name, material_conductivity)
             else:
                 material_permittivity = material["permittivity"]
-                if "loss_tangent" in material: # pragma: no cover
+                if "loss_tangent" in material:  # pragma: no cover
                     warnings.warn(
                         "This key is deprecated in versions >0.7.0 and will soon be removed. "
                         "Use key dielectric_loss_tangent instead.",
@@ -938,7 +938,7 @@ class Materials(object):
                 if "tangent_delta" in material_properties:
                     material_properties["dielectric_loss_tangent"] = material_properties["tangent_delta"]
                     del material_properties["tangent_delta"]
-                elif "loss_tangent" in material_properties: # pragma: no cover
+                elif "loss_tangent" in material_properties:  # pragma: no cover
                     warnings.warn(
                         "This key is deprecated in versions >0.7.0 and will soon be removed. "
                         "Use key dielectric_loss_tangent instead.",

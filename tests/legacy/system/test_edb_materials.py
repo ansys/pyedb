@@ -294,12 +294,7 @@ class TestClass:
     def test_materials_load_material(self):
         """Evaluate load material."""
         materials = Materials(self.edbapp)
-        material_properties = {
-            "name": MATERIAL_NAME,
-            "conductivity": 12,
-            "permittivity": 12,
-            "loss_tangent": 0.00045
-        }
+        material_properties = {"name": MATERIAL_NAME, "conductivity": 12, "permittivity": 12, "loss_tangent": 0.00045}
 
         assert MATERIAL_NAME not in materials
         materials.load_material(material_properties)
