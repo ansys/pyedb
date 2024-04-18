@@ -20,19 +20,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.obj_base import ObjBase
 
+class SiwaveDCIRSettings:
+    """Class for DC IR settings."""
 
-class DefinitionObj(ObjBase):
-    """Base class for definition objects."""
-
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
+    def __init__(self, parent):
+        self._parent = parent
 
     @property
-    def definition_obj_type(self):
-        return self._edb_object.GetDefinitionObjType()
+    def export_dc_thermal_data(self):
+        """Export DC Thermal Data.
 
-    @property
-    def name(self):
-        return self._edb_object.GetName()
+        Returns
+        -------
+            bool
+            ``True`` when activated, ``False`` deactivated.
+        """
+        return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.ExportDCThermalData
+
+    @export_dc_thermal_data.setter
+    def export_dc_thermal_data(self, value):
+        edb_setup_info = self._parent.get_sim_setup_info
+        edb_setup_info.SimulationSettings.DCIRSettings.ExportDCThermalData = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()

@@ -59,9 +59,12 @@ class EdbExamples:
         dst = self.local_scratch.copyfolder(src, os.path.join(self._local_folder, os.path.split(src)[-1]))
         return dst
 
-    def get_si_verse(self):
+    def get_si_verse(self, edbapp=True):
         aedb = self._get_folder("TEDB/ANSYS-HSD_V1.aedb")
-        return Edb(aedb, edbversion=desktop_version)
+        if edbapp:
+            return Edb(aedb, edbversion=desktop_version)
+        else:
+            return aedb
 
     def get_multizone_pcb(self):
         aedb = self._get_folder("multi_zone_project.aedb")

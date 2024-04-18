@@ -3,7 +3,10 @@
     {
       "name": "siwave_dc",
       "type": "siwave_dc",
-      "dc_slider_position": 1
+      "dc_slider_position": 1,
+      "dc_ir_settings": {
+        "export_dc_thermal_data": true
+      }
     }
   ]
 }

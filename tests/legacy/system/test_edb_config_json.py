@@ -71,6 +71,10 @@ class TestClass:
     def test_02_pin_groups(self):
         edbapp = Edb(str(self.local_edb), desktop_version)
         assert edbapp.configuration.load(str(self.local_input_folder / "pin_groups.json"), apply_file=True)
+        assert len(edbapp.siwave.pin_groups["U6_ALL_PINS"].pins.keys()) == 96
+        assert len(edbapp.siwave.pin_groups["J5_TWO_NETS"].pins.keys()) == 2
+        assert edbapp.sources["U9_pin_group_source"]
+        assert edbapp.ports["U9_pin_group_port"]
         edbapp.close()
 
     def test_03_spice_models(self):
@@ -143,13 +147,13 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
-    def test_10_general(self):
-        edbapp = Edb(str(self.local_edb), desktop_version)
+    def test_10_general(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "general.toml"), apply_file=True)
         edbapp.close()
 
-    def test_11_package_definitions(self):
-        edbapp = Edb(str(self.local_edb), desktop_version)
+    def test_11_package_definitions(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "package_def.json"), apply_file=True)
         assert edbapp.definitions.package["package_1"].maximum_power == 1
         assert edbapp.definitions.package["package_1"].therm_cond == 1
@@ -162,3 +166,7 @@ class TestClass:
         assert edbapp.definitions.package["package_1"].heatsink.fin_spacing == 0.001
         assert edbapp.definitions.package["package_1"].heatsink.fin_thickness == 0.004
         edbapp.close()
+
+    def test_12_setup_siwave_dc(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(str(self.local_input_folder / "setups_siwave_dc.json"), apply_file=True)
