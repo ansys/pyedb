@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check commit name
-        uses: ansys/actions/commit-style@v5
+        uses: ansys/actions/commit-style@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           use-upper-case: true
