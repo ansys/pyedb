@@ -383,6 +383,7 @@ class Configuration:
             elif src_type == "current":
                 src_obj = self._pedb.create_current_source(pos_terminal, neg_terminal)
                 src_obj.magnitude = src["magnitude"]
+            src_obj.name = name
 
     @pyedb_function_handler
     def _load_setups(self):
@@ -560,13 +561,21 @@ class Configuration:
     @pyedb_function_handler
     def _load_pin_groups(self):
         """Imports pin groups information from JSON."""
+        comps = self._pedb.components.components
         for pg in self.data["pin_groups"]:
             name = pg["name"]
             ref_designator = pg["reference_designator"]
             if "pins" in pg:
                 self._pedb.siwave.create_pin_group(ref_designator, pg["pins"], name)
             elif "net" in pg:
-                self._pedb.siwave.create_pin_group_on_net(ref_designator, pg["net"], name)
+                nets = pg["net"]
+                nets = nets if isinstance(nets, list) else [nets]
+                comp = comps[ref_designator]
+                pins = [p for p, obj in comp.pins.items() if obj.net_name in nets]
+                self._pedb.siwave.create_pin_group(ref_designator, pins, name)
+            else:
+                pins = [i for i in comps[ref_designator].pins.keys()]
+                self._pedb.siwave.create_pin_group(ref_designator, pins, name)
 
     @pyedb_function_handler
     def _load_nets(self):
