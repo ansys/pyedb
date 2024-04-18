@@ -295,7 +295,7 @@ class TestClass:
         """Load conductor material."""
         materials = Materials(self.edbapp)
         conductor_material_properties = {"name": MATERIAL_NAME, "conductivity": 2e4}
-        
+
         assert MATERIAL_NAME not in materials
         materials.load_material(conductor_material_properties)
         material = materials[MATERIAL_NAME]
