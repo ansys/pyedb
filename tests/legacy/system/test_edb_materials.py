@@ -299,7 +299,7 @@ class TestClass:
         assert MATERIAL_NAME not in materials
         materials.load_material(conductor_material_properties)
         material = materials[MATERIAL_NAME]
-        assert 12 == material.conductivity
+        assert 2e4 == material.conductivity
 
     def test_materials_load_dielectric_material(self):
         """Load dielectric material."""
