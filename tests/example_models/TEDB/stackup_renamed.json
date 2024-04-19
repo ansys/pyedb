@@ -114,8 +114,8 @@
             "loss_tangent_at_frequency": null,
             "permittivity_at_frequency": null
         },
-        "solder_mask": {
-            "name": "solder_mask",
+        "SolderMask": {
+            "name": "SolderMask",
             "conductivity": 0.0,
             "loss_tangent": 0.035,
             "magnetic_loss_tangent": 0.0,

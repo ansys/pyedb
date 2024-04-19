@@ -65,8 +65,7 @@ class TestClass:
         self.edbapp = legacy_edb_app_without_material
         self.definition = self.edbapp.edb_api.definition
 
-    def __remove_material(self):
-        """Remove material using EDB calls."""
+        # Remove dummy material if it exist
         material_def = self.definition.MaterialDef.FindByName(self.edbapp.active_db, MATERIAL_NAME)
         if not material_def.IsNull():
             material_def.Delete()
@@ -78,8 +77,6 @@ class TestClass:
 
         assert MATERIAL_NAME == material.name
 
-        material_def.Delete()
-
     def test_material_properties(self):
         """Evaluate material properties."""
         material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
@@ -89,8 +86,7 @@ class TestClass:
             for value in VALUES:
                 setattr(material, property, value)
                 assert float(value) == getattr(material, property)
-
-        material_def.Delete()
+        assert 12 == material.loss_tangent
 
     def test_material_dc_properties(self):
         """Evaluate material DC properties."""
@@ -108,8 +104,6 @@ class TestClass:
                 setattr(material, property, STR_VALUE)
                 assert float(STR_VALUE) == getattr(material, property)
 
-        material_def.Delete()
-
     def test_material_to_dict(self):
         """Evaluate material conversion into a dictionary."""
         material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
@@ -125,8 +119,6 @@ class TestClass:
         expected_result["name"] = MATERIAL_NAME
 
         assert expected_result == material_dict
-
-        material_def.Delete()
 
     def test_material_update_properties(self):
         """Evaluate material properties update."""
@@ -144,8 +136,6 @@ class TestClass:
         material.update(material_dict)
         for property in PROPERTIES + DC_PROPERTIES:
             assert expected_value == getattr(material, property)
-
-        material_def.Delete()
 
     def test_materials_syslib(self):
         """Evaluate system library."""
@@ -169,8 +159,6 @@ class TestClass:
         material = materials.add_material(MATERIAL_NAME, permittivity=12)
         assert not material
 
-        self.__remove_material()
-
     def test_materials_add_conductor_material(self):
         """Evalue add conductor material."""
         materials = Materials(self.edbapp)
@@ -181,8 +169,6 @@ class TestClass:
         material = materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
         assert not material
 
-        self.__remove_material()
-
     def test_materials_add_dielectric_material(self):
         """Evalue add dielectric material."""
         materials = Materials(self.edbapp)
@@ -192,8 +178,6 @@ class TestClass:
         _ = materials[MATERIAL_NAME]
         material = materials.add_dielectric_material(MATERIAL_NAME, 12, conductivity=12)
         assert not material
-
-        self.__remove_material()
 
     def test_materials_add_djordjevicsarkar_dielectric(self):
         """Evalue add djordjevicsarkar dielectric material."""
@@ -209,8 +193,6 @@ class TestClass:
         )
         assert not material
 
-        self.__remove_material()
-
     def test_materials_add_debye_material(self):
         """Evalue add debye material material."""
         materials = Materials(self.edbapp)
@@ -220,8 +202,6 @@ class TestClass:
         _ = materials[MATERIAL_NAME]
         material = materials.add_debye_material(MATERIAL_NAME, 6, 4, 0.02, 0.05, 1e9, 10e9, conductivity=0)
         assert not material
-
-        self.__remove_material()
 
     def test_materials_add_multipole_debye_material(self):
         """Evalue add multipole debye material."""
@@ -240,8 +220,6 @@ class TestClass:
         )
         assert not material
 
-        self.__remove_material()
-
     def test_materials_duplicate(self):
         """Evalue duplicate material."""
         materials = Materials(self.edbapp)
@@ -254,8 +232,6 @@ class TestClass:
             assert getattr(material, mat_attribute) == getattr(new_material, mat_attribute)
         material = materials.duplicate(MATERIAL_NAME, other_name)
         assert not material
-
-        self.__remove_material()
 
     def test_materials_delete_material(self):
         """Evaluate delete material."""
@@ -297,7 +273,7 @@ class TestClass:
         assert name_to_material[key]["thermal_conductivity"] == 0.062
         assert name_to_material[key]["mass_density"] == 1700
         assert name_to_material[key]["specific_heat"] == 1050
-        assert name_to_material[key]["thermal_expansion_coeffcient"] == 0.0016
+        assert name_to_material[key]["thermal_expansion_coefficient"] == 0.0016
         key = "Polyflon CuFlon (tm)"
         assert key in name_to_material
         assert name_to_material[key]["permittivity"] == 2.1
@@ -307,10 +283,32 @@ class TestClass:
         assert name_to_material[key]["thermal_conductivity"] == 0.6743
         assert name_to_material[key]["mass_density"] == 967.4
         assert name_to_material[key]["specific_heat"] == 4206
-        assert name_to_material[key]["thermal_expansion_coeffcient"] == 0.0006979
+        assert name_to_material[key]["thermal_expansion_coefficient"] == 0.0006979
         key = "steel_stainless"
         assert name_to_material[key]["conductivity"] == 1100000
         assert name_to_material[key]["thermal_conductivity"] == 13.8
         assert name_to_material[key]["mass_density"] == 8055
         assert name_to_material[key]["specific_heat"] == 480
-        assert name_to_material[key]["thermal_expansion_coeffcient"] == 1.08e-005
+        assert name_to_material[key]["thermal_expansion_coefficient"] == 1.08e-005
+
+    def test_materials_load_conductor_material(self):
+        """Load conductor material."""
+        materials = Materials(self.edbapp)
+        conductor_material_properties = {"name": MATERIAL_NAME, "conductivity": 2e4}
+
+        assert MATERIAL_NAME not in materials
+        materials.load_material(conductor_material_properties)
+        material = materials[MATERIAL_NAME]
+        assert 2e4 == material.conductivity
+
+    def test_materials_load_dielectric_material(self):
+        """Load dielectric material."""
+        materials = Materials(self.edbapp)
+        dielectric_material_properties = {"name": MATERIAL_NAME, "permittivity": 12, "loss_tangent": 0.00045}
+
+        assert MATERIAL_NAME not in materials
+        materials.load_material(dielectric_material_properties)
+        material = materials[MATERIAL_NAME]
+        assert 0.00045 == material.loss_tangent
+        assert 0.00045 == material.dielectric_loss_tangent
+        assert 12 == material.permittivity

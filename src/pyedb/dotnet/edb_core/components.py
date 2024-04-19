@@ -38,6 +38,7 @@ from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 from pyedb.generic.general_methods import (
     _retry_ntimes,
+    generate_unique_name,
     get_filename_without_extension,
     pyedb_function_handler,
 )
@@ -1450,7 +1451,7 @@ class Components(object):
     def create(
         self,
         pins,
-        component_name,
+        component_name=None,
         placement_layer=None,
         component_part_name=None,
         is_rlc=False,
@@ -1496,6 +1497,8 @@ class Components(object):
         >>> edbapp.components.create(pins, "A1New")
 
         """
+        if not component_name:
+            component_name = generate_unique_name("Comp_")
         if component_part_name:
             compdef = self._getComponentDefinition(component_part_name, pins)
         else:

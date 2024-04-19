@@ -383,6 +383,7 @@ class Configuration:
             elif src_type == "current":
                 src_obj = self._pedb.create_current_source(pos_terminal, neg_terminal)
                 src_obj.magnitude = src["magnitude"]
+            src_obj.name = name
 
     @pyedb_function_handler
     def _load_setups(self):
@@ -401,6 +402,13 @@ class Configuration:
                     self._pedb.logger.warning("Setup {} already existing. Editing it.".format(name))
                     edb_setup = self._pedb.setups[name]
                 edb_setup.set_dc_slider(setup["dc_slider_position"])
+                dc_ir_settings = setup.get("dc_ir_settings", None)
+                if dc_ir_settings:
+                    for k, v in dc_ir_settings.items():
+                        if k not in dir(edb_setup.dc_ir_settings):
+                            self._pedb.logger.error(f"Invalid keyword {k}")
+                        else:
+                            setattr(edb_setup.dc_ir_settings, k, v)
             else:
                 if setup_type.lower() == "hfss":
                     if name not in self._pedb.setups:
@@ -553,13 +561,21 @@ class Configuration:
     @pyedb_function_handler
     def _load_pin_groups(self):
         """Imports pin groups information from JSON."""
+        comps = self._pedb.components.components
         for pg in self.data["pin_groups"]:
             name = pg["name"]
             ref_designator = pg["reference_designator"]
             if "pins" in pg:
                 self._pedb.siwave.create_pin_group(ref_designator, pg["pins"], name)
             elif "net" in pg:
-                self._pedb.siwave.create_pin_group_on_net(ref_designator, pg["net"], name)
+                nets = pg["net"]
+                nets = nets if isinstance(nets, list) else [nets]
+                comp = comps[ref_designator]
+                pins = [p for p, obj in comp.pins.items() if obj.net_name in nets]
+                self._pedb.siwave.create_pin_group(ref_designator, pins, name)
+            else:
+                pins = [i for i in comps[ref_designator].pins.keys()]
+                self._pedb.siwave.create_pin_group(ref_designator, pins, name)
 
     @pyedb_function_handler
     def _load_nets(self):
@@ -692,7 +708,11 @@ class Configuration:
             name = pkgd["name"]
             if name in self._pedb.definitions.package:
                 self._pedb.definitions.package[name].delete()
-            package_def = PackageDef(self._pedb, name=name)
+            extent_bounding_box = pkgd.get("extent_bounding_box", None)
+            if extent_bounding_box:
+                package_def = PackageDef(self._pedb, name=name, extent_bounding_box=extent_bounding_box)
+            else:
+                package_def = PackageDef(self._pedb, name=name, component_part_name=pkgd["component_definition"])
             package_def.maximum_power = pkgd["maximum_power"]
             package_def.therm_cond = pkgd["therm_cond"]
             package_def.theta_jb = pkgd["theta_jb"]
@@ -708,6 +728,18 @@ class Configuration:
                     heatsink["fin_spacing"],
                     heatsink["fin_thickness"],
                 )
-            json_comps = pkgd["components"] if isinstance(pkgd["components"], list) else [pkgd["components"]]
-            for i in json_comps:
-                comps[i].package_def = name
+
+            comp_def_name = pkgd["component_definition"]
+            comp_def = self._pedb.definitions.component[comp_def_name]
+
+            comp_list = dict()
+            if pkgd["apply_to_all"]:
+                comp_list.update(
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in pkgd["components"]}
+                )
+            else:
+                comp_list.update(
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes in pkgd["components"]}
+                )
+            for _, i in comp_list.items():
+                i.package_def = name

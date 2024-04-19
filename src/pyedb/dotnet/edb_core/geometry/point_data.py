@@ -21,31 +21,17 @@
 # SOFTWARE.
 
 
-class ObjBase(object):
-    """Manages EDB functionalities for a base object."""
+class PointData:
+    """Point Data."""
 
-    def __init__(self, pedb, edb_object):
+    def __init__(self, pedb, edb_object=None, x=None, y=None):
         self._pedb = pedb
-        self._edb_object = edb_object
-
-    @property
-    def is_null(self):
-        """Flag indicating if this object is null."""
-        return self._edb_object.IsNull()
-
-    @property
-    def type(self):
-        """Type of the edb object."""
-        try:
-            return self._edb_object.GetType()
-        except AttributeError:  # pragma: no cover
-            return None
-
-    @property
-    def name(self):
-        """Name of the definition."""
-        return self._edb_object.GetName()
-
-    @name.setter
-    def name(self, value):
-        self._edb_object.SetName(value)
+        if edb_object:
+            self._edb_object = edb_object
+        else:
+            x = x if x else 0
+            y = y if y else 0
+            self._edb_object = self._pedb.edb_api.geometry.point_data(
+                self._pedb.edb_value(x),
+                self._pedb.edb_value(y),
+            )

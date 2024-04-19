@@ -888,7 +888,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
             return self._app.hfss.create_edge_port_vertical(self.id, pos, name, 50, reference_layer)
 
     @pyedb_function_handler()
-    def create_via_fence(self, distance, gap, padstack_name):
+    def create_via_fence(self, distance, gap, padstack_name, net_name="GND"):
         """Create via fences on both sides of the trace.
 
         Parameters
@@ -899,6 +899,8 @@ class EdbPath(EDBPrimitives, PathDotNet):
             Gap between vias.
         padstack_name: str
             Name of the via padstack.
+        net_name: str, optional
+            Name of the net.
 
         Returns
         -------
@@ -990,7 +992,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
         center_line = self.get_center_line()
         leftline, rightline = getParalletLines(center_line, distance)
         for x, y in getLocations(rightline, gap) + getLocations(leftline, gap):
-            self._pedb.padstacks.place([x, y], padstack_name)
+            self._pedb.padstacks.place([x, y], padstack_name, net_name=net_name)
 
 
 class EdbRectangle(EDBPrimitives, RectangleDotNet):

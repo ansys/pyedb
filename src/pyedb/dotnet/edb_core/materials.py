@@ -73,6 +73,19 @@ DC_ATTRIBUTES = [
 ]
 
 
+def get_line_float_value(line):
+    """Retrieve the float value expected in the line of an AMAT file.
+
+    The associated string is expected to follow one of the following cases:
+    - simple('permittivity', 12.)
+    - permittivity='12'.
+    """
+    try:
+        return float(re.split(",|=", line)[-1].strip("'\n)"))
+    except ValueError:
+        return None
+
+
 class MaterialProperties(BaseModel):
     """Store material properties."""
 
@@ -400,7 +413,7 @@ class Material(object):
             for attribute in ATTRIBUTES:
                 if attribute in input_dict:
                     setattr(self, attribute, input_dict[attribute])
-            if "loss_tangent" in input_dict:
+            if "loss_tangent" in input_dict:  # pragma: no cover
                 setattr(self, "loss_tangent", input_dict["loss_tangent"])
 
             # Update DS model
@@ -521,7 +534,7 @@ class Materials(object):
         material_def = self.__edb_definition.MaterialDef.Create(self.__edb.active_db, name)
         material = Material(self.__edb, material_def)
         attributes_input_dict = {key: val for (key, val) in kwargs.items() if key in ATTRIBUTES + DC_ATTRIBUTES}
-        if "loss_tangent" in kwargs:
+        if "loss_tangent" in kwargs:  # pragma: no cover
             warnings.warn(
                 "This key is deprecated in versions >0.7.0 and will soon be removed. "
                 "Use key dielectric_loss_tangent instead.",
@@ -550,14 +563,10 @@ class Materials(object):
         :class:`pyedb.dotnet.edb_core.materials.Material`
 
         """
-        if name in self.__materials:
-            raise ValueError(f"Material {name} already exists in material library.")
-
         extended_kwargs = {key: value for (key, value) in kwargs.items()}
         extended_kwargs["conductivity"] = conductivity
         material = self.add_material(name, **extended_kwargs)
 
-        self.__materials[name] = material
         return material
 
     @pyedb_function_handler()
@@ -577,15 +586,11 @@ class Materials(object):
         -------
         :class:`pyedb.dotnet.edb_core.materials.Material`
         """
-        if name in self.__materials:
-            raise ValueError(f"Material {name} already exists in material library.")
-
         extended_kwargs = {key: value for (key, value) in kwargs.items()}
         extended_kwargs["permittivity"] = permittivity
         extended_kwargs["dielectric_loss_tangent"] = dielectric_loss_tangent
         material = self.add_material(name, **extended_kwargs)
 
-        self.__materials[name] = material
         return material
 
     @pyedb_function_handler()
@@ -632,7 +637,7 @@ class Materials(object):
             material = self.__add_dielectric_material_model(name, material_model)
             for key, value in kwargs.items():
                 setattr(material, key, value)
-            if "loss_tangent" in kwargs:
+            if "loss_tangent" in kwargs:  # pragma: no cover
                 warnings.warn(
                     "This key is deprecated in versions >0.7.0 and will soon be removed. "
                     "Use key dielectric_loss_tangent instead.",
@@ -698,7 +703,7 @@ class Materials(object):
             material = self.__add_dielectric_material_model(name, material_model)
             for key, value in kwargs.items():
                 setattr(material, key, value)
-            if "loss_tangent" in kwargs:
+            if "loss_tangent" in kwargs:  # pragma: no cover
                 warnings.warn(
                     "This key is deprecated in versions >0.7.0 and will soon be removed. "
                     "Use key dielectric_loss_tangent instead.",
@@ -761,7 +766,7 @@ class Materials(object):
             material = self.__add_dielectric_material_model(name, material_model)
             for key, value in kwargs.items():
                 setattr(material, key, value)
-            if "loss_tangent" in kwargs:
+            if "loss_tangent" in kwargs:  # pragma: no cover
                 warnings.warn(
                     "This key is deprecated in versions >0.7.0 and will soon be removed. "
                     "Use key dielectric_loss_tangent instead.",
@@ -837,7 +842,7 @@ class Materials(object):
 
         material = self[material_name]
         attributes_input_dict = {key: val for (key, val) in input_dict.items() if key in ATTRIBUTES + DC_ATTRIBUTES}
-        if "loss_tangent" in input_dict:
+        if "loss_tangent" in input_dict:  # pragma: no cover
             warnings.warn(
                 "This key is deprecated in versions >0.7.0 and will soon be removed. "
                 "Use key dielectric_loss_tangent instead.",
@@ -852,26 +857,6 @@ class Materials(object):
     @pyedb_function_handler()
     def load_material(self, material):
         """Load material."""
-        if self.materials:
-            mat_keys = [i.lower() for i in self.materials.keys()]
-            mat_keys_case = [i for i in self.materials.keys()]
-        else:
-            mat_keys = []
-            mat_keys_case = []
-
-        if not material:
-            return
-        if material["name"].lower() not in mat_keys:
-            if "conductivity" not in material:
-                self.add_dielectric_material(material["name"], material["permittivity"], material["loss_tangent"])
-            elif material["conductivity"] > 1e4:
-                self.add_conductor_material(material["name"], material["conductivity"])
-            else:
-                self.add_dielectric_material(material["name"], material["permittivity"], material["loss_tangent"])
-            self.materials[material["name"]]._load(material)
-        else:
-            self.materials[mat_keys_case[mat_keys.index(material["name"].lower())]]._load(material)
-
         if material:
             material_name = material["name"]
             material_conductivity = material.get("conductivity", None)
@@ -879,7 +864,7 @@ class Materials(object):
                 self.add_conductor_material(material_name, material_conductivity)
             else:
                 material_permittivity = material["permittivity"]
-                if "loss_tangent" in material:
+                if "loss_tangent" in material:  # pragma: no cover
                     warnings.warn(
                         "This key is deprecated in versions >0.7.0 and will soon be removed. "
                         "Use key dielectric_loss_tangent instead.",
@@ -953,7 +938,7 @@ class Materials(object):
                 if "tangent_delta" in material_properties:
                     material_properties["dielectric_loss_tangent"] = material_properties["tangent_delta"]
                     del material_properties["tangent_delta"]
-                elif "loss_tangent" in material_properties:
+                elif "loss_tangent" in material_properties:  # pragma: no cover
                     warnings.warn(
                         "This key is deprecated in versions >0.7.0 and will soon be removed. "
                         "Use key dielectric_loss_tangent instead.",
@@ -966,9 +951,83 @@ class Materials(object):
                 self.__edb.logger.warning(f"Material {material_name} already exist and was not loaded from AMAT file.")
         return True
 
-    @staticmethod
     @pyedb_function_handler()
-    def read_materials(amat_file):
+    def iterate_materials_in_amat(self, amat_file=None):
+        """Iterate over material description in an AMAT file.
+
+        Parameters
+        ----------
+        amat_file : str
+            Full path to the AMAT file to read.
+
+        Yields
+        ------
+        dict
+        """
+        if amat_file is None:
+            amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")
+
+        begin_regex = re.compile(r"^\$begin '(.+)'")
+        end_regex = re.compile(r"^\$end '(.+)'")
+        material_properties = ATTRIBUTES.copy()
+        # Remove cases manually handled
+        material_properties.remove("conductivity")
+
+        with open(amat_file, "r") as amat_fh:
+            in_material_def = False
+            material_description = {}
+            for line in amat_fh:
+                if in_material_def:
+                    # Yield material definition
+                    if end_regex.search(line):
+                        in_material_def = False
+                        yield material_description
+                        material_description = {}
+                    # Extend material definition if possible
+                    else:
+                        for material_property in material_properties:
+                            if material_property in line:
+                                value = get_line_float_value(line)
+                                if value is not None:
+                                    material_description[material_property] = value
+                                break
+                        # Extra case to cover bug in syslib AMAT file (see #364)
+                        if "thermal_expansion_coeffcient" in line:
+                            value = get_line_float_value(line)
+                            if value is not None:
+                                material_description["thermal_expansion_coefficient"] = value
+                        # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
+                        if "conductivity" in line and "thermal_conductivity" not in line:
+                            value = get_line_float_value(line)
+                            if value is not None:
+                                material_description["conductivity"] = value
+                        # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
+                        if (
+                            "loss_tangent" in line
+                            and "dielectric_loss_tangent" not in line
+                            and "magnetic_loss_tangent" not in line
+                        ):
+                            warnings.warn(
+                                "This key is deprecated in versions >0.7.0 and will soon be removed. "
+                                "Use key dielectric_loss_tangent instead.",
+                                DeprecationWarning,
+                            )
+                            value = get_line_float_value(line)
+                            if value is not None:
+                                material_description["dielectric_loss_tangent"] = value
+                # Check if we reach the beginning of a material description
+                else:
+                    match = begin_regex.search(line)
+                    if match:
+                        material_name = match.group(1)
+                        # Skip unwanted data
+                        if material_name in ("$index$", "$base_index$"):
+                            continue
+                        material_description["name"] = match.group(1)
+                        in_material_def = True
+
+    @pyedb_function_handler()
+    def read_materials(self, amat_file):
         """Read materials from an AMAT file.
 
         Parameters
@@ -981,76 +1040,39 @@ class Materials(object):
         dict
             {material name: dict of material properties}.
         """
-
-        def get_line_float_value(line):
-            """Retrieve the float value expected in the line of an AMAT file.
-
-            The associated string is expected to follow one of the following cases:
-            - simple('permittivity', 12.)
-            - permittivity='12'.
-            """
-            try:
-                return float(re.split(",|=", line)[-1].strip(")'"))
-            except ValueError:
-                return None
-
         res = {}
-        _begin_search = re.compile(r"^\$begin '(.+)'")
-        _end_search = re.compile(r"^\$end '(.+)'")
-        material_properties = [
-            "thermal_conductivity",
-            "permittivity",
-            "dielectric_loss_tangent",
-            "permeability",
-            "magnetic_loss_tangent",
-            "thermal_expansion_coeffcient",
-            "specific_heat",
-            "mass_density",
-        ]
+        for material in self.iterate_materials_in_amat(amat_file):
+            material_name = material["name"]
+            res[material_name] = {}
+            for material_property, value in material.items():
+                if material_property != "name":
+                    res[material_name][material_property] = value
 
-        with open(amat_file, "r") as amat_fh:
-            raw_lines = amat_fh.read().splitlines()
-            material_name = ""
-            for line in raw_lines:
-                b = _begin_search.search(line)
-                if b:  # walk down a level
-                    material_name = b.group(1)
-                    res.setdefault(material_name, {})
-                    if len(res) > 165:
-                        pass
-                if material_name:
-                    for material_property in material_properties:
-                        if material_property in line:
-                            value = get_line_float_value(line)
-                            if value is not None:
-                                res[material_name][material_property] = value
-                            break
-                    # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
-                    if "conductivity" in line and "thermal_conductivity" not in line:
-                        value = get_line_float_value(line)
-                        if value is not None:
-                            res[material_name]["conductivity"] = value
-                    # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
-                    if (
-                        "loss_tangent" in line
-                        and "dielectric_loss_tangent" not in line
-                        and "magnetic_loss_tangent" not in line
-                    ):
-                        warnings.warn(
-                            "This key is deprecated in versions >0.7.0 and will soon be removed. "
-                            "Use key dielectric_loss_tangent instead.",
-                            DeprecationWarning,
-                        )
-                        value = get_line_float_value(line)
-                        if value is not None:
-                            res[material_name]["dielectric_loss_tangent"] = value
-                end = _end_search.search(line)
-                if end:
-                    material_name = ""
+        return res
 
-        # Clean unwanted data
-        for key in ("$index$", "$base_index$"):
-            if key in res:
-                del res[key]
+    @pyedb_function_handler()
+    def read_syslib_material(self, material_name):
+        """Read a specific material from syslib AMAT file.
 
+        Parameters
+        ----------
+        material_name : str
+            Name of the material.
+
+        Returns
+        -------
+        dict
+            {material name: dict of material properties}.
+        """
+        res = {}
+        amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")
+        for material in self.iterate_materials_in_amat(amat_file):
+            iter_material_name = material["name"]
+            if iter_material_name == material_name:
+                for material_property, value in material.items():
+                    if material_property != "name":
+                        res[material_property] = value
+                return res
+
+        self.__edb.logger.error(f"Material {material_name} does not exist in syslib AMAT file.")
         return res
