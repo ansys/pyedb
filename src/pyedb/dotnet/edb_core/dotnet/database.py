@@ -720,6 +720,7 @@ class EdbDotNet(object):
         self.student_version = student_version
         """Initialize DLLs."""
         from pyedb.dotnet.clr_module import _clr, edb_initialized
+
         if not settings.use_pyaedt_log:
             if settings.enable_screen_logs:
                 self._logger.enable_stdout_log()
