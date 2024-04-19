@@ -426,4 +426,5 @@ if any("aedt_logger" in str(i) for i in logger.filters):
 else:
     pyedb_logger = EdbLogger(to_stdout=settings.enable_screen_logs)
     from pyedb.generic.settings import settings as pyaedb_settings
+
     pyaedb_settings.logger = pyedb_logger
