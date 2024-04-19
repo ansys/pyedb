@@ -33,12 +33,11 @@ jobs:
   docs-build:
     name: Build documentation
     runs-on: [ Windows, self-hosted, pyedb ]
-    # runs-on: windows-latest
     timeout-minutes: 480
     steps:
       - name: Run doc build action
-        uses: ansys/actions/doc-build@feat/doc-build-os-compatible
+        uses: ansys/actions/doc-build@feat/doc-build-upload-assets
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           check-links: false
-          
+          add-pdf-html-docs-as-assets: true
