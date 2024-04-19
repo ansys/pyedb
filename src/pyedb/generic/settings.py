@@ -59,6 +59,18 @@ class Settings(object):
         self._global_log_file_size = 10
         self._lsf_queue = None
         self._edb_environment_variables = {}
+        self._use_pyaedt_log=False
+
+    @property
+    def use_pyaedt_log(self):
+        """Flag that disable Edb log when PyAEDT is used.
+
+        """
+        return self._use_pyaedt_log
+
+    @use_pyaedt_log.setter
+    def use_pyaedt_log(self, value):
+        self._use_pyaedt_log = value
 
     @property
     def edb_environment_variables(self):

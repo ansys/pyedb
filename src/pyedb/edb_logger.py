@@ -414,5 +414,11 @@ class EdbLogger(object):
         self._global = logging.getLogger("Global")
         return self._global
 
-
-pyedb_logger = EdbLogger(to_stdout=settings.enable_screen_logs)
+logger = logging.getLogger("Global")
+if any("aedt_logger" in str(i) for i in logger.filters):
+    from pyaedt.generic.settings import settings as pyaedt_settings
+    pyedb_logger = pyaedt_settings.logger
+    from pyedb.generic.settings import settings as pyaedb_settings
+    pyaedb_settings.use_pyaedt_log = True
+else:
+    pyedb_logger = EdbLogger(to_stdout=settings.enable_screen_logs)
