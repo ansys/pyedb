@@ -858,7 +858,7 @@ class Components(object):
         self,
         component,
         net_list,
-        port_type=SourceType.CircPort,
+        port_type=SourceType.CoaxPort,
         do_pingroup=True,
         reference_net="gnd",
         port_name=None,
