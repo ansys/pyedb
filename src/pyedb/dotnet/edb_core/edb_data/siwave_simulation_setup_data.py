@@ -27,6 +27,7 @@ from pyedb.dotnet.edb_core.general import (
     convert_pydict_to_netdict,
 )
 from pyedb.dotnet.edb_core.utilities.simulation_setup import BaseSimulationSetup
+from pyedb.dotnet.sim_setup_data.data.siw_dc_ir_settings import SiwaveDCIRSettings
 from pyedb.generic.general_methods import is_linux, pyedb_function_handler
 
 
@@ -1143,6 +1144,11 @@ class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
         self._create(name)
         self.set_dc_slider(1)
         return self
+
+    @property
+    def dc_ir_settings(self):
+        """DC IR settings."""
+        return SiwaveDCIRSettings(self)
 
     @pyedb_function_handler
     def get_configurations(self):
