@@ -60,6 +60,16 @@ class Settings(object):
         self._lsf_queue = None
         self._edb_environment_variables = {}
         self._use_pyaedt_log = False
+        self._logger = None
+
+    @property
+    def logger(self):
+        """Active logger."""
+        return self._logger
+
+    @logger.setter
+    def logger(self, val):
+        self._logger = val
 
     @property
     def use_pyaedt_log(self):
@@ -139,14 +149,6 @@ class Settings(object):
     @enable_debug_methods_argument_logger.setter
     def enable_debug_methods_argument_logger(self, val):
         self._enable_debug_methods_argument_logger = val
-
-    @property
-    def logger(self):
-        """Active logger."""
-        try:
-            return logging.getLogger("Global")
-        except:  # pragma: no cover
-            return logging.getLogger(__name__)
 
     @property
     def enable_error_handler(self):
