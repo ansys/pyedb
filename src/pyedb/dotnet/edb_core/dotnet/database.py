@@ -721,10 +721,11 @@ class EdbDotNet(object):
         """Initialize DLLs."""
         from pyedb.dotnet.clr_module import _clr, edb_initialized
 
-        if settings.enable_screen_logs:
-            self._logger.enable_stdout_log()
-        else:  # pragma: no cover
-            self._logger.disable_stdout_log()
+        if not settings.use_pyaedt_log:
+            if settings.enable_screen_logs:
+                self._logger.enable_stdout_log()
+            else:  # pragma: no cover
+                self._logger.disable_stdout_log()
         if not edb_initialized:  # pragma: no cover
             self._logger.error("Failed to initialize Dlls.")
             return
