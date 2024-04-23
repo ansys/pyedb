@@ -49,25 +49,42 @@ bom_example = "bom_example.csv"
 class EdbExamples:
     def __init__(self, local_scratch):
         self.local_scratch = local_scratch
+        self.example_models_path = example_models_path
+        self._test_folder = ""
 
-    @property
-    def _local_folder(self):
-        return os.path.join(self.local_scratch.path, generate_random_string(6))
+    def get_local_file_folder(self, name):
+        return os.path.join(self.local_scratch.path, name)
 
-    def _get_folder(self, name):
-        src = os.path.join(example_models_path, name)
-        dst = self.local_scratch.copyfolder(src, os.path.join(self._local_folder, os.path.split(src)[-1]))
+    def _create_test_folder(self):
+        """Create a local folder under `local_scratch`."""
+        self._test_folder = os.path.join(self.local_scratch.path, generate_random_string(6))
+        return self._test_folder
+
+    def _copy_file_folder_into_local_folder(self, file_folder_path):
+        src = os.path.join(self.example_models_path, file_folder_path)
+        local_folder = self._create_test_folder()
+        file_folder_name = os.path.join(local_folder, os.path.split(src)[-1])
+        dst = self.local_scratch.copyfolder(src, file_folder_name)
         return dst
 
-    def get_si_verse(self, edbapp=True):
-        aedb = self._get_folder("TEDB/ANSYS-HSD_V1.aedb")
+    def get_si_verse(self, edbapp=True, additional_files_folders=""):
+        aedb = self._copy_file_folder_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")
+        if additional_files_folders:
+            files = additional_files_folders if isinstance(additional_files_folders, list) else [additional_files_folders]
+            for f in files:
+                src = os.path.join(self.example_models_path, f)
+                file_folder_name = os.path.join(self._test_folder, os.path.split(src)[-1])
+                if os.path.isfile(src):
+                    self.local_scratch.copyfile(src, file_folder_name)
+                else:
+                    self.local_scratch.copyfolder(src, file_folder_name)
         if edbapp:
             return Edb(aedb, edbversion=desktop_version)
         else:
             return aedb
 
     def get_multizone_pcb(self):
-        aedb = self._get_folder("multi_zone_project.aedb")
+        aedb = self._copy_file_folder_into_local_folder("multi_zone_project.aedb")
         return Edb(aedb, edbversion=desktop_version)
 
 
