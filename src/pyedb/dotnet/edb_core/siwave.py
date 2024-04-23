@@ -1454,7 +1454,7 @@ class EdbSiwave(object):
         p_terminal = self._pedb.get_point_terminal(name, positive_net_name, positive_location, positive_layer)
         n_terminal = self._pedb.get_point_terminal(name + "_ref", negative_net_name, negative_location, negative_layer)
         return self._pedb.create_voltage_probe(p_terminal, n_terminal)
-    
+
     @property
     def icepak_use_minimal_comp_defaults(self):
         """Icepak default setting. If "True", only resistor are active in Icepak simulation.
