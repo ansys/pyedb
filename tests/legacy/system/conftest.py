@@ -70,7 +70,9 @@ class EdbExamples:
     def get_si_verse(self, edbapp=True, additional_files_folders=""):
         aedb = self._copy_file_folder_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")
         if additional_files_folders:
-            files = additional_files_folders if isinstance(additional_files_folders, list) else [additional_files_folders]
+            files = (
+                additional_files_folders if isinstance(additional_files_folders, list) else [additional_files_folders]
+            )
             for f in files:
                 src = os.path.join(self.example_models_path, f)
                 file_folder_name = os.path.join(self._test_folder, os.path.split(src)[-1])
