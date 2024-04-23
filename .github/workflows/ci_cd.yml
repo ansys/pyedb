@@ -42,21 +42,21 @@ jobs:
           check-links: false
           add-pdf-html-docs-as-assets: true
 
-  docs-build-windows-github-runner:
-    name: Build documentation
-    runs-on: windows-latest
-    timeout-minutes: 480
-    steps:
-      - name: Run doc build action
-        uses: ansys/actions/doc-build@feat/doc-build-upload-assets
-        with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          check-links: false
-          add-pdf-html-docs-as-assets: true
+  # docs-build-windows-github-runner:
+  #   name: Build documentation
+  #   runs-on: windows-latest
+  #   timeout-minutes: 480
+  #   steps:
+  #     - name: Run doc build action
+  #       uses: ansys/actions/doc-build@feat/doc-build-upload-assets
+  #       with:
+  #         python-version: ${{ env.MAIN_PYTHON_VERSION }}
+  #         check-links: false
+  #         add-pdf-html-docs-as-assets: true
 
   docs-build-linux-github-runner:
     name: Build documentation
-    runs-on: linux-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 480
     steps:
       - name: Run doc build action
