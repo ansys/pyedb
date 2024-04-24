@@ -21,11 +21,11 @@
 # SOFTWARE.
 
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.edb_core.edb_data.simulation_setup import (
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.dotnet.edb_core.utilities.simulation_setup import (
     BaseSimulationSetup,
     EdbFrequencySweep,
 )
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.data_handlers import pyedb_function_handler
 from pyedb.generic.general_methods import generate_unique_name
 
@@ -35,8 +35,10 @@ class RaptorXSimulationSetup(BaseSimulationSetup):
 
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
+        self._pedb = pedb
         self._setup_type = "kRaptorX"
         self._edb_setup_info = None
+        self.logger = self._pedb.logger
 
     @pyedb_function_handler
     def create(self, name=None):
@@ -51,7 +53,7 @@ class RaptorXSimulationSetup(BaseSimulationSetup):
 
     @property
     def settings(self):
-        return RaptorXSimulationSettings(self._edb_setup_info)
+        return RaptorXSimulationSettings(self._edb_setup_info, self._pedb)
 
     @property
     def enabled(self):
@@ -69,6 +71,8 @@ class RaptorXSimulationSetup(BaseSimulationSetup):
     def position(self, value):
         if isinstance(value, int):
             self._edb_setup_info.Position = value
+        else:
+            self.logger.error(f"RaptorX setup position input setter must be an integer. Provided value {value}")
 
     @property
     def frequency_sweeps(self):
@@ -106,11 +110,13 @@ class RaptorXSimulationSetup(BaseSimulationSetup):
 
 
 class RaptorXSimulationSettings(object):
-    def __init__(self, edb_setup_info):
+    def __init__(self, edb_setup_info, pedb):
+        self._pedb = pedb
+        self.logger = self._pedb.logger
         self._edb_setup_info = edb_setup_info
         self._simulation_settings = edb_setup_info.SimulationSettings
-        self._general_settings = RaptorXGeneralSettings(self._edb_setup_info)
-        self._advanced_settings = RaptorXSimulationAdvancedSettings(self._edb_setup_info)
+        self._general_settings = RaptorXGeneralSettings(self._edb_setup_info, self._pedb)
+        self._advanced_settings = RaptorXSimulationAdvancedSettings(self._edb_setup_info, self._pedb)
         self._simulation_settings = self._edb_setup_info.SimulationSettings
 
     @property
@@ -129,11 +135,15 @@ class RaptorXSimulationSettings(object):
     def enabled(self, value):
         if isinstance(value, bool):
             self._simulation_settings.Enabled = value
+        else:
+            self.logger.error(f"RaptorX setup enabled setter input must be a boolean. Provided value {value}")
 
 
 class RaptorXGeneralSettings(object):
-    def __init__(self, edb_setup_info):
+    def __init__(self, edb_setup_info, pedb):
         self._general_settings = edb_setup_info.SimulationSettings.GeneralSettings
+        self._pedb = pedb
+        self.logger = self._pedb.logger
 
     @property
     def global_temperature(self):
@@ -158,9 +168,11 @@ class RaptorXGeneralSettings(object):
 
 
 class RaptorXSimulationAdvancedSettings(object):
-    def __init__(self, edb_setup_info):
+    def __init__(self, edb_setup_info, pedb):
         self._edb_setup_info = edb_setup_info
         self._advanced_settings = edb_setup_info.SimulationSettings.AdvancedSettings
+        self._pedb = pedb
+        self.logger = self._pedb.logger
 
     @property
     def auto_removal_sliver_poly(self):
@@ -184,6 +196,8 @@ class RaptorXSimulationAdvancedSettings(object):
     def cell_per_wave_length(self, value):
         if isinstance(value, int):
             self._advanced_settings.CellsPerWavelength = value
+        else:
+            self.logger.error(f"RaptorX cell_per_wave_length setter input must be an integer, value provided {value}")
 
     @property
     def edge_mesh(self):
@@ -230,6 +244,10 @@ class RaptorXSimulationAdvancedSettings(object):
     def net_settings_options(self, value):
         if isinstance(value, list):
             self._advanced_settings.NetSettingsOptions = convert_py_list_to_net_list(value)
+        else:
+            self.logger.error(
+                f"RaptorX setup net_settings_options input setter must be a list. " f"Provided value {value}"
+            )
 
     @property
     def override_shrink_fac(self):
@@ -267,6 +285,10 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_accelerate_via_extraction(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseAccelerateViaExtraction = value
+        else:
+            self.logger.error(
+                "RaptorX setup use_accelerate_via_extraction setter input must be boolean." f"Provided value {value}"
+            )
 
     @property
     def use_auto_removal_sliver_poly(self):
@@ -277,6 +299,10 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_auto_removal_sliver_poly(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseAutoRemovalSliverPoly = value
+        else:
+            self.logger.error(
+                f"RaptorX setup use_auto_removal_sliver_poly setter must be a boolean. " f"Provided value {value}"
+            )
 
     @property
     def use_cells_per_wavelength(self):
@@ -289,6 +315,8 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_cells_per_wavelength(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseCellsPerWavelength = value
+        else:
+            self.logger.error(f"RaptorX setup use_cells_per_wavelength setter must be boolean. Provided value {value}")
 
     @property
     def use_edge_mesh(self):
@@ -301,6 +329,8 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_edge_mesh(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseEdgeMesh = value
+        else:
+            self.logger.error(f"RaptorX setup use_edge_mesh setter must be a boolean. Provided value {value}")
 
     @property
     def use_eliminate_slit_per_holes(self):
@@ -349,6 +379,10 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_enable_hybrid_extraction(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseEnableHybridExtraction = value
+        else:
+            self.logger.error(
+                f"RaptorX setup use_enable_hybrid_extraction setter must be a boolean. " f"Provided value {value}"
+            )
 
     @property
     def use_enable_substrate_network_extraction(self):
@@ -359,6 +393,11 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_enable_substrate_network_extraction(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseEnableSubstrateNetworkExtraction = value
+        else:
+            self.logger.error(
+                f"RaptorX setup use_enable_substrate_network_extraction setter must be a boolean. "
+                f"Provided value {value}"
+            )
 
     @property
     def use_extract_floating_metals_dummy(self):
@@ -372,6 +411,10 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_extract_floating_metals_dummy(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseExtractFloatingMetalsDummy = value
+        else:
+            self.logger.error(
+                f"RaptorX setup use_extract_floating_metals_dummy setter must be a boolean. " f"Provided value {value}"
+            )
 
     @property
     def use_extract_floating_metals_floating(self):
@@ -384,6 +427,11 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_extract_floating_metals_floating(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseExtractFloatingMetalsFloating = value
+        else:
+            self.logger.error(
+                f"RaptorX setup use_extract_floating_metals_floating setter must be a boolean. "
+                f"Provided value {value}"
+            )
 
     @property
     def use_lde(self):
@@ -398,6 +446,8 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_lde(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseLDE = value
+        else:
+            self.logger.error(f"RaptorX setup use_lde setter must be a boolean. Provided value {value}")
 
     @property
     def use_mesh_frequency(self):
@@ -411,6 +461,8 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_mesh_frequency(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseMeshFrequency = value
+        else:
+            self.logger.error(f"RaptorX setup use_mesh_frequency setter must be a boolean. Provided value {value}")
 
     @property
     def use_override_shrink_fac(self):
@@ -423,6 +475,8 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_override_shrink_fac(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseOverrideShrinkFac = value
+        else:
+            self.logger.error(f"RaptorX setup use_override_shrink_fac setter must be a boolean. Provided value {value}")
 
     @property
     def use_plane_projection_factor(self):
@@ -436,6 +490,10 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_plane_projection_factor(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UsePlaneProjectionFactor = value
+        else:
+            self.logger.error(
+                f"RaptorX setup use_plane_projection_factor setter must be a boolean. " f"Provided value {value}"
+            )
 
     @property
     def use_relaxed_z_axis(self):
@@ -446,3 +504,5 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_relaxed_z_axis(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseRelaxedZAxis = value
+        else:
+            self.logger.error(f"RaptorX setup use_relaxed_z_axis setter must be a boolean. " f"Provided value {value}")

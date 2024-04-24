@@ -1736,7 +1736,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_raptorx_setup", "test.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, desktop_version)
+        edbapp = Edb(edbpath=target_path, edbversion=desktop_version)
         setup = edbapp.create_raptorx_setup("test")
         assert "test" in edbapp.setups
         setup.add_frequency_sweep(frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
