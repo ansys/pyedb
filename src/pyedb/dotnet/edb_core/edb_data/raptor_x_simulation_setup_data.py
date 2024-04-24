@@ -343,6 +343,10 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_eliminate_slit_per_holes(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseEliminateSlitPerHoles = value
+        else:
+            self.logger.error(
+                f"RaptorX setup use_eliminate_slit_per_holes setter must be a boolean. " f"Provided value {value}"
+            )
 
     @property
     def use_enable_advanced_cap_effects(self):
@@ -355,6 +359,10 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_enable_advanced_cap_effects(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseEnableAdvancedCapEffects = value
+        else:
+            self.logger.error(
+                f"RaptorX setup use_enable_advanced_cap_effects setter must be a boolean. " f"Provided value {value}"
+            )
 
     @property
     def use_enable_etch_transform(self):
@@ -367,6 +375,10 @@ class RaptorXSimulationAdvancedSettings(object):
     def use_enable_etch_transform(self, value):
         if isinstance(value, bool):
             self._advanced_settings.UseEnableEtchTransform = value
+        else:
+            self.logger.error(
+                f"RaptorX setup use_enable_etch_transform setter must be a boolean. " f"Provided value {value}"
+            )
 
     @property
     def use_enable_hybrid_extraction(self):
