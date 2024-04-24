@@ -126,9 +126,8 @@ class BaseSimulationSetup(object):
 
     @enabled.setter
     def enabled(self, value):
-        # edb_setup_info = self.get_sim_setup_info
-        edb_setup_info.SimulationSettings.Enabled = value
-        self._edb_object = self._set_edb_setup_info(edb_setup_info)
+        self.get_sim_setup_info.SimulationSettings.Enabled = value
+        self._edb_object = self._set_edb_setup_info(self.get_sim_setup_info)
         self._update_setup()
 
     @property
