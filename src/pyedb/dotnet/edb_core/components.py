@@ -1016,17 +1016,10 @@ class Components(object):
                     else:
                         self._logger.info("No pins found on component {} for the net {}".format(component, net))
             else:
-                ref_pin_group = self.create_pingroup_from_pins(ref_pins)
-                if not ref_pin_group:
-                    self._logger.warning("failed to create reference pin group")
-                    return False
-                ref_pin_group_term = self._create_pin_group_terminal(ref_pin_group, isref=True)
                 for net in net_list:
                     pins = [pin for pin in cmp_pins if pin.GetNet().GetName() == net]
                     for pin in pins:
-                        pin_group = self.create_pingroup_from_pins([pin])
-                        pin_group_term = self._create_pin_group_terminal(pin_group, isref=False)
-                        pin_group_term.SetReferenceTerminal(ref_pin_group_term)
+                        self.create_port_on_pins(component, pin, ref_pins)
         return True
 
     @pyedb_function_handler()
@@ -2302,7 +2295,7 @@ class Components(object):
             Filter on the net name as an alternative to
             ``pinName``. The default is ``None``.
         pinName : str, optional
-            Filter on the pin name an an alternative to
+            Filter on the pin name an alternative to
             ``netName``. The default is ``None``.
 
         Returns
