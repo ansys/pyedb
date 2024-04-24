@@ -1732,3 +1732,13 @@ class TestClass:
         assert defined_ports
         assert project_connexions
         edbapp.close_edb()
+
+    def test_icepak(self, edb_examples):
+        edbapp = edb_examples.get_si_verse(additional_files_folders=["siwave/icepak_component.pwrd"])
+        edbapp.siwave.icepak_use_minimal_comp_defaults = True
+        assert edbapp.siwave.icepak_use_minimal_comp_defaults
+        edbapp.siwave.icepak_use_minimal_comp_defaults = False
+        assert not edbapp.siwave.icepak_use_minimal_comp_defaults
+        edbapp.siwave.icepak_component_file = edb_examples.get_local_file_folder("siwave/icepak_component.pwrd")
+        assert edbapp.siwave.icepak_component_file == edb_examples.get_local_file_folder("siwave/icepak_component.pwrd")
+        edbapp.close()
