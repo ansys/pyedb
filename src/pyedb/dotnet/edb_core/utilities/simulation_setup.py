@@ -82,45 +82,26 @@ class BaseSimulationSetup(object):
     def _set_edb_setup_info(self, edb_setup_info):
         """Create a setup object from a setup information object."""
         utility = self._pedb._edb.Utility
+        setup_type_mapping = {
+            "kHFSS": utility.HFSSSimulationSetup,
+            "kPEM": None,
+            "kSIwave": utility.SIWaveSimulationSetup,
+            "kLNA": None,
+            "kTransient": None,
+            "kQEye": None,
+            "kVEye": None,
+            "kAMI": None,
+            "kAnalysisOption": None,
+            "kSIwaveDCIR": utility.SIWaveDCIRSimulationSetup,
+            "kSIwaveEMI": None,
+            "kHFSSPI": None,
+            "kDDRwizard": None,
+            "kQ3D": None,
+            "kNumSetupTypes": None,
+        }
         version = self._pedb.edbversion.split(".")
         if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
-            setup_type_mapping = {
-                "kHFSS": utility.HFSSSimulationSetup,
-                "kPEM": None,
-                "kSIwave": utility.SIWaveSimulationSetup,
-                "kLNA": None,
-                "kTransient": None,
-                "kQEye": None,
-                "kVEye": None,
-                "kAMI": None,
-                "kAnalysisOption": None,
-                "kSIwaveDCIR": utility.SIWaveDCIRSimulationSetup,
-                "kSIwaveEMI": None,
-                "kHFSSPI": None,
-                "kDDRwizard": None,
-                "kQ3D": None,
-                "kNumSetupTypes": None,
-                "kRaptorX": utility.RaptorXSimulationSetup,
-            }
-        else:
-            setup_type_mapping = {
-                "kHFSS": utility.HFSSSimulationSetup,
-                "kPEM": None,
-                "kSIwave": utility.SIWaveSimulationSetup,
-                "kLNA": None,
-                "kTransient": None,
-                "kQEye": None,
-                "kVEye": None,
-                "kAMI": None,
-                "kAnalysisOption": None,
-                "kSIwaveDCIR": utility.SIWaveDCIRSimulationSetup,
-                "kSIwaveEMI": None,
-                "kHFSSPI": None,
-                "kDDRwizard": None,
-                "kQ3D": None,
-                "kNumSetupTypes": None,
-            }
-
+            setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
         setup_utility = setup_type_mapping[self._setup_type]
         return setup_utility(edb_setup_info)
 
