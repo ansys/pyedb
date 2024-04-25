@@ -729,9 +729,8 @@ class EdbFrequencySweep(object):
                 ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
             ]
         temp = []
-        if isinstance(frequency_list, list):
-            if not isinstance(frequency_list[0], list):
-                frequency_list = [frequency_list]
+        if isinstance(frequency_list, list) and not isinstance(frequency_list[0], list):
+            frequency_list = [frequency_list]
         for i in frequency_list:
             if i[0] == "linear count":
                 temp.extend(list(self._edb_sweep_data.SetFrequencies(i[1], i[2], i[3])))
