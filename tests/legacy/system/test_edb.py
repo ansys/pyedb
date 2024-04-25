@@ -118,6 +118,8 @@ class TestClass:
         # TODO: Moves this piece of code in another place
         assert self.edbapp.siwave.create_voltage_source_on_pin_group("sink_pos", "gnd", name="vrm_voltage_source")
         self.edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["A27", "A28"], group_name="vp_pos")
+        assert self.edbapp.siwave.pin_groups["vp_pos"]
+        assert self.edbapp.siwave.pin_groups["vp_pos"].pins
         self.edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["R23", "P23"], group_name="vp_neg")
         assert self.edbapp.siwave.create_voltage_probe_on_pin_group("vprobe", "vp_pos", "vp_neg")
         assert self.edbapp.probes["vprobe"]
@@ -1820,4 +1822,14 @@ class TestClass:
         assert not advanced_settings.use_relaxed_z_axis
         advanced_settings.use_relaxed_z_axis = True
         assert advanced_settings.use_relaxed_z_axis
+        edbapp.close()
+
+    def test_icepak(self, edb_examples):
+        edbapp = edb_examples.get_si_verse(additional_files_folders=["siwave/icepak_component.pwrd"])
+        edbapp.siwave.icepak_use_minimal_comp_defaults = True
+        assert edbapp.siwave.icepak_use_minimal_comp_defaults
+        edbapp.siwave.icepak_use_minimal_comp_defaults = False
+        assert not edbapp.siwave.icepak_use_minimal_comp_defaults
+        edbapp.siwave.icepak_component_file = edb_examples.get_local_file_folder("siwave/icepak_component.pwrd")
+        assert edbapp.siwave.icepak_component_file == edb_examples.get_local_file_folder("siwave/icepak_component.pwrd")
         edbapp.close()

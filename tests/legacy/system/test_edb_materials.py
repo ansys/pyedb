@@ -86,6 +86,7 @@ class TestClass:
             for value in VALUES:
                 setattr(material, property, value)
                 assert float(value) == getattr(material, property)
+        assert 12 == material.loss_tangent
 
     def test_material_dc_properties(self):
         """Evaluate material DC properties."""
@@ -289,3 +290,25 @@ class TestClass:
         assert name_to_material[key]["mass_density"] == 8055
         assert name_to_material[key]["specific_heat"] == 480
         assert name_to_material[key]["thermal_expansion_coefficient"] == 1.08e-005
+
+    def test_materials_load_conductor_material(self):
+        """Load conductor material."""
+        materials = Materials(self.edbapp)
+        conductor_material_properties = {"name": MATERIAL_NAME, "conductivity": 2e4}
+
+        assert MATERIAL_NAME not in materials
+        materials.load_material(conductor_material_properties)
+        material = materials[MATERIAL_NAME]
+        assert 2e4 == material.conductivity
+
+    def test_materials_load_dielectric_material(self):
+        """Load dielectric material."""
+        materials = Materials(self.edbapp)
+        dielectric_material_properties = {"name": MATERIAL_NAME, "permittivity": 12, "loss_tangent": 0.00045}
+
+        assert MATERIAL_NAME not in materials
+        materials.load_material(dielectric_material_properties)
+        material = materials[MATERIAL_NAME]
+        assert 0.00045 == material.loss_tangent
+        assert 0.00045 == material.dielectric_loss_tangent
+        assert 12 == material.permittivity

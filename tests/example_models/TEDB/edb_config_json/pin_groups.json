@@ -17,6 +17,15 @@
       "name": "U9_AVDD_PLL",
       "reference_designator": "U9",
       "pins": ["44"]
+    },
+    {
+      "name": "U6_ALL_PINS",
+      "reference_designator": "U6"
+    },
+    {
+      "name": "J5_TWO_NETS",
+      "reference_designator": "J5",
+      "net": ["SFPA_VCCR", "SFPA_VCCT"]
     }
   ],
   "ports": [

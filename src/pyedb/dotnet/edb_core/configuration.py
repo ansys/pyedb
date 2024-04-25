@@ -383,6 +383,7 @@ class Configuration:
             elif src_type == "current":
                 src_obj = self._pedb.create_current_source(pos_terminal, neg_terminal)
                 src_obj.magnitude = src["magnitude"]
+            src_obj.name = name
 
     @pyedb_function_handler
     def _load_setups(self):
@@ -401,6 +402,13 @@ class Configuration:
                     self._pedb.logger.warning("Setup {} already existing. Editing it.".format(name))
                     edb_setup = self._pedb.setups[name]
                 edb_setup.set_dc_slider(setup["dc_slider_position"])
+                dc_ir_settings = setup.get("dc_ir_settings", None)
+                if dc_ir_settings:
+                    for k, v in dc_ir_settings.items():
+                        if k not in dir(edb_setup.dc_ir_settings):
+                            self._pedb.logger.error(f"Invalid keyword {k}")
+                        else:
+                            setattr(edb_setup.dc_ir_settings, k, v)
             else:
                 if setup_type.lower() == "hfss":
                     if name not in self._pedb.setups:
@@ -553,13 +561,21 @@ class Configuration:
     @pyedb_function_handler
     def _load_pin_groups(self):
         """Imports pin groups information from JSON."""
+        comps = self._pedb.components.components
         for pg in self.data["pin_groups"]:
             name = pg["name"]
             ref_designator = pg["reference_designator"]
             if "pins" in pg:
                 self._pedb.siwave.create_pin_group(ref_designator, pg["pins"], name)
             elif "net" in pg:
-                self._pedb.siwave.create_pin_group_on_net(ref_designator, pg["net"], name)
+                nets = pg["net"]
+                nets = nets if isinstance(nets, list) else [nets]
+                comp = comps[ref_designator]
+                pins = [p for p, obj in comp.pins.items() if obj.net_name in nets]
+                self._pedb.siwave.create_pin_group(ref_designator, pins, name)
+            else:
+                pins = [i for i in comps[ref_designator].pins.keys()]
+                self._pedb.siwave.create_pin_group(ref_designator, pins, name)
 
     @pyedb_function_handler
     def _load_nets(self):
