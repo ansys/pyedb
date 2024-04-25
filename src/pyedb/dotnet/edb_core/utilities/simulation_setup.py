@@ -204,9 +204,7 @@ class BaseSimulationSetup(object):
 
         fsweep = []
         if self.frequency_sweeps:
-            for k, val in self.frequency_sweeps.items():
-                if not k == name:
-                    fsweep.append(val)
+            fsweep = [val for key,val in self.frequency_sweeps.items() if not key == name]
             self.get_sim_setup_info.SweepDataList.Clear()
             for i in fsweep:
                 self.get_sim_setup_info.SweepDataList.Add(i._edb_object)
