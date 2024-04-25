@@ -35,6 +35,56 @@ class LayerEdbClass(object):
         self._name = name
         self._color = ()
         self._type = ""
+        self._stackup_layer_mapping = {
+            "SignalLayer": self._edb.cell.layer_type.SignalLayer,
+            "DielectricLayer": self._edb.cell.layer_type.DielectricLayer,
+        }
+        self._doc_layer_mapping = {
+            "ConductingLayer": self._edb.cell.layer_type.ConductingLayer,
+            "AirlinesLayer": self._edb.cell.layer_type.AirlinesLayer,
+            "ErrorsLayer": self._edb.cell.layer_type.ErrorsLayer,
+            "SymbolLayer": self._edb.cell.layer_type.SymbolLayer,
+            "MeasureLayer": self._edb.cell.layer_type.MeasureLayer,
+            "AssemblyLayer": self._edb.cell.layer_type.AssemblyLayer,
+            "SilkscreenLayer": self._edb.cell.layer_type.SilkscreenLayer,
+            "SolderMaskLayer": self._edb.cell.layer_type.SolderMaskLayer,
+            "SolderPasteLayer": self._edb.cell.layer_type.SolderPasteLayer,
+            "GlueLayer": self._edb.cell.layer_type.GlueLayer,
+            "WirebondLayer": self._edb.cell.layer_type.WirebondLayer,
+            "UserLayer": self._edb.cell.layer_type.UserLayer,
+            "SIwaveHFSSSolverRegions": self._edb.cell.layer_type.SIwaveHFSSSolverRegions,
+            "PostprocessingLayer": self._edb.cell.layer_type.PostprocessingLayer,
+            "OutlineLayer": self._edb.cell.layer_type.OutlineLayer,
+            "LayerTypesCount": self._edb.cell.layer_type.LayerTypesCount,
+            "UndefinedLayerType": self._edb.cell.layer_type.UndefinedLayerType
+        }
+
+        self._layer_type_mapping = {}
+        self._layer_type_mapping.update(self._stackup_layer_mapping)
+        self._layer_type_mapping.update(self._doc_layer_mapping)
+
+        self._layer_name_mapping = {
+            "signal": "SignalLayer",
+            "dielectric": "DielectricLayer",
+            "conducting": "ConductingLayer",
+            "airlines": "AirlinesLayer",
+            "errors": "ErrorsLayer",
+            "symbol": "SymbolLayer",
+            "measure": "MeasureLayer",
+            "assembly": "AssemblyLayer",
+            "silkscreen": "SilkscreenLayer",
+            "soldermask": "SolderMaskLayer",
+            "solderpaste": "SolderPasteLayer",
+            "glue": "GlueLayer",
+            "wirebound": "WirebondLayer",
+            "user": "UserLayer",
+            "siwavehfsssolverregions": "SIwaveHFSSSolverRegions",
+            "postprocessing": "PostprocessingLayer",
+            "outline": "OutlineLayer",
+            "layertypescount": "LayerTypesCount",
+            "undefined": "UndefinedLayerType"
+        }
+        self._layer_name_mapping_reversed = {j: i for i, j in self._layer_name_mapping.items()}
 
     @property
     def _edb(self):
@@ -127,21 +177,14 @@ class LayerEdbClass(object):
     @property
     def type(self):
         """Retrieve type of the layer."""
-        return re.sub(r"Layer$", "", self._edb_layer.GetLayerType().ToString()).lower()
+        return self._layer_name_mapping_reversed[self._edb_layer.GetLayerType().ToString()]
 
     @type.setter
-    def type(self, new_type):
-        if new_type == self.type:
-            return
+    def type(self, value):
+        value = self._layer_name_mapping[value]
         layer_clone = self._edb_layer
-        if new_type == "signal":
-            layer_clone.SetLayerType(self._edb.cell.layer_type.SignalLayer)
-            self._type = new_type
-        elif new_type == "dielectric":
-            layer_clone.SetLayerType(self._edb.cell.layer_type.DielectricLayer)
-            self._type = new_type
-        else:
-            return
+        layer_clone.SetLayerType(self._layer_type_mapping[value])
+        self._type = value
         self._pclass._set_layout_stackup(layer_clone, "change_attribute")
 
 
@@ -282,6 +325,7 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @dielectric_fill.setter
     def dielectric_fill(self, name):
+        name = name.lower()
         if self.type == "signal":
             layer_clone = self._edb_layer
             layer_clone.SetFillMaterial(name)
@@ -462,12 +506,12 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @pyedb_function_handler()
     def assign_roughness_model(
-        self,
-        model_type="huray",
-        huray_radius="0.5um",
-        huray_surface_ratio="2.9",
-        groisse_roughness="1um",
-        apply_on_surface="all",
+            self,
+            model_type="huray",
+            huray_radius="0.5um",
+            huray_surface_ratio="2.9",
+            groisse_roughness="1um",
+            apply_on_surface="all",
     ):
         """Assign roughness model on this layer.
 
@@ -545,10 +589,10 @@ class StackupLayerEdbClass(LayerEdbClass):
         self._bottom_hallhuray_surface_ratio = self.bottom_hallhuray_surface_ratio
         for k, v in self.__dict__.items():
             if (
-                not k == "_pclass"
-                and not k == "_conductivity"
-                and not k == "_permittivity"
-                and not k == "_loss_tangent"
+                    not k == "_pclass"
+                    and not k == "_conductivity"
+                    and not k == "_permittivity"
+                    and not k == "_loss_tangent"
             ):
                 dict_out[k[1:]] = v
         return dict_out

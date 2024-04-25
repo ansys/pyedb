@@ -1860,7 +1860,8 @@ class Stackup(object):
 
             layer.material = layer_info.Material
             layer.thickness = layer_info.Thickness
-            layer.dielectric_fill = layer_info.Dielectric_Fill
+            if not str(layer_info.Dielectric_Fill) == "nan":
+                layer.dielectric_fill = layer_info.Dielectric_Fill
 
         lc_new = self._pedb.edb_api.Cell.LayerCollection()
         for name, _ in df.iterrows():
@@ -2204,7 +2205,9 @@ class Stackup(object):
 
     @pyedb_function_handler()
     def load(self, file_path, rename=False):
-        """Import stackup from a file. The file format can be XML, CSV, or JSON.
+        """Import stackup from a file. The file format can be XML, CSV, or JSON. Valid control file must
+        have the same number of signal layers. Signals layers can be renamed. Dielectric layers can be
+        added and deleted.
 
 
         Parameters
