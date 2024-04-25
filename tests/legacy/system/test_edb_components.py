@@ -569,3 +569,13 @@ class TestClass:
         diam1, diam2 = cmp.solder_ball_diameter
         assert round(diam1, 6) == 100e-6
         assert round(diam2, 6) == 100e-6
+
+    def test_create_pingroup_from_pins_types(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_component", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        assert edbapp.components.create_pingroup_from_pins([*edbapp.components.components["Q1"].pins.values()])
+        assert edbapp.components._create_pin_group_terminal(edbapp.padstacks.pingroups[0], term_type="circuit")
+        edbapp.close()

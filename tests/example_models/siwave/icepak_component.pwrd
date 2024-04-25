@@ -1,0 +1,854 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Parts>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="38.5" PartName="ALTR-FBGA1517-Ansys" PowerDissipation="0.25" RefDes="U1" WidthInMM="38.5"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.349999" PartName="ALTR-FBGA24_A-130" PowerDissipation="0.25" RefDes="U12" WidthInMM="0.349999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="4.325" PartName="ALTR-QFN-38_A-190_D1-193_V" PowerDissipation="0.25" RefDes="U4" WidthInMM="4.4"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="8.4" PartName="ALTR-QFN-68_A-305_V" PowerDissipation="0.25" RefDes="U3" WidthInMM="4.075"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="10.4" PartName="ALTR-QFN-76_A-305_V" PowerDissipation="0.25" RefDes="U2" WidthInMM="4.075"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.4" PartName="EPSON-SG-310-4_V" PowerDissipation="0.25" RefDes="U10" WidthInMM="1.2"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2.38" PartName="LT-DD-10_V" PowerDissipation="0.25" RefDes="U11" WidthInMM="2.6"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2.615" PartName="MAXM-T833+2_V" PowerDissipation="0.25" RefDes="U8" WidthInMM="2.35"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="5.15" PartName="MICL-QFN-48_V" PowerDissipation="0.25" RefDes="U9" WidthInMM="3"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="6.8" PartName="MICT-LY-96_A" PowerDissipation="0.25" RefDes="U6" WidthInMM="12.4"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="6.8" PartName="MICT-LY-96_A" PowerDissipation="0.25" RefDes="U7" WidthInMM="12.4"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="6.8" PartName="MICT-LY-96_A" PowerDissipation="0.25" RefDes="U14" WidthInMM="12.4"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="6.8" PartName="MICT-LY-96_A" PowerDissipation="0.25" RefDes="U15" WidthInMM="12.4"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="3.625" PartName="SLAB-QFN-24-2550x2550TP_V" PowerDissipation="0.25" RefDes="U13" WidthInMM="3.725"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.27" PartName="416131160804" PowerDissipation="0.25" RefDes="SW1" WidthInMM="0.760001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2.1" PartName="BELS-L829-1J1T-43_V" PowerDissipation="0.25" RefDes="J2" WidthInMM="19.6768"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C1" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C100" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C101" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C102" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C103" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C104" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C105" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C106" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C107" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C108" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C109" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C11" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C110" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C111" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C112" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C113" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C114" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C115" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C116" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C117" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C118" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C119" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C120" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C121" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C122" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C123" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C124" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C125" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C126" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C127" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C128" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C129" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C130" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C131" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C132" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C133" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C134" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C135" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C136" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C137" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C138" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C139" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C140" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C141" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C142" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C143" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C144" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C145" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C146" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C147" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C148" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C149" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C150" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C151" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C152" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C153" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C154" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C155" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C156" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C157" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C158" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C159" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C160" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C161" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C162" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C163" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C2" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C206" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C207" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C208" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C209" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C210" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C211" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C212" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C213" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C214" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C215" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C216" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C217" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C218" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C219" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C220" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C221" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C251" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C252" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C253" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C254" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C255" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C256" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C257" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C258" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C259" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C260" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C261" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C262" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C263" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C264" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C265" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C266" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C267" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C268" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C291" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C292" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C293" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C294" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C295" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C296" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C297" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C298" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C299" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C300" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C301" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C302" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C303" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C304" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C305" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C306" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C307" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C308" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C309" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C310" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C319" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C320" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C321" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C322" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C323" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C324" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C325" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C326" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C327" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C328" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C329" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C330" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C331" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C332" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C333" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C334" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C335" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C336" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C337" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C338" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C339" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C340" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C341" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C342" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C343" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C344" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C345" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C346" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C347" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C348" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C349" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C350" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C351" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C352" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C353" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C354" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C355" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C356" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C357" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C358" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C359" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C360" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C361" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C362" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C363" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C364" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C365" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C366" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C367" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C368" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C369" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C370" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C75" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C76" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C77" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C78" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C79" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C8" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C80" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C81" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C82" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C83" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C84" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C85" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C86" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C87" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C88" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C89" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C90" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C91" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C92" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C93" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C94" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C95" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C96" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C97" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.399999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C98" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC0603X33X15LL03T05" PowerDissipation="0.25" RefDes="C99" WidthInMM="0.399999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.640001" PartName="CAPC1005X05N" PowerDissipation="0.25" RefDes="C51" WidthInMM="0.640001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C205" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C238" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C239" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C240" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C241" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C242" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C243" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C244" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C245" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C246" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C247" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C248" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C249" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C250" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C277" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C278" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C279" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C280" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C287" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C311" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C312" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C313" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C314" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C315" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C316" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C317" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C318" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C52" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C53" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C54" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C55" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C56" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C57" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C58" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C60" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C68" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C69" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X33X10LL5_1pin" PowerDissipation="0.25" RefDes="C73" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C165" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C166" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C167" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C184" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C190" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C194" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C197" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C202" WidthInMM="0.319999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C203" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C204" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C271" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C272" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C273" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C274" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C275" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.319999" PartName="CAPC1005X55X10LL05_1pin" PowerDissipation="0.25" RefDes="C276" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.720001" PartName="CAPC1005X55X23ML05T8" PowerDissipation="0.25" RefDes="C18" WidthInMM="0.720001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.720001" PartName="CAPC1005X55X23ML05T8" PowerDissipation="0.25" RefDes="C25" WidthInMM="0.720001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.720001" PartName="CAPC1005X55X23ML05T8" PowerDissipation="0.25" RefDes="C9" WidthInMM="0.720001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C222" WidthInMM="0.559999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.559999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C223" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.559999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C224" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.559999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C225" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C226" WidthInMM="0.559999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C227" WidthInMM="0.559999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.559999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C228" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C229" WidthInMM="0.559999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C230" WidthInMM="0.559999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C231" WidthInMM="0.559999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.559999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C232" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C233" WidthInMM="0.559999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.559999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C234" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.519999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C235" WidthInMM="0.559999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.559999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C236" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.559999" PartName="CAPC1005X55X25LL05T10" PowerDissipation="0.25" RefDes="C237" WidthInMM="0.519999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.720001" PartName="CAPC1005X55X25ML05T10" PowerDissipation="0.25" RefDes="C177" WidthInMM="0.760001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.720001" PartName="CAPC1005X55X25ML05T10" PowerDissipation="0.25" RefDes="C178" WidthInMM="0.760001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.720001" PartName="CAPC1005X55X25ML05T10" PowerDissipation="0.25" RefDes="C179" WidthInMM="0.760001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.720001" PartName="CAPC1005X55X25ML05T10" PowerDissipation="0.25" RefDes="C180" WidthInMM="0.760001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.760001" PartName="CAPC1005X55X25ML05T10" PowerDissipation="0.25" RefDes="C181" WidthInMM="0.720001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.619999" PartName="CAPC1005X55X25NL05T10" PowerDissipation="0.25" RefDes="C175" WidthInMM="0.660001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.660001" PartName="CAPC1005X55X25NL05T10" PowerDissipation="0.25" RefDes="C286" WidthInMM="0.619999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.950001" PartName="CAPC1608X08N_1pin" PowerDissipation="0.25" RefDes="C42" WidthInMM="1.05"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.950001" PartName="CAPC1608X08N_1pin" PowerDissipation="0.25" RefDes="C43" WidthInMM="1.05"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.950001" PartName="CAPC1608X08N_1pin" PowerDissipation="0.25" RefDes="C44" WidthInMM="1.05"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.05" PartName="CAPC1608X08N_1pin" PowerDissipation="0.25" RefDes="C45" WidthInMM="0.950001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.950001" PartName="CAPC1608X90X35ML10T15_1pin" PowerDissipation="0.25" RefDes="C183" WidthInMM="1.05"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.950001" PartName="CAPC1608X90X35ML10T15_1pin" PowerDissipation="0.25" RefDes="C187" WidthInMM="1.05"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.950001" PartName="CAPC1608X90X35ML10T15_1pin" PowerDissipation="0.25" RefDes="C189" WidthInMM="1.05"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.05" PartName="CAPC1608X90X35ML10T15_1pin" PowerDissipation="0.25" RefDes="C193" WidthInMM="0.950001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.950001" PartName="CAPC1608X90X35ML10T15_1pin" PowerDissipation="0.25" RefDes="C196" WidthInMM="1.05"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.950001" PartName="CAPC1608X90X35ML10T15_1pin" PowerDissipation="0.25" RefDes="C201" WidthInMM="1.05"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.1" PartName="CAPC2012X12N" PowerDissipation="0.25" RefDes="C27" WidthInMM="1.4"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.1" PartName="CAPC2012X12N" PowerDissipation="0.25" RefDes="C28" WidthInMM="1.4"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.1" PartName="CAPC2012X12N" PowerDissipation="0.25" RefDes="C29" WidthInMM="1.4"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.750001" PartName="CAPC2013X100X20NL20_1pin" PowerDissipation="0.25" RefDes="C185" WidthInMM="1.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.9" PartName="CAPC3216X180X20ML20_1pin" PowerDissipation="0.25" RefDes="C15" WidthInMM="0.950001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.9" PartName="CAPC3216X180X20ML20_1pin" PowerDissipation="0.25" RefDes="C16" WidthInMM="0.950001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.9" PartName="CAPC3216X180X20ML20_1pin" PowerDissipation="0.25" RefDes="C22" WidthInMM="0.950001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.9" PartName="CAPC3216X180X20ML20_1pin" PowerDissipation="0.25" RefDes="C23" WidthInMM="0.950001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.950001" PartName="CAPC3216X180X20ML20_1pin" PowerDissipation="0.25" RefDes="C288" WidthInMM="1.9"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.9" PartName="CAPC3216X180X20ML20_1pin" PowerDissipation="0.25" RefDes="C5" WidthInMM="0.950001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.9" PartName="CAPC3216X180X20ML20_1pin" PowerDissipation="0.25" RefDes="C6" WidthInMM="0.950001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.9" PartName="CAPC3216X180X20ML20_1pin" PowerDissipation="0.25" RefDes="C7" WidthInMM="0.950001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.9" PartName="CAPC3216X180X55ML20T25_1pin" PowerDissipation="0.25" RefDes="C182" WidthInMM="1.55"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.9" PartName="CAPC3216X180X55ML20T25_1pin" PowerDissipation="0.25" RefDes="C186" WidthInMM="1.55"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.9" PartName="CAPC3216X180X55ML20T25_1pin" PowerDissipation="0.25" RefDes="C188" WidthInMM="1.55"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.9" PartName="CAPC3216X180X55ML20T25_1pin" PowerDissipation="0.25" RefDes="C192" WidthInMM="1.55"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.55" PartName="CAPC3216X180X55ML20T25_1pin" PowerDissipation="0.25" RefDes="C195" WidthInMM="1.9"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.55" PartName="CAPC3216X180X55ML20T25_1pin" PowerDissipation="0.25" RefDes="C200" WidthInMM="1.9"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2" PartName="CAPC3216X190X55ML30T25" PowerDissipation="0.25" RefDes="C59" WidthInMM="1.65"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2" PartName="CAPC3216X190X55ML30T25" PowerDissipation="0.25" RefDes="C61" WidthInMM="1.65"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2" PartName="CAPC3216X190X55ML30T25" PowerDissipation="0.25" RefDes="C62" WidthInMM="1.65"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2" PartName="CAPC3216X190X55ML30T25" PowerDissipation="0.25" RefDes="C63" WidthInMM="1.65"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2" PartName="CAPC3216X190X55ML30T25" PowerDissipation="0.25" RefDes="C64" WidthInMM="1.65"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2" PartName="CAPC3216X190X55ML30T25" PowerDissipation="0.25" RefDes="C65" WidthInMM="1.65"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2" PartName="CAPC3216X190X55ML30T25" PowerDissipation="0.25" RefDes="C66" WidthInMM="1.65"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2" PartName="CAPC3216X190X55ML30T25" PowerDissipation="0.25" RefDes="C67" WidthInMM="1.65"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2" PartName="CAPC3216X190X55ML30T25" PowerDissipation="0.25" RefDes="C70" WidthInMM="1.65"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2" PartName="CAPC3216X190X55ML30T25" PowerDissipation="0.25" RefDes="C71" WidthInMM="1.65"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2" PartName="CAPC3216X190X55ML30T25" PowerDissipation="0.25" RefDes="C72" WidthInMM="1.65"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2" PartName="CAPC3216X190X55ML30T25" PowerDissipation="0.25" RefDes="C74" WidthInMM="1.65"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2.15" PartName="CAPMP7343X31N" PowerDissipation="0.25" RefDes="C30" WidthInMM="2.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2.15" PartName="CAPMP7343X31N" PowerDissipation="0.25" RefDes="C31" WidthInMM="2.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2.15" PartName="CAPMP7343X31N" PowerDissipation="0.25" RefDes="C32" WidthInMM="2.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2.15" PartName="CAPMP7343X31N" PowerDissipation="0.25" RefDes="C46" WidthInMM="2.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2.7" PartName="DO214AA" PowerDissipation="0.25" RefDes="D3" WidthInMM="2.159"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.7874" PartName="DQH8" PowerDissipation="0.25" RefDes="Q2" WidthInMM="3.2512"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="3" PartName="DRC10_2P4X1P65" PowerDissipation="0.25" RefDes="IC1" WidthInMM="1.8"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2.4" PartName="EPSON-FA-128_V" PowerDissipation="0.25" RefDes="Y1" WidthInMM="2"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="15.94" PartName="FCI-10117835_V" PowerDissipation="0.25" RefDes="J6" WidthInMM="2.8"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="7.27999" PartName="MOLX-472720024_V" PowerDissipation="0.25" RefDes="J1" WidthInMM="2.4"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="37" PartName="MOLX-74754-0101_V" PowerDissipation="0.25" RefDes="B1" WidthInMM="16.25"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.4064" PartName="MSOP-8L" PowerDissipation="0.25" RefDes="D1" WidthInMM="1.016"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.4064" PartName="MSOP-8L" PowerDissipation="0.25" RefDes="D2" WidthInMM="1.016"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.499999" PartName="MURA-BLM15AG221SN1x_V" PowerDissipation="0.25" RefDes="L9" WidthInMM="0.499999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R107" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R109" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R110" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R111" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R112" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R12" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R25" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R34" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R82" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R83" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R84" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R86" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R87" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R88" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R89" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R90" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R96" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R97" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R98" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.449999" PartName="RESC1005X40X25LL05T05" PowerDissipation="0.25" RefDes="R99" WidthInMM="0.449999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.650001" PartName="RESC1005X40X25ML05T05" PowerDissipation="0.25" RefDes="R119" WidthInMM="0.650001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.650001" PartName="RESC1005X40X25ML05T05" PowerDissipation="0.25" RefDes="R32" WidthInMM="0.650001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.650001" PartName="RESC1005X40X25ML05T05" PowerDissipation="0.25" RefDes="R85" WidthInMM="0.650001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.549999" PartName="RESC1005X40X25NL05T05" PowerDissipation="0.25" RefDes="R11" WidthInMM="0.549999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.549999" PartName="RESC1005X40X25NL05T05" PowerDissipation="0.25" RefDes="R118" WidthInMM="0.549999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.549999" PartName="RESC1005X40X25NL05T05" PowerDissipation="0.25" RefDes="R127" WidthInMM="0.549999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.549999" PartName="RESC1005X40X25NL05T05" PowerDissipation="0.25" RefDes="R13" WidthInMM="0.549999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.549999" PartName="RESC1005X40X25NL05T05" PowerDissipation="0.25" RefDes="R24" WidthInMM="0.549999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.549999" PartName="RESC1005X40X25NL05T05" PowerDissipation="0.25" RefDes="R26" WidthInMM="0.549999"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.650001" PartName="RESC1608X05N" PowerDissipation="0.25" RefDes="R3" WidthInMM="0.850001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.850001" PartName="RESC1608X05N" PowerDissipation="0.25" RefDes="R35" WidthInMM="0.650001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.850001" PartName="RESC1608X05N" PowerDissipation="0.25" RefDes="R36" WidthInMM="0.650001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.850001" PartName="RESC1608X05N" PowerDissipation="0.25" RefDes="R37" WidthInMM="0.650001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.650001" PartName="RESC1608X05N" PowerDissipation="0.25" RefDes="R4" WidthInMM="0.850001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.850001" PartName="RESC1608X05N" PowerDissipation="0.25" RefDes="R40" WidthInMM="0.650001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="1.316" PartName="SAMTEC_ADF6-40-X-X-4-X-A-X" PowerDissipation="0.25" RefDes="J7" WidthInMM="20.041"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="0.850001" PartName="SMD-0603" PowerDissipation="0.25" RefDes="L3" WidthInMM="0.700001"/>
+
+  <Part GenHeatSink="1" HeightInMM="2" IncludeInModel="0" LengthInMM="8.1" PartName="SMTC-MECT-110-01-M-D-RA1_V" PowerDissipation="0" RefDes="J5" WidthInMM="10.2"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="3.68" PartName="SMTC-TSM-105-01-T-DV_V" PowerDissipation="0.25" RefDes="J3" WidthInMM="8.89"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="7.4" PartName="SOIC127P-680x175-8_N" PowerDissipation="0.25" RefDes="IC2" WidthInMM="3.14"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="2.6" PartName="WE-Coil-744301047" PowerDissipation="0.25" RefDes="L1" WidthInMM="4"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.25" IncludeInModel="0" LengthInMM="21.95" PartName="Amphenol-G97R22322" PowerDissipation="0.25" RefDes="X1" WidthInMM="5"/>
+
+  <Part GenHeatSink="0" HeightInMM="0.5" IncludeInModel="0" LengthInMM="1" PartName="CAPC1005X55X10LL05" PowerDissipation="0" RefDes="C372" WidthInMM="0.5"/>
+
+  <Part GenHeatSink="0" HeightInMM="0.5" IncludeInModel="0" LengthInMM="1" PartName="CAPC1005X55X10LL05" PowerDissipation="0" RefDes="C371" WidthInMM="0.5"/>
+
+  <Part GenHeatSink="0" HeightInMM="1.075" IncludeInModel="0" LengthInMM="2.15" PartName="CAPC2013X100X20NL20" PowerDissipation="0" RefDes="C199" WidthInMM="1.075"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.45" IncludeInModel="0" LengthInMM="6.5" PartName="CAPMP7343X31N_10uF" PowerDissipation="0" RefDes="C48" WidthInMM="2.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="0.725" IncludeInModel="0" LengthInMM="1.45" PartName="CAPC1608X08N" PowerDissipation="0" RefDes="C49" WidthInMM="0.725"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.45" IncludeInModel="0" LengthInMM="6.5" PartName="CAPMP7343X31N_10uF" PowerDissipation="0" RefDes="C47" WidthInMM="2.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.45" IncludeInModel="0" LengthInMM="6.5" PartName="CAPMP7343X31N_0.22mF" PowerDissipation="0" RefDes="C17" WidthInMM="2.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.45" IncludeInModel="0" LengthInMM="6.5" PartName="CAPMP7343X31N_0.22mF" PowerDissipation="0" RefDes="C24" WidthInMM="2.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.45" IncludeInModel="0" LengthInMM="6.5" PartName="CAPMP7343X31N_0.22mF" PowerDissipation="0" RefDes="C20" WidthInMM="2.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.45" IncludeInModel="0" LengthInMM="6.5" PartName="CAPMP7343X31N_0.22mF" PowerDissipation="0" RefDes="C12" WidthInMM="2.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="1.145" IncludeInModel="0" LengthInMM="2.29" PartName="COIL-1008CS_V" PowerDissipation="0" RefDes="L8" WidthInMM="1.145"/>
+
+  <Part GenHeatSink="0" HeightInMM="1.145" IncludeInModel="0" LengthInMM="2.29" PartName="COIL-1008CS_V" PowerDissipation="0" RefDes="L7" WidthInMM="1.145"/>
+
+  <Part GenHeatSink="0" HeightInMM="0.5" IncludeInModel="0" LengthInMM="1" PartName="CAPC1005X55X10LL05" PowerDissipation="0" RefDes="C282" WidthInMM="0.5"/>
+
+  <Part GenHeatSink="0" HeightInMM="0.5" IncludeInModel="0" LengthInMM="1" PartName="CAPC1005X55X10LL05" PowerDissipation="0" RefDes="C281" WidthInMM="0.5"/>
+
+  <Part GenHeatSink="0" HeightInMM="0.5" IncludeInModel="0" LengthInMM="1" PartName="CAPC1005X55X10LL05" PowerDissipation="0" RefDes="C270" WidthInMM="0.5"/>
+
+  <Part GenHeatSink="0" HeightInMM="0.5" IncludeInModel="0" LengthInMM="1" PartName="CAPC1005X55X10LL05" PowerDissipation="0" RefDes="C284" WidthInMM="0.5"/>
+
+  <Part GenHeatSink="0" HeightInMM="1.075" IncludeInModel="0" LengthInMM="2.15" PartName="CAPC2013X100X20NL20" PowerDissipation="0" RefDes="C283" WidthInMM="1.075"/>
+
+  <Part GenHeatSink="0" HeightInMM="1.075" IncludeInModel="0" LengthInMM="2.15" PartName="CAPC2013X100X20NL20" PowerDissipation="0" RefDes="C285" WidthInMM="1.075"/>
+
+  <Part GenHeatSink="0" HeightInMM="0.5" IncludeInModel="0" LengthInMM="1" PartName="CAPC1005X55X10LL05" PowerDissipation="0" RefDes="C269" WidthInMM="0.5"/>
+
+  <Part GenHeatSink="0" HeightInMM="0.5" IncludeInModel="0" LengthInMM="1" PartName="CAPC1005X33X10LL5" PowerDissipation="0" RefDes="C191" WidthInMM="0.5"/>
+
+  <Part GenHeatSink="0" HeightInMM="1.075" IncludeInModel="0" LengthInMM="2.15" PartName="CAPC2013X100X20NL20" PowerDissipation="0" RefDes="C198" WidthInMM="1.075"/>
+
+  <Part GenHeatSink="0" HeightInMM="0.725" IncludeInModel="0" LengthInMM="1.45" PartName="CAPC1608X90X35ML10T15" PowerDissipation="0" RefDes="C164" WidthInMM="0.725"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.45" IncludeInModel="0" LengthInMM="6.5" PartName="CAPMP7343X31N_0.22mF" PowerDissipation="0" RefDes="C40" WidthInMM="2.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.45" IncludeInModel="0" LengthInMM="6.5" PartName="CAPMP7343X31N_0.22mF" PowerDissipation="0" RefDes="C39" WidthInMM="2.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="0.950001" IncludeInModel="0" LengthInMM="1.9" PartName="CAPC2012X12N_10nF" PowerDissipation="0" RefDes="C36" WidthInMM="0.950001"/>
+
+  <Part GenHeatSink="0" HeightInMM="1.475" IncludeInModel="0" LengthInMM="2.95" PartName="CAPC3216X180X55ML20T25" PowerDissipation="0" RefDes="C21" WidthInMM="1.475"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.45" IncludeInModel="0" LengthInMM="6.5" PartName="CAPMP7343X31N_0.22mF" PowerDissipation="0" RefDes="C37" WidthInMM="2.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="0.950001" IncludeInModel="0" LengthInMM="1.9" PartName="CAPC2012X12N_0.22uF" PowerDissipation="0" RefDes="C41" WidthInMM="0.950001"/>
+
+  <Part GenHeatSink="0" HeightInMM="2.45" IncludeInModel="0" LengthInMM="6.5" PartName="CAPMP7343X31N_0.22mF" PowerDissipation="0" RefDes="C38" WidthInMM="2.45"/>
+
+  <Part GenHeatSink="0" HeightInMM="1.775" IncludeInModel="0" LengthInMM="3.55" PartName="CAPC3216X180X20ML20" PowerDissipation="0" RefDes="C4" WidthInMM="1.775"/>
+
+  <Part GenHeatSink="0" HeightInMM="1.775" IncludeInModel="0" LengthInMM="3.55" PartName="CAPC3216X180X20ML20" PowerDissipation="0" RefDes="C3" WidthInMM="1.775"/>
+
+  <Part GenHeatSink="0" HeightInMM="1.475" IncludeInModel="0" LengthInMM="2.95" PartName="CAPC3216X180X55ML20T25" PowerDissipation="0" RefDes="C13" WidthInMM="1.475"/>
+
+  <Part GenHeatSink="0" HeightInMM="1.475" IncludeInModel="0" LengthInMM="2.95" PartName="CAPC3216X180X55ML20T25" PowerDissipation="0" RefDes="C14" WidthInMM="1.475"/>
+
+</Parts>
