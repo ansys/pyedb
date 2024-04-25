@@ -115,7 +115,7 @@ class BaseSimulationSetup(object):
         if self._name in self._pedb.setups:
             self._pedb.layout.cell.DeleteSimulationSetup(self._name)
         if not self._pedb.layout.cell.AddSimulationSetup(self._edb_object):
-            self._pedb.logger.error("Updating setup {} failed.".format(self._name))
+            raise Exception("Updating setup {} failed.".format(self._name))
         else:
             return True
 
