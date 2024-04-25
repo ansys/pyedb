@@ -181,7 +181,7 @@ class BaseSimulationSetup(object):
         if self.setup_type == "kRaptorX":
             edb_setup_info = self._edb_setup_info
         else:
-            edb_setup_info = self.sim_setup_info
+            edb_setup_info = self.get_sim_setup_info
 
         if self._setup_type in ["kSIwave", "kHFSS", "kRaptorX"]:
             for _, v in self._sweep_list.items():
