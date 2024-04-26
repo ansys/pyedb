@@ -1833,3 +1833,15 @@ class TestClass:
         edbapp.siwave.icepak_component_file = edb_examples.get_local_file_folder("siwave/icepak_component.pwrd")
         assert edbapp.siwave.icepak_component_file == edb_examples.get_local_file_folder("siwave/icepak_component.pwrd")
         edbapp.close()
+
+    def test_adaptive_broadband_setup_from_configfile(self):
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_adaptive_broadband.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        cfg_file = os.path.join(target_path, "config_adaptive_broadband.json")
+        sim_config = edbapp.new_simulation_configuration()
+        sim_config.import_json(cfg_file)
+        assert edbapp.build_simulation_project(sim_config)
+        assert edbapp.setups["Pyaedt_setup"].adaptive_settings.adapt_type == "kBroadband"
+        edbapp.close()

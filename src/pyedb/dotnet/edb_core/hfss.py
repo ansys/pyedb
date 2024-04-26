@@ -1276,25 +1276,43 @@ class EdbHfss(object):
                                as argument"
             )
             return False
-        adapt = self._pedb.simsetupdata.AdaptiveFrequencyData()
-        adapt.AdaptiveFrequency = simulation_setup.mesh_freq
-        adapt.MaxPasses = int(simulation_setup.max_num_passes)
-        adapt.MaxDelta = str(simulation_setup.max_mag_delta_s)
         simsetup_info = self._pedb.simsetupdata.SimSetupInfo[self._pedb.simsetupdata.HFSSSimulationSettings]()
         simsetup_info.Name = simulation_setup.setup_name
+
+        if simulation_setup.ac_settings.adaptive_type == 0:
+            adapt = self._pedb.simsetupdata.AdaptiveFrequencyData()
+            adapt.AdaptiveFrequency = simulation_setup.mesh_freq
+            adapt.MaxPasses = int(simulation_setup.max_num_passes)
+            adapt.MaxDelta = str(simulation_setup.max_mag_delta_s)
+            if is_ironpython:
+                simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Clear()
+                simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Add(adapt)
+            else:
+                simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList = (
+                    convert_py_list_to_net_list([adapt])
+                )
+        elif simulation_setup.ac_settings.adaptive_type == 2:
+            low_freq_adapt_data = self._pedb.simsetupdata.AdaptiveFrequencyData()
+            low_freq_adapt_data.MaxDelta = str(simulation_setup.max_mag_delta_s)
+            low_freq_adapt_data.MaxPasses = int(simulation_setup.max_num_passes)
+            low_freq_adapt_data.AdaptiveFrequency = simulation_setup.ac_settings.adaptive_low_freq
+            high_freq_adapt_data = self._pedb.simsetupdata.AdaptiveFrequencyData()
+            high_freq_adapt_data.MaxDelta = str(simulation_setup.max_mag_delta_s)
+            high_freq_adapt_data.MaxPasses = int(simulation_setup.max_num_passes)
+            high_freq_adapt_data.AdaptiveFrequency = simulation_setup.ac_settings.adaptive_high_freq
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptType = (
+                self._pedb.simsetupdata.AdaptiveSettings.TAdaptType.kBroadband
+            )
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Clear()
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Add(low_freq_adapt_data)
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Add(high_freq_adapt_data)
 
         simsetup_info.SimulationSettings.CurveApproxSettings.ArcAngle = simulation_setup.arc_angle
         simsetup_info.SimulationSettings.CurveApproxSettings.UseArcToChordError = (
             simulation_setup.use_arc_to_chord_error
         )
         simsetup_info.SimulationSettings.CurveApproxSettings.ArcToChordError = simulation_setup.arc_to_chord_error
-        if is_ironpython:
-            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Clear()
-            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Add(adapt)
-        else:
-            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList = convert_py_list_to_net_list(
-                [adapt]
-            )
+
         simsetup_info.SimulationSettings.InitialMeshSettings.LambdaRefine = simulation_setup.do_lambda_refinement
         if simulation_setup.mesh_sizefactor > 0.0:
             simsetup_info.SimulationSettings.InitialMeshSettings.MeshSizefactor = simulation_setup.mesh_sizefactor
