@@ -3652,6 +3652,8 @@ class Edb(Database):
         if name in self.setups:
             self.logger.info("setup already exists")
             return False
+        elif not name:
+            name = generate_unique_name("setup")
         setup = HfssSimulationSetup(self).create(name)
         return setup
 
