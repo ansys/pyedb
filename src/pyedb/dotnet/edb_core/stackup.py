@@ -431,9 +431,9 @@ class Stackup(object):
         for l in self._edb_layer_list:
             name = l.GetName()
             if not l.IsStackupLayer():
-                _lays[name] = LayerEdbClass(self, name)
+                _lays[name] = LayerEdbClass(self._pedb, l, name)
             else:
-                _lays[name] = StackupLayerEdbClass(self, name)
+                _lays[name] = StackupLayerEdbClass(self._pedb, l, name)
         return _lays
 
     @property
@@ -493,7 +493,7 @@ class Stackup(object):
         -------
         Dict[str, :class:`dotnet.edb_core.edb_data.layer_data.LayerEdbClass`]
         """
-        return {l.GetName(): LayerEdbClass(self, l.GetName()) for l in self._edb_layer_list_nonstackup}
+        return {l.GetName(): LayerEdbClass(self._pedb, l, l.GetName()) for l in self._edb_layer_list_nonstackup}
 
     @pyedb_function_handler()
     def _edb_value(self, value):
