@@ -26,6 +26,8 @@ This module contains the `EdbPadstacks` class.
 import math
 import warnings
 
+import rtree
+
 from pyedb.dotnet.clr_module import Array
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import (
     EDBPadstack,
@@ -1460,3 +1462,54 @@ class EdbPadstacks(object):
             pin_dict = {GeometryOperators.points_distance(positive_pin.position, p.position): p for p in pinlist}
             pinlist = [pin[1] for pin in sorted(pin_dict.items())[:max_limit]]
         return pinlist
+
+    @pyedb_function_handler()
+    def get_padstack_instances_rtree_index(self, nets=None):
+        """Returns padstack instances Rtree index.
+
+        Parameters
+        ----------
+        nets : str or list, optional
+            net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+            all instances are included in the index. Default value is ``None``.
+
+        Returns
+        -------
+        Rtree index object.
+
+        """
+        if isinstance(nets, str):
+            nets = [nets]
+        padstack_instances_index = rtree.index.Index()
+        if nets:
+            instances = [inst for inst in list(self.instances.values()) if inst.net_name in nets]
+        else:
+            instances = list(self.instances.values())
+        for inst in instances:
+            padstack_instances_index.insert(inst.id, inst.position)
+        return padstack_instances_index
+
+    @pyedb_function_handler()
+    def get_padstack_instances_intersecting_bounding_box(self, bounding_box, nets=None):
+        """Returns the list of padstack instances ID intersecting a given bounding box and nets.
+
+        Parameters
+        ----------
+        bounding_box : tuple or list.
+            bounding box, [x1, y1, x2, y2]
+        nets : str or list, optional
+            net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+            all instances are included in the index. Default value is ``None``.
+
+        Returns
+        -------
+        List of padstack instances ID intersecting the bounding box.
+        """
+        if not bounding_box:
+            raise Exception("No bounding box was provided")
+        index = self.get_padstack_instances_rtree_index(nets=nets)
+        if not len(bounding_box) == 4:
+            raise Exception("The bounding box length must be equal to 4")
+        if isinstance(bounding_box, list):
+            bounding_box = tuple(bounding_box)
+        return list(index.intersection(bounding_box))
