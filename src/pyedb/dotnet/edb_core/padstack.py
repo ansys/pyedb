@@ -1506,7 +1506,7 @@ class EdbPadstacks(object):
         List of padstack instances ID intersecting the bounding box.
         """
         if not bounding_box:
-            raise Exception("No bounding box provided")
+            raise Exception("No bounding box was provided")
         index = self.get_padstack_instances_rtree_index(nets=nets)
         if not len(bounding_box) == 4:
             raise Exception("bounding box length must be 4")
