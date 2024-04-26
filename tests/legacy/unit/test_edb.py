@@ -201,7 +201,7 @@ class TestClass:
         logger_mock = MagicMock()
         mock_logger.return_value = logger_mock
         mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
-        mock_rmtree.side_effect = Exception("Could not delete file")
+        mock_unlink.side_effect = Exception("Could not delete file")
 
         edbpath = "file.edb"
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
