@@ -57,6 +57,9 @@ from pyedb.dotnet.edb_core.edb_data.ports import (
     GapPort,
     WavePort,
 )
+from pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data import (
+    RaptorXSimulationSetup,
+)
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
@@ -3584,6 +3587,8 @@ class Edb(Database):
                 setups[i.GetName()] = SiwaveSYZSimulationSetup(self, i)
             elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWaveDCIR:
                 setups[i.GetName()] = SiwaveDCSimulationSetup(self, i)
+            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kRaptorX:
+                setups[i.GetName()] = RaptorXSimulationSetup(self, i)
         return setups
 
     @property
@@ -3641,6 +3646,30 @@ class Edb(Database):
             return False
         setup = HfssSimulationSetup(self).create(name)
         return setup
+
+    def create_raptorx_setup(self, name=None):
+        """Create an RaptorX simulation setup from a template.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name.
+
+        Returns
+        -------
+        :class:`legacy.edb_core.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
+
+        """
+        if name in self.setups:
+            self.logger.error("Setup name already used in the layout")
+            return False
+        version = self.edbversion.split(".")
+        if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
+            setup = RaptorXSimulationSetup(self).create(name)
+            return setup
+        else:
+            self.logger.error("RaptorX simulation only supported with Ansys release 2024R2 and higher")
+            return False
 
     @pyedb_function_handler()
     def create_siwave_syz_setup(self, name=None):
