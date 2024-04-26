@@ -177,7 +177,7 @@ class TestClass:
         "pyedb.dotnet.edb_core.dotnet.database.EdbDotNet.logger",
         new_callable=PropertyMock,
     )
-    def test_conflict_files_removal_success(self, mock_logger, mock_rmtree, mock_isfile):
+    def test_conflict_files_removal_success(self, mock_logger, mock_unlink, mock_isfile):
         logger_mock = MagicMock()
         mock_logger.return_value = logger_mock
         mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
@@ -188,7 +188,7 @@ class TestClass:
         _ = Edb(edbpath, remove_existing_aedt=True)
 
         for file in files:
-            mock_rmtree.assert_any_call(file)
+            mock_unlink.assert_any_call(file)
             logger_mock.info.assert_any_call(f"Deleted AEDT project-related file {file}.")
 
     @patch("os.path.isfile")
@@ -197,7 +197,7 @@ class TestClass:
         "pyedb.dotnet.edb_core.dotnet.database.EdbDotNet.logger",
         new_callable=PropertyMock,
     )
-    def test_conflict_files_removal_failure(self, mock_logger, mock_rmtree, mock_isfile):
+    def test_conflict_files_removal_failure(self, mock_logger, mock_unlink, mock_isfile):
         logger_mock = MagicMock()
         mock_logger.return_value = logger_mock
         mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
@@ -209,7 +209,7 @@ class TestClass:
         _ = Edb(edbpath, remove_existing_aedt=True)
 
         for file in files:
-            mock_rmtree.assert_any_call(file)
+            mock_unlink.assert_any_call(file)
             logger_mock.info.assert_any_call(f"Failed to delete AEDT project-related file {file}.")
 
     @patch("os.path.isfile")
@@ -218,18 +218,18 @@ class TestClass:
         "pyedb.dotnet.edb_core.dotnet.database.EdbDotNet.logger",
         new_callable=PropertyMock,
     )
-    def test_conflict_files_leave_in_place(self, mock_logger, mock_rmtree, mock_isfile):
+    def test_conflict_files_leave_in_place(self, mock_logger, mock_unlink, mock_isfile):
         logger_mock = MagicMock()
         mock_logger.return_value = logger_mock
         mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
-        mock_rmtree.side_effect = Exception("Could not delete file")
+        mock_unlink.side_effect = Exception("Could not delete file")
 
         edbpath = "file.edb"
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         files = [aedt_file, aedt_file + ".lock"]
         _ = Edb(edbpath)
 
-        mock_rmtree.assert_not_called()
+        mock_unlink.assert_not_called()
         for file in files:
             logger_mock.warning.assert_any_call(
                 f"AEDT project-related file {file} exists and may need to be deleted before opening the EDB in HFSS 3D Layout."  # noqa: E501
