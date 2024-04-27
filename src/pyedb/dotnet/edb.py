@@ -331,7 +331,7 @@ class Edb(Database):
     @pyedb_function_handler()
     def _init_objects(self):
         self._components = Components(self)
-        self._stackup = Stackup(self)
+        self._stackup = Stackup(self, self.layout.layer_collection)
         self._padstack = EdbPadstacks(self)
         self._siwave = EdbSiwave(self)
         self._hfss = EdbHfss(self)
@@ -834,7 +834,7 @@ class Edb(Database):
         >>> edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
         """
         if not self._stackup2 and self.active_db:
-            self._stackup2 = Stackup(self)
+            self._stackup2 = Stackup(self, self.layout.layer_collection)
         return self._stackup2
 
     @property

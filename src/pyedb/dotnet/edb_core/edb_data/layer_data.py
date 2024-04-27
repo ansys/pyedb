@@ -30,62 +30,106 @@ from pyedb.generic.general_methods import pyedb_function_handler
 class LayerEdbClass(object):
     """Manages Edb Layers. Replaces EDBLayer."""
 
-    def __init__(self, pedb, edb_object=None, name=""):
+    def __init__(self,
+                 pedb,
+                 edb_object=None,
+                 name="",
+                 layer_type="undefined",
+                 **kwargs):
         self._pedb = pedb
-        self._edb_object = edb_object
         self._name = name
         self._color = ()
         self._type = ""
-        self._stackup_layer_mapping = {
-            "SignalLayer": self._edb.cell.layer_type.SignalLayer,
-            "DielectricLayer": self._edb.cell.layer_type.DielectricLayer,
-        }
-        self._doc_layer_mapping = {
-            "ConductingLayer": self._edb.cell.layer_type.ConductingLayer,
-            "AirlinesLayer": self._edb.cell.layer_type.AirlinesLayer,
-            "ErrorsLayer": self._edb.cell.layer_type.ErrorsLayer,
-            "SymbolLayer": self._edb.cell.layer_type.SymbolLayer,
-            "MeasureLayer": self._edb.cell.layer_type.MeasureLayer,
-            "AssemblyLayer": self._edb.cell.layer_type.AssemblyLayer,
-            "SilkscreenLayer": self._edb.cell.layer_type.SilkscreenLayer,
-            "SolderMaskLayer": self._edb.cell.layer_type.SolderMaskLayer,
-            "SolderPasteLayer": self._edb.cell.layer_type.SolderPasteLayer,
-            "GlueLayer": self._edb.cell.layer_type.GlueLayer,
-            "WirebondLayer": self._edb.cell.layer_type.WirebondLayer,
-            "UserLayer": self._edb.cell.layer_type.UserLayer,
-            "SIwaveHFSSSolverRegions": self._edb.cell.layer_type.SIwaveHFSSSolverRegions,
-            "PostprocessingLayer": self._edb.cell.layer_type.PostprocessingLayer,
-            "OutlineLayer": self._edb.cell.layer_type.OutlineLayer,
-            "LayerTypesCount": self._edb.cell.layer_type.LayerTypesCount,
-            "UndefinedLayerType": self._edb.cell.layer_type.UndefinedLayerType
-        }
 
-        self._layer_type_mapping = {}
-        self._layer_type_mapping.update(self._stackup_layer_mapping)
-        self._layer_type_mapping.update(self._doc_layer_mapping)
+        if edb_object:
+            self._edb_object = edb_object.Clone()
+        else:
+            self._create(layer_type, **kwargs)
 
-        self._layer_name_mapping = {
-            "signal": "SignalLayer",
-            "dielectric": "DielectricLayer",
-            "conducting": "ConductingLayer",
-            "airlines": "AirlinesLayer",
-            "errors": "ErrorsLayer",
-            "symbol": "SymbolLayer",
-            "measure": "MeasureLayer",
-            "assembly": "AssemblyLayer",
-            "silkscreen": "SilkscreenLayer",
-            "soldermask": "SolderMaskLayer",
-            "solderpaste": "SolderPasteLayer",
-            "glue": "GlueLayer",
-            "wirebound": "WirebondLayer",
-            "user": "UserLayer",
-            "siwavehfsssolverregions": "SIwaveHFSSSolverRegions",
-            "postprocessing": "PostprocessingLayer",
-            "outline": "OutlineLayer",
-            "layertypescount": "LayerTypesCount",
-            "undefined": "UndefinedLayerType"
-        }
-        self._layer_name_mapping_reversed = {j: i for i, j in self._layer_name_mapping.items()}
+    def _create(self, layer_type, **kwargs):
+        layer_type = self._layer_name_mapping[layer_type]
+        layer_type = self._doc_layer_mapping[layer_type]
+
+        self._edb_object = self._pedb.edb_api.cell._cell.Layer(
+            self._name,
+            layer_type,
+        )
+        for k, v in kwargs.items():
+            if k in dir(self):
+                self.__setattr__(k, v)
+            else:
+                self._pedb.logger.error(f"{k} is not a valid layer attribute")
+
+    @property
+    def id(self):
+        return self._edb_object.GetLayerId()
+
+    @property
+    def fill_material(self):
+        """The layer's fill material."""
+        return self._edb_object.GetFillMaterial(True)
+
+    @fill_material.setter
+    def fill_material(self, value):
+        self._edb_object.SetFillMaterial(value)
+
+    @property
+    def _stackup_layer_mapping(self):
+        return {"SignalLayer": self._edb.cell.layer_type.SignalLayer,
+                "DielectricLayer": self._edb.cell.layer_type.DielectricLayer, }
+
+    @property
+    def _doc_layer_mapping(self):
+        return {"ConductingLayer": self._edb.cell.layer_type.ConductingLayer,
+                "AirlinesLayer": self._edb.cell.layer_type.AirlinesLayer,
+                "ErrorsLayer": self._edb.cell.layer_type.ErrorsLayer,
+                "SymbolLayer": self._edb.cell.layer_type.SymbolLayer,
+                "MeasureLayer": self._edb.cell.layer_type.MeasureLayer,
+                "AssemblyLayer": self._edb.cell.layer_type.AssemblyLayer,
+                "SilkscreenLayer": self._edb.cell.layer_type.SilkscreenLayer,
+                "SolderMaskLayer": self._edb.cell.layer_type.SolderMaskLayer,
+                "SolderPasteLayer": self._edb.cell.layer_type.SolderPasteLayer,
+                "GlueLayer": self._edb.cell.layer_type.GlueLayer,
+                "WirebondLayer": self._edb.cell.layer_type.WirebondLayer,
+                "UserLayer": self._edb.cell.layer_type.UserLayer,
+                "SIwaveHFSSSolverRegions": self._edb.cell.layer_type.SIwaveHFSSSolverRegions,
+                "PostprocessingLayer": self._edb.cell.layer_type.PostprocessingLayer,
+                "OutlineLayer": self._edb.cell.layer_type.OutlineLayer,
+                "LayerTypesCount": self._edb.cell.layer_type.LayerTypesCount,
+                "UndefinedLayerType": self._edb.cell.layer_type.UndefinedLayerType}
+
+    @property
+    def _layer_type_mapping(self):
+        mapping = {}
+        mapping.update(self._stackup_layer_mapping)
+        mapping.update(self._doc_layer_mapping)
+        return mapping
+
+    @property
+    def _layer_name_mapping(self):
+        return {"signal": "SignalLayer",
+                "dielectric": "DielectricLayer",
+                "conducting": "ConductingLayer",
+                "airlines": "AirlinesLayer",
+                "errors": "ErrorsLayer",
+                "symbol": "SymbolLayer",
+                "measure": "MeasureLayer",
+                "assembly": "AssemblyLayer",
+                "silkscreen": "SilkscreenLayer",
+                "soldermask": "SolderMaskLayer",
+                "solderpaste": "SolderPasteLayer",
+                "glue": "GlueLayer",
+                "wirebound": "WirebondLayer",
+                "user": "UserLayer",
+                "siwavehfsssolverregions": "SIwaveHFSSSolverRegions",
+                "postprocessing": "PostprocessingLayer",
+                "outline": "OutlineLayer",
+                "layertypescount": "LayerTypesCount",
+                "undefined": "UndefinedLayerType"}
+
+    @property
+    def _layer_name_mapping_reversed(self):
+        return {j: i for i, j in self._layer_name_mapping.items()}
 
     @property
     def _edb(self):
@@ -188,8 +232,8 @@ class LayerEdbClass(object):
 
 
 class StackupLayerEdbClass(LayerEdbClass):
-    def __init__(self, pclass, edb_object=None, name=""):
-        super().__init__(pclass, edb_object, name)
+    def __init__(self, pedb, edb_object=None, name="", layer_type="signal", **kwargs):
+        super().__init__(pedb, edb_object, name=name, layer_type=layer_type, **kwargs)
         self._material = ""
         self._conductivity = 0.0
         self._permittivity = 0.0
@@ -207,6 +251,26 @@ class StackupLayerEdbClass(LayerEdbClass):
         self._material = None
         self._upper_elevation = 0.0
         self._lower_elevation = 0.0
+
+    def _create(self, layer_type, **kwargs):
+        layer_type = self._layer_name_mapping[layer_type]
+        layer_type = self._layer_type_mapping[layer_type]
+
+        thickness = kwargs.get("thickness", 0)
+        elevation = kwargs.get("elevation", 0)
+        material = kwargs.get("material", "copper")
+        self._edb_object = self._pedb.edb_api.cell._cell.StackupLayer(
+            self._name,
+            layer_type,
+            self._pedb.edb_value(thickness),
+            self._pedb.edb_value(elevation),
+            material,
+        )
+        for k, v in kwargs.items():
+            if k in dir(self):
+                self.__setattr__(k, v)
+            else:
+                self._pedb.logger.error(f"{k} is not a valid layer attribute")
 
     @property
     def lower_elevation(self):
