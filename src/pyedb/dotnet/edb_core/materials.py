@@ -528,7 +528,7 @@ class Materials(object):
         -------
         :class:`pyedb.dotnet.edb_core.materials.Material`
         """
-        if name in self.__materials:
+        if name.lower() in [i.lower() for i in self.__materials]:
             raise ValueError(f"Material {name} already exists in material library.")
 
         material_def = self.__edb_definition.MaterialDef.Create(self.__edb.active_db, name)

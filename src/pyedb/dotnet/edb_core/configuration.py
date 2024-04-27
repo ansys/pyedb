@@ -476,35 +476,31 @@ class Configuration:
     def _load_stackup(self):
         """Imports stackup information from json."""
         data = self.data["stackup"]
-        materials = data["materials"] if "materials" in data else []
-        materials_reformatted = {}
-        for mat in materials:
-            new_mat = {}
-            new_mat["name"] = mat["name"]
-            if "conductivity" in mat:
-                new_mat["conductivity"] = mat["conductivity"]
-            if "permittivity" in mat:
-                new_mat["permittivity"] = mat["permittivity"]
-            if "dielectricLoss_tangent" in mat:
-                new_mat["loss_tangent"] = mat["dielectricLoss_tangent"]
+        materials = data.get("materials")
 
-            materials_reformatted[mat["name"]] = new_mat
+        if materials:
+            edb_materials = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
+            for mat in materials:
+                name = mat["name"].lower()
+                if name in edb_materials:
+                    self._pedb.materials.delete_material(edb_materials[name])
+            for mat in materials:
+                self._pedb.materials.add_material(**mat)
 
-        layers = data["layers"]
-        layers_reformatted = {}
+        layers = data.get("layers")
+        if layers:
+            # clean stackup
+            for name, _ in self._pedb.stackup.stackup_layers.items():
+                self._pedb.stackup.remove_layer(name)
 
-        for l in layers:
-            lyr = {
-                "name": l["name"],
-                "type": l["type"],
-                "material": l["material"],
-                "thickness": l["thickness"],
-            }
-            if "fill_material" in l:
-                lyr["dielectric_fill"] = l["fill_material"]
-            layers_reformatted[l["name"]] = lyr
-        stackup_reformated = {"layers": layers_reformatted, "materials": materials_reformatted}
-        self._pedb.stackup.load(stackup_reformated)
+            # Import stackup
+            self._edb_object = self._pedb.edb_api.cell._cell.LayerCollection()
+            self.AUTO_REFRESH = False
+
+            for l in layers:
+                self._pedb.stackup.add_layer_bottom(**l)
+            self._pedb.stackup.update_layout()
+            self._pedb.stackup.AUTO_REFRESH = True
 
     @pyedb_function_handler
     def _load_s_parameter(self):
