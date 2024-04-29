@@ -2402,20 +2402,20 @@ class Components(object):
         return [pin_xy.X.ToDouble(), pin_xy.Y.ToDouble()]
 
     @pyedb_function_handler()
-    def get_pins_name_from_net(self, pin_list, net_name):
+    def get_pins_name_from_net(self, net_name, pin_list=None):
         """Retrieve pins belonging to a net.
 
         Parameters
         ----------
-        pin_list : list
-            List of pins to check.
+        pin_list : list of EDBPadstackInstance, optional
+            List of pins to check. default is None, in which case all pins are checked
         net_name : str
             Name of the net.
 
         Returns
         -------
-        list
-            List of pins belong to the net.
+        list of str names:
+            Pins belonging to the net.
 
         Examples
         --------
@@ -2426,6 +2426,11 @@ class Components(object):
 
         """
         pinlist = []
+        if not pin_list:
+            pin_list = []
+            for i in [*self.components.values()]:
+                for j in [*i.pins.values()]:
+                    pin_list.append(j)
         for pin in pin_list:
             if pin.GetNet().GetName() == net_name:
                 pinlist.append(pin.GetName())
