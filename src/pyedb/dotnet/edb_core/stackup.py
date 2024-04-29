@@ -266,7 +266,7 @@ class LayerCollection(object):
                 lc.AddLayerBottom(i._edb_object)
 
         self._edb_object = lc
-        if self.AUTO_REFRESH:
+        if self.auto_refresh:
             self.update_layout()
         return obj
 
