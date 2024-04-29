@@ -26,6 +26,7 @@ from pathlib import Path
 
 import toml
 
+from pyedb.dotnet.edb_core.configuration_data.component import Component
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.generic.general_methods import pyedb_function_handler
 
@@ -36,7 +37,8 @@ class Configuration:
     def __init__(self, pedb):
         self._pedb = pedb
         self._components = self._pedb.components.components
-        self.data = {}
+        self.data = None
+        self.components = {}
         self._s_parameter_library = ""
         self._spice_model_library = ""
 
@@ -64,19 +66,25 @@ class Configuration:
             Config dictionary.
         """
         if isinstance(config_file, dict):
-            data = config_file
+            self.data = config_file
         elif os.path.isfile(config_file):
             with open(config_file, "r") as f:
                 if config_file.endswith(".json"):
-                    data = json.load(f)
+                    self.data = json.load(f)
                 elif config_file.endswith(".toml"):
-                    data = toml.load(f)
+                    self.data = toml.load(f)
         else:  # pragma: no cover
             return False
 
         if not append:  # pragma: no cover
             self.data = {}
-        for k, v in data.items():
+        for k, v in self.data.items():
+            if k == "components":
+                for component in v:
+                    comp = Component()._import_dict(component)
+                    if not comp.reference_designator in self.components:
+                        self.components[comp.reference_designator] = comp
+
             if k in self.data:
                 if isinstance(v, list):
                     self.data[k].extend(v)
