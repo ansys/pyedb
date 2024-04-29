@@ -44,9 +44,11 @@ class LayerEdbClass(object):
         if edb_object:
             self._edb_object = edb_object.Clone()
         else:
-            self._create(layer_type, **kwargs)
+            self._create(layer_type)
+            self.update(**kwargs)
 
-    def _create(self, layer_type, **kwargs):
+    @pyedb_function_handler
+    def _create(self, layer_type):
         layer_type = self._layer_name_mapping[layer_type]
         layer_type = self._doc_layer_mapping[layer_type]
 
@@ -54,6 +56,9 @@ class LayerEdbClass(object):
             self._name,
             layer_type,
         )
+
+    @pyedb_function_handler
+    def update(self, **kwargs):
         for k, v in kwargs.items():
             if k in dir(self):
                 self.__setattr__(k, v)
@@ -252,25 +257,16 @@ class StackupLayerEdbClass(LayerEdbClass):
         self._upper_elevation = 0.0
         self._lower_elevation = 0.0
 
-    def _create(self, layer_type, **kwargs):
+    def _create(self, layer_type):
         layer_type = self._layer_name_mapping[layer_type]
         layer_type = self._layer_type_mapping[layer_type]
-
-        thickness = kwargs.get("thickness", 0)
-        elevation = kwargs.get("elevation", 0)
-        material = kwargs.get("material", "copper")
         self._edb_object = self._pedb.edb_api.cell._cell.StackupLayer(
             self._name,
             layer_type,
-            self._pedb.edb_value(thickness),
-            self._pedb.edb_value(elevation),
-            material,
+            self._pedb.edb_value(0),
+            self._pedb.edb_value(0),
+            "copper",
         )
-        for k, v in kwargs.items():
-            if k in dir(self):
-                self.__setattr__(k, v)
-            else:
-                self._pedb.logger.error(f"{k} is not a valid layer attribute")
 
     @property
     def lower_elevation(self):

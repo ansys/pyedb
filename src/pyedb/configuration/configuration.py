@@ -488,19 +488,53 @@ class Configuration:
                 self._pedb.materials.add_material(**mat)
 
         layers = data.get("layers")
+
         if layers:
-            # clean stackup
-            for name, _ in self._pedb.stackup.stackup_layers.items():
-                self._pedb.stackup.remove_layer(name)
+            lc = self._pedb.stackup
+            input_signal_layers = [i for i in layers if i["type"].lower()=="signal"]
+            if not len(input_signal_layers) == len(lc.signal_layers):
+                self._pedb.logger.error("Input signal layer count do not match.")
+                return False
 
-            # Import stackup
-            self._edb_object = self._pedb.edb_api.cell._cell.LayerCollection()
-            self.AUTO_REFRESH = False
+            layer_clones = []
+            doc_layer_clones = []
+            for name, obj in lc.layers.items():
+                if obj.is_stackup_layer:
+                    if obj.type == "signal":  # keep signal layers
+                        layer_clones.append(obj)
+                else:
+                    doc_layer_clones.append(obj)
+                lc.remove_layer(name)
 
+            signal_layer_ids = {}
+            top_layer_clone = None
+
+            # add all signal layers
             for l in layers:
-                self._pedb.stackup.add_layer_bottom(**l)
-            self._pedb.stackup.update_layout()
-            self._pedb.stackup.AUTO_REFRESH = True
+                if l["type"] == "signal":
+                    clone = layer_clones.pop(0)
+                    clone.update(**l)
+                    lc.add_layer_bottom(name=clone.name, layer_clone=clone)
+                    signal_layer_ids[clone.name] = clone.id
+
+            # add all docuement layers at bottom
+            for l in doc_layer_clones:
+                doc_layer = lc.add_document_layer(name=l.name, layer_clone=l)
+                first_doc_layer_name = doc_layer.name
+
+            # add all dielectric layers. Dielectric layers must be added last. Otherwise,
+            # dielectric layer will occupy signal and document layer id.
+            prev_layer_clone = None
+            l = layers.pop(0)
+            if l["type"] == "signal":
+                prev_layer_clone = lc.layers[l.name]
+            else:
+                prev_layer_clone = lc.add_layer_top(**l)
+            for idx, l in enumerate(layers):
+                if l["type"] == "dielectric":
+                    prev_layer_clone = lc.add_layer_below(base_layer_name=prev_layer_clone.name, **l)
+                else:
+                    prev_layer_clone = lc.layers[l["name"]]
 
     @pyedb_function_handler
     def _load_s_parameter(self):

@@ -1040,5 +1040,15 @@ class TestClass:
 
     def test_19(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        edbapp.stackup.add_layer_top(name="new_layer")
-        assert "new_layer" in edbapp.stackup.stackup_layers
+        assert edbapp.stackup.add_layer_top(name="add_layer_top")
+        assert list(edbapp.stackup.stackup_layers.values())[0].name == "add_layer_top"
+        assert edbapp.stackup.add_layer_bottom(name="add_layer_bottom")
+        assert list(edbapp.stackup.stackup_layers.values())[-1].name == "add_layer_bottom"
+        assert edbapp.stackup.add_layer_below(name="add_layer_below", base_layer_name="1_Top")
+        base_layer = edbapp.stackup.layers["1_Top"]
+        l_id = edbapp.stackup.layers_by_id.index([base_layer.id, base_layer.name])
+        assert edbapp.stackup.layers_by_id[l_id+1][1] == "add_layer_below"
+        assert edbapp.stackup.add_layer_above(name="add_layer_above", base_layer_name="1_Top")
+        base_layer = edbapp.stackup.layers["1_Top"]
+        l_id = edbapp.stackup.layers_by_id.index([base_layer.id, base_layer.name])
+        assert edbapp.stackup.layers_by_id[l_id - 1][1] == "add_layer_above"

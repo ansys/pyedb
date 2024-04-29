@@ -89,95 +89,113 @@ class LayerCollection(object):
             "multizone": self._pedb.edb_api.cell._cell.LayerCollectionMode.MultiZone,
         }
 
-    def update_layout(self):
+    def update_layout(self, stackup=None):
+        if stackup:
+            self._edb_object = stackup._edb_object
         self._pedb.layout.layer_collection = self._edb_object
 
     @pyedb_function_handler
-    def add_layer_top(self,
-                      name,
-                      layer_type="signal",
-                      thickness=0,
-                      elevation=0,
-                      material="copper",
-                      **kwargs):
+    def _add_layer(self, add_method, base_layer_name="", **kwargs):
+        layer_clone = kwargs.get("layer_clone")
+        if layer_clone:
+            obj = layer_clone
+        else:
+            obj = StackupLayerEdbClass(self._pedb,
+                                       edb_object=None,
+                                       **kwargs)
+        method_top_bottom = None
+        method_above_below = None
+        if add_method == "add_layer_top":
+            method_top_bottom = self._edb_object.AddLayerTop
+        elif add_method == "add_layer_bottom":
+            method_top_bottom = self._edb_object.AddLayerBottom
+        elif add_method == "add_layer_above":
+            method_above_below = self._edb_object.AddLayerAbove
+        elif add_method == "add_layer_below":
+            method_above_below = self._edb_object.AddLayerBelow
+        else:  # pragma: no cover
+            return False
 
-        obj = StackupLayerEdbClass(self._pedb,
-                                   edb_object=None,
-                                   name=name,
-                                   layer_type=layer_type,
-                                   thickness=thickness,
-                                   elevation=elevation,
-                                   material=material,
-                                   **kwargs)
-        self._edb_object.AddLayerBottom(obj._edb_object)
+        if method_top_bottom:
+            obj = obj if method_top_bottom(obj._edb_object) else False
+        elif method_above_below:
+            obj = obj if method_above_below(obj._edb_object, base_layer_name) else False
         if self.AUTO_REFRESH:
             self.update_layout()
         return obj
 
     @pyedb_function_handler
-    def add_layer_top(self,
-                      name,
-                      layer_type="signal",
-                      **kwargs):
-        obj = StackupLayerEdbClass(self._pedb,
-                                   edb_object=None,
-                                   name=name,
-                                   layer_type=layer_type,
-                                   **kwargs)
-        self._edb_object.AddLayerTop(obj._edb_object)
-        if self.AUTO_REFRESH:
-            self.update_layout()
-        return obj
+    def add_layer_top(self, name, layer_type="signal", **kwargs):
+        kwargs["name"] = name
+        kwargs["layer_type"] = layer_type
+        return self._add_layer(add_method="add_layer_top",
+                               **kwargs)
 
     @pyedb_function_handler
-    def add_layer_bottom(self,
-                         name,
-                         layer_type="signal",
-                         **kwargs):
-        obj = StackupLayerEdbClass(self._pedb,
-                                   edb_object=None,
-                                   name=name,
-                                   layer_type=layer_type,
-                                   **kwargs)
-        self._edb_object.AddLayerBottom(obj._edb_object)
-        if self.AUTO_REFRESH:
-            self.update_layout()
-        return obj
+    def add_layer_bottom(self, name, layer_type="signal", **kwargs):
+        kwargs["name"] = name
+        kwargs["layer_type"] = layer_type
+        return self._add_layer(add_method="add_layer_bottom", **kwargs)
 
     @pyedb_function_handler
-    def _set_layer_clone(self, layer_clone):
-        lc = self._pedb.edb_api.cell._cell.LayerCollection()
+    def add_layer_below(self, name, base_layer_name, layer_type="signal", **kwargs):
+        kwargs["name"] = name
+        kwargs["layer_type"] = layer_type
+        return self._add_layer(add_method="add_layer_below",
+                               base_layer_name=base_layer_name,
+                               **kwargs)
+
+    @pyedb_function_handler
+    def add_layer_above(self, name, base_layer_name, layer_type="signal", **kwargs):
+        kwargs["name"] = name
+        kwargs["layer_type"] = layer_type
+        return self._add_layer(add_method="add_layer_above", base_layer_name=base_layer_name,
+                               **kwargs)
+
+    @pyedb_function_handler
+    def add_document_layer(self, name, layer_type="UndefinedLayerType", **kwargs):
+        kwargs["name"] = name
+        kwargs["layer_type"] = layer_type
+        return self._add_layer(add_method="add_layer_bottom", **kwargs)
+
+    @pyedb_function_handler
+    def set_layer_clone(self, layer_clone):
+        lc = self._pedb.edb_api.cell._cell.LayerCollection()  # empty layer collection
         lc.SetMode(self._edb_object.GetMode())
-        if self.mode == "laminate":
+        if self.mode.lower() == "laminate":
             add_method = lc.AddLayerBottom
         else:
             add_method = lc.AddStackupLayerAtElevation
 
-        # Add stackup laeyers
+        obj = False
+        # Add stackup layers
         for _, i in self.stackup_layers.items():
-            if not i.id == layer_clone.id:
-                add_method(i._edb_object)
-            else:
+            if i.id == layer_clone.id:  # replace layer
                 add_method(layer_clone._edb_object)
+                obj = layer_clone
+            else:  # keep existing layer
+                add_method(i._edb_object)
         # add non stackup layers
         for _, i in self.non_stackup_layers.items():
-            if not i.id == layer_clone.id:
-                lc.AddLayerBottom(i._edb_object)
-            else:
+            if i.id == layer_clone.id:
                 lc.AddLayerBottom(layer_clone._edb_object)
+                obj = layer_clone
+            else:
+                lc.AddLayerBottom(i._edb_object)
 
         self._edb_object = lc
         if self.AUTO_REFRESH:
             self.update_layout()
+        return obj
 
     @property
     def stackup_layers(self):
         """Retrieve the dictionary of signal and dielectric layers."""
-        temp = list(self._layer_collection.Layers(self._layer_type_set_mapping["stackup_layer_set"]))
+        temp = list(self._edb_object.Layers((self._pedb.edb_api.cell.layer_type_set.StackupLayerSet)))
         layers = OrderedDict()
         for i in temp:
             name = i.GetName()
-            layers[name] = StackupLayerEdbClass(self._pedb, i, name=name)
+            layers[name] = StackupLayerEdbClass(self._pedb, i.Clone(), name=name)
         return layers
 
     @property
@@ -189,6 +207,15 @@ class LayerCollection(object):
             name = i.GetName()
             layers[name] = LayerEdbClass(self._pedb, i, name=name)
         return layers
+
+    @property
+    def layers_by_id(self):
+        layer_list = list(self._layer_collection.Layers(self._pedb.edb_api.cell.layer_type_set.AllLayerSet))
+        temp = []
+        for i in layer_list:
+            obj = StackupLayerEdbClass(self._pedb, i.Clone(), name=i.GetName)
+            temp.append([obj.id, obj.name])
+        return temp
 
 
 class Stackup(LayerCollection):
