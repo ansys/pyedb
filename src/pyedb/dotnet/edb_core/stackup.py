@@ -132,7 +132,7 @@ class LayerCollection(object):
             obj = obj if method_top_bottom(obj._edb_object) else False
         elif method_above_below:
             obj = obj if method_above_below(obj._edb_object, base_layer_name) else False
-        if self.AUTO_REFRESH:
+        if self.auto_refresh:
             self.update_layout()
         return obj
 
