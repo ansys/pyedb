@@ -527,7 +527,7 @@ class Configuration:
             prev_layer_clone = None
             l = layers.pop(0)
             if l["type"] == "signal":
-                prev_layer_clone = lc.layers[l.name]
+                prev_layer_clone = lc.layers[l["name"]]
             else:
                 prev_layer_clone = lc.add_layer_top(**l)
             for idx, l in enumerate(layers):
