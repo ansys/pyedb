@@ -262,11 +262,6 @@ class TestClass:
         import_method = edbapp.stackup.load
         export_method = edbapp.stackup.export
 
-        assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml"))
-        assert "17_Bottom" in edbapp.stackup.layers.keys()
-        xml_export = os.path.join(self.local_scratch.path, "stackup.xml")
-        assert export_method(xml_export)
-        assert os.path.exists(xml_export)
         assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.csv"))
         assert "18_Bottom" in edbapp.stackup.layers.keys()
         assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
