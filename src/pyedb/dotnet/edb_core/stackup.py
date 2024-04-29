@@ -258,7 +258,7 @@ class LayerCollection(object):
                 obj = layer_clone
             else:  # keep existing layer
                 add_method(i._edb_object)
-        # add non stackup layers
+        # Add non stackup layers
         for _, i in self.non_stackup_layers.items():
             if i.id == layer_clone.id:
                 lc.AddLayerBottom(layer_clone._edb_object)
