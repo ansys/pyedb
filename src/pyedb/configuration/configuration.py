@@ -491,7 +491,7 @@ class Configuration:
 
         if layers:
             lc = self._pedb.stackup
-            input_signal_layers = [i for i in layers if i["type"].lower()=="signal"]
+            input_signal_layers = [i for i in layers if i["type"].lower() == "signal"]
             if not len(input_signal_layers) == len(lc.signal_layers):
                 self._pedb.logger.error("Input signal layer count do not match.")
                 return False

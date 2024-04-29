@@ -1047,7 +1047,7 @@ class TestClass:
         assert edbapp.stackup.add_layer_below(name="add_layer_below", base_layer_name="1_Top")
         base_layer = edbapp.stackup.layers["1_Top"]
         l_id = edbapp.stackup.layers_by_id.index([base_layer.id, base_layer.name])
-        assert edbapp.stackup.layers_by_id[l_id+1][1] == "add_layer_below"
+        assert edbapp.stackup.layers_by_id[l_id + 1][1] == "add_layer_below"
         assert edbapp.stackup.add_layer_above(name="add_layer_above", base_layer_name="1_Top")
         base_layer = edbapp.stackup.layers["1_Top"]
         l_id = edbapp.stackup.layers_by_id.index([base_layer.id, base_layer.name])
