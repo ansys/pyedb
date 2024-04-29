@@ -269,7 +269,7 @@ class LayerCollection(object):
         self._edb_object = lc
         if self.auto_refresh:
             self.update_layout()
-        
+
         if not obj:
             logger.info("Layer clone was not found in stackup or non stackup layers.")
         return obj
