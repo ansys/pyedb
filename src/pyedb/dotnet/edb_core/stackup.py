@@ -126,6 +126,7 @@ class LayerCollection(object):
         elif add_method == "add_layer_below":
             method_above_below = self._edb_object.AddLayerBelow
         else:  # pragma: no cover
+            logger.error("The way of defining layer addition is not correct")
             return False
 
         if method_top_bottom:
