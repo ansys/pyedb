@@ -517,7 +517,7 @@ class Configuration:
                     lc.add_layer_bottom(name=clone.name, layer_clone=clone)
                     signal_layer_ids[clone.name] = clone.id
 
-            # add all docuement layers at bottom
+            # add all document layers at bottom
             for l in doc_layer_clones:
                 doc_layer = lc.add_document_layer(name=l.name, layer_clone=l)
                 first_doc_layer_name = doc_layer.name
