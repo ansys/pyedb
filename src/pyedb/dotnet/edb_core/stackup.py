@@ -110,7 +110,7 @@ class LayerCollection(object):
         add_method
         base_layer_name
         """
-        layer_clone = kwargs.get("layer_clone")
+        layer_clone = kwargs.get("layer_clone", None)
         if layer_clone:
             obj = layer_clone
         else:
