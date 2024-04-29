@@ -2123,10 +2123,15 @@ class Stackup(object):
         stackup_dict = {}
         if stackup.find("Materials"):
             stackup_dict["materials"] = {}
+
             for m in stackup.find("Materials").findall("Material"):
+                temp = dict()
                 material = {"name": m.attrib["Name"]}
                 for i in list(m):
-                    material[i.tag.lower()] = float(list(i)[0].text)
+                    value = list(i)[0].text
+                    temp[i.tag] = value
+                mat = dict()
+
                 if material:
                     stackup_dict["materials"][material["name"]] = material
         stackup_section = stackup.find("Layers")
