@@ -57,6 +57,9 @@ from pyedb.dotnet.edb_core.edb_data.ports import (
     GapPort,
     WavePort,
 )
+from pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data import (
+    RaptorXSimulationSetup,
+)
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
@@ -174,15 +177,16 @@ class Edb(Database):
 
     def __init__(
         self,
-        edbpath=None,
-        cellname=None,
-        isreadonly=False,
-        edbversion=None,
-        isaedtowned=False,
+        edbpath: str = None,
+        cellname: str = None,
+        isreadonly: bool = False,
+        edbversion: str = None,
+        isaedtowned: bool = False,
         oproject=None,
-        student_version=False,
-        use_ppe=False,
-        technology_file=None,
+        student_version: bool = False,
+        use_ppe: bool = False,
+        technology_file: str = None,
+        remove_existing_aedt: bool = False,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
@@ -213,17 +217,8 @@ class Edb(Database):
                 os.path.dirname(edbpath),
                 "pyedb_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log",
             )
-            aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
-            files = [aedt_file, aedt_file + ".lock"]
-            for file in files:
-                if os.path.isfile(file):
-                    try:
-                        shutil.rmtree(file)
-                        self.logger.info(f"Removing {file} to allow loading EDB file.")
-                    except:
-                        self.logger.info(
-                            f"Failed to delete {file} which is located at the same location as the EDB file."
-                        )
+            if not isreadonly:
+                self._check_remove_project_files(edbpath, remove_existing_aedt)
 
         if isaedtowned and (inside_desktop or settings.remote_rpc_session):
             self.open_edb_inside_aedt()
@@ -310,6 +305,22 @@ class Edb(Database):
             self.add_design_variable(variable_name, val)
         if description:  # Add the variable description if a two-item list is passed for variable_value.
             self.__getitem__(variable_name).description = description
+
+    def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
+        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+        files = [aedt_file, aedt_file + ".lock"]
+        for file in files:
+            if os.path.isfile(file):
+                if not remove_existing_aedt:
+                    self.logger.warning(
+                        f"AEDT project-related file {file} exists and may need to be deleted before opening the EDB in HFSS 3D Layout."  # noqa: E501
+                    )
+                else:
+                    try:
+                        os.unlink(file)
+                        self.logger.info(f"Deleted AEDT project-related file {file}.")
+                    except:
+                        self.logger.info(f"Failed to delete AEDT project-related file {file}.")
 
     def _clean_variables(self):
         """Initialize internal variables and perform garbage collection."""
@@ -3584,6 +3595,8 @@ class Edb(Database):
                 setups[i.GetName()] = SiwaveSYZSimulationSetup(self, i)
             elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWaveDCIR:
                 setups[i.GetName()] = SiwaveDCSimulationSetup(self, i)
+            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kRaptorX:
+                setups[i.GetName()] = RaptorXSimulationSetup(self, i)
         return setups
 
     @property
@@ -3639,8 +3652,34 @@ class Edb(Database):
         if name in self.setups:
             self.logger.info("setup already exists")
             return False
+        elif not name:
+            name = generate_unique_name("setup")
         setup = HfssSimulationSetup(self).create(name)
         return setup
+
+    def create_raptorx_setup(self, name=None):
+        """Create an RaptorX simulation setup from a template.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name.
+
+        Returns
+        -------
+        :class:`legacy.edb_core.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
+
+        """
+        if name in self.setups:
+            self.logger.error("Setup name already used in the layout")
+            return False
+        version = self.edbversion.split(".")
+        if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
+            setup = RaptorXSimulationSetup(self).create(name)
+            return setup
+        else:
+            self.logger.error("RaptorX simulation only supported with Ansys release 2024R2 and higher")
+            return False
 
     @pyedb_function_handler()
     def create_siwave_syz_setup(self, name=None):

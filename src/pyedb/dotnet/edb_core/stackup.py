@@ -2365,7 +2365,7 @@ class Stackup(LayerCollection):
         >>> edb.stackup.import_stackup("stackup.xml")
         """
 
-        self._logger.warning("Method export_stackup is deprecated. Use .export.")
+        self._logger.warning("Method import_stackup is deprecated. Use .load")
         return self.load(file_path)
 
     @pyedb_function_handler()

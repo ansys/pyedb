@@ -56,6 +56,7 @@ class BaseSimulationSetup(object):
             "kDDRwizard": None,
             "kQ3D": None,
             "kNumSetupTypes": None,
+            "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings,
         }
         if self._edb_object:
             self._name = self._edb_object.GetName()
@@ -72,6 +73,8 @@ class BaseSimulationSetup(object):
         setup_type = self._setup_type_mapping[self._setup_type]
         edb_setup_info = self._pedb.simsetupdata.SimSetupInfo[setup_type]()
         edb_setup_info.Name = name
+        if edb_setup_info.get_SimSetupType().ToString() == "kRaptorX":
+            self._edb_setup_info = edb_setup_info
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
 
@@ -96,6 +99,9 @@ class BaseSimulationSetup(object):
             "kQ3D": None,
             "kNumSetupTypes": None,
         }
+        version = self._pedb.edbversion.split(".")
+        if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
+            setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
         setup_utility = setup_type_mapping[self._setup_type]
         return setup_utility(edb_setup_info)
 
@@ -122,9 +128,8 @@ class BaseSimulationSetup(object):
 
     @enabled.setter
     def enabled(self, value):
-        edb_setup_info = self.get_sim_setup_info
-        edb_setup_info.SimulationSettings.Enabled = value
-        self._edb_object = self._set_edb_setup_info(edb_setup_info)
+        self.get_sim_setup_info.SimulationSettings.Enabled = value
+        self._edb_object = self._set_edb_setup_info(self.get_sim_setup_info)
         self._update_setup()
 
     @property
@@ -175,9 +180,12 @@ class BaseSimulationSetup(object):
         sweep_data: EdbFrequencySweep
         """
         self._sweep_list[sweep_data.name] = sweep_data
-        edb_setup_info = self.get_sim_setup_info
+        if self.setup_type == "kRaptorX":
+            edb_setup_info = self._edb_setup_info
+        else:
+            edb_setup_info = self.get_sim_setup_info
 
-        if self._setup_type in ["kSIwave", "kHFSS"]:
+        if self._setup_type in ["kSIwave", "kHFSS", "kRaptorX"]:
             for _, v in self._sweep_list.items():
                 edb_setup_info.SweepDataList.Add(v._edb_object)
 
@@ -197,14 +205,13 @@ class BaseSimulationSetup(object):
             self._sweep_list.pop(name)
 
         fsweep = []
-        for k, val in self.frequency_sweeps.items():
-            if not k == name:
-                fsweep.append(val)
-        self.get_sim_setup_info.SweepDataList.Clear()
-        for i in fsweep:
-            self.get_sim_setup_info.SweepDataList.Add(i._edb_object)
-        self._update_setup()
-        return True if name in self.frequency_sweeps else False
+        if self.frequency_sweeps:
+            fsweep = [val for key, val in self.frequency_sweeps.items() if not key == name]
+            self.get_sim_setup_info.SweepDataList.Clear()
+            for i in fsweep:
+                self.get_sim_setup_info.SweepDataList.Add(i._edb_object)
+            self._update_setup()
+            return True if name in self.frequency_sweeps else False
 
     @pyedb_function_handler()
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
@@ -722,6 +729,8 @@ class EdbFrequencySweep(object):
                 ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
             ]
         temp = []
+        if isinstance(frequency_list, list) and not isinstance(frequency_list[0], list):
+            frequency_list = [frequency_list]
         for i in frequency_list:
             if i[0] == "linear count":
                 temp.extend(list(self._edb_sweep_data.SetFrequencies(i[1], i[2], i[3])))
