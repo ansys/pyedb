@@ -2122,39 +2122,47 @@ class Stackup(object):
         stackup = root.find("Stackup")
         stackup_dict = {}
         if stackup.find("Materials"):
-            stackup_dict["materials"] = {}
-
+            mats = []
             for m in stackup.find("Materials").findall("Material"):
                 temp = dict()
-                material = {"name": m.attrib["Name"]}
                 for i in list(m):
                     value = list(i)[0].text
                     temp[i.tag] = value
-                mat = dict()
+                mat = {"name": m.attrib["Name"]}
+                temp_dict = {
+                    "Permittivity": "permittivity",
+                    "Conductivity": "conductivity",
+                    "DielectricLossTangent": "dielectric_loss_tangent"
+                }
+                for i in temp_dict.keys():
+                    value = temp.get(i, None)
+                    if value:
+                        mat[temp_dict[i]] = value
+                mats.append(mat)
+            stackup_dict["materials"] = mats
 
-                if material:
-                    stackup_dict["materials"][material["name"]] = material
         stackup_section = stackup.find("Layers")
         if stackup_section:
             length_unit = stackup_section.attrib["LengthUnit"]
-            stackup_dict["layers"] = {}
+            layers = []
             for l in stackup.find("Layers").findall("Layer"):
-                layer = {"name": l.attrib["Name"]}
-                for k, v in l.attrib.items():
-                    if k == "Color":
-                        layer[k.lower()] = [int(x * 255) for x in list(colors.to_rgb(v))]
-                    elif k == "Thickness":
-                        layer[k.lower()] = v + length_unit
-                    elif v == "conductor":
-                        layer[k.lower()] = "signal"
-                    elif k == "FillMaterial":
-                        layer["dielectric_fill"] = v
-                    else:
-                        layer[k.lower()] = v
-                if layer:
-                    if layer["type"] == "signal" or layer["type"] == "dielectric":
-                        stackup_dict["layers"][layer["name"]] = layer
-        return self._import_dict(stackup_dict, rename=rename)
+                temp = l.attrib
+                layer = dict()
+                temp_dict = {
+                    "Name" : "name",
+                    "Color": "color",
+                    "Material": "material",
+                    "Thickness": "thickness",
+                    "Type": "type",
+                    "FillMaterial": "fill_material"
+                }
+                for i in temp_dict.keys():
+                    value = temp.get(i, None)
+                    if value:
+                        layer[temp_dict[i]] = value
+                layers.append(layer)
+            stackup_dict["layers"] = layers
+        return self._pedb.configuration.load(stackup_dict)
 
     @pyedb_function_handler()
     def _export_xml(self, file_path):
