@@ -69,7 +69,7 @@ logger = logging.getLogger(__name__)
 
 
 class LayerCollection(object):
-    AUTO_REFRESH = True
+    auto_refresh = True
 
     def __init__(self, pedb, edb_object=None):
         self._pedb = pedb
@@ -110,7 +110,7 @@ class LayerCollection(object):
         add_method
         base_layer_name
         """
-        layer_clone = kwargs.get("layer_clone")
+        layer_clone = kwargs.get("layer_clone", None)
         if layer_clone:
             obj = layer_clone
         else:
@@ -126,13 +126,14 @@ class LayerCollection(object):
         elif add_method == "add_layer_below":
             method_above_below = self._edb_object.AddLayerBelow
         else:  # pragma: no cover
+            logger.error("The way of defining layer addition is not correct")
             return False
 
         if method_top_bottom:
             obj = obj if method_top_bottom(obj._edb_object) else False
         elif method_above_below:
             obj = obj if method_above_below(obj._edb_object, base_layer_name) else False
-        if self.AUTO_REFRESH:
+        if self.auto_refresh:
             self.update_layout()
         return obj
 
@@ -257,7 +258,7 @@ class LayerCollection(object):
                 obj = layer_clone
             else:  # keep existing layer
                 add_method(i._edb_object)
-        # add non stackup layers
+        # Add non stackup layers
         for _, i in self.non_stackup_layers.items():
             if i.id == layer_clone.id:
                 lc.AddLayerBottom(layer_clone._edb_object)
@@ -266,8 +267,11 @@ class LayerCollection(object):
                 lc.AddLayerBottom(i._edb_object)
 
         self._edb_object = lc
-        if self.AUTO_REFRESH:
+        if self.auto_refresh:
             self.update_layout()
+        
+        if not obj:
+            logger.info("Layer clone was not found in stackup or non stackup layers.")
         return obj
 
     @property
