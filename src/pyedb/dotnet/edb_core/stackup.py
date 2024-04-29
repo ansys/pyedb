@@ -91,12 +91,25 @@ class LayerCollection(object):
         }
 
     def update_layout(self, stackup=None):
+        """Set layer collection into edb.
+
+        Parameters
+        ----------
+        stackup
+        """
         if stackup:
             self._edb_object = stackup._edb_object
         self._pedb.layout.layer_collection = self._edb_object
 
     @pyedb_function_handler
     def _add_layer(self, add_method, base_layer_name="", **kwargs):
+        """Add a layer to edb.
+
+        Parameters
+        ----------
+        add_method
+        base_layer_name
+        """
         layer_clone = kwargs.get("layer_clone")
         if layer_clone:
             obj = layer_clone
@@ -125,30 +138,104 @@ class LayerCollection(object):
 
     @pyedb_function_handler
     def add_layer_top(self, name, layer_type="signal", **kwargs):
+        """Add a layer on top of the stackup.
+
+        Parameters
+        ----------
+        name : str
+            Name of the layer.
+        layer_type: str, optional
+            Type of the layer. The default to ``"signal"``. Options are ``"signal"``, ``"dielectric"``
+        kwargs
+
+        Returns
+        -------
+
+        """
         kwargs["name"] = name
         kwargs["layer_type"] = layer_type
         return self._add_layer(add_method="add_layer_top", **kwargs)
 
     @pyedb_function_handler
     def add_layer_bottom(self, name, layer_type="signal", **kwargs):
+        """Add a layer on bottom of the stackup.
+
+        Parameters
+        ----------
+        name : str
+            Name of the layer.
+        layer_type: str, optional
+            Type of the layer. The default to ``"signal"``. Options are ``"signal"``, ``"dielectric"``
+        kwargs
+
+        Returns
+        -------
+
+        """
         kwargs["name"] = name
         kwargs["layer_type"] = layer_type
         return self._add_layer(add_method="add_layer_bottom", **kwargs)
 
     @pyedb_function_handler
     def add_layer_below(self, name, base_layer_name, layer_type="signal", **kwargs):
+        """Add a layer below a layer.
+
+        Parameters
+        ----------
+        name : str
+            Name of the layer.
+        base_layer_name: str
+            Name of the base layer.
+        layer_type: str, optional
+            Type of the layer. The default to ``"signal"``. Options are ``"signal"``, ``"dielectric"``
+        kwargs
+
+        Returns
+        -------
+
+        """
         kwargs["name"] = name
         kwargs["layer_type"] = layer_type
         return self._add_layer(add_method="add_layer_below", base_layer_name=base_layer_name, **kwargs)
 
     @pyedb_function_handler
     def add_layer_above(self, name, base_layer_name, layer_type="signal", **kwargs):
+        """Add a layer above a layer.
+
+        Parameters
+        ----------
+        name : str
+            Name of the layer.
+        base_layer_name: str
+            Name of the base layer.
+        layer_type: str, optional
+            Type of the layer. The default to ``"signal"``. Options are ``"signal"``, ``"dielectric"``
+        kwargs
+
+        Returns
+        -------
+
+        """
         kwargs["name"] = name
         kwargs["layer_type"] = layer_type
         return self._add_layer(add_method="add_layer_above", base_layer_name=base_layer_name, **kwargs)
 
     @pyedb_function_handler
     def add_document_layer(self, name, layer_type="UndefinedLayerType", **kwargs):
+        """Add a document layer.
+
+        Parameters
+        ----------
+        name : str
+            Name of the layer.
+        layer_type: str, optional
+            Type of the layer. The default to ``"signal"``. Options are ``"signal"``, ``"dielectric"``
+        kwargs
+
+        Returns
+        -------
+
+        """
         kwargs["name"] = name
         kwargs["layer_type"] = layer_type
         return self._add_layer(add_method="add_layer_bottom", **kwargs)
@@ -205,6 +292,7 @@ class LayerCollection(object):
 
     @property
     def layers_by_id(self):
+        """Retrieve the list of layers with their ids."""
         layer_list = list(self._layer_collection.Layers(self._pedb.edb_api.cell.layer_type_set.AllLayerSet))
         temp = []
         for i in layer_list:

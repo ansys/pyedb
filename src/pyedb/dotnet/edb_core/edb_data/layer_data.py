@@ -22,8 +22,6 @@
 
 from __future__ import absolute_import
 
-import re
-
 from pyedb.generic.general_methods import pyedb_function_handler
 
 
