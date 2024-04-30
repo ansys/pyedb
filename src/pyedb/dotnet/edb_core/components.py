@@ -2408,7 +2408,7 @@ class Components(object):
         Parameters
         ----------
         pin_list : list of EDBPadstackInstance, optional
-            List of pins to check. default is None, in which case all pins are checked
+            List of pins to check. The default is ``None``, in which case all pins are checked
         net_name : str
             Name of the net.
 
