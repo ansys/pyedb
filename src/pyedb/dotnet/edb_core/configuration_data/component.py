@@ -37,14 +37,16 @@ class SolderBallsProperties:
 
 
 class Component:
-    def __init__(self, pedb):
+    def __init__(self, pedb, comp_dict):
         self._pedb = pedb
+        self._comp_dict = comp_dict
         self.reference_designator = ""
         self.part_type = self.ComponentType.RESISTOR
         self.enabled = True
         self.rlc_model = RlcModel()
         self.port_properties = PortProperties()
         self.solder_balls_properties = SolderBallsProperties()
+        self._update()
 
     class ComponentType(Enum):
         RESISTOR = 0
@@ -54,8 +56,8 @@ class Component:
         IC = 4
         OTHER = 5
 
-    def _import_dict(self, comp_dict):
-        part_type = comp_dict["part_type"].lower()
+    def _update(self):
+        part_type = self._comp_dict["part_type"].lower()
         if part_type == "resistor":
             self.part_type = self.part_type.RESISTOR
         elif part_type == "capacitor":
@@ -70,7 +72,7 @@ class Component:
             self.part_type = self.part_type.OTHER
 
         if self.part_type in [0, 1, 2]:
-            rlc_model = comp_dict["rlc_model"] if "rlc_model" in comp_dict else None
+            rlc_model = self._comp_dict["rlc_model"] if "rlc_model" in self._comp_dict else None
             if rlc_model:
                 pin_pairs = rlc_model["pin_pairs"] if "pin_pairs" in rlc_model else None
                 if pin_pairs:
@@ -84,14 +86,16 @@ class Component:
                         self.rlc_model.inductance = pp["inductance"] if "inductance" in pp else None
                         self.rlc_model.capacitance = pp["capacitance"] if "capacitance" in pp else None
 
-        port_properties = comp_dict["port_properties"] if "port_properties" in comp_dict else None
+        port_properties = self._comp_dict["port_properties"] if "port_properties" in self._comp_dict else None
         if port_properties:
             self.port_properties.ref_offset = float(port_properties["reference_offset"])
             self.port_properties.ref_size_auto = bool(port_properties["reference_size_auto"])
             self.port_properties.ref_size_x = float(port_properties["reference_size_x"])
             self.port_properties.ref_size_y = float(port_properties["reference_size_y"])
 
-        solder_ball_properties = comp_dict["solder_ball_properties"] if "solder_ball_properties" in comp_dict else None
+        solder_ball_properties = (
+            self._comp_dict["solder_ball_properties"] if "solder_ball_properties" in self._comp_dict else None
+        )
         if solder_ball_properties:
             if solder_ball_properties["shape"].lower() == "spheroid":
                 self.solder_balls_properties.shape = self.solder_balls_properties.shape.SPHEROID

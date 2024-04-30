@@ -28,6 +28,7 @@ import toml
 
 from pyedb.dotnet.edb_core.configuration_data.boundaries import Boundaries
 from pyedb.dotnet.edb_core.configuration_data.component import Component
+from pyedb.dotnet.edb_core.configuration_data.nets import Nets
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.generic.general_methods import pyedb_function_handler
 
@@ -41,6 +42,7 @@ class Configuration:
         self.data = None
         self.components = {}
         self.boundaries = None
+        self.nets = None
         self._s_parameter_library = ""
         self._spice_model_library = ""
 
@@ -83,21 +85,15 @@ class Configuration:
         for k, v in self.data.items():
             if k == "components":
                 for component in v:
-                    comp = Component()._import_dict(component)
-                    if not comp.reference_designator in self.components:
+                    comp = Component(self._pedb, component)
+                    if comp.reference_designator not in self.components:
                         self.components[comp.reference_designator] = comp
             elif k == "boundaries":
                 self.boundaries = Boundaries(self._pedb, v)
 
-            if k in self.data:
-                if isinstance(v, list):
-                    self.data[k].extend(v)
-                elif isinstance(v, dict):  # pragma: no cover
-                    self.data[k].update(v)
-                else:  # pragma: no cover
-                    self.data[k] = v
-            else:
-                self.data[k] = v
+            elif k == "nets":
+                self.nets = Nets(self._pedb, v)
+
         if apply_file:
             original_file = self._pedb.edbpath
             if output_file:
@@ -118,14 +114,6 @@ class Configuration:
         if not self.data:
             self._pedb.logger.error("No data loaded. Please load a configuration file.")
             return False
-
-        # Configure general settings
-        if "general" in self.data:
-            self._load_general()
-
-        # Configure nets
-        if "nets" in self.data:
-            self._load_nets()
 
         # Configure padstacks
         if "padstacks" in self.data:
@@ -475,23 +463,8 @@ class Configuration:
                 self._pedb.siwave.create_pin_group(ref_designator, pins, name)
 
     @pyedb_function_handler
-    def _load_nets(self):
-        """Imports nets information from JSON."""
-        nets = self._pedb.nets.nets
-        for i in self.data["nets"]["power_ground_nets"]:
-            nets[i].is_power_ground = True
-
-        for i in self.data["nets"]["signal_nets"]:
-            nets[i].is_power_ground = False
-
-    @pyedb_function_handler
     def _load_general(self):
         """Imports general information from JSON."""
-        general = self.data["general"]
-        if "s_parameter_library" in general:
-            self._s_parameter_library = general["s_parameter_library"]
-        if "spice_model_library" in general:
-            self._spice_model_library = general["spice_model_library"]
 
     @pyedb_function_handler
     def _load_operations(self):
