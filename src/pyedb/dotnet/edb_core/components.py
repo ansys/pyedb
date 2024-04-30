@@ -2425,7 +2425,7 @@ class Components(object):
         >>> edbapp.components.get_pins_name_from_net(pin_list, net_name)
 
         """
-        pinlist = []
+        pin_names = []
         if not pin_list:
             pin_list = []
             for i in [*self.components.values()]:
@@ -2433,8 +2433,8 @@ class Components(object):
                     pin_list.append(j)
         for pin in pin_list:
             if pin.GetNet().GetName() == net_name:
-                pinlist.append(pin.GetName())
-        return pinlist
+                pin_names.append(self.get_aedt_pin_name(pin))
+        return pin_names
 
     @pyedb_function_handler()
     def get_nets_from_pin_list(self, PinList):
