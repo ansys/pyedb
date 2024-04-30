@@ -29,6 +29,7 @@ class SolderBallsProperties:
         self.diameter = 0.0
         self.mid_diameter = 0.0
         self.height = 0.0
+        self.enable = False
 
     class Shape(Enum):
         CYLINDER = 0
@@ -101,3 +102,48 @@ class Component:
                 else self.solder_balls_properties.diameter
             )
             self.solder_balls_properties.height = float(solder_ball_properties["height"])
+
+    def apply(self):
+        comp_layout = self._pedb.components[self.reference_designator]
+        comp_layout.type = self.part_type
+        if self.part_type in [0, 1, 2]:
+            comp_layout.is_enabled = self.enabled
+            if self.rlc_model:
+                model_layout = comp_layout.model
+                if self.rlc_model.pin_pairs:
+                    for pp in model_layout.pin_pairs:
+                        model_layout.delete_pin_pair_rlc(pp)
+                    for pp in self.rlc_model.pin_pairs:
+                        pin_pair = self._pedb.edb_api.utility.PinPair(pp[0], pp[1])
+                        rlc = self._pedb.edb_api.utility.Rlc()
+                        rlc.IsParallel = False if self.rlc_model.rlc_model_type.SERIES else True
+                        if not self.rlc_model.resistance is None:
+                            rlc.REnabled = True
+                            rlc.R = self._pedb.edb_value(self.rlc_model.resistance)
+                        else:
+                            rlc.REnabled = False
+                        if not self.rlc_model.inductance is None:
+                            rlc.LEnabled = True
+                            rlc.L = self._pedb.edb_value(self.rlc_model.inductance)
+                        else:
+                            rlc.LEnabled = False
+
+                        if not self.rlc_model.capacitance is None:
+                            rlc.CEnabled = True
+                            rlc.C = self._pedb.edb_value(self.rlc_model.capacitance)
+                        else:
+                            rlc.CEnabled = False
+                        model_layout._set_pin_pair_rlc(pin_pair, rlc)
+                        comp_layout.model = model_layout
+        if self.solder_balls_properties.enable:
+            self._pedb.components.set_solder_ball(
+                component=self.reference_designator,
+                sball_diam=self.solder_balls_properties.diameter,
+                sball_mid_diam=self.solder_balls_properties.mid_diameter,
+                sball_height=self.solder_balls_properties.height,
+                shape=self.solder_balls_properties.shape,
+                auto_reference_size=self.port_properties.ref_size_auto,
+                reference_height=self.port_properties.ref_offset,
+                reference_size_x=self.port_properties.ref_size_x,
+                reference_size_y=self.port_properties.ref_size_y,
+            )

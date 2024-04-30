@@ -26,6 +26,7 @@ from pathlib import Path
 
 import toml
 
+from pyedb.dotnet.edb_core.configuration_data.boundaries import Boundaries
 from pyedb.dotnet.edb_core.configuration_data.component import Component
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.generic.general_methods import pyedb_function_handler
@@ -39,6 +40,7 @@ class Configuration:
         self._components = self._pedb.components.components
         self.data = None
         self.components = {}
+        self.boundaries = None
         self._s_parameter_library = ""
         self._spice_model_library = ""
 
@@ -84,6 +86,8 @@ class Configuration:
                     comp = Component()._import_dict(component)
                     if not comp.reference_designator in self.components:
                         self.components[comp.reference_designator] = comp
+            elif k == "boundaries":
+                self.boundaries = Boundaries(self._pedb, v)
 
             if k in self.data:
                 if isinstance(v, list):
@@ -119,17 +123,9 @@ class Configuration:
         if "general" in self.data:
             self._load_general()
 
-        # Configure boundary settings
-        if "boundaries" in self.data:
-            self._load_boundaries()
-
         # Configure nets
         if "nets" in self.data:
             self._load_nets()
-
-        # Configure components
-        if "components" in self.data:
-            self._load_components()
 
         # Configure padstacks
         if "padstacks" in self.data:
@@ -172,113 +168,6 @@ class Configuration:
             self._load_operations()
 
         return True
-
-    @pyedb_function_handler
-    def _load_components(self):
-        """Imports component information from json."""
-
-        for comp in self.data["components"]:
-            ref_designator = comp["reference_designator"]
-            part_type = comp["part_type"].lower()
-            if part_type == "resistor":
-                part_type = "Resistor"
-            elif part_type == "capacitor":
-                part_type = "Capacitor"
-            elif part_type == "inductor":
-                part_type = "Inductor"
-            elif part_type == "io":
-                part_type = "IO"
-            elif part_type == "ic":
-                part_type = "IC"
-            else:
-                part_type = "Other"
-
-            comp_layout = self._components[ref_designator]
-            comp_layout.type = part_type
-
-            if part_type in ["Resistor", "Capacitor", "Inductor"]:
-                comp_layout.is_enabled = comp["enabled"]
-                rlc_model = comp["rlc_model"] if "rlc_model" in comp else None
-                # n_port_model = comp["NPortModel"] if "NPortModel" in comp else None
-                # netlist_model = comp["NetlistModel"] if "NetlistModel" in comp else None
-                # spice_model = comp["SpiceModel"] if "SpiceModel" in comp else None
-
-                if rlc_model:
-                    model_layout = comp_layout.model
-
-                    pin_pairs = rlc_model["pin_pairs"] if "pin_pairs" in rlc_model else None
-                    if pin_pairs:
-                        for pp in model_layout.pin_pairs:
-                            model_layout.delete_pin_pair_rlc(pp)
-
-                        for pp in pin_pairs:
-                            rlc_model_type = pp["type"]
-                            p1 = pp["p1"]
-                            p2 = pp["p2"]
-
-                            r = pp["resistance"] if "resistance" in pp else None
-                            l = pp["inductance"] if "inductance" in pp else None
-                            c = pp["capacitance"] if "capacitance" in pp else None
-
-                            pin_pair = self._pedb.edb_api.utility.PinPair(p1, p2)
-                            rlc = self._pedb.edb_api.utility.Rlc()
-
-                            rlc.IsParallel = False if rlc_model_type == "series" else True
-                            if not r is None:
-                                rlc.REnabled = True
-                                rlc.R = self._pedb.edb_value(r)
-                            else:
-                                rlc.REnabled = False
-
-                            if not l is None:
-                                rlc.LEnabled = True
-                                rlc.L = self._pedb.edb_value(l)
-                            else:
-                                rlc.LEnabled = False
-
-                            if not c is None:
-                                rlc.CEnabled = True
-                                rlc.C = self._pedb.edb_value(c)
-                            else:
-                                rlc.CEnabled = False
-
-                            model_layout._set_pin_pair_rlc(pin_pair, rlc)
-                        comp_layout.model = model_layout
-
-            # Configure port properties
-            port_properties = comp["port_properties"] if "port_properties" in comp else None
-            if port_properties:
-                ref_offset = port_properties["reference_offset"]
-                ref_size_auto = port_properties["reference_size_auto"]
-                ref_size_x = port_properties["reference_size_x"]
-                ref_size_y = port_properties["reference_size_y"]
-            else:
-                ref_offset = 0
-                ref_size_auto = True
-                ref_size_x = 0
-                ref_size_y = 0
-
-            # Configure solder ball properties
-            solder_ball_properties = comp["solder_ball_properties"] if "solder_ball_properties" in comp else None
-            if solder_ball_properties:
-                shape = solder_ball_properties["shape"]
-                diameter = solder_ball_properties["diameter"]
-                mid_diameter = (
-                    solder_ball_properties["mid_diameter"] if "mid_diameter" in solder_ball_properties else diameter
-                )
-                height = solder_ball_properties["height"]
-
-                self._pedb.components.set_solder_ball(
-                    component=ref_designator,
-                    sball_diam=diameter,
-                    sball_mid_diam=mid_diameter,
-                    sball_height=height,
-                    shape=shape,
-                    auto_reference_size=ref_size_auto,
-                    reference_height=ref_offset,
-                    reference_size_x=ref_size_x,
-                    reference_size_y=ref_size_y,
-                )
 
     @pyedb_function_handler
     def _load_ports(self):
@@ -603,67 +492,6 @@ class Configuration:
             self._s_parameter_library = general["s_parameter_library"]
         if "spice_model_library" in general:
             self._spice_model_library = general["spice_model_library"]
-
-    @pyedb_function_handler
-    def _load_boundaries(self):
-        """Imports boundary information from JSON."""
-        boundaries = self.data["boundaries"]
-
-        open_region = boundaries.get("open_region", None)
-        if open_region:
-            self._pedb.hfss.hfss_extent_info.use_open_region = open_region
-
-        open_region_type = boundaries.get("open_region_type", None)
-        if open_region_type:
-            self._pedb.hfss.hfss_extent_info.open_region_type = open_region_type
-
-        pml_visible = boundaries.get("pml_visible", None)
-        if pml_visible:
-            self._pedb.hfss.hfss_extent_info.is_pml_visible = pml_visible
-
-        pml_operation_frequency = boundaries.get("pml_operation_frequency", None)
-        if pml_operation_frequency:
-            self._pedb.hfss.hfss_extent_info.operating_freq = pml_operation_frequency
-
-        pml_radiation_factor = boundaries.get("pml_radiation_factor", None)
-        if pml_radiation_factor:
-            self._pedb.hfss.hfss_extent_info.radiation_level = pml_radiation_factor
-
-        dielectric_extents_type = boundaries.get("dielectric_extents_type", None)
-        if dielectric_extents_type:
-            self._pedb.hfss.hfss_extent_info.extent_type = dielectric_extents_type
-
-        dielectric_base_polygon = boundaries.get("dielectric_base_polygon", None)
-        if dielectric_base_polygon:
-            self._pedb.hfss.hfss_extent_info.dielectric_base_polygon = dielectric_base_polygon
-
-        horizontal_padding = boundaries.get("horizontal_padding", None)
-        if horizontal_padding:
-            self._pedb.hfss.hfss_extent_info.dielectric_extent_size = horizontal_padding
-
-        honor_primitives_on_dielectric_layers = boundaries.get("honor_primitives_on_dielectric_layers", None)
-        if honor_primitives_on_dielectric_layers:
-            self._pedb.hfss.hfss_extent_info.honor_user_dielectric = honor_primitives_on_dielectric_layers
-
-        air_box_extents_type = boundaries.get("air_box_extents_type", None)
-        if air_box_extents_type:
-            self._pedb.hfss.hfss_extent_info.extent_type = air_box_extents_type
-
-        air_box_truncate_model_ground_layers = boundaries.get("air_box_truncate_model_ground_layers", None)
-        if air_box_truncate_model_ground_layers:
-            self._pedb.hfss.hfss_extent_info.truncate_air_box_at_ground = air_box_truncate_model_ground_layers
-
-        air_box_horizontal_padding = boundaries.get("air_box_horizontal_padding", None)
-        if air_box_horizontal_padding:
-            self._pedb.hfss.hfss_extent_info.air_box_horizontal_extent = air_box_horizontal_padding
-
-        air_box_positive_vertical_padding = boundaries.get("air_box_positive_vertical_padding", None)
-        if air_box_positive_vertical_padding:
-            self._pedb.hfss.hfss_extent_info.air_box_positive_vertical_extent = air_box_positive_vertical_padding
-
-        air_box_negative_vertical_padding = boundaries.get("air_box_negative_vertical_padding", None)
-        if air_box_positive_vertical_padding:
-            self._pedb.hfss.hfss_extent_info.air_box_negative_vertical_extent = air_box_negative_vertical_padding
 
     @pyedb_function_handler
     def _load_operations(self):
