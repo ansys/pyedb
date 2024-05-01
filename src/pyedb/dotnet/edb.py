@@ -3655,6 +3655,7 @@ class Edb(Database):
         elif not name:
             name = generate_unique_name("setup")
         setup = HfssSimulationSetup(self).create(name)
+        setup.set_solution_single_frequency("1GΗz")
         return setup
 
     def create_raptorx_setup(self, name=None):
