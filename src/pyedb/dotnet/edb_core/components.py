@@ -913,6 +913,12 @@ class Components(object):
         >>> port_type=SourceType.CoaxPort, do_pingroup=False, refnet="GND")
 
         """
+        if not solder_balls_height:
+            solder_balls_height = self.components[component.GetName()].solder_ball_height
+        if not solder_balls_size:
+            solder_balls_size = self.components[component.GetName()].solder_ball_diameter[0]
+        if not solder_balls_mid_size:
+            solder_balls_size = self.components[component.GetName()].solder_ball_diameter[1]
         if isinstance(component, str):
             component = self.instances[component].edbcomponent
         if not isinstance(net_list, list):
@@ -942,18 +948,15 @@ class Components(object):
         if port_type == SourceType.CoaxPort:
             pad_params = self._padstack.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
             if not pad_params[0] == 7:
-                solder_balls_size = self.components[component.GetName()].solder_ball_diameter[0]
                 if not solder_balls_size:  # pragma no cover
                     sball_diam = min([self._pedb.edb_value(val).ToDouble() for val in pad_params[1]])
                     sball_mid_diam = sball_diam
                 else:  # pragma no cover
                     sball_diam = solder_balls_size
-                    solder_balls_mid_size = self.components[component.GetName()].solder_ball_diameter[1]
                     if solder_balls_mid_size:
                         sball_mid_diam = solder_balls_mid_size
                     else:
                         sball_mid_diam = solder_balls_size
-                solder_balls_mid_size = self.components[component.GetName()].solder_ball_height
                 if not solder_balls_height:  # pragma no cover
                     solder_balls_height = 2 * sball_diam / 3
             else:  # pragma no cover
