@@ -1670,7 +1670,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             pin_name = self._edb_padstackinstance.GetName()
             return "-".join([comp_name, pin_name])
         else:
-            return self.aedt_name
+            return self.self._edb_padstackinstance.GetName()
 
     @name.setter
     def name(self, value):

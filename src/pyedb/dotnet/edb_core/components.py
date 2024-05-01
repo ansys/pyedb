@@ -2428,7 +2428,7 @@ class Components(object):
         pinlist = []
         for pin in pin_list:
             if pin.GetNet().GetName() == net_name:
-                pinlist.append(pin.GetName())
+                pinlist.append(self.get_aedt_pin_name(pin))
         return pinlist
 
     @pyedb_function_handler()
