@@ -1918,13 +1918,8 @@ class SimulationConfigurationAc(object):
 
     @adaptive_type.setter
     def adaptive_type(self, value):
-        if isinstance(value, int):
-            if value == 0:
-                self._adaptive_type = AdaptiveType.SingleFrequency
-            elif value == 1:
-                self._adaptive_type = AdaptiveType.MultiFrequency
-            elif value == 2:
-                self._adaptive_type = AdaptiveType.BroadBand
+        if isinstance(value, int) and value in range(3):
+            self._adaptive_type = value
 
     @property
     def adaptive_low_freq(self):
