@@ -262,11 +262,6 @@ class TestClass:
         import_method = edbapp.stackup.load
         export_method = edbapp.stackup.export
 
-        assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml"))
-        assert "17_Bottom" in edbapp.stackup.layers.keys()
-        xml_export = os.path.join(self.local_scratch.path, "stackup.xml")
-        assert export_method(xml_export)
-        assert os.path.exists(xml_export)
         assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.csv"))
         assert "18_Bottom" in edbapp.stackup.layers.keys()
         assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
@@ -274,6 +269,20 @@ class TestClass:
         assert export_method(export_stackup_path)
         assert os.path.exists(export_stackup_path)
 
+        edbapp.close()
+
+    def test_stackup_properties_2(self):
+        """Evaluate various stackup properties."""
+        edbapp = Edb(edbversion=desktop_version)
+        import_method = edbapp.stackup.import_stackup
+        export_method = edbapp.stackup.export_stackup
+
+        assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.csv"))
+        assert "18_Bottom" in edbapp.stackup.layers.keys()
+        assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
+        export_stackup_path = os.path.join(self.local_scratch.path, "export_galileo_stackup.csv")
+        assert export_method(export_stackup_path)
+        assert os.path.exists(export_stackup_path)
         edbapp.close()
 
     def test_stackup_layer_properties(self):
@@ -305,13 +314,20 @@ class TestClass:
         assert layer.material == "copper"
         edbapp.close()
 
-    def test_stackup_load(self):
+    def test_stackup_load_json(self):
         """Import stackup from a file."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         fpath = os.path.join(local_path, "example_models", test_subfolder, "stackup.json")
         edbapp = Edb(source_path, edbversion=desktop_version)
         edbapp.stackup.load(fpath)
         edbapp.close()
+
+    def test_stackup_load_xml(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.stackup.load(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml"))
+        assert "Inner1" in list(edbapp.stackup.layers.keys())  # Renamed layer
+        assert "DE1" not in edbapp.stackup.layers.keys()  # Removed layer
+        assert edbapp.stackup.export(os.path.join(self.local_scratch.path, "stackup.xml"))
 
     def test_stackup_load_layer_renamed(self):
         """Import stackup from a file."""
