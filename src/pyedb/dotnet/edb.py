@@ -35,9 +35,9 @@ import time
 import traceback
 import warnings
 
+from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
 from pyedb.dotnet.edb_core.components import Components
-from pyedb.dotnet.edb_core.configuration import Configuration
 from pyedb.dotnet.edb_core.dotnet.database import Database
 from pyedb.dotnet.edb_core.dotnet.layout import LayoutDotNet
 from pyedb.dotnet.edb_core.edb_data.control_file import (
@@ -342,7 +342,7 @@ class Edb(Database):
     @pyedb_function_handler()
     def _init_objects(self):
         self._components = Components(self)
-        self._stackup = Stackup(self)
+        self._stackup = Stackup(self, self.layout.layer_collection)
         self._padstack = EdbPadstacks(self)
         self._siwave = EdbSiwave(self)
         self._hfss = EdbHfss(self)
@@ -845,7 +845,7 @@ class Edb(Database):
         >>> edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
         """
         if not self._stackup2 and self.active_db:
-            self._stackup2 = Stackup(self)
+            self._stackup2 = Stackup(self, self.layout.layer_collection)
         return self._stackup2
 
     @property
@@ -3655,6 +3655,7 @@ class Edb(Database):
         elif not name:
             name = generate_unique_name("setup")
         setup = HfssSimulationSetup(self).create(name)
+        setup.set_solution_single_frequency("1GΗz")
         return setup
 
     def create_raptorx_setup(self, name=None):
