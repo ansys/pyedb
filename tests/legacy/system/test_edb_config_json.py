@@ -58,8 +58,6 @@ class TestClass:
         for i in [
             "components.json",
             "setups_hfss.json",
-            "setups_siwave_syz.json",
-            "setups_siwave_dc.json",
             "sources.json",
         ]:
             with open(self.local_input_folder / i) as f:
@@ -174,4 +172,10 @@ class TestClass:
     def test_13_stackup(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "stackup.json"), apply_file=True)
+        edbapp.close()
+
+    def test_14_setup_siwave_syz(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(str(self.local_input_folder / "setups_siwave_syz.json"), apply_file=True)
+        setup = edbapp.setups["siwave_syz"]
         edbapp.close()
