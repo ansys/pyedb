@@ -8,20 +8,26 @@
       {
         "name": "Megtron4",
         "permittivity": 3.77,
-        "dielectricLoss_tangent": 0.005
+        "dielectric_loss_tangent": 0.005
       },
       {
         "name": "Megtron4_2",
         "permittivity": 3.77,
-        "dielectricLoss_tangent": 0.005
+        "dielectric_loss_tangent": 0.005
       },
       {
         "name": "Solder Resist",
         "permittivity": 4,
-        "dielectricLoss_tangent": 0
+        "dielectric_loss_tangent": 0
       }
     ],
     "layers": [
+      {
+        "material": "Solder Resist",
+        "name": "SMT",
+        "thickness": "0.02mm",
+        "type": "dielectric"
+      },
       {
         "fill_material": "Solder Resist",
         "material": "copper",
@@ -30,15 +36,9 @@
         "type": "signal"
       },
       {
-        "material": "Megtron4_2",
-        "name": "DE1",
-        "thickness": "0.1mm",
-        "type": "dielectric"
-      },
-      {
         "fill_material": "Megtron4",
         "material": "copper",
-        "name": "Inner1(GND1)",
+        "name": "Inner1",
         "thickness": "0.017mm",
         "type": "signal"
       },
@@ -51,7 +51,7 @@
       {
         "fill_material": "Megtron4",
         "material": "copper",
-        "name": "Inner2(PWR1)",
+        "name": "Inner2",
         "thickness": "0.017mm",
         "type": "signal"
       },
@@ -64,7 +64,7 @@
       {
         "fill_material": "Megtron4",
         "material": "copper",
-        "name": "Inner3(Sig1)",
+        "name": "Inner3",
         "thickness": "0.017mm",
         "type": "signal"
       },
@@ -77,7 +77,7 @@
       {
         "fill_material": "Megtron4",
         "material": "copper",
-        "name": "Inner4(Sig2)",
+        "name": "Inner4",
         "thickness": "0.017mm",
         "type": "signal"
       },
@@ -90,7 +90,7 @@
       {
         "fill_material": "Megtron4",
         "material": "copper",
-        "name": "Inner5(PWR2)",
+        "name": "Inner5",
         "thickness": "0.017mm",
         "type": "signal"
       },
@@ -103,7 +103,7 @@
       {
         "fill_material": "Megtron4",
         "material": "copper",
-        "name": "Inner6(GND2)",
+        "name": "Inner6",
         "thickness": "0.017mm",
         "type": "signal"
       },

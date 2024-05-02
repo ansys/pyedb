@@ -107,32 +107,48 @@ class TestClass:
     def test_material_to_dict(self):
         """Evaluate material conversion into a dictionary."""
         material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
+        material = Material(self.edbapp, material_def)
+        for property in PROPERTIES:
+            setattr(material, property, FLOAT_VALUE)
+        expected_result = MaterialProperties(
+            **{field: FLOAT_VALUE for field in MaterialProperties.__annotations__}
+        ).model_dump()
+        expected_result["name"] = MATERIAL_NAME
+        # Material without DC model has None value for each DC properties
+        for property in DC_PROPERTIES:
+            expected_result[property] = None
+
+        material_dict = material.to_dict()
+        assert expected_result == material_dict
+
+    def test_material_with_dc_model_to_dict(self):
+        """Evaluate material conversion into a dictionary."""
+        material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
         material_model = self.definition.DjordjecvicSarkarModel()
         material_def.SetDielectricMaterialModel(material_model)
         material = Material(self.edbapp, material_def)
-        for property in PROPERTIES + DC_PROPERTIES:
+        for property in DC_PROPERTIES:
             setattr(material, property, FLOAT_VALUE)
-        material_dict = material.to_dict()
         expected_result = MaterialProperties(
             **{field: FLOAT_VALUE for field in MaterialProperties.__annotations__}
         ).model_dump()
         expected_result["name"] = MATERIAL_NAME
 
-        assert expected_result == material_dict
+        material_dict = material.to_dict()
+        for property in DC_PROPERTIES:
+            assert expected_result[property] == material_dict[property]
 
     def test_material_update_properties(self):
         """Evaluate material properties update."""
         material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
-        material_model = self.definition.DjordjecvicSarkarModel()
-        material_def.SetDielectricMaterialModel(material_model)
         material = Material(self.edbapp, material_def)
-        for property in PROPERTIES + DC_PROPERTIES:
+        for property in PROPERTIES:
             setattr(material, property, FLOAT_VALUE)
         expected_value = FLOAT_VALUE + 1
-
         material_dict = MaterialProperties(
             **{field: expected_value for field in MaterialProperties.__annotations__}
         ).model_dump()
+
         material.update(material_dict)
         for property in PROPERTIES + DC_PROPERTIES:
             assert expected_value == getattr(material, property)
@@ -228,7 +244,7 @@ class TestClass:
         other_name = "OtherMaterial"
 
         new_material = materials.duplicate(MATERIAL_NAME, other_name)
-        for mat_attribute in MaterialProperties.__annotations__.keys():
+        for mat_attribute in PROPERTIES:
             assert getattr(material, mat_attribute) == getattr(new_material, mat_attribute)
         material = materials.duplicate(MATERIAL_NAME, other_name)
         assert not material
