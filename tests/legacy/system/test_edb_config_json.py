@@ -56,7 +56,6 @@ class TestClass:
     def test_01_create_edb(self):
         edbapp = Edb(str(self.local_edb), desktop_version)
         for i in [
-            "stackup.json",
             "components.json",
             "setups_hfss.json",
             "setups_siwave_syz.json",
@@ -170,3 +169,9 @@ class TestClass:
     def test_12_setup_siwave_dc(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "setups_siwave_dc.json"), apply_file=True)
+        edbapp.close()
+
+    def test_13_stackup(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(str(self.local_input_folder / "stackup.json"), apply_file=True)
+        edbapp.close()

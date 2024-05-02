@@ -915,6 +915,12 @@ class Components(object):
         """
         if isinstance(component, str):
             component = self.instances[component].edbcomponent
+        if not solder_balls_height:
+            solder_balls_height = self.components[component.GetName()].solder_ball_height
+        if not solder_balls_size:
+            solder_balls_size = self.components[component.GetName()].solder_ball_diameter[0]
+        if not solder_balls_mid_size:
+            solder_balls_mid_size = self.components[component.GetName()].solder_ball_diameter[1]
         if not isinstance(net_list, list):
             net_list = [net_list]
         for net in net_list:
@@ -2402,20 +2408,20 @@ class Components(object):
         return [pin_xy.X.ToDouble(), pin_xy.Y.ToDouble()]
 
     @pyedb_function_handler()
-    def get_pins_name_from_net(self, pin_list, net_name):
+    def get_pins_name_from_net(self, net_name, pin_list=None):
         """Retrieve pins belonging to a net.
 
         Parameters
         ----------
-        pin_list : list
-            List of pins to check.
+        pin_list : list of EDBPadstackInstance, optional
+            List of pins to check. The default is ``None``, in which case all pins are checked
         net_name : str
             Name of the net.
 
         Returns
         -------
-        list
-            List of pins belong to the net.
+        list of str names:
+            Pins belonging to the net.
 
         Examples
         --------
@@ -2425,11 +2431,16 @@ class Components(object):
         >>> edbapp.components.get_pins_name_from_net(pin_list, net_name)
 
         """
-        pinlist = []
+        pin_names = []
+        if not pin_list:
+            pin_list = []
+            for i in [*self.components.values()]:
+                for j in [*i.pins.values()]:
+                    pin_list.append(j)
         for pin in pin_list:
             if pin.GetNet().GetName() == net_name:
-                pinlist.append(self.get_aedt_pin_name(pin))
-        return pinlist
+                pin_names.append(self.get_aedt_pin_name(pin))
+        return pin_names
 
     @pyedb_function_handler()
     def get_nets_from_pin_list(self, PinList):

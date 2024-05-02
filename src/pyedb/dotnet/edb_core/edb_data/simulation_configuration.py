@@ -25,6 +25,7 @@ import json
 import os
 
 from pyedb.dotnet.clr_module import Dictionary
+from pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data import AdaptiveType
 from pyedb.dotnet.edb_core.edb_data.sources import Source, SourceType
 from pyedb.generic.constants import (
     BasisOrder,
@@ -1249,6 +1250,9 @@ class SimulationConfigurationAc(object):
         self._snap_length_threshold = "2.5um"
         self._min_plane_area_to_mesh = "4mil2"  # Newly Added
         self._mesh_sizefactor = 0.0
+        self._adaptive_type = AdaptiveType.SingleFrequency
+        self._adaptive_low_freq = "0GHz"
+        self._adaptive_high_freq = "20GHz"
 
     @property
     def sweep_interpolating(self):  # pragma: no cover
@@ -1901,6 +1905,51 @@ class SimulationConfigurationAc(object):
             self._mesh_sizefactor = value
             if value > 0.0:
                 self._do_lambda_refinement = False
+
+    @property
+    def adaptive_type(self):
+        """HFSS adaptive type.
+
+        Returns
+        -------
+        class: pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.AdaptiveType
+        """
+        return self._adaptive_type
+
+    @adaptive_type.setter
+    def adaptive_type(self, value):
+        if isinstance(value, int) and value in range(3):
+            self._adaptive_type = value
+
+    @property
+    def adaptive_low_freq(self):
+        """HFSS broadband low frequency adaptive meshing.
+
+        Returns
+        -------
+        str
+        """
+        return self._adaptive_low_freq
+
+    @adaptive_low_freq.setter
+    def adaptive_low_freq(self, value):
+        if isinstance(value, str):
+            self._adaptive_low_freq = value
+
+    @property
+    def adaptive_high_freq(self):
+        """HFSS broadband high frequency adaptive meshing.
+
+        Returns
+        -------
+        str
+        """
+        return self._adaptive_high_freq
+
+    @adaptive_high_freq.setter
+    def adaptive_high_freq(self, value):
+        if isinstance(value, str):
+            self._adaptive_high_freq = value
 
 
 class SimulationConfiguration(object):
