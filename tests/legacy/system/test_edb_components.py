@@ -181,8 +181,8 @@ class TestClass:
     def test_components_get_pins_name_from_net(self):
         """Retrieve pins belonging to a net."""
         cmp_pinlist = self.edbapp.components.get_pin_from_component("U6")
-        assert len(self.edbapp.components.get_pins_name_from_net(cmp_pinlist, "GND")) > 0
-        assert len(self.edbapp.components.get_pins_name_from_net(cmp_pinlist, "5V")) == 0
+        assert len(self.edbapp.components.get_pins_name_from_net("GND", cmp_pinlist)) > 0
+        assert len(self.edbapp.components.get_pins_name_from_net("5V", cmp_pinlist)) == 0
 
     def test_components_delete_single_pin_rlc(self):
         """Delete all RLC components with a single pin."""
