@@ -276,25 +276,6 @@ class TestClass:
 
         edbapp.close()
 
-    def test_stackup_properties_2(self):
-        """Evaluate various stackup properties."""
-        edbapp = Edb(edbversion=desktop_version)
-        import_method = edbapp.stackup.import_stackup
-        export_method = edbapp.stackup.export_stackup
-
-        assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml"))
-        assert "17_Bottom" in edbapp.stackup.layers.keys()
-        xml_export = os.path.join(self.local_scratch.path, "stackup.xml")
-        assert export_method(xml_export)
-        assert os.path.exists(xml_export)
-        assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.csv"))
-        assert "18_Bottom" in edbapp.stackup.layers.keys()
-        assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
-        export_stackup_path = os.path.join(self.local_scratch.path, "export_galileo_stackup.csv")
-        assert export_method(export_stackup_path)
-        assert os.path.exists(export_stackup_path)
-        edbapp.close()
-
     def test_stackup_layer_properties(self):
         """Evaluate various layer properties."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
@@ -1056,3 +1037,18 @@ class TestClass:
         assert edbapp.stackup.import_stackup(json_path)
         assert "SOLDER" in edbapp.stackup.stackup_layers
         edbapp.close()
+
+    def test_19(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.stackup.add_layer_top(name="add_layer_top")
+        assert list(edbapp.stackup.stackup_layers.values())[0].name == "add_layer_top"
+        assert edbapp.stackup.add_layer_bottom(name="add_layer_bottom")
+        assert list(edbapp.stackup.stackup_layers.values())[-1].name == "add_layer_bottom"
+        assert edbapp.stackup.add_layer_below(name="add_layer_below", base_layer_name="1_Top")
+        base_layer = edbapp.stackup.layers["1_Top"]
+        l_id = edbapp.stackup.layers_by_id.index([base_layer.id, base_layer.name])
+        assert edbapp.stackup.layers_by_id[l_id + 1][1] == "add_layer_below"
+        assert edbapp.stackup.add_layer_above(name="add_layer_above", base_layer_name="1_Top")
+        base_layer = edbapp.stackup.layers["1_Top"]
+        l_id = edbapp.stackup.layers_by_id.index([base_layer.id, base_layer.name])
+        assert edbapp.stackup.layers_by_id[l_id - 1][1] == "add_layer_above"
