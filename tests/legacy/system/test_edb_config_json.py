@@ -99,14 +99,20 @@ class TestClass:
         edbapp.close()
 
     def test_05b_ports_coax(self, edb_examples):
-        ports = [{"name": "COAX_U1_AM17",
-                  "reference_designator": "U1",
-                  "type": "coax",
-                  "positive_terminal": {"pin": "AM17"}},
-                 {"name": "COAX_U1_PCIe_Gen4_TX2_CAP_N",
-                  "reference_designator": "U1",
-                  "type": "coax",
-                  "positive_terminal": {"net": "PCIe_Gen4_TX2_CAP_N"}}]
+        ports = [
+            {
+                "name": "COAX_U1_AM17",
+                "reference_designator": "U1",
+                "type": "coax",
+                "positive_terminal": {"pin": "AM17"},
+            },
+            {
+                "name": "COAX_U1_PCIe_Gen4_TX2_CAP_N",
+                "reference_designator": "U1",
+                "type": "coax",
+                "positive_terminal": {"net": "PCIe_Gen4_TX2_CAP_N"},
+            },
+        ]
         data = {"ports": ports}
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
@@ -115,14 +121,17 @@ class TestClass:
         edbapp.close()
 
     def test_05c_ports_circuit_pin_net(self, edb_examples):
-        data = {"ports": [
-            {"name": "CIRCUIT_X1_B8_GND",
-             "reference_designator": "X1",
-             "type": "circuit",
-             "positive_terminal": {"pin": "B8"},
-             "negative_terminal": {"net": "GND"}
-             },
-        ]}
+        data = {
+            "ports": [
+                {
+                    "name": "CIRCUIT_X1_B8_GND",
+                    "reference_designator": "X1",
+                    "type": "circuit",
+                    "positive_terminal": {"pin": "B8"},
+                    "negative_terminal": {"net": "GND"},
+                },
+            ]
+        }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.ports["CIRCUIT_X1_B8_GND"]
@@ -130,14 +139,16 @@ class TestClass:
         edbapp.close()
 
     def test_05c_ports_circuit_net_net_distributed(self, edb_examples):
-        ports = [{
-            "name": "CIRCUIT_U7_VDD_DDR_GND",
-            "reference_designator": "U7",
-            "type": "circuit",
-            "distributed": True,
-            "positive_terminal": {"net": "VDD_DDR"},
-            "negative_terminal": {"net": "GND"}
-        }]
+        ports = [
+            {
+                "name": "CIRCUIT_U7_VDD_DDR_GND",
+                "reference_designator": "U7",
+                "type": "circuit",
+                "distributed": True,
+                "positive_terminal": {"net": "VDD_DDR"},
+                "negative_terminal": {"net": "GND"},
+            }
+        ]
         data = {"ports": ports}
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)

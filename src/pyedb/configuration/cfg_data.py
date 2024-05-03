@@ -25,6 +25,7 @@ from pyedb.configuration.cfg_ports import CfgPort
 
 class CfgData(object):
     """Manages configure data."""
+
     def __init__(self, pedb, **kwargs):
         self.pedb = pedb
         self.edb_comps = self.pedb.components.components
@@ -42,4 +43,3 @@ class CfgData(object):
         self.cfg_spice_models = None
         self.cfg_package_definition = None
         self.cfg_operations = None
-
