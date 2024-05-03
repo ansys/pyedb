@@ -27,8 +27,10 @@ from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 
 class CfgNegTerm:
     """Manage negative terminal."""
+
     class CfgTermType(Enum):
         """Terminal types."""
+
         pin = [list, str]
         net = [str]
         pin_group = [str]
@@ -45,6 +47,7 @@ class CfgNegTerm:
 
     def _get_candidates(self, distributed):
         """Get list of objects."""
+
         def get_pin_obj(pin_name):
             port_name = "{}_{}".format(self.pport.reference_designator, pin_name)
             return {port_name: self.pport.pdata.edb_comps[self.pport.reference_designator].pins[pin_name]}
@@ -59,9 +62,7 @@ class CfgNegTerm:
         elif self.type == "pin_group":
             term_objs.update(get_pin_group_obj(self.value))
         elif self.type == "net":
-            pins = self.pport.pdata.pedb.components.get_pin_from_component(
-                self.pport.reference_designator,
-                self.value)
+            pins = self.pport.pdata.pedb.components.get_pin_from_component(self.pport.reference_designator, self.value)
             pins = [EDBPadstackInstance(p, self.pedb) for p in pins]
 
             pin_objs = {f"{self.value}_{p.GetName()}": p for p in pins}
@@ -73,9 +74,9 @@ class CfgNegTerm:
                 if self.pport.type == "coax":
                     term_objs.update(get_pin_obj(pins[0].GetName()))
                 else:
-                    temp = self.pport.pdata.pedb.siwave.create_pin_group(self.pport.reference_designator,
-                                                                         list(pin_objs.keys()),
-                                                                         pg_name)
+                    temp = self.pport.pdata.pedb.siwave.create_pin_group(
+                        self.pport.reference_designator, list(pin_objs.keys()), pg_name
+                    )
                     term_objs.update({temp[0]: temp[1]})
         return term_objs
 
@@ -86,6 +87,7 @@ class CfgNegTerm:
 
 class CfgPosTerm(CfgNegTerm):
     """Manage positive terminal."""
+
     def __init__(self, pport, **kwargs):
         super().__init__(pport, **kwargs)
 
@@ -96,8 +98,10 @@ class CfgPosTerm(CfgNegTerm):
 
 class CfgPort:
     """Manage port."""
+
     class CfgPortType(Enum):
         """Port type."""
+
         circuit = [str]
         coax = [str]
 
@@ -114,11 +118,13 @@ class CfgPort:
         pos_term = kwargs.get("positive_terminal", None)
         neg_term = kwargs.get("negative_terminal", None)
         if pos_term:
-            self.positive_terminal = CfgPosTerm(pport=self, type=list(pos_term.keys())[0],
-                                                value=list(pos_term.values())[0])
+            self.positive_terminal = CfgPosTerm(
+                pport=self, type=list(pos_term.keys())[0], value=list(pos_term.values())[0]
+            )
         if neg_term:
-            self.negative_terminal = CfgPosTerm(pport=self, type=list(neg_term.keys())[0],
-                                                value=list(neg_term.values())[0])
+            self.negative_terminal = CfgPosTerm(
+                pport=self, type=list(neg_term.keys())[0], value=list(neg_term.values())[0]
+            )
         self.distributed = kwargs.get("distributed", False)
 
         self._port_name = None
