@@ -28,6 +28,7 @@ import toml
 
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.configuration.cfg_data import CfgData
 
 
 class Configuration:
@@ -39,6 +40,7 @@ class Configuration:
         self.data = {}
         self._s_parameter_library = ""
         self._spice_model_library = ""
+        self.cfg_data = None
 
     @pyedb_function_handler
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
@@ -86,6 +88,9 @@ class Configuration:
                     self.data[k] = v
             else:
                 self.data[k] = v
+
+        self.cfg_data = CfgData(self._pedb, **data)
+
         if apply_file:
             original_file = self._pedb.edbpath
             if output_file:
@@ -132,8 +137,8 @@ class Configuration:
             self._load_pin_groups()
 
         # Configure ports
-        if "ports" in self.data:
-            self._load_ports()
+        for port in self.cfg_data.cfg_ports:
+            port.create()
 
         # Configure sources
         if "sources" in self.data:
@@ -275,6 +280,7 @@ class Configuration:
     @pyedb_function_handler
     def _load_ports(self):
         """Imports port information from json."""
+
         for port in self.data["ports"]:
             port_type = port["type"]
 
@@ -315,7 +321,7 @@ class Configuration:
                     pin_name = negative_terminal_json["pin"]
                     port_name = "{}_{}_ref".format(ref_designator, pin_name)
                     neg_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
-                else:
+                elif "net" in negative_terminal_json:
                     net_name = negative_terminal_json["net"]
                     port_name = "{}_{}_ref".format(ref_designator, net_name)
                     pg_name = "pg_{}".format(port_name)

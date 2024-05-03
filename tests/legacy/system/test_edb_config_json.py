@@ -93,22 +93,56 @@ class TestClass:
         assert not edbapp.nets["SFPA_VCCR"].is_power_ground
         edbapp.close()
 
-    def test_05_ports(self):
-        edbapp = Edb(str(self.local_edb), desktop_version)
-        assert edbapp.configuration.load(
-            str(self.local_input_folder / "ports_coax.json"),
-            apply_file=True,
-            output_file=str(os.path.join(self.local_scratch.path, "exported_1.aedb")),
-            open_at_the_end=False,
-        )
-        assert Path(self.local_scratch.path, "exported_1.aedb").exists()
-        assert edbapp.configuration.load(
-            str(self.local_input_folder / "ports_circuit.json"),
-            apply_file=True,
-            output_file=str(os.path.join(self.local_scratch.path, "exported_2.aedb")),
-            open_at_the_end=True,
-        )
-        assert Path(self.local_scratch.path, "exported_2.aedb").exists()
+    def test_05_ports(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(str(self.local_input_folder / "ports_coax.json"), apply_file=True)
+        assert edbapp.configuration.load(str(self.local_input_folder / "ports_circuit.json"), apply_file=True)
+        edbapp.close()
+
+    def test_05b_ports_coax(self, edb_examples):
+        ports = [{"name": "COAX_U1_AM17",
+                  "reference_designator": "U1",
+                  "type": "coax",
+                  "positive_terminal": {"pin": "AM17"}},
+                 {"name": "COAX_U1_PCIe_Gen4_TX2_CAP_N",
+                  "reference_designator": "U1",
+                  "type": "coax",
+                  "positive_terminal": {"net": "PCIe_Gen4_TX2_CAP_N"}}]
+        data = {"ports": ports}
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.ports["COAX_U1_AM17"]
+        assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"]
+        edbapp.close()
+
+    def test_05c_ports_circuit_pin_net(self, edb_examples):
+        data = {"ports": [
+            {"name": "CIRCUIT_X1_B8_GND",
+             "reference_designator": "X1",
+             "type": "circuit",
+             "positive_terminal": {"pin": "B8"},
+             "negative_terminal": {"net": "GND"}
+             },
+        ]}
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.ports["CIRCUIT_X1_B8_GND"]
+        assert edbapp.ports["CIRCUIT_X1_B8_GND"].is_circuit_port
+        edbapp.close()
+
+    def test_05c_ports_circuit_net_net_distributed(self, edb_examples):
+        ports = [{
+            "name": "CIRCUIT_U7_VDD_DDR_GND",
+            "reference_designator": "U7",
+            "type": "circuit",
+            "distributed": True,
+            "positive_terminal": {"net": "VDD_DDR"},
+            "negative_terminal": {"net": "GND"}
+        }]
+        data = {"ports": ports}
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.ports
         edbapp.close()
 
     def test_06_s_parameters(self):
