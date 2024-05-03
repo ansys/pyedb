@@ -30,7 +30,7 @@ from pyedb.generic.general_methods import generate_unique_name
 
 
 class HFSSPISimulationSetup(BaseSimulationSetup):
-    """Manages EDB methods for RaptorX simulation setup."""
+    """Manages EDB methods for HFSSPI simulation setup."""
 
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
@@ -71,7 +71,7 @@ class HFSSPISimulationSetup(BaseSimulationSetup):
         if isinstance(value, int):
             self._edb_setup_info.Position = value
         else:
-            self.logger.error(f"RaptorX setup position input setter must be an integer. Provided value {value}")
+            self.logger.error(f"HFSSPI setup position input setter must be an integer. Provided value {value}")
 
     @property
     def frequency_sweeps(self):
