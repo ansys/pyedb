@@ -39,7 +39,7 @@ class CfgData(object):
         self.cfg_setups = None
         self.cfg_stackup = None
         self.cfg_s_parameters = None
-        self.cfg_spice_modesl = None
+        self.cfg_spice_models = None
         self.cfg_package_definition = None
         self.cfg_operations = None
 
