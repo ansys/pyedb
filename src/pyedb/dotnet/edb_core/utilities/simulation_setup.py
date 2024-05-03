@@ -57,6 +57,7 @@ class BaseSimulationSetup(object):
             "kQ3D": None,
             "kNumSetupTypes": None,
             "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings,
+            "kHFSSPI": self._pedb.simsetupdata.HFSSPISimulationSettings,
         }
         if self._edb_object:
             self._name = self._edb_object.GetName()
@@ -73,7 +74,10 @@ class BaseSimulationSetup(object):
         setup_type = self._setup_type_mapping[self._setup_type]
         edb_setup_info = self._pedb.simsetupdata.SimSetupInfo[setup_type]()
         edb_setup_info.Name = name
-        if edb_setup_info.get_SimSetupType().ToString() == "kRaptorX":
+        if (
+            edb_setup_info.get_SimSetupType().ToString() == "kRaptorX"
+            or edb_setup_info.get_SimSetupType().ToString() == "kHFSSPI"
+        ):
             self._edb_setup_info = edb_setup_info
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
