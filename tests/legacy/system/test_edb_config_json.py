@@ -242,9 +242,10 @@ class TestClass:
         ]
         data = {"sources": sources_v}
         assert edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.sources["VSOURCE_U2_1V0_GND"].magnitude == 1
         sources_i = [
             {
-                "name": "ISOURCE_U2_1V0_GND",
+                "name": "ISOURCE",
                 "reference_designator": "U1",
                 "type": "current",
                 "magnitude": 1,
@@ -259,6 +260,5 @@ class TestClass:
         ]
         data = {"sources": sources_i}
         assert edbapp.configuration.load(data, apply_file=True)
-        #assert edbapp.ports["COAX_U1_AM17"]
-        #assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"]
+        assert not edbapp.sources["ISOURCE_U1_1V0_M16"].magnitude == 1
         edbapp.close()

@@ -141,8 +141,10 @@ class Configuration:
             port.create()
 
         # Configure sources
-        if "sources" in self.data:
-            self._load_sources()
+        """if "sources" in self.data:
+            self._load_sources()"""
+        for source in self.cfg_data.cfg_sources:
+            source.create()
 
         # Configure HFSS setup
         if "setups" in self.data:

@@ -20,10 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from enum import Enum
-
-from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-
 
 class CfgCircuitElement:
     @property
@@ -116,7 +112,6 @@ class CfgPort(CfgCircuitElement):
         """Create port."""
         is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
-        pos_terminals = list()
         for _, j in self.pos_terminals.items():
             elem = self.pedb.create_port(j, self.neg_terminal, is_circuit_port)
             if not self.distributed:
@@ -138,11 +133,15 @@ class CfgSources(CfgCircuitElement):
         """Create sources."""
         is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
-        pos_terminals = list()
+        method = self.pedb.create_current_source if self.type == "current" else self.pedb.create_voltage_source
         for _, j in self.pos_terminals.items():
-            elem = self.pedb.create_port(j, self.neg_terminal, is_circuit_port)
+            elem = method(j, self.neg_terminal)
             if not self.distributed:
                 elem.name = self.name
+                elem.magnitude = self.magnitude
+            else:
+                elem.name = f"{self.name}_{elem.name}"
+                elem.magnitude = self.magnitude/self._elem_num
             circuit_elements.append(elem)
         return circuit_elements
 
