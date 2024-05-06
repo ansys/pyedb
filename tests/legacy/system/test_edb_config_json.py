@@ -66,19 +66,8 @@ class TestClass:
     def test_02_pin_groups(self):
         edbapp = Edb(str(self.local_edb), desktop_version)
         pin_groups = [
-            {
-                "name": "U9_5V_1",
-                "reference_designator": "U9",
-                "pins": [
-                    "32",
-                    "33"
-                ]
-            },
-            {
-                "name": "U9_GND",
-                "reference_designator": "U9",
-                "net": "GND"
-            },
+            {"name": "U9_5V_1", "reference_designator": "U9", "pins": ["32", "33"]},
+            {"name": "U9_GND", "reference_designator": "U9", "net": "GND"},
         ]
         data = {"pin_groups": pin_groups}
         assert edbapp.configuration.load(data, apply_file=True)
@@ -171,30 +160,15 @@ class TestClass:
     def test_05c_ports_pin_group(self):
         edbapp = Edb(str(self.local_edb), desktop_version)
         pin_groups = [
-            {
-                "name": "U9_5V_1",
-                "reference_designator": "U9",
-                "pins": [
-                    "32",
-                    "33"
-                ]
-            },
-            {
-                "name": "U9_GND",
-                "reference_designator": "U9",
-                "net": "GND"
-            },
+            {"name": "U9_5V_1", "reference_designator": "U9", "pins": ["32", "33"]},
+            {"name": "U9_GND", "reference_designator": "U9", "net": "GND"},
         ]
         ports = [
             {
                 "name": "U9_pin_group_port",
                 "type": "circuit",
-                "positive_terminal": {
-                    "pin_group": "U9_5V_1"
-                },
-                "negative_terminal": {
-                    "pin_group": "U9_GND"
-                }
+                "positive_terminal": {"pin_group": "U9_5V_1"},
+                "negative_terminal": {"pin_group": "U9_GND"},
             }
         ]
         data = {"pin_groups": pin_groups, "ports": ports}
