@@ -156,6 +156,6 @@ class CfgSources(CfgCircuitElement):
                 elem.magnitude = self.magnitude
             else:
                 elem.name = f"{self.name}_{elem.name}"
-                elem.magnitude = self.magnitude/self._elem_num
+                elem.magnitude = self.magnitude / self._elem_num
             circuit_elements.append(elem)
         return circuit_elements
