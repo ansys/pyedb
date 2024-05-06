@@ -1,0 +1,148 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+from enum import Enum
+
+from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+
+
+class CfgCircuitElement:
+    @property
+    def pedb(self):
+        """Edb."""
+        return self.pdata.pedb
+
+    def __init__(self, pdata, **kwargs):
+        self.pdata = pdata
+        self.name = kwargs.get("name", None)
+        self.type = kwargs.get("type", None)
+        self.reference_designator = kwargs.get("reference_designator", None)
+        self.distributed = kwargs.get("distributed", False)
+        pos_term_info = kwargs.get("positive_terminal", None)  # {"pin" : "A1"}
+
+        if pos_term_info:
+            pos_type, pos_value = [[i, j] for i, j in pos_term_info.items()][0]
+            pos_objs = dict()
+            if self.type == "coax":
+                pins = self._get_pins(pos_type, pos_value)
+                pins = {f"{self.name}_{self.reference_designator}": i for _, i in pins.items()}
+                pos_objs.update(pins)
+            else:
+                if not self.distributed:
+                    # get pins
+                    pins = self._get_pins(pos_type, pos_value)  # terminal type pin or net
+                    # create pin group
+                    pin_group = self._create_pin_group(pins)
+                    pos_objs.update(pin_group)
+                else:
+                    # get pins
+                    pins = self._get_pins(pos_type, pos_value)  # terminal type pin or net or pin group
+                    pos_objs.update(pins)
+                    self._elem_num = len(pos_objs)
+
+            self.pos_terminals = {i: j.get_terminal(i, create_new_terminal=True) for i, j in pos_objs.items()}
+
+        neg_term_info = kwargs.get("negative_terminal", None)
+
+        self.neg_terminal = None
+        if neg_term_info:
+            neg_type, neg_value = [[i, j] for i, j in neg_term_info.items()][0]
+            # Get pins
+            pins = self._get_pins(neg_type, neg_value)  # terminal type pin or net
+            # create pin group
+            pin_group = self._create_pin_group(pins, True)
+            self.neg_terminal = [j.get_terminal(i, create_new_terminal=True) for i, j in pin_group.items()][0]
+
+    def _get_pins(self, terminal_type, terminal_value):
+        terminal_value = terminal_value if isinstance(terminal_value, list) else [terminal_value]
+
+        def get_pin_obj(pin_name):
+            return {pin_name: self.pdata.edb_comps[self.reference_designator].pins[pin_name]}
+
+        pins = dict()
+        if terminal_type == "pin":
+            for i in terminal_value:
+                pins.update(get_pin_obj(i))
+        else:
+            if terminal_type == "net":
+                temp = self.pdata.pedb.components.get_pins(self.reference_designator, terminal_value[0])
+            elif terminal_type == "pin_group":
+                pin_group = self.pedb.siwave.pin_groups[terminal_value[0]]
+                temp =pin_group.pins
+            pins.update({f"{self.reference_designator}_{terminal_value[0]}_{i}": j for i,j in temp.items()})
+        return pins
+
+    def _create_pin_group(self, pins, is_ref=False):
+        if is_ref:
+            pg_name = f"pg_{self.name}_{self.reference_designator}_ref"
+        else:
+            pg_name = f"pg_{self.name}_{self.reference_designator}"
+        pin_names = [i.pin_number for i in pins.values()]
+        name, temp = self.pdata.pedb.siwave.create_pin_group(
+            self.reference_designator, pin_names, pg_name
+        )
+        return {name: temp}
+
+
+class CfgPort(CfgCircuitElement):
+    """Manage port."""
+
+    CFG_PORT_TYPE = {"circuit": [str],
+                     "coax": [str]}
+
+    def __init__(self, pdata, **kwargs):
+        super().__init__(pdata, **kwargs)
+
+    def create(self):
+        """Create port."""
+        is_circuit_port = True if self.type == "circuit" else False
+        circuit_elements = []
+        pos_terminals = list()
+        for _, j in self.pos_terminals.items():
+            elem = self.pedb.create_port(j, self.neg_terminal, is_circuit_port)
+            if not self.distributed:
+                elem.name = self.name
+            circuit_elements.append(elem)
+        return circuit_elements
+
+
+class CfgSources(CfgCircuitElement):
+    CFG_SOURCE_TYPE = {"current": [int, float],
+                       "voltage": [int, float]}
+
+    def __init__(self, pdata, **kwargs):
+        super().__init__(pdata, **kwargs)
+
+        self.magnitude = kwargs.get("magnitude", 0.001)
+
+    def create(self):
+        """Create sources."""
+        is_circuit_port = True if self.type == "circuit" else False
+        circuit_elements = []
+        pos_terminals = list()
+        for _, j in self.pos_terminals.items():
+            elem = self.pedb.create_port(j, self.neg_terminal, is_circuit_port)
+            if not self.distributed:
+                elem.name = self.name
+            circuit_elements.append(elem)
+        return circuit_elements
+

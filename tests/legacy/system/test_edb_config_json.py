@@ -57,7 +57,6 @@ class TestClass:
         for i in [
             "components.json",
             "setups_hfss.json",
-            "sources.json",
         ]:
             with open(self.local_input_folder / i) as f:
                 data = json.load(f)
@@ -152,7 +151,7 @@ class TestClass:
         data = {"ports": ports}
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        assert edbapp.ports
+        assert len(edbapp.ports) > 1
         edbapp.close()
 
     def test_06_s_parameters(self):
@@ -222,4 +221,44 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "setups_siwave_syz.json"), apply_file=True)
         setup = edbapp.setups["siwave_syz"]
+        edbapp.close()
+
+    def test_15b_sources(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        sources_v = [
+            {
+                "name": "VSOURCE_U2_1V0_GND",
+                "reference_designator": "U2",
+                "type": "voltage",
+                "magnitude": 1,
+                "distributed": False,
+                "positive_terminal": {
+                    "net": "1V0"
+                },
+                "negative_terminal": {
+                    "net": "GND"
+                }
+            },
+        ]
+        data = {"sources": sources_v}
+        assert edbapp.configuration.load(data, apply_file=True)
+        sources_i = [
+            {
+                "name": "ISOURCE_U2_1V0_GND",
+                "reference_designator": "U1",
+                "type": "current",
+                "magnitude": 1,
+                "distributed": True,
+                "positive_terminal": {
+                    "net": "1V0"
+                },
+                "negative_terminal": {
+                    "net": "GND"
+                }
+            },
+        ]
+        data = {"sources": sources_i}
+        assert edbapp.configuration.load(data, apply_file=True)
+        #assert edbapp.ports["COAX_U1_AM17"]
+        #assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"]
         edbapp.close()
