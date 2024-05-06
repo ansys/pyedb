@@ -83,8 +83,8 @@ class CfgCircuitElement:
                 temp = self.pdata.pedb.components.get_pins(self.reference_designator, terminal_value[0])
             elif terminal_type == "pin_group":
                 pin_group = self.pedb.siwave.pin_groups[terminal_value[0]]
-                temp =pin_group.pins
-            pins.update({f"{self.reference_designator}_{terminal_value[0]}_{i}": j for i,j in temp.items()})
+                temp = pin_group.pins
+            pins.update({f"{self.reference_designator}_{terminal_value[0]}_{i}": j for i, j in temp.items()})
         return pins
 
     def _create_pin_group(self, pins, is_ref=False):
@@ -93,17 +93,14 @@ class CfgCircuitElement:
         else:
             pg_name = f"pg_{self.name}_{self.reference_designator}"
         pin_names = [i.pin_number for i in pins.values()]
-        name, temp = self.pdata.pedb.siwave.create_pin_group(
-            self.reference_designator, pin_names, pg_name
-        )
+        name, temp = self.pdata.pedb.siwave.create_pin_group(self.reference_designator, pin_names, pg_name)
         return {name: temp}
 
 
 class CfgPort(CfgCircuitElement):
     """Manage port."""
 
-    CFG_PORT_TYPE = {"circuit": [str],
-                     "coax": [str]}
+    CFG_PORT_TYPE = {"circuit": [str], "coax": [str]}
 
     def __init__(self, pdata, **kwargs):
         super().__init__(pdata, **kwargs)
@@ -121,8 +118,7 @@ class CfgPort(CfgCircuitElement):
 
 
 class CfgSources(CfgCircuitElement):
-    CFG_SOURCE_TYPE = {"current": [int, float],
-                       "voltage": [int, float]}
+    CFG_SOURCE_TYPE = {"current": [int, float], "voltage": [int, float]}
 
     def __init__(self, pdata, **kwargs):
         super().__init__(pdata, **kwargs)
@@ -144,4 +140,3 @@ class CfgSources(CfgCircuitElement):
                 elem.magnitude = self.magnitude/self._elem_num
             circuit_elements.append(elem)
         return circuit_elements
-

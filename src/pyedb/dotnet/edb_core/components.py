@@ -538,14 +538,14 @@ class Components(object):
 
     @pyedb_function_handler()
     def get_component_placement_vector(
-            self,
-            mounted_component,
-            hosting_component,
-            mounted_component_pin1,
-            mounted_component_pin2,
-            hosting_component_pin1,
-            hosting_component_pin2,
-            flipped=False,
+        self,
+        mounted_component,
+        hosting_component,
+        mounted_component_pin1,
+        mounted_component_pin2,
+        hosting_component_pin1,
+        hosting_component_pin2,
+        flipped=False,
     ):
         """Get the placement vector between 2 components.
 
@@ -855,16 +855,16 @@ class Components(object):
 
     @pyedb_function_handler()
     def create_port_on_component(
-            self,
-            component,
-            net_list,
-            port_type=SourceType.CoaxPort,
-            do_pingroup=True,
-            reference_net="gnd",
-            port_name=None,
-            solder_balls_height=None,
-            solder_balls_size=None,
-            solder_balls_mid_size=None,
+        self,
+        component,
+        net_list,
+        port_type=SourceType.CoaxPort,
+        do_pingroup=True,
+        reference_net="gnd",
+        port_name=None,
+        solder_balls_height=None,
+        solder_balls_size=None,
+        solder_balls_mid_size=None,
     ):
         """Create ports on a component.
 
@@ -1123,9 +1123,9 @@ class Components(object):
                 return False
         component_type = component.edbcomponent.GetComponentType()
         if (
-                component_type == self._edb.definition.ComponentType.Other
-                or component_type == self._edb.definition.ComponentType.IC
-                or component_type == self._edb.definition.ComponentType.IO
+            component_type == self._edb.definition.ComponentType.Other
+            or component_type == self._edb.definition.ComponentType.IC
+            or component_type == self._edb.definition.ComponentType.IO
         ):
             self._logger.info("Component %s passed to deactivate is not an RLC.", component.refdes)
             return False
@@ -1174,9 +1174,9 @@ class Components(object):
                 return False
         component_type = component.edbcomponent.GetComponentType()
         if (
-                component_type == self._edb.definition.ComponentType.Other
-                or component_type == self._edb.definition.ComponentType.IC
-                or component_type == self._edb.definition.ComponentType.IO
+            component_type == self._edb.definition.ComponentType.Other
+            or component_type == self._edb.definition.ComponentType.IC
+            or component_type == self._edb.definition.ComponentType.IO
         ):
             self._logger.info("Component %s passed to deactivate is not an RLC.", component.refdes)
             return False
@@ -1415,7 +1415,7 @@ class Components(object):
 
     @pyedb_function_handler()
     def create_rlc_component(
-            self, pins, component_name="", r_value=None, c_value=None, l_value=None, is_parallel=False
+        self, pins, component_name="", r_value=None, c_value=None, l_value=None, is_parallel=False
     ):  # pragma: no cover
         """Create physical Rlc component.
 
@@ -1455,16 +1455,16 @@ class Components(object):
 
     @pyedb_function_handler()
     def create(
-            self,
-            pins,
-            component_name=None,
-            placement_layer=None,
-            component_part_name=None,
-            is_rlc=False,
-            r_value=None,
-            c_value=None,
-            l_value=None,
-            is_parallel=False,
+        self,
+        pins,
+        component_name=None,
+        placement_layer=None,
+        component_part_name=None,
+        is_rlc=False,
+        r_value=None,
+        c_value=None,
+        l_value=None,
+        is_parallel=False,
     ):
         """Create a component from pins.
 
@@ -1561,7 +1561,7 @@ class Components(object):
             rlc_model.SetPinPairRlc(pin_pair, rlc)
             edb_rlc_component_property = self._edb.cell.hierarchy._hierarchy.RLCComponentProperty()
             if not edb_rlc_component_property.SetModel(rlc_model) or not new_cmp.SetComponentProperty(
-                    edb_rlc_component_property
+                edb_rlc_component_property
             ):
                 return False  # pragma no cover
         new_cmp.SetTransform(hosting_component_location)
@@ -1571,7 +1571,7 @@ class Components(object):
 
     @pyedb_function_handler()
     def create_component_from_pins(
-            self, pins, component_name, placement_layer=None, component_part_name=None
+        self, pins, component_name, placement_layer=None, component_part_name=None
     ):  # pragma: no cover
         """Create a component from pins.
 
@@ -1907,17 +1907,17 @@ class Components(object):
 
     @pyedb_function_handler()
     def set_solder_ball(
-            self,
-            component="",
-            sball_diam=None,
-            sball_height=None,
-            shape="Cylinder",
-            sball_mid_diam=None,
-            chip_orientation="chip_down",
-            auto_reference_size=True,
-            reference_size_x=0,
-            reference_size_y=0,
-            reference_height=0,
+        self,
+        component="",
+        sball_diam=None,
+        sball_height=None,
+        shape="Cylinder",
+        sball_mid_diam=None,
+        chip_orientation="chip_down",
+        auto_reference_size=True,
+        reference_size_x=0,
+        reference_size_y=0,
+        reference_height=0,
     ):
         """Set cylindrical solder balls on a given component.
 
@@ -2014,12 +2014,12 @@ class Components(object):
 
     @pyedb_function_handler()
     def set_component_rlc(
-            self,
-            componentname,
-            res_value=None,
-            ind_value=None,
-            cap_value=None,
-            isparallel=False,
+        self,
+        componentname,
+        res_value=None,
+        ind_value=None,
+        cap_value=None,
+        isparallel=False,
     ):
         """Update values for an RLC component.
 
@@ -2083,7 +2083,7 @@ class Components(object):
             rlc_model = self._edb.cell.hierarchy._hierarchy.PinPairModel()
             rlc_model.SetPinPairRlc(pin_pair, rlc)
             if not edb_rlc_component_property.SetModel(rlc_model) or not edb_component.SetComponentProperty(
-                    edb_rlc_component_property
+                edb_rlc_component_property
             ):
                 self._logger.error("Failed to set RLC model on component")
                 return False
@@ -2099,12 +2099,12 @@ class Components(object):
 
     @pyedb_function_handler()
     def update_rlc_from_bom(
-            self,
-            bom_file,
-            delimiter=";",
-            valuefield="Func des",
-            comptype="Prod name",
-            refdes="Pos / Place",
+        self,
+        bom_file,
+        delimiter=";",
+        valuefield="Func des",
+        comptype="Prod name",
+        refdes="Pos / Place",
     ):
         """Update the EDC core component values (RLCs) with values coming from a BOM file.
 
@@ -2169,13 +2169,13 @@ class Components(object):
 
     @pyedb_function_handler()
     def import_bom(
-            self,
-            bom_file,
-            delimiter=",",
-            refdes_col=0,
-            part_name_col=1,
-            comp_type_col=2,
-            value_col=3,
+        self,
+        bom_file,
+        delimiter=",",
+        refdes_col=0,
+        part_name_col=1,
+        comp_type_col=2,
+        value_col=3,
     ):
         """Load external BOM file.
 
@@ -2346,8 +2346,8 @@ class Components(object):
                 p
                 for p in list(component.LayoutObjs)
                 if int(p.GetObjType()) == 1
-                   and p.IsLayoutPin()
-                   and (self.get_aedt_pin_name(p) in pinName or p.GetName() in pinName)
+                and p.IsLayoutPin()
+                and (self.get_aedt_pin_name(p) in pinName or p.GetName() in pinName)
             ]
         else:
             pins = [p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.IsLayoutPin()]

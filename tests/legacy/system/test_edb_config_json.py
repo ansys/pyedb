@@ -232,12 +232,8 @@ class TestClass:
                 "type": "voltage",
                 "magnitude": 1,
                 "distributed": False,
-                "positive_terminal": {
-                    "net": "1V0"
-                },
-                "negative_terminal": {
-                    "net": "GND"
-                }
+                "positive_terminal": {"net": "1V0"},
+                "negative_terminal": {"net": "GND"},
             },
         ]
         data = {"sources": sources_v}
@@ -250,12 +246,8 @@ class TestClass:
                 "type": "current",
                 "magnitude": 1,
                 "distributed": True,
-                "positive_terminal": {
-                    "net": "1V0"
-                },
-                "negative_terminal": {
-                    "net": "GND"
-                }
+                "positive_terminal": {"net": "1V0"},
+                "negative_terminal": {"net": "GND"},
             },
         ]
         data = {"sources": sources_i}

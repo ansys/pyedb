@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.configuration.cfg_ports_sources import (CfgPort, CfgSources)
-
+from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
 
 
 class CfgData(object):
