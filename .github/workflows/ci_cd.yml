@@ -41,6 +41,7 @@ jobs:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           check-links: false
           add-pdf-html-docs-as-assets: true
+          sphinxopts: '-j auto --keep-going'
 
   docs-build-windows-github-runner:
     name: Build documentation
@@ -53,6 +54,7 @@ jobs:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           check-links: false
           add-pdf-html-docs-as-assets: true
+          sphinxopts: '-j auto --keep-going'
 
   docs-build-linux-github-runner:
     name: Build documentation
@@ -65,4 +67,4 @@ jobs:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           check-links: false
           add-pdf-html-docs-as-assets: true
-
+          sphinxopts: '-j auto --keep-going'
