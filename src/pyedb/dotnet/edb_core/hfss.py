@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 This module contains the ``EdbHfss`` class.
 """
@@ -1143,7 +1165,7 @@ class EdbHfss(object):
                                     if not ref_prim:
                                         self._logger.error("Failed to collect valid reference primitives for terminal")
                                 if ref_prim:
-                                    reference_layer = ref_prim[0].layer
+                                    reference_layer = ref_prim[0].layer._edb_layer
                                     if term.SetReferenceLayer(reference_layer):  # pragma no cover
                                         self._logger.info("Port {} created".format(port_name))
             return terminal_info
@@ -1254,25 +1276,43 @@ class EdbHfss(object):
                                as argument"
             )
             return False
-        adapt = self._pedb.simsetupdata.AdaptiveFrequencyData()
-        adapt.AdaptiveFrequency = simulation_setup.mesh_freq
-        adapt.MaxPasses = int(simulation_setup.max_num_passes)
-        adapt.MaxDelta = str(simulation_setup.max_mag_delta_s)
         simsetup_info = self._pedb.simsetupdata.SimSetupInfo[self._pedb.simsetupdata.HFSSSimulationSettings]()
         simsetup_info.Name = simulation_setup.setup_name
+
+        if simulation_setup.ac_settings.adaptive_type == 0:
+            adapt = self._pedb.simsetupdata.AdaptiveFrequencyData()
+            adapt.AdaptiveFrequency = simulation_setup.mesh_freq
+            adapt.MaxPasses = int(simulation_setup.max_num_passes)
+            adapt.MaxDelta = str(simulation_setup.max_mag_delta_s)
+            if is_ironpython:
+                simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Clear()
+                simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Add(adapt)
+            else:
+                simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList = (
+                    convert_py_list_to_net_list([adapt])
+                )
+        elif simulation_setup.ac_settings.adaptive_type == 2:
+            low_freq_adapt_data = self._pedb.simsetupdata.AdaptiveFrequencyData()
+            low_freq_adapt_data.MaxDelta = str(simulation_setup.max_mag_delta_s)
+            low_freq_adapt_data.MaxPasses = int(simulation_setup.max_num_passes)
+            low_freq_adapt_data.AdaptiveFrequency = simulation_setup.ac_settings.adaptive_low_freq
+            high_freq_adapt_data = self._pedb.simsetupdata.AdaptiveFrequencyData()
+            high_freq_adapt_data.MaxDelta = str(simulation_setup.max_mag_delta_s)
+            high_freq_adapt_data.MaxPasses = int(simulation_setup.max_num_passes)
+            high_freq_adapt_data.AdaptiveFrequency = simulation_setup.ac_settings.adaptive_high_freq
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptType = (
+                self._pedb.simsetupdata.AdaptiveSettings.TAdaptType.kBroadband
+            )
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Clear()
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Add(low_freq_adapt_data)
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Add(high_freq_adapt_data)
 
         simsetup_info.SimulationSettings.CurveApproxSettings.ArcAngle = simulation_setup.arc_angle
         simsetup_info.SimulationSettings.CurveApproxSettings.UseArcToChordError = (
             simulation_setup.use_arc_to_chord_error
         )
         simsetup_info.SimulationSettings.CurveApproxSettings.ArcToChordError = simulation_setup.arc_to_chord_error
-        if is_ironpython:
-            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Clear()
-            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Add(adapt)
-        else:
-            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList = convert_py_list_to_net_list(
-                [adapt]
-            )
+
         simsetup_info.SimulationSettings.InitialMeshSettings.LambdaRefine = simulation_setup.do_lambda_refinement
         if simulation_setup.mesh_sizefactor > 0.0:
             simsetup_info.SimulationSettings.InitialMeshSettings.MeshSizefactor = simulation_setup.mesh_sizefactor

@@ -34,15 +34,10 @@ translation through simulation results.
 Additionally, you can use PyAEDT to import an AEDB file into AEDT to view a project,
 combine 3D designs, or perform simulation postprocessing. EDB also supports 3D component models.
 
-.. image:: https://images.ansys.com/is/image/ansys/ansys-electronics-technology-collage?wid=941&op_usm=0.9,1.0,20,0&fit=constrain,0
-  :width: 800
-  :alt: AEDT Applications
-  :target: https://www.ansys.com/products/electronics
-
 Why use PyEDB?
 --------------
 PyEDB interacts with the `PyEDB-Core <https://github.com/ansys/pyedb-core>`_ API to make scripting simpler.
-It provides application-oriented, high-level methods and properties. The PyEDB API's ``Edb`` class and methods 
+It provides application-oriented, high-level methods and properties. The PyEDB API's ``Edb`` class and methods
 simplify operations while reusing information as much as possible across the API.
 
 Because PyEDB runs in memory, it does not require a user interface. Its API is extremely efficient at

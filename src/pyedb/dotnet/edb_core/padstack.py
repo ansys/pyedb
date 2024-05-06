@@ -1,8 +1,32 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 This module contains the `EdbPadstacks` class.
 """
 import math
 import warnings
+
+import rtree
 
 from pyedb.dotnet.clr_module import Array
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import (
@@ -190,7 +214,7 @@ class EdbPadstacks(object):
 
         Returns
         -------
-        dict[str, :class:`dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
+        dict[int, :class:`dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
             List of padstack instances.
 
         """
@@ -199,6 +223,24 @@ class EdbPadstacks(object):
         edb_padstack_inst_list = self._pedb.layout.padstack_instances
         for edb_padstack_instance in edb_padstack_inst_list:
             padstack_instances[edb_padstack_instance.GetId()] = EDBPadstackInstance(edb_padstack_instance, self._pedb)
+        return padstack_instances
+
+    @property
+    def instances_by_name(self):
+        """Dictionary  of all padstack instances (vias and pins) by name.
+
+        Returns
+        -------
+        dict[str, :class:`dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
+            List of padstack instances.
+
+        """
+        padstack_instances = {}
+        for _, edb_padstack_instance in self._pedb.padstacks.instances.items():
+            if edb_padstack_instance.aedt_name:
+                padstack_instances[edb_padstack_instance.aedt_name] = EDBPadstackInstance(
+                    edb_padstack_instance, self._pedb
+                )
         return padstack_instances
 
     @property
@@ -1311,6 +1353,42 @@ class EdbPadstacks(object):
         return True
 
     @pyedb_function_handler()
+    def get_instances(self, name=None, pid=None, definition_name=None, net_name=None):
+        """Get padstack instances by conditions.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the padstack.
+        pid : int, optional
+            Id of the padstack.
+        definition_name : str, list, optional
+            Name of the padstack definition.
+        net_name : str, optional
+            The net name to be used for filtering padstack instances.
+
+        Returns
+        -------
+        list
+            List of :class:`dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`.
+        """
+
+        instances_by_id = self.instances
+        if pid:
+            return instances_by_id[pid]
+        elif name:
+            return self.instances_by_name[name]
+        else:
+            instances = list(instances_by_id.values())
+            if definition_name:
+                definition_name = definition_name if isinstance(definition_name, list) else [definition_name]
+                instances = [inst for inst in instances if inst.padstack_definition in definition_name]
+            if net_name:
+                net_name = net_name if isinstance(net_name, list) else [net_name]
+                instances = [inst for inst in instances if inst.net_name in net_name]
+            return instances
+
+    @pyedb_function_handler()
     def get_padstack_instance_by_net_name(self, net_name):
         """Get a list of padstack instances by net name.
 
@@ -1324,11 +1402,8 @@ class EdbPadstacks(object):
         list
             List of :class:`dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`.
         """
-        padstack_instances = []
-        for inst_id, inst in self.instances.items():
-            if inst.net_name == net_name:
-                padstack_instances.append(inst)
-        return padstack_instances
+        warnings.warn("Use new property :func:`get_padstack_instance` instead.", DeprecationWarning)
+        return self.get_instances(net_name=net_name)
 
     @pyedb_function_handler()
     def get_reference_pins(
@@ -1387,3 +1462,54 @@ class EdbPadstacks(object):
             pin_dict = {GeometryOperators.points_distance(positive_pin.position, p.position): p for p in pinlist}
             pinlist = [pin[1] for pin in sorted(pin_dict.items())[:max_limit]]
         return pinlist
+
+    @pyedb_function_handler()
+    def get_padstack_instances_rtree_index(self, nets=None):
+        """Returns padstack instances Rtree index.
+
+        Parameters
+        ----------
+        nets : str or list, optional
+            net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+            all instances are included in the index. Default value is ``None``.
+
+        Returns
+        -------
+        Rtree index object.
+
+        """
+        if isinstance(nets, str):
+            nets = [nets]
+        padstack_instances_index = rtree.index.Index()
+        if nets:
+            instances = [inst for inst in list(self.instances.values()) if inst.net_name in nets]
+        else:
+            instances = list(self.instances.values())
+        for inst in instances:
+            padstack_instances_index.insert(inst.id, inst.position)
+        return padstack_instances_index
+
+    @pyedb_function_handler()
+    def get_padstack_instances_intersecting_bounding_box(self, bounding_box, nets=None):
+        """Returns the list of padstack instances ID intersecting a given bounding box and nets.
+
+        Parameters
+        ----------
+        bounding_box : tuple or list.
+            bounding box, [x1, y1, x2, y2]
+        nets : str or list, optional
+            net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+            all instances are included in the index. Default value is ``None``.
+
+        Returns
+        -------
+        List of padstack instances ID intersecting the bounding box.
+        """
+        if not bounding_box:
+            raise Exception("No bounding box was provided")
+        index = self.get_padstack_instances_rtree_index(nets=nets)
+        if not len(bounding_box) == 4:
+            raise Exception("The bounding box length must be equal to 4")
+        if isinstance(bounding_box, list):
+            bounding_box = tuple(bounding_box)
+        return list(index.intersection(bounding_box))

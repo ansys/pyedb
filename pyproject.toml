@@ -21,118 +21,63 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
 ]
 
 dependencies = [
-    "cffi == 1.15.1;platform_system=='Linux' and python_version == '3.7'",
-    "cffi == 1.16.0;platform_system=='Linux' and python_version > '3.7'",
+    "cffi>=1.16.0,<1.17; platform_system=='Linux'",
     "pywin32 >= 303;platform_system=='Windows'",
     "ansys-pythonnet >= 3.1.0rc3",
-    "rpyc==5.3.1",
-    "psutil",
     "dotnetcore2 ==3.1.23;platform_system=='Linux'",
-]
+    "pydantic>=2.6.4,<2.8",
+    "toml == 0.10.2",
+    "Rtree >= 1.2.0",
+    ]
 
 [project.optional-dependencies]
 tests = [
-    "ipython==8.13.0; python_version < '3.9'",
-    "ipython==8.17.2; python_version >= '3.9'",
-    "imageio==2.31.5",
-    "joblib==1.3.2",
-    "matplotlib==3.5.3; python_version == '3.7'",
-    "matplotlib==3.7.3; python_version == '3.8'",
-    "matplotlib==3.8.2; python_version > '3.8'",
-    "numpy==1.21.6; python_version <= '3.9'",
-    "numpy==1.26.0; python_version > '3.9'",
-    "mock",
-    "openpyxl==3.1.2",
-    "osmnx",
-    "pandas==1.3.5; python_version == '3.7'",
-    "pandas==2.0.3; python_version == '3.8'",
-    "pandas==2.1.1; python_version > '3.9'",
-    "pytest==7.4.3",
-    "pytest-cov==4.1.0",
-    "pytest-xdist==3.3.1",
-    "pyvista==0.38.0; python_version <= '3.7'",
-    "pyvista==0.42.2; python_version > '3.7'",
-    "scikit-learn==1.3.0; python_version == '3.7'",
-    "scikit-learn==1.3.1; python_version > '3.7'",
-    "scikit-rf==0.31.0",
-    "SRTM.py",
-    "utm",
+    "matplotlib>=3.5.0,<3.9",
+    "numpy>=1.20.0,<2",
+    "mock>=5.1.0,<5.2",
+    "pandas>=1.1.0,<2.3",
+    "pytest>=7.4.0,<8.3",
+    "pytest-cov>=4.0.0,<5.1",
+    "pytest-xdist>=3.5.0,<3.7",
 ]
 doc = [
-    "ansys-sphinx-theme==0.13.1",
-    "imageio==2.31.5",
-    "imageio-ffmpeg==0.4.9",
-    "ipython==8.13.0; python_version < '3.9'",
-    "ipython==8.17.2; python_version >= '3.9'",
-    "ipywidgets==8.1.1",
-    "joblib==1.3.2",
-    "jupyterlab==4.0.6",
-    "matplotlib==3.5.3; python_version == '3.7'",
-    "matplotlib==3.7.3; python_version == '3.8'",
-    "matplotlib==3.8.2; python_version > '3.8'",
-    "nbsphinx==0.9.3",
-    "numpydoc==1.5.0; python_version == '3.7'",
-    "numpydoc==1.6.0; python_version > '3.7'",
-    "osmnx",
-    "pypandoc==1.11",
-    "pytest-sphinx==0.5.0",
-    "pyvista==0.42.2; python_version > '3.7'",
-    "pyvista==0.38.0; python_version <= '3.7'",
-    "recommonmark==0.7.1",
-    "scikit-learn==1.3.0; python_version == '3.7'",
-    "scikit-learn==1.3.1; python_version > '3.7'",
-    "Sphinx==7.1.2; python_version <= '3.9'",
-    "Sphinx==7.2.6; python_version >= '3.9'",
-    "sphinx-autobuild==2021.3.14",
-    "sphinx-autodoc-typehints==1.24.0",
-    "sphinx-copybutton==0.5.2",
-    "sphinx-gallery==0.14.0",
-    "sphinx-notfound-page==1.0.0",
-    "sphinxcontrib-websupport==1.2.4; python_version <= '3.9'",
-    "sphinxcontrib-websupport==1.2.5; python_version <= '3.7'",
-    "SRTM.py",
-    "utm",
-    "scikit-rf",
-    "openpyxl==3.1.2",
-    "sphinx_design",
-    "sphinx_jinja",
+    "ansys-sphinx-theme>=0.10.0,<0.16",
+    "imageio>=2.30.0,<2.35",
+    "ipython>=8.13.0,<8.25",
+    "jupyterlab>=4.0.0,<4.3",
+    "matplotlib>=3.5.0,<3.9",
+    "nbsphinx>=0.9.0,<0.10",
+    "numpydoc>=1.5.0,<1.8",
+    "pypandoc>=1.10.0,<1.14",
+    # NOTE: Remove recommonmark once examples are reworked.
+    "recommonmark",
+    "Sphinx>=7.1.0,<7.4",
+    "sphinx-autobuild==2024.2.4; python_version == '3.8'",
+    "sphinx-autobuild==2024.2.4; python_version > '3.8'",
+    "sphinx-copybutton>=0.5.0,<0.6",
+    "sphinx-gallery>=0.14.0,<0.17",
+    "sphinx_design>=0.4.0,<0.6",
 ]
 full = [
-    "imageio",
-    "matplotlib==3.5.3; python_version == '3.7'",
-    "matplotlib==3.7.3; python_version == '3.8'",
-    "matplotlib==3.8.2; python_version > '3.8'",
-    "numpy==1.21.6; python_version <= '3.9'",
-    "numpy==1.26.0; python_version > '3.9'",
-    "pandas==1.3.5; python_version == '3.7'",
-    "pandas==2.0.3; python_version == '3.9'",
-    "pandas==2.1.1; python_version > '3.9'",
-    "osmnx",
-    "pyvista==0.42.2; python_version > '3.7'",
-    "pyvista==0.38.0; python_version <= '3.7'",
-    "vtk==9.2.6",
-    "SRTM.py",
-    "utm",
-    "scikit-rf",
-    "openpyxl==3.1.2",
+    "matplotlib>=3.5.0,<3.9",
+    "numpy>=1.20.0,<2",
+    "pandas>=1.1.0,<2.3",
 ]
-grpc = [
-    "ansys-edb-core"
-]
+
 
 [tool.flit.module]
 name = "pyedb"
 
-# TODO: update once the repo is public
-# [project.urls]
-# Bugs = "https://github.com/ansys/pyedb/issues"
-# Documentation = "https://aedt.docs.pyansys.com"
-# Source = "https://github.com/ansys/pyedb"
-# Discussions = "https://github.com/ansys/pyedb/discussions"
-# Releases = "https://github.com/ansys/pyedb/releases"
+[project.urls]
+Bugs = "https://github.com/ansys/pyedb/issues"
+Documentation = "https://edb.docs.pyansys.com"
+Source = "https://github.com/ansys/pyedb"
+Discussions = "https://github.com/ansys/pyedb/discussions"
+ Releases = "https://github.com/ansys/pyedb/releases"
 
 [tool.black]
 line-length = 88

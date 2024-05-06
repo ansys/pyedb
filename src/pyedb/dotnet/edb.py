@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """This module contains the ``Edb`` class.
 
 This module is implicitly loaded in HFSS 3D Layout when launched.
@@ -13,9 +35,9 @@ import time
 import traceback
 import warnings
 
+from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
 from pyedb.dotnet.edb_core.components import Components
-from pyedb.dotnet.edb_core.configuration import Configuration
 from pyedb.dotnet.edb_core.dotnet.database import Database
 from pyedb.dotnet.edb_core.dotnet.layout import LayoutDotNet
 from pyedb.dotnet.edb_core.edb_data.control_file import (
@@ -34,6 +56,9 @@ from pyedb.dotnet.edb_core.edb_data.ports import (
     ExcitationSources,
     GapPort,
     WavePort,
+)
+from pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data import (
+    RaptorXSimulationSetup,
 )
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
@@ -152,15 +177,16 @@ class Edb(Database):
 
     def __init__(
         self,
-        edbpath=None,
-        cellname=None,
-        isreadonly=False,
-        edbversion=None,
-        isaedtowned=False,
+        edbpath: str = None,
+        cellname: str = None,
+        isreadonly: bool = False,
+        edbversion: str = None,
+        isaedtowned: bool = False,
         oproject=None,
-        student_version=False,
-        use_ppe=False,
-        technology_file=None,
+        student_version: bool = False,
+        use_ppe: bool = False,
+        technology_file: str = None,
+        remove_existing_aedt: bool = False,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
@@ -191,10 +217,12 @@ class Edb(Database):
                 os.path.dirname(edbpath),
                 "pyedb_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log",
             )
+            if not isreadonly:
+                self._check_remove_project_files(edbpath, remove_existing_aedt)
 
         if isaedtowned and (inside_desktop or settings.remote_rpc_session):
             self.open_edb_inside_aedt()
-        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz"]:
+        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
             control_file = None
@@ -278,6 +306,22 @@ class Edb(Database):
         if description:  # Add the variable description if a two-item list is passed for variable_value.
             self.__getitem__(variable_name).description = description
 
+    def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
+        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+        files = [aedt_file, aedt_file + ".lock"]
+        for file in files:
+            if os.path.isfile(file):
+                if not remove_existing_aedt:
+                    self.logger.warning(
+                        f"AEDT project-related file {file} exists and may need to be deleted before opening the EDB in HFSS 3D Layout."  # noqa: E501
+                    )
+                else:
+                    try:
+                        os.unlink(file)
+                        self.logger.info(f"Deleted AEDT project-related file {file}.")
+                    except:
+                        self.logger.info(f"Failed to delete AEDT project-related file {file}.")
+
     def _clean_variables(self):
         """Initialize internal variables and perform garbage collection."""
         self._materials = None
@@ -298,7 +342,7 @@ class Edb(Database):
     @pyedb_function_handler()
     def _init_objects(self):
         self._components = Components(self)
-        self._stackup = Stackup(self)
+        self._stackup = Stackup(self, self.layout.layer_collection)
         self._padstack = EdbPadstacks(self)
         self._siwave = EdbSiwave(self)
         self._hfss = EdbHfss(self)
@@ -801,7 +845,7 @@ class Edb(Database):
         >>> edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
         """
         if not self._stackup2 and self.active_db:
-            self._stackup2 = Stackup(self)
+            self._stackup2 = Stackup(self, self.layout.layer_collection)
         return self._stackup2
 
     @property
@@ -815,12 +859,11 @@ class Edb(Database):
         Examples
         --------
         >>> from pyedb.dotnet.edb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> edbapp.materials["FR4_epoxy"].conductivity = 1
-        >>> edbapp.materials.add_debye_material("My_Debye2", 5, 3, 0.02, 0.05, 1e5, 1e9)
-        >>> edbapp.materials.add_djordjevicsarkar_material("MyDjord2", 3.3, 0.02, 3.3)
+        >>> edbapp = Edb()
+        >>> edbapp.materials.add_material("air", permittivity=1.0)
+        >>> edbapp.materials.add_debye_material("debye_mat", 5, 3, 0.02, 0.05, 1e5, 1e9)
+        >>> edbapp.materials.add_djordjevicsarkar_material("djord_mat", 3.3, 0.02, 3.3)
         """
-
         if not self._materials and self.active_db:
             self._materials = Materials(self)
         return self._materials
@@ -2230,9 +2273,10 @@ class Edb(Database):
                 include_pingroups=include_pingroups,
                 pins_to_preserve=pins_to_preserve,
             )
-            if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1] and extent_defeature > 0:
-                _poly = _poly.Defeature(extent_defeature)
-
+            if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1]:
+                if extent_defeature > 0:
+                    _poly = _poly.Defeature(extent_defeature)
+                _poly = _poly.CreateFromArcs(_poly.GetArcData(), True)
         if not _poly or _poly.IsNull():
             self._logger.error("Failed to create Extent.")
             return []
@@ -2289,9 +2333,9 @@ class Edb(Database):
                             list_prims = subtract(p, voids_data)
                             for prim in list_prims:
                                 if not prim.IsNull():
-                                    poly_to_create.append([prim, prim_1.layer_name, net, list_void])
+                                    poly_to_create.append([prim, prim_1.layer.name, net, list_void])
                         else:
-                            poly_to_create.append([p, prim_1.layer_name, net, list_void])
+                            poly_to_create.append([p, prim_1.layer.name, net, list_void])
 
                 prims_to_delete.append(prim_1)
 
@@ -2317,8 +2361,10 @@ class Edb(Database):
 
         for item in reference_paths:
             clip_path(item)
-        with ThreadPoolExecutor(number_of_threads) as pool:
-            pool.map(lambda item: clean_prim(item), reference_prims)
+        for prim in reference_prims:  # removing multithreading as failing with new layer from primitive
+            clean_prim(prim)
+        # with ThreadPoolExecutor(number_of_threads) as pool:
+        #    pool.map(lambda item: clean_prim(item), reference_prims)
 
         for el in poly_to_create:
             self.modeler.create_polygon(el[0], el[1], net_name=el[2], voids=el[3])
@@ -3549,6 +3595,8 @@ class Edb(Database):
                 setups[i.GetName()] = SiwaveSYZSimulationSetup(self, i)
             elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWaveDCIR:
                 setups[i.GetName()] = SiwaveDCSimulationSetup(self, i)
+            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kRaptorX:
+                setups[i.GetName()] = RaptorXSimulationSetup(self, i)
         return setups
 
     @property
@@ -3602,9 +3650,37 @@ class Edb(Database):
         >>> setup1.hfss_port_settings.max_delta_z0 = 0.5
         """
         if name in self.setups:
+            self.logger.info("setup already exists")
             return False
+        elif not name:
+            name = generate_unique_name("setup")
         setup = HfssSimulationSetup(self).create(name)
+        setup.set_solution_single_frequency("1GΗz")
         return setup
+
+    def create_raptorx_setup(self, name=None):
+        """Create an RaptorX simulation setup from a template.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name.
+
+        Returns
+        -------
+        :class:`legacy.edb_core.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
+
+        """
+        if name in self.setups:
+            self.logger.error("Setup name already used in the layout")
+            return False
+        version = self.edbversion.split(".")
+        if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
+            setup = RaptorXSimulationSetup(self).create(name)
+            return setup
+        else:
+            self.logger.error("RaptorX simulation only supported with Ansys release 2024R2 and higher")
+            return False
 
     @pyedb_function_handler()
     def create_siwave_syz_setup(self, name=None):
@@ -4106,8 +4182,8 @@ class Edb(Database):
                     loss_tg_variable = "$loss_tangent_{}".format(mat_name)
                     loss_tg_variable = self._clean_string_for_variable_name(loss_tg_variable)
                     if not loss_tg_variable in self.variables:
-                        self.add_design_variable(loss_tg_variable, material.loss_tangent)
-                    material.loss_tangent = loss_tg_variable
+                        self.add_design_variable(loss_tg_variable, material.dielectric_loss_tangent)
+                    material.dielectric_loss_tangent = loss_tg_variable
                     parameters.append(loss_tg_variable)
                 else:
                     sigma_variable = "$sigma_{}".format(mat_name)
@@ -4140,7 +4216,7 @@ class Edb(Database):
                 if via_holes:  # pragma no cover
                     hole_variable = self._clean_string_for_variable_name("$hole_diam_{}".format(def_name))
                     if hole_variable not in self.variables:
-                        self.add_design_variable(hole_variable, padstack_def.hole_properties[0])
+                        self.add_design_variable(hole_variable, padstack_def.hole_diameter_string)
                     padstack_def.hole_properties = hole_variable
                     parameters.append(hole_variable)
             if pads:
@@ -4150,7 +4226,7 @@ class Edb(Database):
                             "$pad_diam_{}_{}".format(def_name, layer)
                         )
                         if pad_diameter_variable not in self.variables:
-                            self.add_design_variable(pad_diameter_variable, pad.parameters_values[0])
+                            self.add_design_variable(pad_diameter_variable, pad.parameters_values_string[0])
                         pad.parameters = {"Diameter": pad_diameter_variable}
                         parameters.append(pad_diameter_variable)
                     if pad.geometry_type == 2:  # pragma no cover
@@ -4158,7 +4234,7 @@ class Edb(Database):
                             "$pad_size_{}_{}".format(def_name, layer)
                         )
                         if pad_size_variable not in self.variables:
-                            self.add_design_variable(pad_size_variable, pad.parameters_values[0])
+                            self.add_design_variable(pad_size_variable, pad.parameters_values_string[0])
                         pad.parameters = {"Size": pad_size_variable}
                         parameters.append(pad_size_variable)
                     elif pad.geometry_type == 3:  # pragma no cover
@@ -4169,8 +4245,8 @@ class Edb(Database):
                             "$pad_size_y_{}_{}".format(def_name, layer)
                         )
                         if pad_size_variable_x not in self.variables and pad_size_variable_y not in self.variables:
-                            self.add_design_variable(pad_size_variable_x, pad.parameters_values[0])
-                            self.add_design_variable(pad_size_variable_y, pad.parameters_values[1])
+                            self.add_design_variable(pad_size_variable_x, pad.parameters_values_string[0])
+                            self.add_design_variable(pad_size_variable_y, pad.parameters_values_string[1])
                         pad.parameters = {"XSize": pad_size_variable_x, "YSize": pad_size_variable_y}
                         parameters.append(pad_size_variable_x)
                         parameters.append(pad_size_variable_y)
@@ -4181,7 +4257,7 @@ class Edb(Database):
                             "$antipad_diam_{}_{}".format(def_name, layer)
                         )
                         if antipad_diameter_variable not in self.variables:  # pragma no cover
-                            self.add_design_variable(antipad_diameter_variable, antipad.parameters_values[0])
+                            self.add_design_variable(antipad_diameter_variable, antipad.parameters_values_string[0])
                         antipad.parameters = {"Diameter": antipad_diameter_variable}
                         parameters.append(antipad_diameter_variable)
                     if antipad.geometry_type == 2:  # pragma no cover
@@ -4189,7 +4265,7 @@ class Edb(Database):
                             "$antipad_size_{}_{}".format(def_name, layer)
                         )
                         if antipad_size_variable not in self.variables:  # pragma no cover
-                            self.add_design_variable(antipad_size_variable, antipad.parameters_values[0])
+                            self.add_design_variable(antipad_size_variable, antipad.parameters_values_string[0])
                         antipad.parameters = {"Size": antipad_size_variable}
                         parameters.append(antipad_size_variable)
                     elif antipad.geometry_type == 3:  # pragma no cover
@@ -4203,8 +4279,8 @@ class Edb(Database):
                             antipad_size_variable_x not in self.variables
                             and antipad_size_variable_y not in self.variables
                         ):  # pragma no cover
-                            self.add_design_variable(antipad_size_variable_x, antipad.parameters_values[0])
-                            self.add_design_variable(antipad_size_variable_y, antipad.parameters_values[1])
+                            self.add_design_variable(antipad_size_variable_x, antipad.parameters_values_string[0])
+                            self.add_design_variable(antipad_size_variable_y, antipad.parameters_values_string[1])
                         antipad.parameters = {"XSize": antipad_size_variable_x, "YSize": antipad_size_variable_y}
                         parameters.append(antipad_size_variable_x)
                         parameters.append(antipad_size_variable_y)
@@ -4234,4 +4310,5 @@ class Edb(Database):
     def definitions(self):
         """Definitions class."""
         from pyedb.dotnet.edb_core.definition.definitions import Definitions
+
         return Definitions(self)

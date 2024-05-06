@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
@@ -217,6 +239,65 @@ class EdbLayout(object):
                 else:
                     objinst.append(el)
         return objinst
+
+    @pyedb_function_handler()
+    def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):
+        """Return primitive given coordinate point [x, y], layer name and nets.
+
+        Parameters
+        ----------
+        point : list
+            Coordinate [x, y]
+
+        layer : list or str, optional
+            list of layer name or layer name applied on filter.
+
+        nets : list or str, optional
+            list of net name or single net name applied on filter
+
+        Returns
+        -------
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+            List of primitives, polygons, paths and rectangles.
+        """
+        if isinstance(layer, str) and layer not in list(self._pedb.stackup.signal_layers.keys()):
+            layer = None
+        if not isinstance(point, list) and len(point) == 2:
+            self._logger.error("Provided point must be a list of two values")
+            return False
+        pt = self._edb.geometry.point_data(point[0], point[1])
+        if isinstance(nets, str):
+            nets = [nets]
+        elif nets and not isinstance(nets, list) and len(nets) == len([net for net in nets if isinstance(net, str)]):
+            _nets = []
+            for net in nets:
+                if net not in self._pedb.nets:
+                    self._logger.error(
+                        f"Net {net} used to find primitive from layer point and net not found, skipping it."
+                    )
+                else:
+                    _nets.append(self._pedb.nets[net].net_obj)
+            if _nets:
+                nets = _nets
+        _obj_instances = list(self._pedb.layout_instance.FindLayoutObjInstance(pt, None, nets).Items)
+        returned_obj = []
+        if layer:
+            selected_obj = [obj for obj in _obj_instances if layer in [lay.GetName() for lay in list(obj.GetLayers())]]
+            for obj in selected_obj:
+                prim = obj.GetLayoutObj()
+                obj_id = prim.GetId()
+                prim_type = str(prim.GetPrimitiveType())
+                if prim_type == "Polygon":
+                    [returned_obj.append(p) for p in [poly for poly in self.polygons if poly.id == obj_id]]
+                elif prim_type == "Path":
+                    [returned_obj.append(p) for p in [t for t in self.paths if t.id == obj_id]]
+                elif prim_type == "Rectangle":
+                    [returned_obj.append(p) for p in [t for t in self.rectangles if t.id == obj_id]]
+        else:
+            for obj in _obj_instances:
+                obj_id = obj.GetLayoutObj().GetId()
+                [returned_obj.append(p) for p in [obj for obj in self.primitives if obj.id == obj_id]]
+        return returned_obj
 
     @pyedb_function_handler()
     def get_polygon_bounding_box(self, polygon):
@@ -1104,7 +1185,7 @@ class EdbLayout(object):
         return True
 
     @pyedb_function_handler()
-    def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_list=[]):
+    def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_names_list=[]):
         """Try to unite all Polygons on specified layer.
 
         Parameters
@@ -1113,8 +1194,8 @@ class EdbLayout(object):
             Name of layer name to unite objects on. The default is ``None``, in which case all layers are taken.
         delete_padstack_gemometries : bool, optional
             Whether to delete all padstack geometries. The default is ``False``.
-        net_list : list[str] : optional
-            Net list filter. The default is ``[]``, in which case all nets are taken.
+        net_names_list : list[str] : optional
+            Net names list filter. The default is ``[]``, in which case all nets are taken.
 
         Returns
         -------
@@ -1129,6 +1210,9 @@ class EdbLayout(object):
         for lay in layer_name:
             self._logger.info("Uniting Objects on layer %s.", lay)
             poly_by_nets = {}
+            all_voids = []
+            list_polygon_data = []
+            delete_list = []
             if lay in list(self.polygons_by_layer.keys()):
                 for poly in self.polygons_by_layer[lay]:
                     if not poly.GetNet().GetName() in list(poly_by_nets.keys()):
@@ -1138,34 +1222,35 @@ class EdbLayout(object):
                         if poly.GetNet().GetName():
                             poly_by_nets[poly.GetNet().GetName()].append(poly)
             for net in poly_by_nets:
-                if net in net_list or not net_list:  # pragma no cover
-                    list_polygon_data = [i.GetPolygonData() for i in poly_by_nets[net]]
-                    all_voids = [i.Voids for i in poly_by_nets[net]]
-                    a = self._edb.geometry.polygon_data.unite(convert_py_list_to_net_list(list_polygon_data))
-                    for item in a:
-                        for v in all_voids:
-                            for void in v:
-                                if int(item.GetIntersectionType(void.GetPolygonData())) == 2:
-                                    item.AddHole(void.GetPolygonData())
-                        poly = self._edb.cell.primitive.polygon.create(
-                            self._active_layout,
-                            lay,
-                            self._pedb.nets.nets[net],
-                            item,
-                        )
-                    list_to_delete = [i for i in poly_by_nets[net]]
-                    for v in all_voids:
-                        for void in v:
-                            for poly in poly_by_nets[net]:  # pragma no cover
-                                if int(void.GetPolygonData().GetIntersectionType(poly.GetPolygonData())) >= 2:
-                                    try:
-                                        id = list_to_delete.index(poly)
-                                    except ValueError:
-                                        id = -1
-                                    if id >= 0:
-                                        list_to_delete.pop(id)
-
-                    [i.Delete() for i in list_to_delete]  # pragma no cover
+                if net in net_names_list or not net_names_list:
+                    for i in poly_by_nets[net]:
+                        list_polygon_data.append(i.GetPolygonData())
+                        delete_list.append(i)
+                        all_voids.append(i.Voids)
+            a = self._edb.geometry.polygon_data.unite(convert_py_list_to_net_list(list_polygon_data))
+            for item in a:
+                for v in all_voids:
+                    for void in v:
+                        if int(item.GetIntersectionType(void.GetPolygonData())) == 2:
+                            item.AddHole(void.GetPolygonData())
+                poly = self._edb.cell.primitive.polygon.create(
+                    self._active_layout,
+                    lay,
+                    self._pedb.nets.nets[net],
+                    item,
+                )
+            for v in all_voids:
+                for void in v:
+                    for poly in poly_by_nets[net]:  # pragma no cover
+                        if int(void.GetPolygonData().GetIntersectionType(poly.GetPolygonData())) >= 2:
+                            try:
+                                id = delete_list.index(poly)
+                            except ValueError:
+                                id = -1
+                            if id >= 0:
+                                delete_list.pop(id)
+            for poly in delete_list:
+                poly.Delete()
 
         if delete_padstack_gemometries:
             self._logger.info("Deleting Padstack Definitions")
@@ -1233,12 +1318,19 @@ class EdbLayout(object):
         stat_model.num_vias = len(self._pedb.padstacks.instances)
         stat_model.stackup_thickness = self._pedb.stackup.get_layout_thickness()
         if evaluate_area:
+            outline_surface = stat_model.layout_size[0] * stat_model.layout_size[1]
             if net_list:
                 netlist = list(self._pedb.nets.nets.keys())
                 _poly = self._pedb.get_conformal_polygon_from_netlist(netlist)
             else:
-                _poly = self._pedb.get_conformal_polygon_from_netlist()
-            stat_model.occupying_surface = _poly.Area()
-            outline_surface = stat_model.layout_size[0] * stat_model.layout_size[1]
-            stat_model.occupying_ratio = stat_model.occupying_surface / outline_surface
+                for layer in list(self._pedb.stackup.signal_layers.keys()):
+                    surface = 0.0
+                    primitives = self.primitives_by_layer[layer]
+                    for prim in primitives:
+                        if prim.type == "Path":
+                            surface += prim.length * prim.width
+                        if prim.type == "Polygon":
+                            surface += prim.polygon_data.edb_api.Area()
+                            stat_model.occupying_surface[layer] = surface
+                            stat_model.occupying_ratio[layer] = surface / outline_surface
         return stat_model

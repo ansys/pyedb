@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import builtins
 from unittest.mock import mock_open
 
@@ -69,12 +91,12 @@ def test_materials_read_materials(mock_file_open, mock_materials_property):
     mock_materials_property.return_value = ["copper"]
     materials = Materials(MagicMock())
     expected_res = {
-        "Polyflon CuFlon (tm)": {"permittivity": 2.1, "tangent_delta": 0.00045},
+        "Polyflon CuFlon (tm)": {"permittivity": 2.1, "dielectric_loss_tangent": 0.00045},
         "Water(@360K)": {
             "thermal_conductivity": 0.6743,
             "mass_density": 967.4,
-            "specific_heat": 4206,
-            "thermal_expansion_coeffcient": 0.0006979,
+            "specific_heat": 4206.0,
+            "thermal_expansion_coefficient": 0.0006979,
         },
     }
     mats = materials.read_materials("some path")

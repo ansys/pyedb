@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiwave``,
 ``PinGroup``, ``ResistorSource``, ``Source``, ``SourceType``, and ``VoltageSource``.
@@ -5,6 +27,7 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 import os
 import time
 
+from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
     SourceType,
@@ -118,8 +141,14 @@ class EdbSiwave(object):
             Name of the source.
 
         """
-        pos_pin = source.positive_node.node_pins
-        neg_pin = source.negative_node.node_pins
+        if isinstance(source.positive_node.node_pins, EDBPadstackInstance):
+            pos_pin = source.positive_node.node_pins._edb_padstackinstance
+        else:
+            pos_pin = source.positive_node.node_pins
+        if isinstance(source.negative_node.node_pins, EDBPadstackInstance):
+            neg_pin = source.negative_node.node_pins._edb_padstackinstance
+        else:
+            neg_pin = source.negative_node.node_pins
 
         res, fromLayer_pos, toLayer_pos = pos_pin.GetLayerRange()
         res, fromLayer_neg, toLayer_neg = neg_pin.GetLayerRange()
@@ -1167,8 +1196,8 @@ class EdbSiwave(object):
 
         Parameters
         ----------
-        pins : list[Edb.Primitive.PadstackInstance]
-             List of EDB pins, length must be 2, since only 2 pins component are currently supported.
+        pins : list[Edb.Cell.Primitive.PadstackInstance]
+             List of EDB pins.
 
         component_name : str
             Component name.
@@ -1425,3 +1454,34 @@ class EdbSiwave(object):
         p_terminal = self._pedb.get_point_terminal(name, positive_net_name, positive_location, positive_layer)
         n_terminal = self._pedb.get_point_terminal(name + "_ref", negative_net_name, negative_location, negative_layer)
         return self._pedb.create_voltage_probe(p_terminal, n_terminal)
+
+    @property
+    def icepak_use_minimal_comp_defaults(self):
+        """Icepak default setting. If "True", only resistor are active in Icepak simulation.
+        The power dissipation of the resistors are calculated from DC results.
+        """
+        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        cell = self._pedb.active_cell._active_cell
+        _, value = cell.GetProductProperty(siwave_id, 422, "")
+        return bool(value)
+
+    @icepak_use_minimal_comp_defaults.setter
+    def icepak_use_minimal_comp_defaults(self, value):
+        value = "True" if bool(value) else ""
+        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        cell = self._pedb.active_cell._active_cell
+        cell.SetProductProperty(siwave_id, 422, value)
+
+    @property
+    def icepak_component_file(self):
+        """Icepak component file path."""
+        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        cell = self._pedb.active_cell._active_cell
+        _, value = cell.GetProductProperty(siwave_id, 420, "")
+        return value
+
+    @icepak_component_file.setter
+    def icepak_component_file(self, value):
+        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        cell = self._pedb.active_cell._active_cell
+        cell.SetProductProperty(siwave_id, 420, value)

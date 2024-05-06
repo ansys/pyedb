@@ -1,11 +1,42 @@
-import json
-from pyedb.generic.general_methods import ET
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
-from pyedb.misc.siw_feature_config.emc.tag_library import \
-    TagLibrary
+from copy import deepcopy as copy
+import json
+
+import numpy as np
+
+from pyedb.generic.general_methods import ET
+from pyedb.misc.siw_feature_config.emc.component_tags import ComponentTags
 from pyedb.misc.siw_feature_config.emc.net_tags import NetTags
-from pyedb.misc.siw_feature_config.emc.component_tags import \
-    ComponentTags
+from pyedb.misc.siw_feature_config.emc.tag_library import TagLibrary
+
+
+def kwargs_parser(kwargs):
+    kwargs = copy(kwargs)
+    kwargs = {i: False if j == np.nan else j for i, j in kwargs.items()}
+    kwargs = {i: int(j) if isinstance(j, bool) else j for i, j in kwargs.items()}
+    kwargs = {i: str(j) for i, j in kwargs.items()}
+    return kwargs
 
 
 class EMCRuleCheckerSettings:
@@ -33,7 +64,10 @@ class EMCRuleCheckerSettings:
             self.component_tags.write_xml(root)
 
         tree = ET.ElementTree(root)
-        ET.indent(tree, space="\t", level=0)
+        try:
+            ET.indent(tree, space="\t", level=0)
+        except:  # pragma no cover
+            pass
         return tree
 
     def read_xml(self, fpath):
@@ -41,7 +75,7 @@ class EMCRuleCheckerSettings:
 
         Parameters
         ----------
-        fpath: str, Path
+        fpath: str
             Path to file.
         """
         tree = ET.parse(fpath)
@@ -66,7 +100,7 @@ class EMCRuleCheckerSettings:
 
         Parameters
         ----------
-        fpath: str, Path
+        fpath: str
             Path to file.
         """
         data = {}
@@ -82,7 +116,7 @@ class EMCRuleCheckerSettings:
 
         Parameters
         ----------
-        fpath: str, Path
+        fpath: str
             Path to file.
         """
         self.tag_library = TagLibrary(None)
@@ -104,14 +138,16 @@ class EMCRuleCheckerSettings:
         if component_tags:
             self.component_tags.read_dict(component_tags)
 
-    def add_net(self, is_bus, is_clock, is_critical, name, net_type):
+    def add_net(
+        self, name, is_bus=False, is_clock=False, is_critical=False, net_type="Single-Ended", diff_mate_name=""
+    ):
         """Assign tags to a net.
 
         Parameters
         ----------
-        is_bus: str
+        is_bus: str, int
             Whether the net is a bus.
-        is_clock: str
+        is_clock: str, int
             Whether the net is a clock.
         is_critical: str
             Whether the net is critical.
@@ -119,28 +155,49 @@ class EMCRuleCheckerSettings:
             Name of the net.
         net_type: str
             Type of the net.
+        diff_mate_name: str, optional
+            differential mate name.
         """
         kwargs = {
             "isBus": is_bus,
             "isClock": is_clock,
             "isCritical": is_critical,
             "name": name,
-            "type": net_type
+            "type": net_type,
+            "Diffmatename": diff_mate_name,
         }
-        self.net_tags.add_sub_element(kwargs, "Net")
 
-    def add_component(self,
-                      comp_name,
-                      comp_value,
-                      device_name,
-                      is_clock_driver,
-                      is_high_speed,
-                      is_ic,
-                      is_oscillator,
-                      x_loc,
-                      y_loc,
-                      cap_type=None,
-                      ):
+        kwargs = kwargs_parser(kwargs)
+
+        if net_type == "Differential":
+            p = name
+            n = diff_mate_name
+            kwargs_p = kwargs
+            kwargs_n = kwargs
+
+            kwargs_p["name"] = p
+            kwargs_p["Diffmatename"] = n
+            self.net_tags.add_sub_element(kwargs_p, "Net")
+
+            kwargs_n["name"] = n
+            kwargs_n["Diffmatename"] = p
+            self.net_tags.add_sub_element(kwargs_n, "Net")
+        else:
+            self.net_tags.add_sub_element(kwargs, "Net")
+
+    def add_component(
+        self,
+        comp_name,
+        comp_value,
+        device_name,
+        is_clock_driver,
+        is_high_speed,
+        is_ic,
+        is_oscillator,
+        x_loc,
+        y_loc,
+        cap_type=None,
+    ):
         """Assign tags to a component.
 
         Parameters
@@ -166,14 +223,17 @@ class EMCRuleCheckerSettings:
         cap_type: str, optional
             Type of the capacitor. The default is ``"None"``. Options are ``"Decoupling"``, ``"Stitching"``.
         """
-        kwargs = {"CompName": comp_name,
-                  "CompValue": comp_value,
-                  "DeviceName": device_name,
-                  "capType": cap_type,
-                  "isClockDriver": is_clock_driver,
-                  "isHighSpeed": is_high_speed,
-                  "isIC": is_ic,
-                  "isOscillator": is_oscillator,
-                  "xLoc": x_loc,
-                  "yLoc": y_loc}
+        kwargs = {
+            "CompName": comp_name,
+            "CompValue": comp_value,
+            "DeviceName": device_name,
+            "capType": cap_type,
+            "isClockDriver": is_clock_driver,
+            "isHighSpeed": is_high_speed,
+            "isIC": is_ic,
+            "isOscillator": is_oscillator,
+            "xLoc": x_loc,
+            "yLoc": y_loc,
+        }
+        kwargs = kwargs_parser(kwargs)
         self.component_tags.add_sub_element(kwargs, "Comp")

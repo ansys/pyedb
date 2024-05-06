@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
 from pyedb.dotnet.edb_core.general import convert_pytuple_to_nettuple
@@ -17,14 +39,14 @@ class HfssExtentInfo:
         self._pedb = pedb
 
         self._hfss_extent_info_type = {
-            "BoundingBox": self._pedb.edb_api.utility.utility.HFSSExtentInfoType.BoundingBox,
-            "Conforming": self._pedb.edb_api.utility.utility.HFSSExtentInfoType.Conforming,
-            "ConvexHull": self._pedb.edb_api.utility.utility.HFSSExtentInfoType.ConvexHull,
-            "Polygon": self._pedb.edb_api.utility.utility.HFSSExtentInfoType.Polygon,
+            "bounding_box": self._pedb.edb_api.utility.utility.HFSSExtentInfoType.BoundingBox,
+            "conforming": self._pedb.edb_api.utility.utility.HFSSExtentInfoType.Conforming,
+            "convexHull": self._pedb.edb_api.utility.utility.HFSSExtentInfoType.ConvexHull,
+            "polygon": self._pedb.edb_api.utility.utility.HFSSExtentInfoType.Polygon,
         }
         self._open_region_type = {
-            "Radiation": self._pedb.edb_api.utility.utility.OpenRegionType.Radiation,
-            "PML": self._pedb.edb_api.utility.utility.OpenRegionType.PML,
+            "radiation": self._pedb.edb_api.utility.utility.OpenRegionType.Radiation,
+            "pml": self._pedb.edb_api.utility.utility.OpenRegionType.PML,
         }
 
     @pyedb_function_handler()
@@ -173,18 +195,19 @@ class HfssExtentInfo:
     @property
     def dielectric_extent_type(self):
         """Dielectric extent type."""
-        return self._edb_hfss_extent_info.DielectricExtentType.ToString()
+        return self._edb_hfss_extent_info.DielectricExtentType.ToString().lower()
 
     @dielectric_extent_type.setter
     def dielectric_extent_type(self, value):
+        value = "bounding_box" if value == "BoundingBox" else value
         info = self._edb_hfss_extent_info
-        info.DielectricExtentType = self._hfss_extent_info_type[value]
+        info.DielectricExtentType = self._hfss_extent_info_type[value.lower()]
         self._update_hfss_extent_info(info)
 
     @property
     def extent_type(self):
         """Extent type."""
-        return self._edb_hfss_extent_info.ExtentType.ToString()
+        return self._edb_hfss_extent_info.ExtentType.ToString().lower()
 
     @extent_type.setter
     def extent_type(self, value):
@@ -217,17 +240,17 @@ class HfssExtentInfo:
     @property
     def open_region_type(self):
         """Open region type."""
-        return self._edb_hfss_extent_info.OpenRegionType.ToString()
+        return self._edb_hfss_extent_info.OpenRegionType.ToString().lower()
 
     @open_region_type.setter
     def open_region_type(self, value):
         info = self._edb_hfss_extent_info
-        info.OpenRegionType = self._open_region_type[value]
+        info.OpenRegionType = self._open_region_type[value.lower()]
         self._update_hfss_extent_info(info)
 
     @property
     def operating_freq(self):
-        """Operating frequency.
+        """PML Operating frequency.
 
         Returns
         -------
@@ -244,7 +267,7 @@ class HfssExtentInfo:
 
     @property
     def radiation_level(self):
-        """Radiation level."""
+        """PML Radiation level to calculate the thickness of boundary."""
         return EdbValue(self._edb_hfss_extent_info.RadiationLevel)
 
     @radiation_level.setter

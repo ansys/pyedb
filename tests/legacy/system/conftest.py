@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 """
 
@@ -9,11 +31,12 @@ import pytest
 from pyedb.dotnet.edb import Edb
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.misc import list_installed_ansysem
+from tests.conftest import generate_random_string
 
 example_models_path = os.path.join(dirname(dirname(dirname(os.path.realpath(__file__)))), "example_models")
 
 # Initialize default desktop configuration
-desktop_version = "2023.2"
+desktop_version = "2024.1"
 if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_installed_ansysem():
     desktop_version = list_installed_ansysem()[0][12:].replace(".", "")
     desktop_version = "20{}.{}".format(desktop_version[:2], desktop_version[-1])
@@ -21,6 +44,50 @@ if "ANSYSEM_ROOT{}".format(desktop_version[2:].replace(".", "")) not in list_ins
 test_subfolder = "TEDB"
 test_project_name = "ANSYS-HSD_V1"
 bom_example = "bom_example.csv"
+
+
+class EdbExamples:
+    def __init__(self, local_scratch):
+        self.local_scratch = local_scratch
+        self.example_models_path = example_models_path
+        self._test_folder = ""
+
+    def get_local_file_folder(self, name):
+        return os.path.join(self.local_scratch.path, name)
+
+    def _create_test_folder(self):
+        """Create a local folder under `local_scratch`."""
+        self._test_folder = os.path.join(self.local_scratch.path, generate_random_string(6))
+        return self._test_folder
+
+    def _copy_file_folder_into_local_folder(self, file_folder_path):
+        src = os.path.join(self.example_models_path, file_folder_path)
+        local_folder = self._create_test_folder()
+        file_folder_name = os.path.join(local_folder, os.path.split(src)[-1])
+        dst = self.local_scratch.copyfolder(src, file_folder_name)
+        return dst
+
+    def get_si_verse(self, edbapp=True, additional_files_folders=""):
+        aedb = self._copy_file_folder_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")
+        if additional_files_folders:
+            files = (
+                additional_files_folders if isinstance(additional_files_folders, list) else [additional_files_folders]
+            )
+            for f in files:
+                src = os.path.join(self.example_models_path, f)
+                file_folder_name = os.path.join(self._test_folder, os.path.split(src)[-1])
+                if os.path.isfile(src):
+                    self.local_scratch.copyfile(src, file_folder_name)
+                else:
+                    self.local_scratch.copyfolder(src, file_folder_name)
+        if edbapp:
+            return Edb(aedb, edbversion=desktop_version)
+        else:
+            return aedb
+
+    def get_multizone_pcb(self):
+        aedb = self._copy_file_folder_into_local_folder("multi_zone_project.aedb")
+        return Edb(aedb, edbversion=desktop_version)
 
 
 @pytest.fixture(scope="module")
@@ -46,6 +113,12 @@ def add_legacy_edb(local_scratch):
 @pytest.fixture(scope="class")
 def legacy_edb_app(add_legacy_edb):
     app = add_legacy_edb(test_project_name, subfolder=test_subfolder)
+    return app
+
+
+@pytest.fixture(scope="class")
+def legacy_edb_app_without_material(add_legacy_edb):
+    app = add_legacy_edb()
     return app
 
 
@@ -79,3 +152,8 @@ def target_path4(local_scratch):
     target_path4 = os.path.join(local_scratch.path, "Package_00.aedb")
     local_scratch.copyfolder(example_project4, target_path4)
     return target_path4
+
+
+@pytest.fixture(scope="class", autouse=True)
+def edb_examples(local_scratch):
+    return EdbExamples(local_scratch)

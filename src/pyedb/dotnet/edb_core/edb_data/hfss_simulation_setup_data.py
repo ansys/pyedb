@@ -1,10 +1,36 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from pyedb.dotnet.clr_module import Tuple
-from pyedb.dotnet.edb_core.edb_data.simulation_setup import (
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.dotnet.edb_core.utilities.simulation_setup import (
     BaseSimulationSetup,
     EdbFrequencySweep,
 )
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+
+
+class AdaptiveType(object):
+    (SingleFrequency, MultiFrequency, BroadBand) = range(0, 3)
 
 
 class MeshOperation(object):
@@ -942,6 +968,28 @@ class ViaSettings(object):
     def via_density(self, value):
         self._via_settings.ViaDensity = value
         self._parent._update_setup()
+
+    @property
+    def via_mesh_plating(self):
+        """Via mesh plating.
+
+        Returns
+        -------
+        bool
+        """
+        if self._parent._pedb.version[0] >= 10:
+            return self._via_settings.ViaMeshPlating
+        else:
+            self._parent._pedb.logger.error("Property only supported on Ansys release 2024R1 and later")
+            return False
+
+    @via_mesh_plating.setter
+    def via_mesh_plating(self, value):
+        if self._parent._pedb.version[0] >= 10:
+            self._via_settings.ViaMeshPlating = value
+            self._parent._update_setup()
+        else:
+            self._parent._pedb.logger.error("Property only supported on Ansys release 2024R1 and later")
 
     @property
     def via_material(self):

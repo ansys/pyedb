@@ -1,10 +1,30 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import os
 
-from pyedb.dotnet.edb_core.edb_data.obj_base import ObjBase
+from pyedb.dotnet.edb_core.definition.component_model import NPortComponentModel
+from pyedb.dotnet.edb_core.obj_base import ObjBase
 from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.dotnet.edb_core.definition.component_model import (
-    NPortComponentModel
-)
 
 
 class EDBComponentDef(ObjBase):
@@ -12,9 +32,9 @@ class EDBComponentDef(ObjBase):
 
     Parameters
     ----------
-    parent : :class:`pyedb.dotnet.edb_core.components.Components`
+    pedb : :class:`pyedb.edb`
         Inherited AEDT object.
-    comp_def : object
+    edb_object : object
         Edb ComponentDef Object
     """
 
@@ -65,6 +85,7 @@ class EDBComponentDef(ObjBase):
         dict of :class:`EDBComponent`
         """
         from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
+
         comp_list = [
             EDBComponent(self._pedb, l)
             for l in self._pedb.edb_api.cell.hierarchy.component.FindByComponentDef(
@@ -130,6 +151,15 @@ class EDBComponentDef(ObjBase):
         for comp in list(self.components.values()):
             comp.assign_spice_model(file_path, model_name)
         return True
+
+    @property
+    def reference_file(self):
+        ref_files = []
+        for comp_model in self._comp_model:
+            model_type = str(comp_model.GetComponentModelType())
+            if model_type == "NPortComponentModel" or model_type == "DynamicLinkComponentModel":
+                ref_files.append(comp_model.GetReferenceFile())
+        return ref_files
 
     @property
     def component_models(self):

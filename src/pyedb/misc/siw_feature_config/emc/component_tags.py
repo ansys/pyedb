@@ -1,5 +1,4 @@
-from pyedb.misc.siw_feature_config.emc.xml_generic import \
-    XmlGeneric
+from pyedb.misc.siw_feature_config.emc.xml_generic import XmlGeneric
 
 
 class Comp(XmlGeneric):
@@ -33,9 +32,8 @@ class Comp(XmlGeneric):
 
 class ComponentTags(XmlGeneric):
     """Manages component tags."""
-    CLS_MAPPING = {
-        "Comp": Comp
-    }
+
+    CLS_MAPPING = {"Comp": Comp}
 
     def __init__(self, element):
         super().__init__(element)

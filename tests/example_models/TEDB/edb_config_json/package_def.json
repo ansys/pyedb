@@ -1,0 +1,45 @@
+{
+  "package_definitions": [
+    {
+      "name": "package_1",
+      "component_definition": "SMTC-MECT-110-01-M-D-RA1_V",
+      "maximum_power": 1,
+      "therm_cond": 1,
+      "theta_jb": 1,
+      "theta_jc": 1,
+      "height": 1,
+      "heatsink": {
+        "fin_base_height": "1mm",
+        "fin_height": "1mm",
+        "fin_orientation": "x_oriented",
+        "fin_spacing": "1mm",
+        "fin_thickness": "4mm"
+      },
+      "apply_to_all": false,
+      "components": [
+        "J5"
+      ]
+    },
+    {
+      "name": "package_2",
+      "component_definition": "COIL-1008CS_V",
+      "extent_bounding_box": [["-1mm", "-1mm"], ["1mm", "1mm"]],
+      "maximum_power": 1,
+      "therm_cond": 1,
+      "theta_jb": 1,
+      "theta_jc": 1,
+      "height": 1,
+      "heatsink": {
+        "fin_base_height": "1mm",
+        "fin_height": "1mm",
+        "fin_orientation": "x_oriented",
+        "fin_spacing": "1mm",
+        "fin_thickness": "4mm"
+      },
+      "apply_to_all": true,
+      "components": [
+        "L8"
+      ]
+    }
+  ]
+}

@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Tests related to Edb components
 """
 import math
@@ -159,8 +181,8 @@ class TestClass:
     def test_components_get_pins_name_from_net(self):
         """Retrieve pins belonging to a net."""
         cmp_pinlist = self.edbapp.components.get_pin_from_component("U6")
-        assert len(self.edbapp.components.get_pins_name_from_net(cmp_pinlist, "GND")) > 0
-        assert len(self.edbapp.components.get_pins_name_from_net(cmp_pinlist, "5V")) == 0
+        assert len(self.edbapp.components.get_pins_name_from_net("GND", cmp_pinlist)) > 0
+        assert len(self.edbapp.components.get_pins_name_from_net("5V", cmp_pinlist)) == 0
 
     def test_components_delete_single_pin_rlc(self):
         """Delete all RLC components with a single pin."""
@@ -200,7 +222,6 @@ class TestClass:
             modelname="GRM32ER72A225KA35_25C_0V",
         )
 
-    # TODO: Maybe rework this test if #25 is accepted
     def test_modeler_parametrize_layout(self):
         """Parametrize a polygon"""
         assert len(self.edbapp.modeler.polygons) > 0
@@ -318,6 +339,8 @@ class TestClass:
         assert edbapp.components.definitions["CAPC3216X180X20ML20"].assign_rlc_model(1, 2, 3)
         sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
         assert edbapp.components.definitions["CAPC3216X180X55ML20T25"].assign_s_param_model(sparam_path)
+        ref_file = edbapp.components.definitions["CAPC3216X180X55ML20T25"].reference_file
+        assert ref_file
         spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
         assert edbapp.components.definitions["CAPMP7343X31N"].assign_spice_model(spice_path)
         edbapp.close()
@@ -513,28 +536,46 @@ class TestClass:
         assert edbapp.components.instances["Test"].center == [0.06800000116, 0.01649999875]
         edbapp.close_edb()
 
-    def test_move_and_edit_polygons(self):
-        """Move a polygon."""
-        target_path = os.path.join(self.local_scratch.path, "test_move_edit_polygons", "test.aedb")
-        edbapp = Edb(target_path, edbversion=desktop_version)
+    def test_create_package_def(self):
+        """Check the creation of package definition."""
+        assert self.edbapp.components["C200"].create_package_def()
+        assert not self.edbapp.components["C200"].create_package_def()
+        assert self.edbapp.components["C200"].package_def.name == "C200_CAPC3216X180X55ML20T25"
 
-        edbapp.stackup.add_layer("GND")
-        edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
-        edbapp.stackup.add_layer("TOP", "Diel", thickness="0.05mm")
-        points = [[0.0, -1e-3], [0.0, -10e-3], [100e-3, -10e-3], [100e-3, -1e-3], [0.0, -1e-3]]
-        polygon = edbapp.modeler.create_polygon(points, "TOP")
-        assert polygon.center == [0.05, -0.0055]
-        assert polygon.move(["1mm", 1e-3])
-        assert round(polygon.center[0], 6) == 0.051
-        assert round(polygon.center[1], 6) == -0.0045
-        assert polygon.rotate(angle=45)
-        assert polygon.bbox == [0.012462680425333156, -0.043037319574666846, 0.08953731957466685, 0.034037319574666845]
-        assert polygon.rotate(angle=34, center=[0, 0])
-        assert polygon.bbox == [0.03083951217158376, -0.025151830651067256, 0.05875505636026722, 0.07472816865208806]
-        assert polygon.scale(factor=1.5)
-        assert polygon.bbox == [0.0238606261244129, -0.05012183047685609, 0.06573394240743807, 0.09969816847787688]
-        assert polygon.scale(factor=-0.5, center=[0, 0])
-        assert polygon.bbox == [-0.032866971203719036, -0.04984908423893844, -0.01193031306220645, 0.025060915238428044]
-        assert polygon.move_layer("GND")
-        assert len(edbapp.modeler.polygons) == 1
-        assert edbapp.modeler.polygons[0].layer_name == "GND"
+    def test_solder_ball_getter_setter(self):
+        cmp = self.edbapp.components["X1"]
+        cmp.solder_ball_height = 0.0
+        assert cmp.solder_ball_height == 0.0
+        cmp.solder_ball_height = "100um"
+        assert cmp.solder_ball_height == 100e-6
+        assert cmp.solder_ball_shape
+        cmp.solder_ball_shape = "Cylinder"
+        assert cmp.solder_ball_shape == "Cylinder"
+        cmp.solder_ball_shape = 0
+        assert cmp.solder_ball_shape == "None"
+        cmp.solder_ball_shape = 1
+        assert cmp.solder_ball_shape == "Cylinder"
+        cmp.solder_ball_shape = "Spheroid"
+        assert cmp.solder_ball_shape == "Spheroid"
+        cmp.solder_ball_shape = "Cylinder"
+        cmp.solder_ball_shape = 2
+        assert cmp.solder_ball_shape == "Spheroid"
+        assert cmp.solder_ball_diameter == (0.0, 0.0)
+        cmp.solder_ball_diameter = "200um"
+        diam1, diam2 = cmp.solder_ball_diameter
+        assert round(diam1, 6) == 200e-6
+        assert round(diam2, 6) == 200e-6
+        cmp.solder_ball_diameter = ("100um", "100um")
+        diam1, diam2 = cmp.solder_ball_diameter
+        assert round(diam1, 6) == 100e-6
+        assert round(diam2, 6) == 100e-6
+
+    def test_create_pingroup_from_pins_types(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_component", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        assert edbapp.components.create_pingroup_from_pins([*edbapp.components.components["Q1"].pins.values()])
+        assert edbapp.components._create_pin_group_terminal(edbapp.padstacks.pingroups[0], term_type="circuit")
+        edbapp.close()

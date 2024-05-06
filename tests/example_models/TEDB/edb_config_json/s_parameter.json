@@ -1,18 +1,26 @@
 {
+  "general": {
+    "s_parameter_library": ""
+  },
   "s_parameters": [
     {
       "name": "GRM32_DC0V_25degC_series",
       "component_definition": "CAPC3216X180X55ML20T25",
-      "file_path": "C:/ansysdev/pycharm_projects/pyansys-edb/tests/example_models/TEDB/GRM32_DC0V_25degC_series.s2p",
+      "file_path": "GRM32_DC0V_25degC_series.s2p",
       "apply_to_all": true,
-      "components": []
+      "components": [],
+      "reference_net": "GND"
     },
     {
       "name": "GRM32_DC0V_25degC_series",
       "component_definition": "CAPC3216X190X55ML30T25",
-      "file_path": "C:/ansysdev/pycharm_projects/pyansys-edb/tests/example_models/TEDB/GRM32_DC0V_25degC_series.s2p",
+      "file_path": "GRM32_DC0V_25degC_series.s2p",
       "apply_to_all": false,
-      "components": ["C59"]
+      "components": ["C59"],
+      "reference_net": "GND",
+      "reference_net_per_component": {
+        "C59": "GND"
+      }
     }
   ]
 }

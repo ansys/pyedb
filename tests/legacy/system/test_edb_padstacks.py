@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Tests related to Edb padstacks
 """
 import os
@@ -43,7 +65,7 @@ class TestClass:
         assert self.edbapp.padstacks.definitions["myVia"].hole_range == "begin_on_upper_pad"
         self.edbapp.padstacks.definitions["myVia"].hole_range = "through"
         assert self.edbapp.padstacks.definitions["myVia"].hole_range == "through"
-        # Create myVia_vullet
+        # Create myVia_bullet
         self.edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
         assert isinstance(self.edbapp.padstacks.definitions["myVia"].instances, list)
         assert "myVia_bullet" in list(self.edbapp.padstacks.definitions.keys())
@@ -146,7 +168,11 @@ class TestClass:
         pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1, "CornerRadius": 1}
         pad.pad_by_layer[pad.via_stop_layer].parameters = [1, 1, 1]
 
-    def test_padstack_get_instance_by_name(self):
+    def test_padstack_get_instance(self):
+        assert self.edbapp.padstacks.get_instances(name="Via1961")
+        assert self.edbapp.padstacks.get_instances(definition_name="v35h15")
+        assert self.edbapp.padstacks.get_instances(net_name="1V0")
+
         """Access padstack instance by name."""
         padstack_instances = self.edbapp.padstacks.get_padstack_instance_by_net_name("GND")
         assert len(padstack_instances)
@@ -335,3 +361,31 @@ class TestClass:
         for padstack_inst in list(edbapp.padstacks.instances.values()):
             assert not [lay for lay in padstack_inst.layer_range_names if lay in old_layers]
         edbapp.close_edb()
+
+    def test_hole(self):
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_padstack_def_update", "ANSYS-HSD_V1.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp.padstacks.definitions["v35h15"].hole_diameter = "0.16mm"
+        assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
+
+    def test_padstack_instances_rtree_index(self):
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_padstack_rtree_index", "ANSYS-HSD_V1.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        index = edbapp.padstacks.get_padstack_instances_rtree_index()
+        assert index.bounds == [-0.0137849991, -0.00225000058, 0.14800000118, 0.07799999894]
+        stats = edbapp.get_statistics()
+        bbox = (0.0, 0.0, stats.layout_size[0], stats.layout_size[1])
+        test = list(index.intersection(bbox))
+        assert len(test) == 5689
+        index = edbapp.padstacks.get_padstack_instances_rtree_index(nets="GND")
+        test = list(index.intersection(bbox))
+        assert len(test) == 2048
+        test = edbapp.padstacks.get_padstack_instances_intersecting_bounding_box(
+            bounding_box=[0, 0, 0.05, 0.08], nets="GND"
+        )
+        assert len(test) == 194

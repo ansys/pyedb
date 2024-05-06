@@ -14,7 +14,6 @@ env:
   MAIN_PYTHON_VERSION: '3.10'
   PACKAGE_NAME: 'pyedb'
   DOCUMENTATION_CNAME: 'edb.docs.pyansys.com'
-  VTK_OSMESA: 'vtk-osmesa==9.2.20230527.dev0'
   IS_WORKFLOW_RUNNING: True
   ARTIFACTORY_VERSION: v242
   MEILISEARCH_API_KEY: ${{ secrets.MEILISEARCH_API_KEY }}
@@ -26,6 +25,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
+  check_title:
+    if: github.event_name == 'pull_request'
+    name: Check the title of the pull request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check commit name
+        uses: ansys/actions/commit-style@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          use-upper-case: true
 
   doc-style:
     name: Documentation style check
@@ -39,13 +49,13 @@ jobs:
           vale-version: "2.29.6"
 
   smoke-tests:
-    name: Build and Smoke tests
+    name: Build and Smoke tests (${{ matrix.os }} | Python ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ['3.9', '3.10', '3.11']
+        python-version: ['3.8', '3.9', '3.10', '3.11']
         should-release:
           - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
     steps:
@@ -55,6 +65,10 @@ jobs:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
+
+      - name: Import python package
+        run: |
+          python -c "import pyedb; from pyedb import __version__"
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -67,11 +81,11 @@ jobs:
       - name: "Install Git and clone project"
         uses: actions/checkout@v4
 
+      # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@v4
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          use-cache: false
 
       - name: Create Python venv
         run: |
@@ -88,21 +102,12 @@ jobs:
           . .venv\Scripts\Activate.ps1
           python -m pip install .[tests]
 
-      - name: "Install specific vtk version with OSMesa bundled"
-        run: |
-          . .venv\Scripts\Activate.ps1
-          pip uninstall vtk -y
-          # Note: the vtk-osmesa used is 9.2.X as 9.3.0 is not working
-          # well with the use of pyvista in our tests atm.
-          # TODO: update once a stable versio is working
-          pip install --extra-index-url https://wheels.vtk.org ${{ env.VTK_OSMESA }}
-
       - name: "Executing legacy tests"
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 10
+          timeout_minutes: 15
           command: |
             . .venv\Scripts\Activate.ps1
             pytest -m "legacy" -n auto --dist loadfile -v --cov
@@ -132,6 +137,83 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
+  test-pyaedt-main:
+    name: Testing PyAEDT main branch
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    needs: [smoke-tests]
+    runs-on: [ self-hosted, Windows, pyaedt ]
+    steps:
+      - name: Install Git and checkout project
+        uses: actions/checkout@v4
+
+      # Revert to previous verison due too setup-python#819
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+          . .venv\Scripts\Activate.ps1
+
+      - name: Update pip
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install -U pip
+
+      - name: Clone PyAEDT on main branch
+        uses: actions/checkout@v4
+        with:
+          repository: ansys/pyaedt
+          path: "external/pyaedt"
+          ref: "main"
+
+      - name: Install PyAEDT main branch version with its test dependencies
+        run: |
+          . .venv\Scripts\Activate.ps1
+          pip install --no-cache-dir external/pyaedt[tests]
+
+      - name: Install PyEDB
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install .
+
+      - name: Install CI dependencies (e.g. vtk-osmesa)
+        run: |
+          .venv\Scripts\Activate.ps1
+          # Uninstall conflicting dependencies
+          pip uninstall --yes vtk
+          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.2.20230527.dev0
+
+      - name: Run PyAEDT tests
+        uses: nick-fields/retry@v3
+        env:
+          PYTHONMALLOC: malloc
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            .venv\Scripts\Activate.ps1
+            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/_unittest
+
+      - name: Run PyAEDT solvers tests
+        uses: nick-fields/retry@v3
+        env:
+          PYTHONMALLOC: malloc
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            .venv\Scripts\Activate.ps1
+            pytest --durations=50 -v external/pyaedt/_unittest_solvers
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
   docs-build:
     name: Build documentation
     runs-on: [ Windows, self-hosted, pyedb ]
@@ -139,11 +221,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
-        uses: ansys/actions/_setup-python@v4
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          use-cache: false
 
       - name: 'Create virtual env'
         run: |
@@ -194,6 +276,12 @@ jobs:
           . .venv\Scripts\Activate.ps1
           python doc/print_errors.py
 
+      - name: Add assets to HTML docs
+        run: |
+          zip -r documentation-html.zip .\doc\_build\html
+          mv documentation-html.zip .\doc\_build\html\_static\assets\download\
+          cp doc/_build/latex/pyedb.pdf .\doc\_build\html\_static\assets\download\
+
       - name: Upload HTML Documentation artifact
         uses: actions/upload-artifact@v4
         with:
@@ -205,7 +293,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: documentation-pdf
-          path: doc/_build/latex/*.pdf
+          path: doc/_build/latex/pyedb.pdf
           retention-days: 7
 
   package:

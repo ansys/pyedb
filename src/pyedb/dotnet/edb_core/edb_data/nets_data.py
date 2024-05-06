@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from pyedb.dotnet.edb_core.dotnet.database import (
     DifferentialPairDotNet,
     ExtendedNetDotNet,
@@ -227,25 +249,34 @@ class EDBExtendedNetData(ExtendedNetDotNet):
 
     @property
     def rlc(self):
-        """Dictionary of rlc components."""
+        """Dictionary of RLC components."""
         return {
             name: comp for name, comp in self.components.items() if comp.type in ["Inductor", "Resistor", "Capacitor"]
         }
 
     @property
     def serial_rlc(self):
-        """Dictionary of series components."""
-        comps_common = {}
+        """Dictionary of serial RLC components."""
+        res = {}
         nets = self.nets
-        for net in nets:
-            comps_common.update(
-                {
-                    i: v
-                    for i, v in self._app._nets[net].components.items()
-                    if list(set(v.nets).intersection(nets)) != [net] and v.type in ["Resistor", "Inductor", "Capacitor"]
-                }
-            )
-        return comps_common
+        for comp_name, comp_obj in self.components.items():
+            if comp_obj.type not in ["Resistor", "Inductor", "Capacitor"]:
+                continue
+            if set(comp_obj.nets).issubset(set(nets)):
+                res[comp_name] = comp_obj
+        return res
+
+    @property
+    def shunt_rlc(self):
+        """Dictionary of shunt RLC components."""
+        res = {}
+        nets = self.nets
+        for comp_name, comp_obj in self.components.items():
+            if comp_obj.type not in ["Resistor", "Inductor", "Capacitor"]:
+                continue
+            if not set(comp_obj.nets).issubset(set(nets)):
+                res[comp_name] = comp_obj
+        return res
 
 
 class EDBDifferentialPairData(DifferentialPairDotNet):

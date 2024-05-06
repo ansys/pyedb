@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from __future__ import absolute_import  # noreorder
 
 import math
@@ -450,7 +472,7 @@ class EdbNets(object):
     @pyedb_function_handler()
     def get_plot_data(
         self,
-        nets,
+        nets=None,
         layers=None,
         color_by_net=False,
         outline=None,
@@ -461,8 +483,8 @@ class EdbNets(object):
 
         Parameters
         ----------
-        nets : str, list
-            Name of the net or list of nets to plot. If `None` all nets will be plotted.
+        nets : str, list, optional
+            Name of the net or list of nets to plot. If `None` (default value) all nets will be plotted.
         layers : str, list, optional
             Name of the layers to include in the plot. If `None` all the signal layers will be considered.
         color_by_net : bool, optional
@@ -1196,12 +1218,12 @@ class EdbNets(object):
         )
 
     @pyedb_function_handler()
-    def merge_nets_polygons(self, net_list):
+    def merge_nets_polygons(self, net_names_list):
         """Convert paths from net into polygons, evaluate all connected polygons and perform the merge.
 
         Parameters
         ----------
-        net_list : str or list[str]
+        net_names_list : str or list[str]
             Net name of list of net name.
 
         Returns
@@ -1210,6 +1232,6 @@ class EdbNets(object):
             ``True`` when successful, ``False`` when failed.
 
         """
-        if isinstance(net_list, str):
-            net_list = [net_list]
-        return self._pedb.modeler.unite_polygons_on_layer(net_list=net_list)
+        if isinstance(net_names_list, str):
+            net_names_list = [net_names_list]
+        return self._pedb.modeler.unite_polygons_on_layer(net_names_list=net_names_list)
