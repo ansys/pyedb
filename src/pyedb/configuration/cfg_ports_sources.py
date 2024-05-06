@@ -27,22 +27,22 @@ class CfgCircuitElement:
     @property
     def pedb(self):
         """Edb."""
-        return self.pdata.pedb
+        return self._pdata.pedb
 
     @pyedb_function_handler
     def __init__(self, pdata, **kwargs):
-        self.pdata = pdata
+        self._pdata = pdata
         self.name = kwargs.get("name", None)
         self.type = kwargs.get("type", None)
         self.reference_designator = kwargs.get("reference_designator", None)
         self.distributed = kwargs.get("distributed", False)
-        self._pos_term_info = kwargs.get("positive_terminal", None)  # {"pin" : "A1"}
-        self._neg_term_info = kwargs.get("negative_terminal", None)
+        self.pos_term_info = kwargs.get("positive_terminal", None)  # {"pin" : "A1"}
+        self.neg_term_info = kwargs.get("negative_terminal", None)
 
     @pyedb_function_handler
     def _create(self):
         """Create step 1."""
-        pos_term_info = self._pos_term_info
+        pos_term_info = self.pos_term_info
         if pos_term_info:
             pos_type, pos_value = [[i, j] for i, j in pos_term_info.items()][0]
             pos_objs = dict()
@@ -66,7 +66,7 @@ class CfgCircuitElement:
 
             self.pos_terminals = {i: j.get_terminal(i, create_new_terminal=True) for i, j in pos_objs.items()}
 
-        neg_term_info = self._neg_term_info
+        neg_term_info = self.neg_term_info
         self.neg_terminal = None
         if neg_term_info:
             neg_type, neg_value = [[i, j] for i, j in neg_term_info.items()][0]
@@ -84,7 +84,7 @@ class CfgCircuitElement:
         terminal_value = terminal_value if isinstance(terminal_value, list) else [terminal_value]
 
         def get_pin_obj(pin_name):
-            return {pin_name: self.pdata.edb_comps[self.reference_designator].pins[pin_name]}
+            return {pin_name: self._pdata.edb_comps[self.reference_designator].pins[pin_name]}
 
         pins = dict()
         if terminal_type == "pin":
@@ -92,7 +92,7 @@ class CfgCircuitElement:
                 pins.update(get_pin_obj(i))
         else:
             if terminal_type == "net":
-                temp = self.pdata.pedb.components.get_pins(self.reference_designator, terminal_value[0])
+                temp = self._pdata.pedb.components.get_pins(self.reference_designator, terminal_value[0])
             elif terminal_type == "pin_group":
                 pin_group = self.pedb.siwave.pin_groups[terminal_value[0]]
                 temp = pin_group.pins
@@ -106,7 +106,7 @@ class CfgCircuitElement:
         else:
             pg_name = f"pg_{self.name}_{self.reference_designator}"
         pin_names = [i.pin_number for i in pins.values()]
-        name, temp = self.pdata.pedb.siwave.create_pin_group(self.reference_designator, pin_names, pg_name)
+        name, temp = self._pdata.pedb.siwave.create_pin_group(self.reference_designator, pin_names, pg_name)
         return {name: temp}
 
 
