@@ -1732,3 +1732,116 @@ class TestClass:
         assert defined_ports
         assert project_connexions
         edbapp.close_edb()
+
+    @pytest.mark.skipif(
+        not desktop_version == "2024.2" or int(desktop_version.split(".")[0]) >= 2025,
+        reason="Only supported with 2024.2 and higher",
+    )
+    def test_add_raptorx_setup(self):
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_raptorx_setup", "test.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(edbpath=target_path, edbversion=desktop_version)
+        setup = edbapp.create_raptorx_setup("test")
+        assert "test" in edbapp.setups
+        setup.add_frequency_sweep(frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
+        setup.enabled = False
+        assert not setup.enabled
+        assert len(setup.frequency_sweeps) == 1
+        general_settings = setup.settings.general_settings
+        assert general_settings.global_temperature == 22.0
+        general_settings.global_temperature = 35.0
+        assert edbapp.setups["test"].settings.general_settings.global_temperature == 35.0
+        assert general_settings.max_frequency == "10GHz"
+        general_settings.max_frequency = 20e9
+        assert general_settings.max_frequency == "20GHz"
+        advanced_settings = setup.settings.advanced_settings
+        assert advanced_settings.auto_removal_sliver_poly == 0.001
+        advanced_settings.auto_removal_sliver_poly = 0.002
+        assert advanced_settings.auto_removal_sliver_poly == 0.002
+        assert advanced_settings.cell_per_wave_length == 80
+        advanced_settings.cell_per_wave_length = 60
+        assert advanced_settings.cell_per_wave_length == 60
+        assert advanced_settings.edge_mesh == "0.8um"
+        advanced_settings.edge_mesh = "1um"
+        assert advanced_settings.edge_mesh == "1um"
+        assert advanced_settings.eliminate_slit_per_hole == 5.0
+        advanced_settings.eliminate_slit_per_hole = 4.0
+        assert advanced_settings.eliminate_slit_per_hole == 4.0
+        assert advanced_settings.mesh_frequency == "1GHz"
+        advanced_settings.mesh_frequency = "5GHz"
+        assert advanced_settings.mesh_frequency == "5GHz"
+        assert advanced_settings.override_shrink_fac == 1.0
+        advanced_settings.override_shrink_fac = 1.5
+        assert advanced_settings.override_shrink_fac == 1.5
+        assert advanced_settings.plane_projection_factor == 1.0
+        advanced_settings.plane_projection_factor = 1.4
+        assert advanced_settings.plane_projection_factor == 1.4
+        assert advanced_settings.use_accelerate_via_extraction
+        advanced_settings.use_accelerate_via_extraction = False
+        assert not advanced_settings.use_accelerate_via_extraction
+        assert not advanced_settings.use_auto_removal_sliver_poly
+        advanced_settings.use_auto_removal_sliver_poly = True
+        assert advanced_settings.use_auto_removal_sliver_poly
+        assert not advanced_settings.use_cells_per_wavelength
+        advanced_settings.use_cells_per_wavelength = True
+        assert advanced_settings.use_cells_per_wavelength
+        assert not advanced_settings.use_edge_mesh
+        advanced_settings.use_edge_mesh = True
+        assert advanced_settings.use_edge_mesh
+        assert not advanced_settings.use_eliminate_slit_per_holes
+        advanced_settings.use_eliminate_slit_per_holes = True
+        assert advanced_settings.use_eliminate_slit_per_holes
+        assert not advanced_settings.use_enable_advanced_cap_effects
+        advanced_settings.use_enable_advanced_cap_effects = True
+        assert advanced_settings.use_enable_advanced_cap_effects
+        assert not advanced_settings.use_enable_etch_transform
+        advanced_settings.use_enable_etch_transform = True
+        assert advanced_settings.use_enable_etch_transform
+        assert advanced_settings.use_enable_substrate_network_extraction
+        advanced_settings.use_enable_substrate_network_extraction = False
+        assert not advanced_settings.use_enable_substrate_network_extraction
+        assert not advanced_settings.use_extract_floating_metals_dummy
+        advanced_settings.use_extract_floating_metals_dummy = True
+        assert advanced_settings.use_extract_floating_metals_dummy
+        assert advanced_settings.use_extract_floating_metals_floating
+        advanced_settings.use_extract_floating_metals_floating = False
+        assert not advanced_settings.use_extract_floating_metals_floating
+        assert not advanced_settings.use_lde
+        advanced_settings.use_lde = True
+        assert advanced_settings.use_lde
+        assert not advanced_settings.use_mesh_frequency
+        advanced_settings.use_mesh_frequency = True
+        assert advanced_settings.use_mesh_frequency
+        assert not advanced_settings.use_override_shrink_fac
+        advanced_settings.use_override_shrink_fac = True
+        assert advanced_settings.use_override_shrink_fac
+        assert advanced_settings.use_plane_projection_factor
+        advanced_settings.use_plane_projection_factor = False
+        assert not advanced_settings.use_plane_projection_factor
+        assert not advanced_settings.use_relaxed_z_axis
+        advanced_settings.use_relaxed_z_axis = True
+        assert advanced_settings.use_relaxed_z_axis
+        edbapp.close()
+
+    def test_icepak(self, edb_examples):
+        edbapp = edb_examples.get_si_verse(additional_files_folders=["siwave/icepak_component.pwrd"])
+        edbapp.siwave.icepak_use_minimal_comp_defaults = True
+        assert edbapp.siwave.icepak_use_minimal_comp_defaults
+        edbapp.siwave.icepak_use_minimal_comp_defaults = False
+        assert not edbapp.siwave.icepak_use_minimal_comp_defaults
+        edbapp.siwave.icepak_component_file = edb_examples.get_local_file_folder("siwave/icepak_component.pwrd")
+        assert edbapp.siwave.icepak_component_file == edb_examples.get_local_file_folder("siwave/icepak_component.pwrd")
+        edbapp.close()
+
+    def test_adaptive_broadband_setup_from_configfile(self):
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_adaptive_broadband.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        cfg_file = os.path.join(target_path, "config_adaptive_broadband.json")
+        sim_config = edbapp.new_simulation_configuration()
+        sim_config.import_json(cfg_file)
+        assert edbapp.build_simulation_project(sim_config)
+        assert edbapp.setups["Pyaedt_setup"].adaptive_settings.adapt_type == "kBroadband"
+        edbapp.close()

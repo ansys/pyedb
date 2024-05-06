@@ -26,6 +26,7 @@ from pathlib import Path
 
 import toml
 
+from pyedb.configuration.cfg_data import CfgData
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.generic.general_methods import pyedb_function_handler
 
@@ -39,6 +40,7 @@ class Configuration:
         self.data = {}
         self._s_parameter_library = ""
         self._spice_model_library = ""
+        self.cfg_data = None
 
     @pyedb_function_handler
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
@@ -86,6 +88,9 @@ class Configuration:
                     self.data[k] = v
             else:
                 self.data[k] = v
+
+        self.cfg_data = CfgData(self._pedb, **data)
+
         if apply_file:
             original_file = self._pedb.edbpath
             if output_file:
@@ -132,8 +137,8 @@ class Configuration:
             self._load_pin_groups()
 
         # Configure ports
-        if "ports" in self.data:
-            self._load_ports()
+        for port in self.cfg_data.cfg_ports:
+            port.create()
 
         # Configure sources
         if "sources" in self.data:
@@ -275,6 +280,7 @@ class Configuration:
     @pyedb_function_handler
     def _load_ports(self):
         """Imports port information from json."""
+
         for port in self.data["ports"]:
             port_type = port["type"]
 
@@ -315,7 +321,7 @@ class Configuration:
                     pin_name = negative_terminal_json["pin"]
                     port_name = "{}_{}_ref".format(ref_designator, pin_name)
                     neg_terminal = comp_layout.pins[pin_name].get_terminal(port_name, True)
-                else:
+                elif "net" in negative_terminal_json:
                     net_name = negative_terminal_json["net"]
                     port_name = "{}_{}_ref".format(ref_designator, net_name)
                     pg_name = "pg_{}".format(port_name)
@@ -476,35 +482,65 @@ class Configuration:
     def _load_stackup(self):
         """Imports stackup information from json."""
         data = self.data["stackup"]
-        materials = data["materials"] if "materials" in data else []
-        materials_reformatted = {}
-        for mat in materials:
-            new_mat = {}
-            new_mat["name"] = mat["name"]
-            if "conductivity" in mat:
-                new_mat["conductivity"] = mat["conductivity"]
-            if "permittivity" in mat:
-                new_mat["permittivity"] = mat["permittivity"]
-            if "dielectricLoss_tangent" in mat:
-                new_mat["loss_tangent"] = mat["dielectricLoss_tangent"]
+        materials = data.get("materials")
 
-            materials_reformatted[mat["name"]] = new_mat
+        if materials:
+            edb_materials = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
+            for mat in materials:
+                name = mat["name"].lower()
+                if name in edb_materials:
+                    self._pedb.materials.delete_material(edb_materials[name])
+            for mat in materials:
+                self._pedb.materials.add_material(**mat)
 
-        layers = data["layers"]
-        layers_reformatted = {}
+        layers = data.get("layers")
 
-        for l in layers:
-            lyr = {
-                "name": l["name"],
-                "type": l["type"],
-                "material": l["material"],
-                "thickness": l["thickness"],
-            }
-            if "fill_material" in l:
-                lyr["dielectric_fill"] = l["fill_material"]
-            layers_reformatted[l["name"]] = lyr
-        stackup_reformated = {"layers": layers_reformatted, "materials": materials_reformatted}
-        self._pedb.stackup.load(stackup_reformated)
+        if layers:
+            lc = self._pedb.stackup
+            input_signal_layers = [i for i in layers if i["type"].lower() == "signal"]
+            if not len(input_signal_layers) == len(lc.signal_layers):
+                self._pedb.logger.error("Input signal layer count do not match.")
+                return False
+
+            layer_clones = []
+            doc_layer_clones = []
+            for name, obj in lc.layers.items():
+                if obj.is_stackup_layer:
+                    if obj.type == "signal":  # keep signal layers
+                        layer_clones.append(obj)
+                else:
+                    doc_layer_clones.append(obj)
+                lc.remove_layer(name)
+
+            signal_layer_ids = {}
+            top_layer_clone = None
+
+            # add all signal layers
+            for l in layers:
+                if l["type"] == "signal":
+                    clone = layer_clones.pop(0)
+                    clone.update(**l)
+                    lc.add_layer_bottom(name=clone.name, layer_clone=clone)
+                    signal_layer_ids[clone.name] = clone.id
+
+            # add all document layers at bottom
+            for l in doc_layer_clones:
+                doc_layer = lc.add_document_layer(name=l.name, layer_clone=l)
+                first_doc_layer_name = doc_layer.name
+
+            # add all dielectric layers. Dielectric layers must be added last. Otherwise,
+            # dielectric layer will occupy signal and document layer id.
+            prev_layer_clone = None
+            l = layers.pop(0)
+            if l["type"] == "signal":
+                prev_layer_clone = lc.layers[l["name"]]
+            else:
+                prev_layer_clone = lc.add_layer_top(**l)
+            for idx, l in enumerate(layers):
+                if l["type"] == "dielectric":
+                    prev_layer_clone = lc.add_layer_below(base_layer_name=prev_layer_clone.name, **l)
+                else:
+                    prev_layer_clone = lc.layers[l["name"]]
 
     @pyedb_function_handler
     def _load_s_parameter(self):

@@ -14,6 +14,12 @@
               "start": 0,
               "stop": 10e9,
               "points": 11
+            },
+            {
+              "distribution": "log scale",
+              "start": 1e6,
+              "stop": 1e9,
+              "samples": 10
             }
           ]
         }

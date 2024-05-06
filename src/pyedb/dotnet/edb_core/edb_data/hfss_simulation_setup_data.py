@@ -29,6 +29,10 @@ from pyedb.dotnet.edb_core.utilities.simulation_setup import (
 from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 
 
+class AdaptiveType(object):
+    (SingleFrequency, MultiFrequency, BroadBand) = range(0, 3)
+
+
 class MeshOperation(object):
     """Mesh Operation Class."""
 

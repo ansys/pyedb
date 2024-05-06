@@ -879,7 +879,7 @@ class Components(object):
             Type of port to create. ``CoaxPort`` generates solder balls.
             ``CircuitPort`` generates circuit ports on pins belonging to the net list.
         do_pingroup : bool
-            True activate pingroup during port creation (only used with combination of CoaxPort),
+            True activate pingroup during port creation (only used with combination of CircPort),
             False will take the closest reference pin and generate one port per signal pin.
         refnet : string or list of string.
             list of the reference net.
@@ -915,6 +915,12 @@ class Components(object):
         """
         if isinstance(component, str):
             component = self.instances[component].edbcomponent
+        if not solder_balls_height:
+            solder_balls_height = self.components[component.GetName()].solder_ball_height
+        if not solder_balls_size:
+            solder_balls_size = self.components[component.GetName()].solder_ball_diameter[0]
+        if not solder_balls_mid_size:
+            solder_balls_mid_size = self.components[component.GetName()].solder_ball_diameter[1]
         if not isinstance(net_list, list):
             net_list = [net_list]
         for net in net_list:
@@ -1016,17 +1022,10 @@ class Components(object):
                     else:
                         self._logger.info("No pins found on component {} for the net {}".format(component, net))
             else:
-                ref_pin_group = self.create_pingroup_from_pins(ref_pins)
-                if not ref_pin_group:
-                    self._logger.warning("failed to create reference pin group")
-                    return False
-                ref_pin_group_term = self._create_pin_group_terminal(ref_pin_group, isref=True)
                 for net in net_list:
                     pins = [pin for pin in cmp_pins if pin.GetNet().GetName() == net]
                     for pin in pins:
-                        pin_group = self.create_pingroup_from_pins([pin])
-                        pin_group_term = self._create_pin_group_terminal(pin_group, isref=False)
-                        pin_group_term.SetReferenceTerminal(ref_pin_group_term)
+                        self.create_port_on_pins(component, pin, ref_pins)
         return True
 
     @pyedb_function_handler()
@@ -1335,7 +1334,7 @@ class Components(object):
             return True
 
     @pyedb_function_handler()
-    def _create_pin_group_terminal(self, pingroup, isref=False, term_name=None):
+    def _create_pin_group_terminal(self, pingroup, isref=False, term_name=None, term_type="circuit"):
         """Creates an EDB pin group terminal from a given EDB pin group.
 
         Parameters
@@ -1343,10 +1342,13 @@ class Components(object):
         pingroup : Edb pin group.
 
         isref : bool
+        Specify if this terminal a reference terminal.
 
         term_name : Terminal name (Optional). If not provided default name is Component name, Pin name, Net name.
             str.
 
+        term_type: Type of terminal, gap, circuit or auto.
+        str.
         Returns
         -------
         Edb pin group terminal.
@@ -1360,6 +1362,10 @@ class Components(object):
         pingroup_term = self._edb.cell.terminal.PinGroupTerminal.Create(
             self._active_layout, pingroup.GetNet(), term_name, pingroup, isref
         )
+        if term_type == "circuit":
+            pingroup_term.SetIsCircuitPort(True)
+        elif term_type == "auto":
+            pingroup_term.SetIsAutoPort(True)
         return pingroup_term
 
     @pyedb_function_handler()
@@ -2295,7 +2301,7 @@ class Components(object):
             Filter on the net name as an alternative to
             ``pinName``. The default is ``None``.
         pinName : str, optional
-            Filter on the pin name an an alternative to
+            Filter on the pin name an alternative to
             ``netName``. The default is ``None``.
 
         Returns
@@ -2402,20 +2408,20 @@ class Components(object):
         return [pin_xy.X.ToDouble(), pin_xy.Y.ToDouble()]
 
     @pyedb_function_handler()
-    def get_pins_name_from_net(self, pin_list, net_name):
+    def get_pins_name_from_net(self, net_name, pin_list=None):
         """Retrieve pins belonging to a net.
 
         Parameters
         ----------
-        pin_list : list
-            List of pins to check.
+        pin_list : list of EDBPadstackInstance, optional
+            List of pins to check. The default is ``None``, in which case all pins are checked
         net_name : str
             Name of the net.
 
         Returns
         -------
-        list
-            List of pins belong to the net.
+        list of str names:
+            Pins belonging to the net.
 
         Examples
         --------
@@ -2425,11 +2431,16 @@ class Components(object):
         >>> edbapp.components.get_pins_name_from_net(pin_list, net_name)
 
         """
-        pinlist = []
+        pin_names = []
+        if not pin_list:
+            pin_list = []
+            for i in [*self.components.values()]:
+                for j in [*i.pins.values()]:
+                    pin_list.append(j)
         for pin in pin_list:
             if pin.GetNet().GetName() == net_name:
-                pinlist.append(pin.GetName())
-        return pinlist
+                pin_names.append(self.get_aedt_pin_name(pin))
+        return pin_names
 
     @pyedb_function_handler()
     def get_nets_from_pin_list(self, PinList):
