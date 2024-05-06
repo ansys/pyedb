@@ -32,6 +32,7 @@ class CfgCircuitElement:
     @pyedb_function_handler
     def __init__(self, pdata, **kwargs):
         self._pdata = pdata
+        self._data = kwargs
         self.name = kwargs.get("name", None)
         self.type = kwargs.get("type", None)
         self.reference_designator = kwargs.get("reference_designator", None)
