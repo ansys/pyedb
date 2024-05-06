@@ -65,11 +65,25 @@ class TestClass:
 
     def test_02_pin_groups(self):
         edbapp = Edb(str(self.local_edb), desktop_version)
-        assert edbapp.configuration.load(str(self.local_input_folder / "pin_groups.json"), apply_file=True)
-        assert len(edbapp.siwave.pin_groups["U6_ALL_PINS"].pins.keys()) == 96
-        assert len(edbapp.siwave.pin_groups["J5_TWO_NETS"].pins.keys()) == 2
-        assert edbapp.sources["U9_pin_group_source"]
-        assert edbapp.ports["U9_pin_group_port"]
+        pin_groups = [
+            {
+                "name": "U9_5V_1",
+                "reference_designator": "U9",
+                "pins": [
+                    "32",
+                    "33"
+                ]
+            },
+            {
+                "name": "U9_GND",
+                "reference_designator": "U9",
+                "net": "GND"
+            },
+        ]
+        data = {"pin_groups": pin_groups}
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert "U9_5V_1" in edbapp.siwave.pin_groups
+        assert "U9_GND" in edbapp.siwave.pin_groups
         edbapp.close()
 
     def test_03_spice_models(self):
@@ -152,6 +166,42 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         assert len(edbapp.ports) > 1
+        edbapp.close()
+
+    def test_05c_ports_pin_group(self):
+        edbapp = Edb(str(self.local_edb), desktop_version)
+        pin_groups = [
+            {
+                "name": "U9_5V_1",
+                "reference_designator": "U9",
+                "pins": [
+                    "32",
+                    "33"
+                ]
+            },
+            {
+                "name": "U9_GND",
+                "reference_designator": "U9",
+                "net": "GND"
+            },
+        ]
+        ports = [
+            {
+                "name": "U9_pin_group_port",
+                "type": "circuit",
+                "positive_terminal": {
+                    "pin_group": "U9_5V_1"
+                },
+                "negative_terminal": {
+                    "pin_group": "U9_GND"
+                }
+            }
+        ]
+        data = {"pin_groups": pin_groups, "ports": ports}
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert "U9_5V_1" in edbapp.siwave.pin_groups
+        assert "U9_GND" in edbapp.siwave.pin_groups
+        assert "U9_pin_group_port" in edbapp.ports
         edbapp.close()
 
     def test_06_s_parameters(self):

@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.generic.general_methods import pyedb_function_handler
+
 
 class CfgCircuitElement:
     @property
@@ -27,14 +29,20 @@ class CfgCircuitElement:
         """Edb."""
         return self.pdata.pedb
 
+    @pyedb_function_handler
     def __init__(self, pdata, **kwargs):
         self.pdata = pdata
         self.name = kwargs.get("name", None)
         self.type = kwargs.get("type", None)
         self.reference_designator = kwargs.get("reference_designator", None)
         self.distributed = kwargs.get("distributed", False)
-        pos_term_info = kwargs.get("positive_terminal", None)  # {"pin" : "A1"}
+        self._pos_term_info = kwargs.get("positive_terminal", None)  # {"pin" : "A1"}
+        self._neg_term_info = kwargs.get("negative_terminal", None)
 
+    @pyedb_function_handler
+    def _create(self):
+        """Create step 1."""
+        pos_term_info = self._pos_term_info
         if pos_term_info:
             pos_type, pos_value = [[i, j] for i, j in pos_term_info.items()][0]
             pos_objs = dict()
@@ -42,32 +50,36 @@ class CfgCircuitElement:
                 pins = self._get_pins(pos_type, pos_value)
                 pins = {f"{self.name}_{self.reference_designator}": i for _, i in pins.items()}
                 pos_objs.update(pins)
+            elif pos_type == "pin_group":
+                pos_objs[pos_value] = self.pedb.siwave.pin_groups[pos_value]
+            elif not self.distributed:
+                # get pins
+                pins = self._get_pins(pos_type, pos_value)  # terminal type pin or net
+                # create pin group
+                pin_group = self._create_pin_group(pins)
+                pos_objs.update(pin_group)
             else:
-                if not self.distributed:
-                    # get pins
-                    pins = self._get_pins(pos_type, pos_value)  # terminal type pin or net
-                    # create pin group
-                    pin_group = self._create_pin_group(pins)
-                    pos_objs.update(pin_group)
-                else:
-                    # get pins
-                    pins = self._get_pins(pos_type, pos_value)  # terminal type pin or net or pin group
-                    pos_objs.update(pins)
-                    self._elem_num = len(pos_objs)
+                # get pins
+                pins = self._get_pins(pos_type, pos_value)  # terminal type pin or net or pin group
+                pos_objs.update(pins)
+                self._elem_num = len(pos_objs)
 
             self.pos_terminals = {i: j.get_terminal(i, create_new_terminal=True) for i, j in pos_objs.items()}
 
-        neg_term_info = kwargs.get("negative_terminal", None)
-
+        neg_term_info = self._neg_term_info
         self.neg_terminal = None
         if neg_term_info:
             neg_type, neg_value = [[i, j] for i, j in neg_term_info.items()][0]
-            # Get pins
-            pins = self._get_pins(neg_type, neg_value)  # terminal type pin or net
-            # create pin group
-            pin_group = self._create_pin_group(pins, True)
+            if neg_type == "pin_group":
+                pin_group = {neg_value: self.pedb.siwave.pin_groups[neg_value]}
+            else:
+                # Get pins
+                pins = self._get_pins(neg_type, neg_value)  # terminal type pin or net
+                # create pin group
+                pin_group = self._create_pin_group(pins, True)
             self.neg_terminal = [j.get_terminal(i, create_new_terminal=True) for i, j in pin_group.items()][0]
 
+    @pyedb_function_handler
     def _get_pins(self, terminal_type, terminal_value):
         terminal_value = terminal_value if isinstance(terminal_value, list) else [terminal_value]
 
@@ -87,6 +99,7 @@ class CfgCircuitElement:
             pins.update({f"{self.reference_designator}_{terminal_value[0]}_{i}": j for i, j in temp.items()})
         return pins
 
+    @pyedb_function_handler
     def _create_pin_group(self, pins, is_ref=False):
         if is_ref:
             pg_name = f"pg_{self.name}_{self.reference_designator}_ref"
@@ -102,11 +115,14 @@ class CfgPort(CfgCircuitElement):
 
     CFG_PORT_TYPE = {"circuit": [str], "coax": [str]}
 
+    @pyedb_function_handler
     def __init__(self, pdata, **kwargs):
         super().__init__(pdata, **kwargs)
 
+    @pyedb_function_handler
     def create(self):
         """Create port."""
+        self._create()
         is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
         for _, j in self.pos_terminals.items():
@@ -120,13 +136,16 @@ class CfgPort(CfgCircuitElement):
 class CfgSources(CfgCircuitElement):
     CFG_SOURCE_TYPE = {"current": [int, float], "voltage": [int, float]}
 
+    @pyedb_function_handler
     def __init__(self, pdata, **kwargs):
         super().__init__(pdata, **kwargs)
 
         self.magnitude = kwargs.get("magnitude", 0.001)
 
+    @pyedb_function_handler
     def create(self):
         """Create sources."""
+        self._create()
         is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
         method = self.pedb.create_current_source if self.type == "current" else self.pedb.create_voltage_source
