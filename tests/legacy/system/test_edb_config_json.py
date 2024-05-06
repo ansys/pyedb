@@ -232,12 +232,8 @@ class TestClass:
                 "type": "voltage",
                 "magnitude": 1,
                 "distributed": False,
-                "positive_terminal": {
-                    "net": "1V0"
-                },
-                "negative_terminal": {
-                    "net": "GND"
-                }
+                "positive_terminal": {"net": "1V0"},
+                "negative_terminal": {"net": "GND"},
             },
         ]
         data = {"sources": sources_v}
@@ -249,16 +245,12 @@ class TestClass:
                 "type": "current",
                 "magnitude": 1,
                 "distributed": True,
-                "positive_terminal": {
-                    "net": "1V0"
-                },
-                "negative_terminal": {
-                    "net": "GND"
-                }
+                "positive_terminal": {"net": "1V0"},
+                "negative_terminal": {"net": "GND"},
             },
         ]
         data = {"sources": sources_i}
         assert edbapp.configuration.load(data, apply_file=True)
-        #assert edbapp.ports["COAX_U1_AM17"]
-        #assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"]
+        # assert edbapp.ports["COAX_U1_AM17"]
+        # assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"]
         edbapp.close()
