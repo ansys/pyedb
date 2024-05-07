@@ -60,7 +60,11 @@ class HFSSPISimulationSetup(BaseSimulationSetup):
 
     @enabled.setter
     def enabled(self, value):
-        self.settings.enabled = value
+        if isinstance(value, bool):
+            self.settings.enabled = value
+        else:
+            self.logger.error("Property enabled expects a boolean value while the provided "
+                              f"value is {value}.")
 
     @property
     def position(self):
@@ -71,7 +75,8 @@ class HFSSPISimulationSetup(BaseSimulationSetup):
         if isinstance(value, int):
             self._edb_setup_info.Position = value
         else:
-            self.logger.error(f"HFSSPI setup position input setter must be an integer. Provided value {value}")
+            self.logger.error("Property position expects an integer value while the provided "
+                    f"value is {value}.")
 
     @property
     def frequency_sweeps(self):
@@ -132,10 +137,8 @@ class HFSSPISimulationSettings(object):
         if isinstance(value, bool):
             self._simulation_settings.AutoSelectNetsForSimulation = value
         else:
-            self.logger.error(
-                f"HFSSPI setup auto_select_nets_for_simulation setter input must be a boolean. "
-                f"Provided value {value}"
-            )
+            self.logger.error("Property auto_select_nets_for_simulation expects a boolean "
+                              f"value while the provided value is {value}.")
 
     @property
     def enabled(self):
@@ -146,11 +149,12 @@ class HFSSPISimulationSettings(object):
         if isinstance(value, bool):
             self._simulation_settings.Enabled = value
         else:
-            self.logger.error(f"HFSSPI setup enabled setter input must be a boolean. Provided value {value}")
+            self.logger.error("Property enabled expects a boolean value while the "
+                              f"provided value is {value}.")
 
     @property
     def ignore_dummy_nets_for_selected_nets(self):
-        """Auto select nets for simulation.
+        """Auto select Nets for simulation
 
         Return
         ------
@@ -163,10 +167,8 @@ class HFSSPISimulationSettings(object):
         if isinstance(value, bool):
             self._simulation_settings.IgnoreDummyNetsForSelectedNets = value
         else:
-            self.logger.error(
-                f"HFSSPI setup ignore_dummy_nets_for_selected_nets setter input must be a boolean. "
-                f"Provided value {value}"
-            )
+            self.logger.error("Property ignore_dummy_nets_for_selected_nets expects a boolean "
+                              f"value while the provided value is {value}.")
 
     @property
     def ignore_small_holes(self):
@@ -183,12 +185,14 @@ class HFSSPISimulationSettings(object):
         if isinstance(value, bool):
             self._simulation_settings.IgnoreSmallHoles = value
         else:
-            self.logger.error(f"HFSSPI setup ignore_small_holes setter input must be a boolean. Provided value {value}")
+            self.logger.error("Property ignore_small_holes expects a boolean value while "
+                              f"the provided value is {value}.")
 
     @property
     def ignore_small_holes_min_diameter(self):
         """Min diameter to ignore small holes.
         Return
+        ------
             str
         """
         return self._simulation_settings.IgnoreSmallHolesMinDiameter
@@ -210,8 +214,14 @@ class HFSSPISimulationSettings(object):
 
     @improved_loss_model.setter
     def improved_loss_model(self, value):
-        if isinstance(value, str):
+        expected_values = ['Level1', 'Level2', 'Level3']
+        if isinstance(value, str) and value in expected_values:
             self._simulation_settings.ImprovedLossModel = value
+        else:
+            self.logger.error(
+                "Property improved_loss_model expects a string value among "
+                f"'Level1', 'Level2' or 'Level3' while the provided value is {value}."
+            )
 
     @property
     def include_enhanced_bond_wire_modeling(self):
@@ -220,7 +230,6 @@ class HFSSPISimulationSettings(object):
         Return
         ------
             bool
-
         """
         return self._simulation_settings.IncludeEnhancedBondWireModeling
 
@@ -229,10 +238,8 @@ class HFSSPISimulationSettings(object):
         if isinstance(value, bool):
             self._simulation_settings.IncludeEnhancedBondWireModeling = value
         else:
-            self.logger.error(
-                f"HFSSPI setup include_enhanced_bond_wire_modeling setter input must be a boolean. "
-                f"Provided value {value}"
-            )
+            self.logger.error("Property include_enhanced_bond_wire_modeling expects a "
+                              f"boolean value while the provided value is {value}.")
 
     @property
     def include_nets(self):
@@ -252,10 +259,8 @@ class HFSSPISimulationSettings(object):
         if isinstance(value, list):
             self._simulation_settings.IncludeNets = convert_py_list_to_net_list(value)
         else:
-            self.logger.error(
-                f"HFSSPI setup include_nets setter input must be a list of str, with net name provide. "
-                f"Provided value {value}"
-            )
+            self.logger.error("Property include_nets expects a string or list of string"
+                              f"while the provided value is {value}.")
 
     @property
     def min_plane_area_to_mesh(self):
@@ -299,8 +304,13 @@ class HFSSPISimulationSettings(object):
 
     @model_type.setter
     def model_type(self, value):
-        if isinstance(value, int):
+        if isinstance(value, int) and value in range(3):
             self._simulation_settings.ModelType = value
+        else:
+            self.logger.error(
+                "Property model_type expects an integer value among 0, 1 or 2"
+                f"while the provided value is {value}."
+            )
 
     @property
     def perform_erc(self):
@@ -318,7 +328,8 @@ class HFSSPISimulationSettings(object):
         if isinstance(value, bool):
             self._simulation_settings.PerformERC = value
         else:
-            self.logger.error(f"HFSSPI setup perform_erc setter input must be a boolean. Provided value {value}")
+            self.logger.error("Property perform_erc expects a boolean value while the "
+                              f"provided value is {value}.")
 
     @property
     def pi_slider_pos(self):
@@ -334,10 +345,13 @@ class HFSSPISimulationSettings(object):
 
     @pi_slider_pos.setter
     def pi_slider_pos(self, value):
-        if isinstance(value, int):
+        if isinstance(value, int) and value in range(2):
             self._simulation_settings.PISliderPos = value
         else:
-            self.logger.error(f"HFSSPI setup pi_slider_pos setter input must be a integer. Provided value {value}")
+            self.logger.error(
+                "Property pi_slider_pos expects an integer value among 0 or 1"
+                f"while the provided value is {value}."
+            )
 
     @property
     def rms_surface_roughness(self):
@@ -361,20 +375,26 @@ class HFSSPISimulationSettings(object):
         ------
             str
         ``"MeshInside"`` or ``"ImpedanceBoundary"``.
-
         """
         return self._simulation_settings.SignalNetsConductorModeling
 
     @signal_nets_conductor_modeling.setter
     def signal_nets_conductor_modeling(self, value):
-        if isinstance(value, str):
+        expected_values = ["MeshInside", "ImpedanceBoundary"]
+        if isinstance(value, str) and value in expected_values:
             self._simulation_settings.SignalNetsConductorModeling = value
+        else:
+            self.logger.error(
+                "Property signal_nets_conductor_modeling expects a string value among "
+                f"'MeshInside' or 'ImpedanceBoundary' while the provided value is {value}."
+            )
 
     @property
     def signal_nets_error_tolerance(self):
         """Error Tolerance
 
         Return
+        ------
             str
         Value between 0.02 and 1.
         """
@@ -393,10 +413,8 @@ class HFSSPISimulationSettings(object):
         if isinstance(value, bool):
             self._simulation_settings.SignalNetsIncludeImprovedDielectricFillRefinement = value
         else:
-            self.logger.error(
-                f"HFSSPI setup signal_nets_include_improved_dielectric_fill_refinement setter input "
-                f"must be a boolean. Provided value {value}"
-            )
+            self.logger.error("Property signal_nets_include_improved_dielectric_fill_refinement " \
+                              f"expects a boolean value while the provided value is {value}.")
 
     @property
     def signal_nets_include_improved_loss_handling(self):
@@ -405,7 +423,6 @@ class HFSSPISimulationSettings(object):
         Return
         ------
             bool
-
         """
         return self._simulation_settings.SignalNetsIncludeImprovedLossHandling
 
@@ -414,11 +431,8 @@ class HFSSPISimulationSettings(object):
         if isinstance(value, bool):
             self._simulation_settings.SignalNetsIncludeImprovedLossHandling = value
         else:
-            self.logger.error(
-                f"HFSSPI setup signal_nets_include_improved_loss_handling setter input "
-                f"must be a boolean. Provided value {value}"
-            )
-
+            self.logger.error("Property signal_nets_include_improved_loss_handling " \
+                              f"expects a boolean value while the provided value is {value}.")
     @property
     def snap_length_threshold(self):
         return self._simulation_settings.SnapLengthThreshold
@@ -441,11 +455,11 @@ class HFSSPISimulationSettings(object):
 
     @surface_roughness_model.setter
     def surface_roughness_model(self, value):
-        if isinstance(value, str):
+        expected_values = ["None", "Exponential", "Hammerstad"]
+        if isinstance(value, str) and value in expected_values:
             self._simulation_settings.SurfaceRoughnessModel = value
         else:
             self.logger.error(
-                f"HFSSPI setup surface_roughness_model setter input "
-                f"must be a str. Provided value {value}. Supported values 'Exponential' 'None' or "
-                f"Hammerstad"
+                "Property surface_roughness_model expects a string value among "
+                f"'None', 'Exponential' or 'Hammerstad' while the provided value is {value}."
             )
