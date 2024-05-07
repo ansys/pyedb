@@ -3702,7 +3702,7 @@ class Edb(Database):
             self.logger.error("Setup name already used in the layout")
             return False
         version = self.edbversion.split(".")
-        if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
+        if int(version[0]) == 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
             setup = HFSSPISimulationSetup(self).create(name)
             return setup
         else:
