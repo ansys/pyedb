@@ -57,7 +57,6 @@ class TestClass:
         for i in [
             "components.json",
             "setups_hfss.json",
-            "sources.json",
         ]:
             with open(self.local_input_folder / i) as f:
                 data = json.load(f)
@@ -66,11 +65,14 @@ class TestClass:
 
     def test_02_pin_groups(self):
         edbapp = Edb(str(self.local_edb), desktop_version)
-        assert edbapp.configuration.load(str(self.local_input_folder / "pin_groups.json"), apply_file=True)
-        assert len(edbapp.siwave.pin_groups["U6_ALL_PINS"].pins.keys()) == 96
-        assert len(edbapp.siwave.pin_groups["J5_TWO_NETS"].pins.keys()) == 2
-        assert edbapp.sources["U9_pin_group_source"]
-        assert edbapp.ports["U9_pin_group_port"]
+        pin_groups = [
+            {"name": "U9_5V_1", "reference_designator": "U9", "pins": ["32", "33"]},
+            {"name": "U9_GND", "reference_designator": "U9", "net": "GND"},
+        ]
+        data = {"pin_groups": pin_groups}
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert "U9_5V_1" in edbapp.siwave.pin_groups
+        assert "U9_GND" in edbapp.siwave.pin_groups
         edbapp.close()
 
     def test_03_spice_models(self):
@@ -152,7 +154,28 @@ class TestClass:
         data = {"ports": ports}
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        assert edbapp.ports
+        assert len(edbapp.ports) > 1
+        edbapp.close()
+
+    def test_05c_ports_pin_group(self):
+        edbapp = Edb(str(self.local_edb), desktop_version)
+        pin_groups = [
+            {"name": "U9_5V_1", "reference_designator": "U9", "pins": ["32", "33"]},
+            {"name": "U9_GND", "reference_designator": "U9", "net": "GND"},
+        ]
+        ports = [
+            {
+                "name": "U9_pin_group_port",
+                "type": "circuit",
+                "positive_terminal": {"pin_group": "U9_5V_1"},
+                "negative_terminal": {"pin_group": "U9_GND"},
+            }
+        ]
+        data = {"pin_groups": pin_groups, "ports": ports}
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert "U9_5V_1" in edbapp.siwave.pin_groups
+        assert "U9_GND" in edbapp.siwave.pin_groups
+        assert "U9_pin_group_port" in edbapp.ports
         edbapp.close()
 
     def test_06_s_parameters(self):
@@ -222,4 +245,36 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "setups_siwave_syz.json"), apply_file=True)
         setup = edbapp.setups["siwave_syz"]
+        edbapp.close()
+
+    def test_15b_sources(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        sources_v = [
+            {
+                "name": "VSOURCE_U2_1V0_GND",
+                "reference_designator": "U2",
+                "type": "voltage",
+                "magnitude": 1,
+                "distributed": False,
+                "positive_terminal": {"net": "1V0"},
+                "negative_terminal": {"net": "GND"},
+            },
+        ]
+        data = {"sources": sources_v}
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.sources["VSOURCE_U2_1V0_GND"].magnitude == 1
+        sources_i = [
+            {
+                "name": "ISOURCE",
+                "reference_designator": "U1",
+                "type": "current",
+                "magnitude": 1,
+                "distributed": True,
+                "positive_terminal": {"net": "1V0"},
+                "negative_terminal": {"net": "GND"},
+            },
+        ]
+        data = {"sources": sources_i}
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert not edbapp.sources["ISOURCE_U1_1V0_M16"].magnitude == 1
         edbapp.close()
