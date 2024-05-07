@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
 
 
@@ -33,7 +34,7 @@ class CfgData(object):
         self.cfg_general = None
         self.cfg_boundaries = None
         self.cfg_nets = None
-        self.cfg_components = None
+        self.cfg_components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
         self.cfg_padstacks = None
         self.cfg_pin_groups = None
         self.cfg_ports = [CfgPort(self, **port) for port in kwargs.get("ports", [])]
