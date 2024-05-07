@@ -2289,6 +2289,18 @@ class Components(object):
                 f.writelines([delimiter.join([refdes, part_name, comp_type, value + "\n"])])
         return True
 
+    @pyedb_function_handler
+    def find_by_reference_designator(self, reference_designator):
+        """Find a component.
+
+        Parameters
+        ----------
+        reference_designator : str
+            Reference designator of the component.
+        """
+        obj = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, reference_designator)
+        return EDBComponent(self._pedb, obj)
+
     @pyedb_function_handler()
     def get_pin_from_component(self, component, netName=None, pinName=None):
         """Retrieve the pins of a component.
@@ -2372,6 +2384,34 @@ class Components(object):
         _, name = pin.GetProductProperty(self._edb.edb_api.ProductId.Designer, 11, val)
         name = str(name).strip("'")
         return name
+
+    @pyedb_function_handler
+    def get_pins(self, reference_designator, net_name=None, pin_name=None):
+        """Get component pins.
+
+        Parameters
+        ----------
+        reference_designator : str
+            Reference designator of the component.
+        net_name : str, optional
+            Name of the net.
+        pin_name : str, optional
+            Name of the pin.
+
+        Returns
+        -------
+
+        """
+        comp = self.find_by_reference_designator(reference_designator)
+
+        pins = comp.pins
+        if net_name:
+            pins = {i: j for i, j in pins.items() if j.net_name == net_name}
+
+        if pin_name:
+            pins = {i: j for i, j in pins.items() if i == pin_name}
+
+        return pins
 
     @pyedb_function_handler()
     def get_pin_position(self, pin):

@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.configuration.cfg_ports import CfgPort
+from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
 
 
 class CfgData(object):
@@ -37,6 +37,7 @@ class CfgData(object):
         self.cfg_padstacks = None
         self.cfg_pin_groups = None
         self.cfg_ports = [CfgPort(self, **port) for port in kwargs.get("ports", [])]
+        self.cfg_sources = [CfgSources(self, **source) for source in kwargs.get("sources", [])]
         self.cfg_setups = None
         self.cfg_stackup = None
         self.cfg_s_parameters = None
