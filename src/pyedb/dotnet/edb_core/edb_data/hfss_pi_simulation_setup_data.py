@@ -90,7 +90,8 @@ class HFSSPISimulationSetup(BaseSimulationSetup):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.EdbFrequencySweep`
+        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.EdbFrequencySweep`wheen succeeded, ``False``
+        when failed.
 
         Examples
         --------
@@ -102,6 +103,7 @@ class HFSSPISimulationSetup(BaseSimulationSetup):
         ...                           ])
         """
         if name in self.frequency_sweeps:
+            self.logger.error("Frequency sweep with same name already defined.")
             return False
         if not name:
             name = generate_unique_name("sweep")
@@ -117,7 +119,7 @@ class HFSSPISimulationSettings(object):
 
     @property
     def auto_select_nets_for_simulation(self):
-        """Auto select Nets for simulation
+        """Auto select nets for simulation.
 
         Return
         ------
@@ -148,7 +150,7 @@ class HFSSPISimulationSettings(object):
 
     @property
     def ignore_dummy_nets_for_selected_nets(self):
-        """Auto select Nets for simulation
+        """Auto select nets for simulation.
 
         Return
         ------
@@ -168,7 +170,7 @@ class HFSSPISimulationSettings(object):
 
     @property
     def ignore_small_holes(self):
-        """Ignore Small Holes choice
+        """Ignore small holes choice.
 
         Return
         ------
@@ -185,7 +187,7 @@ class HFSSPISimulationSettings(object):
 
     @property
     def ignore_small_holes_min_diameter(self):
-        """Min diameter to ignore small holes
+        """Min diameter to ignore small holes.
         Return
             str
         """
@@ -213,7 +215,7 @@ class HFSSPISimulationSettings(object):
 
     @property
     def include_enhanced_bond_wire_modeling(self):
-        """Enhance Bond wire modeling
+        """Enhance Bond wire modeling.
 
         Return
         ------
@@ -234,7 +236,7 @@ class HFSSPISimulationSettings(object):
 
     @property
     def include_nets(self):
-        """Add Additional Nets for simulation
+        """Add Additional Nets for simulation.
 
         Return
         ------
@@ -257,7 +259,7 @@ class HFSSPISimulationSettings(object):
 
     @property
     def min_plane_area_to_mesh(self):
-        """The minimum area below which geometry is ignored
+        """The minimum area below which geometry is ignored.
 
         Return
         ------
@@ -271,7 +273,7 @@ class HFSSPISimulationSettings(object):
 
     @property
     def min_void_area_to_mesh(self):
-        """The minimum area below which voids are ignored
+        """The minimum area below which voids are ignored.
 
         Return
         ------
@@ -285,7 +287,7 @@ class HFSSPISimulationSettings(object):
 
     @property
     def model_type(self):
-        """Model Type setting
+        """Model Type setting.
 
         Return
         ------

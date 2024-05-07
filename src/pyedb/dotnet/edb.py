@@ -3695,7 +3695,8 @@ class Edb(Database):
 
         Returns
         -------
-        :class:`legacy.edb_core.edb_data.hfss_pi_simulation_setup_data.RaptorXSimulationSetup`
+        :class:`legacy.edb_core.edb_data.hfss_pi_simulation_setup_data.HFSSPISimulationSetup when succeeded, ``False``
+        when failed.
 
         """
         if name in self.setups:
