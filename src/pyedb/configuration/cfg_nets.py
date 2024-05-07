@@ -20,29 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.configuration.cfg_components import CfgComponent
-from pyedb.configuration.cfg_nets import CfgNets
-from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
 
+class CfgNets:
+    def __init__(self, pdata, **kwargs):
+        self._pedb = pdata.pedb
+        self._nets = kwargs
+        self.power_ground_nets = self._nets["power_ground_nets"]
+        self.signal_nets = self._nets["signal_nets"]
 
-class CfgData(object):
-    """Manages configure data."""
+    def apply(self):
+        nets = self._pedb.nets.nets
+        for i in self._nets["power_ground_nets"]:
+            nets[i].is_power_ground = True
 
-    def __init__(self, pedb, **kwargs):
-        self.pedb = pedb
-        self.edb_comps = self.pedb.components.components
-
-        self.cfg_general = None
-        self.cfg_boundaries = None
-        self.cfg_nets = [CfgNets(self, **net) for net in kwargs.get("nets", [])]
-        self.cfg_components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
-        self.cfg_padstacks = None
-        self.cfg_pin_groups = None
-        self.cfg_ports = [CfgPort(self, **port) for port in kwargs.get("ports", [])]
-        self.cfg_sources = [CfgSources(self, **source) for source in kwargs.get("sources", [])]
-        self.cfg_setups = None
-        self.cfg_stackup = None
-        self.cfg_s_parameters = None
-        self.cfg_spice_models = None
-        self.cfg_package_definition = None
-        self.cfg_operations = None
+        for i in self._nets["signal_nets"]:
+            nets[i].is_power_ground = False
