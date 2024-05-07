@@ -1846,6 +1846,10 @@ class TestClass:
         assert edbapp.setups["Pyaedt_setup"].adaptive_settings.adapt_type == "kBroadband"
         edbapp.close()
 
+    @pytest.mark.skipif(
+        not desktop_version == "2024.2" or int(desktop_version.split(".")[0]) >= 2025,
+        reason="Only supported with 2024.2 and higher",
+    )
     def test_create_hfss_pi_setup(self):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_raptorx_setup", "test.aedb")
