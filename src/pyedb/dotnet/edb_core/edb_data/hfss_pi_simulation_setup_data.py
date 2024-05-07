@@ -124,8 +124,8 @@ class HFSSPISimulationSettings(object):
     def auto_select_nets_for_simulation(self):
         """Auto select nets for simulation.
 
-        Return
-        ------
+        Returns
+        -------
             bool
         """
         return self._simulation_settings.AutoSelectNetsForSimulation
@@ -155,8 +155,8 @@ class HFSSPISimulationSettings(object):
     def ignore_dummy_nets_for_selected_nets(self):
         """Auto select Nets for simulation
 
-        Return
-        ------
+        Returns
+        -------
             bool
         """
         return self._simulation_settings.IgnoreDummyNetsForSelectedNets
@@ -175,8 +175,8 @@ class HFSSPISimulationSettings(object):
     def ignore_small_holes(self):
         """Ignore small holes choice.
 
-        Return
-        ------
+        Returns
+        -------
             bool
         """
         return self._simulation_settings.IgnoreSmallHoles
@@ -193,8 +193,9 @@ class HFSSPISimulationSettings(object):
     @property
     def ignore_small_holes_min_diameter(self):
         """Min diameter to ignore small holes.
-        Return
-        ------
+
+        Returns
+        -------
             str
         """
         return self._simulation_settings.IgnoreSmallHolesMinDiameter
@@ -207,8 +208,8 @@ class HFSSPISimulationSettings(object):
     def improved_loss_model(self):
         """Improved Loss Model on power ground nets option.
 
-        Return
-        ------
+        Returns
+        -------
             str
             ``Level1``, ``Level2``, ``Level3``
         """
@@ -229,8 +230,8 @@ class HFSSPISimulationSettings(object):
     def include_enhanced_bond_wire_modeling(self):
         """Enhance Bond wire modeling.
 
-        Return
-        ------
+        Returns
+        -------
             bool
         """
         return self._simulation_settings.IncludeEnhancedBondWireModeling
@@ -249,8 +250,8 @@ class HFSSPISimulationSettings(object):
     def include_nets(self):
         """Add Additional Nets for simulation.
 
-        Return
-        ------
+        Returns
+        -------
             [str]
             List of net name.
         """
@@ -271,8 +272,8 @@ class HFSSPISimulationSettings(object):
     def min_plane_area_to_mesh(self):
         """The minimum area below which geometry is ignored.
 
-        Return
-        ------
+        Returns
+        -------
             str
         """
         return self._simulation_settings.MinPlaneAreaToMesh
@@ -285,8 +286,8 @@ class HFSSPISimulationSettings(object):
     def min_void_area_to_mesh(self):
         """The minimum area below which voids are ignored.
 
-        Return
-        ------
+        Returns
+        -------
             str
         """
         return self._simulation_settings.MinVoidAreaToMesh
@@ -299,11 +300,10 @@ class HFSSPISimulationSettings(object):
     def model_type(self):
         """Model Type setting.
 
-        Return
-        ------
+        Returns
+        -------
             int
-         model type, ``0``=RDL, ``1``=Package, ``2``=PCB
-
+        Model type: ``0``=RDL, ``1``=Package, ``2``=PCB
         """
         return self._simulation_settings.ModelType
 
@@ -320,10 +320,9 @@ class HFSSPISimulationSettings(object):
     def perform_erc(self):
         """Perform ERC
 
-        Return
-        ------
+        Returns
+        -------
             bool
-
         """
         return self._simulation_settings.PerformERC
 
@@ -338,11 +337,10 @@ class HFSSPISimulationSettings(object):
     def pi_slider_pos(self):
         """The Simulation Preference Slider setting
 
-        Return
-        ------
+        Returns
+        -------
             int
-        ``0``= balanced, ``1``=Accuracy.
-
+        Model type: ``0``= balanced, ``1``=Accuracy.
         """
         return self._simulation_settings.PISliderPos
 
@@ -359,8 +357,8 @@ class HFSSPISimulationSettings(object):
     def rms_surface_roughness(self):
         """RMS Surface Roughness setting
 
-        Return
-        ------
+        Returns
+        -------
             str
         """
         return self._simulation_settings.RMSSurfaceRoughness
@@ -373,10 +371,10 @@ class HFSSPISimulationSettings(object):
     def signal_nets_conductor_modeling(self):
         """Conductor Modeling
 
-        Return
-        ------
+        Returns
+        -------
             str
-        ``"MeshInside"`` or ``"ImpedanceBoundary"``.
+        Value: ``"MeshInside"`` or ``"ImpedanceBoundary"``.
         """
         return self._simulation_settings.SignalNetsConductorModeling
 
@@ -395,8 +393,8 @@ class HFSSPISimulationSettings(object):
     def signal_nets_error_tolerance(self):
         """Error Tolerance
 
-        Return
-        ------
+        Returns
+        -------
             str
         Value between 0.02 and 1.
         """
@@ -424,8 +422,8 @@ class HFSSPISimulationSettings(object):
     def signal_nets_include_improved_loss_handling(self):
         """Improved Dielectric Fill Refinement choice.
 
-        Return
-        ------
+        Returns
+        -------
             bool
         """
         return self._simulation_settings.SignalNetsIncludeImprovedLossHandling
@@ -452,11 +450,10 @@ class HFSSPISimulationSettings(object):
     def surface_roughness_model(self):
         """Chosen Model setting
 
-        Return
-        ------
+        Returns
+        -------
             str
         Model allowed, ``"None"``, ``"Exponential"`` or ``"Hammerstad"``.
-
         """
         return self._simulation_settings.SurfaceRoughnessModel
 
