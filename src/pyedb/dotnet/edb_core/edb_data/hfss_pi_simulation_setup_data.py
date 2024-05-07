@@ -63,7 +63,7 @@ class HFSSPISimulationSetup(BaseSimulationSetup):
         if isinstance(value, bool):
             self.settings.enabled = value
         else:
-            self.logger.error("Property enabled expects a boolean value while the provided " f"value is {value}.")
+            self.logger.error(f"Property enabled expects a boolean value while the provided value is {value}.")
 
     @property
     def position(self):
@@ -74,7 +74,7 @@ class HFSSPISimulationSetup(BaseSimulationSetup):
         if isinstance(value, int):
             self._edb_setup_info.Position = value
         else:
-            self.logger.error("Property position expects an integer value while the provided " f"value is {value}.")
+            self.logger.error(f"Property position expects an integer value while the provided value is {value}.")
 
     @property
     def frequency_sweeps(self):
@@ -149,7 +149,7 @@ class HFSSPISimulationSettings(object):
         if isinstance(value, bool):
             self._simulation_settings.Enabled = value
         else:
-            self.logger.error("Property enabled expects a boolean value while the " f"provided value is {value}.")
+            self.logger.error(f"Property enabled expects a boolean value while the provided value is {value}.")
 
     @property
     def ignore_dummy_nets_for_selected_nets(self):
@@ -187,7 +187,7 @@ class HFSSPISimulationSettings(object):
             self._simulation_settings.IgnoreSmallHoles = value
         else:
             self.logger.error(
-                "Property ignore_small_holes expects a boolean value while " f"the provided value is {value}."
+                f"Property ignore_small_holes expects a boolean value while the provided value is {value}."
             )
 
     @property
@@ -265,7 +265,7 @@ class HFSSPISimulationSettings(object):
             self._simulation_settings.IncludeNets = convert_py_list_to_net_list(value)
         else:
             self.logger.error(
-                "Property include_nets expects a string or list of string" f"while the provided value is {value}."
+                f"Property include_nets expects a string or list of string while the provided value is {value}."
             )
 
     @property
@@ -313,7 +313,7 @@ class HFSSPISimulationSettings(object):
             self._simulation_settings.ModelType = value
         else:
             self.logger.error(
-                "Property model_type expects an integer value among 0, 1 or 2" f"while the provided value is {value}."
+                f"Property model_type expects an integer value among 0, 1 or 2 while the provided value is {value}."
             )
 
     @property
@@ -331,7 +331,7 @@ class HFSSPISimulationSettings(object):
         if isinstance(value, bool):
             self._simulation_settings.PerformERC = value
         else:
-            self.logger.error("Property perform_erc expects a boolean value while the " f"provided value is {value}.")
+            self.logger.error(f"Property perform_erc expects a boolean value while the provided value is {value}.")
 
     @property
     def pi_slider_pos(self):
@@ -350,7 +350,7 @@ class HFSSPISimulationSettings(object):
             self._simulation_settings.PISliderPos = value
         else:
             self.logger.error(
-                "Property pi_slider_pos expects an integer value among 0 or 1" f"while the provided value is {value}."
+                f"Property pi_slider_pos expects an integer value among 0 or 1 while the provided value is {value}."
             )
 
     @property
