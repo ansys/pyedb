@@ -278,3 +278,25 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         assert not edbapp.sources["ISOURCE_U1_1V0_M16"].magnitude == 1
         edbapp.close()
+
+    def test_components(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        config = edbapp.configuration.load(str(self.local_input_folder / "components.json"), apply_file=False)
+        assert config.components
+        capacitors = [comp for comp in config.components if comp.part_type.name == "CAPACITOR"]
+        assert len(capacitors) == 2
+        assert capacitors[0].enabled
+        assert capacitors[-1].enabled
+        inductor = next(comp for comp in config.components if comp.reference_designator == "L2")
+        assert inductor.rlc_model.capacitance == "100nf"
+        assert inductor.rlc_model.inductance == "1nh"
+        assert inductor.rlc_model.resistance == "0.001"
+        u1 = next(comp for comp in config.components if comp.reference_designator == "U1")
+        assert u1.solder_balls.shape.name == "CYLINDER"
+        assert u1.solder_balls.height == "406um"
+        assert u1.solder_balls.diameter == "244um"
+        assert u1.solder_balls.mid_diameter == "244um"
+        assert not u1.solder_balls.enable
+        config = edbapp.configuration.load(str(self.local_input_folder / "components.json"), apply_file=True)
+
+        edbapp.close()

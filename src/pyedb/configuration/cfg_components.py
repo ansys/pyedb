@@ -25,7 +25,7 @@ from enum import Enum
 
 class CfgRlcModel:
     def __init__(self):
-        self.resistance = 50.0
+        self.resistance = 0.0
         self.inductance = 0.0
         self.capacitance = 0.0
         self.rlc_model_type = self.RlcModelType.SERIES
@@ -67,8 +67,9 @@ class CfgComponent:
         self.enabled = True
         self.rlc_model = CfgRlcModel()
         self.port_properties = CfgPortProperties()
-        self.solder_balls_properties = CfgSolderBallsProperties()
+        self.solder_balls = CfgSolderBallsProperties()
         self._update()
+        self.layout_comp = None
 
     class ComponentType(Enum):
         RESISTOR = 0
@@ -79,6 +80,7 @@ class CfgComponent:
         OTHER = 5
 
     def _update(self):
+        self.reference_designator = self._comp_dict.get("reference_designator")
         part_type = self._comp_dict["part_type"].lower()
         if part_type == "resistor":
             self.part_type = self.part_type.RESISTOR
@@ -93,17 +95,17 @@ class CfgComponent:
         else:
             self.part_type = self.part_type.OTHER
 
-        if self.part_type in [0, 1, 2]:
+        if self.part_type.value in [0, 1, 2]:
             rlc_model = self._comp_dict["rlc_model"] if "rlc_model" in self._comp_dict else None
             if rlc_model:
                 pin_pairs = rlc_model["pin_pairs"] if "pin_pairs" in rlc_model else None
                 if pin_pairs:
+                    self.rlc_model.pin_pairs = []
                     for pp in pin_pairs:
                         if pp["type"] == "Parallel":
                             self.rlc_model.rlc_model_type = self.rlc_model.rlc_model_type.PARALLEL
 
-                        self.rlc_model.pin_pairs.append(pp["p1"])
-                        self.rlc_model.pin_pairs.append(pp["p2"])
+                        self.rlc_model.pin_pairs.append([pp["p1"], pp["p2"]])
                         self.rlc_model.resistance = pp["resistance"] if "resistance" in pp else None
                         self.rlc_model.inductance = pp["inductance"] if "inductance" in pp else None
                         self.rlc_model.capacitance = pp["capacitance"] if "capacitance" in pp else None
@@ -120,22 +122,41 @@ class CfgComponent:
         )
         if solder_ball_properties:
             if solder_ball_properties["shape"].lower() == "spheroid":
-                self.solder_balls_properties.shape = self.solder_balls_properties.shape.SPHEROID
-            self.solder_balls_properties.diameter = float(solder_ball_properties["diameter"])
-            self.solder_balls_properties.mid_diameter = (
+                self.solder_balls.shape = self.solder_balls.shape.SPHEROID
+            self.solder_balls.diameter = solder_ball_properties["diameter"]
+            self.solder_balls.mid_diameter = (
                 float(solder_ball_properties["mid_diameter"])
                 if "mid_diameter" in solder_ball_properties
-                else self.solder_balls_properties.diameter
+                else self.solder_balls.diameter
             )
-            self.solder_balls_properties.height = float(solder_ball_properties["height"])
+            self.solder_balls.height = solder_ball_properties["height"]
 
     def apply(self):
-        comp_layout = self._pedb.components[self.reference_designator]
-        comp_layout.type = self.part_type
-        if self.part_type in [0, 1, 2]:
-            comp_layout.is_enabled = self.enabled
+        self.layout_comp = self._pedb.components[self.reference_designator]
+        if self.layout_comp:
+            self._apply_part_type()
+            self._apply_rlc_model()
+            self._apply_solder_balls()
+
+    def _apply_part_type(self):
+        if self.part_type.name == "CAPACITOR":
+            self.layout_comp.type = "Capacitor"
+        elif self.part_type.name == "RESISTOR":
+            self.layout_comp.type = "Resistor"
+        elif self.part_type.name == "INDUCTOR":
+            self.layout_comp.type = "Inductor"
+        elif self.part_type.name == "IC":
+            self.layout_comp.type = "IC"
+        elif self.part_type.name == "IO":
+            self.layout_comp.type = "IO"
+        elif self.part_type.name == "OTHER":
+            self.layout_comp.type = "Other"
+
+    def _apply_rlc_model(self):
+        if self.part_type.value in [0, 1, 2]:
+            self.layout_comp.is_enabled = self.enabled
             if self.rlc_model:
-                model_layout = comp_layout.model
+                model_layout = self.layout_comp.model
                 if self.rlc_model.pin_pairs:
                     for pp in model_layout.pin_pairs:
                         model_layout.delete_pin_pair_rlc(pp)
@@ -160,14 +181,16 @@ class CfgComponent:
                         else:
                             rlc.CEnabled = False
                         model_layout._set_pin_pair_rlc(pin_pair, rlc)
-                        comp_layout.model = model_layout
-        if self.solder_balls_properties.enable:
+                        self.layout_comp.model = model_layout
+
+    def _apply_solder_balls(self):
+        if self.solder_balls.enable:
             self._pedb.components.set_solder_ball(
                 component=self.reference_designator,
-                sball_diam=self.solder_balls_properties.diameter,
-                sball_mid_diam=self.solder_balls_properties.mid_diameter,
-                sball_height=self.solder_balls_properties.height,
-                shape=self.solder_balls_properties.shape,
+                sball_diam=self.solder_balls.diameter,
+                sball_mid_diam=self.solder_balls.mid_diameter,
+                sball_height=self.solder_balls.height,
+                shape=self.solder_balls.shape,
                 auto_reference_size=self.port_properties.ref_size_auto,
                 reference_height=self.port_properties.ref_offset,
                 reference_size_x=self.port_properties.ref_size_x,
