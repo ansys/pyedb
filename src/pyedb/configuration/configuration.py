@@ -101,16 +101,11 @@ class Configuration:
                 self._pedb.close_edb()
                 self._pedb.edbpath = original_file
                 self._pedb.open_edb()
-        return self.data
+        return self.cfg_data
 
     @pyedb_function_handler()
     def run(self):
         """Apply configuration settings to the current design"""
-
-        # Configure components
-        if not self.data:
-            self._pedb.logger.error("No data loaded. Please load a configuration file.")
-            return False
 
         # Configure general settings
         if "general" in self.data:
@@ -125,8 +120,9 @@ class Configuration:
             self._load_nets()
 
         # Configure components
-        if "components" in self.data:
-            self._load_components()
+        if self.cfg_data.components:
+            for comp in self.cfg_data.components:
+                comp.apply()
 
         # Configure padstacks
         if "padstacks" in self.data:
@@ -137,13 +133,13 @@ class Configuration:
             self._load_pin_groups()
 
         # Configure ports
-        for port in self.cfg_data.cfg_ports:
+        for port in self.cfg_data.ports:
             port.create()
 
         # Configure sources
         """if "sources" in self.data:
             self._load_sources()"""
-        for source in self.cfg_data.cfg_sources:
+        for source in self.cfg_data.sources:
             source.create()
 
         # Configure HFSS setup
@@ -171,113 +167,6 @@ class Configuration:
             self._load_operations()
 
         return True
-
-    @pyedb_function_handler
-    def _load_components(self):
-        """Imports component information from json."""
-
-        for comp in self.data["components"]:
-            ref_designator = comp["reference_designator"]
-            part_type = comp["part_type"].lower()
-            if part_type == "resistor":
-                part_type = "Resistor"
-            elif part_type == "capacitor":
-                part_type = "Capacitor"
-            elif part_type == "inductor":
-                part_type = "Inductor"
-            elif part_type == "io":
-                part_type = "IO"
-            elif part_type == "ic":
-                part_type = "IC"
-            else:
-                part_type = "Other"
-
-            comp_layout = self._components[ref_designator]
-            comp_layout.type = part_type
-
-            if part_type in ["Resistor", "Capacitor", "Inductor"]:
-                comp_layout.is_enabled = comp["enabled"]
-                rlc_model = comp["rlc_model"] if "rlc_model" in comp else None
-                # n_port_model = comp["NPortModel"] if "NPortModel" in comp else None
-                # netlist_model = comp["NetlistModel"] if "NetlistModel" in comp else None
-                # spice_model = comp["SpiceModel"] if "SpiceModel" in comp else None
-
-                if rlc_model:
-                    model_layout = comp_layout.model
-
-                    pin_pairs = rlc_model["pin_pairs"] if "pin_pairs" in rlc_model else None
-                    if pin_pairs:
-                        for pp in model_layout.pin_pairs:
-                            model_layout.delete_pin_pair_rlc(pp)
-
-                        for pp in pin_pairs:
-                            rlc_model_type = pp["type"]
-                            p1 = pp["p1"]
-                            p2 = pp["p2"]
-
-                            r = pp["resistance"] if "resistance" in pp else None
-                            l = pp["inductance"] if "inductance" in pp else None
-                            c = pp["capacitance"] if "capacitance" in pp else None
-
-                            pin_pair = self._pedb.edb_api.utility.PinPair(p1, p2)
-                            rlc = self._pedb.edb_api.utility.Rlc()
-
-                            rlc.IsParallel = False if rlc_model_type == "series" else True
-                            if not r is None:
-                                rlc.REnabled = True
-                                rlc.R = self._pedb.edb_value(r)
-                            else:
-                                rlc.REnabled = False
-
-                            if not l is None:
-                                rlc.LEnabled = True
-                                rlc.L = self._pedb.edb_value(l)
-                            else:
-                                rlc.LEnabled = False
-
-                            if not c is None:
-                                rlc.CEnabled = True
-                                rlc.C = self._pedb.edb_value(c)
-                            else:
-                                rlc.CEnabled = False
-
-                            model_layout._set_pin_pair_rlc(pin_pair, rlc)
-                        comp_layout.model = model_layout
-
-            # Configure port properties
-            port_properties = comp["port_properties"] if "port_properties" in comp else None
-            if port_properties:
-                ref_offset = port_properties["reference_offset"]
-                ref_size_auto = port_properties["reference_size_auto"]
-                ref_size_x = port_properties["reference_size_x"]
-                ref_size_y = port_properties["reference_size_y"]
-            else:
-                ref_offset = 0
-                ref_size_auto = True
-                ref_size_x = 0
-                ref_size_y = 0
-
-            # Configure solder ball properties
-            solder_ball_properties = comp["solder_ball_properties"] if "solder_ball_properties" in comp else None
-            if solder_ball_properties:
-                shape = solder_ball_properties["shape"]
-                diameter = solder_ball_properties["diameter"]
-                mid_diameter = (
-                    solder_ball_properties["mid_diameter"] if "mid_diameter" in solder_ball_properties else diameter
-                )
-                height = solder_ball_properties["height"]
-
-                self._pedb.components.set_solder_ball(
-                    component=ref_designator,
-                    sball_diam=diameter,
-                    sball_mid_diam=mid_diameter,
-                    sball_height=height,
-                    shape=shape,
-                    auto_reference_size=ref_size_auto,
-                    reference_height=ref_offset,
-                    reference_size_x=ref_size_x,
-                    reference_size_y=ref_size_y,
-                )
 
     @pyedb_function_handler
     def _load_sources(self):
