@@ -51,7 +51,7 @@ class CfgSolderBallsProperties:
         self.diameter = 0.0
         self.mid_diameter = 0.0
         self.height = 0.0
-        self.enable = False
+        self.enable = True
 
     class Shape(Enum):
         CYLINDER = 0
@@ -81,6 +81,7 @@ class CfgComponent:
 
     def _update(self):
         self.reference_designator = self._comp_dict.get("reference_designator")
+        self.enabled = self._comp_dict.get("enabled")
         part_type = self._comp_dict["part_type"].lower()
         if part_type == "resistor":
             self.part_type = self.part_type.RESISTOR
@@ -185,12 +186,15 @@ class CfgComponent:
 
     def _apply_solder_balls(self):
         if self.solder_balls.enable:
+            shape = "Cylinder"
+            if self.solder_balls.shape == self.solder_balls.shape.SPHEROID:
+                shape = "Spheroid"
             self._pedb.components.set_solder_ball(
                 component=self.reference_designator,
                 sball_diam=self.solder_balls.diameter,
                 sball_mid_diam=self.solder_balls.mid_diameter,
                 sball_height=self.solder_balls.height,
-                shape=self.solder_balls.shape,
+                shape=shape,
                 auto_reference_size=self.port_properties.ref_size_auto,
                 reference_height=self.port_properties.ref_offset,
                 reference_size_x=self.port_properties.ref_size_x,

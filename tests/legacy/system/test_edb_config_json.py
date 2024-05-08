@@ -285,8 +285,8 @@ class TestClass:
         assert config.components
         capacitors = [comp for comp in config.components if comp.part_type.name == "CAPACITOR"]
         assert len(capacitors) == 2
-        assert capacitors[0].enabled
-        assert capacitors[-1].enabled
+        assert not capacitors[0].enabled
+        assert not capacitors[-1].enabled
         inductor = next(comp for comp in config.components if comp.reference_designator == "L2")
         assert inductor.rlc_model.capacitance == "100nf"
         assert inductor.rlc_model.inductance == "1nh"
@@ -296,7 +296,14 @@ class TestClass:
         assert u1.solder_balls.height == "406um"
         assert u1.solder_balls.diameter == "244um"
         assert u1.solder_balls.mid_diameter == "244um"
-        assert not u1.solder_balls.enable
+        assert u1.solder_balls.enable
         config = edbapp.configuration.load(str(self.local_input_folder / "components.json"), apply_file=True)
-
+        assert edbapp.components["U1"].solder_ball_height == 406e-6
+        assert edbapp.components["U1"].solder_ball_diameter[0] == 244e-6
+        assert edbapp.components["U1"].solder_ball_diameter[1] == 244e-6
+        assert not edbapp.components["C375"].is_enabled
+        assert not edbapp.components["L2"].is_enabled
+        assert edbapp.components["L2"].ind_value == "1nH"
+        assert edbapp.components["L2"].cap_value == "100nF"
+        assert edbapp.components["L2"].res_value == "0.001"
         edbapp.close()
