@@ -2345,6 +2345,8 @@ class Stackup(LayerCollection):
                 for i in temp_dict.keys():
                     value = temp.get(i, None)
                     if value:
+                        if i == "Thickness":
+                            value = str(round(float(value), 6)) + length_unit
                         value = "signal" if value == "conductor" else value
                         if i == "Color":
                             value = [int(x * 255) for x in list(colors.to_rgb(value))]

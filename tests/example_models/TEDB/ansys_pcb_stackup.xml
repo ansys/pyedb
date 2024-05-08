@@ -48,21 +48,21 @@
                 </DielectricLossTangent>
             </Material>
         </Materials>
-        <Layers LengthUnit="meter">
-            <Layer Material="copper" Name="1_Top" Thickness="3.5000000000000004e-05" Type="conductor" FillMaterial="Solder Resist" EtchFactor="0.0"/>
-            <Layer Material="copper" Name="Inner1" Thickness="1.7000000000000003e-05" Type="conductor" FillMaterial="Megtron4_2" EtchFactor="0.0"/>
-            <Layer Material="Megtron4_2" Name="DE2" Thickness="8.8e-05" Type="dielectric"/>
-            <Layer Material="copper" Name="Inner2" Thickness="1.7000000000000003e-05" Type="conductor" FillMaterial="Megtron4_2" EtchFactor="0.0"/>
-            <Layer Material="Megtron4" Name="DE3" Thickness="0.0001" Type="dielectric"/>
-            <Layer Material="copper" Name="Inner3" Thickness="1.7000000000000003e-05" Type="conductor" FillMaterial="Megtron4_3" EtchFactor="0.0"/>
-            <Layer Material="Megtron4_3" Name="Megtron4-1mm" Thickness="0.001" Type="dielectric"/>
-            <Layer Material="copper" Name="Inner4" Thickness="1.7000000000000003e-05" Type="conductor" FillMaterial="Megtron4_3" EtchFactor="0.0"/>
-            <Layer Material="Megtron4" Name="DE5" Thickness="0.0001" Type="dielectric"/>
-            <Layer Material="copper" Name="Inner5" Thickness="1.7000000000000003e-05" Type="conductor" FillMaterial="Megtron4_2" EtchFactor="0.0"/>
-            <Layer Material="Megtron4_2" Name="DE6" Thickness="8.8e-05" Type="dielectric"/>
-            <Layer Material="copper" Name="Inner6" Thickness="1.7000000000000003e-05" Type="conductor" FillMaterial="Megtron4_2" EtchFactor="0.0"/>
-            <Layer Material="Megtron4" Name="DE7" Thickness="0.0001" Type="dielectric"/>
-            <Layer Material="copper" Name="16_Bottom" Thickness="3.5000000000000004e-05" Type="conductor" FillMaterial="Solder Resist" EtchFactor="0.0"/>
+        <Layers LengthUnit="mm">
+            <Layer Material="copper" Name="1_Top" Thickness="3.5000000000000004e-02" Type="conductor" FillMaterial="Solder Resist" EtchFactor="0.0"/>
+            <Layer Material="copper" Name="Inner1" Thickness="1.7000000000000003e-02" Type="conductor" FillMaterial="Megtron4_2" EtchFactor="0.0"/>
+            <Layer Material="Megtron4_2" Name="DE2" Thickness="8.8e-02" Type="dielectric"/>
+            <Layer Material="copper" Name="Inner2" Thickness="1.7000000000000003e-02" Type="conductor" FillMaterial="Megtron4_2" EtchFactor="0.0"/>
+            <Layer Material="Megtron4" Name="DE3" Thickness="0.1" Type="dielectric"/>
+            <Layer Material="copper" Name="Inner3" Thickness="1.7000000000000003e-02" Type="conductor" FillMaterial="Megtron4_3" EtchFactor="0.0"/>
+            <Layer Material="Megtron4_3" Name="Megtron4-1mm" Thickness="1" Type="dielectric"/>
+            <Layer Material="copper" Name="Inner4" Thickness="1.7000000000000003e-02" Type="conductor" FillMaterial="Megtron4_3" EtchFactor="0.0"/>
+            <Layer Material="Megtron4" Name="DE5" Thickness="0.1" Type="dielectric"/>
+            <Layer Material="copper" Name="Inner5" Thickness="1.7000000000000003e-02" Type="conductor" FillMaterial="Megtron4_2" EtchFactor="0.0"/>
+            <Layer Material="Megtron4_2" Name="DE6" Thickness="8.8e-02" Type="dielectric"/>
+            <Layer Material="copper" Name="Inner6" Thickness="1.7000000000000003e-02" Type="conductor" FillMaterial="Megtron4_2" EtchFactor="0.0"/>
+            <Layer Material="Megtron4" Name="DE7" Thickness="0.1" Type="dielectric"/>
+            <Layer Material="copper" Name="16_Bottom" Thickness="3.5000000000000004e-02" Type="conductor" FillMaterial="Solder Resist" EtchFactor="0.0"/>
             <Layer Name="Measures" Type="measure"/>
             <Layer Name="SIwave Regions" Type="siwavehfsssolverregions"/>
             <Layer Name="Top Overlay" Type="silkscreen"/>
