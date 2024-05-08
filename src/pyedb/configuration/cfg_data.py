@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
 
 
@@ -30,17 +31,17 @@ class CfgData(object):
         self.pedb = pedb
         self.edb_comps = self.pedb.components.components
 
-        self.cfg_general = None
-        self.cfg_boundaries = None
-        self.cfg_nets = None
-        self.cfg_components = None
-        self.cfg_padstacks = None
-        self.cfg_pin_groups = None
-        self.cfg_ports = [CfgPort(self, **port) for port in kwargs.get("ports", [])]
-        self.cfg_sources = [CfgSources(self, **source) for source in kwargs.get("sources", [])]
-        self.cfg_setups = None
-        self.cfg_stackup = None
-        self.cfg_s_parameters = None
-        self.cfg_spice_models = None
-        self.cfg_package_definition = None
-        self.cfg_operations = None
+        self.general = None
+        self.boundaries = None
+        self.nets = None
+        self.components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
+        self.padstacks = None
+        self.pin_groups = None
+        self.ports = [CfgPort(self, **port) for port in kwargs.get("ports", [])]
+        self.sources = [CfgSources(self, **source) for source in kwargs.get("sources", [])]
+        self.setups = None
+        self.stackup = None
+        self.s_parameters = None
+        self.spice_models = None
+        self.package_definition = None
+        self.operations = None
