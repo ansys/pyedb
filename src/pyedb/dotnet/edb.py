@@ -46,6 +46,9 @@ from pyedb.dotnet.edb_core.edb_data.control_file import (
 )
 from pyedb.dotnet.edb_core.edb_data.design_options import EdbDesignOptions
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
+from pyedb.dotnet.edb_core.edb_data.hfss_pi_simulation_setup_data import (
+    HFSSPISimulationSetup,
+)
 from pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data import (
     HfssSimulationSetup,
 )
@@ -3680,6 +3683,31 @@ class Edb(Database):
             return setup
         else:
             self.logger.error("RaptorX simulation only supported with Ansys release 2024R2 and higher")
+            return False
+
+    def create_hfsspi_setup(self, name=None):
+        """Create an HFSS PI simulation setup from a template.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name.
+
+        Returns
+        -------
+        :class:`legacy.edb_core.edb_data.hfss_pi_simulation_setup_data.HFSSPISimulationSetup when succeeded, ``False``
+        when failed.
+
+        """
+        if name in self.setups:
+            self.logger.error("Setup name already used in the layout")
+            return False
+        version = self.edbversion.split(".")
+        if int(version[0]) == 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
+            setup = HFSSPISimulationSetup(self).create(name)
+            return setup
+        else:
+            self.logger.error("HFSSPI simulation only supported with Ansys release 2024R2 and higher")
             return False
 
     @pyedb_function_handler()
