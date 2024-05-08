@@ -1845,3 +1845,53 @@ class TestClass:
         assert edbapp.build_simulation_project(sim_config)
         assert edbapp.setups["Pyaedt_setup"].adaptive_settings.adapt_type == "kBroadband"
         edbapp.close()
+
+    @pytest.mark.skipif(
+        not desktop_version == "2024.2" or int(desktop_version.split(".")[0]) >= 2025,
+        reason="Only supported with 2024.2 and higher",
+    )
+    def test_create_hfss_pi_setup(self):
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_raptorx_setup", "test.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(edbpath=target_path, edbversion=desktop_version)
+        setup = edbapp.create_hfsspi_setup("test")
+        assert not setup.settings.auto_select_nets_for_simulation
+        setup.settings.auto_select_nets_for_simulation = True
+        assert setup.settings.auto_select_nets_for_simulation
+        assert setup.settings.ignore_dummy_nets_for_selected_nets
+        setup.settings.ignore_dummy_nets_for_selected_nets = False
+        assert not setup.settings.ignore_dummy_nets_for_selected_nets
+        assert setup.settings.ignore_small_holes == 0
+        setup.settings.ignore_small_holes_min_diameter = 1e-3
+        assert setup.settings.ignore_small_holes_min_diameter == "0.001"
+        setup.settings.improved_loss_model = "Level2"
+        assert setup.settings.improved_loss_model == "Level2"
+        setup.settings.include_enhanced_bond_wire_modeling = True
+        assert setup.settings.include_enhanced_bond_wire_modeling
+        setup.settings.include_nets = "GND"
+        assert setup.settings.include_nets[0] == "GND"
+        setup.settings.min_plane_area_to_mesh = "0.30mm2"
+        assert setup.settings.min_plane_area_to_mesh == "0.30mm2"
+        setup.settings.min_void_area_to_mesh = "0.30mm2"
+        assert setup.settings.min_void_area_to_mesh == "0.30mm2"
+        setup.settings.model_type = 0
+        assert setup.settings.model_type == 0
+        setup.settings.perform_erc = True
+        assert setup.settings.perform_erc
+        setup.settings.pi_slider_pos = 1
+        assert setup.settings.pi_slider_pos == 1
+        setup.settings.rms_surface_roughness = "2um"
+        assert setup.settings.rms_surface_roughness == "2um"
+        setup.settings.signal_nets_conductor_modeling = "ImpedanceBoundary"
+        assert setup.settings.signal_nets_conductor_modeling == "ImpedanceBoundary"
+        setup.settings.signal_nets_error_tolerance = "0.02"
+        assert setup.settings.signal_nets_error_tolerance == "0.02"
+        setup.settings.signal_nets_include_improved_dielectric_fill_refinement = True
+        assert setup.settings.signal_nets_include_improved_dielectric_fill_refinement
+        setup.settings.signal_nets_include_improved_loss_handling = True
+        assert setup.settings.signal_nets_include_improved_loss_handling
+        setup.settings.snap_length_threshold = "5um"
+        assert setup.settings.snap_length_threshold == "5um"
+        setup.settings.surface_roughness_model = "Hammerstad"
+        assert setup.settings.surface_roughness_model == "Hammerstad"
