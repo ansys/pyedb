@@ -20,29 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.configuration.cfg_components import CfgComponent
-from pyedb.configuration.cfg_nets import CfgNets
-from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
 
+class CfgNets:
+    def __init__(self, pdata, signal_nets, power_nets):
+        self._pedb = pdata.pedb
+        self.signal_nets = signal_nets
+        self.power_nets = power_nets
 
-class CfgData(object):
-    """Manages configure data."""
-
-    def __init__(self, pedb, **kwargs):
-        self.pedb = pedb
-        self.edb_comps = self.pedb.components.components
-
-        self.general = None
-        self.boundaries = None
-        self.nets = CfgNets(self, kwargs.get("nets", {})["signal_nets"], kwargs.get("nets", {})["power_ground_nets"])
-        self.components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
-        self.padstacks = None
-        self.pin_groups = None
-        self.ports = [CfgPort(self, **port) for port in kwargs.get("ports", [])]
-        self.sources = [CfgSources(self, **source) for source in kwargs.get("sources", [])]
-        self.setups = None
-        self.stackup = None
-        self.s_parameters = None
-        self.spice_models = None
-        self.package_definition = None
-        self.operations = None
+    def apply(self):
+        for signal_net in self.signal_nets:
+            if signal_net in self._pedb.nets:
+                self._pedb.nets.nets[signal_net].is_power_ground = False
+        for power_net in self.power_nets:
+            if power_net in self._pedb.nets:
+                self._pedb.nets.nets[power_net].is_power_ground = True

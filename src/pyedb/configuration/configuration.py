@@ -116,8 +116,8 @@ class Configuration:
             self._load_boundaries()
 
         # Configure nets
-        if "nets" in self.data:
-            self._load_nets()
+        if self.cfg_data.nets:
+            self.cfg_data.nets.apply()
 
         # Configure components
         if self.cfg_data.components:
@@ -445,16 +445,6 @@ class Configuration:
             else:
                 pins = [i for i in comps[ref_designator].pins.keys()]
                 self._pedb.siwave.create_pin_group(ref_designator, pins, name)
-
-    @pyedb_function_handler
-    def _load_nets(self):
-        """Imports nets information from JSON."""
-        nets = self._pedb.nets.nets
-        for i in self.data["nets"]["power_ground_nets"]:
-            nets[i].is_power_ground = True
-
-        for i in self.data["nets"]["signal_nets"]:
-            nets[i].is_power_ground = False
 
     @pyedb_function_handler
     def _load_general(self):
