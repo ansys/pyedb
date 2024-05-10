@@ -246,7 +246,7 @@ class Configuration:
                 ref_size_y = port_properties["reference_size_y"]
             else:
                 ref_offset = 0
-                ref_size_auto = True
+                ref_size_auto = comp["auto_reference_size"]
                 ref_size_x = 0
                 ref_size_y = 0
 
