@@ -22,6 +22,8 @@
 
 
 class CfgPinGroup:
+    """Manage configuration pin group class."""
+
     def __init__(self, pdata, **kwargs):
         self._pedb = pdata.pedb
         self._pingroup_dict = kwargs
@@ -30,7 +32,7 @@ class CfgPinGroup:
         self.pins = kwargs.get("pins", [])
         self.net = kwargs.get("net", [])
 
-    def apply(self):
+    def _apply(self):
         if self.pins:
             if not self._pedb.siwave.create_pin_group(self.reference_designator, list(self.pins), self.name):
                 self._pedb.loogger.error(f"Failed to create pin group on pins {self.pins}")

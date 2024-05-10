@@ -132,7 +132,7 @@ class CfgComponent:
             )
             self.solder_balls.height = solder_ball_properties["height"]
 
-    def apply(self):
+    def _apply(self):
         self.layout_comp = self._pedb.components[self.reference_designator]
         if self.layout_comp:
             self._apply_part_type()

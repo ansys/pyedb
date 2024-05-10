@@ -117,12 +117,12 @@ class Configuration:
 
         # Configure nets
         if self.cfg_data.nets:
-            self.cfg_data.nets.apply()
+            self.cfg_data.nets._apply()
 
         # Configure components
         if self.cfg_data.components:
             for comp in self.cfg_data.components:
-                comp.apply()
+                comp._apply()
 
         # Configure padstacks
         if "padstacks" in self.data:
@@ -130,7 +130,7 @@ class Configuration:
 
         # Configure pin groups
         for pin_group in self.cfg_data.pin_groups:
-            pin_group.apply()
+            pin_group._apply()
 
         # Configure ports
         for port in self.cfg_data.ports:
@@ -156,7 +156,7 @@ class Configuration:
 
         # Configure SPICE models
         for spice_model in self.cfg_data.spice_models:
-            spice_model.apply()
+            spice_model._apply()
 
         # Configure package definitions
         if "package_definitions" in self.data:

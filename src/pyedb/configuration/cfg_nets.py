@@ -22,12 +22,14 @@
 
 
 class CfgNets:
+    """Manage configuration net class."""
+
     def __init__(self, pdata, signal_nets, power_nets):
         self._pedb = pdata.pedb
         self.signal_nets = signal_nets
         self.power_nets = power_nets
 
-    def apply(self):
+    def _apply(self):
         for signal_net in self.signal_nets:
             if signal_net in self._pedb.nets:
                 self._pedb.nets.nets[signal_net].is_power_ground = False
