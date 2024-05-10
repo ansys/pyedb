@@ -22,6 +22,7 @@
 
 from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_nets import CfgNets
+from pyedb.configuration.cfg_pin_groups import CfgPinGroup
 from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
 
 
@@ -34,10 +35,14 @@ class CfgData(object):
 
         self.general = None
         self.boundaries = None
-        self.nets = CfgNets(self, kwargs.get("nets", {})["signal_nets"], kwargs.get("nets", {})["power_ground_nets"])
+        self.nets = None
+        if kwargs.get("nets"):
+            self.nets = CfgNets(
+                self, kwargs.get("nets", {})["signal_nets"], kwargs.get("nets", {})["power_ground_nets"]
+            )
         self.components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
         self.padstacks = None
-        self.pin_groups = None
+        self.pin_groups = [CfgPinGroup(self, **pin_group) for pin_group in kwargs.get("pin_groups", [])]
         self.ports = [CfgPort(self, **port) for port in kwargs.get("ports", [])]
         self.sources = [CfgSources(self, **source) for source in kwargs.get("sources", [])]
         self.setups = None

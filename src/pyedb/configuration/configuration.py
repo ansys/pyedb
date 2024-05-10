@@ -129,8 +129,8 @@ class Configuration:
             self._load_padstacks()
 
         # Configure pin groups
-        if "pin_groups" in self.data:
-            self._load_pin_groups()
+        for pin_group in self.cfg_data.pin_groups:
+            pin_group.apply()
 
         # Configure ports
         for port in self.cfg_data.ports:
@@ -426,25 +426,6 @@ class Configuration:
                 for refdes, comp in comps.items():
                     if refdes in sp["components"]:
                         comp.assign_spice_model(fpath, sp_name, sub_circuit_name)
-
-    @pyedb_function_handler
-    def _load_pin_groups(self):
-        """Imports pin groups information from JSON."""
-        comps = self._components
-        for pg in self.data["pin_groups"]:
-            name = pg["name"]
-            ref_designator = pg["reference_designator"]
-            if "pins" in pg:
-                self._pedb.siwave.create_pin_group(ref_designator, pg["pins"], name)
-            elif "net" in pg:
-                nets = pg["net"]
-                nets = nets if isinstance(nets, list) else [nets]
-                comp = comps[ref_designator]
-                pins = [p for p, obj in comp.pins.items() if obj.net_name in nets]
-                self._pedb.siwave.create_pin_group(ref_designator, pins, name)
-            else:
-                pins = [i for i in comps[ref_designator].pins.keys()]
-                self._pedb.siwave.create_pin_group(ref_designator, pins, name)
 
     @pyedb_function_handler
     def _load_general(self):
