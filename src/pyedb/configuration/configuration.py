@@ -155,8 +155,8 @@ class Configuration:
             self._load_s_parameter()
 
         # Configure SPICE models
-        if "spice_models" in self.data:
-            self._load_spice_models()
+        for spice_model in self.cfg_data.spice_models:
+            spice_model.apply()
 
         # Configure package definitions
         if "package_definitions" in self.data:
@@ -404,28 +404,6 @@ class Configuration:
                 else:
                     ref_net = sp["reference_net"]
                 comp.use_s_parameter_model(sp_name, reference_net=ref_net)
-
-    @pyedb_function_handler
-    def _load_spice_models(self):
-        """Imports SPICE information from json."""
-
-        for sp in self.data["spice_models"]:
-            fpath = sp["file_path"]
-            if not Path(fpath).anchor:
-                fpath = str(Path(self._spice_model_library) / fpath)
-            sp_name = sp["name"]
-            sub_circuit_name = sp.get("sub_circuit_name", None)
-            comp_def_name = sp["component_definition"]
-            comp_def = self._pedb.definitions.component[comp_def_name]
-            comps = comp_def.components
-            if sp["apply_to_all"]:
-                for refdes, comp in comps.items():
-                    if refdes not in sp["components"]:
-                        comp.assign_spice_model(fpath, sp_name, sub_circuit_name)
-            else:
-                for refdes, comp in comps.items():
-                    if refdes in sp["components"]:
-                        comp.assign_spice_model(fpath, sp_name, sub_circuit_name)
 
     @pyedb_function_handler
     def _load_general(self):
