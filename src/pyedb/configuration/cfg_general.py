@@ -24,6 +24,9 @@
 class CfgGeneral:
     def __init__(self, pdata, general_dict):
         self._pedb = pdata.pedb
-        self._general_dict = general_dict
-        self.spice_model_library = self._general_dict.get("spice_model_library", "")
-        self.s_parameter_library = self._general_dict.get("s_parameter_library", "")
+        self.spice_model_library = ""
+        self.s_parameter_library = ""
+        if general_dict:
+            self._general_dict = general_dict
+            self.spice_model_library = self._general_dict.get("spice_model_library", "")
+            self.s_parameter_library = self._general_dict.get("s_parameter_library", "")

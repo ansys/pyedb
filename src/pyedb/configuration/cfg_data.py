@@ -35,7 +35,7 @@ class CfgData(object):
         self.pedb = pedb
         self.edb_comps = self.pedb.components.components
 
-        self.general = CfgGeneral(self, kwargs.get("general", ""))
+        self.general = CfgGeneral(self, kwargs.get("general", None))
         self.boundaries = None
         self.nets = None
         if kwargs.get("nets"):
