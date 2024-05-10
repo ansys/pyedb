@@ -126,11 +126,13 @@ class CfgComponent:
                 self.solder_balls.shape = self.solder_balls.shape.SPHEROID
             self.solder_balls.diameter = solder_ball_properties["diameter"]
             self.solder_balls.mid_diameter = (
-                float(solder_ball_properties["mid_diameter"])
+                solder_ball_properties["mid_diameter"]
                 if "mid_diameter" in solder_ball_properties
                 else self.solder_balls.diameter
             )
             self.solder_balls.height = solder_ball_properties["height"]
+            if "auto_reference_size" in solder_ball_properties:
+                self.port_properties.ref_size_auto = solder_ball_properties["auto_reference_size"]
 
     def apply(self):
         self.layout_comp = self._pedb.components[self.reference_designator]
