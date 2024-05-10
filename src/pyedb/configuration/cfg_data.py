@@ -21,9 +21,11 @@
 # SOFTWARE.
 
 from pyedb.configuration.cfg_components import CfgComponent
+from pyedb.configuration.cfg_general import CfgGeneral
 from pyedb.configuration.cfg_nets import CfgNets
 from pyedb.configuration.cfg_pin_groups import CfgPinGroup
 from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
+from pyedb.configuration.cfg_spice_models import CfgSpiceModel
 
 
 class CfgData(object):
@@ -33,7 +35,7 @@ class CfgData(object):
         self.pedb = pedb
         self.edb_comps = self.pedb.components.components
 
-        self.general = None
+        self.general = CfgGeneral(self, kwargs.get("general", ""))
         self.boundaries = None
         self.nets = None
         if kwargs.get("nets"):
@@ -48,6 +50,9 @@ class CfgData(object):
         self.setups = None
         self.stackup = None
         self.s_parameters = None
-        self.spice_models = None
+        self.spice_models = [
+            CfgSpiceModel(self, self.general.spice_model_library, **spice_model)
+            for spice_model in kwargs.get("spice_models", [])
+        ]
         self.package_definition = None
         self.operations = None
