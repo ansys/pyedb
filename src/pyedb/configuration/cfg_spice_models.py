@@ -35,7 +35,7 @@ class CfgSpiceModel:
         self.apply_to_all = self._spice_dict.get("apply_to_all", True)
         self.components = list(self._spice_dict.get("components", []))
 
-    def _apply(self):
+    def apply(self):
         if not Path(self.file_path).anchor:
             fpath = str(Path(self.path_libraries) / self.file_path)
             comps = self._pedb.components.definitions[self.component_definition].components
