@@ -107,10 +107,6 @@ class Configuration:
     def run(self):
         """Apply configuration settings to the current design"""
 
-        # Configure general settings
-        if "general" in self.data:
-            self._load_general()
-
         # Configure boundary settings
         if "boundaries" in self.data:
             self._load_boundaries()
@@ -416,64 +412,7 @@ class Configuration:
 
     @pyedb_function_handler
     def _load_boundaries(self):
-        """Imports boundary information from JSON."""
-        boundaries = self.data["boundaries"]
-
-        open_region = boundaries.get("open_region", None)
-        if open_region:
-            self._pedb.hfss.hfss_extent_info.use_open_region = open_region
-
-        open_region_type = boundaries.get("open_region_type", None)
-        if open_region_type:
-            self._pedb.hfss.hfss_extent_info.open_region_type = open_region_type
-
-        pml_visible = boundaries.get("pml_visible", None)
-        if pml_visible:
-            self._pedb.hfss.hfss_extent_info.is_pml_visible = pml_visible
-
-        pml_operation_frequency = boundaries.get("pml_operation_frequency", None)
-        if pml_operation_frequency:
-            self._pedb.hfss.hfss_extent_info.operating_freq = pml_operation_frequency
-
-        pml_radiation_factor = boundaries.get("pml_radiation_factor", None)
-        if pml_radiation_factor:
-            self._pedb.hfss.hfss_extent_info.radiation_level = pml_radiation_factor
-
-        dielectric_extents_type = boundaries.get("dielectric_extents_type", None)
-        if dielectric_extents_type:
-            self._pedb.hfss.hfss_extent_info.extent_type = dielectric_extents_type
-
-        dielectric_base_polygon = boundaries.get("dielectric_base_polygon", None)
-        if dielectric_base_polygon:
-            self._pedb.hfss.hfss_extent_info.dielectric_base_polygon = dielectric_base_polygon
-
-        horizontal_padding = boundaries.get("horizontal_padding", None)
-        if horizontal_padding:
-            self._pedb.hfss.hfss_extent_info.dielectric_extent_size = horizontal_padding
-
-        honor_primitives_on_dielectric_layers = boundaries.get("honor_primitives_on_dielectric_layers", None)
-        if honor_primitives_on_dielectric_layers:
-            self._pedb.hfss.hfss_extent_info.honor_user_dielectric = honor_primitives_on_dielectric_layers
-
-        air_box_extents_type = boundaries.get("air_box_extents_type", None)
-        if air_box_extents_type:
-            self._pedb.hfss.hfss_extent_info.extent_type = air_box_extents_type
-
-        air_box_truncate_model_ground_layers = boundaries.get("air_box_truncate_model_ground_layers", None)
-        if air_box_truncate_model_ground_layers:
-            self._pedb.hfss.hfss_extent_info.truncate_air_box_at_ground = air_box_truncate_model_ground_layers
-
-        air_box_horizontal_padding = boundaries.get("air_box_horizontal_padding", None)
-        if air_box_horizontal_padding:
-            self._pedb.hfss.hfss_extent_info.air_box_horizontal_extent = air_box_horizontal_padding
-
-        air_box_positive_vertical_padding = boundaries.get("air_box_positive_vertical_padding", None)
-        if air_box_positive_vertical_padding:
-            self._pedb.hfss.hfss_extent_info.air_box_positive_vertical_extent = air_box_positive_vertical_padding
-
-        air_box_negative_vertical_padding = boundaries.get("air_box_negative_vertical_padding", None)
-        if air_box_positive_vertical_padding:
-            self._pedb.hfss.hfss_extent_info.air_box_negative_vertical_extent = air_box_negative_vertical_padding
+        self.cfg_data.boundaries.apply()
 
     @pyedb_function_handler
     def _load_operations(self):

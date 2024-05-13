@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.configuration.cfg_boundaries import CfgBoundaries
 from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_general import CfgGeneral
 from pyedb.configuration.cfg_nets import CfgNets
@@ -36,7 +37,7 @@ class CfgData(object):
         self.edb_comps = self.pedb.components.components
 
         self.general = CfgGeneral(self, kwargs.get("general", None))
-        self.boundaries = None
+        self.boundaries = CfgBoundaries(self, kwargs.get("boundaries", None))
         self.nets = None
         if kwargs.get("nets"):
             self.nets = CfgNets(
