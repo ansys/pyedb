@@ -24,13 +24,13 @@
 class CfgPinGroup:
     """Manage configuration pin group class."""
 
-    def __init__(self, pdata, **kwargs):
+    def __init__(self, pdata, pingroup_dict):
         self._pedb = pdata.pedb
-        self._pingroup_dict = kwargs
-        self.name = kwargs.get("name", "")
-        self.reference_designator = kwargs.get("reference_designator", "")
-        self.pins = kwargs.get("pins", [])
-        self.net = kwargs.get("net", [])
+        self._pingroup_dict = pingroup_dict
+        self.name = self._pingroup_dict.get("name", "")
+        self.reference_designator = self._pingroup_dict.get("reference_designator", "")
+        self.pins = self._pingroup_dict.get("pins", [])
+        self.net = self._pingroup_dict.get("net", [])
 
     def apply(self):
         """Apply pin group on layout."""
