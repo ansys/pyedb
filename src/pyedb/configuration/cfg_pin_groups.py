@@ -50,7 +50,7 @@ class CfgPinGroup:
                 self._pedb.logger.error(f"Failed to create pin group {self.name}")
                 return False
             else:
-                self._pedb.logger.error(f"Pin group {self.name} created.")
+                self._pedb.logger.info(f"Pin group {self.name} created.")
                 return True
         else:
             self._pedb.logger.error(f"No net and pins defined for defining pin group {self.name}")
