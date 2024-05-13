@@ -36,6 +36,7 @@ class CfgSpiceModel:
         self.components = list(self._spice_dict.get("components", []))
 
     def apply(self):
+        """Apply Spice model on layout."""
         if not Path(self.file_path).anchor:
             fpath = str(Path(self.path_libraries) / self.file_path)
             comps = self._pedb.components.definitions[self.component_definition].components

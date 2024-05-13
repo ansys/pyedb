@@ -33,6 +33,7 @@ class CfgPinGroup:
         self.net = kwargs.get("net", [])
 
     def apply(self):
+        """Apply pin group on layout."""
         if self.pins:
             if not self._pedb.siwave.create_pin_group(self.reference_designator, list(self.pins), self.name):
                 self._pedb.loogger.error(f"Failed to create pin group on pins {self.pins}")

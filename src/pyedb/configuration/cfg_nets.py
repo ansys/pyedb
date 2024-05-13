@@ -30,6 +30,7 @@ class CfgNets:
         self.power_nets = power_nets
 
     def apply(self):
+        """Apply net on layout."""
         for signal_net in self.signal_nets:
             if signal_net in self._pedb.nets:
                 self._pedb.nets.nets[signal_net].is_power_ground = False
