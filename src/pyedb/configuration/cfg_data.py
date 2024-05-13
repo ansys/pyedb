@@ -40,7 +40,7 @@ class CfgData(object):
         self.nets = None
         if kwargs.get("nets"):
             self.nets = CfgNets(
-                self, kwargs.get("nets", {})["signal_nets"], kwargs.get("nets", {})["power_ground_nets"]
+                self, kwargs.get("nets", {}).get("signal_nets", []), kwargs.get("nets", {}).get("power_ground_nets", [])
             )
         self.components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
         self.padstacks = None
