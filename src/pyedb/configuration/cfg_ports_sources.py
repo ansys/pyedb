@@ -117,8 +117,8 @@ class CfgPort(CfgCircuitElement):
     CFG_PORT_TYPE = {"circuit": [str], "coax": [str]}
 
     @pyedb_function_handler
-    def __init__(self, pdata, **kwargs):
-        super().__init__(pdata, **kwargs)
+    def __init__(self, pdata, ports_dict):
+        super().__init__(pdata, ports_dict)
 
     @pyedb_function_handler
     def create(self):
@@ -138,10 +138,10 @@ class CfgSources(CfgCircuitElement):
     CFG_SOURCE_TYPE = {"current": [int, float], "voltage": [int, float]}
 
     @pyedb_function_handler
-    def __init__(self, pdata, **kwargs):
-        super().__init__(pdata, **kwargs)
+    def __init__(self, pdata, sources_dict):
+        super().__init__(pdata, sources_dict)
 
-        self.magnitude = kwargs.get("magnitude", 0.001)
+        self.magnitude = sources_dict.get("magnitude", 0.001)
 
     @pyedb_function_handler
     def create(self):

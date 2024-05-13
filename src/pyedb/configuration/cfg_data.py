@@ -46,16 +46,16 @@ class CfgData(object):
             self.nets = CfgNets(
                 self, kwargs.get("nets", {}).get("signal_nets", []), kwargs.get("nets", {}).get("power_ground_nets", [])
             )
-        self.components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
+        self.components = [CfgComponent(self, component) for component in kwargs.get("components", [])]
         self.padstacks = CfgPadstacks(self, kwargs.get("padstacks", None))
-        self.pin_groups = [CfgPinGroup(self, **pin_group) for pin_group in kwargs.get("pin_groups", [])]
-        self.ports = [CfgPort(self, **port) for port in kwargs.get("ports", [])]
-        self.sources = [CfgSources(self, **source) for source in kwargs.get("sources", [])]
+        self.pin_groups = [CfgPinGroup(self, pin_group) for pin_group in kwargs.get("pin_groups", [])]
+        self.ports = [CfgPort(self, port) for port in kwargs.get("ports", [])]
+        self.sources = [CfgSources(self, source) for source in kwargs.get("sources", [])]
         self.setups = None
         self.stackup = None
         self.s_parameters = None
         self.spice_models = [
-            CfgSpiceModel(self, self.general.spice_model_library, **spice_model)
+            CfgSpiceModel(self, self.general.spice_model_library, spice_model)
             for spice_model in kwargs.get("spice_models", [])
         ]
         self.package_definition = None
