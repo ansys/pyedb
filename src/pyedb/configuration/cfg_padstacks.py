@@ -27,7 +27,7 @@ from enum import Enum
 class CfgPadstacks:
     """Padstack data class."""
 
-    def __init__(self, pdata, padstack_dict):
+    def __init__(self, pdata, padstack_dict=None):
         self._pedb = pdata.pedb
         self.definitions = []
         self.instances = []

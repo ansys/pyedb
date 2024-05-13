@@ -40,7 +40,7 @@ class Configuration:
         self.data = {}
         self._s_parameter_library = ""
         self._spice_model_library = ""
-        self.cfg_data = None
+        self.cfg_data = CfgData(self._pedb)
 
     @pyedb_function_handler
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):

@@ -38,10 +38,10 @@ class CfgData(object):
         self.edb_comps = self.pedb.components.components
 
         self.general = CfgGeneral(self, kwargs.get("general", None))
-        self.boundaries = None
+        self.boundaries = {}
         if kwargs.get("boundaries", None):
             self.boundaries = CfgBoundaries(self, kwargs.get("boundaries", None))
-        self.nets = None
+        self.nets = CfgNets(self)
         if kwargs.get("nets"):
             self.nets = CfgNets(
                 self, kwargs.get("nets", {}).get("signal_nets", []), kwargs.get("nets", {}).get("power_ground_nets", [])

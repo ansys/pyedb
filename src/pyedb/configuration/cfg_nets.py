@@ -24,10 +24,14 @@
 class CfgNets:
     """Manage configuration net class."""
 
-    def __init__(self, pdata, signal_nets, power_nets):
+    def __init__(self, pdata, signal_nets=None, power_nets=None):
         self._pedb = pdata.pedb
-        self.signal_nets = signal_nets
-        self.power_nets = power_nets
+        self.signal_nets = []
+        self.power_nets = []
+        if signal_nets:
+            self.signal_nets = signal_nets
+        if power_nets:
+            self.power_nets = power_nets
 
     def apply(self):
         """Apply net on layout."""
