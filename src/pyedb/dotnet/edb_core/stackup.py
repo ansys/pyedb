@@ -1046,7 +1046,11 @@ class Stackup(LayerCollection):
                 material_out[material_name] = material.to_dict()
         layers_out = {}
         for k, v in self.stackup_layers.items():
-            layers_out[k] = v._json_format()
+            data = v._json_format()
+            # FIXME: Update the API to avoid providing following information to our users
+            del data["pedb"]
+            del data["edb_object"]
+            layers_out[k] = data
             if v.material in self._pedb.materials.materials:
                 layer_material = self._pedb.materials.materials[v.material]
                 if not v.dielectric_fill:
