@@ -347,7 +347,7 @@ class TestClass:
         }
         LAYER_DE_2 = {
             "name": "DE2",
-            "color": (128, 128, 128),
+            "color": [128, 128, 128],
             "type": "dielectric",
             "material": "Megtron4_2",
             "dielectric_fill": None,
@@ -364,7 +364,7 @@ class TestClass:
             "lower_elevation": 0.0,
         }
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        edbapp = Edb(source_path, edbversion="2023.2")
+        edbapp = Edb(source_path, edbversion=desktop_version)
         json_path = os.path.join(self.local_scratch.path, "stackup.json")
 
         assert edbapp.stackup.export(json_path)
