@@ -27,6 +27,7 @@ from pyedb.configuration.cfg_nets import CfgNets
 from pyedb.configuration.cfg_padstacks import CfgPadstacks
 from pyedb.configuration.cfg_pin_groups import CfgPinGroup
 from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
+from pyedb.configuration.cfg_setup import CfgSetup
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
 
 
@@ -36,7 +37,6 @@ class CfgData(object):
     def __init__(self, pedb, **kwargs):
         self.pedb = pedb
         self.edb_comps = self.pedb.components.components
-
         self.general = CfgGeneral(self, kwargs.get("general", None))
         self.boundaries = {}
         if kwargs.get("boundaries", None):
@@ -51,7 +51,9 @@ class CfgData(object):
         self.pin_groups = [CfgPinGroup(self, pin_group) for pin_group in kwargs.get("pin_groups", [])]
         self.ports = [CfgPort(self, port) for port in kwargs.get("ports", [])]
         self.sources = [CfgSources(self, source) for source in kwargs.get("sources", [])]
-        self.setups = None
+        self.setups = [CfgSetup(self)]
+        if kwargs.get("setups", None):
+            self.setups = [CfgSetup(self, setup) for setup in kwargs.get("setups", [])]
         self.stackup = None
         self.s_parameters = None
         self.spice_models = [

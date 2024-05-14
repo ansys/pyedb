@@ -140,7 +140,8 @@ class Configuration:
 
         # Configure HFSS setup
         if "setups" in self.data:
-            self._load_setups()
+            for setup in self.cfg_data.setups:
+                setup.apply()
 
         # Configure stackup
         if "stackup" in self.data:
@@ -219,93 +220,6 @@ class Configuration:
                 src_obj = self._pedb.create_current_source(pos_terminal, neg_terminal)
                 src_obj.magnitude = src["magnitude"]
             src_obj.name = name
-
-    @pyedb_function_handler
-    def _load_setups(self):
-        """Imports setup information from json."""
-        for setup in self.data["setups"]:
-            setup_type = setup["type"]
-
-            edb_setup = None
-            name = setup["name"]
-
-            if setup_type.lower() == "siwave_dc":
-                if name not in self._pedb.setups:
-                    self._pedb.logger.info("Setup {} created.".format(name))
-                    edb_setup = self._pedb.create_siwave_dc_setup(name)
-                else:
-                    self._pedb.logger.warning("Setup {} already existing. Editing it.".format(name))
-                    edb_setup = self._pedb.setups[name]
-                edb_setup.set_dc_slider(setup["dc_slider_position"])
-                dc_ir_settings = setup.get("dc_ir_settings", None)
-                if dc_ir_settings:
-                    for k, v in dc_ir_settings.items():
-                        if k not in dir(edb_setup.dc_ir_settings):
-                            self._pedb.logger.error(f"Invalid keyword {k}")
-                        else:
-                            setattr(edb_setup.dc_ir_settings, k, v)
-            else:
-                if setup_type.lower() == "hfss":
-                    if name not in self._pedb.setups:
-                        self._pedb.logger.info("Setup {} created.".format(name))
-                        edb_setup = self._pedb.create_hfss_setup(name)
-                    else:
-                        self._pedb.logger.warning("Setup {} already existing. Editing it.".format(name))
-                        edb_setup = self._pedb.setups[name]
-                    edb_setup.set_solution_single_frequency(
-                        setup["f_adapt"], max_num_passes=setup["max_num_passes"], max_delta_s=setup["max_mag_delta_s"]
-                    )
-                elif setup_type.lower() == "siwave_syz":
-                    name = setup["name"]
-                    if name not in self._pedb.setups:
-                        self._pedb.logger.info("Setup {} created.".format(name))
-                        edb_setup = self._pedb.create_siwave_syz_setup(name)
-                    else:
-                        self._pedb.logger.warning("Setup {} already existing. Editing it.".format(name))
-                        edb_setup = self._pedb.setups[name]
-                    if "si_slider_position" in setup:
-                        edb_setup.si_slider_position = setup["si_slider_position"]
-                    if "pi_slider_position" in setup:
-                        edb_setup.pi_slider_position = setup["pi_slider_position"]
-
-                if "freq_sweep" in setup:
-                    for fsweep in setup["freq_sweep"]:
-                        frequencies = fsweep["frequencies"]
-                        freqs = []
-
-                        for d in frequencies:
-                            if d["distribution"] == "linear step":
-                                freqs.append(
-                                    [
-                                        "linear scale",
-                                        self._pedb.edb_value(d["start"]).ToString(),
-                                        self._pedb.edb_value(d["stop"]).ToString(),
-                                        self._pedb.edb_value(d["step"]).ToString(),
-                                    ]
-                                )
-                            elif d["distribution"] == "linear count":
-                                freqs.append(
-                                    [
-                                        "linear count",
-                                        self._pedb.edb_value(d["start"]).ToString(),
-                                        self._pedb.edb_value(d["stop"]).ToString(),
-                                        int(d["points"]),
-                                    ]
-                                )
-                            elif d["distribution"] == "log scale":
-                                freqs.append(
-                                    [
-                                        "log scale",
-                                        self._pedb.edb_value(d["start"]).ToString(),
-                                        self._pedb.edb_value(d["stop"]).ToString(),
-                                        int(d["samples"]),
-                                    ]
-                                )
-
-                        edb_setup.add_frequency_sweep(
-                            fsweep["name"],
-                            frequency_sweep=freqs,
-                        )
 
     @pyedb_function_handler
     def _load_stackup(self):
@@ -408,10 +322,6 @@ class Configuration:
         cutout = operations.get("cutout", None)
         if cutout:
             self._pedb.cutout(**cutout)
-
-    @pyedb_function_handler
-    def _load_padstacks(self):
-        """Imports padstack information from JSON."""
 
     @pyedb_function_handler
     def _load_package_def(self):
