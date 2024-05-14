@@ -374,6 +374,7 @@ class TestClass:
             assert MATERIAL_MEGTRON_4 == data["materials"]["Megtron4"]
             # Check layer
             assert LAYER_DE_2 == data["layers"]["DE2"]
+        edbapp.close()
 
     def test_stackup_load_xml(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
