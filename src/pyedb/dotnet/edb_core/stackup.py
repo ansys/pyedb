@@ -1042,8 +1042,8 @@ class Stackup(LayerCollection):
     def _export_layer_stackup_to_json(self, output_file=None, include_material_with_layer=False):
         if not include_material_with_layer:
             material_out = {}
-            for k, v in self._pedb.materials.materials.items():
-                material_out[k] = v._json_format()
+            for material_name, material in self._pedb.materials.materials.items():
+                material_out[material_name] = material.to_dict()
         layers_out = {}
         for k, v in self.stackup_layers.items():
             layers_out[k] = v._json_format()
@@ -1054,9 +1054,9 @@ class Stackup(LayerCollection):
                 else:
                     dielectric_fill = self._pedb.materials.materials[v.dielectric_fill]
                 if include_material_with_layer:
-                    layers_out[k]["material"] = layer_material._json_format()
+                    layers_out[k]["material"] = layer_material.to_dict()
                     if dielectric_fill:
-                        layers_out[k]["dielectric_fill"] = dielectric_fill._json_format()
+                        layers_out[k]["dielectric_fill"] = dielectric_fill.to_dict()
         if not include_material_with_layer:
             stackup_out = {"materials": material_out, "layers": layers_out}
         else:
