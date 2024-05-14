@@ -365,7 +365,7 @@ class TestClass:
         }
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         edbapp = Edb(source_path, edbversion=desktop_version)
-        json_path = os.path.join(self.local_scratch.path, "stackup.json")
+        json_path = os.path.join(self.local_scratch.path, "exported_stackup.json")
 
         assert edbapp.stackup.export(json_path)
         with open(json_path, "r") as json_file:
