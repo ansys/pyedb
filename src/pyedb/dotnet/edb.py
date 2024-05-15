@@ -4340,28 +4340,3 @@ class Edb(Database):
         from pyedb.dotnet.edb_core.definition.definitions import Definitions
 
         return Definitions(self)
-
-    @pyedb_function_handler()
-    def change_pin_definition(self, pin):
-        """Change the object definition of the pin from EDBPadstackInstance to PadstackInstance and vice versa.
-        Parameter
-        ----------
-        pin : object EDBPadstackInstance or PadstackInstance
-                Initial definition of Pin.
-        Returns
-        -------
-        pin: secondary definition, depending on the input
-            object EDBPadstackInstance or PadstackInstance.
-        """
-        from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-
-        if isinstance(pin, EDBPadstackInstance):
-            name = pin.name.split("-")
-            for i in self.components.get_pin_from_component(name[0]):
-                if i.GetName() == name[1]:
-                    return i
-        else:
-            name = pin.GetComponent().GetName() + "-" + pin.GetName()
-            for i in [*self.padstacks.pins.values()]:
-                if i.name == name:
-                    return i
