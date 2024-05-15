@@ -30,9 +30,9 @@ class CfgCircuitElement:
         return self._pdata.pedb
 
     @pyedb_function_handler
-    def __init__(self, pdata, sources_dict):
+    def __init__(self, pdata, **kwargs):
         self._pdata = pdata
-        self._sources_dict = sources_dict
+        self._sources_dict = kwargs
         self.name = self._sources_dict.get("name", None)
         self.type = self._sources_dict.get("type", None)
         self.reference_designator = self._sources_dict.get("reference_designator", None)
@@ -117,8 +117,8 @@ class CfgPort(CfgCircuitElement):
     CFG_PORT_TYPE = {"circuit": [str], "coax": [str]}
 
     @pyedb_function_handler
-    def __init__(self, pdata, ports_dict):
-        super().__init__(pdata, ports_dict)
+    def __init__(self, pdata, **kwargs):
+        super().__init__(pdata, **kwargs)
 
     @pyedb_function_handler
     def create(self):

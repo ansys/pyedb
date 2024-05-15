@@ -50,7 +50,7 @@ class CfgData(object):
         self.padstacks = CfgPadstacks(self, kwargs.get("padstacks", None))
         self.pin_groups = [CfgPinGroup(self, pin_group) for pin_group in kwargs.get("pin_groups", [])]
         self.ports = [CfgPort(self, port) for port in kwargs.get("ports", [])]
-        self.sources = [CfgSources(self, source) for source in kwargs.get("sources", [])]
+        self.sources = [CfgSources(self, **source) for source in kwargs.get("sources", [])]
         self.setups = [CfgSetup(self)]
         if kwargs.get("setups", None):
             self.setups = [CfgSetup(self, setup) for setup in kwargs.get("setups", [])]
