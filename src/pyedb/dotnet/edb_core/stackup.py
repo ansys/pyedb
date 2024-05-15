@@ -73,11 +73,12 @@ class LayerCollection(object):
 
     def __init__(self, pedb, edb_object=None):
         self._pedb = pedb
-        self._edb_object = (
-            self._pedb.edb_api.cell._cell.LayerCollection(edb_object)
-            if edb_object
-            else self._pedb.edb_api.cell._cell.LayerCollection()
-        )
+
+        if edb_object:
+            self._edb_object = self._pedb.edb_api.cell._cell.LayerCollection(edb_object)
+        else:
+            self._edb_object = self._pedb.edb_api.cell._cell.LayerCollection()
+
         self._layer_type_set_mapping = {
             "stackup_layer_set": self._pedb.edb_api.cell.layer_type_set.StackupLayerSet,
             "signal_ayer_et": self._pedb.edb_api.cell.layer_type_set.SignalLayerSet,
@@ -303,6 +304,24 @@ class LayerCollection(object):
             obj = StackupLayerEdbClass(self._pedb, i.Clone(), name=i.GetName)
             temp.append([obj.id, obj.name])
         return temp
+
+    @property
+    def layers(self):
+        """Retrieve the dictionary of layers.
+
+        Returns
+        -------
+        Dict[str, :class:`pyedb.dotnet.edb_core.edb_data.layer_data.LayerEdbClass`]
+        """
+        _lays = OrderedDict()
+        layer_list = list(self._edb_object.Layers(self._pedb.edb_api.cell.layer_type_set.AllLayerSet))
+        for l in layer_list:
+            name = l.GetName()
+            if not l.IsStackupLayer():
+                _lays[name] = LayerEdbClass(self._pedb, l, name=name)
+            else:
+                _lays[name] = StackupLayerEdbClass(self._pedb, l, name=name)
+        return _lays
 
 
 class Stackup(LayerCollection):
@@ -633,23 +652,6 @@ class Stackup(LayerCollection):
         return [i.Clone() for i in layer_list]
 
     @property
-    def layers(self):
-        """Retrieve the dictionary of layers.
-
-        Returns
-        -------
-        Dict[str, :class:`pyedb.dotnet.edb_core.edb_data.layer_data.LayerEdbClass`]
-        """
-        _lays = OrderedDict()
-        for l in self._edb_layer_list:
-            name = l.GetName()
-            if not l.IsStackupLayer():
-                _lays[name] = LayerEdbClass(self._pedb, l, name=name)
-            else:
-                _lays[name] = StackupLayerEdbClass(self._pedb, l, name=name)
-        return _lays
-
-    @property
     def signal_layers(self):
         """Retrieve the dictionary of signal layers.
 
@@ -742,8 +744,9 @@ class Stackup(LayerCollection):
             _lc.AddStackupLayerAtElevation(layer_clone)
         elif operation == "non_stackup":
             _lc.AddLayerBottom(layer_clone)
-        self._pedb.layout.layer_collection = _lc
-        self.refresh_layer_collection()
+        if self.auto_refresh:
+            self._pedb.layout.layer_collection = _lc
+            self.refresh_layer_collection()
         return True
 
     @pyedb_function_handler()
