@@ -4344,10 +4344,12 @@ class Edb(Database):
     @pyedb_function_handler()
     def change_pin_definition(self, pin):
         """Change the object definition of the pin from EDBPadstackInstance to PadstackInstance and vice versa.
+
         Parameter
         ----------
         pin : object EDBPadstackInstance or PadstackInstance
                 Initial definition of Pin.
+
         Returns
         -------
         pin: secondary definition, depending on the input
