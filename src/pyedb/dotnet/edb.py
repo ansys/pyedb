@@ -4362,6 +4362,6 @@ class Edb(Database):
                     return i
         else:
             name = pin.GetComponent().GetName() + "-" + pin.GetName()
-            for i in [*self.padstacks.pins.values()]:
+            for i in self.padstacks.pins.values():
                 if i.name == name:
                     return i
