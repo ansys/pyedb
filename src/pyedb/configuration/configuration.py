@@ -139,9 +139,8 @@ class Configuration:
             source.create()
 
         # Configure HFSS setup
-        if "setups" in self.data:
-            for setup in self.cfg_data.setups:
-                setup.apply()
+        for setup in self.cfg_data.setups:
+            setup.apply()
 
         # Configure stackup
         if "stackup" in self.data:
