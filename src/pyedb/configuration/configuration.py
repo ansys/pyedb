@@ -28,6 +28,7 @@ import toml
 
 from pyedb.configuration.cfg_data import CfgData
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
+from pyedb.dotnet.edb_core.stackup import LayerCollection
 from pyedb.generic.general_methods import pyedb_function_handler
 
 
@@ -252,8 +253,9 @@ class Configuration:
                         layer_clones.append(obj)
                 else:
                     doc_layer_clones.append(obj)
-                lc.remove_layer(name)
 
+            lc_new = LayerCollection(self._pedb)
+            lc_new.auto_refresh = False
             signal_layer_ids = {}
             top_layer_clone = None
 
@@ -262,12 +264,12 @@ class Configuration:
                 if l["type"] == "signal":
                     clone = layer_clones.pop(0)
                     clone.update(**l)
-                    lc.add_layer_bottom(name=clone.name, layer_clone=clone)
+                    lc_new.add_layer_bottom(name=clone.name, layer_clone=clone)
                     signal_layer_ids[clone.name] = clone.id
 
             # add all document layers at bottom
             for l in doc_layer_clones:
-                doc_layer = lc.add_document_layer(name=l.name, layer_clone=l)
+                doc_layer = lc_new.add_document_layer(name=l.name, layer_clone=l)
                 first_doc_layer_name = doc_layer.name
 
             # add all dielectric layers. Dielectric layers must be added last. Otherwise,
@@ -275,14 +277,18 @@ class Configuration:
             prev_layer_clone = None
             l = layers.pop(0)
             if l["type"] == "signal":
-                prev_layer_clone = lc.layers[l["name"]]
+                prev_layer_clone = lc_new.layers[l["name"]]
             else:
-                prev_layer_clone = lc.add_layer_top(**l)
+                prev_layer_clone = lc_new.add_layer_top(**l)
             for idx, l in enumerate(layers):
                 if l["type"] == "dielectric":
-                    prev_layer_clone = lc.add_layer_below(base_layer_name=prev_layer_clone.name, **l)
+                    prev_layer_clone = lc_new.add_layer_below(base_layer_name=prev_layer_clone.name, **l)
                 else:
-                    prev_layer_clone = lc.layers[l["name"]]
+                    prev_layer_clone = lc_new.layers[l["name"]]
+
+            lc._edb_object = lc_new._edb_object
+            lc_new.auto_refresh = True
+            lc.update_layout()
 
     @pyedb_function_handler
     def _load_s_parameter(self):
