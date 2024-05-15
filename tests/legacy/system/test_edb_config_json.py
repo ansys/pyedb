@@ -61,6 +61,10 @@ class TestClass:
             with open(self.local_input_folder / i) as f:
                 data = json.load(f)
             assert edbapp.configuration.load(data, apply_file=True)
+        assert not edbapp.components.capacitors["C375"].is_enabled
+        assert edbapp.components.instances["U1"].solder_ball_height == 406e-6
+        assert edbapp.components.instances["U1"].solder_ball_diameter[0] == 244e-6
+        assert edbapp.components.instances["U3"].type == "Other"
         edbapp.close()
 
     def test_02_pin_groups(self):
@@ -98,6 +102,11 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "ports_coax.json"), apply_file=True)
         assert edbapp.configuration.load(str(self.local_input_folder / "ports_circuit.json"), apply_file=True)
+        assert "COAX_U1_AM17" in edbapp.ports
+        assert "COAX_U1_PCIe_Gen4_TX2_CAP_N" in edbapp.ports
+        assert "CIRCUIT_C375_1_2" in edbapp.ports
+        assert "CIRCUIT_X1_B8_GND" in edbapp.ports
+        assert "CIRCUIT_U7_VDD_DDR_GND" in edbapp.ports
         edbapp.close()
 
     def test_05b_ports_coax(self, edb_examples):
