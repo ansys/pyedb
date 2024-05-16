@@ -137,8 +137,10 @@ class CfgComponent:
         self.layout_comp = self._pedb.components[self.reference_designator]
         if self.layout_comp:
             self._apply_part_type()
-            self._apply_rlc_model()
-            self._apply_solder_balls()
+            if self.part_type.name in ["CAPACITOR", "RESISTOR", "INDUCTOR"]:
+                self._apply_rlc_model()
+            else:
+                self._apply_solder_balls()
 
     def _apply_part_type(self):
         if self.part_type.name == "CAPACITOR":

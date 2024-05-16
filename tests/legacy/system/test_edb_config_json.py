@@ -53,7 +53,7 @@ class TestClass:
         )
 
     def test_01_create_edb(self):
-        edbapp = Edb(str(self.local_edb), desktop_version)
+        edbapp = Edb(str(self.local_edb), edbversion=desktop_version)
         for i in [
             "components.json",
             "setups_hfss.json",

@@ -157,7 +157,8 @@ class CfgSetup:
             else:
                 self._pedb.logger.warning("Setup {} already existing. Editing it.".format(self.name))
                 edb_setup = self._pedb.setups[self.name]
-            edb_setup.set_solution_single_frequency(self.f_adapt, self.max_num_passes, self.max_mag_delta_s)
+            if not edb_setup.set_solution_single_frequency(self.f_adapt, self.max_num_passes, self.max_mag_delta_s):
+                self._pedb.logger.errur(f"Failed to create HFSS simulation setup {self.name}")
         elif self.type == self.SetupType.SIWAVE_SYZ:
             if self.name not in self._pedb.setups:
                 edb_setup = self._pedb.create_siwave_syz_setup(self.name)
