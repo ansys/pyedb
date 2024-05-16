@@ -180,8 +180,10 @@ class TestClass:
                 "negative_terminal": {"pin_group": "U9_GND"},
             }
         ]
-        data = {"pin_groups": pin_groups, "ports": ports}
-        assert edbapp.configuration.load(data, apply_file=True)
+        data = {"pin_groups": pin_groups}
+        assert edbapp.configuration.load(data, append=False, apply_file=True)
+        data = {"ports": ports}
+        assert edbapp.configuration.load(data, append=False, apply_file=True)
         assert "U9_5V_1" in edbapp.siwave.pin_groups
         assert "U9_GND" in edbapp.siwave.pin_groups
         assert "U9_pin_group_port" in edbapp.ports
