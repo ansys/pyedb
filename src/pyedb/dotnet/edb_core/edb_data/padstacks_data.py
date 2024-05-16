@@ -1619,6 +1619,13 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         self._edb_padstackinstance.SetIsLayoutPin(pin)
 
     @property
+    def component(self):
+        """Component."""
+        from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
+        comp = EDBComponent(self._pedb, self._edb_object.GetComponent())
+        return comp if not comp.is_null else False
+
+    @property
     def position(self):
         """Padstack instance position.
 
