@@ -322,6 +322,60 @@ class TestClass:
         edbapp.stackup.load(fpath)
         edbapp.close()
 
+    def test_stackup_export_json(self):
+        """Export stackup into a JSON file."""
+        import json
+
+        MATERIAL_MEGTRON_4 = {
+            "name": "Megtron4",
+            "conductivity": 0.0,
+            "dielectric_loss_tangent": 0.005,
+            "magnetic_loss_tangent": 0.0,
+            "mass_density": 0.0,
+            "permittivity": 3.77,
+            "permeability": 0.0,
+            "poisson_ratio": 0.0,
+            "specific_heat": 0.0,
+            "thermal_conductivity": 0.0,
+            "youngs_modulus": 0.0,
+            "thermal_expansion_coefficient": 0.0,
+            "dc_conductivity": None,
+            "dc_permittivity": None,
+            "dielectric_model_frequency": None,
+            "loss_tangent_at_frequency": None,
+            "permittivity_at_frequency": None,
+        }
+        LAYER_DE_2 = {
+            "name": "DE2",
+            "color": [128, 128, 128],
+            "type": "dielectric",
+            "material": "Megtron4_2",
+            "dielectric_fill": None,
+            "thickness": 8.8e-05,
+            "etch_factor": 0.0,
+            "roughness_enabled": False,
+            "top_hallhuray_nodule_radius": 0.0,
+            "top_hallhuray_surface_ratio": 0.0,
+            "bottom_hallhuray_nodule_radius": 0.0,
+            "bottom_hallhuray_surface_ratio": 0.0,
+            "side_hallhuray_nodule_radius": 0.0,
+            "side_hallhuray_surface_ratio": 0.0,
+            "upper_elevation": 0.0,
+            "lower_elevation": 0.0,
+        }
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        edbapp = Edb(source_path, edbversion=desktop_version)
+        json_path = os.path.join(self.local_scratch.path, "exported_stackup.json")
+
+        assert edbapp.stackup.export(json_path)
+        with open(json_path, "r") as json_file:
+            data = json.load(json_file)
+            # Check material
+            assert MATERIAL_MEGTRON_4 == data["materials"]["Megtron4"]
+            # Check layer
+            assert LAYER_DE_2 == data["layers"]["DE2"]
+        edbapp.close()
+
     def test_stackup_load_xml(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.stackup.load(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml"))
