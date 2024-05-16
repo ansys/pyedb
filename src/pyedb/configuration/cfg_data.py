@@ -46,11 +46,11 @@ class CfgData(object):
             self.nets = CfgNets(
                 self, kwargs.get("nets", {}).get("signal_nets", []), kwargs.get("nets", {}).get("power_ground_nets", [])
             )
-        self.components = [CfgComponent(self, component) for component in kwargs.get("components", [])]
+        self.components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
         self.padstacks = CfgPadstacks(self, kwargs.get("padstacks", None))
         self.pin_groups = [CfgPinGroup(self, pin_group) for pin_group in kwargs.get("pin_groups", [])]
-        self.ports = [CfgPort(self, port) for port in kwargs.get("ports", [])]
-        self.sources = [CfgSources(self, source) for source in kwargs.get("sources", [])]
+        self.ports = [CfgPort(self, **port) for port in kwargs.get("ports", [])]
+        self.sources = [CfgSources(self, **source) for source in kwargs.get("sources", [])]
         self.setups = [CfgSetup(self)]
         if kwargs.get("setups", None):
             self.setups = [CfgSetup(self, setup) for setup in kwargs.get("setups", [])]

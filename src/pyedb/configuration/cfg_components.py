@@ -59,9 +59,9 @@ class CfgSolderBallsProperties:
 
 
 class CfgComponent:
-    def __init__(self, pdata, component_dict):
+    def __init__(self, pdata, **kwargs):
         self._pedb = pdata.pedb
-        self._comp_dict = component_dict
+        self._comp_dict = kwargs
         self.reference_designator = ""
         self.part_type = self.ComponentType.RESISTOR
         self.enabled = True

@@ -30,15 +30,15 @@ class CfgCircuitElement:
         return self._pdata.pedb
 
     @pyedb_function_handler
-    def __init__(self, pdata, sources_dict):
+    def __init__(self, pdata, **kwargs):
         self._pdata = pdata
-        self._sources_dict = sources_dict
-        self.name = self._sources_dict.get("name", None)
-        self.type = self._sources_dict.get("type", None)
-        self.reference_designator = self._sources_dict.get("reference_designator", None)
-        self.distributed = self._sources_dict.get("distributed", False)
-        self.pos_term_info = self._sources_dict.get("positive_terminal", None)  # {"pin" : "A1"}
-        self.neg_term_info = self._sources_dict.get("negative_terminal", None)
+        self._data = kwargs
+        self.name = kwargs.get("name", None)
+        self.type = kwargs.get("type", None)
+        self.reference_designator = kwargs.get("reference_designator", None)
+        self.distributed = kwargs.get("distributed", False)
+        self.pos_term_info = kwargs.get("positive_terminal", None)  # {"pin" : "A1"}
+        self.neg_term_info = kwargs.get("negative_terminal", None)
 
     @pyedb_function_handler
     def _create(self):
@@ -117,8 +117,8 @@ class CfgPort(CfgCircuitElement):
     CFG_PORT_TYPE = {"circuit": [str], "coax": [str]}
 
     @pyedb_function_handler
-    def __init__(self, pdata, ports_dict):
-        super().__init__(pdata, ports_dict)
+    def __init__(self, pdata, **kwargs):
+        super().__init__(pdata, **kwargs)
 
     @pyedb_function_handler
     def create(self):
@@ -138,10 +138,10 @@ class CfgSources(CfgCircuitElement):
     CFG_SOURCE_TYPE = {"current": [int, float], "voltage": [int, float]}
 
     @pyedb_function_handler
-    def __init__(self, pdata, sources_dict):
-        super().__init__(pdata, sources_dict)
+    def __init__(self, pdata, **kwargs):
+        super().__init__(pdata, **kwargs)
 
-        self.magnitude = sources_dict.get("magnitude", 0.001)
+        self.magnitude = kwargs.get("magnitude", 0.001)
 
     @pyedb_function_handler
     def create(self):
