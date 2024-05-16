@@ -171,7 +171,11 @@ class BaseSimulationSetup(object):
     def frequency_sweeps(self):
         """List of frequency sweeps."""
         temp = {}
-        for i in list(self.get_sim_setup_info.SweepDataList):
+        if self.setup_type == "kRaptorX" or "kHFSSPI":
+            sweep_data_list = self._edb_setup_info.SweepDataList
+        else:
+            self.get_sim_setup_info.SweepDataList
+        for i in list(sweep_data_list):
             temp[i.Name] = EdbFrequencySweep(self, None, i.Name, i)
         return temp
 
