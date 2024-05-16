@@ -1528,9 +1528,7 @@ class Edb(Database):
         """
         if tech_file or map_file:
             control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(inputGDS)[-1][:-3] + "xml")
-            control_file = ControlFile(xml_input=control_file, tecnhology=tech_file, layer_map=map_file).write_xml(
-                control_file_temp
-            )
+            ControlFile(xml_input=control_file, tecnhology=tech_file, layer_map=map_file).write_xml(control_file_temp)
         elif tech_file:
             self.logger.error("Technology files are supported only in Linux. Use control file instead.")
             return False
@@ -1539,7 +1537,7 @@ class Edb(Database):
             working_dir=WorkDir,
             anstranslator_full_path=anstranslator_full_path,
             use_ppe=use_ppe,
-            control_file=control_file,
+            control_file=control_file_temp,
         ):
             return True
         else:
