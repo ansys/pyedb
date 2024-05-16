@@ -1203,6 +1203,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     def create_terminal(self, name=None):
         """Create a padstack instance terminal"""
         from pyedb.dotnet.edb_core.edb_data.terminals import PadstackInstanceTerminal
+
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term.create(self, name)
 
