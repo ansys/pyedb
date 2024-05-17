@@ -236,7 +236,7 @@ class EdbPadstacks(object):
 
         """
         padstack_instances = {}
-        for _, edb_padstack_instance in self._pedb.padstacks.instances.items():
+        for _, edb_padstack_instance in self.instances.items():
             if edb_padstack_instance.aedt_name:
                 padstack_instances[edb_padstack_instance.aedt_name] = EDBPadstackInstance(
                     edb_padstack_instance, self._pedb

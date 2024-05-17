@@ -2330,29 +2330,9 @@ class Components(object):
 
         """
         warnings.warn("Use new property :func:`edb.padstacks.get_instances` instead.", DeprecationWarning)
-        if not isinstance(component, self._pedb.edb_api.cell.hierarchy.component):
-            component = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, component)
-        if netName:
-            if not isinstance(netName, list):
-                netName = [netName]
-            pins = [
-                p
-                for p in list(component.LayoutObjs)
-                if int(p.GetObjType()) == 1 and p.IsLayoutPin() and p.GetNet().GetName() in netName
-            ]
-        elif pinName:
-            if not isinstance(pinName, list):
-                pinName = [pinName]
-            pins = [
-                p
-                for p in list(component.LayoutObjs)
-                if int(p.GetObjType()) == 1
-                and p.IsLayoutPin()
-                and (self.get_aedt_pin_name(p) in pinName or p.GetName() in pinName)
-            ]
-        else:
-            pins = [p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.IsLayoutPin()]
-        return pins
+        pd = self._pedb.padstacks.get_instances(name=pinName,net_name=netName, component_reference_designator=component)
+        pd = [i for i in pd if i.is_pin]
+        return [i._edb_object for i in pd]
 
     @pyedb_function_handler()
     def get_aedt_pin_name(self, pin):
