@@ -309,13 +309,18 @@ class PinGroup(object):
     @pyedb_function_handler
     def get_terminal(self, name=None, create_new_terminal=False):
         """Terminal."""
-
+        warnings.warn("Use new property :func:`terminal` instead.", DeprecationWarning)
         if create_new_terminal:
             term = self._create_terminal(name)
         else:
-            from pyedb.dotnet.edb_core.edb_data.terminals import PinGroupTerminal
+            return self.terminal
 
-            term = PinGroupTerminal(self._pedb, self._edb_pin_group.GetPinGroupTerminal())
+    @property
+    def terminal(self):
+        """Terminal."""
+        from pyedb.dotnet.edb_core.edb_data.terminals import PinGroupTerminal
+
+        term = PinGroupTerminal(self._pedb, self._edb_pin_group.GetPinGroupTerminal())
         return term if not term.is_null else None
 
     @pyedb_function_handler()
@@ -332,17 +337,28 @@ class PinGroup(object):
         -------
         :class:`pyedb.dotnet.edb_core.edb_data.terminals.PinGroupTerminal`
         """
+        warnings.warn("`_create_terminal` is deprecated. Use `create_terminal` instead.", DeprecationWarning)
+
         terminal = self.get_terminal()
         if terminal:
             return terminal
+        else:
+            return self.create_terminal(name)
 
+    @pyedb_function_handler()
+    def create_terminal(self, name=None):
+        """Create a terminal.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the terminal.
+        """
         if not name:
             name = generate_unique_name(self.name)
-
         from pyedb.dotnet.edb_core.edb_data.terminals import PinGroupTerminal
 
         term = PinGroupTerminal(self._pedb)
-
         term = term.create(name, self.net_name, self.name)
         return term
 

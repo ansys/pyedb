@@ -103,9 +103,10 @@ class BaseSimulationSetup(object):
             "kQ3D": None,
             "kNumSetupTypes": None,
         }
-        version = self._pedb.edbversion.split(".")
-        if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
-            setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
+        if self._pedb.edbversion:
+            version = self._pedb.edbversion.split(".")
+            if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
+                setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
         setup_utility = setup_type_mapping[self._setup_type]
         return setup_utility(edb_setup_info)
 
