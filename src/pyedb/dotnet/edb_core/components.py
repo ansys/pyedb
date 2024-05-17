@@ -2330,7 +2330,9 @@ class Components(object):
 
         """
         warnings.warn("Use new property :func:`edb.padstacks.get_instances` instead.", DeprecationWarning)
-        pd = self._pedb.padstacks.get_instances(name=pinName,net_name=netName, component_reference_designator=component)
+        pd = self._pedb.padstacks.get_instances(
+            name=pinName, net_name=netName, component_reference_designator=component
+        )
         pd = [i for i in pd if i.is_pin]
         return [i._edb_object for i in pd]
 

@@ -1624,6 +1624,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     def component(self):
         """Component."""
         from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
+
         comp = EDBComponent(self._pedb, self._edb_object.GetComponent())
         return comp if not comp.is_null else False
 

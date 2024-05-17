@@ -1353,7 +1353,9 @@ class EdbPadstacks(object):
         return True
 
     @pyedb_function_handler()
-    def get_instances(self, name=None, pid=None, definition_name=None, net_name=None, component_reference_designator=None):
+    def get_instances(
+        self, name=None, pid=None, definition_name=None, net_name=None, component_reference_designator=None
+    ):
         """Get padstack instances by conditions.
 
         Parameters
@@ -1387,7 +1389,11 @@ class EdbPadstacks(object):
                 net_name = net_name if isinstance(net_name, list) else [net_name]
                 instances = [inst for inst in instances if inst.net_name in net_name]
             if component_reference_designator:
-                refdes = component_reference_designator if isinstance(component_reference_designator, list) else [component_reference_designator]
+                refdes = (
+                    component_reference_designator
+                    if isinstance(component_reference_designator, list)
+                    else [component_reference_designator]
+                )
                 instances = [inst for inst in instances if inst.component]
                 instances = [inst for inst in instances if inst.component.refdes in refdes]
             return instances
