@@ -1354,8 +1354,13 @@ class EdbPadstacks(object):
 
     @pyedb_function_handler()
     def get_instances(
-        self, name=None, pid=None, definition_name=None, net_name=None, component_reference_designator=None,
-            component_pin=None
+        self,
+        name=None,
+        pid=None,
+        definition_name=None,
+        net_name=None,
+        component_reference_designator=None,
+        component_pin=None,
     ):
         """Get padstack instances by conditions.
 
