@@ -1354,7 +1354,8 @@ class EdbPadstacks(object):
 
     @pyedb_function_handler()
     def get_instances(
-        self, name=None, pid=None, definition_name=None, net_name=None, component_reference_designator=None
+        self, name=None, pid=None, definition_name=None, net_name=None, component_reference_designator=None,
+            component_pin=None
     ):
         """Get padstack instances by conditions.
 
@@ -1368,7 +1369,8 @@ class EdbPadstacks(object):
             Name of the padstack definition.
         net_name : str, optional
             The net name to be used for filtering padstack instances.
-
+        component_pin: str, optional
+            Pin Number of the component.
         Returns
         -------
         list
@@ -1396,6 +1398,9 @@ class EdbPadstacks(object):
                 )
                 instances = [inst for inst in instances if inst.component]
                 instances = [inst for inst in instances if inst.component.refdes in refdes]
+                if component_pin:
+                    component_pin = component_pin if isinstance(component_pin, list) else [component_pin]
+                    instances = [inst for inst in instances if inst.pin_number in component_pin]
             return instances
 
     @pyedb_function_handler()
