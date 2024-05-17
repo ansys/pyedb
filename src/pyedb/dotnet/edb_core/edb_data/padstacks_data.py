@@ -60,10 +60,12 @@ class EDBPadProperties(object):
     """
 
     def __init__(self, edb_padstack, layer_name, pad_type, p_edb_padstack):
-        self._edb_padstack = edb_padstack
+        self._edb_object = edb_padstack
         self._pedbpadstack = p_edb_padstack
         self.layer_name = layer_name
         self.pad_type = pad_type
+
+        self._edb_padstack = self._edb_object
 
     @property
     def _padstack_methods(self):
@@ -1623,6 +1625,14 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             True if set this padstack instance as pin, False otherwise
         """
         self._edb_padstackinstance.SetIsLayoutPin(pin)
+
+    @property
+    def component(self):
+        """Component."""
+        from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
+
+        comp = EDBComponent(self._pedb, self._edb_object.GetComponent())
+        return comp if not comp.is_null else False
 
     @property
     def position(self):
