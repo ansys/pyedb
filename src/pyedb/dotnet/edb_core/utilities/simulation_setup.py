@@ -106,6 +106,7 @@ class BaseSimulationSetup(object):
         version = self._pedb.edbversion.split(".")
         if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
             setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
+            setup_type_mapping["kHFSSPI"] = utility.HFSSPISimulationSetup
         setup_utility = setup_type_mapping[self._setup_type]
         return setup_utility(edb_setup_info)
 
@@ -188,12 +189,12 @@ class BaseSimulationSetup(object):
         sweep_data: EdbFrequencySweep
         """
         self._sweep_list[sweep_data.name] = sweep_data
-        if self.setup_type == "kRaptorX":
+        if self.setup_type == "kRaptorX" or "kHFSSPI":
             edb_setup_info = self._edb_setup_info
         else:
             edb_setup_info = self.get_sim_setup_info
 
-        if self._setup_type in ["kSIwave", "kHFSS", "kRaptorX"]:
+        if self._setup_type in ["kSIwave", "kHFSS", "kRaptorX", "kHFSSPI"]:
             for _, v in self._sweep_list.items():
                 edb_setup_info.SweepDataList.Add(v._edb_object)
 

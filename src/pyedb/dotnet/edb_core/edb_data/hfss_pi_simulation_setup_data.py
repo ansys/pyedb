@@ -76,9 +76,9 @@ class HFSSPISimulationSetup(BaseSimulationSetup):
         else:
             self.logger.error(f"Property position expects an integer value while the provided value is {value}.")
 
-    @property
-    def frequency_sweeps(self):
-        return list(self._edb_setup_info.SweepDataList)
+    # @property
+    # def frequency_sweeps(self):
+    #     return list(self._edb_setup_info.SweepDataList)
 
     @pyedb_function_handler()
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
