@@ -643,9 +643,10 @@ class PinGroupTerminal(Terminal):
         -------
         :class:`pyedb.dotnet.edb_core.edb_data.terminals.PinGroupTerminal`
         """
+        net_obj = self._pedb.edb_api.cell.net.find_by_name(self._pedb.active_layout, net_name)
         term = self._pedb.edb_api.cell.terminal.PinGroupTerminal.Create(
             self._pedb.active_layout,
-            self._pedb.nets[net_name].net_object,
+            net_obj.api_object,
             name,
             self._pedb.siwave.pin_groups[pin_group_name]._edb_object,
             is_ref,

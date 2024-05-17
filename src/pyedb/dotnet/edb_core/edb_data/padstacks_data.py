@@ -1196,6 +1196,12 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     @pyedb_function_handler()
     def _create_terminal(self, name=None):
         """Create a padstack instance terminal"""
+        warnings.warn("`_create_terminal` is deprecated. Use `create_terminal` instead.", DeprecationWarning)
+        return self.create_terminal(name)
+
+    @pyedb_function_handler
+    def create_terminal(self, name=None):
+        """Create a padstack instance terminal"""
         from pyedb.dotnet.edb_core.edb_data.terminals import PadstackInstanceTerminal
 
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
