@@ -1261,7 +1261,8 @@ class EdbSiwave(object):
         if edb_pingroup.IsNull():  # pragma: no cover
             return False
         else:
-            edb_pingroup.SetNet(pins[0].GetNet())
+            names = [i for i in pins if i.GetNet().GetName()]
+            edb_pingroup.SetNet(names[0].GetNet())
             return group_name, self.pin_groups[group_name]
 
     @pyedb_function_handler()
