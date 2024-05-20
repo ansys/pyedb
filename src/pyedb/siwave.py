@@ -11,7 +11,6 @@ from __future__ import absolute_import  # noreorder
 import os
 import pkgutil
 import sys
-import time
 import warnings
 
 from pyedb.dotnet.clr_module import _clr
