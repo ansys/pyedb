@@ -65,7 +65,7 @@ class CfgCircuitElement:
                 pos_objs.update(pins)
                 self._elem_num = len(pos_objs)
 
-            self.pos_terminals = {i: j.get_terminal(i, create_new_terminal=True) for i, j in pos_objs.items()}
+            self.pos_terminals = {i: j.create_terminal(i) for i, j in pos_objs.items()}
 
         neg_term_info = self.neg_term_info
         self.neg_terminal = None
@@ -78,7 +78,7 @@ class CfgCircuitElement:
                 pins = self._get_pins(neg_type, neg_value)  # terminal type pin or net
                 # create pin group
                 pin_group = self._create_pin_group(pins, True)
-            self.neg_terminal = [j.get_terminal(i, create_new_terminal=True) for i, j in pin_group.items()][0]
+            self.neg_terminal = [j.create_terminal(i) for i, j in pin_group.items()][0]
 
     @pyedb_function_handler
     def _get_pins(self, terminal_type, terminal_value):

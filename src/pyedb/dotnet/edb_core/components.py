@@ -2329,6 +2329,7 @@ class Components(object):
         >>> edbapp.components.get_pin_from_component("R1", refdes)
 
         """
+        warnings.warn("Use new property :func:`edb.padstacks.get_instances` instead.", DeprecationWarning)
         if not isinstance(component, self._pedb.edb_api.cell.hierarchy.component):
             component = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, component)
         if netName:
