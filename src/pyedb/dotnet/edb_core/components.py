@@ -785,10 +785,9 @@ class Components(object):
             reference_pins = [reference_pins]
         if isinstance(refdes, str) or isinstance(refdes, EDBComponent):
             refdes = self.instances[refdes]
-        for i in refdes.rlc_values:
-            if i:
-                self._logger.error("Ports cannot be assigned on RLC components")
-                return False
+        if any(refdes.rlc_values):
+            self._logger.error("Ports cannot be assigned on RLC components")
+            return False
         if len([pin for pin in pins if isinstance(pin, str)]) == len(pins):
             cmp_pins = []
             for pin_name in pins:
