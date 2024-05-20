@@ -236,7 +236,7 @@ class EdbPadstacks(object):
 
         """
         padstack_instances = {}
-        for _, edb_padstack_instance in self._pedb.padstacks.instances.items():
+        for _, edb_padstack_instance in self.instances.items():
             if edb_padstack_instance.aedt_name:
                 padstack_instances[edb_padstack_instance.aedt_name] = EDBPadstackInstance(
                     edb_padstack_instance, self._pedb
@@ -1353,7 +1353,15 @@ class EdbPadstacks(object):
         return True
 
     @pyedb_function_handler()
-    def get_instances(self, name=None, pid=None, definition_name=None, net_name=None):
+    def get_instances(
+        self,
+        name=None,
+        pid=None,
+        definition_name=None,
+        net_name=None,
+        component_reference_designator=None,
+        component_pin=None,
+    ):
         """Get padstack instances by conditions.
 
         Parameters
@@ -1366,7 +1374,8 @@ class EdbPadstacks(object):
             Name of the padstack definition.
         net_name : str, optional
             The net name to be used for filtering padstack instances.
-
+        component_pin: str, optional
+            Pin Number of the component.
         Returns
         -------
         list
@@ -1386,6 +1395,17 @@ class EdbPadstacks(object):
             if net_name:
                 net_name = net_name if isinstance(net_name, list) else [net_name]
                 instances = [inst for inst in instances if inst.net_name in net_name]
+            if component_reference_designator:
+                refdes = (
+                    component_reference_designator
+                    if isinstance(component_reference_designator, list)
+                    else [component_reference_designator]
+                )
+                instances = [inst for inst in instances if inst.component]
+                instances = [inst for inst in instances if inst.component.refdes in refdes]
+                if component_pin:
+                    component_pin = component_pin if isinstance(component_pin, list) else [component_pin]
+                    instances = [inst for inst in instances if inst.pin_number in component_pin]
             return instances
 
     @pyedb_function_handler()
