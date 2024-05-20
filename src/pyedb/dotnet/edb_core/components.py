@@ -785,6 +785,8 @@ class Components(object):
             reference_pins = [reference_pins]
         if isinstance(refdes, str) or isinstance(refdes, EDBComponent):
             refdes = self.instances[refdes]
+        if any(refdes.rlc_values):
+            return self.deactivate_rlc_component(component=refdes, create_circuit_port=True)
         if len([pin for pin in pins if isinstance(pin, str)]) == len(pins):
             cmp_pins = []
             for pin_name in pins:
