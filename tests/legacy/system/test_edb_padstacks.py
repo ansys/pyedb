@@ -172,6 +172,7 @@ class TestClass:
         assert self.edbapp.padstacks.get_instances(name="Via1961")
         assert self.edbapp.padstacks.get_instances(definition_name="v35h15")
         assert self.edbapp.padstacks.get_instances(net_name="1V0")
+        assert self.edbapp.padstacks.get_instances(component_reference_designator="U7")
 
         """Access padstack instance by name."""
         padstack_instances = self.edbapp.padstacks.get_padstack_instance_by_net_name("GND")
