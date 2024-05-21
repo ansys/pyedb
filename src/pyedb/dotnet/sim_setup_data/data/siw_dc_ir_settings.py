@@ -52,7 +52,7 @@ class SiwaveDCIRSettings:
         Returns
         -------
             bool
-            ``True`` when successful, ``False`` when not successful.
+            ``True`` when activated, ``False`` deactivated.
         """
         return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.ImportThermalData
 
@@ -78,5 +78,23 @@ class SiwaveDCIRSettings:
     def dc_report_show_active_devices(self, value):
         edb_setup_info = self._parent.get_sim_setup_info
         edb_setup_info.SimulationSettings.DCIRSettings.DCReportShowActiveDevices = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
+    @property
+    def per_pin_use_pin_format(self):
+        """Per Pin Use Pin Format.
+
+        Returns
+        -------
+            bool
+            ``True`` when activated, ``False`` deactivated.
+        """
+        return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.PerPinUsePinFormat
+
+    @dc_report_show_active_devices.setter
+    def per_pin_use_pin_format(self, value):
+        edb_setup_info = self._parent.get_sim_setup_info
+        edb_setup_info.SimulationSettings.DCIRSettings.PerPinUsePinFormat = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
