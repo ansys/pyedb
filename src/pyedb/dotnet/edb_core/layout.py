@@ -242,7 +242,7 @@ class EdbLayout(object):
                     else:
                         objinst.append(el)
             except:
-                self._logger.warning(f"Failed to retrieve layer on polygon {el.name}")
+                self._logger.warning(f"Failed to retrieve layer on polygon {el.id}")
         return objinst
 
     @pyedb_function_handler()
