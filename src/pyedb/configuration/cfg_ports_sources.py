@@ -78,7 +78,9 @@ class CfgCircuitElement:
                 pins = self._get_pins(neg_type, neg_value)  # terminal type pin or net
                 # create pin group
                 pin_group = self._create_pin_group(pins, True)
-            self.neg_terminal = [j.create_terminal(i) if not j.terminal else j.terminal for i, j in pin_group.items()][0]
+            self.neg_terminal = [j.create_terminal(i) if not j.terminal else j.terminal for i, j in pin_group.items()][
+                0
+            ]
 
     @pyedb_function_handler
     def _get_pins(self, terminal_type, terminal_value):
