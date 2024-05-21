@@ -14,6 +14,7 @@ class Icepak:
         -------
 
         """
+        self._psiw._logger.info("Running Icepak simulation.")
         flag = self._psiw.oproject.ScrRunIcepakSimulation(name, dc_simulation_name)
         return True if flag == 0 else False
 
