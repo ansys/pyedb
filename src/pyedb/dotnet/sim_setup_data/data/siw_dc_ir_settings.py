@@ -44,3 +44,21 @@ class SiwaveDCIRSettings:
         edb_setup_info.SimulationSettings.DCIRSettings.ExportDCThermalData = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
+
+    @property
+    def import_thermal_data(self):
+        """Import Thermal Data.
+
+        Returns
+        -------
+            bool
+            ``True`` when successful, ``False`` when not successful.
+        """
+        return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.ImportThermalData
+
+    @import_thermal_data.setter
+    def import_thermal_data(self, value):
+        edb_setup_info = self._parent.get_sim_setup_info
+        edb_setup_info.SimulationSettings.DCIRSettings.ImportThermalData = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
