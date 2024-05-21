@@ -175,7 +175,7 @@ class BaseSimulationSetup(object):
         if self.setup_type in ("kRaptorX", "kHFSSPI"):
             sweep_data_list = self._edb_setup_info.SweepDataList
         else:
-            self.get_sim_setup_info.SweepDataList
+            sweep_data_list = self.get_sim_setup_info.SweepDataList
         for i in list(sweep_data_list):
             temp[i.Name] = EdbFrequencySweep(self, None, i.Name, i)
         return temp
@@ -189,7 +189,7 @@ class BaseSimulationSetup(object):
         sweep_data: EdbFrequencySweep
         """
         self._sweep_list[sweep_data.name] = sweep_data
-        if self.setup_type == "kRaptorX" or "kHFSSPI":
+        if self.setup_type in ["kRaptorX", "kHFSSPI"]:
             edb_setup_info = self._edb_setup_info
         else:
             edb_setup_info = self.get_sim_setup_info
