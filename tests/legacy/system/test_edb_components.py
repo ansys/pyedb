@@ -313,6 +313,10 @@ class TestClass:
         assert self.edbapp.components["C2"].is_enabled is False
         self.edbapp.components["C2"].is_enabled = True
         assert self.edbapp.components["C2"].is_enabled is True
+        pins = [*self.edbapp.components.components["L10"].pins.values()]
+        self.edbapp.components.create_port_on_pins("L10", pins[0], pins[1])
+        assert self.edbapp.components["L10"].is_enabled is False
+        assert "L10" in self.edbapp.ports.keys()
 
     def test_components_definitions(self):
         """Evaluate components definition."""
