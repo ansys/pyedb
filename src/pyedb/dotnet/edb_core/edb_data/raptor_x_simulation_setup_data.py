@@ -74,10 +74,6 @@ class RaptorXSimulationSetup(BaseSimulationSetup):
         else:
             self.logger.error(f"RaptorX setup position input setter must be an integer. Provided value {value}")
 
-    @property
-    def frequency_sweeps(self):
-        return list(self._edb_setup_info.SweepDataList)
-
     @pyedb_function_handler()
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
