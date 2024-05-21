@@ -63,6 +63,7 @@ class SiwaveDCIRSettings:
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
 
+    @property
     def dc_report_show_active_devices(self):
         """DC Report Show Active Devices.
 
