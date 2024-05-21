@@ -41,7 +41,7 @@ def plot_matplotlib(
     xlabel="",
     ylabel="",
     title="",
-    snapshot_path=None,
+    save_plot=None,
     x_limits=None,
     y_limits=None,
     axis_equal=False,
@@ -67,8 +67,9 @@ def plot_matplotlib(
         Plot Y label. Default is `""`.
     title : str, optional
         Plot Title label. Default is `""`.
-    snapshot_path : str, optional
-        Full path to image file if a snapshot is needed. Default is `None`.
+    save_plot : str, optional
+        If a path is specified the plot will be saved in this location.
+        If ``save_plot`` is provided, the ``show`` parameter is ignored.
     x_limits : list, optional
         List of x limits (left and right). Default is `None`.
     y_limits : list, optional
@@ -141,8 +142,8 @@ def plot_matplotlib(
         for annotation in annotations:
             plt.text(annotation[0], annotation[1], annotation[2], **annotation[3])
 
-    if snapshot_path:
-        plt.savefig(snapshot_path)
+    if save_plot:
+        plt.savefig(save_plot)
     elif show:
         plt.show()
     return plt
