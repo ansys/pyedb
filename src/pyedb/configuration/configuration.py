@@ -41,7 +41,7 @@ class Configuration:
         self.data = {}
         self._s_parameter_library = ""
         self._spice_model_library = ""
-        self.cfg_data = None
+        self.cfg_data = CfgData(self._pedb)
 
     @pyedb_function_handler
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
@@ -90,7 +90,7 @@ class Configuration:
             else:
                 self.data[k] = v
 
-        self.cfg_data = CfgData(self._pedb, **data)
+        self.cfg_data = CfgData(self._pedb, **self.data)
 
         if apply_file:
             original_file = self._pedb.edbpath
@@ -108,17 +108,13 @@ class Configuration:
     def run(self):
         """Apply configuration settings to the current design"""
 
-        # Configure general settings
-        if "general" in self.data:
-            self._load_general()
-
         # Configure boundary settings
-        if "boundaries" in self.data:
-            self._load_boundaries()
+        if self.cfg_data.boundaries:
+            self.cfg_data.boundaries.apply()
 
         # Configure nets
-        if "nets" in self.data:
-            self._load_nets()
+        if self.cfg_data.nets:
+            self.cfg_data.nets.apply()
 
         # Configure components
         if self.cfg_data.components:
@@ -126,12 +122,12 @@ class Configuration:
                 comp.apply()
 
         # Configure padstacks
-        if "padstacks" in self.data:
-            self._load_padstacks()
+        if self.cfg_data.padstacks:
+            self.cfg_data.padstacks.apply()
 
         # Configure pin groups
-        if "pin_groups" in self.data:
-            self._load_pin_groups()
+        for pin_group in self.cfg_data.pin_groups:
+            pin_group.apply()
 
         # Configure ports
         for port in self.cfg_data.ports:
@@ -144,8 +140,8 @@ class Configuration:
             source.create()
 
         # Configure HFSS setup
-        if "setups" in self.data:
-            self._load_setups()
+        for setup in self.cfg_data.setups:
+            setup.apply()
 
         # Configure stackup
         if "stackup" in self.data:
@@ -156,8 +152,8 @@ class Configuration:
             self._load_s_parameter()
 
         # Configure SPICE models
-        if "spice_models" in self.data:
-            self._load_spice_models()
+        for spice_model in self.cfg_data.spice_models:
+            spice_model.apply()
 
         # Configure package definitions
         if "package_definitions" in self.data:
@@ -224,93 +220,6 @@ class Configuration:
                 src_obj = self._pedb.create_current_source(pos_terminal, neg_terminal)
                 src_obj.magnitude = src["magnitude"]
             src_obj.name = name
-
-    @pyedb_function_handler
-    def _load_setups(self):
-        """Imports setup information from json."""
-        for setup in self.data["setups"]:
-            setup_type = setup["type"]
-
-            edb_setup = None
-            name = setup["name"]
-
-            if setup_type.lower() == "siwave_dc":
-                if name not in self._pedb.setups:
-                    self._pedb.logger.info("Setup {} created.".format(name))
-                    edb_setup = self._pedb.create_siwave_dc_setup(name)
-                else:
-                    self._pedb.logger.warning("Setup {} already existing. Editing it.".format(name))
-                    edb_setup = self._pedb.setups[name]
-                edb_setup.set_dc_slider(setup["dc_slider_position"])
-                dc_ir_settings = setup.get("dc_ir_settings", None)
-                if dc_ir_settings:
-                    for k, v in dc_ir_settings.items():
-                        if k not in dir(edb_setup.dc_ir_settings):
-                            self._pedb.logger.error(f"Invalid keyword {k}")
-                        else:
-                            setattr(edb_setup.dc_ir_settings, k, v)
-            else:
-                if setup_type.lower() == "hfss":
-                    if name not in self._pedb.setups:
-                        self._pedb.logger.info("Setup {} created.".format(name))
-                        edb_setup = self._pedb.create_hfss_setup(name)
-                    else:
-                        self._pedb.logger.warning("Setup {} already existing. Editing it.".format(name))
-                        edb_setup = self._pedb.setups[name]
-                    edb_setup.set_solution_single_frequency(
-                        setup["f_adapt"], max_num_passes=setup["max_num_passes"], max_delta_s=setup["max_mag_delta_s"]
-                    )
-                elif setup_type.lower() == "siwave_syz":
-                    name = setup["name"]
-                    if name not in self._pedb.setups:
-                        self._pedb.logger.info("Setup {} created.".format(name))
-                        edb_setup = self._pedb.create_siwave_syz_setup(name)
-                    else:
-                        self._pedb.logger.warning("Setup {} already existing. Editing it.".format(name))
-                        edb_setup = self._pedb.setups[name]
-                    if "si_slider_position" in setup:
-                        edb_setup.si_slider_position = setup["si_slider_position"]
-                    if "pi_slider_position" in setup:
-                        edb_setup.pi_slider_position = setup["pi_slider_position"]
-
-                if "freq_sweep" in setup:
-                    for fsweep in setup["freq_sweep"]:
-                        frequencies = fsweep["frequencies"]
-                        freqs = []
-
-                        for d in frequencies:
-                            if d["distribution"] == "linear step":
-                                freqs.append(
-                                    [
-                                        "linear scale",
-                                        self._pedb.edb_value(d["start"]).ToString(),
-                                        self._pedb.edb_value(d["stop"]).ToString(),
-                                        self._pedb.edb_value(d["step"]).ToString(),
-                                    ]
-                                )
-                            elif d["distribution"] == "linear count":
-                                freqs.append(
-                                    [
-                                        "linear count",
-                                        self._pedb.edb_value(d["start"]).ToString(),
-                                        self._pedb.edb_value(d["stop"]).ToString(),
-                                        int(d["points"]),
-                                    ]
-                                )
-                            elif d["distribution"] == "log scale":
-                                freqs.append(
-                                    [
-                                        "log scale",
-                                        self._pedb.edb_value(d["start"]).ToString(),
-                                        self._pedb.edb_value(d["stop"]).ToString(),
-                                        int(d["samples"]),
-                                    ]
-                                )
-
-                        edb_setup.add_frequency_sweep(
-                            fsweep["name"],
-                            frequency_sweep=freqs,
-                        )
 
     @pyedb_function_handler
     def _load_stackup(self):
@@ -412,168 +321,12 @@ class Configuration:
                 comp.use_s_parameter_model(sp_name, reference_net=ref_net)
 
     @pyedb_function_handler
-    def _load_spice_models(self):
-        """Imports SPICE information from json."""
-
-        for sp in self.data["spice_models"]:
-            fpath = sp["file_path"]
-            if not Path(fpath).anchor:
-                fpath = str(Path(self._spice_model_library) / fpath)
-            sp_name = sp["name"]
-            sub_circuit_name = sp.get("sub_circuit_name", None)
-            comp_def_name = sp["component_definition"]
-            comp_def = self._pedb.definitions.component[comp_def_name]
-            comps = comp_def.components
-            if sp["apply_to_all"]:
-                for refdes, comp in comps.items():
-                    if refdes not in sp["components"]:
-                        comp.assign_spice_model(fpath, sp_name, sub_circuit_name)
-            else:
-                for refdes, comp in comps.items():
-                    if refdes in sp["components"]:
-                        comp.assign_spice_model(fpath, sp_name, sub_circuit_name)
-
-    @pyedb_function_handler
-    def _load_pin_groups(self):
-        """Imports pin groups information from JSON."""
-        comps = self._components
-        for pg in self.data["pin_groups"]:
-            name = pg["name"]
-            ref_designator = pg["reference_designator"]
-            if "pins" in pg:
-                self._pedb.siwave.create_pin_group(ref_designator, pg["pins"], name)
-            elif "net" in pg:
-                nets = pg["net"]
-                nets = nets if isinstance(nets, list) else [nets]
-                comp = comps[ref_designator]
-                pins = [p for p, obj in comp.pins.items() if obj.net_name in nets]
-                self._pedb.siwave.create_pin_group(ref_designator, pins, name)
-            else:
-                pins = [i for i in comps[ref_designator].pins.keys()]
-                self._pedb.siwave.create_pin_group(ref_designator, pins, name)
-
-    @pyedb_function_handler
-    def _load_nets(self):
-        """Imports nets information from JSON."""
-        nets = self._pedb.nets.nets
-        for i in self.data["nets"]["power_ground_nets"]:
-            nets[i].is_power_ground = True
-
-        for i in self.data["nets"]["signal_nets"]:
-            nets[i].is_power_ground = False
-
-    @pyedb_function_handler
-    def _load_general(self):
-        """Imports general information from JSON."""
-        general = self.data["general"]
-        if "s_parameter_library" in general:
-            self._s_parameter_library = general["s_parameter_library"]
-        if "spice_model_library" in general:
-            self._spice_model_library = general["spice_model_library"]
-
-    @pyedb_function_handler
-    def _load_boundaries(self):
-        """Imports boundary information from JSON."""
-        boundaries = self.data["boundaries"]
-
-        open_region = boundaries.get("open_region", None)
-        if open_region:
-            self._pedb.hfss.hfss_extent_info.use_open_region = open_region
-
-        open_region_type = boundaries.get("open_region_type", None)
-        if open_region_type:
-            self._pedb.hfss.hfss_extent_info.open_region_type = open_region_type
-
-        pml_visible = boundaries.get("pml_visible", None)
-        if pml_visible:
-            self._pedb.hfss.hfss_extent_info.is_pml_visible = pml_visible
-
-        pml_operation_frequency = boundaries.get("pml_operation_frequency", None)
-        if pml_operation_frequency:
-            self._pedb.hfss.hfss_extent_info.operating_freq = pml_operation_frequency
-
-        pml_radiation_factor = boundaries.get("pml_radiation_factor", None)
-        if pml_radiation_factor:
-            self._pedb.hfss.hfss_extent_info.radiation_level = pml_radiation_factor
-
-        dielectric_extents_type = boundaries.get("dielectric_extents_type", None)
-        if dielectric_extents_type:
-            self._pedb.hfss.hfss_extent_info.extent_type = dielectric_extents_type
-
-        dielectric_base_polygon = boundaries.get("dielectric_base_polygon", None)
-        if dielectric_base_polygon:
-            self._pedb.hfss.hfss_extent_info.dielectric_base_polygon = dielectric_base_polygon
-
-        horizontal_padding = boundaries.get("horizontal_padding", None)
-        if horizontal_padding:
-            self._pedb.hfss.hfss_extent_info.dielectric_extent_size = horizontal_padding
-
-        honor_primitives_on_dielectric_layers = boundaries.get("honor_primitives_on_dielectric_layers", None)
-        if honor_primitives_on_dielectric_layers:
-            self._pedb.hfss.hfss_extent_info.honor_user_dielectric = honor_primitives_on_dielectric_layers
-
-        air_box_extents_type = boundaries.get("air_box_extents_type", None)
-        if air_box_extents_type:
-            self._pedb.hfss.hfss_extent_info.extent_type = air_box_extents_type
-
-        air_box_truncate_model_ground_layers = boundaries.get("air_box_truncate_model_ground_layers", None)
-        if air_box_truncate_model_ground_layers:
-            self._pedb.hfss.hfss_extent_info.truncate_air_box_at_ground = air_box_truncate_model_ground_layers
-
-        air_box_horizontal_padding = boundaries.get("air_box_horizontal_padding", None)
-        if air_box_horizontal_padding:
-            self._pedb.hfss.hfss_extent_info.air_box_horizontal_extent = air_box_horizontal_padding
-
-        air_box_positive_vertical_padding = boundaries.get("air_box_positive_vertical_padding", None)
-        if air_box_positive_vertical_padding:
-            self._pedb.hfss.hfss_extent_info.air_box_positive_vertical_extent = air_box_positive_vertical_padding
-
-        air_box_negative_vertical_padding = boundaries.get("air_box_negative_vertical_padding", None)
-        if air_box_positive_vertical_padding:
-            self._pedb.hfss.hfss_extent_info.air_box_negative_vertical_extent = air_box_negative_vertical_padding
-
-    @pyedb_function_handler
     def _load_operations(self):
         """Imports operation information from JSON."""
         operations = self.data["operations"]
         cutout = operations.get("cutout", None)
         if cutout:
             self._pedb.cutout(**cutout)
-
-    @pyedb_function_handler
-    def _load_padstacks(self):
-        """Imports padstack information from JSON."""
-        padstacks = self.data["padstacks"]
-        definitions = padstacks.get("definitions", None)
-        if definitions:
-            padstack_defs = self._pedb.padstacks.definitions
-            for value in definitions:
-                pdef = padstack_defs[value["name"]]
-                if "hole_diameter" in value:
-                    pdef.hole_diameter = value["hole_diameter"]
-                if "hole_plating_thickness" in value:
-                    pdef.hole_plating_thickness = value["hole_plating_thickness"]
-                if "hole_material" in value:
-                    pdef.material = value["hole_material"]
-                if "hole_range" in value:
-                    pdef.hole_range = value["hole_range"]
-        instances = padstacks.get("instances", None)
-        if instances:
-            padstack_instances = self._pedb.padstacks.instances_by_name
-            for value in instances:
-                inst = padstack_instances[value["name"]]
-                backdrill_top = value.get("backdrill_top", None)
-                if backdrill_top:
-                    inst.set_backdrill_top(
-                        backdrill_top["drill_to_layer"], backdrill_top["drill_diameter"], backdrill_top["stub_length"]
-                    )
-                backdrill_bottom = value.get("backdrill_bottom", None)
-                if backdrill_top:
-                    inst.set_backdrill_bottom(
-                        backdrill_bottom["drill_to_layer"],
-                        backdrill_bottom["drill_diameter"],
-                        backdrill_bottom["stub_length"],
-                    )
 
     @pyedb_function_handler
     def _load_package_def(self):
