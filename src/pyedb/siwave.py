@@ -11,7 +11,7 @@ from __future__ import absolute_import  # noreorder
 import os
 import pkgutil
 import sys
-import time
+import warnings
 
 from pyedb.dotnet.clr_module import _clr
 from pyedb.edb_logger import pyedb_logger
@@ -335,11 +335,31 @@ class Siwave(object):  # pragma no cover
             ``True`` when successful, ``False`` when failed.
 
         """
+        warnings.warn("Use new property :func:`export_dc_simulation_report` instead.", DeprecationWarning)
+        return self.export_dc_simulation_report(simulation_name, file_path, bkground_color)
+
+    @pyedb_function_handler()
+    def export_dc_simulation_report(self, simulation_name, file_path, background_color="White"):
+        """Export the Siwave DC simulation report.
+
+        Parameters
+        ----------
+        simulation_name : str
+            Name of the setup.
+        file_path : str
+            Path to the exported report.
+        background_color : str, optional
+            Color of the report's background. The default is ``"White"``.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        """
         self.oproject.ScrExportDcSimReportScaling("All", "All", -1, -1, False)
-        self.oproject.ScrExportDcSimReport(simulation_name, bkground_color, file_path)
-        while not os.path.exists(file_path):
-            time.sleep(0.1)
-        return True
+        flag = self.oproject.ScrExportDcSimReport(simulation_name, background_color, file_path)
+        return True if flag == 0 else False
 
     @pyedb_function_handler
     def run_dc_simulation(self):
