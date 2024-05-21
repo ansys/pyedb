@@ -1856,6 +1856,7 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = Edb(edbpath=target_path, edbversion=desktop_version)
         setup = edbapp.create_hfsspi_setup("test")
+        setup.add_frequency_sweep(frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
         assert not setup.settings.auto_select_nets_for_simulation
         setup.settings.auto_select_nets_for_simulation = True
         assert setup.settings.auto_select_nets_for_simulation

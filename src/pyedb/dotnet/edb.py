@@ -3598,6 +3598,8 @@ class Edb(Database):
                 setups[i.GetName()] = SiwaveDCSimulationSetup(self, i)
             elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kRaptorX:
                 setups[i.GetName()] = RaptorXSimulationSetup(self, i)
+            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kHFSSPI:
+                setups[i.GetName()] = HFSSPISimulationSetup(self, i)
         return setups
 
     @property
