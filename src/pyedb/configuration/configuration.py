@@ -90,7 +90,7 @@ class Configuration:
             else:
                 self.data[k] = v
 
-        self.cfg_data = CfgData(self._pedb, **data)
+        self.cfg_data = CfgData(self._pedb, **self.data)
 
         if apply_file:
             original_file = self._pedb.edbpath
