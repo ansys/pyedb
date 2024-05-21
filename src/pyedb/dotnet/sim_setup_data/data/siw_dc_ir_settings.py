@@ -62,3 +62,20 @@ class SiwaveDCIRSettings:
         edb_setup_info.SimulationSettings.DCIRSettings.ImportThermalData = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
+
+    def dc_report_show_active_devices(self):
+        """DC Report Show Active Devices.
+
+        Returns
+        -------
+            bool
+            ``True`` when activated, ``False`` deactivated.
+        """
+        return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.DCReportShowActiveDevices
+
+    @dc_report_show_active_devices.setter
+    def dc_report_show_active_devices(self, value):
+        edb_setup_info = self._parent.get_sim_setup_info
+        edb_setup_info.SimulationSettings.DCIRSettings.DCReportShowActiveDevices = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
