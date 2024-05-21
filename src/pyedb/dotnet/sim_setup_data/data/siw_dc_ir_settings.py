@@ -92,9 +92,27 @@ class SiwaveDCIRSettings:
         """
         return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.PerPinUsePinFormat
 
-    @dc_report_show_active_devices.setter
+    @per_pin_use_pin_format.setter
     def per_pin_use_pin_format(self, value):
         edb_setup_info = self._parent.get_sim_setup_info
         edb_setup_info.SimulationSettings.DCIRSettings.PerPinUsePinFormat = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
+    @property
+    def use_loop_res_for_per_pin(self):
+        """Use loop Res Per Pin.
+
+        Returns
+        -------
+            bool
+            ``True`` when activated, ``False`` deactivated.
+        """
+        return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.UseLoopResForPerPin
+
+    @use_loop_res_for_per_pin.setter
+    def per_pin_use_pin_format(self, value):
+        edb_setup_info = self._parent.get_sim_setup_info
+        edb_setup_info.SimulationSettings.DCIRSettings.UseLoopResForPerPin = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
