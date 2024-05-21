@@ -22,6 +22,7 @@ from pyedb.generic.general_methods import (
     pyedb_function_handler,
 )
 from pyedb.misc.misc import list_installed_ansysem
+from pyedb.siwave_core.icepak import Icepak
 
 
 class Siwave(object):  # pragma no cover
@@ -214,6 +215,10 @@ class Siwave(object):  # pragma no cover
     def oproject(self):
         """Project."""
         return self._oproject
+
+    @property
+    def icepak(self):
+        return Icepak(self)
 
     @pyedb_function_handler()
     def open_project(self, proj_path=None):
