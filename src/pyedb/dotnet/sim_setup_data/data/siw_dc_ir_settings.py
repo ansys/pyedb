@@ -111,8 +111,119 @@ class SiwaveDCIRSettings:
         return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.UseLoopResForPerPin
 
     @use_loop_res_for_per_pin.setter
-    def per_pin_use_pin_format(self, value):
+    def use_loop_res_for_per_pin(self, value):
         edb_setup_info = self._parent.get_sim_setup_info
         edb_setup_info.SimulationSettings.DCIRSettings.UseLoopResForPerPin = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
+
+    @property
+    def dc_report_config_file(self):
+        """DC Report Config File.
+
+        Returns
+        -------
+            str
+            path to the DC report configuration file.
+        """
+        return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.DCReportConfigFile
+
+    @dc_report_config_file.setter
+    def dc_report_config_file(self, value):
+        edb_setup_info = self._parent.get_sim_setup_info
+        edb_setup_info.SimulationSettings.DCIRSettings.DCReportConfigFile = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
+    @property
+    def full_dc_report_path(self):
+        """Full DC Report Path.
+
+        Returns
+        -------
+            str
+            full path to the DC report file.
+        """
+        return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.FullDCReportPath
+
+    @full_dc_report_path.setter
+    def full_dc_report_path(self, value):
+        edb_setup_info = self._parent.get_sim_setup_info
+        edb_setup_info.SimulationSettings.DCIRSettings.FullDCReportPath = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
+    @property
+    def icepak_temp_file(self):
+        """Icepack Temp File.
+
+        Returns
+        -------
+            str
+            path to the temp Icepak file.
+        """
+        return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.IcepakTempFile
+
+        @icepak_temp_file.setter
+        def icepak_temp_file(self, value):
+            edb_setup_info = self._parent.get_sim_setup_info
+            edb_setup_info.SimulationSettings.DCIRSettings.IcepakTempFile = value
+            self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+            self._parent._update_setup()
+
+    @property
+    def per_pin_res_path(self):
+        """Per Pin Res Path.
+
+        Returns
+        -------
+            str
+            path for per pin res.
+        """
+        return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.PerPinResPath
+
+        @per_pin_res_path.setter
+        def per_pin_res_path(self, value):
+            edb_setup_info = self._parent.get_sim_setup_info
+            edb_setup_info.SimulationSettings.DCIRSettings.PerPinResPath = value
+            self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+            self._parent._update_setup()
+
+    @property
+    def via_report_path(self):
+        """Via Report Path.
+
+        Returns
+        -------
+            str
+            path for the Via Report.
+        """
+        return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.ViaReportPath
+
+        @via_report_path.setter
+        def via_report_path(self, value):
+            edb_setup_info = self._parent.get_sim_setup_info
+            edb_setup_info.SimulationSettings.DCIRSettings.ViaReportPath = value
+            self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+            self._parent._update_setup()
+
+    @property
+    def source_terms_to_ground(self):
+        """A dictionary of SourceName, NodeToGround pairs,
+        where NodeToGround is one of 0 (unspecified), 1 (negative), 2 (positive).
+
+
+        Returns
+        -------
+            dict <str, int>
+                str: source name,
+                int: node to ground pairs, 0 (unspecified), 1 (negative), 2 (positive) .
+        """
+        return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround
+
+        @source_terms_to_ground.setter
+        def source_terms_to_ground(self, value):
+            edb_setup_info = self._parent.get_sim_setup_info
+            edb_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround = value
+            self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+            self._parent._update_setup()
