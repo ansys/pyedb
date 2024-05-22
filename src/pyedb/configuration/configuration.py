@@ -22,7 +22,6 @@
 
 import json
 import os
-from pathlib import Path
 
 import toml
 
@@ -148,8 +147,8 @@ class Configuration:
             self._load_stackup()
 
         # Configure S-parameter
-        if "s_parameters" in self.data:
-            self._load_s_parameter()
+        for s_parameter_model in self.cfg_data.s_parameters:
+            s_parameter_model.apply()
 
         # Configure SPICE models
         for spice_model in self.cfg_data.spice_models:
@@ -164,62 +163,6 @@ class Configuration:
             self._load_operations()
 
         return True
-
-    @pyedb_function_handler
-    def _load_sources(self):
-        """Imports source information from json."""
-
-        for src in self.data["sources"]:
-            src_type = src["type"]
-            name = src["name"]
-
-            positive_terminal_json = src["positive_terminal"]
-            if "pin_group" in positive_terminal_json:
-                pin_group = self._pedb.siwave.pin_groups[positive_terminal_json["pin_group"]]
-                pos_terminal = pin_group.get_terminal(pin_group.name, True)
-            else:
-                ref_designator = src["reference_designator"]
-                comp_layout = self._components[ref_designator]
-
-                if "pin" in positive_terminal_json:
-                    pin_name = positive_terminal_json["pin"]
-                    src_name = name
-                    pos_terminal = comp_layout.pins[pin_name].get_terminal(src_name, True)
-                elif "net" in positive_terminal_json:  # Net
-                    net_name = positive_terminal_json["net"]
-                    src_name = "{}_{}".format(ref_designator, net_name)
-                    pg_name = "pg_{}".format(src_name)
-                    _, pg = self._pedb.siwave.create_pin_group_on_net(ref_designator, net_name, pg_name)
-                    pos_terminal = pg.get_terminal(src_name, True)
-
-            negative_terminal_json = src["negative_terminal"]
-            if "pin_group" in negative_terminal_json:
-                pin_group = self._pedb.siwave.pin_groups[negative_terminal_json["pin_group"]]
-                neg_terminal = pin_group.get_terminal(pin_group.name + "_ref", True)
-            else:
-                ref_designator = src["reference_designator"]
-                comp_layout = self._components[ref_designator]
-                if "pin" in negative_terminal_json:
-                    pin_name = negative_terminal_json["pin"]
-                    src_name = name + "_ref"
-                    neg_terminal = comp_layout.pins[pin_name].get_terminal(src_name, True)
-                elif "net" in negative_terminal_json:
-                    net_name = negative_terminal_json["net"]
-                    src_name = name + "_ref"
-                    pg_name = "pg_{}".format(src_name)
-                    if pg_name not in self._pedb.siwave.pin_groups:
-                        _, pg = self._pedb.siwave.create_pin_group_on_net(ref_designator, net_name, pg_name)
-                    else:  # pragma no cover
-                        pg = self._pedb.siwave.pin_groups[pg_name]
-                    neg_terminal = pg.get_terminal(src_name, True)
-
-            if src_type == "voltage":
-                src_obj = self._pedb.create_voltage_source(pos_terminal, neg_terminal)
-                src_obj.magnitude = src["magnitude"]
-            elif src_type == "current":
-                src_obj = self._pedb.create_current_source(pos_terminal, neg_terminal)
-                src_obj.magnitude = src["magnitude"]
-            src_obj.name = name
 
     @pyedb_function_handler
     def _load_stackup(self):
@@ -289,36 +232,6 @@ class Configuration:
             lc._edb_object = lc_new._edb_object
             lc_new.auto_refresh = True
             lc.update_layout()
-
-    @pyedb_function_handler
-    def _load_s_parameter(self):
-        """Imports s-parameter information from json."""
-
-        for sp in self.data["s_parameters"]:
-            fpath = sp["file_path"]
-            if not Path(fpath).anchor:
-                fpath = str(Path(self._s_parameter_library) / fpath)
-            sp_name = sp["name"]
-            comp_def_name = sp["component_definition"]
-            comp_def = self._pedb.definitions.component[comp_def_name]
-            comp_def.add_n_port_model(fpath, sp_name)
-            comp_list = dict()
-            if sp["apply_to_all"]:
-                comp_list.update(
-                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in sp["components"]}
-                )
-            else:
-                comp_list.update(
-                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes in sp["components"]}
-                )
-
-            for refdes, comp in comp_list.items():
-                if "reference_net_per_component" in sp:
-                    ref_net_per_comp = sp["reference_net_per_component"]
-                    ref_net = ref_net_per_comp[refdes] if refdes in ref_net_per_comp else sp["reference_net"]
-                else:
-                    ref_net = sp["reference_net"]
-                comp.use_s_parameter_model(sp_name, reference_net=ref_net)
 
     @pyedb_function_handler
     def _load_operations(self):
