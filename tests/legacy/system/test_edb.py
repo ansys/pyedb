@@ -1896,3 +1896,26 @@ class TestClass:
         assert setup.settings.snap_length_threshold == "5um"
         setup.settings.surface_roughness_model = "Hammerstad"
         assert setup.settings.surface_roughness_model == "Hammerstad"
+
+    def test_dcir_properties(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        setup = edbapp.create_siwave_dc_setup()
+        setup.dc_ir_settings.export_dc_thermal_data = True
+        assert setup.dc_ir_settings.export_dc_thermal_data == True
+        assert not setup.dc_ir_settings.import_thermal_data
+        setup.dc_ir_settings.dc_report_show_active_devices = True
+        assert setup.dc_ir_settings.dc_report_show_active_devices == True
+        assert not setup.dc_ir_settings.per_pin_use_pin_format
+        assert setup.dc_ir_settings.use_loop_res_for_per_pin
+        setup.dc_ir_settings.dc_report_config_file = edbapp.edbpath
+        assert setup.dc_ir_settings.dc_report_config_file
+        setup.dc_ir_settings.full_dc_report_path = edbapp.edbpath
+        assert setup.dc_ir_settings.full_dc_report_path
+        setup.dc_ir_settings.icepak_temp_file = edbapp.edbpath
+        assert setup.dc_ir_settings.icepak_temp_file
+        setup.dc_ir_settings.per_pin_res_path = edbapp.edbpath
+        assert setup.dc_ir_settings.per_pin_res_path
+        setup.dc_ir_settings.via_report_path = edbapp.edbpath
+        assert setup.dc_ir_settings.via_report_path
+        setup.dc_ir_settings.source_terms_to_ground = {"test": 1}
+        assert setup.dc_ir_settings.source_terms_to_ground
