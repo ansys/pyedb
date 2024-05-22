@@ -152,10 +152,12 @@ class EdbLayout(object):
         for lay in self.layers:
             _primitives_by_layer[lay] = []
         for i in self._layout.primitives:
-            lay = i.GetLayer().GetName()
-            if not lay:
+            try:
+                lay = i.GetLayer().GetName()
+                _primitives_by_layer[lay].append(cast(i, self._pedb))
+            except:
+                self._logger.warning(f"Failed to get layer on primitive {i.id}, skipping.")
                 continue
-            _primitives_by_layer[lay].append(cast(i, self._pedb))
         return _primitives_by_layer
 
     @property
@@ -233,11 +235,14 @@ class EdbLayout(object):
         """
         objinst = []
         for el in self.polygons:
-            if el.GetLayer().GetName() == layer_name:
-                if net_list and el.GetNet().GetName() in net_list:
-                    objinst.append(el)
-                else:
-                    objinst.append(el)
+            try:
+                if el.GetLayer().GetName() == layer_name:
+                    if net_list and el.GetNet().GetName() in net_list:
+                        objinst.append(el)
+                    else:
+                        objinst.append(el)
+            except:
+                self._logger.warning(f"Failed to retrieve layer on polygon {el.id}")
         return objinst
 
     @pyedb_function_handler()
