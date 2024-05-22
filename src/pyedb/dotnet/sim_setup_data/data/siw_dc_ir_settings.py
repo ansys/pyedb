@@ -164,12 +164,12 @@ class SiwaveDCIRSettings:
         """
         return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.IcepakTempFile
 
-        @icepak_temp_file.setter
-        def icepak_temp_file(self, value):
-            edb_setup_info = self._parent.get_sim_setup_info
-            edb_setup_info.SimulationSettings.DCIRSettings.IcepakTempFile = value
-            self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-            self._parent._update_setup()
+    @icepak_temp_file.setter
+    def icepak_temp_file(self, value):
+        edb_setup_info = self._parent.get_sim_setup_info
+        edb_setup_info.SimulationSettings.DCIRSettings.IcepakTempFile = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
 
     @property
     def per_pin_res_path(self):
@@ -182,12 +182,12 @@ class SiwaveDCIRSettings:
         """
         return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.PerPinResPath
 
-        @per_pin_res_path.setter
-        def per_pin_res_path(self, value):
-            edb_setup_info = self._parent.get_sim_setup_info
-            edb_setup_info.SimulationSettings.DCIRSettings.PerPinResPath = value
-            self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-            self._parent._update_setup()
+    @per_pin_res_path.setter
+    def per_pin_res_path(self, value):
+        edb_setup_info = self._parent.get_sim_setup_info
+        edb_setup_info.SimulationSettings.DCIRSettings.PerPinResPath = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
 
     @property
     def via_report_path(self):
@@ -200,12 +200,12 @@ class SiwaveDCIRSettings:
         """
         return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.ViaReportPath
 
-        @via_report_path.setter
-        def via_report_path(self, value):
-            edb_setup_info = self._parent.get_sim_setup_info
-            edb_setup_info.SimulationSettings.DCIRSettings.ViaReportPath = value
-            self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-            self._parent._update_setup()
+    @via_report_path.setter
+    def via_report_path(self, value):
+        edb_setup_info = self._parent.get_sim_setup_info
+        edb_setup_info.SimulationSettings.DCIRSettings.ViaReportPath = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
 
     @property
     def source_terms_to_ground(self):
@@ -221,9 +221,9 @@ class SiwaveDCIRSettings:
         """
         return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround
 
-        @source_terms_to_ground.setter
-        def source_terms_to_ground(self, value):
-            edb_setup_info = self._parent.get_sim_setup_info
-            edb_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround = value
-            self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-            self._parent._update_setup()
+    @source_terms_to_ground.setter
+    def source_terms_to_ground(self, value):
+        edb_setup_info = self._parent.get_sim_setup_info
+        edb_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()

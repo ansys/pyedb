@@ -1896,3 +1896,30 @@ class TestClass:
         assert setup.settings.snap_length_threshold == "5um"
         setup.settings.surface_roughness_model = "Hammerstad"
         assert setup.settings.surface_roughness_model == "Hammerstad"
+
+    def test_dcir_properties(self):
+        "test all dcir properties"
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_adaptive_broadband.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        setup = edbapp.create_siwave_dc_setup()
+        setup.dc_ir_settings.export_dc_thermal_data = True
+        assert setup.dc_ir_settings.export_dc_thermal_data == True
+        assert not setup.dc_ir_settings.import_thermal_data
+        setup.dc_ir_settings.dc_report_show_active_devices = True
+        assert setup.dc_ir_settings.dc_report_show_active_devices == True
+        assert not setup.dc_ir_settings.per_pin_use_pin_format
+        assert setup.dc_ir_settings.use_loop_res_for_per_pin
+        setup.dc_ir_settings.dc_report_config_file = target_path
+        assert setup.dc_ir_settings.dc_report_config_file
+        setup.dc_ir_settings.full_dc_report_path = target_path
+        assert setup.dc_ir_settings.full_dc_report_path
+        setup.dc_ir_settings.icepak_temp_file = target_path
+        assert setup.dc_ir_settings.icepak_temp_file
+        setup.dc_ir_settings.per_pin_res_path = target_path
+        assert setup.dc_ir_settings.per_pin_res_path
+        setup.dc_ir_settings.via_report_path = target_path
+        assert setup.dc_ir_settings.via_report_path
+        # setup.dc_ir_settings.source_terms_to_ground = {"test":1}
+        # assert setup.dc_ir_settings.source_terms_to_ground
