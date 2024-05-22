@@ -22,6 +22,7 @@ from pyedb.generic.general_methods import (
     pyedb_function_handler,
 )
 from pyedb.misc.misc import list_installed_ansysem
+from pyedb.siwave_core.icepak import Icepak
 
 
 class Siwave(object):  # pragma no cover
@@ -215,6 +216,10 @@ class Siwave(object):  # pragma no cover
         """Project."""
         return self._oproject
 
+    @property
+    def icepak(self):
+        return Icepak(self)
+
     @pyedb_function_handler()
     def open_project(self, proj_path=None):
         """Open a project.
@@ -362,9 +367,10 @@ class Siwave(object):  # pragma no cover
         return True if flag == 0 else False
 
     @pyedb_function_handler
-    def run_dc_simulation(self):
+    def run_dc_simulation(self, export_dc_power_data_to_icepak=False):
         """Run DC simulation."""
         self._logger.info("Running DC simulation.")
+        self.oproject.ScrExportDcPowerDataToIcepak(export_dc_power_data_to_icepak)
         return self.oproject.ScrRunDcSimulation(1)
 
     @pyedb_function_handler
