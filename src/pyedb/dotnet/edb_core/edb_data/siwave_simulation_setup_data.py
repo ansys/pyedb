@@ -26,8 +26,10 @@ from pyedb.dotnet.edb_core.general import (
     convert_netdict_to_pydict,
     convert_pydict_to_netdict,
 )
+from pyedb.dotnet.edb_core.sim_setup_data.data.siw_dc_ir_settings import (
+    SiwaveDCIRSettings,
+)
 from pyedb.dotnet.edb_core.utilities.simulation_setup import BaseSimulationSetup
-from pyedb.dotnet.sim_setup_data.data.siw_dc_ir_settings import SiwaveDCIRSettings
 from pyedb.generic.general_methods import is_linux, pyedb_function_handler
 
 
@@ -986,7 +988,7 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
                 val = val.replace("SourceTermsToGround(", "").replace(")", "").split(",")
                 for v in val:
                     source = v.split("=")
-                    sources[source[0]] = source[1]
+                    sources[source[0]] = int(source[1].replace("'", ""))
                 edb_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(
                     sources
                 )
