@@ -1921,5 +1921,5 @@ class TestClass:
         assert setup.dc_ir_settings.per_pin_res_path
         setup.dc_ir_settings.via_report_path = target_path
         assert setup.dc_ir_settings.via_report_path
-        # setup.dc_ir_settings.source_terms_to_ground = {"test":1}
-        # assert setup.dc_ir_settings.source_terms_to_ground
+        setup.dc_ir_settings.source_terms_to_ground = {"test":1}
+        assert setup.dc_ir_settings.source_terms_to_ground

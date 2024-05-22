@@ -986,7 +986,7 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
                 val = val.replace("SourceTermsToGround(", "").replace(")", "").split(",")
                 for v in val:
                     source = v.split("=")
-                    sources[source[0]] = source[1]
+                    sources[source[0]] = int(source[1].replace("'", ""))
                 edb_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(
                     sources
                 )

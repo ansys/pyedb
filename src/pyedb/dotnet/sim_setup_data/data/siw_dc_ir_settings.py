@@ -20,6 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.dotnet.edb_core.general import (
+    convert_netdict_to_pydict,
+    convert_pydict_to_netdict,
+)
+
 
 class SiwaveDCIRSettings:
     """Class for DC IR settings."""
@@ -219,11 +224,12 @@ class SiwaveDCIRSettings:
                 str: source name,
                 int: node to ground pairs, 0 (unspecified), 1 (negative), 2 (positive) .
         """
-        return self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround
+        temp = self._parent.get_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround
+        return convert_netdict_to_pydict(temp)
 
     @source_terms_to_ground.setter
     def source_terms_to_ground(self, value):
         edb_setup_info = self._parent.get_sim_setup_info
-        edb_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround = value
+        edb_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(value)
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
