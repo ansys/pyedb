@@ -52,19 +52,20 @@ class BaseSimulationSetup(object):
             "kAnalysisOption": None,
             "kSIwaveDCIR": self._pedb.simsetupdata.SIwave.SIWDCIRSimulationSettings,
             "kSIwaveEMI": None,
+            "kHFSSPI": None,
             "kDDRwizard": None,
             "kQ3D": None,
             "kNumSetupTypes": None,
         }
-        if self._pedb.edbversion:
-            version = self._pedb.edbversion.split(".")
-            if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
-                self._setup_type_mapping.update(
-                    {
-                        "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings,
-                        "kHFSSPI": self._pedb.simsetupdata.HFSSPISimulationSettings,
-                    }
-                )
+
+        version = self._pedb.edbversion.split(".")
+        if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
+            self._setup_type_mapping.update(
+                {
+                    "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings,
+                    "kHFSSPI": self._pedb.simsetupdata.HFSSPISimulationSettings,
+                }
+            )
         if self._edb_object:
             self._name = self._edb_object.GetName()
 
@@ -109,10 +110,10 @@ class BaseSimulationSetup(object):
             "kQ3D": None,
             "kNumSetupTypes": None,
         }
-        if self._pedb.edbversion:
-            version = self._pedb.edbversion.split(".")
-            if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
-                setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
+
+        version = self._pedb.edbversion.split(".")
+        if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
+            setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
         setup_utility = setup_type_mapping[self._setup_type]
         return setup_utility(edb_setup_info)
 
