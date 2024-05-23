@@ -156,7 +156,7 @@ class EdbLayout(object):
                 lay = i.GetLayer().GetName()
                 _primitives_by_layer[lay].append(cast(i, self._pedb))
             except:
-                self._logger.warning(f"Failed to get layer on primitive {i.id}, skipping.")
+                self._logger.warning(f"Failed to get layer on primitive {i}, skipping.")
                 continue
         return _primitives_by_layer
 
@@ -242,7 +242,7 @@ class EdbLayout(object):
                     else:
                         objinst.append(el)
             except:
-                self._logger.warning(f"Failed to retrieve layer on polygon {el.id}")
+                self._logger.warning(f"Failed to retrieve layer on polygon {el}")
         return objinst
 
     @pyedb_function_handler()
