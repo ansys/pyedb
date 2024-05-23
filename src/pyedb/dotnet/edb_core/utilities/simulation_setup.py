@@ -59,10 +59,12 @@ class BaseSimulationSetup(object):
         }
         version = self._pedb.edbversion.split(".")
         if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
-            self._setup_type_mapping.update({
-                "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings,
-                "kHFSSPI": self._pedb.simsetupdata.HFSSPISimulationSettings,
-            })
+            self._setup_type_mapping.update(
+                {
+                    "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings,
+                    "kHFSSPI": self._pedb.simsetupdata.HFSSPISimulationSettings,
+                }
+            )
         if self._edb_object:
             self._name = self._edb_object.GetName()
 
