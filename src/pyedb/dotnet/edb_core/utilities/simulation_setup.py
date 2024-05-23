@@ -40,6 +40,7 @@ class BaseSimulationSetup(object):
         self._pedb = pedb
         self._edb_object = edb_setup
         self._setup_type = ""
+
         self._setup_type_mapping = {
             "kHFSS": self._pedb.simsetupdata.HFSSSimulationSettings,
             "kPEM": None,
@@ -61,25 +62,7 @@ class BaseSimulationSetup(object):
         if self._pedb.edbversion:
             version = self._pedb.edbversion.split(".")
             if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
-                self._setup_type_mapping = {
-                    "kHFSS": self._pedb.simsetupdata.HFSSSimulationSettings,
-                    "kPEM": None,
-                    "kSIwave": self._pedb.simsetupdata.SIwave.SIWSimulationSettings,
-                    "kLNA": None,
-                    "kTransient": None,
-                    "kQEye": None,
-                    "kVEye": None,
-                    "kAMI": None,
-                    "kAnalysisOption": None,
-                    "kSIwaveDCIR": self._pedb.simsetupdata.SIwave.SIWDCIRSimulationSettings,
-                    "kSIwaveEMI": None,
-                    "kHFSSPI": None,
-                    "kDDRwizard": None,
-                    "kQ3D": None,
-                    "kNumSetupTypes": None,
-                    "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings,
-                    "kHFSSPI": self._pedb.simsetupdata.HFSSPISimulationSettings,
-                }
+                self._setup_type_mapping.update({"kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings})
         if self._edb_object:
             self._name = self._edb_object.GetName()
 
