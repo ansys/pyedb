@@ -40,7 +40,6 @@ class BaseSimulationSetup(object):
         self._pedb = pedb
         self._edb_object = edb_setup
         self._setup_type = ""
-
         self._setup_type_mapping = {
             "kHFSS": self._pedb.simsetupdata.HFSSSimulationSettings,
             "kPEM": None,
