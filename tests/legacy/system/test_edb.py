@@ -1184,6 +1184,16 @@ class TestClass:
         ]
         for term in padstack_instance_terminals:
             assert term.position
+        pos_pin = edbapp.padstacks.get_pinlist_from_component_and_net("C173")[1]
+        neg_pin = edbapp.padstacks.get_pinlist_from_component_and_net("C172")[0]
+        edbapp.create_port(
+            pos_pin.get_terminal(create_new_terminal=True),
+            neg_pin.get_terminal(create_new_terminal=True),
+            is_circuit_port=True,
+            name="test",
+        )
+        assert edbapp.ports["test"]
+        assert edbapp.ports["test"].is_circuit_port == True
         edbapp.close()
 
     def test_siwave_source_setter(self):
