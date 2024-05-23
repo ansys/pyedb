@@ -123,6 +123,7 @@ class EDBNetsData(NetDotNet):
         save_plot=None,
         outline=None,
         size=(2000, 1000),
+        show=True,
     ):
         """Plot a net to Matplotlib 2D chart.
 
@@ -134,12 +135,14 @@ class EDBNetsData(NetDotNet):
             If `True` the legend is shown in the plot. (default)
             If `False` the legend is not shown.
         save_plot : str, optional
-            If `None` the plot will be shown.
-            If a file path is specified the plot will be saved to such file.
+            If a path is specified the plot will be saved in this location.
+            If ``save_plot`` is provided, the ``show`` parameter is ignored.
         outline : list, optional
             List of points of the outline to plot.
         size : tuple, optional
             Image size in pixel (width, height).
+        show : bool, optional
+            Whether to show the plot or not. Default is `True`.
         """
 
         self._app.nets.plot(
@@ -149,6 +152,7 @@ class EDBNetsData(NetDotNet):
             save_plot=save_plot,
             outline=outline,
             size=size,
+            show=show,
         )
 
     @pyedb_function_handler()

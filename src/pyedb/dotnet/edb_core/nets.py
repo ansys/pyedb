@@ -822,6 +822,7 @@ class EdbNets(object):
         size=(2000, 1000),
         plot_components_on_top=False,
         plot_components_on_bottom=False,
+        show=True,
     ):
         """Plot a Net to Matplotlib 2D Chart.
 
@@ -838,8 +839,8 @@ class EdbNets(object):
             If ``True`` the legend is shown in the plot. (default)
             If ``False`` the legend is not shown.
         save_plot : str, optional
-            If ``None`` the plot will be shown.
-            If a file path is specified the plot will be saved to such file.
+            If a path is specified the plot will be saved in this location.
+            If ``save_plot`` is provided, the ``show`` parameter is ignored.
         outline : list, optional
             List of points of the outline to plot.
         size : tuple, int, optional
@@ -852,6 +853,8 @@ class EdbNets(object):
             If ``True``  the components placed on bottom layer are plotted.
             If ``False`` the components are not plotted. (default)
             If nets and/or layers is specified, only the components belonging to the specified nets/layers are plotted.
+        show : bool, optional
+            Whether to show the plot or not. Default is `True`.
         """
         if is_ironpython:
             self._logger.warning("Plot functionalities are enabled only in CPython.")
@@ -880,8 +883,9 @@ class EdbNets(object):
             xlabel="X (m)",
             ylabel="Y (m)",
             title=self._pedb.active_cell.GetName(),
-            snapshot_path=save_plot,
+            save_plot=save_plot,
             axis_equal=True,
+            show=show,
         )
 
     @pyedb_function_handler()
