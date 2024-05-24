@@ -92,7 +92,7 @@ class TestClass:
         edbapp.close()
 
     def test_04_nets(self, edb_examples):
-        edbapp= edb_examples.get_si_verse()
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "nets.json"), apply_file=True)
         assert edbapp.nets["1.2V_DVDDL"].is_power_ground
         assert not edbapp.nets["SFPA_VCCR"].is_power_ground
