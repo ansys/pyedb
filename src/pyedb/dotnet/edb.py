@@ -197,7 +197,6 @@ class Edb(Database):
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
-        self.edbversion = edbversion
         self.isaedtowned = isaedtowned
         self.isreadonly = isreadonly
         self.cellname = cellname
