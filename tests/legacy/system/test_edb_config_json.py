@@ -52,8 +52,8 @@ class TestClass:
             str(self.local_input_folder / "GRM32ER72A225KA35_25C_0V.sp"),
         )
 
-    def test_01_create_edb(self):
-        edbapp = Edb(str(self.local_edb), edbversion=desktop_version)
+    def test_01_create_edb(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         for i in [
             "components.json",
             "setups_hfss.json",
@@ -67,8 +67,8 @@ class TestClass:
         assert edbapp.components.instances["U3"].type == "Other"
         edbapp.close()
 
-    def test_02_pin_groups(self):
-        edbapp = Edb(str(self.local_edb), desktop_version)
+    def test_02_pin_groups(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         pin_groups = [
             {"name": "U9_5V_1", "reference_designator": "U9", "pins": ["32", "33"]},
             {"name": "U9_GND", "reference_designator": "U9", "net": "GND"},
@@ -79,20 +79,20 @@ class TestClass:
         assert "U9_GND" in edbapp.siwave.pin_groups
         edbapp.close()
 
-    def test_03_spice_models(self):
+    def test_03_spice_models(self, edb_examples):
         with open(self.local_input_folder / "spice.json") as f:
             data = json.load(f)
         data["general"]["spice_model_library"] = self.local_input_folder
 
-        edbapp = Edb(str(self.local_edb), desktop_version)
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.components["R107"].model.model_name
         assert edbapp.components["R107"].model.spice_file_path
         assert edbapp.components["R106"].model.spice_file_path
         edbapp.close()
 
-    def test_04_nets(self):
-        edbapp = Edb(str(self.local_edb), desktop_version)
+    def test_04_nets(self, edb_examples):
+        edbapp= edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "nets.json"), apply_file=True)
         assert edbapp.nets["1.2V_DVDDL"].is_power_ground
         assert not edbapp.nets["SFPA_VCCR"].is_power_ground
@@ -166,8 +166,8 @@ class TestClass:
         assert len(edbapp.ports) > 1
         edbapp.close()
 
-    def test_05c_ports_pin_group(self):
-        edbapp = Edb(str(self.local_edb), desktop_version)
+    def test_05c_ports_pin_group(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         pin_groups = [
             {"name": "U9_5V_1", "reference_designator": "U9", "pins": ["32", "33"]},
             {"name": "U9_GND", "reference_designator": "U9", "net": "GND"},
@@ -189,12 +189,12 @@ class TestClass:
         assert "U9_pin_group_port" in edbapp.ports
         edbapp.close()
 
-    def test_06_s_parameters(self):
+    def test_06_s_parameters(self, edb_examples):
         with open(self.local_input_folder / "s_parameter.json") as f:
             data = json.load(f)
         data["general"]["s_parameter_library"] = self.local_input_folder
 
-        edbapp = Edb(str(self.local_edb), desktop_version)
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         assert len(edbapp.components.nport_comp_definition) == 2
         assert edbapp.components.nport_comp_definition["CAPC3216X180X55ML20T25"].reference_file
@@ -202,27 +202,27 @@ class TestClass:
         assert len(edbapp.components.nport_comp_definition["CAPC3216X190X55ML30T25"].components) == 12
         edbapp.close()
 
-    def test_07_boundaries(self):
+    def test_07_boundaries(self, edb_examples):
         with open(self.local_input_folder / "boundaries.json") as f:
             data = json.load(f)
 
-        edbapp = Edb(str(self.local_edb), desktop_version)
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
-    def test_08a_operations_cutout(self):
+    def test_08a_operations_cutout(self, edb_examples):
         with open(self.local_input_folder / "operations_cutout.json") as f:
             data = json.load(f)
 
-        edbapp = Edb(str(self.local_edb), desktop_version)
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
-    def test_09_padstacks(self):
+    def test_09_padstacks(self, edb_examples):
         with open(self.local_input_folder / "padstacks.json") as f:
             data = json.load(f)
 
-        edbapp = Edb(str(self.local_edb), desktop_version)
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
@@ -290,7 +290,7 @@ class TestClass:
             },
         ]
         data = {"sources": sources_i}
-        assert edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.configuration.load(data, apply_file=True, append=False)
         assert not edbapp.sources["ISOURCE_U1_1V0_M16"].magnitude == 1
         edbapp.close()
 
