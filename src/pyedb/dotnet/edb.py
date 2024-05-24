@@ -197,7 +197,6 @@ class Edb(Database):
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
-        self.edbversion = edbversion
         self.isaedtowned = isaedtowned
         self.isreadonly = isreadonly
         self.cellname = cellname
@@ -3987,7 +3986,7 @@ class Edb(Database):
             return connected_ports_list
 
     @pyedb_function_handler
-    def create_port(self, terminal, ref_terminal=None, is_circuit_port=False):
+    def create_port(self, terminal, ref_terminal=None, is_circuit_port=False, name=None):
         """Create a port.
 
         Parameters
@@ -4005,7 +4004,8 @@ class Edb(Database):
             Negative terminal of the port.
         is_circuit_port : bool, optional
             Whether it is a circuit port. The default is ``False``.
-
+        name: str, optional
+            Name of the created port. The default is None, a random name is generated.
         Returns
         -------
         list: [:class:`pyedb.dotnet.edb_core.edb_data.ports.GapPort`,
@@ -4018,7 +4018,8 @@ class Edb(Database):
         if ref_terminal:
             ref_terminal.boundary_type = "PortBoundary"
             terminal.ref_terminal = ref_terminal
-
+        if name:
+            terminal.name = name
         return self.ports[terminal.name]
 
     @pyedb_function_handler
