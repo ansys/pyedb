@@ -980,7 +980,6 @@ class ViaSettings(object):
         self._parent._pedb.logger.warning("Property only supported on Ansys release 2024R1 and later")
         return self._via_settings.ViaMeshPlating
 
-
     @via_mesh_plating.setter
     def via_mesh_plating(self, value):
         self._via_settings.ViaMeshPlating = value
