@@ -982,7 +982,6 @@ class ViaSettings(object):
             return False
         return self._via_settings.ViaMeshPlating
 
-
     @via_mesh_plating.setter
     def via_mesh_plating(self, value):
         if float(self._parent._pedb.edbversion) < 2024.1:
