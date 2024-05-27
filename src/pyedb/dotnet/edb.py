@@ -3702,12 +3702,10 @@ class Edb(Database):
             self.logger.error("Setup name already used in the layout")
             return False
         version = self.edbversion.split(".")
-        if int(version[0]) == 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
-            setup = HFSSPISimulationSetup(self).create(name)
-            return setup
-        else:
+        if float(self.edbversion) < 2024.2:
             self.logger.error("HFSSPI simulation only supported with Ansys release 2024R2 and higher")
             return False
+        return HFSSPISimulationSetup(self).create(name)
 
     @pyedb_function_handler()
     def create_siwave_syz_setup(self, name=None):

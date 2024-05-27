@@ -977,19 +977,18 @@ class ViaSettings(object):
         -------
         bool
         """
-        if self._parent._pedb.version[0] >= 10:
-            return self._via_settings.ViaMeshPlating
-        else:
+        if float(self._parent._pedb.edbversion) < 2024.1:
             self._parent._pedb.logger.error("Property only supported on Ansys release 2024R1 and later")
             return False
+        return self._via_settings.ViaMeshPlating
+
 
     @via_mesh_plating.setter
     def via_mesh_plating(self, value):
-        if self._parent._pedb.version[0] >= 10:
-            self._via_settings.ViaMeshPlating = value
-            self._parent._update_setup()
-        else:
+        if float(self._parent._pedb.edbversion) < 2024.1:
             self._parent._pedb.logger.error("Property only supported on Ansys release 2024R1 and later")
+        self._via_settings.ViaMeshPlating = value
+        self._parent._update_setup()
 
     @property
     def via_material(self):
