@@ -398,9 +398,9 @@ class TestClass:
             edbversion=desktop_version,
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
         assert os.path.exists(out)
-        out = edb.export_hfss(self.local_scratch)
+        out = edb.export_hfss(self.local_scratch.path)
         assert os.path.exists(out)
         edb.close()
 
@@ -411,9 +411,9 @@ class TestClass:
             edbversion=desktop_version,
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
         assert os.path.exists(out)
-        out = edb.export_q3d(self.local_scratch, net_list=["ANALOG_A0", "ANALOG_A1", "ANALOG_A2"], hidden=True)
+        out = edb.export_q3d(self.local_scratch.path, net_list=["ANALOG_A0", "ANALOG_A1", "ANALOG_A2"], hidden=True)
         assert os.path.exists(out)
         edb.close()
 
@@ -424,9 +424,9 @@ class TestClass:
             edbversion=desktop_version,
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_MAXWELL": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
         assert os.path.exists(out)
-        out = edb.export_maxwell(self.local_scratch, num_cores=6)
+        out = edb.export_maxwell(self.local_scratch.path, num_cores=6)
         assert os.path.exists(out)
         edb.close()
 
@@ -1184,6 +1184,16 @@ class TestClass:
         ]
         for term in padstack_instance_terminals:
             assert term.position
+        pos_pin = edbapp.padstacks.get_pinlist_from_component_and_net("C173")[1]
+        neg_pin = edbapp.padstacks.get_pinlist_from_component_and_net("C172")[0]
+        edbapp.create_port(
+            pos_pin.get_terminal(create_new_terminal=True),
+            neg_pin.get_terminal(create_new_terminal=True),
+            is_circuit_port=True,
+            name="test",
+        )
+        assert edbapp.ports["test"]
+        assert edbapp.ports["test"].is_circuit_port == True
         edbapp.close()
 
     def test_siwave_source_setter(self):
@@ -1896,3 +1906,26 @@ class TestClass:
         assert setup.settings.snap_length_threshold == "5um"
         setup.settings.surface_roughness_model = "Hammerstad"
         assert setup.settings.surface_roughness_model == "Hammerstad"
+
+    def test_dcir_properties(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        setup = edbapp.create_siwave_dc_setup()
+        setup.dc_ir_settings.export_dc_thermal_data = True
+        assert setup.dc_ir_settings.export_dc_thermal_data == True
+        assert not setup.dc_ir_settings.import_thermal_data
+        setup.dc_ir_settings.dc_report_show_active_devices = True
+        assert setup.dc_ir_settings.dc_report_show_active_devices == True
+        assert not setup.dc_ir_settings.per_pin_use_pin_format
+        assert setup.dc_ir_settings.use_loop_res_for_per_pin
+        setup.dc_ir_settings.dc_report_config_file = edbapp.edbpath
+        assert setup.dc_ir_settings.dc_report_config_file
+        setup.dc_ir_settings.full_dc_report_path = edbapp.edbpath
+        assert setup.dc_ir_settings.full_dc_report_path
+        setup.dc_ir_settings.icepak_temp_file = edbapp.edbpath
+        assert setup.dc_ir_settings.icepak_temp_file
+        setup.dc_ir_settings.per_pin_res_path = edbapp.edbpath
+        assert setup.dc_ir_settings.per_pin_res_path
+        setup.dc_ir_settings.via_report_path = edbapp.edbpath
+        assert setup.dc_ir_settings.via_report_path
+        setup.dc_ir_settings.source_terms_to_ground = {"test": 1}
+        assert setup.dc_ir_settings.source_terms_to_ground

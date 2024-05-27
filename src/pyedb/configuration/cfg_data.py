@@ -27,6 +27,7 @@ from pyedb.configuration.cfg_nets import CfgNets
 from pyedb.configuration.cfg_padstacks import CfgPadstacks
 from pyedb.configuration.cfg_pin_groups import CfgPinGroup
 from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
+from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel
 from pyedb.configuration.cfg_setup import CfgSetup
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
 
@@ -55,7 +56,10 @@ class CfgData(object):
         if kwargs.get("setups", None):
             self.setups = [CfgSetup(self, setup) for setup in kwargs.get("setups", [])]
         self.stackup = None
-        self.s_parameters = None
+        self.s_parameters = [
+            CfgSParameterModel(self, self.general.s_parameter_library, sparam_model)
+            for sparam_model in kwargs.get("s_parameters", [])
+        ]
         self.spice_models = [
             CfgSpiceModel(self, self.general.spice_model_library, spice_model)
             for spice_model in kwargs.get("spice_models", [])

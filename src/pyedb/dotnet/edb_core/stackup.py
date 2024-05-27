@@ -2490,6 +2490,7 @@ class Stackup(LayerCollection):
         first_layer=None,
         last_layer=None,
         scale_elevation=True,
+        show=True,
     ):
         """Plot current stackup and, optionally, overlap padstack definitions.
         Plot supports only 'Laminate' and 'Overlapping' stackup types.
@@ -2497,8 +2498,8 @@ class Stackup(LayerCollection):
         Parameters
         ----------
         save_plot : str, optional
-            If ``None`` the plot will be shown.
-            If a file path is specified the plot will be saved to such file.
+            If a path is specified the plot will be saved in this location.
+            If ``save_plot`` is provided, the ``show`` parameter is ignored.
         size : tuple, optional
             Image size in pixel (width, height). Default value is ``(2000, 1500)``
         plot_definitions : str, list, optional
@@ -2511,6 +2512,8 @@ class Stackup(LayerCollection):
         scale_elevation : bool, optional
             The real layer thickness is scaled so that max_thickness = 3 * min_thickness.
             Default is `True`.
+        show : bool, optional
+            Whether to show the plot or not. Default is `True`.
 
         Returns
         -------
@@ -2925,7 +2928,7 @@ class Stackup(LayerCollection):
             xlabel="",
             ylabel="",
             title="",
-            snapshot_path=None,
+            save_plot=None,
             x_limits=[x_min, x_max],
             y_limits=[y_min, y_max],
             axis_equal=False,
@@ -2950,6 +2953,6 @@ class Stackup(LayerCollection):
         plt.tight_layout()
         if save_plot:
             plt.savefig(save_plot)
-        else:
+        elif show:
             plt.show()
         return plt
