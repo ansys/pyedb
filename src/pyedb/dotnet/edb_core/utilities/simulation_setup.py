@@ -36,6 +36,7 @@ class BaseSimulationSetup(object):
         EDB object.
     """
 
+    @pyedb_function_handler
     def __init__(self, pedb, edb_setup=None):
         self._pedb = pedb
         self._edb_object = edb_setup
@@ -59,7 +60,7 @@ class BaseSimulationSetup(object):
         }
 
         version = self._pedb.edbversion.split(".")
-        if float(self.edbversion) >= 2024.2:
+        if float(self._pedb.edbversion) >= 2024.2:
             self._setup_type_mapping.update(
                 {
                     "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings,
