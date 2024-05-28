@@ -221,10 +221,10 @@ class TestClass:
                 "definitions": [
                     {
                         "name": "v40h20",
-                        #"hole_diameter": "0.18mm",
+                        # "hole_diameter": "0.18mm",
                         "hole_plating_thickness": "25um",
                         "hole_material": "copper",
-                        "hole_range": "through"
+                        "hole_range": "through",
                     }
                 ],
                 "instances": [
@@ -233,15 +233,15 @@ class TestClass:
                         "backdrill_top": {
                             "drill_to_layer": "Inner3(Sig1)",
                             "drill_diameter": "0.5mm",
-                            "stub_length": "0.2mm"
+                            "stub_length": "0.2mm",
                         },
                         "backdrill_bottom": {
                             "drill_to_layer": "Inner4(Sig2)",
                             "drill_diameter": "0.5mm",
-                            "stub_length": "0.2mm"
-                        }
+                            "stub_length": "0.2mm",
+                        },
                     }
-                ]
+                ],
             }
         }
 
