@@ -61,10 +61,7 @@ class Material:
         edb_materials = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
         if self.name.lower() in edb_materials:
             self._pedb.materials.delete_material(edb_materials[self.name])
-            for mat in materials:
-                self._pedb.materials.add_material(**mat)
-
-        layers = data.get("layers")
+        self._pedb.materials.add_material(**mat)
 
 
 class Layer:
