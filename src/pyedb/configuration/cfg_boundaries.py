@@ -27,9 +27,9 @@ class CfgBoundaries:
     def __init__(self, pdata, boundaries_dict):
         self._pedb = pdata.pedb
         self._boundaries_dict = boundaries_dict
-        self.open_region = self._boundaries_dict.get("open_region", True)
+        self.open_region = self._boundaries_dict.get("open_region", None)
         self._map_open_region_type()
-        self.pml_visible = self._boundaries_dict.get("pml_visible", False)
+        self.pml_visible = self._boundaries_dict.get("pml_visible", None)
         self.pml_operation_frequency = self._boundaries_dict.get("pml_operation_frequency", None)
         self.pml_radiation_factor = self._boundaries_dict.get("pml_radiation_factor", None)
         self._map_dielectric_extend_type()
@@ -41,7 +41,7 @@ class CfgBoundaries:
         self._map_air_box_extend_type()
         self.air_box_base_polygon = self._boundaries_dict.get("air_box_base_polygon", None)
         self.air_box_truncate_model_ground_layers = self._boundaries_dict.get(
-            "air_box_truncate_model_ground_layers", False
+            "air_box_truncate_model_ground_layers", None
         )
         self.air_box_horizontal_padding = self._boundaries_dict.get("air_box_horizontal_padding", None)
         self.air_box_positive_vertical_padding = self._boundaries_dict.get("air_box_positive_vertical_padding", None)
@@ -94,9 +94,11 @@ class CfgBoundaries:
 
     def apply(self):
         """Imports boundary information from JSON."""
-        self._pedb.hfss.hfss_extent_info.use_open_region = self.open_region
+        if self.open_region is not None:
+            self._pedb.hfss.hfss_extent_info.use_open_region = self.open_region
         self._pedb.hfss.hfss_extent_info.open_region_type = self.open_region_type.name.lower()
-        self._pedb.hfss.hfss_extent_info.is_pml_visible = self.pml_visible
+        if self.pml_visible is not None:
+            self._pedb.hfss.hfss_extent_info.is_pml_visible = self.pml_visible
         if self.pml_operation_frequency:
             self._pedb.hfss.hfss_extent_info.operating_freq = self.pml_operation_frequency
         if self.pml_radiation_factor:
@@ -106,9 +108,11 @@ class CfgBoundaries:
             self._pedb.hfss.hfss_extent_info.dielectric_base_polygon = self.dielectric_base_polygon
         if self.horizontal_padding:
             self._pedb.hfss.hfss_extent_info.dielectric_extent_size = float(self.horizontal_padding)
-        self._pedb.hfss.hfss_extent_info.honor_user_dielectric = self.honor_primitives_on_dielectric_layers
+        if self.honor_primitives_on_dielectric_layers is not None:
+            self._pedb.hfss.hfss_extent_info.honor_user_dielectric = self.honor_primitives_on_dielectric_layers
         self._pedb.hfss.hfss_extent_info.extent_type = self.air_box_extents_type.name.lower()
-        self._pedb.hfss.hfss_extent_info.truncate_air_box_at_ground = self.air_box_truncate_model_ground_layers
+        if self.air_box_truncate_model_ground_layers is not None:
+            self._pedb.hfss.hfss_extent_info.truncate_air_box_at_ground = self.air_box_truncate_model_ground_layers
         if self.air_box_horizontal_padding:
             self._pedb.hfss.hfss_extent_info.air_box_horizontal_extent = float(self.air_box_horizontal_padding)
         if self.air_box_positive_vertical_padding:
