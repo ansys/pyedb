@@ -54,20 +54,24 @@ class Definition:
     def __init__(self, pdata, definition_dict):
         self._pedb = pdata.pedb
         self._definition_dict = definition_dict
-        self.name = self._definition_dict.get("name", "")
-        self.hole_diameter = self._definition_dict.get("hole_diameter", "")
-        self.hole_plating_thickness = self._definition_dict.get("hole_plating_thickness", "")
-        self.hole_material = self._definition_dict.get("hole_material", "")
-        self.hole_range = self._definition_dict.get("hole_range", "")
+        self.name = self._definition_dict.get("name", None)
+        self.hole_diameter = self._definition_dict.get("hole_diameter", None)
+        self.hole_plating_thickness = self._definition_dict.get("hole_plating_thickness", None)
+        self.hole_material = self._definition_dict.get("hole_material", None)
+        self.hole_range = self._definition_dict.get("hole_range", None)
 
     def apply(self):
         """Apply padstack definition on layout."""
         padstack_defs = self._pedb.padstacks.definitions
         pdef = padstack_defs[self.name]
-        pdef.hole_diameter = self.hole_diameter
-        pdef.hole_plating_thickness = self.hole_plating_thickness
-        pdef.material = self.hole_material
-        pdef.hole_range = self.hole_range
+        if self.hole_diameter:
+            pdef.hole_diameter = self.hole_diameter
+        if self.hole_plating_thickness:
+            pdef.hole_plating_thickness = self.hole_plating_thickness
+        if self.hole_material:
+            pdef.material = self.hole_material
+        if self.hole_range:
+            pdef.hole_range = self.hole_range
 
 
 class Instance:
