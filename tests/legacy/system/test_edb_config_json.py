@@ -163,7 +163,7 @@ class TestClass:
         assert len(edbapp.ports) > 1
         edbapp.close()
 
-    def test_05c_ports_pin_group(self, edb_examples):
+    def test_05d_ports_pin_group(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         pin_groups = [
             {"name": "U9_5V_1", "reference_designator": "U9", "pins": ["32", "33"]},
@@ -184,6 +184,25 @@ class TestClass:
         assert "U9_5V_1" in edbapp.siwave.pin_groups
         assert "U9_GND" in edbapp.siwave.pin_groups
         assert "U9_pin_group_port" in edbapp.ports
+        edbapp.close()
+
+    def test_05e_ports_circuit_net_net_distributed_nearest_ref(self, edb_examples):
+        ports = [
+            {
+                "name": "CIRCUIT_U7_VDD_DDR_GND",
+                "reference_designator": "U7",
+                "type": "circuit",
+                "distributed": True,
+                "positive_terminal": {"net": "VDD_DDR"},
+                "negative_terminal": {"nearest_pin": {
+                        "reference_net" : "GND", "search_radius" : 5e-3
+                    }},
+            }
+        ]
+        data = {"ports": ports}
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert len(edbapp.ports) > 1
         edbapp.close()
 
     def test_06_s_parameters(self, edb_examples):

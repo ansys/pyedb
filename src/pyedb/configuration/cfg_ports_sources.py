@@ -77,6 +77,7 @@ class CfgCircuitElement:
                 temp = dict()
                 for i, j in pos_objs.items():
                     temp[i] = self._pdata.pedb.padstacks.get_reference_pins(j, ref_net, search_radius, max_limit=1)[0]
+                self.neg_terminal = {i: j.create_terminal(i+"_ref") if not j.terminal else j.terminal for i, j in temp.items()}
             else:
                 if neg_type == "pin_group":
                     pin_group = {neg_value: self.pedb.siwave.pin_groups[neg_value]}
@@ -136,7 +137,7 @@ class CfgPort(CfgCircuitElement):
         circuit_elements = []
         for name, j in self.pos_terminals.items():
             if isinstance(self.neg_terminal, dict):
-                elem = self.pedb.create_port(j, self.neg_terminal[name])
+                elem = self.pedb.create_port(j, self.neg_terminal[name], is_circuit_port)
             else:
                 elem = self.pedb.create_port(j, self.neg_terminal, is_circuit_port)
             if not self.distributed:
