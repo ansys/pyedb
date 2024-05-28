@@ -291,6 +291,27 @@ class TestClass:
         assert not edbapp.sources["ISOURCE_U1_1V0_M16"].magnitude == 1
         edbapp.close()
 
+    def test_15c_sources_nearest_ref(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        sources_i = [
+            {
+                "name": "ISOURCE",
+                "reference_designator": "U1",
+                "type": "current",
+                "magnitude": 1,
+                "distributed": True,
+                "positive_terminal": {"net": "1V0"},
+                "negative_terminal": {
+                    "nearest_pin": {
+                        "reference_net" : "GND", "search_radius" : 5e-3
+                    }
+                },
+            },
+        ]
+        data = {"sources": sources_i}
+        assert edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
     def test_components(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         config = edbapp.configuration.load(str(self.local_input_folder / "components.json"), apply_file=False)

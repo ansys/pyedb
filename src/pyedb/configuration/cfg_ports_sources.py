@@ -41,8 +41,8 @@ class CfgCircuitElement:
         self.neg_term_info = kwargs.get("negative_terminal", None)
 
     @pyedb_function_handler
-    def _create(self):
-        """Create step 1."""
+    def _create_terminals(self):
+        """Create step 1. Collect positive and negative terminals."""
         pos_term_info = self.pos_term_info
         if pos_term_info:
             pos_type, pos_value = [[i, j] for i, j in pos_term_info.items()][0]
@@ -71,16 +71,22 @@ class CfgCircuitElement:
         self.neg_terminal = None
         if neg_term_info:
             neg_type, neg_value = [[i, j] for i, j in neg_term_info.items()][0]
-            if neg_type == "pin_group":
-                pin_group = {neg_value: self.pedb.siwave.pin_groups[neg_value]}
+            if neg_type == "nearest_pin":
+                ref_net = neg_value.get("reference_net", "GND")
+                search_radius = neg_value.get("search_radius", "5e-3")
+                temp = dict()
+                for i, j in pos_objs.items():
+                    temp[i] = self._pdata.pedb.padstacks.get_reference_pins(j, ref_net, search_radius, max_limit=1)[0]
             else:
-                # Get pins
-                pins = self._get_pins(neg_type, neg_value)  # terminal type pin or net
-                # create pin group
-                pin_group = self._create_pin_group(pins, True)
-            self.neg_terminal = [j.create_terminal(i) if not j.terminal else j.terminal for i, j in pin_group.items()][
-                0
-            ]
+                if neg_type == "pin_group":
+                    pin_group = {neg_value: self.pedb.siwave.pin_groups[neg_value]}
+                else:
+                    # Get pins
+                    pins = self._get_pins(neg_type, neg_value)  # terminal type pin or net
+                    # create pin group
+                    pin_group = self._create_pin_group(pins, True)
+                self.neg_terminal = \
+                    [j.create_terminal(i) if not j.terminal else j.terminal for i, j in pin_group.items()][0]
 
     @pyedb_function_handler
     def _get_pins(self, terminal_type, terminal_value):
@@ -125,11 +131,14 @@ class CfgPort(CfgCircuitElement):
     @pyedb_function_handler
     def create(self):
         """Create port."""
-        self._create()
+        self._create_terminals()
         is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
-        for _, j in self.pos_terminals.items():
-            elem = self.pedb.create_port(j, self.neg_terminal, is_circuit_port)
+        for name, j in self.pos_terminals.items():
+            if isinstance(self.neg_terminal, dict):
+                elem = self.pedb.create_port(j, self.neg_terminal[name])
+            else:
+                elem = self.pedb.create_port(j, self.neg_terminal, is_circuit_port)
             if not self.distributed:
                 elem.name = self.name
             circuit_elements.append(elem)
@@ -148,12 +157,15 @@ class CfgSources(CfgCircuitElement):
     @pyedb_function_handler
     def create(self):
         """Create sources."""
-        self._create()
+        self._create_terminals()
         is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
         method = self.pedb.create_current_source if self.type == "current" else self.pedb.create_voltage_source
-        for _, j in self.pos_terminals.items():
-            elem = method(j, self.neg_terminal)
+        for name, j in self.pos_terminals.items():
+            if isinstance(self.neg_terminal, dict):
+                elem = method(j, self.neg_terminal[name])
+            else:
+                elem = method(j, self.neg_terminal)
             if not self.distributed:
                 elem.name = self.name
                 elem.magnitude = self.magnitude
