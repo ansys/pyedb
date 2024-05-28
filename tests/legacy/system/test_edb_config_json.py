@@ -194,9 +194,7 @@ class TestClass:
                 "type": "circuit",
                 "distributed": True,
                 "positive_terminal": {"net": "VDD_DDR"},
-                "negative_terminal": {"nearest_pin": {
-                        "reference_net" : "GND", "search_radius" : 5e-3
-                    }},
+                "negative_terminal": {"nearest_pin": {"reference_net": "GND", "search_radius": 5e-3}},
             }
         ]
         data = {"ports": ports}
@@ -320,11 +318,7 @@ class TestClass:
                 "magnitude": 1,
                 "distributed": True,
                 "positive_terminal": {"net": "1V0"},
-                "negative_terminal": {
-                    "nearest_pin": {
-                        "reference_net" : "GND", "search_radius" : 5e-3
-                    }
-                },
+                "negative_terminal": {"nearest_pin": {"reference_net": "GND", "search_radius": 5e-3}},
             },
         ]
         data = {"sources": sources_i}

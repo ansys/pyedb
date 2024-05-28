@@ -1198,7 +1198,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     @property
     def terminal(self):
         """Terminal."""
-        from pyedb.dotnet.edb_core.edb_data.terminals import             PadstackInstanceTerminal
+        from pyedb.dotnet.edb_core.edb_data.terminals import PadstackInstanceTerminal
 
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term if not term.is_null else None

@@ -77,7 +77,9 @@ class CfgCircuitElement:
                 temp = dict()
                 for i, j in pos_objs.items():
                     temp[i] = self._pdata.pedb.padstacks.get_reference_pins(j, ref_net, search_radius, max_limit=1)[0]
-                self.neg_terminal = {i: j.create_terminal(i+"_ref") if not j.terminal else j.terminal for i, j in temp.items()}
+                self.neg_terminal = {
+                    i: j.create_terminal(i + "_ref") if not j.terminal else j.terminal for i, j in temp.items()
+                }
             else:
                 if neg_type == "pin_group":
                     pin_group = {neg_value: self.pedb.siwave.pin_groups[neg_value]}
@@ -86,8 +88,9 @@ class CfgCircuitElement:
                     pins = self._get_pins(neg_type, neg_value)  # terminal type pin or net
                     # create pin group
                     pin_group = self._create_pin_group(pins, True)
-                self.neg_terminal = \
-                    [j.create_terminal(i) if not j.terminal else j.terminal for i, j in pin_group.items()][0]
+                self.neg_terminal = [
+                    j.create_terminal(i) if not j.terminal else j.terminal for i, j in pin_group.items()
+                ][0]
 
     @pyedb_function_handler
     def _get_pins(self, terminal_type, terminal_value):
