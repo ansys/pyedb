@@ -3,7 +3,7 @@
     "materials": [
       {
         "name": "copper",
-        "conductivity": 58000000
+        "conductivity": 570000000
       },
       {
         "name": "Megtron4",

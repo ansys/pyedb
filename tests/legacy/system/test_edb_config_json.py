@@ -254,6 +254,20 @@ class TestClass:
     def test_13_stackup(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "stackup.json"), apply_file=True)
+        assert edbapp.materials["copper"].conductivity == 5.7e8
+        assert edbapp.materials["Megtron4"].permittivity == 3.77
+        assert edbapp.materials["Megtron4"].dielectric_loss_tangent == 0.005
+        assert edbapp.materials["Megtron4_2"].permittivity == 3.77
+        assert edbapp.materials["Megtron4_2"].dielectric_loss_tangent == 0.005
+        assert edbapp.materials["Solder Resist"].permittivity == 4
+        assert edbapp.stackup.layers["SMT"].thickness == 20e-6
+        assert edbapp.stackup.layers["SMT"].material == "Solder Resist"
+        assert edbapp.stackup.layers["1_Top"].material == "copper"
+        assert edbapp.stackup.layers["1_Top"].thickness == 50e-6
+        assert edbapp.stackup.layers["1_Top"].fill_material == "Solder Resist"
+        assert edbapp.stackup.layers["DE5"].thickness == 100e-6
+        assert edbapp.stackup.layers["DE5"].material == "Megtron4"
+
         edbapp.close()
 
     def test_14_setup_siwave_syz(self, edb_examples):

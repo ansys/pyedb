@@ -142,8 +142,8 @@ class Configuration:
             setup.apply()
 
         # Configure stackup
-        if "stackup" in self.data:
-            self._load_stackup()
+        if self.cfg_data.stackup:
+            self.cfg_data.stackup.apply()
 
         # Configure S-parameter
         for s_parameter_model in self.cfg_data.s_parameters:

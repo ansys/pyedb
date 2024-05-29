@@ -73,7 +73,7 @@ class CfgLayerStackup:
         for layer in self.layers:
             if layer.type == LayerType.SIGNAL:
                 clone = layer_clones.pop(0)
-                clone.update(layer.__dict__())
+                clone.update(**layer.to_dict)
                 lc_new.add_layer_bottom(name=clone.name, layer_clone=clone)
                 signal_layer_ids[clone.name] = clone.id
 
@@ -89,10 +89,10 @@ class CfgLayerStackup:
         if layer.type == LayerType.SIGNAL:
             prev_layer_clone = lc_new.layers[layer.name]
         else:
-            prev_layer_clone = lc_new.add_layer_top(layer.__dict__())
+            prev_layer_clone = lc_new.add_layer_top(**layer.to_dict)
         for idx, layer in enumerate(self.layers):
             if layer.type == LayerType.DIELECTRIC:
-                prev_layer_clone = lc_new.add_layer_below(base_layer_name=prev_layer_clone.name, **layer.__dict__())
+                prev_layer_clone = lc_new.add_layer_below(base_layer_name=prev_layer_clone.name, **layer.to_dict)
             else:
                 prev_layer_clone = lc_new.layers[layer.name]
 
@@ -107,7 +107,7 @@ class Material:
         self._material_dict = material_dict
         self.name = ""
         self.conductivity = 0.0
-        self.loss_tangent = 0.0
+        self.dielectric_loss_tangent = 0.0
         self.magnetic_loss_tangent = 0.0
         self.mass_density = 0.0
         self.permittivity = 1.0
@@ -128,7 +128,7 @@ class Material:
         if self._material_dict:
             self.name = self._material_dict.get("name", "")
             self.conductivity = self._material_dict.get("conductivity", 0.0)
-            self.loss_tangent = self._material_dict.get("loss_tangent", 0.0)
+            self.dielectric_loss_tangent = self._material_dict.get("dielectric_loss_tangent", 0.0)
             self.magnetic_loss_tangent = self._material_dict.get("magnetic_loss_tangent", 0.0)
             self.mass_density = self._material_dict.get("mass_density", 0.0)
             self.permittivity = self._material_dict.get("permittivity", 1.0)
@@ -147,8 +147,8 @@ class Material:
     def apply(self):
         edb_materials = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
         if self.name.lower() in edb_materials:
-            self._pedb.materials.delete_material(edb_materials[self.name])
-        self._pedb.materials.add_material(self.__dict__)
+            self._pedb.materials.delete_material(edb_materials[self.name.lower()])
+        self._pedb.materials.add_material(**self.__dict__)
 
 
 class Layer:
@@ -159,7 +159,7 @@ class Layer:
         self.color = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.type = LayerType.SIGNAL
         self.material = "copper"
-        self.dielectric_fill = "fr4"
+        self.fill_material = "fr4"
         self.thickness = 35e-6
         self.etch_factor = 0.0
         self.roughness_enabled = False
@@ -169,9 +169,17 @@ class Layer:
         self.bottom_hallhuray_surface_ratio = 0.0
         self.side_hallhuray_nodule_radius = 0.0
         self.side_hallhuray_surface_ratio = 0.0
-        self.upper_elevation = 0.0
         self.lower_elevation = 0.0
         self.__update()
+
+    @property
+    def to_dict(self):
+        layer_dict = self.__dict__
+        if "type" in layer_dict:
+            layer_dict["type"] = self.type.name.lower()
+        del layer_dict["_pedb"]
+        del layer_dict["_layer_dict"]
+        return layer_dict
 
     def __update(self):
         if self._layer_dict:
@@ -179,7 +187,7 @@ class Layer:
             self.color = self._layer_dict.get("color", self.color)
             self.__map_layer_type()
             self.material = self._layer_dict.get("material", self.material)
-            self.dielectric_fill = self._layer_dict.get("dielectric_fill", self.dielectric_fill)
+            self.fill_material = self._layer_dict.get("fill_material", self.fill_material)
             self.thickness = self._layer_dict.get("thickness", self.thickness)
             self.etch_factor = self._layer_dict.get("etch_factor", self.etch_factor)
             self.roughness_enabled = self._layer_dict.get("roughness_enabled", self.roughness_enabled)
@@ -201,7 +209,6 @@ class Layer:
             self.side_hallhuray_surface_ratio = self._layer_dict.get(
                 "side_hallhuray_surface_ratio", self.side_hallhuray_surface_ratio
             )
-            self.upper_elevation = self._layer_dict.get("upper_elevation", self.upper_elevation)
             self.lower_elevation = self._layer_dict.get("lower_elevation", self.lower_elevation)
 
     def __map_layer_type(self):
