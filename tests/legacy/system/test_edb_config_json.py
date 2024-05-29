@@ -216,8 +216,34 @@ class TestClass:
         edbapp.close()
 
     def test_09_padstacks(self, edb_examples):
-        with open(self.local_input_folder / "padstacks.json") as f:
-            data = json.load(f)
+        data = {
+            "padstacks": {
+                "definitions": [
+                    {
+                        "name": "v40h20",
+                        # "hole_diameter": "0.18mm",
+                        "hole_plating_thickness": "25um",
+                        "hole_material": "copper",
+                        "hole_range": "through",
+                    }
+                ],
+                "instances": [
+                    {
+                        "name": "Via998",
+                        "backdrill_top": {
+                            "drill_to_layer": "Inner3(Sig1)",
+                            "drill_diameter": "0.5mm",
+                            "stub_length": "0.2mm",
+                        },
+                        "backdrill_bottom": {
+                            "drill_to_layer": "Inner4(Sig2)",
+                            "drill_diameter": "0.5mm",
+                            "stub_length": "0.2mm",
+                        },
+                    }
+                ],
+            }
+        }
 
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
