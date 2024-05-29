@@ -30,6 +30,7 @@ from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
 from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel
 from pyedb.configuration.cfg_setup import CfgSetup
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
+from pyedb.configuration.cfg_stackup import CfgLayerStackup
 
 
 class CfgData(object):
@@ -55,7 +56,7 @@ class CfgData(object):
         self.setups = [CfgSetup(self)]
         if kwargs.get("setups", None):
             self.setups = [CfgSetup(self, setup) for setup in kwargs.get("setups", [])]
-        self.stackup = None
+        self.stackup = CfgLayerStackup(self, kwargs.get("materials", {}), kwargs.get("layers", {}))
         self.s_parameters = [
             CfgSParameterModel(self, self.general.s_parameter_library, sparam_model)
             for sparam_model in kwargs.get("s_parameters", [])
