@@ -39,9 +39,9 @@ class CfgLayerStackup:
         self.materials = []
         self.layers = []
         if self._materials_dict:
-            self.materials = [Material(self._pedb, material_dict) for material_dict in self._materials_dict.items()]
+            self.materials = [Material(self._pedb, material_dict) for material_dict in self._materials_dict]
         if self._layers_dict:
-            self.layers = [Layer(self._pedb, layer_dict) for layer_dict in self._layers_dict.items()]
+            self.layers = [Layer(self._pedb, layer_dict) for layer_dict in self._layers_dict]
 
     def apply(self):
         for material in self.materials:

@@ -56,7 +56,9 @@ class CfgData(object):
         self.setups = [CfgSetup(self)]
         if kwargs.get("setups", None):
             self.setups = [CfgSetup(self, setup) for setup in kwargs.get("setups", [])]
-        self.stackup = CfgLayerStackup(self, kwargs.get("materials", {}), kwargs.get("layers", {}))
+        self.stackup = CfgLayerStackup(
+            self, kwargs.get("stackup", {}).get("materials", {}), kwargs.get("stackup", {}).get("layers", {})
+        )
         self.s_parameters = [
             CfgSParameterModel(self, self.general.s_parameter_library, sparam_model)
             for sparam_model in kwargs.get("s_parameters", [])
