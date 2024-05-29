@@ -1183,7 +1183,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         -------
         :class:`pyedb.dotnet.edb_core.edb_data.terminals`
         """
-
+        warnings.warn("Use new property :func:`terminal` instead.", DeprecationWarning)
         if create_new_terminal:
             term = self._create_terminal(name)
         else:
@@ -1194,6 +1194,14 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         if not term.is_null:
             return term
+
+    @property
+    def terminal(self):
+        """Terminal."""
+        from pyedb.dotnet.edb_core.edb_data.terminals import PadstackInstanceTerminal
+
+        term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
+        return term if not term.is_null else None
 
     @pyedb_function_handler()
     def _create_terminal(self, name=None):
