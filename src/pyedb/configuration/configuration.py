@@ -27,7 +27,6 @@ import toml
 
 from pyedb.configuration.cfg_data import CfgData
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
-from pyedb.dotnet.edb_core.stackup import LayerCollection
 from pyedb.generic.general_methods import pyedb_function_handler
 
 
