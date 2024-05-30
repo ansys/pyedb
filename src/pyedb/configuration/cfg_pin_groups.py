@@ -36,7 +36,7 @@ class CfgPinGroup:
         """Apply pin group on layout."""
         if self.pins:
             if not self._pedb.siwave.create_pin_group(self.reference_designator, list(self.pins), self.name):
-                self._pedb.loogger.error(f"Failed to create pin group on pins {self.pins}")
+                self._pedb.logger.error(f"Failed to create pin group on pins {self.pins}")
                 return False
             self._pedb.logger.info(f"Pin group {self.name} created.")
             return True
