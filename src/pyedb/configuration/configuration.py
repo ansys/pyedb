@@ -198,7 +198,7 @@ class Configuration:
                 self._pedb.stackup.remove_layer(l)
 
             # update all signal layers
-            id_name = {i[0]:i[1] for i in self._pedb.stackup.layers_by_id}
+            id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
             signal_idx = 0
             for l in layers:
                 if l["type"] == "signal":
