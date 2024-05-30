@@ -52,7 +52,7 @@ class CfgData(object):
 
         self.components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
 
-        self.padstacks = None #CfgPadstacks(self, kwargs.get("padstacks", None))
+        self.padstacks = CfgPadstacks(self, kwargs.get("padstacks", None))
 
         self.pin_groups = [CfgPinGroup(self, pin_group) for pin_group in kwargs.get("pin_groups", [])]
 
