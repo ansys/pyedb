@@ -182,56 +182,44 @@ class Configuration:
         layers = data.get("layers")
 
         if layers:
-            lc = self._pedb.stackup
             input_signal_layers = [i for i in layers if i["type"].lower() == "signal"]
-            if not len(input_signal_layers) == len(lc.signal_layers):
+            if not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
                 self._pedb.logger.error("Input signal layer count do not match.")
                 return False
 
-            layer_clones = []
-            doc_layer_clones = []
-            for name, obj in lc.layers.items():
-                if obj.is_stackup_layer:
-                    if obj.type == "signal":  # keep signal layers
-                        layer_clones.append(obj)
-                else:
-                    doc_layer_clones.append(obj)
+            removal_list = []
+            lc_signal_layers = []
+            for name, obj in self._pedb.stackup.all_layers.items():
+                if obj.type == "dielectric":
+                    removal_list.append(name)
+                elif obj.type == "signal":
+                    lc_signal_layers.append(obj.id)
+            for l in removal_list:
+                self._pedb.stackup.remove_layer(l)
 
-            lc_new = LayerCollection(self._pedb)
-            lc_new.auto_refresh = False
-            signal_layer_ids = {}
-            top_layer_clone = None
-
-            # add all signal layers
+            # update all signal layers
+            id_name = {i[0]:i[1] for i in self._pedb.stackup.layers_by_id}
+            signal_idx = 0
             for l in layers:
                 if l["type"] == "signal":
-                    clone = layer_clones.pop(0)
-                    clone.update(**l)
-                    lc_new.add_layer_bottom(name=clone.name, layer_clone=clone)
-                    signal_layer_ids[clone.name] = clone.id
-
-            # add all document layers at bottom
-            for l in doc_layer_clones:
-                doc_layer = lc_new.add_document_layer(name=l.name, layer_clone=l)
-                first_doc_layer_name = doc_layer.name
+                    layer_id = lc_signal_layers[signal_idx]
+                    layer_name = id_name[layer_id]
+                    self._pedb.stackup.layers[layer_name].update(**l)
+                    signal_idx = signal_idx + 1
 
             # add all dielectric layers. Dielectric layers must be added last. Otherwise,
             # dielectric layer will occupy signal and document layer id.
             prev_layer_clone = None
             l = layers.pop(0)
             if l["type"] == "signal":
-                prev_layer_clone = lc_new.layers[l["name"]]
+                prev_layer_clone = self._pedb.stackup.layers[l["name"]]
             else:
-                prev_layer_clone = lc_new.add_layer_top(**l)
+                prev_layer_clone = self._pedb.stackup.add_layer_top(**l)
             for idx, l in enumerate(layers):
                 if l["type"] == "dielectric":
-                    prev_layer_clone = lc_new.add_layer_below(base_layer_name=prev_layer_clone.name, **l)
+                    prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **l)
                 else:
-                    prev_layer_clone = lc_new.layers[l["name"]]
-
-            lc._edb_object = lc_new._edb_object
-            lc_new.auto_refresh = True
-            lc.update_layout()
+                    prev_layer_clone = self._pedb.stackup.layers[l["name"]]
 
     @pyedb_function_handler
     def _load_operations(self):
