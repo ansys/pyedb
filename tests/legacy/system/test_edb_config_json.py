@@ -300,76 +300,66 @@ class TestClass:
                         "material": "copper",
                         "name": "1_Top",
                         "thickness": "0.5mm",
-                        "type": "signal"
+                        "type": "signal",
                     },
                     {
                         "fill_material": "Megtron4",
                         "material": "copper",
                         "name": "Inner1",
                         "thickness": "0.017mm",
-                        "type": "signal"
+                        "type": "signal",
                     },
-                    {
-                        "material": "Megtron4",
-                        "name": "DE2",
-                        "thickness": "0.088mm",
-                        "type": "dielectric"
-                    },
-                    {
-                        "material": "Megtron4",
-                        "name": "DE3",
-                        "thickness": "0.1mm",
-                        "type": "dielectric"
-                    },
+                    {"material": "Megtron4", "name": "DE2", "thickness": "0.088mm", "type": "dielectric"},
+                    {"material": "Megtron4", "name": "DE3", "thickness": "0.1mm", "type": "dielectric"},
                     {
                         "fill_material": "Megtron4",
                         "material": "copper",
                         "name": "Inner2",
                         "thickness": "0.017mm",
-                        "type": "signal"
+                        "type": "signal",
                     },
                     {
                         "fill_material": "Megtron4",
                         "material": "copper",
                         "name": "Inner3",
                         "thickness": "0.017mm",
-                        "type": "signal"
+                        "type": "signal",
                     },
                     {
                         "fill_material": "Megtron4",
                         "material": "copper",
                         "name": "Inner4",
                         "thickness": "0.017mm",
-                        "type": "signal"
+                        "type": "signal",
                     },
                     {
                         "fill_material": "Megtron4",
                         "material": "copper",
                         "name": "Inner5",
                         "thickness": "0.017mm",
-                        "type": "signal"
+                        "type": "signal",
                     },
                     {
                         "fill_material": "Megtron4",
                         "material": "copper",
                         "name": "Inner6",
                         "thickness": "0.017mm",
-                        "type": "signal"
+                        "type": "signal",
                     },
                     {
                         "fill_material": "Solder Resist",
                         "material": "copper",
                         "name": "16_Bottom",
                         "thickness": "0.035mm",
-                        "type": "signal"
-                    }
+                        "type": "signal",
+                    },
                 ]
             }
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        assert list(edbapp.stackup.layers.keys())[:4] == ['1_Top', 'Inner1', 'DE2', 'DE3']
-        assert edbapp.stackup.layers['1_Top'].thickness == 0.0005
+        assert list(edbapp.stackup.layers.keys())[:4] == ["1_Top", "Inner1", "DE2", "DE3"]
+        assert edbapp.stackup.layers["1_Top"].thickness == 0.0005
         edbapp.close()
 
     def test_14_setup_siwave_syz(self, edb_examples):

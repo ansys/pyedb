@@ -69,7 +69,6 @@ logger = logging.getLogger(__name__)
 
 
 class LayerCollection(object):
-
     def __init__(self, pedb, edb_object=None):
         self._pedb = pedb
 
