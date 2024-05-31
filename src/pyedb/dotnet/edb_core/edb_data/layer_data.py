@@ -257,8 +257,8 @@ class StackupLayerEdbClass(LayerEdbClass):
         self._lower_elevation = 0.0
 
     def _create(self, layer_type):
-        layer_type = self._layer_name_mapping[layer_type]
-        layer_type = self._layer_type_mapping[layer_type]
+        layer_type_edb_name = self._layer_name_mapping[layer_type]
+        layer_type = self._layer_type_mapping[layer_type_edb_name]
         self._edb_object = self._pedb.edb_api.cell._cell.StackupLayer(
             self._name,
             layer_type,

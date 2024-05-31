@@ -57,8 +57,8 @@ class TestClass:
         edbapp = Edb(
             edbversion=desktop_version,
         )
-        assert edbapp.stackup.add_outline_layer("Outline1")
-        assert not edbapp.stackup.add_outline_layer("Outline1")
+        assert edbapp.stackup.add_outline_layer()
+        assert "Outline" in edbapp.stackup.non_stackup_layers
         edbapp.stackup.add_layer("1_Top")
         assert edbapp.stackup.layers["1_Top"].thickness == 3.5e-05
         edbapp.stackup.layers["1_Top"].thickness = 4e-5
