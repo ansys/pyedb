@@ -142,8 +142,8 @@ class Configuration:
             setup.apply()
 
         # Configure stackup
-        if self.cfg_data.stackup:
-            self.cfg_data.stackup.apply()
+        if "stackup" in self.data:
+            self._load_stackup()
 
         # Configure S-parameter
         for s_parameter_model in self.cfg_data.s_parameters:
@@ -162,6 +162,63 @@ class Configuration:
             self._load_operations()
 
         return True
+
+    @pyedb_function_handler
+    def _load_stackup(self):
+        """Imports stackup information from json."""
+        data = self.data["stackup"]
+        materials = data.get("materials")
+
+        if materials:
+            edb_materials = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
+            for mat in materials:
+                name = mat["name"].lower()
+                if name in edb_materials:
+                    self._pedb.materials.delete_material(edb_materials[name])
+            for mat in materials:
+                self._pedb.materials.add_material(**mat)
+
+        layers = data.get("layers")
+
+        if layers:
+            input_signal_layers = [i for i in layers if i["type"].lower() == "signal"]
+            if not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
+                self._pedb.logger.error("Input signal layer count do not match.")
+                return False
+
+            removal_list = []
+            lc_signal_layers = []
+            for name, obj in self._pedb.stackup.all_layers.items():
+                if obj.type == "dielectric":
+                    removal_list.append(name)
+                elif obj.type == "signal":
+                    lc_signal_layers.append(obj.id)
+            for l in removal_list:
+                self._pedb.stackup.remove_layer(l)
+
+            # update all signal layers
+            id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
+            signal_idx = 0
+            for l in layers:
+                if l["type"] == "signal":
+                    layer_id = lc_signal_layers[signal_idx]
+                    layer_name = id_name[layer_id]
+                    self._pedb.stackup.layers[layer_name].update(**l)
+                    signal_idx = signal_idx + 1
+
+            # add all dielectric layers. Dielectric layers must be added last. Otherwise,
+            # dielectric layer will occupy signal and document layer id.
+            prev_layer_clone = None
+            l = layers.pop(0)
+            if l["type"] == "signal":
+                prev_layer_clone = self._pedb.stackup.layers[l["name"]]
+            else:
+                prev_layer_clone = self._pedb.stackup.add_layer_top(**l)
+            for idx, l in enumerate(layers):
+                if l["type"] == "dielectric":
+                    prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **l)
+                elif l["type"] == "signal":
+                    prev_layer_clone = self._pedb.stackup.layers[l["name"]]
 
     @pyedb_function_handler
     def _load_operations(self):

@@ -69,8 +69,6 @@ logger = logging.getLogger(__name__)
 
 
 class LayerCollection(object):
-    auto_refresh = True
-
     def __init__(self, pedb, edb_object=None):
         self._pedb = pedb
 
@@ -91,16 +89,20 @@ class LayerCollection(object):
             "multizone": self._pedb.edb_api.cell._cell.LayerCollectionMode.MultiZone,
         }
 
-    def update_layout(self, stackup=None):
+    def update_layout(self):
         """Set layer collection into edb.
 
         Parameters
         ----------
         stackup
         """
-        if stackup:
-            self._edb_object = stackup._edb_object
         self._pedb.layout.layer_collection = self._edb_object
+
+    @pyedb_function_handler()
+    def refresh_layer_collection(self):
+        """Refresh layer collection from Edb. This method is run on demand after all edit operations on stackup."""
+        self._edb_object = self._pedb.edb_api.cell._cell.LayerCollection(self._pedb.layout.layer_collection)
+        self._lc = self._edb_object
 
     @pyedb_function_handler
     def _add_layer(self, add_method, base_layer_name="", **kwargs):
@@ -115,7 +117,13 @@ class LayerCollection(object):
         if layer_clone:
             obj = layer_clone
         else:
-            obj = StackupLayerEdbClass(self._pedb, edb_object=None, **kwargs)
+            layer_type = kwargs.get("layer_type", None)
+            if not layer_type:
+                layer_type = kwargs["type"]
+            if layer_type in ["signal", "dielectric"]:
+                obj = StackupLayerEdbClass(self._pedb, edb_object=None, **kwargs)
+            else:
+                obj = LayerEdbClass(self._pedb, edb_object=None, **kwargs)
         method_top_bottom = None
         method_above_below = None
         if add_method == "add_layer_top":
@@ -134,8 +142,7 @@ class LayerCollection(object):
             obj = obj if method_top_bottom(obj._edb_object) else False
         elif method_above_below:
             obj = obj if method_above_below(obj._edb_object, base_layer_name) else False
-        if self.auto_refresh:
-            self.update_layout()
+        self.update_layout()
         return obj
 
     @pyedb_function_handler
@@ -268,8 +275,7 @@ class LayerCollection(object):
                 lc.AddLayerBottom(i._edb_object)
 
         self._edb_object = lc
-        if self.auto_refresh:
-            self.update_layout()
+        self.update_layout()
 
         if not obj:
             logger.info("Layer clone was not found in stackup or non stackup layers.")
@@ -278,32 +284,31 @@ class LayerCollection(object):
     @property
     def stackup_layers(self):
         """Retrieve the dictionary of signal and dielectric layers."""
-        temp = list(self._edb_object.Layers((self._pedb.edb_api.cell.layer_type_set.StackupLayerSet)))
-        layers = OrderedDict()
-        for i in temp:
-            name = i.GetName()
-            layers[name] = StackupLayerEdbClass(self._pedb, i.Clone(), name=name)
-        return layers
+        warnings.warn("Use new property :func:`layers` instead.", DeprecationWarning)
+        return self.layers
 
     @property
     def non_stackup_layers(self):
         """Retrieve the dictionary of signal layers."""
-        temp = list(self._edb_object.Layers(self._layer_type_set_mapping["non_stackup_layer_set"]))
-        layers = OrderedDict()
-        for i in temp:
-            name = i.GetName()
-            layers[name] = LayerEdbClass(self._pedb, i, name=name)
-        return layers
+        return {name: obj for name, obj in self.all_layers.items() if not obj.is_stackup_layer}
+
+    @property
+    def all_layers(self):
+        self.refresh_layer_collection()
+        layer_list = list(self._edb_object.Layers(self._pedb.edb_api.cell.layer_type_set.AllLayerSet))
+        temp = dict()
+        for i in layer_list:
+            if i.IsStackupLayer():
+                obj = StackupLayerEdbClass(self._pedb, i.Clone(), name=i.GetName())
+            else:
+                obj = LayerEdbClass(self._pedb, i.Clone(), name=i.GetName())
+            temp[obj.name] = obj
+        return temp
 
     @property
     def layers_by_id(self):
         """Retrieve the list of layers with their ids."""
-        layer_list = list(self._layer_collection.Layers(self._pedb.edb_api.cell.layer_type_set.AllLayerSet))
-        temp = []
-        for i in layer_list:
-            obj = StackupLayerEdbClass(self._pedb, i.Clone(), name=i.GetName)
-            temp.append([obj.id, obj.name])
-        return temp
+        return [[obj.id, name] for name, obj in self.all_layers.items()]
 
     @property
     def layers(self):
@@ -313,22 +318,14 @@ class LayerCollection(object):
         -------
         Dict[str, :class:`pyedb.dotnet.edb_core.edb_data.layer_data.LayerEdbClass`]
         """
-        _lays = OrderedDict()
-        layer_list = list(self._edb_object.Layers(self._pedb.edb_api.cell.layer_type_set.AllLayerSet))
-        for l in layer_list:
-            name = l.GetName()
-            if not l.IsStackupLayer():
-                _lays[name] = LayerEdbClass(self._pedb, l, name=name)
-            else:
-                _lays[name] = StackupLayerEdbClass(self._pedb, l, name=name)
-        return _lays
+        return {name: obj for name, obj in self.all_layers.items() if obj.is_stackup_layer}
 
 
 class Stackup(LayerCollection):
     """Manages EDB methods for stackup accessible from `Edb.stackup` property."""
 
     def __getitem__(self, item):
-        return self.layers[item]
+        return self.all_layers[item]
 
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
@@ -576,12 +573,6 @@ class Stackup(LayerCollection):
             )
         return True
 
-    @pyedb_function_handler()
-    def refresh_layer_collection(self):
-        """Refresh layer collection from Edb. This method is run on demand after all edit operations on stackup."""
-        self._lc = self._pedb.edb_api.cell._cell.LayerCollection(self._pedb.layout.layer_collection)
-        self._edb_object = self._lc
-
     @property
     def _layer_collection(self):
         """Copy of EDB layer collection.
@@ -591,8 +582,7 @@ class Stackup(LayerCollection):
         :class:`Ansys.Ansoft.Edb.Cell.LayerCollection`
             Collection of layers.
         """
-        if not self._lc:
-            self.refresh_layer_collection()
+        self.refresh_layer_collection()
         return self._lc
 
     @property
@@ -620,7 +610,7 @@ class Stackup(LayerCollection):
             self._layer_collection.SetMode(mode.Overlapping)
         elif value == 2 or value == mode.MultiZone or value == "MultiZone":
             self._layer_collection.SetMode(mode.MultiZone)
-        self._pedb.layout.layer_collection = self._layer_collection
+        self.update_layout()
 
     @property
     def stackup_mode(self):
@@ -744,9 +734,8 @@ class Stackup(LayerCollection):
             _lc.AddStackupLayerAtElevation(layer_clone)
         elif operation == "non_stackup":
             _lc.AddLayerBottom(layer_clone)
-        if self.auto_refresh:
-            self._pedb.layout.layer_collection = _lc
-            self.refresh_layer_collection()
+        self._pedb.layout.layer_collection = _lc
+        self.refresh_layer_collection()
         return True
 
     @pyedb_function_handler()
@@ -814,17 +803,7 @@ class Stackup(LayerCollection):
         bool
             "True" if successful, ``False`` if failed.
         """
-        outlineLayer = self._pedb.edb_api.cell.layer.FindByName(self._pedb.layout.layer_collection, outline_name)
-        if outlineLayer.IsNull():
-            return self.add_layer(
-                outline_name,
-                layer_type="outline",
-                material="",
-                fillMaterial="",
-                thickness="",
-            )
-        else:
-            return False
+        return self.add_document_layer(name="Outline", layer_type="outline")
 
     # TODO: Update optional argument material into material_name and fillMaterial into fill_material_name
     @pyedb_function_handler()

@@ -398,9 +398,9 @@ class TestClass:
             edbversion=desktop_version,
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
         assert os.path.exists(out)
-        out = edb.export_hfss(self.local_scratch)
+        out = edb.export_hfss(self.local_scratch.path)
         assert os.path.exists(out)
         edb.close()
 
@@ -411,9 +411,9 @@ class TestClass:
             edbversion=desktop_version,
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
         assert os.path.exists(out)
-        out = edb.export_q3d(self.local_scratch, net_list=["ANALOG_A0", "ANALOG_A1", "ANALOG_A2"], hidden=True)
+        out = edb.export_q3d(self.local_scratch.path, net_list=["ANALOG_A0", "ANALOG_A1", "ANALOG_A2"], hidden=True)
         assert os.path.exists(out)
         edb.close()
 
@@ -424,9 +424,9 @@ class TestClass:
             edbversion=desktop_version,
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_MAXWELL": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
         assert os.path.exists(out)
-        out = edb.export_maxwell(self.local_scratch, num_cores=6)
+        out = edb.export_maxwell(self.local_scratch.path, num_cores=6)
         assert os.path.exists(out)
         edb.close()
 
@@ -912,7 +912,7 @@ class TestClass:
 
         via_settings = setup1.via_settings
         via_settings.via_density = 1
-        if edbapp.version[0] >= 10:
+        if float(edbapp.edbversion) >= 2024.1:
             via_settings.via_mesh_plating = True
         via_settings.via_material = "pec"
         via_settings.via_num_sides = 8
@@ -920,7 +920,7 @@ class TestClass:
 
         via_settings = edbapp.setups["setup1"].via_settings
         assert via_settings.via_density == 1
-        if edbapp.version[0] >= 10:
+        if float(edbapp.edbversion) >= 2024.1:
             assert via_settings.via_mesh_plating
         assert via_settings.via_material == "pec"
         assert via_settings.via_num_sides == 8
@@ -1184,6 +1184,16 @@ class TestClass:
         ]
         for term in padstack_instance_terminals:
             assert term.position
+        pos_pin = edbapp.padstacks.get_pinlist_from_component_and_net("C173")[1]
+        neg_pin = edbapp.padstacks.get_pinlist_from_component_and_net("C172")[0]
+        edbapp.create_port(
+            pos_pin.get_terminal(create_new_terminal=True),
+            neg_pin.get_terminal(create_new_terminal=True),
+            is_circuit_port=True,
+            name="test",
+        )
+        assert edbapp.ports["test"]
+        assert edbapp.ports["test"].is_circuit_port == True
         edbapp.close()
 
     def test_siwave_source_setter(self):

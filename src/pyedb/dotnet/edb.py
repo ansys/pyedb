@@ -197,7 +197,6 @@ class Edb(Database):
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
-        self.edbversion = edbversion
         self.isaedtowned = isaedtowned
         self.isreadonly = isreadonly
         self.cellname = cellname
@@ -847,9 +846,7 @@ class Edb(Database):
         >>> edbapp.stackup.layers["TOP"].thickness == 4e-05
         >>> edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
         """
-        if not self._stackup2 and self.active_db:
-            self._stackup2 = Stackup(self, self.layout.layer_collection)
-        return self._stackup2
+        return Stackup(self, self.layout.layer_collection)
 
     @property
     def materials(self):
@@ -3703,12 +3700,10 @@ class Edb(Database):
             self.logger.error("Setup name already used in the layout")
             return False
         version = self.edbversion.split(".")
-        if int(version[0]) == 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
-            setup = HFSSPISimulationSetup(self).create(name)
-            return setup
-        else:
+        if float(self.edbversion) < 2024.2:
             self.logger.error("HFSSPI simulation only supported with Ansys release 2024R2 and higher")
             return False
+        return HFSSPISimulationSetup(self).create(name)
 
     @pyedb_function_handler()
     def create_siwave_syz_setup(self, name=None):
@@ -3987,7 +3982,7 @@ class Edb(Database):
             return connected_ports_list
 
     @pyedb_function_handler
-    def create_port(self, terminal, ref_terminal=None, is_circuit_port=False):
+    def create_port(self, terminal, ref_terminal=None, is_circuit_port=False, name=None):
         """Create a port.
 
         Parameters
@@ -4005,7 +4000,8 @@ class Edb(Database):
             Negative terminal of the port.
         is_circuit_port : bool, optional
             Whether it is a circuit port. The default is ``False``.
-
+        name: str, optional
+            Name of the created port. The default is None, a random name is generated.
         Returns
         -------
         list: [:class:`pyedb.dotnet.edb_core.edb_data.ports.GapPort`,
@@ -4018,7 +4014,8 @@ class Edb(Database):
         if ref_terminal:
             ref_terminal.boundary_type = "PortBoundary"
             terminal.ref_terminal = ref_terminal
-
+        if name:
+            terminal.name = name
         return self.ports[terminal.name]
 
     @pyedb_function_handler

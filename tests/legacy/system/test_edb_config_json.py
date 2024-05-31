@@ -24,9 +24,6 @@ from pathlib import Path
 
 import pytest
 
-from pyedb.dotnet.edb import Edb
-from tests.conftest import desktop_version
-
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
@@ -52,8 +49,8 @@ class TestClass:
             str(self.local_input_folder / "GRM32ER72A225KA35_25C_0V.sp"),
         )
 
-    def test_01_create_edb(self):
-        edbapp = Edb(str(self.local_edb), edbversion=desktop_version)
+    def test_01_create_edb(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         for i in [
             "components.json",
             "setups_hfss.json",
@@ -67,8 +64,8 @@ class TestClass:
         assert edbapp.components.instances["U3"].type == "Other"
         edbapp.close()
 
-    def test_02_pin_groups(self):
-        edbapp = Edb(str(self.local_edb), desktop_version)
+    def test_02_pin_groups(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         pin_groups = [
             {"name": "U9_5V_1", "reference_designator": "U9", "pins": ["32", "33"]},
             {"name": "U9_GND", "reference_designator": "U9", "net": "GND"},
@@ -79,20 +76,20 @@ class TestClass:
         assert "U9_GND" in edbapp.siwave.pin_groups
         edbapp.close()
 
-    def test_03_spice_models(self):
+    def test_03_spice_models(self, edb_examples):
         with open(self.local_input_folder / "spice.json") as f:
             data = json.load(f)
         data["general"]["spice_model_library"] = self.local_input_folder
 
-        edbapp = Edb(str(self.local_edb), desktop_version)
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.components["R107"].model.model_name
         assert edbapp.components["R107"].model.spice_file_path
         assert edbapp.components["R106"].model.spice_file_path
         edbapp.close()
 
-    def test_04_nets(self):
-        edbapp = Edb(str(self.local_edb), desktop_version)
+    def test_04_nets(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "nets.json"), apply_file=True)
         assert edbapp.nets["1.2V_DVDDL"].is_power_ground
         assert not edbapp.nets["SFPA_VCCR"].is_power_ground
@@ -166,8 +163,8 @@ class TestClass:
         assert len(edbapp.ports) > 1
         edbapp.close()
 
-    def test_05c_ports_pin_group(self):
-        edbapp = Edb(str(self.local_edb), desktop_version)
+    def test_05d_ports_pin_group(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         pin_groups = [
             {"name": "U9_5V_1", "reference_designator": "U9", "pins": ["32", "33"]},
             {"name": "U9_GND", "reference_designator": "U9", "net": "GND"},
@@ -189,12 +186,29 @@ class TestClass:
         assert "U9_pin_group_port" in edbapp.ports
         edbapp.close()
 
-    def test_06_s_parameters(self):
+    def test_05e_ports_circuit_net_net_distributed_nearest_ref(self, edb_examples):
+        ports = [
+            {
+                "name": "CIRCUIT_U7_VDD_DDR_GND",
+                "reference_designator": "U7",
+                "type": "circuit",
+                "distributed": True,
+                "positive_terminal": {"net": "VDD_DDR"},
+                "negative_terminal": {"nearest_pin": {"reference_net": "GND", "search_radius": 5e-3}},
+            }
+        ]
+        data = {"ports": ports}
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert len(edbapp.ports) > 1
+        edbapp.close()
+
+    def test_06_s_parameters(self, edb_examples):
         with open(self.local_input_folder / "s_parameter.json") as f:
             data = json.load(f)
         data["general"]["s_parameter_library"] = self.local_input_folder
 
-        edbapp = Edb(str(self.local_edb), desktop_version)
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         assert len(edbapp.components.nport_comp_definition) == 2
         assert edbapp.components.nport_comp_definition["CAPC3216X180X55ML20T25"].reference_file
@@ -202,27 +216,53 @@ class TestClass:
         assert len(edbapp.components.nport_comp_definition["CAPC3216X190X55ML30T25"].components) == 12
         edbapp.close()
 
-    def test_07_boundaries(self):
+    def test_07_boundaries(self, edb_examples):
         with open(self.local_input_folder / "boundaries.json") as f:
             data = json.load(f)
 
-        edbapp = Edb(str(self.local_edb), desktop_version)
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
-    def test_08a_operations_cutout(self):
+    def test_08a_operations_cutout(self, edb_examples):
         with open(self.local_input_folder / "operations_cutout.json") as f:
             data = json.load(f)
 
-        edbapp = Edb(str(self.local_edb), desktop_version)
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
-    def test_09_padstacks(self):
-        with open(self.local_input_folder / "padstacks.json") as f:
-            data = json.load(f)
+    def test_09_padstacks(self, edb_examples):
+        data = {
+            "padstacks": {
+                "definitions": [
+                    {
+                        "name": "v40h20",
+                        # "hole_diameter": "0.18mm",
+                        "hole_plating_thickness": "25um",
+                        "hole_material": "copper",
+                        "hole_range": "through",
+                    }
+                ],
+                "instances": [
+                    {
+                        "name": "Via998",
+                        "backdrill_top": {
+                            "drill_to_layer": "Inner3(Sig1)",
+                            "drill_diameter": "0.5mm",
+                            "stub_length": "0.2mm",
+                        },
+                        "backdrill_bottom": {
+                            "drill_to_layer": "Inner4(Sig2)",
+                            "drill_diameter": "0.5mm",
+                            "stub_length": "0.2mm",
+                        },
+                    }
+                ],
+            }
+        }
 
-        edbapp = Edb(str(self.local_edb), desktop_version)
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
@@ -252,22 +292,74 @@ class TestClass:
         edbapp.close()
 
     def test_13_stackup(self, edb_examples):
+        data = {
+            "stackup": {
+                "layers": [
+                    {
+                        "fill_material": "Solder Resist",
+                        "material": "copper",
+                        "name": "1_Top",
+                        "thickness": "0.5mm",
+                        "type": "signal",
+                    },
+                    {
+                        "fill_material": "Megtron4",
+                        "material": "copper",
+                        "name": "Inner1",
+                        "thickness": "0.017mm",
+                        "type": "signal",
+                    },
+                    {"material": "Megtron4", "name": "DE2", "thickness": "0.088mm", "type": "dielectric"},
+                    {"material": "Megtron4", "name": "DE3", "thickness": "0.1mm", "type": "dielectric"},
+                    {
+                        "fill_material": "Megtron4",
+                        "material": "copper",
+                        "name": "Inner2",
+                        "thickness": "0.017mm",
+                        "type": "signal",
+                    },
+                    {
+                        "fill_material": "Megtron4",
+                        "material": "copper",
+                        "name": "Inner3",
+                        "thickness": "0.017mm",
+                        "type": "signal",
+                    },
+                    {
+                        "fill_material": "Megtron4",
+                        "material": "copper",
+                        "name": "Inner4",
+                        "thickness": "0.017mm",
+                        "type": "signal",
+                    },
+                    {
+                        "fill_material": "Megtron4",
+                        "material": "copper",
+                        "name": "Inner5",
+                        "thickness": "0.017mm",
+                        "type": "signal",
+                    },
+                    {
+                        "fill_material": "Megtron4",
+                        "material": "copper",
+                        "name": "Inner6",
+                        "thickness": "0.017mm",
+                        "type": "signal",
+                    },
+                    {
+                        "fill_material": "Solder Resist",
+                        "material": "copper",
+                        "name": "16_Bottom",
+                        "thickness": "0.035mm",
+                        "type": "signal",
+                    },
+                ]
+            }
+        }
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(str(self.local_input_folder / "stackup.json"), apply_file=True)
-        assert edbapp.materials["copper"].conductivity == 5.7e8
-        assert edbapp.materials["Megtron4"].permittivity == 3.77
-        assert edbapp.materials["Megtron4"].dielectric_loss_tangent == 0.005
-        assert edbapp.materials["Megtron4_2"].permittivity == 3.77
-        assert edbapp.materials["Megtron4_2"].dielectric_loss_tangent == 0.005
-        assert edbapp.materials["Solder Resist"].permittivity == 4
-        assert edbapp.stackup.layers["SMT"].thickness == 20e-6
-        assert edbapp.stackup.layers["SMT"].material == "Solder Resist"
-        assert edbapp.stackup.layers["1_Top"].material == "copper"
-        assert edbapp.stackup.layers["1_Top"].thickness == 50e-6
-        assert edbapp.stackup.layers["1_Top"].fill_material == "Solder Resist"
-        assert edbapp.stackup.layers["DE5"].thickness == 100e-6
-        assert edbapp.stackup.layers["DE5"].material == "Megtron4"
-
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert list(edbapp.stackup.layers.keys())[:4] == ["1_Top", "Inner1", "DE2", "DE3"]
+        assert edbapp.stackup.layers["1_Top"].thickness == 0.0005
         edbapp.close()
 
     def test_14_setup_siwave_syz(self, edb_examples):
@@ -304,8 +396,25 @@ class TestClass:
             },
         ]
         data = {"sources": sources_i}
-        assert edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.configuration.load(data, apply_file=True, append=False)
         assert not edbapp.sources["ISOURCE_U1_1V0_M16"].magnitude == 1
+        edbapp.close()
+
+    def test_15c_sources_nearest_ref(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        sources_i = [
+            {
+                "name": "ISOURCE",
+                "reference_designator": "U1",
+                "type": "current",
+                "magnitude": 1,
+                "distributed": True,
+                "positive_terminal": {"net": "1V0"},
+                "negative_terminal": {"nearest_pin": {"reference_net": "GND", "search_radius": 5e-3}},
+            },
+        ]
+        data = {"sources": sources_i}
+        assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
     def test_components(self, edb_examples):

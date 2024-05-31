@@ -40,20 +40,28 @@ class CfgData(object):
         self.pedb = pedb
         self.edb_comps = self.pedb.components.components
         self.general = CfgGeneral(self, kwargs.get("general", None))
+
         self.boundaries = {}
         if kwargs.get("boundaries", None):
             self.boundaries = CfgBoundaries(self, kwargs.get("boundaries", None))
-        self.nets = CfgNets(self)
+
+        self.nets = None
         if kwargs.get("nets"):
             self.nets = CfgNets(
                 self, kwargs.get("nets", {}).get("signal_nets", []), kwargs.get("nets", {}).get("power_ground_nets", [])
             )
+
         self.components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
+
         self.padstacks = CfgPadstacks(self, kwargs.get("padstacks", None))
+
         self.pin_groups = [CfgPinGroup(self, pin_group) for pin_group in kwargs.get("pin_groups", [])]
+
         self.ports = [CfgPort(self, **port) for port in kwargs.get("ports", [])]
+
         self.sources = [CfgSources(self, **source) for source in kwargs.get("sources", [])]
-        self.setups = [CfgSetup(self)]
+
+        self.setups = []
         if kwargs.get("setups", None):
             self.setups = [CfgSetup(self, setup) for setup in kwargs.get("setups", [])]
         self.stackup = CfgLayerStackup(
@@ -63,9 +71,11 @@ class CfgData(object):
             CfgSParameterModel(self, self.general.s_parameter_library, sparam_model)
             for sparam_model in kwargs.get("s_parameters", [])
         ]
+
         self.spice_models = [
             CfgSpiceModel(self, self.general.spice_model_library, spice_model)
             for spice_model in kwargs.get("spice_models", [])
         ]
+
         self.package_definition = None
         self.operations = None
