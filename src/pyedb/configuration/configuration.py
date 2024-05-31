@@ -217,7 +217,7 @@ class Configuration:
             for idx, l in enumerate(layers):
                 if l["type"] == "dielectric":
                     prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **l)
-                else:
+                elif l["type"] == "signal":
                     prev_layer_clone = self._pedb.stackup.layers[l["name"]]
 
     @pyedb_function_handler
