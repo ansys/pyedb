@@ -366,25 +366,10 @@ class TestClass:
         data = {
             "stackup": {
                 "materials": [
-                    {
-                        "name": "copper",
-                        "conductivity": 570000000
-                    },
-                    {
-                        "name": "Megtron4",
-                        "permittivity": 3.77,
-                        "dielectric_loss_tangent": 0.005
-                    },
-                    {
-                        "name": "Megtron4_2",
-                        "permittivity": 3.77,
-                        "dielectric_loss_tangent": 0.005
-                    },
-                    {
-                        "name": "Solder Resist",
-                        "permittivity": 4,
-                        "dielectric_loss_tangent": 0
-                    }
+                    {"name": "copper", "conductivity": 570000000},
+                    {"name": "Megtron4", "permittivity": 3.77, "dielectric_loss_tangent": 0.005},
+                    {"name": "Megtron4_2", "permittivity": 3.77, "dielectric_loss_tangent": 0.005},
+                    {"name": "Solder Resist", "permittivity": 4, "dielectric_loss_tangent": 0},
                 ]
             }
         }

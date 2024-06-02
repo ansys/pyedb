@@ -66,7 +66,9 @@ class CfgStackup:
             if l.type == "signal":
                 layer_id = lc_signal_layers[signal_idx]
                 layer_name = id_name[layer_id]
-                attrs = {i: j for i, j in l.__dict__.items() if not i.startswith("_") and isinstance(j, (int, float, str))}
+                attrs = {
+                    i: j for i, j in l.__dict__.items() if not i.startswith("_") and isinstance(j, (int, float, str))
+                }
                 self._pedb.stackup.layers[layer_name].update(**attrs)
                 signal_idx = signal_idx + 1
 
@@ -77,13 +79,13 @@ class CfgStackup:
         if l.type == "signal":
             prev_layer_clone = self._pedb.stackup.layers[l.name]
         else:
-            attrs = {i: j for i, j in l.__dict__.items() if
-                     not i.startswith("_") and isinstance(j, (int, float, str))}
+            attrs = {i: j for i, j in l.__dict__.items() if not i.startswith("_") and isinstance(j, (int, float, str))}
             prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
         for idx, l in enumerate(layers):
             if l.type == "dielectric":
-                attrs = {i: j for i, j in l.__dict__.items() if
-                         not i.startswith("_") and isinstance(j, (int, float, str))}
+                attrs = {
+                    i: j for i, j in l.__dict__.items() if not i.startswith("_") and isinstance(j, (int, float, str))
+                }
                 prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **attrs)
             elif l.type == "signal":
                 prev_layer_clone = self._pedb.stackup.layers[l.name]
@@ -96,7 +98,11 @@ class CfgStackup:
             if mat_in_cfg.name.lower() in materials_in_db:
                 self._pedb.materials.delete_material(materials_in_db[mat_in_cfg.name.lower()])
 
-            attrs = {i: j for i, j in mat_in_cfg.__dict__.items() if not i.startswith("_") and isinstance(j, (int, float, str))}
+            attrs = {
+                i: j
+                for i, j in mat_in_cfg.__dict__.items()
+                if not i.startswith("_") and isinstance(j, (int, float, str))
+            }
             mat = self._pedb.materials.add_material(**attrs)
 
 
