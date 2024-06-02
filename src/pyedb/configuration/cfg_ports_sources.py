@@ -27,7 +27,7 @@ class CfgCircuitElement:
     @property
     def pedb(self):
         """Edb."""
-        return self._pdata.pedb
+        return self._pdata._pedb
 
     @pyedb_function_handler
     def __init__(self, pdata, **kwargs):
@@ -76,7 +76,7 @@ class CfgCircuitElement:
                 search_radius = neg_value.get("search_radius", "5e-3")
                 temp = dict()
                 for i, j in pos_objs.items():
-                    temp[i] = self._pdata.pedb.padstacks.get_reference_pins(j, ref_net, search_radius, max_limit=1)[0]
+                    temp[i] = self._pdata._pedb.padstacks.get_reference_pins(j, ref_net, search_radius, max_limit=1)[0]
                 self.neg_terminal = {
                     i: j.create_terminal(i + "_ref") if not j.terminal else j.terminal for i, j in temp.items()
                 }
@@ -105,7 +105,7 @@ class CfgCircuitElement:
                 pins.update(get_pin_obj(i))
         else:
             if terminal_type == "net":
-                temp = self._pdata.pedb.components.get_pins(self.reference_designator, terminal_value[0])
+                temp = self._pdata._pedb.components.get_pins(self.reference_designator, terminal_value[0])
             elif terminal_type == "pin_group":
                 pin_group = self.pedb.siwave.pin_groups[terminal_value[0]]
                 temp = pin_group.pins
@@ -119,7 +119,7 @@ class CfgCircuitElement:
         else:
             pg_name = f"pg_{self.name}_{self.reference_designator}"
         pin_names = [i.pin_number for i in pins.values()]
-        name, temp = self._pdata.pedb.siwave.create_pin_group(self.reference_designator, pin_names, pg_name)
+        name, temp = self._pdata._pedb.siwave.create_pin_group(self.reference_designator, pin_names, pg_name)
         return {name: temp}
 
 

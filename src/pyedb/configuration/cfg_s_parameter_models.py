@@ -25,7 +25,7 @@ from pathlib import Path
 
 class CfgSParameterModel:
     def __init__(self, pdata, path_lib, sparam_dict):
-        self._pedb = pdata.pedb
+        self._pedb = pdata._pedb
         self.path_libraries = path_lib
         self._sparam_dict = sparam_dict
         self.name = self._sparam_dict.get("name", "")

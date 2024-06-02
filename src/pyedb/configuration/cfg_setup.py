@@ -89,7 +89,7 @@ class DcIrSettings:
 
 class CfgSetup:
     def __init__(self, pdata, setup_dict=None):
-        self._pedb = pdata.pedb
+        self._pedb = pdata._pedb
         self._setup_dict = None
         self.name = "PyEDB_setup"
         self.type = self.SetupType.HFSS

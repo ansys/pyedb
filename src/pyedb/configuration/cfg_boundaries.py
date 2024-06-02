@@ -25,7 +25,7 @@ from enum import Enum
 
 class CfgBoundaries:
     def __init__(self, pdata, boundaries_dict):
-        self._pedb = pdata.pedb
+        self._pedb = pdata._pedb
         self._boundaries_dict = boundaries_dict
         self.open_region = self._boundaries_dict.get("open_region", None)
         self._map_open_region_type()

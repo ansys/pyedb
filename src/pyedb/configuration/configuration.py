@@ -132,8 +132,6 @@ class Configuration:
             port.create()
 
         # Configure sources
-        """if "sources" in self.data:
-            self._load_sources()"""
         for source in self.cfg_data.sources:
             source.create()
 
@@ -142,8 +140,7 @@ class Configuration:
             setup.apply()
 
         # Configure stackup
-        if "stackup" in self.data:
-            self._load_stackup()
+        self.cfg_data.stackup.apply()
 
         # Configure S-parameter
         for s_parameter_model in self.cfg_data.s_parameters:

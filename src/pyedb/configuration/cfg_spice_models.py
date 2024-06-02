@@ -25,7 +25,7 @@ from pathlib import Path
 
 class CfgSpiceModel:
     def __init__(self, pdata, path_lib, spice_dict):
-        self._pedb = pdata.pedb
+        self._pedb = pdata._pedb
         self.path_libraries = path_lib
         self._spice_dict = spice_dict
         self.name = self._spice_dict.get("name", "")

@@ -28,7 +28,7 @@ class CfgPadstacks:
     """Padstack data class."""
 
     def __init__(self, pdata, padstack_dict=None):
-        self._pedb = pdata.pedb
+        self._pedb = pdata._pedb
         self.definitions = []
         self.instances = []
         self._padstack_dict = padstack_dict
@@ -52,7 +52,7 @@ class Definition:
     """Padstack definition data class."""
 
     def __init__(self, pdata, definition_dict):
-        self._pedb = pdata.pedb
+        self._pedb = pdata._pedb
         self._definition_dict = definition_dict
         self.name = self._definition_dict.get("name", None)
         self.hole_diameter = self._definition_dict.get("hole_diameter", None)
@@ -78,7 +78,7 @@ class Instance:
     """Instance data class."""
 
     def __init__(self, pdata, instances_dict):
-        self._pedb = pdata.pedb
+        self._pedb = pdata._pedb
         self._instances_dict = instances_dict
         self.name = self._instances_dict.get("name", "")
         self.backdrill_top = None

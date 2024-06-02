@@ -25,7 +25,7 @@ class CfgGeneral:
     """Manage configuration general settings."""
 
     def __init__(self, pdata, general_dict):
-        self._pedb = pdata.pedb
+        self._pedb = pdata._pedb
         self.spice_model_library = ""
         self.s_parameter_library = ""
         if general_dict:

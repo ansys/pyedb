@@ -25,7 +25,7 @@ class CfgNets:
     """Manage configuration net class."""
 
     def __init__(self, pdata, signal_nets=None, power_nets=None):
-        self._pedb = pdata.pedb
+        self._pedb = pdata._pedb
         self.signal_nets = []
         self.power_nets = []
         if signal_nets:
