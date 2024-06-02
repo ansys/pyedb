@@ -20,199 +20,110 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from enum import Enum
-import random
 
-from pyedb.dotnet.edb_core.stackup import LayerCollection
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
-class LayerType(Enum):
-    SIGNAL = 0
-    DIELECTRIC = 1
+class CfgStackup:
+    def __init__(self, pedb, data):
+        self._pedb = pedb
 
+        self.materials = [CfgMaterial(self._pedb, **mat) for mat in data.get("materials", [])]
+        self.layers = [CfgLayer(self._pedb, **lay) for lay in data.get("layers", [])]
 
-class CfgLayerStackup:
-    def __init__(self, pdata, materials=None, layers=None):
-        self._pedb = pdata.pedb
-        self._materials_dict = materials
-        self._layers_dict = layers
-        self.materials = []
-        self.layers = []
-        if self._materials_dict:
-            self.materials = [Material(self._pedb, material_dict) for material_dict in self._materials_dict]
-        if self._layers_dict:
-            self.layers = [Layer(self._pedb, layer_dict) for layer_dict in self._layers_dict]
-
+    @pyedb_function_handler
     def apply(self):
-        for material in self.materials:
-            material.apply()
-        self.__apply_layers()
+        """Apply configuration settings to the current design"""
+        if len(self.materials):
+            self.__apply_materials()
+        if len(self.layers):
+            self.__apply_layers()
 
+    @pyedb_function_handler
     def __apply_layers(self):
-        lc = self._pedb.stackup
-        input_signal_layers = [layer for layer in self.layers if layer.type == LayerType.SIGNAL]
-        if not len(input_signal_layers) == len(lc.signal_layers):
+        """Apply layer settings to the current design"""
+        layers = list()
+        layers.extend(self.layers)
+        input_signal_layers = [i for i in layers if i.type.lower() == "signal"]
+        if not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
             self._pedb.logger.error("Input signal layer count do not match.")
             return False
 
-        layer_clones = []
-        doc_layer_clones = []
-        for name, obj in lc.layers.items():
-            if obj.is_stackup_layer:
-                if obj.type == "signal":  # keep signal layers
-                    layer_clones.append(obj)
-            else:
-                doc_layer_clones.append(obj)
+        removal_list = []
+        lc_signal_layers = []
+        for name, obj in self._pedb.stackup.all_layers.items():
+            if obj.type == "dielectric":
+                removal_list.append(name)
+            elif obj.type == "signal":
+                lc_signal_layers.append(obj.id)
+        for l in removal_list:
+            self._pedb.stackup.remove_layer(l)
 
-        lc_new = LayerCollection(self._pedb)
-        lc_new.auto_refresh = False
-        signal_layer_ids = {}
-        top_layer_clone = None
-
-        # add all signal layers
-        for layer in self.layers:
-            if layer.type == LayerType.SIGNAL:
-                clone = layer_clones.pop(0)
-                clone.update(**layer.to_dict)
-                lc_new.add_layer_bottom(name=clone.name, layer_clone=clone)
-                signal_layer_ids[clone.name] = clone.id
-
-        # add all document layers at bottom
-        for layer in doc_layer_clones:
-            doc_layer = lc_new.add_document_layer(name=layer.name, layer_clone=layer)
-            first_doc_layer_name = doc_layer.name
+        # update all signal layers
+        id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
+        signal_idx = 0
+        for l in layers:
+            if l.type == "signal":
+                layer_id = lc_signal_layers[signal_idx]
+                layer_name = id_name[layer_id]
+                attrs = {i: j for i, j in l.__dict__.items() if not i.startswith("_") and isinstance(j, (int, float, str))}
+                self._pedb.stackup.layers[layer_name].update(**attrs)
+                signal_idx = signal_idx + 1
 
         # add all dielectric layers. Dielectric layers must be added last. Otherwise,
         # dielectric layer will occupy signal and document layer id.
         prev_layer_clone = None
-        layer = self.layers.pop(0)
-        if layer.type == LayerType.SIGNAL:
-            prev_layer_clone = lc_new.layers[layer.name]
+        l = layers.pop(0)
+        if l.type == "signal":
+            prev_layer_clone = self._pedb.stackup.layers[l.name]
         else:
-            prev_layer_clone = lc_new.add_layer_top(**layer.to_dict)
-        for idx, layer in enumerate(self.layers):
-            if layer.type == LayerType.DIELECTRIC:
-                prev_layer_clone = lc_new.add_layer_below(base_layer_name=prev_layer_clone.name, **layer.to_dict)
-            else:
-                prev_layer_clone = lc_new.layers[layer.name]
+            attrs = {i: j for i, j in l.__dict__.items() if
+                     not i.startswith("_") and isinstance(j, (int, float, str))}
+            prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
+        for idx, l in enumerate(layers):
+            if l.type == "dielectric":
+                attrs = {i: j for i, j in l.__dict__.items() if
+                         not i.startswith("_") and isinstance(j, (int, float, str))}
+                prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **attrs)
+            elif l.type == "signal":
+                prev_layer_clone = self._pedb.stackup.layers[l.name]
 
-        lc._edb_object = lc_new._edb_object
-        lc_new.auto_refresh = True
-        lc.update_layout()
+    @pyedb_function_handler
+    def __apply_materials(self):
+        """Apply material settings to the current design"""
+        materials_in_db = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
+        for mat_in_cfg in self.materials:
+            if mat_in_cfg.name.lower() in materials_in_db:
+                self._pedb.materials.delete_material(materials_in_db[mat_in_cfg.name.lower()])
+
+            attrs = {i: j for i, j in mat_in_cfg.__dict__.items() if not i.startswith("_") and isinstance(j, (int, float, str))}
+            mat = self._pedb.materials.add_material(**attrs)
 
 
-class Material:
-    def __init__(self, pedb, material_dict=None):
+class CfgMaterial:
+    def __init__(self, pedb, **kwargs):
         self._pedb = pedb
-        self._material_dict = material_dict
-        self.name = ""
-        self.conductivity = 0.0
-        self.dielectric_loss_tangent = 0.0
-        self.magnetic_loss_tangent = 0.0
-        self.mass_density = 0.0
-        self.permittivity = 1.0
-        self.permeability = 1.0
-        self.poisson_ratio = 0.0
-        self.specific_heat = 0.0
-        self.thermal_conductivity = 0.0
-        self.youngs_modulus = 0.0
-        self.thermal_expansion_coefficient = 0.0
-        self.dc_conductivity = None
-        self.dc_permittivity = None
-        self.dielectric_model_frequency = None
-        self.loss_tangent_at_frequency = None
-        self.permittivity_at_frequency = None
-        self.__update()
-
-    def __update(self):
-        if self._material_dict:
-            self.name = self._material_dict.get("name", "")
-            self.conductivity = self._material_dict.get("conductivity", 0.0)
-            self.dielectric_loss_tangent = self._material_dict.get("dielectric_loss_tangent", 0.0)
-            self.magnetic_loss_tangent = self._material_dict.get("magnetic_loss_tangent", 0.0)
-            self.mass_density = self._material_dict.get("mass_density", 0.0)
-            self.permittivity = self._material_dict.get("permittivity", 1.0)
-            self.permeability = self._material_dict.get("permeability", 1.0)
-            self.poisson_ratio = self._material_dict.get("poisson_ratio", 0.0)
-            self.specific_heat = self._material_dict.get("specific_heat", 0.0)
-            self.thermal_conductivity = self._material_dict.get("thermal_conductivity", 0.0)
-            self.youngs_modulus = self._material_dict.get("youngs_modulus", 0.0)
-            self.thermal_expansion_coefficient = self._material_dict.get("thermal_expansion_coefficient", 0.0)
-            self.dc_conductivity = self._material_dict.get("dc_conductivity", None)
-            self.dc_permittivity = self._material_dict.get("dc_permittivity", None)
-            self.dielectric_model_frequency = self._material_dict.get("dc_permittivity", None)
-            self.loss_tangent_at_frequency = self._material_dict.get("loss_tangent_at_frequency", None)
-            self.permittivity_at_frequency = self._material_dict.get("permittivity_at_frequency", None)
-
-    def apply(self):
-        edb_materials = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
-        if self.name.lower() in edb_materials:
-            self._pedb.materials.delete_material(edb_materials[self.name.lower()])
-        self._pedb.materials.add_material(**self.__dict__)
+        self.name = kwargs.get("name")
+        self.permittivity = kwargs.get("permittivity", None)
+        self.conductivity = kwargs.get("conductivity", None)
+        self.dielectric_loss_tangent = kwargs.get("dielectric_loss_tangent", None)
+        self.magnetic_loss_tangent = kwargs.get("magnetic_loss_tangent", None)
+        self.mass_density = kwargs.get("mass_density", None)
+        self.permeability = kwargs.get("permeability", None)
+        self.poisson_ratio = kwargs.get("poisson_ratio", None)
+        self.specific_heat = kwargs.get("specific_heat", None)
+        self.thermal_conductivity = kwargs.get("thermal_conductivity", None)
+        self.youngs_modulus = kwargs.get("youngs_modulus", None)
+        self.thermal_expansion_coefficient = kwargs.get("thermal_expansion_coefficient", None)
 
 
-class Layer:
-    def __init__(self, pedb, layer_dict=None):
+class CfgLayer:
+    def __init__(self, pedb, **kwargs):
         self._pedb = pedb
-        self._layer_dict = layer_dict
-        self.name = ""
-        self.color = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
-        self.type = LayerType.SIGNAL
-        self.material = "copper"
-        self.fill_material = "fr4"
-        self.thickness = 35e-6
-        self.etch_factor = 0.0
-        self.roughness_enabled = False
-        self.top_hallhuray_nodule_radius = 0.0
-        self.top_hallhuray_surface_ratio = 0.0
-        self.bottom_hallhuray_nodule_radius = 0.0
-        self.bottom_hallhuray_surface_ratio = 0.0
-        self.side_hallhuray_nodule_radius = 0.0
-        self.side_hallhuray_surface_ratio = 0.0
-        self.lower_elevation = 0.0
-        self.__update()
-
-    @property
-    def to_dict(self):
-        layer_dict = self.__dict__
-        if "type" in layer_dict:
-            layer_dict["type"] = self.type.name.lower()
-        del layer_dict["_pedb"]
-        del layer_dict["_layer_dict"]
-        return layer_dict
-
-    def __update(self):
-        if self._layer_dict:
-            self.name = self._layer_dict.get("name", self.name)
-            self.color = self._layer_dict.get("color", self.color)
-            self.__map_layer_type()
-            self.material = self._layer_dict.get("material", self.material)
-            self.fill_material = self._layer_dict.get("fill_material", self.fill_material)
-            self.thickness = self._layer_dict.get("thickness", self.thickness)
-            self.etch_factor = self._layer_dict.get("etch_factor", self.etch_factor)
-            self.roughness_enabled = self._layer_dict.get("roughness_enabled", self.roughness_enabled)
-            self.top_hallhuray_nodule_radius = self._layer_dict.get(
-                "top_hallhuray_nodule_radius", self.top_hallhuray_nodule_radius
-            )
-            self.top_hallhuray_surface_ratio = self._layer_dict.get(
-                "top_hallhuray_surface_ratio", self.top_hallhuray_surface_ratio
-            )
-            self.bottom_hallhuray_nodule_radius = self._layer_dict.get(
-                "bottom_hallhuray_nodule_radius", self.bottom_hallhuray_nodule_radius
-            )
-            self.bottom_hallhuray_surface_ratio = self._layer_dict.get(
-                "bottom_hallhuray_surface_ratio", self.bottom_hallhuray_surface_ratio
-            )
-            self.side_hallhuray_nodule_radius = self._layer_dict.get(
-                "side_hallhuray_nodule_radius", self.side_hallhuray_nodule_radius
-            )
-            self.side_hallhuray_surface_ratio = self._layer_dict.get(
-                "side_hallhuray_surface_ratio", self.side_hallhuray_surface_ratio
-            )
-            self.lower_elevation = self._layer_dict.get("lower_elevation", self.lower_elevation)
-
-    def __map_layer_type(self):
-        if self._layer_dict.get("type") == "signal":
-            self.type = LayerType.SIGNAL
-        elif self._layer_dict.get("type") == "dielectric":
-            self.type = LayerType.DIELECTRIC
+        self.name = kwargs.get("name", None)
+        self.type = kwargs.get("type", None)
+        self.material = kwargs.get("material", None)
+        self.fill_material = kwargs.get("fill_material", None)
+        self.thickness = kwargs.get("thickness", None)
+        self.etch_factor = kwargs.get("etch_factor", None)
+        self.lower_elevation = kwargs.get("lower_elevation", None)

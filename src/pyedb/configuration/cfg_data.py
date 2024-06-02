@@ -30,15 +30,16 @@ from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
 from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel
 from pyedb.configuration.cfg_setup import CfgSetup
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
-from pyedb.configuration.cfg_stackup import CfgLayerStackup
+from pyedb.configuration.cfg_stackup import CfgStackup
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class CfgData(object):
     """Manages configure data."""
 
     def __init__(self, pedb, **kwargs):
-        self.pedb = pedb
-        self.edb_comps = self.pedb.components.components
+        self._pedb = pedb
+        self.edb_comps = self._pedb.components.components
         self.general = CfgGeneral(self, kwargs.get("general", None))
 
         self.boundaries = {}
@@ -64,9 +65,9 @@ class CfgData(object):
         self.setups = []
         if kwargs.get("setups", None):
             self.setups = [CfgSetup(self, setup) for setup in kwargs.get("setups", [])]
-        self.stackup = CfgLayerStackup(
-            self, kwargs.get("stackup", {}).get("materials", {}), kwargs.get("stackup", {}).get("layers", {})
-        )
+
+        self.stackup = CfgStackup(self._pedb, data=kwargs.get("stackup", {}))
+
         self.s_parameters = [
             CfgSParameterModel(self, self.general.s_parameter_library, sparam_model)
             for sparam_model in kwargs.get("s_parameters", [])
@@ -79,3 +80,8 @@ class CfgData(object):
 
         self.package_definition = None
         self.operations = None
+
+    @pyedb_function_handler
+    def apply(self):
+        """Apply configuration settings to the current design"""
+        self.stackup.apply()
