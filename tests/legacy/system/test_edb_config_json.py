@@ -274,11 +274,11 @@ class TestClass:
     def test_11_package_definitions(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "package_def.json"), apply_file=True)
-        assert edbapp.definitions.package["package_1"].maximum_power == 1
-        assert edbapp.definitions.package["package_1"].therm_cond == 1
-        assert edbapp.definitions.package["package_1"].theta_jb == 1
-        assert edbapp.definitions.package["package_1"].theta_jc == 1
-        assert edbapp.definitions.package["package_1"].height == 1
+        assert edbapp.definitions.package["package_1"].maximum_power == 1.0
+        assert edbapp.definitions.package["package_1"].therm_cond == 1.0
+        assert edbapp.definitions.package["package_1"].theta_jb == 1.0
+        assert edbapp.definitions.package["package_1"].theta_jc == 1.0
+        assert edbapp.definitions.package["package_1"].height == 1.0
         assert edbapp.definitions.package["package_1"].heatsink.fin_base_height == 0.001
         assert edbapp.definitions.package["package_1"].heatsink.fin_height == 0.001
         assert edbapp.definitions.package["package_1"].heatsink.fin_orientation == "x_oriented"

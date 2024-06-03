@@ -24,6 +24,7 @@ from pyedb.configuration.cfg_boundaries import CfgBoundaries
 from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_general import CfgGeneral
 from pyedb.configuration.cfg_nets import CfgNets
+from pyedb.configuration.cfg_package import CfgPackage
 from pyedb.configuration.cfg_padstacks import CfgPadstacks
 from pyedb.configuration.cfg_pin_groups import CfgPinGroup
 from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
@@ -78,7 +79,7 @@ class CfgData(object):
             for spice_model in kwargs.get("spice_models", [])
         ]
 
-        self.package_definition = None
+        self.package_definition = [CfgPackage(self, package) for package in kwargs.get("package_definitions", [])]
         self.operations = None
 
     @pyedb_function_handler
