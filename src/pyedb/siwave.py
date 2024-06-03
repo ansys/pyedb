@@ -11,6 +11,7 @@ from __future__ import absolute_import  # noreorder
 import os
 import pkgutil
 import sys
+import time
 import warnings
 
 from pyedb.dotnet.clr_module import _clr
@@ -362,8 +363,18 @@ class Siwave(object):  # pragma no cover
             ``True`` when successful, ``False`` when failed.
 
         """
+        if not os.path.splitext(file_path)[-1] == ".htm":
+            fpath = file_path + ".htm"
+        else:
+            fpath = file_path
         self.oproject.ScrExportDcSimReportScaling("All", "All", -1, -1, False)
-        flag = self.oproject.ScrExportDcSimReport(simulation_name, background_color, file_path)
+        flag = self.oproject.ScrExportDcSimReport(simulation_name, background_color, fpath)
+        if flag == 0:
+            while os.path.isfile(fpath):
+                self._logger.info("Exporting Siwave DC simulation report.")
+                time.sleep(1)
+        else:
+            return False
         return True if flag == 0 else False
 
     @pyedb_function_handler
