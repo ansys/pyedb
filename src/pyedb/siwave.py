@@ -370,12 +370,22 @@ class Siwave(object):  # pragma no cover
         self.oproject.ScrExportDcSimReportScaling("All", "All", -1, -1, False)
         flag = self.oproject.ScrExportDcSimReport(simulation_name, background_color, fpath)
         if flag == 0:
-            while os.path.isfile(fpath):
-                self._logger.info("Exporting Siwave DC simulation report.")
-                time.sleep(1)
+            while True:
+                self._logger.info(f"Exporting Siwave DC simulation report to {fpath}.")
+                if os.path.isfile(fpath):
+                    break
+                else:
+                    time.sleep(1)
+                os.path.getsize(fpath)
+            while True:
+                file_size = os.path.getsize(fpath)
+                if file_size > 0:
+                    break
+                else:
+                    time.sleep(1)
+            return True
         else:
             return False
-        return True if flag == 0 else False
 
     @pyedb_function_handler
     def run_dc_simulation(self, export_dc_power_data_to_icepak=False):
