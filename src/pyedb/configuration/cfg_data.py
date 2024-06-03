@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from pyedb.configuration.cfg_boundaries import CfgBoundaries
-from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_general import CfgGeneral
 from pyedb.configuration.cfg_nets import CfgNets
 from pyedb.configuration.cfg_padstacks import CfgPadstacks
@@ -30,8 +29,8 @@ from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
 from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel
 from pyedb.configuration.cfg_setup import CfgSetup
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
-from pyedb.configuration.cfg_stackup import CfgStackup
 from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.configuration.cfg_members import (CfgLayer, CfgMaterial, CfgComponent)
 
 
 class CfgData(object):
@@ -52,7 +51,8 @@ class CfgData(object):
                 self, kwargs.get("nets", {}).get("signal_nets", []), kwargs.get("nets", {}).get("power_ground_nets", [])
             )
 
-        self.components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
+        #self.components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
+        self.components = CfgComponents(self._pedb, data=kwargs.get("components", []))
 
         self.padstacks = CfgPadstacks(self, kwargs.get("padstacks", None))
 
@@ -85,3 +85,95 @@ class CfgData(object):
     def apply(self):
         """Apply configuration settings to the current design"""
         self.stackup.apply()
+
+
+class CfgStackup:
+    def __init__(self, pedb, data):
+        self._pedb = pedb
+        self.data = data
+
+        self.materials = [CfgMaterial(**mat) for mat in data.get("materials", [])]
+        self.layers = [CfgLayer(**lay) for lay in data.get("layers", [])]
+
+    @pyedb_function_handler
+    def apply(self):
+        """Apply configuration settings to the current design"""
+        if len(self.materials):
+            self.__apply_materials()
+        if len(self.layers):
+            self.__apply_layers()
+
+    @pyedb_function_handler
+    def __apply_layers(self):
+        """Apply layer settings to the current design"""
+        layers = list()
+        layers.extend(self.layers)
+        input_signal_layers = [i for i in layers if i.type.lower() == "signal"]
+        if not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
+            self._pedb.logger.error("Input signal layer count do not match.")
+            return False
+
+        removal_list = []
+        lc_signal_layers = []
+        for name, obj in self._pedb.stackup.all_layers.items():
+            if obj.type == "dielectric":
+                removal_list.append(name)
+            elif obj.type == "signal":
+                lc_signal_layers.append(obj.id)
+        for l in removal_list:
+            self._pedb.stackup.remove_layer(l)
+
+        # update all signal layers
+        id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
+        signal_idx = 0
+        for l in layers:
+            if l.type == "signal":
+                layer_id = lc_signal_layers[signal_idx]
+                layer_name = id_name[layer_id]
+                attrs = {
+                    i: j for i, j in l.__dict__.items() if i in l.attr_names
+                }
+                self._pedb.stackup.layers[layer_name].update(**attrs)
+                signal_idx = signal_idx + 1
+
+        # add all dielectric layers. Dielectric layers must be added last. Otherwise,
+        # dielectric layer will occupy signal and document layer id.
+        prev_layer_clone = None
+        l = layers.pop(0)
+        if l.type == "signal":
+            prev_layer_clone = self._pedb.stackup.layers[l.name]
+        else:
+            attrs = {i: j for i, j in l.__dict__.items() if i in l.attr_names}
+            prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
+        for idx, l in enumerate(layers):
+            if l.type == "dielectric":
+                attrs = {
+                    i: j for i, j in l.__dict__.items() if i in l.attr_names
+                }
+                prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **attrs)
+            elif l.type == "signal":
+                prev_layer_clone = self._pedb.stackup.layers[l.name]
+
+    @pyedb_function_handler
+    def __apply_materials(self):
+        """Apply material settings to the current design"""
+        materials_in_db = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
+        for mat_in_cfg in self.materials:
+            if mat_in_cfg.name.lower() in materials_in_db:
+                self._pedb.materials.delete_material(materials_in_db[mat_in_cfg.name.lower()])
+
+            attrs = {
+                i: j
+                for i, j in mat_in_cfg.__dict__.items()
+                if i in mat_in_cfg.attr_names
+            }
+            mat = self._pedb.materials.add_material(**attrs)
+
+
+class CfgComponents:
+    def __init__(self, pedb, data):
+        self._pedb = pedb
+        self.data = data
+        self.components = [CfgComponent(**comp) for comp in data]
+        self.layout_comp = None
+

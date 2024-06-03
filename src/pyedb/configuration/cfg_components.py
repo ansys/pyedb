@@ -23,52 +23,12 @@
 from enum import Enum
 
 
-class CfgRlcModel:
-    def __init__(self):
-        self.resistance = 0.0
-        self.inductance = 0.0
-        self.capacitance = 0.0
-        self.rlc_model_type = self.RlcModelType.SERIES
-        self.enabled = False
-        self.pin_pairs = []
 
-    class RlcModelType(Enum):
-        SERIES = 0
-        PARALLEL = 1
-
-
-class CfgPortProperties:
-    def __init__(self):
-        self.ref_offset = 0.0
-        self.ref_size_auto = True
-        self.ref_size_x = 0.0
-        self.ref_size_y = 0.0
-
-
-class CfgSolderBallsProperties:
-    def __init__(self):
-        self.shape = self.Shape.CYLINDER
-        self.diameter = 0.0
-        self.mid_diameter = 0.0
-        self.height = 0.0
-        self.enable = True
-
-    class Shape(Enum):
-        CYLINDER = 0
-        SPHEROID = 1
-
-
-class CfgComponent:
-    def __init__(self, pdata, **kwargs):
-        self._pedb = pdata._pedb
-        self._comp_dict = kwargs
-        self.reference_designator = ""
-        self.part_type = self.ComponentType.RESISTOR
-        self.enabled = True
-        self.rlc_model = CfgRlcModel()
-        self.port_properties = CfgPortProperties()
-        self.solder_balls = CfgSolderBallsProperties()
-        self._update()
+class CfgComponentDefs:
+    def __init__(self, pedb, data):
+        self._pedb = pedb
+        self.data = data
+        self.components = [CfgComponent(**comp) for comp in data.get("components", [])]
         self.layout_comp = None
 
     class ComponentType(Enum):
