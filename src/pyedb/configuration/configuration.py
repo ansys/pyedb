@@ -269,6 +269,16 @@ class Configuration:
                 i.package_def = name
 
     def get_data_from_db(self, stackup=True):
+        """Get configuration data from layout.
+
+        Parameters
+        ----------
+        stackup
+
+        Returns
+        -------
+
+        """
         data = {}
         if stackup:
             data["stackup"] = self.cfg_data.stackup.get_data_from_db()
@@ -277,6 +287,19 @@ class Configuration:
 
     @pyedb_function_handler
     def export(self, file_path, stackup=True):
+        """Export the configuration data from layout to a file.
+
+        Parameters
+        ----------
+        file_path : str, Path
+            File path to export the configuration data.
+        stackup : bool
+            Whether to export stackup or not.
+
+        Returns
+        -------
+        bool
+        """
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)
         file_path = file_path if file_path.suffix == ".json" else file_path.with_suffix(".json")
         data = self.get_data_from_db(stackup)

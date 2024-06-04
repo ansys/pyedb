@@ -144,6 +144,12 @@ class CfgStackup:
 
     @pyedb_function_handler
     def get_data_from_db(self):
+        """Get configuration data from layout.
+
+        Returns
+        -------
+        dict
+        """
         stackup = {}
         materials = self.__get_materials_from_db()
         stackup["materials"] = materials
