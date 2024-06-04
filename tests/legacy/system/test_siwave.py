@@ -51,6 +51,7 @@ class TestClass:
         siw.run_dc_simulation()
         export_report = os.path.join(siw.results_directory, "test.htm")
         assert siw.export_siwave_report("DC IR Sim 3", export_report)
+        assert siw.export_dc_simulation_report("DC IR Sim 3", os.path.join(siw.results_directory, "test2"))
         export_data = os.path.join(siw.results_directory, "test.txt")
         assert siw.export_element_data("DC IR Sim 3", export_data)
         export_icepak = os.path.join(siw.results_directory, "icepak.aedt")
