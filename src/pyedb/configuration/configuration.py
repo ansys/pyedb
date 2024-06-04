@@ -150,8 +150,8 @@ class Configuration:
             spice_model.apply()
 
         # Configure package definitions
-        if "package_definitions" in self.data:
-            self._load_package_def()
+        for package_def in self.cfg_data.package_definition:
+            package_def.apply()
 
         # Configure operations
         if "operations" in self.data:
