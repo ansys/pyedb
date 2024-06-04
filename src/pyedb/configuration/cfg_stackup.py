@@ -19,6 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import json
+import os.path
 
 from pyedb.configuration.cfg_common import CfgBase
 from pyedb.generic.general_methods import pyedb_function_handler
@@ -26,7 +28,6 @@ from pyedb.generic.general_methods import pyedb_function_handler
 
 class CfgMaterial(CfgBase):
     def __init__(self, **kwargs):
-        self._data = kwargs
 
         self.name = kwargs.get("name", None)
         self.permittivity = kwargs.get("permittivity", None)
@@ -42,8 +43,6 @@ class CfgMaterial(CfgBase):
 
 class CfgLayer(CfgBase):
     def __init__(self, **kwargs):
-        self._data = kwargs
-
         self.name = kwargs.get("name", None)
         self.type = kwargs.get("type", None)
         self.material = kwargs.get("material", None)
@@ -54,7 +53,6 @@ class CfgLayer(CfgBase):
 class CfgStackup:
     def __init__(self, pedb, data):
         self._pedb = pedb
-        self._data = data
 
         self.materials = [CfgMaterial(**mat) for mat in data.get("materials", [])]
         self.layers = [CfgLayer(**lay) for lay in data.get("layers", [])]
@@ -124,3 +122,40 @@ class CfgStackup:
 
             attrs = mat_in_cfg.get_attributes()
             mat = self._pedb.materials.add_material(**attrs)
+
+    @pyedb_function_handler
+    def __get_materials_from_db(self):
+        materials = []
+        for name, p in self._pedb.materials.materials.items():
+            mat = {}
+            for p_name in CfgMaterial().__dict__:
+                mat[p_name] = getattr(p, p_name)
+            materials.append(mat)
+        return materials if materials else None
+
+    @pyedb_function_handler
+    def __get_layers_from_db(self):
+        layers = []
+        for name, obj in self._pedb.stackup.all_layers.items():
+            layer = {}
+            for p_name in CfgLayer().__dict__:
+                p_value = getattr(obj, p_name, None)
+                if p_value is not None:
+                    layer[p_name] = getattr(obj, p_name)
+            layers.append(layer)
+        return layers if layers else None
+
+    @pyedb_function_handler
+    def get_data_from_db(self):
+        stackup = {}
+
+        materials = self.__get_materials_from_db()
+        if materials:
+            stackup["materials"] = materials
+
+        layers = self.__get_layers_from_db()
+        if layers:
+            stackup["layers"] = layers
+
+        return stackup if stackup else None
+

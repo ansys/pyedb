@@ -26,7 +26,6 @@ from pyedb.generic.general_methods import pyedb_function_handler
 
 class CfgPortProperties(CfgBase):
     def __init__(self, **kwargs):
-        self._data = kwargs
 
         self.reference_offset = kwargs.pop("reference_offset", 0)
         self.reference_size_auto = kwargs.pop("reference_size_auto", 0)
@@ -36,7 +35,6 @@ class CfgPortProperties(CfgBase):
 
 class CfgSolderBallsProperties(CfgBase):
     def __init__(self, **kwargs):
-        self._data = kwargs
         self.shape = kwargs.pop("shape", None)
         self.diameter = kwargs.pop("diameter", None)
         self.mid_diameter = kwargs.pop("mid_diameter", None)
@@ -46,7 +44,6 @@ class CfgSolderBallsProperties(CfgBase):
 
 class CfgRlcModel(CfgBase):
     def __init__(self, **kwargs):
-        self._data = kwargs
         self.resistance = kwargs.get("resistance", None)
         self.inductance = kwargs.get("inductance", None)
         self.capacitance = kwargs.get("capacitance", None)
@@ -57,7 +54,6 @@ class CfgRlcModel(CfgBase):
 
 class CfgComponent(CfgBase):
     def __init__(self, **kwargs):
-        self._data = kwargs
 
         self.enabled = kwargs.get("enabled", None)
 
@@ -74,13 +70,12 @@ class CfgComponent(CfgBase):
 
     @property
     def protected_attributes(self):
-        return ["_data", "reference_designator"]
+        return ["reference_designator"]
 
 
 class CfgComponents:
     def __init__(self, pedb, data):
         self._pedb = pedb
-        self._data = data
         self.components = [CfgComponent(**comp) for comp in data]
 
     @pyedb_function_handler

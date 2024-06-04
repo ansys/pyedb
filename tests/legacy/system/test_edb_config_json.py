@@ -366,11 +366,16 @@ class TestClass:
         vias_before = {i: [j.start_layer, j.stop_layer] for i, j in edbapp.padstacks.instances.items()}
         assert edbapp.configuration.load(data, apply_file=True)
         assert list(edbapp.stackup.layers.keys())[:4] == ["1_Top", "Inner1", "DE2", "DE3"]
-        assert edbapp.stackup.layers["1_Top"].thickness == 0.0005
         vias_after = {i: [j.start_layer, j.stop_layer] for i, j in edbapp.padstacks.instances.items()}
         for i, j in vias_after.items():
             assert j[0] == renamed_layers[vias_before[i][0]]
             assert j[1] == renamed_layers[vias_before[i][1]]
+        data_from_db = edbapp.configuration.get_data_from_db()
+        for lay in data["stackup"]["layers"]:
+            target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
+            for p, value in lay.items():
+                value = edbapp.edb_value(value).ToDouble() if p in ["thickness"] else value
+                assert value == target_mat[p]
         edbapp.close()
 
     def test_13b_stackup_materials(self, edb_examples):
@@ -386,6 +391,11 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db()
+        for mat in data["stackup"]["materials"]:
+            target_mat = [i for i in data_from_db["stackup"]["materials"] if i["name"] == mat["name"]][0]
+            for p, value in mat.items():
+                assert value == target_mat[p]
         edbapp.close()
 
     def test_14_setup_siwave_syz(self, edb_examples):
@@ -443,7 +453,7 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
-    def test_components_rlc(self, edb_examples):
+    def test_16_components_rlc(self, edb_examples):
         components = [
             {
                 "reference_designator": "C375",
@@ -473,7 +483,7 @@ class TestClass:
         assert edbapp.components["L2"].type == "Resistor"
         edbapp.close()
 
-    def test_solder_ball(self, edb_examples):
+    def test_15b_component_solder_ball(self, edb_examples):
         components = [
             {
                 "reference_designator": "U1",
@@ -496,3 +506,9 @@ class TestClass:
         assert edbapp.components["U1"].solder_ball_diameter == (244e-6, 244e-6)
 
         edbapp.close()
+
+    def test_16_export_to_external_file(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        data_file_path = Path(edb_examples.test_folder) / "test.json"
+        edbapp.configuration.export_data_from_db(data_file_path)
+        assert data_file_path.is_file()

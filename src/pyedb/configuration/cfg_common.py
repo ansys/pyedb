@@ -27,7 +27,7 @@ from pyedb.generic.general_methods import pyedb_function_handler
 class CfgBase:
     @property
     def protected_attributes(self):
-        return ["_data"]
+        return []
 
     @pyedb_function_handler
     def get_attributes(self):
