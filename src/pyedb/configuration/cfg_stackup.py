@@ -105,7 +105,7 @@ class CfgStackup:
         if l.type == "signal":
             prev_layer_clone = self._pedb.stackup.layers[l.name]
         else:
-            attrs = {i: j for i, j in l.__dict__.items() if i in l.attr_names}
+            attrs = l.get_attributes()
             prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
         for idx, l in enumerate(layers):
             if l.type == "dielectric":
