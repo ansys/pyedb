@@ -80,7 +80,7 @@ class CfgComponent(CfgBase):
 class CfgComponents:
     def __init__(self, pedb, data):
         self._pedb = pedb
-        self.data = data
+        self._data = data
         self.components = [CfgComponent(**comp) for comp in data]
 
     @pyedb_function_handler

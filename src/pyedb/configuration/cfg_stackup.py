@@ -54,7 +54,7 @@ class CfgLayer(CfgBase):
 class CfgStackup:
     def __init__(self, pedb, data):
         self._pedb = pedb
-        self.data = data
+        self._data = data
 
         self.materials = [CfgMaterial(**mat) for mat in data.get("materials", [])]
         self.layers = [CfgLayer(**lay) for lay in data.get("layers", [])]
