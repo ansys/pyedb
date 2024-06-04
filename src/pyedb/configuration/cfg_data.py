@@ -32,7 +32,6 @@ from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel
 from pyedb.configuration.cfg_setup import CfgSetup
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
 from pyedb.configuration.cfg_stackup import CfgStackup
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class CfgData(object):
