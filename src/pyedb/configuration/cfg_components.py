@@ -26,7 +26,6 @@ from pyedb.generic.general_methods import pyedb_function_handler
 
 class CfgPortProperties(CfgBase):
     def __init__(self, **kwargs):
-
         self.reference_offset = kwargs.pop("reference_offset", 0)
         self.reference_size_auto = kwargs.pop("reference_size_auto", 0)
         self.reference_size_x = kwargs.pop("reference_size_x", 0)
@@ -54,7 +53,6 @@ class CfgRlcModel(CfgBase):
 
 class CfgComponent(CfgBase):
     def __init__(self, **kwargs):
-
         self.enabled = kwargs.get("enabled", None)
 
         self.reference_designator = kwargs.get("reference_designator", None)

@@ -26,7 +26,6 @@ from pyedb.generic.general_methods import pyedb_function_handler
 
 class CfgMaterial(CfgBase):
     def __init__(self, **kwargs):
-
         self.name = kwargs.get("name", None)
         self.permittivity = kwargs.get("permittivity", None)
         self.conductivity = kwargs.get("conductivity", None)
@@ -156,4 +155,3 @@ class CfgStackup:
             stackup["layers"] = layers
 
         return stackup if stackup else None
-

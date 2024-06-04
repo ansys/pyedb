@@ -22,10 +22,10 @@
 
 import json
 import os
+from pathlib import Path
 
 import toml
 
-from pathlib import Path
 from pyedb.configuration.cfg_data import CfgData
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.generic.general_methods import pyedb_function_handler
@@ -280,6 +280,5 @@ class Configuration:
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)
         file_path = file_path if file_path.suffix == ".json" else file_path.with_suffix(".json")
         with open(file_path, "w") as f:
-            json.dump(self.get_data_from_db(), f,ensure_ascii=False, indent=4)
+            json.dump(self.get_data_from_db(), f, ensure_ascii=False, indent=4)
         return True if os.path.isfile(file_path) else False
-
