@@ -268,17 +268,18 @@ class Configuration:
             for _, i in comp_list.items():
                 i.package_def = name
 
-    def get_data_from_db(self):
+    def get_data_from_db(self, stackup=True):
         data = {}
-        stackup = self.cfg_data.stackup.get_data_from_db()
         if stackup:
-            data["stackup"] = stackup
+            data["stackup"] = self.cfg_data.stackup.get_data_from_db()
+
         return data
 
     @pyedb_function_handler
-    def export_data_from_db(self, file_path):
+    def export(self, file_path, stackup=True):
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)
         file_path = file_path if file_path.suffix == ".json" else file_path.with_suffix(".json")
+        data = self.get_data_from_db(stackup)
         with open(file_path, "w") as f:
-            json.dump(self.get_data_from_db(), f, ensure_ascii=False, indent=4)
+            json.dump(data, f, ensure_ascii=False, indent=4)
         return True if os.path.isfile(file_path) else False

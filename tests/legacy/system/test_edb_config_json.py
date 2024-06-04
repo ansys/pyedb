@@ -510,5 +510,5 @@ class TestClass:
     def test_16_export_to_external_file(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         data_file_path = Path(edb_examples.test_folder) / "test.json"
-        edbapp.configuration.export_data_from_db(data_file_path)
+        edbapp.configuration.export(data_file_path)
         assert data_file_path.is_file()

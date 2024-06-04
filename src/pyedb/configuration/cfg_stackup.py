@@ -128,7 +128,7 @@ class CfgStackup:
             for p_name in CfgMaterial().__dict__:
                 mat[p_name] = getattr(p, p_name)
             materials.append(mat)
-        return materials if materials else None
+        return materials
 
     @pyedb_function_handler
     def __get_layers_from_db(self):
@@ -140,18 +140,13 @@ class CfgStackup:
                 if p_value is not None:
                     layer[p_name] = getattr(obj, p_name)
             layers.append(layer)
-        return layers if layers else None
+        return layers
 
     @pyedb_function_handler
     def get_data_from_db(self):
         stackup = {}
-
         materials = self.__get_materials_from_db()
-        if materials:
-            stackup["materials"] = materials
-
+        stackup["materials"] = materials
         layers = self.__get_layers_from_db()
-        if layers:
-            stackup["layers"] = layers
-
-        return stackup if stackup else None
+        stackup["layers"] = layers
+        return stackup
