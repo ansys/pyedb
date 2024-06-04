@@ -25,7 +25,6 @@ from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class CfgBase:
-
     @property
     def protected_attributes(self):
         return ["_data"]
@@ -33,5 +32,5 @@ class CfgBase:
     @pyedb_function_handler
     def get_attributes(self):
         attrs = {i: j for i, j in self.__dict__.items() if i not in self.protected_attributes}
-        attrs = {i:j for i,j in attrs.items() if j is not None}
+        attrs = {i: j for i, j in attrs.items() if j is not None}
         return attrs

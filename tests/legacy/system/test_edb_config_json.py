@@ -353,9 +353,16 @@ class TestClass:
             }
         }
         edbapp = edb_examples.get_si_verse()
-        renamed_layers = {"1_Top": "1_Top", 'Inner1(GND1)': "Inner1", "Inner2(PWR1)": "Inner2",
-                          'Inner3(Sig1)': "Inner3", 'Inner4(Sig2)': "Inner4", 'Inner5(PWR2)': "Inner5",
-                          'Inner6(GND2)': "Inner6", "16_Bottom": "16_Bottom"}
+        renamed_layers = {
+            "1_Top": "1_Top",
+            "Inner1(GND1)": "Inner1",
+            "Inner2(PWR1)": "Inner2",
+            "Inner3(Sig1)": "Inner3",
+            "Inner4(Sig2)": "Inner4",
+            "Inner5(PWR2)": "Inner5",
+            "Inner6(GND2)": "Inner6",
+            "16_Bottom": "16_Bottom",
+        }
         vias_before = {i: [j.start_layer, j.stop_layer] for i, j in edbapp.padstacks.instances.items()}
         assert edbapp.configuration.load(data, apply_file=True)
         assert list(edbapp.stackup.layers.keys())[:4] == ["1_Top", "Inner1", "DE2", "DE3"]
@@ -453,10 +460,10 @@ class TestClass:
                         "inductance": "1nh",
                         "resistance": "0.001",
                         "p1": "1",
-                        "p2": "2"
+                        "p2": "2",
                     }
-                ]
-            }
+                ],
+            },
         ]
         data = {"components": components}
         edbapp = edb_examples.get_si_verse()
@@ -471,17 +478,13 @@ class TestClass:
             {
                 "reference_designator": "U1",
                 "part_type": "io",
-                "solder_ball_properties": {
-                    "shape": "cylinder",
-                    "diameter": "244um",
-                    "height": "406um"
-                },
+                "solder_ball_properties": {"shape": "cylinder", "diameter": "244um", "height": "406um"},
                 "port_properties": {
                     "reference_offset": "0.1mm",
                     "reference_size_auto": True,
                     "reference_size_x": 0,
-                    "reference_size_y": 0
-                }
+                    "reference_size_y": 0,
+                },
             },
         ]
         data = {"components": components}

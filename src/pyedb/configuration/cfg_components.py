@@ -27,46 +27,46 @@ class CfgPortProperties(CfgBase):
     def __init__(self, **kwargs):
         self._data = kwargs
 
-        self.reference_offset = kwargs.pop('reference_offset', 0)
-        self.reference_size_auto = kwargs.pop('reference_size_auto', 0)
-        self.reference_size_x = kwargs.pop('reference_size_x', 0)
-        self.reference_size_y = kwargs.pop('reference_size_y', 0)
+        self.reference_offset = kwargs.pop("reference_offset", 0)
+        self.reference_size_auto = kwargs.pop("reference_size_auto", 0)
+        self.reference_size_x = kwargs.pop("reference_size_x", 0)
+        self.reference_size_y = kwargs.pop("reference_size_y", 0)
 
 
 class CfgSolderBallsProperties(CfgBase):
     def __init__(self, **kwargs):
         self._data = kwargs
-        self.shape = kwargs.pop('shape', None)
-        self.diameter = kwargs.pop('diameter', None)
-        self.mid_diameter = kwargs.pop('mid_diameter', None)
-        self.height = kwargs.pop('height', None)
-        self.enabled = kwargs.pop('enabled', None)
+        self.shape = kwargs.pop("shape", None)
+        self.diameter = kwargs.pop("diameter", None)
+        self.mid_diameter = kwargs.pop("mid_diameter", None)
+        self.height = kwargs.pop("height", None)
+        self.enabled = kwargs.pop("enabled", None)
 
 
 class CfgRlcModel(CfgBase):
-
     def __init__(self, **kwargs):
         self._data = kwargs
-        self.resistance = kwargs.get('resistance', None)
-        self.inductance = kwargs.get('inductance', None)
-        self.capacitance = kwargs.get('capacitance', None)
-        self.type = kwargs.get('type', None)
-        self.p1 = kwargs.get('p1', None)
-        self.p2 = kwargs.get('p2', None)
+        self.resistance = kwargs.get("resistance", None)
+        self.inductance = kwargs.get("inductance", None)
+        self.capacitance = kwargs.get("capacitance", None)
+        self.type = kwargs.get("type", None)
+        self.p1 = kwargs.get("p1", None)
+        self.p2 = kwargs.get("p2", None)
 
 
 class CfgComponent(CfgBase):
     def __init__(self, **kwargs):
         self._data = kwargs
 
-        self.enabled = kwargs.get('enabled', None)
+        self.enabled = kwargs.get("enabled", None)
 
-        self.reference_designator = kwargs.get('reference_designator', None)
-        self.type = kwargs.get('part_type', None)
-        self.value = kwargs.get('value', None)
+        self.reference_designator = kwargs.get("reference_designator", None)
+        self.type = kwargs.get("part_type", None)
+        self.value = kwargs.get("value", None)
         self.port_properties = CfgPortProperties(**kwargs["port_properties"]) if "port_properties" in kwargs else None
-        self.solder_ball_properties = CfgSolderBallsProperties(
-            **kwargs["solder_ball_properties"]) if "solder_ball_properties" in kwargs else None
+        self.solder_ball_properties = (
+            CfgSolderBallsProperties(**kwargs["solder_ball_properties"]) if "solder_ball_properties" in kwargs else None
+        )
         rlc_models = kwargs.get("rlc_model", [])
 
         self.rlc_model = [CfgRlcModel(**rlc_m) for rlc_m in rlc_models]
@@ -91,16 +91,17 @@ class CfgComponents:
                 if attr == "solder_ball_properties":
                     solder_ball_properties = value
                     port_properties = comp.port_properties
-                    self._pedb.components.set_solder_ball(component=comp.reference_designator,
-                                                              sball_diam=solder_ball_properties.diameter,
-                                                              sball_mid_diam=solder_ball_properties.mid_diameter,
-                                                              sball_height=solder_ball_properties.height,
-                                                              shape=solder_ball_properties.shape,
-                                                              auto_reference_size=port_properties.reference_size_auto,
-                                                              reference_height=port_properties.reference_offset,
-                                                              reference_size_x=port_properties.reference_size_x,
-                                                              reference_size_y=port_properties.reference_size_y,
-                                                              )
+                    self._pedb.components.set_solder_ball(
+                        component=comp.reference_designator,
+                        sball_diam=solder_ball_properties.diameter,
+                        sball_mid_diam=solder_ball_properties.mid_diameter,
+                        sball_height=solder_ball_properties.height,
+                        shape=solder_ball_properties.shape,
+                        auto_reference_size=port_properties.reference_size_auto,
+                        reference_height=port_properties.reference_offset,
+                        reference_size_x=port_properties.reference_size_x,
+                        reference_size_y=port_properties.reference_size_y,
+                    )
                 elif attr == "port_properties":
                     pass
                 elif attr == "rlc_model":

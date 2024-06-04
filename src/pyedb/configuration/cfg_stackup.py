@@ -28,27 +28,27 @@ class CfgMaterial(CfgBase):
     def __init__(self, **kwargs):
         self._data = kwargs
 
-        self.name = kwargs.get('name', None)
-        self.permittivity= kwargs.get('permittivity', None)
-        self.conductivity= kwargs.get('conductivity', None)
-        self.dielectric_loss_tangent = kwargs.get('dielectric_loss_tangent', None)
-        self.magnetic_loss_tangent = kwargs.get('magnetic_loss_tangent', None)
-        self.mass_density = kwargs.get('mass_density', None)
-        self.permeability = kwargs.get('permeability', None)
-        self.poisson_ratio = kwargs.get('poisson_ratio', None)
-        self.specific_heat = kwargs.get('specific_heat', None)
-        self.thermal_conductivity = kwargs.get('thermal_conductivity', None)
+        self.name = kwargs.get("name", None)
+        self.permittivity = kwargs.get("permittivity", None)
+        self.conductivity = kwargs.get("conductivity", None)
+        self.dielectric_loss_tangent = kwargs.get("dielectric_loss_tangent", None)
+        self.magnetic_loss_tangent = kwargs.get("magnetic_loss_tangent", None)
+        self.mass_density = kwargs.get("mass_density", None)
+        self.permeability = kwargs.get("permeability", None)
+        self.poisson_ratio = kwargs.get("poisson_ratio", None)
+        self.specific_heat = kwargs.get("specific_heat", None)
+        self.thermal_conductivity = kwargs.get("thermal_conductivity", None)
 
 
 class CfgLayer(CfgBase):
     def __init__(self, **kwargs):
         self._data = kwargs
 
-        self.name = kwargs.get('name', None)
-        self.type = kwargs.get('type', None)
-        self.material = kwargs.get('material', None)
-        self.fill_material = kwargs.get('fill_material', None)
-        self.thickness = kwargs.get('thickness', None)
+        self.name = kwargs.get("name", None)
+        self.type = kwargs.get("type", None)
+        self.material = kwargs.get("material", None)
+        self.fill_material = kwargs.get("fill_material", None)
+        self.thickness = kwargs.get("thickness", None)
 
 
 class CfgStackup:
