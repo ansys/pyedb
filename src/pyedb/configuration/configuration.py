@@ -155,8 +155,9 @@ class Configuration:
             self._load_package_def()
 
         # Configure operations
-        if "operations" in self.data:
-            self._load_operations()
+        if self.cfg_data.operations:
+            if not self.cfg_data.operations.apply():
+                return False
 
         return True
 
@@ -216,14 +217,6 @@ class Configuration:
                     prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **l)
                 elif l["type"] == "signal":
                     prev_layer_clone = self._pedb.stackup.layers[l["name"]]
-
-    @pyedb_function_handler
-    def _load_operations(self):
-        """Imports operation information from JSON."""
-        operations = self.data["operations"]
-        cutout = operations.get("cutout", None)
-        if cutout:
-            self._pedb.cutout(**cutout)
 
     @pyedb_function_handler
     def _load_package_def(self):

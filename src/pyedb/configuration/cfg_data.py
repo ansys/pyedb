@@ -24,6 +24,7 @@ from pyedb.configuration.cfg_boundaries import CfgBoundaries
 from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_general import CfgGeneral
 from pyedb.configuration.cfg_nets import CfgNets
+from pyedb.configuration.cfg_operations import CfgOperations
 from pyedb.configuration.cfg_padstacks import CfgPadstacks
 from pyedb.configuration.cfg_pin_groups import CfgPinGroup
 from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
@@ -79,7 +80,7 @@ class CfgData(object):
         ]
 
         self.package_definition = None
-        self.operations = None
+        self.operations = CfgOperations(self, kwargs.get("operations", None))
 
     @pyedb_function_handler
     def apply(self):
