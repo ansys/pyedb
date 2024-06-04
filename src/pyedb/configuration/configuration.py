@@ -115,9 +115,7 @@ class Configuration:
             self.cfg_data.nets.apply()
 
         # Configure components
-        """if self.cfg_data.components:
-            for comp in self.cfg_data.components:
-                comp.apply()"""
+        self.cfg_data.components.apply()
 
         # Configure padstacks
         if self.cfg_data.padstacks:

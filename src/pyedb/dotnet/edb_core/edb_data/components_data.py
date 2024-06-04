@@ -288,10 +288,21 @@ class EDBComponent(object):
         bool
             ``True`` if component is active, ``False`` if is disabled..
         """
-        return self.component_property.IsEnabled()
+        warnings.warn("Use new property :func:`enabled` instead.", DeprecationWarning)
+        return self.enabled
 
     @is_enabled.setter
     def is_enabled(self, value):
+        warnings.warn("Use new property :func:`enabled` instead.", DeprecationWarning)
+        self.enabled = value
+
+    @property
+    def enabled(self):
+        """Get or Set the component to active mode."""
+        return self.component_property.IsEnabled()
+
+    @enabled.setter
+    def enabled(self, value):
         cmp_prop = self.component_property.Clone()
         cmp_prop.SetEnabled(value)
         self.edbcomponent.SetComponentProperty(cmp_prop)
@@ -773,17 +784,18 @@ class EDBComponent(object):
             Type of the component. Options are ``"Resistor"``,  ``"Inductor"``, ``"Capacitor"``,
             ``"IC"``, ``"IO"`` and ``"Other"``.
         """
-        if new_type == "Resistor":
+        new_type = new_type.lower()
+        if new_type == "resistor":
             type_id = self._pedb.definition.ComponentType.Resistor
-        elif new_type == "Inductor":
+        elif new_type == "inductor":
             type_id = self._pedb.definition.ComponentType.Inductor
-        elif new_type == "Capacitor":
+        elif new_type == "capacitor":
             type_id = self._pedb.definition.ComponentType.Capacitor
-        elif new_type == "IC":
+        elif new_type == "ic":
             type_id = self._pedb.definition.ComponentType.IC
-        elif new_type == "IO":
+        elif new_type == "io":
             type_id = self._pedb.definition.ComponentType.IO
-        elif new_type == "Other":
+        elif new_type == "other":
             type_id = self._pedb.definition.ComponentType.Other
         else:
             return

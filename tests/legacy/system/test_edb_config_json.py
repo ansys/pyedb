@@ -52,16 +52,12 @@ class TestClass:
     def test_01_create_edb(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         for i in [
-            "components.json",
             "setups_hfss.json",
         ]:
             with open(self.local_input_folder / i) as f:
                 data = json.load(f)
             assert edbapp.configuration.load(data, apply_file=True)
-        assert not edbapp.components.capacitors["C375"].is_enabled
-        assert edbapp.components.instances["U1"].solder_ball_height == 406e-6
-        assert edbapp.components.instances["U1"].solder_ball_diameter[0] == 244e-6
-        assert edbapp.components.instances["U3"].type == "Other"
+
         edbapp.close()
 
     def test_02_pin_groups(self, edb_examples):
@@ -357,9 +353,17 @@ class TestClass:
             }
         }
         edbapp = edb_examples.get_si_verse()
+        renamed_layers = {"1_Top": "1_Top", 'Inner1(GND1)': "Inner1", "Inner2(PWR1)": "Inner2",
+                          'Inner3(Sig1)': "Inner3", 'Inner4(Sig2)': "Inner4", 'Inner5(PWR2)': "Inner5",
+                          'Inner6(GND2)': "Inner6", "16_Bottom": "16_Bottom"}
+        vias_before = {i: [j.start_layer, j.stop_layer] for i, j in edbapp.padstacks.instances.items()}
         assert edbapp.configuration.load(data, apply_file=True)
         assert list(edbapp.stackup.layers.keys())[:4] == ["1_Top", "Inner1", "DE2", "DE3"]
         assert edbapp.stackup.layers["1_Top"].thickness == 0.0005
+        vias_after = {i: [j.start_layer, j.stop_layer] for i, j in edbapp.padstacks.instances.items()}
+        for i, j in vias_after.items():
+            assert j[0] == renamed_layers[vias_before[i][0]]
+            assert j[1] == renamed_layers[vias_before[i][1]]
         edbapp.close()
 
     def test_13b_stackup_materials(self, edb_examples):
@@ -432,31 +436,60 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
-    def test_components(self, edb_examples):
+    def test_components_rlc(self, edb_examples):
+        components = [
+            {
+                "reference_designator": "C375",
+                "enabled": False,
+                "value": 100e-9,
+            },
+            {
+                "reference_designator": "L2",
+                "part_type": "resistor",
+                "rlc_model": [
+                    {
+                        "type": "series",
+                        "capacitance": "100nf",
+                        "inductance": "1nh",
+                        "resistance": "0.001",
+                        "p1": "1",
+                        "p2": "2"
+                    }
+                ]
+            }
+        ]
+        data = {"components": components}
         edbapp = edb_examples.get_si_verse()
-        config = edbapp.configuration.load(str(self.local_input_folder / "components.json"), apply_file=False)
-        assert config.components
-        capacitors = [comp for comp in config.components if comp.part_type.name == "CAPACITOR"]
-        assert len(capacitors) == 2
-        assert not capacitors[0].enabled
-        assert not capacitors[-1].enabled
-        inductor = next(comp for comp in config.components if comp.reference_designator == "L2")
-        assert inductor.rlc_model.capacitance == "100nf"
-        assert inductor.rlc_model.inductance == "1nh"
-        assert inductor.rlc_model.resistance == "0.001"
-        u1 = next(comp for comp in config.components if comp.reference_designator == "U1")
-        assert u1.solder_balls.shape.name == "CYLINDER"
-        assert u1.solder_balls.height == "406um"
-        assert u1.solder_balls.diameter == "244um"
-        assert u1.solder_balls.mid_diameter == "244um"
-        assert u1.solder_balls.enable
-        config = edbapp.configuration.load(str(self.local_input_folder / "components.json"), apply_file=True)
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.components["C375"].enabled == False
+        assert edbapp.components["C375"].value == 100e-9
+        assert edbapp.components["L2"].type == "Resistor"
+        edbapp.close()
+
+    def test_solder_ball(self, edb_examples):
+        components = [
+            {
+                "reference_designator": "U1",
+                "part_type": "io",
+                "solder_ball_properties": {
+                    "shape": "cylinder",
+                    "diameter": "244um",
+                    "height": "406um"
+                },
+                "port_properties": {
+                    "reference_offset": "0.1mm",
+                    "reference_size_auto": True,
+                    "reference_size_x": 0,
+                    "reference_size_y": 0
+                }
+            },
+        ]
+        data = {"components": components}
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.components["U1"].type == "IO"
+        assert edbapp.components["U1"].solder_ball_shape == "Cylinder"
         assert edbapp.components["U1"].solder_ball_height == 406e-6
-        assert edbapp.components["U1"].solder_ball_diameter[0] == 244e-6
-        assert edbapp.components["U1"].solder_ball_diameter[1] == 244e-6
-        assert not edbapp.components["C375"].is_enabled
-        assert not edbapp.components["L2"].is_enabled
-        assert edbapp.components["L2"].ind_value == "1nH"
-        assert edbapp.components["L2"].cap_value == "100nF"
-        assert edbapp.components["L2"].res_value == "0.001"
+        assert edbapp.components["U1"].solder_ball_diameter == (244e-6, 244e-6)
+
         edbapp.close()
