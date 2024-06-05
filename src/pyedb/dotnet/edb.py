@@ -4377,7 +4377,7 @@ class Edb(Database):
                 if included_instances:
                     void_padstacks.append((void, [self.padstacks.instances[edb_id] for edb_id in included_instances]))
 
-        cloned_edb = Edb(edbpath=cloned_edb_path, edbversion=self.edbversion)
+        cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion)
         cloned_edb.stackup.add_layer(layer_name="ref", layer_type="signal", thickness=0.0, material="pec")
         cloned_edb.stackup.add_layer(
             layer_name="ports",
