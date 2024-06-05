@@ -50,15 +50,15 @@ class EdbExamples:
     def __init__(self, local_scratch):
         self.local_scratch = local_scratch
         self.example_models_path = example_models_path
-        self._test_folder = ""
+        self.test_folder = ""
 
     def get_local_file_folder(self, name):
         return os.path.join(self.local_scratch.path, name)
 
     def _create_test_folder(self):
         """Create a local folder under `local_scratch`."""
-        self._test_folder = os.path.join(self.local_scratch.path, generate_random_string(6))
-        return self._test_folder
+        self.test_folder = os.path.join(self.local_scratch.path, generate_random_string(6))
+        return self.test_folder
 
     def _copy_file_folder_into_local_folder(self, file_folder_path):
         src = os.path.join(self.example_models_path, file_folder_path)
@@ -75,7 +75,7 @@ class EdbExamples:
             )
             for f in files:
                 src = os.path.join(self.example_models_path, f)
-                file_folder_name = os.path.join(self._test_folder, os.path.split(src)[-1])
+                file_folder_name = os.path.join(self.test_folder, os.path.split(src)[-1])
                 if os.path.isfile(src):
                     self.local_scratch.copyfile(src, file_folder_name)
                 else:
