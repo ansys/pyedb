@@ -20,8 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 from pyedb.configuration.cfg_boundaries import CfgBoundaries
-from pyedb.configuration.cfg_components import CfgComponent
+from pyedb.configuration.cfg_components import CfgComponents
 from pyedb.configuration.cfg_general import CfgGeneral
 from pyedb.configuration.cfg_nets import CfgNets
 from pyedb.configuration.cfg_padstacks import CfgPadstacks
@@ -31,7 +32,6 @@ from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel
 from pyedb.configuration.cfg_setup import CfgSetup
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
 from pyedb.configuration.cfg_stackup import CfgStackup
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class CfgData(object):
@@ -52,7 +52,8 @@ class CfgData(object):
                 self, kwargs.get("nets", {}).get("signal_nets", []), kwargs.get("nets", {}).get("power_ground_nets", [])
             )
 
-        self.components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
+        # self.components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
+        self.components = CfgComponents(self._pedb, data=kwargs.get("components", []))
 
         self.padstacks = CfgPadstacks(self, kwargs.get("padstacks", None))
 
@@ -80,8 +81,3 @@ class CfgData(object):
 
         self.package_definition = None
         self.operations = None
-
-    @pyedb_function_handler
-    def apply(self):
-        """Apply configuration settings to the current design"""
-        self.stackup.apply()
