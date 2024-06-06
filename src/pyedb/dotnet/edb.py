@@ -111,6 +111,8 @@ if is_linux and is_ironpython:
 else:
     import subprocess
 
+import rtree
+
 
 class Edb(Database):
     """Provides the EDB application interface.
@@ -315,7 +317,9 @@ class Edb(Database):
             if os.path.isfile(file):
                 if not remove_existing_aedt:
                     self.logger.warning(
-                        f"AEDT project-related file {file} exists and may need to be deleted before opening the EDB in HFSS 3D Layout."  # noqa: E501
+                        f"AEDT project-related file {file} exists and may need to be deleted before opening the EDB in "
+                        f"HFSS 3D Layout."
+                        # noqa: E501
                     )
                 else:
                     try:
@@ -4313,7 +4317,7 @@ class Edb(Database):
     @pyedb_function_handler
     def _clean_string_for_variable_name(self, variable_name):
         """Remove forbidden character for variable name.
-        Parameter
+        Parameters
         ----------
         variable_name : str
                 Variable name.
@@ -4329,6 +4333,158 @@ class Edb(Database):
         variable_name = re.sub(r"[() ]", "_", variable_name)
 
         return variable_name
+
+    def create_model_for_arbitrary_wave_ports(
+        self,
+        temp_directory,
+        mounting_side="top",
+        signal_nets=None,
+        terminal_diameter=None,
+        output_edb=None,
+        launching_box_thickness="100um",
+    ):
+        """Generate EDB design to be consumed by PyAEDT to generate arbitrary wave ports shapes.
+        This model has to be considered as merged onto another one. The current opened design must have voids
+        surrounding the pad-stacks where wave ports terminal will be created. THe open design won't be edited, only
+        primitives like voids and pads-stack definition included in the voids are collected to generate a new design.
+
+        Parameters
+        ----------
+        temp_directory : str
+            Temporary directory used during the method execution.
+
+        mounting_side : str
+            Gives the orientation to be considered for the current design. 2 options are available ``"top"`` and
+            ``"bottom". Default value is ``"top"``. If ``"top"`` is selected the method will voids at the top signal
+            layer, and the bottom layer if ``"bottom"`` is used.
+
+        signal_nets : List[str], optional
+            Provides the nets to be included for the model creation. Default value is ``None``. If None is provided,
+            all nets will be included.
+
+        terminal_diameter : float, str, optional
+            When ``None``, the terminal diameter is evaluated at each pads-tack instance found inside the voids. The top
+            or bottom layer pad diameter will be taken, depending on ``mounting_side`` selected. If value is provided,
+            it will overwrite the evaluated diameter.
+
+        output_edb : str, optional
+            The output EDB absolute. If ``None`` the edb is created in the ``temp_directory`` as default name
+            `"waveport_model.aedb"``
+
+        launching_box_thickness : float, str, optional
+            Launching box thickness  used for wave ports. Default value is ``"100um"``.
+
+        Returns
+        -------
+        bool
+            ``True`` when succeeded, ``False`` if failed.
+        """
+        if not temp_directory:
+            self.logger.error("Temp directory must be provided when creating model foe arbitrary wave port")
+            return False
+        if not output_edb:
+            output_edb = os.path.join(temp_directory, "waveport_model.aedb")
+        if os.path.isdir(temp_directory):
+            shutil.rmtree(temp_directory)
+        reference_layer = list(self.stackup.signal_layers.keys())[0]
+        if mounting_side.lower == "bottom":
+            reference_layer = list(self.stackup.signal_layers.keys())[-1]
+        if not signal_nets:
+            signal_nets = list(self.nets.signal.keys())
+
+        used_padstack_defs = []
+        padstack_instances_index = rtree.index.Index()
+        for padstack_inst in list(self.padstacks.instances.values()):
+            if not reference_layer in [padstack_inst.start_layer, padstack_inst.stop_layer]:
+                padstack_inst.delete()
+            else:
+                if padstack_inst.net_name in signal_nets:
+                    padstack_instances_index.insert(padstack_inst.id, padstack_inst.position)
+                    if not padstack_inst.padstack_definition in used_padstack_defs:
+                        used_padstack_defs.append(padstack_inst.padstack_definition)
+
+        polys = [
+            poly
+            for poly in self.modeler.primitives
+            if poly.layer_name == reference_layer and poly.type == "Polygon" and poly.has_voids
+        ]
+        if not polys:
+            self.logger.error(
+                f"No polygon found with voids on layer {reference_layer} during model creation for "
+                f"arbitrary wave ports"
+            )
+            return False
+        void_padstacks = []
+        for poly in polys:
+            for void in poly.voids:
+                void_bbox = (
+                    void.polygon_data.edb_api.GetBBox().Item1.X.ToDouble(),
+                    void.polygon_data.edb_api.GetBBox().Item1.Y.ToDouble(),
+                    void.polygon_data.edb_api.GetBBox().Item2.X.ToDouble(),
+                    void.polygon_data.edb_api.GetBBox().Item2.Y.ToDouble(),
+                )
+                included_instances = list(padstack_instances_index.intersection(void_bbox))
+                if included_instances:
+                    void_padstacks.append((void, [self.padstacks.instances[edb_id] for edb_id in included_instances]))
+
+        if not void_padstacks:
+            self.logger.error(
+                "No padstack instances found inside evaluated voids during model creation for arbitrary" "waveports"
+            )
+            return False
+        cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion)
+        cloned_edb.stackup.add_layer(layer_name="ref", layer_type="signal", thickness=0.0, material="pec")
+        cloned_edb.stackup.add_layer(
+            layer_name="ports",
+            layer_type="signal",
+            thickness=self.stackup.signal_layers[reference_layer].thickness,
+            material="pec",
+        )
+        box_thick = "100um"
+        if launching_box_thickness:
+            box_thick = self.edb_value(launching_box_thickness).ToString()
+        if mounting_side == "top":
+            cloned_edb.stackup.add_layer(
+                layer_name="port_pec", layer_type="signal", thickness=box_thick, method="add_on_bottom", material="pec"
+            )
+        else:
+            cloned_edb.stackup.add_layer(
+                layer_name="port_pec", layer_type="signal", thickness=box_thick, method="add_on_top", material="pec"
+            )
+
+        for void_info in void_padstacks:
+            port_poly = cloned_edb.modeler.create_polygon(
+                main_shape=void_info[0].polygon_data.edb_api, layer_name="ref", net_name="GND"
+            )
+            pec_poly = cloned_edb.modeler.create_polygon(
+                main_shape=port_poly.polygon_data.edb_api, layer_name="port_pec", net_name="GND"
+            )
+            pec_poly.scale(1.5)
+
+        for void_info in void_padstacks:
+            for inst in void_info[1]:
+                if not terminal_diameter:
+                    pad_diameter = (
+                        self.padstacks.definitions[inst.padstack_definition]
+                        .pad_by_layer[reference_layer]
+                        .parameters_values[0]
+                    )
+                else:
+                    pad_diameter = self.edb_value(terminal_diameter).ToDouble()
+                _temp_circle = cloned_edb.modeler.create_circle(
+                    layer_name="ports",
+                    x=inst.position[0],
+                    y=inst.position[1],
+                    radius=pad_diameter / 2,
+                    net_name=inst.net_name,
+                )
+                if not _temp_circle:
+                    self.logger.error(
+                        f"Failed to create circle for terminal during create_model_for_arbitrary_wave_ports"
+                    )
+        cloned_edb.save_as(output_edb)
+        cloned_edb.close()
+        return True
 
     @property
     def definitions(self):
