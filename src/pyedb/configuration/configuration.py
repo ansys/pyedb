@@ -22,6 +22,7 @@
 
 import json
 import os
+from pathlib import Path
 
 import toml
 
@@ -115,9 +116,7 @@ class Configuration:
             self.cfg_data.nets.apply()
 
         # Configure components
-        if self.cfg_data.components:
-            for comp in self.cfg_data.components:
-                comp.apply()
+        self.cfg_data.components.apply()
 
         # Configure padstacks
         if self.cfg_data.padstacks:
@@ -268,3 +267,42 @@ class Configuration:
                 )
             for _, i in comp_list.items():
                 i.package_def = name
+
+    def get_data_from_db(self, stackup=True):
+        """Get configuration data from layout.
+
+        Parameters
+        ----------
+        stackup
+
+        Returns
+        -------
+
+        """
+        data = {}
+        if stackup:
+            data["stackup"] = self.cfg_data.stackup.get_data_from_db()
+
+        return data
+
+    @pyedb_function_handler
+    def export(self, file_path, stackup=True):
+        """Export the configuration data from layout to a file.
+
+        Parameters
+        ----------
+        file_path : str, Path
+            File path to export the configuration data.
+        stackup : bool
+            Whether to export stackup or not.
+
+        Returns
+        -------
+        bool
+        """
+        file_path = file_path if isinstance(file_path, Path) else Path(file_path)
+        file_path = file_path if file_path.suffix == ".json" else file_path.with_suffix(".json")
+        data = self.get_data_from_db(stackup)
+        with open(file_path, "w") as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        return True if os.path.isfile(file_path) else False

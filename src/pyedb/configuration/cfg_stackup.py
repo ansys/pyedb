@@ -20,16 +20,39 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
+from pyedb.configuration.cfg_common import CfgBase
 from pyedb.generic.general_methods import pyedb_function_handler
+
+
+class CfgMaterial(CfgBase):
+    def __init__(self, **kwargs):
+        self.name = kwargs.get("name", None)
+        self.permittivity = kwargs.get("permittivity", None)
+        self.conductivity = kwargs.get("conductivity", None)
+        self.dielectric_loss_tangent = kwargs.get("dielectric_loss_tangent", None)
+        self.magnetic_loss_tangent = kwargs.get("magnetic_loss_tangent", None)
+        self.mass_density = kwargs.get("mass_density", None)
+        self.permeability = kwargs.get("permeability", None)
+        self.poisson_ratio = kwargs.get("poisson_ratio", None)
+        self.specific_heat = kwargs.get("specific_heat", None)
+        self.thermal_conductivity = kwargs.get("thermal_conductivity", None)
+
+
+class CfgLayer(CfgBase):
+    def __init__(self, **kwargs):
+        self.name = kwargs.get("name", None)
+        self.type = kwargs.get("type", None)
+        self.material = kwargs.get("material", None)
+        self.fill_material = kwargs.get("fill_material", None)
+        self.thickness = kwargs.get("thickness", None)
 
 
 class CfgStackup:
     def __init__(self, pedb, data):
         self._pedb = pedb
 
-        self.materials = [CfgMaterial(self._pedb, **mat) for mat in data.get("materials", [])]
-        self.layers = [CfgLayer(self._pedb, **lay) for lay in data.get("layers", [])]
+        self.materials = [CfgMaterial(**mat) for mat in data.get("materials", [])]
+        self.layers = [CfgLayer(**lay) for lay in data.get("layers", [])]
 
     @pyedb_function_handler
     def apply(self):
@@ -66,9 +89,7 @@ class CfgStackup:
             if l.type == "signal":
                 layer_id = lc_signal_layers[signal_idx]
                 layer_name = id_name[layer_id]
-                attrs = {
-                    i: j for i, j in l.__dict__.items() if not i.startswith("_") and isinstance(j, (int, float, str))
-                }
+                attrs = l.get_attributes()
                 self._pedb.stackup.layers[layer_name].update(**attrs)
                 signal_idx = signal_idx + 1
 
@@ -79,13 +100,11 @@ class CfgStackup:
         if l.type == "signal":
             prev_layer_clone = self._pedb.stackup.layers[l.name]
         else:
-            attrs = {i: j for i, j in l.__dict__.items() if not i.startswith("_") and isinstance(j, (int, float, str))}
+            attrs = l.get_attributes()
             prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
         for idx, l in enumerate(layers):
             if l.type == "dielectric":
-                attrs = {
-                    i: j for i, j in l.__dict__.items() if not i.startswith("_") and isinstance(j, (int, float, str))
-                }
+                attrs = l.get_attributes()
                 prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **attrs)
             elif l.type == "signal":
                 prev_layer_clone = self._pedb.stackup.layers[l.name]
@@ -98,38 +117,42 @@ class CfgStackup:
             if mat_in_cfg.name.lower() in materials_in_db:
                 self._pedb.materials.delete_material(materials_in_db[mat_in_cfg.name.lower()])
 
-            attrs = {
-                i: j
-                for i, j in mat_in_cfg.__dict__.items()
-                if not i.startswith("_") and isinstance(j, (int, float, str))
-            }
+            attrs = mat_in_cfg.get_attributes()
             mat = self._pedb.materials.add_material(**attrs)
 
+    @pyedb_function_handler
+    def __get_materials_from_db(self):
+        materials = []
+        for name, p in self._pedb.materials.materials.items():
+            mat = {}
+            for p_name in CfgMaterial().__dict__:
+                mat[p_name] = getattr(p, p_name)
+            materials.append(mat)
+        return materials
 
-class CfgMaterial:
-    def __init__(self, pedb, **kwargs):
-        self._pedb = pedb
-        self.name = kwargs.get("name")
-        self.permittivity = kwargs.get("permittivity", None)
-        self.conductivity = kwargs.get("conductivity", None)
-        self.dielectric_loss_tangent = kwargs.get("dielectric_loss_tangent", None)
-        self.magnetic_loss_tangent = kwargs.get("magnetic_loss_tangent", None)
-        self.mass_density = kwargs.get("mass_density", None)
-        self.permeability = kwargs.get("permeability", None)
-        self.poisson_ratio = kwargs.get("poisson_ratio", None)
-        self.specific_heat = kwargs.get("specific_heat", None)
-        self.thermal_conductivity = kwargs.get("thermal_conductivity", None)
-        self.youngs_modulus = kwargs.get("youngs_modulus", None)
-        self.thermal_expansion_coefficient = kwargs.get("thermal_expansion_coefficient", None)
+    @pyedb_function_handler
+    def __get_layers_from_db(self):
+        layers = []
+        for name, obj in self._pedb.stackup.all_layers.items():
+            layer = {}
+            for p_name in CfgLayer().__dict__:
+                p_value = getattr(obj, p_name, None)
+                if p_value is not None:
+                    layer[p_name] = getattr(obj, p_name)
+            layers.append(layer)
+        return layers
 
+    @pyedb_function_handler
+    def get_data_from_db(self):
+        """Get configuration data from layout.
 
-class CfgLayer:
-    def __init__(self, pedb, **kwargs):
-        self._pedb = pedb
-        self.name = kwargs.get("name", None)
-        self.type = kwargs.get("type", None)
-        self.material = kwargs.get("material", None)
-        self.fill_material = kwargs.get("fill_material", None)
-        self.thickness = kwargs.get("thickness", None)
-        self.etch_factor = kwargs.get("etch_factor", None)
-        self.lower_elevation = kwargs.get("lower_elevation", None)
+        Returns
+        -------
+        dict
+        """
+        stackup = {}
+        materials = self.__get_materials_from_db()
+        stackup["materials"] = materials
+        layers = self.__get_layers_from_db()
+        stackup["layers"] = layers
+        return stackup

@@ -1983,7 +1983,7 @@ class Components(object):
         if not sball_mid_diam:
             sball_mid_diam = sball_diam
 
-        if shape == "Cylinder":
+        if shape.lower() == "cylinder":
             sball_shape = self._edb.definition.SolderballShape.Cylinder
         else:
             sball_shape = self._edb.definition.SolderballShape.Spheroid
