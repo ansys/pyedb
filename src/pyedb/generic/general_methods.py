@@ -194,7 +194,7 @@ def deprecate_argument_name(argument_map):
     """
     def decorator(func):
         """Decorator that wraps the function to handle deprecated arguments."""
-        @functools.warps(func)
+        @functools.wraps(func)
         def wrapper(*args, **kwargs):
             """Wrapper function that checks for deprecated arguments."""
             func_name = func.__name__
