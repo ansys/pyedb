@@ -4379,8 +4379,6 @@ class Edb(Database):
         -------
         bool
             ``True`` when succeeded, ``False`` if failed.
-
-
         """
         if not temp_directory:
             self.logger.error("Temp directory must be provided when creating model foe arbitrary wave port")
