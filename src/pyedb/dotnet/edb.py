@@ -1523,6 +1523,9 @@ class Edb(Database):
             ``True`` when successful, ``False`` when failed.
 
         """
+        if is_linux and tech_file:
+            self.logger.error("Technology files are supported only in Linux. Use control file instead.")
+            return False
         control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(inputGDS)[-1][:-3] + "xml")
         ControlFile(xml_input=control_file, tecnhology=tech_file, layer_map=map_file).write_xml(control_file_temp)
         if self.import_layout_pcb(
