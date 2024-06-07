@@ -155,6 +155,7 @@ class PackageDef(ObjBase):
 
     @property
     def heatsink(self):
+        """Component heatsink."""
         from pyedb.dotnet.edb_core.utilities.heatsink import HeatSink
 
         flag, edb_object = self._edb_object.GetHeatSink()
