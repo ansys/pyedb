@@ -33,6 +33,7 @@ from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel
 from pyedb.configuration.cfg_setup import CfgSetup
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
 from pyedb.configuration.cfg_stackup import CfgStackup
+from pyedb.configuration.cfg_operations import CfgOperations
 
 
 class CfgData(object):
@@ -81,4 +82,4 @@ class CfgData(object):
         ]
 
         self.package_definitions = CfgPackageDefinitions(self._pedb, data=kwargs.get("package_definitions", []))
-        self.operations = None
+        self.operations = CfgOperations(self._pedb, data=kwargs.get("operations", []))
