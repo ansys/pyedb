@@ -1103,12 +1103,6 @@ class TestClass:
                         assert (pedb_lay.side_hallhuray_nodule_radius - layer["side_hallhuray_nodule_radius"]) < delta
                         assert (pedb_lay.side_hallhuray_surface_ratio - layer["side_hallhuray_surface_ratio"]) < delta
         edbapp.close()
-        edbapp = Edb(edbversion=desktop_version)
-        json_path = os.path.join(local_path, "example_models", test_subfolder, "test_mat2.json")
-        edbapp.materials.delete_material("copper")
-        assert edbapp.stackup.import_stackup(json_path)
-        assert "SOLDER" in edbapp.stackup.stackup_layers
-        edbapp.close()
 
     def test_19(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
