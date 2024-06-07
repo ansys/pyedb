@@ -246,7 +246,7 @@ class TestClass:
                     "maximum_iterations": 10,
                     "preserve_components_with_model": False,
                     "simple_pad_check": True,
-                    "keep_lines_as_path": False
+                    "keep_lines_as_path": False,
                 }
             }
         }
