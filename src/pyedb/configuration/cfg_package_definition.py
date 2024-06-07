@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from enum import Enum
-
 from pyedb.configuration.cfg_common import CfgBase
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.generic.general_methods import pyedb_function_handler
