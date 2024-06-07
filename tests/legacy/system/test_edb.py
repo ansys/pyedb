@@ -1929,8 +1929,9 @@ class TestClass:
         assert setup.dc_ir_settings.via_report_path
         setup.dc_ir_settings.source_terms_to_ground = {"test": 1}
         assert setup.dc_ir_settings.source_terms_to_ground
+        edbapp.close()
 
-    def arbitrary_wave_ports(self):
+    def test_arbitrary_wave_ports(self):
         example_folder = os.path.join(local_path, "example_models", test_subfolder)
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
         target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
@@ -1943,4 +1944,4 @@ class TestClass:
         )
         edb_model = os.path.join(self.local_scratch, "wave_ports.aedb")
         test_edb = Edb(edbpath=edb_model, edbversion=desktop_version)
-        pass
+        edbapp.close()
