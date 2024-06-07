@@ -110,8 +110,7 @@ class Connectable(LayoutObj):
         """
         from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
 
-        edb_net = self._edb_object.GetNet()
-        return EDBNetsData(edb_net, self._pedb) if not edb_net.IsNull() else None
+        return EDBNetsData(self._edb_object.GetNet(), self._pedb)
 
     @net.setter
     def net(self, value):
