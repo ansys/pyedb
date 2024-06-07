@@ -283,28 +283,23 @@ class TestClass:
                         "fin_height": "1mm",
                         "fin_orientation": "x_oriented",
                         "fin_spacing": "1mm",
-                        "fin_thickness": "4mm"
+                        "fin_thickness": "4mm",
                     },
                     "apply_to_all": False,
-                    "components": [
-                        "J5"
-                    ]
+                    "components": ["J5"],
                 },
                 {
                     "name": "package_2",
                     "component_definition": "COIL-1008CS_V",
-                    "extent_bounding_box": [["-1mm", "-1mm"],
-                                            ["1mm", "1mm"]],
+                    "extent_bounding_box": [["-1mm", "-1mm"], ["1mm", "1mm"]],
                     "maximum_power": 1,
                     "therm_cond": 2,
                     "theta_jb": 3,
                     "theta_jc": 4,
                     "height": 5,
                     "apply_to_all": True,
-                    "components": [
-                        "L8"
-                    ]
-                }
+                    "components": ["L8"],
+                },
             ]
         }
         edbapp = edb_examples.get_si_verse()

@@ -22,8 +22,8 @@
 
 from enum import Enum
 
-from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.configuration.cfg_common import CfgBase
+from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.generic.general_methods import pyedb_function_handler
 
 
@@ -74,7 +74,6 @@ class CfgPackageDefinitions:
         self.packages = [CfgPackage(**package) for package in data]
 
     def apply(self):
-
         for pkg in self.packages:
             comp_def_from_db = self._pedb.definitions.component[pkg.component_definition]
             if pkg.name in self._pedb.definitions.package:
@@ -94,8 +93,11 @@ class CfgPackageDefinitions:
             comp_list = dict()
             if pkg.apply_to_all:
                 comp_list.update(
-                    {refdes: comp for refdes, comp in comp_def_from_db.components.items() if
-                     refdes not in pkg.components}
+                    {
+                        refdes: comp
+                        for refdes, comp in comp_def_from_db.components.items()
+                        if refdes not in pkg.components
+                    }
                 )
             else:
                 comp_list.update(
