@@ -489,3 +489,23 @@ class TestClass:
         assert primitives
         assert primitives[0].type == "Path"
         edbapp.close()
+
+    def arbitrary_wave_ports(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        edbapp.create_model_for_arbitrary_wave_ports(
+            temp_directory=self.local_scratch.path,
+            output_edb="wave_ports.aedb",
+            mounting_side="top",
+        )
+        edbapp.close()
+        edb_model = os.path.join(self.local_scratch, "wave_ports.aedb")
+        test_edb = Edb(edbpath=edb_model, edbversion=desktop_version)
+        assert len(list(test_edb.nets.signal.keys())) == 13
+        assert len(list(test_edb.stackup.layers.keys())) == 3
+        assert "ref" in test_edb.stackup.layers
+        assert len(test_edb.modeler.polygons) == 12
+        test_edb.close()

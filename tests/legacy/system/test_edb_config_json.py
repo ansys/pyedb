@@ -268,18 +268,70 @@ class TestClass:
         edbapp.close()
 
     def test_11_package_definitions(self, edb_examples):
+        data = {
+            "package_definitions": [
+                {
+                    "name": "package_1",
+                    "component_definition": "SMTC-MECT-110-01-M-D-RA1_V",
+                    "maximum_power": 1,
+                    "therm_cond": 2,
+                    "theta_jb": 3,
+                    "theta_jc": 4,
+                    "height": 5,
+                    "heatsink": {
+                        "fin_base_height": "1mm",
+                        "fin_height": "1mm",
+                        "fin_orientation": "x_oriented",
+                        "fin_spacing": "1mm",
+                        "fin_thickness": "4mm",
+                    },
+                    "apply_to_all": False,
+                    "components": ["J5"],
+                },
+                {
+                    "name": "package_2",
+                    "component_definition": "COIL-1008CS_V",
+                    "extent_bounding_box": [["-1mm", "-1mm"], ["1mm", "1mm"]],
+                    "maximum_power": 1,
+                    "therm_cond": 2,
+                    "theta_jb": 3,
+                    "theta_jc": 4,
+                    "height": 5,
+                    "apply_to_all": True,
+                    "components": ["L8"],
+                },
+            ]
+        }
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(str(self.local_input_folder / "package_def.json"), apply_file=True)
-        assert edbapp.definitions.package["package_1"].maximum_power == 1
-        assert edbapp.definitions.package["package_1"].therm_cond == 1
-        assert edbapp.definitions.package["package_1"].theta_jb == 1
-        assert edbapp.definitions.package["package_1"].theta_jc == 1
-        assert edbapp.definitions.package["package_1"].height == 1
-        assert edbapp.definitions.package["package_1"].heatsink.fin_base_height == 0.001
-        assert edbapp.definitions.package["package_1"].heatsink.fin_height == 0.001
-        assert edbapp.definitions.package["package_1"].heatsink.fin_orientation == "x_oriented"
-        assert edbapp.definitions.package["package_1"].heatsink.fin_spacing == 0.001
-        assert edbapp.definitions.package["package_1"].heatsink.fin_thickness == 0.004
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(package_definitions=True)
+        for pdef in data["package_definitions"]:
+            target_pdef = [i for i in data_from_db["package_definitions"] if i["name"] == pdef["name"]][0]
+            for p, value in pdef.items():
+                if p == "apply_to_all":
+                    continue
+                elif p == "component_definition":
+                    continue
+                elif p == "components":
+                    comps_def_from_db = edbapp.components.definitions[pdef["component_definition"]]
+                    comps_from_db = comps_def_from_db.components
+                    if pdef["apply_to_all"]:
+                        comps = {i: j for i, j in comps_from_db.items() if i not in value}
+                    else:
+                        comps = {i: j for i, j in comps_from_db.items() if i in value}
+                    for _, comp_obj in comps.items():
+                        assert comp_obj.package_def.name == pdef["name"]
+                elif p == "extent_bounding_box":
+                    continue
+                elif p == "heatsink":
+                    heatsink = pdef["heatsink"]
+                    target_heatsink = target_pdef["heatsink"]
+                    for hs_p, hs_value in target_heatsink.items():
+                        if hs_p in ["fin_base_height", "fin_height", "fin_spacing", "fin_thickness"]:
+                            hs_value = edbapp.edb_value(hs_value).ToDouble()
+                        assert hs_value == target_heatsink[hs_p]
+                else:
+                    assert value == target_pdef[p]
         edbapp.close()
 
     def test_12_setup_siwave_dc(self, edb_examples):
@@ -370,7 +422,7 @@ class TestClass:
         for i, j in vias_after.items():
             assert j[0] == renamed_layers[vias_before[i][0]]
             assert j[1] == renamed_layers[vias_before[i][1]]
-        data_from_db = edbapp.configuration.get_data_from_db()
+        data_from_db = edbapp.configuration.get_data_from_db(stackup=True)
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
@@ -391,7 +443,7 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        data_from_db = edbapp.configuration.get_data_from_db()
+        data_from_db = edbapp.configuration.get_data_from_db(stackup=True)
         for mat in data["stackup"]["materials"]:
             target_mat = [i for i in data_from_db["stackup"]["materials"] if i["name"] == mat["name"]][0]
             for p, value in mat.items():

@@ -542,7 +542,7 @@ class PadstackInstanceTerminal(Terminal):
 
         terminal = self._edb.cell.terminal.PadstackInstanceTerminal.Create(
             self._pedb.active_layout,
-            self.net.net_object,
+            padstack_instance.net.net_object,
             name,
             padstack_instance._edb_object,
             layer_obj._edb_layer,

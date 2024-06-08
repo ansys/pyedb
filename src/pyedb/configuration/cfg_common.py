@@ -30,7 +30,19 @@ class CfgBase:
         return []
 
     @pyedb_function_handler
-    def get_attributes(self):
+    def get_attributes(self, exclude=None):
         attrs = {i: j for i, j in self.__dict__.items() if i not in self.protected_attributes}
+        if exclude is not None:
+            exclude = exclude if isinstance(exclude, list) else [exclude]
+            attrs = {i: j for i, j in attrs.items() if i not in exclude}
+        attrs = {i: j for i, j in attrs.items() if not i.startswith("_")}
         attrs = {i: j for i, j in attrs.items() if j is not None}
         return attrs
+
+    @pyedb_function_handler
+    def set_attributes(self, pedb_object):
+        attrs = self.get_attributes()
+        for attr, value in attrs.items():
+            if attr not in dir(pedb_object):
+                raise AttributeError(f"Invalid attribute '{attr}' in '{pedb_object}'")
+            setattr(pedb_object, attr, value)

@@ -150,8 +150,7 @@ class Configuration:
             spice_model.apply()
 
         # Configure package definitions
-        if "package_definitions" in self.data:
-            self._load_package_def()
+        self.cfg_data.package_definitions.apply()
 
         # Configure operations
         if "operations" in self.data:
@@ -268,7 +267,7 @@ class Configuration:
             for _, i in comp_list.items():
                 i.package_def = name
 
-    def get_data_from_db(self, stackup=True):
+    def get_data_from_db(self, **kwargs):
         """Get configuration data from layout.
 
         Parameters
@@ -280,13 +279,15 @@ class Configuration:
 
         """
         data = {}
-        if stackup:
+        if kwargs.get("stackup", False):
             data["stackup"] = self.cfg_data.stackup.get_data_from_db()
+        if kwargs.get("package_definitions", False):
+            data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
 
         return data
 
     @pyedb_function_handler
-    def export(self, file_path, stackup=True):
+    def export(self, file_path, stackup=True, package_definitions=True):
         """Export the configuration data from layout to a file.
 
         Parameters
@@ -302,7 +303,7 @@ class Configuration:
         """
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)
         file_path = file_path if file_path.suffix == ".json" else file_path.with_suffix(".json")
-        data = self.get_data_from_db(stackup)
+        data = self.get_data_from_db(stackup=stackup, package_definitions=package_definitions)
         with open(file_path, "w") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
         return True if os.path.isfile(file_path) else False

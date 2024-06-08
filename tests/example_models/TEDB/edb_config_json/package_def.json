@@ -29,13 +29,6 @@
       "theta_jb": 1,
       "theta_jc": 1,
       "height": 1,
-      "heatsink": {
-        "fin_base_height": "1mm",
-        "fin_height": "1mm",
-        "fin_orientation": "x_oriented",
-        "fin_spacing": "1mm",
-        "fin_thickness": "4mm"
-      },
       "apply_to_all": true,
       "components": [
         "L8"
