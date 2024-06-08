@@ -76,7 +76,7 @@ jobs:
 
   legacy-tests:
     name: Test dotnet
-    runs-on: [ Windows, self-hosted, pyedb ]
+    runs-on: [ Windows, self-hosted, pyedb, pyedb-ci-0 ]
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@v4
@@ -141,7 +141,7 @@ jobs:
     name: Testing PyAEDT main branch
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
-    runs-on: [ self-hosted, Windows, pyaedt ]
+    runs-on: [ self-hosted, Windows, pyaedt, pyedb-ci-0 ]
     steps:
       - name: Install Git and checkout project
         uses: actions/checkout@v4
@@ -216,7 +216,7 @@ jobs:
 
   docs-build:
     name: Build documentation
-    runs-on: [ Windows, self-hosted, pyedb ]
+    runs-on: [ Windows, self-hosted, pyedb, pyedb-ci-1 ]
     timeout-minutes: 480
     steps:
       - uses: actions/checkout@v4
