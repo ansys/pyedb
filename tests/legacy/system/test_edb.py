@@ -1942,6 +1942,6 @@ class TestClass:
             output_edb="wave_ports.aedb",
             mounting_side="top",
         )
-        edb_model = os.path.join(self.local_scratch, "wave_ports.aedb")
+        edb_model = os.path.join(self.local_scratch.path, "wave_ports.aedb")
         test_edb = Edb(edbpath=edb_model, edbversion=desktop_version)
         edbapp.close()
