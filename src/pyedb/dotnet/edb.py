@@ -35,6 +35,9 @@ import time
 import traceback
 import warnings
 
+from pathlib import Path
+from typing import Union
+
 from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
 from pyedb.dotnet.edb_core.components import Components
@@ -182,7 +185,7 @@ class Edb(Database):
 
     def __init__(
         self,
-        edbpath: str = None,
+        edbpath: Union[str, Path] = None,
         cellname: str = None,
         isreadonly: bool = False,
         edbversion: str = None,
@@ -193,6 +196,9 @@ class Edb(Database):
         technology_file: str = None,
         remove_existing_aedt: bool = False,
     ):
+        if isinstance(edbpath, Path):
+            edbpath = str(edbpath)
+
         edbversion = get_string_version(edbversion)
         self._clean_variables()
         Database.__init__(self, edbversion=edbversion, student_version=student_version)

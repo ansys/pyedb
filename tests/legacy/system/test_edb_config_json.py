@@ -450,6 +450,53 @@ class TestClass:
                 assert value == target_mat[p]
         edbapp.close()
 
+    def test_13c_stackup_create_stackup(self, edb_examples):
+        data = {
+            "stackup": {
+                "materials": [
+                    {"name": "copper", "conductivity": 570000000},
+                    {"name": "megtron4", "permittivity": 3.77, "dielectric_loss_tangent": 0.005},
+                    {"name": "Solder Resist", "permittivity": 4, "dielectric_loss_tangent": 0},
+                ],
+                "layers": [
+                    {
+                        "fill_material": "Solder Resist",
+                        "material": "copper",
+                        "name": "1_Top",
+                        "thickness": "0.5mm",
+                        "type": "signal",
+                    },
+                    {
+                        "fill_material": "megtron4",
+                        "material": "copper",
+                        "name": "Inner1",
+                        "thickness": "0.017mm",
+                        "type": "signal",
+                    },
+                    {"material": "megtron4", "name": "DE2", "thickness": "0.088mm", "type": "dielectric"},
+                    {"material": "megtron4", "name": "DE3", "thickness": "0.1mm", "type": "dielectric"},
+                    {
+                        "fill_material": "megtron4",
+                        "material": "copper",
+                        "name": "Inner2",
+                        "thickness": "0.017mm",
+                        "type": "signal",
+                    }
+                ]
+            }
+        }
+        edbapp = edb_examples.create_empty_edb()
+
+        assert edbapp.configuration.load(data, apply_file=True)
+
+        data_from_db = edbapp.configuration.get_data_from_db(stackup=True)
+        for lay in data["stackup"]["layers"]:
+            target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
+            for p, value in lay.items():
+                value = edbapp.edb_value(value).ToDouble() if p in ["thickness"] else value
+                assert value == target_mat[p]
+        edbapp.close()
+
     def test_14_setup_siwave_syz(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(str(self.local_input_folder / "setups_siwave_syz.json"), apply_file=True)
