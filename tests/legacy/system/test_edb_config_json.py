@@ -481,8 +481,8 @@ class TestClass:
                         "name": "Inner2",
                         "thickness": "0.017mm",
                         "type": "signal",
-                    }
-                ]
+                    },
+                ],
             }
         }
         edbapp = edb_examples.create_empty_edb()

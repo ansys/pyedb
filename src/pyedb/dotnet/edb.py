@@ -27,16 +27,15 @@ This module is implicitly loaded in HFSS 3D Layout when launched.
 """
 from itertools import combinations
 import os
+from pathlib import Path
 import re
 import shutil
 import sys
 import tempfile
 import time
 import traceback
-import warnings
-
-from pathlib import Path
 from typing import Union
+import warnings
 
 from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
