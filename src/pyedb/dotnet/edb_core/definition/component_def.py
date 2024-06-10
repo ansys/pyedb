@@ -94,7 +94,7 @@ class EDBComponentDef(ObjBase):
         ]
         return {comp.refdes: comp for comp in comp_list}
 
-    @pyedb_function_handler()
+  
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
         """Assign RLC to all components under this part name.
 
@@ -114,7 +114,7 @@ class EDBComponentDef(ObjBase):
             comp.assign_rlc_model(res, ind, cap, is_parallel)
         return True
 
-    @pyedb_function_handler()
+  
     def assign_s_param_model(self, file_path, model_name=None, reference_net=None):
         """Assign S-parameter to all components under this part name.
 
@@ -133,7 +133,7 @@ class EDBComponentDef(ObjBase):
             comp.assign_s_param_model(file_path, model_name, reference_net)
         return True
 
-    @pyedb_function_handler()
+  
     def assign_spice_model(self, file_path, model_name=None):
         """Assign Spice model to all components under this part name.
 
@@ -171,11 +171,11 @@ class EDBComponentDef(ObjBase):
                 temp[edb_object.name] = edb_object
         return temp
 
-    @pyedb_function_handler
+
     def _add_component_model(self, value):
         self._edb_object.AddComponentModel(value._edb_object)
 
-    @pyedb_function_handler
+
     def add_n_port_model(self, fpath, name=None):
         if not name:
             name = os.path.splitext(os.path.basename(fpath)[0])
@@ -188,7 +188,7 @@ class EDBComponentDef(ObjBase):
 
         self._add_component_model(n_port_comp_model)
 
-    @pyedb_function_handler
+
     def create(self, name):
         cell_type = self._pedb.edb_api.cell.CellType.FootprintCell
         footprint_cell = self._pedb._active_cell.cell.Create(self._pedb.active_db, cell_type, name)

@@ -110,7 +110,7 @@ class EdbHfss(object):
     def _get_edb_value(self, value):
         return self._pedb.edb_value(value)
 
-    @pyedb_function_handler()
+  
     def _create_edge_terminal(self, prim_id, point_on_edge, terminal_name=None, is_ref=False):
         """Create an edge terminal.
 
@@ -148,7 +148,7 @@ class EdbHfss(object):
             prim.GetLayout(), prim.GetNet(), terminal_name, pos_edge, isRef=is_ref
         )
 
-    @pyedb_function_handler()
+  
     def get_trace_width_for_traces_with_ports(self):
         """Retrieve the trace width for traces with ports.
 
@@ -164,7 +164,7 @@ class EdbHfss(object):
                 nets[net] = self._pedb.nets[net].get_smallest_trace_width()
         return nets
 
-    @pyedb_function_handler()
+  
     def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
         """Create Circuit Port on Pin.
 
@@ -192,7 +192,7 @@ class EdbHfss(object):
         """
         return self._pedb.siwave.create_circuit_port_on_pin(pos_pin, neg_pin, impedance, port_name)
 
-    @pyedb_function_handler()
+  
     def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
         """Create a voltage source.
 
@@ -224,7 +224,7 @@ class EdbHfss(object):
         """
         return self._pedb.siwave.create_voltage_source_on_pin(pos_pin, neg_pin, voltage_value, phase_value, source_name)
 
-    @pyedb_function_handler()
+  
     def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
         """Create a current source.
 
@@ -257,7 +257,7 @@ class EdbHfss(object):
 
         return self._pedb.siwave.create_current_source_on_pin(pos_pin, neg_pin, current_value, phase_value, source_name)
 
-    @pyedb_function_handler()
+  
     def create_resistor_on_pin(self, pos_pin, neg_pin, rvalue=1, resistor_name=""):
         """Create a Resistor boundary between two given pins.
 
@@ -287,7 +287,7 @@ class EdbHfss(object):
         """
         return self._pedb.siwave.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
 
-    @pyedb_function_handler()
+  
     def create_circuit_port_on_net(
         self,
         positive_component_name,
@@ -336,7 +336,7 @@ class EdbHfss(object):
             port_name,
         )
 
-    @pyedb_function_handler()
+  
     def create_voltage_source_on_net(
         self,
         positive_component_name,
@@ -389,7 +389,7 @@ class EdbHfss(object):
             source_name,
         )
 
-    @pyedb_function_handler()
+  
     def create_current_source_on_net(
         self,
         positive_component_name,
@@ -442,7 +442,7 @@ class EdbHfss(object):
             source_name,
         )
 
-    @pyedb_function_handler()
+  
     def create_coax_port_on_component(self, ref_des_list, net_list):
         """Create a coaxial port on a component or component list on a net or net list.
            The name of the new coaxial port is automatically assigned.
@@ -489,7 +489,7 @@ class EdbHfss(object):
                         coax.append(port_name)
         return coax
 
-    @pyedb_function_handler()
+  
     def create_differential_wave_port(
         self,
         positive_primitive_id,
@@ -566,7 +566,7 @@ class EdbHfss(object):
         pos_term._edb_object.SetName(port_name)
         return port_name, BundleWavePort(self._pedb, _edb_boundle_terminal)
 
-    @pyedb_function_handler()
+  
     def create_bundle_wave_port(
         self,
         primitives_id,
@@ -628,7 +628,7 @@ class EdbHfss(object):
         _edb_bundle_terminal = self._edb.cell.terminal.BundleTerminal.Create(edb_list)
         return port_name, BundleWavePort(self._pedb, _edb_bundle_terminal)
 
-    @pyedb_function_handler()
+  
     def create_hfss_ports_on_padstack(self, pinpos, portname=None):
         """Create an HFSS port on a padstack.
 
@@ -657,7 +657,7 @@ class EdbHfss(object):
         else:
             return False
 
-    @pyedb_function_handler()
+  
     def create_edge_port_on_polygon(
         self,
         polygon=None,
@@ -767,7 +767,7 @@ class EdbHfss(object):
             edge_term.SetReferenceTerminal(ref_edge_term)
         return True
 
-    @pyedb_function_handler()
+  
     def create_wave_port(
         self,
         prim_id,
@@ -828,7 +828,7 @@ class EdbHfss(object):
         else:
             return False
 
-    @pyedb_function_handler()
+  
     def create_edge_port_vertical(
         self,
         prim_id,
@@ -901,7 +901,7 @@ class EdbHfss(object):
         else:
             return False
 
-    @pyedb_function_handler()
+  
     def create_edge_port_horizontal(
         self,
         prim_id,
@@ -957,7 +957,7 @@ class EdbHfss(object):
         else:
             return False
 
-    @pyedb_function_handler()
+  
     def create_lumped_port_on_net(
         self, nets=None, reference_layer=None, return_points_only=False, digit_resolution=6, at_bounding_box=True
     ):
@@ -1073,7 +1073,7 @@ class EdbHfss(object):
                 return edges_pts
         return port_created
 
-    @pyedb_function_handler()
+  
     def create_vertical_circuit_port_on_clipped_traces(self, nets=None, reference_net=None, user_defined_extent=None):
         """Create an edge port on clipped signal traces.
 
@@ -1171,7 +1171,7 @@ class EdbHfss(object):
             return terminal_info
         return False
 
-    @pyedb_function_handler()
+  
     def get_layout_bounding_box(self, layout=None, digit_resolution=6):
         """Evaluate the layout bounding box.
 
@@ -1204,7 +1204,7 @@ class EdbHfss(object):
         ]
         return layout_bbox
 
-    @pyedb_function_handler()
+  
     def configure_hfss_extents(self, simulation_setup=None):
         """Configure the HFSS extent box.
 
@@ -1255,7 +1255,7 @@ class EdbHfss(object):
         self._layout.cell.SetHFSSExtentInfo(hfss_extent)  # returns void
         return True
 
-    @pyedb_function_handler()
+  
     def configure_hfss_analysis_setup(self, simulation_setup=None):
         """
         Configure HFSS analysis setup.
@@ -1383,7 +1383,7 @@ class EdbHfss(object):
             freq = freq * math.pow(10, 1.0 / decade_cnt)
             sweep.Frequencies.Add(str(freq))
 
-    @pyedb_function_handler()
+  
     def trim_component_reference_size(self, simulation_setup=None, trim_to_terminals=False):
         """Trim the common component reference to the minimally acceptable size.
 
@@ -1453,7 +1453,7 @@ class EdbHfss(object):
             comp.SetComponentProperty(cmp_prop)
             return True
 
-    @pyedb_function_handler()
+  
     def set_coax_port_attributes(self, simulation_setup=None):
         """Set coaxial port attribute with forcing default impedance to 50 Ohms and adjusting the coaxial extent radius.
 
@@ -1533,7 +1533,7 @@ class EdbHfss(object):
                             tt.SetProductSolverOption(self._edb.edb_api.ProductId.Designer, "HFSS", option)
         return True
 
-    @pyedb_function_handler()
+  
     def _get_terminals_bbox(self, comp, l_inst, terminals_only):
         terms_loi = []
         if terminals_only:
@@ -1572,7 +1572,7 @@ class EdbHfss(object):
             )
         return self._edb.geometry.polygon_data.get_bbox_of_polygons(terms_bbox)
 
-    @pyedb_function_handler()
+  
     def get_ports_number(self):
         """Return the total number of excitation ports in a layout.
 
@@ -1589,7 +1589,7 @@ class EdbHfss(object):
         terms = [term for term in self._layout.terminals if int(term.GetBoundaryType()) == 0]
         return len([i for i in terms if not i.IsReferenceTerminal()])
 
-    @pyedb_function_handler()
+  
     def layout_defeaturing(self, simulation_setup=None):
         """Defeature the layout by reducing the number of points for polygons based on surface deviation criteria.
 
@@ -1637,7 +1637,7 @@ class EdbHfss(object):
 
         return True
 
-    @pyedb_function_handler()
+  
     def create_rlc_boundary_on_pins(self, positive_pin=None, negative_pin=None, rvalue=0.0, lvalue=0.0, cvalue=0.0):
         """Create hfss rlc boundary on pins.
 

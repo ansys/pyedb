@@ -9,7 +9,7 @@ import string
 from pyedb.generic.general_methods import pyedb_function_handler, settings
 
 
-@pyedb_function_handler()
+
 def format_decimals(el):  # pragma: no cover
     """
 
@@ -31,7 +31,7 @@ def format_decimals(el):  # pragma: no cover
     return num
 
 
-@pyedb_function_handler()
+
 def random_string(length=6, only_digits=False, char_set=None):  # pragma: no cover
     """Generate a random string
 
@@ -60,7 +60,7 @@ def random_string(length=6, only_digits=False, char_set=None):  # pragma: no cov
     return random_str
 
 
-@pyedb_function_handler()
+
 def unique_string_list(element_list, only_string=True):  # pragma: no cover
     """Return a unique list of strings from an element list.
 
@@ -95,7 +95,7 @@ def unique_string_list(element_list, only_string=True):  # pragma: no cover
     return element_list
 
 
-@pyedb_function_handler()
+
 def string_list(element_list):  # pragma: no cover
     """
 
@@ -115,7 +115,7 @@ def string_list(element_list):  # pragma: no cover
     return element_list
 
 
-@pyedb_function_handler()
+
 def ensure_list(element_list):  # pragma: no cover
     """
 
@@ -133,7 +133,7 @@ def ensure_list(element_list):  # pragma: no cover
     return element_list
 
 
-@pyedb_function_handler()
+
 def from_rkm(code):  # pragma: no cover
     """Convert an RKM code string to a string with a decimal point.
 
@@ -265,7 +265,7 @@ unit_val = {
 }
 
 
-@pyedb_function_handler()
+
 def float_units(val_str, units=""):  # pragma: no cover
     """Retrieve units for a value.
 
@@ -296,7 +296,7 @@ def float_units(val_str, units=""):  # pragma: no cover
     return val
 
 
-@pyedb_function_handler()
+
 def json_to_dict(fn):  # pragma: no cover
     """Load Json File to a dictionary.
 

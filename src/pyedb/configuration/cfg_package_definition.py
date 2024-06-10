@@ -104,7 +104,7 @@ class CfgPackageDefinitions:
             for _, i in comp_list.items():
                 i.package_def = pkg.name
 
-    @pyedb_function_handler
+
     def get_data_from_db(self):
         package_definitions = []
 

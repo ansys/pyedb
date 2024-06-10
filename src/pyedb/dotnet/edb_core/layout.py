@@ -217,7 +217,7 @@ class EdbLayout(object):
         """
         return [i for i in self.primitives if isinstance(i, PolygonDotNet)]
 
-    @pyedb_function_handler()
+  
     def get_polygons_by_layer(self, layer_name, net_list=None):
         """Retrieve polygons by a layer.
 
@@ -245,7 +245,7 @@ class EdbLayout(object):
                 self._logger.warning(f"Failed to retrieve layer on polygon {el}")
         return objinst
 
-    @pyedb_function_handler()
+  
     def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):
         """Return primitive given coordinate point [x, y], layer name and nets.
 
@@ -304,7 +304,7 @@ class EdbLayout(object):
                 [returned_obj.append(p) for p in [obj for obj in self.primitives if obj.id == obj_id]]
         return returned_obj
 
-    @pyedb_function_handler()
+  
     def get_polygon_bounding_box(self, polygon):
         """Retrieve a polygon bounding box.
 
@@ -336,7 +336,7 @@ class EdbLayout(object):
             pass
         return bounding
 
-    @pyedb_function_handler()
+  
     def get_polygon_points(self, polygon):
         """Retrieve polygon points.
 
@@ -384,7 +384,7 @@ class EdbLayout(object):
                 continue_iterate = False
         return points
 
-    @pyedb_function_handler()
+  
     def parametrize_polygon(self, polygon, selection_polygon, offset_name="offsetx", origin=None):
         """Parametrize pieces of a polygon based on another polygon.
 
@@ -467,7 +467,7 @@ class EdbLayout(object):
         polygon.SetPolygonData(poligon_data)
         return True
 
-    @pyedb_function_handler()
+  
     def _create_path(
         self,
         path_list,
@@ -545,7 +545,7 @@ class EdbLayout(object):
             return False
         return cast(polygon, self._pedb)
 
-    @pyedb_function_handler()
+  
     def create_trace(
         self,
         path_list,
@@ -598,7 +598,7 @@ class EdbLayout(object):
 
         return primitive
 
-    @pyedb_function_handler()
+  
     def create_polygon(self, main_shape, layer_name, voids=[], net_name=""):
         """Create a polygon based on a list of points and voids.
 
@@ -666,7 +666,7 @@ class EdbLayout(object):
         else:
             return cast(polygon, self._pedb)
 
-    @pyedb_function_handler()
+  
     def create_polygon_from_points(self, point_list, layer_name, net_name=""):
         """Create a new polygon from a point list.
 
@@ -695,7 +695,7 @@ class EdbLayout(object):
         )
         return self.create_polygon(point_list, layer_name, net_name=net_name)
 
-    @pyedb_function_handler()
+  
     def create_rectangle(
         self,
         layer_name,
@@ -773,7 +773,7 @@ class EdbLayout(object):
             return cast(rect, self._pedb)
         return False  # pragma: no cover
 
-    @pyedb_function_handler()
+  
     def create_circle(self, layer_name, x, y, radius, net_name=""):
         """Create a circle on a specified layer.
 
@@ -810,7 +810,7 @@ class EdbLayout(object):
             return cast(circle, self._pedb)
         return False  # pragma: no cover
 
-    @pyedb_function_handler()
+  
     def delete_primitives(self, net_names):
         """Delete primitives by net names.
 
@@ -837,7 +837,7 @@ class EdbLayout(object):
                 p.delete()
         return True
 
-    @pyedb_function_handler()
+  
     def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=False):
         """Get primitives by conditions.
 
@@ -874,7 +874,7 @@ class EdbLayout(object):
             prims.append(el)
         return prims
 
-    @pyedb_function_handler()
+  
     def fix_circle_void_for_clipping(self):
         """Fix issues when circle void are clipped due to a bug in EDB.
 
@@ -906,7 +906,7 @@ class EdbLayout(object):
                 void_circle.Delete()
         return True
 
-    @pyedb_function_handler()
+  
     def add_void(self, shape, void_shape):
         """Add a void into a shape.
 
@@ -931,7 +931,7 @@ class EdbLayout(object):
                 return flag
         return True
 
-    @pyedb_function_handler()
+  
     def shape_to_polygon_data(self, shape):
         """Convert a shape to polygon data.
 
@@ -951,7 +951,7 @@ class EdbLayout(object):
             )
             return None
 
-    @pyedb_function_handler()
+  
     def _createPolygonDataFromPolygon(self, shape):
         points = shape.points
         if not self._validatePoint(points[0]):
@@ -1038,7 +1038,7 @@ class EdbLayout(object):
                 k += 1
         return polygon
 
-    @pyedb_function_handler()
+  
     def _validatePoint(self, point, allowArcs=True):
         if len(point) == 2:
             if not isinstance(point[0], (int, float, str)):
@@ -1137,7 +1137,7 @@ class EdbLayout(object):
             self.points = points
             self.properties = properties
 
-    @pyedb_function_handler()
+  
     def parametrize_trace_width(
         self,
         nets_name,
@@ -1189,7 +1189,7 @@ class EdbLayout(object):
                         p.SetWidth(self._pedb.edb_value(parameter_name))
         return True
 
-    @pyedb_function_handler()
+  
     def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_names_list=[]):
         """Try to unite all Polygons on specified layer.
 
@@ -1265,7 +1265,7 @@ class EdbLayout(object):
                     self._pedb.padstacks.remove_pads_from_padstack(pad)
         return True
 
-    @pyedb_function_handler()
+  
     def defeature_polygon(self, poly, tolerance=0.001):
         """Defeature the polygon based on the maximum surface deviation criteria.
 
@@ -1287,7 +1287,7 @@ class EdbLayout(object):
         poly.polygon_data = new_poly
         return True
 
-    @pyedb_function_handler()
+  
     def get_layout_statistics(self, evaluate_area=False, net_list=None):
         """Return EDBStatistics object from a layout.
 

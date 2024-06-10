@@ -265,7 +265,7 @@ class Terminal(Connectable):
 
         return ""
 
-    @pyedb_function_handler()
+  
     def get_padstack_terminal_reference_pin(self, gnd_net_name_preference=None):  # pragma : no cover
         """Get a list of pad stacks instances and serves Coax wave ports,
         pingroup terminals, PadEdge terminals.
@@ -289,7 +289,7 @@ class Terminal(Connectable):
         pins = self._pedb.components.get_pin_from_component(compInst.GetName())
         return self._get_closest_pin(padStackInstance, pins, gnd_net_name_preference)
 
-    @pyedb_function_handler()
+  
     def get_pin_group_terminal_reference_pin(self, gnd_net_name_preference=None):  # pragma : no cover
         """Return a list of pins and serves terminals connected to pingroups.
 
@@ -325,7 +325,7 @@ class Terminal(Connectable):
                     return None
         return None
 
-    @pyedb_function_handler()
+  
     def get_edge_terminal_reference_primitive(self):  # pragma : no cover
         """Check and  return a primitive instance that serves Edge ports,
         wave ports and coupled edge ports that are directly connedted to primitives.
@@ -349,7 +349,7 @@ class Terminal(Connectable):
                     return cast(primitive, self._pedb)
         return None  # pragma: no cover
 
-    @pyedb_function_handler()
+  
     def get_point_terminal_reference_primitive(self):  # pragma : no cover
         """Find and return the primitive reference for the point terminal or the padstack instance.
 
@@ -380,7 +380,7 @@ class Terminal(Connectable):
                     return vias
         return None
 
-    @pyedb_function_handler()
+  
     def get_pad_edge_terminal_reference_pin(self, gnd_net_name_preference=None):
         """Get the closest pin padstack instances and serves any edge terminal connected to a pad.
 
@@ -402,7 +402,7 @@ class Terminal(Connectable):
         _, pad_edge_pstack_inst, _, _ = edges[0].GetParameters()
         return self._get_closest_pin(pad_edge_pstack_inst, pins, gnd_net_name_preference)
 
-    @pyedb_function_handler()
+  
     def _get_closest_pin(self, ref_pin, pin_list, gnd_net=None):
         _, pad_stack_inst_point, _ = ref_pin.GetPositionAndRotation()  # get the xy of the padstack
         if gnd_net is not None:
@@ -438,7 +438,7 @@ class EdgeTerminal(Terminal):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
 
-    @pyedb_function_handler()
+  
     def couple_ports(self, port):
         """Create a bundle wave port.
 
@@ -484,7 +484,7 @@ class BundleTerminal(Terminal):
     def name(self):
         return self.terminals[0].name
 
-    @pyedb_function_handler()
+  
     def decouple(self):
         """Ungroup a bundle of terminals."""
         return self._edb_object.Ungroup()
@@ -559,7 +559,7 @@ class PointTerminal(Terminal):
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
 
-    @pyedb_function_handler
+
     def create(self, name, net, location, layer, is_ref=False):
         """Create a point terminal.
 
@@ -624,7 +624,7 @@ class PinGroupTerminal(Terminal):
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
 
-    @pyedb_function_handler
+
     def create(self, name, net_name, pin_group_name, is_ref=False):
         """Create a pin group terminal.
 

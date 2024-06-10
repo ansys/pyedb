@@ -36,7 +36,7 @@ class Path(object):
         self.entry_line = EntryLine()
         self.width_ref_id = ""
 
-    @pyedb_function_handler()
+  
     def add_path_step(self, path_step=None):  # pragma no cover
         arcs = path_step.primitive_object.GetCenterLine().GetArcData()
         if not arcs:
@@ -87,7 +87,7 @@ class Path(object):
                 new_poly_step.clock_wise = not arc.IsCCW()
                 self.poly_steps.append(new_poly_step)
 
-    @pyedb_function_handler()
+  
     def write_xml(self, net_root):  # pragma no cover
         if not self.poly_steps:
             return

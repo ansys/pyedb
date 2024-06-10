@@ -29,7 +29,7 @@ class CfgCircuitElement:
         """Edb."""
         return self._pdata._pedb
 
-    @pyedb_function_handler
+
     def __init__(self, pdata, **kwargs):
         self._pdata = pdata
         self._data = kwargs
@@ -40,7 +40,7 @@ class CfgCircuitElement:
         self.pos_term_info = kwargs.get("positive_terminal", None)  # {"pin" : "A1"}
         self.neg_term_info = kwargs.get("negative_terminal", None)
 
-    @pyedb_function_handler
+
     def _create_terminals(self):
         """Create step 1. Collect positive and negative terminals."""
         pos_term_info = self.pos_term_info
@@ -92,7 +92,7 @@ class CfgCircuitElement:
                     j.create_terminal(i) if not j.terminal else j.terminal for i, j in pin_group.items()
                 ][0]
 
-    @pyedb_function_handler
+
     def _get_pins(self, terminal_type, terminal_value):
         terminal_value = terminal_value if isinstance(terminal_value, list) else [terminal_value]
 
@@ -112,7 +112,7 @@ class CfgCircuitElement:
             pins.update({f"{self.reference_designator}_{terminal_value[0]}_{i}": j for i, j in temp.items()})
         return pins
 
-    @pyedb_function_handler
+
     def _create_pin_group(self, pins, is_ref=False):
         if is_ref:
             pg_name = f"pg_{self.name}_{self.reference_designator}_ref"
@@ -128,11 +128,11 @@ class CfgPort(CfgCircuitElement):
 
     CFG_PORT_TYPE = {"circuit": [str], "coax": [str]}
 
-    @pyedb_function_handler
+
     def __init__(self, pdata, **kwargs):
         super().__init__(pdata, **kwargs)
 
-    @pyedb_function_handler
+
     def create(self):
         """Create port."""
         self._create_terminals()
@@ -152,13 +152,13 @@ class CfgPort(CfgCircuitElement):
 class CfgSources(CfgCircuitElement):
     CFG_SOURCE_TYPE = {"current": [int, float], "voltage": [int, float]}
 
-    @pyedb_function_handler
+
     def __init__(self, pdata, **kwargs):
         super().__init__(pdata, **kwargs)
 
         self.magnitude = kwargs.get("magnitude", 0.001)
 
-    @pyedb_function_handler
+
     def create(self):
         """Create sources."""
         self._create_terminals()

@@ -39,7 +39,7 @@ class HFSSPISimulationSetup(BaseSimulationSetup):
         self._edb_setup_info = None
         self.logger = self._pedb.logger
 
-    @pyedb_function_handler
+
     def create(self, name=None):
         """Create an HFSS setup."""
         self._name = name
@@ -76,7 +76,7 @@ class HFSSPISimulationSetup(BaseSimulationSetup):
         else:
             self.logger.error(f"Property position expects an integer value while the provided value is {value}.")
 
-    @pyedb_function_handler()
+  
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
 

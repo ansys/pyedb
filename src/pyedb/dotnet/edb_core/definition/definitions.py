@@ -39,7 +39,7 @@ class Definitions:
         """Package definitions."""
         return {l.GetName(): PackageDef(self._pedb, l) for l in list(self._pedb.active_db.PackageDefs)}
 
-    @pyedb_function_handler
+
     def add_package_def(self, name, component_part_name=None, boundary_points=None):
         """Add a package definition.
 

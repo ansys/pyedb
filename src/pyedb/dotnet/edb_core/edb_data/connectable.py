@@ -87,7 +87,7 @@ class LayoutObj(ObjBase):
         """
         return self._edb_object.GetId()
 
-    @pyedb_function_handler()
+  
     def delete(self):
         """Delete this primitive."""
         self._edb_object.Delete()

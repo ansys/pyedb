@@ -64,14 +64,14 @@ class PolygonData:
             for i in list(self._edb_object.Points)
         ]
 
-    @pyedb_function_handler
+
     def create_from_points(self, points, closed=True):
         list_of_point_data = []
         for pt in points:
             list_of_point_data.append(PointData(self._pedb, x=pt[0], y=pt[1]))
         return self._pedb.edb_api.geometry.api_class.PolygonData(list_of_point_data, closed)
 
-    @pyedb_function_handler
+
     def create_from_bounding_box(self, points):
         bbox = BBox(self._pedb, point_1=points[0], point_2=points[1])
         return self._pedb.edb_api.geometry.api_class.PolygonData.CreateFromBBox(bbox._edb_object)

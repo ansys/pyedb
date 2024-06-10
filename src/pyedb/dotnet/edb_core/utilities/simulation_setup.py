@@ -36,7 +36,7 @@ class BaseSimulationSetup(object):
         EDB object.
     """
 
-    @pyedb_function_handler
+
     def __init__(self, pedb, edb_setup=None):
         self._pedb = pedb
         self._edb_object = edb_setup
@@ -72,7 +72,7 @@ class BaseSimulationSetup(object):
 
         self._sweep_list = {}
 
-    @pyedb_function_handler
+
     def _create(self, name=None):
         """Create a simulation setup."""
         if not name:
@@ -90,7 +90,7 @@ class BaseSimulationSetup(object):
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
 
-    @pyedb_function_handler
+
     def _set_edb_setup_info(self, edb_setup_info):
         """Create a setup object from a setup information object."""
         utility = self._pedb._edb.Utility
@@ -118,7 +118,7 @@ class BaseSimulationSetup(object):
         setup_utility = setup_type_mapping[self._setup_type]
         return setup_utility(edb_setup_info)
 
-    @pyedb_function_handler()
+  
     def _update_setup(self):
         """Update setup in EDB."""
         if self._setup_type == "kHFSS":
@@ -188,7 +188,7 @@ class BaseSimulationSetup(object):
             temp[i.Name] = EdbFrequencySweep(self, None, i.Name, i)
         return temp
 
-    @pyedb_function_handler
+
     def _add_frequency_sweep(self, sweep_data):
         """Add a frequency sweep.
 
@@ -209,7 +209,7 @@ class BaseSimulationSetup(object):
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
 
-    @pyedb_function_handler
+
     def delete_frequency_sweep(self, sweep_data):
         """Delete a frequency sweep.
 
@@ -230,7 +230,7 @@ class BaseSimulationSetup(object):
             self._update_setup()
             return True if name in self.frequency_sweeps else False
 
-    @pyedb_function_handler()
+  
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
 
@@ -305,7 +305,7 @@ class EdbFrequencySweep(object):
         """EDB."""
         return self._sim_setup._pedb
 
-    @pyedb_function_handler()
+  
     def _update_sweep(self):
         """Update the sweep."""
         self._sim_setup.delete_frequency_sweep(self)
@@ -650,12 +650,12 @@ class EdbFrequencySweep(object):
         self._edb_sweep_data.UseQ3DForDC = value
         self._update_sweep()
 
-    @pyedb_function_handler()
+  
     def _set_frequencies(self, freq_sweep_string="Linear Step: 0GHz to 20GHz, step=0.05GHz"):
         self._edb_sweep_data.SetFrequencies(freq_sweep_string)
         self._update_sweep()
 
-    @pyedb_function_handler()
+  
     def set_frequencies_linear_scale(self, start="0.1GHz", stop="20GHz", step="50MHz"):
         """Set a linear scale frequency sweep.
 
@@ -676,7 +676,7 @@ class EdbFrequencySweep(object):
         self._edb_sweep_data.Frequencies = self._edb_sweep_data.SetFrequencies(start, stop, step)
         return self._update_sweep()
 
-    @pyedb_function_handler()
+  
     def set_frequencies_linear_count(self, start="1kHz", stop="0.1GHz", count=10):
         """Set a linear count frequency sweep.
 
@@ -699,7 +699,7 @@ class EdbFrequencySweep(object):
         self._edb_sweep_data.Frequencies = self._edb_sweep_data.SetFrequencies(start, stop, count)
         return self._update_sweep()
 
-    @pyedb_function_handler()
+  
     def set_frequencies_log_scale(self, start="1kHz", stop="0.1GHz", samples=10):
         """Set a log-count frequency sweep.
 
@@ -722,7 +722,7 @@ class EdbFrequencySweep(object):
         self._edb_sweep_data.Frequencies = self._edb_sweep_data.SetLogFrequencies(start, stop, samples)
         return self._update_sweep()
 
-    @pyedb_function_handler()
+  
     def set_frequencies(self, frequency_list=None, update=True):
         """Set frequency list to the sweep frequencies.
 

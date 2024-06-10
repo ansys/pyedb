@@ -33,7 +33,7 @@ class LayoutValidation:
     def __init__(self, pedb):
         self._pedb = pedb
 
-    @pyedb_function_handler()
+  
     def dc_shorts(self, net_list=None, fix=False):
         """Find DC shorts on layout.
 
@@ -121,7 +121,7 @@ class LayoutValidation:
                         # i.net = temp_name
         return dc_shorts
 
-    @pyedb_function_handler()
+  
     def disjoint_nets(
         self,
         net_list=None,

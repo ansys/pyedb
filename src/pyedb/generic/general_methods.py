@@ -242,7 +242,7 @@ def pyedb_function_handler(direct_func=None):
     return decorating_function
 
 
-@pyedb_function_handler()
+
 def get_filename_without_extension(path):
     """Get the filename without its extension.
 
@@ -321,7 +321,7 @@ def _get_args_dicts(func, args, kwargs):
     return args_dict
 
 
-@pyedb_function_handler()
+
 def env_path(input_version):
     """Get the path of the version environment variable for an AEDT version.
 
@@ -348,7 +348,7 @@ def env_path(input_version):
     )
 
 
-@pyedb_function_handler()
+
 def get_version_and_release(input_version):
     version = int(input_version[2:4])
     release = int(input_version[5])
@@ -360,7 +360,7 @@ def get_version_and_release(input_version):
     return (version, release)
 
 
-@pyedb_function_handler()
+
 def env_value(input_version):
     """Get the name of the version environment variable for an AEDT version.
 
@@ -384,7 +384,7 @@ def env_value(input_version):
     )
 
 
-@pyedb_function_handler()
+
 def generate_unique_name(rootname, suffix="", n=6):
     """Generate a new name given a root name and optional suffix.
 
@@ -431,7 +431,7 @@ def normalize_path(path_in, sep=None):
     return path_in.replace("\\", sep).replace("/", sep)
 
 
-@pyedb_function_handler()
+
 def check_numeric_equivalence(a, b, relative_tolerance=1e-7):
     """Check if two numeric values are equivalent to within a relative tolerance.
 
@@ -457,7 +457,7 @@ def check_numeric_equivalence(a, b, relative_tolerance=1e-7):
     return True if reldiff < relative_tolerance else False
 
 
-@pyedb_function_handler()
+
 def check_and_download_file(local_path, remote_path, overwrite=True):
     """Check if a file is remote and either download it or return the path.
 
@@ -499,7 +499,7 @@ def check_if_path_exists(path):
     return os.path.exists(path)
 
 
-@pyedb_function_handler()
+
 def check_and_download_folder(local_path, remote_path, overwrite=True):
     """Check if a folder is remote and either download it or return the path.
 
@@ -556,7 +556,7 @@ def open_file(file_path, file_options="r"):  # pragma: no cover
         settings.logger.error("The file or folder %s does not exist", dir_name)
 
 
-@pyedb_function_handler()
+
 def get_string_version(input_version):
     output_version = input_version
     if isinstance(input_version, float):
@@ -574,7 +574,7 @@ def get_string_version(input_version):
     return output_version
 
 
-@pyedb_function_handler()
+
 def env_path_student(input_version):
     """Get the path of the version environment variable for an AEDT student version.
 
@@ -601,7 +601,7 @@ def env_path_student(input_version):
     )
 
 
-@pyedb_function_handler()
+
 def env_value_student(input_version):
     """Get the name of the version environment variable for an AEDT student version.
 
@@ -625,7 +625,7 @@ def env_value_student(input_version):
     )
 
 
-@pyedb_function_handler()
+
 def generate_unique_folder_name(rootname=None, folder_name=None):  # pragma: no cover
     """Generate a new AEDT folder name given a rootname.
 
@@ -656,7 +656,7 @@ def generate_unique_folder_name(rootname=None, folder_name=None):  # pragma: no 
     return temp_folder
 
 
-@pyedb_function_handler()
+
 def generate_unique_project_name(rootname=None, folder_name=None, project_name=None, project_format="aedt"):
     """Generate a new AEDT project name given a rootname.
 
@@ -793,7 +793,7 @@ def is_project_locked(project_path):
     return check_if_path_exists(project_path + ".lock")
 
 
-@pyedb_function_handler()
+
 def remove_project_lock(project_path):  # pragma: no cover
     """Check if an AEDT project exists and try to remove the lock file.
 
@@ -815,7 +815,7 @@ def remove_project_lock(project_path):  # pragma: no cover
     return True
 
 
-@pyedb_function_handler()
+
 def read_csv(filename, encoding="utf-8"):  # pragma: no cover
     """Read information from a CSV file and return a list.
 
@@ -840,7 +840,7 @@ def read_csv(filename, encoding="utf-8"):  # pragma: no cover
     return lines
 
 
-@pyedb_function_handler()
+
 def read_csv_pandas(filename, encoding="utf-8"):  # pragma: no cover
     """Read information from a CSV file and return a list.
 
@@ -865,7 +865,7 @@ def read_csv_pandas(filename, encoding="utf-8"):  # pragma: no cover
         return None
 
 
-@pyedb_function_handler()
+
 def read_tab(filename):  # pragma: no cover
     """Read information from a TAB file and return a list.
 
@@ -884,7 +884,7 @@ def read_tab(filename):  # pragma: no cover
     return lines
 
 
-@pyedb_function_handler()
+
 def read_xlsx(filename):  # pragma: no cover
     """Read information from an XLSX file and return a list.
 
@@ -908,7 +908,7 @@ def read_xlsx(filename):  # pragma: no cover
         return lines
 
 
-@pyedb_function_handler()
+
 def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL):  # pragma: no cover
     if is_ironpython:
         f = open(output, "wb")
@@ -921,7 +921,7 @@ def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE
     return True
 
 
-@pyedb_function_handler()
+
 def filter_tuple(value, search_key1, search_key2):  # pragma: no cover
     """Filter a tuple of two elements with two search keywords."""
     ignore_case = True
@@ -945,7 +945,7 @@ def filter_tuple(value, search_key1, search_key2):  # pragma: no cover
     return False
 
 
-@pyedb_function_handler()
+
 def filter_string(value, search_key1):  # pragma: no cover
     """Filter a string"""
     ignore_case = True
@@ -967,7 +967,7 @@ def filter_string(value, search_key1):  # pragma: no cover
     return False
 
 
-@pyedb_function_handler()
+
 def recursive_glob(startpath, filepattern):  # pragma: no cover
     """Get a list of files matching a pattern, searching recursively from a start path.
 
@@ -992,7 +992,7 @@ def recursive_glob(startpath, filepattern):  # pragma: no cover
         ]
 
 
-@pyedb_function_handler()
+
 def number_aware_string_key(s):  # pragma: no cover
     """Get a key for sorting strings that treats embedded digit sequences as integers.
 
@@ -1030,7 +1030,7 @@ def number_aware_string_key(s):  # pragma: no cover
     return tuple(result)
 
 
-@pyedb_function_handler()
+
 def compute_fft(time_vals, value):  # pragma: no cover
     """Compute FFT of input transient data.
 
@@ -1265,7 +1265,7 @@ class PropsManager(object):
             self.update()
             self._app.logger.warning("Key %s not found. Trying to applying new key ", key)
 
-    @pyedb_function_handler()
+  
     def _recursive_search(self, dict_in, key="", matching_percentage=0.8):  # pragma: no cover
         f = difflib.get_close_matches(key, list(dict_in.keys()), 1, matching_percentage)
         if f:
@@ -1283,7 +1283,7 @@ class PropsManager(object):
                             return out_val
         return False
 
-    @pyedb_function_handler()
+  
     def _recursive_list(self, dict_in, prefix=""):  # pragma: no cover
         available_list = []
         for k, v in dict_in.items():
@@ -1308,7 +1308,7 @@ class PropsManager(object):
             return self._recursive_list(self.props)
         return []
 
-    @pyedb_function_handler()
+  
     def update(self):
         """Update method."""
         pass
@@ -1459,17 +1459,17 @@ class Help:  # pragma: no cover
 
 # class Property(property):
 #
-#     @pyedb_function_handler()
+#   
 #     def getter(self, fget):
 #         """Property getter."""
 #         return self.__class__.__base__(fget, self.fset, self.fdel, self.__doc__)
 #
-#     @pyedb_function_handler()
+#   
 #     def setter(self, fset):
 #         """Property setter."""
 #         return self.__class__.__base__(self.fget, fset, self.fdel, self.__doc__)
 #
-#     @pyedb_function_handler()
+#   
 #     def deleter(self, fdel):
 #         """Property deleter."""
 #         return self.__class__.__base__(self.fget, self.fset, fdel, self.__doc__)

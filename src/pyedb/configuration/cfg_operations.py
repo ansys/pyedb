@@ -56,7 +56,7 @@ class CfgOperations(CfgBase):
         self._pedb = pedb
         self.op_cutout = CfgCutout(**data["cutout"]) if "cutout" in data else None
 
-    @pyedb_function_handler
+
     def apply(self):
         """Imports operation information from JSON."""
         if self.op_cutout:

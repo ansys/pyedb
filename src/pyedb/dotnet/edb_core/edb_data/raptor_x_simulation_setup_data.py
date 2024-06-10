@@ -40,7 +40,7 @@ class RaptorXSimulationSetup(BaseSimulationSetup):
         self._edb_setup_info = None
         self.logger = self._pedb.logger
 
-    @pyedb_function_handler
+
     def create(self, name=None):
         """Create an HFSS setup."""
         self._name = name
@@ -74,7 +74,7 @@ class RaptorXSimulationSetup(BaseSimulationSetup):
         else:
             self.logger.error(f"RaptorX setup position input setter must be an integer. Provided value {value}")
 
-    @pyedb_function_handler()
+  
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
 

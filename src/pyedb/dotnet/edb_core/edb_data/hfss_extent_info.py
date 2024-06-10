@@ -49,12 +49,12 @@ class HfssExtentInfo:
             "pml": self._pedb.edb_api.utility.utility.OpenRegionType.PML,
         }
 
-    @pyedb_function_handler()
+  
     def _get_edb_value(self, value):
         """Get EDB value."""
         return self._pedb.edb_value(value)
 
-    @pyedb_function_handler()
+  
     def _update_hfss_extent_info(self, hfss_extent_info):
         return self._pedb.active_cell.SetHFSSExtentInfo(hfss_extent_info)
 
@@ -321,7 +321,7 @@ class HfssExtentInfo:
         info.UseXYDataExtentForVerticalExpansion = value
         self._update_hfss_extent_info(info)
 
-    @pyedb_function_handler()
+  
     def load_config(self, config):
         """Load HFSS extent configuration.
 
@@ -334,7 +334,7 @@ class HfssExtentInfo:
             if hasattr(self, i):
                 setattr(self, i, j)
 
-    @pyedb_function_handler()
+  
     def export_config(self):
         """Export HFSS extent information.
 

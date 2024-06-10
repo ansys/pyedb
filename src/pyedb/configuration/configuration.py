@@ -42,7 +42,7 @@ class Configuration:
         self._spice_model_library = ""
         self.cfg_data = CfgData(self._pedb)
 
-    @pyedb_function_handler
+
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
         """Import configuration settings from a configure file.
 
@@ -103,7 +103,7 @@ class Configuration:
                 self._pedb.open_edb()
         return self.cfg_data
 
-    @pyedb_function_handler()
+  
     def run(self):
         """Apply configuration settings to the current design"""
 
@@ -157,7 +157,7 @@ class Configuration:
 
         return True
 
-    @pyedb_function_handler
+
     def _load_stackup(self):
         """Imports stackup information from json."""
         data = self.data["stackup"]
@@ -214,7 +214,7 @@ class Configuration:
                 elif l["type"] == "signal":
                     prev_layer_clone = self._pedb.stackup.layers[l["name"]]
 
-    @pyedb_function_handler
+
     def _load_package_def(self):
         """Imports package definition information from JSON."""
         comps = self._pedb.components.components
@@ -277,7 +277,7 @@ class Configuration:
 
         return data
 
-    @pyedb_function_handler
+
     def export(self, file_path, stackup=True, package_definitions=True):
         """Export the configuration data from layout to a file.
 

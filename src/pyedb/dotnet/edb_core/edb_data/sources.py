@@ -306,7 +306,7 @@ class PinGroup(object):
     def net_name(self):
         return self._edb_pin_group.GetNet().GetName()
 
-    @pyedb_function_handler
+
     def get_terminal(self, name=None, create_new_terminal=False):
         """Terminal."""
         warnings.warn("Use new property :func:`terminal` instead.", DeprecationWarning)
@@ -323,7 +323,7 @@ class PinGroup(object):
         term = PinGroupTerminal(self._pedb, self._edb_pin_group.GetPinGroupTerminal())
         return term if not term.is_null else None
 
-    @pyedb_function_handler()
+  
     def _create_terminal(self, name=None):
         """Create a terminal on the pin group.
 
@@ -345,7 +345,7 @@ class PinGroup(object):
         else:
             return self.create_terminal(name)
 
-    @pyedb_function_handler()
+  
     def create_terminal(self, name=None):
         """Create a terminal.
 
@@ -362,12 +362,12 @@ class PinGroup(object):
         term = term.create(name, self.net_name, self.name)
         return term
 
-    @pyedb_function_handler()
+  
     def _json_format(self):
         dict_out = {"component": self.component, "name": self.name, "net": self.net, "node_type": self.node_type}
         return dict_out
 
-    @pyedb_function_handler()
+  
     def create_current_source_terminal(self, magnitude=1, phase=0):
         terminal = self._create_terminal()._edb_object
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kCurrentSource)
@@ -375,7 +375,7 @@ class PinGroup(object):
         terminal.SetSourcePhase(self._pedb.edb_api.utility.value(phase))
         return terminal
 
-    @pyedb_function_handler()
+  
     def create_voltage_source_terminal(self, magnitude=1, phase=0, impedance=0.001):
         terminal = self._create_terminal()._edb_object
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageSource)
@@ -384,14 +384,14 @@ class PinGroup(object):
         terminal.SetImpedance(self._pedb.edb_value(impedance))
         return terminal
 
-    @pyedb_function_handler()
+  
     def create_voltage_probe_terminal(self, impedance=1000000):
         terminal = self._create_terminal()._edb_object
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageProbe)
         terminal.SetImpedance(self._pedb.edb_value(impedance))
         return terminal
 
-    @pyedb_function_handler()
+  
     def create_port_terminal(self, impedance=50):
         terminal = self._create_terminal()._edb_object
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PortBoundary)
@@ -399,7 +399,7 @@ class PinGroup(object):
         terminal.SetIsCircuitPort(True)
         return terminal
 
-    @pyedb_function_handler()
+  
     def delete(self):
         """Delete active pin group.
 

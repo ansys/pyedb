@@ -29,7 +29,7 @@ class CfgBase:
     def protected_attributes(self):
         return []
 
-    @pyedb_function_handler
+
     def get_attributes(self, exclude=None):
         attrs = {i: j for i, j in self.__dict__.items() if i not in self.protected_attributes}
         if exclude is not None:
@@ -39,7 +39,7 @@ class CfgBase:
         attrs = {i: j for i, j in attrs.items() if j is not None}
         return attrs
 
-    @pyedb_function_handler
+
     def set_attributes(self, pedb_object):
         attrs = self.get_attributes()
         for attr, value in attrs.items():

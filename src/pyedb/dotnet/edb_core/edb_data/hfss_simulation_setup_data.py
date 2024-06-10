@@ -714,7 +714,7 @@ class AdaptiveSettings(object):
         self.adaptive_settings.UseMaxRefinement = value
         self._parent._update_setup()
 
-    @pyedb_function_handler()
+  
     def add_adaptive_frequency_data(self, frequency=0, max_num_passes=10, max_delta_s=0.02):
         """Add a setup for frequency data.
 
@@ -740,7 +740,7 @@ class AdaptiveSettings(object):
         self.adaptive_settings.AdaptiveFrequencyDataList.Add(low_freq_adapt_data)
         return self._parent._update_setup()
 
-    @pyedb_function_handler()
+  
     def add_broadband_adaptive_frequency_data(
         self, low_frequency=0, high_frequency=10e9, max_num_passes=10, max_delta_s=0.02
     ):
@@ -1281,7 +1281,7 @@ class HfssSimulationSetup(BaseSimulationSetup):
         self._setup_type = "kHFSS"
         self._mesh_operations = {}
 
-    @pyedb_function_handler
+
     def create(self, name=None):
         """Create an HFSS setup."""
         self._name = name
@@ -1441,7 +1441,7 @@ class HfssSimulationSetup(BaseSimulationSetup):
 
         return self._mesh_operations
 
-    @pyedb_function_handler()
+  
     def add_length_mesh_operation(
         self,
         net_layer_list,
@@ -1492,7 +1492,7 @@ class HfssSimulationSetup(BaseSimulationSetup):
         self.mesh_operations[name] = mesh_operation
         return mesh_operation if self._update_setup() else False
 
-    @pyedb_function_handler()
+  
     def add_skin_depth_mesh_operation(
         self,
         net_layer_list,
@@ -1547,7 +1547,7 @@ class HfssSimulationSetup(BaseSimulationSetup):
         self.mesh_operations[name] = mesh_operation
         return mesh_operation if self._update_setup() else False
 
-    @pyedb_function_handler()
+  
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
 
@@ -1577,7 +1577,7 @@ class HfssSimulationSetup(BaseSimulationSetup):
             name = generate_unique_name("sweep")
         return EdbFrequencySweep(self, frequency_sweep, name)
 
-    @pyedb_function_handler()
+  
     def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02):
         """Set single-frequency solution.
 
@@ -1599,7 +1599,7 @@ class HfssSimulationSetup(BaseSimulationSetup):
         self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
         return self.adaptive_settings.add_adaptive_frequency_data(frequency, max_num_passes, max_delta_s)
 
-    @pyedb_function_handler()
+  
     def set_solution_multi_frequencies(self, frequencies=("5GHz", "10GHz"), max_num_passes=10, max_delta_s="0.02"):
         """Set multi-frequency solution.
 
@@ -1624,7 +1624,7 @@ class HfssSimulationSetup(BaseSimulationSetup):
                 return False
         return True
 
-    @pyedb_function_handler()
+  
     def set_solution_broadband(
         self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
     ):

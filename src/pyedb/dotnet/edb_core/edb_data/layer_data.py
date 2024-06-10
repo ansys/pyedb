@@ -40,7 +40,7 @@ class LayerEdbClass(object):
             self._create(layer_type)
             self.update(**kwargs)
 
-    @pyedb_function_handler
+
     def _create(self, layer_type):
         layer_type = self._layer_name_mapping[layer_type]
         layer_type = self._doc_layer_mapping[layer_type]
@@ -50,7 +50,7 @@ class LayerEdbClass(object):
             layer_type,
         )
 
-    @pyedb_function_handler
+
     def update(self, **kwargs):
         for k, v in kwargs.items():
             if k in dir(self):
@@ -539,7 +539,7 @@ class StackupLayerEdbClass(LayerEdbClass):
     def side_hallhuray_surface_ratio(self, value):
         self._side_hallhuray_surface_ratio = value
 
-    @pyedb_function_handler()
+  
     def get_roughness_model(self, surface="top"):
         """Get roughness model of the layer.
 
@@ -562,7 +562,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         elif surface == "side":
             return self._edb_layer.GetRoughnessModel(self._pedb.edb_api.Cell.RoughnessModel.Region.Side)
 
-    @pyedb_function_handler()
+  
     def assign_roughness_model(
         self,
         model_type="huray",
@@ -627,7 +627,7 @@ class StackupLayerEdbClass(LayerEdbClass):
             layer_clone.SetRoughnessModel(r, model)
         return self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
 
-    @pyedb_function_handler()
+  
     def _json_format(self):
         dict_out = {}
         self._color = self.color

@@ -250,7 +250,7 @@ class EDBComponent(object):
         comp_prop.SetPackageDef(package_def._edb_object)
         self.edbcomponent.SetComponentProperty(comp_prop)
 
-    @pyedb_function_handler
+
     def create_package_def(self, name=""):
         """Create a package definition and assign it to the component.
 
@@ -913,11 +913,11 @@ class EDBComponent(object):
         """
         return int(self.edbcomponent.GetPlacementLayer().GetTopBottomAssociation())
 
-    @pyedb_function_handler()
+  
     def _get_edb_value(self, value):
         return self._pedb.edb_value(value)
 
-    @pyedb_function_handler()
+  
     def _set_model(self, model):  # pragma: no cover
         comp_prop = self.component_property
         comp_prop.SetModel(model)
@@ -926,7 +926,7 @@ class EDBComponent(object):
             return False
         return True
 
-    @pyedb_function_handler()
+  
     def assign_spice_model(self, file_path, name=None, sub_circuit_name=None):
         """Assign Spice model to this component.
 
@@ -966,7 +966,7 @@ class EDBComponent(object):
             return False
         return self._set_model(model)
 
-    @pyedb_function_handler()
+  
     def assign_s_param_model(self, file_path, name=None, reference_net=None):
         """Assign S-parameter to this component.
 
@@ -997,7 +997,7 @@ class EDBComponent(object):
             model.SetReferenceNet(reference_net)
         return self._set_model(model)
 
-    @pyedb_function_handler()
+  
     def use_s_parameter_model(self, name, reference_net=None):
         """Use S-parameter model on the component.
 
@@ -1026,7 +1026,7 @@ class EDBComponent(object):
             model.SetReferenceNet(reference_net)
         return self._set_model(model)
 
-    @pyedb_function_handler()
+  
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
         """Assign RLC to this component.
 
@@ -1061,7 +1061,7 @@ class EDBComponent(object):
             model.SetPinPairRlc(pin_pair, rlc)
         return self._set_model(model)
 
-    @pyedb_function_handler()
+  
     def create_clearance_on_component(self, extra_soldermask_clearance=1e-4):
         """Create a Clearance on Soldermask layer by drawing a rectangle.
 
