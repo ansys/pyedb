@@ -35,6 +35,6 @@ This page shows how to create a port between a pin and a layer.
     edbapp.save_edb()
     edbapp.close_edb()
 
-.. image:: ../../Resources/create_port_between_pin_and_layer.png
-..   :width: 800
-..   :alt: Port created between a pin and layer
+.. image:: ../../resources/create_port_between_pin_and_layer.png
+    :width: 800
+    :alt: Port created between a pin and layer
