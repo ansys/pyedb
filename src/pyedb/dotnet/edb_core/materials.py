@@ -513,7 +513,8 @@ class Materials(object):
         if name in curr_materials:
             raise ValueError(f"Material {name} already exists in material library.")
         elif name.lower() in (material.lower() for material in curr_materials):
-            raise ValueError(f"Material names are case-insensitive and {name.lower()} already exists.")
+            m = {material.lower(): material for material in curr_materials}[name.lower()]
+            raise ValueError(f"Material names are case-insensitive and '{name}' already exists as '{m}'.")
 
         material_def = self.__edb_definition.MaterialDef.Create(self.__edb.active_db, name)
         material = Material(self.__edb, material_def)

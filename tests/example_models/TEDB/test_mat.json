@@ -57,8 +57,8 @@
             "loss_tangent_at_frequency": null,
             "permittivity_at_frequency": null
         },
-        "COPPER_1": {
-            "name": "COPPER_1",
+        "copper": {
+            "name": "copper",
             "conductivity": 59590000.0,
             "dielectric_loss_tangent": 0.0,
             "magnetic_loss_tangent": 0.0,
@@ -372,7 +372,7 @@
                 0
             ],
             "type": "signal",
-            "material": "COPPER",
+            "material": "copper",
             "dielectric_fill": "TOP_FILL",
             "thickness": 4.826e-05,
             "etch_factor": 0.0,
@@ -412,7 +412,7 @@
                 0
             ],
             "type": "signal",
-            "material": "COPPER_1",
+            "material": "copper",
             "dielectric_fill": "PWR_FILL",
             "thickness": 3.302e-05,
             "etch_factor": 0.0,
@@ -432,7 +432,7 @@
                 122
             ],
             "type": "signal",
-            "material": "COPPER",
+            "material": "copper",
             "dielectric_fill": "FR4_epoxy",
             "thickness": 3.5e-05,
             "etch_factor": 0.0,
@@ -472,7 +472,7 @@
                 128
             ],
             "type": "signal",
-            "material": "COPPER_1",
+            "material": "copper",
             "dielectric_fill": "FR-4_1",
             "thickness": 3.048e-05,
             "etch_factor": 0.0,
@@ -512,7 +512,7 @@
                 122
             ],
             "type": "signal",
-            "material": "COPPER_1",
+            "material": "copper",
             "dielectric_fill": "FR4_epoxy_DS",
             "thickness": 3.048e-05,
             "etch_factor": 1.25,
@@ -552,7 +552,7 @@
                 0
             ],
             "type": "signal",
-            "material": "COPPER_1",
+            "material": "copper",
             "dielectric_fill": "FR-4_1",
             "thickness": 3.302e-05,
             "etch_factor": 0.0,
@@ -612,7 +612,7 @@
                 255
             ],
             "type": "signal",
-            "material": "COPPER",
+            "material": "copper",
             "dielectric_fill": "BOTTOM_FILL",
             "thickness": 4.826e-05,
             "etch_factor": 0.0,
@@ -632,7 +632,7 @@
                 122
             ],
             "type": "signal",
-            "material": "COPPER",
+            "material": "copper",
             "dielectric_fill": "FR4_epoxy",
             "thickness": 3.5e-05,
             "etch_factor": 0.0,

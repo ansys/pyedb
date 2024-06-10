@@ -25,6 +25,7 @@ from pyedb.configuration.cfg_boundaries import CfgBoundaries
 from pyedb.configuration.cfg_components import CfgComponents
 from pyedb.configuration.cfg_general import CfgGeneral
 from pyedb.configuration.cfg_nets import CfgNets
+from pyedb.configuration.cfg_operations import CfgOperations
 from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
 from pyedb.configuration.cfg_padstacks import CfgPadstacks
 from pyedb.configuration.cfg_pin_groups import CfgPinGroup
@@ -81,4 +82,4 @@ class CfgData(object):
         ]
 
         self.package_definitions = CfgPackageDefinitions(self._pedb, data=kwargs.get("package_definitions", []))
-        self.operations = None
+        self.operations = CfgOperations(self._pedb, data=kwargs.get("operations", []))
