@@ -19,15 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import pdb
 
-"""
-This module contains these classes: `EdbLayout` and `Shape`.
-"""
-
-from pyedb.dotnet.edb_core.layout import EdbLayout
+from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 
 
-class Modeler(EdbLayout):
-    def __init__(self, pedb):
-        super().__init__(pedb)
-
+class Cell(ObjBase):
+    def __init__(self, pedb, edb_object):
+        super().__init__(pdb, edb_object)

@@ -43,6 +43,15 @@ class Primitive(Connectable):
         self._core_net = pedb.nets
         self.primitive_object = self._edb_object
 
+        bondwire_type = self._pedb._edb.cell.primitive.BondwireType
+        self._bondwire_type = {
+            "invalid": bondwire_type.Invalid,
+            "apd": bondwire_type.ApdBondwire,
+            "jedec4": bondwire_type.Jedec4Bondwire,
+            "jedec5": bondwire_type.Jedec5Bondwire,
+            "num_of_bondwire_type": bondwire_type.NumOfBondwireTypes,
+        }
+
     @property
     def type(self):
         """Return the type of the primitive.
@@ -151,81 +160,23 @@ class Bondwire(Primitive):
         if self._edb_object is None:
             self._edb_object = self.__create(**kwargs)
 
-    def __create(
-        self,
-        layout,
-        bondwire_type,
-        definition_name,
-        placement_layer,
-        width,
-        material,
-        start_context,
-        start_layer_name,
-        start_x,
-        start_y,
-        end_context,
-        end_layer_name,
-        end_x,
-        end_y,
-        net,
-    ):
-        """Create a bondwire object.
-
-        Parameters
-        ----------
-        layout : :class:`Layout <ansys.edb.layout.Layout>`
-            Layout this bondwire will be in.
-        bondwire_type : :class:`BondwireType`
-            Type of bondwire: kAPDBondWire or kJDECBondWire types.
-        definition_name : str
-            Bondwire definition name.
-        placement_layer : str
-            Layer name this bondwire will be on.
-        width : :class:`Value <ansys.edb.utility.Value>`
-            Bondwire width.
-        material : str
-            Bondwire material name.
-        start_context : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
-            Start context: None means top level.
-        start_layer_name : str
-            Name of start layer.
-        start_x : :class:`Value <ansys.edb.utility.Value>`
-            X value of start point.
-        start_y : :class:`Value <ansys.edb.utility.Value>`
-            Y value of start point.
-        end_context : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
-            End context: None means top level.
-        end_layer_name : str
-            Name of end layer.
-        end_x : :class:`Value <ansys.edb.utility.Value>`
-            X value of end point.
-        end_y : :class:`Value <ansys.edb.utility.Value>`
-            Y value of end point.
-        net : str or :class:`Net <ansys.edb.net.Net>` or None
-            Net of the Bondwire.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.edb_core.dotnet.primitive.BondwireDotNet`
-            Bondwire object created.
-        """
+    def __create(self, **kwargs):
         return self._pedb._edb.Cell.Primitive.Bondwire.Create(
-                layout,
-                net,
-                bondwire_type,
-                definition_name,
-                placement_layer,
-                width,
-                material,
-                start_context,
-                start_layer_name,
-                start_x,
-                start_y,
-                end_context,
-                end_layer_name,
-                end_x,
-                end_y,
-            )
+            self._pedb.modeler._edb_object,
+            kwargs.get("net"),
+            self._bondwire_type[kwargs.get("bondwire_type")],
+            kwargs.get("definition_name"),
+            kwargs.get("placement_layer"),
+            kwargs.get("width"),
+            kwargs.get("material"),
+            kwargs.get("start_context"),
+            kwargs.get("start_layer_name"),
+            kwargs.get("start_x"),
+            kwargs.get("start_y"),
+            kwargs.get("end_context"),
+            kwargs.get("end_x"),
+            kwargs.get("end_y")
+        )
 
     def get_material(self, evaluated=True):
         """Get material of the bondwire.

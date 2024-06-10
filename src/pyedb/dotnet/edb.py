@@ -106,7 +106,7 @@ from pyedb.generic.general_methods import (
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
-from pyedb.modeler.modeler import Modeler
+from pyedb.dotnet.edb_core.cell.layout import Layout
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 if is_linux and is_ironpython:
@@ -359,7 +359,7 @@ class Edb(Database):
         self._siwave = EdbSiwave(self)
         self._hfss = EdbHfss(self)
         self._nets = EdbNets(self)
-        self._core_primitives = Modeler(self)
+        self._core_primitives = Layout(self, self._active_cell.GetLayout())
         self._stackup2 = self._stackup
         self._materials = Materials(self)
 
@@ -1140,7 +1140,7 @@ class Edb(Database):
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
         if not self._core_primitives and self.active_db:
-            self._core_primitives = Modeler(self)
+            self._core_primitives = Layout(self, self._active_cell.GetLayout())
         return self._core_primitives
 
     @property
