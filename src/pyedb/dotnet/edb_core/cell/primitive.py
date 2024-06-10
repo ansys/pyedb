@@ -92,7 +92,7 @@ class Primitive(Connectable):
 
     @property
     def layer_name(self):
-        """Get or Set the primitive layer name.
+        """Get the primitive layer name.
 
         Returns
         -------
