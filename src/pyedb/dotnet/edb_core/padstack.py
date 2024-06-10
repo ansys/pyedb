@@ -938,17 +938,33 @@ class EdbPadstacks(object):
         holediam = self._get_edb_value(holediam)
         paddiam = self._get_edb_value(paddiam)
         antipaddiam = self._get_edb_value(antipaddiam)
-
+        layers = list(self._pedb.stackup.signal_layers.keys())[:]
+        value0 = self._get_edb_value("0.0")
         if not padstackname:
             padstackname = generate_unique_name("VIA")
         # assert not self.isreadonly, "Write Functions are not available within AEDT"
         padstackData = self._edb.definition.PadstackDefData.Create()
-        if has_hole:
+        if has_hole and not polygon_hole:
             ptype = self._edb.definition.PadGeometryType.Circle
+            hole_param = Array[type(holediam)]([holediam])
+            padstackData.SetHoleParameters(ptype, hole_param, value0, value0, value0)
+            padstackData.SetHolePlatingPercentage(self._get_edb_value(20.0))
+        elif polygon_hole:
+            if isinstance(polygon_hole, list):
+                _poly = self._pedb.modeler.create_polygon(polygon_hole, layers[0], net_name="dummy")
+                if not _poly.is_null:
+                    hole_param = _poly.polygon_data
+                else:
+                    return False
+            elif isinstance(polygon_hole, PolygonDataDotNet):
+                hole_param = polygon_hole
+            else:
+                return False
+            padstackData.SetPolygonalHoleParameters(hole_param, value0, value0, value0)
+            padstackData.SetHolePlatingPercentage(self._get_edb_value(20.0))
         else:
             ptype = self._edb.definition.PadGeometryType.NoGeometry
-        holparam = Array[type(holediam)]([holediam])
-        value0 = self._get_edb_value("0.0")
+
         x_size = self._get_edb_value(x_size)
         y_size = self._get_edb_value(y_size)
         corner_radius = self._get_edb_value(corner_radius)
@@ -961,8 +977,7 @@ class EdbPadstacks(object):
         pad_rotation = self._get_edb_value(pad_rotation)
         anti_pad_x_size = self._get_edb_value(anti_pad_x_size)
         anti_pad_y_size = self._get_edb_value(anti_pad_y_size)
-        padstackData.SetHoleParameters(ptype, holparam, value0, value0, value0)
-        padstackData.SetHolePlatingPercentage(self._get_edb_value(20.0))
+
         if hole_range == "through":  # pragma no cover
             padstackData.SetHoleRange(self._edb.definition.PadstackHoleRange.Through)
         elif hole_range == "begin_on_upper_pad":  # pragma no cover
@@ -974,7 +989,7 @@ class EdbPadstacks(object):
         else:  # pragma no cover
             self._logger.error("Unknown padstack hole range")
         padstackData.SetMaterial("copper")
-        layers = list(self._pedb.stackup.signal_layers.keys())[:]
+
         if start_layer and start_layer in layers:  # pragma no cover
             layers = layers[layers.index(start_layer) :]
         if stop_layer and stop_layer in layers:  # pragma no cover
