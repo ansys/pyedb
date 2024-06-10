@@ -68,6 +68,7 @@ class EdbExamples:
         return dst
 
     def get_si_verse(self, edbapp=True, additional_files_folders=""):
+        """Copy si_verse board file into local folder. A new temporary folder will be created."""
         aedb = self._copy_file_folder_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")
         if additional_files_folders:
             files = (
@@ -84,6 +85,11 @@ class EdbExamples:
             return Edb(aedb, edbversion=desktop_version)
         else:
             return aedb
+
+    def create_empty_edb(self):
+        local_folder = self._create_test_folder()
+        aedb = os.path.join(local_folder, "new_layout.aedb")
+        return Edb(aedb, edbversion=desktop_version)
 
     def get_multizone_pcb(self):
         aedb = self._copy_file_folder_into_local_folder("multi_zone_project.aedb")

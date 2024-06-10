@@ -27,12 +27,14 @@ This module is implicitly loaded in HFSS 3D Layout when launched.
 """
 from itertools import combinations
 import os
+from pathlib import Path
 import re
 import shutil
 import sys
 import tempfile
 import time
 import traceback
+from typing import Union
 import warnings
 
 from pyedb.configuration.configuration import Configuration
@@ -182,7 +184,7 @@ class Edb(Database):
 
     def __init__(
         self,
-        edbpath: str = None,
+        edbpath: Union[str, Path] = None,
         cellname: str = None,
         isreadonly: bool = False,
         edbversion: str = None,
@@ -193,6 +195,9 @@ class Edb(Database):
         technology_file: str = None,
         remove_existing_aedt: bool = False,
     ):
+        if isinstance(edbpath, Path):
+            edbpath = str(edbpath)
+
         edbversion = get_string_version(edbversion)
         self._clean_variables()
         Database.__init__(self, edbversion=edbversion, student_version=student_version)
