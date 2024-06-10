@@ -49,7 +49,7 @@ and edit projects, run simulations, or perform postprocessing. AEDB files are pr
 meaning that ready-to-solve projects can be written with PyEDB. Therefore Ansys solvers can directly
 load AEDB files graphically or in batch non-graphically to support submission for job scheduling on a cluster.
 
-.. image:: ../Resources/aedt_3.png
+.. image:: ../resources/aedt_3.png
   :width: 800
   :alt: AEDT Applications
   :target: https://www.ansys.com/products/electronics
