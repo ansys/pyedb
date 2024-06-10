@@ -390,6 +390,7 @@ class TestClass:
             bounding_box=[0, 0, 0.05, 0.08], nets="GND"
         )
         assert len(test) == 194
+        edbapp.close()
 
     def test_polygon_based_padsatck(self):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
