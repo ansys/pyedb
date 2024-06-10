@@ -390,3 +390,39 @@ class TestClass:
             bounding_box=[0, 0, 0.05, 0.08], nets="GND"
         )
         assert len(test) == 194
+
+    def test_polygon_based_padsatck(self):
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_padstack_rtree_index", "ANSYS-HSD_V1.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        polygon_data = edbapp.modeler.paths[0].polygon_data
+        edbapp.padstacks.create(
+            padstackname="test",
+            pad_shape="Polygon",
+            antipad_shape="Polygon",
+            pad_polygon=polygon_data,
+            antipad_polygon=polygon_data,
+        )
+        edbapp.padstacks.create(
+            padstackname="test2",
+            pad_shape="Polygon",
+            antipad_shape="Polygon",
+            pad_polygon=[
+                [-0.025, -0.02],
+                [0.025, -0.02],
+                [0.025, 0.02],
+                [-0.025, 0.02],
+                [-0.025, -0.02],
+            ],
+            antipad_polygon=[
+                [-0.025, -0.02],
+                [0.025, -0.02],
+                [0.025, 0.02],
+                [-0.025, 0.02],
+                [-0.025, -0.02],
+            ],
+        )
+        assert edbapp.padstacks.definitions["test"]
+        assert edbapp.padstacks.definitions["test2"]
+        edbapp.close()
