@@ -78,7 +78,6 @@ def cast(raw_primitive, core_app):
             return None
 
 
-
 class EDBPrimitives(Primitive):
     """Manages EDB functionalities for a primitives.
     It Inherits EDB Object properties.
@@ -93,7 +92,7 @@ class EDBPrimitives(Primitive):
     """
 
     def __init__(self, raw_primitive, core_app):
-        Primitive.__init__(self, raw_primitive, core_app)
+        Primitive.__init__(self, core_app, raw_primitive)
 
     @pyedb_function_handler()
     def area(self, include_voids=True):

@@ -36,11 +36,11 @@ class Primitive(Connectable):
     >>> edb_prim.IsVoid() # EDB Object Property
     """
 
-    def __init__(self, raw_primitive, core_app):
-        super().__init__(core_app, raw_primitive)
+    def __init__(self, pedb, edb_object):
+        super().__init__(pedb, edb_object)
         self._app = self._pedb
-        self._core_stackup = core_app.stackup
-        self._core_net = core_app.nets
+        self._core_stackup = pedb.stackup
+        self._core_net = pedb.nets
         self.primitive_object = self._edb_object
 
     @property
