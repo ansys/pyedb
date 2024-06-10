@@ -11,6 +11,7 @@ on:
 env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   PYEDB_USE_DOTNET: '1'
+  PYEDB_CI_NO_DISPLAY: '1'
   MAIN_PYTHON_VERSION: '3.10'
   PACKAGE_NAME: 'pyedb'
   DOCUMENTATION_CNAME: 'edb.docs.pyansys.com'
@@ -76,7 +77,7 @@ jobs:
 
   legacy-tests:
     name: Test dotnet
-    runs-on: [ Windows, self-hosted, pyedb, pyedb-ci-0 ]
+    runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@v4
@@ -141,7 +142,7 @@ jobs:
     name: Testing PyAEDT main branch
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
-    runs-on: [ self-hosted, Windows, pyaedt, pyedb-ci-0 ]
+    runs-on: [ self-hosted, Windows, pyaedt ]
     steps:
       - name: Install Git and checkout project
         uses: actions/checkout@v4
@@ -216,7 +217,7 @@ jobs:
 
   docs-build:
     name: Build documentation
-    runs-on: [ Windows, self-hosted, pyedb, pyedb-ci-1 ]
+    runs-on: [ Windows, self-hosted, pyedb ]
     timeout-minutes: 480
     steps:
       - uses: actions/checkout@v4
