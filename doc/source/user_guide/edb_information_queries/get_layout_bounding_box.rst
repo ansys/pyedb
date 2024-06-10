@@ -20,6 +20,6 @@ This tutorial shows how to retrieve the layout size by getting the bounding box.
 
     edbapp.get_bounding_box()
 
-.. .. image:: ../../Resources/layout_bbox.png
-..     :width: 800
-..     :alt: Layout bounding box
+.. image:: ../../resources/layout_bbox.png
+    :width: 800
+    :alt: Layout bounding box
