@@ -25,7 +25,8 @@ from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
 
 class Primitive(Connectable):
     """Manages EDB functionalities for a primitives.
-    It Inherits EDB Object properties.
+    
+    It inherits EDB Object properties.
 
     Examples
     --------
