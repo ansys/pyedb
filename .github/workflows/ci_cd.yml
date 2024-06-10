@@ -77,7 +77,7 @@ jobs:
 
   legacy-tests:
     name: Test dotnet
-    runs-on: [ Windows, self-hosted, pyedb, pyedb-ci-1 ]
+    runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@v4
