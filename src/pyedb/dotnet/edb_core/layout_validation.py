@@ -24,7 +24,7 @@ import re
 
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.primitives_data import EDBPrimitives
-from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name
 
 
 class LayoutValidation:
@@ -33,7 +33,6 @@ class LayoutValidation:
     def __init__(self, pedb):
         self._pedb = pedb
 
-  
     def dc_shorts(self, net_list=None, fix=False):
         """Find DC shorts on layout.
 
@@ -121,7 +120,6 @@ class LayoutValidation:
                         # i.net = temp_name
         return dc_shorts
 
-  
     def disjoint_nets(
         self,
         net_list=None,

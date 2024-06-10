@@ -35,7 +35,7 @@ from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.exceptions import MaterialModelException
-from pyedb.generic.general_methods import is_ironpython, pyedb_function_handler
+from pyedb.generic.general_methods import is_ironpython
 
 logger = logging.getLogger(__name__)
 
@@ -378,7 +378,6 @@ class Material(object):
         material_property_id = self.__edb_definition.MaterialPropertyId.ThermalExpansionCoefficient
         self.__material_def.SetProperty(material_property_id, edb_value)
 
-  
     def to_dict(self):
         """Convert material into dictionary."""
         self.__load_all_properties()
@@ -387,7 +386,6 @@ class Material(object):
         res.update(self.__properties.model_dump())
         return res
 
-  
     def update(self, input_dict: dict):
         if input_dict:
             # Update attributes
@@ -412,7 +410,6 @@ class Material(object):
             elif self.__dc_model:
                 self.__material_def.SetDielectricMaterialModel(self.__edb_value(None))
 
-  
     def __edb_value(self, value):
         """Convert a value to an EDB value.
 
@@ -422,13 +419,11 @@ class Material(object):
         """
         return self.__edb.edb_value(value)
 
-  
     def __load_all_properties(self):
         """Load all properties of the material."""
         for property in self.__properties.model_dump().keys():
             _ = getattr(self, property)
 
-  
     def __property_value(self, material_property_id):
         """Get property value from a material property id."""
         if is_ironpython:  # pragma: no cover
@@ -496,7 +491,6 @@ class Materials(object):
         """
         return self.__edb.edb_value(value)
 
-  
     def add_material(self, name: str, **kwargs):
         """Add a new material.
 
@@ -531,7 +525,6 @@ class Materials(object):
 
         return material
 
-  
     def add_conductor_material(self, name, conductivity, **kwargs):
         """Add a new conductor material.
 
@@ -553,7 +546,6 @@ class Materials(object):
 
         return material
 
-  
     def add_dielectric_material(self, name, permittivity, dielectric_loss_tangent, **kwargs):
         """Add a new dielectric material in library.
 
@@ -577,7 +569,6 @@ class Materials(object):
 
         return material
 
-  
     def add_djordjevicsarkar_dielectric(
         self,
         name,
@@ -635,7 +626,6 @@ class Materials(object):
         except MaterialModelException:
             raise ValueError("Use realistic values to define DS model.")
 
-  
     def add_debye_material(
         self,
         name,
@@ -703,7 +693,6 @@ class Materials(object):
         except MaterialModelException:
             raise ValueError("Use realistic values to define Debye model.")
 
-  
     def add_multipole_debye_material(
         self,
         name,
@@ -768,7 +757,6 @@ class Materials(object):
         except MaterialModelException:
             raise ValueError("Use realistic values to define Multipole Debye model.")
 
-  
     def __add_dielectric_material_model(self, name, material_model):
         """Add a dielectric material model.
 
@@ -791,7 +779,6 @@ class Materials(object):
             return material
         raise MaterialModelException("Set dielectric material model failed.")
 
-  
     def duplicate(self, material_name, new_material_name):
         """Duplicate a material from the database.
 
@@ -820,7 +807,6 @@ class Materials(object):
 
         return new_material
 
-  
     def delete_material(self, material_name):
         """Remove a material from the database."""
         material_def = self.__edb_definition.MaterialDef.FindByName(self.__edb.active_db, material_name)
@@ -828,7 +814,6 @@ class Materials(object):
             raise ValueError(f"Cannot find material {material_name}.")
         material_def.Delete()
 
-  
     def update_material(self, material_name, input_dict):
         """Update material attributes."""
         if material_name not in self.materials:
@@ -847,7 +832,6 @@ class Materials(object):
             material.update(attributes_input_dict)
         return material
 
-  
     def load_material(self, material: dict):
         """Load material."""
         if material:
@@ -868,7 +852,6 @@ class Materials(object):
                     material_dlt = material["dielectric_loss_tangent"]
                 self.add_dielectric_material(material_name, material_permittivity, material_dlt)
 
-  
     def material_property_to_id(self, property_name):
         """Convert a material property name to a material property ID.
 
@@ -910,7 +893,6 @@ class Materials(object):
         else:
             return property_name_to_id["InvalidProperty"]
 
-  
     def load_amat(self, amat_file):
         """Load materials from an AMAT file.
 
@@ -944,7 +926,6 @@ class Materials(object):
                 self.__edb.logger.warning(f"Material {material_name} already exist and was not loaded from AMAT file.")
         return True
 
-  
     def iterate_materials_in_amat(self, amat_file=None):
         """Iterate over material description in an AMAT file.
 
@@ -1019,7 +1000,6 @@ class Materials(object):
                         material_description["name"] = match.group(1)
                         in_material_def = True
 
-  
     def read_materials(self, amat_file):
         """Read materials from an AMAT file.
 
@@ -1043,7 +1023,6 @@ class Materials(object):
 
         return res
 
-  
     def read_syslib_material(self, material_name):
         """Read a specific material from syslib AMAT file.
 

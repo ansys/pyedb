@@ -30,7 +30,7 @@ from __future__ import absolute_import  # noreorder
 import logging
 
 from pyedb.dotnet.clr_module import Dictionary, List, Tuple
-from pyedb.generic.general_methods import is_ironpython, pyedb_function_handler
+from pyedb.generic.general_methods import is_ironpython
 
 if not is_ironpython:  # pragma: no cover
     try:
@@ -41,7 +41,6 @@ else:  # pragma: no cover
     Enum = object
 
 logger = logging.getLogger(__name__)
-
 
 
 def convert_netdict_to_pydict(dict_in):
@@ -64,7 +63,6 @@ def convert_netdict_to_pydict(dict_in):
     return pydict
 
 
-
 def convert_pytuple_to_nettuple(_tuple):
     """Convert a Python tuple into a .NET tuple.
     Parameters
@@ -76,7 +74,6 @@ def convert_pytuple_to_nettuple(_tuple):
     .NET tuple.
     """
     return Tuple.Create(_tuple[0], _tuple[1])
-
 
 
 def convert_pydict_to_netdict(input_dict):
@@ -98,7 +95,6 @@ def convert_pydict_to_netdict(input_dict):
         net_dict[k1] = v1
     return net_dict
     # to be completed
-
 
 
 def convert_py_list_to_net_list(pylist, list_type=None):
@@ -125,7 +121,6 @@ def convert_py_list_to_net_list(pylist, list_type=None):
         for el in pylist:
             net_list.Add(el)
         return net_list
-
 
 
 def convert_net_list_to_py_list(netlist):

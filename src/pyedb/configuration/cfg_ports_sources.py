@@ -20,15 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.generic.general_methods import pyedb_function_handler
-
 
 class CfgCircuitElement:
     @property
     def pedb(self):
         """Edb."""
         return self._pdata._pedb
-
 
     def __init__(self, pdata, **kwargs):
         self._pdata = pdata
@@ -39,7 +36,6 @@ class CfgCircuitElement:
         self.distributed = kwargs.get("distributed", False)
         self.pos_term_info = kwargs.get("positive_terminal", None)  # {"pin" : "A1"}
         self.neg_term_info = kwargs.get("negative_terminal", None)
-
 
     def _create_terminals(self):
         """Create step 1. Collect positive and negative terminals."""
@@ -92,7 +88,6 @@ class CfgCircuitElement:
                     j.create_terminal(i) if not j.terminal else j.terminal for i, j in pin_group.items()
                 ][0]
 
-
     def _get_pins(self, terminal_type, terminal_value):
         terminal_value = terminal_value if isinstance(terminal_value, list) else [terminal_value]
 
@@ -112,7 +107,6 @@ class CfgCircuitElement:
             pins.update({f"{self.reference_designator}_{terminal_value[0]}_{i}": j for i, j in temp.items()})
         return pins
 
-
     def _create_pin_group(self, pins, is_ref=False):
         if is_ref:
             pg_name = f"pg_{self.name}_{self.reference_designator}_ref"
@@ -128,10 +122,8 @@ class CfgPort(CfgCircuitElement):
 
     CFG_PORT_TYPE = {"circuit": [str], "coax": [str]}
 
-
     def __init__(self, pdata, **kwargs):
         super().__init__(pdata, **kwargs)
-
 
     def create(self):
         """Create port."""
@@ -152,12 +144,10 @@ class CfgPort(CfgCircuitElement):
 class CfgSources(CfgCircuitElement):
     CFG_SOURCE_TYPE = {"current": [int, float], "voltage": [int, float]}
 
-
     def __init__(self, pdata, **kwargs):
         super().__init__(pdata, **kwargs)
 
         self.magnitude = kwargs.get("magnitude", 0.001)
-
 
     def create(self):
         """Create sources."""

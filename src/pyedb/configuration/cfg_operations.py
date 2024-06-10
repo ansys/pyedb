@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from pyedb.configuration.cfg_common import CfgBase
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class CfgCutout(CfgBase):
@@ -55,7 +54,6 @@ class CfgOperations(CfgBase):
     def __init__(self, pedb, data):
         self._pedb = pedb
         self.op_cutout = CfgCutout(**data["cutout"]) if "cutout" in data else None
-
 
     def apply(self):
         """Imports operation information from JSON."""

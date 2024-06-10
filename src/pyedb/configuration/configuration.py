@@ -28,7 +28,6 @@ import toml
 
 from pyedb.configuration.cfg_data import CfgData
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class Configuration:
@@ -41,7 +40,6 @@ class Configuration:
         self._s_parameter_library = ""
         self._spice_model_library = ""
         self.cfg_data = CfgData(self._pedb)
-
 
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
         """Import configuration settings from a configure file.
@@ -103,7 +101,6 @@ class Configuration:
                 self._pedb.open_edb()
         return self.cfg_data
 
-  
     def run(self):
         """Apply configuration settings to the current design"""
 
@@ -156,7 +153,6 @@ class Configuration:
         self.cfg_data.operations.apply()
 
         return True
-
 
     def _load_stackup(self):
         """Imports stackup information from json."""
@@ -213,7 +209,6 @@ class Configuration:
                     prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **l)
                 elif l["type"] == "signal":
                     prev_layer_clone = self._pedb.stackup.layers[l["name"]]
-
 
     def _load_package_def(self):
         """Imports package definition information from JSON."""
@@ -276,7 +271,6 @@ class Configuration:
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
 
         return data
-
 
     def export(self, file_path, stackup=True, package_definitions=True):
         """Export the configuration data from layout to a file.

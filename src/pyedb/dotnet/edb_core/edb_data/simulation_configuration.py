@@ -35,7 +35,7 @@ from pyedb.generic.constants import (
     SweepType,
     validate_enum_class_value,
 )
-from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name
 
 
 class SimulationConfigurationBatch(object):
@@ -525,7 +525,6 @@ class SimulationConfigurationBatch(object):
             if len([src for src in value if isinstance(src, Source)]) == len(value):
                 self._sources = value
 
-  
     def add_source(self, source=None):  # pragma: no cover
         """Add a new source to configuration.
 
@@ -2355,7 +2354,6 @@ class SimulationConfiguration(object):
         """
         return self._batch_solve_settings
 
-  
     def build_simulation_project(self):
         """Build active simulation project. This method requires to be run inside Edb Class.
 
@@ -2433,7 +2431,6 @@ class SimulationConfiguration(object):
                 prop_values = [value.strip()]
             return prop_values
 
-  
     def add_dc_ground_source_term(self, source_name=None, node_to_ground=1):
         """Add a dc ground source terminal for Siwave.
 
@@ -2705,7 +2702,6 @@ class SimulationConfiguration(object):
             else:
                 self.__setattr__(k, v)
 
-  
     def export_json(self, output_file):
         """Export Json file from SimulationConfiguration object.
 
@@ -2735,7 +2731,6 @@ class SimulationConfiguration(object):
         else:
             return False
 
-  
     def import_json(self, input_file):
         """Import Json file into SimulationConfiguration object instance.
 
@@ -2764,7 +2759,6 @@ class SimulationConfiguration(object):
         else:
             return False
 
-  
     def add_voltage_source(
         self,
         name="",
@@ -2836,7 +2830,6 @@ class SimulationConfiguration(object):
         except:  # pragma: no cover
             return False
 
-  
     def add_current_source(
         self,
         name="",
@@ -2908,7 +2901,6 @@ class SimulationConfiguration(object):
         except:  # pragma: no cover
             return False
 
-  
     def add_rlc(
         self,
         name="",

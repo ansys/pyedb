@@ -22,7 +22,6 @@
 
 from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
 from pyedb.dotnet.edb_core.obj_base import ObjBase
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class PackageDef(ObjBase):
@@ -47,7 +46,6 @@ class PackageDef(ObjBase):
             self._edb_object = self.__create_from_name(name, component_part_name, extent_bounding_box)
         else:
             self._edb_object = edb_object
-
 
     def __create_from_name(self, name, component_part_name=None, extent_bounding_box=None):
         """Create a package definition.
@@ -76,7 +74,6 @@ class PackageDef(ObjBase):
 
         edb_object.SetExteriorBoundary(polygon_data._edb_object)
         return edb_object
-
 
     def delete(self):
         """Delete a package definition object from the database."""
@@ -140,7 +137,6 @@ class PackageDef(ObjBase):
     def height(self, value):
         value = self._pedb.edb_value(value)
         self._edb_object.SetHeight(value)
-
 
     def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness):
         from pyedb.dotnet.edb_core.utilities.heatsink import HeatSink

@@ -30,7 +30,6 @@ import csv
 import datetime
 import difflib
 import fnmatch
-from functools import update_wrapper
 import inspect
 import itertools
 import logging
@@ -220,29 +219,6 @@ def deprecate_argument_name(argument_map):
     return decorator
 
 
-def pyedb_function_handler(direct_func=None):
-    """Provides an exception handler, logging mechanism, and argument converter for client-server
-    communications.
-
-    This method returns the function itself if correctly executed. Otherwise, it returns ``False``
-    and displays errors.
-
-    """
-    if callable(direct_func):
-        user_function = direct_func
-        wrapper = _function_handler_wrapper(user_function)
-        return update_wrapper(wrapper, user_function)
-    elif direct_func is not None:
-        raise TypeError("Expected first argument to be a callable, or None")
-
-    def decorating_function(user_function):
-        wrapper = _function_handler_wrapper(user_function)
-        return update_wrapper(wrapper, user_function)
-
-    return decorating_function
-
-
-
 def get_filename_without_extension(path):
     """Get the filename without its extension.
 
@@ -321,7 +297,6 @@ def _get_args_dicts(func, args, kwargs):
     return args_dict
 
 
-
 def env_path(input_version):
     """Get the path of the version environment variable for an AEDT version.
 
@@ -348,7 +323,6 @@ def env_path(input_version):
     )
 
 
-
 def get_version_and_release(input_version):
     version = int(input_version[2:4])
     release = int(input_version[5])
@@ -358,7 +332,6 @@ def get_version_and_release(input_version):
         else:
             release -= 2
     return (version, release)
-
 
 
 def env_value(input_version):
@@ -382,7 +355,6 @@ def env_value(input_version):
     return "ANSYSEM_ROOT{0}{1}".format(
         get_version_and_release(input_version)[0], get_version_and_release(input_version)[1]
     )
-
 
 
 def generate_unique_name(rootname, suffix="", n=6):
@@ -431,7 +403,6 @@ def normalize_path(path_in, sep=None):
     return path_in.replace("\\", sep).replace("/", sep)
 
 
-
 def check_numeric_equivalence(a, b, relative_tolerance=1e-7):
     """Check if two numeric values are equivalent to within a relative tolerance.
 
@@ -455,7 +426,6 @@ def check_numeric_equivalence(a, b, relative_tolerance=1e-7):
     else:
         reldiff = abs(b)
     return True if reldiff < relative_tolerance else False
-
 
 
 def check_and_download_file(local_path, remote_path, overwrite=True):
@@ -497,7 +467,6 @@ def check_if_path_exists(path):
     if settings.remote_rpc_session:
         return settings.remote_rpc_session.filemanager.pathexists(path)
     return os.path.exists(path)
-
 
 
 def check_and_download_folder(local_path, remote_path, overwrite=True):
@@ -556,7 +525,6 @@ def open_file(file_path, file_options="r"):  # pragma: no cover
         settings.logger.error("The file or folder %s does not exist", dir_name)
 
 
-
 def get_string_version(input_version):
     output_version = input_version
     if isinstance(input_version, float):
@@ -572,7 +540,6 @@ def get_string_version(input_version):
         elif len(input_version) == 4:
             output_version = "20" + input_version
     return output_version
-
 
 
 def env_path_student(input_version):
@@ -601,7 +568,6 @@ def env_path_student(input_version):
     )
 
 
-
 def env_value_student(input_version):
     """Get the name of the version environment variable for an AEDT student version.
 
@@ -623,7 +589,6 @@ def env_value_student(input_version):
     return "ANSYSEMSV_ROOT{0}{1}".format(
         get_version_and_release(input_version)[0], get_version_and_release(input_version)[1]
     )
-
 
 
 def generate_unique_folder_name(rootname=None, folder_name=None):  # pragma: no cover
@@ -654,7 +619,6 @@ def generate_unique_folder_name(rootname=None, folder_name=None):  # pragma: no 
         os.makedirs(temp_folder)
 
     return temp_folder
-
 
 
 def generate_unique_project_name(rootname=None, folder_name=None, project_name=None, project_format="aedt"):
@@ -793,7 +757,6 @@ def is_project_locked(project_path):
     return check_if_path_exists(project_path + ".lock")
 
 
-
 def remove_project_lock(project_path):  # pragma: no cover
     """Check if an AEDT project exists and try to remove the lock file.
 
@@ -813,7 +776,6 @@ def remove_project_lock(project_path):  # pragma: no cover
     if os.path.exists(project_path + ".lock"):
         os.remove(project_path + ".lock")
     return True
-
 
 
 def read_csv(filename, encoding="utf-8"):  # pragma: no cover
@@ -840,7 +802,6 @@ def read_csv(filename, encoding="utf-8"):  # pragma: no cover
     return lines
 
 
-
 def read_csv_pandas(filename, encoding="utf-8"):  # pragma: no cover
     """Read information from a CSV file and return a list.
 
@@ -865,7 +826,6 @@ def read_csv_pandas(filename, encoding="utf-8"):  # pragma: no cover
         return None
 
 
-
 def read_tab(filename):  # pragma: no cover
     """Read information from a TAB file and return a list.
 
@@ -882,7 +842,6 @@ def read_tab(filename):  # pragma: no cover
     with open(filename) as my_file:
         lines = my_file.readlines()
     return lines
-
 
 
 def read_xlsx(filename):  # pragma: no cover
@@ -908,7 +867,6 @@ def read_xlsx(filename):  # pragma: no cover
         return lines
 
 
-
 def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL):  # pragma: no cover
     if is_ironpython:
         f = open(output, "wb")
@@ -919,7 +877,6 @@ def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE
         writer.writerow(data)
     f.close()
     return True
-
 
 
 def filter_tuple(value, search_key1, search_key2):  # pragma: no cover
@@ -945,7 +902,6 @@ def filter_tuple(value, search_key1, search_key2):  # pragma: no cover
     return False
 
 
-
 def filter_string(value, search_key1):  # pragma: no cover
     """Filter a string"""
     ignore_case = True
@@ -965,7 +921,6 @@ def filter_string(value, search_key1):  # pragma: no cover
     if m:
         return True
     return False
-
 
 
 def recursive_glob(startpath, filepattern):  # pragma: no cover
@@ -990,7 +945,6 @@ def recursive_glob(startpath, filepattern):  # pragma: no cover
             for filename in filenames
             if fnmatch.fnmatch(filename, filepattern)
         ]
-
 
 
 def number_aware_string_key(s):  # pragma: no cover
@@ -1028,7 +982,6 @@ def number_aware_string_key(s):  # pragma: no cover
             result.append(key)
             i = j
     return tuple(result)
-
 
 
 def compute_fft(time_vals, value):  # pragma: no cover
@@ -1265,7 +1218,6 @@ class PropsManager(object):
             self.update()
             self._app.logger.warning("Key %s not found. Trying to applying new key ", key)
 
-  
     def _recursive_search(self, dict_in, key="", matching_percentage=0.8):  # pragma: no cover
         f = difflib.get_close_matches(key, list(dict_in.keys()), 1, matching_percentage)
         if f:
@@ -1283,7 +1235,6 @@ class PropsManager(object):
                             return out_val
         return False
 
-  
     def _recursive_list(self, dict_in, prefix=""):  # pragma: no cover
         available_list = []
         for k, v in dict_in.items():
@@ -1308,7 +1259,6 @@ class PropsManager(object):
             return self._recursive_list(self.props)
         return []
 
-  
     def update(self):
         """Update method."""
         pass
@@ -1459,17 +1409,17 @@ class Help:  # pragma: no cover
 
 # class Property(property):
 #
-#   
+#
 #     def getter(self, fget):
 #         """Property getter."""
 #         return self.__class__.__base__(fget, self.fset, self.fdel, self.__doc__)
 #
-#   
+#
 #     def setter(self, fset):
 #         """Property setter."""
 #         return self.__class__.__base__(self.fget, fset, self.fdel, self.__doc__)
 #
-#   
+#
 #     def deleter(self, fdel):
 #         """Property deleter."""
 #         return self.__class__.__base__(self.fget, self.fset, fdel, self.__doc__)

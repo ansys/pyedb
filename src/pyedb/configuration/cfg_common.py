@@ -21,14 +21,10 @@
 # SOFTWARE.
 
 
-from pyedb.generic.general_methods import pyedb_function_handler
-
-
 class CfgBase:
     @property
     def protected_attributes(self):
         return []
-
 
     def get_attributes(self, exclude=None):
         attrs = {i: j for i, j in self.__dict__.items() if i not in self.protected_attributes}
@@ -38,7 +34,6 @@ class CfgBase:
         attrs = {i: j for i, j in attrs.items() if not i.startswith("_")}
         attrs = {i: j for i, j in attrs.items() if j is not None}
         return attrs
-
 
     def set_attributes(self, pedb_object):
         attrs = self.get_attributes()

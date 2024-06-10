@@ -2,7 +2,7 @@ import ast
 import os
 import warnings
 
-from pyedb.generic.general_methods import is_ironpython, pyedb_function_handler
+from pyedb.generic.general_methods import is_ironpython
 
 if not is_ironpython:  # pragma: no cover
     try:
@@ -31,7 +31,6 @@ if not is_ironpython:  # pragma: no cover
         )
     except:
         pass
-
 
 
 def plot_matplotlib(

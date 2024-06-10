@@ -30,7 +30,7 @@ from pyedb.dotnet.edb_core.sim_setup_data.data.siw_dc_ir_settings import (
     SiwaveDCIRSettings,
 )
 from pyedb.dotnet.edb_core.utilities.simulation_setup import BaseSimulationSetup
-from pyedb.generic.general_methods import is_linux, pyedb_function_handler
+from pyedb.generic.general_methods import is_linux
 
 
 def _parse_value(v):
@@ -67,7 +67,6 @@ class SettingsBase(object):
         """EDB internal simulation setup object."""
         return self._parent.get_sim_setup_info
 
-
     def get_configurations(self):
         """Get all attributes.
 
@@ -95,7 +94,6 @@ class SettingsBase(object):
         for i in attrs_list:
             temp[i] = self.__getattribute__(i)
         return temp
-
 
     def restore_default(self):
         for k, val in self.defaults.items():
@@ -144,11 +142,9 @@ class AdvancedSettings(SettingsBase):
             "max_coupled_lines": [12, 12, 40],
         }
 
-
     def set_si_slider(self, value):
         for k, val in self.si_defaults.items():
             self.__setattr__(k, val[value])
-
 
     def set_pi_slider(self, value):
         for k, val in self.pi_defaults.items():
@@ -656,7 +652,6 @@ class DCAdvancedSettings(SettingsBase):
             "refine_vias": [False, False, True],
         }
 
-
     def set_dc_slider(self, value):
         for k, val in self.dc_defaults.items():
             self.__setattr__(k, val[value])
@@ -928,7 +923,6 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
         self._setup_type = "kSIwave"
         self._sim_setup_info = None
 
-  
     def create(self, name=None):
         """Create a SIwave SYZ setup.
 
@@ -941,7 +935,6 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
         self.si_slider_position = 1
 
         return self
-
 
     def get_configurations(self):
         """Get SIwave SYZ simulation settings.
@@ -1022,7 +1015,6 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
 
         return edb_sim_setup_info
 
-
     def set_pi_slider(self, value):
         """Set SIwave PI simulation accuracy level.
         Options are:
@@ -1036,7 +1028,6 @@ class SiwaveSYZSimulationSetup(BaseSimulationSetup):
         """
         warnings.warn("`set_pi_slider` is deprecated. Use `pi_slider_position` property instead.", DeprecationWarning)
         self.pi_slider_position = value
-
 
     def set_si_slider(self, value):
         """Set SIwave SI simulation accuracy level.
@@ -1152,7 +1143,6 @@ class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
         """DC IR settings."""
         return SiwaveDCIRSettings(self)
 
-
     def get_configurations(self):
         """Get SIwave DC simulation settings.
 
@@ -1165,7 +1155,6 @@ class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
             "dc_settings": self.dc_settings.get_configurations(),
             "dc_advanced_settings": self.dc_advanced_settings.get_configurations(),
         }
-
 
     def set_dc_slider(self, value):
         """Set DC simulation accuracy level.
@@ -1207,7 +1196,6 @@ class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
         """
         return convert_netdict_to_pydict(self.get_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround)
 
-  
     def add_source_terminal_to_ground(self, source_name, terminal=0):
         """Add a source terminal to ground.
 

@@ -6,8 +6,7 @@ import random
 import re
 import string
 
-from pyedb.generic.general_methods import pyedb_function_handler, settings
-
+from pyedb.generic.general_methods import settings
 
 
 def format_decimals(el):  # pragma: no cover
@@ -29,7 +28,6 @@ def format_decimals(el):  # pragma: no cover
     else:
         num = "{:.3E}".format(Decimal(el))
     return num
-
 
 
 def random_string(length=6, only_digits=False, char_set=None):  # pragma: no cover
@@ -58,7 +56,6 @@ def random_string(length=6, only_digits=False, char_set=None):  # pragma: no cov
             char_set = string.ascii_uppercase + string.digits
     random_str = "".join(random.choice(char_set) for _ in range(int(length)))
     return random_str
-
 
 
 def unique_string_list(element_list, only_string=True):  # pragma: no cover
@@ -95,7 +92,6 @@ def unique_string_list(element_list, only_string=True):  # pragma: no cover
     return element_list
 
 
-
 def string_list(element_list):  # pragma: no cover
     """
 
@@ -115,7 +111,6 @@ def string_list(element_list):  # pragma: no cover
     return element_list
 
 
-
 def ensure_list(element_list):  # pragma: no cover
     """
 
@@ -131,7 +126,6 @@ def ensure_list(element_list):  # pragma: no cover
     if not isinstance(element_list, list):
         element_list = [element_list]
     return element_list
-
 
 
 def from_rkm(code):  # pragma: no cover
@@ -265,7 +259,6 @@ unit_val = {
 }
 
 
-
 def float_units(val_str, units=""):  # pragma: no cover
     """Retrieve units for a value.
 
@@ -294,7 +287,6 @@ def float_units(val_str, units=""):  # pragma: no cover
 
     val = val / unit_val[units]
     return val
-
 
 
 def json_to_dict(fn):  # pragma: no cover

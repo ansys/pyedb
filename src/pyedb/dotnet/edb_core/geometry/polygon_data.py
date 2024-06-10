@@ -22,7 +22,6 @@
 
 from pyedb.dotnet.edb_core.geometry.point_data import PointData
 from pyedb.dotnet.edb_core.obj_base import BBox
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class PolygonData:
@@ -64,13 +63,11 @@ class PolygonData:
             for i in list(self._edb_object.Points)
         ]
 
-
     def create_from_points(self, points, closed=True):
         list_of_point_data = []
         for pt in points:
             list_of_point_data.append(PointData(self._pedb, x=pt[0], y=pt[1]))
         return self._pedb.edb_api.geometry.api_class.PolygonData(list_of_point_data, closed)
-
 
     def create_from_bounding_box(self, points):
         bbox = BBox(self._pedb, point_1=points[0], point_2=points[1])

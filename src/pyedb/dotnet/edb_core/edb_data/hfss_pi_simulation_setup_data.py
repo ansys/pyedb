@@ -25,7 +25,6 @@ from pyedb.dotnet.edb_core.utilities.simulation_setup import (
     BaseSimulationSetup,
     EdbFrequencySweep,
 )
-from pyedb.generic.data_handlers import pyedb_function_handler
 from pyedb.generic.general_methods import generate_unique_name
 
 
@@ -38,7 +37,6 @@ class HFSSPISimulationSetup(BaseSimulationSetup):
         self._setup_type = "kHFSSPI"
         self._edb_setup_info = None
         self.logger = self._pedb.logger
-
 
     def create(self, name=None):
         """Create an HFSS setup."""
@@ -76,7 +74,6 @@ class HFSSPISimulationSetup(BaseSimulationSetup):
         else:
             self.logger.error(f"Property position expects an integer value while the provided value is {value}.")
 
-  
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
 

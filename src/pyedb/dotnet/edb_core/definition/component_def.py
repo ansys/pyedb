@@ -24,7 +24,6 @@ import os
 
 from pyedb.dotnet.edb_core.definition.component_model import NPortComponentModel
 from pyedb.dotnet.edb_core.obj_base import ObjBase
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class EDBComponentDef(ObjBase):
@@ -94,7 +93,6 @@ class EDBComponentDef(ObjBase):
         ]
         return {comp.refdes: comp for comp in comp_list}
 
-  
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
         """Assign RLC to all components under this part name.
 
@@ -114,7 +112,6 @@ class EDBComponentDef(ObjBase):
             comp.assign_rlc_model(res, ind, cap, is_parallel)
         return True
 
-  
     def assign_s_param_model(self, file_path, model_name=None, reference_net=None):
         """Assign S-parameter to all components under this part name.
 
@@ -133,7 +130,6 @@ class EDBComponentDef(ObjBase):
             comp.assign_s_param_model(file_path, model_name, reference_net)
         return True
 
-  
     def assign_spice_model(self, file_path, model_name=None):
         """Assign Spice model to all components under this part name.
 
@@ -171,10 +167,8 @@ class EDBComponentDef(ObjBase):
                 temp[edb_object.name] = edb_object
         return temp
 
-
     def _add_component_model(self, value):
         self._edb_object.AddComponentModel(value._edb_object)
-
 
     def add_n_port_model(self, fpath, name=None):
         if not name:
@@ -187,7 +181,6 @@ class EDBComponentDef(ObjBase):
         n_port_comp_model.reference_file = fpath
 
         self._add_component_model(n_port_comp_model)
-
 
     def create(self, name):
         cell_type = self._pedb.edb_api.cell.CellType.FootprintCell

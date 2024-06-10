@@ -32,7 +32,6 @@ from pyedb.generic.general_methods import (
     env_value,
     is_ironpython,
     is_linux,
-    pyedb_function_handler,
 )
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 from pyedb.misc.misc import list_installed_ansysem
@@ -41,7 +40,6 @@ if is_linux and is_ironpython:
     import subprocessdotnet as subprocess
 else:
     import subprocess
-
 
 
 def convert_technology_file(tech_file, edbversion=None, control_file=None):
@@ -1255,7 +1253,6 @@ class ControlFile:
                                                 )
         return True
 
-  
     def write_xml(self, xml_output):
         """Write xml to output file
 
