@@ -37,6 +37,7 @@ import traceback
 from typing import Union
 import warnings
 
+
 from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
 from pyedb.dotnet.edb_core.components import Components
@@ -106,6 +107,7 @@ from pyedb.generic.general_methods import (
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
+from pyedb.modeler.modeler import Modeler
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 if is_linux and is_ironpython:
