@@ -26,9 +26,9 @@ import re
 import warnings
 
 from pyedb.dotnet.clr_module import String, _clr
+from pyedb.dotnet.edb_core.cell.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.edb_core.edb_data.primitives_data import EDBPrimitivesMain
 from pyedb.dotnet.edb_core.general import PadGeometryTpe, convert_py_list_to_net_list
 from pyedb.generic.general_methods import (
     generate_unique_name,
@@ -1144,7 +1144,7 @@ class EDBPadstack(object):
         return True
 
 
-class EDBPadstackInstance(EDBPrimitivesMain):
+class EDBPadstackInstance(Primitive):
     """Manages EDB functionalities for a padstack.
 
     Parameters
@@ -1162,7 +1162,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     """
 
     def __init__(self, edb_padstackinstance, _pedb):
-        super().__init__(edb_padstackinstance, _pedb)
+        super().__init__(_pedb, edb_padstackinstance)
         self._edb_padstackinstance = self._edb_object
         self._bounding_box = []
         self._object_instance = None

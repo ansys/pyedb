@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.obj_base import ObjBase
+from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 from pyedb.generic.general_methods import pyedb_function_handler
 
 
