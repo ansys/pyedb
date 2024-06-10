@@ -1187,9 +1187,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         if create_new_terminal:
             term = self._create_terminal(name)
         else:
-            from pyedb.dotnet.edb_core.edb_data.terminals import (
-                PadstackInstanceTerminal,
-            )
+            from pyedb.dotnet.edb_core.terminal.terminal import PadstackInstanceTerminal
 
             term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         if not term.is_null:
@@ -1198,7 +1196,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     @property
     def terminal(self):
         """Terminal."""
-        from pyedb.dotnet.edb_core.edb_data.terminals import PadstackInstanceTerminal
+        from pyedb.dotnet.edb_core.terminal.terminal import PadstackInstanceTerminal
 
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term if not term.is_null else None
@@ -1212,7 +1210,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     @pyedb_function_handler
     def create_terminal(self, name=None):
         """Create a padstack instance terminal"""
-        from pyedb.dotnet.edb_core.edb_data.terminals import PadstackInstanceTerminal
+        from pyedb.dotnet.edb_core.terminal.terminal import PadstackInstanceTerminal
 
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term.create(self, name)
@@ -1637,7 +1635,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     @property
     def component(self):
         """Component."""
-        from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
+        from pyedb.dotnet.edb_core.hierarchy.component import EDBComponent
 
         comp = EDBComponent(self._pedb, self._edb_object.GetComponent())
         return comp if not comp.is_null else False

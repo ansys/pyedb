@@ -318,7 +318,7 @@ class PinGroup(object):
     @property
     def terminal(self):
         """Terminal."""
-        from pyedb.dotnet.edb_core.edb_data.terminals import PinGroupTerminal
+        from pyedb.dotnet.edb_core.terminal.terminal import PinGroupTerminal
 
         term = PinGroupTerminal(self._pedb, self._edb_pin_group.GetPinGroupTerminal())
         return term if not term.is_null else None
@@ -356,7 +356,7 @@ class PinGroup(object):
         """
         if not name:
             name = generate_unique_name(self.name)
-        from pyedb.dotnet.edb_core.edb_data.terminals import PinGroupTerminal
+        from pyedb.dotnet.edb_core.terminal.terminal import PinGroupTerminal
 
         term = PinGroupTerminal(self._pedb)
         term = term.create(name, self.net_name, self.name)

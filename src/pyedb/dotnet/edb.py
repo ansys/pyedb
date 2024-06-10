@@ -73,7 +73,6 @@ from pyedb.dotnet.edb_core.edb_data.siwave_simulation_setup_data import (
     SiwaveSYZSimulationSetup,
 )
 from pyedb.dotnet.edb_core.edb_data.sources import SourceType
-from pyedb.dotnet.edb_core.edb_data.terminals import Terminal
 from pyedb.dotnet.edb_core.edb_data.variables import Variable
 from pyedb.dotnet.edb_core.general import (
     LayoutObjType,
@@ -93,6 +92,7 @@ from pyedb.dotnet.edb_core.nets import EdbNets
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 from pyedb.dotnet.edb_core.siwave import EdbSiwave
 from pyedb.dotnet.edb_core.stackup import Stackup
+from pyedb.dotnet.edb_core.terminal.terminal import Terminal
 from pyedb.generic.constants import AEDT_UNITS, SolverType
 from pyedb.generic.general_methods import (
     generate_unique_name,
@@ -4135,7 +4135,7 @@ class Edb(Database):
         -------
         :class:`legacy.edb_core.edb_data.terminals.PointTerminal`
         """
-        from pyedb.dotnet.edb_core.edb_data.terminals import PointTerminal
+        from pyedb.dotnet.edb_core.terminal.terminal import PointTerminal
 
         point_terminal = PointTerminal(self)
         return point_terminal.create(name, net_name, location, layer)
