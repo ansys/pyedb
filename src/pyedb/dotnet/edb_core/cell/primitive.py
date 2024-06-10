@@ -59,7 +59,7 @@ class Primitive(Connectable):
 
     @property
     def net_name(self):
-        """Get or Set the primitive net name.
+        """Get the primitive net name.
 
         Returns
         -------
