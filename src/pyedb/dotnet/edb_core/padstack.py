@@ -954,6 +954,7 @@ class EdbPadstacks(object):
                 _poly = self._pedb.modeler.create_polygon(polygon_hole, layers[0], net_name="dummy")
                 if not _poly.is_null:
                     hole_param = _poly.polygon_data
+                    _poly.delete()
                 else:
                     return False
             elif isinstance(polygon_hole, PolygonDataDotNet):
