@@ -25,7 +25,7 @@ from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
 
 class Primitive(Connectable):
     """Manages EDB functionalities for a primitives.
-    
+
     It inherits EDB Object properties.
 
     Examples
@@ -47,7 +47,7 @@ class Primitive(Connectable):
     @property
     def type(self):
         """Return the type of the primitive.
-        
+
         Expected ouput is among ``"Circle"``, ``"Rectangle"``,``"Polygon"``,``"Path"`` or ``"Bondwire"``.
 
         Returns
