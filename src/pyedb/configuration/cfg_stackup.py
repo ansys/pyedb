@@ -59,18 +59,29 @@ class CfgStackup:
         """Apply configuration settings to the current design"""
         if len(self.materials):
             self.__apply_materials()
+
+        input_signal_layers = [i for i in self.layers if i.type.lower() == "signal"]
+
         if len(self.layers):
-            self.__apply_layers()
+            if len(self._pedb.stackup.signal_layers) == 0:
+                self.__create_stackup()
+            elif not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
+                raise Exception(f"Input signal layer count do not match.")
+            else:
+                self.__apply_layers()
+
+    def __create_stackup(self):
+        layers = list()
+        layers.extend(self.layers)
+        for l_attrs in layers:
+            attrs = l_attrs.get_attributes()
+            self._pedb.stackup.add_layer_bottom(**attrs)
 
     @pyedb_function_handler
     def __apply_layers(self):
         """Apply layer settings to the current design"""
         layers = list()
         layers.extend(self.layers)
-        input_signal_layers = [i for i in layers if i.type.lower() == "signal"]
-        if not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
-            self._pedb.logger.error("Input signal layer count do not match.")
-            return False
 
         removal_list = []
         lc_signal_layers = []

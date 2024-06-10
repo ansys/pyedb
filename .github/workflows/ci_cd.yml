@@ -11,6 +11,7 @@ on:
 env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   PYEDB_USE_DOTNET: '1'
+  PYEDB_CI_NO_DISPLAY: '1'
   MAIN_PYTHON_VERSION: '3.10'
   PACKAGE_NAME: 'pyedb'
   DOCUMENTATION_CNAME: 'edb.docs.pyansys.com'
