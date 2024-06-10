@@ -892,7 +892,7 @@ class EdbPadstacks(object):
         antipaddiam : str, optional
             Diameter of the antipad with units. The default is ``"600um"``.
         pad_shape : str, optional
-            Shape of the pad. The default is ``"Circle``. Options are ``"Circle"`` ``"Rectangle"`` and ``"Polygon"``.
+            Shape of the pad. The default is ``"Circle``. Options are ``"Circle"``, ``"Rectangle"`` and ``"Polygon"``.
         antipad_shape : str, optional
             Shape of the antipad. The default is ``"Circle"``. Options are ``"Circle"`` ``"Rectangle"`` and
             ``"Bullet"``.
