@@ -74,10 +74,7 @@ class Primitive(Connectable):
             self.primitive_object.SetNet(net)
         else:
             try:
-                if isinstance(name, str):
-                    self.net = name
-                elif isinstance(name, NetDotNet):
-                    self.net = name.name
+                self.net = name.name
             except:  # pragma: no cover
                 self._app.logger.error("Failed to set net name.")
 
