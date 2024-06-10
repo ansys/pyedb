@@ -31,6 +31,6 @@ This page shows how to create an HFSS coaxial port on a component.
 
 The preceding code creates a coaxial port on nets ``DDR4_DSQ0_P`` and ``DDR4_DSQ0_N`` from component ``U1``:
 
-.. image:: ../../Resources/create_port_on_component_simple.png
-..   :width: 800
-..   :alt: HFSS coaxial port created on a component
+.. image:: ../../resources/create_port_on_component_simple.png
+    :width: 800
+    :alt: HFSS coaxial port created on a component
