@@ -48,7 +48,7 @@ class Primitive(Connectable):
     def type(self):
         """Return the type of the primitive.
 
-        Expected ouput is among ``"Circle"``, ``"Rectangle"``,``"Polygon"``,``"Path"`` or ``"Bondwire"``.
+        Expected output is among ``"Circle"``, ``"Rectangle"``,``"Polygon"``,``"Path"`` or ``"Bondwire"``.
 
         Returns
         -------
