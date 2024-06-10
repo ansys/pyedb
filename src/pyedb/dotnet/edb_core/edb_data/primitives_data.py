@@ -23,7 +23,6 @@
 import math
 
 from pyedb.dotnet.edb_core.cell.primitive import Primitive
-from pyedb.dotnet.edb_core.dotnet.database import NetDotNet
 from pyedb.dotnet.edb_core.dotnet.primitive import (
     BondwireDotNet,
     CircleDotNet,
