@@ -22,7 +22,7 @@
 
 import re
 
-from pyedb.dotnet.edb_core.edb_data.connectable import Connectable
+from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
