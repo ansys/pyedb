@@ -29,6 +29,7 @@ import warnings
 import rtree
 
 from pyedb.dotnet.clr_module import Array
+from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import (
     EDBPadstack,
     EDBPadstackInstance,
@@ -868,6 +869,9 @@ class EdbPadstacks(object):
         pad_offset_x="0.0",
         pad_offset_y="0.0",
         pad_rotation="0.0",
+        pad_polygon=None,
+        antipad_polygon=None,
+        polygon_hole=None,
         start_layer=None,
         stop_layer=None,
         add_default_layer=False,
@@ -888,7 +892,7 @@ class EdbPadstacks(object):
         antipaddiam : str, optional
             Diameter of the antipad with units. The default is ``"600um"``.
         pad_shape : str, optional
-            Shape of the pad. The default is ``"Circle``. Options are ``"Circle"`` and ``"Rectangle"``.
+            Shape of the pad. The default is ``"Circle``. Options are ``"Circle"``, ``"Rectangle"`` and ``"Polygon"``.
         antipad_shape : str, optional
             Shape of the antipad. The default is ``"Circle"``. Options are ``"Circle"`` ``"Rectangle"`` and
             ``"Bullet"``.
@@ -934,17 +938,34 @@ class EdbPadstacks(object):
         holediam = self._get_edb_value(holediam)
         paddiam = self._get_edb_value(paddiam)
         antipaddiam = self._get_edb_value(antipaddiam)
-
+        layers = list(self._pedb.stackup.signal_layers.keys())[:]
+        value0 = self._get_edb_value("0.0")
         if not padstackname:
             padstackname = generate_unique_name("VIA")
         # assert not self.isreadonly, "Write Functions are not available within AEDT"
         padstackData = self._edb.definition.PadstackDefData.Create()
-        if has_hole:
+        if has_hole and not polygon_hole:
             ptype = self._edb.definition.PadGeometryType.Circle
+            hole_param = Array[type(holediam)]([holediam])
+            padstackData.SetHoleParameters(ptype, hole_param, value0, value0, value0)
+            padstackData.SetHolePlatingPercentage(self._get_edb_value(20.0))
+        elif polygon_hole:
+            if isinstance(polygon_hole, list):
+                _poly = self._pedb.modeler.create_polygon(polygon_hole, layers[0], net_name="dummy")
+                if not _poly.is_null:
+                    hole_param = _poly.polygon_data
+                    _poly.delete()
+                else:
+                    return False
+            elif isinstance(polygon_hole, PolygonDataDotNet):
+                hole_param = polygon_hole
+            else:
+                return False
+            padstackData.SetPolygonalHoleParameters(hole_param, value0, value0, value0)
+            padstackData.SetHolePlatingPercentage(self._get_edb_value(20.0))
         else:
             ptype = self._edb.definition.PadGeometryType.NoGeometry
-        holparam = Array[type(holediam)]([holediam])
-        value0 = self._get_edb_value("0.0")
+
         x_size = self._get_edb_value(x_size)
         y_size = self._get_edb_value(y_size)
         corner_radius = self._get_edb_value(corner_radius)
@@ -957,8 +978,7 @@ class EdbPadstacks(object):
         pad_rotation = self._get_edb_value(pad_rotation)
         anti_pad_x_size = self._get_edb_value(anti_pad_x_size)
         anti_pad_y_size = self._get_edb_value(anti_pad_y_size)
-        padstackData.SetHoleParameters(ptype, holparam, value0, value0, value0)
-        padstackData.SetHolePlatingPercentage(self._get_edb_value(20.0))
+
         if hole_range == "through":  # pragma no cover
             padstackData.SetHoleRange(self._edb.definition.PadstackHoleRange.Through)
         elif hole_range == "begin_on_upper_pad":  # pragma no cover
@@ -970,7 +990,7 @@ class EdbPadstacks(object):
         else:  # pragma no cover
             self._logger.error("Unknown padstack hole range")
         padstackData.SetMaterial("copper")
-        layers = list(self._pedb.stackup.signal_layers.keys())[:]
+
         if start_layer and start_layer in layers:  # pragma no cover
             layers = layers[layers.index(start_layer) :]
         if stop_layer and stop_layer in layers:  # pragma no cover
@@ -981,37 +1001,76 @@ class EdbPadstacks(object):
         elif pad_shape == "Rectangle":  # pragma no cover
             pad_array = Array[type(x_size)]([x_size, y_size])
             pad_shape = self._edb.definition.PadGeometryType.Rectangle
+        elif pad_shape == "Polygon":
+            if isinstance(pad_polygon, list):
+                _poly = self._pedb.modeler.create_polygon(pad_polygon, layers[0], net_name="dummy")
+                if not _poly.is_null:
+                    pad_array = _poly.polygon_data
+                    _poly.delete()
+                else:
+                    return False
+            elif isinstance(pad_polygon, PolygonDataDotNet):
+                pad_array = pad_polygon
         if antipad_shape == "Bullet":  # pragma no cover
             antipad_array = Array[type(x_size)]([x_size, y_size, corner_radius])
             antipad_shape = self._edb.definition.PadGeometryType.Bullet
         elif antipad_shape == "Rectangle":  # pragma no cover
             antipad_array = Array[type(anti_pad_x_size)]([anti_pad_x_size, anti_pad_y_size])
             antipad_shape = self._edb.definition.PadGeometryType.Rectangle
+        elif antipad_shape == "Polygon":
+            if isinstance(antipad_polygon, list):
+                _poly = self._pedb.modeler.create_polygon(antipad_polygon, layers[0], net_name="dummy")
+                if not _poly.is_null:
+                    antipad_array = _poly.polygon_data
+                    _poly.delete()
+                else:
+                    return False
+            elif isinstance(antipad_polygon, PolygonDataDotNet):
+                antipad_array = antipad_polygon
         else:  # pragma no cover
             antipad_array = Array[type(antipaddiam)]([antipaddiam])
             antipad_shape = self._edb.definition.PadGeometryType.Circle
         if add_default_layer:  # pragma no cover
             layers = layers + ["Default"]
-        for layer in layers:
-            padstackData.SetPadParameters(
-                layer,
-                self._edb.definition.PadType.RegularPad,
-                pad_shape,
-                pad_array,
-                pad_offset_x,
-                pad_offset_y,
-                pad_rotation,
-            )
+        if antipad_shape == "Polygon" and pad_shape == "Polygon":
+            for layer in layers:
+                padstackData.SetPolygonalPadParameters(
+                    layer,
+                    self._edb.definition.PadType.RegularPad,
+                    pad_array.edb_api,
+                    pad_offset_x,
+                    pad_offset_y,
+                    pad_rotation,
+                )
+                padstackData.SetPolygonalPadParameters(
+                    layer,
+                    self._edb.definition.PadType.AntiPad,
+                    antipad_array.edb_api,
+                    pad_offset_x,
+                    pad_offset_y,
+                    pad_rotation,
+                )
+        else:
+            for layer in layers:
+                padstackData.SetPadParameters(
+                    layer,
+                    self._edb.definition.PadType.RegularPad,
+                    pad_shape,
+                    pad_array,
+                    pad_offset_x,
+                    pad_offset_y,
+                    pad_rotation,
+                )
 
-            padstackData.SetPadParameters(
-                layer,
-                self._edb.definition.PadType.AntiPad,
-                antipad_shape,
-                antipad_array,
-                offset_x,
-                offset_y,
-                rotation,
-            )
+                padstackData.SetPadParameters(
+                    layer,
+                    self._edb.definition.PadType.AntiPad,
+                    antipad_shape,
+                    antipad_array,
+                    offset_x,
+                    offset_y,
+                    rotation,
+                )
 
         padstackDefinition = self._edb.definition.PadstackDef.Create(self.db, padstackname)
         padstackDefinition.SetData(padstackData)
