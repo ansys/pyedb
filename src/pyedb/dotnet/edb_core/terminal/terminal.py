@@ -25,13 +25,6 @@ import re
 from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
-from pyedb.dotnet.edb_core.terminal.bundle_terminal import BundleTerminal
-from pyedb.dotnet.edb_core.terminal.edge_terminal import EdgeTerminal
-from pyedb.dotnet.edb_core.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal,
-)
-from pyedb.dotnet.edb_core.terminal.pingroup_terminal import PinGroupTerminal
-from pyedb.dotnet.edb_core.terminal.point_terminal import PointTerminal
 from pyedb.generic.general_methods import pyedb_function_handler
 
 
@@ -61,14 +54,6 @@ class Terminal(Connectable):
             "PadstackInstanceTerminal": self._pedb.edb_api.cell.terminal.TerminalType.PadstackInstanceTerminal,
             "BundleTerminal": self._pedb.edb_api.cell.terminal.TerminalType.BundleTerminal,
             "PinGroupTerminal": self._pedb.edb_api.cell.terminal.TerminalType.PinGroupTerminal,
-        }
-
-        self._terminal_mapping = {
-            "EdgeTerminal": EdgeTerminal,
-            "PointTerminal": PointTerminal,
-            "PadstackInstanceTerminal": PadstackInstanceTerminal,
-            "BundleTerminal": BundleTerminal,
-            "PinGroupTerminal": PinGroupTerminal,
         }
 
     @property

@@ -21,10 +21,11 @@
 # SOFTWARE.
 
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.dotnet.edb_core.terminal.terminal import Terminal
 from pyedb.generic.general_methods import generate_unique_name
 
 
-class PadstackInstanceTerminal(object):
+class PadstackInstanceTerminal(Terminal):
     """Manages bundle terminal properties."""
 
     def __init__(self, pedb, edb_object):

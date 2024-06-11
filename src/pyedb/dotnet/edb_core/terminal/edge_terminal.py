@@ -21,9 +21,10 @@
 # SOFTWARE.
 
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.dotnet.edb_core.terminal.terminal import Terminal
 
 
-class EdgeTerminal(object):
+class EdgeTerminal(Terminal):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
 

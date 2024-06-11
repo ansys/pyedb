@@ -21,9 +21,10 @@
 # SOFTWARE.
 
 from pyedb.dotnet.edb_core.terminal.edge_terminal import EdgeTerminal
+from pyedb.dotnet.edb_core.terminal.terminal import Terminal
 
 
-class BundleTerminal(object):
+class BundleTerminal(Terminal):
     """Manages bundle terminal properties.
 
     Parameters

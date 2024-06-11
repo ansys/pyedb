@@ -20,8 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.dotnet.edb_core.terminal.terminal import Terminal
 
-class PointTerminal(object):
+
+class PointTerminal(Terminal):
     """Manages point terminal properties."""
 
     def __init__(self, pedb, edb_object=None):
