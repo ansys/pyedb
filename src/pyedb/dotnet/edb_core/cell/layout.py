@@ -59,22 +59,27 @@ class Layout(EdbLayout):
         list :
             List of bondwires.
         """
-        return [Bondwire(self._pedb, i) for i in self._edb_object.Primitives if
-                i.GetPrimitiveType().ToString() == "Bondwire"]
+        return [
+            Bondwire(self._pedb, i)
+            for i in self._edb_object.Primitives
+            if i.GetPrimitiveType().ToString() == "Bondwire"
+        ]
 
-    def create_bondwire(self,
-                        definition_name,
-                        placement_layer,
-                        width,
-                        material,
-                        start_layer_name,
-                        start_x,
-                        start_y,
-                        end_layer_name,
-                        end_x,
-                        end_y,
-                        net,
-                        bondwire_type="jedec4", ):
+    def create_bondwire(
+        self,
+        definition_name,
+        placement_layer,
+        width,
+        material,
+        start_layer_name,
+        start_x,
+        start_y,
+        end_layer_name,
+        end_x,
+        end_y,
+        net,
+        bondwire_type="jedec4",
+    ):
         """Create a bondwire object.
 
         Parameters
