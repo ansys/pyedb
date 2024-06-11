@@ -27,7 +27,6 @@ import math
 import warnings
 
 from pyedb.dotnet.edb_core.dotnet.primitive import (
-    BondwireDotNet,
     CircleDotNet,
     PathDotNet,
     PolygonDotNet,
