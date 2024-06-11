@@ -287,7 +287,7 @@ class Bondwire(Primitive):
 
             **y1** : Y value of the end point.
         """
-        return [self._pedb.edb_value(i) for i in self._edb_object.GetTrajectory()]
+        return [i.ToDouble() for i in self._edb_object.GetTrajectory() if not isinstance(i, bool)]
 
     def set_trajectory(self, x1, y1, x2, y2):
         """Set the parameters of the trajectory of a bondwire.
@@ -309,28 +309,13 @@ class Bondwire(Primitive):
     @property
     def width(self):
         """:class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object."""
-        return self._edb_object.GetWidthValue().ToDouble()
+        return self._edb_object.GetWidth().ToDouble()
 
     @width.setter
     def width(self, width):
-        self._edb_object.SetWidthValue(self._pedb.edb_value(width))
+        self._edb_object.SetWidth(self._pedb.edb_value(width))
 
-    def get_start_elevation(self, start_context):
-        """Get the start elevation layer of a bondwire object.
-
-        Parameters
-        ----------
-        start_context : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
-            Start cell context of the bondwire.
-
-        Returns
-        -------
-        :class:`Layer <ansys.edb.layer.Layer>`
-            Start context of the bondwire.
-        """
-        return self._edb_object.GetStartElevation(start_context)
-
-    def set_start_elevation(self, start_context, layer):
+    def set_start_elevation(self, layer, start_context=None):
         """Set the start elevation of a bondwire.
 
         Parameters
@@ -342,22 +327,7 @@ class Bondwire(Primitive):
         """
         self._edb_object.SetStartElevation(start_context, layer)
 
-    def get_end_elevation(self, end_context):
-        """Get the end elevation layer of a bondwire object.
-
-        Parameters
-        ----------
-        end_context : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
-            End cell context of the bondwire.
-
-        Returns
-        -------
-        :class:`Layer <ansys.edb.layer.Layer>`
-            End context of the bondwire.
-        """
-        return self._edb_object.GetEndElevation(end_context)
-
-    def set_end_elevation(self, end_context, layer):
+    def set_end_elevation(self, layer, end_context=None):
         """Set the end elevation of a bondwire.
 
         Parameters

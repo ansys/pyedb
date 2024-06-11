@@ -1948,9 +1948,9 @@ class TestClass:
 
     def test_bondwire(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        edbapp.modeler.create_bondwire(
-            definition_name="default",
-            placement_layer="1_Top",
+        bondwire_1 = edbapp.modeler.create_bondwire(
+            definition_name="Default",
+            placement_layer="Postprocessing",
             width="0.5mm",
             material="copper",
             start_layer_name="1_Top",
@@ -1959,6 +1959,23 @@ class TestClass:
             end_layer_name="1_Top",
             end_x="71mm",
             end_y="23mm",
-            bondwire_type="jedec_4",
+            bondwire_type="apd",
             net="1V0"
         )
+        bondwire_1.set_material("Gold")
+        assert bondwire_1.get_material() == "Gold"
+        bondwire_1.type = "jedec_4"
+        assert bondwire_1.type == "jedec_4"
+        bondwire_1.cross_section_type = "round"
+        assert bondwire_1.cross_section_type == "round"
+        bondwire_1.cross_section_height = "0.1mm"
+        assert bondwire_1.cross_section_height == 0.0001
+        bondwire_1.set_definition_name("J4_LH10")
+        assert bondwire_1.get_definition_name() == "J4_LH10"
+        bondwire_1.set_trajectory(1, 0.1, 0.2, 0.3)
+        assert bondwire_1.get_trajectory() == [1, 0.1, 0.2, 0.3]
+        bondwire_1.width = "0.2mm"
+        assert bondwire_1.width == 0.0002
+        bondwire_1.set_start_elevation("16_Bottom")
+        bondwire_1.set_end_elevation("16_Bottom")
+        edbapp.close()

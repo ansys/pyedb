@@ -60,7 +60,8 @@ class Layout(EdbLayout):
         list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of bondwires.
         """
-        return [Bondwire(self._pedb, i) for i in self._edb_object.Primitives if i.GetPrimitiveType().ToString() == "Bondwire"]
+        return [Bondwire(self._pedb, i) for i in self._edb_object.Primitives if
+                i.GetPrimitiveType().ToString() == "Bondwire"]
 
     def create_bondwire(self,
                         definition_name,
@@ -116,14 +117,16 @@ class Layout(EdbLayout):
             Bondwire object created.
         """
         return Bondwire(pedb=self._pedb,
-            bondwire_type=bondwire_type,
-            definition_name=definition_name,
-            placement_layer=placement_layer,
-            width=self._pedb.edb_value(width),
-            material=material,
-            start_x=self._pedb.edb_value(start_x),
-            start_y=self._pedb.edb_value(start_y),
-            end_x=self._pedb.edb_value(end_x),
-            end_y=self._pedb.edb_value(end_y),
-            net=self.nets[net]._edb_object
-        )
+                        bondwire_type=bondwire_type,
+                        definition_name=definition_name,
+                        placement_layer=placement_layer,
+                        width=self._pedb.edb_value(width),
+                        material=material,
+                        start_layer_name=start_layer_name,
+                        start_x=self._pedb.edb_value(start_x),
+                        start_y=self._pedb.edb_value(start_y),
+                        end_layer_name=end_layer_name,
+                        end_x=self._pedb.edb_value(end_x),
+                        end_y=self._pedb.edb_value(end_y),
+                        net=self.nets[net]._edb_object
+                        )
