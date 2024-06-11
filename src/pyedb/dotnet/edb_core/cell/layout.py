@@ -24,10 +24,9 @@
 This module contains these classes: `EdbLayout` and `Shape`.
 """
 
-from pyedb.dotnet.edb_core.layout import EdbLayout
-from pyedb.dotnet.edb_core.cell.primitive import (Bondwire)
-
+from pyedb.dotnet.edb_core.cell.primitive import Bondwire
 from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
+from pyedb.dotnet.edb_core.layout import EdbLayout
 
 
 class Layout(EdbLayout):
@@ -51,19 +50,21 @@ class Layout(EdbLayout):
             temp[n.name] = n
         return temp
 
-    def create_bondwire(self,
-                        definition_name,
-                        placement_layer,
-                        width,
-                        material,
-                        start_layer_name,
-                        start_x,
-                        start_y,
-                        end_layer_name,
-                        end_x,
-                        end_y,
-                        net,
-                        bondwire_type="jedec4", ):
+    def create_bondwire(
+        self,
+        definition_name,
+        placement_layer,
+        width,
+        material,
+        start_layer_name,
+        start_x,
+        start_y,
+        end_layer_name,
+        end_x,
+        end_y,
+        net,
+        bondwire_type="jedec4",
+    ):
         """Create a bondwire object.
 
         Parameters
@@ -104,17 +105,18 @@ class Layout(EdbLayout):
         :class:`pyedb.dotnet.edb_core.dotnet.primitive.BondwireDotNet`
             Bondwire object created.
         """
-        return Bondwire(pedb=self._pedb,
-                        bondwire_type=bondwire_type,
-                        definition_name=definition_name,
-                        placement_layer=placement_layer,
-                        width=self._pedb.edb_value(width),
-                        material=material,
-                        start_layer_name=start_layer_name,
-                        start_x=self._pedb.edb_value(start_x),
-                        start_y=self._pedb.edb_value(start_y),
-                        end_layer_name=end_layer_name,
-                        end_x=self._pedb.edb_value(end_x),
-                        end_y=self._pedb.edb_value(end_y),
-                        net=self.nets[net]._edb_object
-                        )
+        return Bondwire(
+            pedb=self._pedb,
+            bondwire_type=bondwire_type,
+            definition_name=definition_name,
+            placement_layer=placement_layer,
+            width=self._pedb.edb_value(width),
+            material=material,
+            start_layer_name=start_layer_name,
+            start_x=self._pedb.edb_value(start_x),
+            start_y=self._pedb.edb_value(start_y),
+            end_layer_name=end_layer_name,
+            end_x=self._pedb.edb_value(end_x),
+            end_y=self._pedb.edb_value(end_y),
+            net=self.nets[net]._edb_object,
+        )
