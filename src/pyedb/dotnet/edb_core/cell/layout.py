@@ -51,18 +51,6 @@ class Layout(EdbLayout):
             temp[n.name] = n
         return temp
 
-    @property
-    def bondwires(self):
-        """Bondwires.
-
-        Returns
-        -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
-            List of bondwires.
-        """
-        return [Bondwire(self._pedb, i) for i in self._edb_object.Primitives if
-                i.GetPrimitiveType().ToString() == "Bondwire"]
-
     def create_bondwire(self,
                         definition_name,
                         placement_layer,
