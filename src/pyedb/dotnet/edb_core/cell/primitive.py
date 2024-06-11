@@ -180,7 +180,7 @@ class Bondwire(Primitive):
             kwargs.get("end_context"),
             kwargs.get("end_layer_name"),
             kwargs.get("end_x"),
-            kwargs.get("end_y")
+            kwargs.get("end_y"),
         )
 
     def get_material(self, evaluated=True):

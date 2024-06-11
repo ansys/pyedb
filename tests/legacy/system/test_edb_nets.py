@@ -71,8 +71,6 @@ class TestClass:
         self.edbapp.extended_nets.auto_identify_power()
         assert self.edbapp.nets["AVCC_1V3"].extended_net
 
-
-
     def test_nets_get_power_tree(self):
         """Evaluate nets get powertree."""
         OUTPUT_NET = "5V"

@@ -1960,7 +1960,7 @@ class TestClass:
             end_x="71mm",
             end_y="23mm",
             bondwire_type="apd",
-            net="1V0"
+            net="1V0",
         )
         bondwire_1.set_material("Gold")
         assert bondwire_1.get_material() == "Gold"
