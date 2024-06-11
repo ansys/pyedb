@@ -196,17 +196,6 @@ class EdbLayout(object):
         return [i for i in self.primitives if isinstance(i, PathDotNet)]
 
     @property
-    def bondwires(self):
-        """Bondwires.
-
-        Returns
-        -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
-            List of bondwires.
-        """
-        return [i for i in self.primitives if isinstance(i, BondwireDotNet)]
-
-    @property
     def polygons(self):
         """Polygons.
 

@@ -1945,3 +1945,20 @@ class TestClass:
         edb_model = os.path.join(self.local_scratch.path, "wave_ports.aedb")
         test_edb = Edb(edbpath=edb_model, edbversion=desktop_version)
         edbapp.close()
+
+    def test_bondwire(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.modeler.create_bondwire(
+            definition_name="default",
+            placement_layer="1_Top",
+            width="0.5mm",
+            material="copper",
+            start_layer_name="1_Top",
+            start_x="82mm",
+            start_y="30mm",
+            end_layer_name="1_Top",
+            end_x="71mm",
+            end_y="23mm",
+            bondwire_type="jedec_4",
+            net="1V0"
+        )

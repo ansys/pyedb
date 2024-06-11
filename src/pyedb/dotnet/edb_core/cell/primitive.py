@@ -43,13 +43,19 @@ class Primitive(Connectable):
         self._core_net = pedb.nets
         self.primitive_object = self._edb_object
 
-        bondwire_type = self._pedb._edb.cell.primitive.BondwireType
+        bondwire_type = self._pedb._edb.Cell.Primitive.BondwireType
         self._bondwire_type = {
             "invalid": bondwire_type.Invalid,
             "apd": bondwire_type.ApdBondwire,
-            "jedec4": bondwire_type.Jedec4Bondwire,
-            "jedec5": bondwire_type.Jedec5Bondwire,
-            "num_of_bondwire_type": bondwire_type.NumOfBondwireTypes,
+            "jedec_4": bondwire_type.Jedec4Bondwire,
+            "jedec_5": bondwire_type.Jedec5Bondwire,
+            "num_of_bondwire_type": bondwire_type.NumOfBondwireType,
+        }
+        bondwire_cross_section_type = self._pedb._edb.Cell.Primitive.BondwireCrossSectionType
+        self._bondwire_cross_section_type = {
+            "invalid": bondwire_cross_section_type.Invalid,
+            "round": bondwire_cross_section_type.BondwireRound,
+            "rectangle": bondwire_cross_section_type.BondwireRectangle,
         }
 
     @property
@@ -156,7 +162,7 @@ class Bondwire(Primitive):
     """Class representing a bondwire object."""
 
     def __init__(self, pedb, edb_object=None, **kwargs):
-        super().__init__(self, pedb, edb_object)
+        super().__init__(pedb, edb_object)
         if self._edb_object is None:
             self._edb_object = self.__create(**kwargs)
 
@@ -174,6 +180,7 @@ class Bondwire(Primitive):
             kwargs.get("start_x"),
             kwargs.get("start_y"),
             kwargs.get("end_context"),
+            kwargs.get("end_layer_name"),
             kwargs.get("end_x"),
             kwargs.get("end_y")
         )
@@ -206,29 +213,32 @@ class Bondwire(Primitive):
     @property
     def type(self):
         """:class:`BondwireType`: Bondwire-type of a bondwire object."""
-        return self._edb_object.GetType()
+
+        type_name = self._edb_object.GetType()
+        return [i for i, j in self._bondwire_type.items() if j == type_name][0]
 
     @type.setter
     def type(self, bondwire_type):
-        self._edb_object.SetType(bondwire_type)
+        self._edb_object.SetType(self._bondwire_type[bondwire_type])
 
     @property
     def cross_section_type(self):
         """:class:`BondwireCrossSectionType`: Bondwire-cross-section-type of a bondwire object."""
-        return self._edb_object.GetCrossSectionType()
+        cs_type = self._edb_object.GetCrossSectionType()
+        return [i for i, j in self._bondwire_cross_section_type.items() if j == cs_type][0]
 
     @cross_section_type.setter
     def cross_section_type(self, bondwire_type):
-        self._edb_object.SetCrossSectionType(bondwire_type)
+        self._edb_object.SetCrossSectionType(self._bondwire_cross_section_type[bondwire_type])
 
     @property
     def cross_section_height(self):
         """:class:`Value <ansys.edb.utility.Value>`: Bondwire-cross-section height of a bondwire object."""
-        return self._edb_object.GetCrossSectionHeight()
+        return self._edb_object.GetCrossSectionHeight().ToDouble()
 
     @cross_section_height.setter
     def cross_section_height(self, height):
-        self._edb_object.SetCrossSectionHeight(height)
+        self._edb_object.SetCrossSectionHeight(self._pedb.edb_value(height))
 
     def get_definition_name(self, evaluated=True):
         """Get definition name of a bondwire object.
@@ -255,7 +265,7 @@ class Bondwire(Primitive):
         """
         self._edb_object.SetDefinitionName(definition_name)
 
-    def get_traj(self):
+    def get_trajectory(self):
         """Get trajectory parameters of a bondwire object.
 
         Returns
@@ -279,9 +289,9 @@ class Bondwire(Primitive):
 
             **y1** : Y value of the end point.
         """
-        return self._edb_object.GetTraj()
+        return [self._pedb.edb_value(i) for i in self._edb_object.GetTrajectory()]
 
-    def set_traj(self, x1, y1, x2, y2):
+    def set_trajectory(self, x1, y1, x2, y2):
         """Set the parameters of the trajectory of a bondwire.
 
         Parameters
@@ -295,16 +305,17 @@ class Bondwire(Primitive):
         y2 : :class:`Value <ansys.edb.utility.Value>`
             Y value of the end point.
         """
-        self._edb_object.SetTraj(x1, y1, x2, y2)
+        values = [self._pedb.edb_value(i) for i in [x1, y1, x2, y2]]
+        self._edb_object.SetTrajectory(*values)
 
     @property
     def width(self):
         """:class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object."""
-        return self._edb_object.GetWidthValue()
+        return self._edb_object.GetWidthValue().ToDouble()
 
     @width.setter
     def width(self, width):
-        self._edb_object.SetWidthValue(width)
+        self._edb_object.SetWidthValue(self._pedb.edb_value(width))
 
     def get_start_elevation(self, start_context):
         """Get the start elevation layer of a bondwire object.
