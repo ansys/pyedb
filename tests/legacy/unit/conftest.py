@@ -27,7 +27,6 @@ import csv
 import os
 from os.path import dirname
 
-import numpy as np
 import pytest
 
 example_models_path = os.path.join(dirname(dirname(dirname(os.path.realpath(__file__)))), "example_models")
@@ -46,7 +45,4 @@ def points_for_line_detection():
             x, y = map(float, row)
             points.append((x, y))
 
-    # START
-    pts = np.array(points)
-
-    return pts
+    return points
