@@ -22,7 +22,7 @@
 
 import math
 
-from pyedb.dotnet.edb_core.dotnet.database import NetDotNet
+from pyedb.dotnet.edb_core.cell.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.primitive import (
     BondwireDotNet,
     CircleDotNet,
@@ -32,7 +32,6 @@ from pyedb.dotnet.edb_core.dotnet.primitive import (
     RectangleDotNet,
     TextDotNet,
 )
-from pyedb.dotnet.edb_core.cell.primitive import Primitive
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators

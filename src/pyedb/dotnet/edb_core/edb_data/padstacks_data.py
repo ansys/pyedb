@@ -26,9 +26,9 @@ import re
 import warnings
 
 from pyedb.dotnet.clr_module import String, _clr
+from pyedb.dotnet.edb_core.cell.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.edb_core.cell.primitive import Primitive
 from pyedb.dotnet.edb_core.general import PadGeometryTpe, convert_py_list_to_net_list
 from pyedb.generic.general_methods import (
     generate_unique_name,

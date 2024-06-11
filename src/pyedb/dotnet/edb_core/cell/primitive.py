@@ -25,7 +25,7 @@ from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
 
 class Primitive(Connectable):
     """Manages EDB functionalities for a primitives.
-    It Inherits EDB Object properties.
+    It inherits EDB Object properties.
 
     Examples
     --------
@@ -61,7 +61,8 @@ class Primitive(Connectable):
     @property
     def type(self):
         """Return the type of the primitive.
-        Allowed outputs are ``"Circle"``, ``"Rectangle"``,``"Polygon"``,``"Path"`` or ``"Bondwire"``.
+
+        Expected output is among ``"Circle"``, ``"Rectangle"``,``"Polygon"``,``"Path"`` or ``"Bondwire"``.
 
         Returns
         -------
@@ -74,7 +75,7 @@ class Primitive(Connectable):
 
     @property
     def net_name(self):
-        """Get or Set the primitive net name.
+        """Get the primitive net name.
 
         Returns
         -------
@@ -89,10 +90,7 @@ class Primitive(Connectable):
             self.primitive_object.SetNet(net)
         else:
             try:
-                if isinstance(name, str):
-                    self.net = name
-                elif isinstance(name, NetDotNet):
-                    self.net = name.name
+                self.net = name.name
             except:  # pragma: no cover
                 self._app.logger.error("Failed to set net name.")
 
@@ -107,7 +105,7 @@ class Primitive(Connectable):
 
     @property
     def layer_name(self):
-        """Get or Set the primitive layer name.
+        """Get the primitive layer name.
 
         Returns
         -------
