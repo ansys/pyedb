@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from System import Tuple
 
 from pyedb.dotnet.edb_core.utilities.simulation_setup import (
     EdbFrequencySweep,
