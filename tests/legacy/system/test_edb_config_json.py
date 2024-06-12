@@ -199,6 +199,24 @@ class TestClass:
         assert len(edbapp.ports) > 1
         edbapp.close()
 
+    def test_05f_ports_between_two_points(self, edb_examples):
+        data = {
+            "ports": [
+                {
+                    "name": "x_y_port",
+                    "positive_terminal": {
+                        "coordinates": {"layer": "1_Top", "point": ["104mm", "37mm"], "net": "AVCC_1V3"}
+                    },
+                    "negative_terminal": {
+                        "coordinates": {"layer": "Inner6(GND2)", "point": ["104mm", "37mm"], "net": "GND"}
+                    },
+                }
+            ]
+        }
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
     def test_06_s_parameters(self, edb_examples):
         with open(self.local_input_folder / "s_parameter.json") as f:
             data = json.load(f)
