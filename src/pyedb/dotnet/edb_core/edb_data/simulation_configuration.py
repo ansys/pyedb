@@ -25,7 +25,7 @@ import json
 import os
 
 from pyedb.dotnet.clr_module import Dictionary
-from pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data import AdaptiveType
+from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_setup import AdaptiveType
 from pyedb.dotnet.edb_core.edb_data.sources import Source, SourceType
 from pyedb.generic.constants import (
     BasisOrder,
@@ -1912,7 +1912,7 @@ class SimulationConfigurationAc(object):
 
         Returns
         -------
-        class: pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.AdaptiveType
+        class: pyedb.dotnet.edb_core.edb_data.simulation_setup.AdaptiveType
         """
         return self._adaptive_type
 

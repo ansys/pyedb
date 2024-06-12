@@ -23,14 +23,14 @@
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.utilities.simulation_setup import (
-    BaseSimulationSetup,
     EdbFrequencySweep,
 )
 from pyedb.generic.data_handlers import pyedb_function_handler
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_setup import SimulationSetup
 
 
-class RaptorXSimulationSetup(BaseSimulationSetup):
+class RaptorXSimulationSetup(SimulationSetup):
     """Manages EDB methods for RaptorX simulation setup."""
 
     def __init__(self, pedb, edb_object=None):
@@ -87,7 +87,7 @@ class RaptorXSimulationSetup(BaseSimulationSetup):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.EdbFrequencySweep`
+        :class:`pyedb.dotnet.edb_core.edb_data.simulation_setup.EdbFrequencySweep`
 
         Examples
         --------

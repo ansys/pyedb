@@ -1,0 +1,665 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+from System import Tuple
+
+from pyedb.dotnet.edb_core.utilities.simulation_setup import (
+    EdbFrequencySweep,
+)
+from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+
+from pyedb.dotnet.edb_core.sim_setup_data.data.settings import (AdaptiveSettings,AdvancedMeshSettings,
+                                                                CurveApproxSettings, DcrSettings, DefeatureSettings,
+                                                                HfssPortSettings, ViaSettings,HfssSolverSettings
+                                                                )
+from pyedb.dotnet.edb_core.sim_setup_data.data.mesh_operation import (MeshOperationLength, MeshOperationSkinDepth)
+
+class AdaptiveType(object):
+    (SingleFrequency, MultiFrequency, BroadBand) = range(0, 3)
+
+
+class SimulationSetup(object):
+    """Provide base simulation setup.
+
+    Parameters
+    ----------
+    pedb : :class:`pyedb.dotnet.edb.Edb`
+        Inherited object.
+    edb_object : :class:`Ansys.Ansoft.Edb.Utility.SIWaveSimulationSetup`,
+    :class:`Ansys.Ansoft.Edb.Utility.SIWDCIRSimulationSettings`,
+    :class:`Ansys.Ansoft.Edb.Utility.HFSSSimulationSettings`
+        EDB object.
+    """
+
+    @pyedb_function_handler
+    def __init__(self, pedb, edb_setup=None):
+        self._pedb = pedb
+        self._edb_object = edb_setup
+        self._setup_type = ""
+        self._setup_type_mapping = {
+            "kHFSS": self._pedb.simsetupdata.HFSSSimulationSettings,
+            "kPEM": None,
+            "kSIwave": self._pedb.simsetupdata.SIwave.SIWSimulationSettings,
+            "kLNA": None,
+            "kTransient": None,
+            "kQEye": None,
+            "kVEye": None,
+            "kAMI": None,
+            "kAnalysisOption": None,
+            "kSIwaveDCIR": self._pedb.simsetupdata.SIwave.SIWDCIRSimulationSettings,
+            "kSIwaveEMI": None,
+            "kHFSSPI": None,
+            "kDDRwizard": None,
+            "kQ3D": None,
+            "kNumSetupTypes": None,
+        }
+
+        version = self._pedb.edbversion.split(".")
+        if float(self._pedb.edbversion) >= 2024.2:
+            self._setup_type_mapping.update(
+                {
+                    "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings,
+                    "kHFSSPI": self._pedb.simsetupdata.HFSSPISimulationSettings,
+                }
+            )
+        if self._edb_object:
+            self._name = self._edb_object.GetName()
+
+        self._sweep_list = {}
+
+    @pyedb_function_handler
+    def _create(self, name=None):
+        """Create a simulation setup."""
+        if not name:
+            name = generate_unique_name(self.setup_type)
+            self._name = name
+
+        setup_type = self._setup_type_mapping[self._setup_type]
+        edb_setup_info = self._pedb.simsetupdata.SimSetupInfo[setup_type]()
+        edb_setup_info.Name = name
+        if (
+                edb_setup_info.get_SimSetupType().ToString() == "kRaptorX"
+                or edb_setup_info.get_SimSetupType().ToString() == "kHFSSPI"
+        ):
+            self._edb_setup_info = edb_setup_info
+        self._edb_object = self._set_edb_setup_info(edb_setup_info)
+        self._update_setup()
+
+    @pyedb_function_handler
+    def _set_edb_setup_info(self, edb_setup_info):
+        """Create a setup object from a setup information object."""
+        utility = self._pedb._edb.Utility
+        setup_type_mapping = {
+            "kHFSS": utility.HFSSSimulationSetup,
+            "kPEM": None,
+            "kSIwave": utility.SIWaveSimulationSetup,
+            "kLNA": None,
+            "kTransient": None,
+            "kQEye": None,
+            "kVEye": None,
+            "kAMI": None,
+            "kAnalysisOption": None,
+            "kSIwaveDCIR": utility.SIWaveDCIRSimulationSetup,
+            "kSIwaveEMI": None,
+            "kHFSSPI": None,
+            "kDDRwizard": None,
+            "kQ3D": None,
+            "kNumSetupTypes": None,
+        }
+
+        version = self._pedb.edbversion.split(".")
+        if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
+            setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
+        setup_utility = setup_type_mapping[self._setup_type]
+        return setup_utility(edb_setup_info)
+
+    @pyedb_function_handler()
+    def _update_setup(self):
+        """Update setup in EDB."""
+        if self._setup_type == "kHFSS":
+            mesh_operations = self.get_sim_setup_info.SimulationSettings.MeshOperations
+            mesh_operations.Clear()
+            for mop in self.mesh_operations.values():
+                mesh_operations.Add(mop.mesh_operation)
+
+        if self._name in self._pedb.setups:
+            self._pedb.layout.cell.DeleteSimulationSetup(self._name)
+        if not self._pedb.layout.cell.AddSimulationSetup(self._edb_object):
+            raise Exception("Updating setup {} failed.".format(self._name))
+        else:
+            return True
+
+    @property
+    def enabled(self):
+        """Flag indicating if the setup is enabled."""
+        return self.get_sim_setup_info.SimulationSettings.Enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        self.get_sim_setup_info.SimulationSettings.Enabled = value
+        self._edb_object = self._set_edb_setup_info(self.get_sim_setup_info)
+        self._update_setup()
+
+    @property
+    def name(self):
+        """Name of the setup."""
+        return self._edb_object.GetName()
+
+    @name.setter
+    def name(self, value):
+        self._pedb.layout.cell.DeleteSimulationSetup(self.name)
+        edb_setup_info = self.get_sim_setup_info
+        edb_setup_info.Name = value
+        self._name = value
+        self._edb_object = self._set_edb_setup_info(edb_setup_info)
+        self._update_setup()
+
+    @property
+    def position(self):
+        """Position in the setup list."""
+        return self.get_sim_setup_info.Position
+
+    @position.setter
+    def position(self, value):
+        edb_setup_info = self.get_sim_setup_info.SimulationSettings
+        edb_setup_info.Position = value
+        self._set_edb_setup_info(edb_setup_info)
+        self._update_setup()
+
+    @property
+    def setup_type(self):
+        """Type of the setup."""
+        return self.get_sim_setup_info.SimSetupType.ToString()
+
+    @property
+    def frequency_sweeps(self):
+        """List of frequency sweeps."""
+        temp = {}
+        if self.setup_type in ("kRaptorX", "kHFSSPI"):
+            sweep_data_list = self._edb_setup_info.SweepDataList
+        else:
+            sweep_data_list = self.get_sim_setup_info.SweepDataList
+        for i in list(sweep_data_list):
+            temp[i.Name] = EdbFrequencySweep(self, None, i.Name, i)
+        return temp
+
+    @pyedb_function_handler
+    def _add_frequency_sweep(self, sweep_data):
+        """Add a frequency sweep.
+
+        Parameters
+        ----------
+        sweep_data: EdbFrequencySweep
+        """
+        self._sweep_list[sweep_data.name] = sweep_data
+        if self.setup_type in ["kRaptorX", "kHFSSPI"]:
+            edb_setup_info = self._edb_setup_info
+        else:
+            edb_setup_info = self.get_sim_setup_info
+
+        if self._setup_type in ["kSIwave", "kHFSS", "kRaptorX", "kHFSSPI"]:
+            for _, v in self._sweep_list.items():
+                edb_setup_info.SweepDataList.Add(v._edb_object)
+
+        self._edb_object = self._set_edb_setup_info(edb_setup_info)
+        self._update_setup()
+
+    @pyedb_function_handler
+    def delete_frequency_sweep(self, sweep_data):
+        """Delete a frequency sweep.
+
+        Parameters
+        ----------
+            sweep_data : EdbFrequencySweep.
+        """
+        name = sweep_data.name
+        if name in self._sweep_list:
+            self._sweep_list.pop(name)
+
+        fsweep = []
+        if self.frequency_sweeps:
+            fsweep = [val for key, val in self.frequency_sweeps.items() if not key == name]
+            self.get_sim_setup_info.SweepDataList.Clear()
+            for i in fsweep:
+                self.get_sim_setup_info.SweepDataList.Add(i._edb_object)
+            self._update_setup()
+            return True if name in self.frequency_sweeps else False
+
+    @pyedb_function_handler()
+    def add_frequency_sweep(self, name=None, frequency_sweep=None):
+        """Add frequency sweep.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the frequency sweep. The default is ``None``.
+        frequency_sweep : list, optional
+            List of frequency points. The default is ``None``.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.simulation_setup_data.EdbFrequencySweep`
+
+        Examples
+        --------
+        >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
+        >>> setup1.add_frequency_sweep(frequency_sweep=[
+        ...     ["linear count", "0", "1kHz", 1],
+        ...     ["log scale", "1kHz", "0.1GHz", 10],
+        ...     ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+        ...     ])
+        """
+        if name in self.frequency_sweeps:
+            return False
+
+        if not frequency_sweep:
+            frequency_sweep = [["linear scale", "0.1GHz", "10GHz", "0.1GHz"]]
+        elif not isinstance(frequency_sweep[0], list):
+            frequency_sweep = [frequency_sweep]
+
+        if not name:
+            name = generate_unique_name("sweep")
+        sweep = EdbFrequencySweep(self, frequency_sweep, name)
+        self._add_frequency_sweep(sweep)
+        self._update_setup()
+        return sweep
+
+
+class HfssSimulationSetup(SimulationSetup):
+    """Manages EDB methods for HFSS simulation setup."""
+
+    def __init__(self, pedb, edb_object=None):
+        super().__init__(pedb, edb_object)
+        self._setup_type = "kHFSS"
+        self._mesh_operations = {}
+
+    @pyedb_function_handler
+    def create(self, name=None):
+        """Create an HFSS setup."""
+        self._name = name
+        self._create(name)
+        return self
+
+    @property
+    def get_sim_setup_info(self):
+        """Get simulation setup information."""
+        return self._edb_object.GetSimSetupInfo()
+
+    @property
+    def solver_slider_type(self):
+        """Solver slider type.
+        Options are:
+        1 - ``kFast``.
+        2 - ``kMedium``.
+        3 - ``kAccurate``.
+        4 - ``kNumSliderTypes``.
+
+        Returns
+        -------
+        str
+        """
+        return self.get_sim_setup_info.SimulationSettings.TSolveSliderType.ToString()
+
+    @solver_slider_type.setter
+    def solver_slider_type(self, value):
+        """Set solver slider type."""
+        solver_types = {
+            "kFast": self.get_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaWirebond,
+            "kMedium": self.get_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaRibbon,
+            "kAccurate": self.get_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaMesh,
+            "kNumSliderTypes": self.get_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaField,
+        }
+        self.get_sim_setup_info.SimulationSettings.TSolveSliderType = solver_types[value]
+        self._update_setup()
+
+    @property
+    def is_auto_setup(self):
+        """Flag indicating if automatic setup is enabled."""
+        return self.get_sim_setup_info.SimulationSettings.IsAutoSetup
+
+    @is_auto_setup.setter
+    def is_auto_setup(self, value):
+        self.get_sim_setup_info.SimulationSettings.IsAutoSetup = value
+        self._update_setup()
+
+    @property
+    def hfss_solver_settings(self):
+        """Manages EDB methods for HFSS solver settings.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.HfssSolverSettings`
+
+        """
+        return HfssSolverSettings(self)
+
+    @property
+    def adaptive_settings(self):
+        """Adaptive Settings Class.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.AdaptiveSettings`
+
+        """
+        return AdaptiveSettings(self)
+
+    @property
+    def defeature_settings(self):
+        """Defeature settings Class.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.DefeatureSettings`
+
+        """
+        return DefeatureSettings(self)
+
+    @property
+    def via_settings(self):
+        """Via settings Class.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.ViaSettings`
+
+        """
+        return ViaSettings(self)
+
+    @property
+    def advanced_mesh_settings(self):
+        """Advanced mesh settings Class.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.AdvancedMeshSettings`
+
+        """
+        return AdvancedMeshSettings(self)
+
+    @property
+    def curve_approx_settings(self):
+        """Curve approximation settings Class.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.CurveApproxSettings`
+
+        """
+        return CurveApproxSettings(self)
+
+    @property
+    def dcr_settings(self):
+        """Dcr settings Class.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.DcrSettings`
+
+        """
+        return DcrSettings(self)
+
+    @property
+    def hfss_port_settings(self):
+        """HFSS port settings Class.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.HfssPortSettings`
+
+        """
+        return HfssPortSettings(self)
+
+    @property
+    def mesh_operations(self):
+        """Mesh operations settings Class.
+
+        Returns
+        -------
+        List of :class:`dotnet.edb_core.edb_data.hfss_simulation_setup_data.MeshOperation`
+
+        """
+        if self._mesh_operations:
+            return self._mesh_operations
+        settings = self.get_sim_setup_info.SimulationSettings.MeshOperations
+        self._mesh_operations = {}
+        for i in list(settings):
+            if i.MeshOpType == i.TMeshOpType.kMeshSetupLength:
+                self._mesh_operations[i.Name] = MeshOperationLength(self, i)
+            elif i.MeshOpType == i.TMeshOpType.kMeshSetupSkinDepth:
+                self._mesh_operations[i.Name] = MeshOperationSkinDepth(self, i)
+            elif i.MeshOpType == i.TMeshOpType.kMeshSetupBase:
+                self._mesh_operations[i.Name] = MeshOperationSkinDepth(self, i)
+
+        return self._mesh_operations
+
+    @pyedb_function_handler()
+    def add_length_mesh_operation(
+            self,
+            net_layer_list,
+            name=None,
+            max_elements=1000,
+            max_length="1mm",
+            restrict_elements=True,
+            restrict_length=True,
+            refine_inside=False,
+            mesh_region=None,
+    ):
+        """Add a mesh operation to the setup.
+
+        Parameters
+        ----------
+        net_layer_list : dict
+            Dictionary containing nets and layers on which enable Mesh operation. Example ``{"A0_N": ["TOP", "PWR"]}``.
+        name : str, optional
+            Mesh operation name.
+        max_elements : int, optional
+            Maximum number of elements. Default is ``1000``.
+        max_length : str, optional
+            Maximum length of elements. Default is ``1mm``.
+        restrict_elements : bool, optional
+            Whether to restrict number of elements. Default is ``True``.
+        restrict_length : bool, optional
+            Whether to restrict length of elements. Default is ``True``.
+        mesh_region : str, optional
+            Mesh region name.
+        refine_inside : bool, optional
+            Whether to refine inside or not.  Default is ``False``.
+
+        Returns
+        -------
+        :class:`dotnet.edb_core.edb_data.hfss_simulation_setup_data.LengthMeshOperation`
+        """
+        if not name:
+            name = generate_unique_name("skin")
+        mesh_operation = MeshOperationLength(self, self._pedb.simsetupdata.LengthMeshOperation())
+        mesh_operation.mesh_region = mesh_region
+        mesh_operation.name = name
+        mesh_operation.nets_layers_list = net_layer_list
+        mesh_operation.refine_inside = refine_inside
+        mesh_operation.max_elements = str(max_elements)
+        mesh_operation.max_length = max_length
+        mesh_operation.restrict_length = restrict_length
+        mesh_operation.restrict_max_elements = restrict_elements
+        self.mesh_operations[name] = mesh_operation
+        return mesh_operation if self._update_setup() else False
+
+    @pyedb_function_handler()
+    def add_skin_depth_mesh_operation(
+            self,
+            net_layer_list,
+            name=None,
+            max_elements=1000,
+            skin_depth="1um",
+            restrict_elements=True,
+            surface_triangle_length="1mm",
+            number_of_layers=2,
+            refine_inside=False,
+            mesh_region=None,
+    ):
+        """Add a mesh operation to the setup.
+
+        Parameters
+        ----------
+        net_layer_list : dict
+            Dictionary containing nets and layers on which enable Mesh operation. Example ``{"A0_N": ["TOP", "PWR"]}``.
+        name : str, optional
+            Mesh operation name.
+        max_elements : int, optional
+            Maximum number of elements. Default is ``1000``.
+        skin_depth : str, optional
+            Skin Depth. Default is ``1um``.
+        restrict_elements : bool, optional
+            Whether to restrict number of elements. Default is ``True``.
+        surface_triangle_length : bool, optional
+            Surface Triangle length. Default is ``1mm``.
+        number_of_layers : int, str, optional
+            Number of layers. Default is ``2``.
+        mesh_region : str, optional
+            Mesh region name.
+        refine_inside : bool, optional
+            Whether to refine inside or not.  Default is ``False``.
+
+        Returns
+        -------
+        :class:`dotnet.edb_core.edb_data.hfss_simulation_setup_data.LengthMeshOperation`
+        """
+        if not name:
+            name = generate_unique_name("length")
+        mesh_operation = MeshOperationSkinDepth(self, self._pedb.simsetupdata.SkinDepthMeshOperation())
+        mesh_operation.mesh_region = mesh_region
+        mesh_operation.name = name
+        mesh_operation.nets_layers_list = net_layer_list
+        mesh_operation.refine_inside = refine_inside
+        mesh_operation.max_elements = max_elements
+        mesh_operation.skin_depth = skin_depth
+        mesh_operation.number_of_layer_elements = number_of_layers
+        mesh_operation.surface_triangle_length = surface_triangle_length
+        mesh_operation.restrict_max_elements = restrict_elements
+        self.mesh_operations[name] = mesh_operation
+        return mesh_operation if self._update_setup() else False
+
+    @pyedb_function_handler()
+    def add_frequency_sweep(self, name=None, frequency_sweep=None):
+        """Add frequency sweep.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the frequency sweep.
+        frequency_sweep : list, optional
+            List of frequency points.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.simulation_setup.EdbFrequencySweep`
+
+        Examples
+        --------
+        >>> setup1 = edbapp.create_hfss_setup("setup1")
+        >>> setup1.add_frequency_sweep(frequency_sweep=[
+        ...                           ["linear count", "0", "1kHz", 1],
+        ...                           ["log scale", "1kHz", "0.1GHz", 10],
+        ...                           ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+        ...                           ])
+        """
+        if name in self.frequency_sweeps:
+            return False
+        if not name:
+            name = generate_unique_name("sweep")
+        return EdbFrequencySweep(self, frequency_sweep, name)
+
+    @pyedb_function_handler()
+    def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02):
+        """Set single-frequency solution.
+
+        Parameters
+        ----------
+        frequency : str, float, optional
+            Adaptive frequency. The default is ``5GHz``.
+        max_num_passes : int, optional
+            Maximum number of passes. The default is ``10``.
+        max_delta_s : float, optional
+            Maximum delta S. The default is ``0.02``.
+
+        Returns
+        -------
+        bool
+
+        """
+        self.adaptive_settings.adapt_type = "kSingle"
+        self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
+        return self.adaptive_settings.add_adaptive_frequency_data(frequency, max_num_passes, max_delta_s)
+
+    @pyedb_function_handler()
+    def set_solution_multi_frequencies(self, frequencies=("5GHz", "10GHz"), max_num_passes=10, max_delta_s="0.02"):
+        """Set multi-frequency solution.
+
+        Parameters
+        ----------
+        frequencies : list, tuple, optional
+            List or tuple of adaptive frequencies. The default is ``5GHz``.
+        max_num_passes : int, optional
+            Maximum number of passes. Default is ``10``.
+        max_delta_s : float, optional
+            Maximum delta S. The default is ``0.02``.
+
+        Returns
+        -------
+        bool
+
+        """
+        self.adaptive_settings.adapt_type = "kMultiFrequencies"
+        self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
+        for i in frequencies:
+            if not self.adaptive_settings.add_adaptive_frequency_data(i, max_num_passes, max_delta_s):
+                return False
+        return True
+
+    @pyedb_function_handler()
+    def set_solution_broadband(
+            self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
+    ):
+        """Set broadband solution.
+
+        Parameters
+        ----------
+        low_frequency : str, float, optional
+            Low frequency. The default is ``5GHz``.
+        high_frequency : str, float, optional
+            High frequency. The default is ``10GHz``.
+        max_num_passes : int, optional
+            Maximum number of passes. The default is ``10``.
+        max_delta_s : float, optional
+            Maximum Delta S. Default is ``0.02``.
+
+        Returns
+        -------
+        bool
+        """
+        self.adaptive_settings.adapt_type = "kBroadband"
+        self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
+        if not self.adaptive_settings.add_broadband_adaptive_frequency_data(
+                low_frequency, high_frequency, max_num_passes, max_delta_s
+        ):  # pragma no cover
+            return False
+        return True

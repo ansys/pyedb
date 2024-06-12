@@ -29,7 +29,7 @@ from pyedb.dotnet.edb_core.general import (
 from pyedb.dotnet.edb_core.sim_setup_data.data.siw_dc_ir_settings import (
     SiwaveDCIRSettings,
 )
-from pyedb.dotnet.edb_core.utilities.simulation_setup import BaseSimulationSetup
+from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import is_linux, pyedb_function_handler
 
 
@@ -911,7 +911,7 @@ class DCAdvancedSettings(SettingsBase):
         self._parent._update_setup()
 
 
-class SiwaveSYZSimulationSetup(BaseSimulationSetup):
+class SiwaveSYZSimulationSetup(SimulationSetup):
     """Manages EDB methods for SIwave simulation setup.
 
     Parameters
