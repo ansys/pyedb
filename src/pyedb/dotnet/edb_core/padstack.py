@@ -59,7 +59,7 @@ class EdbPadstacks(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponent`
+        :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`
 
         """
         if name in self.instances:

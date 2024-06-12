@@ -89,7 +89,7 @@ class EDBNetsData(NetDotNet):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`]
         """
         comps = {}
         for p in self.padstack_instances:
