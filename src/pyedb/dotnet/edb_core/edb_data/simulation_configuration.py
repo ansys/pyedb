@@ -25,8 +25,8 @@ import json
 import os
 
 from pyedb.dotnet.clr_module import Dictionary
-from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_setup import AdaptiveType
 from pyedb.dotnet.edb_core.edb_data.sources import Source, SourceType
+from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_setup import AdaptiveType
 from pyedb.generic.constants import (
     BasisOrder,
     CutoutSubdesignType,
