@@ -48,7 +48,6 @@ class TestClass:
         assert len(self.edbapp.nets.netlist) > 0
         signalnets = self.edbapp.nets.signal
         assert not signalnets[list(signalnets.keys())[0]].is_power_ground
-        assert not signalnets[list(signalnets.keys())[0]].IsPowerGround()
         assert len(list(signalnets[list(signalnets.keys())[0]].primitives)) > 0
         assert len(signalnets) > 2
 
@@ -59,7 +58,7 @@ class TestClass:
         assert not powernets["AVCC_1V3"].is_power_ground
         powernets["AVCC_1V3"].is_power_ground = True
         assert powernets["AVCC_1V3"].name == "AVCC_1V3"
-        assert powernets["AVCC_1V3"].IsPowerGround()
+        assert powernets["AVCC_1V3"].is_power_ground
         assert len(list(powernets["AVCC_1V3"].components.keys())) > 0
         assert len(powernets["AVCC_1V3"].primitives) > 0
 
