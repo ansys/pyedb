@@ -42,7 +42,7 @@ class LayoutObj(ObjBase):
             try:
                 return getattr(self._edb_object, key)
             except AttributeError:
-                raise AttributeError("Attribute not present")
+                raise AttributeError(f"Attribute '{key}' not present")
 
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
