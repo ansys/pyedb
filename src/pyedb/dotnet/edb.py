@@ -92,6 +92,13 @@ from pyedb.dotnet.edb_core.nets import EdbNets
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 from pyedb.dotnet.edb_core.siwave import EdbSiwave
 from pyedb.dotnet.edb_core.stackup import Stackup
+from pyedb.dotnet.edb_core.terminal.bundle_terminal import BundleTerminal
+from pyedb.dotnet.edb_core.terminal.edge_terminal import EdgeTerminal
+from pyedb.dotnet.edb_core.terminal.padstack_instance_terminal import (
+    PadstackInstanceTerminal,
+)
+from pyedb.dotnet.edb_core.terminal.pingroup_terminal import PinGroupTerminal
+from pyedb.dotnet.edb_core.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.edb_core.terminal.terminal import Terminal
 from pyedb.generic.constants import AEDT_UNITS, SolverType
 from pyedb.generic.general_methods import (
@@ -438,12 +445,18 @@ class Edb(Database):
         """
 
         temp = {}
-        terminal_mapping = Terminal(self)._terminal_mapping
         for i in self.layout.terminals:
             terminal_type = i.ToString().split(".")[-1]
-            ter = terminal_mapping[terminal_type](self, i)
-            temp[ter.name] = ter
-
+            if terminal_type == "PinGroupTerminal":
+                temp[i.GetName()] = PinGroupTerminal(self, i)
+            elif terminal_type == "PadstackInstanceTerminal":
+                temp[i.GetName()] = PadstackInstanceTerminal(self, i)
+            elif terminal_type == "EdgeTerminal":
+                temp[i.GetName()] = EdgeTerminal(self, i)
+            elif terminal_type == "BundleTerminal":
+                temp[i.GetName()] = BundleTerminal(self, i)
+            elif terminal_type == "PointTerminal":
+                temp[i.GetName()] = PointTerminal(self, i)
         return temp
 
     @property
@@ -4135,7 +4148,7 @@ class Edb(Database):
         -------
         :class:`legacy.edb_core.edb_data.terminals.PointTerminal`
         """
-        from pyedb.dotnet.edb_core.terminal.terminal import PointTerminal
+        from pyedb.dotnet.edb_core.terminal.point_terminal import PointTerminal
 
         point_terminal = PointTerminal(self)
         return point_terminal.create(name, net_name, location, layer)

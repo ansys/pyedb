@@ -61,27 +61,13 @@ class PointTerminal(Terminal):
         return terminal if not terminal.is_null else False
 
     @property
-    def location(self):
-        """Location of the terminal."""
-        layer = list(self._pedb.stackup.layers.values())[0]._edb_layer
-        _, point_data, _ = self._edb_object.GetParameters(None, layer)
-        return [point_data.X.ToDouble(), point_data.Y.ToDouble()]
+    def ref_terminal(self):
+        """Get reference terminal."""
 
-    @location.setter
-    def location(self, value):
-        layer = self.layer
-        self._edb_object.SetParameters(self._pedb.point_data(*value), layer)
+        terminal = Terminal(self._pedb, self._edb_object.GetReferenceTerminal())
+        if not terminal.is_null:
+            return terminal
 
-    @property
-    def layer(self):
-        """Get layer of the terminal."""
-        point_data = self._pedb.point_data(0, 0)
-        layer = list(self._pedb.stackup.layers.values())[0]._edb_layer
-        if self._edb_object.GetParameters(point_data, layer):
-            return layer
-
-    @layer.setter
-    def layer(self, value):
-        layer = self._pedb.stackup.layers[value]._edb_layer
-        point_data = self._pedb.point_data(*self.location)
-        self._edb_object.SetParameters(point_data, layer)
+    @ref_terminal.setter
+    def ref_terminal(self, value):
+        self._edb_object.SetReferenceTerminal(value._edb_object)
