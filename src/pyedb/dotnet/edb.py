@@ -39,6 +39,14 @@ import warnings
 
 from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
+from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
+from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
+from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
+    PadstackInstanceTerminal,
+)
+from pyedb.dotnet.edb_core.cell.terminal.pingroup_terminal import PinGroupTerminal
+from pyedb.dotnet.edb_core.cell.terminal.point_terminal import PointTerminal
+from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
 from pyedb.dotnet.edb_core.components import Components
 from pyedb.dotnet.edb_core.dotnet.database import Database
 from pyedb.dotnet.edb_core.dotnet.layout import LayoutDotNet
@@ -92,14 +100,6 @@ from pyedb.dotnet.edb_core.nets import EdbNets
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 from pyedb.dotnet.edb_core.siwave import EdbSiwave
 from pyedb.dotnet.edb_core.stackup import Stackup
-from pyedb.dotnet.edb_core.terminal.bundle_terminal import BundleTerminal
-from pyedb.dotnet.edb_core.terminal.edge_terminal import EdgeTerminal
-from pyedb.dotnet.edb_core.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal,
-)
-from pyedb.dotnet.edb_core.terminal.pingroup_terminal import PinGroupTerminal
-from pyedb.dotnet.edb_core.terminal.point_terminal import PointTerminal
-from pyedb.dotnet.edb_core.terminal.terminal import Terminal
 from pyedb.generic.constants import AEDT_UNITS, SolverType
 from pyedb.generic.general_methods import (
     generate_unique_name,
@@ -4148,7 +4148,7 @@ class Edb(Database):
         -------
         :class:`legacy.edb_core.edb_data.terminals.PointTerminal`
         """
-        from pyedb.dotnet.edb_core.terminal.point_terminal import PointTerminal
+        from pyedb.dotnet.edb_core.cell.terminal.point_terminal import PointTerminal
 
         point_terminal = PointTerminal(self)
         return point_terminal.create(name, net_name, location, layer)

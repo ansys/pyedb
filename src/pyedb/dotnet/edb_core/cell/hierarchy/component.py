@@ -25,12 +25,12 @@ import re
 import warnings
 
 from pyedb.dotnet.edb_core.cell.hierarchy.model import PinPairModel, SPICEModel
+from pyedb.dotnet.edb_core.cell.hierarchy.netlist_model import NetlistModel
+from pyedb.dotnet.edb_core.cell.hierarchy.pin_pair_model import PinPair
+from pyedb.dotnet.edb_core.cell.hierarchy.s_parameter_model import SparamModel
+from pyedb.dotnet.edb_core.cell.hierarchy.spice_model import SpiceModel
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.dotnet.edb_core.hierarchy.netlist_model import NetlistModel
-from pyedb.dotnet.edb_core.hierarchy.pin_pair_model import PinPair
-from pyedb.dotnet.edb_core.hierarchy.s_parameter_model import SparamModel
-from pyedb.dotnet.edb_core.hierarchy.spice_model import SpiceModel
 from pyedb.generic.general_methods import is_ironpython
 
 if not is_ironpython:

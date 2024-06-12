@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.terminal.terminal import Terminal
+from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
 
 
 class PointTerminal(Terminal):
