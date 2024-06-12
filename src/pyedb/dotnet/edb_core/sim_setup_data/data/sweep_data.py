@@ -23,7 +23,7 @@
 from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 
 
-class EdbFrequencySweep(object):
+class SweepData(object):
     """Manages EDB methods for a frequency sweep.
 
     Parameters

@@ -35,7 +35,7 @@ from pyedb.dotnet.edb_core.sim_setup_data.data.settings import (
     HfssSolverSettings,
     ViaSettings,
 )
-from pyedb.dotnet.edb_core.utilities.simulation_setup import EdbFrequencySweep
+from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 
 
@@ -205,7 +205,7 @@ class SimulationSetup(object):
         else:
             sweep_data_list = self.get_sim_setup_info.SweepDataList
         for i in list(sweep_data_list):
-            temp[i.Name] = EdbFrequencySweep(self, None, i.Name, i)
+            temp[i.Name] = SweepData(self, None, i.Name, i)
         return temp
 
     @pyedb_function_handler
@@ -214,7 +214,7 @@ class SimulationSetup(object):
 
         Parameters
         ----------
-        sweep_data: EdbFrequencySweep
+        sweep_data: SweepData
         """
         self._sweep_list[sweep_data.name] = sweep_data
         if self.setup_type in ["kRaptorX", "kHFSSPI"]:
@@ -284,7 +284,7 @@ class SimulationSetup(object):
 
         if not name:
             name = generate_unique_name("sweep")
-        sweep = EdbFrequencySweep(self, frequency_sweep, name)
+        sweep = SweepData(self, frequency_sweep, name)
         self._add_frequency_sweep(sweep)
         self._update_setup()
         return sweep
@@ -592,7 +592,7 @@ class HfssSimulationSetup(SimulationSetup):
             return False
         if not name:
             name = generate_unique_name("sweep")
-        return EdbFrequencySweep(self, frequency_sweep, name)
+        return SweepData(self, frequency_sweep, name)
 
     @pyedb_function_handler()
     def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02):
