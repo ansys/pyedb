@@ -58,6 +58,7 @@ class EDBNetsData(NetDotNet):
         self._core_components = core_app.components
         self._core_primitive = core_app.modeler
         self.net_object = raw_net
+        self._edb_object = raw_net
         NetDotNet.__init__(self, self._app, raw_net)
 
     @property
