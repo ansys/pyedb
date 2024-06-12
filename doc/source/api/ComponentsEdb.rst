@@ -28,7 +28,7 @@ Instances and definitions
 These classes are the containers of data management for components reference designator and  definitions.
 
 
-.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent
+.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component
 
 .. autosummary::
    :toctree: _autosummary
