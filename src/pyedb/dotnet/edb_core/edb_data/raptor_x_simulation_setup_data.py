@@ -22,7 +22,7 @@
 
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
-from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_setup import SimulationSetup
+from pyedb.dotnet.edb_core.utilities.simulation_setup import SimulationSetup
 from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 from pyedb.generic.data_handlers import pyedb_function_handler
 from pyedb.generic.general_methods import generate_unique_name

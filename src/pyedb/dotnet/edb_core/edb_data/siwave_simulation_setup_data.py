@@ -26,7 +26,7 @@ from pyedb.dotnet.edb_core.general import (
     convert_netdict_to_pydict,
     convert_pydict_to_netdict,
 )
-from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_setup import SimulationSetup
+from pyedb.dotnet.edb_core.utilities.simulation_setup import SimulationSetup
 from pyedb.dotnet.edb_core.sim_setup_data.data.siw_dc_ir_settings import (
     SiwaveDCIRSettings,
 )

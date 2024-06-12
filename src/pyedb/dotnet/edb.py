@@ -88,7 +88,7 @@ from pyedb.dotnet.edb_core.net_class import (
 )
 from pyedb.dotnet.edb_core.nets import EdbNets
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
-from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_setup import (
+from pyedb.dotnet.edb_core.utilities.simulation_setup import (
     HfssSimulationSetup,
 )
 from pyedb.dotnet.edb_core.siwave import EdbSiwave
