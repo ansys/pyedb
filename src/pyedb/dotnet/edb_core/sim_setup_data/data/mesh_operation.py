@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from System import Tuple
+
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 
 

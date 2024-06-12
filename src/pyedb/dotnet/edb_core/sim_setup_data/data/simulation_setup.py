@@ -22,16 +22,23 @@
 
 from System import Tuple
 
-from pyedb.dotnet.edb_core.utilities.simulation_setup import (
-    EdbFrequencySweep,
+from pyedb.dotnet.edb_core.sim_setup_data.data.mesh_operation import (
+    MeshOperationLength,
+    MeshOperationSkinDepth,
 )
+from pyedb.dotnet.edb_core.sim_setup_data.data.settings import (
+    AdaptiveSettings,
+    AdvancedMeshSettings,
+    CurveApproxSettings,
+    DcrSettings,
+    DefeatureSettings,
+    HfssPortSettings,
+    HfssSolverSettings,
+    ViaSettings,
+)
+from pyedb.dotnet.edb_core.utilities.simulation_setup import EdbFrequencySweep
 from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
 
-from pyedb.dotnet.edb_core.sim_setup_data.data.settings import (AdaptiveSettings,AdvancedMeshSettings,
-                                                                CurveApproxSettings, DcrSettings, DefeatureSettings,
-                                                                HfssPortSettings, ViaSettings,HfssSolverSettings
-                                                                )
-from pyedb.dotnet.edb_core.sim_setup_data.data.mesh_operation import (MeshOperationLength, MeshOperationSkinDepth)
 
 class AdaptiveType(object):
     (SingleFrequency, MultiFrequency, BroadBand) = range(0, 3)
@@ -97,8 +104,8 @@ class SimulationSetup(object):
         edb_setup_info = self._pedb.simsetupdata.SimSetupInfo[setup_type]()
         edb_setup_info.Name = name
         if (
-                edb_setup_info.get_SimSetupType().ToString() == "kRaptorX"
-                or edb_setup_info.get_SimSetupType().ToString() == "kHFSSPI"
+            edb_setup_info.get_SimSetupType().ToString() == "kRaptorX"
+            or edb_setup_info.get_SimSetupType().ToString() == "kHFSSPI"
         ):
             self._edb_setup_info = edb_setup_info
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
@@ -454,15 +461,15 @@ class HfssSimulationSetup(SimulationSetup):
 
     @pyedb_function_handler()
     def add_length_mesh_operation(
-            self,
-            net_layer_list,
-            name=None,
-            max_elements=1000,
-            max_length="1mm",
-            restrict_elements=True,
-            restrict_length=True,
-            refine_inside=False,
-            mesh_region=None,
+        self,
+        net_layer_list,
+        name=None,
+        max_elements=1000,
+        max_length="1mm",
+        restrict_elements=True,
+        restrict_length=True,
+        refine_inside=False,
+        mesh_region=None,
     ):
         """Add a mesh operation to the setup.
 
@@ -505,16 +512,16 @@ class HfssSimulationSetup(SimulationSetup):
 
     @pyedb_function_handler()
     def add_skin_depth_mesh_operation(
-            self,
-            net_layer_list,
-            name=None,
-            max_elements=1000,
-            skin_depth="1um",
-            restrict_elements=True,
-            surface_triangle_length="1mm",
-            number_of_layers=2,
-            refine_inside=False,
-            mesh_region=None,
+        self,
+        net_layer_list,
+        name=None,
+        max_elements=1000,
+        skin_depth="1um",
+        restrict_elements=True,
+        surface_triangle_length="1mm",
+        number_of_layers=2,
+        refine_inside=False,
+        mesh_region=None,
     ):
         """Add a mesh operation to the setup.
 
@@ -637,7 +644,7 @@ class HfssSimulationSetup(SimulationSetup):
 
     @pyedb_function_handler()
     def set_solution_broadband(
-            self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
+        self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
     ):
         """Set broadband solution.
 
@@ -659,7 +666,7 @@ class HfssSimulationSetup(SimulationSetup):
         self.adaptive_settings.adapt_type = "kBroadband"
         self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
         if not self.adaptive_settings.add_broadband_adaptive_frequency_data(
-                low_frequency, high_frequency, max_num_passes, max_delta_s
+            low_frequency, high_frequency, max_num_passes, max_delta_s
         ):  # pragma no cover
             return False
         return True

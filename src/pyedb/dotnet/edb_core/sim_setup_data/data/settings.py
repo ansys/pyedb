@@ -20,8 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.sim_setup_data.data.adaptive_frequency_data import AdaptiveFrequencyData
+from pyedb.dotnet.edb_core.sim_setup_data.data.adaptive_frequency_data import (
+    AdaptiveFrequencyData,
+)
 from pyedb.generic.data_handlers import pyedb_function_handler
+
 
 class AdaptiveSettings(object):
     """Manages EDB methods for adaptive settings."""

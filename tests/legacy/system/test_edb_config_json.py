@@ -74,47 +74,32 @@ class TestClass:
                             "name": "sweep1",
                             "type": "Interpolation",
                             "frequencies": [
-                                {
-                                    "distribution": "linear scale",
-                                    "start": "50MHz",
-                                    "stop": "200MHz",
-                                    "step": "10MHz"
-                                }
-                            ]
+                                {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"}
+                            ],
                         },
                         {
                             "name": "sweep2",
                             "type": "Interpolation",
                             "frequencies": [
-                                {
-                                    "distribution": "log scale",
-                                    "start": "1KHz",
-                                    "stop": "100kHz",
-                                    "samples": 10
-                                }
-                            ]
+                                {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10}
+                            ],
                         },
                         {
                             "name": "sweep3",
                             "type": "Interpolation",
                             "frequencies": [
-                                {
-                                    "distribution": "linear count",
-                                    "start": "10MHz",
-                                    "stop": "20MHz",
-                                    "points": 11
-                                }
-                            ]
-                        }
-                    ]
+                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11}
+                            ],
+                        },
+                    ],
                 },
             ]
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        #assert len(edbapp.setups["hfss_setup_1"].frequency_sweeps["sweep1"].frequencies) == 16
-        #assert len(edbapp.setups["hfss_setup_1"].frequency_sweeps["sweep2"].frequencies) == 20
-        #assert len(edbapp.setups["hfss_setup_1"].frequency_sweeps["sweep3"].frequencies) == 11
+        # assert len(edbapp.setups["hfss_setup_1"].frequency_sweeps["sweep1"].frequencies) == 16
+        # assert len(edbapp.setups["hfss_setup_1"].frequency_sweeps["sweep2"].frequencies) == 20
+        # assert len(edbapp.setups["hfss_setup_1"].frequency_sweeps["sweep3"].frequencies) == 11
         edbapp.close()
 
     def test_02_pin_groups(self, edb_examples):

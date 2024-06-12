@@ -1039,10 +1039,12 @@ class TestClass:
                                             frequency_sweep=[
                                                 ["log scale", "1kHz", "100kHz", 10],
                                             ])"""
-        sweep3 = setup1.add_frequency_sweep(name="sweep3",
-                                            frequency_sweep=[
-                                                ["linear scale", "20MHz", "30MHz", "1MHz"],
-                                            ])
+        sweep3 = setup1.add_frequency_sweep(
+            name="sweep3",
+            frequency_sweep=[
+                ["linear scale", "20MHz", "30MHz", "1MHz"],
+            ],
+        )
         edbapp.close()
 
     def test_siwave_dc_simulation_setup(self):
