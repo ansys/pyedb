@@ -958,7 +958,7 @@ class EdbPadstacks(object):
                 else:
                     return False
             elif isinstance(polygon_hole, PolygonDataDotNet):
-                hole_param = polygon_hole
+                hole_param = polygon_hole.edb_api
             else:
                 return False
             padstackData.SetPolygonalHoleParameters(hole_param, value0, value0, value0)
@@ -1592,3 +1592,47 @@ class EdbPadstacks(object):
         if isinstance(bounding_box, list):
             bounding_box = tuple(bounding_box)
         return list(index.intersection(bounding_box))
+
+    def merge_via_along_lines(self, net_name="gnd", distance_threshold=5e-3, minimum_via_number=6):
+        """ """
+        _def = list(
+            set([inst.padstack_definition for inst in list(self.instances.values()) if inst.net_name == net_name])
+        )
+        _instances_to_delete = []
+        padstack_instances = []
+        for pdstk_def in _def:
+            padstack_instances.append(
+                [inst for inst in self.definitions[pdstk_def].instances if inst.net_name == net_name]
+            )
+        for pdstk_series in padstack_instances:
+            inst_location = [inst.position for inst in pdstk_series]
+            lines, line_indexes = GeometryOperators.find_points_along_lines(
+                points=inst_location, minimum_number_of_points=minimum_via_number, distance_threshold=distance_threshold
+            )
+            for line in line_indexes:
+                [_instances_to_delete.append(pdstk_series[ind]) for ind in line]
+                start_point = pdstk_series[line[0]]
+                stop_point = pdstk_series[line[-1]]
+                padstack_def = start_point.padstack_definition
+                trace_width = self.definitions[padstack_def].pad_by_layer[stop_point.start_layer].parameters_values[0]
+                trace = self._pedb.modeler.create_trace(
+                    path_list=[start_point.position, stop_point.position],
+                    layer_name=start_point.start_layer,
+                    width=trace_width,
+                )
+                polygon_data = trace.polygon_data
+                trace.delete()
+
+                new_padstack_def = generate_unique_name(padstack_def)
+                if not self.create(
+                    padstackname=new_padstack_def,
+                    pad_shape="Polygon",
+                    antipad_shape="Polygon",
+                    pad_polygon=polygon_data,
+                    antipad_polygon=polygon_data,
+                    polygon_hole=polygon_data,
+                ):
+                    self._logger.error(f"Failed to create padstack definition {new_padstack_def}")
+                if not self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net_name):
+                    self._logger.error(f"Failed to place padstack instance {new_padstack_def}")
+            [inst.delete() for inst in _instances_to_delete]
