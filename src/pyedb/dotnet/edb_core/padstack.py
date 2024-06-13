@@ -1593,11 +1593,14 @@ class EdbPadstacks(object):
             bounding_box = tuple(bounding_box)
         return list(index.intersection(bounding_box))
 
-    def merge_via_along_lines(self, net_name="gnd", distance_threshold=5e-3, minimum_via_number=6):
+    def merge_via_along_lines(self, net_name="GND", distance_threshold=5e-3, minimum_via_number=6):
         """ """
         _def = list(
             set([inst.padstack_definition for inst in list(self.instances.values()) if inst.net_name == net_name])
         )
+        if not _def:
+            self._logger.error(f"No padstack definition found for net {net_name}")
+            return False
         _instances_to_delete = []
         padstack_instances = []
         for pdstk_def in _def:
@@ -1605,9 +1608,11 @@ class EdbPadstacks(object):
                 [inst for inst in self.definitions[pdstk_def].instances if inst.net_name == net_name]
             )
         for pdstk_series in padstack_instances:
-            inst_location = [inst.position for inst in pdstk_series]
+            instances_location = [inst.position for inst in pdstk_series]
             lines, line_indexes = GeometryOperators.find_points_along_lines(
-                points=inst_location, minimum_number_of_points=minimum_via_number, distance_threshold=distance_threshold
+                points=instances_location,
+                minimum_number_of_points=minimum_via_number,
+                distance_threshold=distance_threshold,
             )
             for line in line_indexes:
                 [_instances_to_delete.append(pdstk_series[ind]) for ind in line]
@@ -1622,7 +1627,6 @@ class EdbPadstacks(object):
                 )
                 polygon_data = trace.polygon_data
                 trace.delete()
-
                 new_padstack_def = generate_unique_name(padstack_def)
                 if not self.create(
                     padstackname=new_padstack_def,
@@ -1636,3 +1640,4 @@ class EdbPadstacks(object):
                 if not self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net_name):
                     self._logger.error(f"Failed to place padstack instance {new_padstack_def}")
             [inst.delete() for inst in _instances_to_delete]
+        return True
