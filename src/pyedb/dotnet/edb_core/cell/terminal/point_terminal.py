@@ -28,6 +28,7 @@ class PointTerminal(Terminal):
 
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
+        self._pedb = pedb
 
     def create(self, name, net, location, layer, is_ref=False):
         """Create a point terminal.
@@ -65,8 +66,7 @@ class PointTerminal(Terminal):
         """Get reference terminal."""
 
         terminal = Terminal(self._pedb, self._edb_object.GetReferenceTerminal())
-        if not terminal.is_null:
-            return terminal
+        return terminal if not terminal.is_null else False
 
     @ref_terminal.setter
     def ref_terminal(self, value):

@@ -110,6 +110,8 @@ class Terminal(Connectable):
         layer = list(self._pedb.stackup.layers.values())[0]._edb_layer
         if self._edb_object.GetParameters(point_data, layer):
             return layer
+        else:
+            self._pedb.logger.warning(f"No pad parameters found for terminal {self.name}")
 
     @layer.setter
     def layer(self, value):
@@ -339,8 +341,8 @@ class Terminal(Connectable):
                     _, refTermPSI, _ = refTerm.GetParameters()
                     return EDBPadstackInstance(refTermPSI, self._pedb)
                 except AttributeError:
-                    return None
-        return None
+                    return False
+        return False
 
     @pyedb_function_handler()
     def get_edge_terminal_reference_primitive(self):  # pragma : no cover
@@ -395,7 +397,7 @@ class Terminal(Connectable):
                 rectangle_data = vias._pedb.modeler.shape_to_polygon_data(plane)
                 if rectangle_data.PointInPolygon(shape_pd):
                     return vias
-        return None
+        return False
 
     @pyedb_function_handler()
     def get_pad_edge_terminal_reference_pin(self, gnd_net_name_preference=None):
@@ -415,7 +417,7 @@ class Terminal(Connectable):
         try:
             edges = self._edb_object.GetEdges()
         except AttributeError:
-            return None
+            return False
         _, pad_edge_pstack_inst, _, _ = edges[0].GetParameters()
         return self._get_closest_pin(pad_edge_pstack_inst, pins, gnd_net_name_preference)
 
