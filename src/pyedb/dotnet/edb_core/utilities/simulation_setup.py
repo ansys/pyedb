@@ -21,6 +21,12 @@
 # SOFTWARE.
 
 
+import warnings
+
+from pyedb.dotnet.edb_core.general import (
+    convert_netdict_to_pydict,
+    convert_pydict_to_netdict,
+)
 from pyedb.dotnet.edb_core.sim_setup_data.data.mesh_operation import (
     MeshOperationLength,
     MeshOperationSkinDepth,
@@ -35,21 +41,21 @@ from pyedb.dotnet.edb_core.sim_setup_data.data.settings import (
     HfssSolverSettings,
     ViaSettings,
 )
-from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.dotnet.edb_core.sim_setup_data.io.siwave import (AdvancedSettings, DCSettings, DCAdvancedSettings)
-
-import warnings
-
-from pyedb.dotnet.edb_core.general import (
-    convert_netdict_to_pydict,
-    convert_pydict_to_netdict,
-)
 from pyedb.dotnet.edb_core.sim_setup_data.data.siw_dc_ir_settings import (
     SiwaveDCIRSettings,
 )
+from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
+from pyedb.dotnet.edb_core.sim_setup_data.io.siwave import (
+    AdvancedSettings,
+    DCAdvancedSettings,
+    DCSettings,
+)
+from pyedb.generic.general_methods import (
+    generate_unique_name,
+    is_linux,
+    pyedb_function_handler,
+)
 
-from pyedb.generic.general_methods import is_linux, pyedb_function_handler
 
 def _parse_value(v):
     """Parse value in C sharp format."""
@@ -1027,5 +1033,3 @@ class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
             terminals
         )
         return self._update_setup()
-
-

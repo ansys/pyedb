@@ -899,7 +899,3 @@ class DCAdvancedSettings(SettingsBase):
         edb_setup_info.SimulationSettings.DCAdvancedSettings.RefineVias = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
-
-
-
-
