@@ -36,7 +36,42 @@ from pyedb.dotnet.edb_core.sim_setup_data.data.settings import (
     ViaSettings,
 )
 from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
-from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.dotnet.edb_core.sim_setup_data.io.siwave import (AdvancedSettings, DCSettings, DCAdvancedSettings)
+
+import warnings
+
+from pyedb.dotnet.edb_core.general import (
+    convert_netdict_to_pydict,
+    convert_pydict_to_netdict,
+)
+from pyedb.dotnet.edb_core.sim_setup_data.data.siw_dc_ir_settings import (
+    SiwaveDCIRSettings,
+)
+
+from pyedb.generic.general_methods import is_linux, pyedb_function_handler
+
+def _parse_value(v):
+    """Parse value in C sharp format."""
+    #  duck typing parse of the value 'v'
+    if v is None or v == "":
+        pv = v
+    elif v == "true":
+        pv = True
+    elif v == "false":
+        pv = False
+    else:
+        try:
+            pv = int(v)
+        except ValueError:
+            try:
+                pv = float(v)
+            except ValueError:
+                if isinstance(v, str) and v[0] == v[-1] == "'":
+                    pv = v[1:-1]
+                else:
+                    pv = v
+    return pv
 
 
 class AdaptiveType(object):
@@ -57,9 +92,9 @@ class SimulationSetup(object):
     """
 
     @pyedb_function_handler
-    def __init__(self, pedb, edb_setup=None):
+    def __init__(self, pedb, edb_object=None):
         self._pedb = pedb
-        self._edb_object = edb_setup
+        self._edb_object = edb_object
         self._setup_type = ""
         self._setup_type_mapping = {
             "kHFSS": self._pedb.simsetupdata.HFSSSimulationSettings,
@@ -79,7 +114,6 @@ class SimulationSetup(object):
             "kNumSetupTypes": None,
         }
 
-        version = self._pedb.edbversion.split(".")
         if float(self._pedb.edbversion) >= 2024.2:
             self._setup_type_mapping.update(
                 {
@@ -669,3 +703,329 @@ class HfssSimulationSetup(SimulationSetup):
         ):  # pragma no cover
             return False
         return True
+
+
+class SiwaveSYZSimulationSetup(SimulationSetup):
+    """Manages EDB methods for SIwave simulation setup.
+
+    Parameters
+    ----------
+    pedb : :class:`pyedb.dotnet.edb.Edb`
+        Inherited AEDT object.
+    edb_setup : :class:`Ansys.Ansoft.Edb.Utility.SIWaveSimulationSetup`
+        Edb object.
+    """
+
+    def __init__(self, pedb, edb_setup=None):
+        super().__init__(pedb, edb_setup)
+        self._edb = self._pedb
+        self._setup_type = "kSIwave"
+        self._sim_setup_info = None
+
+    @pyedb_function_handler()
+    def create(self, name=None):
+        """Create a SIwave SYZ setup.
+
+        Returns
+        -------
+        :class:`SiwaveDCSimulationSetup`
+        """
+        self._name = name
+        self._create(name)
+        self.si_slider_position = 1
+
+        return self
+
+    @pyedb_function_handler
+    def get_configurations(self):
+        """Get SIwave SYZ simulation settings.
+
+        Returns
+        -------
+        dict
+            Dictionary of SIwave SYZ simulation settings.
+        """
+        return {
+            "pi_slider_position": self.pi_slider_position,
+            "si_slider_position": self.si_slider_position,
+            "use_custom_settings": self.use_si_settings,
+            "use_si_settings": self.use_si_settings,
+            "advanced_settings": self.advanced_settings.get_configurations(),
+        }
+
+    @property
+    def advanced_settings(self):
+        """SIwave advanced settings."""
+        return AdvancedSettings(self)
+
+    @property
+    def get_sim_setup_info(self):
+        """Get simulation information from the setup."""
+        if self._sim_setup_info:
+            return self._sim_setup_info
+
+        edb_setup = self._edb_object
+        edb_sim_setup_info = self._pedb.simsetupdata.SimSetupInfo[self._setup_type_mapping[self._setup_type]]()
+        edb_sim_setup_info.Name = edb_setup.GetName()
+
+        string = edb_setup.ToString().replace("\t", "").split("\r\n")
+
+        if is_linux:
+            string = string[0].split("\n")
+        keys = [i.split("=")[0] for i in string if len(i.split("=")) == 2 and "SourceTermsToGround" not in i]
+        values = [i.split("=")[1] for i in string if len(i.split("=")) == 2 and "SourceTermsToGround" not in i]
+        for val in string:
+            if "SourceTermsToGround()" in val:
+                break
+            elif "SourceTermsToGround" in val:
+                sources = {}
+                val = val.replace("SourceTermsToGround(", "").replace(")", "").split(",")
+                for v in val:
+                    source = v.split("=")
+                    sources[source[0]] = int(source[1].replace("'", ""))
+                edb_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(
+                    sources
+                )
+                break
+        for k in keys:
+            value = _parse_value(values[keys.index(k)])
+            setter = None
+            if k in dir(edb_sim_setup_info.SimulationSettings):
+                setter = edb_sim_setup_info.SimulationSettings
+            elif k in dir(edb_sim_setup_info.SimulationSettings.AdvancedSettings):
+                setter = edb_sim_setup_info.SimulationSettings.AdvancedSettings
+
+            elif k in dir(edb_sim_setup_info.SimulationSettings.DCAdvancedSettings):
+                setter = edb_sim_setup_info.SimulationSettings.DCAdvancedSettings
+            elif "DCIRSettings" in dir(edb_sim_setup_info.SimulationSettings) and k in dir(
+                edb_sim_setup_info.SimulationSettings.DCIRSettings
+            ):
+                setter = edb_sim_setup_info.SimulationSettings.DCIRSettings
+            elif k in dir(edb_sim_setup_info.SimulationSettings.DCSettings):
+                setter = edb_sim_setup_info.SimulationSettings.DCSettings
+            elif k in dir(edb_sim_setup_info.SimulationSettings.AdvancedSettings):
+                setter = edb_sim_setup_info.SimulationSettings.AdvancedSettings
+            if setter:
+                try:
+                    setter.__setattr__(k, value)
+                except TypeError:
+                    try:
+                        setter.__setattr__(k, str(value))
+                    except:
+                        pass
+
+        return edb_sim_setup_info
+
+    @pyedb_function_handler
+    def set_pi_slider(self, value):
+        """Set SIwave PI simulation accuracy level.
+        Options are:
+        - ``0``: Optimal speed
+        - ``1``:  Balanced
+        - ``2``: Optimal accuracy
+
+        .. deprecated:: 0.7.5
+           Use :property:`pi_slider_position` property instead.
+
+        """
+        warnings.warn("`set_pi_slider` is deprecated. Use `pi_slider_position` property instead.", DeprecationWarning)
+        self.pi_slider_position = value
+
+    @pyedb_function_handler
+    def set_si_slider(self, value):
+        """Set SIwave SI simulation accuracy level.
+
+        Options are:
+        - ``0``: Optimal speed;
+        - ``1``:  Balanced;
+        - ``2``: Optimal accuracy```.
+        """
+        self.use_si_settings = True
+        self.use_custom_settings = False
+        self.si_slider_position = value
+        self.advanced_settings.set_si_slider(value)
+
+    @property
+    def pi_slider_position(self):
+        """PI solider position. Values are from ``1`` to ``3``."""
+        return self.get_sim_setup_info.SimulationSettings.PISliderPos
+
+    @pi_slider_position.setter
+    def pi_slider_position(self, value):
+        edb_setup_info = self.get_sim_setup_info
+        edb_setup_info.SimulationSettings.PISliderPos = value
+        self._edb_object = self._set_edb_setup_info(edb_setup_info)
+        self._update_setup()
+
+        self.use_si_settings = False
+        self.use_custom_settings = False
+        self.advanced_settings.set_pi_slider(value)
+
+    @property
+    def si_slider_position(self):
+        """SI slider position. Values are from ``1`` to ``3``."""
+        return self.get_sim_setup_info.SimulationSettings.SISliderPos
+
+    @si_slider_position.setter
+    def si_slider_position(self, value):
+        edb_setup_info = self.get_sim_setup_info
+        edb_setup_info.SimulationSettings.SISliderPos = value
+        self._edb_object = self._set_edb_setup_info(edb_setup_info)
+        self._update_setup()
+
+        self.use_si_settings = True
+        self.use_custom_settings = False
+        self.advanced_settings.set_si_slider(value)
+
+    @property
+    def use_custom_settings(self):
+        """Custom settings to use.
+
+        Returns
+        -------
+        bool
+        """
+        return self.get_sim_setup_info.SimulationSettings.UseCustomSettings
+
+    @use_custom_settings.setter
+    def use_custom_settings(self, value):
+        edb_setup_info = self.get_sim_setup_info
+        edb_setup_info.SimulationSettings.UseCustomSettings = value
+        self._edb_object = self._set_edb_setup_info(edb_setup_info)
+        self._update_setup()
+
+    @property
+    def use_si_settings(self):
+        """Whether to use SI Settings.
+
+        Returns
+        -------
+        bool
+        """
+        return self.get_sim_setup_info.SimulationSettings.UseSISettings
+
+    @use_si_settings.setter
+    def use_si_settings(self, value):
+        edb_setup_info = self.get_sim_setup_info
+        edb_setup_info.SimulationSettings.UseSISettings = value
+        self._edb_object = self._set_edb_setup_info(edb_setup_info)
+        self._update_setup()
+
+
+class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
+    """Manages EDB methods for SIwave DC simulation setup.
+
+    Parameters
+    ----------
+    pedb : :class:`pyedb.dotnet.edb.Edb`
+        Inherited AEDT object.
+    edb_setup : Ansys.Ansoft.Edb.Utility.SIWDCIRSimulationSettings
+        EDB object. The default is ``None``.
+    """
+
+    def __init__(self, pedb, edb_object=None):
+        super().__init__(pedb, edb_object)
+        self._setup_type = "kSIwaveDCIR"
+        self._edb = pedb
+        self._mesh_operations = {}
+
+    def create(self, name=None):
+        """Create a SIwave DCIR setup.
+
+        Returns
+        -------
+        :class:`SiwaveDCSimulationSetup`
+        """
+        self._name = name
+        self._create(name)
+        self.set_dc_slider(1)
+        return self
+
+    @property
+    def dc_ir_settings(self):
+        """DC IR settings."""
+        return SiwaveDCIRSettings(self)
+
+    @pyedb_function_handler
+    def get_configurations(self):
+        """Get SIwave DC simulation settings.
+
+        Returns
+        -------
+        dict
+            Dictionary of SIwave DC simulation settings.
+        """
+        return {
+            "dc_settings": self.dc_settings.get_configurations(),
+            "dc_advanced_settings": self.dc_advanced_settings.get_configurations(),
+        }
+
+    @pyedb_function_handler
+    def set_dc_slider(self, value):
+        """Set DC simulation accuracy level.
+
+        Options are:
+
+        - ``0``: Optimal speed
+        - ``1``: Balanced
+        - ``2``: Optimal accuracy
+        """
+        self.use_custom_settings = False
+        self.dc_settings.dc_slider_position = value
+        self.dc_advanced_settings.set_dc_slider(value)
+
+    @property
+    def dc_settings(self):
+        """SIwave DC setting."""
+        return DCSettings(self)
+
+    @property
+    def dc_advanced_settings(self):
+        """Siwave DC advanced settings.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
+        """
+        return DCAdvancedSettings(self)
+
+    @property
+    def source_terms_to_ground(self):
+        """Dictionary of grounded terminals.
+
+        Returns
+        -------
+        Dictionary
+            {str, int}, keys is source name, value int 0 unspecified, 1 negative node, 2 positive one.
+
+        """
+        return convert_netdict_to_pydict(self.get_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround)
+
+    @pyedb_function_handler()
+    def add_source_terminal_to_ground(self, source_name, terminal=0):
+        """Add a source terminal to ground.
+
+        Parameters
+        ----------
+        source_name : str,
+            Source name.
+        terminal : int, optional
+            Terminal to assign. Options are:
+
+             - 0=Unspecified
+             - 1=Negative node
+             - 2=Positive none
+
+        Returns
+        -------
+        bool
+
+        """
+        terminals = self.source_terms_to_ground
+        terminals[source_name] = terminal
+        self.get_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(
+            terminals
+        )
+        return self._update_setup()
+
+

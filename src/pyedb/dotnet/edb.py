@@ -66,7 +66,7 @@ from pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data import (
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
-from pyedb.dotnet.edb_core.edb_data.siwave_simulation_setup_data import (
+from pyedb.dotnet.edb_core.utilities.simulation_setup import (
     SiwaveDCSimulationSetup,
     SiwaveSYZSimulationSetup,
 )
