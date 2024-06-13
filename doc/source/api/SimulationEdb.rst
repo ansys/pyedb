@@ -20,25 +20,23 @@ These classes are the containers of ``setup`` classes in EDB for both HFSS and S
 
 
 
-.. currentmodule:: pyedb.dotnet.edb_core.edb_data
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.simulation_setup
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
 
-   hfss_simulation_setup_data.HfssSimulationSetup
-   hfss_simulation_setup_data.EdbFrequencySweep
-   hfss_simulation_setup_data.DcrSettings
-   hfss_simulation_setup_data.CurveApproxSettings
-   hfss_simulation_setup_data.AdvancedMeshSettings
-   hfss_simulation_setup_data.ViaSettings
-   hfss_simulation_setup_data.DefeatureSettings
-   hfss_simulation_setup_data.AdaptiveSettings
-   hfss_simulation_setup_data.AdaptiveFrequencyData
-   hfss_simulation_setup_data.HfssSolverSettings
-   hfss_simulation_setup_data.HfssPortSettings
-   hfss_simulation_setup_data.MeshOperationLength
-   hfss_simulation_setup_data.MeshOperationSkinDepth
-   siwave_simulation_setup_data.SiwaveSYZSimulationSetup
-   siwave_simulation_setup_data.SiwaveDCSimulationSetup
+   simulation_setup.HfssSimulationSetup
+   simulation_setup.EdbFrequencySweep
+   simulation_setup.DcrSettings
+   simulation_setup.CurveApproxSettings
+   simulation_setup.AdvancedMeshSettings
+   simulation_setup.ViaSettings
+   simulation_setup.DefeatureSettings
+   simulation_setup.AdaptiveSettings
+   simulation_setup.AdaptiveFrequencyData
+   simulation_setup.HfssSolverSettings
+   simulation_setup.HfssPortSettings
+   simulation_setup.MeshOperationLength
+   simulation_setup.MeshOperationSkinDepth
