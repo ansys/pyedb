@@ -84,7 +84,7 @@ class EDBComponentDef(ObjBase):
         -------
         dict of :class:`EDBComponent`
         """
-        from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
+        from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 
         comp_list = [
             EDBComponent(self._pedb, l)
