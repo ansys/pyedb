@@ -126,7 +126,7 @@ class Connectable(LayoutObj):
         -------
         :class:`dotnet.edb_core.edb_data.nets_data.EDBComponent`
         """
-        from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
+        from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 
         edb_comp = self._edb_object.GetComponent()
         if edb_comp.IsNull():
