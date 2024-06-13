@@ -160,7 +160,7 @@ class RaptorXGeneralSettings(object):
         mesh will be. User can override the default meshing frequency as defined by Max Frequency using the Advanced
         settings > MeshFrequency. Example: "10GHz".
         """
-        self._general_settings.MaxFrequency = EdbValue(value).tostring
+        self._general_settings.MaxFrequency = self._pedb.edb_value(value).ToString()
 
 
 class RaptorXSimulationAdvancedSettings(object):
@@ -205,7 +205,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @edge_mesh.setter
     def edge_mesh(self, value):
-        self._advanced_settings.EdgeMesh = EdbValue(value).tostring
+        self._advanced_settings.EdgeMesh = self._pedb.edb_value(value).ToString()
 
     @property
     def eliminate_slit_per_hole(self):
@@ -229,7 +229,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @mesh_frequency.setter
     def mesh_frequency(self, value):
-        self._advanced_settings.MeshFrequency = EdbValue(value).tostring
+        self._advanced_settings.MeshFrequency = self._pedb.edb_value(value).ToString()
 
     @property
     def net_settings_options(self):
