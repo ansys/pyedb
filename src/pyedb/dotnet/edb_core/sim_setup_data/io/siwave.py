@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.generic.general_methods import is_linux, pyedb_function_handler
+from pyedb.generic.general_methods import pyedb_function_handler
 
 
 def _parse_value(v):

@@ -27,16 +27,16 @@ These classes are the containers of ``setup`` classes in EDB for both HFSS and S
    :nosignatures:
 
 
-   simulation_setup.HfssSimulationSetup
-   simulation_setup.EdbFrequencySweep
-   simulation_setup.DcrSettings
-   simulation_setup.CurveApproxSettings
-   simulation_setup.AdvancedMeshSettings
-   simulation_setup.ViaSettings
-   simulation_setup.DefeatureSettings
-   simulation_setup.AdaptiveSettings
-   simulation_setup.AdaptiveFrequencyData
-   simulation_setup.HfssSolverSettings
-   simulation_setup.HfssPortSettings
-   simulation_setup.MeshOperationLength
-   simulation_setup.MeshOperationSkinDepth
+   HfssSimulationSetup
+   EdbFrequencySweep
+   DcrSettings
+   CurveApproxSettings
+   AdvancedMeshSettings
+   ViaSettings
+   DefeatureSettings
+   AdaptiveSettings
+   AdaptiveFrequencyData
+   HfssSolverSettings
+   HfssPortSettings
+   MeshOperationLength
+   MeshOperationSkinDepth
