@@ -40,6 +40,14 @@ import warnings
 from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
 from pyedb.dotnet.edb_core.cell.layout import Layout
+from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
+from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
+from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
+    PadstackInstanceTerminal,
+)
+from pyedb.dotnet.edb_core.cell.terminal.pingroup_terminal import PinGroupTerminal
+from pyedb.dotnet.edb_core.cell.terminal.point_terminal import PointTerminal
+from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
 from pyedb.dotnet.edb_core.components import Components
 from pyedb.dotnet.edb_core.dotnet.database import Database
 from pyedb.dotnet.edb_core.dotnet.layout import LayoutDotNet
@@ -67,7 +75,6 @@ from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
 from pyedb.dotnet.edb_core.edb_data.sources import SourceType
-from pyedb.dotnet.edb_core.edb_data.terminals import Terminal
 from pyedb.dotnet.edb_core.edb_data.variables import Variable
 from pyedb.dotnet.edb_core.general import (
     LayoutObjType,
@@ -436,12 +443,18 @@ class Edb(Database):
         """
 
         temp = {}
-        terminal_mapping = Terminal(self)._terminal_mapping
         for i in self.layout.terminals:
             terminal_type = i.ToString().split(".")[-1]
-            ter = terminal_mapping[terminal_type](self, i)
-            temp[ter.name] = ter
-
+            if terminal_type == "PinGroupTerminal":
+                temp[i.GetName()] = PinGroupTerminal(self, i)
+            elif terminal_type == "PadstackInstanceTerminal":
+                temp[i.GetName()] = PadstackInstanceTerminal(self, i)
+            elif terminal_type == "EdgeTerminal":
+                temp[i.GetName()] = EdgeTerminal(self, i)
+            elif terminal_type == "BundleTerminal":
+                temp[i.GetName()] = BundleTerminal(self, i)
+            elif terminal_type == "PointTerminal":
+                temp[i.GetName()] = PointTerminal(self, i)
         return temp
 
     @property
@@ -4133,7 +4146,7 @@ class Edb(Database):
         -------
         :class:`legacy.edb_core.edb_data.terminals.PointTerminal`
         """
-        from pyedb.dotnet.edb_core.edb_data.terminals import PointTerminal
+        from pyedb.dotnet.edb_core.cell.terminal.point_terminal import PointTerminal
 
         point_terminal = PointTerminal(self)
         return point_terminal.create(name, net_name, location, layer)

@@ -97,9 +97,6 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        # assert len(edbapp.setups["hfss_setup_1"].frequency_sweeps["sweep1"].frequencies) == 16
-        # assert len(edbapp.setups["hfss_setup_1"].frequency_sweeps["sweep2"].frequencies) == 20
-        # assert len(edbapp.setups["hfss_setup_1"].frequency_sweeps["sweep3"].frequencies) == 11
         edbapp.close()
 
     def test_02_pin_groups(self, edb_examples):

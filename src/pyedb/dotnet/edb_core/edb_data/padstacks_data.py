@@ -1187,7 +1187,7 @@ class EDBPadstackInstance(Primitive):
         if create_new_terminal:
             term = self._create_terminal(name)
         else:
-            from pyedb.dotnet.edb_core.edb_data.terminals import (
+            from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
                 PadstackInstanceTerminal,
             )
 
@@ -1198,7 +1198,9 @@ class EDBPadstackInstance(Primitive):
     @property
     def terminal(self):
         """Terminal."""
-        from pyedb.dotnet.edb_core.edb_data.terminals import PadstackInstanceTerminal
+        from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
+            PadstackInstanceTerminal,
+        )
 
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term if not term.is_null else None
@@ -1212,7 +1214,9 @@ class EDBPadstackInstance(Primitive):
     @pyedb_function_handler
     def create_terminal(self, name=None):
         """Create a padstack instance terminal"""
-        from pyedb.dotnet.edb_core.edb_data.terminals import PadstackInstanceTerminal
+        from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
+            PadstackInstanceTerminal,
+        )
 
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term.create(self, name)
@@ -1239,9 +1243,9 @@ class EDBPadstackInstance(Primitive):
         is_circuit_port : bool, optional
             Whether it is a circuit port.
         """
-        terminal = self._create_terminal(name)
+        terminal = self.create_terminal(name)
         if reference:
-            ref_terminal = reference._create_terminal(terminal.name + "_ref")
+            ref_terminal = reference.create_terminal(terminal.name + "_ref")
             if reference._edb_object.ToString() == "PinGroup":
                 is_circuit_port = True
         else:
@@ -1637,7 +1641,7 @@ class EDBPadstackInstance(Primitive):
     @property
     def component(self):
         """Component."""
-        from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
+        from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 
         comp = EDBComponent(self._pedb, self._edb_object.GetComponent())
         return comp if not comp.is_null else False

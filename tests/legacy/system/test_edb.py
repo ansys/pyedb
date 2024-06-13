@@ -75,8 +75,9 @@ class TestClass:
         # TODO: Moves this piece of code in another place
         assert "test" in self.edbapp.terminals
         assert self.edbapp.siwave.create_pin_group_on_net("U1", "1V0", "PG_V1P0_S0")
+        assert self.edbapp.siwave.create_pin_group_on_net("U1", "GND", "U1_GND")
         assert self.edbapp.siwave.create_circuit_port_on_pin_group(
-            "PG_V1P0_S0", "PinGroup_2", impedance=50, name="test_port"
+            "PG_V1P0_S0", "U1_GND", impedance=50, name="test_port"
         )
         self.edbapp.excitations["test_port"].name = "test_rename"
         assert any(port for port in list(self.edbapp.excitations) if port == "test_rename")
@@ -95,9 +96,10 @@ class TestClass:
         list(self.edbapp.sources.values())[0].phase = 1
         assert list(self.edbapp.sources.values())[0].phase == 1
         u6 = self.edbapp.components["U6"]
-        self.edbapp.create_voltage_source(
+        voltage_source = self.edbapp.create_voltage_source(
             u6.pins["F2"].get_terminal(create_new_terminal=True), u6.pins["F1"].get_terminal(create_new_terminal=True)
         )
+        assert not voltage_source.is_null
 
     def test_siwave_create_current_source(self):
         """Create a current source."""
@@ -114,13 +116,16 @@ class TestClass:
         self.edbapp.siwave.create_pin_group(
             reference_designator="U1", pin_numbers=["R23", "P23"], group_name="sink_pos"
         )
+        self.edbapp.siwave.create_pin_group_on_net(reference_designator="U1", net_name="GND", group_name="gnd2")
 
         # TODO: Moves this piece of code in another place
-        assert self.edbapp.siwave.create_voltage_source_on_pin_group("sink_pos", "gnd", name="vrm_voltage_source")
+        assert self.edbapp.siwave.create_voltage_source_on_pin_group("sink_pos", "gnd2", name="vrm_voltage_source")
         self.edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["A27", "A28"], group_name="vp_pos")
+        assert self.edbapp.siwave.create_pin_group_on_net(
+            reference_designator="U1", net_name="GND", group_name="vp_neg"
+        )
         assert self.edbapp.siwave.pin_groups["vp_pos"]
         assert self.edbapp.siwave.pin_groups["vp_pos"].pins
-        self.edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["R23", "P23"], group_name="vp_neg")
         assert self.edbapp.siwave.create_voltage_probe_on_pin_group("vprobe", "vp_pos", "vp_neg")
         assert self.edbapp.probes["vprobe"]
         self.edbapp.siwave.place_voltage_probe(
@@ -1031,14 +1036,18 @@ class TestClass:
     def test_hfss_simulation_setup_b(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         setup1 = edbapp.create_hfss_setup("setup1")
-        """sweep1 = setup1.add_frequency_sweep(name="sweep1",
-                                   frequency_sweep=[
-                                   ["linear count", "1MHz", "10MHz", 10],
-                                   ])
-        sweep2 = setup1.add_frequency_sweep(name="sweep2",
-                                            frequency_sweep=[
-                                                ["log scale", "1kHz", "100kHz", 10],
-                                            ])"""
+        sweep1 = setup1.add_frequency_sweep(
+            name="sweep1",
+            frequency_sweep=[
+                ["linear count", "1MHz", "10MHz", 10],
+            ],
+        )
+        sweep2 = setup1.add_frequency_sweep(
+            name="sweep2",
+            frequency_sweep=[
+                ["log scale", "1kHz", "100kHz", 10],
+            ],
+        )
         sweep3 = setup1.add_frequency_sweep(
             name="sweep3",
             frequency_sweep=[
@@ -1197,7 +1206,7 @@ class TestClass:
         _, pin_group = edbapp.siwave.create_pin_group_on_net(
             reference_designator="U7", net_name="GND", group_name="U7_GND"
         )
-        U7.pins["F7"].create_port(reference=pin_group)
+        U7.pins["F7"].create_port(name="test", reference=pin_group)
         padstack_instance_terminals = [
             term for term in list(edbapp.terminals.values()) if "PadstackInstanceTerminal" in str(term.type)
         ]
@@ -1212,6 +1221,7 @@ class TestClass:
             name="test",
         )
         assert edbapp.ports["test"]
+        edbapp.ports["test"].is_circuit_port = True
         assert edbapp.ports["test"].is_circuit_port == True
         edbapp.close()
 

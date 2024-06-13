@@ -20,12 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.edb_data.terminals import (
-    BundleTerminal,
-    EdgeTerminal,
+from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
+from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
+from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
-    Terminal,
 )
+from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
 
 
 class GapPort(EdgeTerminal):
