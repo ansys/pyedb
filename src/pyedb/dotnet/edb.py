@@ -60,9 +60,6 @@ from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.edb_data.hfss_pi_simulation_setup_data import (
     HFSSPISimulationSetup,
 )
-from pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data import (
-    HfssSimulationSetup,
-)
 from pyedb.dotnet.edb_core.edb_data.ports import (
     BundleWavePort,
     CircuitPort,
@@ -76,10 +73,6 @@ from pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data import (
 )
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
-)
-from pyedb.dotnet.edb_core.edb_data.siwave_simulation_setup_data import (
-    SiwaveDCSimulationSetup,
-    SiwaveSYZSimulationSetup,
 )
 from pyedb.dotnet.edb_core.edb_data.sources import SourceType
 from pyedb.dotnet.edb_core.edb_data.variables import Variable
@@ -100,6 +93,11 @@ from pyedb.dotnet.edb_core.nets import EdbNets
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 from pyedb.dotnet.edb_core.siwave import EdbSiwave
 from pyedb.dotnet.edb_core.stackup import Stackup
+from pyedb.dotnet.edb_core.utilities.simulation_setup import (
+    HfssSimulationSetup,
+    SiwaveDCSimulationSetup,
+    SiwaveSYZSimulationSetup,
+)
 from pyedb.generic.constants import AEDT_UNITS, SolverType
 from pyedb.generic.general_methods import (
     generate_unique_name,

@@ -1033,6 +1033,29 @@ class TestClass:
         assert mop.number_of_layer_elements == "3"
         edbapp.close()
 
+    def test_hfss_simulation_setup_b(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        setup1 = edbapp.create_hfss_setup("setup1")
+        sweep1 = setup1.add_frequency_sweep(
+            name="sweep1",
+            frequency_sweep=[
+                ["linear count", "1MHz", "10MHz", 10],
+            ],
+        )
+        sweep2 = setup1.add_frequency_sweep(
+            name="sweep2",
+            frequency_sweep=[
+                ["log scale", "1kHz", "100kHz", 10],
+            ],
+        )
+        sweep3 = setup1.add_frequency_sweep(
+            name="sweep3",
+            frequency_sweep=[
+                ["linear scale", "20MHz", "30MHz", "1MHz"],
+            ],
+        )
+        edbapp.close()
+
     def test_siwave_dc_simulation_setup(self):
         """Create a dc simulation setup and evaluate its properties."""
         setup1 = self.edbapp.create_siwave_dc_setup("DC1")
