@@ -38,7 +38,7 @@ class Definitions:
         """Package definitions."""
         return {l.GetName(): PackageDef(self._pedb, l) for l in list(self._pedb.active_db.PackageDefs)}
 
-    def add_package_def(self, name, component_part_name=None):
+    def add_package_def(self, name, component_part_name=None, boundary_points=None):
         """Add a package definition.
 
         Parameters
@@ -47,10 +47,14 @@ class Definitions:
             Name of the package definition.
         component_part_name : str, optional
             Part name of the component.
+        boundary_points : list, optional
+            Boundary points which define the shape of the package.
 
         Returns
         -------
 
         """
-        package_def = PackageDef(self._pedb, name=name, component_part_name=component_part_name)
+        package_def = PackageDef(
+            self._pedb, name=name, component_part_name=component_part_name, extent_bounding_box=boundary_points
+        )
         return package_def
