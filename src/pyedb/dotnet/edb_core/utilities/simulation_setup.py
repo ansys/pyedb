@@ -50,10 +50,7 @@ from pyedb.dotnet.edb_core.sim_setup_data.io.siwave import (
     DCAdvancedSettings,
     DCSettings,
 )
-from pyedb.generic.general_methods import (
-    generate_unique_name,
-    is_linux,
-)
+from pyedb.generic.general_methods import generate_unique_name, is_linux
 
 
 def _parse_value(v):
