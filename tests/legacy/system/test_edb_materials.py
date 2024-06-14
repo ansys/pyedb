@@ -57,6 +57,7 @@ INT_VALUE = 12
 STR_VALUE = "12"
 VALUES = (FLOAT_VALUE, INT_VALUE, STR_VALUE)
 MATERIAL_NAME = "DummyMaterial"
+OTHER_MATERIAL_NAME = "OtherDummyMaterial"
 
 
 class TestClass:
@@ -172,8 +173,8 @@ class TestClass:
         material = materials.add_material(MATERIAL_NAME, permittivity=12)
         assert material
         material.name == materials[MATERIAL_NAME].name
-        material = materials.add_material(MATERIAL_NAME, permittivity=12)
-        assert not material
+        with pytest.raises(ValueError):
+            materials.add_material(MATERIAL_NAME, permittivity=12)
 
     def test_materials_add_conductor_material(self):
         """Evalue add conductor material."""
@@ -182,8 +183,8 @@ class TestClass:
         material = materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
         assert material
         _ = materials[MATERIAL_NAME]
-        material = materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
-        assert not material
+        with pytest.raises(ValueError):
+            materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
 
     def test_materials_add_dielectric_material(self):
         """Evalue add dielectric material."""
@@ -192,8 +193,8 @@ class TestClass:
         material = materials.add_dielectric_material(MATERIAL_NAME, 12, 12, conductivity=12)
         assert material
         _ = materials[MATERIAL_NAME]
-        material = materials.add_dielectric_material(MATERIAL_NAME, 12, conductivity=12)
-        assert not material
+        with pytest.raises(ValueError):
+            materials.add_dielectric_material(MATERIAL_NAME, 12, conductivity=12)
 
     def test_materials_add_djordjevicsarkar_dielectric(self):
         """Evalue add djordjevicsarkar dielectric material."""
@@ -204,10 +205,10 @@ class TestClass:
         )
         assert material
         _ = materials[MATERIAL_NAME]
-        material = materials.add_djordjevicsarkar_dielectric(
-            MATERIAL_NAME, 4.3, 0.02, 9, dc_conductivity=1e-12, dc_permittivity=5, conductivity=0
-        )
-        assert not material
+        with pytest.raises(ValueError):
+            materials.add_djordjevicsarkar_dielectric(
+                MATERIAL_NAME, 4.3, 0.02, 9, dc_conductivity=1e-12, dc_permittivity=5, conductivity=0
+            )
 
     def test_materials_add_debye_material(self):
         """Evalue add debye material material."""
@@ -216,8 +217,8 @@ class TestClass:
         material = materials.add_debye_material(MATERIAL_NAME, 6, 4, 0.02, 0.05, 1e9, 10e9, conductivity=0)
         assert material
         _ = materials[MATERIAL_NAME]
-        material = materials.add_debye_material(MATERIAL_NAME, 6, 4, 0.02, 0.05, 1e9, 10e9, conductivity=0)
-        assert not material
+        with pytest.raises(ValueError):
+            materials.add_debye_material(MATERIAL_NAME, 6, 4, 0.02, 0.05, 1e9, 10e9, conductivity=0)
 
     def test_materials_add_multipole_debye_material(self):
         """Evalue add multipole debye material."""
@@ -231,10 +232,10 @@ class TestClass:
         )
         assert material
         _ = materials[MATERIAL_NAME]
-        material = materials.add_multipole_debye_material(
-            MATERIAL_NAME, frequencies, relative_permitivities, loss_tangents, conductivity=0
-        )
-        assert not material
+        with pytest.raises(ValueError):
+            materials.add_multipole_debye_material(
+                MATERIAL_NAME, frequencies, relative_permitivities, loss_tangents, conductivity=0
+            )
 
     def test_materials_duplicate(self):
         """Evalue duplicate material."""
@@ -243,11 +244,11 @@ class TestClass:
         material = materials.add_material(MATERIAL_NAME, **kwargs)
         other_name = "OtherMaterial"
 
-        new_material = materials.duplicate(MATERIAL_NAME, other_name)
+        new_material = materials.duplicate(OTHER_MATERIAL_NAME, other_name)
         for mat_attribute in PROPERTIES:
             assert getattr(material, mat_attribute) == getattr(new_material, mat_attribute)
-        material = materials.duplicate(MATERIAL_NAME, other_name)
-        assert not material
+        with pytest.raises(ValueError):
+            materials.duplicate(OTHER_MATERIAL_NAME, other_name)
 
     def test_materials_delete_material(self):
         """Evaluate delete material."""
@@ -256,7 +257,8 @@ class TestClass:
         _ = materials.add_material(MATERIAL_NAME)
         materials.delete_material(MATERIAL_NAME)
         assert MATERIAL_NAME not in materials
-        assert not materials.delete_material(MATERIAL_NAME)
+        with pytest.raises(ValueError):
+            materials.delete_material(MATERIAL_NAME)
 
     def test_materials_material_property_to_id(self):
         """Evaluate materials map between material property and id."""
