@@ -1595,7 +1595,7 @@ class EdbPadstacks(object):
 
     def merge_via_along_lines(self, net_name="GND", distance_threshold=5e-3, minimum_via_number=6):
         """Replace padstack instances along lines into a single polygon.
-        
+
         Detect all padstack instances that are placed along lines and replace them by a single polygon based one
         forming a wall shape. This method is designed to simplify meshing on via fence usually added to shield RF traces
         on PCB.
