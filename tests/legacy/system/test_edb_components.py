@@ -540,9 +540,10 @@ class TestClass:
         assert edbapp.components.instances["Test"].center == [0.06800000116, 0.01649999875]
         edbapp.close_edb()
 
+    @pytest.mark.current
     def test_create_package_def(self):
         """Check the creation of package definition."""
-        assert self.edbapp.components["C200"].create_package_def(extent_bounding_box=[[0, 0], ["2mm", "2mm"]])
+        assert self.edbapp.components["C200"].create_package_def(component_part_name="SMTC-MECT-110-01-M-D-RA1_V")
         assert not self.edbapp.components["C200"].create_package_def()
         assert self.edbapp.components["C200"].package_def.name == "C200_CAPC3216X180X55ML20T25"
 
