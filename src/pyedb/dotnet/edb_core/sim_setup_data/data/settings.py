@@ -23,7 +23,6 @@
 from pyedb.dotnet.edb_core.sim_setup_data.data.adaptive_frequency_data import (
     AdaptiveFrequencyData,
 )
-from pyedb.generic.data_handlers import pyedb_function_handler
 
 
 class AdaptiveSettings(object):
@@ -216,7 +215,6 @@ class AdaptiveSettings(object):
         self.adaptive_settings.UseMaxRefinement = value
         self._parent._update_setup()
 
-    @pyedb_function_handler()
     def add_adaptive_frequency_data(self, frequency=0, max_num_passes=10, max_delta_s=0.02):
         """Add a setup for frequency data.
 
@@ -242,7 +240,6 @@ class AdaptiveSettings(object):
         self.adaptive_settings.AdaptiveFrequencyDataList.Add(low_freq_adapt_data)
         return self._parent._update_setup()
 
-    @pyedb_function_handler()
     def add_broadband_adaptive_frequency_data(
         self, low_frequency=0, high_frequency=10e9, max_num_passes=10, max_delta_s=0.02
     ):

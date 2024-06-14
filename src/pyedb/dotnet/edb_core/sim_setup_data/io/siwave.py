@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.generic.general_methods import pyedb_function_handler
-
 
 def _parse_value(v):
     """Parse value in C sharp format."""
@@ -57,7 +55,6 @@ class SettingsBase(object):
         """EDB internal simulation setup object."""
         return self._parent.get_sim_setup_info
 
-    @pyedb_function_handler
     def get_configurations(self):
         """Get all attributes.
 
@@ -86,7 +83,6 @@ class SettingsBase(object):
             temp[i] = self.__getattribute__(i)
         return temp
 
-    @pyedb_function_handler
     def restore_default(self):
         for k, val in self.defaults.items():
             self.__setattr__(k, val)
@@ -134,12 +130,10 @@ class AdvancedSettings(SettingsBase):
             "max_coupled_lines": [12, 12, 40],
         }
 
-    @pyedb_function_handler
     def set_si_slider(self, value):
         for k, val in self.si_defaults.items():
             self.__setattr__(k, val[value])
 
-    @pyedb_function_handler
     def set_pi_slider(self, value):
         for k, val in self.pi_defaults.items():
             self.__setattr__(k, val[value])
@@ -646,7 +640,6 @@ class DCAdvancedSettings(SettingsBase):
             "refine_vias": [False, False, True],
         }
 
-    @pyedb_function_handler
     def set_dc_slider(self, value):
         for k, val in self.dc_defaults.items():
             self.__setattr__(k, val[value])
