@@ -22,15 +22,13 @@
 
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
-from pyedb.dotnet.edb_core.utilities.simulation_setup import (
-    BaseSimulationSetup,
-    EdbFrequencySweep,
-)
+from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
+from pyedb.dotnet.edb_core.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.data_handlers import pyedb_function_handler
 from pyedb.generic.general_methods import generate_unique_name
 
 
-class RaptorXSimulationSetup(BaseSimulationSetup):
+class RaptorXSimulationSetup(SimulationSetup):
     """Manages EDB methods for RaptorX simulation setup."""
 
     def __init__(self, pedb, edb_object=None):
@@ -87,7 +85,7 @@ class RaptorXSimulationSetup(BaseSimulationSetup):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.EdbFrequencySweep`
+        :class:`pyedb.dotnet.edb_core.edb_data.simulation_setup.EdbFrequencySweep`
 
         Examples
         --------
@@ -102,7 +100,7 @@ class RaptorXSimulationSetup(BaseSimulationSetup):
             return False
         if not name:
             name = generate_unique_name("sweep")
-        return EdbFrequencySweep(self, frequency_sweep, name)
+        return SweepData(self, frequency_sweep, name)
 
 
 class RaptorXSimulationSettings(object):
@@ -160,7 +158,7 @@ class RaptorXGeneralSettings(object):
         mesh will be. User can override the default meshing frequency as defined by Max Frequency using the Advanced
         settings > MeshFrequency. Example: "10GHz".
         """
-        self._general_settings.MaxFrequency = EdbValue(value).tostring
+        self._general_settings.MaxFrequency = self._pedb.edb_value(value).ToString()
 
 
 class RaptorXSimulationAdvancedSettings(object):
@@ -205,7 +203,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @edge_mesh.setter
     def edge_mesh(self, value):
-        self._advanced_settings.EdgeMesh = EdbValue(value).tostring
+        self._advanced_settings.EdgeMesh = self._pedb.edb_value(value).ToString()
 
     @property
     def eliminate_slit_per_hole(self):
@@ -229,7 +227,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @mesh_frequency.setter
     def mesh_frequency(self, value):
-        self._advanced_settings.MeshFrequency = EdbValue(value).tostring
+        self._advanced_settings.MeshFrequency = self._pedb.edb_value(value).ToString()
 
     @property
     def net_settings_options(self):
