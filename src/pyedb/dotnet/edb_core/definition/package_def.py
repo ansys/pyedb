@@ -72,8 +72,10 @@ class PackageDef(ObjBase):
         else:
             bbox = extent_bounding_box
         if bbox is None:
-            pyedb_logger.warning("Package creation uses bounding box but it cannot be inferred. " \
-                                 "Please set argument 'component_part_name' or 'extent_bounding_box'.")
+            pyedb_logger.warning(
+                "Package creation uses bounding box but it cannot be inferred. "
+                "Please set argument 'component_part_name' or 'extent_bounding_box'."
+            )
         polygon_data = PolygonData(self._pedb, create_from_bounding_box=True, points=bbox)
 
         edb_object.SetExteriorBoundary(polygon_data._edb_object)
