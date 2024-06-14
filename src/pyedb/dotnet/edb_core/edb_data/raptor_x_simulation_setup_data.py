@@ -148,7 +148,7 @@ class RaptorXGeneralSettings(object):
 
     @global_temperature.setter
     def global_temperature(self, value):
-        self._general_settings.GlobalTemperature = EdbValue(value).tofloat
+        self._general_settings.GlobalTemperature = self._pedb.edb_value(value).ToDouble()
 
     @property
     def max_frequency(self):
@@ -176,7 +176,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @auto_removal_sliver_poly.setter
     def auto_removal_sliver_poly(self, value):
-        self._advanced_settings.AutoRemovalSliverPoly = EdbValue(value).tofloat
+        self._advanced_settings.AutoRemovalSliverPoly = self._pedb.edb_value(value).ToDouble()
 
     @property
     def cell_per_wave_length(self):
@@ -218,7 +218,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @eliminate_slit_per_hole.setter
     def eliminate_slit_per_hole(self, value):
-        self._advanced_settings.EliminateSlitPerHoles = EdbValue(value).tofloat
+        self._advanced_settings.EliminateSlitPerHoles = self._pedb.edb_value(value).ToDouble()
 
     @property
     def mesh_frequency(self):
@@ -255,7 +255,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @override_shrink_fac.setter
     def override_shrink_fac(self, value):
-        self._advanced_settings.OverrideShrinkFac = EdbValue(value).tofloat
+        self._advanced_settings.OverrideShrinkFac = self._pedb.edb_value(value).ToDouble()
 
     @property
     def plane_projection_factor(self):
@@ -268,7 +268,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @plane_projection_factor.setter
     def plane_projection_factor(self, value):
-        self._advanced_settings.PlaneProjectionFactor = EdbValue(value).tofloat
+        self._advanced_settings.PlaneProjectionFactor = self._pedb.edb_value(value).ToDouble()
 
     @property
     def use_accelerate_via_extraction(self):
