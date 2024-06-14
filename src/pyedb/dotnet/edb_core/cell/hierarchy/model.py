@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class Model(ObjBase):
@@ -48,7 +47,6 @@ class PinPairModel(Model):
         """List of pin pair definitions."""
         return list(self._edb_object.PinPairs)
 
-    @pyedb_function_handler
     def delete_pin_pair_rlc(self, pin_pair):
         """Delete a pin pair definition.
 
@@ -62,7 +60,6 @@ class PinPairModel(Model):
         """
         return self._edb_object.DeletePinPairRlc(pin_pair)
 
-    @pyedb_function_handler
     def _set_pin_pair_rlc(self, pin_pair, pin_par_rlc):
         """Set resistance, inductance, capacitance to a pin pair definition.
 

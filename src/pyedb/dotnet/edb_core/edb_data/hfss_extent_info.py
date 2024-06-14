@@ -23,7 +23,6 @@
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
 from pyedb.dotnet.edb_core.general import convert_pytuple_to_nettuple
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class HfssExtentInfo:
@@ -49,12 +48,10 @@ class HfssExtentInfo:
             "pml": self._pedb.edb_api.utility.utility.OpenRegionType.PML,
         }
 
-    @pyedb_function_handler()
     def _get_edb_value(self, value):
         """Get EDB value."""
         return self._pedb.edb_value(value)
 
-    @pyedb_function_handler()
     def _update_hfss_extent_info(self, hfss_extent_info):
         return self._pedb.active_cell.SetHFSSExtentInfo(hfss_extent_info)
 
@@ -321,7 +318,6 @@ class HfssExtentInfo:
         info.UseXYDataExtentForVerticalExpansion = value
         self._update_hfss_extent_info(info)
 
-    @pyedb_function_handler()
     def load_config(self, config):
         """Load HFSS extent configuration.
 
@@ -334,7 +330,6 @@ class HfssExtentInfo:
             if hasattr(self, i):
                 setattr(self, i, j)
 
-    @pyedb_function_handler()
     def export_config(self):
         """Export HFSS extent information.
 

@@ -41,10 +41,7 @@ if not is_ironpython:
             "The NumPy module is required to run some functionalities of EDB.\n"
             "Install with \n\npip install numpy\n\nRequires CPython."
         )
-from pyedb.generic.general_methods import (
-    get_filename_without_extension,
-    pyedb_function_handler,
-)
+from pyedb.generic.general_methods import get_filename_without_extension
 
 
 class EDBComponent(object):
@@ -139,14 +136,15 @@ class EDBComponent(object):
         comp_prop.SetPackageDef(package_def._edb_object)
         self.edbcomponent.SetComponentProperty(comp_prop)
 
-    @pyedb_function_handler
-    def create_package_def(self, name=""):
+    def create_package_def(self, name="", component_part_name=None):
         """Create a package definition and assign it to the component.
 
         Parameters
         ----------
         name: str, optional
             Name of the package definition
+        component_part_name : str, optional
+            Part name of the component.
 
         Returns
         -------
@@ -156,7 +154,7 @@ class EDBComponent(object):
         if not name:
             name = "{}_{}".format(self.refdes, self.part_name)
         if name not in self._pedb.definitions.package:
-            self._pedb.definitions.add_package_def(name)
+            self._pedb.definitions.add_package_def(name, component_part_name=component_part_name)
             self.package_def = name
 
             from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
@@ -802,11 +800,9 @@ class EDBComponent(object):
         """
         return int(self.edbcomponent.GetPlacementLayer().GetTopBottomAssociation())
 
-    @pyedb_function_handler()
     def _get_edb_value(self, value):
         return self._pedb.edb_value(value)
 
-    @pyedb_function_handler()
     def _set_model(self, model):  # pragma: no cover
         comp_prop = self.component_property
         comp_prop.SetModel(model)
@@ -815,7 +811,6 @@ class EDBComponent(object):
             return False
         return True
 
-    @pyedb_function_handler()
     def assign_spice_model(self, file_path, name=None, sub_circuit_name=None):
         """Assign Spice model to this component.
 
@@ -855,7 +850,6 @@ class EDBComponent(object):
             return False
         return self._set_model(model)
 
-    @pyedb_function_handler()
     def assign_s_param_model(self, file_path, name=None, reference_net=None):
         """Assign S-parameter to this component.
 
@@ -886,7 +880,6 @@ class EDBComponent(object):
             model.SetReferenceNet(reference_net)
         return self._set_model(model)
 
-    @pyedb_function_handler()
     def use_s_parameter_model(self, name, reference_net=None):
         """Use S-parameter model on the component.
 
@@ -915,7 +908,6 @@ class EDBComponent(object):
             model.SetReferenceNet(reference_net)
         return self._set_model(model)
 
-    @pyedb_function_handler()
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
         """Assign RLC to this component.
 
@@ -950,7 +942,6 @@ class EDBComponent(object):
             model.SetPinPairRlc(pin_pair, rlc)
         return self._set_model(model)
 
-    @pyedb_function_handler()
     def create_clearance_on_component(self, extra_soldermask_clearance=1e-4):
         """Create a Clearance on Soldermask layer by drawing a rectangle.
 

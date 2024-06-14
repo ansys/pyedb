@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
-
 
 class SweepData(object):
     """Manages EDB methods for a frequency sweep.
@@ -58,7 +56,6 @@ class SweepData(object):
         """EDB."""
         return self._sim_setup._pedb
 
-    @pyedb_function_handler()
     def _update_sweep(self):
         """Update the sweep."""
         self._sim_setup.delete_frequency_sweep(self)
@@ -403,12 +400,10 @@ class SweepData(object):
         self._edb_sweep_data.UseQ3DForDC = value
         self._update_sweep()
 
-    @pyedb_function_handler()
     def _set_frequencies(self, freq_sweep_string="Linear Step: 0GHz to 20GHz, step=0.05GHz"):
         self._edb_sweep_data.SetFrequencies(freq_sweep_string)
         self._update_sweep()
 
-    @pyedb_function_handler()
     def set_frequencies_linear_scale(self, start="0.1GHz", stop="20GHz", step="50MHz"):
         """Set a linear scale frequency sweep.
 
@@ -429,7 +424,6 @@ class SweepData(object):
         self._edb_sweep_data.Frequencies = self._edb_sweep_data.SetFrequencies(start, stop, step)
         return self._update_sweep()
 
-    @pyedb_function_handler()
     def set_frequencies_linear_count(self, start="1kHz", stop="0.1GHz", count=10):
         """Set a linear count frequency sweep.
 
@@ -452,7 +446,6 @@ class SweepData(object):
         self._edb_sweep_data.Frequencies = self._edb_sweep_data.SetFrequencies(start, stop, count)
         return self._update_sweep()
 
-    @pyedb_function_handler()
     def set_frequencies_log_scale(self, start="1kHz", stop="0.1GHz", samples=10):
         """Set a log-count frequency sweep.
 
@@ -475,7 +468,6 @@ class SweepData(object):
         self._edb_sweep_data.Frequencies = self._edb_sweep_data.SetLogFrequencies(start, stop, samples)
         return self._update_sweep()
 
-    @pyedb_function_handler()
     def set_frequencies(self, frequency_list=None, update=True):
         """Set frequency list to the sweep frequencies.
 

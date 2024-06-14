@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from pyedb.configuration.cfg_common import CfgBase
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class CfgPortProperties(CfgBase):
@@ -76,7 +75,6 @@ class CfgComponents:
         self._pedb = pedb
         self.components = [CfgComponent(**comp) for comp in data]
 
-    @pyedb_function_handler
     def apply(self):
         comps_in_db = self._pedb.components
         for comp in self.components:

@@ -40,7 +40,6 @@ from pyedb.generic.general_methods import (
     _retry_ntimes,
     generate_unique_name,
     get_filename_without_extension,
-    pyedb_function_handler,
 )
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -85,7 +84,6 @@ class Components(object):
     >>> edbapp.components
     """
 
-    @pyedb_function_handler()
     def __getitem__(self, name):
         """Get  a component or component definition from the Edb project.
 
@@ -128,7 +126,6 @@ class Components(object):
     def _edb(self):
         return self._pedb.edb_api
 
-    @pyedb_function_handler()
     def _init_parts(self):
         a = self.components
         a = self.resistors
@@ -221,7 +218,6 @@ class Components(object):
         m = "Ansys.Ansoft.Edb.Definition.NPortComponentModel"
         return {name: l for name, l in self.definitions.items() if m in [i.ToString() for i in l._comp_model]}
 
-    @pyedb_function_handler()
     def import_definition(self, file_path):
         """Import component definition from json file.
 
@@ -256,7 +252,6 @@ class Components(object):
                         pass
         return True
 
-    @pyedb_function_handler()
     def export_definition(self, file_path):
         """Export component definitions to json file.
 
@@ -307,7 +302,6 @@ class Components(object):
             json.dump(data, f, ensure_ascii=False, indent=4)
         return file_path
 
-    @pyedb_function_handler()
     def refresh_components(self):
         """Refresh the component dictionary."""
         # self._logger.info("Refreshing the Components dictionary.")
@@ -479,7 +473,6 @@ class Components(object):
                 self._comps_by_part[val.partname] = [val]
         return self._comps_by_part
 
-    @pyedb_function_handler()
     def get_component_by_name(self, name):
         """Retrieve a component by name.
 
@@ -500,7 +493,6 @@ class Components(object):
         else:
             pass
 
-    @pyedb_function_handler()
     def get_components_from_nets(self, netlist=None):
         """Retrieve components from a net list.
 
@@ -525,7 +517,6 @@ class Components(object):
                 cmp_list.append(refdes)
         return cmp_list
 
-    @pyedb_function_handler()
     def _get_edb_pin_from_pin_name(self, cmp, pin):
         if not isinstance(cmp, self._pedb.edb_api.cell.hierarchy.component):
             return False
@@ -536,7 +527,6 @@ class Components(object):
             return pins[0]
         return False
 
-    @pyedb_function_handler()
     def get_component_placement_vector(
         self,
         mounted_component,
@@ -634,7 +624,6 @@ class Components(object):
         self._logger.warning("Failed to compute vector.")
         return False, [0, 0], 0, 0
 
-    @pyedb_function_handler()
     def get_solder_ball_height(self, cmp):
         """Get component solder ball height.
 
@@ -656,7 +645,6 @@ class Components(object):
             return cmp_prop.GetSolderBallProperty().GetHeight()
         return False
 
-    @pyedb_function_handler()
     def create_source_on_component(self, sources=None):
         """Create voltage, current source, or resistor on component.
 
@@ -735,7 +723,6 @@ class Components(object):
                 )
         return True
 
-    @pyedb_function_handler()
     def create_port_on_pins(self, refdes, pins, reference_pins, impedance=50.0, port_name=None, pec_boundary=False):
         """Create circuit port between pins and reference ones.
 
@@ -855,7 +842,6 @@ class Components(object):
             return term
         return False
 
-    @pyedb_function_handler()
     def create_port_on_component(
         self,
         component,
@@ -1030,7 +1016,6 @@ class Components(object):
                         self.create_port_on_pins(component, pin, ref_pins)
         return True
 
-    @pyedb_function_handler()
     def _create_terminal(self, pin, term_name=None):
         """Create terminal on component pin.
 
@@ -1060,7 +1045,6 @@ class Components(object):
         )
         return term
 
-    @pyedb_function_handler()
     def _get_closest_pin_from(self, pin, ref_pinlist):
         """Returns the closest pin from given pin among the list of reference pins.
 
@@ -1092,7 +1076,6 @@ class Components(object):
                 closest_pin = ref_pin
         return closest_pin
 
-    @pyedb_function_handler()
     def replace_rlc_by_gap_boundaries(self, component=None):
         """Replace RLC component by RLC gap boundaries. These boundary types are compatible with 3D modeler export.
         Only 2 pins RLC components are supported in this command.
@@ -1134,7 +1117,6 @@ class Components(object):
         component.is_enabled = False
         return self.add_rlc_boundary(component.refdes, False)
 
-    @pyedb_function_handler()
     def deactivate_rlc_component(self, component=None, create_circuit_port=False, pec_boundary=False):
         """Deactivate RLC component with a possibility to convert it to a circuit port.
 
@@ -1187,7 +1169,6 @@ class Components(object):
             component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
         )
 
-    @pyedb_function_handler()
     def add_port_on_rlc_component(self, component=None, circuit_ports=True, pec_boundary=False):
         """Deactivate RLC component and replace it with a circuit port.
         The circuit port supports only two-pin components.
@@ -1261,7 +1242,6 @@ class Components(object):
             return True
         return False
 
-    @pyedb_function_handler()
     def add_rlc_boundary(self, component=None, circuit_type=True):
         """Add RLC gap boundary on component and replace it with a circuit port.
         The circuit port supports only 2-pin components.
@@ -1335,7 +1315,6 @@ class Components(object):
             self._logger.info("Component {} has been replaced by port".format(component.refdes))
             return True
 
-    @pyedb_function_handler()
     def _create_pin_group_terminal(self, pingroup, isref=False, term_name=None, term_type="circuit"):
         """Creates an EDB pin group terminal from a given EDB pin group.
 
@@ -1370,7 +1349,6 @@ class Components(object):
             pingroup_term.SetIsAutoPort(True)
         return pingroup_term
 
-    @pyedb_function_handler()
     def _is_top_component(self, cmp):
         """Test the component placement layer.
 
@@ -1392,7 +1370,6 @@ class Components(object):
         else:
             return False
 
-    @pyedb_function_handler()
     def _getComponentDefinition(self, name, pins):
         componentDefinition = self._pedb.edb_api.definition.ComponentDef.FindByName(self._db, name)
         if componentDefinition.IsNull():
@@ -1415,7 +1392,6 @@ class Components(object):
             self._logger.warning("Found existing component definition for footprint {}".format(name))
         return componentDefinition
 
-    @pyedb_function_handler()
     def create_rlc_component(
         self, pins, component_name="", r_value=None, c_value=None, l_value=None, is_parallel=False
     ):  # pragma: no cover
@@ -1455,7 +1431,6 @@ class Components(object):
             is_parallel=is_parallel,
         )
 
-    @pyedb_function_handler()
     def create(
         self,
         pins,
@@ -1571,7 +1546,6 @@ class Components(object):
         self._cmp[new_cmp.GetName()] = new_edb_comp
         return new_edb_comp
 
-    @pyedb_function_handler()
     def create_component_from_pins(
         self, pins, component_name, placement_layer=None, component_part_name=None
     ):  # pragma: no cover
@@ -1614,7 +1588,6 @@ class Components(object):
             is_rlc=False,
         )
 
-    @pyedb_function_handler()
     def set_component_model(self, componentname, model_type="Spice", modelpath=None, modelname=None):
         """Assign a Spice or Touchstone model to a component.
 
@@ -1703,7 +1676,6 @@ class Components(object):
                 return False
         return True
 
-    @pyedb_function_handler()
     def create_pingroup_from_pins(self, pins, group_name=None):
         """Create a pin group on a component.
 
@@ -1771,7 +1743,6 @@ class Components(object):
             pingroup.SetNet(pins[0].GetNet())
             return pingroup
 
-    @pyedb_function_handler()
     def delete_single_pin_rlc(self, deactivate_only=False):
         # type: (bool) -> list
         """Delete all RLC components with a single pin.
@@ -1813,7 +1784,6 @@ class Components(object):
 
         return deleted_comps
 
-    @pyedb_function_handler()
     def delete_component(self, component_name):  # pragma: no cover
         """Delete a component.
 
@@ -1841,7 +1811,6 @@ class Components(object):
         warnings.warn("`delete_component` is deprecated. Use `delete` property instead.", DeprecationWarning)
         return self.delete(component_name=component_name)
 
-    @pyedb_function_handler()
     def delete(self, component_name):
         """Delete a component.
 
@@ -1871,7 +1840,6 @@ class Components(object):
             return True
         return False
 
-    @pyedb_function_handler()
     def disable_rlc_component(self, component_name):
         """Disable a RLC component.
 
@@ -1907,7 +1875,6 @@ class Components(object):
             return True
         return False
 
-    @pyedb_function_handler()
     def set_solder_ball(
         self,
         component="",
@@ -2014,7 +1981,6 @@ class Components(object):
         edb_cmp.SetComponentProperty(cmp_property)
         return True
 
-    @pyedb_function_handler()
     def set_component_rlc(
         self,
         componentname,
@@ -2099,7 +2065,6 @@ class Components(object):
         self._logger.info("RLC properties for Component %s has been assigned.", componentname)
         return True
 
-    @pyedb_function_handler()
     def update_rlc_from_bom(
         self,
         bom_file,
@@ -2169,7 +2134,6 @@ class Components(object):
                 self.components[comp].is_enabled = False
         return found
 
-    @pyedb_function_handler()
     def import_bom(
         self,
         bom_file,
@@ -2260,7 +2224,6 @@ class Components(object):
                 self.components[comp].is_enabled = False
         return True
 
-    @pyedb_function_handler()
     def export_bom(self, bom_file, delimiter=","):
         """Export Bom file from layout.
 
@@ -2291,7 +2254,6 @@ class Components(object):
                 f.writelines([delimiter.join([refdes, part_name, comp_type, value + "\n"])])
         return True
 
-    @pyedb_function_handler
     def find_by_reference_designator(self, reference_designator):
         """Find a component.
 
@@ -2303,7 +2265,6 @@ class Components(object):
         obj = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, reference_designator)
         return EDBComponent(self._pedb, obj)
 
-    @pyedb_function_handler()
     def get_pin_from_component(self, component, netName=None, pinName=None):
         """Retrieve the pins of a component.
 
@@ -2356,7 +2317,6 @@ class Components(object):
             pins = [p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.IsLayoutPin()]
         return pins
 
-    @pyedb_function_handler()
     def get_aedt_pin_name(self, pin):
         """Retrieve the pin name that is shown in AEDT.
 
@@ -2388,7 +2348,6 @@ class Components(object):
         name = str(name).strip("'")
         return name
 
-    @pyedb_function_handler
     def get_pins(self, reference_designator, net_name=None, pin_name=None):
         """Get component pins.
 
@@ -2416,7 +2375,6 @@ class Components(object):
 
         return pins
 
-    @pyedb_function_handler()
     def get_pin_position(self, pin):
         """Retrieve the pin position in meters.
 
@@ -2450,7 +2408,6 @@ class Components(object):
         )
         return [pin_xy.X.ToDouble(), pin_xy.Y.ToDouble()]
 
-    @pyedb_function_handler()
     def get_pins_name_from_net(self, net_name, pin_list=None):
         """Retrieve pins belonging to a net.
 
@@ -2485,7 +2442,6 @@ class Components(object):
                 pin_names.append(self.get_aedt_pin_name(pin))
         return pin_names
 
-    @pyedb_function_handler()
     def get_nets_from_pin_list(self, PinList):
         """Retrieve nets with one or more pins.
 
@@ -2512,7 +2468,6 @@ class Components(object):
             netlist.append(pin.GetNet().GetName())
         return list(set(netlist))
 
-    @pyedb_function_handler()
     def get_component_net_connection_info(self, refdes):
         """Retrieve net connection information.
 
@@ -2602,7 +2557,6 @@ class Components(object):
 
         return through_comp_list
 
-    @pyedb_function_handler()
     def short_component_pins(self, component_name, pins_to_short=None, width=1e-3):
         """Short pins of component with a trace.
 

@@ -16,12 +16,7 @@ import warnings
 
 from pyedb.dotnet.clr_module import _clr
 from pyedb.edb_logger import pyedb_logger
-from pyedb.generic.general_methods import (
-    _pythonver,
-    is_ironpython,
-    is_windows,
-    pyedb_function_handler,
-)
+from pyedb.generic.general_methods import _pythonver, is_ironpython, is_windows
 from pyedb.misc.misc import list_installed_ansysem
 from pyedb.siwave_core.icepak import Icepak
 
@@ -221,7 +216,6 @@ class Siwave(object):  # pragma no cover
     def icepak(self):
         return Icepak(self)
 
-    @pyedb_function_handler()
     def open_project(self, proj_path=None):
         """Open a project.
 
@@ -244,7 +238,6 @@ class Siwave(object):  # pragma no cover
         else:
             return False
 
-    @pyedb_function_handler()
     def save_project(self, projectpath=None, projectName=None):
         """Save the project.
 
@@ -267,7 +260,6 @@ class Siwave(object):  # pragma no cover
             self.oproject.Save()
         return True
 
-    @pyedb_function_handler()
     def close_project(self, save_project=False):
         """Close the project.
 
@@ -288,7 +280,6 @@ class Siwave(object):  # pragma no cover
         self._oproject = None
         return True
 
-    @pyedb_function_handler()
     def quit_application(self):
         """Quit the application.
 
@@ -301,7 +292,6 @@ class Siwave(object):  # pragma no cover
         self._main.oSiwave.Quit()
         return True
 
-    @pyedb_function_handler()
     def export_element_data(self, simulation_name, file_path, data_type="Vias"):
         """Export element data.
 
@@ -322,7 +312,6 @@ class Siwave(object):  # pragma no cover
         self.oproject.ScrExportElementData(simulation_name, file_path, data_type)
         return True
 
-    @pyedb_function_handler()
     def export_siwave_report(self, simulation_name, file_path, bkground_color="White"):
         """Export the Siwave report.
 
@@ -344,7 +333,6 @@ class Siwave(object):  # pragma no cover
         warnings.warn("Use new property :func:`export_dc_simulation_report` instead.", DeprecationWarning)
         return self.export_dc_simulation_report(simulation_name, file_path, bkground_color)
 
-    @pyedb_function_handler()
     def export_dc_simulation_report(self, simulation_name, file_path, background_color="White"):
         """Export the Siwave DC simulation report.
 
@@ -387,14 +375,12 @@ class Siwave(object):  # pragma no cover
         else:
             return False
 
-    @pyedb_function_handler
     def run_dc_simulation(self, export_dc_power_data_to_icepak=False):
         """Run DC simulation."""
         self._logger.info("Running DC simulation.")
         self.oproject.ScrExportDcPowerDataToIcepak(export_dc_power_data_to_icepak)
         return self.oproject.ScrRunDcSimulation(1)
 
-    @pyedb_function_handler
     def export_icepak_project(self, file_path, dc_simulation_name):
         """Exports an Icepak project for standalone use.
 
@@ -417,7 +403,6 @@ class Siwave(object):  # pragma no cover
         code = self.oproject.ScrExportIcepakProject(file_path, dc_simulation_name)
         return True if code == 0 else False
 
-    @pyedb_function_handler
     def run_icepak_simulation(self, icepak_simulation_name, dc_simulation_name):
         """Runs an Icepak simulation.
 

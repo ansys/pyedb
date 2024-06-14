@@ -22,7 +22,6 @@
 
 from pyedb.configuration.cfg_common import CfgBase
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class CfgPackage(CfgBase):
@@ -104,7 +103,6 @@ class CfgPackageDefinitions:
             for _, i in comp_list.items():
                 i.package_def = pkg.name
 
-    @pyedb_function_handler
     def get_data_from_db(self):
         package_definitions = []
 

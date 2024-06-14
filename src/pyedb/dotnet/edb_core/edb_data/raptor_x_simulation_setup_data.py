@@ -22,7 +22,6 @@
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 from pyedb.dotnet.edb_core.utilities.simulation_setup import SimulationSetup
-from pyedb.generic.data_handlers import pyedb_function_handler
 from pyedb.generic.general_methods import generate_unique_name
 
 
@@ -36,7 +35,6 @@ class RaptorXSimulationSetup(SimulationSetup):
         self._edb_setup_info = None
         self.logger = self._pedb.logger
 
-    @pyedb_function_handler
     def create(self, name=None):
         """Create an HFSS setup."""
         self._name = name
@@ -70,7 +68,6 @@ class RaptorXSimulationSetup(SimulationSetup):
         else:
             self.logger.error(f"RaptorX setup position input setter must be an integer. Provided value {value}")
 
-    @pyedb_function_handler()
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
 

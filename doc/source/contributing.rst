@@ -93,26 +93,6 @@ These examples show how to write messages only to the log file:
     self.logger.info("This is an info message.")
 
 
-Handle exceptions
-~~~~~~~~~~~~~~~~~
-PyEDB uses a specific decorator, ``@pyedb_function_handler()``,
-to handle exceptions caused by methods and by the AEDT API.
-This exception handler decorator makes PyEDB fault tolerant
-to errors that can occur in any method.
-
-For example:
-
-.. code:: python
-
-   @pyedb_function_handler()
-   def my_method(self, var):
-       pass
-
-Every method can return a value of ``True`` when successful or
-``False`` when failed. When a failure occurs, the error
-handler returns information about the error in both the console and
-log file.
-
 Hard-coded values
 ~~~~~~~~~~~~~~~~~~
 Do not write hard-coded values to the registry. Instead, use the Configuration service.

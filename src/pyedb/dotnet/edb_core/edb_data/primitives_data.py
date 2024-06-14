@@ -33,7 +33,6 @@ from pyedb.dotnet.edb_core.dotnet.primitive import (
     TextDotNet,
 )
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import pyedb_function_handler
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -93,7 +92,6 @@ class EDBPrimitives(Primitive):
     def __init__(self, raw_primitive, core_app):
         Primitive.__init__(self, core_app, raw_primitive)
 
-    @pyedb_function_handler()
     def area(self, include_voids=True):
         """Return the total area.
 
@@ -254,7 +252,6 @@ class EDBPrimitives(Primitive):
         bbox = self.bbox
         return [(bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2]
 
-    @pyedb_function_handler()
     def is_arc(self, point):
         """Either if a point is an arc or not.
 
@@ -264,7 +261,6 @@ class EDBPrimitives(Primitive):
         """
         return point.IsArc()
 
-    @pyedb_function_handler()
     def get_connected_object_id_set(self):
         """Produce a list of all geometries physically connected to a given layout object.
 
@@ -277,7 +273,6 @@ class EDBPrimitives(Primitive):
         layoutObjInst = layoutInst.GetLayoutObjInstance(self.primitive_object, None)  # 2nd arg was []
         return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
 
-    @pyedb_function_handler()
     def convert_to_polygon(self):
         """Convert path to polygon.
 
@@ -295,7 +290,6 @@ class EDBPrimitives(Primitive):
         else:
             return False
 
-    @pyedb_function_handler()
     def subtract(self, primitives):
         """Subtract active primitive with one or more primitives.
 
@@ -349,7 +343,6 @@ class EDBPrimitives(Primitive):
                     continue
         return new_polys
 
-    @pyedb_function_handler()
     def intersect(self, primitives):
         """Intersect active primitive with one or more primitives.
 
@@ -434,7 +427,6 @@ class EDBPrimitives(Primitive):
                     continue
         return new_polys
 
-    @pyedb_function_handler()
     def unite(self, primitives):
         """Unite active primitive with one or more primitives.
 
@@ -489,7 +481,6 @@ class EDBPrimitives(Primitive):
                     continue
         return new_polys
 
-    @pyedb_function_handler()
     def intersection_type(self, primitive):
         """Get intersection type between actual primitive and another primitive or polygon data.
 
@@ -514,7 +505,6 @@ class EDBPrimitives(Primitive):
             pass
         return int(self.polygon_data.edb_api.GetIntersectionType(poly.edb_api))
 
-    @pyedb_function_handler()
     def is_intersecting(self, primitive):
         """Check if actual primitive and another primitive or polygon data intesects.
 
@@ -528,7 +518,6 @@ class EDBPrimitives(Primitive):
         """
         return True if self.intersection_type(primitive) >= 1 else False
 
-    @pyedb_function_handler()
     def get_closest_point(self, point):
         """Get the closest point of the primitive to the input data.
 
@@ -546,7 +535,6 @@ class EDBPrimitives(Primitive):
         p0 = self.polygon_data.edb_api.GetClosestPoint(point)
         return [p0.X.ToDouble(), p0.Y.ToDouble()]
 
-    @pyedb_function_handler()
     def get_closest_arc_midpoint(self, point):
         """Get the closest arc midpoint of the primitive to the input data.
 
@@ -645,7 +633,6 @@ class EdbPath(EDBPrimitives, PathDotNet):
                 path_length += self.width / 2
         return path_length
 
-    @pyedb_function_handler()
     def add_point(self, x, y, incremental=False):
         """Add a point at the end of the path.
 
@@ -667,7 +654,6 @@ class EdbPath(EDBPrimitives, PathDotNet):
         center_line.add_point(x, y, incremental)
         return self._edb_object.SetCenterLine(center_line.edb_api)
 
-    @pyedb_function_handler()
     def get_center_line(self, to_string=False):
         """Get the center line of the trace.
 
@@ -686,7 +672,6 @@ class EdbPath(EDBPrimitives, PathDotNet):
         else:
             return [[p.X.ToDouble(), p.Y.ToDouble()] for p in list(self.primitive_object.GetCenterLine().Points)]
 
-    @pyedb_function_handler()
     def clone(self):
         """Clone a primitive object with keeping same definition and location.
 
@@ -712,8 +697,8 @@ class EdbPath(EDBPrimitives, PathDotNet):
         if cloned_path:
             return cloned_path
 
-    # @pyedb_function_handler()
-    @pyedb_function_handler()
+    #
+
     def create_edge_port(
         self,
         name,
@@ -766,7 +751,6 @@ class EdbPath(EDBPrimitives, PathDotNet):
         else:
             return self._app.hfss.create_edge_port_vertical(self.id, pos, name, 50, reference_layer)
 
-    @pyedb_function_handler()
     def create_via_fence(self, distance, gap, padstack_name, net_name="GND"):
         """Create via fences on both sides of the trace.
 
@@ -891,7 +875,6 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
         EDBPrimitives.__init__(self, raw_primitive, core_app)
         PolygonDotNet.__init__(self, self._app, raw_primitive)
 
-    @pyedb_function_handler()
     def clone(self):
         """Clone a primitive object with keeping same definition and location.
 
@@ -913,7 +896,6 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
             return cloned_poly
         return False
 
-    @pyedb_function_handler()
     def duplicate_across_layers(self, layers):
         """Duplicate across layer a primitive object.
 
@@ -942,7 +924,6 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
                 return False
         return True
 
-    @pyedb_function_handler
     def move(self, vector):
         """Move polygon along a vector.
 
@@ -971,7 +952,6 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
             return self.api_object.SetPolygonData(polygon_data)
         return False
 
-    @pyedb_function_handler
     def rotate(self, angle, center=None):
         """Rotate polygon around a center point by an angle.
 
@@ -1009,7 +989,6 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
                 return self.api_object.SetPolygonData(polygon_data)
         return False
 
-    @pyedb_function_handler
     def scale(self, factor, center=None):
         """Scales the polygon relative to a center point by a factor.
 
@@ -1048,7 +1027,6 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
                 return self.api_object.SetPolygonData(polygon_data)
         return False
 
-    @pyedb_function_handler
     def move_layer(self, layer):
         """Move polygon to given layer.
 
@@ -1072,7 +1050,6 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
                 return True
         return False
 
-    @pyedb_function_handler()
     def in_polygon(
         self,
         point_data,
@@ -1111,7 +1088,7 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
         else:
             return False
 
-    # @pyedb_function_handler()
+    #
     # def add_void(self, point_list):
     #     """Add a void to current primitive.
     #
