@@ -22,6 +22,7 @@
 
 from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
 from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
+from pyedb.edb_logger import pyedb_logger
 
 
 class PackageDef(ObjBase):
@@ -36,7 +37,7 @@ class PackageDef(ObjBase):
         component_part_name : str, optional
         Part name of the component.
     extent_bounding_box : list, optional
-        Bounding box defines the shape of the package. For example, [[0, 0], ["2mm", "2mm"].
+        Bounding box defines the shape of the package. For example, [[0, 0], ["2mm", "2mm"]].
 
     """
 
@@ -70,6 +71,9 @@ class PackageDef(ObjBase):
             bbox = [[y_pt1 - y_mid, x_pt1 - x_mid], [y_pt2 - y_mid, x_pt2 - x_mid]]
         else:
             bbox = extent_bounding_box
+        if bbox is None:
+            pyedb_logger.warning("Package creation uses bounding box but it cannot be inferred. " \
+                                 "Please set argument 'component_part_name' or 'extent_bounding_box'.")
         polygon_data = PolygonData(self._pedb, create_from_bounding_box=True, points=bbox)
 
         edb_object.SetExteriorBoundary(polygon_data._edb_object)

@@ -136,13 +136,15 @@ class EDBComponent(object):
         comp_prop.SetPackageDef(package_def._edb_object)
         self.edbcomponent.SetComponentProperty(comp_prop)
 
-    def create_package_def(self, name=""):
+    def create_package_def(self, name="", extent_bounding_box=None):
         """Create a package definition and assign it to the component.
 
         Parameters
         ----------
         name: str, optional
             Name of the package definition
+        extent_bounding_box : list, optional
+            Boundary points which define the shape of the package.
 
         Returns
         -------
@@ -152,7 +154,7 @@ class EDBComponent(object):
         if not name:
             name = "{}_{}".format(self.refdes, self.part_name)
         if name not in self._pedb.definitions.package:
-            self._pedb.definitions.add_package_def(name)
+            self._pedb.definitions.add_package_def(name, boundary_points=extent_bounding_box)
             self.package_def = name
 
             from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
