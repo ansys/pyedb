@@ -1662,5 +1662,6 @@ class EdbPadstacks(object):
                     self._logger.error(f"Failed to create padstack definition {new_padstack_def}")
                 if not self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net_name):
                     self._logger.error(f"Failed to place padstack instance {new_padstack_def}")
-            [inst.delete() for inst in _instances_to_delete]
+            for inst in _instances_to_delete:
+                inst.delete()
         return True

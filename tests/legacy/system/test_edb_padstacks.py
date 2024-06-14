@@ -434,6 +434,9 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = Edb(target_path, edbversion=desktop_version)
         assert edbapp.padstacks.merge_via_along_lines(net_name="GND", distance_threshold=2e-3, minimum_via_number=6)
+        assert not edbapp.padstacks.merge_via_along_lines(
+            net_name="test_dummy", distance_threshold=2e-3, minimum_via_number=6
+        )
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions
         edbapp.close()
