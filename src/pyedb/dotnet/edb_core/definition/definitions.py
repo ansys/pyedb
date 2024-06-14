@@ -52,7 +52,5 @@ class Definitions:
         -------
 
         """
-        package_def = PackageDef(
-            self._pedb, name=name, component_part_name=component_part_name
-        )
+        package_def = PackageDef(self._pedb, name=name, component_part_name=component_part_name)
         return package_def
