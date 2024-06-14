@@ -427,3 +427,13 @@ class TestClass:
         assert edbapp.padstacks.definitions["test"]
         assert edbapp.padstacks.definitions["test2"]
         edbapp.close()
+
+    def test_via_fence(self):
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "via_fence_generic_project.aedb")
+        target_path = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence.aedb")
+        self.local_scratch.copyfolder(source_path, target_path)
+        edbapp = Edb(target_path, edbversion=desktop_version)
+        assert edbapp.padstacks.merge_via_along_lines(net_name="GND", distance_threshold=2e-3, minimum_via_number=6)
+        assert "main_via" in edbapp.padstacks.definitions
+        assert "via_central" in edbapp.padstacks.definitions
+        edbapp.close()

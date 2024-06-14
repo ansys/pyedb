@@ -1594,7 +1594,28 @@ class EdbPadstacks(object):
         return list(index.intersection(bounding_box))
 
     def merge_via_along_lines(self, net_name="GND", distance_threshold=5e-3, minimum_via_number=6):
-        """ """
+        """Detect all padstack instances that are placed along lines and replace then by a single polygon based one
+        forming a wall shape. This method is designed to simplify meshing on via fence usually added to shield RF traces
+        on PCB.
+
+        Parameters
+        ----------
+        net_name : str
+            Net name used for detected padstack instances. Default value is ``"GND"``.
+
+        distance_threshold : float, None, optional
+            If two points in a line are separated by a distance larger than `distance_threshold`,
+            the line is divided in two parts. Default is ``5e-3`` (5mm), in which case the control is not performed.
+
+        minimum_via_number : int, optional
+            The minimum number of points that a line must contain. Default is ``6``.
+
+        Returns
+        -------
+        bool
+            ``True`` when succeeded ``False`` when failed. <
+
+        """
         _def = list(
             set([inst.padstack_definition for inst in list(self.instances.values()) if inst.net_name == net_name])
         )
