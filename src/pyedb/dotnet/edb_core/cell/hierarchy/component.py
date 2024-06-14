@@ -25,6 +25,10 @@ import re
 import warnings
 
 from pyedb.dotnet.edb_core.cell.hierarchy.model import PinPairModel, SPICEModel
+from pyedb.dotnet.edb_core.cell.hierarchy.netlist_model import NetlistModel
+from pyedb.dotnet.edb_core.cell.hierarchy.pin_pair_model import PinPair
+from pyedb.dotnet.edb_core.cell.hierarchy.s_parameter_model import SparamModel
+from pyedb.dotnet.edb_core.cell.hierarchy.spice_model import SpiceModel
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.generic.general_methods import is_ironpython
@@ -51,121 +55,6 @@ class EDBComponent(object):
         Edb Component Object
 
     """
-
-    class _PinPair(object):  # pragma: no cover
-        def __init__(self, pcomp, edb_comp, edb_comp_prop, edb_model, edb_pin_pair):
-            self._pedb_comp = pcomp
-            self._edb_comp = edb_comp
-            self._edb_comp_prop = edb_comp_prop
-            self._edb_model = edb_model
-            self._edb_pin_pair = edb_pin_pair
-
-        def _edb_value(self, value):
-            return self._pedb_comp._get_edb_value(value)  # pragma: no cover
-
-        @property
-        def is_parallel(self):
-            return self._pin_pair_rlc.IsParallel  # pragma: no cover
-
-        @is_parallel.setter
-        def is_parallel(self, value):
-            rlc = self._pin_pair_rlc
-            rlc.IsParallel = value
-            self._set_comp_prop()  # pragma: no cover
-
-        @property
-        def _pin_pair_rlc(self):
-            return self._edb_model.GetPinPairRlc(self._edb_pin_pair)
-
-        @property
-        def rlc_enable(self):
-            rlc = self._pin_pair_rlc
-            return [rlc.REnabled, rlc.LEnabled, rlc.CEnabled]
-
-        @rlc_enable.setter
-        def rlc_enable(self, value):
-            rlc = self._pin_pair_rlc
-            rlc.REnabled = value[0]
-            rlc.LEnabled = value[1]
-            rlc.CEnabled = value[2]
-            self._set_comp_prop()  # pragma: no cover
-
-        @property
-        def resistance(self):
-            return self._pin_pair_rlc.R.ToDouble()  # pragma: no cover
-
-        @resistance.setter
-        def resistance(self, value):
-            self._pin_pair_rlc.R = value
-            self._set_comp_prop(self._pin_pair_rlc)  # pragma: no cover
-
-        @property
-        def inductance(self):
-            return self._pin_pair_rlc.L.ToDouble()  # pragma: no cover
-
-        @inductance.setter
-        def inductance(self, value):
-            self._pin_pair_rlc.L = value
-            self._set_comp_prop(self._pin_pair_rlc)  # pragma: no cover
-
-        @property
-        def capacitance(self):
-            return self._pin_pair_rlc.C.ToDouble()  # pragma: no cover
-
-        @capacitance.setter
-        def capacitance(self, value):
-            self._pin_pair_rlc.C = value
-            self._set_comp_prop(self._pin_pair_rlc)  # pragma: no cover
-
-        @property
-        def rlc_values(self):  # pragma: no cover
-            rlc = self._pin_pair_rlc
-            return [rlc.R.ToDouble(), rlc.L.ToDouble(), rlc.C.ToDouble()]
-
-        @rlc_values.setter
-        def rlc_values(self, values):  # pragma: no cover
-            rlc = self._pin_pair_rlc
-            rlc.R = self._edb_value(values[0])
-            rlc.L = self._edb_value(values[1])
-            rlc.C = self._edb_value(values[2])
-            self._set_comp_prop()  # pragma: no cover
-
-        def _set_comp_prop(self):  # pragma: no cover
-            self._edb_model.SetPinPairRlc(self._edb_pin_pair, self._pin_pair_rlc)
-            self._edb_comp_prop.SetModel(self._edb_model)
-            self._edb_comp.SetComponentProperty(self._edb_comp_prop)
-
-    class _SpiceModel(object):  # pragma: no cover
-        def __init__(self, edb_model):
-            self._edb_model = edb_model
-
-        @property
-        def file_path(self):
-            return self._edb_model.GetSPICEFilePath()
-
-        @property
-        def name(self):
-            return self._edb_model.GetSPICEName()
-
-    class _SparamModel(object):  # pragma: no cover
-        def __init__(self, edb_model):
-            self._edb_model = edb_model
-
-        @property
-        def name(self):
-            return self._edb_model.GetComponentModelName()
-
-        @property
-        def reference_net(self):
-            return self._edb_model.GetReferenceNet()
-
-    class _NetlistModel(object):  # pragma: no cover
-        def __init__(self, edb_model):
-            self._edb_model = edb_model
-
-        @property
-        def netlist(self):
-            return self._edb_model.GetNetlist()
 
     def __init__(self, pedb, cmp):
         self._pedb = pedb
@@ -208,7 +97,7 @@ class EDBComponent(object):
         edb_comp_prop = self.component_property
         edb_model = self._edb_model
         return [
-            self._PinPair(self, self.edbcomponent, edb_comp_prop, edb_model, pin_pair)
+            PinPair(self, self.edbcomponent, edb_comp_prop, edb_model, pin_pair)
             for pin_pair in list(edb_model.PinPairs)
         ]
 
@@ -309,7 +198,7 @@ class EDBComponent(object):
         if not self.model_type == "SPICEModel":
             return None
         else:
-            return self._SpiceModel(self._edb_model)
+            return SpiceModel(self._edb_model)
 
     @property
     def s_param_model(self):
@@ -317,7 +206,7 @@ class EDBComponent(object):
         if not self.model_type == "SParameterModel":
             return None
         else:
-            return self._SparamModel(self._edb_model)
+            return SparamModel(self._edb_model)
 
     @property
     def netlist_model(self):
@@ -325,7 +214,7 @@ class EDBComponent(object):
         if not self.model_type == "NetlistModel":
             return None
         else:
-            return self._NetlistModel(self._edb_model)
+            return NetlistModel(self._edb_model)
 
     @property
     def solder_ball_height(self):

@@ -20,19 +20,40 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
+from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
 
 
-class DefinitionObj(ObjBase):
-    """Base class for definition objects."""
+class PinGroupTerminal(Terminal):
+    """Manages pin group terminal properties."""
 
-    def __init__(self, pedb, edb_object):
+    def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
 
-    @property
-    def definition_obj_type(self):
-        return self._edb_object.GetDefinitionObjType()
+    def create(self, name, net_name, pin_group_name, is_ref=False):
+        """Create a pin group terminal.
 
-    @property
-    def name(self):
-        return self._edb_object.GetName()
+        Parameters
+        ----------
+        name : str
+            Name of the terminal.
+        net_name : str
+            Name of the net.
+        pin_group_name : str,
+            Name of the pin group.
+        is_ref : bool, optional
+            Whether it is a reference terminal. The default is ``False``.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.terminals.PinGroupTerminal`
+        """
+        net_obj = self._pedb.edb_api.cell.net.find_by_name(self._pedb.active_layout, net_name)
+        term = self._pedb.edb_api.cell.terminal.PinGroupTerminal.Create(
+            self._pedb.active_layout,
+            net_obj.api_object,
+            name,
+            self._pedb.siwave.pin_groups[pin_group_name]._edb_object,
+            is_ref,
+        )
+        term = PinGroupTerminal(self._pedb, term)
+        return term if not term.is_null else False

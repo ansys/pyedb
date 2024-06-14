@@ -40,7 +40,6 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
    NetsEdb
    PadstackEdb
    SourcesEdb
-   SimulationEdb
    SimulationConfigurationEdb
    SiWave
    PortsEdb

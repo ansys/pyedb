@@ -317,7 +317,9 @@ class PinGroup(object):
     @property
     def terminal(self):
         """Terminal."""
-        from pyedb.dotnet.edb_core.edb_data.terminals import PinGroupTerminal
+        from pyedb.dotnet.edb_core.cell.terminal.pingroup_terminal import (
+            PinGroupTerminal,
+        )
 
         term = PinGroupTerminal(self._pedb, self._edb_pin_group.GetPinGroupTerminal())
         return term if not term.is_null else None
@@ -353,9 +355,11 @@ class PinGroup(object):
         """
         if not name:
             name = generate_unique_name(self.name)
-        from pyedb.dotnet.edb_core.edb_data.terminals import PinGroupTerminal
+        from pyedb.dotnet.edb_core.cell.terminal.pingroup_terminal import (
+            PinGroupTerminal,
+        )
 
-        term = PinGroupTerminal(self._pedb)
+        term = PinGroupTerminal(self._pedb, self._edb_object)
         term = term.create(name, self.net_name, self.name)
         return term
 
@@ -364,14 +368,14 @@ class PinGroup(object):
         return dict_out
 
     def create_current_source_terminal(self, magnitude=1, phase=0):
-        terminal = self._create_terminal()._edb_object
+        terminal = self.create_terminal()._edb_object
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kCurrentSource)
         terminal.SetSourceAmplitude(self._pedb.edb_value(magnitude))
         terminal.SetSourcePhase(self._pedb.edb_api.utility.value(phase))
         return terminal
 
     def create_voltage_source_terminal(self, magnitude=1, phase=0, impedance=0.001):
-        terminal = self._create_terminal()._edb_object
+        terminal = self.create_terminal()._edb_object
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageSource)
         terminal.SetSourceAmplitude(self._pedb.edb_value(magnitude))
         terminal.SetSourcePhase(self._pedb.edb_api.utility.value(phase))
@@ -379,13 +383,13 @@ class PinGroup(object):
         return terminal
 
     def create_voltage_probe_terminal(self, impedance=1000000):
-        terminal = self._create_terminal()._edb_object
+        terminal = self.create_terminal()._edb_object
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageProbe)
         terminal.SetImpedance(self._pedb.edb_value(impedance))
         return terminal
 
     def create_port_terminal(self, impedance=50):
-        terminal = self._create_terminal()._edb_object
+        terminal = self.create_terminal()._edb_object
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PortBoundary)
         terminal.SetImpedance(self._pedb.edb_value(impedance))
         terminal.SetIsCircuitPort(True)

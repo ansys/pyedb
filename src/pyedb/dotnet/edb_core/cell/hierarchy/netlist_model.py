@@ -20,19 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 
-
-class DefinitionObj(ObjBase):
-    """Base class for definition objects."""
-
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
+class NetlistModel(object):  # pragma: no cover
+    def __init__(self, edb_model):
+        self._edb_model = edb_model
 
     @property
-    def definition_obj_type(self):
-        return self._edb_object.GetDefinitionObjType()
-
-    @property
-    def name(self):
-        return self._edb_object.GetName()
+    def netlist(self):
+        return self._edb_model.GetNetlist()

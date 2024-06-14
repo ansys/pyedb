@@ -39,6 +39,15 @@ import warnings
 
 from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
+from pyedb.dotnet.edb_core.cell.layout import Layout
+from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
+from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
+from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
+    PadstackInstanceTerminal,
+)
+from pyedb.dotnet.edb_core.cell.terminal.pingroup_terminal import PinGroupTerminal
+from pyedb.dotnet.edb_core.cell.terminal.point_terminal import PointTerminal
+from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
 from pyedb.dotnet.edb_core.components import Components
 from pyedb.dotnet.edb_core.dotnet.database import Database
 from pyedb.dotnet.edb_core.dotnet.layout import LayoutDotNet
@@ -50,9 +59,6 @@ from pyedb.dotnet.edb_core.edb_data.design_options import EdbDesignOptions
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.edb_data.hfss_pi_simulation_setup_data import (
     HFSSPISimulationSetup,
-)
-from pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data import (
-    HfssSimulationSetup,
 )
 from pyedb.dotnet.edb_core.edb_data.ports import (
     BundleWavePort,
@@ -68,12 +74,7 @@ from pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data import (
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
-from pyedb.dotnet.edb_core.edb_data.siwave_simulation_setup_data import (
-    SiwaveDCSimulationSetup,
-    SiwaveSYZSimulationSetup,
-)
 from pyedb.dotnet.edb_core.edb_data.sources import SourceType
-from pyedb.dotnet.edb_core.edb_data.terminals import Terminal
 from pyedb.dotnet.edb_core.edb_data.variables import Variable
 from pyedb.dotnet.edb_core.general import (
     LayoutObjType,
@@ -81,7 +82,6 @@ from pyedb.dotnet.edb_core.general import (
     convert_py_list_to_net_list,
 )
 from pyedb.dotnet.edb_core.hfss import EdbHfss
-from pyedb.dotnet.edb_core.layout import EdbLayout
 from pyedb.dotnet.edb_core.layout_validation import LayoutValidation
 from pyedb.dotnet.edb_core.materials import Materials
 from pyedb.dotnet.edb_core.net_class import (
@@ -93,6 +93,11 @@ from pyedb.dotnet.edb_core.nets import EdbNets
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 from pyedb.dotnet.edb_core.siwave import EdbSiwave
 from pyedb.dotnet.edb_core.stackup import Stackup
+from pyedb.dotnet.edb_core.utilities.simulation_setup import (
+    HfssSimulationSetup,
+    SiwaveDCSimulationSetup,
+    SiwaveSYZSimulationSetup,
+)
 from pyedb.generic.constants import AEDT_UNITS, SolverType
 from pyedb.generic.general_methods import (
     generate_unique_name,
@@ -354,7 +359,7 @@ class Edb(Database):
         self._siwave = EdbSiwave(self)
         self._hfss = EdbHfss(self)
         self._nets = EdbNets(self)
-        self._core_primitives = EdbLayout(self)
+        self._core_primitives = Layout(self, self._active_cell.GetLayout())
         self._stackup2 = self._stackup
         self._materials = Materials(self)
 
@@ -434,12 +439,18 @@ class Edb(Database):
         """
 
         temp = {}
-        terminal_mapping = Terminal(self)._terminal_mapping
         for i in self.layout.terminals:
             terminal_type = i.ToString().split(".")[-1]
-            ter = terminal_mapping[terminal_type](self, i)
-            temp[ter.name] = ter
-
+            if terminal_type == "PinGroupTerminal":
+                temp[i.GetName()] = PinGroupTerminal(self, i)
+            elif terminal_type == "PadstackInstanceTerminal":
+                temp[i.GetName()] = PadstackInstanceTerminal(self, i)
+            elif terminal_type == "EdgeTerminal":
+                temp[i.GetName()] = EdgeTerminal(self, i)
+            elif terminal_type == "BundleTerminal":
+                temp[i.GetName()] = BundleTerminal(self, i)
+            elif terminal_type == "PointTerminal":
+                temp[i.GetName()] = PointTerminal(self, i)
         return temp
 
     @property
@@ -1130,7 +1141,7 @@ class Edb(Database):
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
         if not self._core_primitives and self.active_db:
-            self._core_primitives = EdbLayout(self)
+            self._core_primitives = Layout(self, self._active_cell.GetLayout())
         return self._core_primitives
 
     @property
@@ -4071,7 +4082,7 @@ class Edb(Database):
         -------
         :class:`legacy.edb_core.edb_data.terminals.PointTerminal`
         """
-        from pyedb.dotnet.edb_core.edb_data.terminals import PointTerminal
+        from pyedb.dotnet.edb_core.cell.terminal.point_terminal import PointTerminal
 
         point_terminal = PointTerminal(self)
         return point_terminal.create(name, net_name, location, layer)

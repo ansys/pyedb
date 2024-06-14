@@ -20,19 +20,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
+from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 
 
-class DefinitionObj(ObjBase):
-    """Base class for definition objects."""
-
+class EdgeTerminal(Terminal):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
 
-    @property
-    def definition_obj_type(self):
-        return self._edb_object.GetDefinitionObjType()
+    def couple_ports(self, port):
+        """Create a bundle wave port.
 
-    @property
-    def name(self):
-        return self._edb_object.GetName()
+        Parameters
+        ----------
+        port : :class:`dotnet.edb_core.ports.WavePort`, :class:`dotnet.edb_core.ports.GapPort`, list, optional
+            Ports to be added.
+
+        Returns
+        -------
+        :class:`dotnet.edb_core.ports.BundleWavePort`
+
+        """
+        if not isinstance(port, (list, tuple)):
+            port = [port]
+        temp = [self._edb_object]
+        temp.extend([i._edb_object for i in port])
+        edb_list = convert_py_list_to_net_list(temp, self._edb.cell.terminal.Terminal)
+        _edb_bundle_terminal = self._edb.cell.terminal.BundleTerminal.Create(edb_list)
+        return self._pedb.ports[self.name]

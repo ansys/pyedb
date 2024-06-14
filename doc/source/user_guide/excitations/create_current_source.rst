@@ -64,6 +64,6 @@ This page shows how to create current and voltage sources on a component.
     edbapp.close_edb()
 
 
-.. image:: ../../Resources/create_sources_and_probes.png
-..   :width: 800
-..   :alt: Current and voltage sources created on a component
+.. image:: ../../resources/create_sources_and_probes.png
+    :width: 800
+    :alt: Current and voltage sources created on a component

@@ -43,10 +43,16 @@ class CfgCircuitElement:
         if pos_term_info:
             pos_type, pos_value = [[i, j] for i, j in pos_term_info.items()][0]
             pos_objs = dict()
+            pos_coor_terminal = dict()
             if self.type == "coax":
                 pins = self._get_pins(pos_type, pos_value)
                 pins = {f"{self.name}_{self.reference_designator}": i for _, i in pins.items()}
                 pos_objs.update(pins)
+            elif pos_type == "coordinates":
+                layer = pos_value["layer"]
+                point = pos_value["point"]
+                net_name = pos_value["net"]
+                pos_coor_terminal[self.name] = self.pedb.get_point_terminal(self.name, net_name, point, layer)
             elif pos_type == "pin_group":
                 pos_objs[pos_value] = self.pedb.siwave.pin_groups[pos_value]
             elif not self.distributed:
@@ -62,12 +68,19 @@ class CfgCircuitElement:
                 self._elem_num = len(pos_objs)
 
             self.pos_terminals = {i: j.create_terminal(i) for i, j in pos_objs.items()}
+            self.pos_terminals.update(pos_coor_terminal)
 
         neg_term_info = self.neg_term_info
         self.neg_terminal = None
         if neg_term_info:
             neg_type, neg_value = [[i, j] for i, j in neg_term_info.items()][0]
-            if neg_type == "nearest_pin":
+
+            if neg_type == "coordinates":
+                layer = neg_value["layer"]
+                point = neg_value["point"]
+                net_name = neg_value["net"]
+                self.neg_terminal = self.pedb.get_point_terminal(self.name + "_ref", net_name, point, layer)
+            elif neg_type == "nearest_pin":
                 ref_net = neg_value.get("reference_net", "GND")
                 search_radius = neg_value.get("search_radius", "5e-3")
                 temp = dict()

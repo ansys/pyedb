@@ -26,9 +26,9 @@ import re
 import warnings
 
 from pyedb.dotnet.clr_module import String, _clr
+from pyedb.dotnet.edb_core.cell.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.edb_core.edb_data.primitives_data import EDBPrimitivesMain
 from pyedb.dotnet.edb_core.general import PadGeometryTpe, convert_py_list_to_net_list
 from pyedb.generic.general_methods import generate_unique_name, is_ironpython
 from pyedb.modeler.geometry_operators import GeometryOperators
@@ -1133,7 +1133,7 @@ class EDBPadstack(object):
         return True
 
 
-class EDBPadstackInstance(EDBPrimitivesMain):
+class EDBPadstackInstance(Primitive):
     """Manages EDB functionalities for a padstack.
 
     Parameters
@@ -1151,7 +1151,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     """
 
     def __init__(self, edb_padstackinstance, _pedb):
-        super().__init__(edb_padstackinstance, _pedb)
+        super().__init__(_pedb, edb_padstackinstance)
         self._edb_padstackinstance = self._edb_object
         self._bounding_box = []
         self._object_instance = None
@@ -1176,7 +1176,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         if create_new_terminal:
             term = self._create_terminal(name)
         else:
-            from pyedb.dotnet.edb_core.edb_data.terminals import (
+            from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
                 PadstackInstanceTerminal,
             )
 
@@ -1187,7 +1187,9 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     @property
     def terminal(self):
         """Terminal."""
-        from pyedb.dotnet.edb_core.edb_data.terminals import PadstackInstanceTerminal
+        from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
+            PadstackInstanceTerminal,
+        )
 
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term if not term.is_null else None
@@ -1199,7 +1201,9 @@ class EDBPadstackInstance(EDBPrimitivesMain):
 
     def create_terminal(self, name=None):
         """Create a padstack instance terminal"""
-        from pyedb.dotnet.edb_core.edb_data.terminals import PadstackInstanceTerminal
+        from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
+            PadstackInstanceTerminal,
+        )
 
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term.create(self, name)
@@ -1224,9 +1228,9 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         is_circuit_port : bool, optional
             Whether it is a circuit port.
         """
-        terminal = self._create_terminal(name)
+        terminal = self.create_terminal(name)
         if reference:
-            ref_terminal = reference._create_terminal(terminal.name + "_ref")
+            ref_terminal = reference.create_terminal(terminal.name + "_ref")
             if reference._edb_object.ToString() == "PinGroup":
                 is_circuit_port = True
         else:
@@ -1621,7 +1625,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     @property
     def component(self):
         """Component."""
-        from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
+        from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 
         comp = EDBComponent(self._pedb, self._edb_object.GetComponent())
         return comp if not comp.is_null else False

@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
 import math
 import re
 import sys
+
+import numpy as np
 
 from pyedb.generic.constants import AXIS, PLANE, SWEEPDRAFT, scale_units
 
@@ -2013,3 +2016,164 @@ class GeometryOperators(object):
         dot_product = sum([distance[i] * vector[i] for i in range(3)])
         reflection = [-dot_product * vector[i] * 2 + start[i] for i in range(3)]
         return reflection
+
+    @staticmethod
+    def find_points_along_lines(
+        points, minimum_number_of_points=3, distance_threshold=None, return_additional_info=False
+    ):
+        """Detect all points that are placed along lines.
+
+        The method takes as input a list of 2D points and detects all lines that contain at least 3 points.
+        Optionally, the minimum number of points contained in a line can be specified by setting the
+        argument ``minimum_number_of_points``.
+        As default, all points along the lines are returned, regardless of their relative distance.
+        Optionally, a `distance_threshold` can be set. If two points in a line are separated by a distance larger than
+        ``distance_threshold``, the line is divided in two parts. If one of those parts does not satisfy the
+        ``minimum_number_of_points`` requirement, it is discarded.
+        If `distance_threshold` is set (not ``None``), the computational time increases.
+
+        points : List, numpy.ndarray
+            The points to process. Can be a list of lists where each sublist
+            represents a 2D point ``[x, y]`` coordinates, or a numpy array of shape (n, 2).
+        minimum_number_of_points : int, optional
+            The minimum number of points that a line must contain. Default is ``3``.
+        distance_threshold : float, None, optional
+            If two points in a line are separated by a distance larger than `distance_threshold`,
+            the line is divided in two parts. Default is ``None``, in which case the control is not performed.
+        return_additional_info : bool, optional
+            Whether to return additional information about the number of elements processed.
+            The default is ``True``.
+
+        Returns
+        -------
+        tuple
+            The tuple contains:
+            - lines: a list of lists where each sublist represents a 2D point ``[x, y]`` coordinates in each line.
+            - lines indexes: a list of lists where each sublist represents the index of the point in each line.
+                            The index is referring to the point position in the input point list.
+            - number of processed points: optional, returned if ``return_additional_info`` is ``True``
+            - number of processed lines: optional, returned if ``return_additional_info`` is ``True``
+            - number of detected lines after ``minimum_number_of_points`` is applied: optional,
+                returned if ``return_additional_info`` is ``True``
+            - number of detected lines after ``distance_threshold`` is applied: optional,
+                returned if ``return_additional_info`` is ``True``
+        """
+
+        # Parameters
+        min_num_points = max(3, int(minimum_number_of_points))
+        cluster_lines_flag = False if distance_threshold is None else True
+        tol_rad = 1e-10
+
+        # Converts the input
+        points = np.array(points)
+        # Number of points
+        num_points = len(points)
+
+        angles = []
+        # Evaluate the angle with x-axis for every possible line defined by 2 points
+        # Nested for loops to iterate over each point
+        for i in range(num_points - 1):
+            angles.append([])
+            for j in range(i + 1, num_points):
+                p1 = points[i]
+                p2 = points[j]
+                x1 = p1[0]
+                y1 = p1[1]
+                x2 = p2[0]
+                y2 = p2[1]
+
+                dx = x2 - x1
+                dy = y2 - y1
+
+                # Calculate the angle in radians with the x-axis
+                angle_rad = np.arctan2(dy, dx)
+                if angle_rad < 0:
+                    angles[i].append(angle_rad + np.pi)
+                else:
+                    angles[i].append(angle_rad)
+
+        # rounding the angles float number
+        def bin_float(value, bin_size):
+            return round(value / bin_size) * bin_size
+
+        for col in angles:
+            for i, a in enumerate(col):
+                col[i] = bin_float(a, tol_rad)
+
+        # Group the lines based on angles
+        detected_lines_idx = []
+        for i in range(num_points - 1):
+            column = angles[i]
+            new_lines = defaultdict(set)  # sets are more efficient than lists for inclusion check
+            lines_to_check = [line for line in detected_lines_idx if i in line]
+            for k in range(len(column)):
+                j = k + i + 1
+                angle = column[k]
+
+                # Check if both indexes (points) are in any of the sets (lines)
+                # Note that lines containing `i` are pre-selected outside this loop.
+                # This makes the check O(n^2) instead of O(n^3)
+                found = any(j in l for l in lines_to_check)
+                if found:
+                    # this two points already belong to a line, no need to store them again
+                    continue
+                new_lines[angle].update((i, j))
+            # considering only lines with at least 3 points
+            lines_to_add = [l for l in new_lines.values() if len(l) >= 3]
+            detected_lines_idx.extend(lines_to_add)
+
+        # Discard the lines with less than min_num_points
+        selected_lines_idx = [line for line in detected_lines_idx if len(line) >= min_num_points]
+
+        # Convert the lines' indexes in ndarrays
+        selected_lines_idx = [np.array(list(line)) for line in selected_lines_idx]
+
+        # First sort the points in the detected lines
+        lines_with_sorted_points_idx = []
+        for line_idx in selected_lines_idx:
+            pts_in_line = points[list(line_idx)]
+            min_x = pts_in_line[:, 0].min()
+            max_x = pts_in_line[:, 0].max()
+            if max_x - min_x < 1e-7:
+                # cluster on y because the line is vertical
+                sort_idx = pts_in_line[:, 1].argsort()
+            else:
+                # cluster on x on the other cases
+                sort_idx = pts_in_line[:, 0].argsort()
+            sorted_points_idx = line_idx[sort_idx]
+            lines_with_sorted_points_idx.append(sorted_points_idx)
+        lines_idx = lines_with_sorted_points_idx
+
+        def cluster_line_points(points_idx, threshold):
+            # Requires sorted points, points must be in numpy array format
+            # Initialize clusters
+            clusters = []
+            current_cluster = [points_idx[0]]
+            # Iterate through the sorted points
+            for i in range(1, len(points_idx)):
+                # Check if the current point is within the distance threshold from the last point in the current cluster
+                if np.linalg.norm(points[points_idx[i]] - points[points_idx[i - 1]]) <= threshold:
+                    current_cluster.append(points_idx[i])
+                else:
+                    # The current point is too far from the last point, finalize the current cluster and start a new one
+                    clusters.append(current_cluster)
+                    current_cluster = [points_idx[i]]
+            # Append the last cluster
+            clusters.append(current_cluster)
+            return clusters
+
+        # separate lines based on required minimum distance btw points
+        # It requires the points of the line to be sorted
+        if cluster_lines_flag:
+            clustered_lines = []
+            for p_idx in lines_with_sorted_points_idx:
+                clusters_in_line = cluster_line_points(p_idx, distance_threshold)
+                clustered_lines.extend([c for c in clusters_in_line if len(c) >= min_num_points])
+            lines_idx = clustered_lines
+
+        # Convert indexes to points coordinates
+        lines = [points[list(line)].tolist() for line in lines_idx]
+
+        if return_additional_info:
+            return lines, lines_idx, num_points, len(detected_lines_idx), len(selected_lines_idx), len(lines_idx)
+        return lines, lines_idx

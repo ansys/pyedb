@@ -1358,8 +1358,8 @@ class EdbSiwave(object):
         else:
             probe_name = generate_unique_name("vprobe")
             pos_terminal.SetName(probe_name)
-        neg_pin_group_name = self.pin_groups[neg_pin_group_name]
-        neg_terminal = neg_pin_group_name.create_voltage_probe_terminal()
+        neg_pin_group = self.pin_groups[neg_pin_group_name]
+        neg_terminal = neg_pin_group.create_voltage_probe_terminal()
         neg_terminal.SetName(probe_name + "_ref")
         pos_terminal.SetReferenceTerminal(neg_terminal)
         return not pos_terminal.IsNull()
@@ -1390,8 +1390,8 @@ class EdbSiwave(object):
         else:
             name = generate_unique_name("port")
             pos_terminal.SetName(name)
-        neg_pin_group_name = self.pin_groups[neg_pin_group_name]
-        neg_terminal = neg_pin_group_name.create_port_terminal(impedance)
+        neg_pin_group = self.pin_groups[neg_pin_group_name]
+        neg_terminal = neg_pin_group.create_port_terminal(impedance)
         neg_terminal.SetName(name + "_ref")
         pos_terminal.SetReferenceTerminal(neg_terminal)
         return True

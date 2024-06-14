@@ -57,6 +57,7 @@ class EDBNetsData(NetDotNet):
         self._core_components = core_app.components
         self._core_primitive = core_app.modeler
         self.net_object = raw_net
+        self._edb_object = raw_net
         NetDotNet.__init__(self, self._app, raw_net)
 
     @property
@@ -87,7 +88,7 @@ class EDBNetsData(NetDotNet):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`]
         """
         comps = {}
         for p in self.padstack_instances:

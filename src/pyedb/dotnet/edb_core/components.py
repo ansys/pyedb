@@ -30,8 +30,8 @@ import re
 import warnings
 
 from pyedb.dotnet.clr_module import String
+from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.edb_core.definition.component_def import EDBComponentDef
-from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.sources import Source, SourceType
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
@@ -93,7 +93,7 @@ class Components(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponent`
+        :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`
 
         """
         if name in self.instances:
@@ -168,7 +168,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`]
             Default dictionary for the EDB component.
 
         Examples
@@ -188,7 +188,7 @@ class Components(object):
 
         Returns
         -------
-        Dict[str, :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponent`]
+        Dict[str, :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`]
             Default dictionary for the EDB component.
 
         Examples
@@ -318,7 +318,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`]
             Dictionary of resistors.
 
         Examples
@@ -340,7 +340,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`]
             Dictionary of capacitors.
 
         Examples
@@ -362,7 +362,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`]
             Dictionary of inductors.
 
         Examples
@@ -385,7 +385,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`]
             Dictionary of integrated circuits.
 
         Examples
@@ -408,7 +408,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`]
             Dictionary of circuit inputs and outputs.
 
         Examples
@@ -431,7 +431,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`]
             Dictionary of other core components.
 
         Examples

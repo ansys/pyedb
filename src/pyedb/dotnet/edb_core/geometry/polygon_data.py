@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 from pyedb.dotnet.edb_core.geometry.point_data import PointData
-from pyedb.dotnet.edb_core.obj_base import BBox
+from pyedb.dotnet.edb_core.utilities.obj_base import BBox
 
 
 class PolygonData:

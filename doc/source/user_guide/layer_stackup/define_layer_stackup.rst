@@ -28,6 +28,6 @@ This page shows how to add a layer in the current layer stackup.
     )
     edb.close()
 
-.. image:: ../../Resources/define_layer_stackup.png
-..   :width: 800
-..   :alt: Layer added to the layer stackup
+.. image:: ../../resources/define_layer_stackup.png
+    :width: 800
+    :alt: Layer added to the layer stackup

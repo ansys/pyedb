@@ -20,19 +20,33 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
+from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
+from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
 
 
-class DefinitionObj(ObjBase):
-    """Base class for definition objects."""
+class BundleTerminal(Terminal):
+    """Manages bundle terminal properties.
+
+    Parameters
+    ----------
+    pedb : pyedb.edb.Edb
+        EDB object from the ``Edblib`` library.
+    edb_object : Ansys.Ansoft.Edb.Cell.Terminal.BundleTerminal
+        BundleTerminal instance from EDB.
+    """
 
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
 
     @property
-    def definition_obj_type(self):
-        return self._edb_object.GetDefinitionObjType()
+    def terminals(self):
+        """Get terminals belonging to this excitation."""
+        return [EdgeTerminal(self._pedb, i) for i in list(self._edb_object.GetTerminals())]
 
     @property
     def name(self):
-        return self._edb_object.GetName()
+        return self.terminals[0].name
+
+    def decouple(self):
+        """Ungroup a bundle of terminals."""
+        return self._edb_object.Ungroup()

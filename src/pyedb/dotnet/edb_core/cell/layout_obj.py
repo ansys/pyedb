@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.obj_base import ObjBase
+from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 
 
 class LayoutObjInstance:
@@ -41,7 +41,7 @@ class LayoutObj(ObjBase):
             try:
                 return getattr(self._edb_object, key)
             except AttributeError:
-                raise AttributeError("Attribute not present")
+                raise AttributeError(f"Attribute '{key}' not present")
 
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
@@ -124,7 +124,7 @@ class Connectable(LayoutObj):
         -------
         :class:`dotnet.edb_core.edb_data.nets_data.EDBComponent`
         """
-        from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
+        from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 
         edb_comp = self._edb_object.GetComponent()
         if edb_comp.IsNull():

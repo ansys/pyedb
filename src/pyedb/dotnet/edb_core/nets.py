@@ -119,11 +119,7 @@ class EdbNets(object):
         dict[str, :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBNetsData`]
             Dictionary of nets.
         """
-
-        temp = {}
-        for net in self._layout.nets:
-            temp[net.name] = EDBNetsData(net.api_object, self._pedb)
-        return temp
+        return self._pedb.modeler.nets
 
     @property
     def netlist(self):
@@ -177,7 +173,7 @@ class EdbNets(object):
         """
         nets = {}
         for net, value in self.nets.items():
-            if not value.IsPowerGround():
+            if not value.is_power_ground:
                 nets[net] = value
         return nets
 
@@ -192,7 +188,7 @@ class EdbNets(object):
         """
         nets = {}
         for net, value in self.nets.items():
-            if value.IsPowerGround():
+            if value.is_power_ground:
                 nets[net] = value
         return nets
 

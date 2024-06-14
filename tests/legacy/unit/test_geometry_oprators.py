@@ -20,19 +20,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
+import pytest
+
+from pyedb.modeler.geometry_operators import GeometryOperators as go
+
+pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
 
-class DefinitionObj(ObjBase):
-    """Base class for definition objects."""
+class TestClass:
+    def test_find_points_along_lines(self, points_for_line_detection):
+        distance_threshold = 0.015
+        minimum_number_of_points = 10
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
-
-    @property
-    def definition_obj_type(self):
-        return self._edb_object.GetDefinitionObjType()
-
-    @property
-    def name(self):
-        return self._edb_object.GetName()
+        lines, lines_idx, nppoints, nplines, nslines, nlines = go.find_points_along_lines(
+            points=points_for_line_detection,
+            minimum_number_of_points=minimum_number_of_points,
+            distance_threshold=distance_threshold,
+            return_additional_info=True,
+        )
+        assert len(lines) == 20
+        assert nppoints == 800
+        assert nplines == 28
+        assert nslines == 8
+        assert nlines == 20

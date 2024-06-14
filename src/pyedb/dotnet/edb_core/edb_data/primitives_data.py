@@ -22,7 +22,7 @@
 
 import math
 
-from pyedb.dotnet.edb_core.dotnet.database import NetDotNet
+from pyedb.dotnet.edb_core.cell.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.primitive import (
     BondwireDotNet,
     CircleDotNet,
@@ -32,7 +32,6 @@ from pyedb.dotnet.edb_core.dotnet.primitive import (
     RectangleDotNet,
     TextDotNet,
 )
-from pyedb.dotnet.edb_core.edb_data.connectable import Connectable
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -77,7 +76,7 @@ def cast(raw_primitive, core_app):
             return None
 
 
-class EDBPrimitivesMain(Connectable):
+class EDBPrimitives(Primitive):
     """Manages EDB functionalities for a primitives.
     It Inherits EDB Object properties.
 
@@ -91,127 +90,7 @@ class EDBPrimitivesMain(Connectable):
     """
 
     def __init__(self, raw_primitive, core_app):
-        super().__init__(core_app, raw_primitive)
-        self._app = self._pedb
-        self._core_stackup = core_app.stackup
-        self._core_net = core_app.nets
-        self.primitive_object = self._edb_object
-
-    @property
-    def type(self):
-        """Return the type of the primitive.
-        Allowed outputs are ``"Circle"``, ``"Rectangle"``,``"Polygon"``,``"Path"`` or ``"Bondwire"``.
-
-        Returns
-        -------
-        str
-        """
-        try:
-            return self._edb_object.GetPrimitiveType().ToString()
-        except AttributeError:  # pragma: no cover
-            return ""
-
-    @property
-    def net_name(self):
-        """Get or Set the primitive net name.
-
-        Returns
-        -------
-        str
-        """
-        return self.net.GetName()
-
-    @net_name.setter
-    def net_name(self, name):
-        if isinstance(name, str):
-            net = self._app.nets.nets[name].net_object
-            self.primitive_object.SetNet(net)
-        else:
-            try:
-                if isinstance(name, str):
-                    self.net = name
-                elif isinstance(name, NetDotNet):
-                    self.net = name.name
-            except:  # pragma: no cover
-                self._app.logger.error("Failed to set net name.")
-
-    @property
-    def layer(self):
-        """Get the primitive edb layer object."""
-        try:
-            layer_name = self.primitive_object.GetLayer().GetName()
-            return self._pedb.stackup.layers[layer_name]
-        except (KeyError, AttributeError):  # pragma: no cover
-            return None
-
-    @property
-    def layer_name(self):
-        """Get or Set the primitive layer name.
-
-        Returns
-        -------
-        str
-        """
-        try:
-            return self.layer.name
-        except (KeyError, AttributeError):  # pragma: no cover
-            return None
-
-    @layer_name.setter
-    def layer_name(self, val):
-        layer_list = list(self._core_stackup.layers.keys())
-        if isinstance(val, str) and val in layer_list:
-            layer = self._core_stackup.layers[val]._edb_layer
-            if layer:
-                self.primitive_object.SetLayer(layer)
-            else:
-                raise AttributeError("Layer {} not found.".format(val))
-        elif isinstance(val, type(self._core_stackup.layers[layer_list[0]])):
-            try:
-                self.primitive_object.SetLayer(val._edb_layer)
-            except:
-                raise AttributeError("Failed to assign new layer on primitive.")
-        else:
-            raise AttributeError("Invalid input value")
-
-    @property
-    def is_void(self):
-        """Either if the primitive is a void or not.
-
-        Returns
-        -------
-        bool
-        """
-        try:
-            return self._edb_object.IsVoid()
-        except AttributeError:  # pragma: no cover
-            return None
-
-    def get_connected_objects(self):
-        """Get connected objects.
-
-        Returns
-        -------
-        list
-        """
-        return self._pedb.get_connected_objects(self._layout_obj_instance)
-
-
-class EDBPrimitives(EDBPrimitivesMain):
-    """Manages EDB functionalities for a primitives.
-    It Inherits EDB Object properties.
-
-    Examples
-    --------
-    >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2021.2")
-    >>> edb_prim = edb.modeler.primitives[0]
-    >>> edb_prim.is_void # Class Property
-    >>> edb_prim.IsVoid() # EDB Object Property
-    """
-
-    def __init__(self, raw_primitive, core_app):
-        EDBPrimitivesMain.__init__(self, raw_primitive, core_app)
+        Primitive.__init__(self, core_app, raw_primitive)
 
     def area(self, include_voids=True):
         """Return the total area.
@@ -1239,13 +1118,13 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
     #     return self.add_void(prim)
 
 
-class EdbText(EDBPrimitivesMain, TextDotNet):
+class EdbText(Primitive, TextDotNet):
     def __init__(self, raw_primitive, core_app):
         EDBPrimitives.__init__(self, raw_primitive, core_app)
         TextDotNet.__init__(self, self._app, raw_primitive)
 
 
-class EdbBondwire(EDBPrimitivesMain, BondwireDotNet):
+class EdbBondwire(Primitive, BondwireDotNet):
     def __init__(self, raw_primitive, core_app):
         EDBPrimitives.__init__(self, raw_primitive, core_app)
         BondwireDotNet.__init__(self, self._app, raw_primitive)
