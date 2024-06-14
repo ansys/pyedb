@@ -49,7 +49,7 @@ class TestClass:
             str(self.local_input_folder / "GRM32ER72A225KA35_25C_0V.sp"),
         )
 
-    def test_01_create_edb(self, edb_examples):
+    def test_01_setups(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         for i in [
             "setups_hfss.json",
@@ -58,6 +58,45 @@ class TestClass:
                 data = json.load(f)
             assert edbapp.configuration.load(data, apply_file=True)
 
+        edbapp.close()
+
+    def test_01a_setups_frequency_sweeps(self, edb_examples):
+        data = {
+            "setups": [
+                {
+                    "name": "hfss_setup_1",
+                    "type": "HFSS",
+                    "f_adapt": "5GHz",
+                    "max_num_passes": 10,
+                    "max_mag_delta_s": 0.02,
+                    "freq_sweep": [
+                        {
+                            "name": "sweep1",
+                            "type": "Interpolation",
+                            "frequencies": [
+                                {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"}
+                            ],
+                        },
+                        {
+                            "name": "sweep2",
+                            "type": "Interpolation",
+                            "frequencies": [
+                                {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10}
+                            ],
+                        },
+                        {
+                            "name": "sweep3",
+                            "type": "Interpolation",
+                            "frequencies": [
+                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11}
+                            ],
+                        },
+                    ],
+                },
+            ]
+        }
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
     def test_02_pin_groups(self, edb_examples):
