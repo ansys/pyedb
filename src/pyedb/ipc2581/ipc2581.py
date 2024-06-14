@@ -325,9 +325,13 @@ class Ipc2581(object):
             self.ecad.cad_data.cad_data_step.add_logical_net(net)
 
     def add_profile(self):
-        profile = self._pedb.modeler.primitives_by_layer["Outline"]
-        for prim in profile:
-            self.ecad.cad_data.cad_data_step.add_profile(prim)
+        profile = self._pedb.modeler.primitives_by_layer.get("Outline")
+        if profile is None:
+            self._pedb.logger.warning("Layer 'Outline' not found.")
+        else:
+            profile = self._pedb.modeler.primitives_by_layer["Outline"]
+            for prim in profile:
+                self.ecad.cad_data.cad_data_step.add_profile(prim)
 
     def add_layer_features(self):
         layers = {i: j for i, j in self._pedb.stackup.layers.items()}
