@@ -57,7 +57,6 @@ INT_VALUE = 12
 STR_VALUE = "12"
 VALUES = (FLOAT_VALUE, INT_VALUE, STR_VALUE)
 MATERIAL_NAME = "DummyMaterial"
-OTHER_MATERIAL_NAME = "OtherDummyMaterial"
 
 
 class TestClass:
@@ -194,7 +193,7 @@ class TestClass:
         assert material
         _ = materials[MATERIAL_NAME]
         with pytest.raises(ValueError):
-            materials.add_dielectric_material(MATERIAL_NAME, 12, conductivity=12)
+            materials.add_dielectric_material(MATERIAL_NAME, 12, 12, conductivity=12)
 
     def test_materials_add_djordjevicsarkar_dielectric(self):
         """Evalue add djordjevicsarkar dielectric material."""
@@ -244,11 +243,11 @@ class TestClass:
         material = materials.add_material(MATERIAL_NAME, **kwargs)
         other_name = "OtherMaterial"
 
-        new_material = materials.duplicate(OTHER_MATERIAL_NAME, other_name)
+        new_material = materials.duplicate(MATERIAL_NAME, other_name)
         for mat_attribute in PROPERTIES:
             assert getattr(material, mat_attribute) == getattr(new_material, mat_attribute)
         with pytest.raises(ValueError):
-            materials.duplicate(OTHER_MATERIAL_NAME, other_name)
+            materials.duplicate(MATERIAL_NAME, other_name)
 
     def test_materials_delete_material(self):
         """Evaluate delete material."""
