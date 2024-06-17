@@ -30,11 +30,7 @@ from pyedb.dotnet.edb_core.cell.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.general import PadGeometryTpe, convert_py_list_to_net_list
-from pyedb.generic.general_methods import (
-    generate_unique_name,
-    is_ironpython,
-    pyedb_function_handler,
-)
+from pyedb.generic.general_methods import generate_unique_name, is_ironpython
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -300,7 +296,6 @@ class EDBPadProperties(object):
     def rotation(self, rotation_value):
         self._update_pad_parameters_parameters(rotation=rotation_value)
 
-    @pyedb_function_handler()
     def int_to_pad_type(self, val=0):
         """Convert an integer to an EDB.PadGeometryType.
 
@@ -315,7 +310,6 @@ class EDBPadProperties(object):
         """
         return self._pedbpadstack._ppadstack.int_to_pad_type(val)
 
-    @pyedb_function_handler()
     def int_to_geometry_type(self, val=0):
         """Convert an integer to an EDB.PadGeometryType.
 
@@ -330,7 +324,6 @@ class EDBPadProperties(object):
         """
         return self._pedbpadstack._ppadstack.int_to_geometry_type(val)
 
-    @pyedb_function_handler()
     def _update_pad_parameters_parameters(
         self,
         layer_name=None,
@@ -521,7 +514,6 @@ class EDBPadstack(object):
         """Hole diameter in string format."""
         return list(self.hole_params[2])[0].ToString()
 
-    @pyedb_function_handler()
     def _update_hole_parameters(self, hole_type=None, params=None, offsetx=None, offsety=None, rotation=None):
         """Update hole parameters.
 
@@ -777,7 +769,6 @@ class EDBPadstack(object):
                 return
             self.edb_padstack.SetData(cloned_padstackdef_data)
 
-    @pyedb_function_handler()
     def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True):
         """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
 
@@ -905,7 +896,6 @@ class EDBPadstack(object):
         self._ppadstack._pedb.logger.info("{} Converted successfully to 3D Objects.".format(i))
         return True
 
-    @pyedb_function_handler()
     def split_to_microvias(self):
         """Convert actual padstack definition to multiple microvias definitions.
 
@@ -1045,7 +1035,6 @@ class EDBPadstack(object):
         self._ppadstack._pedb.logger.info("Created {} new microvias.".format(i))
         return new_instances
 
-    @pyedb_function_handler()
     def _update_layer_names(self, old_name, updated_name):
         """Update padstack definition layer name when layer name is edited with the layer name setter.
         Parameters
@@ -1205,13 +1194,11 @@ class EDBPadstackInstance(Primitive):
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term if not term.is_null else None
 
-    @pyedb_function_handler()
     def _create_terminal(self, name=None):
         """Create a padstack instance terminal"""
         warnings.warn("`_create_terminal` is deprecated. Use `create_terminal` instead.", DeprecationWarning)
         return self.create_terminal(name)
 
-    @pyedb_function_handler
     def create_terminal(self, name=None):
         """Create a padstack instance terminal"""
         from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
@@ -1221,14 +1208,12 @@ class EDBPadstackInstance(Primitive):
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term.create(self, name)
 
-    @pyedb_function_handler()
     def create_coax_port(self, name=None, radial_extent_factor=0):
         """Create a coax port."""
         port = self.create_port(name)
         port.radial_extent_factor = radial_extent_factor
         return port
 
-    @pyedb_function_handler
     def create_port(self, name=None, reference=None, is_circuit_port=False):
         """Create a port on the padstack.
 
@@ -1345,7 +1330,6 @@ class EDBPadstackInstance(Primitive):
         ]
         return self._bounding_box
 
-    @pyedb_function_handler()
     def in_polygon(self, polygon_data, include_partial=True, simple_check=False):
         """Check if padstack Instance is in given polygon data.
 
@@ -1772,7 +1756,6 @@ class EDBPadstackInstance(Primitive):
         name = str(name).strip("'")
         return name
 
-    @pyedb_function_handler()
     def parametrize_position(self, prefix=None):
         """Parametrize the instance position.
 
@@ -1797,7 +1780,6 @@ class EDBPadstackInstance(Primitive):
         self.position = [var_name + "X", var_name + "Y"]
         return [var_name + "X", var_name + "Y"]
 
-    @pyedb_function_handler()
     def delete_padstack_instance(self):
         """Delete this padstack instance.
 
@@ -1808,7 +1790,6 @@ class EDBPadstackInstance(Primitive):
         self._edb_padstackinstance.Delete()
         return True
 
-    @pyedb_function_handler()
     def in_voids(self, net_name=None, layer_name=None):
         """Check if this padstack instance is in any void.
 
@@ -1901,7 +1882,6 @@ class EDBPadstackInstance(Primitive):
         """
         return int(self._edb_padstackinstance.GetGroup().GetPlacementLayer().GetTopBottomAssociation())
 
-    @pyedb_function_handler()
     def create_rectangle_in_pad(self, layer_name, return_points=False, partition_max_order=16):
         """Create a rectangle inscribed inside a padstack instance pad.
 
@@ -2099,7 +2079,6 @@ class EDBPadstackInstance(Primitive):
             created_polygon = self._pedb.modeler.create_polygon(path, layer_name)
             return created_polygon
 
-    @pyedb_function_handler()
     def get_connected_object_id_set(self):
         """Produce a list of all geometries physically connected to a given layout object.
 
@@ -2112,7 +2091,6 @@ class EDBPadstackInstance(Primitive):
         layoutObjInst = self.object_instance
         return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
 
-    @pyedb_function_handler()
     def get_reference_pins(self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True):
         """Search for reference pins using given criteria.
 

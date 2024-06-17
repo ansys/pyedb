@@ -51,11 +51,7 @@ from pyedb.dotnet.edb_core.sim_setup_data.io.siwave import (
     DCAdvancedSettings,
     DCSettings,
 )
-from pyedb.generic.general_methods import (
-    generate_unique_name,
-    is_linux,
-    pyedb_function_handler,
-)
+from pyedb.generic.general_methods import generate_unique_name, is_linux
 
 
 def _parse_value(v):
@@ -98,7 +94,6 @@ class SimulationSetup(object):
         EDB object.
     """
 
-    @pyedb_function_handler
     def __init__(self, pedb, edb_object=None):
         self._pedb = pedb
         self._edb_object = edb_object
@@ -146,7 +141,6 @@ class SimulationSetup(object):
     def setup_type(self):
         return self.sim_setup_info.sim_setup_type
 
-    @pyedb_function_handler
     def _create(self, name=None, simulation_setup_type=""):
         """Create a simulation setup."""
         if not name:
@@ -163,7 +157,6 @@ class SimulationSetup(object):
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
 
-    @pyedb_function_handler
     def _set_edb_setup_info(self, edb_setup_info):
         """Create a setup object from a setup information object."""
         utility = self._pedb._edb.Utility
@@ -191,7 +184,6 @@ class SimulationSetup(object):
         setup_utility = setup_type_mapping[self.sim_setup_info.sim_setup_type.ToString()]
         return setup_utility(edb_setup_info)
 
-    @pyedb_function_handler()
     def _update_setup(self):
         """Update setup in EDB."""
         if self._setup_type == "kHFSS":
@@ -266,7 +258,6 @@ class SimulationSetup(object):
         else:
             return {i.name: i for i in self.sim_setup_info.sweep_data_list}
 
-    @pyedb_function_handler
     def add_sweep(self, name, frequency_set: list = None):
         name = generate_unique_name("sweep") if not name else name
         if name in self.sweeps:
@@ -288,7 +279,6 @@ class SimulationSetup(object):
         self.sim_setup_info = ss_info
         self._update_setup()
 
-    @pyedb_function_handler
     def _add_frequency_sweep(self, sweep_data):
         """Add a frequency sweep.
 
@@ -309,7 +299,6 @@ class SimulationSetup(object):
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
 
-    @pyedb_function_handler
     def delete_frequency_sweep(self, sweep_data):
         """Delete a frequency sweep.
 
@@ -330,7 +319,6 @@ class SimulationSetup(object):
             self._update_setup()
             return True if name in self.frequency_sweeps else False
 
-    @pyedb_function_handler()
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
 
@@ -385,7 +373,6 @@ class HfssSimulationSetup(SimulationSetup):
             sim_setup_info = SimSetupInfo(self._pedb, setup_type="kHFSS", name=name)
             self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
 
-    @pyedb_function_handler
     def create(self, name=None):
         """Create an HFSS setup."""
         self._name = name
@@ -546,7 +533,6 @@ class HfssSimulationSetup(SimulationSetup):
 
         return self._mesh_operations
 
-    @pyedb_function_handler()
     def add_length_mesh_operation(
             self,
             net_layer_list,
@@ -597,7 +583,6 @@ class HfssSimulationSetup(SimulationSetup):
         self.mesh_operations[name] = mesh_operation
         return mesh_operation if self._update_setup() else False
 
-    @pyedb_function_handler()
     def add_skin_depth_mesh_operation(
             self,
             net_layer_list,
@@ -652,7 +637,6 @@ class HfssSimulationSetup(SimulationSetup):
         self.mesh_operations[name] = mesh_operation
         return mesh_operation if self._update_setup() else False
 
-    @pyedb_function_handler()
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
 
@@ -682,7 +666,6 @@ class HfssSimulationSetup(SimulationSetup):
             name = generate_unique_name("sweep")
         return SweepData(self, frequency_sweep, name)
 
-    @pyedb_function_handler()
     def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02):
         """Set single-frequency solution.
 
@@ -704,7 +687,6 @@ class HfssSimulationSetup(SimulationSetup):
         self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
         return self.adaptive_settings.add_adaptive_frequency_data(frequency, max_num_passes, max_delta_s)
 
-    @pyedb_function_handler()
     def set_solution_multi_frequencies(self, frequencies=("5GHz", "10GHz"), max_num_passes=10, max_delta_s="0.02"):
         """Set multi-frequency solution.
 
@@ -729,7 +711,6 @@ class HfssSimulationSetup(SimulationSetup):
                 return False
         return True
 
-    @pyedb_function_handler()
     def set_solution_broadband(
             self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
     ):
@@ -776,7 +757,6 @@ class SiwaveSYZSimulationSetup(SimulationSetup):
         self._setup_type = "kSIwave"
         self._sim_setup_info = None
 
-    @pyedb_function_handler()
     def create(self, name=None):
         """Create a SIwave SYZ setup.
 
@@ -790,7 +770,6 @@ class SiwaveSYZSimulationSetup(SimulationSetup):
 
         return self
 
-    @pyedb_function_handler
     def get_configurations(self):
         """Get SIwave SYZ simulation settings.
 
@@ -870,7 +849,6 @@ class SiwaveSYZSimulationSetup(SimulationSetup):
 
         return edb_sim_setup_info
 
-    @pyedb_function_handler
     def set_pi_slider(self, value):
         """Set SIwave PI simulation accuracy level.
         Options are:
@@ -885,7 +863,6 @@ class SiwaveSYZSimulationSetup(SimulationSetup):
         warnings.warn("`set_pi_slider` is deprecated. Use `pi_slider_position` property instead.", DeprecationWarning)
         self.pi_slider_position = value
 
-    @pyedb_function_handler
     def set_si_slider(self, value):
         """Set SIwave SI simulation accuracy level.
 
@@ -1000,7 +977,6 @@ class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
         """DC IR settings."""
         return SiwaveDCIRSettings(self)
 
-    @pyedb_function_handler
     def get_configurations(self):
         """Get SIwave DC simulation settings.
 
@@ -1014,7 +990,6 @@ class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
             "dc_advanced_settings": self.dc_advanced_settings.get_configurations(),
         }
 
-    @pyedb_function_handler
     def set_dc_slider(self, value):
         """Set DC simulation accuracy level.
 
@@ -1055,7 +1030,6 @@ class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
         """
         return convert_netdict_to_pydict(self.get_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround)
 
-    @pyedb_function_handler()
     def add_source_terminal_to_ground(self, source_name, terminal=0):
         """Add a source terminal to ground.
 

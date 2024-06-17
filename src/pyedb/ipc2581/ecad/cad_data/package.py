@@ -22,7 +22,7 @@
 
 import math
 
-from pyedb.generic.general_methods import ET, pyedb_function_handler
+from pyedb.generic.general_methods import ET
 from pyedb.ipc2581.content.entry_line import EntryLine
 from pyedb.ipc2581.ecad.cad_data.assembly_drawing import AssemblyDrawing
 from pyedb.ipc2581.ecad.cad_data.outline import Outline
@@ -55,7 +55,6 @@ class Package(object):
             if len([pin for pin in value if isinstance(pin, Pin)]) == len(value):
                 self._pins = value
 
-    @pyedb_function_handler()
     def add_pin(self, number=0, x=0.0, y=0.0, rotation=0.0, primitive_ref=""):  # pragma no cover
         added_pin = Pin()
         added_pin.x = x
@@ -65,7 +64,6 @@ class Package(object):
         added_pin.primitive_def = primitive_ref
         self.pins.append(added_pin)
 
-    @pyedb_function_handler()
     def add_component_outline(self, component):  # pragma no cover
         if component:
             _bbox = component.bounding_box
@@ -112,7 +110,6 @@ class Package(object):
             self.assembly_drawing.polygon.poly_steps = [poly_step1, poly_step2, poly_step3, poly_step4, poly_step5]
             self.assembly_drawing.line_ref = "ROUND_0"
 
-    @pyedb_function_handler()
     def write_xml(self, step):  # pragma no cover
         package = ET.SubElement(step, "Package")
         package.set("name", self.name)

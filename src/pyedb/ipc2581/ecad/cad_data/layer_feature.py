@@ -22,7 +22,7 @@
 
 import math
 
-from pyedb.generic.general_methods import ET, pyedb_function_handler
+from pyedb.generic.general_methods import ET
 from pyedb.ipc2581.ecad.cad_data.feature import Feature, FeatureType
 
 
@@ -46,7 +46,6 @@ class LayerFeature(object):
             if len([feat for feat in value if isinstance(feat, Feature)]) == len(value):
                 self._features = value
 
-    @pyedb_function_handler()
     def add_feature(self, obj_instance=None):  # pragma no cover
         if obj_instance:
             feature = Feature(self._ipc)
@@ -61,7 +60,6 @@ class LayerFeature(object):
         else:
             return False
 
-    @pyedb_function_handler()
     def add_via_instance_feature(self, padstack_inst=None, padstackdef=None, layer_name=None):  # pragma no cover
         if padstack_inst and padstackdef:
             feature = Feature(self._ipc)
@@ -97,7 +95,6 @@ class LayerFeature(object):
             except:
                 pass
 
-    @pyedb_function_handler()
     def add_drill_feature(self, via, diameter=0.0):  # pragma no cover
         feature = Feature(self._ipc)
         feature.feature_type = FeatureType.Drill
@@ -108,7 +105,6 @@ class LayerFeature(object):
         feature.drill.diameter = self._ipc.from_meter_to_units(diameter, self._ipc.units)
         self.features.append(feature)
 
-    @pyedb_function_handler()
     def add_component_padstack_instance_feature(
         self, component=None, pin=None, top_bottom_layers=[], padstack_def=None
     ):  # pragma no cover
@@ -154,7 +150,6 @@ class LayerFeature(object):
                 feature.padstack_instance.standard_primimtive_ref = primitive_ref
                 self.features.append(feature)
 
-    @pyedb_function_handler()
     def _get_primitive_ref(self, padstack_def=None, layer=None):
         if padstack_def and layer:
             for pad_def in self._ipc.ecad.cad_data.cad_data_step.padstack_defs[padstack_def].padstack_pad_def:
@@ -162,7 +157,6 @@ class LayerFeature(object):
                     return pad_def.primitive_ref
             return "default_value"
 
-    @pyedb_function_handler()
     def write_xml(self, step):  # pragma no cover
         layer_feature = ET.SubElement(step, "LayerFeature")
         layer_feature.set("layerRef", self.layer_name)
