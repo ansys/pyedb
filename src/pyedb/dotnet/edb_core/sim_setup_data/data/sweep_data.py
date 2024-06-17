@@ -22,7 +22,7 @@
 
 import warnings
 
-from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name
 
 
 class SweepData(object):
@@ -510,7 +510,6 @@ class SweepData(object):
         if update:
             return self._update_sweep()
 
-    @pyedb_function_handler
     def add(self, sweep_type, start, stop, increment):
         sweep_type = sweep_type.replace(" ", "_")
         if sweep_type in ["linear_count", "linear_scale"]:
@@ -521,7 +520,6 @@ class SweepData(object):
             raise ValueError("sweep_type must be either 'linear_count', 'linear_scale' or 'log_scale")
         self.add_frequencies(freqs)
 
-    @pyedb_function_handler
     def add_frequencies(self, frequencies):
         if not isinstance(frequencies, list):
             frequencies = [frequencies]
@@ -529,6 +527,5 @@ class SweepData(object):
             i = str(self._pedb.edb_value(i).ToDouble())
             self._edb_object.Frequencies.Add(i)
 
-    @pyedb_function_handler
     def clear(self):
         self._edb_object.Frequencies.Clear()

@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.generic.general_methods import pyedb_function_handler
-
 from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 
 
@@ -68,6 +66,5 @@ class SimSetupInfo:
     def sweep_data_list(self):
         return [SweepData(self._pedb, i) for i in list(self._edb_object.SweepDataList)]
 
-    @pyedb_function_handler()
     def add_sweep_data(self, sweep_data):
         self._edb_object.SweepDataList.Add(sweep_data._edb_object)

@@ -3698,7 +3698,7 @@ class Edb(Database):
             name = generate_unique_name("Siwave_SYZ")
         if name in self.setups:
             return False
-        SiwaveSYZSimulationSetup(self).create(name)
+        setup = SiwaveSYZSimulationSetup(self, name=name)
         return self.setups[name]
 
     def create_siwave_dc_setup(self, name=None):

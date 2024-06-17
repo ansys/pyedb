@@ -181,7 +181,8 @@ class SimulationSetup(object):
         version = self._pedb.edbversion.split(".")
         if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
             setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
-        setup_utility = setup_type_mapping[self.sim_setup_info.sim_setup_type.ToString()]
+        sim_setup_type = self.sim_setup_info.sim_setup_type
+        setup_utility = setup_type_mapping[sim_setup_type.ToString()]
         return setup_utility(edb_setup_info)
 
     def _update_setup(self):
@@ -372,12 +373,7 @@ class HfssSimulationSetup(SimulationSetup):
 
             sim_setup_info = SimSetupInfo(self._pedb, setup_type="kHFSS", name=name)
             self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
-
-    def create(self, name=None):
-        """Create an HFSS setup."""
-        self._name = name
-        self._create(name, "kHFSS")
-        return self
+            self._update_setup()
 
     @property
     def get_sim_setup_info(self):
@@ -751,11 +747,17 @@ class SiwaveSYZSimulationSetup(SimulationSetup):
         Edb object.
     """
 
-    def __init__(self, pedb, edb_setup=None):
-        super().__init__(pedb, edb_setup)
-        self._edb = self._pedb
-        self._setup_type = "kSIwave"
-        self._sim_setup_info = None
+    def __init__(self, pedb, edb_object=None, name: str=None):
+        super().__init__(pedb, edb_object)
+        self._simulation_setup_builder = self._pedb._edb.Utility.SIWaveSimulationSetup
+        #self._setup_type = "kSIwave"
+        if edb_object is None:
+            self._name = name
+            sim_setup_info = SimSetupInfo(self._pedb, setup_type="kSIwave", name=name)
+            self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
+            self._update_setup()
+
+        #self._sim_setup_info = None
 
     def create(self, name=None):
         """Create a SIwave SYZ setup.
@@ -765,7 +767,7 @@ class SiwaveSYZSimulationSetup(SimulationSetup):
         :class:`SiwaveDCSimulationSetup`
         """
         self._name = name
-        self._create(name)
+        self._create(name, simulation_setup_type="kSIwave")
         self.si_slider_position = 1
 
         return self
@@ -792,14 +794,20 @@ class SiwaveSYZSimulationSetup(SimulationSetup):
         return AdvancedSettings(self)
 
     @property
+    def sim_setup_info(self):
+        """Overrides the default sim_setup_info object."""
+        return SimSetupInfo(self._pedb, self.get_sim_setup_info)
+
+    @property
     def get_sim_setup_info(self):
         """Get simulation information from the setup."""
-        if self._sim_setup_info:
-            return self._sim_setup_info
+        """if self._sim_setup_info:
+            return self._sim_setup_info"""
 
         edb_setup = self._edb_object
-        edb_sim_setup_info = self._pedb.simsetupdata.SimSetupInfo[self._simulation_setup_type[self._setup_type]]()
-        edb_sim_setup_info.Name = edb_setup.GetName()
+        #edb_sim_setup_info = self._pedb.simsetupdata.SimSetupInfo[self._setup_type_mapping[self._setup_type]]()
+        sim_setup_info = SimSetupInfo(self._pedb, setup_type="kSIwave", name=edb_setup.GetName())
+        edb_sim_setup_info = sim_setup_info._edb_object
 
         string = edb_setup.ToString().replace("\t", "").split("\r\n")
 
@@ -831,7 +839,7 @@ class SiwaveSYZSimulationSetup(SimulationSetup):
             elif k in dir(edb_sim_setup_info.SimulationSettings.DCAdvancedSettings):
                 setter = edb_sim_setup_info.SimulationSettings.DCAdvancedSettings
             elif "DCIRSettings" in dir(edb_sim_setup_info.SimulationSettings) and k in dir(
-                    edb_sim_setup_info.SimulationSettings.DCIRSettings
+                edb_sim_setup_info.SimulationSettings.DCIRSettings
             ):
                 setter = edb_sim_setup_info.SimulationSettings.DCIRSettings
             elif k in dir(edb_sim_setup_info.SimulationSettings.DCSettings):
@@ -957,7 +965,6 @@ class SiwaveDCSimulationSetup(SiwaveSYZSimulationSetup):
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
         self._setup_type = "kSIwaveDCIR"
-        self._edb = pedb
         self._mesh_operations = {}
 
     def create(self, name=None):
