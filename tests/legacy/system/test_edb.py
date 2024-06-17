@@ -1033,6 +1033,19 @@ class TestClass:
         assert mop.number_of_layer_elements == "3"
         edbapp.close()
 
+    def test_hfss_frequency_sweep(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        setup1 = edbapp.create_hfss_setup("setup1")
+        assert edbapp.setups["setup1"].name == "setup1"
+        setup1.add_sweep("sw1", ["linear count", "1MHz", "100MHz", 10])
+        assert edbapp.setups["setup1"].sweeps["sw1"].name == "sw1"
+        assert len(setup1.sweeps["sw1"].frequencies) == 10
+        setup1.sweeps["sw1"].add("linear_scale", "210MHz", "300MHz", "10MHz")
+        assert len(setup1.sweeps["sw1"].frequencies) == 20
+        setup1.sweeps["sw1"].add("log_scale", "1GHz", "10GHz", 10)
+        assert len(setup1.sweeps["sw1"].frequencies) == 31
+        edbapp.close()
+
     def test_hfss_simulation_setup_b(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         setup1 = edbapp.create_hfss_setup("setup1")

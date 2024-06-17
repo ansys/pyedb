@@ -45,6 +45,7 @@ from pyedb.dotnet.edb_core.sim_setup_data.data.siw_dc_ir_settings import (
     SiwaveDCIRSettings,
 )
 from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
+from pyedb.dotnet.edb_core.sim_setup_data.data.sim_setup_info import SimSetupInfo
 from pyedb.dotnet.edb_core.sim_setup_data.io.siwave import (
     AdvancedSettings,
     DCAdvancedSettings,
@@ -102,7 +103,8 @@ class SimulationSetup(object):
         self._pedb = pedb
         self._edb_object = edb_object
         self._setup_type = ""
-        self._setup_type_mapping = {
+        self._simulation_setup_builder = None
+        self._simulation_setup_type = {
             "kHFSS": self._pedb.simsetupdata.HFSSSimulationSettings,
             "kPEM": None,
             "kSIwave": self._pedb.simsetupdata.SIwave.SIWSimulationSettings,
@@ -121,7 +123,7 @@ class SimulationSetup(object):
         }
 
         if float(self._pedb.edbversion) >= 2024.2:
-            self._setup_type_mapping.update(
+            self._simulation_setup_type.update(
                 {
                     "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings,
                     "kHFSSPI": self._pedb.simsetupdata.HFSSPISimulationSettings,
@@ -132,19 +134,30 @@ class SimulationSetup(object):
 
         self._sweep_list = {}
 
+    @property
+    def sim_setup_info(self):
+        return SimSetupInfo(self._pedb, self._edb_object.GetSimSetupInfo())
+
+    @sim_setup_info.setter
+    def sim_setup_info(self, sim_setup_info):
+        self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
+
+    @property
+    def setup_type(self):
+        return self.sim_setup_info.sim_setup_type
+
     @pyedb_function_handler
-    def _create(self, name=None):
+    def _create(self, name=None, simulation_setup_type=""):
         """Create a simulation setup."""
         if not name:
             name = generate_unique_name(self.setup_type)
             self._name = name
 
-        setup_type = self._setup_type_mapping[self._setup_type]
-        edb_setup_info = self._pedb.simsetupdata.SimSetupInfo[setup_type]()
+        edb_setup_info = self._pedb.simsetupdata.SimSetupInfo[self._simulation_setup_type[simulation_setup_type]]()
         edb_setup_info.Name = name
         if (
-            edb_setup_info.get_SimSetupType().ToString() == "kRaptorX"
-            or edb_setup_info.get_SimSetupType().ToString() == "kHFSSPI"
+                edb_setup_info.get_SimSetupType().ToString() == "kRaptorX"
+                or edb_setup_info.get_SimSetupType().ToString() == "kHFSSPI"
         ):
             self._edb_setup_info = edb_setup_info
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
@@ -175,7 +188,7 @@ class SimulationSetup(object):
         version = self._pedb.edbversion.split(".")
         if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
             setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
-        setup_utility = setup_type_mapping[self._setup_type]
+        setup_utility = setup_type_mapping[self.sim_setup_info.sim_setup_type.ToString()]
         return setup_utility(edb_setup_info)
 
     @pyedb_function_handler()
@@ -238,15 +251,42 @@ class SimulationSetup(object):
 
     @property
     def frequency_sweeps(self):
+        warnings.warn("Use new property :func:`sweeps` instead.", DeprecationWarning)
+        return self.sweeps
+
+    @property
+    def sweeps(self):
         """List of frequency sweeps."""
         temp = {}
         if self.setup_type in ("kRaptorX", "kHFSSPI"):
             sweep_data_list = self._edb_setup_info.SweepDataList
+            for i in list(sweep_data_list):
+                temp[i.Name] = SweepData(self, None, i.Name, i)
+            return temp
         else:
-            sweep_data_list = self.get_sim_setup_info.SweepDataList
-        for i in list(sweep_data_list):
-            temp[i.Name] = SweepData(self, None, i.Name, i)
-        return temp
+            return {i.name: i for i in self.sim_setup_info.sweep_data_list}
+
+    @pyedb_function_handler
+    def add_sweep(self, name, frequency_set: list = None):
+        name = generate_unique_name("sweep") if not name else name
+        if name in self.sweeps:
+            raise ValueError("Sweep {} already exists.".format(name))
+
+        sweep_data = SweepData(self._pedb, name=name)
+        if frequency_set is None:
+            sweep_type = "linear_scale"
+            start, stop, increment = "50MHz", "5GHz", "50MHz"
+            sweep_data.add(sweep_type, start, stop, increment)
+        else:
+            if not isinstance(frequency_set[0], list):
+                frequency_set = [frequency_set]
+            for fs in frequency_set:
+                sweep_data.add(*fs)
+
+        ss_info = self.sim_setup_info
+        ss_info.add_sweep_data(sweep_data)
+        self.sim_setup_info = ss_info
+        self._update_setup()
 
     @pyedb_function_handler
     def _add_frequency_sweep(self, sweep_data):
@@ -333,22 +373,30 @@ class SimulationSetup(object):
 class HfssSimulationSetup(SimulationSetup):
     """Manages EDB methods for HFSS simulation setup."""
 
-    def __init__(self, pedb, edb_object=None):
+    def __init__(self, pedb, edb_object=None, name: str = None):
         super().__init__(pedb, edb_object)
-        self._setup_type = "kHFSS"
+        self._simulation_setup_builder = self._pedb._edb.Utility.HFSSSimulationSetup
         self._mesh_operations = {}
+        if edb_object is None:
+            if not name:
+                name = generate_unique_name("HFSS")
+            self._name = name
+
+            sim_setup_info = SimSetupInfo(self._pedb, setup_type="kHFSS", name=name)
+            self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
 
     @pyedb_function_handler
     def create(self, name=None):
         """Create an HFSS setup."""
         self._name = name
-        self._create(name)
+        self._create(name, "kHFSS")
         return self
 
     @property
     def get_sim_setup_info(self):
         """Get simulation setup information."""
-        return self._edb_object.GetSimSetupInfo()
+        warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
+        return self.sim_setup_info._edb_object
 
     @property
     def solver_slider_type(self):
@@ -500,15 +548,15 @@ class HfssSimulationSetup(SimulationSetup):
 
     @pyedb_function_handler()
     def add_length_mesh_operation(
-        self,
-        net_layer_list,
-        name=None,
-        max_elements=1000,
-        max_length="1mm",
-        restrict_elements=True,
-        restrict_length=True,
-        refine_inside=False,
-        mesh_region=None,
+            self,
+            net_layer_list,
+            name=None,
+            max_elements=1000,
+            max_length="1mm",
+            restrict_elements=True,
+            restrict_length=True,
+            refine_inside=False,
+            mesh_region=None,
     ):
         """Add a mesh operation to the setup.
 
@@ -551,16 +599,16 @@ class HfssSimulationSetup(SimulationSetup):
 
     @pyedb_function_handler()
     def add_skin_depth_mesh_operation(
-        self,
-        net_layer_list,
-        name=None,
-        max_elements=1000,
-        skin_depth="1um",
-        restrict_elements=True,
-        surface_triangle_length="1mm",
-        number_of_layers=2,
-        refine_inside=False,
-        mesh_region=None,
+            self,
+            net_layer_list,
+            name=None,
+            max_elements=1000,
+            skin_depth="1um",
+            restrict_elements=True,
+            surface_triangle_length="1mm",
+            number_of_layers=2,
+            refine_inside=False,
+            mesh_region=None,
     ):
         """Add a mesh operation to the setup.
 
@@ -683,7 +731,7 @@ class HfssSimulationSetup(SimulationSetup):
 
     @pyedb_function_handler()
     def set_solution_broadband(
-        self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
+            self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
     ):
         """Set broadband solution.
 
@@ -705,7 +753,7 @@ class HfssSimulationSetup(SimulationSetup):
         self.adaptive_settings.adapt_type = "kBroadband"
         self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
         if not self.adaptive_settings.add_broadband_adaptive_frequency_data(
-            low_frequency, high_frequency, max_num_passes, max_delta_s
+                low_frequency, high_frequency, max_num_passes, max_delta_s
         ):  # pragma no cover
             return False
         return True
@@ -771,7 +819,7 @@ class SiwaveSYZSimulationSetup(SimulationSetup):
             return self._sim_setup_info
 
         edb_setup = self._edb_object
-        edb_sim_setup_info = self._pedb.simsetupdata.SimSetupInfo[self._setup_type_mapping[self._setup_type]]()
+        edb_sim_setup_info = self._pedb.simsetupdata.SimSetupInfo[self._simulation_setup_type[self._setup_type]]()
         edb_sim_setup_info.Name = edb_setup.GetName()
 
         string = edb_setup.ToString().replace("\t", "").split("\r\n")
@@ -804,7 +852,7 @@ class SiwaveSYZSimulationSetup(SimulationSetup):
             elif k in dir(edb_sim_setup_info.SimulationSettings.DCAdvancedSettings):
                 setter = edb_sim_setup_info.SimulationSettings.DCAdvancedSettings
             elif "DCIRSettings" in dir(edb_sim_setup_info.SimulationSettings) and k in dir(
-                edb_sim_setup_info.SimulationSettings.DCIRSettings
+                    edb_sim_setup_info.SimulationSettings.DCIRSettings
             ):
                 setter = edb_sim_setup_info.SimulationSettings.DCIRSettings
             elif k in dir(edb_sim_setup_info.SimulationSettings.DCSettings):

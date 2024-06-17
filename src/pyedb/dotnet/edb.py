@@ -3673,7 +3673,7 @@ class Edb(Database):
             return False
         elif not name:
             name = generate_unique_name("setup")
-        setup = HfssSimulationSetup(self).create(name)
+        setup = HfssSimulationSetup(self, name=name)
         setup.set_solution_single_frequency("1GΗz")
         return setup
 
