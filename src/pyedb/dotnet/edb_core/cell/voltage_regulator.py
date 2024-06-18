@@ -33,13 +33,12 @@ class VoltageRegulator(Connectable):
     @property
     def component(self):
         """Retrieve voltage regulator component"""
-        try:
+        if not self._edb_object.GetComponent().IsNull():
             ref_des = self._edb_object.GetComponent().GetName()
             if not ref_des:
                 return False
             return self._pedb.components.instances[ref_des]
-        except:
-            return False
+        return False
 
     @component.setter
     def component(self, value):
