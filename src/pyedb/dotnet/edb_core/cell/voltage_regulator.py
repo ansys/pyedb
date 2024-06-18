@@ -21,11 +21,12 @@
 # SOFTWARE.
 
 from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
-from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 
 
 class VoltageRegulator(Connectable):
+    """Class managing EDB voltage regulator."""
+
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
         self._positive_remote_sense_pin = None
@@ -33,6 +34,7 @@ class VoltageRegulator(Connectable):
 
     @property
     def component(self):
+        """Retrieve voltage regulator component"""
         try:
             ref_des = self._edb_object.GetComponent().GetName()
             if not ref_des:
@@ -53,10 +55,12 @@ class VoltageRegulator(Connectable):
 
     @property
     def id(self):
+        """Retrieve voltage regulator ID."""
         return self._edb_object.GetId()
 
     @property
     def load_regulator_current(self):
+        """Retrieve load regulator current value"""
         return self._edb_object.GetLoadRegulationCurrent().ToDouble()
 
     @load_regulator_current.setter
@@ -66,6 +70,7 @@ class VoltageRegulator(Connectable):
 
     @property
     def load_regulation_percent(self):
+        """Retrieve load regulation percent value."""
         return self._edb_object.GetLoadRegulationPercent().ToDouble()
 
     @load_regulation_percent.setter
@@ -75,6 +80,7 @@ class VoltageRegulator(Connectable):
 
     @property
     def name(self):
+        """Retrieve voltage regulator name."""
         return self._edb_object.GetName()
 
     @name.setter
@@ -84,6 +90,7 @@ class VoltageRegulator(Connectable):
 
     @property
     def negative_remote_sense_pin(self):
+        """Retrieve negative remote sense pin."""
         return self._negative_remote_sense_pin
 
     @negative_remote_sense_pin.setter
@@ -99,6 +106,7 @@ class VoltageRegulator(Connectable):
 
     @property
     def positive_remote_sense_pin(self):
+        """Retrieve positive remote sense pin."""
         return self._positive_remote_sense_pin
 
     @positive_remote_sense_pin.setter
@@ -118,6 +126,7 @@ class VoltageRegulator(Connectable):
 
     @property
     def voltage(self):
+        """Retrieve voltage value."""
         return self._edb_object.GetVoltage().ToDouble()
 
     @voltage.setter
@@ -126,6 +135,7 @@ class VoltageRegulator(Connectable):
 
     @property
     def is_active(self):
+        """Check is voltage regulator is active."""
         return self._edb_object.IsActive()
 
     @is_active.setter
@@ -136,16 +146,3 @@ class VoltageRegulator(Connectable):
     @property
     def is_null(self):
         return self._edb_object.IsNull()
-
-    @property
-    def net(self):
-        edb_net = self._edb_object.GetNet()
-        return self._pedb.nets[edb_net.GetName()]
-
-    @net.setter
-    def net(self, value):
-        if isinstance(value, str):
-            if value in self._pedb.nets:
-                self._edb_object.SetNet(self._pedb.nets[value]._edb_object)
-        elif isinstance(value, EDBNetsData):
-            self._edb_object.SetNet(value._edb_object)

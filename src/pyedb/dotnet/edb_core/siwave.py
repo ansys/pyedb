@@ -1444,6 +1444,24 @@ class EdbSiwave(object):
         load_regulation_current="1A",
         load_regulation_percent=0.1,
     ):
+        """Create a voltage regulator module.
+        Parameters
+        ----------
+        name : str
+            Name of the voltage regulator.
+        is_active : bool optional
+            Set the voltage regulator active or not. Default value is ``True``.
+        voltage ; str, float
+            Set the voltage value.
+        positive_sensor_pin : int, .class pyedb.dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance
+            defining the positive sensor pin.
+        negative_sensor_pin : int, .class pyedb.dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance
+            defining the negative sensor pin.
+        load_regulation_current : str or float
+            definition the load regulation current value.
+        load_regulation_percent : float
+            definition the load regulation percent value.
+        """
         from pyedb.dotnet.edb_core.cell.voltage_regulator import VoltageRegulator
 
         voltage = self._pedb.edb_value(voltage)
