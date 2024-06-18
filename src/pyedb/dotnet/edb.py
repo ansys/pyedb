@@ -48,6 +48,7 @@ from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
 from pyedb.dotnet.edb_core.cell.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.dotnet.edb_core.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
+from pyedb.dotnet.edb_core.cell.voltage_regulator import VoltageRegulator
 from pyedb.dotnet.edb_core.components import Components
 from pyedb.dotnet.edb_core.dotnet.database import Database
 from pyedb.dotnet.edb_core.dotnet.layout import LayoutDotNet
@@ -509,6 +510,15 @@ class Edb(Database):
         """Get all layout sources."""
         terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [3, 4, 7]]
         return {ter.GetName(): ExcitationSources(self, ter) for ter in terms}
+
+    @property
+    def voltage_regulator_modules(self):
+        """Get all voltage regulator modules"""
+        vrms = [VoltageRegulator(self, edb_object) for edb_object in list(self.active_layout.VoltageRegulators)]
+        _vrms = {}
+        for vrm in vrms:
+            _vrms[vrm.GetName()] = vrm
+        return _vrms
 
     @property
     def probes(self):
