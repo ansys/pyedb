@@ -981,9 +981,9 @@ class TestClass:
         # mesh_operations = setup1.mesh_operations
         # setup1.mesh_operations = mesh_operations
 
-        setup1.add_frequency_sweep(
+        setup1.add_sweep(
             "sweep1",
-            frequency_sweep=[
+            frequency_set=[
                 ["linear count", "0", "1kHz", 1],
                 ["log scale", "1kHz", "0.1GHz", 10],
                 ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
@@ -1122,15 +1122,15 @@ class TestClass:
             for k, v in setup1.advanced_settings.pi_defaults.items():
                 assert settings["advanced_settings"][k] == v[p]
 
-        sweep = setup1.add_frequency_sweep(
-            "sweep1",
-            frequency_sweep=[
+        sweep = setup1.add_sweep(
+            name="sweep1",
+            frequency_set=[
                 ["linear count", "0", "1kHz", 1],
                 ["log scale", "1kHz", "0.1GHz", 10],
                 ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
             ],
         )
-        assert "0" in sweep.frequencies
+        assert 0 in sweep.frequencies
         assert not sweep.adaptive_sampling
         assert not sweep.adv_dc_extrapolation
         assert sweep.auto_s_mat_only_solve
@@ -1190,7 +1190,7 @@ class TestClass:
         assert sweep.save_rad_fields_only
         assert sweep.use_q3d_for_dc
 
-    def test_siwave_build_ac_project(self):
+    def test_edb_configuration_siwave_build_ac_project(self):
         """Build ac simulation project."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_133_simconfig.aedb")

@@ -22,8 +22,6 @@
 
 import warnings
 
-from pyedb.generic.general_methods import generate_unique_name
-
 
 class SweepData(object):
     """Manages EDB methods for a frequency sweep.
@@ -39,24 +37,20 @@ class SweepData(object):
 
     def __init__(self, pedb, edb_object=None, name:str=None, sim_setup=None):
         self._pedb = pedb
-        self._sim_setup = sim_setup  # Tobe removed
+        self.sim_setup = sim_setup
 
         if edb_object is not None:
             self._edb_object = edb_object
             self._name = self._edb_object.Name
         else:
-            if not name:
-                self._name = generate_unique_name("sweep")
-            else:
-                self._name = name
+            self._name = name
             self._edb_object = self._pedb.simsetupdata.SweepData(self._name)
             self.clear()
 
     def _update_sweep(self):
-        warnings.warn("Use new property :func:`add` instead.", DeprecationWarning)
         """Update the sweep."""
-        self._sim_setup.delete_frequency_sweep(self)
-        self._sim_setup._add_frequency_sweep(self)
+        self.sim_setup.delete_frequency_sweep(self)
+        self.sim_setup._add_frequency_sweep(self)
         return
 
     @property
@@ -77,7 +71,7 @@ class SweepData(object):
     @property
     def frequencies(self):
         """List of frequency points."""
-        return list(self._edb_object.Frequencies)
+        return [float(i) for i in list(self._edb_object.Frequencies)]
 
     @property
     def adaptive_sampling(self):
@@ -441,8 +435,8 @@ class SweepData(object):
             ``True`` if correctly executed, ``False`` otherwise.
         """
         warnings.warn("Use new property :func:`add` instead.", DeprecationWarning)
-        start = self._sim_setup._pedb.arg_to_dim(start, "Hz")
-        stop = self._sim_setup._pedb.arg_to_dim(stop, "Hz")
+        start = self.sim_setup._pedb.arg_to_dim(start, "Hz")
+        stop = self.sim_setup._pedb.arg_to_dim(stop, "Hz")
         self._edb_object.Frequencies = self._edb_object.SetFrequencies(start, stop, count)
         return self._update_sweep()
 
@@ -464,8 +458,8 @@ class SweepData(object):
             ``True`` if correctly executed, ``False`` otherwise.
         """
         warnings.warn("Use new property :func:`add` instead.", DeprecationWarning)
-        start = self._sim_setup._pedb.arg_to_dim(start, "Hz")
-        stop = self._sim_setup._pedb.arg_to_dim(stop, "Hz")
+        start = self.sim_setup._pedb.arg_to_dim(start, "Hz")
+        stop = self.sim_setup._pedb.arg_to_dim(stop, "Hz")
         self._edb_object.Frequencies = self._edb_object.SetLogFrequencies(start, stop, samples)
         return self._update_sweep()
 
