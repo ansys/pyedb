@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import warnings
+
 
 class SweepData(object):
     """Manages EDB methods for a frequency sweep.
@@ -29,47 +31,36 @@ class SweepData(object):
     sim_setup : :class:`pyedb.dotnet.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
     name : str, optional
         Name of the frequency sweep.
-    edb_sweep_data : :class:`Ansys.Ansoft.Edb.Utility.SIWDCIRSimulationSettings`, optional
+    edb_object : :class:`Ansys.Ansoft.Edb.Utility.SIWDCIRSimulationSettings`, optional
         EDB object. The default is ``None``.
     """
 
-    def __init__(self, sim_setup, frequency_sweep=None, name=None, edb_sweep_data=None):
-        self._sim_setup = sim_setup
+    def __init__(self, pedb, edb_object=None, name: str = None, sim_setup=None):
+        self._pedb = pedb
+        self.sim_setup = sim_setup
 
-        if edb_sweep_data:
-            self._edb_sweep_data = edb_sweep_data
-            self._name = self._edb_sweep_data.Name
+        if edb_object is not None:
+            self._edb_object = edb_object
+            self._name = self._edb_object.Name
         else:
-            if not name:
-                self._name = generate_unique_name("sweep")
-            else:
-                self._name = name
-            self._edb_sweep_data = self._pedb.simsetupdata.SweepData(self._name)
-            self.set_frequencies(frequency_sweep)
-
-    @property
-    def _edb_object(self):
-        return self._edb_sweep_data
-
-    @property
-    def _pedb(self):
-        """EDB."""
-        return self._sim_setup._pedb
+            self._name = name
+            self._edb_object = self._pedb.simsetupdata.SweepData(self._name)
+            self.clear()
 
     def _update_sweep(self):
         """Update the sweep."""
-        self._sim_setup.delete_frequency_sweep(self)
-        self._sim_setup._add_frequency_sweep(self)
+        self.sim_setup.delete_frequency_sweep(self)
+        self.sim_setup._add_frequency_sweep(self)
         return
 
     @property
     def name(self):
         """Name of the sweep."""
-        return self._edb_sweep_data.Name
+        return self._edb_object.Name
 
     @name.setter
     def name(self, value):
-        self._edb_sweep_data.Name = value
+        self._edb_object.Name = value
         self._update_sweep()
 
     @property
@@ -80,7 +71,7 @@ class SweepData(object):
     @property
     def frequencies(self):
         """List of frequency points."""
-        return list(self._edb_sweep_data.Frequencies)
+        return [float(i) for i in list(self._edb_object.Frequencies)]
 
     @property
     def adaptive_sampling(self):
@@ -91,7 +82,7 @@ class SweepData(object):
         bool
             ``True`` if adaptive sampling is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.AdaptiveSampling
+        return self._edb_object.AdaptiveSampling
 
     @property
     def adv_dc_extrapolation(self):
@@ -102,22 +93,22 @@ class SweepData(object):
         bool
             ``True`` if advanced DC Extrapolation is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.AdvDCExtrapolation
+        return self._edb_object.AdvDCExtrapolation
 
     @property
     def compute_dc_point(self):
         """Flag indicating if computing the exact DC point is turned on."""
-        return self._edb_sweep_data.ComputeDCPoint
+        return self._edb_object.ComputeDCPoint
 
     @compute_dc_point.setter
     def compute_dc_point(self, value):
-        self._edb_sweep_data.ComputeDCPoint = value
+        self._edb_object.ComputeDCPoint = value
         self._update_sweep()
 
     @property
     def auto_s_mat_only_solve(self):
         """Flag indicating if Auto SMatrix only solve is turned on."""
-        return self._edb_sweep_data.AutoSMatOnlySolve
+        return self._edb_object.AutoSMatOnlySolve
 
     @property
     def enforce_causality(self):
@@ -128,7 +119,7 @@ class SweepData(object):
         bool
             ``True`` if enforce causality is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.EnforceCausality
+        return self._edb_object.EnforceCausality
 
     @property
     def enforce_dc_and_causality(self):
@@ -139,7 +130,7 @@ class SweepData(object):
         bool
             ``True`` if enforce dc point and causality is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.EnforceDCAndCausality
+        return self._edb_object.EnforceDCAndCausality
 
     @property
     def enforce_passivity(self):
@@ -150,7 +141,7 @@ class SweepData(object):
         bool
             ``True`` if enforce passivity is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.EnforcePassivity
+        return self._edb_object.EnforcePassivity
 
     @property
     def freq_sweep_type(self):
@@ -166,7 +157,7 @@ class SweepData(object):
         str
             Sweep type.
         """
-        return self._edb_sweep_data.FreqSweepType.ToString()
+        return self._edb_object.FreqSweepType.ToString()
 
     @property
     def interpolation_use_full_basis(self):
@@ -177,7 +168,7 @@ class SweepData(object):
         bool
             ``True`` if full basis interpolation is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.InterpUseFullBasis
+        return self._edb_object.InterpUseFullBasis
 
     @property
     def interpolation_use_port_impedance(self):
@@ -188,7 +179,7 @@ class SweepData(object):
         bool
             ``True`` if port impedance is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.InterpUsePortImpedance
+        return self._edb_object.InterpUsePortImpedance
 
     @property
     def interpolation_use_prop_const(self):
@@ -199,7 +190,7 @@ class SweepData(object):
         bool
             ``True`` if propagation constants are used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.InterpUsePropConst
+        return self._edb_object.InterpUsePropConst
 
     @property
     def interpolation_use_s_matrix(self):
@@ -210,7 +201,7 @@ class SweepData(object):
         bool
             ``True`` if S matrix are used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.InterpUseSMatrix
+        return self._edb_object.InterpUseSMatrix
 
     @property
     def max_solutions(self):
@@ -220,7 +211,7 @@ class SweepData(object):
         -------
         int
         """
-        return self._edb_sweep_data.MaxSolutions
+        return self._edb_object.MaxSolutions
 
     @property
     def min_freq_s_mat_only_solve(self):
@@ -231,7 +222,7 @@ class SweepData(object):
         str
             Frequency with units.
         """
-        return self._edb_sweep_data.MinFreqSMatOnlySolve
+        return self._edb_object.MinFreqSMatOnlySolve
 
     @property
     def min_solved_freq(self):
@@ -242,7 +233,7 @@ class SweepData(object):
         str
             Frequency with units.
         """
-        return self._edb_sweep_data.MinSolvedFreq
+        return self._edb_object.MinSolvedFreq
 
     @property
     def passivity_tolerance(self):
@@ -252,7 +243,7 @@ class SweepData(object):
         -------
         float
         """
-        return self._edb_sweep_data.PassivityTolerance
+        return self._edb_object.PassivityTolerance
 
     @property
     def relative_s_error(self):
@@ -262,7 +253,7 @@ class SweepData(object):
         -------
         float
         """
-        return self._edb_sweep_data.RelativeSError
+        return self._edb_object.RelativeSError
 
     @property
     def save_fields(self):
@@ -273,7 +264,7 @@ class SweepData(object):
         bool
             ``True`` if save fields is enabled, ``False`` otherwise.
         """
-        return self._edb_sweep_data.SaveFields
+        return self._edb_object.SaveFields
 
     @property
     def save_rad_fields_only(self):
@@ -284,7 +275,7 @@ class SweepData(object):
         bool
             ``True`` if save radiated field only is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.SaveRadFieldsOnly
+        return self._edb_object.SaveRadFieldsOnly
 
     @property
     def use_q3d_for_dc(self):
@@ -295,113 +286,114 @@ class SweepData(object):
         bool
             ``True`` if Q3d for DC point is used, ``False`` otherwise.
         """
-        return self._edb_sweep_data.UseQ3DForDC
+        return self._edb_object.UseQ3DForDC
 
     @adaptive_sampling.setter
     def adaptive_sampling(self, value):
-        self._edb_sweep_data.AdaptiveSampling = value
+        self._edb_object.AdaptiveSampling = value
         self._update_sweep()
 
     @adv_dc_extrapolation.setter
     def adv_dc_extrapolation(self, value):
-        self._edb_sweep_data.AdvDCExtrapolation = value
+        self._edb_object.AdvDCExtrapolation = value
         self._update_sweep()
 
     @auto_s_mat_only_solve.setter
     def auto_s_mat_only_solve(self, value):
-        self._edb_sweep_data.AutoSMatOnlySolve = value
+        self._edb_object.AutoSMatOnlySolve = value
         self._update_sweep()
 
     @enforce_causality.setter
     def enforce_causality(self, value):
-        self._edb_sweep_data.EnforceCausality = value
+        self._edb_object.EnforceCausality = value
         self._update_sweep()
 
     @enforce_dc_and_causality.setter
     def enforce_dc_and_causality(self, value):
-        self._edb_sweep_data.EnforceDCAndCausality = value
+        self._edb_object.EnforceDCAndCausality = value
         self._update_sweep()
 
     @enforce_passivity.setter
     def enforce_passivity(self, value):
-        self._edb_sweep_data.EnforcePassivity = value
+        self._edb_object.EnforcePassivity = value
         self._update_sweep()
 
     @freq_sweep_type.setter
     def freq_sweep_type(self, value):
-        edb_freq_sweep_type = self._edb_sweep_data.TFreqSweepType
+        edb_freq_sweep_type = self._edb_object.TFreqSweepType
         if value in [0, "kInterpolatingSweep"]:
-            self._edb_sweep_data.FreqSweepType = edb_freq_sweep_type.kInterpolatingSweep
+            self._edb_object.FreqSweepType = edb_freq_sweep_type.kInterpolatingSweep
         elif value in [1, "kDiscreteSweep"]:
-            self._edb_sweep_data.FreqSweepType = edb_freq_sweep_type.kDiscreteSweep
+            self._edb_object.FreqSweepType = edb_freq_sweep_type.kDiscreteSweep
         elif value in [2, "kBroadbandFastSweep"]:
-            self._edb_sweep_data.FreqSweepType = edb_freq_sweep_type.kBroadbandFastSweep
+            self._edb_object.FreqSweepType = edb_freq_sweep_type.kBroadbandFastSweep
         elif value in [3, "kNumSweepTypes"]:
-            self._edb_sweep_data.FreqSweepType = edb_freq_sweep_type.kNumSweepTypes
-        self._edb_sweep_data.FreqSweepType.ToString()
+            self._edb_object.FreqSweepType = edb_freq_sweep_type.kNumSweepTypes
+        self._edb_object.FreqSweepType.ToString()
 
     @interpolation_use_full_basis.setter
     def interpolation_use_full_basis(self, value):
-        self._edb_sweep_data.InterpUseFullBasis = value
+        self._edb_object.InterpUseFullBasis = value
         self._update_sweep()
 
     @interpolation_use_port_impedance.setter
     def interpolation_use_port_impedance(self, value):
-        self._edb_sweep_data.InterpUsePortImpedance = value
+        self._edb_object.InterpUsePortImpedance = value
         self._update_sweep()
 
     @interpolation_use_prop_const.setter
     def interpolation_use_prop_const(self, value):
-        self._edb_sweep_data.InterpUsePropConst = value
+        self._edb_object.InterpUsePropConst = value
         self._update_sweep()
 
     @interpolation_use_s_matrix.setter
     def interpolation_use_s_matrix(self, value):
-        self._edb_sweep_data.InterpUseSMatrix = value
+        self._edb_object.InterpUseSMatrix = value
         self._update_sweep()
 
     @max_solutions.setter
     def max_solutions(self, value):
-        self._edb_sweep_data.MaxSolutions = value
+        self._edb_object.MaxSolutions = value
         self._update_sweep()
 
     @min_freq_s_mat_only_solve.setter
     def min_freq_s_mat_only_solve(self, value):
-        self._edb_sweep_data.MinFreqSMatOnlySolve = value
+        self._edb_object.MinFreqSMatOnlySolve = value
         self._update_sweep()
 
     @min_solved_freq.setter
     def min_solved_freq(self, value):
-        self._edb_sweep_data.MinSolvedFreq = value
+        self._edb_object.MinSolvedFreq = value
         self._update_sweep()
 
     @passivity_tolerance.setter
     def passivity_tolerance(self, value):
-        self._edb_sweep_data.PassivityTolerance = value
+        self._edb_object.PassivityTolerance = value
         self._update_sweep()
 
     @relative_s_error.setter
     def relative_s_error(self, value):
-        self._edb_sweep_data.RelativeSError = value
+        self._edb_object.RelativeSError = value
         self._update_sweep()
 
     @save_fields.setter
     def save_fields(self, value):
-        self._edb_sweep_data.SaveFields = value
+        self._edb_object.SaveFields = value
         self._update_sweep()
 
     @save_rad_fields_only.setter
     def save_rad_fields_only(self, value):
-        self._edb_sweep_data.SaveRadFieldsOnly = value
+        self._edb_object.SaveRadFieldsOnly = value
         self._update_sweep()
 
     @use_q3d_for_dc.setter
     def use_q3d_for_dc(self, value):
-        self._edb_sweep_data.UseQ3DForDC = value
+        self._edb_object.UseQ3DForDC = value
         self._update_sweep()
 
     def _set_frequencies(self, freq_sweep_string="Linear Step: 0GHz to 20GHz, step=0.05GHz"):
-        self._edb_sweep_data.SetFrequencies(freq_sweep_string)
+        warnings.warn("Use new property :func:`add` instead.", DeprecationWarning)
+        self._edb_object.SetFrequencies(freq_sweep_string)
         self._update_sweep()
 
     def set_frequencies_linear_scale(self, start="0.1GHz", stop="20GHz", step="50MHz"):
@@ -421,7 +413,8 @@ class SweepData(object):
         bool
             ``True`` if correctly executed, ``False`` otherwise.
         """
-        self._edb_sweep_data.Frequencies = self._edb_sweep_data.SetFrequencies(start, stop, step)
+        warnings.warn("Use new property :func:`add` instead.", DeprecationWarning)
+        self._edb_object.Frequencies = self._edb_object.SetFrequencies(start, stop, step)
         return self._update_sweep()
 
     def set_frequencies_linear_count(self, start="1kHz", stop="0.1GHz", count=10):
@@ -441,9 +434,10 @@ class SweepData(object):
         bool
             ``True`` if correctly executed, ``False`` otherwise.
         """
-        start = self._sim_setup._pedb.arg_to_dim(start, "Hz")
-        stop = self._sim_setup._pedb.arg_to_dim(stop, "Hz")
-        self._edb_sweep_data.Frequencies = self._edb_sweep_data.SetFrequencies(start, stop, count)
+        warnings.warn("Use new property :func:`add` instead.", DeprecationWarning)
+        start = self.sim_setup._pedb.arg_to_dim(start, "Hz")
+        stop = self.sim_setup._pedb.arg_to_dim(stop, "Hz")
+        self._edb_object.Frequencies = self._edb_object.SetFrequencies(start, stop, count)
         return self._update_sweep()
 
     def set_frequencies_log_scale(self, start="1kHz", stop="0.1GHz", samples=10):
@@ -463,9 +457,10 @@ class SweepData(object):
         bool
             ``True`` if correctly executed, ``False`` otherwise.
         """
-        start = self._sim_setup._pedb.arg_to_dim(start, "Hz")
-        stop = self._sim_setup._pedb.arg_to_dim(stop, "Hz")
-        self._edb_sweep_data.Frequencies = self._edb_sweep_data.SetLogFrequencies(start, stop, samples)
+        warnings.warn("Use new property :func:`add` instead.", DeprecationWarning)
+        start = self.sim_setup._pedb.arg_to_dim(start, "Hz")
+        stop = self.sim_setup._pedb.arg_to_dim(stop, "Hz")
+        self._edb_object.Frequencies = self._edb_object.SetLogFrequencies(start, stop, samples)
         return self._update_sweep()
 
     def set_frequencies(self, frequency_list=None, update=True):
@@ -484,6 +479,7 @@ class SweepData(object):
         bool
             ``True`` if correctly executed, ``False`` otherwise.
         """
+        warnings.warn("Use new property :func:`add` instead.", DeprecationWarning)
         if not frequency_list:
             frequency_list = [
                 ["linear count", "0", "1kHz", 1],
@@ -495,15 +491,35 @@ class SweepData(object):
             frequency_list = [frequency_list]
         for i in frequency_list:
             if i[0] == "linear count":
-                temp.extend(list(self._edb_sweep_data.SetFrequencies(i[1], i[2], i[3])))
+                temp.extend(list(self._edb_object.SetFrequencies(i[1], i[2], i[3])))
             elif i[0] == "linear scale":
-                temp.extend(list(self._edb_sweep_data.SetFrequencies(i[1], i[2], i[3])))
+                temp.extend(list(self._edb_object.SetFrequencies(i[1], i[2], i[3])))
             elif i[0] == "log scale":
-                temp.extend(list(self._edb_sweep_data.SetLogFrequencies(i[1], i[2], i[3])))
+                temp.extend(list(self._edb_object.SetLogFrequencies(i[1], i[2], i[3])))
             else:
                 return False
-        self._edb_sweep_data.Frequencies.Clear()
+        self._edb_object.Frequencies.Clear()
         for i in temp:
-            self._edb_sweep_data.Frequencies.Add(i)
+            self._edb_object.Frequencies.Add(i)
         if update:
             return self._update_sweep()
+
+    def add(self, sweep_type, start, stop, increment):
+        sweep_type = sweep_type.replace(" ", "_")
+        if sweep_type in ["linear_count", "linear_scale"]:
+            freqs = list(self._edb_object.SetFrequencies(start, stop, increment))
+        elif sweep_type == "log_scale":
+            freqs = list(self._edb_object.SetLogFrequencies(start, stop, increment))
+        else:
+            raise ValueError("sweep_type must be either 'linear_count', 'linear_scale' or 'log_scale")
+        self.add_frequencies(freqs)
+
+    def add_frequencies(self, frequencies):
+        if not isinstance(frequencies, list):
+            frequencies = [frequencies]
+        for i in frequencies:
+            i = str(self._pedb.edb_value(i).ToDouble())
+            self._edb_object.Frequencies.Add(i)
+
+    def clear(self):
+        self._edb_object.Frequencies.Clear()

@@ -93,10 +93,10 @@ from pyedb.dotnet.edb_core.nets import EdbNets
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 from pyedb.dotnet.edb_core.siwave import EdbSiwave
 from pyedb.dotnet.edb_core.stackup import Stackup
-from pyedb.dotnet.edb_core.utilities.simulation_setup import (
-    HfssSimulationSetup,
+from pyedb.dotnet.edb_core.utilities.hfss_simulation_setup import HfssSimulationSetup
+from pyedb.dotnet.edb_core.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
-    SiwaveSYZSimulationSetup,
+    SiwaveSimulationSetup,
 )
 from pyedb.generic.constants import AEDT_UNITS, SolverType
 from pyedb.generic.general_methods import (
@@ -3562,7 +3562,7 @@ class Edb(Database):
             if i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kHFSS:
                 setups[i.GetName()] = HfssSimulationSetup(self, i)
             elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWave:
-                setups[i.GetName()] = SiwaveSYZSimulationSetup(self, i)
+                setups[i.GetName()] = SiwaveSimulationSetup(self, i)
             elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWaveDCIR:
                 setups[i.GetName()] = SiwaveDCSimulationSetup(self, i)
             elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kRaptorX:
@@ -3600,7 +3600,7 @@ class Edb(Database):
         -------
         Dict[str, :class:`legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
         """
-        return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSYZSimulationSetup)}
+        return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSimulationSetup)}
 
     def create_hfss_setup(self, name=None):
         """Create an HFSS simulation setup from a template.
@@ -3626,7 +3626,7 @@ class Edb(Database):
             return False
         elif not name:
             name = generate_unique_name("setup")
-        setup = HfssSimulationSetup(self).create(name)
+        setup = HfssSimulationSetup(self, name=name)
         setup.set_solution_single_frequency("1GΗz")
         return setup
 
@@ -3704,7 +3704,7 @@ class Edb(Database):
             name = generate_unique_name("Siwave_SYZ")
         if name in self.setups:
             return False
-        SiwaveSYZSimulationSetup(self).create(name)
+        setup = SiwaveSimulationSetup(self, name=name)
         return self.setups[name]
 
     def create_siwave_dc_setup(self, name=None):
@@ -3731,7 +3731,7 @@ class Edb(Database):
             name = generate_unique_name("Siwave_DC")
         if name in self.setups:
             return False
-        setup = SiwaveDCSimulationSetup(self).create(name)
+        setup = SiwaveDCSimulationSetup(self, name=name)
         return setup
 
     def calculate_initial_extent(self, expansion_factor):
