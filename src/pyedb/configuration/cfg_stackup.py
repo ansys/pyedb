@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from pyedb.configuration.cfg_common import CfgBase
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class CfgMaterial(CfgBase):
@@ -54,7 +53,6 @@ class CfgStackup:
         self.materials = [CfgMaterial(**mat) for mat in data.get("materials", [])]
         self.layers = [CfgLayer(**lay) for lay in data.get("layers", [])]
 
-    @pyedb_function_handler
     def apply(self):
         """Apply configuration settings to the current design"""
         if len(self.materials):
@@ -77,7 +75,6 @@ class CfgStackup:
             attrs = l_attrs.get_attributes()
             self._pedb.stackup.add_layer_bottom(**attrs)
 
-    @pyedb_function_handler
     def __apply_layers(self):
         """Apply layer settings to the current design"""
         layers = list()
@@ -120,7 +117,6 @@ class CfgStackup:
             elif l.type == "signal":
                 prev_layer_clone = self._pedb.stackup.layers[l.name]
 
-    @pyedb_function_handler
     def __apply_materials(self):
         """Apply material settings to the current design"""
         materials_in_db = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
@@ -131,7 +127,6 @@ class CfgStackup:
             attrs = mat_in_cfg.get_attributes()
             mat = self._pedb.materials.add_material(**attrs)
 
-    @pyedb_function_handler
     def __get_materials_from_db(self):
         materials = []
         for name, p in self._pedb.materials.materials.items():
@@ -141,7 +136,6 @@ class CfgStackup:
             materials.append(mat)
         return materials
 
-    @pyedb_function_handler
     def __get_layers_from_db(self):
         layers = []
         for name, obj in self._pedb.stackup.all_layers.items():
@@ -153,7 +147,6 @@ class CfgStackup:
             layers.append(layer)
         return layers
 
-    @pyedb_function_handler
     def get_data_from_db(self):
         """Get configuration data from layout.
 

@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class ComponentModel(ObjBase):
@@ -31,7 +30,6 @@ class ComponentModel(ObjBase):
         super().__init__(pedb, edb_object)
         self._model_type_mapping = {"PinPairModel": self._pedb.edb_api.cell}
 
-    @pyedb_function_handler()
     def name(self):
         """Name of the component model."""
         return self._edb_object.GetName()

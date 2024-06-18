@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class LayoutObjInstance:
@@ -87,7 +86,6 @@ class LayoutObj(ObjBase):
         """
         return self._edb_object.GetId()
 
-    @pyedb_function_handler()
     def delete(self):
         """Delete this primitive."""
         self._edb_object.Delete()

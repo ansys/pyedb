@@ -28,7 +28,6 @@ from pyedb.dotnet.edb_core.dotnet.database import (
 )
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class EDBNetsData(NetDotNet):
@@ -99,7 +98,6 @@ class EDBNetsData(NetDotNet):
                     comps[comp.refdes] = comp
         return comps
 
-    @pyedb_function_handler()
     def find_dc_short(self, fix=False):
         """Find DC-shorted nets.
 
@@ -116,7 +114,6 @@ class EDBNetsData(NetDotNet):
         """
         return self._app.layout_validation.dc_shorts(self.name, fix)
 
-    @pyedb_function_handler()
     def plot(
         self,
         layers=None,
@@ -156,7 +153,6 @@ class EDBNetsData(NetDotNet):
             show=show,
         )
 
-    @pyedb_function_handler()
     def get_smallest_trace_width(self):
         """Retrieve the smallest trace width from paths.
 
