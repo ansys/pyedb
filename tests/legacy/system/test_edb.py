@@ -981,9 +981,9 @@ class TestClass:
         # mesh_operations = setup1.mesh_operations
         # setup1.mesh_operations = mesh_operations
 
-        setup1.add_frequency_sweep(
+        setup1.add_sweep(
             "sweep1",
-            frequency_sweep=[
+            frequency_set=[
                 ["linear count", "0", "1kHz", 1],
                 ["log scale", "1kHz", "0.1GHz", 10],
                 ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
@@ -1031,6 +1031,19 @@ class TestClass:
         assert mop.skin_depth == "5um"
         assert mop.surface_triangle_length == "2mm"
         assert mop.number_of_layer_elements == "3"
+        edbapp.close()
+
+    def test_hfss_frequency_sweep(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        setup1 = edbapp.create_hfss_setup("setup1")
+        assert edbapp.setups["setup1"].name == "setup1"
+        setup1.add_sweep("sw1", ["linear count", "1MHz", "100MHz", 10])
+        assert edbapp.setups["setup1"].sweeps["sw1"].name == "sw1"
+        assert len(setup1.sweeps["sw1"].frequencies) == 10
+        setup1.sweeps["sw1"].add("linear_scale", "210MHz", "300MHz", "10MHz")
+        assert len(setup1.sweeps["sw1"].frequencies) == 20
+        setup1.sweeps["sw1"].add("log_scale", "1GHz", "10GHz", 10)
+        assert len(setup1.sweeps["sw1"].frequencies) == 31
         edbapp.close()
 
     def test_hfss_simulation_setup_b(self, edb_examples):
@@ -1109,15 +1122,15 @@ class TestClass:
             for k, v in setup1.advanced_settings.pi_defaults.items():
                 assert settings["advanced_settings"][k] == v[p]
 
-        sweep = setup1.add_frequency_sweep(
-            "sweep1",
-            frequency_sweep=[
+        sweep = setup1.add_sweep(
+            name="sweep1",
+            frequency_set=[
                 ["linear count", "0", "1kHz", 1],
                 ["log scale", "1kHz", "0.1GHz", 10],
                 ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
             ],
         )
-        assert "0" in sweep.frequencies
+        assert 0 in sweep.frequencies
         assert not sweep.adaptive_sampling
         assert not sweep.adv_dc_extrapolation
         assert sweep.auto_s_mat_only_solve
@@ -1177,7 +1190,7 @@ class TestClass:
         assert sweep.save_rad_fields_only
         assert sweep.use_q3d_for_dc
 
-    def test_siwave_build_ac_project(self):
+    def test_edb_configuration_siwave_build_ac_project(self):
         """Build ac simulation project."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_133_simconfig.aedb")
