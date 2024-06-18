@@ -94,8 +94,10 @@ from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 from pyedb.dotnet.edb_core.siwave import EdbSiwave
 from pyedb.dotnet.edb_core.stackup import Stackup
 from pyedb.dotnet.edb_core.utilities.hfss_simulation_setup import HfssSimulationSetup
-from pyedb.dotnet.edb_core.utilities.siwave_simulation_setup import SiwaveDCSimulationSetup, SiwaveSimulationSetup
-
+from pyedb.dotnet.edb_core.utilities.siwave_simulation_setup import (
+    SiwaveDCSimulationSetup,
+    SiwaveSimulationSetup,
+)
 from pyedb.generic.constants import AEDT_UNITS, SolverType
 from pyedb.generic.general_methods import (
     generate_unique_name,
