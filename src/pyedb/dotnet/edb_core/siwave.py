@@ -1445,6 +1445,7 @@ class EdbSiwave(object):
         load_regulation_percent=0.1,
     ):
         """Create a voltage regulator module.
+
         Parameters
         ----------
         name : str

@@ -45,7 +45,7 @@ class AdaptiveSettings(object):
         -------
         :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.AdaptiveSettings`
         """
-        return self._parent.get_sim_setup_info.SimulationSettings.AdaptiveSettings
+        return self._parent.sim_setup_info.simulation_settings.AdaptiveSettings
 
     @property
     def adaptive_frequency_data_list(self):
