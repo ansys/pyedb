@@ -1,6 +1,5 @@
 import warnings
-from pyedb.generic.general_methods import generate_unique_name
-from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
+
 from pyedb.dotnet.edb_core.sim_setup_data.data.mesh_operation import (
     MeshOperationLength,
     MeshOperationSkinDepth,
@@ -16,6 +15,7 @@ from pyedb.dotnet.edb_core.sim_setup_data.data.settings import (
     ViaSettings,
 )
 from pyedb.dotnet.edb_core.sim_setup_data.data.sim_setup_info import SimSetupInfo
+from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 from pyedb.dotnet.edb_core.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import generate_unique_name
 
@@ -189,15 +189,15 @@ class HfssSimulationSetup(SimulationSetup):
         return self._mesh_operations
 
     def add_length_mesh_operation(
-            self,
-            net_layer_list,
-            name=None,
-            max_elements=1000,
-            max_length="1mm",
-            restrict_elements=True,
-            restrict_length=True,
-            refine_inside=False,
-            mesh_region=None,
+        self,
+        net_layer_list,
+        name=None,
+        max_elements=1000,
+        max_length="1mm",
+        restrict_elements=True,
+        restrict_length=True,
+        refine_inside=False,
+        mesh_region=None,
     ):
         """Add a mesh operation to the setup.
 
@@ -239,16 +239,16 @@ class HfssSimulationSetup(SimulationSetup):
         return mesh_operation if self._update_setup() else False
 
     def add_skin_depth_mesh_operation(
-            self,
-            net_layer_list,
-            name=None,
-            max_elements=1000,
-            skin_depth="1um",
-            restrict_elements=True,
-            surface_triangle_length="1mm",
-            number_of_layers=2,
-            refine_inside=False,
-            mesh_region=None,
+        self,
+        net_layer_list,
+        name=None,
+        max_elements=1000,
+        skin_depth="1um",
+        restrict_elements=True,
+        surface_triangle_length="1mm",
+        number_of_layers=2,
+        refine_inside=False,
+        mesh_region=None,
     ):
         """Add a mesh operation to the setup.
 
@@ -338,7 +338,7 @@ class HfssSimulationSetup(SimulationSetup):
         return True
 
     def set_solution_broadband(
-            self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
+        self, low_frequency="5GHz", high_frequency="10GHz", max_num_passes=10, max_delta_s="0.02"
     ):
         """Set broadband solution.
 
@@ -360,7 +360,7 @@ class HfssSimulationSetup(SimulationSetup):
         self.adaptive_settings.adapt_type = "kBroadband"
         self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
         if not self.adaptive_settings.add_broadband_adaptive_frequency_data(
-                low_frequency, high_frequency, max_num_passes, max_delta_s
+            low_frequency, high_frequency, max_num_passes, max_delta_s
         ):  # pragma no cover
             return False
         return True

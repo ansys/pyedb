@@ -101,8 +101,8 @@ class SimulationSetup(object):
         edb_setup_info = self._pedb.simsetupdata.SimSetupInfo[self._simulation_setup_type[simulation_setup_type]]()
         edb_setup_info.Name = name
         if (
-                edb_setup_info.get_SimSetupType().ToString() == "kRaptorX"
-                or edb_setup_info.get_SimSetupType().ToString() == "kHFSSPI"
+            edb_setup_info.get_SimSetupType().ToString() == "kRaptorX"
+            or edb_setup_info.get_SimSetupType().ToString() == "kHFSSPI"
         ):
             self._edb_setup_info = edb_setup_info
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
