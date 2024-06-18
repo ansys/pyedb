@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 class BaseSimulationSettings:
     def __init__(self, pedb, sim_setup, edb_object):
         self._pedb = pedb
@@ -54,7 +55,7 @@ class BaseSimulationSettings:
 
 class SimulationSettings(BaseSimulationSettings):
     def __init__(self, pedb, sim_setup, edb_object):
-        super().__init__(pedb,sim_setup, edb_object)
+        super().__init__(pedb, sim_setup, edb_object)
 
 
 class HFSSSimulationSettings(SimulationSettings):
