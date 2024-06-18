@@ -38,6 +38,7 @@ class VoltageRegulator(Connectable):
             if not ref_des:
                 return False
             return self._pedb.components.instances[ref_des]
+        self._pedb.logger.warning("No voltage regulator component.")
         return False
 
     @component.setter
