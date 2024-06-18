@@ -35,7 +35,7 @@ class SweepData(object):
         EDB object. The default is ``None``.
     """
 
-    def __init__(self, pedb, edb_object=None, name:str=None, sim_setup=None):
+    def __init__(self, pedb, edb_object=None, name: str = None, sim_setup=None):
         self._pedb = pedb
         self.sim_setup = sim_setup
 

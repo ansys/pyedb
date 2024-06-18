@@ -1,21 +1,20 @@
 import warnings
-from pyedb.generic.general_methods import is_linux
 
+from pyedb.dotnet.edb_core.general import (
+    convert_netdict_to_pydict,
+    convert_pydict_to_netdict,
+)
+from pyedb.dotnet.edb_core.sim_setup_data.data.sim_setup_info import SimSetupInfo
+from pyedb.dotnet.edb_core.sim_setup_data.data.siw_dc_ir_settings import (
+    SiwaveDCIRSettings,
+)
 from pyedb.dotnet.edb_core.sim_setup_data.io.siwave import (
     AdvancedSettings,
     DCAdvancedSettings,
     DCSettings,
 )
-from pyedb.dotnet.edb_core.sim_setup_data.data.siw_dc_ir_settings import (
-    SiwaveDCIRSettings,
-)
-from pyedb.dotnet.edb_core.general import (
-    convert_netdict_to_pydict,
-    convert_pydict_to_netdict,
-)
-
 from pyedb.dotnet.edb_core.utilities.simulation_setup import SimulationSetup
-from pyedb.dotnet.edb_core.sim_setup_data.data.sim_setup_info import SimSetupInfo
+from pyedb.generic.general_methods import is_linux
 
 
 def _parse_value(v):
@@ -40,6 +39,7 @@ def _parse_value(v):
                     pv = v
     return pv
 
+
 def clone_edb_sim_setup_info(source, target):
     string = source.ToString().replace("\t", "").split("\r\n")
     if is_linux:
@@ -55,9 +55,7 @@ def clone_edb_sim_setup_info(source, target):
             for v in val:
                 source = v.split("=")
                 sources[source[0]] = int(source[1].replace("'", ""))
-            target.SimulationSettings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(
-                sources
-            )
+            target.SimulationSettings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(sources)
             break
     for k in keys:
         value = _parse_value(values[keys.index(k)])
@@ -69,9 +67,7 @@ def clone_edb_sim_setup_info(source, target):
 
         elif k in dir(target.SimulationSettings.DCAdvancedSettings):
             setter = target.SimulationSettings.DCAdvancedSettings
-        elif "DCIRSettings" in dir(target.SimulationSettings) and k in dir(
-                target.SimulationSettings.DCIRSettings
-        ):
+        elif "DCIRSettings" in dir(target.SimulationSettings) and k in dir(target.SimulationSettings.DCIRSettings):
             setter = target.SimulationSettings.DCIRSettings
         elif k in dir(target.SimulationSettings.DCSettings):
             setter = target.SimulationSettings.DCSettings
@@ -90,7 +86,7 @@ def clone_edb_sim_setup_info(source, target):
 class SiwaveSimulationSetup(SimulationSetup):
     """Manages EDB methods for SIwave simulation setup."""
 
-    def __init__(self, pedb, edb_object=None, name: str=None):
+    def __init__(self, pedb, edb_object=None, name: str = None):
         super().__init__(pedb, edb_object)
         self._simulation_setup_builder = self._pedb._edb.Utility.SIWaveSimulationSetup
         if edb_object is None:
@@ -247,7 +243,7 @@ class SiwaveSimulationSetup(SimulationSetup):
 class SiwaveDCSimulationSetup(SimulationSetup):
     """Manages EDB methods for SIwave DC simulation setup."""
 
-    def __init__(self, pedb, edb_object=None, name:str=None):
+    def __init__(self, pedb, edb_object=None, name: str = None):
         super().__init__(pedb, edb_object)
         self._simulation_setup_builder = self._pedb._edb.Utility.SIWaveDCIRSimulationSetup
         self._mesh_operations = {}
@@ -282,7 +278,9 @@ class SiwaveDCSimulationSetup(SimulationSetup):
     def get_sim_setup_info(self):
         """Get simulation information from the setup."""
 
-        sim_setup_info = SimSetupInfo(self._pedb, sim_setup=self, setup_type="kSIwaveDCIR", name=self._edb_object.GetName())
+        sim_setup_info = SimSetupInfo(
+            self._pedb, sim_setup=self, setup_type="kSIwaveDCIR", name=self._edb_object.GetName()
+        )
         clone_edb_sim_setup_info(source=self._edb_object, target=sim_setup_info._edb_object)
         return sim_setup_info._edb_object
 

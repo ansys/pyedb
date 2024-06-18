@@ -24,7 +24,14 @@ from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 
 
 class SimSetupInfo:
-    def __init__(self, pedb, sim_setup,  edb_object=None, setup_type: str = None, name: str = None, ):
+    def __init__(
+        self,
+        pedb,
+        sim_setup,
+        edb_object=None,
+        setup_type: str = None,
+        name: str = None,
+    ):
         self._pedb = pedb
         self.sim_setup = sim_setup
         simulation_setup_type = {
@@ -65,7 +72,9 @@ class SimSetupInfo:
 
     @property
     def sweep_data_list(self):
-        return [SweepData(self._pedb, edb_object=i, sim_setup=self.sim_setup) for i in list(self._edb_object.SweepDataList)]
+        return [
+            SweepData(self._pedb, edb_object=i, sim_setup=self.sim_setup) for i in list(self._edb_object.SweepDataList)
+        ]
 
     def add_sweep_data(self, sweep_data):
         sweep_data.sim_setup = self.sim_setup
