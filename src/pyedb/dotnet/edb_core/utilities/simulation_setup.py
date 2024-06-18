@@ -27,7 +27,7 @@ import warnings
 from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 from pyedb.dotnet.edb_core.sim_setup_data.data.sim_setup_info import SimSetupInfo
 
-from pyedb.generic.general_methods import generate_unique_name, is_linux
+from pyedb.generic.general_methods import generate_unique_name
 
 
 class AdaptiveType(object):
