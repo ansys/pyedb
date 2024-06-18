@@ -20,24 +20,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
 from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 
 
-class VoltageRegulator:
-    def __init__(self, pedb):
-        self._pedb = pedb
-        self._edb_object = None
-        self._edb_component = None
+class VoltageRegulator(Connectable):
+    def __init__(self, pedb, edb_object=None):
+        super().__init__(pedb, edb_object)
+        self._positive_remote_sense_pin = None
+        self._negative_remote_sense_pin = None
 
     @property
     def component(self):
-        if self._edb_component is None:
-            self._edb_component = self._edb_object.GetComponent()
-            ref_des = self._edb_component.GetName()
+        try:
+            ref_des = self._edb_object.GetComponent().GetName()
             if not ref_des:
                 return False
             return self._pedb.components.instances[ref_des]
+        except:
+            return False
 
     @component.setter
     def component(self, value):
@@ -47,7 +49,7 @@ class VoltageRegulator:
         if value not in self._pedb.components.instances:
             self._pedb.logger.error(f"component {value} not found in layout")
             return
-        self._edb_object.SetGroup(self._pedb.components.instances[value].edb_component)
+        self._edb_object.SetGroup(self._pedb.components.instances[value].edbcomponent)
 
     @property
     def id(self):
@@ -82,31 +84,37 @@ class VoltageRegulator:
 
     @property
     def negative_remote_sense_pin(self):
-        edb_padtsack_instance = self._edb_object.GetNegRemoteSensePin()
-        return self._pedb.padstacks.instances[edb_padtsack_instance.GetId()]
+        return self._negative_remote_sense_pin
 
     @negative_remote_sense_pin.setter
     def negative_remote_sense_pin(self, value):
         if isinstance(value, int):
             if value in self._pedb.padsatcks.instances:
                 _inst = self._pedb.padsatcks.instances[value]
-                self._edb_object.SetNegRemoteSensePin(_inst.edb_object)
-            elif isinstance(value, EDBPadstackInstance):
-                self._edb_object.SetNegRemoteSensePin(value.edb_object)
+                if self._edb_object.SetNegRemoteSensePin(_inst._edb_object):
+                    self._negative_remote_sense_pin = _inst
+        elif isinstance(value, EDBPadstackInstance):
+            if self._edb_object.SetNegRemoteSensePin(value._edb_object):
+                self._negative_remote_sense_pin = value
 
     @property
     def positive_remote_sense_pin(self):
-        edb_padtsack_instance = self._edb_object.GetPosRemoteSensePin()
-        return self._pedb.padstacks.instances[edb_padtsack_instance.GetId()]
+        return self._positive_remote_sense_pin
 
     @positive_remote_sense_pin.setter
     def positive_remote_sense_pin(self, value):
         if isinstance(value, int):
             if value in self._pedb.padsatcks.instances:
                 _inst = self._pedb.padsatcks.instances[value]
-                self._edb_object.SetPosRemoteSensePin(_inst.edb_object)
-            elif isinstance(value, EDBPadstackInstance):
-                self._edb_object.SetPosRemoteSensePin(value.edb_object)
+                if self._edb_object.SetPosRemoteSensePin(_inst._edb_object):
+                    self._positive_remote_sense_pin = _inst
+                if not self.component:
+                    self.component = _inst._edb_object.GetComponent().GetName()
+        elif isinstance(value, EDBPadstackInstance):
+            if self._edb_object.SetPosRemoteSensePin(value._edb_object):
+                self._positive_remote_sense_pin = value
+            if not self.component:
+                self.component = value._edb_object.GetComponent().GetName()
 
     @property
     def voltage(self):
@@ -141,13 +149,3 @@ class VoltageRegulator:
                 self._edb_object.SetNet(self._pedb.nets[value]._edb_object)
         elif isinstance(value, EDBNetsData):
             self._edb_object.SetNet(value._edb_object)
-
-    def create(
-        self, name=None, is_active=True, voltage="3V", load_regulation_current="1A", load_regulation_percent=0.1
-    ):
-        voltage = self._pedb.edb_value(voltage)
-        load_regulation_current = self._pedb.edb_value(load_regulation_current)
-        load_regulation_percent = self._pedb.edb_value(load_regulation_percent)
-        self._edb_object = self._pedb.Cell.VoltageRegulator.Create(
-            self._pedb.active_layout, name, is_active, voltage, load_regulation_current, load_regulation_percent
-        )

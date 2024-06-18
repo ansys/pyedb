@@ -114,6 +114,11 @@ class EdbSiwave(object):
         return self._pedb.probes
 
     @property
+    def voltage_regulator_modules(self):
+        """Get all voltage regulator modules"""
+        return self._pedb.voltage_regulator_modules
+
+    @property
     def pin_groups(self):
         """All Layout Pin groups.
 
@@ -1428,6 +1433,33 @@ class EdbSiwave(object):
         p_terminal = self._pedb.get_point_terminal(name, positive_net_name, positive_location, positive_layer)
         n_terminal = self._pedb.get_point_terminal(name + "_ref", negative_net_name, negative_location, negative_layer)
         return self._pedb.create_voltage_probe(p_terminal, n_terminal)
+
+    def create_vrm_module(
+        self,
+        name=None,
+        is_active=True,
+        voltage="3V",
+        positive_sensor_pin=None,
+        negative_sensor_pin=None,
+        load_regulation_current="1A",
+        load_regulation_percent=0.1,
+    ):
+        from pyedb.dotnet.edb_core.cell.voltage_regulator import VoltageRegulator
+
+        voltage = self._pedb.edb_value(voltage)
+        load_regulation_current = self._pedb.edb_value(load_regulation_current)
+        load_regulation_percent = self._pedb.edb_value(load_regulation_percent)
+        edb_vrm = self._edb_object = self._pedb._edb.Cell.VoltageRegulator.Create(
+            self._pedb.active_layout, name, is_active, voltage, load_regulation_current, load_regulation_percent
+        )
+        vrm = VoltageRegulator(self._pedb, edb_vrm)
+        if positive_sensor_pin:
+            vrm.positive_remote_sense_pin = positive_sensor_pin
+        if negative_sensor_pin:
+            vrm.negative_remote_sense_pin = negative_sensor_pin
+        if not vrm.name in self._pedb._vrms:
+            self._pedb._vrms[vrm.name] = vrm
+        return vrm
 
     @property
     def icepak_use_minimal_comp_defaults(self):

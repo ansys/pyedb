@@ -267,6 +267,7 @@ class Edb(Database):
             self.logger.info("EDB initialized.")
         else:
             self.logger.info("Failed to initialize DLLs.")
+        self._vrms = {}
 
     def __enter__(self):
         return self
@@ -509,6 +510,11 @@ class Edb(Database):
         """Get all layout sources."""
         terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [3, 4, 7]]
         return {ter.GetName(): ExcitationSources(self, ter) for ter in terms}
+
+    @property
+    def voltage_regulator_modules(self):
+        """Get all voltage regulator modules"""
+        return self._vrms
 
     @property
     def probes(self):
