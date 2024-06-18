@@ -997,13 +997,20 @@ class TestClass:
         edbapp.setups["setup1"].name = "setup1a"
         assert "setup1" not in edbapp.setups
         assert "setup1a" in edbapp.setups
+        edbapp.close()
 
-        mop = edbapp.setups["setup1a"].add_length_mesh_operation({"GND": ["1_Top", "16_Bottom"]}, "m1")
+    def test_hfss_simulation_setup_mesh_operation(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        setup = edbapp.create_hfss_setup(name="setup")
+        mop = setup.add_length_mesh_operation({"GND": ["1_Top", "16_Bottom"]}, "m1")
         assert mop.name == "m1"
         assert mop.max_elements == "1000"
         assert mop.restrict_max_elements
         assert mop.restrict_length
         assert mop.max_length == "1mm"
+        setup = edbapp.setups["setup"]
+        assert setup.mesh_operations
+        assert edbapp.setups["setup"].mesh_operations
 
         mop.name = "m2"
         mop.max_elements = 2000
@@ -1017,7 +1024,7 @@ class TestClass:
         assert not mop.restrict_length
         assert mop.max_length == "2mm"
 
-        mop = edbapp.setups["setup1a"].add_skin_depth_mesh_operation({"GND": ["1_Top", "16_Bottom"]})
+        mop = edbapp.setups["setup"].add_skin_depth_mesh_operation({"GND": ["1_Top", "16_Bottom"]})
         assert mop.max_elements == "1000"
         assert mop.restrict_max_elements
         assert mop.skin_depth == "1um"
