@@ -29,8 +29,6 @@ class VoltageRegulator(Connectable):
 
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
-        self._positive_remote_sense_pin = None
-        self._negative_remote_sense_pin = None
 
     @property
     def component(self):
@@ -91,7 +89,8 @@ class VoltageRegulator(Connectable):
     @property
     def negative_remote_sense_pin(self):
         """Retrieve negative remote sense pin."""
-        return self._negative_remote_sense_pin
+        edb_pin = self._edb_object.GetNegRemoteSensePin()
+        return self._pedb.padstacks.instances[edb_pin.GetId()]
 
     @negative_remote_sense_pin.setter
     def negative_remote_sense_pin(self, value):
@@ -107,7 +106,8 @@ class VoltageRegulator(Connectable):
     @property
     def positive_remote_sense_pin(self):
         """Retrieve positive remote sense pin."""
-        return self._positive_remote_sense_pin
+        edb_pin = self._edb_object.GetPosRemoteSensePin()
+        return self._pedb.padstacks.instances[edb_pin.GetId()]
 
     @positive_remote_sense_pin.setter
     def positive_remote_sense_pin(self, value):

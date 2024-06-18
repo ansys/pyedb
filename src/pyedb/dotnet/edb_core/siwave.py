@@ -1475,8 +1475,6 @@ class EdbSiwave(object):
             vrm.positive_remote_sense_pin = positive_sensor_pin
         if negative_sensor_pin:
             vrm.negative_remote_sense_pin = negative_sensor_pin
-        if not vrm.name in self._pedb._vrms:
-            self._pedb._vrms[vrm.name] = vrm
         return vrm
 
     @property
