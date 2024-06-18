@@ -21,6 +21,22 @@ from pyedb.misc.misc import list_installed_ansysem
 from pyedb.siwave_core.icepak import Icepak
 
 
+def wait_export_file(flag, file_path, time_sleep=0.5):
+    while True:
+        if os.path.isfile(file_path):
+            break
+        else:
+            time.sleep(1)
+        os.path.getsize(file_path)
+    while True:
+        file_size = os.path.getsize(file_path)
+        if file_size > 0:
+            break
+        else:
+            time.sleep(time_sleep)
+    return True
+
+
 class Siwave(object):  # pragma no cover
     """Initializes SIwave based on the inputs provided and manages SIwave release and closing.
 
@@ -309,8 +325,12 @@ class Siwave(object):  # pragma no cover
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        self.oproject.ScrExportElementData(simulation_name, file_path, data_type)
-        return True
+        flag = self.oproject.ScrExportElementData(simulation_name, file_path, data_type)
+        if flag == 0:
+            self._logger.info(f"Exporting element data to {file_path}.")
+            return wait_export_file(flag, file_path, time_sleep=1)
+        else:
+            return False
 
     def export_siwave_report(self, simulation_name, file_path, bkground_color="White"):
         """Export the Siwave report.
@@ -358,20 +378,8 @@ class Siwave(object):  # pragma no cover
         self.oproject.ScrExportDcSimReportScaling("All", "All", -1, -1, False)
         flag = self.oproject.ScrExportDcSimReport(simulation_name, background_color, fpath)
         if flag == 0:
-            while True:
-                self._logger.info(f"Exporting Siwave DC simulation report to {fpath}.")
-                if os.path.isfile(fpath):
-                    break
-                else:
-                    time.sleep(1)
-                os.path.getsize(fpath)
-            while True:
-                file_size = os.path.getsize(fpath)
-                if file_size > 0:
-                    break
-                else:
-                    time.sleep(1)
-            return True
+            self._logger.info(f"Exporting Siwave DC simulation report to {fpath}.")
+            return wait_export_file(flag, fpath, time_sleep=1)
         else:
             return False
 
