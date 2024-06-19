@@ -50,14 +50,48 @@ class TestClass:
         )
 
     def test_01_setups(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        for i in [
-            "setups_hfss.json",
-        ]:
-            with open(self.local_input_folder / i) as f:
-                data = json.load(f)
-            assert edbapp.configuration.load(data, apply_file=True)
+        data = {
+            "setups": [
+                {
+                    "name": "hfss_setup_1",
+                    "type": "hfss",
+                    "f_adapt": "5GHz",
+                    "max_num_passes": 10,
+                    "max_mag_delta_s": 0.02,
+                    "mesh_operations": [
+                        {
+                            "name": "mop_1",
+                            "type": "length",
+                            "max_length": "3mm",
+                            "restrict_length": True,
+                            "refine_inside": False,
+                            "nets_layers_list": {"GND": ["1_Top", "16_Bottom"]},
+                        }
+                    ]
+                },
+            ]
+        }
 
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        for setup in data["setups"]:
+            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
+            for p, value in setup.items():
+                if p == "max_num_passes":
+                    assert value == int(target[p])
+                elif p == "max_mag_delta_s":
+                    assert value == float(target[p])
+                elif p == "freq_sweep":
+                    pass
+                elif p == "mesh_operations":
+                    for mop in value:
+                        target_mop = [i for i in target["mesh_operations"] if i["name"] == mop["name"]][0]
+                        for mop_p_name, mop_value in mop.items():
+                            print(mop_p_name)
+                            assert mop_value == target_mop[mop_p_name]
+                else:
+                    assert value == target[p]
         edbapp.close()
 
     def test_01a_setups_frequency_sweeps(self, edb_examples):

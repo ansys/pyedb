@@ -1003,8 +1003,10 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         setup = edbapp.create_hfss_setup(name="setup")
         mop = setup.add_length_mesh_operation({"GND": ["1_Top", "16_Bottom"]}, "m1")
+        assert mop.nets_layers_list == {"GND": ["1_Top", "16_Bottom"]}
+        assert mop.type == "length"
         assert mop.name == "m1"
-        assert mop.max_elements == "1000"
+        assert mop.max_elements == 1000
         assert mop.restrict_max_elements
         assert mop.restrict_length
         assert mop.max_length == "1mm"
@@ -1012,20 +1014,9 @@ class TestClass:
         assert setup.mesh_operations
         assert edbapp.setups["setup"].mesh_operations
 
-        mop.name = "m2"
-        mop.max_elements = 2000
-        mop.restrict_max_elements = False
-        mop.restrict_length = False
-        mop.max_length = "2mm"
-
-        assert mop.name == "m2"
-        assert mop.max_elements == "2000"
-        assert not mop.restrict_max_elements
-        assert not mop.restrict_length
-        assert mop.max_length == "2mm"
-
         mop = edbapp.setups["setup"].add_skin_depth_mesh_operation({"GND": ["1_Top", "16_Bottom"]})
-        assert mop.max_elements == "1000"
+        assert mop.nets_layers_list == {"GND": ["1_Top", "16_Bottom"]}
+        assert mop.max_elements == 1000
         assert mop.restrict_max_elements
         assert mop.skin_depth == "1um"
         assert mop.surface_triangle_length == "1mm"

@@ -160,9 +160,12 @@ class SimulationSetup(object):
         setup_utility = setup_type_mapping[sim_setup_type.ToString()]
         return setup_utility(edb_setup_info)
 
+    @property
+    def mesh_operations(self):
+        return {}
+
     def _update_setup(self):
         """Update setup in EDB."""
-        # Update mesh operation
         # Update sweep
 
         # Replace setup
