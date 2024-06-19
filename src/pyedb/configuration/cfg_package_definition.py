@@ -27,6 +27,9 @@ from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 class CfgPackage(CfgBase):
     """Configuration package class."""
 
+    # Attributes cannot be set to package definition class or don't exist in package definition class.
+    protected_attributes = ["apply_to_all", "components", "extent_bounding_box", "component_definition"]
+
     def __init__(self, **kwargs):
         self.name = kwargs.get("name", None)
         self.component_definition = kwargs.get("component_definition", None)
@@ -48,10 +51,8 @@ class CfgPackage(CfgBase):
     def heatsink(self, value):
         self._heatsink = value
 
-    @property
-    def protected_attributes(self):
-        """Attributes cannot be set to package definition class or don't exist in package definition class."""
-        return ["apply_to_all", "components", "extent_bounding_box", "component_definition"]
+
+
 
 
 class CfgHeatSink(CfgBase):

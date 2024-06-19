@@ -127,7 +127,7 @@ class CfgStackup:
             attrs = mat_in_cfg.get_attributes()
             mat = self._pedb.materials.add_material(**attrs)
 
-    def __get_materials_from_db(self):
+    def get_materials_from_db(self):
         materials = []
         for name, p in self._pedb.materials.materials.items():
             mat = {}
@@ -136,7 +136,7 @@ class CfgStackup:
             materials.append(mat)
         return materials
 
-    def __get_layers_from_db(self):
+    def get_layers_from_db(self):
         layers = []
         for name, obj in self._pedb.stackup.all_layers.items():
             layer = {}
@@ -155,8 +155,8 @@ class CfgStackup:
         dict
         """
         stackup = {}
-        materials = self.__get_materials_from_db()
+        materials = self.get_materials_from_db()
         stackup["materials"] = materials
-        layers = self.__get_layers_from_db()
+        layers = self.get_layers_from_db()
         stackup["layers"] = layers
         return stackup

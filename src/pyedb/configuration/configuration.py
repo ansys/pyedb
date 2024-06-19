@@ -131,9 +131,8 @@ class Configuration:
         for source in self.cfg_data.sources:
             source.create()
 
-        # Configure HFSS setup
-        for setup in self.cfg_data.setups:
-            setup.apply()
+        # Configure setup
+        self.cfg_data.setups.apply()
 
         # Configure stackup
         self.cfg_data.stackup.apply()
@@ -269,10 +268,12 @@ class Configuration:
             data["stackup"] = self.cfg_data.stackup.get_data_from_db()
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
+        if kwargs.get("setups", False):
+            data["setups"] = self.cfg_data.setups.get_data_from_db()
 
         return data
 
-    def export(self, file_path, stackup=True, package_definitions=True):
+    def export(self, file_path, stackup=True, package_definitions=True, setups=True):
         """Export the configuration data from layout to a file.
 
         Parameters
@@ -288,7 +289,9 @@ class Configuration:
         """
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)
         file_path = file_path if file_path.suffix == ".json" else file_path.with_suffix(".json")
-        data = self.get_data_from_db(stackup=stackup, package_definitions=package_definitions)
+        data = self.get_data_from_db(stackup=stackup,
+                                     package_definitions=package_definitions,
+                                     setups=setups)
         with open(file_path, "w") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
         return True if os.path.isfile(file_path) else False

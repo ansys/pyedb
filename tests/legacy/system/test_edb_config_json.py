@@ -65,28 +65,28 @@ class TestClass:
             "setups": [
                 {
                     "name": "hfss_setup_1",
-                    "type": "HFSS",
+                    "type": "hfss",
                     "f_adapt": "5GHz",
                     "max_num_passes": 10,
                     "max_mag_delta_s": 0.02,
                     "freq_sweep": [
                         {
                             "name": "sweep1",
-                            "type": "Interpolation",
+                            "type": "interpolation",
                             "frequencies": [
                                 {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"}
                             ],
                         },
                         {
                             "name": "sweep2",
-                            "type": "Interpolation",
+                            "type": "interpolation",
                             "frequencies": [
                                 {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10}
                             ],
                         },
                         {
                             "name": "sweep3",
-                            "type": "Interpolation",
+                            "type": "interpolation",
                             "frequencies": [
                                 {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11}
                             ],
@@ -97,6 +97,24 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        for setup in data["setups"]:
+            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
+            for p, value in setup.items():
+                if p == "max_num_passes":
+                    assert value == int(target[p])
+                elif p == "max_mag_delta_s":
+                    assert value == float(target[p])
+                elif p == "freq_sweep":
+                    for sw in value:
+                        target_sw = [i for i in target["freq_sweep"] if i["name"] == sw["name"]][0]
+                        for sw_p_name, sw_value in sw.items():
+                            if sw_p_name == "frequencies":
+                                pass
+                            else:
+                                assert sw_value == target_sw[sw_p_name]
+                else:
+                    assert value == target[p]
         edbapp.close()
 
     def test_02_pin_groups(self, edb_examples):

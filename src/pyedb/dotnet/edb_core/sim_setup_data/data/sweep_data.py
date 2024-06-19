@@ -64,11 +64,6 @@ class SweepData(object):
         self._update_sweep()
 
     @property
-    def sweep_type(self):
-        """Sweep type."""
-        return
-
-    @property
     def frequencies(self):
         """List of frequency points."""
         return [float(i) for i in list(self._edb_object.Frequencies)]
@@ -158,6 +153,39 @@ class SweepData(object):
             Sweep type.
         """
         return self._edb_object.FreqSweepType.ToString()
+
+    @freq_sweep_type.setter
+    def freq_sweep_type(self, value):
+        edb_freq_sweep_type = self._edb_object.TFreqSweepType
+        if value in [0, "kInterpolatingSweep"]:
+            self._edb_object.FreqSweepType = edb_freq_sweep_type.kInterpolatingSweep
+        elif value in [1, "kDiscreteSweep"]:
+            self._edb_object.FreqSweepType = edb_freq_sweep_type.kDiscreteSweep
+        elif value in [2, "kBroadbandFastSweep"]:
+            self._edb_object.FreqSweepType = edb_freq_sweep_type.kBroadbandFastSweep
+        elif value in [3, "kNumSweepTypes"]:
+            self._edb_object.FreqSweepType = edb_freq_sweep_type.kNumSweepTypes
+        self._edb_object.FreqSweepType.ToString()
+
+    @property
+    def type(self):
+        """Sweep type."""
+        sw_type = self.freq_sweep_type
+        if sw_type == 'kInterpolatingSweep':
+            return "interpolation"
+        elif sw_type == 'kDiscreteSweep':
+            return "discrete"
+        elif sw_type == 'kBroadbandFastSweep':
+            return "broadband"
+
+    @type.setter
+    def type(self, value):
+        if value == 'interpolation':
+            self.freq_sweep_type = 'kInterpolatingSweep'
+        elif value == 'discrete':
+            self.freq_sweep_type = 'kDiscreteSweep'
+        elif value == 'broadband':
+            self.freq_sweep_type = 'kBroadbandFastSweep'
 
     @property
     def interpolation_use_full_basis(self):
@@ -317,19 +345,6 @@ class SweepData(object):
     def enforce_passivity(self, value):
         self._edb_object.EnforcePassivity = value
         self._update_sweep()
-
-    @freq_sweep_type.setter
-    def freq_sweep_type(self, value):
-        edb_freq_sweep_type = self._edb_object.TFreqSweepType
-        if value in [0, "kInterpolatingSweep"]:
-            self._edb_object.FreqSweepType = edb_freq_sweep_type.kInterpolatingSweep
-        elif value in [1, "kDiscreteSweep"]:
-            self._edb_object.FreqSweepType = edb_freq_sweep_type.kDiscreteSweep
-        elif value in [2, "kBroadbandFastSweep"]:
-            self._edb_object.FreqSweepType = edb_freq_sweep_type.kBroadbandFastSweep
-        elif value in [3, "kNumSweepTypes"]:
-            self._edb_object.FreqSweepType = edb_freq_sweep_type.kNumSweepTypes
-        self._edb_object.FreqSweepType.ToString()
 
     @interpolation_use_full_basis.setter
     def interpolation_use_full_basis(self, value):
@@ -506,20 +521,24 @@ class SweepData(object):
 
     def add(self, sweep_type, start, stop, increment):
         sweep_type = sweep_type.replace(" ", "_")
+        start = start.upper().replace("Z", "z")
+        stop = stop.upper().replace("Z", "z")
+        increment = increment.upper().replace("Z", "z") if isinstance(increment, str) else int(increment)
         if sweep_type in ["linear_count", "linear_scale"]:
             freqs = list(self._edb_object.SetFrequencies(start, stop, increment))
         elif sweep_type == "log_scale":
             freqs = list(self._edb_object.SetLogFrequencies(start, stop, increment))
         else:
             raise ValueError("sweep_type must be either 'linear_count', 'linear_scale' or 'log_scale")
-        self.add_frequencies(freqs)
+        return self.add_frequencies(freqs)
 
     def add_frequencies(self, frequencies):
         if not isinstance(frequencies, list):
             frequencies = [frequencies]
         for i in frequencies:
-            i = str(self._pedb.edb_value(i).ToDouble())
+            i = self._pedb.edb_value(i).ToString()
             self._edb_object.Frequencies.Add(i)
+        return list(self._edb_object.Frequencies)
 
     def clear(self):
         self._edb_object.Frequencies.Clear()
