@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import warnings
 
 from pyedb.dotnet.edb_core.sim_setup_data.data.mesh_operation import (
@@ -25,7 +47,6 @@ class HfssSimulationSetup(SimulationSetup):
     def __init__(self, pedb, edb_object=None, name: str = None):
         super().__init__(pedb, edb_object)
         self._simulation_setup_builder = self._pedb._edb.Utility.HFSSSimulationSetup
-        self._mesh_operations = {}
         if edb_object is None:
             self._name = name
 
@@ -173,19 +194,17 @@ class HfssSimulationSetup(SimulationSetup):
         List of :class:`dotnet.edb_core.edb_data.hfss_simulation_setup_data.MeshOperation`
 
         """
-        if self._mesh_operations:
-            return self._mesh_operations
-        settings = self.get_sim_setup_info.SimulationSettings.MeshOperations
-        self._mesh_operations = {}
+        settings = self.sim_setup_info.simulation_settings.MeshOperations
+        mesh_operations = {}
         for i in list(settings):
             if i.MeshOpType == i.TMeshOpType.kMeshSetupLength:
-                self._mesh_operations[i.Name] = MeshOperationLength(self, i)
+                mesh_operations[i.Name] = MeshOperationLength(self, i)
             elif i.MeshOpType == i.TMeshOpType.kMeshSetupSkinDepth:
-                self._mesh_operations[i.Name] = MeshOperationSkinDepth(self, i)
+                mesh_operations[i.Name] = MeshOperationSkinDepth(self, i)
             elif i.MeshOpType == i.TMeshOpType.kMeshSetupBase:
-                self._mesh_operations[i.Name] = MeshOperationSkinDepth(self, i)
+                mesh_operations[i.Name] = MeshOperationSkinDepth(self, i)
 
-        return self._mesh_operations
+        return mesh_operations
 
     def add_length_mesh_operation(
         self,
@@ -234,8 +253,9 @@ class HfssSimulationSetup(SimulationSetup):
         mesh_operation.max_length = max_length
         mesh_operation.restrict_length = restrict_length
         mesh_operation.restrict_max_elements = restrict_elements
-        self.mesh_operations[name] = mesh_operation
-        return mesh_operation if self._update_setup() else False
+        self.sim_setup_info.simulation_settings.MeshOperations.Add(mesh_operation.mesh_operation)
+        self._update_setup()
+        return mesh_operation
 
     def add_skin_depth_mesh_operation(
         self,
@@ -288,8 +308,9 @@ class HfssSimulationSetup(SimulationSetup):
         mesh_operation.number_of_layer_elements = number_of_layers
         mesh_operation.surface_triangle_length = surface_triangle_length
         mesh_operation.restrict_max_elements = restrict_elements
-        self.mesh_operations[name] = mesh_operation
-        return mesh_operation if self._update_setup() else False
+        self.sim_setup_info.simulation_settings.MeshOperations.Add(mesh_operation.mesh_operation)
+        self._update_setup()
+        return mesh_operation
 
     def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02):
         """Set single-frequency solution.
