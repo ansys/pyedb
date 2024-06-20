@@ -46,18 +46,54 @@ class CfgSetup(CfgBase):
         self.name = kwargs.get("name")
         self.type = kwargs.get("type").lower() if kwargs.get("type") else None
 
+        self.freq_sweep = []
+        for i in kwargs.get("freq_sweep", []):
+            self.freq_sweep.append(CfgSweepData(**i))
 
-class CfgSIwaveSetup(CfgSetup):
+    def _apply_freq_sweep(self, edb_setup):
+        for i in self.freq_sweep:
+            f_set = []
+            kw = {}
+            for attr in i.get_attributes(exclude="name"):
+                if attr == "frequencies":
+                    for f in i.frequencies:
+                        f_set.append([f.distribution, f.start, f.stop, f.increment])
+                else:
+                    kw[attr] = getattr(i, attr)
+            edb_setup.add_sweep(i.name, frequency_set=f_set, **kw)
+
+
+class CfgSIwaveACSetup(CfgSetup):
     def __init__(self, pedb, **kwargs):
         super().__init__(pedb, **kwargs)
-        self.si_slider_position = 1
-        self.pi_slider_position = 1
+        self.si_slider_position = kwargs.get("si_slider_position")
+        self.pi_slider_position = kwargs.get("pi_slider_position")
+
+    def apply(self):
+        if self.name in self._pedb.setups:
+            raise "Setup {} already existing. Editing it.".format(self.name)
+
+        kwargs = {"si_slider_position": self.si_slider_position} if self.si_slider_position is not None else {
+            "pi_slider_position": self.pi_slider_position}
+
+        edb_setup = self._pedb.create_siwave_syz_setup(name=self.name, **kwargs)
+        self._apply_freq_sweep(edb_setup)
 
 
 class CfgSIwaveDCSetup(CfgSetup):
     def __init__(self, pedb, **kwargs):
         super().__init__(pedb, **kwargs)
-        self.dc_settings = CfgDcSetup()
+        self.dc_slider_position = kwargs.get("dc_slider_position")
+        self.dc_ir_settings = CfgDcIrSettings(**kwargs.get("dc_ir_settings", {}))
+        self.freq_sweep = None
+
+    def apply(self):
+        edb_setup = self._pedb.create_siwave_dc_setup(name=self.name, dc_slider_position=self.dc_slider_position)
+        for k, v in self.dc_ir_settings.get_attributes().items():
+            if k == "dc_slider_postion":
+                edb_setup.dc_settings.dc_slider_position = v
+            else:
+                setattr(edb_setup.dc_ir_settings, k, v)
 
 
 class CfgHFSSSetup(CfgSetup):
@@ -72,55 +108,37 @@ class CfgHFSSSetup(CfgSetup):
         for i in kwargs.get("mesh_operations", []):
             self.mesh_operations.append(CfgLengthMeshOperation(**i))
 
-        self.freq_sweep = []
-        for i in kwargs.get("freq_sweep", []):
-            self.freq_sweep.append(CfgSweepData(**i))
-
     def apply(self):
         if self.name in self._pedb.setups:
             raise "Setup {} already existing. Editing it.".format(self.name)
 
         edb_setup = self._pedb.create_hfss_setup(self.name)
         edb_setup.set_solution_single_frequency(self.f_adapt, self.max_num_passes, self.max_mag_delta_s)
-        for i in self.freq_sweep:
-            f_set = []
-            kw = {}
-            for attr in i.get_attributes(exclude="name"):
-                if attr == "frequencies":
-                    for f in i.frequencies:
-                        f_set.append([f.distribution, f.start, f.stop, f.increment])
-                else:
-                    kw[attr] = getattr(i, attr)
-            edb_setup.add_sweep(i.name, frequency_set=f_set, **kw)
+
+        self._apply_freq_sweep(edb_setup)
 
         for i in self.mesh_operations:
             edb_setup.add_length_mesh_operation(net_layer_list=i.nets_layers_list,
                                                 name=i.name,
-                                                #max_elements=i.max_elements,
+                                                # max_elements=i.max_elements,
                                                 max_length=i.max_length,
-                                                #restrict_elements=i.restrict_max_elements,
+                                                # restrict_elements=i.restrict_max_elements,
                                                 restrict_length=i.restrict_length,
                                                 refine_inside=i.refine_inside,
-                                                #mesh_region=i.mesh_region
+                                                # mesh_region=i.mesh_region
                                                 )
 
 
-class CfgDcSetup:
-    def __init__(self):
-        self.dc_slider_position = 1
-        self.dcir_settings = DcIrSettings()
-
-
-class DcIrSettings:
-    def __init__(self):
-        self.export_dc_thermal_data = True
+class CfgDcIrSettings(CfgBase):
+    def __init__(self, **kwargs):
+        self.export_dc_thermal_data = kwargs.get("export_dc_thermal_data")
 
 
 class CfgMeshOperation(CfgBase):
     def __init__(self, **kwargs):
         self.name = kwargs.get("name")
         self.type = kwargs.get("type")
-        #self.mesh_region = kwargs.get("mesh_region")
+        # self.mesh_region = kwargs.get("mesh_region")
         self.nets_layers_list = kwargs.get("nets_layers_list", {})
         self.refine_inside = kwargs.get("refine_inside", False)
 
@@ -130,8 +148,8 @@ class CfgLengthMeshOperation(CfgMeshOperation):
         super().__init__(**kwargs)
 
         # waiting bug review
-        #self.restrict_max_elements = kwargs.get("restrict_max_elements", True)
-        #self.max_elements = kwargs.get("max_elements", 1000)
+        # self.restrict_max_elements = kwargs.get("restrict_max_elements", True)
+        # self.max_elements = kwargs.get("max_elements", 1000)
         self.restrict_length = kwargs.get("restrict_length", True)
         self.max_length = kwargs.get("max_length", "1mm")
 
@@ -143,8 +161,8 @@ class CfgSetups:
         for stp in setups_data:
             if stp.get("type").lower() == "hfss":
                 self.setups.append(CfgHFSSSetup(self._pedb, **stp))
-            elif stp.get("type").lower() == "siwave":
-                self.setups.append(CfgSIwaveSetup(self._pedb, **stp))
+            elif stp.get("type").lower() in ["siwave_ac", "siwave_syz"]:
+                self.setups.append(CfgSIwaveACSetup(self._pedb, **stp))
             elif stp.get("type").lower() == "siwave_dc":
                 self.setups.append(CfgSIwaveDCSetup(self._pedb, **stp))
 
@@ -156,7 +174,7 @@ class CfgSetups:
         setups = []
         for _, s in self._pedb.setups.items():
             stp = {}
-            if s.setup_type == "kHFSS":
+            if s.type == "hfss":
                 for p_name in CfgHFSSSetup(self._pedb).__dict__:
                     if p_name.startswith("_"):
                         continue
@@ -169,7 +187,7 @@ class CfgSetups:
                     elif p_name == "max_mag_delta_s":
                         stp[p_name] = list(s.adaptive_settings.adaptive_frequency_data_list)[0].max_delta
                     elif p_name == "freq_sweep":
-                        stp["freq_sweep"] = []
+                        f_sweep = []
                         for _, sw in s.sweeps.items():
                             sweep_data = {}
                             for sw_p_name in CfgSweepData().__dict__:
@@ -177,7 +195,8 @@ class CfgSetups:
                                     pass  # Frequencies cannot be read from EDB
                                 else:
                                     sweep_data[sw_p_name] = getattr(sw, sw_p_name)
-                            stp["freq_sweep"].append(sweep_data)
+                            f_sweep.append(sweep_data)
+                        stp["freq_sweep"] = f_sweep
                     elif p_name == "mesh_operations":
                         mops = []
                         for _, i in s.mesh_operations.items():
@@ -186,6 +205,31 @@ class CfgSetups:
                                 mop[mop_p_name] = getattr(i, mop_p_name)
                             mops.append(mop)
                         stp["mesh_operations"] = mops
+                    else:
+                        stp[p_name] = getattr(s, p_name)
+
+            elif s.type == "siwave_ac":
+
+                for p_name in CfgSIwaveACSetup(self._pedb).__dict__:
+                    if p_name.startswith("_"):
+                        continue
+                    elif p_name == "freq_sweep":
+                        pass  # Bug in EDB API
+                    else:
+                        stp[p_name] = getattr(s, p_name)
+            elif s.type == "siwave_dc":
+                for p_name in CfgSIwaveDCSetup(self._pedb).__dict__:
+                    if p_name.startswith("_"):
+                        continue
+                    elif p_name == "freq_sweep":
+                        pass
+                    elif p_name == "dc_ir_settings":
+                        dc_ir_s = {}
+                        for dcir_p_name in CfgDcIrSettings().__dict__:
+                            dc_ir_s[dcir_p_name] = getattr(s.dc_ir_settings, dcir_p_name)
+                        stp["dc_ir_settings"] = dc_ir_s
+                    elif p_name == "dc_slider_position":
+                        stp[p_name] = getattr(s.dc_settings, p_name)
                     else:
                         stp[p_name] = getattr(s, p_name)
             setups.append(stp)

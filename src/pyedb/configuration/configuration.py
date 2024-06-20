@@ -263,6 +263,7 @@ class Configuration:
         -------
 
         """
+        self._pedb.logger.info("Getting data from layout database.")
         data = {}
         if kwargs.get("stackup", False):
             data["stackup"] = self.cfg_data.stackup.get_data_from_db()

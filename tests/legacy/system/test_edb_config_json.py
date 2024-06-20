@@ -83,7 +83,7 @@ class TestClass:
                 elif p == "max_mag_delta_s":
                     assert value == float(target[p])
                 elif p == "freq_sweep":
-                    pass
+                    pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
                 elif p == "mesh_operations":
                     for mop in value:
                         target_mop = [i for i in target["mesh_operations"] if i["name"] == mop["name"]][0]
@@ -471,8 +471,28 @@ class TestClass:
         edbapp.close()
 
     def test_12_setup_siwave_dc(self, edb_examples):
+        data = {
+            "setups": [
+                {
+                    "name": "siwave_1",
+                    "type": "siwave_dc",
+                    "dc_slider_position": 1,
+                    "dc_ir_settings": {
+                        "export_dc_thermal_data": True
+                    }
+                }
+            ]
+        }
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(str(self.local_input_folder / "setups_siwave_dc.json"), apply_file=True)
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        for setup in data["setups"]:
+            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
+            for p, value in setup.items():
+                if p == "freq_sweep":
+                    pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
+                else:
+                    assert value == target[p]
         edbapp.close()
 
     def test_13_stackup_layers(self, edb_examples):
@@ -634,9 +654,45 @@ class TestClass:
         edbapp.close()
 
     def test_14_setup_siwave_syz(self, edb_examples):
+        data = {
+            "setups": [
+                {
+                    "name": "siwave_1",
+                    "type": "siwave_ac",
+                    "si_slider_position": 1,
+                    "freq_sweep": [
+                        {
+                            "name": "Sweep1",
+                            "type": "Interpolation",
+                            "frequencies": [
+                                {
+                                    "distribution": "log_scale",
+                                    "start": 1e3,
+                                    "stop": 1e9,
+                                    "samples": 10
+                                },
+                                {
+                                    "distribution": "linear_count",
+                                    "start": 1e9,
+                                    "stop": 10e9,
+                                    "points": 11
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(str(self.local_input_folder / "setups_siwave_syz.json"), apply_file=True)
-        setup = edbapp.setups["siwave_syz"]
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        for setup in data["setups"]:
+            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
+            for p, value in setup.items():
+                if p == "freq_sweep":
+                    pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
+                else:
+                    assert value == target[p]
         edbapp.close()
 
     def test_15b_sources(self, edb_examples):

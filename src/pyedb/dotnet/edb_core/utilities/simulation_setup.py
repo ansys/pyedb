@@ -33,14 +33,14 @@ from enum import Enum
 class SimulationSetupType(Enum):
     kHFSS = "hfss"
     kPEM = None
-    kSIwave = "siwave"
+    kSIwave = "siwave_ac"
     kLNA = "lna"
     kTransient = "transient"
     kQEye = "quick_eye"
     kVEye = "verif_eye"
     kAMI = "ami"
     kAnalysisOption = "analysis_option"
-    kSIwaveDCIR = "siwave_dcir"
+    kSIwaveDCIR = "siwave_dc"
     kSIwaveEMI = "siwave_emi"
     kHFSSPI = "hfss_pi"
     kDDRwizard = "ddrwizard"

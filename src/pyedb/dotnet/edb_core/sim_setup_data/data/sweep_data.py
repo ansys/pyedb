@@ -521,8 +521,8 @@ class SweepData(object):
 
     def add(self, sweep_type, start, stop, increment):
         sweep_type = sweep_type.replace(" ", "_")
-        start = start.upper().replace("Z", "z")
-        stop = stop.upper().replace("Z", "z")
+        start = start.upper().replace("Z", "z") if isinstance(start, str) else str(start)
+        stop = stop.upper().replace("Z", "z")  if isinstance(stop, str) else str(stop)
         increment = increment.upper().replace("Z", "z") if isinstance(increment, str) else int(increment)
         if sweep_type in ["linear_count", "linear_scale"]:
             freqs = list(self._edb_object.SetFrequencies(start, stop, increment))
