@@ -140,11 +140,6 @@ class SimulationSetup(object):
     def _update_setup(self):
         """Update setup in EDB."""
         # Update mesh operation
-        if self._setup_type == "kHFSS":
-            mesh_operations = self.get_sim_setup_info.SimulationSettings.MeshOperations
-            mesh_operations.Clear()
-            for mop in self.mesh_operations.values():
-                mesh_operations.Add(mop.mesh_operation)
         # Update sweep
 
         # Replace setup
