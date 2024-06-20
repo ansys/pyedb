@@ -3681,7 +3681,7 @@ class Edb(Database):
             return False
         return HFSSPISimulationSetup(self).create(name)
 
-    def create_siwave_syz_setup(self, name=None):
+    def create_siwave_syz_setup(self, name=None, **kwargs):
         """Create a setup from a template.
 
         Parameters
@@ -3709,9 +3709,11 @@ class Edb(Database):
         if name in self.setups:
             return False
         setup = SiwaveSimulationSetup(self, name=name)
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
         return self.setups[name]
 
-    def create_siwave_dc_setup(self, name=None):
+    def create_siwave_dc_setup(self, name=None, **kwargs):
         """Create a setup from a template.
 
         Parameters
@@ -3736,6 +3738,8 @@ class Edb(Database):
         if name in self.setups:
             return False
         setup = SiwaveDCSimulationSetup(self, name=name)
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
         return setup
 
     def calculate_initial_extent(self, expansion_factor):

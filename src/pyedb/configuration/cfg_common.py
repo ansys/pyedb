@@ -22,9 +22,7 @@
 
 
 class CfgBase:
-    @property
-    def protected_attributes(self):
-        return []
+    protected_attributes = []
 
     def get_attributes(self, exclude=None):
         attrs = {i: j for i, j in self.__dict__.items() if i not in self.protected_attributes}

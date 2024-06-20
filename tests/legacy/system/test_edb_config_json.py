@@ -50,14 +50,48 @@ class TestClass:
         )
 
     def test_01_setups(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        for i in [
-            "setups_hfss.json",
-        ]:
-            with open(self.local_input_folder / i) as f:
-                data = json.load(f)
-            assert edbapp.configuration.load(data, apply_file=True)
+        data = {
+            "setups": [
+                {
+                    "name": "hfss_setup_1",
+                    "type": "hfss",
+                    "f_adapt": "5GHz",
+                    "max_num_passes": 10,
+                    "max_mag_delta_s": 0.02,
+                    "mesh_operations": [
+                        {
+                            "name": "mop_1",
+                            "type": "length",
+                            "max_length": "3mm",
+                            "restrict_length": True,
+                            "refine_inside": False,
+                            "nets_layers_list": {"GND": ["1_Top", "16_Bottom"]},
+                        }
+                    ],
+                },
+            ]
+        }
 
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        for setup in data["setups"]:
+            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
+            for p, value in setup.items():
+                if p == "max_num_passes":
+                    assert value == int(target[p])
+                elif p == "max_mag_delta_s":
+                    assert value == float(target[p])
+                elif p == "freq_sweep":
+                    pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
+                elif p == "mesh_operations":
+                    for mop in value:
+                        target_mop = [i for i in target["mesh_operations"] if i["name"] == mop["name"]][0]
+                        for mop_p_name, mop_value in mop.items():
+                            print(mop_p_name)
+                            assert mop_value == target_mop[mop_p_name]
+                else:
+                    assert value == target[p]
         edbapp.close()
 
     def test_01a_setups_frequency_sweeps(self, edb_examples):
@@ -65,28 +99,28 @@ class TestClass:
             "setups": [
                 {
                     "name": "hfss_setup_1",
-                    "type": "HFSS",
+                    "type": "hfss",
                     "f_adapt": "5GHz",
                     "max_num_passes": 10,
                     "max_mag_delta_s": 0.02,
                     "freq_sweep": [
                         {
                             "name": "sweep1",
-                            "type": "Interpolation",
+                            "type": "interpolation",
                             "frequencies": [
                                 {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"}
                             ],
                         },
                         {
                             "name": "sweep2",
-                            "type": "Interpolation",
+                            "type": "interpolation",
                             "frequencies": [
                                 {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10}
                             ],
                         },
                         {
                             "name": "sweep3",
-                            "type": "Interpolation",
+                            "type": "interpolation",
                             "frequencies": [
                                 {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11}
                             ],
@@ -97,6 +131,24 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        for setup in data["setups"]:
+            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
+            for p, value in setup.items():
+                if p == "max_num_passes":
+                    assert value == int(target[p])
+                elif p == "max_mag_delta_s":
+                    assert value == float(target[p])
+                elif p == "freq_sweep":
+                    for sw in value:
+                        target_sw = [i for i in target["freq_sweep"] if i["name"] == sw["name"]][0]
+                        for sw_p_name, sw_value in sw.items():
+                            if sw_p_name == "frequencies":
+                                pass
+                            else:
+                                assert sw_value == target_sw[sw_p_name]
+                else:
+                    assert value == target[p]
         edbapp.close()
 
     def test_02_pin_groups(self, edb_examples):
@@ -419,8 +471,26 @@ class TestClass:
         edbapp.close()
 
     def test_12_setup_siwave_dc(self, edb_examples):
+        data = {
+            "setups": [
+                {
+                    "name": "siwave_1",
+                    "type": "siwave_dc",
+                    "dc_slider_position": 1,
+                    "dc_ir_settings": {"export_dc_thermal_data": True},
+                }
+            ]
+        }
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(str(self.local_input_folder / "setups_siwave_dc.json"), apply_file=True)
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        for setup in data["setups"]:
+            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
+            for p, value in setup.items():
+                if p == "freq_sweep":
+                    pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
+                else:
+                    assert value == target[p]
         edbapp.close()
 
     def test_13_stackup_layers(self, edb_examples):
@@ -582,9 +652,35 @@ class TestClass:
         edbapp.close()
 
     def test_14_setup_siwave_syz(self, edb_examples):
+        data = {
+            "setups": [
+                {
+                    "name": "siwave_1",
+                    "type": "siwave_ac",
+                    "si_slider_position": 1,
+                    "freq_sweep": [
+                        {
+                            "name": "Sweep1",
+                            "type": "Interpolation",
+                            "frequencies": [
+                                {"distribution": "log_scale", "start": 1e3, "stop": 1e9, "samples": 10},
+                                {"distribution": "linear_count", "start": 1e9, "stop": 10e9, "points": 11},
+                            ],
+                        }
+                    ],
+                }
+            ]
+        }
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(str(self.local_input_folder / "setups_siwave_syz.json"), apply_file=True)
-        setup = edbapp.setups["siwave_syz"]
+        assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        for setup in data["setups"]:
+            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
+            for p, value in setup.items():
+                if p == "freq_sweep":
+                    pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
+                else:
+                    assert value == target[p]
         edbapp.close()
 
     def test_15b_sources(self, edb_examples):
