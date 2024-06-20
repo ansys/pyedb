@@ -2021,11 +2021,8 @@ class TestClass:
         assert len(edbapp.modeler.bondwires) == 1
         edbapp.close()
 
-    def test_voltage_regulator(self):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_vrm", "test.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(edbpath=target_path, edbversion=desktop_version)
+    def test_voltage_regulator(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         positive_sensor_pin = edbapp.components["U1"].pins["A2"]
         negative_sensor_pin = edbapp.components["U1"].pins["A3"]
         vrm = edbapp.siwave.create_vrm_module(
@@ -2048,3 +2045,4 @@ class TestClass:
         assert vrm.id
         assert edbapp.voltage_regulator_modules
         assert "test" in edbapp.voltage_regulator_modules
+        edbapp.close()
