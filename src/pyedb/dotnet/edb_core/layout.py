@@ -149,10 +149,13 @@ class EdbLayout(object):
         _primitives_by_layer = {}
         for lay in self.layers:
             _primitives_by_layer[lay] = []
+        for lay in self._pedb.stackup.non_stackup_layers:
+            _primitives_by_layer[lay] = []
         for i in self._layout.primitives:
             try:
                 lay = i.GetLayer().GetName()
-                _primitives_by_layer[lay].append(cast(i, self._pedb))
+                if lay in _primitives_by_layer:
+                    _primitives_by_layer[lay].append(cast(i, self._pedb))
             except:
                 self._logger.warning(f"Failed to get layer on primitive {i}, skipping.")
                 continue
