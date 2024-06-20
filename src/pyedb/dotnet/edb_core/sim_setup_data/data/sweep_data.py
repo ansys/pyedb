@@ -171,21 +171,21 @@ class SweepData(object):
     def type(self):
         """Sweep type."""
         sw_type = self.freq_sweep_type
-        if sw_type == 'kInterpolatingSweep':
+        if sw_type == "kInterpolatingSweep":
             return "interpolation"
-        elif sw_type == 'kDiscreteSweep':
+        elif sw_type == "kDiscreteSweep":
             return "discrete"
-        elif sw_type == 'kBroadbandFastSweep':
+        elif sw_type == "kBroadbandFastSweep":
             return "broadband"
 
     @type.setter
     def type(self, value):
-        if value == 'interpolation':
-            self.freq_sweep_type = 'kInterpolatingSweep'
-        elif value == 'discrete':
-            self.freq_sweep_type = 'kDiscreteSweep'
-        elif value == 'broadband':
-            self.freq_sweep_type = 'kBroadbandFastSweep'
+        if value == "interpolation":
+            self.freq_sweep_type = "kInterpolatingSweep"
+        elif value == "discrete":
+            self.freq_sweep_type = "kDiscreteSweep"
+        elif value == "broadband":
+            self.freq_sweep_type = "kBroadbandFastSweep"
 
     @property
     def interpolation_use_full_basis(self):
@@ -522,7 +522,7 @@ class SweepData(object):
     def add(self, sweep_type, start, stop, increment):
         sweep_type = sweep_type.replace(" ", "_")
         start = start.upper().replace("Z", "z") if isinstance(start, str) else str(start)
-        stop = stop.upper().replace("Z", "z")  if isinstance(stop, str) else str(stop)
+        stop = stop.upper().replace("Z", "z") if isinstance(stop, str) else str(stop)
         increment = increment.upper().replace("Z", "z") if isinstance(increment, str) else int(increment)
         if sweep_type in ["linear_count", "linear_scale"]:
             freqs = list(self._edb_object.SetFrequencies(start, stop, increment))

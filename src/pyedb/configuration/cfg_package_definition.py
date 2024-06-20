@@ -52,9 +52,6 @@ class CfgPackage(CfgBase):
         self._heatsink = value
 
 
-
-
-
 class CfgHeatSink(CfgBase):
     """Configuration heat sink class."""
 

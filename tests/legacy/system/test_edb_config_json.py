@@ -67,7 +67,7 @@ class TestClass:
                             "refine_inside": False,
                             "nets_layers_list": {"GND": ["1_Top", "16_Bottom"]},
                         }
-                    ]
+                    ],
                 },
             ]
         }
@@ -477,9 +477,7 @@ class TestClass:
                     "name": "siwave_1",
                     "type": "siwave_dc",
                     "dc_slider_position": 1,
-                    "dc_ir_settings": {
-                        "export_dc_thermal_data": True
-                    }
+                    "dc_ir_settings": {"export_dc_thermal_data": True},
                 }
             ]
         }
@@ -665,21 +663,11 @@ class TestClass:
                             "name": "Sweep1",
                             "type": "Interpolation",
                             "frequencies": [
-                                {
-                                    "distribution": "log_scale",
-                                    "start": 1e3,
-                                    "stop": 1e9,
-                                    "samples": 10
-                                },
-                                {
-                                    "distribution": "linear_count",
-                                    "start": 1e9,
-                                    "stop": 10e9,
-                                    "points": 11
-                                }
-                            ]
+                                {"distribution": "log_scale", "start": 1e3, "stop": 1e9, "samples": 10},
+                                {"distribution": "linear_count", "start": 1e9, "stop": 10e9, "points": 11},
+                            ],
                         }
-                    ]
+                    ],
                 }
             ]
         }

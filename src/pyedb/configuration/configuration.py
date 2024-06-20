@@ -290,9 +290,7 @@ class Configuration:
         """
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)
         file_path = file_path if file_path.suffix == ".json" else file_path.with_suffix(".json")
-        data = self.get_data_from_db(stackup=stackup,
-                                     package_definitions=package_definitions,
-                                     setups=setups)
+        data = self.get_data_from_db(stackup=stackup, package_definitions=package_definitions, setups=setups)
         with open(file_path, "w") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
         return True if os.path.isfile(file_path) else False

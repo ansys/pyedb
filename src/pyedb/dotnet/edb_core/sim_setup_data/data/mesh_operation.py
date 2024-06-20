@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from enum import Enum
+
 from System import Tuple
 
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
@@ -149,21 +150,17 @@ class MeshOperation(object):
     def enabled(self, value):
         self._edb_object.Enabled = value
 
-
     @mesh_region.setter
     def mesh_region(self, value):
         self._edb_object.MeshRegion = value
-
 
     @name.setter
     def name(self, value):
         self._edb_object.Name = value
 
-
     @refine_inside.setter
     def refine_inside(self, value):
         self._edb_object.RefineInside = value
-
 
     @property
     def max_elements(self):
@@ -189,7 +186,6 @@ class MeshOperation(object):
     def max_elements(self, value):
         self._edb_object.MaxElems = str(value)
 
-
     @restrict_max_elements.setter
     def restrict_max_elements(self, value):
         """Whether to restrict maximum number  of elements.
@@ -199,7 +195,6 @@ class MeshOperation(object):
         bool
         """
         self._edb_object.RestrictMaxElem = value
-
 
 
 class LengthMeshOperation(MeshOperation, object):
@@ -239,7 +234,6 @@ class LengthMeshOperation(MeshOperation, object):
     def max_length(self, value):
         self._edb_object.MaxLength = value
 
-
     @restrict_length.setter
     def restrict_length(self, value):
         """Whether to restrict length of elements.
@@ -249,7 +243,6 @@ class LengthMeshOperation(MeshOperation, object):
         bool
         """
         self._edb_object.RestrictLength = value
-
 
 
 class SkinDepthMeshOperation(MeshOperation, object):
@@ -279,7 +272,6 @@ class SkinDepthMeshOperation(MeshOperation, object):
     def skin_depth(self, value):
         self._edb_object.SkinDepth = value
 
-
     @property
     def surface_triangle_length(self):
         """Surface triangle length value.
@@ -294,7 +286,6 @@ class SkinDepthMeshOperation(MeshOperation, object):
     def surface_triangle_length(self, value):
         self._edb_object.SurfTriLength = value
 
-
     @property
     def number_of_layer_elements(self):
         """Number of layer elements.
@@ -308,4 +299,3 @@ class SkinDepthMeshOperation(MeshOperation, object):
     @number_of_layer_elements.setter
     def number_of_layer_elements(self, value):
         self._edb_object.NumLayers = str(value)
-

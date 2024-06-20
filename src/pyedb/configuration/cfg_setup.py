@@ -25,10 +25,10 @@ from pyedb.configuration.cfg_common import CfgBase
 
 class CfgFrequencies(CfgBase):
     def __init__(self, **kwargs):
-        self.distribution = kwargs.get('distribution').replace(" ", "_") if kwargs.get("distribution") else None
-        self.start = kwargs.get('start')
-        self.stop = kwargs.get('stop')
-        self.increment = kwargs.get('increment', kwargs.get('points', kwargs.get("samples", kwargs.get("step"))))
+        self.distribution = kwargs.get("distribution").replace(" ", "_") if kwargs.get("distribution") else None
+        self.start = kwargs.get("start")
+        self.stop = kwargs.get("stop")
+        self.increment = kwargs.get("increment", kwargs.get("points", kwargs.get("samples", kwargs.get("step"))))
 
 
 class CfgSweepData(CfgBase):
@@ -36,7 +36,7 @@ class CfgSweepData(CfgBase):
         self.name = kwargs.get("name")
         self.type = kwargs.get("type").lower() if kwargs.get("type") else None
         self.frequencies = []
-        for kw in kwargs.get('frequencies', []):
+        for kw in kwargs.get("frequencies", []):
             self.frequencies.append(CfgFrequencies(**kw))
 
 
@@ -73,8 +73,11 @@ class CfgSIwaveACSetup(CfgSetup):
         if self.name in self._pedb.setups:
             raise "Setup {} already existing. Editing it.".format(self.name)
 
-        kwargs = {"si_slider_position": self.si_slider_position} if self.si_slider_position is not None else {
-            "pi_slider_position": self.pi_slider_position}
+        kwargs = (
+            {"si_slider_position": self.si_slider_position}
+            if self.si_slider_position is not None
+            else {"pi_slider_position": self.pi_slider_position}
+        )
 
         edb_setup = self._pedb.create_siwave_syz_setup(name=self.name, **kwargs)
         self._apply_freq_sweep(edb_setup)
@@ -118,15 +121,16 @@ class CfgHFSSSetup(CfgSetup):
         self._apply_freq_sweep(edb_setup)
 
         for i in self.mesh_operations:
-            edb_setup.add_length_mesh_operation(net_layer_list=i.nets_layers_list,
-                                                name=i.name,
-                                                # max_elements=i.max_elements,
-                                                max_length=i.max_length,
-                                                # restrict_elements=i.restrict_max_elements,
-                                                restrict_length=i.restrict_length,
-                                                refine_inside=i.refine_inside,
-                                                # mesh_region=i.mesh_region
-                                                )
+            edb_setup.add_length_mesh_operation(
+                net_layer_list=i.nets_layers_list,
+                name=i.name,
+                # max_elements=i.max_elements,
+                max_length=i.max_length,
+                # restrict_elements=i.restrict_max_elements,
+                restrict_length=i.restrict_length,
+                refine_inside=i.refine_inside,
+                # mesh_region=i.mesh_region
+            )
 
 
 class CfgDcIrSettings(CfgBase):
@@ -209,7 +213,6 @@ class CfgSetups:
                         stp[p_name] = getattr(s, p_name)
 
             elif s.type == "siwave_ac":
-
                 for p_name in CfgSIwaveACSetup(self._pedb).__dict__:
                     if p_name.startswith("_"):
                         continue
