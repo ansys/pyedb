@@ -22,6 +22,9 @@
 
 import warnings
 
+from pyedb.dotnet.edb_core.sim_setup_data.data.hfss_pi_simulation_settings import (
+    HFSSPISimulationSettings,
+)
 from pyedb.dotnet.edb_core.sim_setup_data.data.mesh_operation import (
     LengthMeshOperation,
     SkinDepthMeshOperation,
@@ -37,6 +40,7 @@ from pyedb.dotnet.edb_core.sim_setup_data.data.settings import (
     ViaSettings,
 )
 from pyedb.dotnet.edb_core.sim_setup_data.data.sim_setup_info import SimSetupInfo
+from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 from pyedb.dotnet.edb_core.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import generate_unique_name
 
@@ -384,3 +388,81 @@ class HfssSimulationSetup(SimulationSetup):
         ):  # pragma no cover
             return False
         return True
+
+
+class HFSSPISimulationSetup(SimulationSetup):
+    """Manages EDB methods for HFSSPI simulation setup."""
+
+    def __init__(self, pedb, edb_object=None):
+        super().__init__(pedb, edb_object)
+        self._pedb = pedb
+        self._setup_type = "kHFSSPI"
+        self._edb_setup_info = None
+        self.logger = self._pedb.logger
+
+    def create(self, name=None):
+        """Create an HFSS setup."""
+        self._name = name
+        self._create(name=name, simulation_setup_type=self._setup_type)
+        return self
+
+    @property
+    def setup_type(self):
+        return self._setup_type
+
+    @property
+    def settings(self):
+        return HFSSPISimulationSettings(self._edb_setup_info, self._pedb)
+
+    @property
+    def enabled(self):
+        return self.settings.enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        if isinstance(value, bool):
+            self.settings.enabled = value
+        else:
+            self.logger.error(f"Property enabled expects a boolean value while the provided value is {value}.")
+
+    @property
+    def position(self):
+        return self._edb_setup_info.Position
+
+    @position.setter
+    def position(self, value):
+        if isinstance(value, int):
+            self._edb_setup_info.Position = value
+        else:
+            self.logger.error(f"Property position expects an integer value while the provided value is {value}.")
+
+    def add_frequency_sweep(self, name=None, frequency_sweep=None):
+        """Add frequency sweep.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the frequency sweep.
+        frequency_sweep : list, optional
+            List of frequency points.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.EdbFrequencySweep`wheen succeeded, ``False``
+        when failed.
+
+        Examples
+        --------
+        >>> setup1 = edbapp.create_hfss_setup("setup1")
+        >>> setup1.add_frequency_sweep(frequency_sweep=[
+        ...                           ["linear count", "0", "1kHz", 1],
+        ...                           ["log scale", "1kHz", "0.1GHz", 10],
+        ...                           ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+        ...                           ])
+        """
+        if name in self.frequency_sweeps:
+            self.logger.error("Frequency sweep with same name already defined.")
+            return False
+        if not name:
+            name = generate_unique_name("sweep")
+        return SweepData(self, frequency_sweep, name)
