@@ -39,7 +39,7 @@ class HFSSPISimulationSetup(SimulationSetup):
     def create(self, name=None):
         """Create an HFSS setup."""
         self._name = name
-        self._create(name)
+        self._create(name=name, simulation_setup_type=self._setup_type)
         return self
 
     @property
