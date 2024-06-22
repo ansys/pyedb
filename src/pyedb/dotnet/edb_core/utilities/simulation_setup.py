@@ -145,7 +145,6 @@ class SimulationSetup(object):
             "kAnalysisOption": None,
             "kSIwaveDCIR": utility.SIWaveDCIRSimulationSetup,
             "kSIwaveEMI": None,
-            "kHFSSPI": None,
             "kDDRwizard": None,
             "kQ3D": None,
             "kNumSetupTypes": None,
