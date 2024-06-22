@@ -1787,7 +1787,6 @@ class TestClass:
         not desktop_version == "2024.2" or int(desktop_version.split(".")[0]) >= 2025,
         reason="Only supported with 2024.2 and higher",
     )
-
     def test_icepak(self, edb_examples):
         edbapp = edb_examples.get_si_verse(additional_files_folders=["siwave/icepak_component.pwrd"])
         edbapp.siwave.icepak_use_minimal_comp_defaults = True
@@ -1814,7 +1813,6 @@ class TestClass:
         not desktop_version == "2024.2" or int(desktop_version.split(".")[0]) >= 2025,
         reason="Only supported with 2024.2 and higher",
     )
-
     def test_dcir_properties(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         setup = edbapp.create_siwave_dc_setup()
