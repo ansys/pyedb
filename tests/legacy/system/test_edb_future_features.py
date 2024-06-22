@@ -34,7 +34,7 @@ class TestClass:
         pass
 
     def test_create_hfss_pi_setup(self, edb_examples):
-        edbapp = edb_examples.get_si_verse(version=2024.2)
+        edbapp = edb_examples.get_si_verse(version=2025.1)
         setup = edbapp.create_hfsspi_setup("test")
         setup.add_frequency_sweep(frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
         assert not setup.settings.auto_select_nets_for_simulation
