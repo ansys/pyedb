@@ -23,19 +23,7 @@
 """Tests related to Edb
 """
 
-import os
-
 import pytest
-
-from pyedb.dotnet.edb import Edb
-from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
-    SimulationConfiguration,
-)
-from pyedb.generic.constants import RadiationBoxType, SolverType, SourceType
-from pyedb.generic.general_methods import is_linux
-from tests.conftest import desktop_version, local_path
-from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
@@ -89,7 +77,7 @@ class TestClass:
         setup.settings.surface_roughness_model = "Hammerstad"
         assert setup.settings.surface_roughness_model == "Hammerstad"
 
-    def test_add_raptorx_setup(self):
+    def test_add_raptorx_setup(self, edb_examples):
         edbapp = edb_examples.get_si_verse(version=2024.2)
         setup = edbapp.create_raptorx_setup("test")
         assert "test" in edbapp.setups
