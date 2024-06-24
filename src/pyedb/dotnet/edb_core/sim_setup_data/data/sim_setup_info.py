@@ -46,7 +46,7 @@ class SimSetupInfo:
             "kAnalysisOption": None,
             "kSIwaveDCIR": self._pedb.simsetupdata.SIwave.SIWDCIRSimulationSettings,
             "kSIwaveEMI": None,
-            "kHFSSPI": None,
+            "kHFSSPI": self._pedb.simsetupdata.HFSSPISimulationSettings,
             "kDDRwizard": None,
             "kQ3D": None,
             "kNumSetupTypes": None,
