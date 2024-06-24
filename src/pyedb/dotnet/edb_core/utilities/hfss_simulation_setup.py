@@ -22,9 +22,6 @@
 
 import warnings
 
-from pyedb.dotnet.edb_core.sim_setup_data.data.hfss_pi_simulation_settings import (
-    HFSSPISimulationSettings,
-)
 from pyedb.dotnet.edb_core.sim_setup_data.data.mesh_operation import (
     LengthMeshOperation,
     SkinDepthMeshOperation,
@@ -40,6 +37,9 @@ from pyedb.dotnet.edb_core.sim_setup_data.data.settings import (
     ViaSettings,
 )
 from pyedb.dotnet.edb_core.sim_setup_data.data.sim_setup_info import SimSetupInfo
+from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_settings import (
+    HFSSPISimulationSettings,
+)
 from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 from pyedb.dotnet.edb_core.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import generate_unique_name
@@ -395,6 +395,7 @@ class HFSSPISimulationSetup(SimulationSetup):
 
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
+        self._edb_object = edb_object
         self._pedb = pedb
         self._setup_type = "kHFSSPI"
         self._edb_setup_info = None
@@ -412,7 +413,7 @@ class HFSSPISimulationSetup(SimulationSetup):
 
     @property
     def settings(self):
-        return HFSSPISimulationSettings(self._edb_setup_info, self._pedb)
+        return HFSSPISimulationSettings(self._edb_setup_info, self._pedb, self._edb_object)
 
     @property
     def enabled(self):
