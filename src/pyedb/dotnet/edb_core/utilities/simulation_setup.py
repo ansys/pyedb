@@ -100,11 +100,11 @@ class SimulationSetup(object):
 
     @property
     def sim_setup_info(self):
-        if self.type not in ["hfss_pi", "raptor_x"]:
-            return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_object.GetSimSetupInfo())
-        else:
-            if self._edb_setup_info:
-                return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_setup_info)
+        if self._edb_object:
+            if self._edb_object.GetType().ToString() not in ["kHFSSPI", "kRaptorX"]:
+                return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_object.GetSimSetupInfo())
+        elif self._edb_setup_info:
+            return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_setup_info)
 
     @sim_setup_info.setter
     def sim_setup_info(self, sim_setup_info):
