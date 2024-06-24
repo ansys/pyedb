@@ -1,5 +1,6 @@
 # # Setup EDB for Power Integrity Analysis
-# This example shows how to setup the electronics database (EDB) for power integrity analysis from a single configuration file.
+# This example shows how to setup the electronics database (EDB) for power integrity analysis from a single
+# configuration file.
 
 # ## Preparation
 # Import the required packages
