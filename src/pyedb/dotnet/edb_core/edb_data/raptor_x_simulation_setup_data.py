@@ -38,7 +38,7 @@ class RaptorXSimulationSetup(SimulationSetup):
     def create(self, name=None):
         """Create an HFSS setup."""
         self._name = name
-        self._create(name, simulation_setup_type="kRaptorX")
+        self._create(name, simulation_setup_type=self._setup_type)
         return self
 
     @property
