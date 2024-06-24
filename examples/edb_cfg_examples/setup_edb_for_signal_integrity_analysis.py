@@ -13,6 +13,7 @@ import time
 
 from pyaedt import Hfss3dLayout
 from pyaedt.downloads import download_file
+
 from pyedb import Edb
 
 AEDT_VERSION = "2024.1"
@@ -165,7 +166,7 @@ h3d.analyze()
 
 # ### Plot impedance
 
-solutions = h3d.post.get_solution_data(expressions='Z(port1,port1)')
+solutions = h3d.post.get_solution_data(expressions="Z(port1,port1)")
 solutions.plot()
 
 # ## Shut Down Electronics Desktop
