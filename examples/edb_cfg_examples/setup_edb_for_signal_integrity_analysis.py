@@ -4,14 +4,18 @@
 # ## Preparation
 # Import the required packages
 
+import json
+
 # +
 import os
-import json
 import tempfile
 import time
-from pyedb import Edb
+
 from pyaedt import Hfss3dLayout
 from pyaedt.downloads import download_file
+
+from pyedb import Edb
+
 try:
     from ansys.pyaedt.examples.constants import AEDT_VERSION
 except:
@@ -24,12 +28,8 @@ NG_MODE = False
 # Download the example PCB data.
 
 temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
-aedb = download_file(
-    source="edb/ANSYS-HSD_V1.aedb", destination=temp_folder.name
-)
-download_file(
-    source="touchstone", name="GRM32_DC0V_25degC_series.s2p", destination=temp_folder.name
-)
+aedb = download_file(source="edb/ANSYS-HSD_V1.aedb", destination=temp_folder.name)
+download_file(source="touchstone", name="GRM32_DC0V_25degC_series.s2p", destination=temp_folder.name)
 
 # ## Create a configuration file
 # In this example, we are going to use a configuration file to set up the layout for analysis.
@@ -38,13 +38,11 @@ download_file(
 
 cfg = dict()
 
-# ### Assign S-parameter model to capactitors. 
+# ### Assign S-parameter model to capactitors.
 
 # Set S-parameter library path.
 
-cfg["general"] = {
-    "s_parameter_library": os.path.join(temp_folder.name, "touchstone")
-}
+cfg["general"] = {"s_parameter_library": os.path.join(temp_folder.name, "touchstone")}
 
 # Assign the S-parameter model. Keywords
 # - **name**. Name of the S-parameter model in AEDT.
@@ -78,12 +76,8 @@ cfg["ports"] = [
         "name": "port1",
         "reference_designator": "U1",
         "type": "circuit",
-        "positive_terminal": {
-            "net": "1V0"
-        },
-        "negative_terminal": {
-            "net": "GND"
-        }
+        "positive_terminal": {"net": "1V0"},
+        "negative_terminal": {"net": "GND"},
     }
 ]
 
@@ -99,7 +93,7 @@ cfg["ports"] = [
 #     - **distribution**. Supported distributions are 'linear_count', 'linear_scale', 'log_scale'.
 #     - **start**. Start frequency. Example, 1e6, "1MHz".
 #     - **stop**. Stop frequency. Example, 1e9, "1GHz".
-#     - **increment**. 
+#     - **increment**.
 
 cfg["setups"] = [
     {
@@ -110,16 +104,9 @@ cfg["setups"] = [
             {
                 "name": "Sweep1",
                 "type": "interpolation",
-                "frequencies": [
-                    {
-                        "distribution": "log_scale",
-                        "start": 1e6,
-                        "stop": 1e9,
-                        "increment": 20
-                    }
-                ]
+                "frequencies": [{"distribution": "log_scale", "start": 1e6, "stop": 1e9, "increment": 20}],
             }
-        ]
+        ],
     }
 ]
 
@@ -172,12 +159,7 @@ print(temp_folder.name)
 
 # ### Load edb into HFSS 3D Layout.
 
-h3d = Hfss3dLayout(
-    aedb,
-    version=AEDT_VERSION,
-    non_graphical=NG_MODE,
-    new_desktop=True
-)
+h3d = Hfss3dLayout(aedb, version=AEDT_VERSION, non_graphical=NG_MODE, new_desktop=True)
 
 # ### Analyze
 
@@ -185,19 +167,19 @@ h3d.analyze()
 
 # ### Plot impedance
 
-solutions = h3d.post.get_solution_data(expressions='Z(port1,port1)')
+solutions = h3d.post.get_solution_data(expressions="Z(port1,port1)")
 solutions.plot()
 
 # ## Shut Down Electronics Desktop
 
 h3d.close_desktop()
 
-# All project files are saved in the folder ``temp_file.dir``. If you've run this example as a Jupyter notbook you 
+# All project files are saved in the folder ``temp_file.dir``. If you've run this example as a Jupyter notbook you
 # can retrieve those project files. The following cell removes all temporary files, including the project folder.
 
 # ## Cleanup
 #
-# All project files are saved in the folder ``temp_file.dir``. If you've run this example as a Jupyter notbook you 
+# All project files are saved in the folder ``temp_file.dir``. If you've run this example as a Jupyter notbook you
 # can retrieve those project files. The following cell removes all temporary files, including the project folder.
 
 time.sleep(3)
