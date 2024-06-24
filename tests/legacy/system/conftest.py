@@ -67,7 +67,7 @@ class EdbExamples:
         dst = self.local_scratch.copyfolder(src, file_folder_name)
         return dst
 
-    def get_si_verse(self, edbapp=True, additional_files_folders=""):
+    def get_si_verse(self, edbapp=True, additional_files_folders="", version=None):
         """Copy si_verse board file into local folder. A new temporary folder will be created."""
         aedb = self._copy_file_folder_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")
         if additional_files_folders:
@@ -82,7 +82,8 @@ class EdbExamples:
                 else:
                     self.local_scratch.copyfolder(src, file_folder_name)
         if edbapp:
-            return Edb(aedb, edbversion=desktop_version)
+            version = desktop_version if version is None else version
+            return Edb(aedb, edbversion=version)
         else:
             return aedb
 

@@ -149,15 +149,14 @@ class SimulationSetup(object):
             "kAnalysisOption": None,
             "kSIwaveDCIR": utility.SIWaveDCIRSimulationSetup,
             "kSIwaveEMI": None,
-            "kHFSSPI": None,
             "kDDRwizard": None,
             "kQ3D": None,
             "kNumSetupTypes": None,
         }
 
-        version = self._pedb.edbversion.split(".")
-        if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
+        if float(self._pedb.edbversion) >= 2024.2:
             setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
+        if float(self._pedb.edbversion) >= 2025.1:
             setup_type_mapping["kHFSSPI"] = utility.HFSSPISimulationSetup
         sim_setup_type = self.sim_setup_info.sim_setup_type
         setup_utility = setup_type_mapping[sim_setup_type.ToString()]
