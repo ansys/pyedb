@@ -1,5 +1,6 @@
 # # Setup EDB for Power Integrity Analysis
-# This example shows how to setup the electronics database (EDB) for power integrity analysis from a single configuration file.
+# This example shows how to set up the electronics database (EDB) for power integrity analysis from a single
+# configuration file.
 
 # ## Preparation
 # Import the required packages
@@ -12,11 +13,8 @@ import time
 from pyedb import Edb
 from pyaedt import Hfss3dLayout
 from pyaedt.downloads import download_file
-try:
-    from ansys.pyaedt.examples.constants import AEDT_VERSION
-except:
-    AEDT_VERSION = "2024.1"
 
+AEDT_VERSION = "2024.1"
 NG_MODE = False
 
 # -
@@ -50,8 +48,10 @@ cfg["general"] = {
 # - **name**. Name of the S-parameter model in AEDT.
 # - **component**_definition. Known as component part number of part name.
 # - **file_path**. Touchstone file or full path to the touchstone file.
-# - **apply_to_all**. When set to True, assign the S-parameter model to all components share the same component_definition. When set to False, Only components in "components" are assigned.
-# - **components**. when apply_to_all=False, components in the list are assigned a S-parameter model. When apply_to_all=False, components in the list are NOT assigned.
+# - **apply_to_all**. When set to True, assign the S-parameter model to all components share the same
+# component_definition. When set to False, Only components in "components" are assigned.
+# - **components**. when apply_to_all=False, components in the list are assigned an S-parameter model.
+# When apply_to_all=False, components in the list are NOT assigned.
 # - **reference_net**. Reference net of the S-parameter model.
 
 cfg["s_parameters"] = [
@@ -91,7 +91,8 @@ cfg["ports"] = [
 # Keywords
 # - **name**. Name of the setup.
 # - **type**. Type of the analysis setup. Supported types are 'siwave_ac', 'siwave_dc', 'hfss'.
-# - **pi_slider_position**. PI slider position. Supported values are from '0', '1', '2'. 0:speed, 1:balanced, 2:accuracy.
+# - **pi_slider_position**. PI slider position. Supported values are from '0', '1', '2'. 0:speed, 1:balanced,
+# 2:accuracy.
 # - **freq_sweep**. List of frequency sweeps.
 #   - **name**. Name of the sweep.
 #   - **type**. Type of the sweep. Supported types are 'interpolation', 'discrete', 'broadband'.
