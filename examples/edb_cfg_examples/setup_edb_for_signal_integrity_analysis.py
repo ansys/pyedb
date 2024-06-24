@@ -1,5 +1,5 @@
 # # Setup EDB for Power Integrity Analysis
-# This example shows how to setup the electronics database (EDB) for power integrity analysis from a single
+# This example shows how to set up the electronics database (EDB) for power integrity analysis from a single
 # configuration file.
 
 # ## Preparation
@@ -115,7 +115,7 @@ cfg["setups"] = [
 # - **signal_list**. List of nets to be kept after cutout.
 # - **reference_list**. List of nets as reference planes.
 # - **extent_type**. Supported extend types are 'Conforming', 'ConvexHull', 'Bounding'.
-# For optional input arguements, refere to method pyedb.Edb.cutout()
+# For optional input arguments, refer to method pyedb.Edb.cutout()
 
 cfg["operations"] = {
     "cutout": {
