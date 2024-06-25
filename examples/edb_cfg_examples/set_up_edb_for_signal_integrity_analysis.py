@@ -10,10 +10,9 @@ import json
 # +
 import os
 import tempfile
-import time
 
 from pyaedt import Hfss3dLayout
-from pyaedt.downloads import download_file
+from pyedb.downloads import download_file
 
 from pyedb import Edb
 

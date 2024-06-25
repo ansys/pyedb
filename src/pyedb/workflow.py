@@ -1,7 +1,7 @@
 from pathlib import Path
 import tempfile
 
-from pyaedt.downloads import download_file
+from pyedb.downloads import download_file
 
 
 class Workflow:

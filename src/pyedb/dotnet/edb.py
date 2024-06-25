@@ -4460,4 +4460,5 @@ class Edb(Database):
 
     @property
     def workflow(self):
+        """Workflow class."""
         return Workflow(self)
