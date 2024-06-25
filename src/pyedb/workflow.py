@@ -1,7 +1,7 @@
-import pandas as pd
-
 from pathlib import Path
 from typing import Union
+
+import pandas as pd
 
 
 class Workflow:
@@ -22,7 +22,7 @@ class Workflow:
         """
         file_path = str(file_path)
         data = self._pedb.configuration.get_data_from_db(components=True)
-        comps = data['components']
+        comps = data["components"]
         temp = []
         for comp in comps:
             comp_attrs = {k: v for k, v in comp.items() if isinstance(v, Union[str, float, int])}

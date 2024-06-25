@@ -24,7 +24,6 @@ from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
 
 
 class HierarchyObj(Connectable):
-
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
 

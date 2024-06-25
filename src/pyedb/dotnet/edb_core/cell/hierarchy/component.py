@@ -24,6 +24,7 @@ import logging
 import re
 import warnings
 
+from pyedb.dotnet.edb_core.cell.hierarchy.hierarchy_obj import Group
 from pyedb.dotnet.edb_core.cell.hierarchy.model import PinPairModel, SPICEModel
 from pyedb.dotnet.edb_core.cell.hierarchy.netlist_model import NetlistModel
 from pyedb.dotnet.edb_core.cell.hierarchy.pin_pair_model import PinPair
@@ -32,9 +33,6 @@ from pyedb.dotnet.edb_core.cell.hierarchy.spice_model import SpiceModel
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.generic.general_methods import is_ironpython
-
-from pyedb.dotnet.edb_core.cell.hierarchy.hierarchy_obj import Group
-
 
 if not is_ironpython:
     try:
