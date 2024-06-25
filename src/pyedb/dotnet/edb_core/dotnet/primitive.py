@@ -620,9 +620,8 @@ class CircleDotNet(PrimitiveDotNet):
              Ignored for Circle and Path.
         """
         center_x, center_y, radius = self.get_parameters()
-        self.set_parameters(center_x, center_y, radius.ToFloat()+offset)
+        self.set_parameters(center_x, center_y, radius.ToFloat() + offset)
         return True
-
 
 
 class TextDotNet(PrimitiveDotNet):
@@ -916,9 +915,8 @@ class PathDotNet(PrimitiveDotNet):
             The maximum corner extension (when round corners are not used) at which point the corner is clipped.
              Ignored for Circle and Path.
         """
-        self.width = self.width+offset
+        self.width = self.width + offset
         return True
-
 
 
 class BondwireDotNet(PrimitiveDotNet):
