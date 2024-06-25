@@ -51,6 +51,8 @@ class CfgRlcModel(CfgBase):
 
 
 class CfgComponent(CfgBase):
+    protected_attributes = ["reference_designator"]
+
     def __init__(self, **kwargs):
         self.enabled = kwargs.get("enabled", None)
 
@@ -65,15 +67,11 @@ class CfgComponent(CfgBase):
 
         self.rlc_model = [CfgRlcModel(**rlc_m) for rlc_m in rlc_models]
 
-    @property
-    def protected_attributes(self):
-        return ["reference_designator"]
-
 
 class CfgComponents:
-    def __init__(self, pedb, data):
+    def __init__(self, pedb, components_data):
         self._pedb = pedb
-        self.components = [CfgComponent(**comp) for comp in data]
+        self.components = [CfgComponent(**comp) for comp in components_data]
 
     def apply(self):
         comps_in_db = self._pedb.components

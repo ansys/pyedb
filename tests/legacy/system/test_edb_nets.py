@@ -119,11 +119,8 @@ class TestClass:
         assert self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
 
     @pytest.mark.slow
-    def test_nets_dc_shorts(self):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_dc_shorts", "ANSYS-HSD_V1_dc_shorts.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+    def test_nets_dc_shorts(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         dc_shorts = edbapp.layout_validation.dc_shorts()
         assert dc_shorts
         edbapp.nets.nets["DDR4_A0"].name = "DDR4$A0"

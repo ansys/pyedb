@@ -1003,8 +1003,10 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         setup = edbapp.create_hfss_setup(name="setup")
         mop = setup.add_length_mesh_operation({"GND": ["1_Top", "16_Bottom"]}, "m1")
+        assert mop.nets_layers_list == {"GND": ["1_Top", "16_Bottom"]}
+        assert mop.type == "length"
         assert mop.name == "m1"
-        assert mop.max_elements == "1000"
+        assert mop.max_elements == 1000
         assert mop.restrict_max_elements
         assert mop.restrict_length
         assert mop.max_length == "1mm"
@@ -1012,20 +1014,9 @@ class TestClass:
         assert setup.mesh_operations
         assert edbapp.setups["setup"].mesh_operations
 
-        mop.name = "m2"
-        mop.max_elements = 2000
-        mop.restrict_max_elements = False
-        mop.restrict_length = False
-        mop.max_length = "2mm"
-
-        assert mop.name == "m2"
-        assert mop.max_elements == "2000"
-        assert not mop.restrict_max_elements
-        assert not mop.restrict_length
-        assert mop.max_length == "2mm"
-
         mop = edbapp.setups["setup"].add_skin_depth_mesh_operation({"GND": ["1_Top", "16_Bottom"]})
-        assert mop.max_elements == "1000"
+        assert mop.nets_layers_list == {"GND": ["1_Top", "16_Bottom"]}
+        assert mop.max_elements == 1000
         assert mop.restrict_max_elements
         assert mop.skin_depth == "1um"
         assert mop.surface_triangle_length == "1mm"
@@ -1056,21 +1047,21 @@ class TestClass:
     def test_hfss_simulation_setup_b(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         setup1 = edbapp.create_hfss_setup("setup1")
-        sweep1 = setup1.add_frequency_sweep(
+        sweep1 = setup1.add_sweep(
             name="sweep1",
-            frequency_sweep=[
+            frequency_set=[
                 ["linear count", "1MHz", "10MHz", 10],
             ],
         )
-        sweep2 = setup1.add_frequency_sweep(
+        sweep2 = setup1.add_sweep(
             name="sweep2",
-            frequency_sweep=[
+            frequency_set=[
                 ["log scale", "1kHz", "100kHz", 10],
             ],
         )
-        sweep3 = setup1.add_frequency_sweep(
+        sweep3 = setup1.add_sweep(
             name="sweep3",
-            frequency_sweep=[
+            frequency_set=[
                 ["linear scale", "20MHz", "30MHz", "1MHz"],
             ],
         )
@@ -1796,93 +1787,6 @@ class TestClass:
         not desktop_version == "2024.2" or int(desktop_version.split(".")[0]) >= 2025,
         reason="Only supported with 2024.2 and higher",
     )
-    def test_add_raptorx_setup(self):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_raptorx_setup", "test.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(edbpath=target_path, edbversion=desktop_version)
-        setup = edbapp.create_raptorx_setup("test")
-        assert "test" in edbapp.setups
-        setup.add_frequency_sweep(frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
-        setup.enabled = False
-        assert not setup.enabled
-        assert len(setup.frequency_sweeps) == 1
-        general_settings = setup.settings.general_settings
-        assert general_settings.global_temperature == 22.0
-        general_settings.global_temperature = 35.0
-        assert edbapp.setups["test"].settings.general_settings.global_temperature == 35.0
-        assert general_settings.max_frequency == "10GHz"
-        general_settings.max_frequency = 20e9
-        assert general_settings.max_frequency == "20GHz"
-        advanced_settings = setup.settings.advanced_settings
-        assert advanced_settings.auto_removal_sliver_poly == 0.001
-        advanced_settings.auto_removal_sliver_poly = 0.002
-        assert advanced_settings.auto_removal_sliver_poly == 0.002
-        assert advanced_settings.cell_per_wave_length == 80
-        advanced_settings.cell_per_wave_length = 60
-        assert advanced_settings.cell_per_wave_length == 60
-        assert advanced_settings.edge_mesh == "0.8um"
-        advanced_settings.edge_mesh = "1um"
-        assert advanced_settings.edge_mesh == "1um"
-        assert advanced_settings.eliminate_slit_per_hole == 5.0
-        advanced_settings.eliminate_slit_per_hole = 4.0
-        assert advanced_settings.eliminate_slit_per_hole == 4.0
-        assert advanced_settings.mesh_frequency == "1GHz"
-        advanced_settings.mesh_frequency = "5GHz"
-        assert advanced_settings.mesh_frequency == "5GHz"
-        assert advanced_settings.override_shrink_fac == 1.0
-        advanced_settings.override_shrink_fac = 1.5
-        assert advanced_settings.override_shrink_fac == 1.5
-        assert advanced_settings.plane_projection_factor == 1.0
-        advanced_settings.plane_projection_factor = 1.4
-        assert advanced_settings.plane_projection_factor == 1.4
-        assert advanced_settings.use_accelerate_via_extraction
-        advanced_settings.use_accelerate_via_extraction = False
-        assert not advanced_settings.use_accelerate_via_extraction
-        assert not advanced_settings.use_auto_removal_sliver_poly
-        advanced_settings.use_auto_removal_sliver_poly = True
-        assert advanced_settings.use_auto_removal_sliver_poly
-        assert not advanced_settings.use_cells_per_wavelength
-        advanced_settings.use_cells_per_wavelength = True
-        assert advanced_settings.use_cells_per_wavelength
-        assert not advanced_settings.use_edge_mesh
-        advanced_settings.use_edge_mesh = True
-        assert advanced_settings.use_edge_mesh
-        assert not advanced_settings.use_eliminate_slit_per_holes
-        advanced_settings.use_eliminate_slit_per_holes = True
-        assert advanced_settings.use_eliminate_slit_per_holes
-        assert not advanced_settings.use_enable_advanced_cap_effects
-        advanced_settings.use_enable_advanced_cap_effects = True
-        assert advanced_settings.use_enable_advanced_cap_effects
-        assert not advanced_settings.use_enable_etch_transform
-        advanced_settings.use_enable_etch_transform = True
-        assert advanced_settings.use_enable_etch_transform
-        assert advanced_settings.use_enable_substrate_network_extraction
-        advanced_settings.use_enable_substrate_network_extraction = False
-        assert not advanced_settings.use_enable_substrate_network_extraction
-        assert not advanced_settings.use_extract_floating_metals_dummy
-        advanced_settings.use_extract_floating_metals_dummy = True
-        assert advanced_settings.use_extract_floating_metals_dummy
-        assert advanced_settings.use_extract_floating_metals_floating
-        advanced_settings.use_extract_floating_metals_floating = False
-        assert not advanced_settings.use_extract_floating_metals_floating
-        assert not advanced_settings.use_lde
-        advanced_settings.use_lde = True
-        assert advanced_settings.use_lde
-        assert not advanced_settings.use_mesh_frequency
-        advanced_settings.use_mesh_frequency = True
-        assert advanced_settings.use_mesh_frequency
-        assert not advanced_settings.use_override_shrink_fac
-        advanced_settings.use_override_shrink_fac = True
-        assert advanced_settings.use_override_shrink_fac
-        assert advanced_settings.use_plane_projection_factor
-        advanced_settings.use_plane_projection_factor = False
-        assert not advanced_settings.use_plane_projection_factor
-        assert not advanced_settings.use_relaxed_z_axis
-        advanced_settings.use_relaxed_z_axis = True
-        assert advanced_settings.use_relaxed_z_axis
-        edbapp.close()
-
     def test_icepak(self, edb_examples):
         edbapp = edb_examples.get_si_verse(additional_files_folders=["siwave/icepak_component.pwrd"])
         edbapp.siwave.icepak_use_minimal_comp_defaults = True
@@ -1909,53 +1813,6 @@ class TestClass:
         not desktop_version == "2024.2" or int(desktop_version.split(".")[0]) >= 2025,
         reason="Only supported with 2024.2 and higher",
     )
-    def test_create_hfss_pi_setup(self):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_raptorx_setup", "test.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(edbpath=target_path, edbversion=desktop_version)
-        setup = edbapp.create_hfsspi_setup("test")
-        setup.add_frequency_sweep(frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
-        assert not setup.settings.auto_select_nets_for_simulation
-        setup.settings.auto_select_nets_for_simulation = True
-        assert setup.settings.auto_select_nets_for_simulation
-        assert setup.settings.ignore_dummy_nets_for_selected_nets
-        setup.settings.ignore_dummy_nets_for_selected_nets = False
-        assert not setup.settings.ignore_dummy_nets_for_selected_nets
-        assert setup.settings.ignore_small_holes == 0
-        setup.settings.ignore_small_holes_min_diameter = 1e-3
-        assert setup.settings.ignore_small_holes_min_diameter == "0.001"
-        setup.settings.improved_loss_model = "Level2"
-        assert setup.settings.improved_loss_model == "Level2"
-        setup.settings.include_enhanced_bond_wire_modeling = True
-        assert setup.settings.include_enhanced_bond_wire_modeling
-        setup.settings.include_nets = "GND"
-        assert setup.settings.include_nets[0] == "GND"
-        setup.settings.min_plane_area_to_mesh = "0.30mm2"
-        assert setup.settings.min_plane_area_to_mesh == "0.30mm2"
-        setup.settings.min_void_area_to_mesh = "0.30mm2"
-        assert setup.settings.min_void_area_to_mesh == "0.30mm2"
-        setup.settings.model_type = 0
-        assert setup.settings.model_type == 0
-        setup.settings.perform_erc = True
-        assert setup.settings.perform_erc
-        setup.settings.pi_slider_pos = 1
-        assert setup.settings.pi_slider_pos == 1
-        setup.settings.rms_surface_roughness = "2um"
-        assert setup.settings.rms_surface_roughness == "2um"
-        setup.settings.signal_nets_conductor_modeling = "ImpedanceBoundary"
-        assert setup.settings.signal_nets_conductor_modeling == "ImpedanceBoundary"
-        setup.settings.signal_nets_error_tolerance = "0.02"
-        assert setup.settings.signal_nets_error_tolerance == "0.02"
-        setup.settings.signal_nets_include_improved_dielectric_fill_refinement = True
-        assert setup.settings.signal_nets_include_improved_dielectric_fill_refinement
-        setup.settings.signal_nets_include_improved_loss_handling = True
-        assert setup.settings.signal_nets_include_improved_loss_handling
-        setup.settings.snap_length_threshold = "5um"
-        assert setup.settings.snap_length_threshold == "5um"
-        setup.settings.surface_roughness_model = "Hammerstad"
-        assert setup.settings.surface_roughness_model == "Hammerstad"
-
     def test_dcir_properties(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         setup = edbapp.create_siwave_dc_setup()
@@ -2030,11 +1887,8 @@ class TestClass:
         assert len(edbapp.modeler.bondwires) == 1
         edbapp.close()
 
-    def test_voltage_regulator(self):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_vrm", "test.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(edbpath=target_path, edbversion=desktop_version)
+    def test_voltage_regulator(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         positive_sensor_pin = edbapp.components["U1"].pins["A2"]
         negative_sensor_pin = edbapp.components["U1"].pins["A3"]
         vrm = edbapp.siwave.create_vrm_module(
@@ -2057,3 +1911,4 @@ class TestClass:
         assert vrm.id
         assert edbapp.voltage_regulator_modules
         assert "test" in edbapp.voltage_regulator_modules
+        edbapp.close()

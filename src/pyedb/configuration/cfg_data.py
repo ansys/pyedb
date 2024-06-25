@@ -31,7 +31,7 @@ from pyedb.configuration.cfg_padstacks import CfgPadstacks
 from pyedb.configuration.cfg_pin_groups import CfgPinGroup
 from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
 from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel
-from pyedb.configuration.cfg_setup import CfgSetup
+from pyedb.configuration.cfg_setup import CfgSetups
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
 from pyedb.configuration.cfg_stackup import CfgStackup
 
@@ -54,8 +54,7 @@ class CfgData(object):
                 self, kwargs.get("nets", {}).get("signal_nets", []), kwargs.get("nets", {}).get("power_ground_nets", [])
             )
 
-        # self.components = [CfgComponent(self, **component) for component in kwargs.get("components", [])]
-        self.components = CfgComponents(self._pedb, data=kwargs.get("components", []))
+        self.components = CfgComponents(self._pedb, components_data=kwargs.get("components", []))
 
         self.padstacks = CfgPadstacks(self, kwargs.get("padstacks", None))
 
@@ -65,9 +64,7 @@ class CfgData(object):
 
         self.sources = [CfgSources(self, **source) for source in kwargs.get("sources", [])]
 
-        self.setups = []
-        if kwargs.get("setups", None):
-            self.setups = [CfgSetup(self, setup) for setup in kwargs.get("setups", [])]
+        self.setups = CfgSetups(self._pedb, setups_data=kwargs.get("setups", []))
 
         self.stackup = CfgStackup(self._pedb, data=kwargs.get("stackup", {}))
 

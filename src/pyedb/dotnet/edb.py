@@ -58,9 +58,6 @@ from pyedb.dotnet.edb_core.edb_data.control_file import (
 )
 from pyedb.dotnet.edb_core.edb_data.design_options import EdbDesignOptions
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.edb_core.edb_data.hfss_pi_simulation_setup_data import (
-    HFSSPISimulationSetup,
-)
 from pyedb.dotnet.edb_core.edb_data.ports import (
     BundleWavePort,
     CircuitPort,
@@ -94,7 +91,10 @@ from pyedb.dotnet.edb_core.nets import EdbNets
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 from pyedb.dotnet.edb_core.siwave import EdbSiwave
 from pyedb.dotnet.edb_core.stackup import Stackup
-from pyedb.dotnet.edb_core.utilities.hfss_simulation_setup import HfssSimulationSetup
+from pyedb.dotnet.edb_core.utilities.hfss_simulation_setup import (
+    HFSSPISimulationSetup,
+    HfssSimulationSetup,
+)
 from pyedb.dotnet.edb_core.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
     SiwaveSimulationSetup,
@@ -3681,7 +3681,7 @@ class Edb(Database):
             return False
         return HFSSPISimulationSetup(self).create(name)
 
-    def create_siwave_syz_setup(self, name=None):
+    def create_siwave_syz_setup(self, name=None, **kwargs):
         """Create a setup from a template.
 
         Parameters
@@ -3709,9 +3709,11 @@ class Edb(Database):
         if name in self.setups:
             return False
         setup = SiwaveSimulationSetup(self, name=name)
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
         return self.setups[name]
 
-    def create_siwave_dc_setup(self, name=None):
+    def create_siwave_dc_setup(self, name=None, **kwargs):
         """Create a setup from a template.
 
         Parameters
@@ -3736,6 +3738,8 @@ class Edb(Database):
         if name in self.setups:
             return False
         setup = SiwaveDCSimulationSetup(self, name=name)
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
         return setup
 
     def calculate_initial_extent(self, expansion_factor):

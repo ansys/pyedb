@@ -23,8 +23,8 @@
 import warnings
 
 from pyedb.dotnet.edb_core.sim_setup_data.data.mesh_operation import (
-    MeshOperationLength,
-    MeshOperationSkinDepth,
+    LengthMeshOperation,
+    SkinDepthMeshOperation,
 )
 from pyedb.dotnet.edb_core.sim_setup_data.data.settings import (
     AdaptiveSettings,
@@ -37,6 +37,10 @@ from pyedb.dotnet.edb_core.sim_setup_data.data.settings import (
     ViaSettings,
 )
 from pyedb.dotnet.edb_core.sim_setup_data.data.sim_setup_info import SimSetupInfo
+from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_settings import (
+    HFSSPISimulationSettings,
+)
+from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 from pyedb.dotnet.edb_core.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import generate_unique_name
 
@@ -198,11 +202,11 @@ class HfssSimulationSetup(SimulationSetup):
         mesh_operations = {}
         for i in list(settings):
             if i.MeshOpType == i.TMeshOpType.kMeshSetupLength:
-                mesh_operations[i.Name] = MeshOperationLength(self, i)
+                mesh_operations[i.Name] = LengthMeshOperation(self, i)
             elif i.MeshOpType == i.TMeshOpType.kMeshSetupSkinDepth:
-                mesh_operations[i.Name] = MeshOperationSkinDepth(self, i)
+                mesh_operations[i.Name] = SkinDepthMeshOperation(self, i)
             elif i.MeshOpType == i.TMeshOpType.kMeshSetupBase:
-                mesh_operations[i.Name] = MeshOperationSkinDepth(self, i)
+                mesh_operations[i.Name] = SkinDepthMeshOperation(self, i)
 
         return mesh_operations
 
@@ -244,18 +248,18 @@ class HfssSimulationSetup(SimulationSetup):
         """
         if not name:
             name = generate_unique_name("skin")
-        mesh_operation = MeshOperationLength(self, self._pedb.simsetupdata.LengthMeshOperation())
-        mesh_operation.mesh_region = mesh_region
-        mesh_operation.name = name
-        mesh_operation.nets_layers_list = net_layer_list
-        mesh_operation.refine_inside = refine_inside
-        mesh_operation.max_elements = str(max_elements)
-        mesh_operation.max_length = max_length
-        mesh_operation.restrict_length = restrict_length
-        mesh_operation.restrict_max_elements = restrict_elements
-        self.sim_setup_info.simulation_settings.MeshOperations.Add(mesh_operation.mesh_operation)
+        mop = LengthMeshOperation(self, self._pedb.simsetupdata.LengthMeshOperation())
+        mop.mesh_region = mesh_region
+        mop.name = name
+        mop.nets_layers_list = net_layer_list
+        mop.refine_inside = refine_inside
+        mop.max_elements = max_elements
+        mop.max_length = max_length
+        mop.restrict_length = restrict_length
+        mop.restrict_max_elements = restrict_elements
+        self.sim_setup_info.simulation_settings.MeshOperations.Add(mop._edb_object)
         self._update_setup()
-        return mesh_operation
+        return mop
 
     def add_skin_depth_mesh_operation(
         self,
@@ -298,7 +302,7 @@ class HfssSimulationSetup(SimulationSetup):
         """
         if not name:
             name = generate_unique_name("length")
-        mesh_operation = MeshOperationSkinDepth(self, self._pedb.simsetupdata.SkinDepthMeshOperation())
+        mesh_operation = SkinDepthMeshOperation(self, self._pedb.simsetupdata.SkinDepthMeshOperation())
         mesh_operation.mesh_region = mesh_region
         mesh_operation.name = name
         mesh_operation.nets_layers_list = net_layer_list
@@ -308,7 +312,7 @@ class HfssSimulationSetup(SimulationSetup):
         mesh_operation.number_of_layer_elements = number_of_layers
         mesh_operation.surface_triangle_length = surface_triangle_length
         mesh_operation.restrict_max_elements = restrict_elements
-        self.sim_setup_info.simulation_settings.MeshOperations.Add(mesh_operation.mesh_operation)
+        self.sim_setup_info.simulation_settings.MeshOperations.Add(mesh_operation._edb_object)
         self._update_setup()
         return mesh_operation
 
@@ -384,3 +388,82 @@ class HfssSimulationSetup(SimulationSetup):
         ):  # pragma no cover
             return False
         return True
+
+
+class HFSSPISimulationSetup(SimulationSetup):
+    """Manages EDB methods for HFSSPI simulation setup."""
+
+    def __init__(self, pedb, edb_object=None):
+        super().__init__(pedb, edb_object)
+        self._edb_object = edb_object
+        self._pedb = pedb
+        self._setup_type = "kHFSSPI"
+        self._edb_setup_info = None
+        self.logger = self._pedb.logger
+
+    def create(self, name=None):
+        """Create an HFSS setup."""
+        self._name = name
+        self._create(name=name, simulation_setup_type=self._setup_type)
+        return self
+
+    @property
+    def setup_type(self):
+        return self._setup_type
+
+    @property
+    def settings(self):
+        return HFSSPISimulationSettings(self._edb_setup_info, self._pedb, self._edb_object)
+
+    @property
+    def enabled(self):
+        return self.settings.enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        if isinstance(value, bool):
+            self.settings.enabled = value
+        else:
+            self.logger.error(f"Property enabled expects a boolean value while the provided value is {value}.")
+
+    @property
+    def position(self):
+        return self._edb_setup_info.Position
+
+    @position.setter
+    def position(self, value):
+        if isinstance(value, int):
+            self._edb_setup_info.Position = value
+        else:
+            self.logger.error(f"Property position expects an integer value while the provided value is {value}.")
+
+    def add_frequency_sweep(self, name=None, frequency_sweep=None):
+        """Add frequency sweep.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the frequency sweep.
+        frequency_sweep : list, optional
+            List of frequency points.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.EdbFrequencySweep`wheen succeeded, ``False``
+        when failed.
+
+        Examples
+        --------
+        >>> setup1 = edbapp.create_hfss_setup("setup1")
+        >>> setup1.add_frequency_sweep(frequency_sweep=[
+        ...                           ["linear count", "0", "1kHz", 1],
+        ...                           ["log scale", "1kHz", "0.1GHz", 10],
+        ...                           ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+        ...                           ])
+        """
+        if name in self.frequency_sweeps:
+            self.logger.error("Frequency sweep with same name already defined.")
+            return False
+        if not name:
+            name = generate_unique_name("sweep")
+        return SweepData(self, frequency_sweep, name)

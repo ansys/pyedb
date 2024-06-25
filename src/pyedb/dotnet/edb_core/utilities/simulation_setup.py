@@ -21,11 +21,29 @@
 # SOFTWARE.
 
 
+from enum import Enum
 import warnings
 
 from pyedb.dotnet.edb_core.sim_setup_data.data.sim_setup_info import SimSetupInfo
 from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 from pyedb.generic.general_methods import generate_unique_name
+
+
+class SimulationSetupType(Enum):
+    kHFSS = "hfss"
+    kPEM = None
+    kSIwave = "siwave_ac"
+    kLNA = "lna"
+    kTransient = "transient"
+    kQEye = "quick_eye"
+    kVEye = "verif_eye"
+    kAMI = "ami"
+    kAnalysisOption = "analysis_option"
+    kSIwaveDCIR = "siwave_dc"
+    kSIwaveEMI = "siwave_emi"
+    kHFSSPI = "hfss_pi"
+    kDDRwizard = "ddrwizard"
+    kQ3D = "q3d"
 
 
 class AdaptiveType(object):
@@ -82,7 +100,11 @@ class SimulationSetup(object):
 
     @property
     def sim_setup_info(self):
-        return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_object.GetSimSetupInfo())
+        if self._edb_object:
+            if self._edb_object.GetType().ToString() not in ["kHFSSPI", "kRaptorX"]:
+                return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_object.GetSimSetupInfo())
+        elif self._edb_setup_info:
+            return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_setup_info)
 
     @sim_setup_info.setter
     def sim_setup_info(self, sim_setup_info):
@@ -91,6 +113,10 @@ class SimulationSetup(object):
     @property
     def setup_type(self):
         return self.sim_setup_info.sim_setup_type
+
+    @property
+    def type(self):
+        return SimulationSetupType[self.setup_type].value
 
     def _create(self, name=None, simulation_setup_type=""):
         """Create a simulation setup."""
@@ -123,23 +149,25 @@ class SimulationSetup(object):
             "kAnalysisOption": None,
             "kSIwaveDCIR": utility.SIWaveDCIRSimulationSetup,
             "kSIwaveEMI": None,
-            "kHFSSPI": None,
             "kDDRwizard": None,
             "kQ3D": None,
             "kNumSetupTypes": None,
         }
 
-        version = self._pedb.edbversion.split(".")
-        if int(version[0]) == 2024 and int(version[1]) == 2 or int(version[0]) > 2024:
+        if float(self._pedb.edbversion) >= 2024.2:
             setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
+        if float(self._pedb.edbversion) >= 2025.1:
             setup_type_mapping["kHFSSPI"] = utility.HFSSPISimulationSetup
         sim_setup_type = self.sim_setup_info.sim_setup_type
         setup_utility = setup_type_mapping[sim_setup_type.ToString()]
         return setup_utility(edb_setup_info)
 
+    @property
+    def mesh_operations(self):
+        return {}
+
     def _update_setup(self):
         """Update setup in EDB."""
-        # Update mesh operation
         # Update sweep
 
         # Replace setup
@@ -209,7 +237,7 @@ class SimulationSetup(object):
         else:
             return {i.name: i for i in self.sim_setup_info.sweep_data_list}
 
-    def add_sweep(self, name, frequency_set: list = None):
+    def add_sweep(self, name, frequency_set: list = None, **kwargs):
         """Add frequency sweep.
 
         Parameters
@@ -232,10 +260,16 @@ class SimulationSetup(object):
             raise ValueError("Sweep {} already exists.".format(name))
 
         sweep_data = SweepData(self._pedb, name=name, sim_setup=self)
+        for k, v in kwargs.items():
+            if k in dir(sweep_data):
+                setattr(sweep_data, k, v)
+
         if frequency_set is None:
             sweep_type = "linear_scale"
             start, stop, increment = "50MHz", "5GHz", "50MHz"
             sweep_data.add(sweep_type, start, stop, increment)
+        elif len(frequency_set) == 0:
+            pass
         else:
             if not isinstance(frequency_set[0], list):
                 frequency_set = [frequency_set]
