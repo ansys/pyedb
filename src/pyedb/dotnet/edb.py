@@ -518,7 +518,7 @@ class Edb(Database):
         vrms = [VoltageRegulator(self, edb_object) for edb_object in list(self.active_layout.VoltageRegulators)]
         _vrms = {}
         for vrm in vrms:
-            _vrms[vrm.GetName()] = vrm
+            _vrms[vrm.name] = vrm
         return _vrms
 
     @property
