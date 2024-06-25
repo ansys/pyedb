@@ -81,7 +81,7 @@ class CfgComponent(CfgBase):
         data_comp["value"] = self.value
         data_comp["x_location"] = self.x_location
         data_comp["y_location"] = self.y_location
-        #data_comp["angle"] = self.angle
+        # data_comp["angle"] = self.angle
         data_comp["placement_layer"] = self.placement_layer
         return data_comp
 
@@ -150,13 +150,15 @@ class CfgComponents:
         self.components = []
         comps_in_db = self._pedb.components
         for _, comp in comps_in_db.components.items():
-            cfg_comp = CfgComponent(enabled=comp.enabled,
-                                    reference_designator=comp.name,
-                                    part_type=comp.type,
-                                    value=comp.value,
-                                    definition=comp.component_def,
-                                    location=comp.location,
-                                    placement_layer=comp.placement_layer)
+            cfg_comp = CfgComponent(
+                enabled=comp.enabled,
+                reference_designator=comp.name,
+                part_type=comp.type,
+                value=comp.value,
+                definition=comp.component_def,
+                location=comp.location,
+                placement_layer=comp.placement_layer,
+            )
             self.components.append(cfg_comp)
 
     def get_data_from_db(self):

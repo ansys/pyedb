@@ -24,10 +24,9 @@
 """
 
 import os
+from pathlib import Path
 
 import pytest
-
-from pathlib import Path
 
 from pyedb.dotnet.edb import Edb
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
@@ -1921,4 +1920,3 @@ class TestClass:
         edbapp.workflow.export_bill_of_materials(path_bom)
         assert path_bom.exists()
         edbapp.close()
-
