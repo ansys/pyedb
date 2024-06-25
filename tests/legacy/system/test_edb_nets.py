@@ -27,7 +27,7 @@ import os
 
 import pytest
 
-from pyedb import Edb
+from pyedb.dotnet.edb import Edb
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 

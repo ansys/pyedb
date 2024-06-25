@@ -105,7 +105,7 @@ def Edb(
 
     # Use EDB legacy (default choice)
     if bool(os.getenv("PYEDB_USE_DOTNET", "1")):
-        from pyedb import Edb as app
+        from pyedb.dotnet.edb import Edb as app
 
         return app(
             edbpath=edbpath,
