@@ -37,7 +37,7 @@ display(df)
 
 # ### Modify stackup
 
-# Modifiy top layer thickness
+# Modify top layer thickness
 
 data_cfg["stackup"]["layers"][0]["thickness"] = 0.00005
 
