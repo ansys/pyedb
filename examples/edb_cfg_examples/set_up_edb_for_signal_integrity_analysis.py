@@ -12,9 +12,9 @@ import os
 import tempfile
 
 from pyaedt import Hfss3dLayout
-from pyedb.downloads import download_file
 
 from pyedb import Edb
+from pyedb.downloads import download_file
 
 temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
 AEDT_VERSION = "2024.1"

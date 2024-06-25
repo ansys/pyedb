@@ -5,11 +5,12 @@
 
 # +
 import json
-import pandas as pd
+from pathlib import Path
 import tempfile
 
 from IPython.display import display
-from pathlib import Path
+import pandas as pd
+
 from pyedb import Edb
 
 temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
@@ -42,11 +43,9 @@ data_cfg["stackup"]["layers"][0]["thickness"] = 0.00005
 
 # Add a solder mask layer
 
-data_cfg["stackup"]["layers"].insert(0, {'name': 'soler_mask',
-                                         'type': 'dielectric',
-                                         'material': 'Megtron4',
-                                         'fill_material': '',
-                                         'thickness': 0.00002})
+data_cfg["stackup"]["layers"].insert(
+    0, {"name": "soler_mask", "type": "dielectric", "material": "Megtron4", "fill_material": "", "thickness": 0.00002}
+)
 
 # Review modified stackup
 

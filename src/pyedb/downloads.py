@@ -29,10 +29,12 @@ import shutil
 import tempfile
 import zipfile
 
-from pyaedt.generic.general_methods import is_ironpython
-from pyaedt.generic.general_methods import is_linux
-from pyaedt.generic.general_methods import pyaedt_function_handler
-from pyaedt.generic.general_methods import settings
+from pyaedt.generic.general_methods import (
+    is_ironpython,
+    is_linux,
+    pyaedt_function_handler,
+    settings,
+)
 from pyaedt.misc import list_installed_ansysem
 
 if is_ironpython:
