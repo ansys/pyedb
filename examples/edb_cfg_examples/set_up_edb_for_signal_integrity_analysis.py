@@ -12,10 +12,9 @@ import os
 import tempfile
 
 from pyaedt import Hfss3dLayout
-
-from pyedb import Edb
 from pyaedt.downloads import download_file
 
+from pyedb import Edb
 
 AEDT_VERSION = "2024.1"
 NG_MODE = False
