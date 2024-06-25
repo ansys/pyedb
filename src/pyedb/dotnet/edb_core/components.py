@@ -2344,8 +2344,6 @@ class Components(object):
         if isinstance(pin, EDBPadstackInstance):
             pin = pin._edb_padstackinstance
         val = String("")
-        _, name = pin.GetProductProperty(self._edb.edb_api.ProductId.Designer, 11, val)
-        name = str(name).strip("'")
         return name
 
     def get_pins(self, reference_designator, net_name=None, pin_name=None):

@@ -75,8 +75,10 @@ class TestClass:
         assert isinstance(poly0.arcs[0].points, tuple)
         assert isinstance(poly0.intersection_type(poly0), int)
         assert poly0.is_intersecting(poly0)
-        poly_3022 = [i for i in self.edbapp.modeler.polygons if i.id == 3022][0]
-
+        poly_3022 = self.edbapp.modeler.get_primitive(3022)
+        assert self.edbapp.modeler.get_primitive(3023)
+        assert poly_3022.aedt_name == "poly__3022"
+        poly_3022.aedt_name = "poly_3022"
         for i, k in enumerate(poly_3022.voids):
             assert k.id
             assert k.expand(0.0005)

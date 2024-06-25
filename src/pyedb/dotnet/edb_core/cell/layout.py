@@ -84,8 +84,6 @@ class Layout(EdbLayout):
 
         Parameters
         ----------
-        layout : :class:`Layout <ansys.edb.layout.Layout>`
-            Layout this bondwire will be in.
         bondwire_type : :class:`BondwireType`
             Type of bondwire: kAPDBondWire or kJDECBondWire types.
         definition_name : str
@@ -96,16 +94,12 @@ class Layout(EdbLayout):
             Bondwire width.
         material : str
             Bondwire material name.
-        start_context : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
-            Start context: None means top level.
         start_layer_name : str
             Name of start layer.
         start_x : :class:`Value <ansys.edb.utility.Value>`
             X value of start point.
         start_y : :class:`Value <ansys.edb.utility.Value>`
             Y value of start point.
-        end_context : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
-            End context: None means top level.
         end_layer_name : str
             Name of end layer.
         end_x : :class:`Value <ansys.edb.utility.Value>`
