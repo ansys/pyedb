@@ -90,18 +90,20 @@ class PrimitiveDotNet:
             Name.
         """
         from System import String
+
         val = String("")
 
         _, name = self.prim_obj.GetProductProperty(self._app._edb.ProductId.Designer, 1, val)
         name = str(name).strip("'")
         if name == "":
             name = "{}__{}".format(self.primitive_type, self.id)
-            self.prim_obj.SetProductProperty(self._app._edb.ProductId.Designer, 1,name )
+            self.prim_obj.SetProductProperty(self._app._edb.ProductId.Designer, 1, name)
         return name
 
     @aedt_name.setter
     def aedt_name(self, value):
-        self.prim_obj.SetProductProperty(self._app._edb.ProductId.Designer, 1,value )
+        self.prim_obj.SetProductProperty(self._app._edb.ProductId.Designer, 1, value)
+
     @property
     def api_object(self):
         return self.prim_obj
