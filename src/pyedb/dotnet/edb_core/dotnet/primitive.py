@@ -400,6 +400,8 @@ class PrimitiveDotNet:
                     polygon_data.Scale(factor, center)
                     self.polygon_data = polygon_data
                     return True
+                else:
+                    self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
             elif isinstance(center, list) and len(center) == 2:
                 center = self._edb.Geometry.PointData(
                     self._edb.Utility.Value(center[0]), self._edb.Utility.Value(center[1])
