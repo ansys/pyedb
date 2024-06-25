@@ -1,4 +1,4 @@
-# # Setup EDB for Power Integrity Analysis
+# # Set up EDB for Power Integrity Analysis
 # This example shows how to set up the electronics database (EDB) for power integrity analysis from a single
 # configuration file.
 
@@ -17,6 +17,7 @@ from pyaedt.downloads import download_file
 
 from pyedb import Edb
 
+temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
 AEDT_VERSION = "2024.1"
 NG_MODE = False
 
@@ -24,9 +25,12 @@ NG_MODE = False
 
 # Download the example PCB data.
 
-temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
-aedb = download_file(source="edb/ANSYS-HSD_V1.aedb", destination=temp_folder.name)
 download_file(source="touchstone", name="GRM32_DC0V_25degC_series.s2p", destination=temp_folder.name)
+
+# Load example layout.
+
+edbapp = Edb(edbversion=AEDT_VERSION)
+edbapp.workflow.get_si_verse(working_directory=temp_folder.name)
 
 # ## Create a configuration file
 # In this example, we are going to use a configuration file to set up the layout for analysis.
@@ -134,10 +138,6 @@ with open(file_json, "w") as f:
 
 # ## Load configuration into EDB
 
-# Load layout.
-
-edbapp = Edb(aedb, edbversion=AEDT_VERSION)
-
 # Load configuration file
 
 edbapp.configuration.load(config_file=file_json)
@@ -159,7 +159,7 @@ print(temp_folder.name)
 
 # ### Load edb into HFSS 3D Layout.
 
-h3d = Hfss3dLayout(aedb, version=AEDT_VERSION, non_graphical=NG_MODE, new_desktop=True)
+h3d = Hfss3dLayout(edbapp.edbpath, version=AEDT_VERSION, non_graphical=NG_MODE, new_desktop=True)
 
 # ### Analyze
 
