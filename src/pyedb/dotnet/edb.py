@@ -112,6 +112,7 @@ from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.workflow import Workflow
 
 if is_linux and is_ironpython:
     import subprocessdotnet as subprocess
@@ -4456,3 +4457,8 @@ class Edb(Database):
         from pyedb.dotnet.edb_core.definition.definitions import Definitions
 
         return Definitions(self)
+
+    @property
+    def workflow(self):
+        """Workflow class."""
+        return Workflow(self)
