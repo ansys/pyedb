@@ -1,4 +1,4 @@
-# # Set up EDB for Power Integrity Analysis
+# # Import Stackup
 # This example shows how to import stackup file.
 
 # ### Import the required packages
