@@ -10,13 +10,21 @@ class CrosstalkFrequency:
     def __write_wml(self, parent):
         pass
 
-    def add_single_ended_net(self, name, nominal_impedance=50.0, warning_threshold=17.0, violation_threshold=32.0):
-        if name and not name in self.nets:
+    def add_single_ended_net(
+        self,
+        name,
+        next_warning_threshold=5.0,
+        next_violation_threshold=10,
+        fext_warning_threshold_warning=5.0,
+        fext_violation_threshold=5.0,
+    ):
+        if name and name not in self.nets:
             net = SingleEndedNet()
             net.name = name
-            net.nominal_impedance = nominal_impedance
-            net.warning_threshold = warning_threshold
-            net.violation_threshold = violation_threshold
+            net.next_warning_threshold = next_warning_threshold
+            net.next_violation_threshold = next_violation_threshold
+            net.fext_warning_threshold = fext_warning_threshold_warning
+            net.fext_violation_threshold = fext_violation_threshold
             self.nets[name] = net
         else:
             return False

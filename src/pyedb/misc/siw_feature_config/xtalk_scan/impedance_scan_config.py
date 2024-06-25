@@ -1,7 +1,7 @@
 from pyedb.misc.siw_feature_config.xtalk_scan.net import SingleEndedNet
 
 
-class ImpdedanceScan:
+class ImpedanceScan:
     def __init__(self):
         self.min_transmission_line_segment_length = "0.25mm"
         self.z0_frequency = "2e9Hz"
@@ -11,7 +11,7 @@ class ImpdedanceScan:
         pass
 
     def add_single_ended_net(self, name, nominal_impedance=50.0, warning_threshold=17.0, violation_threshold=32.0):
-        if name and not name in self.nets:
+        if name and name not in self.nets:
             net = SingleEndedNet()
             net.name = name
             net.nominal_impedance = nominal_impedance
