@@ -11,18 +11,22 @@ import tempfile
 from IPython.display import display
 import pandas as pd
 
+from pyaedt.downloads import download_file
 from pyedb import Edb
 
-temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
 AEDT_VERSION = "2024.1"
 NG_MODE = False
 
 # -
 
+# Download the example PCB data.
+
+temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
+file_edb = download_file(source="edb/ANSYS-HSD_V1.aedb", destination=temp_folder.name)
+
 # ### Load example layout.
 
-edbapp = Edb(edbversion=AEDT_VERSION)
-edbapp.workflow.get_si_verse(working_directory=temp_folder.name)
+edbapp = Edb(file_edb, edbversion=AEDT_VERSION)
 
 # ### Review original stackup definition
 

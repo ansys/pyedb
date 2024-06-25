@@ -14,9 +14,9 @@ import tempfile
 from pyaedt import Hfss3dLayout
 
 from pyedb import Edb
-from pyedb.downloads import download_file
+from pyaedt.downloads import download_file
 
-temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
+
 AEDT_VERSION = "2024.1"
 NG_MODE = False
 
@@ -24,12 +24,13 @@ NG_MODE = False
 
 # Download the example PCB data.
 
+temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
 download_file(source="touchstone", name="GRM32_DC0V_25degC_series.s2p", destination=temp_folder.name)
+file_edb = download_file(source="edb/ANSYS-HSD_V1.aedb", destination=temp_folder.name)
 
 # Load example layout.
 
-edbapp = Edb(edbversion=AEDT_VERSION)
-edbapp.workflow.get_si_verse(working_directory=temp_folder.name)
+edbapp = Edb(file_edb, edbversion=AEDT_VERSION)
 
 # ## Create a configuration file
 # In this example, we are going to use a configuration file to set up the layout for analysis.
