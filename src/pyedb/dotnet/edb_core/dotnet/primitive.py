@@ -73,6 +73,10 @@ class PrimitiveDotNet:
         self.prim_obj = prim_object
 
     @property
+    def id(self):
+        return self.prim_obj.GetId()
+
+    @property
     def api_class(self):
         return self.api
 
@@ -352,6 +356,26 @@ class PrimitiveDotNet:
         except:
             return points
 
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
+        """Expand the polygon shape by an absolute value in all direction.
+        Offset can be negative for negative expansion.
+
+        Parameters
+        ----------
+        offset : float, optional
+            Offset value in meters.
+        tolerance : float, optional
+            Tolerance in meters.
+        round_corners : bool, optional
+            Whether to round corners or not.
+            If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+        maximum_corner_extension : float, optional
+            The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+        """
+        new_poly = self.polygon_data.edb_api.Expand(offset, tolerance, round_corners, maximum_corner_extension)
+        self.polygon_data = new_poly[0]
+        return True
+
 
 class RectangleDotNet(PrimitiveDotNet):
     """Class representing a rectangle object."""
@@ -575,6 +599,28 @@ class CircleDotNet(PrimitiveDotNet):
 
     def can_be_zone_primitive(self):
         """:obj:`bool`: If a circle can be a zone."""
+        return True
+
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
+        """Expand the polygon shape by an absolute value in all direction.
+        Offset can be negative for negative expansion.
+
+        Parameters
+        ----------
+        offset : float, optional
+            Offset value in meters.
+        tolerance : float, optional
+            Tolerance in meters. Ignored for Circle and Path.
+        round_corners : bool, optional
+            Whether to round corners or not.
+            If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+             Ignored for Circle and Path.
+        maximum_corner_extension : float, optional
+            The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+             Ignored for Circle and Path.
+        """
+        center_x, center_y, radius = self.get_parameters()
+        self.set_parameters(center_x, center_y, radius.ToFloat() + offset)
         return True
 
 
@@ -849,6 +895,27 @@ class PathDotNet(PrimitiveDotNet):
 
         Read-Only.
         """
+        return True
+
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
+        """Expand the polygon shape by an absolute value in all direction.
+        Offset can be negative for negative expansion.
+
+        Parameters
+        ----------
+        offset : float, optional
+            Offset value in meters.
+        tolerance : float, optional
+            Tolerance in meters. Ignored for Circle and Path.
+        round_corners : bool, optional
+            Whether to round corners or not.
+            If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+             Ignored for Circle and Path.
+        maximum_corner_extension : float, optional
+            The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+             Ignored for Circle and Path.
+        """
+        self.width = self.width + offset
         return True
 
 

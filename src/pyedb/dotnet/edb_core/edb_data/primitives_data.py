@@ -559,6 +559,15 @@ class EDBPrimitives(Primitive):
         return [out.X.ToDouble(), out.Y.ToDouble()]
 
     @property
+    def voids(self):
+        """:obj:`list` of :class:`Primitive <ansys.edb.primitive.Primitive>`: List of void\
+        primitive objects inside the primitive.
+
+        Read-Only.
+        """
+        return [cast(void, self._app) for void in self.prim_obj.Voids]
+
+    @property
     def arcs(self):
         """Get the Primitive Arc Data."""
         arcs = [EDBArcs(self, i) for i in self.polygon_data.arcs]
