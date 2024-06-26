@@ -184,7 +184,10 @@ class TestClass:
             [-0.025, -0.02],
         ]
         plane = self.edbapp.modeler.Shape("polygon", points=points)
-        poly = self.edbapp.modeler.create_polygon(plane, "1_Top",)
+        poly = self.edbapp.modeler.create_polygon(
+            plane,
+            "1_Top",
+        )
         assert poly.has_self_intersections
         assert poly.remove_self_intersections() == []
         assert not poly.has_self_intersections

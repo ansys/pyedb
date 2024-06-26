@@ -934,7 +934,6 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
                 new_polys.append(cloned_poly)
         return new_polys
 
-
     def duplicate_across_layers(self, layers):
         """Duplicate across layer a primitive object.
 

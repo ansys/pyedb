@@ -276,7 +276,7 @@ class LayoutValidation:
             net_list = [net_list]
         _objects_list = {}
         _padstacks_list = {}
-        new_prims =[]
+        new_prims = []
         for prim in self._pedb.modeler.polygons:
             if prim.net_name in net_list:
                 new_prims.extend(prim.remove_self_intersections())
