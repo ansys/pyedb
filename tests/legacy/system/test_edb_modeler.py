@@ -175,6 +175,19 @@ class TestClass:
         ]
         assert self.edbapp.modeler.create_polygon(points, "1_Top")
         settings.enable_error_handler = False
+        points = [
+            [-0.025, -0.02],
+            [0.025, -0.02],
+            [-0.025, -0.02],
+            [0.025, 0.02],
+            [-0.025, 0.02],
+            [-0.025, -0.02],
+        ]
+        plane = self.edbapp.modeler.Shape("polygon", points=points)
+        poly = self.edbapp.modeler.create_polygon(plane, "1_Top",)
+        assert poly.has_self_intersections
+        assert poly.remove_self_intersections() == []
+        assert not poly.has_self_intersections
 
     def test_modeler_create_polygon_from_shape(self):
         """Create polygon from shape."""
