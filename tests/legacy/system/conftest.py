@@ -28,7 +28,7 @@ from os.path import dirname
 
 import pytest
 
-from pyedb import Edb
+from pyedb.dotnet.edb import Edb
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.misc import list_installed_ansysem
 from tests.conftest import generate_random_string
