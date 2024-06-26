@@ -20,20 +20,35 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from dataclasses import dataclass
+
+from pyedb.generic.general_methods import ET
 
 
-@dataclass
 class DriverPin:
-    name: str
-    ref_des: str
-    driver_rise_time: str
-    voltage: float
-    driver_impedance: float
+    def __init__(self):
+        self.name = None
+        self.ref_des = None
+        self.driver_rise_time = None
+        self.voltage = None
+        self.driver_impedance = None
+
+    def write_xml(self, parent):
+        pin = ET.SubElement(parent, "Pin")
+        pin.set("Name", self.name)
+        pin.set("RefDes", self.ref_des)
+        pin.set("DriverRiseTime", str(self.driver_rise_time))
+        pin.set("Voltage", str(self.voltage))
+        pin.set("DriverImpedance", str(self.driver_impedance))
 
 
-@dataclass
 class ReceiverPin:
-    name: str
-    ref_des: str
-    receiver_impedance: float
+    def __init__(self):
+        self.name = None
+        self.ref_des = None
+        self.receiver_impedance = None
+
+    def write_xml(self, parent):
+        pin = ET.SubElement(parent, "Pin")
+        pin.set("Name", self.name)
+        pin.set("Name", self.name)
+        pin.set("ReceiverImpedance", str(self.receiver_impedance))

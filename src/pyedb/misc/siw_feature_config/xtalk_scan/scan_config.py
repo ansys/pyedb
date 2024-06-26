@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from enum import Enum
+import os
 import xml.etree as ET
 
 from pyedb.generic.general_methods import ET
@@ -38,8 +39,14 @@ class ScanType(Enum):
 
 
 class SiwaveScanConfig:
-    def __init__(self):
-        self.scan_type = ScanType.IMPEDANCE
+    def __init__(self, scan_type="impedance"):
+        self.file_path = ""
+        if scan_type == "impedance":
+            self.scan_type = ScanType.IMPEDANCE
+        elif scan_type == "frequency_xtalk":
+            self.scan_type = ScanType.FREQ_XTALK
+        elif scan_type == "time_xtalk":
+            self.scan_type = ScanType.TIME_XTALK
         self.impedance_scan = ImpedanceScan()
         self.frequency_xtalk_scan = CrosstalkFrequency()
         self.time_xtalk_scan = CrossTalkTime()
@@ -54,3 +61,10 @@ class SiwaveScanConfig:
             self.frequency_xtalk_scan.write_wml(scan_config)
         elif self.scan_type == ScanType.TIME_XTALK:
             self.time_xtalk_scan.write_wml(scan_config)
+        try:
+            ET.indent(scan_config)
+        except AttributeError:
+            pass
+        tree = ET.ElementTree(scan_config)
+        tree.write(self.file_path)
+        return True if os.path.exists(self.file_path) else False

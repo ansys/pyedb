@@ -51,22 +51,28 @@ class CrossTalkTime:
             return False
 
     def add_driver_pins(self, name, ref_des, rise_time="100ps", voltage=1.0, impedance=50.0):
-        pin = DriverPin(
-            name=name, ref_des=ref_des, driver_rise_time=rise_time, voltage=voltage, driver_impedance=impedance
-        )
+        pin = DriverPin()
+        pin.name = name
+        pin.ref_des = ref_des
+        pin.driver_rise_time = rise_time
+        pin.voltage = voltage
+        pin.driver_impedance = impedance
         self.driver_pins.append(pin)
 
     def add_receiver_pin(self, name, ref_des, impedance):
-        pin = ReceiverPin(name=name, ref_des=ref_des, receiver_impedance=impedance)
+        pin = ReceiverPin()
+        pin.name = name
+        pin.ref_des = ref_des
+        pin.receiver_impedance = impedance
         self.receiver_pins.append(pin)
 
     def write_wml(self, parent):
         time_scan = ET.SubElement(parent, "TdXtalkConfig")
         for net in list(self.nets.values()):
             net.write_xml(time_scan)
-        driver_pins = ET.SubElement("DriverPins")
+        driver_pins = ET.SubElement(time_scan, "DriverPins")
         for pin in self.driver_pins:
             pin.write_xml(driver_pins)
-        receiver_pins = ET.SubElement("ReceiverPins")
+        receiver_pins = ET.SubElement(time_scan, "ReceiverPins")
         for pin in self.receiver_pins:
             pin.write_xml(receiver_pins)

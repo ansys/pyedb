@@ -34,8 +34,9 @@ class CrosstalkFrequency:
         freq_scan = ET.SubElement(parent, "FdXtalkConfig")
         freq_scan.set("MinTlineSegmentLength", self.min_transmission_line_segment_length)
         freq_scan.set("XtalkFrequency", self.frequency)
+        nets = ET.SubElement(parent, "SingleEndedNets")
         for net in list(self.nets.values()):
-            net.write_xml(parent)
+            net.write_xml(nets)
 
     def add_single_ended_net(
         self,

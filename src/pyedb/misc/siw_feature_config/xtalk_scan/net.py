@@ -52,7 +52,7 @@ class SingleEndedNet:
             net.set("FEXTWarningThreshold", str(self.fext_warning_threshold))
         if self.fext_violation_threshold is not None:
             net.set("FEXTViolationThreshold", str(self.fext_violation_threshold))
-        if self.next_warning_threshold is None:
+        if self.next_warning_threshold is not None:
             net.set("NEXTWarningThreshold", str(self.next_warning_threshold))
         if self.next_violation_threshold is not None:
             net.set("NEXTViolationThreshold", str(self.next_violation_threshold))
