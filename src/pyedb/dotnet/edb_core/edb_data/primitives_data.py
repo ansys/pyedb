@@ -998,44 +998,6 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
                 return self.api_object.SetPolygonData(polygon_data)
         return False
 
-    def scale(self, factor, center=None):
-        """Scales the polygon relative to a center point by a factor.
-
-        Parameters
-        ----------
-        factor : float
-            Scaling factor.
-        center : List of float or str [x,y], optional
-            If None scaling is done from polygon center.
-
-        Returns
-        -------
-        bool
-           ``True`` when successful, ``False`` when failed.
-
-        Examples
-        --------
-        >>> edbapp = pyaedt.Edb("myproject.aedb")
-        >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
-        >>> for polygon in top_layer_polygon:
-        >>>     polygon.scale(factor=2)
-        """
-        if not isinstance(factor, str):
-            factor = float(factor)
-            polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(self.polygon_data.edb_api.GetArcData(), True)
-            if not center:
-                center = polygon_data.GetBoundingCircleCenter()
-                if center:
-                    polygon_data.Scale(factor, center)
-                    return self.api_object.SetPolygonData(polygon_data)
-            elif isinstance(center, list) and len(center) == 2:
-                center = self._edb.Geometry.PointData(
-                    self._edb.Utility.Value(center[0]), self._edb.Utility.Value(center[1])
-                )
-                polygon_data.Scale(factor, center)
-                return self.api_object.SetPolygonData(polygon_data)
-        return False
-
     def move_layer(self, layer):
         """Move polygon to given layer.
 

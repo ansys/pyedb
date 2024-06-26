@@ -38,7 +38,7 @@ class EdbNets(object):
 
     Examples
     --------
-    >>> from pyedb.dotnet.edb import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_nets = edbapp.nets
     """
