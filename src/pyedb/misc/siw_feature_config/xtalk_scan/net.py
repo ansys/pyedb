@@ -1,7 +1,3 @@
-from dataclasses import dataclass
-
-
-@dataclass
 class SingleEndedNet:
     def __init__(self):
         self.name = ""

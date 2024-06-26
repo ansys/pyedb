@@ -5,7 +5,7 @@ from dataclasses import dataclass
 class DriverPin:
     name: str
     ref_des: str
-    driver_rise_time: float
+    driver_rise_time: str
     voltage: float
     driver_impedance: float
 
