@@ -82,7 +82,7 @@ class PrimitiveDotNet:
 
     @property
     def aedt_name(self):
-        """Name to be visualizied in AEDT.
+        """Name to be visualized in AEDT.
 
         Returns
         -------
