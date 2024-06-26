@@ -28,7 +28,7 @@ from pathlib import Path
 
 import pytest
 
-from pyedb.dotnet.edb import Edb
+from pyedb import Edb
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
