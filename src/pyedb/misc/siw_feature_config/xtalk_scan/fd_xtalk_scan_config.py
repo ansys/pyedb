@@ -1,3 +1,4 @@
+from pyedb.generic.general_methods import ET
 from pyedb.misc.siw_feature_config.xtalk_scan.net import SingleEndedNet
 
 
@@ -7,8 +8,12 @@ class CrosstalkFrequency:
         self.frequency = "2e9Hz"
         self.nets = {}
 
-    def __write_wml(self, parent):
-        pass
+    def write_wml(self, parent):
+        freq_scan = ET.SubElement(parent, "FdXtalkConfig")
+        freq_scan.set("MinTlineSegmentLength", self.min_transmission_line_segment_length)
+        freq_scan.set("XtalkFrequency", self.frequency)
+        for net in list(self.nets.values()):
+            net.write_xml(parent)
 
     def add_single_ended_net(
         self,

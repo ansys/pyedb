@@ -1,3 +1,4 @@
+from pyedb.generic.general_methods import ET
 from pyedb.misc.siw_feature_config.xtalk_scan.net import SingleEndedNet
 from pyedb.misc.siw_feature_config.xtalk_scan.pins import DriverPin, ReceiverPin
 
@@ -37,5 +38,13 @@ class CrossTalkTime:
         pin = ReceiverPin(name=name, ref_des=ref_des, receiver_impedance=impedance)
         self.receiver_pins.append(pin)
 
-    def __write_wml(self, parent):
-        pass
+    def write_wml(self, parent):
+        time_scan = ET.SubElement(parent, "TdXtalkConfig")
+        for net in list(self.nets.values()):
+            net.write_xml(time_scan)
+        driver_pins = ET.SubElement("DriverPins")
+        for pin in self.driver_pins:
+            pin.write_xml(driver_pins)
+        receiver_pins = ET.SubElement("ReceiverPins")
+        for pin in self.receiver_pins:
+            pin.write_xml(receiver_pins)
