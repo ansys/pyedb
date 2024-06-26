@@ -326,9 +326,9 @@ class PrimitiveDotNet:
                 # i += 1
             else:
                 arc_h = point.GetArcHeight().ToDouble()
-                p1 = [my_net_points[i-1].X.ToDouble(), my_net_points[i-1].Y.ToDouble()]
-                if i+1 < len(my_net_points):
-                    p2 = [my_net_points[i+1].X.ToDouble(), my_net_points[i+1].Y.ToDouble()]
+                p1 = [my_net_points[i - 1].X.ToDouble(), my_net_points[i - 1].Y.ToDouble()]
+                if i + 1 < len(my_net_points):
+                    p2 = [my_net_points[i + 1].X.ToDouble(), my_net_points[i + 1].Y.ToDouble()]
                 else:
                     p2 = [my_net_points[0].X.ToDouble(), my_net_points[0].Y.ToDouble()]
                 x_arc, y_arc = self._eval_arc_points(p1, p2, arc_h, num)
@@ -399,6 +399,41 @@ class PrimitiveDotNet:
         new_poly = self.polygon_data.edb_api.Expand(offset, tolerance, round_corners, maximum_corner_extension)
         self.polygon_data = new_poly[0]
         return True
+
+    def scale(self, factor, center=None):
+        """Scales the polygon relative to a center point by a factor.
+
+        Parameters
+        ----------
+        factor : float
+            Scaling factor.
+        center : List of float or str [x,y], optional
+            If None scaling is done from polygon center.
+
+        Returns
+        -------
+        bool
+           ``True`` when successful, ``False`` when failed.
+        """
+        if not isinstance(factor, str):
+            factor = float(factor)
+            polygon_data = self.polygon_data.create_from_arcs(self.polygon_data.edb_api.GetArcData(), True)
+            if not center:
+                center = self.polygon_data.edb_api.GetBoundingCircleCenter()
+                if center:
+                    polygon_data.Scale(factor, center)
+                    self.polygon_data = polygon_data
+                    return True
+                else:
+                    self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
+            elif isinstance(center, list) and len(center) == 2:
+                center = self._edb.Geometry.PointData(
+                    self._edb.Utility.Value(center[0]), self._edb.Utility.Value(center[1])
+                )
+                polygon_data.Scale(factor, center)
+                self.polygon_data = polygon_data
+                return True
+        return False
 
 
 class RectangleDotNet(PrimitiveDotNet):
