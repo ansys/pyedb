@@ -73,11 +73,11 @@ class SiwaveScanConfig:
         scan_config.set("xmlns", "http://webstds.ipc.org/2581")
         scan_config.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
         if self.scan_type == ScanType.IMPEDANCE:
-            self.impedance_scan.parse_xml(scan_config)
+            self.impedance_scan.extend_xml(scan_config)
         elif self.scan_type == ScanType.FREQ_XTALK:
-            self.frequency_xtalk_scan.parse_xml(scan_config)
+            self.frequency_xtalk_scan.extend_xml(scan_config)
         elif self.scan_type == ScanType.TIME_XTALK:
-            self.time_xtalk_scan.parse_xml(scan_config)
+            self.time_xtalk_scan.extend_xml(scan_config)
         try:
             ET.indent(scan_config)
         except AttributeError:

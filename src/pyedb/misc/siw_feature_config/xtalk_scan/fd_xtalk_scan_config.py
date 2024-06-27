@@ -33,7 +33,7 @@ class CrosstalkFrequency:
         self.frequency = "2e9Hz"
         self.nets = {}
 
-    def parse_xml(self, parent):
+    def extend_xml(self, parent):
         """Write class xml section.
 
         Parameters
@@ -47,7 +47,7 @@ class CrosstalkFrequency:
         freq_scan.set("XtalkFrequency", self.frequency)
         nets = ET.SubElement(freq_scan, "SingleEndedNets")
         for net in list(self.nets.values()):
-            net.parse_xml(nets)
+            net.extend_xml(nets)
 
     def add_single_ended_net(
         self,

@@ -91,14 +91,14 @@ class CrossTalkTime:
         pin.receiver_impedance = impedance
         self.receiver_pins.append(pin)
 
-    def parse_xml(self, parent):
+    def extend_xml(self, parent):
         time_scan = ET.SubElement(parent, "TdXtalkConfig")
         single_ended_nets = ET.SubElement(time_scan, "SingleEndedNets")
         for net in list(self.nets.values()):
-            net.parse_xml(single_ended_nets)
+            net.extend_xml(single_ended_nets)
         driver_pins = ET.SubElement(time_scan, "DriverPins")
         for pin in self.driver_pins:
-            pin.parse_xml(driver_pins)
+            pin.extend_xml(driver_pins)
         receiver_pins = ET.SubElement(time_scan, "ReceiverPins")
         for pin in self.receiver_pins:
-            pin.parse_xml(receiver_pins)
+            pin.extend_xml(receiver_pins)
