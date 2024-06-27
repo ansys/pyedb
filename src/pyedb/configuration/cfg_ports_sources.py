@@ -30,7 +30,7 @@ class CfgTerminal(CfgBase):
         self.net = kwargs.get('net')
         self.nearest_pin = kwargs.get('nearest_pin')
         self.coordinates = kwargs.get('coordinates')
-        self.value =
+        self.value = getattr(self, self.type)
 
     @property
     def type(self):
@@ -45,7 +45,7 @@ class CfgTerminal(CfgBase):
 
     def export_properties(self):
         return {
-
+            self.type: self.value
         }
 
 
@@ -73,6 +73,9 @@ class CfgNearestPinTerminal(CfgTerminal):
         self.reference_net = kwargs["reference_net"]
         self.search_radius = kwargs["search_radius"]
 
+    def export_properties(self):
+        return
+
 
 class CfgSources:
     def __init__(self, pedb, sources_data):
@@ -88,8 +91,19 @@ class CfgCircuitElement(CfgBase):
         self.type = kwargs.get("type", None)
         self.reference_designator = kwargs.get("reference_designator", None)
         self.distributed = kwargs.get("distributed", False)
-        self.pos_term_info = kwargs.get("positive_terminal", None)  # {"pin" : "A1"}
-        self.neg_term_info = kwargs.get("negative_terminal", None)
+        pos = kwargs.get("positive_terminal", {})  # {"pin" : "A1"}
+        if pos.keys()[0] == "coordinates":
+            self.positive_terminal = CfgCoordianteTerminal(self._pedb, **pos)
+        else:
+            self.positive_terminal = CfgTerminal(self._pedb, **pos)
+
+        neg = kwargs.get("negative_terminal", {})
+        if neg.keys()[0] == "coordinates":
+            self.negative_terminal = CfgCoordianteTerminal(self._pedb, **neg)
+        elif neg.keys()[0] == "nearest_pin":
+            self.negative_terminal = CfgNearestPinTerminal(self._pedb, **neg)
+        else:
+            self.negative_terminal = CfgTerminal(self._pedb, **neg)
 
     def _create_terminals(self):
         """Create step 1. Collect positive and negative terminals."""
