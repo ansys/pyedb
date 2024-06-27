@@ -258,6 +258,32 @@ class LayoutValidation:
 
         return new_nets
 
+    def fix_self_intersections(self, net_list=None):
+        """Find and fix self intersections from a given netlist.
+
+        Parameters
+        ----------
+        net_list : str, list, optional
+            List of nets on which check disjoints. If `None` is provided then the algorithm will loop on all nets.
+
+        Returns
+        -------
+        bool
+        """
+        if not net_list:
+            net_list = list(self._pedb.nets.keys())
+        elif isinstance(net_list, str):
+            net_list = [net_list]
+        new_prims = []
+        for prim in self._pedb.modeler.polygons:
+            if prim.net_name in net_list:
+                new_prims.extend(prim.fix_self_intersections())
+        if new_prims:
+            self._pedb._logger.info("Self-intersections detected and removed.")
+        else:
+            self._pedb._logger.info("Self-intersection not found.")
+        return True
+
     def illegal_net_names(self, fix=False):
         """Find and fix illegal net names."""
         pattern = r"[\(\)\\\/:;*?<>\'\"|`~$]"
