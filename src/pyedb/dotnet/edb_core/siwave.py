@@ -1495,9 +1495,9 @@ class EdbSiwave(object):
         Parameters
         ----------
         scan_type : str
-        Scan type to be analyzed. 3 options are available, ``impedance`` for frequency impedance scan,
-        ``frequency_xtalk`` for frequency domain crosstalk and ``time_xtalk`` for time domain crosstalk.
-        Default value is ``frequency``.
+            Scan type to be analyzed. 3 options are available, ``impedance`` for frequency impedance scan,
+            ``frequency_xtalk`` for frequency domain crosstalk and ``time_xtalk`` for time domain crosstalk.
+            Default value is ``frequency``.
 
         """
         return SiwaveScanConfig(scan_type)
