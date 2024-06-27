@@ -905,6 +905,35 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
             return cloned_poly
         return False
 
+    @property
+    def has_self_intersections(self):
+        """Check if Polygon has self intersections.
+
+        Returns
+        -------
+        bool
+        """
+        return self.polygon_data.edb_api.HasSelfIntersections()
+
+    def fix_self_intersections(self):
+        """Remove self intersections if they exists.
+
+        Returns
+        -------
+        list
+            All new polygons created from the removal operation.
+        """
+        new_polys = []
+        if self.has_self_intersections:
+            new_polygons = list(self.polygon_data.edb_api.RemoveSelfIntersections())
+            self.polygon_data = new_polygons[0]
+            for p in new_polygons[1:]:
+                cloned_poly = self._app.edb_api.cell.primitive.polygon.create(
+                    self._app.active_layout, self.layer_name, self.net, p
+                )
+                new_polys.append(cloned_poly)
+        return new_polys
+
     def duplicate_across_layers(self, layers):
         """Duplicate across layer a primitive object.
 
