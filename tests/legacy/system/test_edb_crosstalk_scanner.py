@@ -37,7 +37,7 @@ class TestClass:
                 name=net, nominal_impedance=45.0, warning_threshold=40.0, violation_threshold=30.0
             )
         xtalk_scan.file_path = os.path.join(self.local_scratch.path, "test_impedance_scan.xml")
-        assert xtalk_scan.write_wml()
+        assert xtalk_scan.write_xml()
 
     def test_create_frequency_xtalk_scan(self):
         xtalk_scan = self.edbapp.siwave.create_crosstalk_config_file(scan_type="frequency_xtalk")
@@ -51,7 +51,7 @@ class TestClass:
             )
 
         xtalk_scan.file_path = os.path.join(self.local_scratch.path, "test_impedance_scan.xml")
-        assert xtalk_scan.write_wml()
+        assert xtalk_scan.write_xml()
 
     def test_create_time_xtalk_scan(self):
         xtalk_scan = self.edbapp.siwave.create_crosstalk_config_file(scan_type="time_xtalk")
@@ -69,4 +69,4 @@ class TestClass:
             xtalk_scan.time_xtalk_scan.add_receiver_pin(name=pin.name, ref_des="U1", impedance=80.0)
         # xtalk_scan.file_path = os.path.join(self.local_scratch.path, "test_impedance_scan.xml")
         xtalk_scan.file_path = r"D:\Temp\test_time_xtalk_scan.xml"
-        assert xtalk_scan.write_wml()
+        assert xtalk_scan.write_xml()

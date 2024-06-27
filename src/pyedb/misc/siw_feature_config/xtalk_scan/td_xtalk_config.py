@@ -28,7 +28,8 @@ from pyedb.misc.siw_feature_config.xtalk_scan.pins import DriverPin, ReceiverPin
 class CrossTalkTime:
     """Time domain crosstalk configuration class handler."""
 
-    def __init__(self):
+    def __init__(self, pedb):
+        self._pedb = pedb
         self.nets = {}
         self.driver_pins = []
         self.receiver_pins = []
@@ -71,6 +72,7 @@ class CrossTalkTime:
             self.nets[name] = net
             return True
         else:
+            self._pedb.logger.error(f"Net {name} already assigned.")
             return False
 
     def add_driver_pins(self, name, ref_des, rise_time="100ps", voltage=1.0, impedance=50.0):
@@ -89,13 +91,13 @@ class CrossTalkTime:
         pin.receiver_impedance = impedance
         self.receiver_pins.append(pin)
 
-    def write_wml(self, parent):
+    def _write_xml(self, parent):
         time_scan = ET.SubElement(parent, "TdXtalkConfig")
         for net in list(self.nets.values()):
-            net.write_xml(time_scan)
+            net._write_xml(time_scan)
         driver_pins = ET.SubElement(time_scan, "DriverPins")
         for pin in self.driver_pins:
-            pin.write_xml(driver_pins)
+            pin._write_xml(driver_pins)
         receiver_pins = ET.SubElement(time_scan, "ReceiverPins")
         for pin in self.receiver_pins:
-            pin.write_xml(receiver_pins)
+            pin._write_xml(receiver_pins)

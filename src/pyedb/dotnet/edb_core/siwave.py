@@ -1489,7 +1489,7 @@ class EdbSiwave(object):
         _, value = cell.GetProductProperty(siwave_id, 422, "")
         return bool(value)
 
-    def create_crosstalk_config_file(self, scan_type="impedance", file_path=""):
+    def create_crosstalk_config_file(self, scan_type="impedance"):
         """Create Siwave crosstalk scan object
 
         Parameters
@@ -1500,7 +1500,7 @@ class EdbSiwave(object):
         Default value is ``frequency``.
 
         """
-        return SiwaveScanConfig(scan_type)
+        return SiwaveScanConfig(self._pedb, scan_type)
 
     @icepak_use_minimal_comp_defaults.setter
     def icepak_use_minimal_comp_defaults(self, value):

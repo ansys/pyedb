@@ -27,12 +27,13 @@ from pyedb.misc.siw_feature_config.xtalk_scan.net import SingleEndedNet
 class CrosstalkFrequency:
     """Siwave frequency domain crosstalk configuration handler."""
 
-    def __init__(self):
+    def __init__(self, pedb):
+        self._pedb = pedb
         self.min_transmission_line_segment_length = "0.25mm"
         self.frequency = "2e9Hz"
         self.nets = {}
 
-    def write_wml(self, parent):
+    def _write_xml(self, parent):
         """Write class xml section.
 
         Parameters
@@ -46,7 +47,7 @@ class CrosstalkFrequency:
         freq_scan.set("XtalkFrequency", self.frequency)
         nets = ET.SubElement(parent, "SingleEndedNets")
         for net in list(self.nets.values()):
-            net.write_xml(nets)
+            net._write_xml(nets)
 
     def add_single_ended_net(
         self,
@@ -86,4 +87,5 @@ class CrosstalkFrequency:
             self.nets[name] = net
             return True
         else:
+            self._pedb.logger.error(f"Net {name} already assigned.")
             return False

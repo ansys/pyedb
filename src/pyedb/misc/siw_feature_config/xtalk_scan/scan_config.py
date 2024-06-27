@@ -41,7 +41,8 @@ class ScanType(Enum):
 class SiwaveScanConfig:
     """XML control file handle for Siwave crosstalk scan."""
 
-    def __init__(self, scan_type="impedance"):
+    def __init__(self, pedb, scan_type="impedance"):
+        self._pedb = pedb
         self.file_path = ""
         if scan_type == "impedance":
             self.scan_type = ScanType.IMPEDANCE
@@ -49,30 +50,39 @@ class SiwaveScanConfig:
             self.scan_type = ScanType.FREQ_XTALK
         elif scan_type == "time_xtalk":
             self.scan_type = ScanType.TIME_XTALK
-        self.impedance_scan = ImpedanceScan()
-        self.frequency_xtalk_scan = CrosstalkFrequency()
-        self.time_xtalk_scan = CrossTalkTime()
+        else:
+            self._pedb.logger.error(f"No valid scan type argument : {scan_type}")
+            self._pedb.logger.error('Supported argument : "impedance", "frequency_xtalk", "time_xtalk"')
 
-    def write_wml(self):
+        self.impedance_scan = ImpedanceScan(self._pedb)
+        self.frequency_xtalk_scan = CrosstalkFrequency(self._pedb)
+        self.time_xtalk_scan = CrossTalkTime(self._pedb)
+
+    def write_xml(self):
         """Write XML control file
 
         Returns
         -------
         bool
         """
+        if not self.file_path:
+            self._pedb.logger.error("No xml file path provided, please provide absolute valid one.")
+            return False
+        self._pedb.logger.info(f"Parsing xml file")
         scan_config = ET.Element("SiwaveScanConfig")
         scan_config.set("xmlns", "http://webstds.ipc.org/2581")
         scan_config.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
         if self.scan_type == ScanType.IMPEDANCE:
-            self.impedance_scan.write_wml(scan_config)
+            self.impedance_scan._write_xml(scan_config)
         elif self.scan_type == ScanType.FREQ_XTALK:
-            self.frequency_xtalk_scan.write_wml(scan_config)
+            self.frequency_xtalk_scan._write_xml(scan_config)
         elif self.scan_type == ScanType.TIME_XTALK:
-            self.time_xtalk_scan.write_wml(scan_config)
+            self.time_xtalk_scan._write_xml(scan_config)
         try:
             ET.indent(scan_config)
         except AttributeError:
             pass
         tree = ET.ElementTree(scan_config)
+        self._pedb.logger.info(f"Writing xml file")
         tree.write(self.file_path)
         return True if os.path.exists(self.file_path) else False
