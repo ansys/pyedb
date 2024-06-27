@@ -41,7 +41,6 @@ class CfgData(object):
 
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
-        self.edb_comps = self._pedb.components.components
         self.general = CfgGeneral(self, kwargs.get("general", None))
 
         self.boundaries = {}
@@ -62,7 +61,8 @@ class CfgData(object):
 
         self.ports = [CfgPort(self, **port) for port in kwargs.get("ports", [])]
 
-        self.sources = [CfgSources(self, **source) for source in kwargs.get("sources", [])]
+        #self.sources = [CfgSources(self, **source) for source in kwargs.get("sources", [])]
+        self.sources = CfgSources(self._pedb, sources_data=kwargs.get("sources", []))
 
         self.setups = CfgSetups(self._pedb, setups_data=kwargs.get("setups", []))
 

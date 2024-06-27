@@ -20,16 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.configuration.cfg_common import CfgBase
+
+
+class CfgSources:
+    def __init__(self, pedb, sources_data):
+        self._pedb = pedb
+        self.sources = [CfgSource(self._pedb, **src) for src in sources_data]
+
 
 class CfgCircuitElement:
-    @property
-    def pedb(self):
-        """Edb."""
-        return self._pdata._pedb
 
-    def __init__(self, pdata, **kwargs):
-        self._pdata = pdata
-        self._data = kwargs
+    def __init__(self, pedb, **kwargs):
+        self._pedb = pedb
         self.name = kwargs.get("name", None)
         self.type = kwargs.get("type", None)
         self.reference_designator = kwargs.get("reference_designator", None)
@@ -91,7 +94,7 @@ class CfgCircuitElement:
                 }
             else:
                 if neg_type == "pin_group":
-                    pin_group = {neg_value: self.pedb.siwave.pin_groups[neg_value]}
+                    pin_group = {neg_value: self._pedb.siwave.pin_groups[neg_value]}
                 else:
                     # Get pins
                     pins = self._get_pins(neg_type, neg_value)  # terminal type pin or net
@@ -105,7 +108,7 @@ class CfgCircuitElement:
         terminal_value = terminal_value if isinstance(terminal_value, list) else [terminal_value]
 
         def get_pin_obj(pin_name):
-            return {pin_name: self._pdata.edb_comps[self.reference_designator].pins[pin_name]}
+            return {pin_name: self._pedb.components.components[self.reference_designator].pins[pin_name]}
 
         pins = dict()
         if terminal_type == "pin":
@@ -113,7 +116,7 @@ class CfgCircuitElement:
                 pins.update(get_pin_obj(i))
         else:
             if terminal_type == "net":
-                temp = self._pdata._pedb.components.get_pins(self.reference_designator, terminal_value[0])
+                temp = self._pedb.components.get_pins(self.reference_designator, terminal_value[0])
             elif terminal_type == "pin_group":
                 pin_group = self.pedb.siwave.pin_groups[terminal_value[0]]
                 temp = pin_group.pins
@@ -126,7 +129,7 @@ class CfgCircuitElement:
         else:
             pg_name = f"pg_{self.name}_{self.reference_designator}"
         pin_names = [i.pin_number for i in pins.values()]
-        name, temp = self._pdata._pedb.siwave.create_pin_group(self.reference_designator, pin_names, pg_name)
+        name, temp = self._pedb.siwave.create_pin_group(self.reference_designator, pin_names, pg_name)
         return {name: temp}
 
 
@@ -135,8 +138,8 @@ class CfgPort(CfgCircuitElement):
 
     CFG_PORT_TYPE = {"circuit": [str], "coax": [str]}
 
-    def __init__(self, pdata, **kwargs):
-        super().__init__(pdata, **kwargs)
+    def __init__(self, pedb, **kwargs):
+        super().__init__(pedb, **kwargs)
 
     def create(self):
         """Create port."""
@@ -145,29 +148,29 @@ class CfgPort(CfgCircuitElement):
         circuit_elements = []
         for name, j in self.pos_terminals.items():
             if isinstance(self.neg_terminal, dict):
-                elem = self.pedb.create_port(j, self.neg_terminal[name], is_circuit_port)
+                elem = self._pedb.create_port(j, self.neg_terminal[name], is_circuit_port)
             else:
-                elem = self.pedb.create_port(j, self.neg_terminal, is_circuit_port)
+                elem = self._pedb.create_port(j, self.neg_terminal, is_circuit_port)
             if not self.distributed:
                 elem.name = self.name
             circuit_elements.append(elem)
         return circuit_elements
 
 
-class CfgSources(CfgCircuitElement):
+class CfgSource(CfgCircuitElement):
     CFG_SOURCE_TYPE = {"current": [int, float], "voltage": [int, float]}
 
-    def __init__(self, pdata, **kwargs):
-        super().__init__(pdata, **kwargs)
+    def __init__(self, pedb, **kwargs):
+        super().__init__(pedb, **kwargs)
 
         self.magnitude = kwargs.get("magnitude", 0.001)
 
     def create(self):
         """Create sources."""
         self._create_terminals()
-        is_circuit_port = True if self.type == "circuit" else False
+        #is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
-        method = self.pedb.create_current_source if self.type == "current" else self.pedb.create_voltage_source
+        method = self._pedb.create_current_source if self.type == "current" else self._pedb.create_voltage_source
         for name, j in self.pos_terminals.items():
             if isinstance(self.neg_terminal, dict):
                 elem = method(j, self.neg_terminal[name])
