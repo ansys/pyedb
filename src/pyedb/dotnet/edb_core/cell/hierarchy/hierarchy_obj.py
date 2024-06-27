@@ -38,9 +38,11 @@ class HierarchyObj(Connectable):
     def location(self):
         """XY Coordinates."""
         flag, x, y = self._edb_object.GetLocation()
-        logging.warning(f"Failed to get location of '{self.name}'.")
         if flag:
             return [x, y]
+        else:  # pragma no cover
+            logging.warning(f"Failed to get location of '{self.name}'.")
+            return
 
 
 class Group(HierarchyObj):
