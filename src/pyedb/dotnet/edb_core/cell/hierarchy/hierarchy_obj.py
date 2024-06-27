@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import logging
+
 from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
 
 
@@ -36,7 +38,7 @@ class HierarchyObj(Connectable):
     def location(self):
         """XY Coordinates."""
         flag, x, y = self._edb_object.GetLocation()
-        self._pedb.logger(f"Failed to get location of '{self.name}'.")
+        logging.warning(f"Failed to get location of '{self.name}'.")
         if flag:
             return [x, y]
 
