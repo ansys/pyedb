@@ -36,6 +36,7 @@ class HierarchyObj(Connectable):
     def location(self):
         """XY Coordinates."""
         flag, x, y = self._edb_object.GetLocation()
+        self._pedb.logger(f"Failed to get location of '{self.name}'.")
         if flag:
             return [x, y]
 
