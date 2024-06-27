@@ -259,7 +259,7 @@ class LayoutValidation:
         return new_nets
 
     def self_intersections(self, net_list):
-        """Find and fix self intersections  from a given netlist.
+        """Find and fix self intersections from a given netlist.
 
         Parameters
         ----------
