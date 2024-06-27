@@ -23,13 +23,64 @@
 from pyedb.configuration.cfg_common import CfgBase
 
 
+class CfgTerminal(CfgBase):
+    def __init__(self, pedb, **kwargs):
+        self._pedb = pedb
+        self.pin = kwargs.get('pin')
+        self.net = kwargs.get('net')
+        self.nearest_pin = kwargs.get('nearest_pin')
+        self.coordinates = kwargs.get('coordinates')
+        self.value =
+
+    @property
+    def type(self):
+        if self.pin:
+            return "pin"
+        if self.net:
+            return "net"
+        if self.nearest_pin:
+            return "nearest_pin"
+        if self.coordinates:
+            return "coordinates"
+
+    def export_properties(self):
+        return {
+
+        }
+
+
+class CfgCoordianteTerminal(CfgTerminal):
+    def __init__(self, pedb, **kwargs):
+        super().__init__(pedb, **kwargs)
+
+        self.layer = kwargs["layer"]
+        self.point_x = kwargs["point"][0]
+        self.point_y = kwargs["point"][1]
+        self.net = kwargs["net"]
+
+    def export_properties(self):
+        return {
+            "layer": self.layer,
+            "point_x": self.point_x,
+            "point_y": self.point_y,
+            "net": self.net
+        }
+
+
+class CfgNearestPinTerminal(CfgTerminal):
+    def __init__(self, pedb, **kwargs):
+        super().__init__(pedb, **kwargs)
+        self.reference_net = kwargs["reference_net"]
+        self.search_radius = kwargs["search_radius"]
+
+
 class CfgSources:
     def __init__(self, pedb, sources_data):
         self._pedb = pedb
         self.sources = [CfgSource(self._pedb, **src) for src in sources_data]
 
 
-class CfgCircuitElement:
+class CfgCircuitElement(CfgBase):
 
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
@@ -55,9 +106,9 @@ class CfgCircuitElement:
                 layer = pos_value["layer"]
                 point = pos_value["point"]
                 net_name = pos_value["net"]
-                pos_coor_terminal[self.name] = self.pedb.get_point_terminal(self.name, net_name, point, layer)
+                pos_coor_terminal[self.name] = self._pedb.get_point_terminal(self.name, net_name, point, layer)
             elif pos_type == "pin_group":
-                pos_objs[pos_value] = self.pedb.siwave.pin_groups[pos_value]
+                pos_objs[pos_value] = self._pedb.siwave.pin_groups[pos_value]
             elif not self.distributed:
                 # get pins
                 pins = self._get_pins(pos_type, pos_value)  # terminal type pin or net
@@ -82,13 +133,13 @@ class CfgCircuitElement:
                 layer = neg_value["layer"]
                 point = neg_value["point"]
                 net_name = neg_value["net"]
-                self.neg_terminal = self.pedb.get_point_terminal(self.name + "_ref", net_name, point, layer)
+                self.neg_terminal = self._pedb.get_point_terminal(self.name + "_ref", net_name, point, layer)
             elif neg_type == "nearest_pin":
                 ref_net = neg_value.get("reference_net", "GND")
                 search_radius = neg_value.get("search_radius", "5e-3")
                 temp = dict()
                 for i, j in pos_objs.items():
-                    temp[i] = self._pdata._pedb.padstacks.get_reference_pins(j, ref_net, search_radius, max_limit=1)[0]
+                    temp[i] = self._pedb.padstacks.get_reference_pins(j, ref_net, search_radius, max_limit=1)[0]
                 self.neg_terminal = {
                     i: j.create_terminal(i + "_ref") if not j.terminal else j.terminal for i, j in temp.items()
                 }
@@ -104,6 +155,14 @@ class CfgCircuitElement:
                     j.create_terminal(i) if not j.terminal else j.terminal for i, j in pin_group.items()
                 ][0]
 
+    def export_properties(self):
+        elem = {}
+        elem.update(self.pos_terminals)  # todo
+        elem.update(self.neg_terminal)  # todo
+        elem["reference_designator"] = self.reference_designator
+        elem["positive_terminal"] = self.pos_terminals.
+        pass
+
     def _get_pins(self, terminal_type, terminal_value):
         terminal_value = terminal_value if isinstance(terminal_value, list) else [terminal_value]
 
@@ -118,7 +177,7 @@ class CfgCircuitElement:
             if terminal_type == "net":
                 temp = self._pedb.components.get_pins(self.reference_designator, terminal_value[0])
             elif terminal_type == "pin_group":
-                pin_group = self.pedb.siwave.pin_groups[terminal_value[0]]
+                pin_group = self._pedb.siwave.pin_groups[terminal_value[0]]
                 temp = pin_group.pins
             pins.update({f"{self.reference_designator}_{terminal_value[0]}_{i}": j for i, j in temp.items()})
         return pins
@@ -168,7 +227,7 @@ class CfgSource(CfgCircuitElement):
     def create(self):
         """Create sources."""
         self._create_terminals()
-        #is_circuit_port = True if self.type == "circuit" else False
+        # is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
         method = self._pedb.create_current_source if self.type == "current" else self._pedb.create_voltage_source
         for name, j in self.pos_terminals.items():
