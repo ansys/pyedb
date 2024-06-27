@@ -756,10 +756,12 @@ class TestClass:
         ]
         data = {"components": components}
         edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.get_data_from_db(components=True)
         assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.components["C375"].enabled == False
         assert edbapp.components["C375"].value == 100e-9
         assert edbapp.components["L2"].type == "Resistor"
+
         edbapp.close()
 
     def test_15b_component_solder_ball(self, edb_examples):

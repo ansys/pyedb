@@ -24,6 +24,7 @@
 """
 
 import os
+from pathlib import Path
 
 import pytest
 
@@ -1912,4 +1913,11 @@ class TestClass:
         assert vrm.id
         assert edbapp.voltage_regulator_modules
         assert "test" in edbapp.voltage_regulator_modules
+        edbapp.close()
+
+    def test_workflow(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        path_bom = Path(edb_examples.test_folder) / "bom.csv"
+        edbapp.workflow.export_bill_of_materials(path_bom)
+        assert path_bom.exists()
         edbapp.close()

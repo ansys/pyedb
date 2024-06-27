@@ -271,6 +271,8 @@ class Configuration:
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):
             data["setups"] = self.cfg_data.setups.get_data_from_db()
+        if kwargs.get("components", False):
+            data["components"] = self.cfg_data.components.get_data_from_db()
 
         return data
 

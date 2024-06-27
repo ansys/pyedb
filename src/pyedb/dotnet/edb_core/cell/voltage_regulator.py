@@ -52,11 +52,6 @@ class VoltageRegulator(Connectable):
         self._edb_object.SetGroup(self._pedb.components.instances[value].edbcomponent)
 
     @property
-    def id(self):
-        """Retrieve voltage regulator ID."""
-        return self._edb_object.GetId()
-
-    @property
     def load_regulator_current(self):
         """Retrieve load regulator current value"""
         return self._edb_object.GetLoadRegulationCurrent().ToDouble()
