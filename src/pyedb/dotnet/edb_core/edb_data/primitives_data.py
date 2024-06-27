@@ -915,7 +915,7 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
         """
         return self.polygon_data.edb_api.HasSelfIntersections()
 
-    def remove_self_intersections(self):
+    def fix_self_intersections(self):
         """Remove self intersections if they exists.
 
         Returns

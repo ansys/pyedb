@@ -258,7 +258,7 @@ class LayoutValidation:
 
         return new_nets
 
-    def self_intersections(self, net_list=None):
+    def fix_self_intersections(self, net_list=None):
         """Find and fix self intersections from a given netlist.
 
         Parameters
@@ -277,7 +277,7 @@ class LayoutValidation:
         new_prims = []
         for prim in self._pedb.modeler.polygons:
             if prim.net_name in net_list:
-                new_prims.extend(prim.remove_self_intersections())
+                new_prims.extend(prim.fix_self_intersections())
         if new_prims:
             self._pedb._logger.info("Self-intersections detected and removed.")
         else:

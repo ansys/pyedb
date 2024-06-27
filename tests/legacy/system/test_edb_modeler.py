@@ -189,7 +189,7 @@ class TestClass:
             "1_Top",
         )
         assert poly.has_self_intersections
-        assert poly.remove_self_intersections() == []
+        assert poly.fix_self_intersections() == []
         assert not poly.has_self_intersections
 
     def test_modeler_create_polygon_from_shape(self):
