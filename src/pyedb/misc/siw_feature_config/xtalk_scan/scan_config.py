@@ -39,6 +39,8 @@ class ScanType(Enum):
 
 
 class SiwaveScanConfig:
+    """XML control file handle for Siwave crosstalk scan."""
+
     def __init__(self, scan_type="impedance"):
         self.file_path = ""
         if scan_type == "impedance":
@@ -52,6 +54,12 @@ class SiwaveScanConfig:
         self.time_xtalk_scan = CrossTalkTime()
 
     def write_wml(self):
+        """Write XML control file
+
+        Returns
+        -------
+        bool
+        """
         scan_config = ET.Element("SiwaveScanConfig")
         scan_config.set("xmlns", "http://webstds.ipc.org/2581")
         scan_config.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")

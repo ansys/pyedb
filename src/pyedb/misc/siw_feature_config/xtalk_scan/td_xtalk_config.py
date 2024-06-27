@@ -26,6 +26,8 @@ from pyedb.misc.siw_feature_config.xtalk_scan.pins import DriverPin, ReceiverPin
 
 
 class CrossTalkTime:
+    """Time domain crosstalk configuration class handler."""
+
     def __init__(self):
         self.nets = {}
         self.driver_pins = []
@@ -39,6 +41,26 @@ class CrossTalkTime:
         driver_impedance=5.0,
         termination_impedance=5.0,
     ):
+        """Add single ended net.
+
+        Parameters
+        ----------
+        name : str
+            Net name.
+        driver_rise_time : flot or str
+            Near end crosstalk warning threshold value. Default value is ``5.0``.
+        voltage : float, str
+            Near end crosstalk violation threshold value. Default value is ``10.0
+
+        driver_impedance : float, str
+            Far end crosstalk violation threshold value, Default value is ``5.0``
+        termination_impedance : float, str
+            Far end crosstalk warning threshold value, Default value is ``5.0``
+
+        Returns
+        -------
+        bool
+        """
         if name and name not in self.nets:
             net = SingleEndedNet()
             net.name = name
@@ -47,6 +69,7 @@ class CrossTalkTime:
             net.driver_impedance = driver_impedance
             net.termination_impedance = termination_impedance
             self.nets[name] = net
+            return True
         else:
             return False
 

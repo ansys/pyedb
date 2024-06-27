@@ -25,12 +25,22 @@ from pyedb.misc.siw_feature_config.xtalk_scan.net import SingleEndedNet
 
 
 class CrosstalkFrequency:
+    """Siwave frequency domain crosstalk configuration handler."""
+
     def __init__(self):
         self.min_transmission_line_segment_length = "0.25mm"
         self.frequency = "2e9Hz"
         self.nets = {}
 
     def write_wml(self, parent):
+        """Write class xml section.
+
+        Parameters
+        ----------
+        parent : :class xml.etree.cElementTree object
+        Parent object.
+
+        """
         freq_scan = ET.SubElement(parent, "FdXtalkConfig")
         freq_scan.set("MinTlineSegmentLength", self.min_transmission_line_segment_length)
         freq_scan.set("XtalkFrequency", self.frequency)
@@ -42,10 +52,30 @@ class CrosstalkFrequency:
         self,
         name,
         next_warning_threshold=5.0,
-        next_violation_threshold=10,
+        next_violation_threshold=10.0,
         fext_warning_threshold_warning=5.0,
         fext_violation_threshold=5.0,
     ):
+        """Add single ended net.
+
+        Parameters
+        ----------
+        name : str
+            Net name.
+        next_warning_threshold : flot or str
+            Near end crosstalk warning threshold value. Default value is ``5.0``.
+        next_violation_threshold : float, str
+            Near end crosstalk violation threshold value. Default value is ``10.0
+
+        fext_violation_threshold : float, str
+            Far end crosstalk violation threshold value, Default value is ``5.0``
+        fext_warning_threshold_warning : float, str
+            Far end crosstalk warning threshold value, Default value is ``5.0``
+
+        Returns
+        -------
+        bool
+        """
         if name and name not in self.nets:
             net = SingleEndedNet()
             net.name = name
@@ -54,5 +84,6 @@ class CrosstalkFrequency:
             net.fext_warning_threshold = fext_warning_threshold_warning
             net.fext_violation_threshold = fext_violation_threshold
             self.nets[name] = net
+            return True
         else:
             return False

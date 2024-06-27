@@ -31,6 +31,7 @@ class ImpedanceScan:
         self.nets = {}
 
     def write_wml(self, parent):
+        """Write object wml section"""
         z_scan = ET.SubElement(parent, "Z0ScanConfig")
         z_scan.set("MinTlineSegmentLength", self.min_transmission_line_segment_length)
         z_scan.set("Z0Frequency", self.frequency)
@@ -39,6 +40,23 @@ class ImpedanceScan:
             net.write_xml(single_ended_nets)
 
     def add_single_ended_net(self, name, nominal_impedance=50.0, warning_threshold=17.0, violation_threshold=32.0):
+        """Add single ended net.
+
+        Parameters
+        ----------
+        name : str
+            Net name.
+        nominal_impedance : flot or str
+            nominal impedance in ohm. Default value is ``50,0``..
+        warning_threshold : float, str
+            Warning threshold value. Default value is ``17.0
+        violation_threshold : float, str
+            Violation threshold value, Default value is ``5.0``
+
+        Returns
+        -------
+        bool
+        """
         if name and name not in self.nets:
             net = SingleEndedNet()
             net.name = name

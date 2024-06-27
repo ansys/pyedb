@@ -25,6 +25,8 @@ from pyedb.generic.general_methods import ET
 
 
 class DriverPin:
+    """Driver pin class handler."""
+
     def __init__(self):
         self.name = None
         self.ref_des = None
@@ -33,6 +35,7 @@ class DriverPin:
         self.driver_impedance = None
 
     def write_xml(self, parent):
+        """Write  object to xml section."""
         pin = ET.SubElement(parent, "Pin")
         pin.set("Name", self.name)
         pin.set("RefDes", self.ref_des)
@@ -42,12 +45,15 @@ class DriverPin:
 
 
 class ReceiverPin:
+    """Receiver pin class handler."""
+
     def __init__(self):
         self.name = None
         self.ref_des = None
         self.receiver_impedance = None
 
     def write_xml(self, parent):
+        """Write object to xml section."""
         pin = ET.SubElement(parent, "Pin")
         pin.set("Name", self.name)
         pin.set("Name", self.name)

@@ -24,6 +24,8 @@ from pyedb.generic.general_methods import ET
 
 
 class SingleEndedNet:
+    """Single ended net class handler."""
+
     def __init__(self):
         self.name = None
         self.nominal_impedance = None
@@ -39,6 +41,7 @@ class SingleEndedNet:
         self.termination_impedance = None
 
     def write_xml(self, parent):
+        """Write XMl object section."""
         net = ET.SubElement(parent, "Net")
         if self.name is not None:
             net.set("Name", self.name)
