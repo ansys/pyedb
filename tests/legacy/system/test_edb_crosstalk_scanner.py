@@ -18,6 +18,8 @@ import os
 
 import pytest
 
+from pyedb.generic.general_methods import ET
+
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
@@ -38,6 +40,16 @@ class TestClass:
             )
         xtalk_scan.file_path = os.path.join(self.local_scratch.path, "test_impedance_scan.xml")
         assert xtalk_scan.write_xml()
+        tree = ET.parse(xtalk_scan.file_path)
+        root = tree.getroot()
+        nets = [child for child in root[0] if "SingleEndedNets" in child.tag][0]
+        assert len(nets) == 342
+        for net in nets:
+            net_dict = net.attrib
+            assert net_dict["Name"]
+            assert float(net_dict["NominalZ0"]) == 45.0
+            assert float(net_dict["WarningThreshold"]) == 40.0
+            assert float(net_dict["ViolationThreshold"]) == 30.0
 
     def test_create_frequency_xtalk_scan(self):
         xtalk_scan = self.edbapp.siwave.create_crosstalk_config_file(scan_type="frequency_xtalk")
@@ -52,6 +64,17 @@ class TestClass:
 
         xtalk_scan.file_path = os.path.join(self.local_scratch.path, "test_impedance_scan.xml")
         assert xtalk_scan.write_xml()
+        tree = ET.parse(xtalk_scan.file_path)
+        root = tree.getroot()
+        nets = [child for child in root[0] if "SingleEndedNets" in child.tag][0]
+        assert len(nets) == 342
+        for net in nets:
+            net_dict = net.attrib
+            assert net_dict["Name"]
+            assert float(net_dict["FEXTWarningThreshold"]) == 8.0
+            assert float(net_dict["FEXTViolationThreshold"]) == 10.0
+            assert float(net_dict["NEXTWarningThreshold"]) == 5.0
+            assert float(net_dict["NEXTViolationThreshold"]) == 8.0
 
     def test_create_time_xtalk_scan(self):
         xtalk_scan = self.edbapp.siwave.create_crosstalk_config_file(scan_type="time_xtalk")
@@ -67,6 +90,31 @@ class TestClass:
             )
         for pin in receiver_pins:
             xtalk_scan.time_xtalk_scan.add_receiver_pin(name=pin.name, ref_des="U1", impedance=80.0)
-        # xtalk_scan.file_path = os.path.join(self.local_scratch.path, "test_impedance_scan.xml")
-        xtalk_scan.file_path = r"D:\Temp\test_time_xtalk_scan.xml"
+        xtalk_scan.file_path = os.path.join(self.local_scratch.path, "test_impedance_scan.xml")
         assert xtalk_scan.write_xml()
+        tree = ET.parse(xtalk_scan.file_path)
+        root = tree.getroot()
+        nets = [child for child in root[0] if "SingleEndedNets" in child.tag][0]
+        assert len(nets) == 342
+        driver_pins = [child for child in root[0] if "DriverPins" in child.tag][0]
+        assert len(driver_pins) == 120
+        receiver_pins = [child for child in root[0] if "ReceiverPins" in child.tag][0]
+        assert len(receiver_pins) == 403
+        for net in nets:
+            net_dict = net.attrib
+            assert net_dict["Name"]
+            assert net_dict["DriverRiseTime"] == "132ps"
+            assert net_dict["Voltage"] == "2.4V"
+            assert float(net_dict["DriverImpedance"]) == 45.0
+            assert float(net_dict["TerminationImpedance"]) == 51.0
+        for pin in driver_pins:
+            pin_dict = pin.attrib
+            assert pin_dict["Name"]
+            assert pin_dict["RefDes"] == "U1"
+            assert pin_dict["DriverRiseTime"] == "20ps"
+            assert pin_dict["Voltage"] == "1.2V"
+            assert float(pin_dict["DriverImpedance"]) == 120.0
+        for pin in receiver_pins:
+            pin_dict = pin.attrib
+            assert pin_dict["Name"]
+            assert float(pin_dict["ReceiverImpedance"]) == 80.0

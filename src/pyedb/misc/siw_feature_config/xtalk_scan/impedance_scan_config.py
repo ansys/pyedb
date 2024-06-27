@@ -31,14 +31,14 @@ class ImpedanceScan:
         self.frequency = "2e9Hz"
         self.nets = {}
 
-    def _write_xml(self, parent):
+    def parse_xml(self, parent):
         """Write object wml section"""
         z_scan = ET.SubElement(parent, "Z0ScanConfig")
         z_scan.set("MinTlineSegmentLength", self.min_transmission_line_segment_length)
         z_scan.set("Z0Frequency", self.frequency)
-        single_ended_nets = ET.SubElement(parent, "SingleEndedNets")
+        single_ended_nets = ET.SubElement(z_scan, "SingleEndedNets")
         for net in list(self.nets.values()):
-            net._write_xml(single_ended_nets)
+            net.parse_xml(single_ended_nets)
 
     def add_single_ended_net(self, name, nominal_impedance=50.0, warning_threshold=17.0, violation_threshold=32.0):
         """Add single ended net.

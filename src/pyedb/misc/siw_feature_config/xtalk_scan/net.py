@@ -40,7 +40,7 @@ class SingleEndedNet:
         self.driver_impedance = None
         self.termination_impedance = None
 
-    def _write_xml(self, parent):
+    def parse_xml(self, parent):
         """Write XMl object section."""
         net = ET.SubElement(parent, "Net")
         if self.name is not None:

@@ -34,7 +34,7 @@ class DriverPin:
         self.voltage = None
         self.driver_impedance = None
 
-    def _write_xml(self, parent):
+    def parse_xml(self, parent):
         """Write  object to xml section."""
         pin = ET.SubElement(parent, "Pin")
         pin.set("Name", self.name)
@@ -52,7 +52,7 @@ class ReceiverPin:
         self.ref_des = None
         self.receiver_impedance = None
 
-    def _write_xml(self, parent):
+    def parse_xml(self, parent):
         """Write object to xml section."""
         pin = ET.SubElement(parent, "Pin")
         pin.set("Name", self.name)
