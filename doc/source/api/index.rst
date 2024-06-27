@@ -23,7 +23,7 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
 
 .. code:: python
 
-    from pyedb.dotnet.edb import Edb
+    from pyedb import Edb
 
     edb = Edb("my_project.aedb", edbversion="2023.1")
     edb.core_components.components["R1"].r_value = 40

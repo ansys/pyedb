@@ -31,7 +31,7 @@ This example shows how you can use PyEDB to rename ports and nets.
 # ~~~~~~~~~~~~~~~~~~~~~~~~
 # Perform required imports, which includes importing a section.
 
-from pyedb.dotnet.edb import Edb
+from pyedb import Edb
 from pyedb.generic.general_methods import generate_unique_folder_name
 import pyedb.misc.downloads as downloads
 

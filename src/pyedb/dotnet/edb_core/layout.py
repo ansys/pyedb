@@ -94,6 +94,27 @@ class EdbLayout(object):
         """
         return self._pedb.stackup.layers
 
+    def get_primitive(self, primitive_id):
+        """Retrieve primitive from give id.
+
+        Parameters
+        ----------
+        primitive_id : int
+            Primitive id.
+
+        Returns
+        -------
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+            List of primitives.
+        """
+        for p in self._layout.primitives:
+            if p.id == primitive_id:
+                return p
+        for p in self._layout.primitives:
+            for v in p.voids:
+                if v.id == primitive_id:
+                    return v
+
     @property
     def primitives(self):
         """Primitives.

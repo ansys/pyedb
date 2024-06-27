@@ -10,7 +10,7 @@ This page shows how to create a padstack instance.
 
 .. code:: python
 
-    from pyedb.dotnet.edb import Edb
+    from pyedb import Edb
 
 
     edb = Edb(edbversion=desktop_version)

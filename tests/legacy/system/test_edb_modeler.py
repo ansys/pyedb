@@ -75,6 +75,18 @@ class TestClass:
         assert isinstance(poly0.arcs[0].points, tuple)
         assert isinstance(poly0.intersection_type(poly0), int)
         assert poly0.is_intersecting(poly0)
+        poly_3022 = self.edbapp.modeler.get_primitive(3022)
+        assert self.edbapp.modeler.get_primitive(3023)
+        assert poly_3022.aedt_name == "poly_3022"
+        poly_3022.aedt_name = "poly3022"
+        assert poly_3022.aedt_name == "poly3022"
+        for i, k in enumerate(poly_3022.voids):
+            assert k.id
+            assert k.expand(0.0005)
+            # edb.modeler.parametrize_polygon(k, poly_5953, offset_name=f"offset_{i}", origin=centroid)
+
+        poly_167 = [i for i in self.edbapp.modeler.paths if i.id == 167][0]
+        assert poly_167.expand(0.0005)
 
     def test_modeler_paths(self):
         """Evaluate modeler paths"""
