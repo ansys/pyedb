@@ -372,6 +372,7 @@ class TestClass:
             use_pyaedt_extent_computing=True,
             check_terminals=True,
             expansion_factor=2,
+            include_voids_in_extents=True,
         )
         edbapp.close()
         source_path = os.path.join(local_path, "example_models", test_subfolder, "Multizone_GroundVoids.aedb")
