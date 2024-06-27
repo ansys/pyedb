@@ -72,7 +72,13 @@ class CfgComponent(CfgBase):
         self.angle = kwargs.get("angle", None)
         self.placement_layer = kwargs.get("placement_layer", None)
 
-    def export(self):
+    def export_properties(self):
+        """Export component properties.
+
+        Returns
+        -------
+        Dict
+        """
         data_comp = {}
         data_comp["enabled"] = self.enabled
         data_comp["reference_designator"] = self.reference_designator
@@ -165,5 +171,5 @@ class CfgComponents:
         self._load_data_from_db()
         data = []
         for comp in self.components:
-            data.append(comp.export())
+            data.append(comp.export_properties())
         return data
