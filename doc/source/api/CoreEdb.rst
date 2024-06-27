@@ -12,7 +12,7 @@ It can be opened and edited using the ``Edb`` class.
 .. autosummary::
    :toctree: _autosummary
 
-   pyedb.dotnet.edb
+   pyedb.dotnet.edb.Edb
    pyedb.dotnet.edb_core.edb_data.variables.Variable
    pyedb.dotnet.edb_core.edb_data.edbvalue.EdbValue
 
