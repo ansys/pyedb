@@ -2045,7 +2045,12 @@ class Edb(Database):
             include_pingroups=include_pingroups,
             inlcude_voids_in_extents=inlcude_voids_in_extents,
         )
-
+        _poly1 = _poly.CreateFromArcs(_poly.GetArcData(), True)
+        if inlcude_voids_in_extents:
+            for hole in list(_poly.Holes):
+                if hole.Area() >= 0.05 * _poly1.Area():
+                    _poly1.AddHole(hole)
+        _poly = _poly1
         # Create new cutout cell/design
         included_nets_list = signal_list + reference_list
         included_nets = convert_py_list_to_net_list(
