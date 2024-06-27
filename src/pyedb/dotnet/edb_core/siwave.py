@@ -1489,7 +1489,7 @@ class EdbSiwave(object):
         _, value = cell.GetProductProperty(siwave_id, 422, "")
         return bool(value)
 
-    def create_crosstalk_config_file(self, scan_type="impedance", file_path=""):
+    def create_crosstalk_config_file(self, scan_type="impedance"):
         """Create Siwave crosstalk scan object
 
         Parameters
