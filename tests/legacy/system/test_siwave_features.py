@@ -33,7 +33,7 @@ class TestClass:
         self.target_path4 = target_path4
 
     def test_create_impedance_scan(self):
-        xtalk_scan = self.edbapp.siwave.create_crosstalk_config_file(scan_type="impedance")
+        xtalk_scan = self.edbapp.siwave.create_impedance_crosstalk_scan(scan_type="impedance")
         for net in list(self.edbapp.nets.signal.keys()):
             xtalk_scan.impedance_scan.add_single_ended_net(
                 name=net, nominal_impedance=45.0, warning_threshold=40.0, violation_threshold=30.0
@@ -52,7 +52,7 @@ class TestClass:
             assert float(net_dict["ViolationThreshold"]) == 30.0
 
     def test_create_frequency_xtalk_scan(self):
-        xtalk_scan = self.edbapp.siwave.create_crosstalk_config_file(scan_type="frequency_xtalk")
+        xtalk_scan = self.edbapp.siwave.create_impedance_crosstalk_scan(scan_type="frequency_xtalk")
         for net in list(self.edbapp.nets.signal.keys()):
             xtalk_scan.frequency_xtalk_scan.add_single_ended_net(
                 name=net,
@@ -77,7 +77,7 @@ class TestClass:
             assert float(net_dict["NEXTViolationThreshold"]) == 8.0
 
     def test_create_time_xtalk_scan(self):
-        xtalk_scan = self.edbapp.siwave.create_crosstalk_config_file(scan_type="time_xtalk")
+        xtalk_scan = self.edbapp.siwave.create_impedance_crosstalk_scan(scan_type="time_xtalk")
         for net in list(self.edbapp.nets.signal.keys()):
             xtalk_scan.time_xtalk_scan.add_single_ended_net(
                 name=net, driver_rise_time="132ps", voltage="2.4V", driver_impedance=45.0, termination_impedance=51.0
