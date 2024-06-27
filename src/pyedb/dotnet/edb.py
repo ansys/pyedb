@@ -1575,7 +1575,7 @@ class Edb(Database):
                     smart_cut,
                     reference_list,
                     pins_to_preserve,
-                    inlcude_voids_in_extents=inlcude_voids_in_extents
+                    inlcude_voids_in_extents=inlcude_voids_in_extents,
                 )
             else:
                 _poly = self.layout.expanded_extent(
@@ -1662,7 +1662,9 @@ class Edb(Database):
             unite_polys = []
             for i in _polys:
                 if "PolygonData" not in str(i):
-                    obj_data = i.primitive_object.GetPolygonData().Expand(expansion_size, tolerance, round_corner, round_extension)
+                    obj_data = i.primitive_object.GetPolygonData().Expand(
+                        expansion_size, tolerance, round_corner, round_extension
+                    )
                 else:
                     obj_data = i.Expand(expansion_size, tolerance, round_corner, round_extension)
                 if obj_data:
@@ -1678,8 +1680,10 @@ class Edb(Database):
                                     if void_polydata.Area() >= 0.05 * area:
                                         voids_poly.append(void_polydata)
                                 if voids_poly:
-                                    obj_data = obj_data[0].Subtract(convert_py_list_to_net_list(list(obj_data)),
-                                                                    convert_py_list_to_net_list(voids_poly))
+                                    obj_data = obj_data[0].Subtract(
+                                        convert_py_list_to_net_list(list(obj_data)),
+                                        convert_py_list_to_net_list(voids_poly),
+                                    )
                         except:
                             pass
                         finally:
@@ -2318,7 +2322,7 @@ class Edb(Database):
                 _poly1 = _poly.CreateFromArcs(_poly.GetArcData(), True)
                 if inlcude_voids_in_extents:
                     for hole in list(_poly.Holes):
-                        if hole.Area()>= 0.05*_poly1.Area():
+                        if hole.Area() >= 0.05 * _poly1.Area():
                             _poly1.AddHole(hole)
                 _poly = _poly1
         if not _poly or _poly.IsNull():
@@ -2407,7 +2411,9 @@ class Edb(Database):
         for pin in pins_to_delete:
             pin.delete()
 
-        self.logger.info_timer("Padstack Instances removal completed. {} instances removed.".format(len(pins_to_delete)))
+        self.logger.info_timer(
+            "Padstack Instances removal completed. {} instances removed.".format(len(pins_to_delete))
+        )
         self.logger.reset_timer()
 
         # with ThreadPoolExecutor(number_of_threads) as pool:
