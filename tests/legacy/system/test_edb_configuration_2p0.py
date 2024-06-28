@@ -793,3 +793,17 @@ class TestClass:
         data_file_path = Path(edb_examples.test_folder) / "test.json"
         edbapp.configuration.export(data_file_path)
         assert data_file_path.is_file()
+        with open(data_file_path) as f:
+            data = json.load(f)
+            assert "stackup" in data
+            assert data["stackup"]["materials"]
+            assert data["stackup"]["materials"][0]["name"] == "copper"
+            assert data["stackup"]["materials"][0]["conductivity"] == 5.8e7
+            assert data["stackup"]["layers"]
+            data["stackup"]["layers"][0]["name"] = "1_Top"
+            data["stackup"]["layers"][0]["type"] = "signal"
+            data["stackup"]["layers"][0]["material"] = "copper"
+            assert data["nets"]
+            assert len(data["nets"]["signal_nets"]) == 342
+            assert len(data["nets"]["power_ground_nets"]) == 6
+        edbapp.close()()
