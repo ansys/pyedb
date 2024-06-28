@@ -40,7 +40,7 @@ These classes are the containers of data management for components reference des
 
 .. code:: python
 
-    from pyedb.dotnet.edb import Edb
+    from pyedb import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 

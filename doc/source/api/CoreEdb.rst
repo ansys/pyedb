@@ -12,14 +12,14 @@ It can be opened and edited using the ``Edb`` class.
 .. autosummary::
    :toctree: _autosummary
 
-   pyedb.dotnet.edb.Edb
+   pyedb.dotnet.edb
    pyedb.dotnet.edb_core.edb_data.variables.Variable
    pyedb.dotnet.edb_core.edb_data.edbvalue.EdbValue
 
 
 .. code:: python
 
-    from pyedb.dotnet.edb import Edb
+    from pyedb import Edb
 
     # this call returns the Edb class initialized on 2023 R1
     edb = Edb(myedb, edbversion="2023.1")
@@ -59,7 +59,7 @@ to AEDB files.
 
 .. code:: python
 
-    from pyedb.dotnet.edb import Edb
+    from pyedb import Edb
 
     edb = Edb(myedb, edbversion="2023.1")
 
