@@ -23,11 +23,12 @@
 from pyedb.configuration.cfg_common import CfgBase
 
 
-class CfgTerminal(CfgBase):
+class CfgTerminalInfo(CfgBase):
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
         self.pin = kwargs.get('pin')
         self.net = kwargs.get('net')
+        self.pin_group = kwargs.get('pin_group')
         self.nearest_pin = kwargs.get('nearest_pin')
         self.coordinates = kwargs.get('coordinates')
         self.value = getattr(self, self.type)
@@ -42,6 +43,8 @@ class CfgTerminal(CfgBase):
             return "nearest_pin"
         if self.coordinates:
             return "coordinates"
+        if self.pin_group:
+            return "pin_group"
 
     def export_properties(self):
         return {
@@ -49,7 +52,7 @@ class CfgTerminal(CfgBase):
         }
 
 
-class CfgCoordianteTerminal(CfgTerminal):
+class CfgCoordianteTerminalInfo(CfgTerminalInfo):
     def __init__(self, pedb, **kwargs):
         super().__init__(pedb, **kwargs)
 
@@ -67,7 +70,7 @@ class CfgCoordianteTerminal(CfgTerminal):
         }
 
 
-class CfgNearestPinTerminal(CfgTerminal):
+class CfgNearestPinTerminalInfo(CfgTerminalInfo):
     def __init__(self, pedb, **kwargs):
         super().__init__(pedb, **kwargs)
         self.reference_net = kwargs["reference_net"]
@@ -91,62 +94,63 @@ class CfgCircuitElement(CfgBase):
         self.type = kwargs.get("type", None)
         self.reference_designator = kwargs.get("reference_designator", None)
         self.distributed = kwargs.get("distributed", False)
-        pos = kwargs.get("positive_terminal", {})  # {"pin" : "A1"}
+
+        pos = kwargs["positive_terminal"]  # {"pin" : "A1"}
         if pos.keys()[0] == "coordinates":
-            self.positive_terminal = CfgCoordianteTerminal(self._pedb, **pos)
+            self.positive_terminal_info = CfgCoordianteTerminalInfo(self._pedb, **pos)
         else:
-            self.positive_terminal = CfgTerminal(self._pedb, **pos)
+            self.positive_terminal_info = CfgTerminalInfo(self._pedb, **pos)
 
         neg = kwargs.get("negative_terminal", {})
-        if neg.keys()[0] == "coordinates":
-            self.negative_terminal = CfgCoordianteTerminal(self._pedb, **neg)
+        if len(neg) == 0:
+            self.negative_terminal_info = None
+        elif neg.keys()[0] == "coordinates":
+            self.negative_terminal_info = CfgCoordianteTerminalInfo(self._pedb, **neg)
         elif neg.keys()[0] == "nearest_pin":
-            self.negative_terminal = CfgNearestPinTerminal(self._pedb, **neg)
+            self.negative_terminal_info = CfgNearestPinTerminalInfo(self._pedb, **neg)
         else:
-            self.negative_terminal = CfgTerminal(self._pedb, **neg)
+            self.negative_terminal_info = CfgTerminalInfo(self._pedb, **neg)
 
     def _create_terminals(self):
         """Create step 1. Collect positive and negative terminals."""
-        pos_term_info = self.pos_term_info
-        if pos_term_info:
-            pos_type, pos_value = [[i, j] for i, j in pos_term_info.items()][0]
-            pos_objs = dict()
-            pos_coor_terminal = dict()
-            if self.type == "coax":
-                pins = self._get_pins(pos_type, pos_value)
-                pins = {f"{self.name}_{self.reference_designator}": i for _, i in pins.items()}
-                pos_objs.update(pins)
-            elif pos_type == "coordinates":
-                layer = pos_value["layer"]
-                point = pos_value["point"]
-                net_name = pos_value["net"]
-                pos_coor_terminal[self.name] = self._pedb.get_point_terminal(self.name, net_name, point, layer)
-            elif pos_type == "pin_group":
-                pos_objs[pos_value] = self._pedb.siwave.pin_groups[pos_value]
-            elif not self.distributed:
-                # get pins
-                pins = self._get_pins(pos_type, pos_value)  # terminal type pin or net
-                # create pin group
-                pin_group = self._create_pin_group(pins)
-                pos_objs.update(pin_group)
-            else:
-                # get pins
-                pins = self._get_pins(pos_type, pos_value)  # terminal type pin or net or pin group
-                pos_objs.update(pins)
-                self._elem_num = len(pos_objs)
 
-            self.pos_terminals = {i: j.create_terminal(i) for i, j in pos_objs.items()}
-            self.pos_terminals.update(pos_coor_terminal)
+        pos_type, pos_value = self.positive_terminal_info.type, self.positive_terminal_info.value
+        pos_objs = dict()
+        pos_coor_terminal = dict()
+        if self.type == "coax":
+            pins = self._get_pins(pos_type, pos_value)
+            pins = {f"{self.name}_{self.reference_designator}": i for _, i in pins.items()}
+            pos_objs.update(pins)
+        elif pos_type == "coordinates":
+            layer = self.positive_terminal_info.layer
+            point = self.positive_terminal_info.point
+            net_name = self.positive_terminal_info.net
+            pos_coor_terminal[self.name] = self._pedb.get_point_terminal(self.name, net_name, point, layer)
+        elif pos_type == "pin_group":
+            pos_objs[pos_value] = self._pedb.siwave.pin_groups[pos_value]
+        elif not self.distributed:
+            # get pins
+            pins = self._get_pins(pos_type, pos_value)  # terminal type pin or net
+            # create pin group
+            pin_group = self._create_pin_group(pins)
+            pos_objs.update(pin_group)
+        else:
+            # get pins
+            pins = self._get_pins(pos_type, pos_value)  # terminal type pin or net or pin group
+            pos_objs.update(pins)
+            self._elem_num = len(pos_objs)
 
-        neg_term_info = self.neg_term_info
+        self.pos_terminals = {i: j.create_terminal(i) for i, j in pos_objs.items()}
+        self.pos_terminals.update(pos_coor_terminal)
+
         self.neg_terminal = None
-        if neg_term_info:
-            neg_type, neg_value = [[i, j] for i, j in neg_term_info.items()][0]
+        if self.negative_terminal_info:
+            neg_type, neg_value = self.negative_terminal_info.type, self.negative_terminal_info.value
 
             if neg_type == "coordinates":
-                layer = neg_value["layer"]
-                point = neg_value["point"]
-                net_name = neg_value["net"]
+                layer = self.negative_terminal_info.layer
+                point = self.negative_terminal_info.point
+                net_name = self.negative_terminal_info.net
                 self.neg_terminal = self._pedb.get_point_terminal(self.name + "_ref", net_name, point, layer)
             elif neg_type == "nearest_pin":
                 ref_net = neg_value.get("reference_net", "GND")
@@ -174,7 +178,7 @@ class CfgCircuitElement(CfgBase):
         elem.update(self.pos_terminals)  # todo
         elem.update(self.neg_terminal)  # todo
         elem["reference_designator"] = self.reference_designator
-        elem["positive_terminal"] = self.pos_terminals.
+        # elem["positive_terminal"] = self.pos_terminals. # todo
         pass
 
     def _get_pins(self, terminal_type, terminal_value):
