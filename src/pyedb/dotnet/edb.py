@@ -1558,6 +1558,7 @@ class Edb(Database):
         reference_list=[],
         include_pingroups=True,
         pins_to_preserve=None,
+        inlcude_voids_in_extents=False,
     ):
         if extent_type in [
             "Conforming",
@@ -1574,6 +1575,7 @@ class Edb(Database):
                     smart_cut,
                     reference_list,
                     pins_to_preserve,
+                    inlcude_voids_in_extents=inlcude_voids_in_extents,
                 )
             else:
                 _poly = self.layout.expanded_extent(
@@ -1632,6 +1634,7 @@ class Edb(Database):
         smart_cutout=False,
         reference_list=[],
         pins_to_preserve=None,
+        inlcude_voids_in_extents=False,
     ):
         names = []
         _polys = []
@@ -1649,7 +1652,7 @@ class Edb(Database):
 
         for prim in self.modeler.primitives:
             if prim is not None and prim.net_name in names:
-                _polys.append(prim.primitive_object.GetPolygonData())
+                _polys.append(prim)
         if smart_cutout:
             objs_data = self._smart_cut(reference_list, expansion_size)
             _polys.extend(objs_data)
@@ -1658,9 +1661,33 @@ class Edb(Database):
         while k < 10:
             unite_polys = []
             for i in _polys:
-                obj_data = i.Expand(expansion_size, tolerance, round_corner, round_extension)
+                if "PolygonData" not in str(i):
+                    obj_data = i.primitive_object.GetPolygonData().Expand(
+                        expansion_size, tolerance, round_corner, round_extension
+                    )
+                else:
+                    obj_data = i.Expand(expansion_size, tolerance, round_corner, round_extension)
                 if obj_data:
-                    unite_polys.extend(list(obj_data))
+                    if not inlcude_voids_in_extents:
+                        unite_polys.extend(list(obj_data))
+                    else:
+                        voids_poly = []
+                        try:
+                            if i.HasVoids():
+                                area = i.area()
+                                for void in i.Voids:
+                                    void_polydata = void.GetPolygonData()
+                                    if void_polydata.Area() >= 0.05 * area:
+                                        voids_poly.append(void_polydata)
+                                if voids_poly:
+                                    obj_data = obj_data[0].Subtract(
+                                        convert_py_list_to_net_list(list(obj_data)),
+                                        convert_py_list_to_net_list(voids_poly),
+                                    )
+                        except:
+                            pass
+                        finally:
+                            unite_polys.extend(list(obj_data))
             _poly_unite = self.edb_api.geometry.polygon_data.unite(unite_polys)
             if len(_poly_unite) == 1:
                 self.logger.info("Correctly computed Extension at first iteration.")
@@ -1761,6 +1788,7 @@ class Edb(Database):
         preserve_components_with_model=False,
         simple_pad_check=True,
         keep_lines_as_path=False,
+        include_voids_in_extents=False,
     ):
         """Create a cutout using an approach entirely based on PyAEDT.
         This method replaces all legacy cutout methods in PyAEDT.
@@ -1837,6 +1865,11 @@ class Edb(Database):
             This feature works only in Electronics Desktop (3D Layout).
             If the flag is set to ``True`` it can cause issues in SiWave once the Edb is imported.
             Default is ``False`` to generate PolygonData of cut lines.
+        include_voids_in_extents : bool, optional
+            Whether to compute and include voids in pyaedt extent before the cutout. Cutout time can be affected.
+            It works only with Conforming cutout.
+            Default is ``False`` to generate extent without voids.
+
 
         Returns
         -------
@@ -1896,6 +1929,7 @@ class Edb(Database):
                 use_pyaedt_extent_computing=use_pyaedt_extent_computing,
                 check_terminals=check_terminals,
                 include_pingroups=include_pingroups,
+                inlcude_voids_in_extents=include_voids_in_extents,
             )
         else:
             legacy_path = self.edbpath
@@ -1929,6 +1963,7 @@ class Edb(Database):
                         include_partial=include_partial_instances,
                         simple_pad_check=simple_pad_check,
                         keep_lines_as_path=keep_lines_as_path,
+                        inlcude_voids_in_extents=include_voids_in_extents,
                     )
                     if self.are_port_reference_terminals_connected():
                         if output_aedb_path:
@@ -1969,6 +2004,7 @@ class Edb(Database):
                     include_partial=include_partial_instances,
                     simple_pad_check=simple_pad_check,
                     keep_lines_as_path=keep_lines_as_path,
+                    inlcude_voids_in_extents=include_voids_in_extents,
                 )
             if result and not open_cutout_at_end and self.edbpath != legacy_path:
                 self.save_edb()
@@ -1990,6 +2026,7 @@ class Edb(Database):
         remove_single_pin_components=False,
         check_terminals=False,
         include_pingroups=True,
+        inlcude_voids_in_extents=False,
     ):
         expansion_size = self.edb_value(expansion_size).ToDouble()
 
@@ -2010,8 +2047,14 @@ class Edb(Database):
             smart_cut=check_terminals,
             reference_list=reference_list,
             include_pingroups=include_pingroups,
+            inlcude_voids_in_extents=inlcude_voids_in_extents,
         )
-
+        _poly1 = _poly.CreateFromArcs(_poly.GetArcData(), True)
+        if inlcude_voids_in_extents:
+            for hole in list(_poly.Holes):
+                if hole.Area() >= 0.05 * _poly1.Area():
+                    _poly1.AddHole(hole)
+        _poly = _poly1
         # Create new cutout cell/design
         included_nets_list = signal_list + reference_list
         included_nets = convert_py_list_to_net_list(
@@ -2172,6 +2215,7 @@ class Edb(Database):
         include_partial=False,
         simple_pad_check=True,
         keep_lines_as_path=False,
+        inlcude_voids_in_extents=False,
     ):
         if is_ironpython:  # pragma: no cover
             self.logger.error("Method working only in Cpython")
@@ -2269,11 +2313,18 @@ class Edb(Database):
                 reference_list=reference_list,
                 include_pingroups=include_pingroups,
                 pins_to_preserve=pins_to_preserve,
+                inlcude_voids_in_extents=inlcude_voids_in_extents,
             )
             if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1]:
                 if extent_defeature > 0:
                     _poly = _poly.Defeature(extent_defeature)
-                _poly = _poly.CreateFromArcs(_poly.GetArcData(), True)
+
+                _poly1 = _poly.CreateFromArcs(_poly.GetArcData(), True)
+                if inlcude_voids_in_extents:
+                    for hole in list(_poly.Holes):
+                        if hole.Area() >= 0.05 * _poly1.Area():
+                            _poly1.AddHole(hole)
+                _poly = _poly1
         if not _poly or _poly.IsNull():
             self._logger.error("Failed to create Extent.")
             return []
@@ -2312,29 +2363,39 @@ class Edb(Database):
             pdata = prim_1.polygon_data.edb_api
             int_data = _poly.GetIntersectionType(pdata)
             if int_data == 2:
-                return
+                if not inlcude_voids_in_extents:
+                    return
+                skip = False
+                for hole in list(_poly.Holes):
+                    if hole.GetIntersectionType(pdata) == 0:
+                        prims_to_delete.append(prim_1)
+                        return
+                    elif hole.GetIntersectionType(pdata) == 1:
+                        skip = True
+                if skip:
+                    return
             elif int_data == 0:
                 prims_to_delete.append(prim_1)
-            else:
-                list_poly = intersect(_poly, pdata)
-                if list_poly:
-                    net = prim_1.net_name
-                    voids = prim_1.voids
-                    for p in list_poly:
-                        if p.IsNull():
-                            continue
-                        # points = list(p.Points)
-                        list_void = []
-                        if voids:
-                            voids_data = [void.polygon_data.edb_api for void in voids]
-                            list_prims = subtract(p, voids_data)
-                            for prim in list_prims:
-                                if not prim.IsNull():
-                                    poly_to_create.append([prim, prim_1.layer.name, net, list_void])
-                        else:
-                            poly_to_create.append([p, prim_1.layer.name, net, list_void])
+                return
+            list_poly = intersect(_poly, pdata)
+            if list_poly:
+                net = prim_1.net_name
+                voids = prim_1.voids
+                for p in list_poly:
+                    if p.IsNull():
+                        continue
+                    # points = list(p.Points)
+                    list_void = []
+                    if voids:
+                        voids_data = [void.polygon_data.edb_api for void in voids]
+                        list_prims = subtract(p, voids_data)
+                        for prim in list_prims:
+                            if not prim.IsNull():
+                                poly_to_create.append([prim, prim_1.layer.name, net, list_void])
+                    else:
+                        poly_to_create.append([p, prim_1.layer.name, net, list_void])
 
-                prims_to_delete.append(prim_1)
+            prims_to_delete.append(prim_1)
 
         def pins_clean(pinst):
             if not pinst.in_polygon(_poly, include_partial=include_partial, simple_check=simple_pad_check):
@@ -2350,7 +2411,9 @@ class Edb(Database):
         for pin in pins_to_delete:
             pin.delete()
 
-        self.logger.info_timer("Padstack Instances removal completed")
+        self.logger.info_timer(
+            "Padstack Instances removal completed. {} instances removed.".format(len(pins_to_delete))
+        )
         self.logger.reset_timer()
 
         # with ThreadPoolExecutor(number_of_threads) as pool:
@@ -2369,7 +2432,7 @@ class Edb(Database):
         for prim in prims_to_delete:
             prim.delete()
 
-        self.logger.info_timer("Primitives cleanup completed")
+        self.logger.info_timer("Primitives cleanup completed. {} primitives deleted.".format(len(prims_to_delete)))
         self.logger.reset_timer()
 
         i = 0
