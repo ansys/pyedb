@@ -26,7 +26,7 @@
 import pytest
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
-VERSION=2024.2
+VERSION = 2024.2
 
 
 @pytest.mark.skipif(True, reason="AEDT 2024.2 is not installed")
