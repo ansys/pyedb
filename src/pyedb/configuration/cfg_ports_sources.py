@@ -27,26 +27,7 @@ class CfgTerminalInfo(CfgBase):
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
         self.type = list(kwargs.keys())[0]
-        """self.pin = kwargs.get('pin')
-        self.net = kwargs.get('net')
-        self.pin_group = kwargs.get('pin_group')
-        self.nearest_pin = kwargs.get('nearest_pin')
-        self.coordinates = kwargs.get('coordinates')"""
         self.value = kwargs[self.type]
-
-    """@property
-    def type(self):
-        if self.pin:
-            return "pin"
-        if self.net:
-            return "net"
-        if self.nearest_pin:
-            return "nearest_pin"
-        if self.coordinates:
-            return "coordinates"
-        if self.pin_group:
-            return "pin_group"""
-
 
     def export_properties(self):
         return {
@@ -143,18 +124,27 @@ class CfgCircuitElement(CfgBase):
             net_name = self.positive_terminal_info.net
             pos_coor_terminal[self.name] = self._pedb.get_point_terminal(self.name, net_name, point, layer)
         elif pos_type == "pin_group":
-            pos_objs[pos_value] = self._pedb.siwave.pin_groups[pos_value]
-        elif not self.distributed:
-            # get pins
-            pins = self._get_pins(pos_type, pos_value)  # terminal type pin or net
-            # create pin group
-            pin_group = self._create_pin_group(pins)
-            pos_objs.update(pin_group)
-        else:
-            # get pins
-            pins = self._get_pins(pos_type, pos_value)  # terminal type pin or net or pin group
+            if self.distributed:
+                pins = self._get_pins(pos_type, pos_value)
+                pos_objs.update(pins)
+                self._elem_num = len(pos_objs)
+            else:
+                pos_objs[pos_value] = self._pedb.siwave.pin_groups[pos_value]
+        elif pos_type == "net":
+            if self.distributed:
+                pins = self._get_pins(pos_type, pos_value)
+                pos_objs.update(pins)
+                self._elem_num = len(pos_objs)
+            else:
+                pins = self._get_pins(pos_type, pos_value)
+                # create pin group
+                neg_obj = self._create_pin_group(pins)
+                pos_objs.update(neg_obj)
+        elif pos_type == "pin":
+            pins = {pos_value: self._pedb.components.components[self.reference_designator].pins[pos_value]}
             pos_objs.update(pins)
-            self._elem_num = len(pos_objs)
+        else:
+            raise f"Wrong positive terminal type {pos_type}"
 
         self.pos_terminals = {i: j.create_terminal(i) for i, j in pos_objs.items()}
         self.pos_terminals.update(pos_coor_terminal)
@@ -179,14 +169,18 @@ class CfgCircuitElement(CfgBase):
                 }
             else:
                 if neg_type == "pin_group":
-                    pin_group = {neg_value: self._pedb.siwave.pin_groups[neg_value]}
-                else:
+                    neg_obj = {neg_value: self._pedb.siwave.pin_groups[neg_value]}
+                elif neg_type == "net":
                     # Get pins
                     pins = self._get_pins(neg_type, neg_value)  # terminal type pin or net
                     # create pin group
-                    pin_group = self._create_pin_group(pins, True)
+                    neg_obj = self._create_pin_group(pins, True)
+                elif neg_type == "pin":
+                    neg_obj = {neg_value: self._pedb.components.components[self.reference_designator].pins[neg_value]}
+                else:
+                    raise f"Wrong negative terminal type {neg_type}"
                 self.neg_terminal = [
-                    j.create_terminal(i) if not j.terminal else j.terminal for i, j in pin_group.items()
+                    j.create_terminal(i) if not j.terminal else j.terminal for i, j in neg_obj.items()
                 ][0]
 
     def export_properties(self):
