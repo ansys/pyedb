@@ -156,7 +156,6 @@ class SimulationSetup(object):
 
         if float(self._pedb.edbversion) >= 2024.2:
             setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
-        if float(self._pedb.edbversion) >= 2025.1:
             setup_type_mapping["kHFSSPI"] = utility.HFSSPISimulationSetup
         sim_setup_type = self.sim_setup_info.sim_setup_type
         setup_utility = setup_type_mapping[sim_setup_type.ToString()]
