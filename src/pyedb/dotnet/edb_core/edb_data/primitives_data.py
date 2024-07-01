@@ -559,6 +559,15 @@ class EDBPrimitives(Primitive):
         return [out.X.ToDouble(), out.Y.ToDouble()]
 
     @property
+    def voids(self):
+        """:obj:`list` of :class:`Primitive <ansys.edb.primitive.Primitive>`: List of void\
+        primitive objects inside the primitive.
+
+        Read-Only.
+        """
+        return [cast(void, self._app) for void in self.prim_obj.Voids]
+
+    @property
     def arcs(self):
         """Get the Primitive Arc Data."""
         arcs = [EDBArcs(self, i) for i in self.polygon_data.arcs]
@@ -896,6 +905,35 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
             return cloned_poly
         return False
 
+    @property
+    def has_self_intersections(self):
+        """Check if Polygon has self intersections.
+
+        Returns
+        -------
+        bool
+        """
+        return self.polygon_data.edb_api.HasSelfIntersections()
+
+    def fix_self_intersections(self):
+        """Remove self intersections if they exists.
+
+        Returns
+        -------
+        list
+            All new polygons created from the removal operation.
+        """
+        new_polys = []
+        if self.has_self_intersections:
+            new_polygons = list(self.polygon_data.edb_api.RemoveSelfIntersections())
+            self.polygon_data = new_polygons[0]
+            for p in new_polygons[1:]:
+                cloned_poly = self._app.edb_api.cell.primitive.polygon.create(
+                    self._app.active_layout, self.layer_name, self.net, p
+                )
+                new_polys.append(cloned_poly)
+        return new_polys
+
     def duplicate_across_layers(self, layers):
         """Duplicate across layer a primitive object.
 
@@ -986,44 +1024,6 @@ class EdbPolygon(EDBPrimitives, PolygonDotNet):
                     self._edb.Utility.Value(center[0]), self._edb.Utility.Value(center[1])
                 )
                 polygon_data.Rotate(angle * math.pi / 180, center)
-                return self.api_object.SetPolygonData(polygon_data)
-        return False
-
-    def scale(self, factor, center=None):
-        """Scales the polygon relative to a center point by a factor.
-
-        Parameters
-        ----------
-        factor : float
-            Scaling factor.
-        center : List of float or str [x,y], optional
-            If None scaling is done from polygon center.
-
-        Returns
-        -------
-        bool
-           ``True`` when successful, ``False`` when failed.
-
-        Examples
-        --------
-        >>> edbapp = pyaedt.Edb("myproject.aedb")
-        >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
-        >>> for polygon in top_layer_polygon:
-        >>>     polygon.scale(factor=2)
-        """
-        if not isinstance(factor, str):
-            factor = float(factor)
-            polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(self.polygon_data.edb_api.GetArcData(), True)
-            if not center:
-                center = polygon_data.GetBoundingCircleCenter()
-                if center:
-                    polygon_data.Scale(factor, center)
-                    return self.api_object.SetPolygonData(polygon_data)
-            elif isinstance(center, list) and len(center) == 2:
-                center = self._edb.Geometry.PointData(
-                    self._edb.Utility.Value(center[0]), self._edb.Utility.Value(center[1])
-                )
-                polygon_data.Scale(factor, center)
                 return self.api_object.SetPolygonData(polygon_data)
         return False
 

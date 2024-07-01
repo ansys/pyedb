@@ -112,6 +112,7 @@ from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.workflow import Workflow
 
 if is_linux and is_ironpython:
     import subprocessdotnet as subprocess
@@ -157,7 +158,7 @@ class Edb(Database):
     --------
     Create an ``Edb`` object and a new EDB cell.
 
-    >>> from pyedb.dotnet.edb import Edb
+    >>> from pyedb import Edb
     >>> app = Edb()
 
     Add a new variable named "s1" to the ``Edb`` instance.
@@ -517,7 +518,7 @@ class Edb(Database):
         vrms = [VoltageRegulator(self, edb_object) for edb_object in list(self.active_layout.VoltageRegulators)]
         _vrms = {}
         for vrm in vrms:
-            _vrms[vrm.GetName()] = vrm
+            _vrms[vrm.name] = vrm
         return _vrms
 
     @property
@@ -801,7 +802,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> comp = edbapp.components.get_component_by_name("J1")
         """
@@ -818,7 +819,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> comp = edbapp.components.get_component_by_name("J1")
         """
@@ -861,7 +862,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.stackup.layers["TOP"].thickness = 4e-5
         >>> edbapp.stackup.layers["TOP"].thickness == 4e-05
@@ -879,7 +880,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb()
         >>> edbapp.materials.add_material("air", permittivity=1.0)
         >>> edbapp.materials.add_debye_material("debye_mat", 5, 3, 0.02, 0.05, 1e5, 1e9)
@@ -903,7 +904,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
         >>> edbapp.padstacks.get_pad_parameters(
@@ -925,7 +926,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
         >>> edbapp.padstacks.get_pad_parameters(
@@ -950,7 +951,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
         """
@@ -967,7 +968,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
         """
@@ -988,7 +989,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
         """
@@ -1009,7 +1010,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> sim_config = edbapp.new_simulation_configuration()
         >>> sim_config.mesh_freq = "10Ghz"
@@ -1032,7 +1033,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.nets.find_or_create_net("GND")
         >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
@@ -1050,7 +1051,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb"myproject.aedb")
         >>> edbapp.nets.find_or_create_net("GND")
         >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
@@ -1071,7 +1072,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.net_classes
         """
@@ -1089,7 +1090,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.extended_nets
         """
@@ -1107,7 +1108,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.differential_pairs
         """
@@ -1129,7 +1130,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
@@ -1146,7 +1147,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
@@ -1243,7 +1244,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> pin_net_name = edbapp.pins[424968329].netname
         """
@@ -1557,6 +1558,7 @@ class Edb(Database):
         reference_list=[],
         include_pingroups=True,
         pins_to_preserve=None,
+        inlcude_voids_in_extents=False,
     ):
         if extent_type in [
             "Conforming",
@@ -1573,6 +1575,7 @@ class Edb(Database):
                     smart_cut,
                     reference_list,
                     pins_to_preserve,
+                    inlcude_voids_in_extents=inlcude_voids_in_extents,
                 )
             else:
                 _poly = self.layout.expanded_extent(
@@ -1631,6 +1634,7 @@ class Edb(Database):
         smart_cutout=False,
         reference_list=[],
         pins_to_preserve=None,
+        inlcude_voids_in_extents=False,
     ):
         names = []
         _polys = []
@@ -1648,7 +1652,7 @@ class Edb(Database):
 
         for prim in self.modeler.primitives:
             if prim is not None and prim.net_name in names:
-                _polys.append(prim.primitive_object.GetPolygonData())
+                _polys.append(prim)
         if smart_cutout:
             objs_data = self._smart_cut(reference_list, expansion_size)
             _polys.extend(objs_data)
@@ -1657,9 +1661,33 @@ class Edb(Database):
         while k < 10:
             unite_polys = []
             for i in _polys:
-                obj_data = i.Expand(expansion_size, tolerance, round_corner, round_extension)
+                if "PolygonData" not in str(i):
+                    obj_data = i.primitive_object.GetPolygonData().Expand(
+                        expansion_size, tolerance, round_corner, round_extension
+                    )
+                else:
+                    obj_data = i.Expand(expansion_size, tolerance, round_corner, round_extension)
                 if obj_data:
-                    unite_polys.extend(list(obj_data))
+                    if not inlcude_voids_in_extents:
+                        unite_polys.extend(list(obj_data))
+                    else:
+                        voids_poly = []
+                        try:
+                            if i.HasVoids():
+                                area = i.area()
+                                for void in i.Voids:
+                                    void_polydata = void.GetPolygonData()
+                                    if void_polydata.Area() >= 0.05 * area:
+                                        voids_poly.append(void_polydata)
+                                if voids_poly:
+                                    obj_data = obj_data[0].Subtract(
+                                        convert_py_list_to_net_list(list(obj_data)),
+                                        convert_py_list_to_net_list(voids_poly),
+                                    )
+                        except:
+                            pass
+                        finally:
+                            unite_polys.extend(list(obj_data))
             _poly_unite = self.edb_api.geometry.polygon_data.unite(unite_polys)
             if len(_poly_unite) == 1:
                 self.logger.info("Correctly computed Extension at first iteration.")
@@ -1760,6 +1788,7 @@ class Edb(Database):
         preserve_components_with_model=False,
         simple_pad_check=True,
         keep_lines_as_path=False,
+        include_voids_in_extents=False,
     ):
         """Create a cutout using an approach entirely based on PyAEDT.
         This method replaces all legacy cutout methods in PyAEDT.
@@ -1836,6 +1865,11 @@ class Edb(Database):
             This feature works only in Electronics Desktop (3D Layout).
             If the flag is set to ``True`` it can cause issues in SiWave once the Edb is imported.
             Default is ``False`` to generate PolygonData of cut lines.
+        include_voids_in_extents : bool, optional
+            Whether to compute and include voids in pyaedt extent before the cutout. Cutout time can be affected.
+            It works only with Conforming cutout.
+            Default is ``False`` to generate extent without voids.
+
 
         Returns
         -------
@@ -1845,7 +1879,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb(r'C:\\test.aedb', edbversion="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
@@ -1895,6 +1929,7 @@ class Edb(Database):
                 use_pyaedt_extent_computing=use_pyaedt_extent_computing,
                 check_terminals=check_terminals,
                 include_pingroups=include_pingroups,
+                inlcude_voids_in_extents=include_voids_in_extents,
             )
         else:
             legacy_path = self.edbpath
@@ -1928,6 +1963,7 @@ class Edb(Database):
                         include_partial=include_partial_instances,
                         simple_pad_check=simple_pad_check,
                         keep_lines_as_path=keep_lines_as_path,
+                        inlcude_voids_in_extents=include_voids_in_extents,
                     )
                     if self.are_port_reference_terminals_connected():
                         if output_aedb_path:
@@ -1968,6 +2004,7 @@ class Edb(Database):
                     include_partial=include_partial_instances,
                     simple_pad_check=simple_pad_check,
                     keep_lines_as_path=keep_lines_as_path,
+                    inlcude_voids_in_extents=include_voids_in_extents,
                 )
             if result and not open_cutout_at_end and self.edbpath != legacy_path:
                 self.save_edb()
@@ -1989,6 +2026,7 @@ class Edb(Database):
         remove_single_pin_components=False,
         check_terminals=False,
         include_pingroups=True,
+        inlcude_voids_in_extents=False,
     ):
         expansion_size = self.edb_value(expansion_size).ToDouble()
 
@@ -2009,8 +2047,14 @@ class Edb(Database):
             smart_cut=check_terminals,
             reference_list=reference_list,
             include_pingroups=include_pingroups,
+            inlcude_voids_in_extents=inlcude_voids_in_extents,
         )
-
+        _poly1 = _poly.CreateFromArcs(_poly.GetArcData(), True)
+        if inlcude_voids_in_extents:
+            for hole in list(_poly.Holes):
+                if hole.Area() >= 0.05 * _poly1.Area():
+                    _poly1.AddHole(hole)
+        _poly = _poly1
         # Create new cutout cell/design
         included_nets_list = signal_list + reference_list
         included_nets = convert_py_list_to_net_list(
@@ -2171,6 +2215,7 @@ class Edb(Database):
         include_partial=False,
         simple_pad_check=True,
         keep_lines_as_path=False,
+        inlcude_voids_in_extents=False,
     ):
         if is_ironpython:  # pragma: no cover
             self.logger.error("Method working only in Cpython")
@@ -2268,11 +2313,18 @@ class Edb(Database):
                 reference_list=reference_list,
                 include_pingroups=include_pingroups,
                 pins_to_preserve=pins_to_preserve,
+                inlcude_voids_in_extents=inlcude_voids_in_extents,
             )
             if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1]:
                 if extent_defeature > 0:
                     _poly = _poly.Defeature(extent_defeature)
-                _poly = _poly.CreateFromArcs(_poly.GetArcData(), True)
+
+                _poly1 = _poly.CreateFromArcs(_poly.GetArcData(), True)
+                if inlcude_voids_in_extents:
+                    for hole in list(_poly.Holes):
+                        if hole.Area() >= 0.05 * _poly1.Area():
+                            _poly1.AddHole(hole)
+                _poly = _poly1
         if not _poly or _poly.IsNull():
             self._logger.error("Failed to create Extent.")
             return []
@@ -2311,29 +2363,39 @@ class Edb(Database):
             pdata = prim_1.polygon_data.edb_api
             int_data = _poly.GetIntersectionType(pdata)
             if int_data == 2:
-                return
+                if not inlcude_voids_in_extents:
+                    return
+                skip = False
+                for hole in list(_poly.Holes):
+                    if hole.GetIntersectionType(pdata) == 0:
+                        prims_to_delete.append(prim_1)
+                        return
+                    elif hole.GetIntersectionType(pdata) == 1:
+                        skip = True
+                if skip:
+                    return
             elif int_data == 0:
                 prims_to_delete.append(prim_1)
-            else:
-                list_poly = intersect(_poly, pdata)
-                if list_poly:
-                    net = prim_1.net_name
-                    voids = prim_1.voids
-                    for p in list_poly:
-                        if p.IsNull():
-                            continue
-                        # points = list(p.Points)
-                        list_void = []
-                        if voids:
-                            voids_data = [void.polygon_data.edb_api for void in voids]
-                            list_prims = subtract(p, voids_data)
-                            for prim in list_prims:
-                                if not prim.IsNull():
-                                    poly_to_create.append([prim, prim_1.layer.name, net, list_void])
-                        else:
-                            poly_to_create.append([p, prim_1.layer.name, net, list_void])
+                return
+            list_poly = intersect(_poly, pdata)
+            if list_poly:
+                net = prim_1.net_name
+                voids = prim_1.voids
+                for p in list_poly:
+                    if p.IsNull():
+                        continue
+                    # points = list(p.Points)
+                    list_void = []
+                    if voids:
+                        voids_data = [void.polygon_data.edb_api for void in voids]
+                        list_prims = subtract(p, voids_data)
+                        for prim in list_prims:
+                            if not prim.IsNull():
+                                poly_to_create.append([prim, prim_1.layer.name, net, list_void])
+                    else:
+                        poly_to_create.append([p, prim_1.layer.name, net, list_void])
 
-                prims_to_delete.append(prim_1)
+            prims_to_delete.append(prim_1)
 
         def pins_clean(pinst):
             if not pinst.in_polygon(_poly, include_partial=include_partial, simple_check=simple_pad_check):
@@ -2349,7 +2411,9 @@ class Edb(Database):
         for pin in pins_to_delete:
             pin.delete()
 
-        self.logger.info_timer("Padstack Instances removal completed")
+        self.logger.info_timer(
+            "Padstack Instances removal completed. {} instances removed.".format(len(pins_to_delete))
+        )
         self.logger.reset_timer()
 
         # with ThreadPoolExecutor(number_of_threads) as pool:
@@ -2368,7 +2432,7 @@ class Edb(Database):
         for prim in prims_to_delete:
             prim.delete()
 
-        self.logger.info_timer("Primitives cleanup completed")
+        self.logger.info_timer("Primitives cleanup completed. {} primitives deleted.".format(len(prims_to_delete)))
         self.logger.reset_timer()
 
         i = 0
@@ -2461,7 +2525,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb(r'C:\\test.aedb', edbversion="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
@@ -2894,7 +2958,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2023.2")
 
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
@@ -2937,7 +3001,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
         >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
@@ -2987,7 +3051,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
 
         >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
 
@@ -3146,7 +3210,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> boolean_1, ant_length = edb_app.add_project_variable("my_local_variable", "1cm")
         >>> print(edb_app["$my_local_variable"])    #using getitem
@@ -3182,7 +3246,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> boolean_1, ant_length = edb_app.add_design_variable("my_local_variable", "1cm")
         >>> print(edb_app["my_local_variable"])    #using getitem
@@ -3220,7 +3284,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> boolean, ant_length = edb_app.add_design_variable("ant_length", "1cm")
         >>> boolean, ant_length = edb_app.change_design_variable_value("ant_length", "1m")
@@ -3265,7 +3329,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> from pyedb.dotnet.edb_core.edb_data.simulation_configuration import SimulationConfiguration
         >>> config_file = path_configuration_file
         >>> source_file = path_to_edb_folder
@@ -3465,7 +3529,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>>edb = Edb()
         >>> edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
         >>> edb.hfss.create_edge_port_horizontal(
@@ -3620,7 +3684,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb()
         >>> setup1 = edbapp.create_hfss_setup("setup1")
         >>> setup1.hfss_port_settings.max_delta_z0 = 0.5
@@ -3695,7 +3759,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb()
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
         >>> setup1.add_frequency_sweep(frequency_sweep=[
@@ -3727,7 +3791,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb()
         >>> setup1 = edbapp.create_siwave_dc_setup("setup1")
         >>> setup1.mesh_bondwires = True
@@ -4456,3 +4520,8 @@ class Edb(Database):
         from pyedb.dotnet.edb_core.definition.definitions import Definitions
 
         return Definitions(self)
+
+    @property
+    def workflow(self):
+        """Workflow class."""
+        return Workflow(self)

@@ -51,12 +51,13 @@ class CfgRlcModel(CfgBase):
 
 
 class CfgComponent(CfgBase):
-    protected_attributes = ["reference_designator"]
+    protected_attributes = ["reference_designator", "definition", "location", "angle", "placement_layer"]
 
     def __init__(self, **kwargs):
         self.enabled = kwargs.get("enabled", None)
 
         self.reference_designator = kwargs.get("reference_designator", None)
+        self.definition = kwargs.get("definition", None)
         self.type = kwargs.get("part_type", None)
         self.value = kwargs.get("value", None)
         self.port_properties = CfgPortProperties(**kwargs["port_properties"]) if "port_properties" in kwargs else None
@@ -66,6 +67,29 @@ class CfgComponent(CfgBase):
         rlc_models = kwargs.get("rlc_model", [])
 
         self.rlc_model = [CfgRlcModel(**rlc_m) for rlc_m in rlc_models]
+
+        self.x_location, self.y_location = kwargs.get("location", [None, None])
+        self.angle = kwargs.get("angle", None)
+        self.placement_layer = kwargs.get("placement_layer", None)
+
+    def export_properties(self):
+        """Export component properties.
+
+        Returns
+        -------
+        Dict
+        """
+        data_comp = {}
+        data_comp["enabled"] = self.enabled
+        data_comp["reference_designator"] = self.reference_designator
+        data_comp["definition"] = self.definition
+        data_comp["type"] = self.type
+        data_comp["value"] = self.value
+        data_comp["x_location"] = self.x_location
+        data_comp["y_location"] = self.y_location
+        # data_comp["angle"] = self.angle
+        data_comp["placement_layer"] = self.placement_layer
+        return data_comp
 
 
 class CfgComponents:
@@ -127,3 +151,25 @@ class CfgComponents:
                         setattr(c_db, attr, value)
                     else:
                         raise AttributeError(f"'{attr}' is not valid component attribute.")
+
+    def _load_data_from_db(self):
+        self.components = []
+        comps_in_db = self._pedb.components
+        for _, comp in comps_in_db.components.items():
+            cfg_comp = CfgComponent(
+                enabled=comp.enabled,
+                reference_designator=comp.name,
+                part_type=comp.type,
+                value=comp.value,
+                definition=comp.component_def,
+                location=comp.location,
+                placement_layer=comp.placement_layer,
+            )
+            self.components.append(cfg_comp)
+
+    def get_data_from_db(self):
+        self._load_data_from_db()
+        data = []
+        for comp in self.components:
+            data.append(comp.export_properties())
+        return data

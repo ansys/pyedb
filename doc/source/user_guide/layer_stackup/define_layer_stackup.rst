@@ -10,7 +10,7 @@ This page shows how to add a layer in the current layer stackup.
 
 .. code:: python
 
-    from pyedb.dotnet.edb import Edb
+    from pyedb import Edb
 
     edb = Edb(edbversion=desktop_version)
     edb.stackup.add_layer(layer_name="gnd", fillMaterial="AIR", thickness="10um")

@@ -37,7 +37,7 @@ import os
 
 import numpy as np
 
-from pyedb.dotnet.edb import Edb
+from pyedb import Edb
 from pyedb.generic.general_methods import (
     generate_unique_folder_name,
     generate_unique_name,

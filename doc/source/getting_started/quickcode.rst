@@ -16,7 +16,7 @@ This code shows how to use PyEDB to load an existing AEDB file into memory:
 
 .. code:: python
 
-    from pyedb.dotnet.edb import Edb
+    from pyedb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
@@ -38,7 +38,7 @@ Explicit PyEDB declaration and error management
 
     # Start EDB
 
-    from pyedb.dotnet.edb import Edb
+    from pyedb import Edb
 
     edb_file = pyedb.layout_examples.ANSYS - HSD_V1.aedb
     edb = Edb(edbversion="2024.1", edbpath=edb_file)
@@ -49,7 +49,7 @@ Variables
 
 .. code:: python
 
-    from pyedb.dotnet.edb import Edb
+    from pyedb import Edb
 
     edb_file = pyedb.layout_examples.ANSYS - HSD_V1.aedb
     edb = Edb(edbversion="2024.1", edbpath=edb_file)
