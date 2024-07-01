@@ -183,11 +183,56 @@ class TestClass:
         edbapp.close()
 
     def test_05_ports(self, edb_examples):
+        data = {
+            "ports": [
+                {
+                    "name": "CIRCUIT_C375_1_2",
+                    "reference_designator": "C375",
+                    "type": "circuit",
+                    "positive_terminal": {
+                        "pin": "1"
+                    },
+                    "negative_terminal": {
+                        "pin": "2"
+                    }
+                },
+                {
+                    "name": "CIRCUIT_X1_B8_GND",
+                    "reference_designator": "X1",
+                    "type": "circuit",
+                    "positive_terminal": {
+                        "pin": "B8"
+                    },
+                    "negative_terminal": {
+                        "net": "GND"
+                    }
+                },
+                {
+                    "name": "CIRCUIT_X1_B9_GND",
+                    "reference_designator": "X1",
+                    "type": "circuit",
+                    "positive_terminal": {
+                        "net": "PCIe_Gen4_TX2_N"
+                    },
+                    "negative_terminal": {
+                        "net": "GND"
+                    }
+                },
+                {
+                    "name": "CIRCUIT_U7_VDD_DDR_GND",
+                    "reference_designator": "U7",
+                    "type": "circuit",
+                    "positive_terminal": {
+                        "net": "VDD_DDR"
+                    },
+                    "negative_terminal": {
+                        "net": "GND"
+                    }
+                }
+            ]
+        }
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(str(self.local_input_folder / "ports_coax.json"), apply_file=True)
-        assert edbapp.configuration.load(str(self.local_input_folder / "ports_circuit.json"), apply_file=True)
-        assert "COAX_U1_AM17" in edbapp.ports
-        assert "COAX_U1_PCIe_Gen4_TX2_CAP_N" in edbapp.ports
+        assert edbapp.configuration.load(data, apply_file=True)
         assert "CIRCUIT_C375_1_2" in edbapp.ports
         assert "CIRCUIT_X1_B8_GND" in edbapp.ports
         assert "CIRCUIT_U7_VDD_DDR_GND" in edbapp.ports

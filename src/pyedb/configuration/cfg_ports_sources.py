@@ -26,14 +26,15 @@ from pyedb.configuration.cfg_common import CfgBase
 class CfgTerminalInfo(CfgBase):
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
-        self.pin = kwargs.get('pin')
+        self.type = list(kwargs.keys())[0]
+        """self.pin = kwargs.get('pin')
         self.net = kwargs.get('net')
         self.pin_group = kwargs.get('pin_group')
         self.nearest_pin = kwargs.get('nearest_pin')
-        self.coordinates = kwargs.get('coordinates')
-        self.value = getattr(self, self.type)
+        self.coordinates = kwargs.get('coordinates')"""
+        self.value = kwargs[self.type]
 
-    @property
+    """@property
     def type(self):
         if self.pin:
             return "pin"
@@ -44,7 +45,8 @@ class CfgTerminalInfo(CfgBase):
         if self.coordinates:
             return "coordinates"
         if self.pin_group:
-            return "pin_group"
+            return "pin_group"""
+
 
     def export_properties(self):
         return {
@@ -56,10 +58,10 @@ class CfgCoordianteTerminalInfo(CfgTerminalInfo):
     def __init__(self, pedb, **kwargs):
         super().__init__(pedb, **kwargs)
 
-        self.layer = kwargs["layer"]
-        self.point_x = kwargs["point"][0]
-        self.point_y = kwargs["point"][1]
-        self.net = kwargs["net"]
+        self.layer = self.value["layer"]
+        self.point_x = self.value["point"][0]
+        self.point_y = self.value["point"][1]
+        self.net = self.value["net"]
 
     def export_properties(self):
         return {
@@ -73,8 +75,8 @@ class CfgCoordianteTerminalInfo(CfgTerminalInfo):
 class CfgNearestPinTerminalInfo(CfgTerminalInfo):
     def __init__(self, pedb, **kwargs):
         super().__init__(pedb, **kwargs)
-        self.reference_net = kwargs["reference_net"]
-        self.search_radius = kwargs["search_radius"]
+        self.reference_net = self.value["reference_net"]
+        self.search_radius = self.value["search_radius"]
 
     def export_properties(self):
         return
@@ -84,6 +86,20 @@ class CfgSources:
     def __init__(self, pedb, sources_data):
         self._pedb = pedb
         self.sources = [CfgSource(self._pedb, **src) for src in sources_data]
+
+    def apply(self):
+        for src in self.sources:
+            src.create()
+
+
+class CfgPorts:
+    def __init__(self, pedb, ports_data):
+        self._pedb = pedb
+        self.ports = [CfgPort(self._pedb, **p) for p in ports_data]
+
+    def apply(self):
+        for p in self.ports:
+            p.create()
 
 
 class CfgCircuitElement(CfgBase):
@@ -96,7 +112,7 @@ class CfgCircuitElement(CfgBase):
         self.distributed = kwargs.get("distributed", False)
 
         pos = kwargs["positive_terminal"]  # {"pin" : "A1"}
-        if pos.keys()[0] == "coordinates":
+        if list(pos.keys())[0] == "coordinates":
             self.positive_terminal_info = CfgCoordianteTerminalInfo(self._pedb, **pos)
         else:
             self.positive_terminal_info = CfgTerminalInfo(self._pedb, **pos)
@@ -104,9 +120,9 @@ class CfgCircuitElement(CfgBase):
         neg = kwargs.get("negative_terminal", {})
         if len(neg) == 0:
             self.negative_terminal_info = None
-        elif neg.keys()[0] == "coordinates":
+        elif list(neg.keys())[0] == "coordinates":
             self.negative_terminal_info = CfgCoordianteTerminalInfo(self._pedb, **neg)
-        elif neg.keys()[0] == "nearest_pin":
+        elif list(neg.keys())[0] == "nearest_pin":
             self.negative_terminal_info = CfgNearestPinTerminalInfo(self._pedb, **neg)
         else:
             self.negative_terminal_info = CfgTerminalInfo(self._pedb, **neg)
@@ -123,7 +139,7 @@ class CfgCircuitElement(CfgBase):
             pos_objs.update(pins)
         elif pos_type == "coordinates":
             layer = self.positive_terminal_info.layer
-            point = self.positive_terminal_info.point
+            point = [self.positive_terminal_info.point_x, self.positive_terminal_info.point_y]
             net_name = self.positive_terminal_info.net
             pos_coor_terminal[self.name] = self._pedb.get_point_terminal(self.name, net_name, point, layer)
         elif pos_type == "pin_group":
@@ -149,7 +165,7 @@ class CfgCircuitElement(CfgBase):
 
             if neg_type == "coordinates":
                 layer = self.negative_terminal_info.layer
-                point = self.negative_terminal_info.point
+                point = [self.negative_terminal_info.point_x, self.positive_terminal_info.point_y]
                 net_name = self.negative_terminal_info.net
                 self.neg_terminal = self._pedb.get_point_terminal(self.name + "_ref", net_name, point, layer)
             elif neg_type == "nearest_pin":

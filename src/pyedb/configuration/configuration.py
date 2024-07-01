@@ -124,12 +124,10 @@ class Configuration:
             pin_group.apply()
 
         # Configure ports
-        for port in self.cfg_data.ports:
-            port.create()
+        self.cfg_data.ports.apply()
 
         # Configure sources
-        for source in self.cfg_data.sources:
-            source.create()
+        self.cfg_data.sources.apply()
 
         # Configure setup
         self.cfg_data.setups.apply()
