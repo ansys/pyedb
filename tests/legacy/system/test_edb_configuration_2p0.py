@@ -806,4 +806,4 @@ class TestClass:
             assert data["nets"]
             assert len(data["nets"]["signal_nets"]) == 342
             assert len(data["nets"]["power_ground_nets"]) == 6
-        edbapp.close()()
+        edbapp.close()
