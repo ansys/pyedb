@@ -269,6 +269,10 @@ class Configuration:
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):
             data["setups"] = self.cfg_data.setups.get_data_from_db()
+        if kwargs.get("sources", False):
+            data["sources"] = self.cfg_data.sources.get_data_from_db()
+        if kwargs.get("ports", False):
+            data["ports"] = self.cfg_data.ports.get_data_from_db()
 
         return data
 

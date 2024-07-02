@@ -235,7 +235,9 @@ class Terminal(Connectable):
     def ref_terminal(self):
         """Get reference terminal."""
 
-        terminal = Terminal(self._pedb, self._edb_object.GetReferenceTerminal())
+        edb_terminal = self._edb_object.GetReferenceTerminal()
+        terminal = self._pedb.terminals[edb_terminal.GetName()]
+        #terminal = Terminal(self._pedb, self._edb_object.GetReferenceTerminal())
         if not terminal.is_null:
             return terminal
 
@@ -444,3 +446,21 @@ class Terminal(Connectable):
                 pin_obj = pin
         if pin_obj:
             return EDBPadstackInstance(pin_obj, self._pedb)
+
+    @property
+    def magnitude(self):
+        """Get the magnitude of the source."""
+        return self._edb_object.GetSourceAmplitude().ToDouble()
+
+    @magnitude.setter
+    def magnitude(self, value):
+        self._edb_object.SetSourceAmplitude(self._edb.utility.value(value))
+
+    @property
+    def phase(self):
+        """Get the phase of the source."""
+        return self._edb_object.GetSourcePhase().ToDouble()
+
+    @phase.setter
+    def phase(self, value):
+        self._edb_object.SetSourcePhase(self._edb.utility.value(value))

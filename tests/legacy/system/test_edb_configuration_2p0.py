@@ -236,6 +236,7 @@ class TestClass:
         assert "CIRCUIT_C375_1_2" in edbapp.ports
         assert "CIRCUIT_X1_B8_GND" in edbapp.ports
         assert "CIRCUIT_U7_VDD_DDR_GND" in edbapp.ports
+        data_from_db = edbapp.configuration.get_data_from_db(ports=True)
         edbapp.close()
 
     def test_05b_ports_coax(self, edb_examples):
@@ -758,6 +759,7 @@ class TestClass:
         data = {"sources": sources_i}
         assert edbapp.configuration.load(data, apply_file=True, append=False)
         assert not edbapp.sources["ISOURCE_U1_1V0_M16"].magnitude == 1
+        data_from_db = edbapp.configuration.get_data_from_db(sources=True)
         edbapp.close()
 
     def test_15c_sources_nearest_ref(self, edb_examples):
