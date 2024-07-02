@@ -68,12 +68,12 @@ class HFSSSimulationSettings(SimulationSettings):
 
 
 class HFSSPISimulationSettings(SimulationSettings):
-    def __init__(self, edb_setup_info, pedb, edb_object):
-        super().__init__(pedb, edb_setup_info, edb_object)
+    def __init__(self, pedb, edb_object):
+        self._edb_setup_info = edb_object.GetSimSetupInfo()
+        super().__init__(pedb, edb_object.GetSimSetupInfo(), edb_object)
         self._pedb = pedb
         self.logger = self._pedb.logger
-        self._edb_setup_info = edb_setup_info
-        self._simulation_settings = edb_setup_info.SimulationSettings
+        self._simulation_settings = self._edb_setup_info.SimulationSettings
 
     @property
     def auto_select_nets_for_simulation(self):
