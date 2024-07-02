@@ -155,7 +155,7 @@ class SimulationSetup(object):
             setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
             setup_type_mapping["kHFSSPI"] = utility.HFSSPISimulationSetup
         setup_utility = setup_type_mapping[self.setup_type]
-        return setup_utility(edb_setup_info)
+        return setup_utility(edb_setup_info._edb_object)
 
     @property
     def mesh_operations(self):
@@ -192,10 +192,9 @@ class SimulationSetup(object):
     @name.setter
     def name(self, value):
         self._pedb.layout.cell.DeleteSimulationSetup(self.name)
-        edb_setup_info = self.sim_setup_info
-        edb_setup_info.Name = value
+        self.sim_setup_info.name = value
         self._name = value
-        self._edb_object = self._set_edb_setup_info(edb_setup_info)
+        self._edb_object = self._set_edb_setup_info(self.sim_setup_info)
         self._update_setup()
 
     @property
@@ -213,7 +212,7 @@ class SimulationSetup(object):
     @property
     def setup_type(self):
         """Type of the setup."""
-        return self.sim_setup_info.SimSetupType.ToString()
+        return self.sim_setup_info.sim_setup_type.ToString()
 
     @property
     def frequency_sweeps(self):
@@ -309,12 +308,11 @@ class SimulationSetup(object):
         if name in self._sweep_list:
             self._sweep_list.pop(name)
 
-        fsweep = []
         if self.sweeps:
             fsweep = [val for key, val in self.sweeps.items() if not key == name]
-            self.sim_setup_info.SweepDataList.Clear()
+            self.sim_setup_info.sweep_data_list.clear()
             for i in fsweep:
-                self.sim_setup_info.SweepDataList.Add(i._edb_object)
+                self.sim_setup_info.sweep_data_list.a(i._edb_object)
             self._update_setup()
             return True if name in self.sweeps else False
 

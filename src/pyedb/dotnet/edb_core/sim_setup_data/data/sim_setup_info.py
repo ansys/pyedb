@@ -59,6 +59,14 @@ class SimSetupInfo:
             self._edb_object = edb_object
 
     @property
+    def name(self):
+        return self._edb_object.Name
+
+    @name.setter
+    def name(self, value):
+        self._edb_object.Name = value
+
+    @property
     def position(self):
         return self._edb_object.Position
 

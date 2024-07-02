@@ -93,11 +93,11 @@ class HfssSimulationSetup(SimulationSetup):
     @property
     def is_auto_setup(self):
         """Flag indicating if automatic setup is enabled."""
-        return self.get_sim_setup_info.SimulationSettings.IsAutoSetup
+        return self.sim_setup_info.SimulationSettings.IsAutoSetup
 
     @is_auto_setup.setter
     def is_auto_setup(self, value):
-        self.get_sim_setup_info.SimulationSettings.IsAutoSetup = value
+        self.sim_setup_info.SimulationSettings.IsAutoSetup = value
         self._update_setup()
 
     @property
