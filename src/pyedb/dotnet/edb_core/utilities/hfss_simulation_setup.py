@@ -40,7 +40,6 @@ from pyedb.dotnet.edb_core.sim_setup_data.data.sim_setup_info import SimSetupInf
 from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_settings import (
     HFSSPISimulationSettings,
 )
-from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 from pyedb.dotnet.edb_core.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import generate_unique_name
 
@@ -77,18 +76,18 @@ class HfssSimulationSetup(SimulationSetup):
         -------
         str
         """
-        return self.get_sim_setup_info.SimulationSettings.TSolveSliderType.ToString()
+        return self.sim_setup_info.SimulationSettings.TSolveSliderType.ToString()
 
     @solver_slider_type.setter
     def solver_slider_type(self, value):
         """Set solver slider type."""
         solver_types = {
-            "kFast": self.get_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaWirebond,
-            "kMedium": self.get_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaRibbon,
-            "kAccurate": self.get_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaMesh,
-            "kNumSliderTypes": self.get_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaField,
+            "kFast": self.sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaWirebond,
+            "kMedium": self.sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaRibbon,
+            "kAccurate": self.sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaMesh,
+            "kNumSliderTypes": self.sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaField,
         }
-        self.get_sim_setup_info.SimulationSettings.TSolveSliderType = solver_types[value]
+        self.sim_setup_info.SimulationSettings.TSolveSliderType = solver_types[value]
         self._update_setup()
 
     @property
@@ -397,8 +396,8 @@ class HFSSPISimulationSetup(SimulationSetup):
         super().__init__(pedb, edb_object)
         self._edb_object = edb_object
         self._pedb = pedb
+        self._simulation_setup_builder = self._pedb._edb.Utility.HFSSPISimulationSetup
         self._setup_type = "kHFSSPI"
-        self._edb_setup_info = None
         self.logger = self._pedb.logger
 
     def create(self, name=None):
@@ -413,29 +412,7 @@ class HFSSPISimulationSetup(SimulationSetup):
 
     @property
     def settings(self):
-        return HFSSPISimulationSettings(self._edb_setup_info, self._pedb, self._edb_object)
-
-    @property
-    def enabled(self):
-        return self.settings.enabled
-
-    @enabled.setter
-    def enabled(self, value):
-        if isinstance(value, bool):
-            self.settings.enabled = value
-        else:
-            self.logger.error(f"Property enabled expects a boolean value while the provided value is {value}.")
-
-    @property
-    def position(self):
-        return self._edb_setup_info.Position
-
-    @position.setter
-    def position(self, value):
-        if isinstance(value, int):
-            self._edb_setup_info.Position = value
-        else:
-            self.logger.error(f"Property position expects an integer value while the provided value is {value}.")
+        return HFSSPISimulationSettings(self._pedb, self._edb_object)
 
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
@@ -461,9 +438,9 @@ class HFSSPISimulationSetup(SimulationSetup):
         ...                           ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
         ...                           ])
         """
-        if name in self.frequency_sweeps:
+        if name in self.sweeps:
             self.logger.error("Frequency sweep with same name already defined.")
             return False
         if not name:
             name = generate_unique_name("sweep")
-        return SweepData(self, frequency_sweep, name)
+        return self.add_sweep(name, frequency_sweep)
