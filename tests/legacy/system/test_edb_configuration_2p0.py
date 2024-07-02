@@ -729,7 +729,7 @@ class TestClass:
                     assert value == target[p]
         edbapp.close()
 
-    def test_15b_sources(self, edb_examples):
+    def test_15b_sources_net_net(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         sources_v = [
             {
@@ -743,23 +743,41 @@ class TestClass:
             },
         ]
         data = {"sources": sources_v}
-        assert edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.configuration.load(data)
         assert edbapp.sources["VSOURCE_U2_1V0_GND"].magnitude == 1
+
+        data_from_json = edbapp.configuration.cfg_data.sources.export_properties()
+        edbapp.configuration.cfg_data.sources.get_data_from_db()
+        data_from_db = edbapp.configuration.cfg_data.sources.export_properties()
+        for s1 in data_from_json:
+            s2 = data_from_db.pop(0)
+            for k in ["name", "type", "magnitude"]:
+                assert s1[k] == s2[k]
+        edbapp.close()
+
+    def test_15c_sources_net_net_distributed(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         sources_i = [
             {
                 "name": "ISOURCE",
                 "reference_designator": "U1",
                 "type": "current",
-                "magnitude": 1,
+                "magnitude": 117,
                 "distributed": True,
                 "positive_terminal": {"net": "1V0"},
                 "negative_terminal": {"net": "GND"},
             },
         ]
         data = {"sources": sources_i}
-        assert edbapp.configuration.load(data, apply_file=True, append=False)
-        assert not edbapp.sources["ISOURCE_U1_1V0_M16"].magnitude == 1
-        data_from_db = edbapp.configuration.get_data_from_db(sources=True)
+        assert edbapp.configuration.load(data, apply_file=True)
+
+        edbapp.configuration.cfg_data.sources.get_data_from_db()
+        data_from_db = edbapp.configuration.cfg_data.sources.export_properties()
+        assert len(data_from_db) == 117
+        for s1 in data_from_db:
+            assert s1["magnitude"] == 1
+            assert s1["reference_designator"] == "U1"
+            assert s1["type"] == "current"
         edbapp.close()
 
     def test_15c_sources_nearest_ref(self, edb_examples):

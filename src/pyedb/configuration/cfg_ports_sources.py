@@ -81,7 +81,7 @@ class CfgSources:
         self.sources = []
 
         for _, src in self._pedb.sources.items():
-            src_type = "voltage" if src.boundary_type.lower() else "current"
+            src_type = "voltage" if "voltage" in src.boundary_type.lower() else "current"
             name = src.name
             magnitude = src.magnitude
 
@@ -102,7 +102,7 @@ class CfgSources:
             elif neg_term.terminal_type == "PadstackInstanceTerminal":
                 neg_term_info = {"pin": neg_term.reference_object.pin_number}
 
-            CfgSource(
+            cfg_src = CfgSource(
                 self._pedb,
                 name=name,
                 type=src_type,
@@ -111,7 +111,9 @@ class CfgSources:
                 positive_terminal=pos_term_info,
                 negative_terminal=neg_term_info
             )
+            self.sources.append(cfg_src)
 
+    def export_properties(self):
         sources = []
         for src in self.sources:
             sources.append(src.export_properties())
