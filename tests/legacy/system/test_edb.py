@@ -87,7 +87,7 @@ class TestClass:
         """Create a voltage source."""
         assert len(self.edbapp.sources) == 0
         assert "Vsource_" in self.edbapp.siwave.create_voltage_source_on_net("U1", "USB3_D_P", "U1", "GND", 3.3, 0)
-        assert len(self.edbapp.sources) == 2
+        assert len(self.edbapp.sources) == 1
         assert list(self.edbapp.sources.values())[0].magnitude == 3.3
 
         pins = self.edbapp.components.get_pin_from_component("U1")
