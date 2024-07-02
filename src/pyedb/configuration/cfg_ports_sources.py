@@ -94,9 +94,7 @@ class CfgSources:
                 refdes = src.component.refdes if src.component else ""
                 pos_term_info = {"pin": src.reference_object.pin_number}
 
-            if src.ref_terminal.GetName():
-                pass
-            neg_term = self._pedb.terminals[src.ref_terminal.GetName()]
+            neg_term = self._pedb.terminals[src.ref_terminal.name]
             if neg_term.terminal_type == "PinGroupTerminal":
                 pg = self._pedb.siwave.pin_groups[neg_term._edb_object.GetPinGroup().GetName()]
                 # todo create pin group

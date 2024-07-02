@@ -237,7 +237,6 @@ class Terminal(Connectable):
 
         edb_terminal = self._edb_object.GetReferenceTerminal()
         terminal = self._pedb.terminals[edb_terminal.GetName()]
-        #terminal = Terminal(self._pedb, self._edb_object.GetReferenceTerminal())
         if not terminal.is_null:
             return terminal
 
