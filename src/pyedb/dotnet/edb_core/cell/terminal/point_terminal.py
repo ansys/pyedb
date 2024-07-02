@@ -60,14 +60,3 @@ class PointTerminal(Terminal):
         )
         terminal = PointTerminal(self._pedb, terminal)
         return terminal if not terminal.is_null else False
-
-    @property
-    def ref_terminal(self):
-        """Get reference terminal."""
-
-        terminal = Terminal(self._pedb, self._edb_object.GetReferenceTerminal())
-        return terminal if not terminal.is_null else False
-
-    @ref_terminal.setter
-    def ref_terminal(self, value):
-        self._edb_object.SetReferenceTerminal(value._edb_object)

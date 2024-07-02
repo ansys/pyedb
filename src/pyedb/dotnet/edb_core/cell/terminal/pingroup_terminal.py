@@ -57,3 +57,8 @@ class PinGroupTerminal(Terminal):
         )
         term = PinGroupTerminal(self._pedb, term)
         return term if not term.is_null else False
+
+    def pin_group(self):
+        """Gets the pin group the terminal refers to."""
+        name = self._edb_object.GetPinGroup().GetName()
+        return self._pedb.siwave.pin_groups[name]

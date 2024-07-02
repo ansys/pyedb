@@ -510,6 +510,7 @@ class Edb(Database):
     def sources(self):
         """Get all layout sources."""
         terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [3, 4, 7]]
+        terms = [term for term in terms if not term.IsReferenceTerminal()]
         return {ter.GetName(): ExcitationSources(self, ter) for ter in terms}
 
     @property
