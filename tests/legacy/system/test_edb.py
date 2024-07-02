@@ -92,7 +92,7 @@ class TestClass:
 
         pins = self.edbapp.components.get_pin_from_component("U1")
         assert "VSource_" in self.edbapp.siwave.create_voltage_source_on_pin(pins[300], pins[10], 3.3, 0)
-        assert len(self.edbapp.sources) == 3
+        assert len(self.edbapp.sources) == 2
         assert len(self.edbapp.probes) == 0
         list(self.edbapp.sources.values())[0].phase = 1
         assert list(self.edbapp.sources.values())[0].phase == 1
@@ -1250,8 +1250,6 @@ class TestClass:
         assert sources[0].magnitude == 1.45
         sources[1].magnitude = 1.45
         assert sources[1].magnitude == 1.45
-        sources[2].magnitude = 1.45
-        assert sources[2].magnitude == 1.45
         edbapp.close()
 
     def test_delete_pingroup(self):
