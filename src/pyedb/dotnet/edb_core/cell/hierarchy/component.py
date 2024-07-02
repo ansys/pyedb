@@ -24,6 +24,7 @@ import logging
 import re
 import warnings
 
+from pyedb.dotnet.edb_core.cell.hierarchy.hierarchy_obj import Group
 from pyedb.dotnet.edb_core.cell.hierarchy.model import PinPairModel, SPICEModel
 from pyedb.dotnet.edb_core.cell.hierarchy.netlist_model import NetlistModel
 from pyedb.dotnet.edb_core.cell.hierarchy.pin_pair_model import PinPair
@@ -44,7 +45,7 @@ if not is_ironpython:
 from pyedb.generic.general_methods import get_filename_without_extension
 
 
-class EDBComponent(object):
+class EDBComponent(Group):
     """Manages EDB functionalities for components.
 
     Parameters
@@ -56,9 +57,9 @@ class EDBComponent(object):
 
     """
 
-    def __init__(self, pedb, cmp):
-        self._pedb = pedb
-        self.edbcomponent = cmp
+    def __init__(self, pedb, edb_object):
+        super().__init__(pedb, edb_object)
+        self.edbcomponent = edb_object
         self._layout_instance = None
         self._comp_instance = None
 
@@ -186,7 +187,10 @@ class EDBComponent(object):
     @property
     def enabled(self):
         """Get or Set the component to active mode."""
-        return self.component_property.IsEnabled()
+        if self.type.lower() in ["resistor", "capacitor", "inductor"]:
+            return self.component_property.IsEnabled()
+        else:
+            return
 
     @enabled.setter
     def enabled(self, value):
@@ -319,11 +323,11 @@ class EDBComponent(object):
         str
             Reference Designator Name.
         """
-        return self.edbcomponent.GetName()
+        return self.name
 
     @refdes.setter
     def refdes(self, name):
-        self.edbcomponent.SetName(name)
+        self.name = name
 
     @property
     def is_null(self):
@@ -395,12 +399,7 @@ class EDBComponent(object):
         """
         if self.model_type == "RLC":
             if not self._pin_pairs:
-                if self.type == "Inductor":
-                    return 1e-9
-                elif self.type == "Resistor":
-                    return 1e6
-                else:
-                    return 1
+                return
             else:
                 pin_pair = self._pin_pairs[0]
             if len([i for i in pin_pair.rlc_enable if i]) == 1:
@@ -730,10 +729,6 @@ class EDBComponent(object):
     def part_name(self, name):  # pragma: no cover
         """Set component part name."""
         self.edbcomponent.GetComponentDef().SetName(name)
-
-    @property
-    def _edb(self):
-        return self._pedb.edb_api
 
     @property
     def placement_layer(self):

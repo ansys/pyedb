@@ -29,18 +29,17 @@ dependencies = [
     "pywin32 >= 303;platform_system=='Windows'",
     "ansys-pythonnet >= 3.1.0rc3",
     "dotnetcore2 ==3.1.23;platform_system=='Linux'",
-    "pydantic>=2.6.4,<2.8",
-    "toml == 0.10.2",
-    "Rtree >= 1.2.0",
     "numpy>=1.20.0,<2",
+    "pandas>=1.1.0,<2.3",
+    "pydantic>=2.6.4,<2.8",
+    "Rtree >= 1.2.0",
+    "toml == 0.10.2",
     ]
 
 [project.optional-dependencies]
 tests = [
     "matplotlib>=3.5.0,<3.10",
-    "numpy>=1.20.0,<2",
     "mock>=5.1.0,<5.2",
-    "pandas>=1.1.0,<2.3",
     "pytest>=7.4.0,<8.3",
     "pytest-cov>=4.0.0,<5.1",
     "pytest-xdist>=3.5.0,<3.7",
@@ -48,7 +47,7 @@ tests = [
 doc = [
     "ansys-sphinx-theme>=0.10.0,<0.17",
     "imageio>=2.30.0,<2.35",
-    "ipython>=8.13.0,<8.26",
+    "ipython>=8.13.0,<8.27",
     "jupyterlab>=4.0.0,<4.3",
     "matplotlib>=3.5.0,<3.10",
     "nbsphinx>=0.9.0,<0.10",
@@ -65,7 +64,6 @@ doc = [
 ]
 full = [
     "matplotlib>=3.5.0,<3.10",
-    "pandas>=1.1.0,<2.3",
 ]
 
 

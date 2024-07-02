@@ -41,3 +41,17 @@ class CfgNets:
         for power_net in self.power_nets:
             if power_net in self._pedb.nets:
                 self._pedb.nets.nets[power_net].is_power_ground = True
+
+    def _load_data_from_db(self):
+        self.signal_nets = []
+        self.power_nets = []
+        for net in self._pedb.nets.signal:
+            self.signal_nets.append(net)
+        for net in self._pedb.nets.power:
+            self.power_nets.append(net)
+
+    def get_data_from_db(self):
+        """Get net information."""
+        self._load_data_from_db()
+        data = {"signal_nets": self.signal_nets, "power_ground_nets": self.power_nets}
+        return data

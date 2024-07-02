@@ -275,10 +275,14 @@ class Configuration:
         if kwargs.get("ports", False):
             self.cfg_data.ports.get_data_from_db()
             data["ports"] = self.cfg_data.ports.export_properties()
+        if kwargs.get("components", False):
+            data["components"] = self.cfg_data.components.get_data_from_db()
+        if kwargs.get("nets", False):
+            data["nets"] = self.cfg_data.nets.get_data_from_db()
 
         return data
 
-    def export(self, file_path, stackup=True, package_definitions=True, setups=True, sources=True, ports=True):
+    def export(self, file_path, stackup=True, package_definitions=True, setups=True, sources=True, ports=True, nets=True):
         """Export the configuration data from layout to a file.
 
         Parameters
@@ -295,7 +299,8 @@ class Configuration:
             Whether to export sources or not.
         ports : bool
             Whether to export ports or not.
-
+        nets : bool
+            Whether to export nets.
         Returns
         -------
         bool

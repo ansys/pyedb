@@ -47,11 +47,9 @@ class CfgData(object):
         if kwargs.get("boundaries", None):
             self.boundaries = CfgBoundaries(self, kwargs.get("boundaries", None))
 
-        self.nets = None
-        if kwargs.get("nets"):
-            self.nets = CfgNets(
-                self, kwargs.get("nets", {}).get("signal_nets", []), kwargs.get("nets", {}).get("power_ground_nets", [])
-            )
+        self.nets = CfgNets(
+            self, kwargs.get("nets", {}).get("signal_nets", []), kwargs.get("nets", {}).get("power_ground_nets", [])
+        )
 
         self.components = CfgComponents(self._pedb, components_data=kwargs.get("components", []))
 

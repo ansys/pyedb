@@ -43,6 +43,7 @@ from pyedb.dotnet.edb_core.edb_data.sources import (
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.constants import SolverType, SweepType
 from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
+from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -1487,6 +1488,19 @@ class EdbSiwave(object):
         cell = self._pedb.active_cell._active_cell
         _, value = cell.GetProductProperty(siwave_id, 422, "")
         return bool(value)
+
+    def create_impedance_crosstalk_scan(self, scan_type="impedance"):
+        """Create Siwave crosstalk scan object
+
+        Parameters
+        ----------
+        scan_type : str
+            Scan type to be analyzed. 3 options are available, ``impedance`` for frequency impedance scan,
+            ``frequency_xtalk`` for frequency domain crosstalk and ``time_xtalk`` for time domain crosstalk.
+            Default value is ``frequency``.
+
+        """
+        return SiwaveScanConfig(self._pedb, scan_type)
 
     @icepak_use_minimal_comp_defaults.setter
     def icepak_use_minimal_comp_defaults(self, value):
