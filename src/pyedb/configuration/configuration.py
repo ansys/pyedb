@@ -66,6 +66,7 @@ class Configuration:
         if isinstance(config_file, dict):
             data = config_file
         elif os.path.isfile(config_file):
+            config_file = str(config_file)
             with open(config_file, "r") as f:
                 if config_file.endswith(".json"):
                     data = json.load(f)
