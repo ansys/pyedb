@@ -312,7 +312,9 @@ class Configuration:
             package_definitions=package_definitions,
             setups=setups,
             sources=sources,
-            ports=ports, )
+            ports=ports,
+            nets=nets
+        )
         with open(file_path, "w") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
         return True if os.path.isfile(file_path) else False
