@@ -1,0 +1,6 @@
+project\_variables
+==================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.project_variables
