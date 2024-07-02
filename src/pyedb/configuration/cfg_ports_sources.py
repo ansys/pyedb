@@ -79,8 +79,10 @@ class CfgSources:
 
     def get_data_from_db(self):
         self.sources = []
+        sources = {name: t for name, t in self._pedb.terminals.items() if not t.is_reference_terminal}
+        sources = {name: t for name, t in sources.items() if t.is_current_source or t.is_voltage_source}
 
-        for _, src in self._pedb.sources.items():
+        for _, src in sources.items():
             src_type = "voltage" if "voltage" in src.boundary_type.lower() else "current"
             name = src.name
             magnitude = src.magnitude
@@ -92,7 +94,7 @@ class CfgSources:
                 pos_term_info = {"pin_group": pg.name}
             elif src.terminal_type == "PadstackInstanceTerminal":
                 refdes = src.component.refdes if src.component else ""
-                pos_term_info = {"pin": src.reference_object.pin_number}
+                pos_term_info = {"pin": src.padstack_instance.pin_number}
 
             neg_term = self._pedb.terminals[src.ref_terminal.name]
             if neg_term.terminal_type == "PinGroupTerminal":
@@ -100,7 +102,7 @@ class CfgSources:
                 # todo create pin group
                 neg_term_info = {"pin_group": pg.name}
             elif neg_term.terminal_type == "PadstackInstanceTerminal":
-                neg_term_info = {"pin": neg_term.reference_object.pin_number}
+                neg_term_info = {"pin": neg_term.padstack_instance.pin_number}
 
             cfg_src = CfgSource(
                 self._pedb,
@@ -130,6 +132,51 @@ class CfgPorts:
             p.create()
 
     def get_data_from_db(self):
+        self.ports = []
+        ports = {name: t for name, t in self._pedb.terminals.items() if not t.is_reference_terminal}
+        ports = {name: t for name, t in ports.items() if t.is_port}
+
+        for _, p in ports.items():
+            port_type = "circuit" if p.is_circuit_port else "coax"
+
+            if p.terminal_type == "PinGroupTerminal":
+                refdes = ""
+                pg = self._pedb.siwave.pin_groups[p._edb_object.GetPinGroup().GetName()]
+                # todo create pin group
+                pos_term_info = {"pin_group": pg.name}
+            elif p.terminal_type == "PadstackInstanceTerminal":
+                refdes = p.component.refdes if p.component else ""
+                pos_term_info = {"pin": p.padstack_instance.pin_number}
+
+            if port_type == "circuit":
+                neg_term = self._pedb.terminals[p.ref_terminal.name]
+                if neg_term.terminal_type == "PinGroupTerminal":
+                    pg = self._pedb.siwave.pin_groups[neg_term._edb_object.GetPinGroup().GetName()]
+                    # todo create pin group
+                    neg_term_info = {"pin_group": pg.name}
+                elif neg_term.terminal_type == "PadstackInstanceTerminal":
+                    neg_term_info = {"pin": neg_term.padstack_instance.pin_number}
+
+                cfg_port = CfgPort(
+                    self._pedb,
+                    name=p.name,
+                    type=port_type,
+                    reference_designator=refdes,
+                    positive_terminal=pos_term_info,
+                    negative_terminal=neg_term_info
+                )
+            else:
+                cfg_port = CfgPort(
+                    self._pedb,
+                    name=p.name,
+                    type=port_type,
+                    reference_designator=refdes,
+                    positive_terminal=pos_term_info,
+                )
+
+            self.ports.append(cfg_port)
+
+    def export_properties(self):
         ports = []
         for p in self.ports:
             ports.append(p.export_properties())

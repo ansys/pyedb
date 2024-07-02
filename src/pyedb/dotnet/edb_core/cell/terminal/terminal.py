@@ -218,6 +218,21 @@ class Terminal(Connectable):
         self._edb_object.SetBoundaryType(self._boundary_type_mapping[value])
 
     @property
+    def is_port(self):
+        """Whether it is a port."""
+        return True if self.boundary_type == "PortBoundary" else False
+
+    @property
+    def is_current_source(self):
+        """Whether it is a current source."""
+        return True if self.boundary_type == "kCurrentSource" else False
+
+    @property
+    def is_voltage_source(self):
+        """Whether it is a voltage source."""
+        return True if self.boundary_type == "kVoltageSource" else False
+
+    @property
     def impedance(self):
         """Impedance of the port."""
         return self._edb_object.GetImpedance().ToDouble()

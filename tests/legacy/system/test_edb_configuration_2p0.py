@@ -236,7 +236,18 @@ class TestClass:
         assert "CIRCUIT_C375_1_2" in edbapp.ports
         assert "CIRCUIT_X1_B8_GND" in edbapp.ports
         assert "CIRCUIT_U7_VDD_DDR_GND" in edbapp.ports
-        data_from_db = edbapp.configuration.get_data_from_db(ports=True)
+        data_from_json = edbapp.configuration.cfg_data.ports.export_properties()
+        edbapp.configuration.cfg_data.ports.get_data_from_db()
+        data_from_db = edbapp.configuration.cfg_data.ports.export_properties()
+        for p1 in data_from_json:
+            p2 = data_from_db.pop(0)
+            for k, v in p1.items():
+                if k in ["reference_designator"]:
+                    continue
+                if k in ["positive_terminal", "negative_terminal"]:
+                    if "net" in v:
+                        continue
+                assert p2[k] == v
         edbapp.close()
 
     def test_05b_ports_coax(self, edb_examples):
@@ -743,7 +754,7 @@ class TestClass:
             },
         ]
         data = {"sources": sources_v}
-        assert edbapp.configuration.load(data)
+        assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.sources["VSOURCE_U2_1V0_GND"].magnitude == 1
 
         data_from_json = edbapp.configuration.cfg_data.sources.export_properties()
@@ -751,8 +762,13 @@ class TestClass:
         data_from_db = edbapp.configuration.cfg_data.sources.export_properties()
         for s1 in data_from_json:
             s2 = data_from_db.pop(0)
-            for k in ["name", "type", "magnitude"]:
-                assert s1[k] == s2[k]
+            for k, v in s1.items():
+                if k in ["reference_designator", "distributed"]:
+                    continue
+                if k in ["positive_terminal", "negative_terminal"]:
+                    if "net" in v:
+                        continue
+                assert s2[k] == v
         edbapp.close()
 
     def test_15c_sources_net_net_distributed(self, edb_examples):

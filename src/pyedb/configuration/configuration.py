@@ -273,11 +273,12 @@ class Configuration:
             self.cfg_data.sources.get_data_from_db()
             data["sources"] = self.cfg_data.sources.export_properties()
         if kwargs.get("ports", False):
-            data["ports"] = self.cfg_data.ports.get_data_from_db()
+            self.cfg_data.ports.get_data_from_db()
+            data["ports"] = self.cfg_data.ports.export_properties()
 
         return data
 
-    def export(self, file_path, stackup=True, package_definitions=True, setups=True):
+    def export(self, file_path, stackup=True, package_definitions=True, setups=True, sources=True, ports=True):
         """Export the configuration data from layout to a file.
 
         Parameters
@@ -286,6 +287,14 @@ class Configuration:
             File path to export the configuration data.
         stackup : bool
             Whether to export stackup or not.
+        package_definitions : bool
+            Whether to export package definitions or not.
+        setups : bool
+            Whether to export setups or not.
+        sources : bool
+            Whether to export sources or not.
+        ports : bool
+            Whether to export ports or not.
 
         Returns
         -------
@@ -293,7 +302,12 @@ class Configuration:
         """
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)
         file_path = file_path if file_path.suffix == ".json" else file_path.with_suffix(".json")
-        data = self.get_data_from_db(stackup=stackup, package_definitions=package_definitions, setups=setups)
+        data = self.get_data_from_db(
+            stackup=stackup,
+            package_definitions=package_definitions,
+            setups=setups,
+            sources=sources,
+            ports=ports, )
         with open(file_path, "w") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
         return True if os.path.isfile(file_path) else False
