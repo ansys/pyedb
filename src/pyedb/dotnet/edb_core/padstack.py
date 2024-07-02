@@ -248,9 +248,7 @@ class EdbPadstacks(object):
         ----------
         value : int
         """
-        return EDBPadstackInstance(
-            self._pedb.modeler.find_by_connectable_object_by_id(value), self._pedb
-        )
+        return EDBPadstackInstance(self._pedb.modeler.find_by_connectable_object_by_id(value), self._pedb)
 
     @property
     def pins(self):

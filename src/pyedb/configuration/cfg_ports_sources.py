@@ -32,9 +32,7 @@ class CfgTerminalInfo(CfgBase):
         self.value = kwargs[self.type]
 
     def export_properties(self):
-        return {
-            self.type: self.value
-        }
+        return {self.type: self.value}
 
 
 class CfgCoordianteTerminalInfo(CfgTerminalInfo):
@@ -47,12 +45,7 @@ class CfgCoordianteTerminalInfo(CfgTerminalInfo):
         self.net = self.value["net"]
 
     def export_properties(self):
-        return {
-            "layer": self.layer,
-            "point_x": self.point_x,
-            "point_y": self.point_y,
-            "net": self.net
-        }
+        return {"layer": self.layer, "point_x": self.point_x, "point_y": self.point_y, "net": self.net}
 
 
 class CfgNearestPinTerminalInfo(CfgTerminalInfo):
@@ -62,10 +55,7 @@ class CfgNearestPinTerminalInfo(CfgTerminalInfo):
         self.search_radius = self.value["search_radius"]
 
     def export_properties(self):
-        return {
-            "reference_net": self.reference_net,
-            "search_radius": self.search_radius
-        }
+        return {"reference_net": self.reference_net, "search_radius": self.search_radius}
 
 
 class CfgSources:
@@ -111,7 +101,7 @@ class CfgSources:
                 magnitude=magnitude,
                 reference_designator=refdes,
                 positive_terminal=pos_term_info,
-                negative_terminal=neg_term_info
+                negative_terminal=neg_term_info,
             )
             self.sources.append(cfg_src)
 
@@ -163,7 +153,7 @@ class CfgPorts:
                     type=port_type,
                     reference_designator=refdes,
                     positive_terminal=pos_term_info,
-                    negative_terminal=neg_term_info
+                    negative_terminal=neg_term_info,
                 )
             else:
                 cfg_port = CfgPort(
@@ -184,7 +174,6 @@ class CfgPorts:
 
 
 class CfgCircuitElement(CfgBase):
-
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
         self.name = kwargs.get("name", None)

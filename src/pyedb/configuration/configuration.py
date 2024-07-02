@@ -282,7 +282,9 @@ class Configuration:
 
         return data
 
-    def export(self, file_path, stackup=True, package_definitions=True, setups=True, sources=True, ports=True, nets=True):
+    def export(
+        self, file_path, stackup=True, package_definitions=True, setups=True, sources=True, ports=True, nets=True
+    ):
         """Export the configuration data from layout to a file.
 
         Parameters
@@ -313,7 +315,7 @@ class Configuration:
             setups=setups,
             sources=sources,
             ports=ports,
-            nets=nets
+            nets=nets,
         )
         with open(file_path, "w") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)

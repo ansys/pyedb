@@ -89,7 +89,7 @@ class PadstackInstanceTerminal(Terminal):
 
     def _get_parameters(self):
         """Gets the parameters of the padstack instance terminal."""
-        _, padstack_inst, layer_obj  = self._edb_object.GetParameters()
+        _, padstack_inst, layer_obj = self._edb_object.GetParameters()
         return padstack_inst, layer_obj
 
     @property
