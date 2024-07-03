@@ -71,6 +71,7 @@ class Layout(EdbLayout):
 
     @property
     def padstack_instances(self):
+        """Get all padstack instances in a list."""
         return [EDBPadstackInstance(i, self._pedb) for i in self._edb_object.PadstackInstances]
 
     def create_bondwire(
@@ -146,10 +147,20 @@ class Layout(EdbLayout):
         value : int
         """
         obj = self._pedb._edb.Cell.Connectable.FindById(self._edb_object, value)
-        if obj.GetObjType() == "PadstackInstance":
+        if obj.GetObjType().ToString() == "PadstackInstance":
             return EDBPadstackInstance(obj, self._pedb)
 
-    def create_pin_group(self, name, pins_by_id=None, pins_by_aedt_name=None):
+    def create_pin_group(self, name: str, pins_by_id: list[int] = None, pins_by_aedt_name: list[str] = None):
+        """Create a PinGroup.
+
+        Parameters
+        name : str,
+            Name of the PinGroup.
+        pins_by_id : list[int] or None
+            List of pins by ID.
+        pins_by_aedt_name : list[str] or None
+            List of pins by AEDT name.
+        """
         pins = []
 
         if pins_by_id is not None:
