@@ -23,14 +23,12 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
-
 from pyedb.dotnet.edb_core.cell.primitive import Bondwire
 from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
-from pyedb.dotnet.edb_core.layout import EdbLayout
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-
 from pyedb.dotnet.edb_core.edb_data.sources import PinGroup
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.dotnet.edb_core.layout import EdbLayout
 
 
 class Layout(EdbLayout):
@@ -75,19 +73,19 @@ class Layout(EdbLayout):
         return [EDBPadstackInstance(i, self._pedb) for i in self._edb_object.PadstackInstances]
 
     def create_bondwire(
-            self,
-            definition_name,
-            placement_layer,
-            width,
-            material,
-            start_layer_name,
-            start_x,
-            start_y,
-            end_layer_name,
-            end_x,
-            end_y,
-            net,
-            bondwire_type="jedec4",
+        self,
+        definition_name,
+        placement_layer,
+        width,
+        material,
+        start_layer_name,
+        start_x,
+        start_y,
+        end_layer_name,
+        end_x,
+        end_y,
+        net,
+        bondwire_type="jedec4",
     ):
         """Create a bondwire object.
 
@@ -176,7 +174,5 @@ class Layout(EdbLayout):
                 if len(pins_by_aedt_name) == 0:
                     break
 
-        obj = self._edb.cell.hierarchy.pin_group.Create(
-            self._edb_object, name, convert_py_list_to_net_list(pins)
-        )
+        obj = self._edb.cell.hierarchy.pin_group.Create(self._edb_object, name, convert_py_list_to_net_list(pins))
         return PinGroup(name, obj, self._pedb)
