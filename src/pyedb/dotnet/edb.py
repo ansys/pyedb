@@ -3773,8 +3773,9 @@ class Edb(Database):
         if name in self.setups:
             return False
         setup = SiwaveSimulationSetup(self, name=name)
-        for k, v in kwargs.items():
-            setattr(setup, k, v)
+        if kwargs:
+            for k, v in kwargs.items():
+                setattr(setup, k, v)
         return self.setups[name]
 
     def create_siwave_dc_setup(self, name=None, **kwargs):

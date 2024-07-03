@@ -50,7 +50,6 @@ class HfssSimulationSetup(SimulationSetup):
         self._simulation_setup_builder = self._pedb._edb.Utility.HFSSSimulationSetup
         if edb_object is None:
             self._name = name
-
             sim_setup_info = SimSetupInfo(self._pedb, sim_setup=self, setup_type="kHFSS", name=name)
             self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
             self._update_setup()
@@ -79,17 +78,17 @@ class HfssSimulationSetup(SimulationSetup):
             "kAccurate": self.sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaMesh,
             "kNumSliderTypes": self.sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaField,
         }
-        self.sim_setup_info.SimulationSettings.TSolveSliderType = solver_types[value]
+        self.sim_setup_info.simulation_settings.TSolveSliderType = solver_types[value]
         self._update_setup()
 
     @property
     def is_auto_setup(self):
         """Flag indicating if automatic setup is enabled."""
-        return self.sim_setup_info.SimulationSettings.IsAutoSetup
+        return self.sim_setup_info.simulation_settings.IsAutoSetup
 
     @is_auto_setup.setter
     def is_auto_setup(self, value):
-        self.sim_setup_info.SimulationSettings.IsAutoSetup = value
+        self.sim_setup_info.simulation_settings.IsAutoSetup = value
         self._update_setup()
 
     @property
