@@ -283,7 +283,7 @@ class DefeatureSettings(object):
 
     @property
     def _defeature_settings(self):
-        return self._parent.get_sim_setup_info.SimulationSettings.DefeatureSettings
+        return self._parent.sim_setup_info.simulation_settings.DefeatureSettings
 
     @property
     def defeature_abs_length(self):
@@ -441,7 +441,7 @@ class AdvancedMeshSettings(object):
 
     @property
     def _advanced_mesh_settings(self):
-        return self._parent.get_sim_setup_info.SimulationSettings.AdvancedMeshSettings
+        return self._parent.sim_setup_info.simulation_settings.AdvancedMeshSettings
 
     @property
     def layer_snap_tol(self):
@@ -510,7 +510,7 @@ class ViaSettings(object):
 
     @property
     def _via_settings(self):
-        return self._parent.get_sim_setup_info.SimulationSettings.ViaSettings
+        return self._parent.sim_setup_info.simulation_settings.ViaSettings
 
     @property
     def via_density(self):
@@ -608,7 +608,7 @@ class CurveApproxSettings(object):
 
     @property
     def _curve_approx_settings(self):
-        return self._parent.get_sim_setup_info.SimulationSettings.CurveApproxSettings
+        return self._parent.sim_setup_info.simulation_settings.CurveApproxSettings
 
     @property
     def arc_angle(self):
@@ -694,7 +694,7 @@ class DcrSettings(object):
 
     @property
     def _dcr_settings(self):
-        return self._parent.get_sim_setup_info.SimulationSettings.DCRSettings
+        return self._parent.sim_setup_info.simulation_settings.DCRSettings
 
     @property
     def conduction_max_passes(self):
@@ -780,7 +780,7 @@ class HfssPortSettings(object):
 
     @property
     def _hfss_port_settings(self):
-        return self._parent.get_sim_setup_info.SimulationSettings.HFSSPortSettings
+        return self._parent.sim_setup_info.simulation_settings.HFSSPortSettings
 
     @property
     def max_delta_z0(self):
@@ -852,7 +852,7 @@ class HfssSolverSettings(object):
 
     @property
     def _hfss_solver_settings(self):
-        return self._parent.get_sim_setup_info.SimulationSettings.HFSSSolverSettings
+        return self._parent.sim_setup_info.simulation_settings.HFSSSolverSettings
 
     @property
     def enhanced_low_freq_accuracy(self):

@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import warnings
-
 from pyedb.dotnet.edb_core.sim_setup_data.data.mesh_operation import (
     LengthMeshOperation,
     SkinDepthMeshOperation,
@@ -56,12 +54,6 @@ class HfssSimulationSetup(SimulationSetup):
             sim_setup_info = SimSetupInfo(self._pedb, sim_setup=self, setup_type="kHFSS", name=name)
             self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
             self._update_setup()
-
-    @property
-    def get_sim_setup_info(self):
-        """Get simulation setup information."""
-        warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
-        return self.sim_setup_info._edb_object
 
     @property
     def solver_slider_type(self):

@@ -997,10 +997,12 @@ class TestClass:
         sweep1 = setup1.frequency_sweeps["sweep1"]
         sweep1.adaptive_sampling = True
         assert sweep1.adaptive_sampling
-
         edbapp.setups["setup1"].name = "setup1a"
         assert "setup1" not in edbapp.setups
         assert "setup1a" in edbapp.setups
+        # TODO check bug status EDB api always return True when setup is disabled
+        # edbapp.setups["setup1a"].enabled = False
+        # assert not edbapp.setups["setup1a"].enabled
         edbapp.close()
 
     def test_hfss_simulation_setup_mesh_operation(self, edb_examples):
