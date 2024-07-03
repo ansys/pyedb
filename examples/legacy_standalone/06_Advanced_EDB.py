@@ -9,6 +9,7 @@ import os
 import tempfile
 
 import numpy as np
+
 import pyedb
 
 # Create the EDB project.
@@ -105,7 +106,6 @@ edb.padstacks.place([0, 0], "SVIA", net_name="RF")
 gvia_num_side = gvia_num / 2
 
 if gvia_num_side % 2:
-
     # Even number of ground vias on each side
     edb.padstacks.place(["via_pitch", 0], "GVIA", net_name="GND")
     edb.padstacks.place(["via_pitch*-1", 0], "GVIA", net_name="GND")
@@ -118,7 +118,6 @@ if gvia_num_side % 2:
         edb.padstacks.place([xloc + "*-1", yloc], "GVIA", net_name="GND")
         edb.padstacks.place([xloc + "*-1", yloc + "*-1"], "GVIA", net_name="GND")
 else:
-
     # Odd number of ground vias on each side
     for i in np.arange(0, gvia_num_side / 2):
         xloc = "{}*{}".format(np.cos(giva_angle_rad * (i + 0.5)), "via_pitch")

@@ -15,6 +15,7 @@ import tempfile
 import time
 
 import pyaedt
+
 import pyedb
 from pyedb.misc.downloads import download_file
 
@@ -47,9 +48,7 @@ edbapp = pyedb.Edb(edbpath=edb_full_path, edbversion=edb_version)
 # An extended net consists of two nets that are connected
 # through a passive component such as a resistor or capacitor.
 
-all_nets = edbapp.extended_nets.auto_identify_signal(
-    resistor_below=10, inductor_below=1, capacitor_above=1e-9
-)
+all_nets = edbapp.extended_nets.auto_identify_signal(resistor_below=10, inductor_below=1, capacitor_above=1e-9)
 
 # Review the properties of extended nets.
 
@@ -106,9 +105,7 @@ for d in ports:
     port_name = d["port_name"]
     comp_name = d["comp_name"]
     net_name = d["net_name"]
-    edbapp.components.create_port_on_component(
-        component=comp_name, net_list=net_name, port_name=port_name
-    )
+    edbapp.components.create_port_on_component(component=comp_name, net_list=net_name, port_name=port_name)
 
 # ### Cutout
 #

@@ -13,6 +13,7 @@ import os
 import tempfile
 
 import pyaedt
+
 import pyedb
 
 # -
@@ -25,6 +26,7 @@ non_graphical = False
 #
 # Data classes are useful to do calculations and store variables.
 # There are three data classes: ``Patch``, ``Line``, and ``Array``.
+
 
 # +
 class Patch:
@@ -96,13 +98,9 @@ edb = pyedb.Edb(edbpath=aedb_path, edbversion=edb_version)
 # Add stackup layers
 
 edb.stackup.add_layer("Virt_GND")
-edb.stackup.add_layer(
-    "Gap", "Virt_GND", layer_type="dielectric", thickness="0.05mm", material="Air"
-)
+edb.stackup.add_layer("Gap", "Virt_GND", layer_type="dielectric", thickness="0.05mm", material="Air")
 edb.stackup.add_layer("GND", "Gap")
-edb.stackup.add_layer(
-    "Substrat", "GND", layer_type="dielectric", thickness="0.5mm", material="Duroid (tm)"
-)
+edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.5mm", material="Duroid (tm)")
 edb.stackup.add_layer("TOP", "Substrat")
 
 # Create the the first patch and feed line using the ``Patch``, ``Line``classes defined above.
@@ -159,9 +157,7 @@ edb.modeler.create_polygon(linear_array.points, "GND", net_name="GND")
 
 # Add the connector pin to use to assign the port.
 
-edb.padstacks.create(
-    padstackname="Connector_pin", holediam="100um", paddiam="0", antipaddiam="200um"
-)
+edb.padstacks.create(padstackname="Connector_pin", holediam="100um", paddiam="0", antipaddiam="200um")
 con_pin = edb.padstacks.place(
     ["{}/4.0".format(first_patch.width), 0],
     "Connector_pin",
@@ -332,9 +328,7 @@ variations["Theta"] = ["All"]
 variations["Phi"] = ["All"]
 h3d.insert_infinite_sphere(name="3D")
 
-new_report = h3d.post.reports_by_category.far_field(
-    "db(RealizedGainTotal)", h3d.nominal_adaptive, "3D"
-)
+new_report = h3d.post.reports_by_category.far_field("db(RealizedGainTotal)", h3d.nominal_adaptive, "3D")
 new_report.variations = variations
 new_report.primary_sweep = "Theta"
 new_report.create("Realized2D")

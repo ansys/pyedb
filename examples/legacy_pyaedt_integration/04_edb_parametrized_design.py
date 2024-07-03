@@ -15,7 +15,9 @@ import os
 import tempfile
 
 import pyaedt
+
 import pyedb
+
 # -
 
 # ## Set non-graphical mode
@@ -208,12 +210,8 @@ points_n = [
 trace_p = []
 trace_n = []
 for n in range(len(points_p)):
-    trace_p.append(
-        edb.modeler.create_trace(points_p[n], route_layer[n], width[n], net_p, "Flat", "Flat")
-    )
-    trace_n.append(
-        edb.modeler.create_trace(points_n[n], route_layer[n], width[n], net_n, "Flat", "Flat")
-    )
+    trace_p.append(edb.modeler.create_trace(points_p[n], route_layer[n], width[n], net_p, "Flat", "Flat"))
+    trace_n.append(edb.modeler.create_trace(points_n[n], route_layer[n], width[n], net_n, "Flat", "Flat"))
 
 # Create the wave ports
 
@@ -280,13 +278,10 @@ void_shape = edb.modeler.Shape("polygon", points=void_poly)
 
 # +
 for layer in layers[:-1:2]:
-
     # add void if the layer is the signal routing layer.
     void = [void_shape] if layer["name"] == route_layer[1] else []
 
-    edb.modeler.create_polygon(
-        main_shape=gnd_shape, layer_name=layer["name"], voids=void, net_name="gnd"
-    )
+    edb.modeler.create_polygon(main_shape=gnd_shape, layer_name=layer["name"], voids=void, net_name="gnd")
 # -
 
 # Plot the layout.
@@ -333,12 +328,8 @@ h3d.create_linear_count_sweep(
 # Define the differential pairs to used to calculate differential and common mode
 # s-parameters.
 
-h3d.set_differential_pair(
-    diff_name="In", positive_terminal="wave_port_1:T1", negative_terminal="wave_port_1:T2"
-)
-h3d.set_differential_pair(
-    diff_name="Out", positive_terminal="wave_port_2:T1", negative_terminal="wave_port_2:T2"
-)
+h3d.set_differential_pair(diff_name="In", positive_terminal="wave_port_1:T1", negative_terminal="wave_port_1:T2")
+h3d.set_differential_pair(diff_name="Out", positive_terminal="wave_port_2:T1", negative_terminal="wave_port_2:T2")
 
 # Solve the project.
 
@@ -346,9 +337,7 @@ h3d.analyze()
 
 # Plot the results and shut down AEDT.
 
-solutions = h3d.post.get_solution_data(
-    ["dB(S(In,In))", "dB(S(In,Out))"], context="Differential Pairs"
-)
+solutions = h3d.post.get_solution_data(["dB(S(In,In))", "dB(S(In,Out))"], context="Differential Pairs")
 solutions.plot()
 h3d.release_desktop()
 

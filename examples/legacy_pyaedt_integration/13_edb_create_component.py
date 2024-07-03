@@ -32,6 +32,7 @@ import os
 import tempfile
 
 import pyaedt
+
 from pyedb import Edb
 
 temp_dir = tempfile.TemporaryDirectory(suffix=".ansys")
@@ -73,9 +74,7 @@ edb.stackup.create_symmetric_stackup(
 # Create ground planes
 
 ground_layers = [
-    layer_name
-    for layer_name in edb.stackup.signal_layers.keys()
-    if layer_name not in [trace_in_layer, trace_out_layer]
+    layer_name for layer_name in edb.stackup.signal_layers.keys() if layer_name not in [trace_in_layer, trace_out_layer]
 ]
 plane_shape = edb.modeler.Shape("rectangle", pointA=["-3mm", "-3mm"], pointB=["13mm", "3mm"])
 for i in ground_layers:

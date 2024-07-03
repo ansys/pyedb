@@ -13,8 +13,12 @@ import os
 
 import numpy as np
 import pyaedt
+
 from pyedb import Edb
-from pyedb.generic.general_methods import generate_unique_folder_name, generate_unique_name
+from pyedb.generic.general_methods import (
+    generate_unique_folder_name,
+    generate_unique_name,
+)
 
 # ## Set non-graphical mode
 
@@ -126,12 +130,8 @@ h3d = pyaedt.Hfss3dLayout(
 
 # ## Create wave ports
 
-h3d.create_edge_port(
-    "line_3", 0, iswave=True, wave_vertical_extension=10, wave_horizontal_extension=10
-)
-h3d.create_edge_port(
-    "line_3", 2, iswave=True, wave_vertical_extension=10, wave_horizontal_extension=10
-)
+h3d.create_edge_port("line_3", 0, iswave=True, wave_vertical_extension=10, wave_horizontal_extension=10)
+h3d.create_edge_port("line_3", 2, iswave=True, wave_vertical_extension=10, wave_horizontal_extension=10)
 
 # ## Edit airbox extents
 

@@ -14,6 +14,7 @@ import tempfile
 
 import pyedb
 from pyedb.misc.downloads import download_file
+
 # -
 
 # ## Download the EDB and copy it into the temporary folder.

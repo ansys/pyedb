@@ -20,6 +20,7 @@ import tempfile
 
 import numpy as np
 import pyaedt
+
 import pyedb
 from pyedb.misc.downloads import download_file
 
@@ -51,25 +52,15 @@ edb.materials.add_dielectric_material("ANSYS_FR4", 3.5, 0.005)
 
 edb.add_design_variable("$DIEL_T", "0.15mm")
 edb.stackup.add_layer("BOT")
-edb.stackup.add_layer(
-    "D5", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4"
-)
+edb.stackup.add_layer("D5", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4")
 edb.stackup.add_layer("L5", "Diel", thickness="0.05mm")
-edb.stackup.add_layer(
-    "D4", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4"
-)
+edb.stackup.add_layer("D4", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4")
 edb.stackup.add_layer("L4", "Diel", thickness="0.05mm")
-edb.stackup.add_layer(
-    "D3", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4"
-)
+edb.stackup.add_layer("D3", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4")
 edb.stackup.add_layer("L3", "Diel", thickness="0.05mm")
-edb.stackup.add_layer(
-    "D2", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4"
-)
+edb.stackup.add_layer("D2", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4")
 edb.stackup.add_layer("L2", "Diel", thickness="0.05mm")
-edb.stackup.add_layer(
-    "D1", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4"
-)
+edb.stackup.add_layer("D1", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4")
 edb.stackup.add_layer("TOP", "Diel", thickness="0.05mm")
 
 # Create ground conductors.
@@ -80,9 +71,7 @@ edb.add_design_variable("PCB_L", "20mm")
 
 gnd_dict = {}
 for layer_name in edb.stackup.signal_layers.keys():
-    gnd_dict[layer_name] = edb.modeler.create_rectangle(
-        layer_name, "GND", [0, "PCB_W/-2"], ["PCB_L", "PCB_W/2"]
-    )
+    gnd_dict[layer_name] = edb.modeler.create_rectangle(layer_name, "GND", [0, "PCB_W/-2"], ["PCB_L", "PCB_W/2"])
 # -
 
 # ## Create signal net
@@ -120,9 +109,7 @@ edb.padstacks.place(["5mm", 0], "ANSYS_VIA", "SIG")
 for i in np.arange(30, 326, 35):
     px = np.cos(i / 180 * np.pi)
     py = np.sin(i / 180 * np.pi)
-    edb.padstacks.place(
-        ["{}*{}+5mm".format("SG_VIA_D", px), "{}*{}".format("SG_VIA_D", py)], "ANSYS_VIA", "GND"
-    )
+    edb.padstacks.place(["{}*{}+5mm".format("SG_VIA_D", px), "{}*{}".format("SG_VIA_D", py)], "ANSYS_VIA", "GND")
 
 # Create ground vias along the signal trace.
 
@@ -190,9 +177,7 @@ h3d = pyaedt.Hfss3dLayout(aedb_path, specified_version=edb_version, new_desktop_
 
 # Place a 3D component.
 
-full_comp_name = download_file(
-    "component_3d", filename="SMA_RF_SURFACE_MOUNT.a3dcomp", destination=working_folder
-)
+full_comp_name = download_file("component_3d", filename="SMA_RF_SURFACE_MOUNT.a3dcomp", destination=working_folder)
 comp = h3d.modeler.place_3d_component(
     component_path=full_comp_name,
     number_of_terminals=1,

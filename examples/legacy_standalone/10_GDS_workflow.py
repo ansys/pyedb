@@ -97,9 +97,7 @@ c.write_xml(os.path.join(temp_dir.name, "output.xml"))
 edb_version = "2024.1"
 print(f"EDB version: {edb_version}")
 
-edb = pyedb.Edb(
-    gds_out, edbversion=edb_version, technology_file=os.path.join(temp_dir.name, "output.xml")
-)
+edb = pyedb.Edb(gds_out, edbversion=edb_version, technology_file=os.path.join(temp_dir.name, "output.xml"))
 # -
 
 # ## Plot stackup

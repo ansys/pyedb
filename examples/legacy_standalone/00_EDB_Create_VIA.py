@@ -11,6 +11,7 @@
 # +
 import os
 import tempfile
+
 import pyedb
 
 temp_dir = tempfile.TemporaryDirectory(suffix=".ansys")
@@ -29,9 +30,7 @@ edb = pyedb.Edb(edbpath=aedb_path, edbversion=edb_version)
 # A stackup can be created layer by layer or imported from a CSV file or XML file.
 
 edb.stackup.add_layer("GND")
-edb.stackup.add_layer(
-    "Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy"
-)
+edb.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
 edb.stackup.add_layer("TOP", "Diel", thickness="0.05mm")
 
 # ## Create signal net and ground planes

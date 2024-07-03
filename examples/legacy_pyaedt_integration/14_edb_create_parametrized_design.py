@@ -14,6 +14,7 @@
 import tempfile
 
 import pyaedt
+
 import pyedb
 from pyedb.misc.downloads import download_file
 
@@ -63,9 +64,7 @@ edb.build_simulation_project(simulation_configuration)
 # impact of antipad diameter or trace width on signal integrity performance may be invested
 # parametrically.
 
-edb.auto_parametrize_design(
-    layers=True, materials=True, via_holes=True, pads=True, antipads=True, traces=True
-)
+edb.auto_parametrize_design(layers=True, materials=True, via_holes=True, pads=True, antipads=True, traces=True)
 edb.save_edb()
 edb.close_edb()
 
