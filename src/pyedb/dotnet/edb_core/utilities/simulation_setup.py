@@ -102,9 +102,18 @@ class SimulationSetup(object):
     def sim_setup_info(self):
         return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_object.GetSimSetupInfo())
 
-    @sim_setup_info.setter
+    """@sim_setup_info.setter
     def sim_setup_info(self, sim_setup_info):
+        self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)"""
+
+    def set_sim_setup_info(self, sim_setup_info):
         self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
+
+    @property
+    def get_sim_setup_info(self):
+        """Get simulation setup information."""
+        warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
+        return self.sim_setup_info._edb_object
 
     @property
     def setup_type(self):
@@ -273,7 +282,7 @@ class SimulationSetup(object):
 
         ss_info = self.sim_setup_info
         ss_info.add_sweep_data(sweep_data)
-        self.sim_setup_info = ss_info
+        self.set_sim_setup_info(ss_info)
         self._update_setup()
         return sweep_data
 

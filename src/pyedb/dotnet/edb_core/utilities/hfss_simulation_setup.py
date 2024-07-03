@@ -59,36 +59,35 @@ class HfssSimulationSetup(SimulationSetup):
             self._update_setup()
 
     @property
-    def get_sim_setup_info(self):
-        """Get simulation setup information."""
-        warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
-        return self.sim_setup_info._edb_object
-
-    @property
     def solver_slider_type(self):
         """Solver slider type.
         Options are:
-        1 - ``kFast``.
-        2 - ``kMedium``.
-        3 - ``kAccurate``.
-        4 - ``kNumSliderTypes``.
+        1 - ``Fast``.
+        2 - ``Medium``.
+        3 - ``Accurate``.
 
         Returns
         -------
-        str
+        int
         """
-        return self.get_sim_setup_info.SimulationSettings.TSolveSliderType.ToString()
+        solver_types = {
+            "kFast": 0,
+            "kMedium": 1,
+            "kAccurate": 2,
+            "kNumSliderTypes": 3,
+        }
+        return solver_types[self.sim_setup_info.simulation_settings.SolveSliderType.ToString()]
 
     @solver_slider_type.setter
     def solver_slider_type(self, value):
         """Set solver slider type."""
         solver_types = {
-            "kFast": self.get_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaWirebond,
-            "kMedium": self.get_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaRibbon,
-            "kAccurate": self.get_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaMesh,
-            "kNumSliderTypes": self.get_sim_setup_info.SimulationSettings.TSolveSliderType.k25DViaField,
+            0: self.sim_setup_info.simulation_settings.TSolveSliderType.kFast,
+            1: self.sim_setup_info.simulation_settings.TSolveSliderType.kMedium,
+            2: self.sim_setup_info.simulation_settings.TSolveSliderType.kAccurate,
+            3: self.sim_setup_info.simulation_settings.TSolveSliderType.kNumSliderTypes,
         }
-        self.get_sim_setup_info.SimulationSettings.TSolveSliderType = solver_types[value]
+        self.sim_setup_info.simulation_settings.SolveSliderType = solver_types[value]
         self._update_setup()
 
     @property
@@ -393,25 +392,15 @@ class HfssSimulationSetup(SimulationSetup):
 class HFSSPISimulationSetup(SimulationSetup):
     """Manages EDB methods for HFSSPI simulation setup."""
 
-    def __init__(self, pedb, edb_object=None):
+    def __init__(self, pedb, edb_object=None, name: str = None):
         super().__init__(pedb, edb_object)
-        self._edb_object = edb_object
-        self._pedb = pedb
-        self._setup_type = "kHFSSPI"
-        self._edb_setup_info = None
-        self.logger = self._pedb.logger
 
-    def create(self, name=None):
-        """Create an HFSS setup."""
-        self._name = name
-        self._create(name=name, simulation_setup_type=self._setup_type)
-        return self
-
-    @property
-    def get_sim_setup_info(self):
-        """Get simulation setup information."""
-        warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
-        return self.sim_setup_info._edb_object
+        self._simulation_setup_builder = self._pedb._edb.Utility.HFSSPISimulationSetup
+        if edb_object is None:
+            self._name = name
+            sim_setup_info = SimSetupInfo(self._pedb, sim_setup=self, setup_type="kHFSSPI", name=name)
+            self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
+            self._update_setup()
 
     @property
     def settings(self):
