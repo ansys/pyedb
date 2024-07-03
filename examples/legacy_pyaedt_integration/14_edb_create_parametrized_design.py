@@ -1,79 +1,51 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
-# SPDX-License-Identifier: MIT
+# # EDB: parameterized design
 #
+# This example shows how to
+# 1. Set up an HFSS project using SimulationConfiguration class.
+# 2. Create automatically parametrized design.
 #
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
+# This image shows the layout created in this example:
 #
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# <img src="_static\parameterized_design.png" width="600">
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
 
-"""
-EDB: parameterized design
-------------------------
-This example shows how to
-1, Create an HFSS simulation project using SimulationConfiguration class.
-2, Create automatically parametrized design.
-"""
-######################################################################
-# Final expected project
-# ~~~~~~~~~~~~~~~~~~~~~~
-#
-# .. image:: ../../_static/parametrized_design.png
-#  :width: 600
-#  :alt: Fully automated parametrization.
-######################################################################
+# ## Import dependencies.
 
-######################################################################
-# Create HFSS simulatio project
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Load an existing EDB folder.
-######################################################################
+import tempfile
 
-from pyaedt import Hfss3dLayout
-
+import pyaedt
 import pyedb
-from pyedb.generic.general_methods import generate_unique_folder_name
 from pyedb.misc.downloads import download_file
 
-project_path = generate_unique_folder_name()
-target_aedb = download_file("edb/ANSYS-HSD_V1.aedb", destination=project_path)
-print("Project folder will be", target_aedb)
+# ## Create an instance of a pyedb.Edb object.
 
-##########################################################
-# Set non-graphical mode
-# ~~~~~~~~~~~~~~~~~~~~~~
-# Set non-graphical mode. The default is ``False``.
+# +
+temp_dir = tempfile.TemporaryDirectory(suffix=".ansys")
+target_aedb = download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_dir.name)
+print("Project is located in ", target_aedb)
 
-non_graphical = False
+# Select EDB version (change it manually if needed, e.g. "2024.1")
+edb_version = "2024.1"
+print(f"EDB version: {edb_version}")
 
-###############################################################################
-# Launch EDB
-# ~~~~~~~~~~
-# Launch the :class:`pyedb.Edb` class, using EDB 2023 R2.
+edb = pyedb.Edb(edbpath=target_aedb, edbversion=edb_version)
+print("AEDB file is located in {}".format(target_aedb))
+# -
 
-aedt_version = "2024.1"
-edb = pyedb.Edb(edbpath=target_aedb, edbversion=aedt_version)
-print("EDB is located at {}".format(target_aedb))
-
-########################################################################
-# Create SimulationConfiguration object and define simulation parameters
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ## Prepare the layout for the simulation
+#
+# The ``new_simulation_configuration()`` method creates an instance of
+# the ``SimulationConfiguration`` class. This class helps define all preprocessing steps
+# required to set up the PCB for simulation. After the simulation configuration has been defined,
+# they are applied to the EDB using the ``Edb.build_simulation()`` method.
 
 simulation_configuration = edb.new_simulation_configuration()
-simulation_configuration.signal_nets = ["PCIe_Gen4_RX0_P", "PCIe_Gen4_RX0_N", "PCIe_Gen4_RX1_P", "PCIe_Gen4_RX1_N"]
+simulation_configuration.signal_nets = [
+    "PCIe_Gen4_RX0_P",
+    "PCIe_Gen4_RX0_N",
+    "PCIe_Gen4_RX1_P",
+    "PCIe_Gen4_RX1_N",
+]
 simulation_configuration.power_nets = ["GND"]
 simulation_configuration.components = ["X1", "U1"]
 simulation_configuration.do_cutout_subdesign = True
@@ -81,35 +53,62 @@ simulation_configuration.start_freq = "OGHz"
 simulation_configuration.stop_freq = "20GHz"
 simulation_configuration.step_freq = "10MHz"
 
-##########################
-# Build simulation project
-# ~~~~~~~~~~~~~~~~~~~~~~~~
+# Now apply the simulation setup to the EDB.
 
 edb.build_simulation_project(simulation_configuration)
 
-#############################
-# Generated design parameters
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ## Parameterize
 #
+# The layout can automatically be set up to enable parametric studies. For example, the
+# impact of antipad diameter or trace width on signal integrity performance may be invested
+# parametrically.
 
-edb.auto_parametrize_design(layers=True, materials=True, via_holes=True, pads=True, antipads=True, traces=True)
-
-###############################################################################
-# Plot EDB
-# ~~~~~~~~
-# Plot EDB.
-
-edb.nets.plot(None)
-
-###########################
-# Save EDB and open in AEDT
-# ~~~~~~~~~~~~~~~~~~~~~~~~~
-
+edb.auto_parametrize_design(
+    layers=True, materials=True, via_holes=True, pads=True, antipads=True, traces=True
+)
 edb.save_edb()
 edb.close_edb()
 
-# Uncomment the following line to open the design in HFSS 3D Layout
-hfss = Hfss3dLayout(
-    projectname=target_aedb, specified_version=aedt_version, non_graphical=non_graphical, new_desktop_session=True
+# ## Open project in AEDT
+#
+# All manipulations thus far have been executed using the EDB API, which provides fast,
+# streamlined processing of layout data in non-graphical mode. The layout and simulation
+# setup can be visualized by opening it using the 3D Layout editor in AEDT.
+#
+# Note that there may be some delay while AEDT is being launched.
+
+hfss = pyaedt.Hfss3dLayout(
+    projectname=target_aedb,
+    specified_version=edb_version,
+    non_graphical=False,
+    new_desktop_session=True,
 )
-hfss.release_desktop()
+
+# The following cell can be used to ensure that the design is valid for simulation.
+
+validation_info = hfss.validate_full_design()
+is_ready_to_simulate = True
+
+# +
+for s in validation_info[0]:
+    if "error" in s:
+        print(s)
+        is_ready_to_simulate = False
+
+if is_ready_to_simulate:
+    print("The model is ready for simulation.")
+else:
+    print("There are errors in the model that must be fixed.")
+# -
+
+# ## Release the application from the Python kernel
+#
+# It is important to release the application from the Python kernel after
+# execution of the script. The default behavior of the ``release_desktop()`` method closes all open
+# projects and closes the application.
+#
+# If you want to continue working on the project in graphical mode
+# after script execution, call the following method with both arguments set to ``False``.
+
+hfss.release_desktop(close_projects=True, close_desktop=True)
+temp_dir.cleanup()  # Remove the temporary folder and files. All data will be removd!
