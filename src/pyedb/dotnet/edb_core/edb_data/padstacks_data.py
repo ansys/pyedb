@@ -1725,6 +1725,12 @@ class EDBPadstackInstance(Primitive):
     @property
     def pin_number(self):
         """Get pin number."""
+        warnings.warn("`pin_number` is deprecated. Use `component_pin` method instead.", DeprecationWarning)
+        return self.component_pin
+
+    @property
+    def component_pin(self):
+        """Get component pin."""
         return self._edb_padstackinstance.GetName()
 
     @property

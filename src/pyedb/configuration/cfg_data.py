@@ -28,7 +28,7 @@ from pyedb.configuration.cfg_nets import CfgNets
 from pyedb.configuration.cfg_operations import CfgOperations
 from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
 from pyedb.configuration.cfg_padstacks import CfgPadstacks
-from pyedb.configuration.cfg_pin_groups import CfgPinGroup
+from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 from pyedb.configuration.cfg_ports_sources import CfgPorts, CfgSources
 from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel
 from pyedb.configuration.cfg_setup import CfgSetups
@@ -55,7 +55,7 @@ class CfgData(object):
 
         self.padstacks = CfgPadstacks(self, kwargs.get("padstacks", None))
 
-        self.pin_groups = [CfgPinGroup(self, pin_group) for pin_group in kwargs.get("pin_groups", [])]
+        self.pin_groups = CfgPinGroups(self._pedb, pingroup_data=kwargs.get("pin_groups", []))
 
         self.ports = CfgPorts(self._pedb, ports_data=kwargs.get("ports", []))
 

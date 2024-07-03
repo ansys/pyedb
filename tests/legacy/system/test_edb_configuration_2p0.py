@@ -161,6 +161,7 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         assert "U9_5V_1" in edbapp.siwave.pin_groups
         assert "U9_GND" in edbapp.siwave.pin_groups
+        edbapp.configuration.cfg_data.pin_groups.get_data_from_db()
         edbapp.close()
 
     def test_03_spice_models(self, edb_examples):
