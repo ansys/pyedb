@@ -29,7 +29,7 @@ from pyedb.configuration.cfg_operations import CfgOperations
 from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
 from pyedb.configuration.cfg_padstacks import CfgPadstacks
 from pyedb.configuration.cfg_pin_groups import CfgPinGroup
-from pyedb.configuration.cfg_ports_sources import CfgPort, CfgSources
+from pyedb.configuration.cfg_ports_sources import CfgPorts, CfgSources
 from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel
 from pyedb.configuration.cfg_setup import CfgSetups
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
@@ -41,7 +41,6 @@ class CfgData(object):
 
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
-        self.edb_comps = self._pedb.components.components
         self.general = CfgGeneral(self, kwargs.get("general", None))
 
         self.boundaries = {}
@@ -58,9 +57,9 @@ class CfgData(object):
 
         self.pin_groups = [CfgPinGroup(self, pin_group) for pin_group in kwargs.get("pin_groups", [])]
 
-        self.ports = [CfgPort(self, **port) for port in kwargs.get("ports", [])]
+        self.ports = CfgPorts(self._pedb, ports_data=kwargs.get("ports", []))
 
-        self.sources = [CfgSources(self, **source) for source in kwargs.get("sources", [])]
+        self.sources = CfgSources(self._pedb, sources_data=kwargs.get("sources", []))
 
         self.setups = CfgSetups(self._pedb, setups_data=kwargs.get("setups", []))
 

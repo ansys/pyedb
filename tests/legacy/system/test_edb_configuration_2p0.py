@@ -183,14 +183,55 @@ class TestClass:
         edbapp.close()
 
     def test_05_ports(self, edb_examples):
+        data = {
+            "ports": [
+                {
+                    "name": "CIRCUIT_C375_1_2",
+                    "reference_designator": "C375",
+                    "type": "circuit",
+                    "positive_terminal": {"pin": "1"},
+                    "negative_terminal": {"pin": "2"},
+                },
+                {
+                    "name": "CIRCUIT_X1_B8_GND",
+                    "reference_designator": "X1",
+                    "type": "circuit",
+                    "positive_terminal": {"pin": "B8"},
+                    "negative_terminal": {"net": "GND"},
+                },
+                {
+                    "name": "CIRCUIT_X1_B9_GND",
+                    "reference_designator": "X1",
+                    "type": "circuit",
+                    "positive_terminal": {"net": "PCIe_Gen4_TX2_N"},
+                    "negative_terminal": {"net": "GND"},
+                },
+                {
+                    "name": "CIRCUIT_U7_VDD_DDR_GND",
+                    "reference_designator": "U7",
+                    "type": "circuit",
+                    "positive_terminal": {"net": "VDD_DDR"},
+                    "negative_terminal": {"net": "GND"},
+                },
+            ]
+        }
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(str(self.local_input_folder / "ports_coax.json"), apply_file=True)
-        assert edbapp.configuration.load(str(self.local_input_folder / "ports_circuit.json"), apply_file=True)
-        assert "COAX_U1_AM17" in edbapp.ports
-        assert "COAX_U1_PCIe_Gen4_TX2_CAP_N" in edbapp.ports
+        assert edbapp.configuration.load(data, apply_file=True)
         assert "CIRCUIT_C375_1_2" in edbapp.ports
         assert "CIRCUIT_X1_B8_GND" in edbapp.ports
         assert "CIRCUIT_U7_VDD_DDR_GND" in edbapp.ports
+        data_from_json = edbapp.configuration.cfg_data.ports.export_properties()
+        edbapp.configuration.cfg_data.ports.get_data_from_db()
+        data_from_db = edbapp.configuration.cfg_data.ports.export_properties()
+        for p1 in data_from_json:
+            p2 = data_from_db.pop(0)
+            for k, v in p1.items():
+                if k in ["reference_designator"]:
+                    continue
+                if k in ["positive_terminal", "negative_terminal"]:
+                    if "net" in v:
+                        continue
+                assert p2[k] == v
         edbapp.close()
 
     def test_05b_ports_coax(self, edb_examples):
@@ -683,7 +724,7 @@ class TestClass:
                     assert value == target[p]
         edbapp.close()
 
-    def test_15b_sources(self, edb_examples):
+    def test_15b_sources_net_net(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         sources_v = [
             {
@@ -699,20 +740,44 @@ class TestClass:
         data = {"sources": sources_v}
         assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.sources["VSOURCE_U2_1V0_GND"].magnitude == 1
+
+        data_from_json = edbapp.configuration.cfg_data.sources.export_properties()
+        edbapp.configuration.cfg_data.sources.get_data_from_db()
+        data_from_db = edbapp.configuration.cfg_data.sources.export_properties()
+        for s1 in data_from_json:
+            s2 = data_from_db.pop(0)
+            for k, v in s1.items():
+                if k in ["reference_designator", "distributed"]:
+                    continue
+                if k in ["positive_terminal", "negative_terminal"]:
+                    if "net" in v:
+                        continue
+                assert s2[k] == v
+        edbapp.close()
+
+    def test_15c_sources_net_net_distributed(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         sources_i = [
             {
                 "name": "ISOURCE",
                 "reference_designator": "U1",
                 "type": "current",
-                "magnitude": 1,
+                "magnitude": 117,
                 "distributed": True,
                 "positive_terminal": {"net": "1V0"},
                 "negative_terminal": {"net": "GND"},
             },
         ]
         data = {"sources": sources_i}
-        assert edbapp.configuration.load(data, apply_file=True, append=False)
-        assert not edbapp.sources["ISOURCE_U1_1V0_M16"].magnitude == 1
+        assert edbapp.configuration.load(data, apply_file=True)
+
+        edbapp.configuration.cfg_data.sources.get_data_from_db()
+        data_from_db = edbapp.configuration.cfg_data.sources.export_properties()
+        assert len(data_from_db) == 117
+        for s1 in data_from_db:
+            assert s1["magnitude"] == 1
+            assert s1["reference_designator"] == "U1"
+            assert s1["type"] == "current"
         edbapp.close()
 
     def test_15c_sources_nearest_ref(self, edb_examples):

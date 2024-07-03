@@ -129,3 +129,12 @@ class Layout(EdbLayout):
             end_y=self._pedb.edb_value(end_y),
             net=self.nets[net]._edb_object,
         )
+
+    def find_object_by_id(self, value: int):
+        """Find a Connectable object by Database ID.
+
+        Parameters
+        ----------
+        value : int
+        """
+        return self._pedb._edb.Cell.Connectable.FindById(self._edb_object, value)
