@@ -139,8 +139,9 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "numpydoc",
     "ansys_sphinx_theme.extension.linkcode",
+    "nbsphinx",
     # TODO: Remove once we switch for new example format.
-    "recommonmark",
+    # "recommonmark",
 ]
 
 # Intersphinx mapping
@@ -231,6 +232,21 @@ master_doc = "index"
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
+
+# Execute notebooks before conversion
+nbsphinx_execute = "auto"
+
+# Allow errors to help debug.
+nbsphinx_allow_errors = False
+
+# Sphinx gallery customization
+# nbsphinx_thumbnails = {
+#     "examples/legacy_standalone/00_EDB_Create_VIA": "_static/thumbnails/diff_via.png",
+# }
+
+nbsphinx_custom_formats = {
+    ".py": ["jupytext.reads", {"fmt": ""}],
+}
 
 
 # gallery build requires EDB install
