@@ -258,30 +258,30 @@ if os.name != "posix" and "PYEDB_CI_NO_EXAMPLES" not in os.environ:
         message="Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.",
     )
 
-    if config["run_examples"]:
-        extensions.append("sphinx_gallery.gen_gallery")
+    # if config["run_examples"]:
+    #     extensions.append("sphinx_gallery.gen_gallery")
 
-        sphinx_gallery_conf = {
-            # convert rst to md for ipynb
-            "pypandoc": True,
-            # path to your examples scripts
-            "examples_dirs": [EXAMPLES_PATH_FOR_DOCS],
-            # path where to save gallery generated examples
-            "gallery_dirs": [GALLERY_EXAMPLES_PATH],
-            # Pattern to search for examples files
-            "filename_pattern": r"\." + DEFAULT_EXAMPLE_EXTENSION,
-            # Remove the "Download all examples" button from the top level gallery
-            "download_all_examples": False,
-            # Sort gallery examples by file name instead of number of lines (default)
-            "within_subsection_order": FileNameSortKey,
-            # directory where function granular galleries are stored
-            "backreferences_dir": None,
-            # Modules for which function level galleries are created.  In
-            "doc_module": "ansys-legacy",
-            "image_scrapers": ("matplotlib"),
-            "ignore_pattern": "flycheck*",
-            "thumbnail_size": (350, 350),
-        }
+    #     sphinx_gallery_conf = {
+    #         # convert rst to md for ipynb
+    #         "pypandoc": True,
+    #         # path to your examples scripts
+    #         "examples_dirs": [EXAMPLES_PATH_FOR_DOCS],
+    #         # path where to save gallery generated examples
+    #         "gallery_dirs": [GALLERY_EXAMPLES_PATH],
+    #         # Pattern to search for examples files
+    #         "filename_pattern": r"\." + DEFAULT_EXAMPLE_EXTENSION,
+    #         # Remove the "Download all examples" button from the top level gallery
+    #         "download_all_examples": False,
+    #         # Sort gallery examples by file name instead of number of lines (default)
+    #         "within_subsection_order": FileNameSortKey,
+    #         # directory where function granular galleries are stored
+    #         "backreferences_dir": None,
+    #         # Modules for which function level galleries are created.  In
+    #         "doc_module": "ansys-legacy",
+    #         "image_scrapers": ("matplotlib"),
+    #         "ignore_pattern": "flycheck*",
+    #         "thumbnail_size": (350, 350),
+    #     }
 
 # jinja_contexts = {
 #     "main_toctree": {
