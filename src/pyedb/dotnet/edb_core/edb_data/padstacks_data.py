@@ -1678,11 +1678,9 @@ class EDBPadstackInstance(Primitive):
     def name(self):
         """Padstack Instance Name. If it is a pin, the syntax will be like in AEDT ComponentName-PinName."""
         if self.is_pin:
-            comp_name = self._edb_padstackinstance.GetComponent().GetName()
-            pin_name = self._edb_padstackinstance.GetName()
-            return "-".join([comp_name, pin_name])
+            return self.aedt_name
         else:
-            return self._edb_padstackinstance.GetName()
+            return self.component_pin
 
     @name.setter
     def name(self, value):
