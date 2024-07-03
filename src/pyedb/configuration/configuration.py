@@ -65,14 +65,16 @@ class Configuration:
         """
         if isinstance(config_file, dict):
             data = config_file
-        elif os.path.isfile(config_file):
-            with open(config_file, "r") as f:
-                if config_file.endswith(".json"):
-                    data = json.load(f)
-                elif config_file.endswith(".toml"):
-                    data = toml.load(f)
-        else:  # pragma: no cover
-            return False
+        else:
+            config_file = str(config_file)
+            if os.path.isfile(config_file):
+                with open(config_file, "r") as f:
+                    if config_file.endswith(".json"):
+                        data = json.load(f)
+                    elif config_file.endswith(".toml"):
+                        data = toml.load(f)
+            else:  # pragma: no cover
+                return False
 
         if not append:  # pragma: no cover
             self.data = {}
@@ -270,11 +272,9 @@ class Configuration:
         if kwargs.get("setups", False):
             data["setups"] = self.cfg_data.setups.get_data_from_db()
         if kwargs.get("sources", False):
-            self.cfg_data.sources.get_data_from_db()
-            data["sources"] = self.cfg_data.sources.export_properties()
+            data["sources"] = self.cfg_data.sources.get_data_from_db()
         if kwargs.get("ports", False):
-            self.cfg_data.ports.get_data_from_db()
-            data["ports"] = self.cfg_data.ports.export_properties()
+            data["ports"] = self.cfg_data.ports.get_data_from_db()
         if kwargs.get("components", False):
             data["components"] = self.cfg_data.components.get_data_from_db()
         if kwargs.get("nets", False):

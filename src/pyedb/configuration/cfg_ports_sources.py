@@ -104,6 +104,7 @@ class CfgSources:
                 negative_terminal=neg_term_info,
             )
             self.sources.append(cfg_src)
+        return self.export_properties()
 
     def export_properties(self):
         sources = []
@@ -165,6 +166,7 @@ class CfgPorts:
                 )
 
             self.ports.append(cfg_port)
+        return self.export_properties()
 
     def export_properties(self):
         ports = []
