@@ -408,8 +408,10 @@ class HFSSPISimulationSetup(SimulationSetup):
         return self
 
     @property
-    def setup_type(self):
-        return self._setup_type
+    def get_sim_setup_info(self):
+        """Get simulation setup information."""
+        warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
+        return self.sim_setup_info._edb_object
 
     @property
     def settings(self):

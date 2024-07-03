@@ -100,11 +100,7 @@ class SimulationSetup(object):
 
     @property
     def sim_setup_info(self):
-        if self._edb_object:
-            if self._edb_object.GetType().ToString() not in ["kHFSSPI", "kRaptorX"]:
-                return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_object.GetSimSetupInfo())
-        elif self._edb_setup_info:
-            return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_setup_info)
+        return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_object.GetSimSetupInfo())
 
     @sim_setup_info.setter
     def sim_setup_info(self, sim_setup_info):
@@ -126,11 +122,11 @@ class SimulationSetup(object):
 
         edb_setup_info = self._pedb.simsetupdata.SimSetupInfo[self._simulation_setup_type[simulation_setup_type]]()
         edb_setup_info.Name = name
-        if (
+        """if (
             edb_setup_info.get_SimSetupType().ToString() == "kRaptorX"
             or edb_setup_info.get_SimSetupType().ToString() == "kHFSSPI"
         ):
-            self._edb_setup_info = edb_setup_info
+            self._edb_setup_info = edb_setup_info"""
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
 
