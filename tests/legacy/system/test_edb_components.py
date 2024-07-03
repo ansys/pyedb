@@ -94,6 +94,8 @@ class TestClass:
         assert self.edbapp.components.components["R1"].pinlist
         assert self.edbapp.components.components["R1"].pins
         assert self.edbapp.components.components["R1"].pins["1"].pin_number
+        assert self.edbapp.components.components["R1"].pins["1"].component_pin
+
         assert self.edbapp.components.components["R1"].pins["1"].component
         assert (
             self.edbapp.components.components["R1"].pins["1"].lower_elevation

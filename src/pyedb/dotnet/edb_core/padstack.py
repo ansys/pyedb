@@ -241,6 +241,15 @@ class EdbPadstacks(object):
                 )
         return padstack_instances
 
+    def find_instance_by_id(self, value: int):
+        """Find a padstack instance by database id.
+
+        Parameters
+        ----------
+        value : int
+        """
+        return self._pedb.modeler.find_object_by_id(value)
+
     @property
     def pins(self):
         """Dictionary  of all pins instances (belonging to component).
@@ -1441,7 +1450,7 @@ class EdbPadstacks(object):
                 instances = [inst for inst in instances if inst.component.refdes in refdes]
                 if component_pin:
                     component_pin = component_pin if isinstance(component_pin, list) else [component_pin]
-                    instances = [inst for inst in instances if inst.pin_number in component_pin]
+                    instances = [inst for inst in instances if inst.component_pin in component_pin]
             return instances
 
     def get_padstack_instance_by_net_name(self, net_name):
