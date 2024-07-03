@@ -37,13 +37,15 @@ class CfgPinGroups:
     def get_data_from_db(self):
         self.pin_groups = []
         for name, pg in self._pedb.siwave.pin_groups.items():
-            CfgPinGroup(
+            pins = [p.aedt_name for p in pg.pins.values()]
+            cfg_pg = CfgPinGroup(
                 self._pedb,
                 name=name,
-                reference_designator=pg.reference_designator,
-                pins=pg.pins,
+                reference_designator=None,
+                pins=pins,
             )
-
+            self.pin_groups.append(cfg_pg)
+        return self.export_properties()
 
     def export_properties(self):
         pin_groups = []
@@ -51,22 +53,22 @@ class CfgPinGroups:
             pin_groups.append(pg.export_properties())
         return pin_groups
 
+
 class CfgPinGroup(CfgBase):
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
         self.name = kwargs["name"]
-        self.reference_designator = kwargs["reference_designator"]
+        self.reference_designator = kwargs.get("reference_designator")
         self.pins = kwargs.get("pins")
         self.net = kwargs.get("net")
 
     def create(self):
         """Apply pin group on layout."""
         if self.pins:
-            if not self._pedb.siwave.create_pin_group(self.reference_designator, list(self.pins), self.name):
-                self._pedb.logger.error(f"Failed to create pin group on pins {self.pins}")
-                return False
-            self._pedb.logger.info(f"Pin group {self.name} created.")
-            return True
+            if self.reference_designator is None:
+                self._pedb.modeler.create_pin_group(self.name, pins_by_aedt_name=self.pins)
+            else:
+                self._pedb.siwave.create_pin_group(self.reference_designator, list(self.pins), self.name)
         elif self.net:
             if self.reference_designator in self._pedb.components.instances:
                 comp = self._pedb.components.instances[self.reference_designator]
