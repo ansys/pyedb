@@ -130,7 +130,7 @@ class Layout(EdbLayout):
             net=self.nets[net]._edb_object,
         )
 
-    def find_by_connectable_object_by_id(self, value: int):
+    def find_object_by_id(self, value: int):
         """Find a Connectable object by Database ID.
 
         Parameters
