@@ -283,7 +283,7 @@ class Configuration:
         return data
 
     def export(
-            self, file_path, stackup=True, package_definitions=True, setups=True, sources=True, ports=True, nets=True
+        self, file_path, stackup=True, package_definitions=True, setups=True, sources=True, ports=True, nets=True
     ):
         """Export the configuration data from layout to a file.
 
