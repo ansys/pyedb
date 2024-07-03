@@ -152,12 +152,13 @@ class TestClass:
         pins = self.edbapp.components.get_pin_from_component("U1")
         assert "RST4000" == self.edbapp.siwave.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")
 
-    def test_siwave_add_syz_analsyis(self):
-        """Add a sywave AC analysis."""
-        assert self.edbapp.siwave.add_siwave_syz_analysis(start_freq="=GHz", stop_freq="10GHz", step_freq="10MHz")
+    def test_siwave_add_syz_analsyis(self, edb_examples):
+        """Add a siwave AC analysis."""
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.siwave.add_siwave_syz_analysis(start_freq="=GHz", stop_freq="10GHz", step_freq="10MHz")
 
     def test_siwave_add_dc_analysis(self):
-        """Add a sywave DC analysis."""
+        """Add a siwave DC analysis."""
         assert self.edbapp.siwave.add_siwave_dc_analysis(name="Test_dc")
 
     def test_hfss_mesh_operations(self):
