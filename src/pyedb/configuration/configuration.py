@@ -122,8 +122,7 @@ class Configuration:
             self.cfg_data.padstacks.apply()
 
         # Configure pin groups
-        for pin_group in self.cfg_data.pin_groups:
-            pin_group.apply()
+        self.cfg_data.pin_groups.apply()
 
         # Configure ports
         self.cfg_data.ports.apply()
@@ -279,11 +278,21 @@ class Configuration:
             data["components"] = self.cfg_data.components.get_data_from_db()
         if kwargs.get("nets", False):
             data["nets"] = self.cfg_data.nets.get_data_from_db()
+        if kwargs.get("pin_groups", False):
+            data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
 
         return data
 
     def export(
-        self, file_path, stackup=True, package_definitions=True, setups=True, sources=True, ports=True, nets=True
+        self,
+        file_path,
+        stackup=True,
+        package_definitions=True,
+        setups=True,
+        sources=True,
+        ports=True,
+        nets=True,
+        pin_groups=True,
     ):
         """Export the configuration data from layout to a file.
 
@@ -316,6 +325,7 @@ class Configuration:
             sources=sources,
             ports=ports,
             nets=nets,
+            pin_groups=pin_groups,
         )
         with open(file_path, "w") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)

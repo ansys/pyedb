@@ -95,4 +95,4 @@ class PadstackInstanceTerminal(Terminal):
     @property
     def padstack_instance(self):
         p_inst, _ = self._get_parameters()
-        return self._pedb.padstacks.find_instance_by_id(p_inst.GetId())
+        return self._pedb.modeler.find_object_by_id(p_inst.GetId())
