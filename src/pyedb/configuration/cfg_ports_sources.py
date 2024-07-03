@@ -80,7 +80,6 @@ class CfgSources:
             if src.terminal_type == "PinGroupTerminal":
                 refdes = ""
                 pg = self._pedb.siwave.pin_groups[src._edb_object.GetPinGroup().GetName()]
-                # todo create pin group
                 pos_term_info = {"pin_group": pg.name}
             elif src.terminal_type == "PadstackInstanceTerminal":
                 refdes = src.component.refdes if src.component else ""
@@ -89,7 +88,6 @@ class CfgSources:
             neg_term = self._pedb.terminals[src.ref_terminal.name]
             if neg_term.terminal_type == "PinGroupTerminal":
                 pg = self._pedb.siwave.pin_groups[neg_term._edb_object.GetPinGroup().GetName()]
-                # todo create pin group
                 neg_term_info = {"pin_group": pg.name}
             elif neg_term.terminal_type == "PadstackInstanceTerminal":
                 neg_term_info = {"pin": neg_term.padstack_instance.component_pin}
@@ -132,7 +130,6 @@ class CfgPorts:
             if p.terminal_type == "PinGroupTerminal":
                 refdes = ""
                 pg = self._pedb.siwave.pin_groups[p._edb_object.GetPinGroup().GetName()]
-                # todo create pin group
                 pos_term_info = {"pin_group": pg.name}
             elif p.terminal_type == "PadstackInstanceTerminal":
                 refdes = p.component.refdes if p.component else ""
@@ -142,7 +139,6 @@ class CfgPorts:
                 neg_term = self._pedb.terminals[p.ref_terminal.name]
                 if neg_term.terminal_type == "PinGroupTerminal":
                     pg = self._pedb.siwave.pin_groups[neg_term._edb_object.GetPinGroup().GetName()]
-                    # todo create pin group
                     neg_term_info = {"pin_group": pg.name}
                 elif neg_term.terminal_type == "PadstackInstanceTerminal":
                     neg_term_info = {"pin": neg_term.padstack_instance.component_pin}

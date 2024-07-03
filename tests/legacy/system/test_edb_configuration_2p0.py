@@ -746,18 +746,17 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.sources["VSOURCE_U2_1V0_GND"].magnitude == 1
 
-        data_from_json = edbapp.configuration.cfg_data.sources.export_properties()
         edbapp.configuration.cfg_data.sources.get_data_from_db()
-        data_from_db = edbapp.configuration.cfg_data.sources.export_properties()
-        for s1 in data_from_json:
-            s2 = data_from_db.pop(0)
-            for k, v in s1.items():
-                if k in ["reference_designator", "distributed"]:
-                    continue
-                if k in ["positive_terminal", "negative_terminal"]:
-                    if "net" in v:
-                        continue
-                assert s2[k] == v
+        src_from_db = edbapp.configuration.cfg_data.sources.export_properties()
+        assert src_from_db[0]["name"] == "VSOURCE_U2_1V0_GND"
+        assert src_from_db[0]["type"] == "voltage"
+        assert src_from_db[0]["magnitude"] == 1
+        assert src_from_db[0]["positive_terminal"] == {"pin_group": "pg_VSOURCE_U2_1V0_GND_U2"}
+        assert src_from_db[0]["negative_terminal"] == {"pin_group": "pg_VSOURCE_U2_1V0_GND_U2_ref"}
+
+        pg_from_db = edbapp.configuration.cfg_data.pin_groups.get_data_from_db()
+        assert pg_from_db[0]["name"] == "pg_VSOURCE_U2_1V0_GND_U2"
+        assert pg_from_db[1]["name"] == "pg_VSOURCE_U2_1V0_GND_U2_ref"
         edbapp.close()
 
     def test_15c_sources_net_net_distributed(self, edb_examples):
