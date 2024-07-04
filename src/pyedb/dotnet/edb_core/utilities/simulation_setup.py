@@ -115,6 +115,22 @@ class SimulationSetup(object):
         warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
         return self.sim_setup_info._edb_object
 
+    def get_simulation_settings(self):
+        sim_settings = self.sim_setup_info.simulation_settings
+        properties = {}
+        for k in dir(sim_settings):
+            if not k.startswith("_"):
+                properties[k] = getattr(sim_settings, k)
+        return properties
+
+    def set_simulation_settings(self, sim_settings: dict):
+        for k, v in sim_settings.items():
+            if k == "enabled":
+                continue
+            if k in self.get_simulation_settings():
+                setattr(self.sim_setup_info.simulation_settings, k, v)
+        self._update_setup()
+
     @property
     def setup_type(self):
         return self.sim_setup_info.sim_setup_type
@@ -163,7 +179,7 @@ class SimulationSetup(object):
             setup_type_mapping["kRaptorX"] = utility.RaptorXSimulationSetup
             setup_type_mapping["kHFSSPI"] = utility.HFSSPISimulationSetup
         sim_setup_type = self.sim_setup_info.sim_setup_type
-        setup_utility = setup_type_mapping[sim_setup_type.ToString()]
+        setup_utility = setup_type_mapping[sim_setup_type]
         return setup_utility(edb_setup_info)
 
     @property

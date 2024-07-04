@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import warnings
 
 from pyedb.dotnet.edb_core.sim_setup_data.data.mesh_operation import (
     LengthMeshOperation,
@@ -401,60 +400,3 @@ class HFSSPISimulationSetup(SimulationSetup):
             sim_setup_info = SimSetupInfo(self._pedb, sim_setup=self, setup_type="kHFSSPI", name=name)
             self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
             self._update_setup()
-
-    @property
-    def settings(self):
-        return HFSSPISimulationSettings(self._edb_setup_info, self._pedb, self._edb_object)
-
-    @property
-    def enabled(self):
-        return self.settings.enabled
-
-    @enabled.setter
-    def enabled(self, value):
-        if isinstance(value, bool):
-            self.settings.enabled = value
-        else:
-            self.logger.error(f"Property enabled expects a boolean value while the provided value is {value}.")
-
-    @property
-    def position(self):
-        return self._edb_setup_info.Position
-
-    @position.setter
-    def position(self, value):
-        if isinstance(value, int):
-            self._edb_setup_info.Position = value
-        else:
-            self.logger.error(f"Property position expects an integer value while the provided value is {value}.")
-
-    def add_frequency_sweep(self, name=None, frequency_sweep=None):
-        """Add frequency sweep.
-
-        Parameters
-        ----------
-        name : str, optional
-            Name of the frequency sweep.
-        frequency_sweep : list, optional
-            List of frequency points.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data.EdbFrequencySweep`wheen succeeded, ``False``
-        when failed.
-
-        Examples
-        --------
-        >>> setup1 = edbapp.create_hfss_setup("setup1")
-        >>> setup1.add_frequency_sweep(frequency_sweep=[
-        ...                           ["linear count", "0", "1kHz", 1],
-        ...                           ["log scale", "1kHz", "0.1GHz", 10],
-        ...                           ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-        ...                           ])
-        """
-        if name in self.frequency_sweeps:
-            self.logger.error("Frequency sweep with same name already defined.")
-            return False
-        if not name:
-            name = generate_unique_name("sweep")
-        return SweepData(self, frequency_sweep, name)

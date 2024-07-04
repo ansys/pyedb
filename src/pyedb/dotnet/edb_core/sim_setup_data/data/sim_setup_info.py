@@ -21,16 +21,20 @@
 # SOFTWARE.
 
 from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
+from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_settings import (
+    HFSSPISimulationSettings,
+    HFSSSimulationSettings
+)
 
 
 class SimSetupInfo:
     def __init__(
-        self,
-        pedb,
-        sim_setup,
-        edb_object=None,
-        setup_type: str = None,
-        name: str = None,
+            self,
+            pedb,
+            sim_setup,
+            edb_object=None,
+            setup_type: str = None,
+            name: str = None,
     ):
         self._pedb = pedb
         self.sim_setup = sim_setup
@@ -64,11 +68,32 @@ class SimSetupInfo:
 
     @property
     def sim_setup_type(self):
-        return self._edb_object.SimSetupType
+        """
+        "kHFSS": self._pedb.simsetupdata.HFSSSimulationSettings,
+        "kPEM": None,
+        "kSIwave": self._pedb.simsetupdata.SIwave.SIWSimulationSettings,
+        "kLNA": None,
+        "kTransient": None,
+        "kQEye": None,
+        "kVEye": None,
+        "kAMI": None,
+        "kAnalysisOption": None,
+        "kSIwaveDCIR": self._pedb.simsetupdata.SIwave.SIWDCIRSimulationSettings,
+        "kSIwaveEMI": None,
+        "kHFSSPI": self._pedb.simsetupdata.HFSSPISimulationSettings,
+        "kDDRwizard": None,
+        "kQ3D": None,
+        "kNumSetupTypes": None,
+        """
+
+        return self._edb_object.SimSetupType.ToString()
 
     @property
     def simulation_settings(self):
-        return self._edb_object.SimulationSettings
+        if self.sim_setup_type == "kHFSS":
+            return HFSSSimulationSettings(self._pedb, self.sim_setup, self._edb_object.SimulationSettings)
+        elif self.sim_setup_type == "kHFSSPI":
+            return HFSSPISimulationSettings(self._pedb, self.sim_setup, self._edb_object.SimulationSettings)
 
     @property
     def sweep_data_list(self):
@@ -77,5 +102,5 @@ class SimSetupInfo:
         ]
 
     def add_sweep_data(self, sweep_data):
-        sweep_data.sim_setup = self.sim_setup
+        sweep_data._sim_setup = self.sim_setup
         self._edb_object.SweepDataList.Add(sweep_data._edb_object)
