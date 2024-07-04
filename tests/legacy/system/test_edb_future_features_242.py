@@ -123,7 +123,6 @@ class TestClass:
         edbapp = edb_examples.get_si_verse(version=VERSION)
         setup = edbapp.create_hfsspi_setup("test")
         assert setup.get_simulation_settings()
-        # setup.add_frequency_sweep(frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
         settings = {'auto_select_nets_for_simulation': True,
                     'ignore_dummy_nets_for_selected_nets': False,
                     'ignore_small_holes': 1,
@@ -147,3 +146,9 @@ class TestClass:
         settings_get = edbapp.setups["test"].get_simulation_settings()
         for k, v in settings.items():
             assert settings[k] == settings_get[k]
+
+    def test_create_hfss_pi_setup_add_sweep(self, edb_examples):
+        edbapp = edb_examples.get_si_verse(version=VERSION)
+        setup = edbapp.create_hfsspi_setup("test")
+        setup.add_frequency_sweep(name="sweep1", frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
+        assert setup.sweeps["sweep1"].frequencies

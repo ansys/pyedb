@@ -248,14 +248,7 @@ class SimulationSetup(object):
     @property
     def sweeps(self):
         """List of frequency sweeps."""
-        temp = {}
-        if self.setup_type in ("kRaptorX", "kHFSSPI"):
-            sweep_data_list = self._edb_setup_info.SweepDataList
-            for i in list(sweep_data_list):
-                temp[i.Name] = SweepData(self, None, i.Name, i)
-            return temp
-        else:
-            return {i.name: i for i in self.sim_setup_info.sweep_data_list}
+        return {i.name: i for i in self.sim_setup_info.sweep_data_list}
 
     def add_sweep(self, name, frequency_set: list = None, **kwargs):
         """Add frequency sweep.
