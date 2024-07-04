@@ -862,6 +862,9 @@ class TestClass:
         assert setup1.set_solution_multi_frequencies()
         assert setup1.set_solution_broadband()
 
+        setup1.solver_slider_type = 0
+        assert setup1.solver_slider_type == 0
+
         setup1.hfss_solver_settings.enhanced_low_freq_accuracy = True
         setup1.hfss_solver_settings.order_basis = "first"
         setup1.hfss_solver_settings.relative_residual = 0.0002
