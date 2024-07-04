@@ -29,14 +29,14 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 VERSION = 2024.2
 
 
-@pytest.mark.skipif(True, reason="AEDT 2024.2 is not installed")
+#@pytest.mark.skipif(True, reason="AEDT 2024.2 is not installed")
 class TestClass:
     @pytest.fixture(autouse=True)
     def init(self):
         pass
 
     def test_add_raptorx_setup(self, edb_examples):
-        edbapp = edb_examples.get_si_verse(VERSION=VERSION)
+        edbapp = edb_examples.get_si_verse(version=VERSION)
         setup = edbapp.create_raptorx_setup("test")
         assert "test" in edbapp.setups
         setup.add_frequency_sweep(frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])

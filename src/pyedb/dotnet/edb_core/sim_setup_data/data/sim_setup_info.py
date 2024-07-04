@@ -23,7 +23,7 @@
 from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_settings import (
     HFSSPISimulationSettings,
-    HFSSSimulationSettings
+    # HFSSSimulationSettings
 )
 
 
@@ -63,6 +63,14 @@ class SimSetupInfo:
             self._edb_object = edb_object
 
     @property
+    def name(self):
+        return self._edb_object.Name
+
+    @name.setter
+    def name(self, name):
+        self._edb_object.Name = name
+
+    @property
     def position(self):
         return self._edb_object.Position
 
@@ -91,9 +99,17 @@ class SimSetupInfo:
     @property
     def simulation_settings(self):
         if self.sim_setup_type == "kHFSS":
-            return HFSSSimulationSettings(self._pedb, self.sim_setup, self._edb_object.SimulationSettings)
+            return self._edb_object.SimulationSettings
+            # todo refactor HFSS
+            # return HFSSSimulationSettings(self._pedb, self.sim_setup, self._edb_object.SimulationSettings)
         elif self.sim_setup_type == "kHFSSPI":
             return HFSSPISimulationSettings(self._pedb, self.sim_setup, self._edb_object.SimulationSettings)
+        elif self.sim_setup_type == "kSIwave":  # todo refactor
+            return self._edb_object.SimulationSettings
+
+        elif self.sim_setup_type == "kSIwaveDCIR":  # todo refactor
+            return self._edb_object.SimulationSettings
+
 
     @property
     def sweep_data_list(self):
