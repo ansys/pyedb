@@ -248,6 +248,9 @@ nbsphinx_custom_formats = {
     ".py": ["jupytext.reads", {"fmt": ""}],
 }
 
+exclude_patterns = [
+    "conf.py",
+]
 
 # gallery build requires EDB install
 if os.name != "posix" and "PYEDB_CI_NO_EXAMPLES" not in os.environ:
