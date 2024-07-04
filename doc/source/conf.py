@@ -7,6 +7,7 @@ import json
 import os
 import pathlib
 from pprint import pformat
+import shutil
 import sys
 import warnings
 
