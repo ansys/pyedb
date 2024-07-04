@@ -29,8 +29,8 @@ from sphinx import addnodes
 # Additionally, when documenting images in formats other than the supported ones,
 # make sure to specify their types.
 from sphinx.builders.latex import LaTeXBuilder
-from sphinx_gallery.sorting import FileNameSortKey
 from sphinx.util import logging
+from sphinx_gallery.sorting import FileNameSortKey
 
 LaTeXBuilder.supported_image_types = ["image/png", "image/pdf", "image/svg+xml", "image/webp"]
 
@@ -68,6 +68,7 @@ class PrettyPrintDirective(Directive):
         literal["language"] = "python"
 
         return [addnodes.desc_name(text=member_name), addnodes.desc_content("", literal)]
+
 
 # Sphinx event hooks
 
@@ -210,7 +211,6 @@ def setup(app):
     app.connect("build-finished", remove_examples)
     app.connect("build-finished", remove_doctree)
     app.connect("build-finished", check_build_finished_without_error)
-    
 
 
 local_path = os.path.dirname(os.path.realpath(__file__))
