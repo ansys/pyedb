@@ -847,11 +847,15 @@ class PathDotNet(PrimitiveDotNet):
     @property
     def center_line(self):
         """:class:`PolygonData <ansys.edb.geometry.PolygonData>`: Center line for this Path."""
-        return self.prim_obj.GetCenterLine()
+        edb_center_line = self.prim_obj.GetCenterLine()
+        return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(edb_center_line.Points)]
 
     @center_line.setter
-    def center_line(self, center_line):
-        self.prim_obj.SetCenterLineMessage(center_line)
+    def center_line(self, value):
+        if isinstance(value, list):
+            points = [self._pedb.point_data(i[0], i[1]) for i in value]
+            polygon_data = self._edb.geometry.polygon_data.dotnetobj(convert_py_list_to_net_list(points), False)
+            self.prim_obj.SetCenterLine(polygon_data)
 
     @property
     def end_cap_style(self):
