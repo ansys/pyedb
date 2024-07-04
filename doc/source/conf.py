@@ -30,6 +30,7 @@ from sphinx import addnodes
 # make sure to specify their types.
 from sphinx.builders.latex import LaTeXBuilder
 from sphinx_gallery.sorting import FileNameSortKey
+from sphinx.util import logging
 
 LaTeXBuilder.supported_image_types = ["image/png", "image/pdf", "image/svg+xml", "image/webp"]
 
@@ -46,6 +47,10 @@ LaTeXTranslator.visit_desc_content = visit_desc_content
 
 
 # <----------------- End of sphinx pdf builder override---------------->
+
+logger = logging.getLogger(__name__)
+path = pathlib.Path(__file__).parent.parent.parent / "examples"
+EXAMPLES_DIRECTORY = path.resolve()
 
 
 class PrettyPrintDirective(Directive):
@@ -64,6 +69,126 @@ class PrettyPrintDirective(Directive):
 
         return [addnodes.desc_name(text=member_name), addnodes.desc_content("", literal)]
 
+# Sphinx event hooks
+
+
+def directory_size(directory_path):
+    """Compute the size (in mega bytes) of a directory."""
+    res = 0
+    for path, _, files in os.walk(directory_path):
+        for f in files:
+            fp = os.path.join(path, f)
+            res += os.stat(fp).st_size
+    # Convert in mega bytes
+    res /= 1e6
+    return res
+
+
+def remove_doctree(app, exception):
+    """Remove the .doctree directory created during the documentation build."""
+
+    # Keep the doctree to avoid creating it twice. This is typically helpful in CI/CD
+    # where we want to build both HTML and PDF pages.
+    if bool(int(os.getenv("SPHINXBUILD_KEEP_DOCTREEDIR", "0"))):
+        logger.info(f"Keeping directory {app.doctreedir}.")
+    else:
+        size = directory_size(app.doctreedir)
+        logger.info(f"Removing doctree {app.doctreedir} ({size} MB).")
+        shutil.rmtree(app.doctreedir, ignore_errors=True)
+        logger.info(f"Doctree removed.")
+
+
+def copy_examples(app):
+    """Copy directory examples (root directory) files into the doc/source/examples directory."""
+    destination_dir = pathlib.Path(app.srcdir, "examples").resolve()
+    logger.info(f"Copying examples from {EXAMPLES_DIRECTORY} to {destination_dir}.")
+
+    if os.path.exists(destination_dir):
+        size = directory_size(destination_dir)
+        logger.info(f"Directory {destination_dir} ({size} MB) already exist, removing it.")
+        shutil.rmtree(destination_dir, ignore_errors=True)
+        logger.info(f"Directory removed.")
+
+    shutil.copytree(EXAMPLES_DIRECTORY, destination_dir)
+    logger.info(f"Copy performed")
+
+
+def remove_examples(app, exception):
+    """Remove the doc/source/examples directory created during the documentation build."""
+    destination_dir = pathlib.Path(app.srcdir) / "examples"
+
+    size = directory_size(destination_dir)
+    logger.info(f"Removing directory {destination_dir} ({size} MB).")
+    shutil.rmtree(destination_dir, ignore_errors=True)
+    logger.info(f"Directory removed.")
+
+
+def adjust_image_path(app, docname, source):
+    """Adjust the HTML label used to insert images in the examples.
+
+    The following path makes the examples in the root directory work:
+    # <img src="../../doc/source/_static/diff_via.png" width="500">
+    However, examples fail when used through the documentation build because
+    reaching the associated path should be "../../_static/diff_via.png".
+    Indeed, the directory ``_static`` is automatically copied into the output directory
+    ``_build/html/_static``.
+    """
+    # Get the full path to the document
+    docpath = os.path.join(app.srcdir, docname)
+
+    # Check if this is a PY example file
+    if not os.path.exists(docpath + ".py") or not docname.startswith("examples"):
+        return
+
+    logger.info(f"Changing HTML image path in '{docname}.py' file.")
+    source[0] = source[0].replace("../../doc/source/_static", "../../_static")
+
+
+def check_example_error(app, pagename, templatename, context, doctree):
+    """Log an error if the execution of an example as a notebook triggered an error.
+
+    Since the documentation build might not stop if the execution of a notebook triggered
+    an error, we use a flag to log that an error is spotted in the html page context.
+    """
+    # Check if the HTML contains an error message
+    if pagename.startswith("examples") and not pagename.endswith("/index"):
+        if any(
+            map(
+                lambda msg: msg in context["body"],
+                [
+                    "UsageError",
+                    "NameError",
+                    "DeadKernelError",
+                    "NotebookError",
+                    "CellExecutionError",
+                ],
+            )
+        ):
+            logger.error(f"An error was detected in file {pagename}")
+            app.builder.config.html_context["build_error"] = True
+
+
+def check_build_finished_without_error(app, exception):
+    """Check that no error is detected along the documentation build process."""
+    if app.builder.config.html_context.get("build_error", False):
+        logger.info("Build failed due to an error in html-page-context")
+        exit(1)
+
+
+def check_pandoc_installed(app):
+    """Ensure that pandoc is installed"""
+    import pypandoc
+
+    try:
+        pandoc_path = pypandoc.get_pandoc_path()
+        pandoc_dir = os.path.dirname(pandoc_path)
+        if pandoc_dir not in os.environ["PATH"].split(os.pathsep):
+            logger.info("Pandoc directory is not in $PATH.")
+            os.environ["PATH"] += os.pathsep + pandoc_dir
+            logger.info(f"Pandoc directory '{pandoc_dir}' has been added to $PATH")
+    except OSError:
+        logger.error("Pandoc was not found, please add it to your path or install pypandoc-binary")
+
 
 def autodoc_skip_member(app, what, name, obj, skip, options):
     try:
@@ -78,6 +203,14 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
 def setup(app):
     app.add_directive("pprint", PrettyPrintDirective)
     app.connect("autodoc-skip-member", autodoc_skip_member)
+    app.connect("builder-inited", copy_examples)
+    app.connect("builder-inited", check_pandoc_installed)
+    app.connect("source-read", adjust_image_path)
+    app.connect("html-page-context", check_example_error)
+    app.connect("build-finished", remove_examples)
+    app.connect("build-finished", remove_doctree)
+    app.connect("build-finished", check_build_finished_without_error)
+    
 
 
 local_path = os.path.dirname(os.path.realpath(__file__))
