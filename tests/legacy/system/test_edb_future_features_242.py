@@ -29,7 +29,7 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 VERSION = 2024.2
 
 
-# @pytest.mark.skipif(True, reason="AEDT 2024.2 is not installed")
+@pytest.mark.skipif(True, reason="AEDT 2024.2 is not installed")
 class TestClass:
     @pytest.fixture(autouse=True)
     def init(self):
