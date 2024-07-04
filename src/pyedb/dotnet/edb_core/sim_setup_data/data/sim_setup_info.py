@@ -20,21 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
-from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_settings import (
+from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_settings import (  # HFSSSimulationSettings
     HFSSPISimulationSettings,
-    # HFSSSimulationSettings
 )
+from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 
 
 class SimSetupInfo:
     def __init__(
-            self,
-            pedb,
-            sim_setup,
-            edb_object=None,
-            setup_type: str = None,
-            name: str = None,
+        self,
+        pedb,
+        sim_setup,
+        edb_object=None,
+        setup_type: str = None,
+        name: str = None,
     ):
         self._pedb = pedb
         self.sim_setup = sim_setup
@@ -109,7 +108,6 @@ class SimSetupInfo:
 
         elif self.sim_setup_type == "kSIwaveDCIR":  # todo refactor
             return self._edb_object.SimulationSettings
-
 
     @property
     def sweep_data_list(self):

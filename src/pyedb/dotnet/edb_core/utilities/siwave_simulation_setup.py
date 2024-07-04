@@ -287,7 +287,9 @@ class SiwaveDCSimulationSetup(SimulationSetup):
     def get_sim_setup_info(self):  # todo remove after refactoring
         """Get simulation information from the setup."""
         warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
-        sim_setup_info = SimSetupInfo(self._pedb, sim_setup=self, setup_type="kSIwaveDCIR", name=self._edb_object.GetName())
+        sim_setup_info = SimSetupInfo(
+            self._pedb, sim_setup=self, setup_type="kSIwaveDCIR", name=self._edb_object.GetName()
+        )
         clone_edb_sim_setup_info(source=self._edb_object, target=sim_setup_info._edb_object)
         return sim_setup_info
 
