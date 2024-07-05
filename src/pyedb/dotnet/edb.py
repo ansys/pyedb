@@ -510,6 +510,7 @@ class Edb(Database):
     def sources(self):
         """Get all layout sources."""
         terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [3, 4, 7]]
+        terms = [term for term in terms if not term.IsReferenceTerminal()]
         return {ter.GetName(): ExcitationSources(self, ter) for ter in terms}
 
     @property
@@ -3743,7 +3744,7 @@ class Edb(Database):
         if float(self.edbversion) < 2024.2:
             self.logger.error("HFSSPI simulation only supported with Ansys release 2024R2 and higher")
             return False
-        return HFSSPISimulationSetup(self).create(name)
+        return HFSSPISimulationSetup(self, name=name)
 
     def create_siwave_syz_setup(self, name=None, **kwargs):
         """Create a setup from a template.

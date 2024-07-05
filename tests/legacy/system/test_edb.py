@@ -87,12 +87,12 @@ class TestClass:
         """Create a voltage source."""
         assert len(self.edbapp.sources) == 0
         assert "Vsource_" in self.edbapp.siwave.create_voltage_source_on_net("U1", "USB3_D_P", "U1", "GND", 3.3, 0)
-        assert len(self.edbapp.sources) == 2
+        assert len(self.edbapp.sources) == 1
         assert list(self.edbapp.sources.values())[0].magnitude == 3.3
 
         pins = self.edbapp.components.get_pin_from_component("U1")
         assert "VSource_" in self.edbapp.siwave.create_voltage_source_on_pin(pins[300], pins[10], 3.3, 0)
-        assert len(self.edbapp.sources) == 3
+        assert len(self.edbapp.sources) == 2
         assert len(self.edbapp.probes) == 0
         list(self.edbapp.sources.values())[0].phase = 1
         assert list(self.edbapp.sources.values())[0].phase == 1
@@ -862,6 +862,9 @@ class TestClass:
         assert setup1.set_solution_multi_frequencies()
         assert setup1.set_solution_broadband()
 
+        setup1.solver_slider_type = 0
+        assert setup1.solver_slider_type == 0
+
         setup1.hfss_solver_settings.enhanced_low_freq_accuracy = True
         setup1.hfss_solver_settings.order_basis = "first"
         setup1.hfss_solver_settings.relative_residual = 0.0002
@@ -1250,8 +1253,6 @@ class TestClass:
         assert sources[0].magnitude == 1.45
         sources[1].magnitude = 1.45
         assert sources[1].magnitude == 1.45
-        sources[2].magnitude = 1.45
-        assert sources[2].magnitude == 1.45
         edbapp.close()
 
     def test_delete_pingroup(self):

@@ -23,9 +23,11 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
-
 from pyedb.dotnet.edb_core.cell.primitive import Bondwire
 from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
+from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.dotnet.edb_core.edb_data.sources import PinGroup
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.layout import EdbLayout
 
 
@@ -64,6 +66,11 @@ class Layout(EdbLayout):
             for i in self._edb_object.Primitives
             if i.GetPrimitiveType().ToString() == "Bondwire"
         ]
+
+    @property
+    def padstack_instances(self):
+        """Get all padstack instances in a list."""
+        return [EDBPadstackInstance(i, self._pedb) for i in self._edb_object.PadstackInstances]
 
     def create_bondwire(
         self,
@@ -129,3 +136,43 @@ class Layout(EdbLayout):
             end_y=self._pedb.edb_value(end_y),
             net=self.nets[net]._edb_object,
         )
+
+    def find_object_by_id(self, value: int):
+        """Find a Connectable object by Database ID.
+
+        Parameters
+        ----------
+        value : int
+        """
+        obj = self._pedb._edb.Cell.Connectable.FindById(self._edb_object, value)
+        if obj.GetObjType().ToString() == "PadstackInstance":
+            return EDBPadstackInstance(obj, self._pedb)
+
+    def create_pin_group(self, name: str, pins_by_id: list[int] = None, pins_by_aedt_name: list[str] = None):
+        """Create a PinGroup.
+
+        Parameters
+        name : str,
+            Name of the PinGroup.
+        pins_by_id : list[int] or None
+            List of pins by ID.
+        pins_by_aedt_name : list[str] or None
+            List of pins by AEDT name.
+        """
+        pins = []
+
+        if pins_by_id is not None:
+            for p in pins_by_id:
+                pins.append(self.find_object_by_id(p._edb_object))
+        else:
+            p_inst = self.padstack_instances
+            while True:
+                p = p_inst.pop(0)
+                if p.aedt_name in pins_by_aedt_name:
+                    pins.append(p._edb_object)
+                    pins_by_aedt_name.remove(p.aedt_name)
+                if len(pins_by_aedt_name) == 0:
+                    break
+
+        obj = self._edb.cell.hierarchy.pin_group.Create(self._edb_object, name, convert_py_list_to_net_list(pins))
+        return PinGroup(name, obj, self._pedb)

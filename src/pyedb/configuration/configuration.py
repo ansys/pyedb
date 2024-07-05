@@ -65,14 +65,16 @@ class Configuration:
         """
         if isinstance(config_file, dict):
             data = config_file
-        elif os.path.isfile(config_file):
-            with open(config_file, "r") as f:
-                if config_file.endswith(".json"):
-                    data = json.load(f)
-                elif config_file.endswith(".toml"):
-                    data = toml.load(f)
-        else:  # pragma: no cover
-            return False
+        else:
+            config_file = str(config_file)
+            if os.path.isfile(config_file):
+                with open(config_file, "r") as f:
+                    if config_file.endswith(".json"):
+                        data = json.load(f)
+                    elif config_file.endswith(".toml"):
+                        data = toml.load(f)
+            else:  # pragma: no cover
+                return False
 
         if not append:  # pragma: no cover
             self.data = {}
@@ -120,16 +122,13 @@ class Configuration:
             self.cfg_data.padstacks.apply()
 
         # Configure pin groups
-        for pin_group in self.cfg_data.pin_groups:
-            pin_group.apply()
+        self.cfg_data.pin_groups.apply()
 
         # Configure ports
-        for port in self.cfg_data.ports:
-            port.create()
+        self.cfg_data.ports.apply()
 
         # Configure sources
-        for source in self.cfg_data.sources:
-            source.create()
+        self.cfg_data.sources.apply()
 
         # Configure setup
         self.cfg_data.setups.apply()
@@ -271,12 +270,30 @@ class Configuration:
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):
             data["setups"] = self.cfg_data.setups.get_data_from_db()
+        if kwargs.get("sources", False):
+            data["sources"] = self.cfg_data.sources.get_data_from_db()
+        if kwargs.get("ports", False):
+            data["ports"] = self.cfg_data.ports.get_data_from_db()
         if kwargs.get("components", False):
             data["components"] = self.cfg_data.components.get_data_from_db()
+        if kwargs.get("nets", False):
+            data["nets"] = self.cfg_data.nets.get_data_from_db()
+        if kwargs.get("pin_groups", False):
+            data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
 
         return data
 
-    def export(self, file_path, stackup=True, package_definitions=True, setups=True):
+    def export(
+        self,
+        file_path,
+        stackup=True,
+        package_definitions=True,
+        setups=True,
+        sources=True,
+        ports=True,
+        nets=True,
+        pin_groups=True,
+    ):
         """Export the configuration data from layout to a file.
 
         Parameters
@@ -285,14 +302,31 @@ class Configuration:
             File path to export the configuration data.
         stackup : bool
             Whether to export stackup or not.
-
+        package_definitions : bool
+            Whether to export package definitions or not.
+        setups : bool
+            Whether to export setups or not.
+        sources : bool
+            Whether to export sources or not.
+        ports : bool
+            Whether to export ports or not.
+        nets : bool
+            Whether to export nets.
         Returns
         -------
         bool
         """
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)
         file_path = file_path if file_path.suffix == ".json" else file_path.with_suffix(".json")
-        data = self.get_data_from_db(stackup=stackup, package_definitions=package_definitions, setups=setups)
+        data = self.get_data_from_db(
+            stackup=stackup,
+            package_definitions=package_definitions,
+            setups=setups,
+            sources=sources,
+            ports=ports,
+            nets=nets,
+            pin_groups=pin_groups,
+        )
         with open(file_path, "w") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
         return True if os.path.isfile(file_path) else False

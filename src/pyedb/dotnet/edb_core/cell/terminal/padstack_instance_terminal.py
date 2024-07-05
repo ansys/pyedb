@@ -86,3 +86,13 @@ class PadstackInstanceTerminal(Terminal):
         terminal = PadstackInstanceTerminal(self._pedb, terminal)
 
         return terminal if not terminal.is_null else False
+
+    def _get_parameters(self):
+        """Gets the parameters of the padstack instance terminal."""
+        _, padstack_inst, layer_obj = self._edb_object.GetParameters()
+        return padstack_inst, layer_obj
+
+    @property
+    def padstack_instance(self):
+        p_inst, _ = self._get_parameters()
+        return self._pedb.modeler.find_object_by_id(p_inst.GetId())
