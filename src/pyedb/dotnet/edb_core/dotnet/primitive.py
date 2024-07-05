@@ -837,9 +837,8 @@ class PathDotNet(PrimitiveDotNet):
             net = net.api_object
         width = self._app.edb_api.utility.value(width)
         if isinstance(points, list):
-            points = self._app.edb_api.geometry.polygon_data.api_class(
-                convert_py_list_to_net_list([self._app.geometry.point_data(i) for i in points]), False
-            )
+            points = convert_py_list_to_net_list([self._app.point_data(i[0], i[1]) for i in points])
+            points = self._app.edb_api.geometry.polygon_data.dotnetobj(points)
         return PathDotNet(
             self._app, self.api.Path.Create(layout, layer, net, width, end_cap1, end_cap2, corner_style, points)
         )
