@@ -537,3 +537,24 @@ class TestClass:
         assert "ref" in test_edb.stackup.layers
         assert len(test_edb.modeler.polygons) == 12
         test_edb.close()
+
+    def test_path_center_line(self):
+        edb = Edb()
+        edb.stackup.add_layer("GND", "Gap")
+        edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.2mm", material="Duroid (tm)")
+        edb.stackup.add_layer("TOP", "Substrat")
+        trace_length = 10e-3
+        trace_width = 200e-6
+        trace_gap = 1e-3
+        edb.modeler.create_trace(
+            path_list=[[-trace_gap / 2, 0.0], [-trace_gap / 2, trace_length]],
+            layer_name="TOP",
+            width=trace_width,
+            net_name="signal1",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        centerline = edb.modeler.paths[0].center_line
+        assert centerline == [[-0.0005, 0.0], [-0.0005, 0.01]]
+        edb.modeler.paths[0].center_line = [[0.0, 0.0], [0.0, 5e-3]]
+        assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.0, 5e-3]]
