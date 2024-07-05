@@ -20,31 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import logging
-
-from pyedb.dotnet.edb_core.cell.connectable import Connectable
+from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 
 
-class HierarchyObj(Connectable):
+class LayoutObjInstance(ObjBase):
+    """Manages EDB functionalities for the layout object instance."""
+
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
 
-    @property
-    def component_def(self):
-        """Component definition."""
-        return self._edb_object.GetComponentDef().GetName()
-
-    @property
-    def location(self):
-        """XY Coordinates."""
-        flag, x, y = self._edb_object.GetLocation()
-        if flag:
-            return [x, y]
-        else:  # pragma no cover
-            logging.warning(f"Failed to get location of '{self.name}'.")
-            return
-
-
-class Group(HierarchyObj):
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)

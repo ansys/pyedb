@@ -37,6 +37,11 @@ class Layout(EdbLayout):
         self._edb_object = edb_object
 
     @property
+    def cell_instances(self):
+
+        return list(self._edb_object.CellInstances)
+
+    @property
     def nets(self):
         """Nets.
 

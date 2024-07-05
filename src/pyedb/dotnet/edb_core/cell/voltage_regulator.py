@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
+from pyedb.dotnet.edb_core.cell.connectable import Connectable
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 
 
