@@ -132,19 +132,19 @@ class SiwaveSimulationSetup(SimulationSetup):
     @property
     def sim_setup_info(self):
         """Overrides the default sim_setup_info object."""
-        return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self.get_sim_setup_info)
+        return self.get_sim_setup_info
 
     @sim_setup_info.setter
     def sim_setup_info(self, sim_setup_info):
         self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
 
     @property
-    def get_sim_setup_info(self):
+    def get_sim_setup_info(self):  # todo remove after refactoring
         """Get simulation information from the setup."""
 
         sim_setup_info = SimSetupInfo(self._pedb, sim_setup=self, setup_type="kSIwave", name=self._edb_object.GetName())
         clone_edb_sim_setup_info(source=self._edb_object, target=sim_setup_info._edb_object)
-        return sim_setup_info._edb_object
+        return sim_setup_info
 
     def set_pi_slider(self, value):
         """Set SIwave PI simulation accuracy level.
@@ -174,14 +174,23 @@ class SiwaveSimulationSetup(SimulationSetup):
         self.advanced_settings.set_si_slider(value)
 
     @property
+    def enabled(self):
+        """Flag indicating if the setup is enabled."""
+        return self.sim_setup_info.simulation_settings.Enabled
+
+    @enabled.setter
+    def enabled(self, value: bool):
+        self.sim_setup_info.simulation_settings.Enabled = value
+
+    @property
     def pi_slider_position(self):
         """PI solider position. Values are from ``1`` to ``3``."""
-        return self.get_sim_setup_info.SimulationSettings.PISliderPos
+        return self.get_sim_setup_info.simulation_settings.PISliderPos
 
     @pi_slider_position.setter
     def pi_slider_position(self, value):
         edb_setup_info = self.get_sim_setup_info
-        edb_setup_info.SimulationSettings.PISliderPos = value
+        edb_setup_info.simulation_settings.PISliderPos = value
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
 
@@ -192,12 +201,12 @@ class SiwaveSimulationSetup(SimulationSetup):
     @property
     def si_slider_position(self):
         """SI slider position. Values are from ``1`` to ``3``."""
-        return self.get_sim_setup_info.SimulationSettings.SISliderPos
+        return self.get_sim_setup_info.simulation_settings.SISliderPos
 
     @si_slider_position.setter
     def si_slider_position(self, value):
         edb_setup_info = self.get_sim_setup_info
-        edb_setup_info.SimulationSettings.SISliderPos = value
+        edb_setup_info.simulation_settings.SISliderPos = value
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
 
@@ -213,12 +222,12 @@ class SiwaveSimulationSetup(SimulationSetup):
         -------
         bool
         """
-        return self.get_sim_setup_info.SimulationSettings.UseCustomSettings
+        return self.get_sim_setup_info.simulation_settings.UseCustomSettings
 
     @use_custom_settings.setter
     def use_custom_settings(self, value):
         edb_setup_info = self.get_sim_setup_info
-        edb_setup_info.SimulationSettings.UseCustomSettings = value
+        edb_setup_info.simulation_settings.UseCustomSettings = value
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
 
@@ -230,12 +239,12 @@ class SiwaveSimulationSetup(SimulationSetup):
         -------
         bool
         """
-        return self.get_sim_setup_info.SimulationSettings.UseSISettings
+        return self.get_sim_setup_info.simulation_settings.UseSISettings
 
     @use_si_settings.setter
     def use_si_settings(self, value):
         edb_setup_info = self.get_sim_setup_info
-        edb_setup_info.SimulationSettings.UseSISettings = value
+        edb_setup_info.simulation_settings.UseSISettings = value
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
 
@@ -268,21 +277,21 @@ class SiwaveDCSimulationSetup(SimulationSetup):
     @property
     def sim_setup_info(self):
         """Overrides the default sim_setup_info object."""
-        return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self.get_sim_setup_info)
+        return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self.get_sim_setup_info._edb_object)
 
     @sim_setup_info.setter
     def sim_setup_info(self, sim_setup_info):
         self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
 
     @property
-    def get_sim_setup_info(self):
+    def get_sim_setup_info(self):  # todo remove after refactoring
         """Get simulation information from the setup."""
-
+        warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
         sim_setup_info = SimSetupInfo(
             self._pedb, sim_setup=self, setup_type="kSIwaveDCIR", name=self._edb_object.GetName()
         )
         clone_edb_sim_setup_info(source=self._edb_object, target=sim_setup_info._edb_object)
-        return sim_setup_info._edb_object
+        return sim_setup_info
 
     @property
     def dc_ir_settings(self):
@@ -340,7 +349,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
             {str, int}, keys is source name, value int 0 unspecified, 1 negative node, 2 positive one.
 
         """
-        return convert_netdict_to_pydict(self.get_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround)
+        return convert_netdict_to_pydict(self.get_sim_setup_info.simulation_settings.DCIRSettings.SourceTermsToGround)
 
     def add_source_terminal_to_ground(self, source_name, terminal=0):
         """Add a source terminal to ground.
@@ -363,7 +372,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         """
         terminals = self.source_terms_to_ground
         terminals[source_name] = terminal
-        self.get_sim_setup_info.SimulationSettings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(
+        self.get_sim_setup_info.simulation_settings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(
             terminals
         )
         return self._update_setup()

@@ -20,13 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+
 
 class BaseSimulationSettings:
     def __init__(self, pedb, sim_setup, edb_object):
         self._pedb = pedb
-        self.sim_setup = sim_setup
+        self._sim_setup = sim_setup
         self._edb_object = edb_object
-        self.t_sim_setup_type = {
+        self._t_sim_setup_type = {
             "kHFSS": self._pedb.simsetupdata.HFSSSimulationSettings,
             "kPEM": None,
             "kSIwave": self._pedb.simsetupdata.SIwave.SIWSimulationSettings,
@@ -68,12 +70,8 @@ class HFSSSimulationSettings(SimulationSettings):
 
 
 class HFSSPISimulationSettings(SimulationSettings):
-    def __init__(self, edb_setup_info, pedb, edb_object):
-        super().__init__(pedb, edb_setup_info, edb_object)
-        self._pedb = pedb
-        self.logger = self._pedb.logger
-        self._edb_setup_info = edb_setup_info
-        self._simulation_settings = edb_setup_info.SimulationSettings
+    def __init__(self, pedb, sim_setup, edb_object):
+        super().__init__(pedb, sim_setup, edb_object)
 
     @property
     def auto_select_nets_for_simulation(self):
@@ -83,28 +81,11 @@ class HFSSPISimulationSettings(SimulationSettings):
         -------
             bool
         """
-        return self._simulation_settings.AutoSelectNetsForSimulation
+        return self._edb_object.AutoSelectNetsForSimulation
 
     @auto_select_nets_for_simulation.setter
-    def auto_select_nets_for_simulation(self, value):
-        if isinstance(value, bool):
-            self._simulation_settings.AutoSelectNetsForSimulation = value
-        else:
-            self.logger.error(
-                "Property auto_select_nets_for_simulation expects a boolean "
-                f"value while the provided value is {value}."
-            )
-
-    @property
-    def enabled(self):
-        return self._simulation_settings.Enabled
-
-    @enabled.setter
-    def enabled(self, value):
-        if isinstance(value, bool):
-            self._simulation_settings.Enabled = value
-        else:
-            self.logger.error(f"Property enabled expects a boolean value while the provided value is {value}.")
+    def auto_select_nets_for_simulation(self, value: bool):
+        self._edb_object.AutoSelectNetsForSimulation = value
 
     @property
     def ignore_dummy_nets_for_selected_nets(self):
@@ -114,17 +95,11 @@ class HFSSPISimulationSettings(SimulationSettings):
         -------
             bool
         """
-        return self._simulation_settings.IgnoreDummyNetsForSelectedNets
+        return self._edb_object.IgnoreDummyNetsForSelectedNets
 
     @ignore_dummy_nets_for_selected_nets.setter
     def ignore_dummy_nets_for_selected_nets(self, value):
-        if isinstance(value, bool):
-            self._simulation_settings.IgnoreDummyNetsForSelectedNets = value
-        else:
-            self.logger.error(
-                "Property ignore_dummy_nets_for_selected_nets expects a boolean "
-                f"value while the provided value is {value}."
-            )
+        self._edb_object.IgnoreDummyNetsForSelectedNets = value
 
     @property
     def ignore_small_holes(self):
@@ -134,16 +109,11 @@ class HFSSPISimulationSettings(SimulationSettings):
         -------
             bool
         """
-        return self._simulation_settings.IgnoreSmallHoles
+        return self._edb_object.IgnoreSmallHoles
 
     @ignore_small_holes.setter
-    def ignore_small_holes(self, value):
-        if isinstance(value, bool):
-            self._simulation_settings.IgnoreSmallHoles = value
-        else:
-            self.logger.error(
-                f"Property ignore_small_holes expects a boolean value while the provided value is {value}."
-            )
+    def ignore_small_holes(self, value: bool):
+        self._edb_object.IgnoreSmallHoles = value
 
     @property
     def ignore_small_holes_min_diameter(self):
@@ -153,33 +123,27 @@ class HFSSPISimulationSettings(SimulationSettings):
         -------
             str
         """
-        return self._simulation_settings.IgnoreSmallHolesMinDiameter
+        value = self._edb_object.IgnoreSmallHolesMinDiameter
+        return float(value) if value else value
 
     @ignore_small_holes_min_diameter.setter
     def ignore_small_holes_min_diameter(self, value):
-        self._simulation_settings.IgnoreSmallHolesMinDiameter = self._pedb.edb_value(value).ToString()
+        self._edb_object.IgnoreSmallHolesMinDiameter = self._pedb.edb_value(value).ToString()
 
     @property
     def improved_loss_model(self):
         """Improved Loss Model on power ground nets option.
-
-        Returns
-        -------
-            str
-            ``Level1``, ``Level2``, ``Level3``
+        1: Level 1
+        2: Level 2
+        3: Level 3
         """
-        return self._simulation_settings.ImprovedLossModel
+        levels = {"Level 1": 1, "Level 2": 2, "Level 3": 3}
+        return levels[self._edb_object.ImprovedLossModel]
 
     @improved_loss_model.setter
-    def improved_loss_model(self, value):
-        expected_values = ["Level1", "Level2", "Level3"]
-        if isinstance(value, str) and value in expected_values:
-            self._simulation_settings.ImprovedLossModel = value
-        else:
-            self.logger.error(
-                "Property improved_loss_model expects a string value among "
-                f"'Level1', 'Level2' or 'Level3' while the provided value is {value}."
-            )
+    def improved_loss_model(self, value: int):
+        levels = {1: "Level 1", 2: "Level 2", 3: "Level 3"}
+        self._edb_object.ImprovedLossModel = levels[value]
 
     @property
     def include_enhanced_bond_wire_modeling(self):
@@ -189,17 +153,11 @@ class HFSSPISimulationSettings(SimulationSettings):
         -------
             bool
         """
-        return self._simulation_settings.IncludeEnhancedBondWireModeling
+        return self._edb_object.IncludeEnhancedBondWireModeling
 
     @include_enhanced_bond_wire_modeling.setter
-    def include_enhanced_bond_wire_modeling(self, value):
-        if isinstance(value, bool):
-            self._simulation_settings.IncludeEnhancedBondWireModeling = value
-        else:
-            self.logger.error(
-                "Property include_enhanced_bond_wire_modeling expects a "
-                f"boolean value while the provided value is {value}."
-            )
+    def include_enhanced_bond_wire_modeling(self, value: bool):
+        self._edb_object.IncludeEnhancedBondWireModeling = value
 
     @property
     def include_nets(self):
@@ -210,18 +168,12 @@ class HFSSPISimulationSettings(SimulationSettings):
             [str]
             List of net name.
         """
-        return list(self._simulation_settings.IncludeNets)
+        return list(self._edb_object.IncludeNets)
 
     @include_nets.setter
     def include_nets(self, value):
-        if isinstance(value, str):
-            value = [value]
-        if isinstance(value, list):
-            self._simulation_settings.IncludeNets = convert_py_list_to_net_list(value)
-        else:
-            self.logger.error(
-                f"Property include_nets expects a string or list of string while the provided value is {value}."
-            )
+        value = value if isinstance(value, list) else [value]
+        self._edb_object.IncludeNets = convert_py_list_to_net_list(value)
 
     @property
     def min_plane_area_to_mesh(self):
@@ -231,11 +183,11 @@ class HFSSPISimulationSettings(SimulationSettings):
         -------
             str
         """
-        return self._simulation_settings.MinPlaneAreaToMesh
+        return self._edb_object.MinPlaneAreaToMesh
 
     @min_plane_area_to_mesh.setter
     def min_plane_area_to_mesh(self, value):
-        self._simulation_settings.MinPlaneAreaToMesh = self._pedb.edb_value(value).ToString()
+        self._edb_object.MinPlaneAreaToMesh = self._pedb.edb_value(value).ToString()
 
     @property
     def min_void_area_to_mesh(self):
@@ -245,31 +197,30 @@ class HFSSPISimulationSettings(SimulationSettings):
         -------
             str
         """
-        return self._simulation_settings.MinVoidAreaToMesh
+        return self._edb_object.MinVoidAreaToMesh
 
     @min_void_area_to_mesh.setter
     def min_void_area_to_mesh(self, value):
-        self._simulation_settings.MinVoidAreaToMesh = self._pedb.edb_value(value).ToString()
+        self._edb_object.MinVoidAreaToMesh = self._pedb.edb_value(value).ToString()
 
     @property
     def model_type(self):
         """Model Type setting.
 
+        0: RDL,
+        1: Package
+        2: PCB
+
         Returns
         -------
             int
-        Model type: ``0``=RDL, ``1``=Package, ``2``=PCB
+
         """
-        return self._simulation_settings.ModelType
+        return self._edb_object.ModelType
 
     @model_type.setter
-    def model_type(self, value):
-        if isinstance(value, int) and value in range(3):
-            self._simulation_settings.ModelType = value
-        else:
-            self.logger.error(
-                f"Property model_type expects an integer value among 0, 1 or 2 while the provided value is {value}."
-            )
+    def model_type(self, value: int):
+        self._edb_object.ModelType = value
 
     @property
     def perform_erc(self):
@@ -279,34 +230,25 @@ class HFSSPISimulationSettings(SimulationSettings):
         -------
             bool
         """
-        return self._simulation_settings.PerformERC
+        return self._edb_object.PerformERC
 
     @perform_erc.setter
-    def perform_erc(self, value):
-        if isinstance(value, bool):
-            self._simulation_settings.PerformERC = value
-        else:
-            self.logger.error(f"Property perform_erc expects a boolean value while the provided value is {value}.")
+    def perform_erc(self, value: bool):
+        self._edb_object.PerformERC = value
 
     @property
     def pi_slider_pos(self):
         """The Simulation Preference Slider setting
-
+        Model type: ``0``= balanced, ``1``=Accuracy.
         Returns
         -------
             int
-        Model type: ``0``= balanced, ``1``=Accuracy.
         """
-        return self._simulation_settings.PISliderPos
+        return self._edb_object.PISliderPos
 
     @pi_slider_pos.setter
     def pi_slider_pos(self, value):
-        if isinstance(value, int) and value in range(2):
-            self._simulation_settings.PISliderPos = value
-        else:
-            self.logger.error(
-                f"Property pi_slider_pos expects an integer value among 0 or 1 while the provided value is {value}."
-            )
+        self._edb_object.PISliderPos = value
 
     @property
     def rms_surface_roughness(self):
@@ -316,33 +258,32 @@ class HFSSPISimulationSettings(SimulationSettings):
         -------
             str
         """
-        return self._simulation_settings.RMSSurfaceRoughness
+        return self._edb_object.RMSSurfaceRoughness
 
     @rms_surface_roughness.setter
     def rms_surface_roughness(self, value):
-        self._simulation_settings.RMSSurfaceRoughness = self._pedb.edb_value(value).ToString()
+        self._edb_object.RMSSurfaceRoughness = self._pedb.edb_value(value).ToString()
 
     @property
-    def signal_nets_conductor_modeling(self):
-        """Conductor Modeling
-
-        Returns
-        -------
-            str
-        Value: ``"MeshInside"`` or ``"ImpedanceBoundary"``.
+    def signal_nets_conductor_modeling(self) -> int:
+        """Conductor Modeling.
+        0: MeshInside,
+        1: ImpedanceBoundary
         """
-        return self._simulation_settings.SignalNetsConductorModeling
+        modelling_type = {
+            "Mesh Inside": 0,
+            "Impedance Boundary": 1,
+        }
+
+        return modelling_type[self._edb_object.SignalNetsConductorModeling]
 
     @signal_nets_conductor_modeling.setter
-    def signal_nets_conductor_modeling(self, value):
-        expected_values = ["MeshInside", "ImpedanceBoundary"]
-        if isinstance(value, str) and value in expected_values:
-            self._simulation_settings.SignalNetsConductorModeling = value
-        else:
-            self.logger.error(
-                "Property signal_nets_conductor_modeling expects a string value among "
-                f"'MeshInside' or 'ImpedanceBoundary' while the provided value is {value}."
-            )
+    def signal_nets_conductor_modeling(self, value: int):
+        modelling_type = {
+            0: "Mesh Inside",
+            1: "Impedance Boundary",
+        }
+        self._edb_object.SignalNetsConductorModeling = modelling_type[value]
 
     @property
     def signal_nets_error_tolerance(self):
@@ -353,25 +294,20 @@ class HFSSPISimulationSettings(SimulationSettings):
             str
         Value between 0.02 and 1.
         """
-        return self._simulation_settings.SignalNetsErrorTolerance
+        value = self._edb_object.SignalNetsErrorTolerance
+        return "default" if value == "Default" else float(value)
 
     @signal_nets_error_tolerance.setter
     def signal_nets_error_tolerance(self, value):
-        self._simulation_settings.SignalNetsErrorTolerance = self._pedb.edb_value(value).ToString()
+        self._edb_object.SignalNetsErrorTolerance = self._pedb.edb_value(value).ToString()
 
     @property
     def signal_nets_include_improved_dielectric_fill_refinement(self):
-        return self._simulation_settings.SignalNetsIncludeImprovedDielectricFillRefinement
+        return self._edb_object.SignalNetsIncludeImprovedDielectricFillRefinement
 
     @signal_nets_include_improved_dielectric_fill_refinement.setter
-    def signal_nets_include_improved_dielectric_fill_refinement(self, value):
-        if isinstance(value, bool):
-            self._simulation_settings.SignalNetsIncludeImprovedDielectricFillRefinement = value
-        else:
-            self.logger.error(
-                "Property signal_nets_include_improved_dielectric_fill_refinement "
-                f"expects a boolean value while the provided value is {value}."
-            )
+    def signal_nets_include_improved_dielectric_fill_refinement(self, value: bool):
+        self._edb_object.SignalNetsIncludeImprovedDielectricFillRefinement = value
 
     @property
     def signal_nets_include_improved_loss_handling(self):
@@ -381,44 +317,42 @@ class HFSSPISimulationSettings(SimulationSettings):
         -------
             bool
         """
-        return self._simulation_settings.SignalNetsIncludeImprovedLossHandling
+        return self._edb_object.SignalNetsIncludeImprovedLossHandling
 
     @signal_nets_include_improved_loss_handling.setter
-    def signal_nets_include_improved_loss_handling(self, value):
-        if isinstance(value, bool):
-            self._simulation_settings.SignalNetsIncludeImprovedLossHandling = value
-        else:
-            self.logger.error(
-                "Property signal_nets_include_improved_loss_handling "
-                f"expects a boolean value while the provided value is {value}."
-            )
+    def signal_nets_include_improved_loss_handling(self, value: bool):
+        self._edb_object.SignalNetsIncludeImprovedLossHandling = value
 
     @property
     def snap_length_threshold(self):
-        return self._simulation_settings.SnapLengthThreshold
+        return self._edb_object.SnapLengthThreshold
 
     @snap_length_threshold.setter
     def snap_length_threshold(self, value):
-        self._simulation_settings.SnapLengthThreshold = self._pedb.edb_value(value).ToString()
+        self._edb_object.SnapLengthThreshold = self._pedb.edb_value(value).ToString()
 
     @property
     def surface_roughness_model(self):
         """Chosen Model setting
+        Model allowed, ``"None"``, ``"Exponential"`` or ``"Hammerstad"``.
 
         Returns
         -------
             str
-        Model allowed, ``"None"``, ``"Exponential"`` or ``"Hammerstad"``.
+
         """
-        return self._simulation_settings.SurfaceRoughnessModel
+        model = {
+            "None": 0,
+            "Exponential": 1,
+            "Hammerstad": 2,
+        }
+        return model[self._edb_object.SurfaceRoughnessModel]
 
     @surface_roughness_model.setter
     def surface_roughness_model(self, value):
-        expected_values = ["None", "Exponential", "Hammerstad"]
-        if isinstance(value, str) and value in expected_values:
-            self._simulation_settings.SurfaceRoughnessModel = value
-        else:
-            self.logger.error(
-                "Property surface_roughness_model expects a string value among "
-                f"'None', 'Exponential' or 'Hammerstad' while the provided value is {value}."
-            )
+        model = {
+            0: "None",
+            1: "Exponential",
+            2: "Hammerstad",
+        }
+        self._edb_object.SurfaceRoughnessModel = model[value]
