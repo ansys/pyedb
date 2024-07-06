@@ -274,7 +274,7 @@ extensions = [
     "numpydoc",
     "ansys_sphinx_theme.extension.linkcode",
     "nbsphinx",
-    # TODO: Remove once we switch for new example format.
+    # parse MD documents with Sphinx
     "recommonmark",
 ]
 
