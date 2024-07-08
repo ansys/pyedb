@@ -1,6 +1,5 @@
-# Configuration file for the Sphinx_PyEDB documentation builder.
+# Configuration file for the PyEDB documentation builder.
 
-# -- Project information -----------------------------------------------------
 import datetime
 from importlib import import_module
 import json
@@ -31,7 +30,6 @@ from sphinx import addnodes
 # make sure to specify their types.
 from sphinx.builders.latex import LaTeXBuilder
 from sphinx.util import logging
-from sphinx_gallery.sorting import FileNameSortKey
 
 LaTeXBuilder.supported_image_types = ["image/png", "image/pdf", "image/svg+xml", "image/webp"]
 
@@ -325,10 +323,6 @@ html_favicon = ansys_favicon
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
-# # disable generating the sphinx nested documentation
-# if "PYEDB_CI_NO_AUTODOC" in os.environ:
-#     templates_path.clear()
-
 # Copy button customization ---------------------------------------------------
 # exclude traditional Python prompts from the copied code
 copybutton_prompt_text = r">>> ?|\.\.\. "
@@ -350,14 +344,6 @@ inheritance_graph_attrs = dict(rankdir="RL", size='"8.0, 10.0"', fontsize=14, ra
 inheritance_node_attrs = dict(shape="ellipse", fontsize=14, height=0.75, color="dodgerblue1", style="filled")
 
 # -- Options for HTML output -------------------------------------------------
-
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
 
 source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 
@@ -386,57 +372,12 @@ exclude_patterns = [
     "conf.py",
 ]
 
-# gallery build requires EDB install
-if os.name != "posix" and "PYEDB_CI_NO_EXAMPLES" not in os.environ:
-    # suppress annoying matplotlib bug
-    warnings.filterwarnings(
-        "ignore",
-        category=UserWarning,
-        message="Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.",
-    )
-
-    # if config["run_examples"]:
-    #     extensions.append("sphinx_gallery.gen_gallery")
-
-    #     sphinx_gallery_conf = {
-    #         # convert rst to md for ipynb
-    #         "pypandoc": True,
-    #         # path to your examples scripts
-    #         "examples_dirs": [EXAMPLES_PATH_FOR_DOCS],
-    #         # path where to save gallery generated examples
-    #         "gallery_dirs": [GALLERY_EXAMPLES_PATH],
-    #         # Pattern to search for examples files
-    #         "filename_pattern": r"\." + DEFAULT_EXAMPLE_EXTENSION,
-    #         # Remove the "Download all examples" button from the top level gallery
-    #         "download_all_examples": False,
-    #         # Sort gallery examples by file name instead of number of lines (default)
-    #         "within_subsection_order": FileNameSortKey,
-    #         # directory where function granular galleries are stored
-    #         "backreferences_dir": None,
-    #         # Modules for which function level galleries are created.  In
-    #         "doc_module": "ansys-legacy",
-    #         "image_scrapers": ("matplotlib"),
-    #         "ignore_pattern": "flycheck*",
-    #         "thumbnail_size": (350, 350),
-    #     }
-
-# jinja_contexts = {
-#     "main_toctree": {
-#         "run_examples": config["run_examples"],
-#     },
-# }
-# def prepare_jinja_env(jinja_env) -> None:
-#     """
-#     Customize the jinja env.
-#
-#     Notes
-#     -----
-#     See https://jinja.palletsprojects.com/en/3.0.x/api/#jinja2.Environment
-#     """
-#     jinja_env.globals["project_name"] = project
-#
-#
-# autoapi_prepare_jinja_env = prepare_jinja_env
+# Suppress annoying matplotlib bug
+warnings.filterwarnings(
+    "ignore",
+    category=UserWarning,
+    message="Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.",
+)
 
 # -- Options for HTML output -------------------------------------------------
 html_short_title = html_title = "PyEDB"
