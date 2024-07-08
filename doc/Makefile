@@ -36,7 +36,7 @@ clean:
 # build html docs in parallel using all available CPUs
 # WARNING: this is a resource hog
 html: .install-deps
-	$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O) 
+	$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 # Build pdf docs.
 pdf: .install-deps
