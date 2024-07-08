@@ -52,7 +52,6 @@ from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
 from pyedb.dotnet.edb_core.cell.voltage_regulator import VoltageRegulator
 from pyedb.dotnet.edb_core.components import Components
 from pyedb.dotnet.edb_core.dotnet.database import Database
-from pyedb.dotnet.edb_core.dotnet.layout import LayoutDotNet
 from pyedb.dotnet.edb_core.edb_data.control_file import (
     ControlFile,
     convert_technology_file,
