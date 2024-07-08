@@ -40,6 +40,7 @@ import warnings
 from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
 from pyedb.dotnet.edb_core.cell.layout import Layout
+from pyedb.dotnet.edb_core.layout import EdbLayout
 from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
 from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
 from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
@@ -361,7 +362,7 @@ class Edb(Database):
         self._siwave = EdbSiwave(self)
         self._hfss = EdbHfss(self)
         self._nets = EdbNets(self)
-        self._core_primitives = Layout(self, self._active_cell.GetLayout())
+        self._core_primitives = EdbLayout(self)
         self._stackup2 = self._stackup
         self._materials = Materials(self)
 
@@ -1153,7 +1154,7 @@ class Edb(Database):
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
         if not self._core_primitives and self.active_db:
-            self._core_primitives = Layout(self, self._active_cell.GetLayout())
+            self._core_primitives = EdbLayout(self)
         return self._core_primitives
 
     @property
@@ -1164,7 +1165,8 @@ class Edb(Database):
         -------
         :class:`legacy.edb_core.dotnet.layout.Layout`
         """
-        return LayoutDotNet(self)
+        return Layout(self, self._active_cell.GetLayout())
+        #return LayoutDotNet(self)
 
     @property
     def active_layout(self):
@@ -1174,12 +1176,12 @@ class Edb(Database):
         -------
         Instance of EDB API Layout Class.
         """
-        return self.layout._layout
+        return self.layout._edb_object
 
     @property
     def layout_instance(self):
         """Edb Layout Instance."""
-        return self.layout.layout_instance
+        return self.layout._edb_object.GetLayoutInstance()
 
     def get_connected_objects(self, layout_object_instance):
         """Get connected objects.

@@ -24,8 +24,6 @@ from pyedb.dotnet.edb_core.layout_obj_instance import LayoutObjInstance
 from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 
 
-
-
 class LayoutObj(ObjBase):
     """Manages EDB functionalities for the layout object."""
 
