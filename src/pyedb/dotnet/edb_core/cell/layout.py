@@ -36,6 +36,8 @@ from pyedb.dotnet.edb_core.edb_data.primitives_data import (
 
 
 class LayoutToRemove:
+    # todo refactor
+
     @property
     def cell(self):
         """:class:`Cell <ansys.edb.layout.Cell>`: Owning cell for this layout.
@@ -168,14 +170,7 @@ class LayoutToRemove:
         """
         self._edb_object.ConvertPrimitivesToVias(convert_py_list_to_net_list(primitives), is_pins)
 
-    @property
-    def port_reference_terminals_connected(self):
-        """:obj:`bool`: Determine if port reference terminals are connected, applies to lumped ports and circuit ports.
 
-        True if they are connected, False otherwise.
-        Read-Only.
-        """
-        return self._edb_object.ArePortReferenceTerminalsConnected()
 
     @property
     def zone_primitives(self):
@@ -194,19 +189,6 @@ class LayoutToRemove:
     @fixed_zone_primitive.setter
     def fixed_zone_primitive(self, value):
         self._edb_object.SetFixedZonePrimitives(value)
-
-    @property
-    def board_bend_defs(self):
-        """:obj:`list` of :class:`BoardBendDef <ansys.edb.primitive.BoardBendDef>` : List of all the board bend \
-        definitions in this layout.
-
-        Read-Only.
-        """
-        return list(self._edb_object.GetBoardBendDefs())
-
-    def synchronize_bend_manager(self):
-        """Synchronize bend manager."""
-        self._edb_object.SynchronizeBendManager()
 
 
 class Layout(ObjBase, LayoutToRemove):
@@ -292,9 +274,31 @@ class Layout(ObjBase, LayoutToRemove):
         ]
 
     @property
+    def board_bend_defs(self):
+        """:obj:`list` of :class:`BoardBendDef <ansys.edb.primitive.BoardBendDef>` : List of all the board bend \
+        definitions in this layout.
+
+        Read-Only.
+        """
+        return list(self._edb_object.GetBoardBendDefs())
+
+    def synchronize_bend_manager(self):
+        """Synchronize bend manager."""
+        self._edb_object.SynchronizeBendManager()
+
+    @property
     def padstack_instances(self):
         """Get all padstack instances in a list."""
         return [EDBPadstackInstance(i, self._pedb) for i in self._edb_object.PadstackInstances]
+
+    @property
+    def port_reference_terminals_connected(self):
+        """:obj:`bool`: Determine if port reference terminals are connected, applies to lumped ports and circuit ports.
+
+        True if they are connected, False otherwise.
+        Read-Only.
+        """
+        return self._edb_object.ArePortReferenceTerminalsConnected()
 
     def find_object_by_id(self, value: int):
         """Find a Connectable object by Database ID.
@@ -311,31 +315,6 @@ class Layout(ObjBase, LayoutToRemove):
         obj = self._pedb._edb.Cell.Net.FindByName(self._edb_object, value)
         return EDBNetsData(obj, self._pedb)
 
-    def create_pin_group(self, name: str, pins_by_id: list[int] = None, pins_by_aedt_name: list[str] = None):
-        """Create a PinGroup.
-
-        Parameters
-        name : str,
-            Name of the PinGroup.
-        pins_by_id : list[int] or None
-            List of pins by ID.
-        pins_by_aedt_name : list[str] or None
-            List of pins by AEDT name.
-        """
-        pins = []
-
-        if pins_by_id is not None:
-            for p in pins_by_id:
-                pins.append(self.find_object_by_id(p._edb_object))
-        else:
-            p_inst = self.padstack_instances
-            while True:
-                p = p_inst.pop(0)
-                if p.aedt_name in pins_by_aedt_name:
-                    pins.append(p._edb_object)
-                    pins_by_aedt_name.remove(p.aedt_name)
-                if len(pins_by_aedt_name) == 0:
-                    break
-
         obj = self._edb.cell.hierarchy.pin_group.Create(self._edb_object, name, convert_py_list_to_net_list(pins))
         return PinGroup(name, obj, self._pedb)
+

@@ -1395,3 +1395,29 @@ class Modeler(object):
             end_y=self._pedb.edb_value(end_y),
             net=self._pedb.nets[net]._edb_object,
         )
+
+    def create_pin_group(self, name: str, pins_by_id: list[int] = None, pins_by_aedt_name: list[str] = None):
+        """Create a PinGroup.
+
+        Parameters
+        name : str,
+            Name of the PinGroup.
+        pins_by_id : list[int] or None
+            List of pins by ID.
+        pins_by_aedt_name : list[str] or None
+            List of pins by AEDT name.
+        """
+        pins = []
+
+        if pins_by_id is not None:
+            for p in pins_by_id:
+                pins.append(self._pedb.layout.find_object_by_id(p._edb_object))
+        else:
+            p_inst = self._pedb.layout.padstack_instances
+            while True:
+                p = p_inst.pop(0)
+                if p.aedt_name in pins_by_aedt_name:
+                    pins.append(p._edb_object)
+                    pins_by_aedt_name.remove(p.aedt_name)
+                if len(pins_by_aedt_name) == 0:
+                    break
