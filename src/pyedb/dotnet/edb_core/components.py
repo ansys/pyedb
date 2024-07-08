@@ -779,9 +779,14 @@ class Components(object):
                     if ref_pin in self._padstack.instances:
                         _temp.append(self._padstack.instances[ref_pin])
                 if isinstance(ref_pin, str):
-                    p = next(pp for pp in list(self._padstack.instances.values()) if pp.name == ref_pin)
-                    if p:
-                        _temp.append(p)
+                    if ref_pin in self.instances[refdes].pins:
+                        _temp.append(self.instances[refdes].pins[ref_pin])
+                    else:
+                        p = [pp for pp in list(self._padstack.instances.values()) if pp.name == ref_pin]
+                        if p:
+                            _temp.append(p)
+                if isinstance(ref_pin, EDBPadstackInstance):
+                    _temp.append(ref_pin.name)
             reference_pins = _temp
         if isinstance(reference_pins, int):
             if reference_pins in self._padstack.instances:
@@ -790,14 +795,15 @@ class Components(object):
             refdes = self.instances[refdes]
         if isinstance(refdes, self._pedb._edb.Cell.Hierarchy.Component):
             refdes = EDBComponent(self._pedb, refdes)
+        refdes_pins = refdes.pins
         if any(refdes.rlc_values):
             return self.deactivate_rlc_component(component=refdes, create_circuit_port=True)
         if len([pin for pin in pins if isinstance(pin, str)]) == len(pins):
             cmp_pins = []
             for pin_name in pins:
-                cmp_pin = [pin for pin in list(refdes.pins.values()) if pin_name == pin.name]
+                cmp_pin = [pin for pin in list(refdes_pins.values()) if pin_name == pin.name]
                 if not cmp_pin:
-                    cmp_pin = [pin for pin in list(refdes.pins.values()) if pin_name == pin.name.split("-")[1]]
+                    cmp_pin = [pin for pin in list(refdes_pins.values()) if pin_name == pin.name.split("-")[1]]
                 if cmp_pin:
                     cmp_pins.append(cmp_pin[0])
             if not cmp_pins:
@@ -811,11 +817,10 @@ class Components(object):
         if len([pin for pin in reference_pins if isinstance(pin, str)]) == len(reference_pins):
             ref_cmp_pins = []
             for ref_pin_name in reference_pins:
-                cmp_ref_pin = [pin for pin in list(refdes.pins.values()) if ref_pin_name == pin.name]
-                if not cmp_ref_pin:
-                    cmp_ref_pin = [pin for pin in list(refdes.pins.values()) if ref_pin_name == pin.name.split("-")[1]]
-                if cmp_ref_pin:
-                    ref_cmp_pins.append(cmp_ref_pin[0])
+                if ref_pin_name in refdes_pins:
+                    ref_cmp_pins.append(refdes_pins[ref_pin_name])
+                elif "-" in ref_pin_name and ref_pin_name.split("-")[1] in refdes_pins:
+                    ref_cmp_pins.append(refdes_pins[ref_pin_name.split("-")[1]])
             if not ref_cmp_pins:
                 return
             reference_pins = ref_cmp_pins
