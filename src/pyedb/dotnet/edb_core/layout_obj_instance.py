@@ -28,4 +28,3 @@ class LayoutObjInstance(ObjBase):
 
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
-

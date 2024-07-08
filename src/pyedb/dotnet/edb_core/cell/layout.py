@@ -26,13 +26,16 @@ This module contains these classes: `EdbLayout` and `Shape`.
 from pyedb.dotnet.edb_core.cell.primitive import Bondwire
 from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.dotnet.edb_core.edb_data.primitives_data import (
+    EdbCircle,
+    EdbPath,
+    EdbPolygon,
+    EdbRectangle,
+    EdbText,
+)
 from pyedb.dotnet.edb_core.edb_data.sources import PinGroup
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
-
-from pyedb.dotnet.edb_core.edb_data.primitives_data import (
-    EdbRectangle, EdbPolygon, EdbPath, EdbText, EdbCircle
-)
 
 
 class LayoutToRemove:
@@ -169,8 +172,6 @@ class LayoutToRemove:
             True for pins, false for vias (default).
         """
         self._edb_object.ConvertPrimitivesToVias(convert_py_list_to_net_list(primitives), is_pins)
-
-
 
     @property
     def zone_primitives(self):
@@ -317,4 +318,3 @@ class Layout(ObjBase, LayoutToRemove):
 
         obj = self._edb.cell.hierarchy.pin_group.Create(self._edb_object, name, convert_py_list_to_net_list(pins))
         return PinGroup(name, obj, self._pedb)
-
