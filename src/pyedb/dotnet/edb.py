@@ -40,7 +40,6 @@ import warnings
 from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
 from pyedb.dotnet.edb_core.cell.layout import Layout
-from pyedb.dotnet.edb_core.modeler import Modeler
 from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
 from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
 from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
@@ -82,6 +81,7 @@ from pyedb.dotnet.edb_core.general import (
 from pyedb.dotnet.edb_core.hfss import EdbHfss
 from pyedb.dotnet.edb_core.layout_validation import LayoutValidation
 from pyedb.dotnet.edb_core.materials import Materials
+from pyedb.dotnet.edb_core.modeler import Modeler
 from pyedb.dotnet.edb_core.net_class import (
     EdbDifferentialPairs,
     EdbExtendedNets,
@@ -1165,7 +1165,7 @@ class Edb(Database):
         :class:`legacy.edb_core.dotnet.layout.Layout`
         """
         return Layout(self, self._active_cell.GetLayout())
-        #return LayoutDotNet(self)
+        # return LayoutDotNet(self)
 
     @property
     def active_layout(self):
