@@ -166,7 +166,7 @@ class Bondwire(Primitive):
 
     def __create(self, **kwargs):
         return self._pedb._edb.Cell.Primitive.Bondwire.Create(
-            self._pedb.modeler._edb_object,
+            self._pedb.layout._edb_object,
             kwargs.get("net"),
             self._bondwire_type[kwargs.get("bondwire_type")],
             kwargs.get("definition_name"),

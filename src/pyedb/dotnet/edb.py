@@ -40,7 +40,7 @@ import warnings
 from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
 from pyedb.dotnet.edb_core.cell.layout import Layout
-from pyedb.dotnet.edb_core.layout import EdbLayout
+from pyedb.dotnet.edb_core.modeler import Modeler
 from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
 from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
 from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
@@ -362,7 +362,7 @@ class Edb(Database):
         self._siwave = EdbSiwave(self)
         self._hfss = EdbHfss(self)
         self._nets = EdbNets(self)
-        self._core_primitives = EdbLayout(self)
+        self._core_primitives = Modeler(self)
         self._stackup2 = self._stackup
         self._materials = Materials(self)
 
@@ -1154,7 +1154,7 @@ class Edb(Database):
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
         if not self._core_primitives and self.active_db:
-            self._core_primitives = EdbLayout(self)
+            self._core_primitives = Modeler(self)
         return self._core_primitives
 
     @property

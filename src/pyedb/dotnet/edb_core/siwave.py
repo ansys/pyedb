@@ -325,10 +325,10 @@ class EdbSiwave(object):
                 pin = [
                     pin
                     for pin in self._pedb.padstacks.get_pinlist_from_component_and_net(component_name)
-                    if pin.GetName() == pin_name
+                    if pin.component_pin == pin_name
                 ][0]
-                term_name = "{}_{}_{}".format(pin.GetComponent().GetName(), pin.GetNet().GetName(), pin.GetName())
-                res, start_layer, stop_layer = pin.GetLayerRange()
+                term_name = "{}_{}_{}".format(pin.component.name, pin._edb_object.GetNet().GetName(), pin.component_pin)
+                res, start_layer, stop_layer = pin._edb_object.GetLayerRange()
                 if res:
                     pin_instance = pin._edb_padstackinstance
                     positive_terminal = self._edb.cell.terminal.PadstackInstanceTerminal.Create(

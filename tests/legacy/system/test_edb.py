@@ -1888,7 +1888,7 @@ class TestClass:
         assert bondwire_1.width == 0.0002
         bondwire_1.set_start_elevation("16_Bottom")
         bondwire_1.set_end_elevation("16_Bottom")
-        assert len(edbapp.modeler.bondwires) == 1
+        assert len(edbapp.layout.bondwires) == 1
         edbapp.close()
 
     def test_voltage_regulator(self, edb_examples):

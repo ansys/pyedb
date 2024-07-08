@@ -30,7 +30,9 @@ from pyedb.dotnet.edb_core.edb_data.sources import PinGroup
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 
-from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
+from pyedb.dotnet.edb_core.edb_data.primitives_data import (
+    EdbRectangle, EdbPolygon, EdbPath, EdbText, EdbCircle
+)
 
 
 class LayoutToRemove:
@@ -250,7 +252,29 @@ class Layout(ObjBase, LayoutToRemove):
         -------
         list of :class:`dotnet.edb_core.dotnet.primitive.PrimitiveDotNet` cast objects.
         """
-        return [cast(self._pedb, i) for i in list(self._edb_object.Primitives)]
+        prims = []
+        for p in self._edb_object.Primitives:
+            if p.GetPrimitiveType().ToString() == "Rectangle":
+                prims.append(EdbRectangle(p, self._pedb))
+            elif p.GetPrimitiveType().ToString() == "Circle":
+                prims.append(EdbCircle(p, self._pedb))
+            elif p.GetPrimitiveType().ToString() == "Polygon":
+                prims.append(EdbPolygon(p, self._pedb))
+            elif p.GetPrimitiveType().ToString() == "Path":
+                prims.append(EdbPath(p, self._pedb))
+            elif p.GetPrimitiveType().ToString() == "Bondwire":
+                prims.append(Bondwire(self._pedb, p))
+            elif p.GetPrimitiveType().ToString() == "Text":
+                prims.append(EdbText(p, self._pedb))
+            elif p.GetPrimitiveType().ToString() == "PrimitivePlugin":
+                pass
+            elif p.GetPrimitiveType().ToString() == "Path3D":
+                pass
+            elif p.GetPrimitiveType().ToString() == "BoardBendDef":
+                pass
+            else:
+                pass
+        return prims
 
     @property
     def bondwires(self):
@@ -272,71 +296,6 @@ class Layout(ObjBase, LayoutToRemove):
         """Get all padstack instances in a list."""
         return [EDBPadstackInstance(i, self._pedb) for i in self._edb_object.PadstackInstances]
 
-    def create_bondwire(
-        self,
-        definition_name,
-        placement_layer,
-        width,
-        material,
-        start_layer_name,
-        start_x,
-        start_y,
-        end_layer_name,
-        end_x,
-        end_y,
-        net,
-        bondwire_type="jedec4",
-    ):
-        """Create a bondwire object.
-
-        Parameters
-        ----------
-        bondwire_type : :class:`BondwireType`
-            Type of bondwire: kAPDBondWire or kJDECBondWire types.
-        definition_name : str
-            Bondwire definition name.
-        placement_layer : str
-            Layer name this bondwire will be on.
-        width : :class:`Value <ansys.edb.utility.Value>`
-            Bondwire width.
-        material : str
-            Bondwire material name.
-        start_layer_name : str
-            Name of start layer.
-        start_x : :class:`Value <ansys.edb.utility.Value>`
-            X value of start point.
-        start_y : :class:`Value <ansys.edb.utility.Value>`
-            Y value of start point.
-        end_layer_name : str
-            Name of end layer.
-        end_x : :class:`Value <ansys.edb.utility.Value>`
-            X value of end point.
-        end_y : :class:`Value <ansys.edb.utility.Value>`
-            Y value of end point.
-        net : str or :class:`Net <ansys.edb.net.Net>` or None
-            Net of the Bondwire.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.edb_core.dotnet.primitive.BondwireDotNet`
-            Bondwire object created.
-        """
-        return Bondwire(
-            pedb=self._pedb,
-            bondwire_type=bondwire_type,
-            definition_name=definition_name,
-            placement_layer=placement_layer,
-            width=self._pedb.edb_value(width),
-            material=material,
-            start_layer_name=start_layer_name,
-            start_x=self._pedb.edb_value(start_x),
-            start_y=self._pedb.edb_value(start_y),
-            end_layer_name=end_layer_name,
-            end_x=self._pedb.edb_value(end_x),
-            end_y=self._pedb.edb_value(end_y),
-            net=self.nets[net]._edb_object,
-        )
-
     def find_object_by_id(self, value: int):
         """Find a Connectable object by Database ID.
 
@@ -348,8 +307,9 @@ class Layout(ObjBase, LayoutToRemove):
         if obj.GetObjType().ToString() == "PadstackInstance":
             return EDBPadstackInstance(obj, self._pedb)
 
-    def find_net_by_name(self, name: str):
-        # todo
+    def find_net_by_name(self, value: str):
+        obj = self._pedb._edb.Cell.Net.FindByName(self._edb_object, value)
+        return EDBNetsData(obj, self._pedb)
 
     def create_pin_group(self, name: str, pins_by_id: list[int] = None, pins_by_aedt_name: list[str] = None):
         """Create a PinGroup.
