@@ -3744,7 +3744,7 @@ class Edb(Database):
         if float(self.edbversion) < 2024.2:
             self.logger.error("HFSSPI simulation only supported with Ansys release 2024R2 and higher")
             return False
-        return HFSSPISimulationSetup(self).create(name)
+        return HFSSPISimulationSetup(self, name=name)
 
     def create_siwave_syz_setup(self, name=None, **kwargs):
         """Create a setup from a template.

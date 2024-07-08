@@ -631,7 +631,7 @@ class EdbPath(EDBPrimitives, PathDotNet):
         float
             Path length in meters.
         """
-        center_line_arcs = list(self.center_line.GetArcData())
+        center_line_arcs = list(self.api_object.GetCenterLine().GetArcData())
         path_length = 0.0
         for arc in center_line_arcs:
             path_length += arc.GetLength()
