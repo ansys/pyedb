@@ -51,6 +51,14 @@ rmdir /s /q %BUILDDIR% > /NUL 2>&1
 for /d /r %SOURCEDIR% %%d in (_autosummary) do @if exist "%%d" rmdir /s /q "%%d"
 goto end
 
+:html
+echo Building HTML pages with running examples
+REM %SPHINXBUILD% -M linkcheck %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %LINKCHECKOPTS% %O%
+%SPHINXBUILD% -M html %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+echo
+echo "Build finished. The HTML pages are in %BUILDDIR%."
+goto end
+
 :pdf
 %SPHINXBUILD% -M latex %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 cd "%BUILDDIR%\latex"

@@ -30,24 +30,16 @@ clean:
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
+%: .install-deps Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 # build html docs in parallel using all available CPUs
 # WARNING: this is a resource hog
-html:
+html: .install-deps
 	$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O) -j auto
 
 # Build pdf docs.
-pdf:
+pdf: .install-deps
 	@$(SPHINXBUILD) -M latex "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 	cd $(BUILDDIR)/latex && latexmk -r latexmkrc -pdf *.tex -interaction=nonstopmode || true
 	(test -f $(BUILDDIR)/latex/pyedb.pdf && echo pdf exists) || exit 1
-
-# build docs like the CI build
-cibuild:
-	mkdir source/examples -p
-	echo 'Examples' > source/examples/index.rst
-	echo '========' >> source/examples/index.rst
-	$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O) -j auto -w build_errors.txt -N
-	python print_errors.py
