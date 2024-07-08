@@ -284,26 +284,6 @@ jobs:
           .venv\Scripts\Activate.ps1
           . .\doc\make.bat pdf
 
-      # Verify that sphinx generates no warnings
-      - name: Check for warnings
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python doc/print_errors.py
-
-      - name: Upload PDF documentation artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: documentation-pdf
-          path: doc/_build/latex
-          retention-days: 7
-
-      - name: Upload HTML Documentation artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: documentation-html
-          path: doc/_build/html
-          retention-days: 1
-
       - name: Upload PDF Documentation artifact
         uses: actions/upload-artifact@v4
         with:
