@@ -1018,8 +1018,7 @@ class Components(object):
                     p.SetIsLayoutPin(True)
             if not ref_pins:
                 self._logger.warning(
-                    "No reference pins found on component, extending pin search at the component "
-                    "vicinity Pingroups are not supported, the closest pin will be selected."
+                    "No reference pins found on component, the closest pin will be selected."
                 )
                 do_pingroup = False
             if do_pingroup:
