@@ -1017,9 +1017,7 @@ class Components(object):
                 if not p.IsLayoutPin():
                     p.SetIsLayoutPin(True)
             if not ref_pins:
-                self._logger.warning(
-                    "No reference pins found on component, the closest pin will be selected."
-                )
+                self._logger.warning("No reference pins found on component, the closest pin will be selected.")
                 do_pingroup = False
             if do_pingroup:
                 if len(ref_pins) == 1:
