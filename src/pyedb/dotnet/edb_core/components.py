@@ -965,7 +965,7 @@ class Components(object):
             ]
             if not ref_pins:
                 self._logger.error(
-                    "The no reference pins found on component. You might consider"
+                    "No reference pins found on component. You might consider"
                     "using Circuit port instead since reference pins can be extended"
                     "outside the component automatically when not found."
                 )
