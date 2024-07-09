@@ -549,7 +549,6 @@ class TestClass:
         assert gap_port.is_circuit_port
         edb.close()
 
-
     def test_edb_statistics(self):
         """Get statistics."""
         example_project = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")

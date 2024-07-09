@@ -189,17 +189,17 @@ class Edb(Database):
     """
 
     def __init__(
-            self,
-            edbpath: Union[str, Path] = None,
-            cellname: str = None,
-            isreadonly: bool = False,
-            edbversion: str = None,
-            isaedtowned: bool = False,
-            oproject=None,
-            student_version: bool = False,
-            use_ppe: bool = False,
-            technology_file: str = None,
-            remove_existing_aedt: bool = False,
+        self,
+        edbpath: Union[str, Path] = None,
+        cellname: str = None,
+        isreadonly: bool = False,
+        edbversion: str = None,
+        isaedtowned: bool = False,
+        oproject=None,
+        student_version: bool = False,
+        use_ppe: bool = False,
+        technology_file: str = None,
+        remove_existing_aedt: bool = False,
     ):
         if isinstance(edbpath, Path):
             edbpath = str(edbpath)
@@ -622,12 +622,12 @@ class Edb(Database):
         return None
 
     def import_layout_pcb(
-            self,
-            input_file,
-            working_dir,
-            anstranslator_full_path="",
-            use_ppe=False,
-            control_file=None,
+        self,
+        input_file,
+        working_dir,
+        anstranslator_full_path="",
+        use_ppe=False,
+        control_file=None,
     ):
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
@@ -1178,10 +1178,10 @@ class Edb(Database):
         """
         temp = []
         for i in list(
-                [
-                    loi.GetLayoutObj()
-                    for loi in self.layout_instance.GetConnectedObjects(layout_object_instance._edb_object).Items
-                ]
+            [
+                loi.GetLayoutObj()
+                for loi in self.layout_instance.GetConnectedObjects(layout_object_instance._edb_object).Items
+            ]
         ):
             obj_type = i.GetObjType().ToString()
             if obj_type == LayoutObjType.PadstackInstance.name:
@@ -1469,24 +1469,24 @@ class Edb(Database):
 
         """
         if self.import_layout_pcb(
-                inputBrd,
-                working_dir=WorkDir,
-                anstranslator_full_path=anstranslator_full_path,
-                use_ppe=use_ppe,
+            inputBrd,
+            working_dir=WorkDir,
+            anstranslator_full_path=anstranslator_full_path,
+            use_ppe=use_ppe,
         ):
             return True
         else:
             return False
 
     def import_gds_file(
-            self,
-            inputGDS,
-            WorkDir=None,
-            anstranslator_full_path="",
-            use_ppe=False,
-            control_file=None,
-            tech_file=None,
-            map_file=None,
+        self,
+        inputGDS,
+        WorkDir=None,
+        anstranslator_full_path="",
+        use_ppe=False,
+        control_file=None,
+        tech_file=None,
+        map_file=None,
     ):
         """Import a GDS file and generate an ``edb.def`` file in the working directory.
 
@@ -1526,28 +1526,28 @@ class Edb(Database):
         control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(inputGDS)[-1][:-3] + "xml")
         ControlFile(xml_input=control_file, tecnhology=tech_file, layer_map=map_file).write_xml(control_file_temp)
         if self.import_layout_pcb(
-                inputGDS,
-                working_dir=WorkDir,
-                anstranslator_full_path=anstranslator_full_path,
-                use_ppe=use_ppe,
-                control_file=control_file_temp,
+            inputGDS,
+            working_dir=WorkDir,
+            anstranslator_full_path=anstranslator_full_path,
+            use_ppe=use_ppe,
+            control_file=control_file_temp,
         ):
             return True
         else:
             return False
 
     def _create_extent(
-            self,
-            net_signals,
-            extent_type,
-            expansion_size,
-            use_round_corner,
-            use_pyaedt_extent=False,
-            smart_cut=False,
-            reference_list=[],
-            include_pingroups=True,
-            pins_to_preserve=None,
-            inlcude_voids_in_extents=False,
+        self,
+        net_signals,
+        extent_type,
+        expansion_size,
+        use_round_corner,
+        use_pyaedt_extent=False,
+        smart_cut=False,
+        reference_list=[],
+        include_pingroups=True,
+        pins_to_preserve=None,
+        inlcude_voids_in_extents=False,
     ):
         if extent_type in [
             "Conforming",
@@ -1614,16 +1614,16 @@ class Edb(Database):
         return _poly
 
     def _create_conformal(
-            self,
-            net_signals,
-            expansion_size,
-            tolerance,
-            round_corner,
-            round_extension,
-            smart_cutout=False,
-            reference_list=[],
-            pins_to_preserve=None,
-            inlcude_voids_in_extents=False,
+        self,
+        net_signals,
+        expansion_size,
+        tolerance,
+        round_corner,
+        round_extension,
+        smart_cutout=False,
+        reference_list=[],
+        pins_to_preserve=None,
+        inlcude_voids_in_extents=False,
     ):
         names = []
         _polys = []
@@ -1719,15 +1719,15 @@ class Edb(Database):
         return _polys
 
     def _create_convex_hull(
-            self,
-            net_signals,
-            expansion_size,
-            tolerance,
-            round_corner,
-            round_extension,
-            smart_cut=False,
-            reference_list=[],
-            pins_to_preserve=None,
+        self,
+        net_signals,
+        expansion_size,
+        tolerance,
+        round_corner,
+        round_extension,
+        smart_cut=False,
+        reference_list=[],
+        pins_to_preserve=None,
     ):
         names = []
         _polys = []
@@ -1753,31 +1753,31 @@ class Edb(Database):
         return _poly
 
     def cutout(
-            self,
-            signal_list=None,
-            reference_list=None,
-            extent_type="ConvexHull",
-            expansion_size=0.002,
-            use_round_corner=False,
-            output_aedb_path=None,
-            open_cutout_at_end=True,
-            use_pyaedt_cutout=True,
-            number_of_threads=4,
-            use_pyaedt_extent_computing=True,
-            extent_defeature=0,
-            remove_single_pin_components=False,
-            custom_extent=None,
-            custom_extent_units="mm",
-            include_partial_instances=False,
-            keep_voids=True,
-            check_terminals=False,
-            include_pingroups=False,
-            expansion_factor=0,
-            maximum_iterations=10,
-            preserve_components_with_model=False,
-            simple_pad_check=True,
-            keep_lines_as_path=False,
-            include_voids_in_extents=False,
+        self,
+        signal_list=None,
+        reference_list=None,
+        extent_type="ConvexHull",
+        expansion_size=0.002,
+        use_round_corner=False,
+        output_aedb_path=None,
+        open_cutout_at_end=True,
+        use_pyaedt_cutout=True,
+        number_of_threads=4,
+        use_pyaedt_extent_computing=True,
+        extent_defeature=0,
+        remove_single_pin_components=False,
+        custom_extent=None,
+        custom_extent_units="mm",
+        include_partial_instances=False,
+        keep_voids=True,
+        check_terminals=False,
+        include_pingroups=False,
+        expansion_factor=0,
+        maximum_iterations=10,
+        preserve_components_with_model=False,
+        simple_pad_check=True,
+        keep_lines_as_path=False,
+        include_voids_in_extents=False,
     ):
         """Create a cutout using an approach entirely based on PyAEDT.
         This method replaces all legacy cutout methods in PyAEDT.
@@ -2003,19 +2003,19 @@ class Edb(Database):
             return result
 
     def _create_cutout_legacy(
-            self,
-            signal_list=[],
-            reference_list=["GND"],
-            extent_type="Conforming",
-            expansion_size=0.002,
-            use_round_corner=False,
-            output_aedb_path=None,
-            open_cutout_at_end=True,
-            use_pyaedt_extent_computing=False,
-            remove_single_pin_components=False,
-            check_terminals=False,
-            include_pingroups=True,
-            inlcude_voids_in_extents=False,
+        self,
+        signal_list=[],
+        reference_list=["GND"],
+        extent_type="Conforming",
+        expansion_size=0.002,
+        use_round_corner=False,
+        output_aedb_path=None,
+        open_cutout_at_end=True,
+        use_pyaedt_extent_computing=False,
+        remove_single_pin_components=False,
+        check_terminals=False,
+        include_pingroups=True,
+        inlcude_voids_in_extents=False,
     ):
         expansion_size = self.edb_value(expansion_size).ToDouble()
 
@@ -2124,15 +2124,15 @@ class Edb(Database):
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(_poly.GetPolygonWithoutArcs().Points)]
 
     def create_cutout(
-            self,
-            signal_list=[],
-            reference_list=["GND"],
-            extent_type="Conforming",
-            expansion_size=0.002,
-            use_round_corner=False,
-            output_aedb_path=None,
-            open_cutout_at_end=True,
-            use_pyaedt_extent_computing=False,
+        self,
+        signal_list=[],
+        reference_list=["GND"],
+        extent_type="Conforming",
+        expansion_size=0.002,
+        use_round_corner=False,
+        output_aedb_path=None,
+        open_cutout_at_end=True,
+        use_pyaedt_extent_computing=False,
     ):
         """Create a cutout using an approach entirely based on legacy.
         It does in sequence:
@@ -2185,26 +2185,26 @@ class Edb(Database):
         )
 
     def _create_cutout_multithread(
-            self,
-            signal_list=[],
-            reference_list=["GND"],
-            extent_type="Conforming",
-            expansion_size=0.002,
-            use_round_corner=False,
-            number_of_threads=4,
-            custom_extent=None,
-            output_aedb_path=None,
-            remove_single_pin_components=False,
-            use_pyaedt_extent_computing=False,
-            extent_defeature=0.0,
-            custom_extent_units="mm",
-            check_terminals=False,
-            include_pingroups=True,
-            preserve_components_with_model=False,
-            include_partial=False,
-            simple_pad_check=True,
-            keep_lines_as_path=False,
-            inlcude_voids_in_extents=False,
+        self,
+        signal_list=[],
+        reference_list=["GND"],
+        extent_type="Conforming",
+        expansion_size=0.002,
+        use_round_corner=False,
+        number_of_threads=4,
+        custom_extent=None,
+        output_aedb_path=None,
+        remove_single_pin_components=False,
+        use_pyaedt_extent_computing=False,
+        extent_defeature=0.0,
+        custom_extent_units="mm",
+        check_terminals=False,
+        include_pingroups=True,
+        preserve_components_with_model=False,
+        include_partial=False,
+        simple_pad_check=True,
+        keep_lines_as_path=False,
+        inlcude_voids_in_extents=False,
     ):
         if is_ironpython:  # pragma: no cover
             self.logger.error("Method working only in Cpython")
@@ -2443,20 +2443,20 @@ class Edb(Database):
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(_poly.GetPolygonWithoutArcs().Points)]
 
     def create_cutout_multithread(
-            self,
-            signal_list=[],
-            reference_list=["GND"],
-            extent_type="Conforming",
-            expansion_size=0.002,
-            use_round_corner=False,
-            number_of_threads=4,
-            custom_extent=None,
-            output_aedb_path=None,
-            remove_single_pin_components=False,
-            use_pyaedt_extent_computing=False,
-            extent_defeature=0,
-            keep_lines_as_path=False,
-            return_extent=False,
+        self,
+        signal_list=[],
+        reference_list=["GND"],
+        extent_type="Conforming",
+        expansion_size=0.002,
+        use_round_corner=False,
+        number_of_threads=4,
+        custom_extent=None,
+        output_aedb_path=None,
+        remove_single_pin_components=False,
+        use_pyaedt_extent_computing=False,
+        extent_defeature=0,
+        keep_lines_as_path=False,
+        return_extent=False,
     ):
         """Create a cutout using an approach entirely based on legacy.
         It does in sequence:
@@ -2639,14 +2639,14 @@ class Edb(Database):
             return val
 
     def _create_cutout_on_point_list(
-            self,
-            point_list,
-            units="mm",
-            output_aedb_path=None,
-            open_cutout_at_end=True,
-            nets_to_include=None,
-            include_partial_instances=False,
-            keep_voids=True,
+        self,
+        point_list,
+        units="mm",
+        output_aedb_path=None,
+        open_cutout_at_end=True,
+        nets_to_include=None,
+        include_partial_instances=False,
+        keep_voids=True,
     ):
         if point_list[0] != point_list[-1]:
             point_list.append(point_list[0])
@@ -2825,14 +2825,14 @@ class Edb(Database):
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(polygonData.GetPolygonWithoutArcs().Points)]
 
     def create_cutout_on_point_list(
-            self,
-            point_list,
-            units="mm",
-            output_aedb_path=None,
-            open_cutout_at_end=True,
-            nets_to_include=None,
-            include_partial_instances=False,
-            keep_voids=True,
+        self,
+        point_list,
+        units="mm",
+        output_aedb_path=None,
+        open_cutout_at_end=True,
+        nets_to_include=None,
+        include_partial_instances=False,
+        keep_voids=True,
     ):
         """Create a cutout on a specified shape and save it to a new AEDB file.
 
@@ -2915,12 +2915,12 @@ class Edb(Database):
         return os.path.join(path_to_output, "options.config")
 
     def export_hfss(
-            self,
-            path_to_output,
-            net_list=None,
-            num_cores=None,
-            aedt_file_name=None,
-            hidden=False,
+        self,
+        path_to_output,
+        net_list=None,
+        num_cores=None,
+        aedt_file_name=None,
+        hidden=False,
     ):
         """Export EDB to HFSS.
 
@@ -2958,12 +2958,12 @@ class Edb(Database):
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
 
     def export_q3d(
-            self,
-            path_to_output,
-            net_list=None,
-            num_cores=None,
-            aedt_file_name=None,
-            hidden=False,
+        self,
+        path_to_output,
+        net_list=None,
+        num_cores=None,
+        aedt_file_name=None,
+        hidden=False,
     ):
         """Export EDB to Q3D.
 
@@ -3008,12 +3008,12 @@ class Edb(Database):
         )
 
     def export_maxwell(
-            self,
-            path_to_output,
-            net_list=None,
-            num_cores=None,
-            aedt_file_name=None,
-            hidden=False,
+        self,
+        path_to_output,
+        net_list=None,
+        num_cores=None,
+        aedt_file_name=None,
+        hidden=False,
     ):
         """Export EDB to Maxwell 3D.
 
@@ -3075,17 +3075,17 @@ class Edb(Database):
         return self.edbpath[:-5] + ".siw"
 
     def export_siwave_dc_results(
-            self,
-            siwave_project,
-            solution_name,
-            output_folder=None,
-            html_report=True,
-            vias=True,
-            voltage_probes=True,
-            current_sources=True,
-            voltage_sources=True,
-            power_tree=True,
-            loop_res=True,
+        self,
+        siwave_project,
+        solution_name,
+        output_folder=None,
+        html_report=True,
+        vias=True,
+        voltage_probes=True,
+        current_sources=True,
+        voltage_sources=True,
+        power_tree=True,
+        loop_res=True,
     ):
         """Close EDB and solve it with Siwave.
 
@@ -3358,13 +3358,13 @@ class Edb(Database):
             if simulation_setup.use_default_cutout:
                 old_cell_name = self.active_cell.GetName()
                 if self.cutout(
-                        signal_list=simulation_setup.signal_nets,
-                        reference_list=simulation_setup.power_nets,
-                        expansion_size=simulation_setup.cutout_subdesign_expansion,
-                        use_round_corner=simulation_setup.cutout_subdesign_round_corner,
-                        extent_type=simulation_setup.cutout_subdesign_type,
-                        use_pyaedt_cutout=False,
-                        use_pyaedt_extent_computing=False,
+                    signal_list=simulation_setup.signal_nets,
+                    reference_list=simulation_setup.power_nets,
+                    expansion_size=simulation_setup.cutout_subdesign_expansion,
+                    use_round_corner=simulation_setup.cutout_subdesign_round_corner,
+                    extent_type=simulation_setup.cutout_subdesign_type,
+                    use_pyaedt_cutout=False,
+                    use_pyaedt_extent_computing=False,
                 ):
                     self.logger.info("Cutout processed.")
                     old_cell = self.active_cell.FindByName(
@@ -3392,9 +3392,7 @@ class Edb(Database):
         else:
             if simulation_setup.include_only_selected_nets:
                 included_nets = simulation_setup.signal_nets + simulation_setup.power_nets
-                nets_to_remove = [
-                    net.name for net in list(self.nets.nets.values()) if not net.name in included_nets
-                ]
+                nets_to_remove = [net.name for net in list(self.nets.nets.values()) if not net.name in included_nets]
                 self.nets.delete(nets_to_remove)
         self.logger.info("Deleting existing ports.")
         map(lambda port: port.Delete(), self.layout.terminals)
@@ -3434,14 +3432,12 @@ class Edb(Database):
                                 solder_balls_mid_size=cmp["solder_balls_mid_size"],
                             )
                 if simulation_setup.generate_solder_balls and not self.hfss.set_coax_port_attributes(
-                        simulation_setup
+                    simulation_setup
                 ):  # pragma: no cover
                     self.logger.error("Failed to configure coaxial port attributes.")
                 self.logger.info("Number of ports: {}".format(self.hfss.get_ports_number()))
                 self.logger.info("Configure HFSS extents.")
-                if (
-                        simulation_setup.generate_solder_balls and simulation_setup.trim_reference_size
-                ):  # pragma: no cover
+                if simulation_setup.generate_solder_balls and simulation_setup.trim_reference_size:  # pragma: no cover
                     self.logger.info(
                         "Trimming the reference plane for coaxial ports: {0}".format(
                             bool(simulation_setup.trim_reference_size)
@@ -3567,7 +3563,7 @@ class Edb(Database):
                     for list_obj2 in setList:
                         if list_obj2 != list_obj and len(set(ids).intersection(list_obj)) == 1:
                             if (ids[0] in list_obj and ids[1] in list_obj2) or (
-                                    ids[1] in list_obj and ids[0] in list_obj2
+                                ids[1] in list_obj and ids[0] in list_obj2
                             ):
                                 setList[setList.index(list_obj)] = list_obj.union(list_obj2)
                                 setList[setList.index(list_obj2)] = list_obj.union(list_obj2)
@@ -3982,8 +3978,8 @@ class Edb(Database):
                                         port1_connexion = None
                                         port2_connexion = None
                                         for (
-                                                project_path,
-                                                port_info,
+                                            project_path,
+                                            port_info,
                                         ) in terminal_info_dict.items():
                                             port1_map = [port for port in port_info if port[3] == port1[3]]
                                             if port1_map:
@@ -3999,8 +3995,8 @@ class Edb(Database):
                                                 )
                                         if port1_connexion and port2_connexion:
                                             if (
-                                                    not port1_connexion[0] == port2_connexion[0]
-                                                    or not port1_connexion[1] == port2_connexion[1]
+                                                not port1_connexion[0] == port2_connexion[0]
+                                                or not port1_connexion[1] == port2_connexion[1]
                                             ):
                                                 connected_ports_list.append((port1_connexion, port2_connexion))
             return connected_ports_list
@@ -4152,17 +4148,17 @@ class Edb(Database):
         return point_terminal.create(name, net_name, location, layer)
 
     def auto_parametrize_design(
-            self,
-            layers=True,
-            materials=True,
-            via_holes=True,
-            pads=True,
-            antipads=True,
-            traces=True,
-            layer_filter=None,
-            material_filter=None,
-            padstack_definition_filter=None,
-            trace_net_filter=None,
+        self,
+        layers=True,
+        materials=True,
+        via_holes=True,
+        pads=True,
+        antipads=True,
+        traces=True,
+        layer_filter=None,
+        material_filter=None,
+        padstack_definition_filter=None,
+        trace_net_filter=None,
     ):
         """Assign automatically design and project variables with current values.
 
@@ -4319,8 +4315,8 @@ class Edb(Database):
                             "$antipad_size_y_{}_{}".format(def_name, layer)
                         )
                         if (
-                                antipad_size_variable_x not in self.variables
-                                and antipad_size_variable_y not in self.variables
+                            antipad_size_variable_x not in self.variables
+                            and antipad_size_variable_y not in self.variables
                         ):  # pragma no cover
                             self.add_design_variable(antipad_size_variable_x, antipad.parameters_values_string[0])
                             self.add_design_variable(antipad_size_variable_y, antipad.parameters_values_string[1])
@@ -4349,13 +4345,13 @@ class Edb(Database):
         return variable_name
 
     def create_model_for_arbitrary_wave_ports(
-            self,
-            temp_directory,
-            mounting_side="top",
-            signal_nets=None,
-            terminal_diameter=None,
-            output_edb=None,
-            launching_box_thickness="100um",
+        self,
+        temp_directory,
+        mounting_side="top",
+        signal_nets=None,
+        terminal_diameter=None,
+        output_edb=None,
+        launching_box_thickness="100um",
     ):
         """Generate EDB design to be consumed by PyAEDT to generate arbitrary wave ports shapes.
         This model has to be considered as merged onto another one. The current opened design must have voids

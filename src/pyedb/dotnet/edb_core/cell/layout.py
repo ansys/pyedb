@@ -23,8 +23,21 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
+from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.edb_core.cell.primitive import Bondwire
-from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
+from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
+from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
+from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
+    PadstackInstanceTerminal,
+)
+from pyedb.dotnet.edb_core.cell.terminal.pingroup_terminal import PinGroupTerminal
+from pyedb.dotnet.edb_core.cell.terminal.point_terminal import PointTerminal
+from pyedb.dotnet.edb_core.edb_data.nets_data import (
+    EDBDifferentialPairData,
+    EDBExtendedNetData,
+    EDBNetClassData,
+    EDBNetsData,
+)
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.primitives_data import (
     EdbCircle,
@@ -33,21 +46,9 @@ from pyedb.dotnet.edb_core.edb_data.primitives_data import (
     EdbRectangle,
     EdbText,
 )
-
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
-from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
-from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
-from pyedb.dotnet.edb_core.cell.terminal.pingroup_terminal import PinGroupTerminal
-from pyedb.dotnet.edb_core.cell.terminal.point_terminal import PointTerminal
-from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
-from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
-from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
-from pyedb.dotnet.edb_core.edb_data.nets_data import (
-    EDBDifferentialPairData,
-    EDBExtendedNetData,
-    EDBNetClassData,
-)
 from pyedb.dotnet.edb_core.edb_data.sources import PinGroup
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 
 
 class Layout(ObjBase):
