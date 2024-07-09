@@ -1,7 +1,7 @@
 # # Import Stackup
 # This example shows how to import stackup file.
 
-# ### Import the required packages
+# ## Import the required packages
 
 # +
 import json
@@ -24,11 +24,11 @@ NG_MODE = False
 temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
 file_edb = download_file(source="edb/ANSYS-HSD_V1.aedb", destination=temp_folder.name)
 
-# ### Load example layout.
+# ## Load example layout.
 
 edbapp = Edb(file_edb, edbversion=AEDT_VERSION)
 
-# ### Review original stackup definition
+# ## Review original stackup definition
 
 # Get original stackup definition in a dictionary. Alternatively, stackup definition can be exported in a json file by
 # edbapp.configuration.export()
@@ -39,7 +39,7 @@ data_cfg = edbapp.configuration.get_data_from_db(stackup=True)
 df = pd.DataFrame(data=data_cfg["stackup"]["layers"])
 display(df)
 
-# ### Modify stackup
+# ## Modify stackup
 
 # Modify top layer thickness
 
@@ -63,7 +63,7 @@ with open(file_cfg, "w") as f:
     json.dump(data_cfg, f, indent=4, ensure_ascii=False)
 
 
-# ### Load stackup from json configuration file
+# ## Load stackup from json configuration file
 
 edbapp.configuration.load(file_cfg, apply_file=True)
 
