@@ -785,7 +785,7 @@ class Components(object):
                         p = [pp for pp in list(self._padstack.instances.values()) if pp.name == ref_pin]
                         if p:
                             _temp.append(p)
-                if isinstance(ref_pin, EDBPadstackInstance):
+                elif isinstance(ref_pin, EDBPadstackInstance):
                     _temp.append(ref_pin.name)
             reference_pins = _temp
         if isinstance(reference_pins, int):
