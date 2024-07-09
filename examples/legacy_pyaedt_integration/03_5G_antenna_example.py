@@ -20,15 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-EDB: 5G linear array antenna
-----------------------------
-This example shows how you can use HFSS 3D Layout to create and solve a 5G linear array antenna.
-"""
+# ## EDB: 5G linear array antenna
+#
+# This example shows how you can use HFSS 3D Layout to create and solve a 5G linear array antenna.
 
-##########################################################
-# Perform required imports
-# ~~~~~~~~~~~~~~~~~~~~~~~~
+# ## Perform required imports
+#
 # Perform required imports.
 
 import os
@@ -39,9 +36,8 @@ from pyaedt import Hfss3dLayout
 import pyedb
 from pyedb.generic.general_methods import generate_unique_name
 
-##########################################################
-# Set non-graphical mode
-# ~~~~~~~~~~~~~~~~~~~~~~
+# ## Set non-graphical mode
+#
 # Set non-graphical mode. The default is ``False``.
 
 non_graphical = False
@@ -100,12 +96,10 @@ aedb_path = os.path.join(tmpfold, generate_unique_name("pcb") + ".aedb")
 print(aedb_path)
 edb = pyedb.Edb(edbpath=aedb_path, edbversion="2024.1")
 
-
-###############################################################################
-# Add stackup layers
-# ~~~~~~~~~~~~~~~~~~
-# Add the stackup layers.
+# ## Add stackup layers
 #
+# Add the stackup layers.
+
 if edb:
     edb.stackup.add_layer("Virt_GND")
     edb.stackup.add_layer("Gap", "Virt_GND", layer_type="dielectric", thickness="0.05mm", material="Air")
@@ -113,9 +107,8 @@ if edb:
     edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.5mm", material="Duroid (tm)")
     edb.stackup.add_layer("TOP", "Substrat")
 
-###############################################################################
-# Create linear array
-# ~~~~~~~~~~~~~~~~~~~
+# ## Create linear array
+#
 # Create the first patch of the linear array.
 
 first_patch = Patch(width=1.4e-3, height=1.2e-3, position=0.0)
@@ -124,9 +117,8 @@ edb.modeler.create_polygon(first_patch.points, "TOP", net_name="Array_antenna")
 first_line = Line(length=2.4e-3, width=0.3e-3, position=first_patch.width)
 edb.modeler.create_polygon(first_line.points, "TOP", net_name="Array_antenna")
 
-###############################################################################
-# Patch linear array
-# ~~~~~~~~~~~~~~~~~~
+# ## Patch linear array
+#
 # Patch the linear array.
 
 patch = Patch(width=2.29e-3, height=3.3e-3)
@@ -148,18 +140,15 @@ while current_patch <= linear_array.nbpatch:
 
 linear_array.length = current_position
 
-
-###############################################################################
-# Add ground
-# ~~~~~~~~~~
+# ## Add ground
+#
 # Add a ground.
 
 edb.modeler.create_polygon(linear_array.points, "GND", net_name="GND")
 
 
-###############################################################################
-# Add connector pin
-# ~~~~~~~~~~~~~~~~~
+# ## Add connector pin
+#
 # Add a central connector pin.
 
 edb.padstacks.create(padstackname="Connector_pin", holediam="100um", paddiam="0", antipaddiam="200um")
@@ -172,10 +161,8 @@ con_pin = edb.padstacks.place(
     via_name="coax",
 )
 
-
-###############################################################################
-# Add connector ground
-# ~~~~~~~~~~~~~~~~~~~~
+# ## Add connector ground
+#
 # Add a connector ground.
 
 edb.modeler.create_polygon(first_patch.points, "Virt_GND", net_name="GND")
@@ -209,50 +196,44 @@ con_ref4 = edb.padstacks.place(
     net_name="GND",
 )
 
-
-###############################################################################
-# Add excitation port
-# ~~~~~~~~~~~~~~~~~~~
+# ## Add excitation port
+#
 # Add an excitation port.
 
 edb.padstacks.set_solderball(con_pin, "Virt_GND", isTopPlaced=False, ballDiam=0.1e-3)
 port_name = edb.padstacks.create_coax_port(con_pin)
 
 
-###############################################################################
-# Plot geometry
-# ~~~~~~~~~~~~~
+# ## Plot geometry
+#
 # Plot the geometry.
 
 edb.nets.plot(None)
 
-###############################################################################
-# Save and close Edb instance prior to opening it in Electronics Desktop.
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ## Save and close Edb instance prior to opening it in Electronics Desktop.
+#
 # Save EDB.
 
 edb.save_edb()
 edb.close_edb()
 print("EDB saved correctly to {}. You can import in AEDT.".format(aedb_path))
-###############################################################################
-# Launch HFSS 3D Layout and open EDB
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ## Launch HFSS 3D Layout and open EDB
+#
 # Launch HFSS 3D Layout and open EDB.
 
 h3d = Hfss3dLayout(
     projectname=aedb_path, specified_version="2024.1", new_desktop_session=True, non_graphical=non_graphical
 )
 
-###############################################################################
-# Plot geometry
-# ~~~~~~~~~~~~~~~~~
+# ## Plot geometry
+#
 # Plot the geometry. The EDB methods are also accessible from the ``Hfss3dlayout`` class.
 
 h3d.modeler.edb.nets.plot(None)
 
-###############################################################################
-# Create setup and sweeps
-# ~~~~~~~~~~~~~~~~~~~~~~~
+# ## Create setup and sweeps
+#
 # Getters and setters facilitate the settings on the nested property dictionary.
 # Previously, you had to use these commands:
 #
@@ -279,27 +260,23 @@ h3d.create_linear_count_sweep(
     use_q3d_for_dc=False,
 )
 
-
-###############################################################################
-# Solve setup and create report
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ## Solve setup and create report
+#
 # Solve the project and create a report.
 
 h3d.analyze()
 h3d.post.create_report(["db(S({0},{1}))".format(port_name, port_name)])
 
 
-###############################################################################
-# Plot results outside AEDT
-# ~~~~~~~~~~~~~~~~~~~~~~~~~
+# ## Plot results outside AEDT
+#
 # Plot results using Matplotlib.
 
 solution = h3d.post.get_solution_data(["S({0},{1})".format(port_name, port_name)])
 solution.plot()
 
-###############################################################################
-# Close AEDT
-# ~~~~~~~~~~
+# ## Close AEDT
+#
 # After the simulation completes, you can close AEDT or release it using the
 # :func:`dotnet.Desktop.release_desktop` method.
 # All methods provide for saving the project before closing AEDT.

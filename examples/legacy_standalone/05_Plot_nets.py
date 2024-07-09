@@ -1,88 +1,65 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
-# SPDX-License-Identifier: MIT
+# # EDB: plot nets with Matplotlib
 #
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+# This example shows how to use the ``Edb`` class to view nets, layers and
+# via geometry directly in Python. The methods demonstrated in this example
+# rely on
+# [matplotlib](https://matplotlib.org/cheatsheets/_images/cheatsheets-1.png).
 
-"""
-EDB: plot nets with Matplotlib
-------------------------------
-This example shows how you can use the ``Edb`` class to plot a net or a layout.
-"""
-
-###############################################################################
-# Perform required imports
-# ~~~~~~~~~~~~~~~~~~~~~~~~
+# ## Perform required imports
+#
 # Perform required imports, which includes importing a section.
 
+# +
+import tempfile
+
 import pyedb
-from pyedb.generic.general_methods import generate_unique_folder_name
 from pyedb.misc.downloads import download_file
 
-###############################################################################
-# Download file
-# ~~~~~~~~~~~~~
-# Download the AEDT file and copy it into the temporary folder.
+# -
 
-temp_folder = generate_unique_folder_name()
+# ## Download the EDB and copy it into the temporary folder.
 
-targetfolder = download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
+temp_dir = tempfile.TemporaryDirectory(suffix=".ansys")
+targetfolder = download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_dir.name)
 
+# ## Create an instance of the Electronics Database using the `pyedb.Edb` class.
+#
+# > Note that units are SI.
 
-###############################################################################
-# Launch EDB
-# ~~~~~~~~~~
-# Launch the :class:`pyedb.Edb` class, using EDB 2023 R2 and SI units.
+# +
+# Select EDB version (change it manually if needed, e.g. "2024.1")
+edb_version = "2024.1"
+print(f"EDB version: {edb_version}")
 
-edb = pyedb.Edb(edbpath=targetfolder, edbversion="2024.1")
+edb = pyedb.Edb(edbpath=targetfolder, edbversion=edb_version)
+# -
 
-###############################################################################
-# Plot custom set of nets colored by layer
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Plot a custom set of nets colored by layer (default).
+# Display the nets on a layer. You can display the net geometry directly in Python using
+# ``matplotlib`` from the ``pyedb.Edb`` class.
 
 edb.nets.plot("AVCC_1V3")
 
-###############################################################################
-# Plot custom set of nets colored by nets
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Plot a custom set of nets colored by nets.
+# You can view multiple nets by passing a list containing the net
+# names to the ``plot()`` method.
 
 edb.nets.plot(["GND", "GND_DP", "AVCC_1V3"], color_by_net=True)
 
-###############################################################################
-# Plot all nets on a layer colored by nets
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Plot all nets on a layer colored by nets
+# You can display all copper on a single layer by passing ``None``
+# as the first argument. The second argument is a list
+# of layers to plot. In this case, only one
+# layer is to be displayed.
 
 edb.nets.plot(None, ["1_Top"], color_by_net=True, plot_components_on_top=True)
 
-###############################################################################
-# Plot stackup and some padstack definition
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Plot all nets on a layer colored by nets
+# Display a side view of the layers and padstack geometry using the
+# ``Edb.stackup.plot()`` method.
 
 edb.stackup.plot(scale_elevation=False, plot_definitions=["c100hn140", "c35"])
 
-###############################################################################
-# Close EDB
-# ~~~~~~~~~
-# Close EDB.
+# Close the EDB.
 
 edb.close_edb()
+
+# Remove all files and the temporary directory.
+
+temp_dir.cleanup()
