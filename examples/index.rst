@@ -1,5 +1,15 @@
 .. _ref_example_gallery:
 
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+
+
+   legacy_pyaedt_integration/index
+   legacy_standalone/index
+
+
 Examples
 ========
 End-to-end examples show how you can use PyEDB. If PyEDB is installed on your machine,
