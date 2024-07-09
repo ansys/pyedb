@@ -72,16 +72,6 @@ class VoltageRegulator(Connectable):
         self._edb_object.SetLoadRegulationPercent(_value)
 
     @property
-    def name(self):
-        """Retrieve voltage regulator name."""
-        return self._edb_object.GetName()
-
-    @name.setter
-    def name(self, value):
-        if isinstance(value, str):
-            self._edb_object.SetName(value)
-
-    @property
     def negative_remote_sense_pin(self):
         """Retrieve negative remote sense pin."""
         edb_pin = self._edb_object.GetNegRemoteSensePin()
@@ -137,7 +127,3 @@ class VoltageRegulator(Connectable):
     def is_active(self, value):
         if isinstance(value, bool):
             self._edb_object.SetIsActive(value)
-
-    @property
-    def is_null(self):
-        return self._edb_object.IsNull()

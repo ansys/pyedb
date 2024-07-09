@@ -32,6 +32,7 @@ from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
 )
 from pyedb.dotnet.edb_core.cell.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.dotnet.edb_core.cell.terminal.point_terminal import PointTerminal
+from pyedb.dotnet.edb_core.cell.voltage_regulator import VoltageRegulator
 from pyedb.dotnet.edb_core.edb_data.nets_data import (
     EDBDifferentialPairData,
     EDBExtendedNetData,
@@ -269,6 +270,10 @@ class Layout(ObjBase):
     def padstack_instances(self):
         """Get all padstack instances in a list."""
         return [EDBPadstackInstance(i, self._pedb) for i in self._edb_object.PadstackInstances]
+
+    @property
+    def voltage_regulators(self):
+        return [VoltageRegulator(self._pedb, i) for i in list(self._edb_object.VoltageRegulators)]
 
     @property
     def port_reference_terminals_connected(self):

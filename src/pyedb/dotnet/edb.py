@@ -496,7 +496,7 @@ class Edb(Database):
     @property
     def voltage_regulator_modules(self):
         """Get all voltage regulator modules"""
-        vrms = [VoltageRegulator(self, edb_object) for edb_object in list(self.active_layout.VoltageRegulators)]
+        vrms = self.layout.voltage_regulators
         _vrms = {}
         for vrm in vrms:
             _vrms[vrm.name] = vrm
