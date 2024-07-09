@@ -1144,7 +1144,6 @@ class Edb(Database):
         :class:`legacy.edb_core.dotnet.layout.Layout`
         """
         return Layout(self, self._active_cell.GetLayout())
-        # return LayoutDotNet(self)
 
     @property
     def active_layout(self):

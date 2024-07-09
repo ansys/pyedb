@@ -41,7 +41,6 @@ class EdbCommon:
 
         Returns
         -------
-        :class:` :class:`pyedb.dotnet.edb_core.dotnet.layout.LayoutDotNet`
         """
         return self._pedb.layout
 
