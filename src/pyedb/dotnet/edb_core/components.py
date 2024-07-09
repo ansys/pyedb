@@ -1028,9 +1028,13 @@ class Components(object):
                         pin.is_pin = True
                     ref_pin_group = self.create_pingroup_from_pins(ref_pins)
                     if not ref_pin_group:
+                        self._logger.error(f"Failed to create reference pin group on component {component.GetName()}.")
                         return False
                     ref_pin_group_term = self._create_pin_group_terminal(ref_pin_group, isref=False)
                     if not ref_pin_group_term:
+                        self._logger.error(
+                            f"Failed to create reference pin group terminal on component {component.GetName()}"
+                        )
                         return False
                 for net in net_list:
                     pins = [pin for pin in cmp_pins if pin.GetNet().GetName() == net]
