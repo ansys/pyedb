@@ -778,7 +778,7 @@ class Components(object):
                 if isinstance(ref_pin, int):
                     if ref_pin in self._padstack.instances:
                         _temp.append(self._padstack.instances[ref_pin])
-                if isinstance(ref_pin, str):
+                elif isinstance(ref_pin, str):
                     if ref_pin in self.instances[refdes].pins:
                         _temp.append(self.instances[refdes].pins[ref_pin])
                     else:
