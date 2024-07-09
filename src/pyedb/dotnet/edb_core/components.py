@@ -985,6 +985,7 @@ class Components(object):
                     ref_pin_group = self.create_pingroup_from_pins(ref_pins)
                     if not ref_pin_group:
                         return False
+                    ref_pin_group=self._pedb.siwave.pin_groups[ref_pin_group.GetName()]
                     ref_pin_group_term = self._create_pin_group_terminal(ref_pin_group, isref=True)
                     if not ref_pin_group_term:
                         return False
@@ -999,6 +1000,7 @@ class Components(object):
                             pin_group = self.create_pingroup_from_pins(pins)
                             if not pin_group:
                                 return False
+                            pin_group = self._pedb.siwave.pin_groups[pin_group.GetName()]
                             pin_group_term = self._create_pin_group_terminal(pin_group)
                             if pin_group_term:
                                 pin_group_term.SetReferenceTerminal(ref_pin_group_term)
