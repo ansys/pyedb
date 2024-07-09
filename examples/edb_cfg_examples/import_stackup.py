@@ -75,8 +75,6 @@ edbapp.stackup.plot()
 
 edbapp.stackup["1_Top"].thickness
 
-# ## Create a configuration file
-
 # ## Cleanup
 #
 # All project files are saved in the folder ``temp_file.dir``. If you've run this example as a Jupyter notbook you
