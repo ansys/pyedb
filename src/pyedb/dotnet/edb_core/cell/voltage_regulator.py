@@ -49,7 +49,7 @@ class VoltageRegulator(Connectable):
         if value not in self._pedb.components.instances:
             self._pedb.logger.error(f"component {value} not found in layout")
             return
-        self._edb_object.SetGroup(self._pedb.components.instances[value].edbcomponent)
+        self._edb_object.SetGroup(self._pedb.components.instances[value]._edb_object)
 
     @property
     def load_regulator_current(self):

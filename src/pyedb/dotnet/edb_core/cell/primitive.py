@@ -74,6 +74,18 @@ class Primitive(Connectable):
             return ""
 
     @property
+    def primitive_type(self):
+        """Return the type of the primitive.
+
+        Expected output is among ``"circle"``, ``"rectangle"``,``"polygon"``,``"path"`` or ``"bondwire"``.
+
+        Returns
+        -------
+        str
+        """
+        return self._edb_object.GetPrimitiveType().ToString().lower()
+
+    @property
     def net_name(self):
         """Get the primitive net name.
 

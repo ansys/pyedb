@@ -305,11 +305,10 @@ class Components(object):
     def refresh_components(self):
         """Refresh the component dictionary."""
         # self._logger.info("Refreshing the Components dictionary.")
-        self._cmp = {
-            l.GetName(): EDBComponent(self._pedb, l)
-            for l in self._layout.groups
-            if l.ToString() == "Ansys.Ansoft.Edb.Cell.Hierarchy.Component"
-        }
+        self._cmp = {}
+        for i in self._pedb.layout.groups:
+            if i.group_type == "component":
+                self._cmp[i.name] = i
         return True
 
     @property
@@ -487,11 +486,7 @@ class Components(object):
             ``True`` when successful, ``False`` when failed.
 
         """
-        edbcmp = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, name)
-        if edbcmp is not None:
-            return edbcmp
-        else:
-            pass
+        return self._pedb.layout.find_component_by_name(name)
 
     def get_components_from_nets(self, netlist=None):
         """Retrieve components from a net list.
@@ -1334,14 +1329,14 @@ class Components(object):
         -------
         Edb pin group terminal.
         """
-        pin = list(pingroup.GetPins())[0]
+        pin = list(pingroup._edb_object.GetPins())[0]
         if term_name is None:
             term_name = "{}.{}.{}".format(pin.GetComponent().GetName(), pin.GetName(), pin.GetNet().GetName())
         for t in list(self._pedb.active_layout.Terminals):
             if t.GetName() == term_name:
                 return t
         pingroup_term = self._edb.cell.terminal.PinGroupTerminal.Create(
-            self._active_layout, pingroup.GetNet(), term_name, pingroup, isref
+            self._active_layout, pingroup._edb_object.GetNet(), term_name, pingroup._edb_object, isref
         )
         if term_type == "circuit":
             pingroup_term.SetIsCircuitPort(True)
@@ -1929,7 +1924,7 @@ class Components(object):
 
         """
         if not isinstance(component, self._pedb.edb_api.cell.hierarchy.component):
-            edb_cmp = self.get_component_by_name(component)
+            edb_cmp = self.get_component_by_name(component)._edb_object
             cmp = self.instances[component]
         else:  # pragma: no cover
             edb_cmp = component

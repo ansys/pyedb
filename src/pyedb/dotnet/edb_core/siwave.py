@@ -129,8 +129,8 @@ class EdbSiwave(object):
             List of all layout pin groups.
         """
         _pingroups = {}
-        for el in self._layout.pin_groups:
-            _pingroups[el.GetName()] = PinGroup(el.GetName(), el, self._pedb)
+        for el in self._pedb.layout.pin_groups:
+            _pingroups[el._edb_object.GetName()] = el
         return _pingroups
 
     def _create_terminal_on_pins(self, source):

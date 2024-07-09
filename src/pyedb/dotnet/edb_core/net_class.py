@@ -90,10 +90,10 @@ class EdbNetClasses(EdbCommon, object):
         dict[str, :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBDifferentialPairData`]
             Dictionary of extended nets.
         """
-        net_classes = {}
-        for net_class in self._layout.net_classes:
-            net_classes[net_class.GetName()] = EDBNetClassData(self._pedb, net_class)
-        return net_classes
+        temp = {}
+        for i in self._layout.net_classes:
+            temp[i.name] = i
+        return temp
 
     def create(self, name, net):
         # type: (str, str|list)->EDBNetClassData
@@ -147,8 +147,8 @@ class EdbExtendedNets(EdbCommon, object):
             Dictionary of extended nets.
         """
         nets = {}
-        for extended_net in self._layout.extended_nets:
-            nets[extended_net.GetName()] = EDBExtendedNetData(self._pedb, extended_net)
+        for extended_net in self._pedb.layout.extended_nets:
+            nets[extended_net.name] = extended_net
         return nets
 
     def create(self, name, net):
@@ -273,7 +273,7 @@ class EdbDifferentialPairs(EdbCommon, object):
         """
         diff_pairs = {}
         for diff_pair in self._layout.differential_pairs:
-            diff_pairs[diff_pair.GetName()] = EDBDifferentialPairData(self._pedb, diff_pair)
+            diff_pairs[diff_pair.name] = diff_pair
         return diff_pairs
 
     def create(self, name, net_p, net_n):

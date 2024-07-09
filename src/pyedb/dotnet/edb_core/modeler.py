@@ -1421,3 +1421,6 @@ class Modeler(object):
                     pins_by_aedt_name.remove(p.aedt_name)
                 if len(pins_by_aedt_name) == 0:
                     break
+
+        self._edb.cell.hierarchy.pin_group.Create(self._pedb.layout._edb_object, name, convert_py_list_to_net_list(pins))
+        return self._pedb.siwave.pin_groups[name]

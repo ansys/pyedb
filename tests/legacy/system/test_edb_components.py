@@ -412,8 +412,8 @@ class TestClass:
         edb2 = Edb(self.target_path4, edbversion=desktop_version)
         for _, cmp in edb2.components.instances.items():
             assert isinstance(cmp.solder_ball_placement, int)
-        mounted_cmp = edb2.components.get_component_by_name("BGA")
-        hosting_cmp = self.edbapp.components.get_component_by_name("U1")
+        mounted_cmp = edb2.components.get_component_by_name("BGA")._edb_object
+        hosting_cmp = self.edbapp.components.get_component_by_name("U1")._edb_object
         (
             result,
             vector,
