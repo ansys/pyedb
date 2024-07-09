@@ -1,79 +1,45 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
-# SPDX-License-Identifier: MIT
+# # EDB: IPC2581 export
 #
+# This example shows how you can use PyAEDT to export an IPC2581 file.
 #
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
-"""
-EDB: IPC2581 export
--------------------
-This example shows how you can use PyEDB to export an IPC2581 file.
-"""
-
-###############################################################################
-# Perform required imports
-# ~~~~~~~~~~~~~~~~~~~~~~~~
 # Perform required imports, which includes importing a section.
 
+# +
 import os
+import tempfile
 
 import pyedb
-from pyedb.generic.general_methods import (
-    generate_unique_folder_name,
-    generate_unique_name,
-)
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.downloads import download_file
 
-###############################################################################
-# Download file
-# ~~~~~~~~~~~~~
-# Download the AEDB file and copy it in the temporary folder.
+# -
 
+# ## Download the AEDB file and copy it in the temporary folder.
 
-temp_folder = generate_unique_folder_name()
-targetfile = download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-
-
-ipc2581_file = os.path.join(temp_folder, "Ansys_Hsd.xml")
-
+temp_dir = tempfile.TemporaryDirectory(suffix=".ansys")
+targetfile = download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_dir.name)
+ipc2581_file_name = os.path.join(temp_dir.name, "Ansys_Hsd.xml")
 print(targetfile)
 
+# ## Launch EDB
+#
+# Launch the `pyedb.Edb` class, using EDB 2023.
+# > Note that length dimensions passed to EDB are in SI units.
 
-###############################################################################
-# Launch EDB
-# ~~~~~~~~~~
-# Launch the :class:`pyedb.Edb` class, using EDB 2023 R2 and SI units.
+# +
+# Select EDB version (change it manually if needed, e.g. "2024.1")
+edb_version = "2024.1"
+print(f"EDB version: {edb_version}")
 
-edb = pyedb.Edb(edbpath=targetfile, edbversion="2024.1")
+edb = pyedb.Edb(edbpath=targetfile, edbversion=edb_version)
+# -
 
-
-###############################################################################
-# Parametrize net
-# ~~~~~~~~~~~~~~~
-# Parametrize a net.
+# ## Parametrize the width of a trace.
 
 edb.modeler.parametrize_trace_width("A0_N", parameter_name=generate_unique_name("Par"), variable_value="0.4321mm")
 
-###############################################################################
-# Cutout
-# ~~~~~~
-# Create a cutout.
+# ## Create a cutout and plot it.
+
 signal_list = []
 for net in edb.nets.netlist:
     if "PCIe" in net:
@@ -90,25 +56,17 @@ edb.cutout(
     use_pyaedt_extent_computing=True,
     extent_defeature=0,
 )
-
-###############################################################################
-# Plot cutout
-# ~~~~~~~~~~~
-# Plot cutout before exporting to IPC2581 file.
-
 edb.nets.plot(None, None, color_by_net=True)
 
-###############################################################################
-# Create IPC2581 file
-# ~~~~~~~~~~~~~~~~~~~
-# Create the IPC2581 file.
+# ## Export the EDB to an IPC2581 file.
 
-edb.export_to_ipc2581(ipc2581_file, "inch")
-print("IPC2581 File has been saved to {}".format(ipc2581_file))
+edb.export_to_ipc2581(ipc2581_file_name, "inch")
+print("IPC2581 File has been saved to {}".format(ipc2581_file_name))
 
-###############################################################################
-# Close EDB
-# ~~~~~~~~~
-# Close EDB.
+# ## Close EDB
 
 edb.close_edb()
+
+# ## Clean up the temporary directory
+
+temp_dir.cleanup()
