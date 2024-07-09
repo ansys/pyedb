@@ -20,6 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.dotnet.edb_core.sim_setup_data.data.simulation_settings import (  # HFSSSimulationSettings
+    HFSSPISimulationSettings,
+)
 from pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data import SweepData
 
 
@@ -59,16 +62,52 @@ class SimSetupInfo:
             self._edb_object = edb_object
 
     @property
+    def name(self):
+        return self._edb_object.Name
+
+    @name.setter
+    def name(self, name):
+        self._edb_object.Name = name
+
+    @property
     def position(self):
         return self._edb_object.Position
 
     @property
     def sim_setup_type(self):
-        return self._edb_object.SimSetupType
+        """
+        "kHFSS": self._pedb.simsetupdata.HFSSSimulationSettings,
+        "kPEM": None,
+        "kSIwave": self._pedb.simsetupdata.SIwave.SIWSimulationSettings,
+        "kLNA": None,
+        "kTransient": None,
+        "kQEye": None,
+        "kVEye": None,
+        "kAMI": None,
+        "kAnalysisOption": None,
+        "kSIwaveDCIR": self._pedb.simsetupdata.SIwave.SIWDCIRSimulationSettings,
+        "kSIwaveEMI": None,
+        "kHFSSPI": self._pedb.simsetupdata.HFSSPISimulationSettings,
+        "kDDRwizard": None,
+        "kQ3D": None,
+        "kNumSetupTypes": None,
+        """
+
+        return self._edb_object.SimSetupType.ToString()
 
     @property
     def simulation_settings(self):
-        return self._edb_object.SimulationSettings
+        if self.sim_setup_type == "kHFSS":
+            return self._edb_object.SimulationSettings
+            # todo refactor HFSS
+            # return HFSSSimulationSettings(self._pedb, self.sim_setup, self._edb_object.SimulationSettings)
+        elif self.sim_setup_type == "kHFSSPI":
+            return HFSSPISimulationSettings(self._pedb, self.sim_setup, self._edb_object.SimulationSettings)
+        elif self.sim_setup_type == "kSIwave":  # todo refactor
+            return self._edb_object.SimulationSettings
+
+        elif self.sim_setup_type == "kSIwaveDCIR":  # todo refactor
+            return self._edb_object.SimulationSettings
 
     @property
     def sweep_data_list(self):
@@ -77,5 +116,5 @@ class SimSetupInfo:
         ]
 
     def add_sweep_data(self, sweep_data):
-        sweep_data.sim_setup = self.sim_setup
+        sweep_data._sim_setup = self.sim_setup
         self._edb_object.SweepDataList.Add(sweep_data._edb_object)

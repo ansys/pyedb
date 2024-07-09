@@ -31,7 +31,7 @@ API to make scripting simpler.
 
     .. grid-item-card:: Examples :fa:`scroll`
         :padding: 2 2 2 2
-        :link: examples
+        :link: examples/index
         :link-type: doc
 
         Explore examples that show how to use PyEDB to

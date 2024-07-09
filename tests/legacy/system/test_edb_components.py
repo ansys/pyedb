@@ -86,12 +86,16 @@ class TestClass:
         assert not self.edbapp.components.components["R1"].is_null
         assert self.edbapp.components.components["R1"].res_value
         assert self.edbapp.components.components["R1"].placement_layer
+        assert self.edbapp.components.components["R1"].component_def
+        assert self.edbapp.components.components["R1"].location
         assert isinstance(self.edbapp.components.components["R1"].lower_elevation, float)
         assert isinstance(self.edbapp.components.components["R1"].upper_elevation, float)
         assert self.edbapp.components.components["R1"].top_bottom_association == 2
         assert self.edbapp.components.components["R1"].pinlist
         assert self.edbapp.components.components["R1"].pins
         assert self.edbapp.components.components["R1"].pins["1"].pin_number
+        assert self.edbapp.components.components["R1"].pins["1"].component_pin
+
         assert self.edbapp.components.components["R1"].pins["1"].component
         assert (
             self.edbapp.components.components["R1"].pins["1"].lower_elevation

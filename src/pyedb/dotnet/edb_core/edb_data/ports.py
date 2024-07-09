@@ -198,24 +198,6 @@ class ExcitationSources(Terminal):
     def __init__(self, pedb, edb_terminal):
         Terminal.__init__(self, pedb, edb_terminal)
 
-    @property
-    def magnitude(self):
-        """Get the magnitude of the source."""
-        return self._edb_object.GetSourceAmplitude().ToDouble()
-
-    @magnitude.setter
-    def magnitude(self, value):
-        self._edb_object.SetSourceAmplitude(self._edb.utility.value(value))
-
-    @property
-    def phase(self):
-        """Get the phase of the source."""
-        return self._edb_object.GetSourcePhase().ToDouble()
-
-    @phase.setter
-    def phase(self, value):
-        self._edb_object.SetSourcePhase(self._edb.utility.value(value))
-
 
 class BundleWavePort(BundleTerminal):
     """Manages bundle wave port properties.

@@ -26,6 +26,7 @@
 import pytest
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
+VERSION = 2024.2
 
 
 @pytest.mark.skipif(True, reason="AEDT 2024.2 is not installed")
@@ -35,7 +36,7 @@ class TestClass:
         pass
 
     def test_add_raptorx_setup(self, edb_examples):
-        edbapp = edb_examples.get_si_verse(version=2024.2)
+        edbapp = edb_examples.get_si_verse(version=VERSION)
         setup = edbapp.create_raptorx_setup("test")
         assert "test" in edbapp.setups
         setup.add_frequency_sweep(frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
@@ -117,3 +118,39 @@ class TestClass:
         advanced_settings.use_relaxed_z_axis = True
         assert advanced_settings.use_relaxed_z_axis
         edbapp.close()
+
+    def test_create_hfss_pi_setup(self, edb_examples):
+        edbapp = edb_examples.get_si_verse(version=VERSION)
+        setup = edbapp.create_hfsspi_setup("test")
+        assert setup.get_simulation_settings()
+        settings = {
+            "auto_select_nets_for_simulation": True,
+            "ignore_dummy_nets_for_selected_nets": False,
+            "ignore_small_holes": 1,
+            "ignore_small_holes_min_diameter": 1,
+            "improved_loss_model": 2,
+            "include_enhanced_bond_wire_modeling": True,
+            "include_nets": ["GND"],
+            "min_plane_area_to_mesh": "0.2mm2",
+            "min_void_area_to_mesh": "0.02mm2",
+            "model_type": 2,
+            "perform_erc": True,
+            "pi_slider_pos": 1,
+            "rms_surface_roughness": "1",
+            "signal_nets_conductor_modeling": 1,
+            "signal_nets_error_tolerance": 0.02,
+            "signal_nets_include_improved_dielectric_fill_refinement": True,
+            "signal_nets_include_improved_loss_handling": True,
+            "snap_length_threshold": "2.6um",
+            "surface_roughness_model": 1,
+        }
+        setup.set_simulation_settings(settings)
+        settings_get = edbapp.setups["test"].get_simulation_settings()
+        for k, v in settings.items():
+            assert settings[k] == settings_get[k]
+
+    def test_create_hfss_pi_setup_add_sweep(self, edb_examples):
+        edbapp = edb_examples.get_si_verse(version=VERSION)
+        setup = edbapp.create_hfsspi_setup("test")
+        setup.add_frequency_sweep(name="sweep1", frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
+        assert setup.sweeps["sweep1"].frequencies

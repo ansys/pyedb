@@ -21,7 +21,7 @@ Load a layout
 
 
     # import EDB and load a layout
-    from pyedb.dotnet.edb import Edb
+    from pyedb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 

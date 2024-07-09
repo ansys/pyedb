@@ -24,6 +24,7 @@
 """
 
 import os
+from pathlib import Path
 
 import pytest
 
@@ -86,12 +87,12 @@ class TestClass:
         """Create a voltage source."""
         assert len(self.edbapp.sources) == 0
         assert "Vsource_" in self.edbapp.siwave.create_voltage_source_on_net("U1", "USB3_D_P", "U1", "GND", 3.3, 0)
-        assert len(self.edbapp.sources) == 2
+        assert len(self.edbapp.sources) == 1
         assert list(self.edbapp.sources.values())[0].magnitude == 3.3
 
         pins = self.edbapp.components.get_pin_from_component("U1")
         assert "VSource_" in self.edbapp.siwave.create_voltage_source_on_pin(pins[300], pins[10], 3.3, 0)
-        assert len(self.edbapp.sources) == 3
+        assert len(self.edbapp.sources) == 2
         assert len(self.edbapp.probes) == 0
         list(self.edbapp.sources.values())[0].phase = 1
         assert list(self.edbapp.sources.values())[0].phase == 1
@@ -281,6 +282,7 @@ class TestClass:
         assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", order_by_area=True), list)
         assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True), list)
         assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
+        assert edbapp.layout_validation.fix_self_intersections("PGND")
 
         edbapp.close()
 
@@ -370,6 +372,7 @@ class TestClass:
             use_pyaedt_extent_computing=True,
             check_terminals=True,
             expansion_factor=2,
+            include_voids_in_extents=True,
         )
         edbapp.close()
         source_path = os.path.join(local_path, "example_models", test_subfolder, "Multizone_GroundVoids.aedb")
@@ -859,6 +862,9 @@ class TestClass:
         assert setup1.set_solution_multi_frequencies()
         assert setup1.set_solution_broadband()
 
+        setup1.solver_slider_type = 0
+        assert setup1.solver_slider_type == 0
+
         setup1.hfss_solver_settings.enhanced_low_freq_accuracy = True
         setup1.hfss_solver_settings.order_basis = "first"
         setup1.hfss_solver_settings.relative_residual = 0.0002
@@ -1247,8 +1253,6 @@ class TestClass:
         assert sources[0].magnitude == 1.45
         sources[1].magnitude = 1.45
         assert sources[1].magnitude == 1.45
-        sources[2].magnitude = 1.45
-        assert sources[2].magnitude == 1.45
         edbapp.close()
 
     def test_delete_pingroup(self):
@@ -1911,4 +1915,11 @@ class TestClass:
         assert vrm.id
         assert edbapp.voltage_regulator_modules
         assert "test" in edbapp.voltage_regulator_modules
+        edbapp.close()
+
+    def test_workflow(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        path_bom = Path(edb_examples.test_folder) / "bom.csv"
+        edbapp.workflow.export_bill_of_materials(path_bom)
+        assert path_bom.exists()
         edbapp.close()

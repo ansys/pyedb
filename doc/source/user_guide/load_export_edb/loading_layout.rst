@@ -13,7 +13,7 @@ start manipulating objects.
 .. code:: python
 
 
-    from pyedb.dotnet.edb import Edb
+    from pyedb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
