@@ -768,7 +768,7 @@ class Components(object):
 
         if isinstance(pins, str):
             pins = [pins]
-        if isinstance(pins, EDBPadstackInstance):
+        elif isinstance(pins, EDBPadstackInstance):
             pins = [pins.name]
         if isinstance(reference_pins, str):
             reference_pins = [reference_pins]
