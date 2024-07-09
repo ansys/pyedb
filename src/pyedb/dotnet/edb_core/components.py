@@ -825,6 +825,7 @@ class Components(object):
                 return
             reference_pins = ref_cmp_pins
         if not reference_pins:
+            self._logger.error("No reference pins found.")
             return
         if len(pins) > 1:
             pec_boundary = False
