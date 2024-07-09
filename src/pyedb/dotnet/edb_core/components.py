@@ -793,7 +793,7 @@ class Components(object):
                 reference_pins = self._padstack.instances[reference_pins]
         elif isinstance(refdes, str):
             refdes = self.instances[refdes]
-        if isinstance(refdes, self._pedb._edb.Cell.Hierarchy.Component):
+        elif isinstance(refdes, self._pedb._edb.Cell.Hierarchy.Component):
             refdes = EDBComponent(self._pedb, refdes)
         refdes_pins = refdes.pins
         if any(refdes.rlc_values):
