@@ -670,9 +670,11 @@ class Components(object):
             positive_pin_group = self.create_pingroup_from_pins(positive_pins)
             if not positive_pin_group:  # pragma: no cover
                 return False
+            positive_pin_group = self._pedb.siwave.pin_groups[positive_pin_group.GetName()]
             negative_pin_group = self.create_pingroup_from_pins(negative_pins)
             if not negative_pin_group:  # pragma: no cover
                 return False
+            negative_pin_group = self._pedb.siwave.pin_groups[negative_pin_group.GetName()]
             if source.source_type == SourceType.Vsource:  # pragma: no cover
                 positive_pin_group_term = self._create_pin_group_terminal(
                     positive_pin_group,
@@ -843,7 +845,9 @@ class Components(object):
             )
             ref_group_name = "group_{}_ref".format(port_name)
             ref_pin_group = self.create_pingroup_from_pins(reference_pins, ref_group_name)
+            ref_pin_group = self._pedb.siwave.pin_groups[ref_pin_group.GetName()]
             ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
+
         else:
             ref_term = self._create_terminal(reference_pins[0].primitive_object, term_name=port_name + "_ref")
         ref_term.SetIsCircuitPort(True)
