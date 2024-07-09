@@ -761,20 +761,44 @@ class Components(object):
         >>> edb.close_edb()
         """
 
-        if isinstance(pins, str) or isinstance(pins, EDBPadstackInstance):
+        if isinstance(pins, str):
             pins = [pins]
+        elif isinstance(pins, EDBPadstackInstance):
+            pins = [pins.name]
         if isinstance(reference_pins, str):
             reference_pins = [reference_pins]
-        if isinstance(refdes, str) or isinstance(refdes, EDBComponent):
+        if isinstance(reference_pins, list):
+            _temp = []
+            for ref_pin in reference_pins:
+                if isinstance(ref_pin, int):
+                    if ref_pin in self._padstack.instances:
+                        _temp.append(self._padstack.instances[ref_pin])
+                elif isinstance(ref_pin, str):
+                    if ref_pin in self.instances[refdes].pins:
+                        _temp.append(self.instances[refdes].pins[ref_pin])
+                    else:
+                        p = [pp for pp in list(self._padstack.instances.values()) if pp.name == ref_pin]
+                        if p:
+                            _temp.append(p)
+                elif isinstance(ref_pin, EDBPadstackInstance):
+                    _temp.append(ref_pin.name)
+            reference_pins = _temp
+        elif isinstance(reference_pins, int):
+            if reference_pins in self._padstack.instances:
+                reference_pins = self._padstack.instances[reference_pins]
+        if isinstance(refdes, str):
             refdes = self.instances[refdes]
+        elif isinstance(refdes, self._pedb._edb.Cell.Hierarchy.Component):
+            refdes = EDBComponent(self._pedb, refdes)
+        refdes_pins = refdes.pins
         if any(refdes.rlc_values):
             return self.deactivate_rlc_component(component=refdes, create_circuit_port=True)
         if len([pin for pin in pins if isinstance(pin, str)]) == len(pins):
             cmp_pins = []
             for pin_name in pins:
-                cmp_pin = [pin for pin in list(refdes.pins.values()) if pin_name == pin.name]
+                cmp_pin = [pin for pin in list(refdes_pins.values()) if pin_name == pin.name]
                 if not cmp_pin:
-                    cmp_pin = [pin for pin in list(refdes.pins.values()) if pin_name == pin.name.split("-")[1]]
+                    cmp_pin = [pin for pin in list(refdes_pins.values()) if pin_name == pin.name.split("-")[1]]
                 if cmp_pin:
                     cmp_pins.append(cmp_pin[0])
             if not cmp_pins:
@@ -788,15 +812,15 @@ class Components(object):
         if len([pin for pin in reference_pins if isinstance(pin, str)]) == len(reference_pins):
             ref_cmp_pins = []
             for ref_pin_name in reference_pins:
-                cmp_ref_pin = [pin for pin in list(refdes.pins.values()) if ref_pin_name == pin.name]
-                if not cmp_ref_pin:
-                    cmp_ref_pin = [pin for pin in list(refdes.pins.values()) if ref_pin_name == pin.name.split("-")[1]]
-                if cmp_ref_pin:
-                    ref_cmp_pins.append(cmp_ref_pin[0])
+                if ref_pin_name in refdes_pins:
+                    ref_cmp_pins.append(refdes_pins[ref_pin_name])
+                elif "-" in ref_pin_name and ref_pin_name.split("-")[1] in refdes_pins:
+                    ref_cmp_pins.append(refdes_pins[ref_pin_name.split("-")[1]])
             if not ref_cmp_pins:
                 return
             reference_pins = ref_cmp_pins
-        if not len([pin for pin in reference_pins if isinstance(pin, EDBPadstackInstance)]) == len(reference_pins):
+        if not reference_pins:
+            self._logger.error("No reference pins found.")
             return
         if len(pins) > 1:
             pec_boundary = False
@@ -878,7 +902,7 @@ class Components(object):
         solder_balls_size : float, optional
             Solder balls diameter. When provided auto evaluation based on padstack size will be disabled.
         solder_balls_mid_size : float, optional
-            Solder balls mid diameter. When provided if value is different than solder balls size, spheroid shape will
+            Solder balls mid-diameter. When provided if value is different than solder balls size, spheroid shape will
             be switched.
 
         Returns
@@ -899,11 +923,11 @@ class Components(object):
         if isinstance(component, str):
             component = self.instances[component].edbcomponent
         if not solder_balls_height:
-            solder_balls_height = self.components[component.GetName()].solder_ball_height
+            solder_balls_height = self.instances[component.GetName()].solder_ball_height
         if not solder_balls_size:
-            solder_balls_size = self.components[component.GetName()].solder_ball_diameter[0]
+            solder_balls_size = self.instances[component.GetName()].solder_ball_diameter[0]
         if not solder_balls_mid_size:
-            solder_balls_mid_size = self.components[component.GetName()].solder_ball_diameter[1]
+            solder_balls_mid_size = self.instances[component.GetName()].solder_ball_diameter[1]
         if not isinstance(net_list, list):
             net_list = [net_list]
         for net in net_list:
@@ -929,6 +953,18 @@ class Components(object):
             return False
         pin_layers = cmp_pins[0].GetPadstackDef().GetData().GetLayerNames()
         if port_type == SourceType.CoaxPort:
+            ref_pins = [
+                p
+                for p in list(component.LayoutObjs)
+                if int(p.GetObjType()) == 1 and p.GetNet().GetName() in reference_net
+            ]
+            if not ref_pins:
+                self._logger.error(
+                    "No reference pins found on component. You might consider"
+                    "using Circuit port instead since reference pins can be extended"
+                    "outside the component automatically when not found."
+                )
+                return False
             pad_params = self._padstack.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
             if not pad_params[0] == 7:
                 if not solder_balls_size:  # pragma no cover
@@ -976,17 +1012,25 @@ class Components(object):
             for p in ref_pins:
                 if not p.IsLayoutPin():
                     p.SetIsLayoutPin(True)
-            if len(ref_pins) == 0:
-                self._logger.info("No reference pin found on component {}.".format(component.GetName()))
+            if not ref_pins:
+                self._logger.warning("No reference pins found on component, the closest pin will be selected.")
+                do_pingroup = False
             if do_pingroup:
                 if len(ref_pins) == 1:
+                    ref_pins.is_pin = True
                     ref_pin_group_term = self._create_terminal(ref_pins[0])
                 else:
+                    for pin in ref_pins:
+                        pin.is_pin = True
                     ref_pin_group = self.create_pingroup_from_pins(ref_pins)
                     if not ref_pin_group:
+                        self._logger.error(f"Failed to create reference pin group on component {component.GetName()}.")
                         return False
-                    ref_pin_group_term = self._create_pin_group_terminal(ref_pin_group, isref=True)
+                    ref_pin_group_term = self._create_pin_group_terminal(ref_pin_group, isref=False)
                     if not ref_pin_group_term:
+                        self._logger.error(
+                            f"Failed to create reference pin group terminal on component {component.GetName()}"
+                        )
                         return False
                 for net in net_list:
                     pins = [pin for pin in cmp_pins if pin.GetNet().GetName() == net]
@@ -1008,7 +1052,19 @@ class Components(object):
                 for net in net_list:
                     pins = [pin for pin in cmp_pins if pin.GetNet().GetName() == net]
                     for pin in pins:
-                        self.create_port_on_pins(component, pin, ref_pins)
+                        if ref_pins:
+                            self.create_port_on_pins(component, pin, ref_pins)
+                        else:
+                            _pin = EDBPadstackInstance(pin, self._pedb)
+                            ref_pin = _pin.get_reference_pins(
+                                reference_net=reference_net[0], max_limit=1, component_only=False, search_radius=3e-3
+                            )
+                            if ref_pin:
+                                self.create_port_on_pins(
+                                    component,
+                                    [EDBPadstackInstance(pin, self._pedb).name],
+                                    [EDBPadstackInstance(ref_pin[0], self._pedb).id],
+                                )
         return True
 
     def _create_terminal(self, pin, term_name=None):
