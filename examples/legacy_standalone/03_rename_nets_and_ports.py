@@ -20,47 +20,38 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-EDB: Rename nets and ports
--------------------
-This example shows how you can use PyEDB to rename ports and nets.
-"""
 
-###############################################################################
-# Perform required imports
-# ~~~~~~~~~~~~~~~~~~~~~~~~
+# # EDB: Rename nets and ports
+#
+# This example shows how you can use PyEDB to rename ports and nets.
+
+
+# ## Perform required imports
 # Perform required imports, which includes importing a section.
 
 from pyedb import Edb
 from pyedb.generic.general_methods import generate_unique_folder_name
 import pyedb.misc.downloads as downloads
 
-###############################################################################
-# Download ANSYS EDB
-# ~~~~~~~~~~~~~~~~~~
+# ## Download ANSYS EDB
 # Download ANSYS generic design from public repository.
-
 
 temp_folder = generate_unique_folder_name()
 targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
-
-###############################################################################
-# opening EDB
-# ~~~~~~~~~~~
+# ## opening EDB
 # Opening EDB with ANSYS release 2024.1
-edbapp = Edb(edbpath=targetfile, edbversion="2024.1")
 
-##############################################################################
-# Renaming all signal nets
-# ~~~~~~~~~~~~~~~~~~~~~~~~
+EDB_VERSION = "2024.1"
+edbapp = Edb(edbpath=targetfile, edbversion=EDB_VERSION)
+
+# ## Renaming all signal nets
 # Using the net name setter to rename.
+
 for net_name, net in edbapp.nets.signal.items():
     net.name = f"{net_name}_test"
 
-##############################################################################
-# Creating coaxial port on component U1 and all ddr4_dqs nets
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ## Creating coaxial port on component U1 and all ddr4_dqs nets
 # Selecting all nets from ddr4_dqs and component U1 and create coaxial ports
 # On corresponding pins.
 
@@ -69,20 +60,14 @@ signal_nets = [net for net in comp_u1.nets if "ddr4_dqs" in net.lower()]
 edbapp.hfss.create_coax_port_on_component("U1", net_list=signal_nets)
 edbapp.components.set_solder_ball(component="U1", sball_diam="0.3mm", sball_height="0.3mm")
 
-##############################################################################
-# Renaming all ports
-# ~~~~~~~~~~~~~~~~~~
+# ## Renaming all ports
 # Renaming all port with _renamed string as suffix example.
 
 for port_name, port in edbapp.ports.items():
     port.name = f"{port_name}_renamed"
 
-
-##############################################################################
-# Saving and closing EDB
-# ~~~~~~~~~~~~~~~~~~~~~~
+# ## Saving and closing EDB
 # Once the EDB saved and closed, this can be imported in ANSYS AEDT as an HFSS 3D Layout project.
-
 
 edbapp.save()
 edbapp.close()
