@@ -40,13 +40,6 @@ import warnings
 from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
 from pyedb.dotnet.edb_core.cell.layout import Layout
-from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
-from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
-from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal,
-)
-from pyedb.dotnet.edb_core.cell.terminal.pingroup_terminal import PinGroupTerminal
-from pyedb.dotnet.edb_core.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
 from pyedb.dotnet.edb_core.cell.voltage_regulator import VoltageRegulator
 from pyedb.dotnet.edb_core.components import Components

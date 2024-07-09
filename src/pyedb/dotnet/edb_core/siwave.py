@@ -36,7 +36,6 @@ from pyedb.dotnet.edb_core.edb_data.sources import (
     CircuitPort,
     CurrentSource,
     DCTerminal,
-    PinGroup,
     ResistorSource,
     VoltageSource,
 )
