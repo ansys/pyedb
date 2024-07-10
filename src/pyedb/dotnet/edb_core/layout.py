@@ -67,6 +67,7 @@ class EdbLayout(object):
 
     def __init__(self, p_edb):
         self._pedb = p_edb
+        self._primitives = []
 
     @property
     def _edb(self):
@@ -142,11 +143,13 @@ class EdbLayout(object):
         list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of primitives.
         """
-        _prims = []
+        if len(self._primitives) == len(self._layout.primitives):
+            return self._primitives
+        self._primitives = []
         if self._active_layout:
             for lay_obj in self._layout.primitives:
-                _prims.append(cast(lay_obj, self._pedb))
-        return _prims
+                self._primitives.append(cast(lay_obj, self._pedb))
+        return self._primitives
 
     @property
     def polygons_by_layer(self):
