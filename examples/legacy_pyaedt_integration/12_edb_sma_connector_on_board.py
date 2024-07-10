@@ -20,9 +20,9 @@ import tempfile
 
 import numpy as np
 import pyaedt
-from pyaedt.downloads import download_file
 
 import pyedb
+from pyedb.misc.downloads import download_file
 
 # Create the EDB.
 

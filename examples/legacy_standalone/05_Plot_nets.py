@@ -12,9 +12,8 @@
 # +
 import tempfile
 
-from pyaedt.downloads import download_file
-
 import pyedb
+from pyedb.misc.downloads import download_file
 
 # -
 

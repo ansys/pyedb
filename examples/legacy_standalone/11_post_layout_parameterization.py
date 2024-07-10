@@ -14,9 +14,8 @@ layers = ["16_Bottom"]  # Specify layers to parameterize
 import os
 import tempfile
 
-from pyaedt.downloads import download_file
-
 import pyedb
+from pyedb.misc.downloads import download_file
 
 temp_dir = tempfile.TemporaryDirectory(suffix=".ansys")
 
