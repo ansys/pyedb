@@ -31,7 +31,7 @@
 
 from pyedb import Edb
 from pyedb.generic.general_methods import generate_unique_folder_name
-import pyedb.misc.downloads as downloads
+import pyaedt.downloads as downloads
 
 # ## Download ANSYS EDB
 # Download ANSYS generic design from public repository.
