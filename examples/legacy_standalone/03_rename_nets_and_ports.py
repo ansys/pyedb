@@ -22,7 +22,7 @@
 
 """
 EDB: Rename nets and ports
--------------------
+--------------------------
 This example shows how you can use PyEDB to rename ports and nets.
 """
 
