@@ -101,7 +101,7 @@ class TestClass:
         line_number = len(self.edbapp.modeler.primitives)
         assert self.edbapp.modeler["line_167"].delete()
         assert self.edbapp.modeler._primitives == []
-        assert line_number == len(self.edbapp.modeler.primitives)+1
+        assert line_number == len(self.edbapp.modeler.primitives) + 1
         assert self.edbapp.modeler["poly_3022"].type == "Polygon"
 
     def test_modeler_primitives_by_layer(self):
