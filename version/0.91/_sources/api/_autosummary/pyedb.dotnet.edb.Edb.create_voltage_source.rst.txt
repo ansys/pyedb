@@ -1,6 +1,0 @@
-create\_voltage\_source
-=======================
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. automethod:: Edb.create_voltage_source

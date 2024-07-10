@@ -1,6 +1,0 @@
-excitations
-===========
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. autoproperty:: Edb.excitations

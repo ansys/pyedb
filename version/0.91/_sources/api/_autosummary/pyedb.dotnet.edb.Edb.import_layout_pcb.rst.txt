@@ -1,6 +1,0 @@
-import\_layout\_pcb
-===================
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. automethod:: Edb.import_layout_pcb

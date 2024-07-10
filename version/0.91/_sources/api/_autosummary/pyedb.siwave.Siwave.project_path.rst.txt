@@ -1,6 +1,0 @@
-project\_path
-=============
-
-.. currentmodule:: pyedb.siwave
-
-.. autoproperty:: Siwave.project_path

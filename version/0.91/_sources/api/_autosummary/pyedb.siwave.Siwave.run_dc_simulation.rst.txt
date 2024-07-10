@@ -1,6 +1,0 @@
-run\_dc\_simulation
-===================
-
-.. currentmodule:: pyedb.siwave
-
-.. automethod:: Siwave.run_dc_simulation

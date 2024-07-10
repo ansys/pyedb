@@ -1,6 +1,0 @@
-setups
-======
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. autoproperty:: Edb.setups

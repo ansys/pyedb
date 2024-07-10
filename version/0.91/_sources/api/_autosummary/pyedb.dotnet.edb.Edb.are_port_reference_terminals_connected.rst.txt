@@ -1,6 +1,0 @@
-are\_port\_reference\_terminals\_connected
-==========================================
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. automethod:: Edb.are_port_reference_terminals_connected

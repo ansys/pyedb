@@ -1,6 +1,0 @@
-padstacks
-=========
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. autoproperty:: Edb.padstacks

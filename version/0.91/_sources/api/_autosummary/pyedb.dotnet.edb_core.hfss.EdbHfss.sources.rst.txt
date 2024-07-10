@@ -1,6 +1,0 @@
-sources
-=======
-
-.. currentmodule:: pyedb.dotnet.edb_core.hfss
-
-.. autoproperty:: EdbHfss.sources

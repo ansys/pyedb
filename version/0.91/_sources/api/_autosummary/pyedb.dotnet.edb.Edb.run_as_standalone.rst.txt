@@ -1,6 +1,0 @@
-run\_as\_standalone
-===================
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. automethod:: Edb.run_as_standalone

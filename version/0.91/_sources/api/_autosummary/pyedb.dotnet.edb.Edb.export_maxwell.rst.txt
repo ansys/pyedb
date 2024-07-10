@@ -1,6 +1,0 @@
-export\_maxwell
-===============
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. automethod:: Edb.export_maxwell

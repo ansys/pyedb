@@ -1,6 +1,0 @@
-modeler
-=======
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. autoproperty:: Edb.modeler

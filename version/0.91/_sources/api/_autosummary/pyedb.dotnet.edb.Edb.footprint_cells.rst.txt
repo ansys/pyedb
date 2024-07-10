@@ -1,6 +1,0 @@
-footprint\_cells
-================
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. autoproperty:: Edb.footprint_cells

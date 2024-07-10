@@ -1,6 +1,0 @@
-export\_siwave\_report
-======================
-
-.. currentmodule:: pyedb.siwave
-
-.. automethod:: Siwave.export_siwave_report

@@ -1,6 +1,0 @@
-set\_layer\_clone
-=================
-
-.. currentmodule:: pyedb.dotnet.edb_core.stackup
-
-.. automethod:: Stackup.set_layer_clone

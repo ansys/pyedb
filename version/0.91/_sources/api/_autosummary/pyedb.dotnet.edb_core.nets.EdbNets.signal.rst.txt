@@ -1,6 +1,0 @@
-signal
-======
-
-.. currentmodule:: pyedb.dotnet.edb_core.nets
-
-.. autoproperty:: EdbNets.signal

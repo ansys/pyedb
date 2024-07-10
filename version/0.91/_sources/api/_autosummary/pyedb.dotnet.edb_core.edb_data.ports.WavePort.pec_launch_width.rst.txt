@@ -1,6 +1,0 @@
-pec\_launch\_width
-==================
-
-.. currentmodule:: pyedb.dotnet.edb_core.edb_data.ports
-
-.. autoproperty:: WavePort.pec_launch_width

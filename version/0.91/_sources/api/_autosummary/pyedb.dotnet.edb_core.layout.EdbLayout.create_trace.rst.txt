@@ -1,6 +1,0 @@
-create\_trace
-=============
-
-.. currentmodule:: pyedb.dotnet.edb_core.layout
-
-.. automethod:: EdbLayout.create_trace

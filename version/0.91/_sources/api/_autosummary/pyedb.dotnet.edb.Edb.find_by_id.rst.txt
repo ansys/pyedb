@@ -1,6 +1,0 @@
-find\_by\_id
-============
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. automethod:: Edb.find_by_id

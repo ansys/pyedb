@@ -1,6 +1,0 @@
-copy\_cells
-===========
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. automethod:: Edb.copy_cells

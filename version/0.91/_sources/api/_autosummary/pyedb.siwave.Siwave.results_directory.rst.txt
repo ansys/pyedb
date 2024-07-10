@@ -1,6 +1,0 @@
-results\_directory
-==================
-
-.. currentmodule:: pyedb.siwave
-
-.. autoproperty:: Siwave.results_directory

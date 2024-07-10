@@ -1,6 +1,0 @@
-refresh\_layer\_collection
-==========================
-
-.. currentmodule:: pyedb.dotnet.edb_core.stackup
-
-.. automethod:: Stackup.refresh_layer_collection

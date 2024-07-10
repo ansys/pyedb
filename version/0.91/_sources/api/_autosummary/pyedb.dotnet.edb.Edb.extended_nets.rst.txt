@@ -1,6 +1,0 @@
-extended\_nets
-==============
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. autoproperty:: Edb.extended_nets

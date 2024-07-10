@@ -1,6 +1,0 @@
-update\_material
-================
-
-.. currentmodule:: pyedb.dotnet.edb_core.materials
-
-.. automethod:: Materials.update_material

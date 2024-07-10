@@ -1,6 +1,0 @@
-set\_coax\_port\_attributes
-===========================
-
-.. currentmodule:: pyedb.dotnet.edb_core.hfss
-
-.. automethod:: EdbHfss.set_coax_port_attributes

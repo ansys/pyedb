@@ -1,6 +1,0 @@
-set\_component\_rlc
-===================
-
-.. currentmodule:: pyedb.dotnet.edb_core.components
-
-.. automethod:: Components.set_component_rlc

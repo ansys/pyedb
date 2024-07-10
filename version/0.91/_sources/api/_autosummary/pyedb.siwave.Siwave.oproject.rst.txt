@@ -1,6 +1,0 @@
-oproject
-========
-
-.. currentmodule:: pyedb.siwave
-
-.. autoproperty:: Siwave.oproject

@@ -1,6 +1,0 @@
-get\_padstack\_instances\_intersecting\_bounding\_box
-=====================================================
-
-.. currentmodule:: pyedb.dotnet.edb_core.padstack
-
-.. automethod:: EdbPadstacks.get_padstack_instances_intersecting_bounding_box

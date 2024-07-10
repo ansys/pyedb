@@ -1,6 +1,0 @@
-design\_variables
-=================
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. autoproperty:: Edb.design_variables

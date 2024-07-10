@@ -1,6 +1,0 @@
-nets
-====
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. autoproperty:: Edb.nets

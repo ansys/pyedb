@@ -1,6 +1,0 @@
-net
-===
-
-.. currentmodule:: pyedb.dotnet.edb_core.edb_data.ports
-
-.. autoproperty:: GapPort.net

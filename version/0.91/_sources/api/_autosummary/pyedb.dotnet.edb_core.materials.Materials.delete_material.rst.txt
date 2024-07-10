@@ -1,6 +1,0 @@
-delete\_material
-================
-
-.. currentmodule:: pyedb.dotnet.edb_core.materials
-
-.. automethod:: Materials.delete_material

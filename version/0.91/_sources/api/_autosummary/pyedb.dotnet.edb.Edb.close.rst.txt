@@ -1,6 +1,0 @@
-close
-=====
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. automethod:: Edb.close

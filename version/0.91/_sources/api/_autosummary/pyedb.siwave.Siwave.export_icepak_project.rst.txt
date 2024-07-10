@@ -1,6 +1,0 @@
-export\_icepak\_project
-=======================
-
-.. currentmodule:: pyedb.siwave
-
-.. automethod:: Siwave.export_icepak_project

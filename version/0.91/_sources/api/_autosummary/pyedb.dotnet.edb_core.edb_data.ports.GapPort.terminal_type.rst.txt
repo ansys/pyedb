@@ -1,6 +1,0 @@
-terminal\_type
-==============
-
-.. currentmodule:: pyedb.dotnet.edb_core.edb_data.ports
-
-.. autoproperty:: GapPort.terminal_type

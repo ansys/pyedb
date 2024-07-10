@@ -1,6 +1,0 @@
-set\_solderball
-===============
-
-.. currentmodule:: pyedb.dotnet.edb_core.padstack
-
-.. automethod:: EdbPadstacks.set_solderball

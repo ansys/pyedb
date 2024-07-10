@@ -1,6 +1,0 @@
-classify\_nets
-==============
-
-.. currentmodule:: pyedb.dotnet.edb_core.nets
-
-.. automethod:: EdbNets.classify_nets

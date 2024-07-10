@@ -1,6 +1,0 @@
-components\_by\_partname
-========================
-
-.. currentmodule:: pyedb.dotnet.edb_core.components
-
-.. autoproperty:: Components.components_by_partname

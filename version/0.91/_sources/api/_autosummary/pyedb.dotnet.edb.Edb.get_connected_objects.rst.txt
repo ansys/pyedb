@@ -1,6 +1,0 @@
-get\_connected\_objects
-=======================
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. automethod:: Edb.get_connected_objects

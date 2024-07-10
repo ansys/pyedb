@@ -1,6 +1,0 @@
-layer\_types
-============
-
-.. currentmodule:: pyedb.dotnet.edb_core.stackup
-
-.. autoproperty:: Stackup.layer_types

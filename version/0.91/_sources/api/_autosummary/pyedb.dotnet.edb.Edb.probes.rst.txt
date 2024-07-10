@@ -1,6 +1,0 @@
-probes
-======
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. autoproperty:: Edb.probes

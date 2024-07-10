@@ -1,6 +1,0 @@
-database
-========
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. autoproperty:: Edb.database

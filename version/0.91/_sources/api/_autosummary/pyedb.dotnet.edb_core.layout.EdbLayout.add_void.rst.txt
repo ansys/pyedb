@@ -1,6 +1,0 @@
-add\_void
-=========
-
-.. currentmodule:: pyedb.dotnet.edb_core.layout
-
-.. automethod:: EdbLayout.add_void

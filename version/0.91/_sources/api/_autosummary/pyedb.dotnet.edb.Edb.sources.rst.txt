@@ -1,6 +1,0 @@
-sources
-=======
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. autoproperty:: Edb.sources

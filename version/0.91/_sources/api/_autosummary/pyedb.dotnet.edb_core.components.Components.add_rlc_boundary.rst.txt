@@ -1,6 +1,0 @@
-add\_rlc\_boundary
-==================
-
-.. currentmodule:: pyedb.dotnet.edb_core.components
-
-.. automethod:: Components.add_rlc_boundary

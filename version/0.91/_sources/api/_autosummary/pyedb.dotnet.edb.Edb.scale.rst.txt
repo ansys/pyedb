@@ -1,6 +1,0 @@
-scale
-=====
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. automethod:: Edb.scale

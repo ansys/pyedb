@@ -1,6 +1,0 @@
-lock\_file
-==========
-
-.. currentmodule:: pyedb.siwave
-
-.. autoproperty:: Siwave.lock_file

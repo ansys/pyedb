@@ -1,6 +1,0 @@
-create\_hfss\_setup
-===================
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. automethod:: Edb.create_hfss_setup

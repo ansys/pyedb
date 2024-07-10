@@ -1,6 +1,0 @@
-solve\_siwave
-=============
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. automethod:: Edb.solve_siwave

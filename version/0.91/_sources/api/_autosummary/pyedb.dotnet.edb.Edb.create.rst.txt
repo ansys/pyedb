@@ -1,6 +1,0 @@
-create
-======
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. automethod:: Edb.create

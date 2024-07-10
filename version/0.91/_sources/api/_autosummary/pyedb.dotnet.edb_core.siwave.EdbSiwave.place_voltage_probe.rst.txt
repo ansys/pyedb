@@ -1,6 +1,0 @@
-place\_voltage\_probe
-=====================
-
-.. currentmodule:: pyedb.dotnet.edb_core.siwave
-
-.. automethod:: EdbSiwave.place_voltage_probe

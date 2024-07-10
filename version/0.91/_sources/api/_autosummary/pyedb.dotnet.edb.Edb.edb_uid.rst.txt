@@ -1,6 +1,0 @@
-edb\_uid
-========
-
-.. currentmodule:: pyedb.dotnet.edb
-
-.. autoproperty:: Edb.edb_uid
