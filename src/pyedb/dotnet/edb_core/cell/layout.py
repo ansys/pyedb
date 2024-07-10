@@ -285,20 +285,42 @@ class Layout(ObjBase):
         return self._edb_object.ArePortReferenceTerminalsConnected()
 
     def find_object_by_id(self, value: int):
-        """Find a Connectable object by Database ID.
+        """Find a layout object by Database ID.
 
         Parameters
         ----------
         value : int
+            ID of the object.
         """
         obj = self._pedb._edb.Cell.Connectable.FindById(self._edb_object, value)
         if obj.GetObjType().ToString() == "PadstackInstance":
             return EDBPadstackInstance(obj, self._pedb) if obj is not None else None
 
     def find_net_by_name(self, value: str):
+        """Find a net object by name
+
+        Parameters
+        ----------
+        value : str
+            Name of the net.
+
+        Returns
+        -------
+
+        """
         obj = self._pedb._edb.Cell.Net.FindByName(self._edb_object, value)
         return EDBNetsData(obj, self._pedb) if obj is not None else None
 
     def find_component_by_name(self, value: str):
+        """Find a component object by name. Component name is the reference designator in layout.
+
+        Parameters
+        ----------
+        value : str
+            Name of the component.
+        Returns
+        -------
+
+        """
         obj = self._pedb._edb.Cell.Hierarchy.Component.FindByName(self._edb_object, value)
         return EDBComponent(self._pedb, obj) if obj is not None else None
