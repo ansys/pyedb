@@ -28,7 +28,7 @@ This example shows you how to parameterize the signal net in post-layout.
 
 ###############################################################################
 # Define input parameters
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~
 signal_net_name = "DDR4_ALERT3"
 coplanar_plane_net_name = "1V0"  # Specify coplanar plane net name for adding clearance
 layers = ["16_Bottom"]  # Specify layers to be parameterized
@@ -55,7 +55,7 @@ appedb = pyedb.Edb(edb_fpath, edbversion="2024.1")
 
 ###############################################################################
 # Cutout
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~
 appedb.cutout([signal_net_name], [coplanar_plane_net_name, "GND"], remove_single_pin_components=True)
 
 ###############################################################################
@@ -82,7 +82,7 @@ for p in trace_segments:
 
 ###############################################################################
 # Delete existing clearance
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~
 for p in trace_segments:
     for g in appedb.modeler.get_polygons_by_layer(p.layer_name, coplanar_plane_net_name):
         for v in g.voids:
@@ -108,7 +108,7 @@ appedb.nets.plot(layers=layers[0], size=2000)
 
 ###############################################################################
 # Save and close Edb
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~
 
 save_edb_fpath = os.path.join(temppath, generate_unique_name("post_layout_parameterization") + ".aedb")
 appedb.save_edb_as(save_edb_fpath)
