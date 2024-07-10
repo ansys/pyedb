@@ -10,9 +10,10 @@ import os
 import shutil
 import tempfile
 
+from pyaedt.downloads import download_file
+
 import pyedb
 from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
-from pyedb.misc.downloads import download_file
 
 # -
 

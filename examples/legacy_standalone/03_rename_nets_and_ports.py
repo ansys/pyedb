@@ -29,9 +29,10 @@
 # ## Perform required imports
 # Perform required imports, which includes importing a section.
 
+import pyaedt.downloads as downloads
+
 from pyedb import Edb
 from pyedb.generic.general_methods import generate_unique_folder_name
-import pyedb.misc.downloads as downloads
 
 # ## Download ANSYS EDB
 # Download ANSYS generic design from public repository.
