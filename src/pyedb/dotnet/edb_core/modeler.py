@@ -26,6 +26,7 @@ This module contains these classes: `EdbLayout` and `Shape`.
 import math
 import warnings
 
+from pyedb.dotnet.edb_core.cell.primitive import Bondwire
 from pyedb.dotnet.edb_core.dotnet.primitive import (
     CircleDotNet,
     PathDotNet,
@@ -37,7 +38,7 @@ from pyedb.dotnet.edb_core.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 
 
-class EdbLayout(object):
+class Modeler(object):
     """Manages EDB methods for primitives management accessible from `Edb.modeler` property.
 
     Examples
@@ -643,7 +644,7 @@ class EdbLayout(object):
                 new_points = self._edb.Geometry.PointData(pdata_0, pdata_1)
                 polygonData.SetPoint(idx, new_points)
 
-        elif isinstance(main_shape, EdbLayout.Shape):
+        elif isinstance(main_shape, Modeler.Shape):
             polygonData = self.shape_to_polygon_data(main_shape)
         else:
             polygonData = main_shape
@@ -654,7 +655,7 @@ class EdbLayout(object):
             if isinstance(void, list):
                 void = self.Shape("polygon", points=void)
                 voidPolygonData = self.shape_to_polygon_data(void)
-            elif isinstance(void, EdbLayout.Shape):
+            elif isinstance(void, Modeler.Shape):
                 voidPolygonData = self.shape_to_polygon_data(void)
             else:
                 voidPolygonData = void
@@ -932,7 +933,7 @@ class EdbLayout(object):
 
         Parameters
         ----------
-        shape : :class:`pyedb.dotnet.edb_core.layout.EdbLayout.Shape`
+        shape : :class:`pyedb.dotnet.edb_core.modeler.Modeler.Shape`
             Type of the shape to convert. Options are ``"rectangle"`` and ``"polygon"``.
         """
         if shape.type == "polygon":
@@ -1328,3 +1329,100 @@ class EdbLayout(object):
                             stat_model.occupying_surface[layer] = surface
                             stat_model.occupying_ratio[layer] = surface / outline_surface
         return stat_model
+
+    def create_bondwire(
+        self,
+        definition_name,
+        placement_layer,
+        width,
+        material,
+        start_layer_name,
+        start_x,
+        start_y,
+        end_layer_name,
+        end_x,
+        end_y,
+        net,
+        bondwire_type="jedec4",
+    ):
+        """Create a bondwire object.
+
+        Parameters
+        ----------
+        bondwire_type : :class:`BondwireType`
+            Type of bondwire: kAPDBondWire or kJDECBondWire types.
+        definition_name : str
+            Bondwire definition name.
+        placement_layer : str
+            Layer name this bondwire will be on.
+        width : :class:`Value <ansys.edb.utility.Value>`
+            Bondwire width.
+        material : str
+            Bondwire material name.
+        start_layer_name : str
+            Name of start layer.
+        start_x : :class:`Value <ansys.edb.utility.Value>`
+            X value of start point.
+        start_y : :class:`Value <ansys.edb.utility.Value>`
+            Y value of start point.
+        end_layer_name : str
+            Name of end layer.
+        end_x : :class:`Value <ansys.edb.utility.Value>`
+            X value of end point.
+        end_y : :class:`Value <ansys.edb.utility.Value>`
+            Y value of end point.
+        net : str or :class:`Net <ansys.edb.net.Net>` or None
+            Net of the Bondwire.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.dotnet.primitive.BondwireDotNet`
+            Bondwire object created.
+        """
+
+        return Bondwire(
+            pedb=self._pedb,
+            bondwire_type=bondwire_type,
+            definition_name=definition_name,
+            placement_layer=placement_layer,
+            width=self._pedb.edb_value(width),
+            material=material,
+            start_layer_name=start_layer_name,
+            start_x=self._pedb.edb_value(start_x),
+            start_y=self._pedb.edb_value(start_y),
+            end_layer_name=end_layer_name,
+            end_x=self._pedb.edb_value(end_x),
+            end_y=self._pedb.edb_value(end_y),
+            net=self._pedb.nets[net]._edb_object,
+        )
+
+    def create_pin_group(self, name: str, pins_by_id: list[int] = None, pins_by_aedt_name: list[str] = None):
+        """Create a PinGroup.
+
+        Parameters
+        name : str,
+            Name of the PinGroup.
+        pins_by_id : list[int] or None
+            List of pins by ID.
+        pins_by_aedt_name : list[str] or None
+            List of pins by AEDT name.
+        """
+        pins = []
+
+        if pins_by_id is not None:
+            for p in pins_by_id:
+                pins.append(self._pedb.layout.find_object_by_id(p._edb_object))
+        else:
+            p_inst = self._pedb.layout.padstack_instances
+            while True:
+                p = p_inst.pop(0)
+                if p.aedt_name in pins_by_aedt_name:
+                    pins.append(p._edb_object)
+                    pins_by_aedt_name.remove(p.aedt_name)
+                if len(pins_by_aedt_name) == 0:
+                    break
+
+        self._edb.cell.hierarchy.pin_group.Create(
+            self._pedb.layout._edb_object, name, convert_py_list_to_net_list(pins)
+        )
+        return self._pedb.siwave.pin_groups[name]

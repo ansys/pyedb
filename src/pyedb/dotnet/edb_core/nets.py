@@ -55,10 +55,7 @@ class EdbNets(object):
         :class:` :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBNetsData`
 
         """
-        if name in self.nets:
-            return self.nets[name]
-        self._pedb.logger.error("Component or definition not found.")
-        return
+        return self._pedb.layout.find_net_by_name(name)
 
     def __contains__(self, name):
         """Determine if a net is named ``name`` or not.
@@ -119,7 +116,7 @@ class EdbNets(object):
         dict[str, :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBNetsData`]
             Dictionary of nets.
         """
-        return self._pedb.modeler.nets
+        return {i.name: i for i in self._pedb.layout.nets}
 
     @property
     def netlist(self):

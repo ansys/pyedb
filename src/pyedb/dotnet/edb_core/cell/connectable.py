@@ -20,31 +20,45 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import logging
-
-from pyedb.dotnet.edb_core.cell.connectable import Connectable
+from pyedb.dotnet.edb_core.cell.layout_obj import LayoutObj
 
 
-class HierarchyObj(Connectable):
+class Connectable(LayoutObj):
+    """Manages EDB functionalities for a connectable object."""
+
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
 
     @property
-    def component_def(self):
-        """Component definition."""
-        return self._edb_object.GetComponentDef().GetName()
+    def net(self):
+        """Net Object.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBNetsData`
+        """
+        from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
+
+        return EDBNetsData(self._edb_object.GetNet(), self._pedb)
+
+    @net.setter
+    def net(self, value):
+        """Set net."""
+        net = self._pedb.nets[value]
+        self._edb_object.SetNet(net.net_object)
 
     @property
-    def location(self):
-        """XY Coordinates."""
-        flag, x, y = self._edb_object.GetLocation()
-        if flag:
-            return [x, y]
-        else:  # pragma no cover
-            logging.warning(f"Failed to get location of '{self.name}'.")
-            return
+    def component(self):
+        """Component connected to this object.
 
+        Returns
+        -------
+        :class:`dotnet.edb_core.edb_data.nets_data.EDBComponent`
+        """
+        from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 
-class Group(HierarchyObj):
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
+        edb_comp = self._edb_object.GetComponent()
+        if edb_comp.IsNull():
+            return None
+        else:
+            return EDBComponent(self._pedb, edb_comp)

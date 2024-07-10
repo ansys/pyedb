@@ -64,6 +64,10 @@ class EDBComponent(Group):
         self._comp_instance = None
 
     @property
+    def group_type(self):
+        return self._edb_object.ToString().split(".")[-1].lower()
+
+    @property
     def layout_instance(self):
         """EDB layout instance object."""
         return self._pedb.layout_instance

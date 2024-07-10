@@ -216,12 +216,7 @@ class EdbPadstacks(object):
             List of padstack instances.
 
         """
-
-        padstack_instances = {}
-        edb_padstack_inst_list = self._pedb.layout.padstack_instances
-        for edb_padstack_instance in edb_padstack_inst_list:
-            padstack_instances[edb_padstack_instance.GetId()] = EDBPadstackInstance(edb_padstack_instance, self._pedb)
-        return padstack_instances
+        return {i.id: i for i in self._pedb.layout.padstack_instances}
 
     @property
     def instances_by_name(self):
