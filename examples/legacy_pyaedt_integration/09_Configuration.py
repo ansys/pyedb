@@ -15,9 +15,9 @@ import os
 import tempfile
 
 import pyaedt
+from pyaedt.downloads import download_file
 
 import pyedb
-from pyaedt.downloads import download_file
 
 # -
 

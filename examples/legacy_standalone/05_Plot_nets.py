@@ -12,8 +12,9 @@
 # +
 import tempfile
 
-import pyedb
 from pyaedt.downloads import download_file
+
+import pyedb
 
 # -
 

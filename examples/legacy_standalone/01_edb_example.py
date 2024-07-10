@@ -9,8 +9,9 @@ import os
 import tempfile
 import time
 
-import pyedb
 from pyaedt.downloads import download_file
+
+import pyedb
 
 temp_dir = tempfile.TemporaryDirectory(suffix=".ansys")
 targetfile = download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_dir.name)
