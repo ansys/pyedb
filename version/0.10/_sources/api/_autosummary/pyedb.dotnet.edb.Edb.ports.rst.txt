@@ -1,0 +1,6 @@
+ports
+=====
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.ports

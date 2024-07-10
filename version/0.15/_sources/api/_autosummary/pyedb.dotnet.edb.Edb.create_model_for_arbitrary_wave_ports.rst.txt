@@ -1,0 +1,6 @@
+create\_model\_for\_arbitrary\_wave\_ports
+==========================================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.create_model_for_arbitrary_wave_ports

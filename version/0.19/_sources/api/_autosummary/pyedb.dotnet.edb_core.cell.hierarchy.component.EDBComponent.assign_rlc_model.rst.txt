@@ -1,0 +1,6 @@
+assign\_rlc\_model
+==================
+
+.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component
+
+.. automethod:: EDBComponent.assign_rlc_model

@@ -1,0 +1,6 @@
+use\_pyaedt\_cutout
+===================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationBatch.use_pyaedt_cutout

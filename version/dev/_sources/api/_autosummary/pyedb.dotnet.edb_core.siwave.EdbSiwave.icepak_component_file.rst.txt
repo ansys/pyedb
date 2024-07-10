@@ -1,0 +1,6 @@
+icepak\_component\_file
+=======================
+
+.. currentmodule:: pyedb.dotnet.edb_core.siwave
+
+.. autoproperty:: EdbSiwave.icepak_component_file

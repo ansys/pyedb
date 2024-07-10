@@ -1,0 +1,6 @@
+reference\_net\_name
+====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.ports
+
+.. autoproperty:: WavePort.reference_net_name

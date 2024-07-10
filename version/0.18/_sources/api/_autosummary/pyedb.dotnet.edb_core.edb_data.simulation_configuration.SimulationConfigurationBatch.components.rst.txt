@@ -1,0 +1,6 @@
+components
+==========
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationBatch.components

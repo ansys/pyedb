@@ -1,0 +1,6 @@
+assign\_s\_param\_model
+=======================
+
+.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component
+
+.. automethod:: EDBComponent.assign_s_param_model

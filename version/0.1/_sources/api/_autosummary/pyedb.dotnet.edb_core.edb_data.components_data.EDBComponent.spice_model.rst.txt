@@ -1,0 +1,6 @@
+spice\_model
+============
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.components_data
+
+.. autoproperty:: EDBComponent.spice_model

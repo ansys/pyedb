@@ -1,0 +1,6 @@
+point\_3d
+=========
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.point_3d

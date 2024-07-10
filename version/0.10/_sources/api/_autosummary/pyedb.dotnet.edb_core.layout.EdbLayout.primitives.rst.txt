@@ -1,0 +1,6 @@
+primitives
+==========
+
+.. currentmodule:: pyedb.dotnet.edb_core.layout
+
+.. autoproperty:: EdbLayout.primitives

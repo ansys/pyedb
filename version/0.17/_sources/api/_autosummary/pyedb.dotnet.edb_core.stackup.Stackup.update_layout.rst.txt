@@ -1,0 +1,6 @@
+update\_layout
+==============
+
+.. currentmodule:: pyedb.dotnet.edb_core.stackup
+
+.. automethod:: Stackup.update_layout

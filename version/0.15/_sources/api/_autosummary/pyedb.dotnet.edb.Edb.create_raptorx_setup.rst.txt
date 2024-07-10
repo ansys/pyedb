@@ -1,0 +1,6 @@
+create\_raptorx\_setup
+======================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.create_raptorx_setup

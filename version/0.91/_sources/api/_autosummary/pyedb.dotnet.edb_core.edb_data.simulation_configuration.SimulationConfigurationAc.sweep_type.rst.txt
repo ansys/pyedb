@@ -1,0 +1,6 @@
+sweep\_type
+===========
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationAc.sweep_type

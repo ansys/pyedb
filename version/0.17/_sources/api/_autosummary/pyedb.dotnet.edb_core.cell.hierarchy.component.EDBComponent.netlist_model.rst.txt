@@ -1,0 +1,6 @@
+netlist\_model
+==============
+
+.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component
+
+.. autoproperty:: EDBComponent.netlist_model

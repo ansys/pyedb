@@ -1,0 +1,6 @@
+enforce\_passivity
+==================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data
+
+.. autoproperty:: EdbFrequencySweep.enforce_passivity

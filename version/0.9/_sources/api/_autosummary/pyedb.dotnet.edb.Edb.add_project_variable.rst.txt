@@ -1,0 +1,6 @@
+add\_project\_variable
+======================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.add_project_variable

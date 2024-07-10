@@ -1,0 +1,6 @@
+cutout\_multizone\_layout
+=========================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.cutout_multizone_layout

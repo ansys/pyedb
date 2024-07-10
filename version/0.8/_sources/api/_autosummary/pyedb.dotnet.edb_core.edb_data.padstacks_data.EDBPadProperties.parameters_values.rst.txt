@@ -1,0 +1,6 @@
+parameters\_values
+==================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadProperties.parameters_values

@@ -1,0 +1,6 @@
+component\_pin
+==============
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstackInstance.component_pin

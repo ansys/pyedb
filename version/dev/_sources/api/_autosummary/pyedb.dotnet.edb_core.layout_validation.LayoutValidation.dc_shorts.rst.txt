@@ -1,0 +1,6 @@
+dc\_shorts
+==========
+
+.. currentmodule:: pyedb.dotnet.edb_core.layout_validation
+
+.. automethod:: LayoutValidation.dc_shorts

@@ -1,0 +1,6 @@
+add\_frequency\_sweep
+=====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationBatch.add_frequency_sweep

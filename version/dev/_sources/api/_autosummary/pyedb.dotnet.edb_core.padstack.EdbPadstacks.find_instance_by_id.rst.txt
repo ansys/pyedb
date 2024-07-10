@@ -1,0 +1,6 @@
+find\_instance\_by\_id
+======================
+
+.. currentmodule:: pyedb.dotnet.edb_core.padstack
+
+.. automethod:: EdbPadstacks.find_instance_by_id

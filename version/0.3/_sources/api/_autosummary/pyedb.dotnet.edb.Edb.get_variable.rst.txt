@@ -1,0 +1,6 @@
+get\_variable
+=============
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.get_variable

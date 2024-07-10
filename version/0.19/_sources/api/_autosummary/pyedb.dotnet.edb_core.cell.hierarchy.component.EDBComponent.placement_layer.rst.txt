@@ -1,0 +1,6 @@
+placement\_layer
+================
+
+.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component
+
+.. autoproperty:: EDBComponent.placement_layer

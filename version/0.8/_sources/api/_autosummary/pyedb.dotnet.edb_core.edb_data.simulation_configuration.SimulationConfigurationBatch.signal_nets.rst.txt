@@ -1,0 +1,6 @@
+signal\_nets
+============
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationBatch.signal_nets

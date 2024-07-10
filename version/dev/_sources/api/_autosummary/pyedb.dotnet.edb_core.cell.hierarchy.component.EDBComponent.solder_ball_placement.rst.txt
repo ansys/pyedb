@@ -1,0 +1,6 @@
+solder\_ball\_placement
+=======================
+
+.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component
+
+.. autoproperty:: EDBComponent.solder_ball_placement

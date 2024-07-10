@@ -1,0 +1,6 @@
+iterate\_materials\_in\_amat
+============================
+
+.. currentmodule:: pyedb.dotnet.edb_core.materials
+
+.. automethod:: Materials.iterate_materials_in_amat

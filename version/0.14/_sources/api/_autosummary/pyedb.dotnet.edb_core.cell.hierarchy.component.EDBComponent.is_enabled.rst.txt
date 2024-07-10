@@ -1,0 +1,6 @@
+is\_enabled
+===========
+
+.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component
+
+.. autoproperty:: EDBComponent.is_enabled

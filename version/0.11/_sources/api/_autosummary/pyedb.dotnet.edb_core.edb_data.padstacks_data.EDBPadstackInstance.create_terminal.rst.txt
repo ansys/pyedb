@@ -1,0 +1,6 @@
+create\_terminal
+================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. automethod:: EDBPadstackInstance.create_terminal

@@ -1,0 +1,29 @@
+﻿pyedb.dotnet.edb
+================
+
+.. automodule:: pyedb.dotnet.edb
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Edb
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,6 @@
+use\_s\_parameter\_model
+========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.components_data
+
+.. automethod:: EDBComponent.use_s_parameter_model

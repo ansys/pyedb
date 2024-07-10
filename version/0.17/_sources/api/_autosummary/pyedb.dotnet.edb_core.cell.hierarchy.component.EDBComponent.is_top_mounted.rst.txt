@@ -1,0 +1,6 @@
+is\_top\_mounted
+================
+
+.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component
+
+.. autoproperty:: EDBComponent.is_top_mounted

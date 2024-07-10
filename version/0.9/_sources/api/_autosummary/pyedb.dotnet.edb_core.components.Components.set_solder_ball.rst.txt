@@ -1,0 +1,6 @@
+set\_solder\_ball
+=================
+
+.. currentmodule:: pyedb.dotnet.edb_core.components
+
+.. automethod:: Components.set_solder_ball
