@@ -102,7 +102,7 @@ class PrimitiveDotNet:
                 ptype = "rect"
             elif str(self.primitive_type) == "Polygon":
                 ptype = "poly"
-            elif (str(self.primitive_type) == "Bondwire"):
+            elif str(self.primitive_type) == "Bondwire":
                 ptype = "bwr"
             else:
                 ptype = str(self.primitive_type).lower()

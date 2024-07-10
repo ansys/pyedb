@@ -60,7 +60,11 @@ class EdbLayout(object):
 
         """
         for i in self.primitives:
-            if (isinstance(name, str) and i.aedt_name == name) or (isinstance(name, str) and i.aedt_name == name.replace("__", "_")) or (isinstance(name, int) and i.id==name):
+            if (
+                (isinstance(name, str) and i.aedt_name == name)
+                or (isinstance(name, str) and i.aedt_name == name.replace("__", "_"))
+                or (isinstance(name, int) and i.id == name)
+            ):
                 return i
         self._pedb.logger.error("Primitive not found.")
         return
