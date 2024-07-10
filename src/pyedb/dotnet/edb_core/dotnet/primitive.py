@@ -96,7 +96,17 @@ class PrimitiveDotNet:
         _, name = self.prim_obj.GetProductProperty(self._app._edb.ProductId.Designer, 1, val)
         name = str(name).strip("'")
         if name == "":
-            name = "{}__{}".format(self.primitive_type, self.id)
+            if str(self.primitive_type) == "Path":
+                ptype = "line"
+            elif str(self.primitive_type) == "Rectangle":
+                ptype = "rect"
+            elif str(self.primitive_type) == "Polygon":
+                ptype = "poly"
+            elif (str(self.primitive_type) == "Bondwire"):
+                ptype = "bwr"
+            else:
+                ptype = str(self.primitive_type).lower()
+            name = "{}_{}".format(ptype, self.id)
             self.prim_obj.SetProductProperty(self._app._edb.ProductId.Designer, 1, name)
         return name
 

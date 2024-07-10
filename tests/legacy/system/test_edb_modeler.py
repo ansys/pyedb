@@ -96,6 +96,8 @@ class TestClass:
         assert isinstance(self.edbapp.modeler.paths[0].width, float)
         self.edbapp.modeler.paths[0].width = "1mm"
         assert self.edbapp.modeler.paths[0].width == 0.001
+        assert self.edbapp.modeler["line_167"].type == "Path"
+        assert self.edbapp.modeler["poly_3022"].type == "Polygon"
 
     def test_modeler_primitives_by_layer(self):
         """Evaluate modeler primitives by layer"""

@@ -47,6 +47,24 @@ class EdbLayout(object):
     >>> edb_layout = edbapp.modeler
     """
 
+    def __getitem__(self, name):
+        """Get  a layout instance from the Edb project.
+
+        Parameters
+        ----------
+        name : str, int
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`
+
+        """
+        for i in self.primitives:
+            if (isinstance(name, str) and i.aedt_name == name) or (isinstance(name, str) and i.aedt_name == name.replace("__", "_")) or (isinstance(name, int) and i.id==name):
+                return i
+        self._pedb.logger.error("Primitive not found.")
+        return
+
     def __init__(self, p_edb):
         self._pedb = p_edb
 

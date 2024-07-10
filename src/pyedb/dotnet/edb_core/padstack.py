@@ -61,7 +61,7 @@ class EdbPadstacks(object):
         :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`
 
         """
-        if name in self.instances:
+        if isinstance(name, int) and name in self.instances:
             return self.instances[name]
         elif name in self.definitions:
             return self.definitions[name]
@@ -74,6 +74,8 @@ class EdbPadstacks(object):
 
     def __init__(self, p_edb):
         self._pedb = p_edb
+        self._instances = {}
+        self._definitions = {}
 
     @property
     def _edb(self):
@@ -183,12 +185,14 @@ class EdbPadstacks(object):
             List of definitions via padstack definitions.
 
         """
-        _padstacks = {}
+        if len(self._definitions) == len(self._pedb.padstack_defs):
+            return self._definitions
+        self._definitions = {}
         for padstackdef in self._pedb.padstack_defs:
             PadStackData = padstackdef.GetData()
             if len(PadStackData.GetLayerNames()) >= 1:
-                _padstacks[padstackdef.GetName()] = EDBPadstack(padstackdef, self)
-        return _padstacks
+                self._definitions[padstackdef.GetName()] = EDBPadstack(padstackdef, self)
+        return self._definitions
 
     @property
     def padstacks(self):
@@ -217,11 +221,14 @@ class EdbPadstacks(object):
 
         """
 
-        padstack_instances = {}
+
         edb_padstack_inst_list = self._pedb.layout.padstack_instances
+        if len(self._instances) == len(edb_padstack_inst_list):
+            return self._instances
+        self._instances = {}
         for edb_padstack_instance in edb_padstack_inst_list:
-            padstack_instances[edb_padstack_instance.GetId()] = EDBPadstackInstance(edb_padstack_instance, self._pedb)
-        return padstack_instances
+            self._instances[edb_padstack_instance.GetId()] = EDBPadstackInstance(edb_padstack_instance, self._pedb)
+        return self._instances
 
     @property
     def instances_by_name(self):
