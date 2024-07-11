@@ -983,7 +983,6 @@ class TestClass:
 
         edbapp.close()
 
-
     def test_hfss_simulation_setup_b(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         setup1 = edbapp.create_hfss_setup("setup1")
