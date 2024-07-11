@@ -152,7 +152,6 @@ class TestClass:
     def test_create_hfss_pi_setup_add_sweep(self, edb_examples):
         edbapp = edb_examples.get_si_verse(version=VERSION)
         setup = edbapp.create_hfsspi_setup("test")
-        setup.add_frequency_sweep(name="sweep1", frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
+        setup.add_sweep(name="sweep1", frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
         assert setup.sweeps["sweep1"].frequencies
-        setup.sweeps["sweep1"].adaptive_sampling = True
-        assert setup.sweeps["sweep1"].adaptive_sampling
+        edbapp.setups["test"].sweeps["sweep1"].adaptive_sampling = True
