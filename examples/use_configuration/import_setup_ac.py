@@ -64,7 +64,6 @@ siwave_setup = {
     ],
 }
 
-
 # ## Create a HFSS setup
 
 # Keywords
