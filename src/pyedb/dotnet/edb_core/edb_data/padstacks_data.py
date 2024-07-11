@@ -25,7 +25,7 @@ import math
 import re
 import warnings
 
-from pyedb.dotnet.clr_module import String, _clr
+from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.edb_core.cell.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
