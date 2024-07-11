@@ -929,22 +929,6 @@ class TestClass:
         hfss_port_settings.set_triangles_wave_port = True
         assert hfss_port_settings.set_triangles_wave_port
 
-        # mesh_operations = setup1.mesh_operations
-        # setup1.mesh_operations = mesh_operations
-
-        setup1.add_sweep(
-            "sweep1",
-            frequency_set=[
-                ["linear count", "0", "1kHz", 1],
-                ["log scale", "1kHz", "0.1GHz", 10],
-                ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-            ],
-        )
-        assert "sweep1" in setup1.frequency_sweeps
-        sweep1 = setup1.frequency_sweeps["sweep1"]
-        sweep1.adaptive_sampling = True
-        assert sweep1.adaptive_sampling
-
         edbapp.setups["setup1"].name = "setup1a"
         assert "setup1" not in edbapp.setups
         assert "setup1a" in edbapp.setups
@@ -993,6 +977,10 @@ class TestClass:
         assert len(setup1.sweeps["sw1"].frequencies) == 20
         setup1.sweeps["sw1"].add("log_scale", "1GHz", "10GHz", 10)
         assert len(setup1.sweeps["sw1"].frequencies) == 31
+
+        setup1.sweeps["sw1"].adaptive_sampling = True
+        assert setup1.sweeps["sw1"].adaptive_sampling
+
         edbapp.close()
 
     def test_hfss_simulation_setup_b(self, edb_examples):
