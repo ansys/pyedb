@@ -20,6 +20,7 @@ from pyedb.misc.downloads import download_file
 #
 # Download the EDB folder and copy it to a temporary folder.
 # The following files are used in this example:
+#
 # - _sky130_fictious_dtc_exmple_contol_no_map.xml_
 #   defines physical information such
 #   as material properties, stackup layers, and boundary conditions.
