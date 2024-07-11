@@ -1744,7 +1744,7 @@ class EDBPadstackInstance(Primitive):
 
         val = String("")
         _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
-    name = str(name).strip("'")
+        name = str(name).strip("'")
         return name
 
     def parametrize_position(self, prefix=None):
