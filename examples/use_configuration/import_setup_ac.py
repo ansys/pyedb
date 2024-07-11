@@ -9,10 +9,11 @@
 
 # +
 import json
+from pathlib import Path
 import tempfile
 
-from pathlib import Path
 from pyaedt.downloads import download_file
+
 from pyedb import Edb
 
 AEDT_VERSION = "2024.1"
@@ -110,14 +111,12 @@ hfss_setup = {
             "type": "interpolation",
             "frequencies": [{"distribution": "log_scale", "start": 1e6, "stop": 1e9, "increment": 20}],
         }
-    ]
+    ],
 }
 
 # ## Add setups in configuration
 
-cfg["setups"] = [
-    siwave_setup, hfss_setup
-]
+cfg["setups"] = [siwave_setup, hfss_setup]
 
 # ## Write configuration into as json file
 
@@ -142,5 +141,3 @@ print(f"EDB is saved to {edbapp.edbpath}")
 # ## Close EDB
 
 edbapp.close()
-
-

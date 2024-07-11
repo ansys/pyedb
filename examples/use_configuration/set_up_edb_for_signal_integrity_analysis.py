@@ -4,13 +4,15 @@
 
 # ## Import the required packages
 
+import json
+
 # +
 import os
-import json
 import tempfile
 
 from pyaedt import Hfss3dLayout
 from pyaedt.downloads import download_file
+
 from pyedb import Edb
 
 AEDT_VERSION = "2024.1"
