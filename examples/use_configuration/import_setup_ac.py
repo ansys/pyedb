@@ -1,5 +1,5 @@
 # # Import Setup AC
-# This example shows how to import SIwave, HFSS setups for AC analysis. In this example, we are going to 
+# This example shows how to import SIwave, HFSS setups for AC analysis. In this example, we are going to
 # - Download a example board
 # - Create a configuration file
 #   - add setups
@@ -9,12 +9,13 @@
 
 # +
 import json
+from pathlib import Path
 import tempfile
-import pandas as pd
 
 from IPython.display import display
-from pathlib import Path
+import pandas as pd
 from pyaedt.downloads import download_file
+
 from pyedb import Edb
 
 AEDT_VERSION = "2024.1"
@@ -112,14 +113,12 @@ hfss_setup = {
             "type": "interpolation",
             "frequencies": [{"distribution": "log_scale", "start": 1e6, "stop": 1e9, "increment": 20}],
         }
-    ]
+    ],
 }
 
 # ## Add setups in configuration
 
-cfg["setups"] = [
-    siwave_setup, hfss_setup
-]
+cfg["setups"] = [siwave_setup, hfss_setup]
 
 # ## Write configuration into as json file
 
@@ -144,5 +143,3 @@ print(f"EDB is saved to {edbapp.edbpath}")
 # ## Close EDB
 
 edbapp.close()
-
-
