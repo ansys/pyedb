@@ -38,27 +38,26 @@ from pyedb.dotnet.edb_core.edb_data.layer_data import (
     StackupLayerEdbClass,
 )
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import ET, generate_unique_name, is_ironpython
+from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 
 colors = None
 pd = None
 np = None
-if not is_ironpython:
-    try:
-        import matplotlib.colors as colors
-    except ImportError:
-        colors = None
+try:
+    import matplotlib.colors as colors
+except ImportError:
+    colors = None
 
-    try:
-        import numpy as np
-    except ImportError:
-        np = None
+try:
+    import numpy as np
+except ImportError:
+    np = None
 
-    try:
-        import pandas as pd
-    except ImportError:
-        pd = None
+try:
+    import pandas as pd
+except ImportError:
+    pd = None
 
 logger = logging.getLogger(__name__)
 
@@ -970,8 +969,7 @@ class Stackup(LayerCollection):
         if not pd:
             self._pedb.logger.error("Pandas is needed. Please, install it first.")
             return False
-        if is_ironpython:
-            return
+
         data = {
             "Type": [],
             "Material": [],
@@ -1972,9 +1970,7 @@ class Stackup(LayerCollection):
         if not pd:
             self._pedb.logger.error("Pandas is needed. You must install it first.")
             return False
-        if is_ironpython:
-            self._pedb.logger.error("Method works on CPython only.")
-            return False
+
         df = pd.read_csv(file_path, index_col=0)
 
         for name in self.stackup_layers.keys():  # pragma: no cover
@@ -2451,8 +2447,7 @@ class Stackup(LayerCollection):
         -------
         :class:`matplotlib.plt`
         """
-        if is_ironpython:
-            return False
+
         from pyedb.generic.constants import CSS4_COLORS
         from pyedb.generic.plot import plot_matplotlib
 

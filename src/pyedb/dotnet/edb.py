@@ -30,12 +30,15 @@ import os
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
 import traceback
 from typing import Union
 import warnings
+
+import rtree
 
 from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
@@ -95,8 +98,6 @@ from pyedb.generic.constants import AEDT_UNITS, SolverType
 from pyedb.generic.general_methods import (
     generate_unique_name,
     get_string_version,
-    inside_desktop,
-    is_ironpython,
     is_linux,
     is_windows,
 )
@@ -105,13 +106,6 @@ from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
-
-if is_linux and is_ironpython:
-    import subprocessdotnet as subprocess
-else:
-    import subprocess
-
-import rtree
 
 
 class Edb(Database):
@@ -227,9 +221,7 @@ class Edb(Database):
             if not isreadonly:
                 self._check_remove_project_files(edbpath, remove_existing_aedt)
 
-        if isaedtowned and (inside_desktop or settings.remote_rpc_session):
-            self.open_edb_inside_aedt()
-        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
+        if edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
             control_file = None
@@ -552,40 +544,6 @@ class Edb(Database):
             self.logger.error("Builder was not initialized.")
 
         return True
-
-    def open_edb_inside_aedt(self):
-        """Open EDB inside AEDT.
-
-        Returns
-        -------
-        ``True`` when succeed ``False`` if failed : bool
-
-        """
-        self.logger.info("Opening EDB from HDL")
-        self.run_as_standalone(False)
-        if self.oproject.GetEDBHandle():
-            self.attach(self.oproject.GetEDBHandle())
-            if not self.active_db:
-                self.logger.warning("Error getting the database.")
-                self._active_cell = None
-                return None
-            self._active_cell = self.edb_api.cell.cell.FindByName(
-                self.active_db,
-                self.edb_api.cell._cell.CellType.CircuitCell,
-                self.cellname,
-            )
-            if self._active_cell is None:
-                self._active_cell = list(self.top_circuit_cells)[0]
-            if self._active_cell:
-                if not os.path.exists(self.edbpath):
-                    os.makedirs(self.edbpath)
-                self._init_objects()
-                return True
-            else:
-                return None
-        else:
-            self._active_cell = None
-            return None
 
     def create_edb(self):
         """Create EDB.
@@ -2197,9 +2155,6 @@ class Edb(Database):
         keep_lines_as_path=False,
         inlcude_voids_in_extents=False,
     ):
-        if is_ironpython:  # pragma: no cover
-            self.logger.error("Method working only in Cpython")
-            return False
         from concurrent.futures import ThreadPoolExecutor
 
         if output_aedb_path:
@@ -2729,20 +2684,12 @@ class Edb(Database):
 
         for void_circle in voids_to_add:
             if void_circle.type == "Circle":
-                if is_ironpython:  # pragma: no cover
-                    (
-                        res,
-                        center_x,
-                        center_y,
-                        radius,
-                    ) = void_circle.primitive_object.GetParameters()
-                else:
-                    (
-                        res,
-                        center_x,
-                        center_y,
-                        radius,
-                    ) = void_circle.primitive_object.GetParameters(0.0, 0.0, 0.0)
+                (
+                    res,
+                    center_x,
+                    center_y,
+                    radius,
+                ) = void_circle.primitive_object.GetParameters(0.0, 0.0, 0.0)
                 cloned_circle = self.edb_api.cell.primitive.circle.create(
                     layout,
                     void_circle.layer_name,

@@ -25,12 +25,12 @@ import math
 import re
 import warnings
 
-from pyedb.dotnet.clr_module import String, _clr
+from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.edb_core.cell.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.general import PadGeometryTpe, convert_py_list_to_net_list
-from pyedb.generic.general_methods import generate_unique_name, is_ironpython
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -1403,17 +1403,12 @@ class EDBPadstackInstance(Primitive):
         layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
         val = self._pedb.edb_value(0)
         offset = self._pedb.edb_value(0.0)
-        if is_ironpython:  # pragma: no cover
-            diameter = _clr.StrongBox[type(val)]()
-            drill_to_layer = _clr.StrongBox[self._pedb.edb_api.Cell.ILayerReadOnly]()
-            flag = self._edb_padstackinstance.GetBackDrillParametersLayerValue(drill_to_layer, offset, diameter, False)
-        else:
-            (
-                flag,
-                drill_to_layer,
-                offset,
-                diameter,
-            ) = self._edb_padstackinstance.GetBackDrillParametersLayerValue(layer, offset, val, False)
+        (
+            flag,
+            drill_to_layer,
+            offset,
+            diameter,
+        ) = self._edb_padstackinstance.GetBackDrillParametersLayerValue(layer, offset, val, False)
         if flag:
             if offset.ToDouble():
                 return drill_to_layer.GetName(), diameter.ToString(), offset.ToString()
@@ -1461,17 +1456,12 @@ class EDBPadstackInstance(Primitive):
         layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
         val = self._pedb.edb_value(0)
         offset = self._pedb.edb_value(0.0)
-        if is_ironpython:  # pragma: no cover
-            diameter = _clr.StrongBox[type(val)]()
-            drill_to_layer = _clr.StrongBox[self._pedb.edb_api.Cell.ILayerReadOnly]()
-            flag = self._edb_padstackinstance.GetBackDrillParametersLayerValue(drill_to_layer, offset, diameter, True)
-        else:
-            (
-                flag,
-                drill_to_layer,
-                offset,
-                diameter,
-            ) = self._edb_padstackinstance.GetBackDrillParametersLayerValue(layer, offset, val, True)
+        (
+            flag,
+            drill_to_layer,
+            offset,
+            diameter,
+        ) = self._edb_padstackinstance.GetBackDrillParametersLayerValue(layer, offset, val, True)
         if flag:
             if offset.ToDouble():
                 return drill_to_layer.GetName(), diameter.ToString(), offset.ToString()
@@ -1751,12 +1741,9 @@ class EDBPadstackInstance(Primitive):
         >>> edbapp.padstacks.instances[111].get_aedt_pin_name()
 
         """
-        if is_ironpython:
-            name = _clr.Reference[String]()
-            self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, name)
-        else:
-            val = String("")
-            _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
+
+        val = String("")
+        _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
         name = str(name).strip("'")
         return name
 

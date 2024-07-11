@@ -32,16 +32,14 @@ from pyedb.dotnet.edb_core.cell.hierarchy.s_parameter_model import SparamModel
 from pyedb.dotnet.edb_core.cell.hierarchy.spice_model import SpiceModel
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.generic.general_methods import is_ironpython
 
-if not is_ironpython:
-    try:
-        import numpy as np
-    except ImportError:
-        warnings.warn(
-            "The NumPy module is required to run some functionalities of EDB.\n"
-            "Install with \n\npip install numpy\n\nRequires CPython."
-        )
+try:
+    import numpy as np
+except ImportError:
+    warnings.warn(
+        "The NumPy module is required to run some functionalities of EDB.\n"
+        "Install with \n\npip install numpy\n\nRequires CPython."
+    )
 from pyedb.generic.general_methods import get_filename_without_extension
 
 
