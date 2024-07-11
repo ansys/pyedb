@@ -1682,3 +1682,20 @@ class TestClass:
         sim_setup.do_cutout_subdesign = False
         edbapp.build_simulation_project(sim_setup)
         assert len(edbapp.ports) == 15
+
+    def test_create_ping_group(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.modeler.create_pin_group(
+            name="test1", pins_by_id=[4294969495, 4294969494, 4294969496, 4294969497]
+        )
+
+        assert edbapp.modeler.create_pin_group(
+            name="test2", pins_by_id=[4294969502, 4294969503], pins_by_aedt_name=["U1-A11", "U1-A12", "U1-A13"]
+        )
+        assert edbapp.modeler.create_pin_group(
+            name="test3",
+            pins_by_id=[4294969502, 4294969503],
+            pins_by_aedt_name=["U1-A11", "U1-A12", "U1-A13"],
+            pins_by_name=["A11", "A12", "A15", "A16"],
+        )
+        edbapp.close()

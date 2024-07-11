@@ -1421,7 +1421,13 @@ class Modeler(object):
             net=self._pedb.nets[net]._edb_object,
         )
 
-    def create_pin_group(self, name: str, pins_by_id: list[int] = None, pins_by_aedt_name: list[str] = None):
+    def create_pin_group(
+        self,
+        name: str,
+        pins_by_id: list[int] = None,
+        pins_by_aedt_name: list[str] = None,
+        pins_by_name: list[str] = None,
+    ):
         """Create a PinGroup.
 
         Parameters
@@ -1431,23 +1437,40 @@ class Modeler(object):
             List of pins by ID.
         pins_by_aedt_name : list[str] or None
             List of pins by AEDT name.
+        pins_by_name : list[str] or None
+            List of pins by name.
         """
-        pins = []
-
-        if pins_by_id is not None:
+        pins = {}
+        if pins_by_id:
             for p in pins_by_id:
-                pins.append(self._pedb.layout.find_object_by_id(p._edb_object))
-        else:
+                edb_pin = self._pedb.layout.find_object_by_id(p)
+                if edb_pin and not p in pins:
+                    pins[p] = edb_pin._edb_object
+        if not pins_by_aedt_name:
+            pins_by_aedt_name = []
+        if not pins_by_name:
+            pins_by_name = []
+        if pins_by_aedt_name or pins_by_name:
             p_inst = self._pedb.layout.padstack_instances
-            while True:
-                p = p_inst.pop(0)
-                if p.aedt_name in pins_by_aedt_name:
-                    pins.append(p._edb_object)
-                    pins_by_aedt_name.remove(p.aedt_name)
-                if len(pins_by_aedt_name) == 0:
-                    break
-
-        self._edb.cell.hierarchy.pin_group.Create(
-            self._pedb.layout._edb_object, name, convert_py_list_to_net_list(pins)
+            _pins = {
+                pin.id: pin._edb_object
+                for pin in p_inst
+                if pin.aedt_name in pins_by_aedt_name or pin.name in pins_by_name
+            }
+            if not pins:
+                pins = _pins
+            else:
+                for id, pin in _pins.items():
+                    if not id in pins:
+                        pins[id] = pin
+        if not pins:
+            self._logger.error("No pin found.")
+            return False
+        pins = list(pins.values())
+        obj = self._edb.cell.hierarchy.pin_group.Create(
+            self._pedb.active_layout, name, convert_py_list_to_net_list(pins)
         )
+        if obj.IsNull():
+            self._logger.debug("Pin group creation returned Null obj.")
+            return False
         return self._pedb.siwave.pin_groups[name]
