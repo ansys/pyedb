@@ -82,7 +82,7 @@ class LayoutObj(ObjBase):
     def delete(self):
         """Delete this primitive."""
         self._edb_object.Delete()
-        self._pedb.modeler._primitives = []
-        self._pedb.padstacks._instances = []
-        self._pedb.padstacks._definitions = []
+        self._pedb.modeler._primitives = {}
+        self._pedb.padstacks._instances = {}
+        self._pedb.padstacks._definitions = {}
         return True
