@@ -1,11 +1,9 @@
 import os.path
 
-from pyedb.generic.general_methods import env_path, is_ironpython, is_linux
+from pyedb.generic.general_methods import env_path, is_linux
 
-if is_linux and is_ironpython:
-    import subprocessdotnet as subprocess
-else:
-    import subprocess
+
+import subprocess
 
 
 class SiwaveSolve(object):

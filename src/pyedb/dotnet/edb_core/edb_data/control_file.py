@@ -30,16 +30,12 @@ from pyedb.generic.general_methods import (
     ET,
     env_path,
     env_value,
-    is_ironpython,
     is_linux,
 )
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 from pyedb.misc.misc import list_installed_ansysem
 
-if is_linux and is_ironpython:
-    import subprocessdotnet as subprocess
-else:
-    import subprocess
+import subprocess
 
 
 def convert_technology_file(tech_file, edbversion=None, control_file=None):

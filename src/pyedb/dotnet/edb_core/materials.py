@@ -35,7 +35,6 @@ from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.exceptions import MaterialModelException
-from pyedb.generic.general_methods import is_ironpython
 
 logger = logging.getLogger(__name__)
 
@@ -426,16 +425,11 @@ class Material(object):
 
     def __property_value(self, material_property_id):
         """Get property value from a material property id."""
-        if is_ironpython:  # pragma: no cover
-            property_box = _clr.StrongBox[float]()
-            self.__material_def.GetProperty(material_property_id, property_box)
-            return float(property_box)
+        _, property_box = self.__material_def.GetProperty(material_property_id)
+        if isinstance(property_box, float):
+            return property_box
         else:
-            _, property_box = self.__material_def.GetProperty(material_property_id)
-            if isinstance(property_box, float):
-                return property_box
-            else:
-                return property_box.ToDouble()
+            return property_box.ToDouble()
 
     # def __reset_property(self, name):
     #     """Reset a property using the default value of the EDB API.
