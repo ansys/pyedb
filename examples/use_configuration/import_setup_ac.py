@@ -1,6 +1,6 @@
 # # Import Setup AC
 # This example shows how to import SIwave, HFSS setups for AC analysis. In this example, we are going to 
-# - Download a example board
+# - Download an example board
 # - Create a configuration file
 #   - add setups
 # - Import the configuration file
@@ -72,7 +72,7 @@ siwave_setup = {
 # - **type**. Type of the analysis setup. Supported types are 'siwave_ac', 'siwave_dc', 'hfss'.
 # - **f_adapt**. Adaptive frequency.
 # - **max_num_passes**. Maximum number of passes.
-# - **max_mag_delta_s**. Convergence critera delta S.
+# - **max_mag_delta_s**. Convergence criteria delta S.
 # - **mesh_operations**. Mesh operations.
 #     - **name**. Name of the mesh operation.
 #     - **type**. Type of the mesh operation. The supported types are 'base', 'length', 'skin_depth'.
