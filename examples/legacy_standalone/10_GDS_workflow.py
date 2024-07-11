@@ -1,77 +1,65 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
-# SPDX-License-Identifier: MIT
+# # EDB: Edit Control File and import gds
 #
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+# This example demonstrates how to import a gds layout for subsequent
+# simulation with HFSS.
 
-"""
-EDB: Edit Control File and import gds
--------------------------------------
-This example shows how you can use PyAEDT to import a gds from an IC file.
-"""
+# Perform imports.
 
-###############################################################################
-# Perform required imports
-# ~~~~~~~~~~~~~~~~~~~~~~~~
-# Perform required imports, which includes importing a section.
-
+# +
 import os
 import shutil
 import tempfile
 
-from pyedb import Edb
+import pyedb
 from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
 from pyedb.misc.downloads import download_file
 
-###############################################################################
-# Download file
-# ~~~~~~~~~~~~~
-# Download the AEDB file and copy it in the temporary folder.
-temppath = tempfile.gettempdir()
-local_path = download_file("gds")
-c_file_in = os.path.join(local_path, "sky130_fictitious_dtc_example_control_no_map.xml")
-c_map = os.path.join(local_path, "dummy_layermap.map")
-gds_in = os.path.join(local_path, "sky130_fictitious_dtc_example.gds")
-gds_out = os.path.join(temppath, "example.gds")
+# -
+
+# ## Fetch Example Data
+#
+# Download the EDB folder and copy it to a temporary folder.
+# The following files are used in this example:
+# - _sky130_fictious_dtc_exmple_contol_no_map.xml_
+#   defines physical information such
+#   as material properties, stackup layers, and boundary conditions.
+# - _dummy_layermap.map_
+#   maps properties to stackup layers.
+
+# +
+temp_dir = tempfile.TemporaryDirectory(suffix=".ansys")
+control_fn = "sky130_fictitious_dtc_example_control_no_map.xml"
+gds_fn = "sky130_fictitious_dtc_example.gds"
+layer_map = "dummy_layermap.map"
+
+local_path = download_file("gds", destination=temp_dir.name)
+c_file_in = os.path.join(local_path, control_fn)
+c_map = os.path.join(local_path, layer_map)
+gds_in = os.path.join(local_path, gds_fn)
+gds_out = os.path.join(temp_dir.name, "gds_out.gds")
 shutil.copy2(gds_in, gds_out)
-###############################################################################
-# Control file
-# ~~~~~~~~~~~~
-# A Control file is an xml file which purpose if to provide additional
-# information during import phase. It can include, materials, stackup, setup, boundaries and settings.
+# -
+
+# ## Control file
+#
+# A Control file is an xml file which purpose if to provide additional information during
+# import phase. It can include, materials, stackup, setup, boundaries and settings.
 # In this example we will import an existing xml, integrate it with a layer mapping file of gds
 # and then adding setup and boundaries.
 
 c = ControlFile(c_file_in, layer_map=c_map)
 
+# ## Set up simulation
+#
+# This code sets up a simulation with HFSS and adds a frequency sweep.
 
-###############################################################################
-# Simulation setup
-# ~~~~~~~~~~~~~~~~
-# Here we setup simulation with HFSS and add a frequency sweep.
 setup = c.setups.add_setup("Setup1", "1GHz")
 setup.add_sweep("Sweep1", "0.01GHz", "5GHz", "0.1GHz")
 
-###############################################################################
-# Additional stackup settings
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# After import user can change stackup settings and add/remove layers or materials.
+# ## Provide additional stackup settings
+#
+# After import, you can change the stackup settings and add or remove layers or materials.
+
 c.stackup.units = "um"
 c.stackup.dielectrics_base_elevation = -100
 c.stackup.metal_layer_snapping_tolerance = "10nm"
@@ -79,10 +67,8 @@ for via in c.stackup.vias:
     via.create_via_group = True
     via.snap_via_group = True
 
-
-###############################################################################
-# Boundaries settings
-# ~~~~~~~~~~~~~~~~~~~
+# ## Define boundary settings
+#
 # Boundaries can include ports, components and boundary extent.
 
 c.boundaries.units = "um"
@@ -96,29 +82,36 @@ comp.add_pin("3", "211.28", "214.6", "met2")
 comp.add_pin("4", "81.28", "214.6", "met2")
 c.import_options.import_dummy_nets = True
 
-###############################################################################
-# Write xml
-# ~~~~~~~~~
-# After all settings are ready we can write xml.
+# ## Write XML file
+#
+# After all settings are ready, you can write an XML file.
 
-c.write_xml(os.path.join(temppath, "output.xml"))
+c.write_xml(os.path.join(temp_dir.name, "output.xml"))
 
-###############################################################################
-# Open Edb
-# ~~~~~~~~~
+# ## Open EDB
+#
 # Import the gds and open the edb.
 
-edb = Edb(gds_out, edbversion="2024.1", technology_file=os.path.join(temppath, "output.xml"))
+# +
+# Select EDB version (change it manually if needed, e.g. "2024.1")
+edb_version = "2024.1"
+print(f"EDB version: {edb_version}")
 
-###############################################################################
-# Plot Stackup
-# ~~~~~~~~~~~~
-# Stackup plot.
+edb = pyedb.Edb(gds_out, edbversion=edb_version, technology_file=os.path.join(temp_dir.name, "output.xml"))
+# -
+
+# ## Plot stackup
+#
+# Plot the stackup.
+
 edb.stackup.plot(first_layer="met1")
 
-###############################################################################
-# Close Edb
-# ~~~~~~~~~
+# ## Close EDB
+#
 # Close the project.
 
 edb.close_edb()
+
+# Clean up the temporary folder.
+
+temp_dir.cleanup()
