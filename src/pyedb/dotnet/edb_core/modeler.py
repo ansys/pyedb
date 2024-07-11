@@ -48,8 +48,31 @@ class Modeler(object):
     >>> edb_layout = edbapp.modeler
     """
 
+    def __getitem__(self, name):
+        """Get  a layout instance from the Edb project.
+
+        Parameters
+        ----------
+        name : str, int
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`
+
+        """
+        for i in self.primitives:
+            if (
+                (isinstance(name, str) and i.aedt_name == name)
+                or (isinstance(name, str) and i.aedt_name == name.replace("__", "_"))
+                or (isinstance(name, int) and i.id == name)
+            ):
+                return i
+        self._pedb.logger.error("Primitive not found.")
+        return
+
     def __init__(self, p_edb):
         self._pedb = p_edb
+        self._primitives = []
 
     @property
     def _edb(self):
@@ -125,11 +148,13 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
             List of primitives.
         """
-        _prims = []
+        if len(self._primitives) == len(self._layout.primitives):
+            return self._primitives
+        self._primitives = []
         if self._active_layout:
             for lay_obj in self._layout.primitives:
-                _prims.append(cast(lay_obj, self._pedb))
-        return _prims
+                self._primitives.append(cast(lay_obj, self._pedb))
+        return self._primitives
 
     @property
     def polygons_by_layer(self):
