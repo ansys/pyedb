@@ -1258,8 +1258,8 @@ class EdbHfss(object):
             adapt.AdaptiveFrequency = simulation_setup.mesh_freq
             adapt.MaxPasses = int(simulation_setup.max_num_passes)
             adapt.MaxDelta = str(simulation_setup.max_mag_delta_s)
-            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList = (
-                convert_py_list_to_net_list([adapt])
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList = convert_py_list_to_net_list(
+                [adapt]
             )
         elif simulation_setup.ac_settings.adaptive_type == 2:
             low_freq_adapt_data = self._pedb.simsetupdata.AdaptiveFrequencyData()

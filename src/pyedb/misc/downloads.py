@@ -24,12 +24,10 @@
 import os
 import shutil
 import tempfile
+import urllib.request
 import zipfile
 
 from pyedb.generic.general_methods import  is_linux, settings
-
-
-import urllib.request
 
 tmpfold = tempfile.gettempdir()
 EXAMPLE_REPO = "https://github.com/ansys/example-data/raw/master/"

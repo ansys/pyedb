@@ -30,12 +30,15 @@ import os
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
 import traceback
 from typing import Union
 import warnings
+
+import rtree
 
 from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
@@ -103,11 +106,6 @@ from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
-
-
-import subprocess
-
-import rtree
 
 
 class Edb(Database):
@@ -2157,7 +2155,6 @@ class Edb(Database):
         keep_lines_as_path=False,
         inlcude_voids_in_extents=False,
     ):
-
         from concurrent.futures import ThreadPoolExecutor
 
         if output_aedb_path:

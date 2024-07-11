@@ -866,7 +866,6 @@ def read_xlsx(filename):  # pragma: no cover
 
 
 def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL):  # pragma: no cover
-
     f = open(output, "w", newline="")
     writer = csv.writer(f, delimiter=delimiter, quotechar=quotechar, quoting=quoting)
     for data in list_data:
@@ -1300,6 +1299,7 @@ def install_with_pip(package_name, package_path=None, upgrade=False, uninstall=F
     """
 
     import subprocess
+
     executable = '"{}"'.format(sys.executable) if is_windows else sys.executable
 
     commands = []
