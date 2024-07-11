@@ -16,9 +16,7 @@
 # +
 import json
 import tempfile
-import pandas as pd
 
-from IPython.display import display
 from pathlib import Path
 from pyaedt.downloads import download_file
 from pyedb import Edb
@@ -49,7 +47,8 @@ cfg = dict()
 # - **Reference_designator**. Reference designator of the component.
 # - **type**. Type of the port. Supported types are 'circuit', 'coax'
 # - **positve_terminal**. Positive terminal of the port. Supported types are 'net', 'pin', 'pin_group', 'coordinates'
-# - **negative_terminal**. Negative terminal of the port. Supported types are 'net', 'pin', 'pin_group', 'coordinates', 'nearest_pin'
+# - **negative_terminal**. Negative terminal of the port. Supported types are 'net', 'pin', 'pin_group', 'coordinates',
+# 'nearest_pin'
 
 port_1 = {
     "name": "port_1",

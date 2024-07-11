@@ -10,9 +10,7 @@
 # +
 import json
 import tempfile
-import pandas as pd
 
-from IPython.display import display
 from pathlib import Path
 from pyaedt.downloads import download_file
 from pyedb import Edb
