@@ -1,5 +1,5 @@
 # # Import Ports
-# This example shows how to import ports. In this example, we are going to 
+# This example shows how to import ports. In this example, we are going to
 # - Download a example board
 # - Create a configuration file
 #   - Add a circuit port between two nets
@@ -93,22 +93,13 @@ port_3 = {
 
 port_4 = {
     "name": "port_4",
-    "positive_terminal": {
-        "coordinates": {"layer": "1_Top", "point": ["104mm", "37mm"], "net": "AVCC_1V3"}
-    },
-    "negative_terminal": {
-        "coordinates": {"layer": "Inner6(GND2)", "point": ["104mm", "37mm"], "net": "GND"}
-    },
+    "positive_terminal": {"coordinates": {"layer": "1_Top", "point": ["104mm", "37mm"], "net": "AVCC_1V3"}},
+    "negative_terminal": {"coordinates": {"layer": "Inner6(GND2)", "point": ["104mm", "37mm"], "net": "GND"}},
 }
 
 # ## Add a coax port
 
-port_5 = {
-    "name": "port_5",
-    "reference_designator": "U1",
-    "type": "coax",
-    "positive_terminal": {"pin": "AM17"}
-}
+port_5 = {"name": "port_5", "reference_designator": "U1", "type": "coax", "positive_terminal": {"pin": "AM17"}}
 
 # ## Add a port reference to the neareast pin
 
@@ -137,21 +128,13 @@ ports_distributed = {
     "type": "circuit",
     "distributed": True,
     "positive_terminal": {"net": "VDD_DDR"},
-    "negative_terminal": {"net": "GND"}
+    "negative_terminal": {"net": "GND"},
 }
 
 # ## Add setups in configuration
 
 cfg["pin_groups"] = pin_groups
-cfg["ports"] = [
-    port_1,
-    port_2,
-    port_3,
-    port_4,
-    port_5,
-    port_6,
-    ports_distributed
-]
+cfg["ports"] = [port_1, port_2, port_3, port_4, port_5, port_6, ports_distributed]
 
 # ## Write configuration into as json file
 
