@@ -29,7 +29,7 @@ import warnings
 
 from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
 from pyedb.generic.constants import CSS4_COLORS
-from pyedb.generic.general_methods import generate_unique_name, is_ironpython
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -838,9 +838,6 @@ class EdbNets(object):
         show : bool, optional
             Whether to show the plot or not. Default is `True`.
         """
-        if is_ironpython:
-            self._logger.warning("Plot functionalities are enabled only in CPython.")
-            return False
         from pyedb.generic.plot import plot_matplotlib
 
         object_lists = self.get_plot_data(
