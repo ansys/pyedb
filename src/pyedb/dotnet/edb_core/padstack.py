@@ -62,7 +62,7 @@ class EdbPadstacks(object):
 
         """
         if isinstance(name, int) and name in self.instances:
-            return self.instances[name]
+            return self._pedb.layout.find_object_by_id(name)
         elif name in self.definitions:
             return self.definitions[name]
         else:
@@ -224,9 +224,7 @@ class EdbPadstacks(object):
         edb_padstack_inst_list = self._pedb.layout.padstack_instances
         if len(self._instances) == len(edb_padstack_inst_list):
             return self._instances
-        self._instances = {}
-        for edb_padstack_instance in edb_padstack_inst_list:
-            self._instances[edb_padstack_instance.GetId()] = EDBPadstackInstance(edb_padstack_instance, self._pedb)
+        self._instances = {i.id: i for i in edb_padstack_inst_list}
         return self._instances
 
     @property

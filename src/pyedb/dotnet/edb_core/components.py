@@ -305,11 +305,10 @@ class Components(object):
     def refresh_components(self):
         """Refresh the component dictionary."""
         # self._logger.info("Refreshing the Components dictionary.")
-        self._cmp = {
-            l.GetName(): EDBComponent(self._pedb, l)
-            for l in self._layout.groups
-            if l.ToString() == "Ansys.Ansoft.Edb.Cell.Hierarchy.Component"
-        }
+        self._cmp = {}
+        for i in self._pedb.layout.groups:
+            if i.group_type == "component":
+                self._cmp[i.name] = i
         return True
 
     @property
@@ -487,11 +486,7 @@ class Components(object):
             ``True`` when successful, ``False`` when failed.
 
         """
-        edbcmp = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, name)
-        if edbcmp is not None:
-            return edbcmp
-        else:
-            pass
+        return self._pedb.layout.find_component_by_name(name)
 
     def get_components_from_nets(self, netlist=None):
         """Retrieve components from a net list.
@@ -675,9 +670,11 @@ class Components(object):
             positive_pin_group = self.create_pingroup_from_pins(positive_pins)
             if not positive_pin_group:  # pragma: no cover
                 return False
+            positive_pin_group = self._pedb.siwave.pin_groups[positive_pin_group.GetName()]
             negative_pin_group = self.create_pingroup_from_pins(negative_pins)
             if not negative_pin_group:  # pragma: no cover
                 return False
+            negative_pin_group = self._pedb.siwave.pin_groups[negative_pin_group.GetName()]
             if source.source_type == SourceType.Vsource:  # pragma: no cover
                 positive_pin_group_term = self._create_pin_group_terminal(
                     positive_pin_group,
@@ -848,7 +845,9 @@ class Components(object):
             )
             ref_group_name = "group_{}_ref".format(port_name)
             ref_pin_group = self.create_pingroup_from_pins(reference_pins, ref_group_name)
+            ref_pin_group = self._pedb.siwave.pin_groups[ref_pin_group.GetName()]
             ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
+
         else:
             ref_term = self._create_terminal(reference_pins[0].primitive_object, term_name=port_name + "_ref")
         ref_term.SetIsCircuitPort(True)
@@ -1031,6 +1030,7 @@ class Components(object):
                     if not ref_pin_group:
                         self._logger.error(f"Failed to create reference pin group on component {component.GetName()}.")
                         return False
+                    ref_pin_group = self._pedb.siwave.pin_groups[ref_pin_group.GetName()]
                     ref_pin_group_term = self._create_pin_group_terminal(ref_pin_group, isref=False)
                     if not ref_pin_group_term:
                         self._logger.error(
@@ -1048,6 +1048,7 @@ class Components(object):
                             pin_group = self.create_pingroup_from_pins(pins)
                             if not pin_group:
                                 return False
+                            pin_group = self._pedb.siwave.pin_groups[pin_group.GetName()]
                             pin_group_term = self._create_pin_group_terminal(pin_group)
                             if pin_group_term:
                                 pin_group_term.SetReferenceTerminal(ref_pin_group_term)
@@ -1390,14 +1391,14 @@ class Components(object):
         -------
         Edb pin group terminal.
         """
-        pin = list(pingroup.GetPins())[0]
+        pin = list(pingroup._edb_object.GetPins())[0]
         if term_name is None:
             term_name = "{}.{}.{}".format(pin.GetComponent().GetName(), pin.GetName(), pin.GetNet().GetName())
         for t in list(self._pedb.active_layout.Terminals):
             if t.GetName() == term_name:
                 return t
         pingroup_term = self._edb.cell.terminal.PinGroupTerminal.Create(
-            self._active_layout, pingroup.GetNet(), term_name, pingroup, isref
+            self._active_layout, pingroup._edb_object.GetNet(), term_name, pingroup._edb_object, isref
         )
         if term_type == "circuit":
             pingroup_term.SetIsCircuitPort(True)
@@ -1985,7 +1986,7 @@ class Components(object):
 
         """
         if not isinstance(component, self._pedb.edb_api.cell.hierarchy.component):
-            edb_cmp = self.get_component_by_name(component)
+            edb_cmp = self.get_component_by_name(component)._edb_object
             cmp = self.instances[component]
         else:  # pragma: no cover
             edb_cmp = component

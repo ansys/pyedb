@@ -52,7 +52,7 @@ class PointTerminal(Terminal):
         """
         terminal = self._pedb.edb_api.cell.terminal.PointTerminal.Create(
             self._pedb.active_layout,
-            self._pedb.nets[net].net_object,
+            self._pedb.layout.find_net_by_name(net)._edb_object,
             name,
             self._pedb.point_data(*location),
             self._pedb.stackup[layer]._edb_layer,

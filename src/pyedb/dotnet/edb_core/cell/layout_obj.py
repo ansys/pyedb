@@ -20,15 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.dotnet.edb_core.layout_obj_instance import LayoutObjInstance
 from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
-
-
-class LayoutObjInstance:
-    """Manages EDB functionalities for the layout object instance."""
-
-    def __init__(self, pedb, edb_object):
-        self._pedb = pedb
-        self._edb_object = edb_object
 
 
 class LayoutObj(ObjBase):
@@ -93,44 +86,3 @@ class LayoutObj(ObjBase):
         self._pedb.padstacks._instances = []
         self._pedb.padstacks._definitions = []
         return True
-
-
-class Connectable(LayoutObj):
-    """Manages EDB functionalities for a connectable object."""
-
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
-
-    @property
-    def net(self):
-        """Net Object.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBNetsData`
-        """
-        from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
-
-        return EDBNetsData(self._edb_object.GetNet(), self._pedb)
-
-    @net.setter
-    def net(self, value):
-        """Set net."""
-        net = self._pedb.nets[value]
-        self._edb_object.SetNet(net.net_object)
-
-    @property
-    def component(self):
-        """Component connected to this object.
-
-        Returns
-        -------
-        :class:`dotnet.edb_core.edb_data.nets_data.EDBComponent`
-        """
-        from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
-
-        edb_comp = self._edb_object.GetComponent()
-        if edb_comp.IsNull():
-            return None
-        else:
-            return EDBComponent(self._pedb, edb_comp)

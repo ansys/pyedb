@@ -1503,9 +1503,9 @@ class EDBPadstackInstance(Primitive):
         val = self._pedb.edb_value(drill_diameter)
         offset = self._pedb.edb_value(offset)
         if offset.ToDouble():
-            return self._edb_padstackinstance.SetBackDrillParameters(layer, offset, val, True)
+            return self._edb_object.SetBackDrillParameters(layer, offset, val, True)
         else:
-            return self._edb_padstackinstance.SetBackDrillParameters(layer, val, True)
+            return self._edb_object.SetBackDrillParameters(layer, val, True)
 
     @property
     def start_layer(self):
@@ -1517,7 +1517,7 @@ class EDBPadstackInstance(Primitive):
             Name of the starting layer.
         """
         layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
-        _, start_layer, stop_layer = self._edb_padstackinstance.GetLayerRange()
+        _, start_layer, stop_layer = self._edb_object.GetLayerRange()
 
         if start_layer:
             return start_layer.GetName()

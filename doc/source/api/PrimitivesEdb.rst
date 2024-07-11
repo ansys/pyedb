@@ -16,14 +16,14 @@ Primitives are planes, lines, rectangles, and circles.
 
     ...
 
-.. currentmodule:: pyedb.dotnet.edb_core.layout
+.. currentmodule:: pyedb.dotnet.edb_core.modeler
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
 
-   EdbLayout
+   Modeler
 
 
 Primitives properties

@@ -131,7 +131,7 @@ edbapp.save_edb()
 # ## Configure the simulation setup
 #
 # This step enables the following:
-
+#
 # - Definition of the nets to include in the cutout region
 # - Cutout details
 # - Components to create the ports on

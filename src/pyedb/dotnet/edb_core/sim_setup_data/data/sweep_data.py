@@ -50,7 +50,10 @@ class SweepData(object):
     def _update_sweep(self):
         """Update the sweep."""
         self.sim_setup.delete_frequency_sweep(self)
-        self.sim_setup._add_frequency_sweep(self)
+        ss_info = self.sim_setup.sim_setup_info
+        ss_info.add_sweep_data(self)
+        self.sim_setup.set_sim_setup_info(ss_info)
+        self.sim_setup._update_setup()
         return
 
     @property

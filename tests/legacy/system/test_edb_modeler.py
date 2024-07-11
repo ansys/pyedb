@@ -122,7 +122,7 @@ class TestClass:
         """Evaluate modeler primitives"""
         assert len(self.edbapp.modeler.rectangles) > 0
         assert len(self.edbapp.modeler.circles) > 0
-        assert len(self.edbapp.modeler.bondwires) == 0
+        assert len(self.edbapp.layout.bondwires) == 0
         assert "1_Top" in self.edbapp.modeler.polygons_by_layer.keys()
         assert len(self.edbapp.modeler.polygons_by_layer["1_Top"]) > 0
         assert len(self.edbapp.modeler.polygons_by_layer["DE1"]) == 0
