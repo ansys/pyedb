@@ -1439,7 +1439,7 @@ class Modeler(object):
                     if not id in pins:
                         pins[id] = pin
         if not pins:
-            self._logger.error("No pin found")
+            self._logger.error("No pin found.")
             return False
         pins = list(pins.values())
         obj = self._edb.cell.hierarchy.pin_group.Create(
