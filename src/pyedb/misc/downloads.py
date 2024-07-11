@@ -27,7 +27,6 @@ import tempfile
 import zipfile
 
 from pyedb.generic.general_methods import  is_linux, settings
-from pyedb.misc.misc import list_installed_ansysem
 
 
 import urllib.request
