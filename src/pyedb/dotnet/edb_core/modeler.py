@@ -1439,12 +1439,13 @@ class Modeler(object):
                     if not id in pins:
                         pins[id] = pin
         if not pins:
-            self._logger.error("Not pin found")
+            self._logger.error("No pin found")
             return False
         pins = list(pins.values())
         obj = self._edb.cell.hierarchy.pin_group.Create(
             self._pedb.active_layout, name, convert_py_list_to_net_list(pins)
         )
         if obj.IsNull():
+            self._logger.debug("Pin group creation returned Null obj.")
             return False
         return self._pedb.siwave.pin_groups[name]
