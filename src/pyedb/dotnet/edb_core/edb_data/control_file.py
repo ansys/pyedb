@@ -23,19 +23,13 @@
 import copy
 import os
 import re
+import subprocess
 import sys
 
 from pyedb.edb_logger import pyedb_logger
-from pyedb.generic.general_methods import (
-    ET,
-    env_path,
-    env_value,
-    is_linux,
-)
+from pyedb.generic.general_methods import ET, env_path, env_value, is_linux
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 from pyedb.misc.misc import list_installed_ansysem
-
-import subprocess
 
 
 def convert_technology_file(tech_file, edbversion=None, control_file=None):

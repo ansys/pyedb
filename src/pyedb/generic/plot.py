@@ -2,7 +2,6 @@ import ast
 import os
 import warnings
 
-
 try:
     import numpy  # noqa: F401
 except ImportError:

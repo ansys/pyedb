@@ -1,9 +1,7 @@
 import os.path
+import subprocess
 
 from pyedb.generic.general_methods import env_path, is_linux
-
-
-import subprocess
 
 
 class SiwaveSolve(object):
