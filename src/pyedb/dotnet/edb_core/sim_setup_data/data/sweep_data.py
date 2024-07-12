@@ -168,7 +168,7 @@ class SweepData(object):
             self._edb_object.FreqSweepType = edb_freq_sweep_type.kBroadbandFastSweep
         elif value in [3, "kNumSweepTypes"]:
             self._edb_object.FreqSweepType = edb_freq_sweep_type.kNumSweepTypes
-        self._edb_object.FreqSweepType.ToString()
+        self._update_sweep()
 
     @property
     def type(self):
