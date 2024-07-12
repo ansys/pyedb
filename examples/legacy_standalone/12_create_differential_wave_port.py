@@ -20,41 +20,35 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-EDB: Differential wave port
----------------------------------
-This example shows how to create a simple design with differential pairs and assign wave port on them.
-"""
+# # EDB: Differential wave port
+#
+# This example shows how to create a simple design with differential pairs and assign wave port on them.
 
 
-###############################################################################
 # Import EDB library
-# ~~~~~~~~~~~~~~~~~~
+
 from pyedb import Edb
 
-###############################################################################
 # Create an empty EDB
-# ~~~~~~~~~~~~~~~~~~~
+
 edb = Edb()
 
-###############################################################################
+
 # Define a layer stackup
-# ~~~~~~~~~~~~~~~~~~~~~~
+
 edb.stackup.add_layer("GND", "Gap")
 edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.2mm", material="Duroid (tm)")
 edb.stackup.add_layer("TOP", "Substrat")
 
-###############################################################################
 # Define parameters
-# ~~~~~~~~~~~~~~~~~
+
 trace_length = 10e-3
 trace_width = 200e-6
 design_width = 10e-3
 trace_gap = 1e-3
 
-###############################################################################
 # Create ground plane
-# ~~~~~~~~~~~~~~~~~~~
+
 gnd_plane = edb.modeler.create_polygon(
     main_shape=[
         [-design_width / 2, 0.0],
@@ -66,9 +60,8 @@ gnd_plane = edb.modeler.create_polygon(
     net_name="gnd",
 )
 
-###############################################################################
 # Create differential traces
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 trace1 = edb.modeler.create_trace(
     path_list=[[-trace_gap / 2, 0.0], [-trace_gap / 2, trace_length]],
     layer_name="TOP",
@@ -86,9 +79,7 @@ trace2 = edb.modeler.create_trace(
     end_cap_style="Flat",
 )
 
-###############################################################################
 # Create wave ports on traces end
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 edb.hfss.create_bundle_wave_port(
     primitives_id=[trace1.id, trace2.id], points_on_edge=[[-trace_gap / 2, 0.0], [trace_gap / 2, 0.0]]
@@ -97,8 +88,7 @@ edb.hfss.create_bundle_wave_port(
     primitives_id=[trace1.id, trace2.id], points_on_edge=[[-trace_gap / 2, trace_length], [trace_gap / 2, trace_length]]
 )
 
-###############################################################################
 # Save and closed EDB
-# ~~~~~~~~~~~~~~~~~~~
+
 edb.save()
 edb.close()
