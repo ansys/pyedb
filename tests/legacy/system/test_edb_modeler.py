@@ -88,14 +88,23 @@ class TestClass:
         poly_167 = [i for i in self.edbapp.modeler.paths if i.id == 167][0]
         assert poly_167.expand(0.0005)
 
-    def test_modeler_paths(self):
+    def test_modeler_paths(self, edb_examples):
         """Evaluate modeler paths"""
-        assert len(self.edbapp.modeler.paths) > 0
-        assert self.edbapp.modeler.paths[0].type == "Path"
-        assert self.edbapp.modeler.paths[0].clone()
-        assert isinstance(self.edbapp.modeler.paths[0].width, float)
-        self.edbapp.modeler.paths[0].width = "1mm"
-        assert self.edbapp.modeler.paths[0].width == 0.001
+        edbapp = edb_examples.get_si_verse()
+        assert len(edbapp.modeler.paths) > 0
+        assert edbapp.modeler.paths[0].type == "Path"
+        assert edbapp.modeler.paths[0].clone()
+        assert isinstance(edbapp.modeler.paths[0].width, float)
+        edbapp.modeler.paths[0].width = "1mm"
+        assert edbapp.modeler.paths[0].width == 0.001
+        assert edbapp.modeler["line_167"].type == "Path"
+        assert edbapp.modeler["poly_3022"].type == "Polygon"
+        line_number = len(edbapp.modeler.primitives)
+        assert edbapp.modeler["line_167"].delete()
+        assert edbapp.modeler._primitives == []
+        assert line_number == len(edbapp.modeler.primitives) + 1
+        assert edbapp.modeler["poly_3022"].type == "Polygon"
+        edbapp.close()
 
     def test_modeler_primitives_by_layer(self):
         """Evaluate modeler primitives by layer"""
@@ -115,7 +124,7 @@ class TestClass:
         """Evaluate modeler primitives"""
         assert len(self.edbapp.modeler.rectangles) > 0
         assert len(self.edbapp.modeler.circles) > 0
-        assert len(self.edbapp.modeler.bondwires) == 0
+        assert len(self.edbapp.layout.bondwires) == 0
         assert "1_Top" in self.edbapp.modeler.polygons_by_layer.keys()
         assert len(self.edbapp.modeler.polygons_by_layer["1_Top"]) > 0
         assert len(self.edbapp.modeler.polygons_by_layer["DE1"]) == 0
@@ -537,3 +546,24 @@ class TestClass:
         assert "ref" in test_edb.stackup.layers
         assert len(test_edb.modeler.polygons) == 12
         test_edb.close()
+
+    def test_path_center_line(self):
+        edb = Edb()
+        edb.stackup.add_layer("GND", "Gap")
+        edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.2mm", material="Duroid (tm)")
+        edb.stackup.add_layer("TOP", "Substrat")
+        trace_length = 10e-3
+        trace_width = 200e-6
+        trace_gap = 1e-3
+        edb.modeler.create_trace(
+            path_list=[[-trace_gap / 2, 0.0], [-trace_gap / 2, trace_length]],
+            layer_name="TOP",
+            width=trace_width,
+            net_name="signal1",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        centerline = edb.modeler.paths[0].center_line
+        assert centerline == [[-0.0005, 0.0], [-0.0005, 0.01]]
+        edb.modeler.paths[0].center_line = [[0.0, 0.0], [0.0, 5e-3]]
+        assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.0, 5e-3]]

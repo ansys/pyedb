@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
+from pyedb.dotnet.edb_core.cell.connectable import Connectable
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 
 
@@ -49,7 +49,7 @@ class VoltageRegulator(Connectable):
         if value not in self._pedb.components.instances:
             self._pedb.logger.error(f"component {value} not found in layout")
             return
-        self._edb_object.SetGroup(self._pedb.components.instances[value].edbcomponent)
+        self._edb_object.SetGroup(self._pedb.components.instances[value]._edb_object)
 
     @property
     def load_regulator_current(self):
@@ -70,16 +70,6 @@ class VoltageRegulator(Connectable):
     def load_regulation_percent(self, value):
         _value = self._edb_object.edb_value(value)
         self._edb_object.SetLoadRegulationPercent(_value)
-
-    @property
-    def name(self):
-        """Retrieve voltage regulator name."""
-        return self._edb_object.GetName()
-
-    @name.setter
-    def name(self, value):
-        if isinstance(value, str):
-            self._edb_object.SetName(value)
 
     @property
     def negative_remote_sense_pin(self):
@@ -137,7 +127,3 @@ class VoltageRegulator(Connectable):
     def is_active(self, value):
         if isinstance(value, bool):
             self._edb_object.SetIsActive(value)
-
-    @property
-    def is_null(self):
-        return self._edb_object.IsNull()

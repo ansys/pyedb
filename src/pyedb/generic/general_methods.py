@@ -47,11 +47,9 @@ from pyedb.exceptions import MaterialModelException
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.settings import settings
 
-is_ironpython = "IronPython" in sys.version or ".NETFramework" in sys.version
 is_linux = os.name == "posix"
 is_windows = not is_linux
 _pythonver = sys.version_info[0]
-inside_desktop = True if is_ironpython and "4.0.30319.42000" in sys.version else False
 
 
 try:
@@ -868,10 +866,7 @@ def read_xlsx(filename):  # pragma: no cover
 
 
 def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL):  # pragma: no cover
-    if is_ironpython:
-        f = open(output, "wb")
-    else:
-        f = open(output, "w", newline="")
+    f = open(output, "w", newline="")
     writer = csv.writer(f, delimiter=delimiter, quotechar=quotechar, quoting=quoting)
     for data in list_data:
         writer.writerow(data)
@@ -1302,10 +1297,9 @@ def install_with_pip(package_name, package_path=None, upgrade=False, uninstall=F
     uninstall : bool, optional
         Whether to install the package or uninstall the package.
     """
-    if is_linux and is_ironpython:
-        import subprocessdotnet as subprocess
-    else:
-        import subprocess
+
+    import subprocess
+
     executable = '"{}"'.format(sys.executable) if is_windows else sys.executable
 
     commands = []

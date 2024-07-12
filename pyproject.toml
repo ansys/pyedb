@@ -31,7 +31,7 @@ dependencies = [
     "dotnetcore2 ==3.1.23;platform_system=='Linux'",
     "numpy>=1.20.0,<2",
     "pandas>=1.1.0,<2.3",
-    "pydantic>=2.6.4,<2.8",
+    "pydantic>=2.6.4,<2.9",
     "Rtree >= 1.2.0",
     "toml == 0.10.2",
     ]
@@ -49,10 +49,12 @@ doc = [
     "imageio>=2.30.0,<2.35",
     "ipython>=8.13.0,<8.27",
     "jupyterlab>=4.0.0,<4.3",
-    "matplotlib>=3.5.0,<3.9",
+    "jupytext>=1.16.0,<1.17",
+    "matplotlib>=3.5.0,<3.10",
     "nbsphinx>=0.9.0,<0.10",
     "numpydoc>=1.5.0,<1.8",
     "pyvista>=0.38.0,<0.44",
+    "nbconvert < 7.17",
     "numpydoc>=1.5.0,<1.8",
     "pypandoc>=1.10.0,<1.14",
     # NOTE: Remove recommonmark once examples are reworked.

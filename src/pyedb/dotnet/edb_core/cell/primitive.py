@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
+from pyedb.dotnet.edb_core.cell.connectable import Connectable
 
 
 class Primitive(Connectable):
@@ -72,6 +72,18 @@ class Primitive(Connectable):
             return self._edb_object.GetPrimitiveType().ToString()
         except AttributeError:  # pragma: no cover
             return ""
+
+    @property
+    def primitive_type(self):
+        """Return the type of the primitive.
+
+        Expected output is among ``"circle"``, ``"rectangle"``,``"polygon"``,``"path"`` or ``"bondwire"``.
+
+        Returns
+        -------
+        str
+        """
+        return self._edb_object.GetPrimitiveType().ToString().lower()
 
     @property
     def net_name(self):
@@ -166,7 +178,7 @@ class Bondwire(Primitive):
 
     def __create(self, **kwargs):
         return self._pedb._edb.Cell.Primitive.Bondwire.Create(
-            self._pedb.modeler._edb_object,
+            self._pedb.layout._edb_object,
             kwargs.get("net"),
             self._bondwire_type[kwargs.get("bondwire_type")],
             kwargs.get("definition_name"),

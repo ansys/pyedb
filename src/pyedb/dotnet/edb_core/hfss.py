@@ -36,7 +36,7 @@ from pyedb.dotnet.edb_core.general import (
     convert_pytuple_to_nettuple,
 )
 from pyedb.generic.constants import RadiationBoxType, SweepType
-from pyedb.generic.general_methods import generate_unique_name, is_ironpython
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -1258,13 +1258,9 @@ class EdbHfss(object):
             adapt.AdaptiveFrequency = simulation_setup.mesh_freq
             adapt.MaxPasses = int(simulation_setup.max_num_passes)
             adapt.MaxDelta = str(simulation_setup.max_mag_delta_s)
-            if is_ironpython:
-                simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Clear()
-                simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Add(adapt)
-            else:
-                simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList = (
-                    convert_py_list_to_net_list([adapt])
-                )
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList = convert_py_list_to_net_list(
+                [adapt]
+            )
         elif simulation_setup.ac_settings.adaptive_type == 2:
             low_freq_adapt_data = self._pedb.simsetupdata.AdaptiveFrequencyData()
             low_freq_adapt_data.MaxDelta = str(simulation_setup.max_mag_delta_s)

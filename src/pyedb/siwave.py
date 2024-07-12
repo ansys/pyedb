@@ -16,7 +16,7 @@ import warnings
 
 from pyedb.dotnet.clr_module import _clr
 from pyedb.edb_logger import pyedb_logger
-from pyedb.generic.general_methods import _pythonver, is_ironpython, is_windows
+from pyedb.generic.general_methods import _pythonver, is_windows
 from pyedb.misc.misc import list_installed_ansysem
 from pyedb.siwave_core.icepak import Icepak
 
@@ -80,10 +80,7 @@ class Siwave(object):  # pragma no cover
 
     def __init__(self, specified_version=None):
         self._logger = pyedb_logger
-        if is_ironpython:
-            _com = "pythonnet"
-            import System
-        elif is_windows:  # pragma: no cover
+        if is_windows:  # pragma: no cover
             modules = [tup[1] for tup in pkgutil.iter_modules()]
             if _clr:
                 import win32com.client

@@ -30,6 +30,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
@@ -37,21 +38,14 @@ import traceback
 from typing import Union
 import warnings
 
+import rtree
+
 from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
 from pyedb.dotnet.edb_core.cell.layout import Layout
-from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
-from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
-from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal,
-)
-from pyedb.dotnet.edb_core.cell.terminal.pingroup_terminal import PinGroupTerminal
-from pyedb.dotnet.edb_core.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
-from pyedb.dotnet.edb_core.cell.voltage_regulator import VoltageRegulator
 from pyedb.dotnet.edb_core.components import Components
 from pyedb.dotnet.edb_core.dotnet.database import Database
-from pyedb.dotnet.edb_core.dotnet.layout import LayoutDotNet
 from pyedb.dotnet.edb_core.edb_data.control_file import (
     ControlFile,
     convert_technology_file,
@@ -82,6 +76,7 @@ from pyedb.dotnet.edb_core.general import (
 from pyedb.dotnet.edb_core.hfss import EdbHfss
 from pyedb.dotnet.edb_core.layout_validation import LayoutValidation
 from pyedb.dotnet.edb_core.materials import Materials
+from pyedb.dotnet.edb_core.modeler import Modeler
 from pyedb.dotnet.edb_core.net_class import (
     EdbDifferentialPairs,
     EdbExtendedNets,
@@ -103,8 +98,6 @@ from pyedb.generic.constants import AEDT_UNITS, SolverType
 from pyedb.generic.general_methods import (
     generate_unique_name,
     get_string_version,
-    inside_desktop,
-    is_ironpython,
     is_linux,
     is_windows,
 )
@@ -113,13 +106,6 @@ from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
-
-if is_linux and is_ironpython:
-    import subprocessdotnet as subprocess
-else:
-    import subprocess
-
-import rtree
 
 
 class Edb(Database):
@@ -235,9 +221,7 @@ class Edb(Database):
             if not isreadonly:
                 self._check_remove_project_files(edbpath, remove_existing_aedt)
 
-        if isaedtowned and (inside_desktop or settings.remote_rpc_session):
-            self.open_edb_inside_aedt()
-        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
+        if edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
             control_file = None
@@ -361,7 +345,7 @@ class Edb(Database):
         self._siwave = EdbSiwave(self)
         self._hfss = EdbHfss(self)
         self._nets = EdbNets(self)
-        self._core_primitives = Layout(self, self._active_cell.GetLayout())
+        self._core_primitives = Modeler(self)
         self._stackup2 = self._stackup
         self._materials = Materials(self)
 
@@ -437,23 +421,10 @@ class Edb(Database):
 
         Returns
         -------
-        Terminal dictionary : Dict[str, pyedb.dotnet.edb_core.edb_data.terminals.Terminal]
+        Dict
         """
 
-        temp = {}
-        for i in self.layout.terminals:
-            terminal_type = i.ToString().split(".")[-1]
-            if terminal_type == "PinGroupTerminal":
-                temp[i.GetName()] = PinGroupTerminal(self, i)
-            elif terminal_type == "PadstackInstanceTerminal":
-                temp[i.GetName()] = PadstackInstanceTerminal(self, i)
-            elif terminal_type == "EdgeTerminal":
-                temp[i.GetName()] = EdgeTerminal(self, i)
-            elif terminal_type == "BundleTerminal":
-                temp[i.GetName()] = BundleTerminal(self, i)
-            elif terminal_type == "PointTerminal":
-                temp[i.GetName()] = PointTerminal(self, i)
-        return temp
+        return {i.name: i for i in self.layout.terminals}
 
     @property
     def excitations(self):
@@ -516,7 +487,7 @@ class Edb(Database):
     @property
     def voltage_regulator_modules(self):
         """Get all voltage regulator modules"""
-        vrms = [VoltageRegulator(self, edb_object) for edb_object in list(self.active_layout.VoltageRegulators)]
+        vrms = self.layout.voltage_regulators
         _vrms = {}
         for vrm in vrms:
             _vrms[vrm.name] = vrm
@@ -573,40 +544,6 @@ class Edb(Database):
             self.logger.error("Builder was not initialized.")
 
         return True
-
-    def open_edb_inside_aedt(self):
-        """Open EDB inside AEDT.
-
-        Returns
-        -------
-        ``True`` when succeed ``False`` if failed : bool
-
-        """
-        self.logger.info("Opening EDB from HDL")
-        self.run_as_standalone(False)
-        if self.oproject.GetEDBHandle():
-            self.attach(self.oproject.GetEDBHandle())
-            if not self.active_db:
-                self.logger.warning("Error getting the database.")
-                self._active_cell = None
-                return None
-            self._active_cell = self.edb_api.cell.cell.FindByName(
-                self.active_db,
-                self.edb_api.cell._cell.CellType.CircuitCell,
-                self.cellname,
-            )
-            if self._active_cell is None:
-                self._active_cell = list(self.top_circuit_cells)[0]
-            if self._active_cell:
-                if not os.path.exists(self.edbpath):
-                    os.makedirs(self.edbpath)
-                self._init_objects()
-                return True
-            else:
-                return None
-        else:
-            self._active_cell = None
-            return None
 
     def create_edb(self):
         """Create EDB.
@@ -1153,7 +1090,7 @@ class Edb(Database):
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
         if not self._core_primitives and self.active_db:
-            self._core_primitives = Layout(self, self._active_cell.GetLayout())
+            self._core_primitives = Modeler(self)
         return self._core_primitives
 
     @property
@@ -1164,7 +1101,7 @@ class Edb(Database):
         -------
         :class:`legacy.edb_core.dotnet.layout.Layout`
         """
-        return LayoutDotNet(self)
+        return Layout(self, self._active_cell.GetLayout())
 
     @property
     def active_layout(self):
@@ -1174,12 +1111,12 @@ class Edb(Database):
         -------
         Instance of EDB API Layout Class.
         """
-        return self.layout._layout
+        return self.layout._edb_object
 
     @property
     def layout_instance(self):
         """Edb Layout Instance."""
-        return self.layout.layout_instance
+        return self.layout._edb_object.GetLayoutInstance()
 
     def get_connected_objects(self, layout_object_instance):
         """Get connected objects.
@@ -2218,9 +2155,6 @@ class Edb(Database):
         keep_lines_as_path=False,
         inlcude_voids_in_extents=False,
     ):
-        if is_ironpython:  # pragma: no cover
-            self.logger.error("Method working only in Cpython")
-            return False
         from concurrent.futures import ThreadPoolExecutor
 
         if output_aedb_path:
@@ -2750,20 +2684,12 @@ class Edb(Database):
 
         for void_circle in voids_to_add:
             if void_circle.type == "Circle":
-                if is_ironpython:  # pragma: no cover
-                    (
-                        res,
-                        center_x,
-                        center_y,
-                        radius,
-                    ) = void_circle.primitive_object.GetParameters()
-                else:
-                    (
-                        res,
-                        center_x,
-                        center_y,
-                        radius,
-                    ) = void_circle.primitive_object.GetParameters(0.0, 0.0, 0.0)
+                (
+                    res,
+                    center_x,
+                    center_y,
+                    radius,
+                ) = void_circle.primitive_object.GetParameters(0.0, 0.0, 0.0)
                 cloned_circle = self.edb_api.cell.primitive.circle.create(
                     layout,
                     void_circle.layer_name,
@@ -3344,163 +3270,156 @@ class Edb(Database):
         legacy_name = self.edbpath
         if simulation_setup.output_aedb:
             self.save_edb_as(simulation_setup.output_aedb)
-        try:
-            if simulation_setup.signal_layer_etching_instances:
-                for layer in simulation_setup.signal_layer_etching_instances:
-                    if layer in self.stackup.layers:
-                        idx = simulation_setup.signal_layer_etching_instances.index(layer)
-                        if len(simulation_setup.etching_factor_instances) > idx:
-                            self.stackup[layer].etch_factor = float(simulation_setup.etching_factor_instances[idx])
+        if simulation_setup.signal_layer_etching_instances:
+            for layer in simulation_setup.signal_layer_etching_instances:
+                if layer in self.stackup.layers:
+                    idx = simulation_setup.signal_layer_etching_instances.index(layer)
+                    if len(simulation_setup.etching_factor_instances) > idx:
+                        self.stackup[layer].etch_factor = float(simulation_setup.etching_factor_instances[idx])
 
-            if not simulation_setup.signal_nets and simulation_setup.components:
-                nets_to_include = []
-                pnets = list(self.nets.power.keys())[:]
-                for el in simulation_setup.components:
-                    nets_to_include.append([i for i in self.components[el].nets if i not in pnets])
-                simulation_setup.signal_nets = [
-                    i
-                    for i in list(set.intersection(*map(set, nets_to_include)))
-                    if i not in simulation_setup.power_nets and i != ""
-                ]
-            self.nets.classify_nets(simulation_setup.power_nets, simulation_setup.signal_nets)
-            if not simulation_setup.power_nets or not simulation_setup.signal_nets:
-                self.logger.info("Disabling cutout as no signals or power nets have been defined.")
-                simulation_setup.do_cutout_subdesign = False
-            if simulation_setup.do_cutout_subdesign:
-                self.logger.info("Cutting out using method: {0}".format(simulation_setup.cutout_subdesign_type))
-                if simulation_setup.use_default_cutout:
-                    old_cell_name = self.active_cell.GetName()
-                    if self.cutout(
-                        signal_list=simulation_setup.signal_nets,
-                        reference_list=simulation_setup.power_nets,
-                        expansion_size=simulation_setup.cutout_subdesign_expansion,
-                        use_round_corner=simulation_setup.cutout_subdesign_round_corner,
-                        extent_type=simulation_setup.cutout_subdesign_type,
-                        use_pyaedt_cutout=False,
-                        use_pyaedt_extent_computing=False,
-                    ):
-                        self.logger.info("Cutout processed.")
-                        old_cell = self.active_cell.FindByName(
-                            self.db,
-                            self.edb_api.cell.CellType.CircuitCell,
-                            old_cell_name,
-                        )
-                        if old_cell:
-                            old_cell.Delete()
-                    else:  # pragma: no cover
-                        self.logger.error("Cutout failed.")
-                else:
-                    self.logger.info("Cutting out using method: {0}".format(simulation_setup.cutout_subdesign_type))
-                    self.cutout(
-                        signal_list=simulation_setup.signal_nets,
-                        reference_list=simulation_setup.power_nets,
-                        expansion_size=simulation_setup.cutout_subdesign_expansion,
-                        use_round_corner=simulation_setup.cutout_subdesign_round_corner,
-                        extent_type=simulation_setup.cutout_subdesign_type,
-                        use_pyaedt_cutout=True,
-                        use_pyaedt_extent_computing=True,
-                        remove_single_pin_components=True,
-                    )
+        if not simulation_setup.signal_nets and simulation_setup.components:
+            nets_to_include = []
+            pnets = list(self.nets.power.keys())[:]
+            for el in simulation_setup.components:
+                nets_to_include.append([i for i in self.components[el].nets if i not in pnets])
+            simulation_setup.signal_nets = [
+                i
+                for i in list(set.intersection(*map(set, nets_to_include)))
+                if i not in simulation_setup.power_nets and i != ""
+            ]
+        self.nets.classify_nets(simulation_setup.power_nets, simulation_setup.signal_nets)
+        if not simulation_setup.power_nets or not simulation_setup.signal_nets:
+            self.logger.info("Disabling cutout as no signals or power nets have been defined.")
+            simulation_setup.do_cutout_subdesign = False
+        if simulation_setup.do_cutout_subdesign:
+            self.logger.info("Cutting out using method: {0}".format(simulation_setup.cutout_subdesign_type))
+            if simulation_setup.use_default_cutout:
+                old_cell_name = self.active_cell.GetName()
+                if self.cutout(
+                    signal_list=simulation_setup.signal_nets,
+                    reference_list=simulation_setup.power_nets,
+                    expansion_size=simulation_setup.cutout_subdesign_expansion,
+                    use_round_corner=simulation_setup.cutout_subdesign_round_corner,
+                    extent_type=simulation_setup.cutout_subdesign_type,
+                    use_pyaedt_cutout=False,
+                    use_pyaedt_extent_computing=False,
+                ):
                     self.logger.info("Cutout processed.")
+                    old_cell = self.active_cell.FindByName(
+                        self.db,
+                        self.edb_api.cell.CellType.CircuitCell,
+                        old_cell_name,
+                    )
+                    if old_cell:
+                        old_cell.Delete()
+                else:  # pragma: no cover
+                    self.logger.error("Cutout failed.")
             else:
-                if simulation_setup.include_only_selected_nets:
-                    included_nets = simulation_setup.signal_nets + simulation_setup.power_nets
-                    nets_to_remove = [
-                        net.name for net in list(self.nets.nets.values()) if not net.name in included_nets
-                    ]
-                    self.nets.delete(nets_to_remove)
-            self.logger.info("Deleting existing ports.")
-            map(lambda port: port.Delete(), self.layout.terminals)
-            map(lambda pg: pg.Delete(), self.layout.pin_groups)
-            if simulation_setup.solver_type == SolverType.Hfss3dLayout:
-                if simulation_setup.generate_excitations:
-                    self.logger.info("Creating HFSS ports for signal nets.")
-                    source_type = SourceType.CoaxPort
-                    if not simulation_setup.generate_solder_balls:
-                        source_type = SourceType.CircPort
-                    for cmp in simulation_setup.components:
-                        if isinstance(cmp, str):  # keep legacy component
+                self.logger.info("Cutting out using method: {0}".format(simulation_setup.cutout_subdesign_type))
+                self.cutout(
+                    signal_list=simulation_setup.signal_nets,
+                    reference_list=simulation_setup.power_nets,
+                    expansion_size=simulation_setup.cutout_subdesign_expansion,
+                    use_round_corner=simulation_setup.cutout_subdesign_round_corner,
+                    extent_type=simulation_setup.cutout_subdesign_type,
+                    use_pyaedt_cutout=True,
+                    use_pyaedt_extent_computing=True,
+                    remove_single_pin_components=True,
+                )
+                self.logger.info("Cutout processed.")
+        else:
+            if simulation_setup.include_only_selected_nets:
+                included_nets = simulation_setup.signal_nets + simulation_setup.power_nets
+                nets_to_remove = [net.name for net in list(self.nets.nets.values()) if not net.name in included_nets]
+                self.nets.delete(nets_to_remove)
+        self.logger.info("Deleting existing ports.")
+        map(lambda port: port.Delete(), self.layout.terminals)
+        map(lambda pg: pg.Delete(), self.layout.pin_groups)
+        if simulation_setup.solver_type == SolverType.Hfss3dLayout:
+            if simulation_setup.generate_excitations:
+                self.logger.info("Creating HFSS ports for signal nets.")
+                source_type = SourceType.CoaxPort
+                if not simulation_setup.generate_solder_balls:
+                    source_type = SourceType.CircPort
+                for cmp in simulation_setup.components:
+                    if isinstance(cmp, str):  # keep legacy component
+                        self.components.create_port_on_component(
+                            cmp,
+                            net_list=simulation_setup.signal_nets,
+                            do_pingroup=False,
+                            reference_net=simulation_setup.power_nets,
+                            port_type=source_type,
+                        )
+                    elif isinstance(cmp, dict):
+                        if "refdes" in cmp:
+                            if not "solder_balls_height" in cmp:  # pragma no cover
+                                cmp["solder_balls_height"] = None
+                            if not "solder_balls_size" in cmp:  # pragma no cover
+                                cmp["solder_balls_size"] = None
+                                cmp["solder_balls_mid_size"] = None
+                            if not "solder_balls_mid_size" in cmp:  # pragma no cover
+                                cmp["solder_balls_mid_size"] = None
                             self.components.create_port_on_component(
-                                cmp,
+                                cmp["refdes"],
                                 net_list=simulation_setup.signal_nets,
                                 do_pingroup=False,
                                 reference_net=simulation_setup.power_nets,
                                 port_type=source_type,
+                                solder_balls_height=cmp["solder_balls_height"],
+                                solder_balls_size=cmp["solder_balls_size"],
+                                solder_balls_mid_size=cmp["solder_balls_mid_size"],
                             )
-                        elif isinstance(cmp, dict):
-                            if "refdes" in cmp:
-                                if not "solder_balls_height" in cmp:  # pragma no cover
-                                    cmp["solder_balls_height"] = None
-                                if not "solder_balls_size" in cmp:  # pragma no cover
-                                    cmp["solder_balls_size"] = None
-                                    cmp["solder_balls_mid_size"] = None
-                                if not "solder_balls_mid_size" in cmp:  # pragma no cover
-                                    cmp["solder_balls_mid_size"] = None
-                                self.components.create_port_on_component(
-                                    cmp["refdes"],
-                                    net_list=simulation_setup.signal_nets,
-                                    do_pingroup=False,
-                                    reference_net=simulation_setup.power_nets,
-                                    port_type=source_type,
-                                    solder_balls_height=cmp["solder_balls_height"],
-                                    solder_balls_size=cmp["solder_balls_size"],
-                                    solder_balls_mid_size=cmp["solder_balls_mid_size"],
-                                )
-                    if simulation_setup.generate_solder_balls and not self.hfss.set_coax_port_attributes(
-                        simulation_setup
-                    ):  # pragma: no cover
-                        self.logger.error("Failed to configure coaxial port attributes.")
-                    self.logger.info("Number of ports: {}".format(self.hfss.get_ports_number()))
-                    self.logger.info("Configure HFSS extents.")
-                    if (
-                        simulation_setup.generate_solder_balls and simulation_setup.trim_reference_size
-                    ):  # pragma: no cover
-                        self.logger.info(
-                            "Trimming the reference plane for coaxial ports: {0}".format(
-                                bool(simulation_setup.trim_reference_size)
-                            )
+                if simulation_setup.generate_solder_balls and not self.hfss.set_coax_port_attributes(
+                    simulation_setup
+                ):  # pragma: no cover
+                    self.logger.error("Failed to configure coaxial port attributes.")
+                self.logger.info("Number of ports: {}".format(self.hfss.get_ports_number()))
+                self.logger.info("Configure HFSS extents.")
+                if simulation_setup.generate_solder_balls and simulation_setup.trim_reference_size:  # pragma: no cover
+                    self.logger.info(
+                        "Trimming the reference plane for coaxial ports: {0}".format(
+                            bool(simulation_setup.trim_reference_size)
                         )
-                        self.hfss.trim_component_reference_size(simulation_setup)  # pragma: no cover
-                self.hfss.configure_hfss_extents(simulation_setup)
-                if not self.hfss.configure_hfss_analysis_setup(simulation_setup):
-                    self.logger.error("Failed to configure HFSS simulation setup.")
-            if simulation_setup.solver_type == SolverType.SiwaveSYZ:
-                if simulation_setup.generate_excitations:
-                    for cmp in simulation_setup.components:
-                        if isinstance(cmp, str):  # keep legacy
+                    )
+                    self.hfss.trim_component_reference_size(simulation_setup)  # pragma: no cover
+            self.hfss.configure_hfss_extents(simulation_setup)
+            if not self.hfss.configure_hfss_analysis_setup(simulation_setup):
+                self.logger.error("Failed to configure HFSS simulation setup.")
+        if simulation_setup.solver_type == SolverType.SiwaveSYZ:
+            if simulation_setup.generate_excitations:
+                for cmp in simulation_setup.components:
+                    if isinstance(cmp, str):  # keep legacy
+                        self.components.create_port_on_component(
+                            cmp,
+                            net_list=simulation_setup.signal_nets,
+                            do_pingroup=simulation_setup.do_pingroup,
+                            reference_net=simulation_setup.power_nets,
+                            port_type=SourceType.CircPort,
+                        )
+                    elif isinstance(cmp, dict):
+                        if "refdes" in cmp:  # pragma no cover
                             self.components.create_port_on_component(
-                                cmp,
+                                cmp["refdes"],
                                 net_list=simulation_setup.signal_nets,
                                 do_pingroup=simulation_setup.do_pingroup,
                                 reference_net=simulation_setup.power_nets,
                                 port_type=SourceType.CircPort,
                             )
-                        elif isinstance(cmp, dict):
-                            if "refdes" in cmp:  # pragma no cover
-                                self.components.create_port_on_component(
-                                    cmp["refdes"],
-                                    net_list=simulation_setup.signal_nets,
-                                    do_pingroup=simulation_setup.do_pingroup,
-                                    reference_net=simulation_setup.power_nets,
-                                    port_type=SourceType.CircPort,
-                                )
-                self.logger.info("Configuring analysis setup.")
-                if not self.siwave.configure_siw_analysis_setup(simulation_setup):  # pragma: no cover
-                    self.logger.error("Failed to configure Siwave simulation setup.")
-            if simulation_setup.solver_type == SolverType.SiwaveDC:
-                if simulation_setup.generate_excitations:
-                    self.components.create_source_on_component(simulation_setup.sources)
-                if not self.siwave.configure_siw_analysis_setup(simulation_setup):  # pragma: no cover
-                    self.logger.error("Failed to configure Siwave simulation setup.")
-            self.padstacks.check_and_fix_via_plating()
-            self.save_edb()
-            if not simulation_setup.open_edb_after_build and simulation_setup.output_aedb:
-                self.close_edb()
-                self.edbpath = legacy_name
-                self.open_edb()
-            return True
-        except:
-            return False
+            self.logger.info("Configuring analysis setup.")
+            if not self.siwave.configure_siw_analysis_setup(simulation_setup):  # pragma: no cover
+                self.logger.error("Failed to configure Siwave simulation setup.")
+        if simulation_setup.solver_type == SolverType.SiwaveDC:
+            if simulation_setup.generate_excitations:
+                self.components.create_source_on_component(simulation_setup.sources)
+            if not self.siwave.configure_siw_analysis_setup(simulation_setup):  # pragma: no cover
+                self.logger.error("Failed to configure Siwave simulation setup.")
+        self.padstacks.check_and_fix_via_plating()
+        self.save_edb()
+        if not simulation_setup.open_edb_after_build and simulation_setup.output_aedb:
+            self.close_edb()
+            self.edbpath = legacy_name
+            self.open_edb()
+        return True
 
     def get_statistics(self, compute_area=False):
         """Get the EDBStatistics object.
@@ -3744,7 +3663,7 @@ class Edb(Database):
         if float(self.edbversion) < 2024.2:
             self.logger.error("HFSSPI simulation only supported with Ansys release 2024R2 and higher")
             return False
-        return HFSSPISimulationSetup(self).create(name)
+        return HFSSPISimulationSetup(self, name=name)
 
     def create_siwave_syz_setup(self, name=None, **kwargs):
         """Create a setup from a template.
