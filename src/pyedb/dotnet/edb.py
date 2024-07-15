@@ -4218,7 +4218,9 @@ class Edb(Database):
                         padstack_defs[via.padstack_definition] = self.padstacks.definitions[via.padstack_definition]
             else:
                 used_padsatck_defs = list(
-                    set([padstack_inst.padstack_definition for padstack_inst in list(self.padstacks.instances.values())])
+                    set(
+                        [padstack_inst.padstack_definition for padstack_inst in list(self.padstacks.instances.values())]
+                    )
                 )
                 padstack_defs = {k: v for k, v in self.padstacks.definitions.items() if k in used_padsatck_defs}
         else:
