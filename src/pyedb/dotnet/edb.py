@@ -4150,6 +4150,7 @@ class Edb(Database):
         if isinstance(trace_net_filter, str):
             trace_net_filter = [trace_net_filter]
         parameters = []
+
         def _apply_variable(orig_name, orig_value):
             if use_relative_variables:
                 var = f"{orig_name}_delta"
@@ -4164,7 +4165,7 @@ class Edb(Database):
             if use_relative_variables:
                 return f"{orig_value}+{var}", var
             else:
-                 return var, var
+                return var, var
 
         if layers:
             if not layer_filter:
@@ -4227,18 +4228,16 @@ class Edb(Database):
             padstack_defs = {k: v for k, v in self.padstacks.definitions.items() if k in padstack_definition_filter}
 
         for def_name, padstack_def in padstack_defs.items():
-
             if not padstack_def.via_start_layer == padstack_def.via_stop_layer:
                 if via_holes:  # pragma no cover
                     if use_relative_variables:
                         hole_variable = "$hole_diameter"
                     else:
-                        hole_variable =  f"${def_name}_hole_diameter"
+                        hole_variable = f"${def_name}_hole_diameter"
                     var, val = _apply_variable(hole_variable, padstack_def.hole_diameter_string)
                     padstack_def.hole_properties = var
                     parameters.append(val)
             if pads:
-
                 for layer, pad in padstack_def.pad_by_layer.items():
                     if use_relative_variables:
                         pad_name = "$pad"
@@ -4247,7 +4246,7 @@ class Edb(Database):
                     else:
                         pad_name = f"${def_name}_{layer}_pad"
 
-                    if pad.geometry_type in [1,2]:
+                    if pad.geometry_type in [1, 2]:
                         var, val = _apply_variable(pad_name, pad.parameters_values_string[0])
                         if pad.geometry_type == 1:
                             pad.parameters = {"Diameter": var}
@@ -4279,7 +4278,7 @@ class Edb(Database):
                     else:
                         pad_name = f"${def_name}_{layer}_antipad"
 
-                    if antipad.geometry_type in [1,2]:
+                    if antipad.geometry_type in [1, 2]:
                         var, val = _apply_variable(pad_name, antipad.parameters_values_string[0])
                         if antipad.geometry_type == 1:  # pragma no cover
                             antipad.parameters = {"Diameter": var}
@@ -4309,10 +4308,10 @@ class Edb(Database):
         if expand_voids_size:
             for poly in self.modeler.polygons:
                 if poly.is_void:
-                    poly.expand(expand_voids_size,round_corners=False)
+                    poly.expand(expand_voids_size, round_corners=False)
                 elif poly.has_voids:
                     for void in poly.voids:
-                        void.expand(expand_voids_size,round_corners=False)
+                        void.expand(expand_voids_size, round_corners=False)
         if not open_aedb_at_end and self.edbpath != edb_original_path:
             self.save_edb()
             self.close_edb()

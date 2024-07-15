@@ -151,7 +151,7 @@ class TestClass:
     def test_layout_auto_parametrization(self):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_auto_parameters", "test.aedb")
-        output_path =  os.path.join(self.local_scratch.path, "test_auto_parameters", "test_absolute.aedb")
+        output_path = os.path.join(self.local_scratch.path, "test_auto_parameters", "test_absolute.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = Edb(target_path, desktop_version)
         parameters = edbapp.auto_parametrize_design(
