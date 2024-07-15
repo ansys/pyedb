@@ -4097,6 +4097,7 @@ class Edb(Database):
         material_filter=None,
         padstack_definition_filter=None,
         trace_net_filter=None,
+        use_single_variable_for_padstack_definitions=True,
     ):
         """Assign automatically design and project variables with current values.
 
@@ -4122,20 +4123,25 @@ class Edb(Database):
             Enable padstack definition filter. Default value is ``None``, all padsatcks are parametrized.
         trace_net_filter : str, List(str), optional
             Enable nets filter for trace width parametrization. Default value is ``None``, all layers are parametrized.
+        use_single_variable_for_padstack_definitions : bool, optional
+            Whether to use a single design variable for each padstack definition or a variable per pad layer.
+            Default value is ``True``.
 
         Returns
         -------
         List(str)
             List of all parameters name created.
         """
+        if isinstance(trace_net_filter, str):
+            trace_net_filter = [trace_net_filter]
         parameters = []
         if layers:
             if not layer_filter:
-                _layers = self.stackup.stackup_layers
+                _layers = self.stackup.layers
             else:
                 if isinstance(layer_filter, str):
                     layer_filter = [layer_filter]
-                _layers = {k: v for k, v in self.stackup.stackup_layers.items() if k in layer_filter}
+                _layers = {k: v for k, v in self.stackup.layers.items() if k in layer_filter}
             for layer_name, layer in _layers.items():
                 thickness_variable = "${}_thick".format(layer_name)
                 thickness_variable = self._clean_string_for_variable_name(thickness_variable)
@@ -4175,92 +4181,108 @@ class Edb(Database):
             else:
                 paths = [path for path in self.modeler.paths if path.net_name in trace_net_filter]
             for path in paths:
-                trace_width_variable = "trace_w_{}_{}".format(path.net_name, path.id)
+                net_name = path.net_name
+                if net_name:
+                    trace_width_variable = f"{path.net_name}_{path.aedt_name}_width"
+                else:
+                    trace_width_variable = f"{path.aedt_name}_width"
                 trace_width_variable = self._clean_string_for_variable_name(trace_width_variable)
                 if trace_width_variable not in self.variables:
                     self.add_design_variable(trace_width_variable, path.width)
                 path.width = trace_width_variable
                 parameters.append(trace_width_variable)
         if not padstack_definition_filter:
-            used_padsatck_defs = list(
-                set([padstack_inst.padstack_definition for padstack_inst in list(self.padstacks.instances.values())])
-            )
-            padstack_defs = {k: v for k, v in self.padstacks.definitions.items() if k in used_padsatck_defs}
+            if trace_net_filter:
+                padstack_defs = {}
+                for net in trace_net_filter:
+                    for via in self.nets[net].padstack_instances:
+                        padstack_defs[via.padstack_definition] = self.padstacks.definitions[via.padstack_definition]
+            else:
+                used_padsatck_defs = list(
+                    set([padstack_inst.padstack_definition for padstack_inst in list(self.padstacks.instances.values())])
+                )
+                padstack_defs = {k: v for k, v in self.padstacks.definitions.items() if k in used_padsatck_defs}
         else:
             padstack_defs = {k: v for k, v in self.padstacks.definitions.items() if k in padstack_definition_filter}
+
         for def_name, padstack_def in padstack_defs.items():
+
             if not padstack_def.via_start_layer == padstack_def.via_stop_layer:
                 if via_holes:  # pragma no cover
-                    hole_variable = self._clean_string_for_variable_name("$hole_diam_{}".format(def_name))
+                    hole_variable = self._clean_string_for_variable_name( f"${def_name}_hole_diam")
                     if hole_variable not in self.variables:
                         self.add_design_variable(hole_variable, padstack_def.hole_diameter_string)
                     padstack_def.hole_properties = hole_variable
                     parameters.append(hole_variable)
             if pads:
+
                 for layer, pad in padstack_def.pad_by_layer.items():
-                    if pad.geometry_type == 1:
-                        pad_diameter_variable = self._clean_string_for_variable_name(
-                            "$pad_diam_{}_{}".format(def_name, layer)
-                        )
-                        if pad_diameter_variable not in self.variables:
-                            self.add_design_variable(pad_diameter_variable, pad.parameters_values_string[0])
-                        pad.parameters = {"Diameter": pad_diameter_variable}
-                        parameters.append(pad_diameter_variable)
-                    if pad.geometry_type == 2:  # pragma no cover
-                        pad_size_variable = self._clean_string_for_variable_name(
-                            "$pad_size_{}_{}".format(def_name, layer)
-                        )
-                        if pad_size_variable not in self.variables:
-                            self.add_design_variable(pad_size_variable, pad.parameters_values_string[0])
-                        pad.parameters = {"Size": pad_size_variable}
-                        parameters.append(pad_size_variable)
+                    if use_single_variable_for_padstack_definitions:
+                        pad_name = f"${def_name}_pad"
+                    else:
+                        pad_name = f"${def_name}_{layer}_pad"
+                    pad_variable = self._clean_string_for_variable_name(pad_name)
+
+                    if pad.geometry_type in [1,2] and pad_variable not in self.variables:
+                        self.add_design_variable(pad_variable, pad.parameters_values_string[0])
+                        if pad.geometry_type == 1:
+                            pad.parameters = {"Diameter": pad_variable}
+                        else:
+                            pad.parameters = {"Size": pad_variable}
+                        parameters.append(pad_variable)
                     elif pad.geometry_type == 3:  # pragma no cover
-                        pad_size_variable_x = self._clean_string_for_variable_name(
-                            "$pad_size_x_{}_{}".format(def_name, layer)
-                        )
-                        pad_size_variable_y = self._clean_string_for_variable_name(
-                            "$pad_size_y_{}_{}".format(def_name, layer)
-                        )
-                        if pad_size_variable_x not in self.variables and pad_size_variable_y not in self.variables:
-                            self.add_design_variable(pad_size_variable_x, pad.parameters_values_string[0])
-                            self.add_design_variable(pad_size_variable_y, pad.parameters_values_string[1])
-                        pad.parameters = {"XSize": pad_size_variable_x, "YSize": pad_size_variable_y}
-                        parameters.append(pad_size_variable_x)
-                        parameters.append(pad_size_variable_y)
+                        if use_single_variable_for_padstack_definitions:
+                            pad_name_x = f"${def_name}_pad_x"
+                            pad_name_y = f"${def_name}_pad_y"
+                        else:
+                            pad_name_x = f"${def_name}_{layer}_pad_x"
+                            pad_name_y = f"${def_name}_pad_y"
+
+                        pad_name_x = self._clean_string_for_variable_name(pad_name_x)
+                        pad_name_y = self._clean_string_for_variable_name(pad_name_y)
+                        if pad_name_x not in self.variables and pad_name_y not in self.variables:
+                            self.add_design_variable(pad_name_x, pad.parameters_values_string[0])
+                            self.add_design_variable(pad_name_y, pad.parameters_values_string[1])
+                        pad.parameters = {"XSize": pad_name_x, "YSize": pad_name_y}
+                        parameters.append(pad_name_x)
+                        parameters.append(pad_name_y)
             if antipads:
                 for layer, antipad in padstack_def.antipad_by_layer.items():
-                    if antipad.geometry_type == 1:  # pragma no cover
-                        antipad_diameter_variable = self._clean_string_for_variable_name(
-                            "$antipad_diam_{}_{}".format(def_name, layer)
-                        )
-                        if antipad_diameter_variable not in self.variables:  # pragma no cover
-                            self.add_design_variable(antipad_diameter_variable, antipad.parameters_values_string[0])
-                        antipad.parameters = {"Diameter": antipad_diameter_variable}
-                        parameters.append(antipad_diameter_variable)
-                    if antipad.geometry_type == 2:  # pragma no cover
-                        antipad_size_variable = self._clean_string_for_variable_name(
-                            "$antipad_size_{}_{}".format(def_name, layer)
-                        )
-                        if antipad_size_variable not in self.variables:  # pragma no cover
-                            self.add_design_variable(antipad_size_variable, antipad.parameters_values_string[0])
-                        antipad.parameters = {"Size": antipad_size_variable}
-                        parameters.append(antipad_size_variable)
+                    if use_single_variable_for_padstack_definitions:
+                        pad_name = f"${def_name}_antipad"
+                    else:
+                        pad_name = f"${def_name}_{layer}_antipad"
+                    antipad_variable = self._clean_string_for_variable_name(pad_name)
+
+                    if antipad.geometry_type in [1,2] and antipad_variable not in self.variables:
+                        self.add_design_variable(antipad_variable, antipad.parameters_values_string[0])
+                        if antipad.geometry_type == 1:  # pragma no cover
+                            antipad.parameters = {"Diameter": antipad_variable}
+                        else:
+                            antipad.parameters = {"Size": antipad_variable}
+                        parameters.append(antipad_variable)
                     elif antipad.geometry_type == 3:  # pragma no cover
-                        antipad_size_variable_x = self._clean_string_for_variable_name(
-                            "$antipad_size_x_{}_{}".format(def_name, layer)
-                        )
-                        antipad_size_variable_y = self._clean_string_for_variable_name(
-                            "$antipad_size_y_{}_{}".format(def_name, layer)
-                        )
+                        if use_single_variable_for_padstack_definitions:
+                            pad_name_x = f"${def_name}_antipad_x"
+                            pad_name_y = f"${def_name}_antipad_y"
+                        else:
+                            pad_name_x = f"${def_name}_{layer}_antipad_x"
+                            pad_name_y = f"${def_name}_antipad_y"
+
+                        pad_name_x = self._clean_string_for_variable_name(pad_name_x)
+                        pad_name_y = self._clean_string_for_variable_name(pad_name_y)
+                        if pad_name_x not in self.variables and pad_name_y not in self.variables:
+                            self.add_design_variable(pad_name_x, antipad.parameters_values_string[0])
+                            self.add_design_variable(pad_name_y, antipad.parameters_values_string[1])
                         if (
-                            antipad_size_variable_x not in self.variables
-                            and antipad_size_variable_y not in self.variables
+                            pad_name_x not in self.variables
+                            and pad_name_y not in self.variables
                         ):  # pragma no cover
-                            self.add_design_variable(antipad_size_variable_x, antipad.parameters_values_string[0])
-                            self.add_design_variable(antipad_size_variable_y, antipad.parameters_values_string[1])
-                        antipad.parameters = {"XSize": antipad_size_variable_x, "YSize": antipad_size_variable_y}
-                        parameters.append(antipad_size_variable_x)
-                        parameters.append(antipad_size_variable_y)
+                            self.add_design_variable(pad_name_x, antipad.parameters_values_string[0])
+                            self.add_design_variable(pad_name_y, antipad.parameters_values_string[1])
+                        antipad.parameters = {"XSize": pad_name_x, "YSize": pad_name_y}
+                        parameters.append(pad_name_x)
+                        parameters.append(pad_name_y)
         return parameters
 
     def _clean_string_for_variable_name(self, variable_name):
