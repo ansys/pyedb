@@ -4199,23 +4199,23 @@ class Edb(Database):
                         padstack_defs[via.padstack_definition] = self.padstacks.definitions[via.padstack_definition]
             else:
                 used_padsatck_defs = list(
-                    set([padstack_inst.padstack_definition for padstack_inst in list(self.padstacks.instances.values())])
+                    set(
+                        [padstack_inst.padstack_definition for padstack_inst in list(self.padstacks.instances.values())]
+                    )
                 )
                 padstack_defs = {k: v for k, v in self.padstacks.definitions.items() if k in used_padsatck_defs}
         else:
             padstack_defs = {k: v for k, v in self.padstacks.definitions.items() if k in padstack_definition_filter}
 
         for def_name, padstack_def in padstack_defs.items():
-
             if not padstack_def.via_start_layer == padstack_def.via_stop_layer:
                 if via_holes:  # pragma no cover
-                    hole_variable = self._clean_string_for_variable_name( f"${def_name}_hole_diam")
+                    hole_variable = self._clean_string_for_variable_name(f"${def_name}_hole_diam")
                     if hole_variable not in self.variables:
                         self.add_design_variable(hole_variable, padstack_def.hole_diameter_string)
                     padstack_def.hole_properties = hole_variable
                     parameters.append(hole_variable)
             if pads:
-
                 for layer, pad in padstack_def.pad_by_layer.items():
                     if use_single_variable_for_padstack_definitions:
                         pad_name = f"${def_name}_pad"
@@ -4223,7 +4223,7 @@ class Edb(Database):
                         pad_name = f"${def_name}_{layer}_pad"
                     pad_variable = self._clean_string_for_variable_name(pad_name)
 
-                    if pad.geometry_type in [1,2] and pad_variable not in self.variables:
+                    if pad.geometry_type in [1, 2] and pad_variable not in self.variables:
                         self.add_design_variable(pad_variable, pad.parameters_values_string[0])
                         if pad.geometry_type == 1:
                             pad.parameters = {"Diameter": pad_variable}
@@ -4254,7 +4254,7 @@ class Edb(Database):
                         pad_name = f"${def_name}_{layer}_antipad"
                     antipad_variable = self._clean_string_for_variable_name(pad_name)
 
-                    if antipad.geometry_type in [1,2] and antipad_variable not in self.variables:
+                    if antipad.geometry_type in [1, 2] and antipad_variable not in self.variables:
                         self.add_design_variable(antipad_variable, antipad.parameters_values_string[0])
                         if antipad.geometry_type == 1:  # pragma no cover
                             antipad.parameters = {"Diameter": antipad_variable}
@@ -4274,10 +4274,7 @@ class Edb(Database):
                         if pad_name_x not in self.variables and pad_name_y not in self.variables:
                             self.add_design_variable(pad_name_x, antipad.parameters_values_string[0])
                             self.add_design_variable(pad_name_y, antipad.parameters_values_string[1])
-                        if (
-                            pad_name_x not in self.variables
-                            and pad_name_y not in self.variables
-                        ):  # pragma no cover
+                        if pad_name_x not in self.variables and pad_name_y not in self.variables:  # pragma no cover
                             self.add_design_variable(pad_name_x, antipad.parameters_values_string[0])
                             self.add_design_variable(pad_name_y, antipad.parameters_values_string[1])
                         antipad.parameters = {"XSize": pad_name_x, "YSize": pad_name_y}
