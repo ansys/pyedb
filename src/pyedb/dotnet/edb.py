@@ -4318,8 +4318,6 @@ class Edb(Database):
             self.close_edb()
             self.edbpath = edb_original_path
             self.open_edb()
-        # elif open_aedb_at_end and self.edbpath != edb_original_path:
-        #     self.save()
         return parameters
 
     def _clean_string_for_variable_name(self, variable_name):
