@@ -4144,6 +4144,7 @@ class Edb(Database):
         List(str)
             List of all parameters name created.
         """
+        edb_original_path = self.edbpath
         if output_aedb_path:
             self.save_edb_as(output_aedb_path)
         if isinstance(trace_net_filter, str):
@@ -4311,14 +4312,14 @@ class Edb(Database):
                 elif poly.has_voids:
                     for void in poly.voids:
                         void.expand(expand_voids_size, round_corners=False)
-        edb_original_path = self.edbpath
+
         if not open_aedb_at_end and self.edbpath != edb_original_path:
             self.save_edb()
             self.close_edb()
             self.edbpath = edb_original_path
             self.open_edb()
-        else:
-            self.save()
+        # elif open_aedb_at_end and self.edbpath != edb_original_path:
+        #     self.save()
         return parameters
 
     def _clean_string_for_variable_name(self, variable_name):
