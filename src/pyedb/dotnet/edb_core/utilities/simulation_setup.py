@@ -293,10 +293,7 @@ class SimulationSetup(object):
         """
         warnings.warn("Use new property :func:`add_sweep_data` instead.", DeprecationWarning)
         self._sweep_list[sweep_data.name] = sweep_data
-        if self.setup_type in ["kRaptorX", "kHFSSPI"]:
-            edb_setup_info = self._edb_setup_info
-        else:
-            edb_setup_info = self.sim_setup_info
+        edb_setup_info = self.sim_setup_info
 
         if self._setup_type in ["kSIwave", "kHFSS", "kRaptorX", "kHFSSPI"]:
             for _, v in self._sweep_list.items():

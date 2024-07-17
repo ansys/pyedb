@@ -412,8 +412,8 @@ class TestClass:
         edb2 = Edb(self.target_path4, edbversion=desktop_version)
         for _, cmp in edb2.components.instances.items():
             assert isinstance(cmp.solder_ball_placement, int)
-        mounted_cmp = edb2.components.get_component_by_name("BGA")
-        hosting_cmp = self.edbapp.components.get_component_by_name("U1")
+        mounted_cmp = edb2.components.get_component_by_name("BGA")._edb_object
+        hosting_cmp = self.edbapp.components.get_component_by_name("U1")._edb_object
         (
             result,
             vector,
@@ -578,12 +578,8 @@ class TestClass:
         assert round(diam1, 6) == 100e-6
         assert round(diam2, 6) == 100e-6
 
-    def test_create_pingroup_from_pins_types(self):
-        example_folder = os.path.join(local_path, "example_models", test_subfolder)
-        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
-        target_path_edb = os.path.join(self.local_scratch.path, "test_component", "test.aedb")
-        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = Edb(target_path_edb, desktop_version)
+    def test_create_pingroup_from_pins_types(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.components.create_pingroup_from_pins([*edbapp.components.components["Q1"].pins.values()])
         assert edbapp.components._create_pin_group_terminal(edbapp.padstacks.pingroups[0], term_type="circuit")
         edbapp.close()

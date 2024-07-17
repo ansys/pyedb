@@ -29,7 +29,7 @@ import warnings
 
 from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
 from pyedb.generic.constants import CSS4_COLORS
-from pyedb.generic.general_methods import generate_unique_name, is_ironpython
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -55,10 +55,7 @@ class EdbNets(object):
         :class:` :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBNetsData`
 
         """
-        if name in self.nets:
-            return self.nets[name]
-        self._pedb.logger.error("Component or definition not found.")
-        return
+        return self._pedb.layout.find_net_by_name(name)
 
     def __contains__(self, name):
         """Determine if a net is named ``name`` or not.
@@ -119,7 +116,7 @@ class EdbNets(object):
         dict[str, :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBNetsData`]
             Dictionary of nets.
         """
-        return self._pedb.modeler.nets
+        return {i.name: i for i in self._pedb.layout.nets}
 
     @property
     def netlist(self):
@@ -841,9 +838,6 @@ class EdbNets(object):
         show : bool, optional
             Whether to show the plot or not. Default is `True`.
         """
-        if is_ironpython:
-            self._logger.warning("Plot functionalities are enabled only in CPython.")
-            return False
         from pyedb.generic.plot import plot_matplotlib
 
         object_lists = self.get_plot_data(

@@ -22,7 +22,7 @@
 
 import logging
 
-from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
+from pyedb.dotnet.edb_core.cell.connectable import Connectable
 
 
 class HierarchyObj(Connectable):

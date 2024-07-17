@@ -32,7 +32,6 @@ from pyedb.generic.general_methods import (
     env_path,
     env_path_student,
     env_value,
-    is_ironpython,
     is_linux,
     settings,
 )
@@ -751,14 +750,10 @@ class EdbDotNet(object):
                         self.base_path = edb_path
                         sys.path.append(edb_path)
                         os.environ[env_value(self.edbversion)] = self.base_path
-            if is_ironpython:
-                _clr.AddReferenceToFile("Ansys.Ansoft.Edb.dll")
-                _clr.AddReferenceToFile("Ansys.Ansoft.EdbBuilderUtils.dll")
-                _clr.AddReferenceToFileAndPath(os.path.join(self.base_path, "Ansys.Ansoft.SimSetupData.dll"))
-            else:
-                _clr.AddReference("Ansys.Ansoft.Edb")
-                _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
-                _clr.AddReference("Ansys.Ansoft.SimSetupData")
+
+            _clr.AddReference("Ansys.Ansoft.Edb")
+            _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
+            _clr.AddReference("Ansys.Ansoft.SimSetupData")
         else:
             if settings.edb_dll_path:
                 self.base_path = settings.edb_dll_path
@@ -1234,7 +1229,7 @@ class Database(EdbDotNet):
         -------
 
         """
-        from pyedb.generic.clr_module import Convert
+        from pyedb.dotnet.clr_module import Convert
 
         hdl = Convert.ToUInt64(hdb)
         self._db = self.edb_api.database.Attach(hdl)
