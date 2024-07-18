@@ -1424,9 +1424,9 @@ class Modeler(object):
     def create_pin_group(
         self,
         name: str,
-        pins_by_id: list[int] = None,
-        pins_by_aedt_name: list[str] = None,
-        pins_by_name: list[str] = None,
+        pins_by_id=None,
+        pins_by_aedt_name=None,
+        pins_by_name=None,
     ):
         """Create a PinGroup.
 
@@ -1442,6 +1442,8 @@ class Modeler(object):
         """
         pins = {}
         if pins_by_id:
+            if isinstance(pins_by_id, int):
+                pins_by_id = [pins_by_id]
             for p in pins_by_id:
                 edb_pin = self._pedb.layout.find_object_by_id(p)
                 if edb_pin and not p in pins:
@@ -1451,6 +1453,10 @@ class Modeler(object):
         if not pins_by_name:
             pins_by_name = []
         if pins_by_aedt_name or pins_by_name:
+            if isinstance(pins_by_aedt_name, str):
+                pins_by_aedt_name = [pins_by_aedt_name]
+            if isinstance(pins_by_name, str):
+                pins_by_name = [pins_by_name]
             p_inst = self._pedb.layout.padstack_instances
             _pins = {
                 pin.id: pin._edb_object
