@@ -118,7 +118,7 @@ class Edb(Database):
     edbpath : str, optional
         Full path to the ``aedb`` folder. The variable can also contain
         the path to a layout to import. Allowed formats are BRD, MCM,
-        XML (IPC2581), GDS, and DXF. The default is ``None``.
+        XML (IPC2581), GDS, DXF, ODB++(TGZ and ZIP). The default is ``None``.
         For GDS import, the Ansys control file (also XML) should have the same
         name as the GDS file. Only the file extension differs.
     cellname : str, optional
@@ -221,7 +221,7 @@ class Edb(Database):
             if not isreadonly:
                 self._check_remove_project_files(edbpath, remove_existing_aedt)
 
-        if edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
+        if edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "zip", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
             control_file = None
@@ -581,7 +581,7 @@ class Edb(Database):
     ):
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
-        This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM and TGZ.
+        This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, ZIP and TGZ.
 
         Parameters
         ----------
