@@ -37,6 +37,7 @@ import time
 import traceback
 from typing import Union
 import warnings
+from zipfile import ZipFile as zpf
 
 import rtree
 
@@ -221,7 +222,31 @@ class Edb(Database):
             if not isreadonly:
                 self._check_remove_project_files(edbpath, remove_existing_aedt)
 
-        if edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "zip", "anf"]:
+        elif edbpath[-3:] == "zip":
+            self.edbpath = edbpath[:-4] + ".aedb"
+            working_dir = os.path.dirname(edbpath)
+            zipped_file = zpf(edbpath,'r')
+            top_level_folders = {item.split('/')[0] for item in zipped_file.namelist()}
+            if len(top_level_folders) == 1:
+                self.logger.info('Unzipping ODB++...')
+                zipped_file.extractall(working_dir)
+            else:
+                self.logger.info('Unzipping ODB++ before translating to EDB...')
+                zipped_file.extractall(edbpath[:-4])
+                self.logger.info('ODB++ unzipped succefully.')				
+            zipped_file.close()
+            control_file = None
+            if technology_file:
+                if os.path.splitext(technology_file)[1] == ".xml":
+                    control_file = technology_file
+                else:
+                    control_file = convert_technology_file(technology_file, edbversion=edbversion)
+            self.logger.info('Translating ODB++ to EDB...')
+            self.import_layout_pcb(edbpath[:-4], working_dir, use_ppe=use_ppe, control_file=control_file)
+            if settings.enable_local_log_file and self.log_name:
+                self._logger.add_file_logger(self.log_name, "Edb")
+            self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)        
+        if edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
             control_file = None
