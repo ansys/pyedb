@@ -26,9 +26,15 @@
 import codecs
 import json
 import math
+import os
 import re
 import warnings
 
+from pyedb.component_libraries.ansys_components import (
+    ComponentLib,
+    ComponentPart,
+    Series,
+)
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.edb_core.definition.component_def import EDBComponentDef
@@ -639,6 +645,50 @@ class Components(object):
             cmp_prop = cmp.GetComponentProperty().Clone()
             return cmp_prop.GetSolderBallProperty().GetHeight()
         return False
+
+    def get_vendor_libraries(self):
+        """Retrieve all capacitors and inductors libraries from ANSYS installation (used by Siwave).
+
+        Returns
+        -------
+        pyedb.component_libraries.ansys_components import ComponentLib object. ComponentLib object contains nested
+        dictionaries to navigate through [component tpe][vendors][series]
+        [class: `pyedb.component_libraries.ansys_components.ComponentPart`]
+
+        Examples
+        --------
+        >>> edbapp = Edb()
+        >>> comp_lib = edbapp.components.get_vendor_libraries()
+        >>> network = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].s_parameters
+        >>> network.write_touchstone(os.path.join(edbapp.directory, "test_export.s2p"))
+
+        """
+        comp_lib_path = os.path.join(self._pedb.base_path, "complib", "Locked")
+        comp_types = ["Capacitors", "Inductors"]
+        comp_lib = ComponentLib()
+        comp_lib.path = comp_lib_path
+        for cmp_type in comp_types:
+            folder = os.path.join(comp_lib_path, cmp_type)
+            vendors = {f.name: "" for f in os.scandir(folder) if f.is_dir()}
+            for vendor in list(vendors.keys()):
+                series = {f.name: Series() for f in os.scandir(os.path.join(folder, vendor)) if f.is_dir()}
+                for serie_name, _ in series.items():
+                    _serie = {}
+                    index_file = os.path.join(folder, vendor, serie_name, "index.txt")
+                    sbin_file = os.path.join(folder, vendor, serie_name, "sdata.bin")
+                    if os.path.isfile(index_file):
+                        with open(index_file, "r") as f:
+                            for line in f.readlines():
+                                part_name, index = line.split()
+                                _serie[part_name] = ComponentPart(part_name, int(index), sbin_file)
+                            f.close()
+                        series[serie_name] = _serie
+                vendors[vendor] = series
+            if cmp_type == "Capacitors":
+                comp_lib.capacitors = vendors
+            elif cmp_type == "Inductors":
+                comp_lib.inductors = vendors
+        return comp_lib
 
     def create_source_on_component(self, sources=None):
         """Create voltage, current source, or resistor on component.
