@@ -1004,7 +1004,7 @@ class Components(object):
                 shape=sball_shape,
             )
             for pin in cmp_pins:
-                return self._padstack.create_coax_port(padstackinstance=pin, name=port_name)
+                self._padstack.create_coax_port(padstackinstance=pin, name=port_name)
 
         elif port_type == SourceType.CircPort:  # pragma no cover
             ref_pins = [
@@ -1052,15 +1052,15 @@ class Components(object):
                             pin_group = self._pedb.siwave.pin_groups[pin_group.GetName()]
                             pin_group_term = self._create_pin_group_terminal(pin_group)
                             if pin_group_term:
-                                return pin_group_term.SetReferenceTerminal(ref_pin_group_term)
+                                pin_group_term.SetReferenceTerminal(ref_pin_group_term)
                     else:
                         self._logger.info("No pins found on component {} for the net {}".format(component, net))
             else:
                 for net in net_list:
                     pins = [pin for pin in cmp_pins if pin.GetNet().GetName() == net]
                     for pin in pins:
-                        return self.create_port_on_pins(component, pin, ref_pins)
-        return False
+                        self.create_port_on_pins(component, pin, ref_pins)
+        return True
 
     def _create_terminal(self, pin, term_name=None):
         """Create terminal on component pin.
