@@ -964,8 +964,9 @@ class Components(object):
             ]
             if not ref_pins:
                 self._logger.error(
-                    "No reference pins found on component, no current return path which will defined causing wrong "
-                    "results. Please check your design."
+                    "No reference pins found on component. You might consider"
+                    "using Circuit port instead since reference pins can be extended"
+                    "outside the component automatically when not found."
                 )
                 return False
             pad_params = self._padstack.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
@@ -1016,10 +1017,8 @@ class Components(object):
                 if not p.IsLayoutPin():
                     p.SetIsLayoutPin(True)
             if not ref_pins:
-                self._logger.warning(
-                    f"No reference pins found on component {component.GetName()}. Please check your design."
-                )
-                return False
+                self._logger.warning("No reference pins found on component, the closest pin will be selected.")
+                do_pingroup = False
             if do_pingroup:
                 if len(ref_pins) == 1:
                     ref_pins.is_pin = True
@@ -1044,7 +1043,7 @@ class Components(object):
                         if len(pins) == 1:
                             pin_term = self._create_terminal(pins[0])
                             if pin_term:
-                                return pin_term.SetReferenceTerminal(ref_pin_group_term)
+                                pin_term.SetReferenceTerminal(ref_pin_group_term)
                         else:
                             pin_group = self.create_pingroup_from_pins(pins)
                             if not pin_group:
@@ -1059,7 +1058,19 @@ class Components(object):
                 for net in net_list:
                     pins = [pin for pin in cmp_pins if pin.GetNet().GetName() == net]
                     for pin in pins:
-                        self.create_port_on_pins(component, pin, ref_pins)
+                        if ref_pins:
+                            self.create_port_on_pins(component, pin, ref_pins)
+                        else:
+                            _pin = EDBPadstackInstance(pin, self._pedb)
+                            ref_pin = _pin.get_reference_pins(
+                                reference_net=reference_net[0], max_limit=1, component_only=False, search_radius=3e-3
+                            )
+                            if ref_pin:
+                                self.create_port_on_pins(
+                                    component,
+                                    [EDBPadstackInstance(pin, self._pedb).name],
+                                    [EDBPadstackInstance(ref_pin[0], self._pedb).id],
+                                )
         return True
 
     def _create_terminal(self, pin, term_name=None):
