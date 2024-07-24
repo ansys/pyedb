@@ -46,3 +46,17 @@ def points_for_line_detection():
             points.append((x, y))
 
     return points
+
+
+@pytest.fixture(scope="function", autouse=False)
+def points_for_line_detection_135():
+    csv_file = os.path.join(example_models_path, test_subfolder, "points_for_line_detection_135.csv")
+
+    points = []
+    with open(csv_file, mode="r") as file:
+        csv_reader = csv.reader(file)
+        for row in csv_reader:
+            x, y = map(float, row)
+            points.append((x, y))
+
+    return points
