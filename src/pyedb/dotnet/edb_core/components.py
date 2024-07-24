@@ -1017,7 +1017,7 @@ class Components(object):
                     p.SetIsLayoutPin(True)
             if not ref_pins:
                 self._logger.warning(
-                    f"No reference pins found on component {component.GetName()}. Please check your" f"design."
+                    f"No reference pins found on component {component.GetName()}. Please check your design."
                 )
                 return False
             if do_pingroup:
