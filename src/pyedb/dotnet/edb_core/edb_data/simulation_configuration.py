@@ -2477,7 +2477,7 @@ class SimulationConfiguration(object):
                 cfg_lines = cfg_file.read().split("\n")
                 for line in cfg_lines:
                     if line.strip() != "":
-                        if line.find("=")>0:
+                        if line.find("=") > 0:
                             i, prop_value = line.strip().split("=")
                             value = prop_value.replace("'", "").strip()
                             if i.lower().startswith("generatesolderballs"):
