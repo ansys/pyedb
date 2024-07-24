@@ -1441,14 +1441,16 @@ class Components(object):
         -------
         Edb pin group terminal.
         """
-        pin = list(pingroup._edb_object.GetPins())[0]
+        if not "Cell.Hierarchy.PinGroup" in str(pingroup):
+            pingroup = pingroup._edb_object
+        pin = list(pingroup.GetPins())[0]
         if term_name is None:
             term_name = "{}.{}.{}".format(pin.GetComponent().GetName(), pin.GetName(), pin.GetNet().GetName())
         for t in list(self._pedb.active_layout.Terminals):
             if t.GetName() == term_name:
                 return t
         pingroup_term = self._edb.cell.terminal.PinGroupTerminal.Create(
-            self._active_layout, pingroup._edb_object.GetNet(), term_name, pingroup._edb_object, isref
+            self._active_layout, pingroup.GetNet(), term_name, pingroup, isref
         )
         if term_type == "circuit":
             pingroup_term.SetIsCircuitPort(True)
