@@ -655,6 +655,13 @@ class Components(object):
         dictionaries to navigate through [component tpe][vendors][series]
         [class: `pyedb.component_libraries.ansys_components.ComponentPart`]
 
+        Examples
+        --------
+        >>> edbapp = Edb()
+        >>> comp_lib = edbapp.components.get_vendor_libraries()
+        >>> network = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].s_parameters
+        >>> network.write_touchstone(os.path.join(edbapp.directory, "test_export.s2p"))
+
         """
         comp_lib_path = os.path.join(self._pedb.base_path, "complib", "Locked")
         comp_types = ["Capacitors", "Inductors"]
