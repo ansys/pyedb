@@ -2019,7 +2019,7 @@ class GeometryOperators(object):
 
     @staticmethod
     def find_points_along_lines(
-        points, minimum_number_of_points=3, distance_threshold=None, return_additional_info=False
+        points, minimum_number_of_points=3, distance_threshold=None, selected_angles=None, return_additional_info=False
     ):
         """Detect all points that are placed along lines.
 
@@ -2040,6 +2040,15 @@ class GeometryOperators(object):
         distance_threshold : float, None, optional
             If two points in a line are separated by a distance larger than `distance_threshold`,
             the line is divided in two parts. Default is ``None``, in which case the control is not performed.
+        selected_angles : list, None, optional
+            Specify a list of angles in degrees. If specified, the method returns only the lines which
+            have one of the specified angles.
+            The angle is defined as the positive angle of the infinite line with respect to the x-axis
+            It is positive, and between 0 and 180 degrees.
+            For example, ``[90]`` indicated vertical lines parallel to the y-axis,
+            ``[0]`` or ``[180]`` identifies horizontal lines parallel to the x-axis,
+            ``45`` identifies lines parallel to the first quadrant bisector.
+            Default is ``None``, in which case all lines are returned.
         return_additional_info : bool, optional
             Whether to return additional information about the number of elements processed.
             The default is ``True``.
@@ -2062,6 +2071,11 @@ class GeometryOperators(object):
         # Parameters
         min_num_points = max(3, int(minimum_number_of_points))
         cluster_lines_flag = False if distance_threshold is None else True
+        if selected_angles is not None:
+            if 0 in selected_angles or 180 in selected_angles:
+                selected_angles.extend([0, 180])
+            selected_angles = set(selected_angles)
+            selected_angles = np.deg2rad(np.array(list(selected_angles)))
         tol_rad = 1e-10
 
         # Converts the input
@@ -2087,7 +2101,9 @@ class GeometryOperators(object):
 
                 # Calculate the angle in radians with the x-axis
                 angle_rad = np.arctan2(dy, dx)
-                if angle_rad < 0:
+                if abs(angle_rad - np.pi) < tol_rad:
+                    angles[i].append(0.0)
+                elif angle_rad < 0:
                     angles[i].append(angle_rad + np.pi)
                 else:
                     angles[i].append(angle_rad)
@@ -2118,8 +2134,18 @@ class GeometryOperators(object):
                     # this two points already belong to a line, no need to store them again
                     continue
                 new_lines[angle].update((i, j))
+
+            # Depending on user choice, it checks if the angle is among the desired angles
+            if selected_angles is not None:
+                selected_lines = []
+                for ang, v in new_lines.items():
+                    if any(abs(sa - ang) < tol_rad for sa in selected_angles):
+                        selected_lines.append(v)
+            else:
+                selected_lines = [l for l in new_lines.values()]
+
             # considering only lines with at least 3 points
-            lines_to_add = [l for l in new_lines.values() if len(l) >= 3]
+            lines_to_add = [l for l in selected_lines if len(l) >= 3]
             detected_lines_idx.extend(lines_to_add)
 
         # Discard the lines with less than min_num_points
