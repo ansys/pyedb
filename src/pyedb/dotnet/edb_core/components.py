@@ -26,9 +26,15 @@
 import codecs
 import json
 import math
+import os
 import re
 import warnings
 
+from pyedb.component_libraries.ansys_components import (
+    ComponentLib,
+    ComponentPart,
+    Series,
+)
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.edb_core.definition.component_def import EDBComponentDef
@@ -640,6 +646,50 @@ class Components(object):
             return cmp_prop.GetSolderBallProperty().GetHeight()
         return False
 
+    def get_vendor_libraries(self):
+        """Retrieve all capacitors and inductors libraries from ANSYS installation (used by Siwave).
+
+        Returns
+        -------
+        pyedb.component_libraries.ansys_components import ComponentLib object. ComponentLib object contains nested
+        dictionaries to navigate through [component tpe][vendors][series]
+        [class: `pyedb.component_libraries.ansys_components.ComponentPart`]
+
+        Examples
+        --------
+        >>> edbapp = Edb()
+        >>> comp_lib = edbapp.components.get_vendor_libraries()
+        >>> network = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].s_parameters
+        >>> network.write_touchstone(os.path.join(edbapp.directory, "test_export.s2p"))
+
+        """
+        comp_lib_path = os.path.join(self._pedb.base_path, "complib", "Locked")
+        comp_types = ["Capacitors", "Inductors"]
+        comp_lib = ComponentLib()
+        comp_lib.path = comp_lib_path
+        for cmp_type in comp_types:
+            folder = os.path.join(comp_lib_path, cmp_type)
+            vendors = {f.name: "" for f in os.scandir(folder) if f.is_dir()}
+            for vendor in list(vendors.keys()):
+                series = {f.name: Series() for f in os.scandir(os.path.join(folder, vendor)) if f.is_dir()}
+                for serie_name, _ in series.items():
+                    _serie = {}
+                    index_file = os.path.join(folder, vendor, serie_name, "index.txt")
+                    sbin_file = os.path.join(folder, vendor, serie_name, "sdata.bin")
+                    if os.path.isfile(index_file):
+                        with open(index_file, "r") as f:
+                            for line in f.readlines():
+                                part_name, index = line.split()
+                                _serie[part_name] = ComponentPart(part_name, int(index), sbin_file)
+                            f.close()
+                        series[serie_name] = _serie
+                vendors[vendor] = series
+            if cmp_type == "Capacitors":
+                comp_lib.capacitors = vendors
+            elif cmp_type == "Inductors":
+                comp_lib.inductors = vendors
+        return comp_lib
+
     def create_source_on_component(self, sources=None):
         """Create voltage, current source, or resistor on component.
 
@@ -876,6 +926,7 @@ class Components(object):
         solder_balls_height=None,
         solder_balls_size=None,
         solder_balls_mid_size=None,
+        extend_reference_pins_outside_component=False,
     ):
         """Create ports on a component.
 
@@ -908,6 +959,9 @@ class Components(object):
         solder_balls_mid_size : float, optional
             Solder balls mid-diameter. When provided if value is different than solder balls size, spheroid shape will
             be switched.
+        extend_reference_pins_outside_component : bool
+            When no reference pins are found on the component extend the pins search with taking the closest one. If
+            `do_pingroup` is `True` will be set to `False`. Default value is `False`.
 
         Returns
         -------
@@ -966,7 +1020,7 @@ class Components(object):
                 self._logger.error(
                     "No reference pins found on component. You might consider"
                     "using Circuit port instead since reference pins can be extended"
-                    "outside the component automatically when not found."
+                    "outside the component when not found if argument extend_reference_pins_outside_component is True."
                 )
                 return False
             pad_params = self._padstack.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
@@ -1017,8 +1071,14 @@ class Components(object):
                 if not p.IsLayoutPin():
                     p.SetIsLayoutPin(True)
             if not ref_pins:
-                self._logger.warning("No reference pins found on component, the closest pin will be selected.")
-                do_pingroup = False
+                self._logger.warning("No reference pins found on component")
+                if not extend_reference_pins_outside_component:
+                    self._logger.warning(
+                        "argument extend_reference_pins_outside_component is False. You might want "
+                        "setting to True to extend the reference pin search outside the component"
+                    )
+                else:
+                    do_pingroup = False
             if do_pingroup:
                 if len(ref_pins) == 1:
                     ref_pins.is_pin = True
@@ -1061,16 +1121,22 @@ class Components(object):
                         if ref_pins:
                             self.create_port_on_pins(component, pin, ref_pins)
                         else:
-                            _pin = EDBPadstackInstance(pin, self._pedb)
-                            ref_pin = _pin.get_reference_pins(
-                                reference_net=reference_net[0], max_limit=1, component_only=False, search_radius=3e-3
-                            )
-                            if ref_pin:
-                                self.create_port_on_pins(
-                                    component,
-                                    [EDBPadstackInstance(pin, self._pedb).name],
-                                    [EDBPadstackInstance(ref_pin[0], self._pedb).id],
+                            if extend_reference_pins_outside_component:
+                                _pin = EDBPadstackInstance(pin, self._pedb)
+                                ref_pin = _pin.get_reference_pins(
+                                    reference_net=reference_net[0],
+                                    max_limit=1,
+                                    component_only=False,
+                                    search_radius=3e-3,
                                 )
+                                if ref_pin:
+                                    self.create_port_on_pins(
+                                        component,
+                                        [EDBPadstackInstance(pin, self._pedb).name],
+                                        [EDBPadstackInstance(ref_pin[0], self._pedb).id],
+                                    )
+                            else:
+                                self._logger.error("Skipping port creation no reference pin found.")
         return True
 
     def _create_terminal(self, pin, term_name=None):
