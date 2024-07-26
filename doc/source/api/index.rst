@@ -39,6 +39,6 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
    sim_setup_data/io/index
    utilities/index
    SiWave
-   SimulationConfiguration_v2
+   SimulationConfigurationv2
 
 

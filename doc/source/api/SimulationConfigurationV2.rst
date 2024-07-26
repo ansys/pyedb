@@ -128,7 +128,7 @@ These classes are the containers of simulation configuration constructors V2.0 f
    CfgSIwaveACSetup
    CfgSiwaveDCSetup
    CfgHFSSSetup
-   CfgDcirSettings
+   CfgDcIrSettings
    CfgMeshOperation
    CfgLengthMeshOperation
    CfgSetups
