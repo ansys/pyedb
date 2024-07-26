@@ -1,6 +1,6 @@
 XML Control File
 ================
-Convert a technology file to edb control xml file.
+Convert a technology file to edb control file.
 
 
 .. currentmodule:: pyedb.dotnet.edb_core.edb_data.control_file
