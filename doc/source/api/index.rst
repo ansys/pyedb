@@ -34,12 +34,11 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
    :maxdepth: 2
 
    CoreEdb
-   LayerData
-   PrimitivesEdb
-   ComponentsEdb
-   NetsEdb
-   PadstackEdb
-   SourcesEdb
-   SimulationConfigurationEdb
+   edb_data/index
+   sim_setup_data/data/index
+   sim_setup_data/io/index
+   utilities/index
    SiWave
-   PortsEdb
+   SimulationConfiguration_v2
+
+
