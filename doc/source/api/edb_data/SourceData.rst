@@ -7,7 +7,7 @@ These classes are the containers of sources methods of the EDB for both HFSS and
 
     from pyedb import Edb
 
-    edb = Edb(myedb, edbversion="2023.1")
+    edb = Edb(myedb, edbversion="2024.2")
 
     # this call returns the EDB excitations dictionary
     edb.excitations
