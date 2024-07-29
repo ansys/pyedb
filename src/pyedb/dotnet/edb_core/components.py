@@ -980,12 +980,7 @@ class Components(object):
         """
         if isinstance(component, str):
             component = self.instances[component].edbcomponent
-        if not solder_balls_height:
-            solder_balls_height = self.instances[component.GetName()].solder_ball_height
-        if not solder_balls_size:
-            solder_balls_size = self.instances[component.GetName()].solder_ball_diameter[0]
-        if not solder_balls_mid_size:
-            solder_balls_mid_size = self.instances[component.GetName()].solder_ball_diameter[1]
+
         if not isinstance(net_list, list):
             net_list = [net_list]
         for net in net_list:
@@ -1011,6 +1006,12 @@ class Components(object):
             return False
         pin_layers = cmp_pins[0].GetPadstackDef().GetData().GetLayerNames()
         if port_type == SourceType.CoaxPort:
+            if not solder_balls_height:
+                solder_balls_height = self.instances[component.GetName()].solder_ball_height
+            if not solder_balls_size:
+                solder_balls_size = self.instances[component.GetName()].solder_ball_diameter[0]
+            if not solder_balls_mid_size:
+                solder_balls_mid_size = self.instances[component.GetName()].solder_ball_diameter[1]
             ref_pins = [
                 p
                 for p in list(component.LayoutObjs)
