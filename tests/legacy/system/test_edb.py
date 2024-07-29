@@ -279,9 +279,9 @@ class TestClass:
             keep_lines_as_path=True,
         )
         assert "A0_N" not in edbapp.nets.nets
-        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", order_by_area=True), list)
-        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True), list)
-        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
+        assert isinstance(edbapp.layout_validation.disjoint_nets("GND", order_by_area=True), list)
+        assert isinstance(edbapp.layout_validation.disjoint_nets("GND", keep_only_main_net=True), list)
+        assert isinstance(edbapp.layout_validation.disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
         assert edbapp.layout_validation.fix_self_intersections("PGND")
 
         edbapp.close()
@@ -1054,7 +1054,7 @@ class TestClass:
                 assert settings["advanced_settings"][k] == v[p]
 
         for p in [0, 1, 2]:
-            setup1.set_pi_slider(p)
+            setup1.pi_slider_position = p
             settings = self.edbapp.setups["AC1"].get_configurations()
             for k, v in setup1.advanced_settings.pi_defaults.items():
                 assert settings["advanced_settings"][k] == v[p]
@@ -1195,7 +1195,7 @@ class TestClass:
 
     def test_pins(self):
         """Evaluate the pins."""
-        assert len(self.edbapp.pins) > 0
+        assert len(self.edbapp.padstacks.pins) > 0
 
     def test_create_padstack_instance(self):
         """Create padstack instances."""
@@ -1246,7 +1246,7 @@ class TestClass:
         assert not pad_instance3.dcir_equipotential_region
 
         trace = edb.modeler.create_trace([[0, 0], [0, 10e-3]], "1_Top", "0.1mm", "trace_with_via_fence")
-        edb.padstacks.create_padstack("via_0")
+        edb.padstacks.create("via_0")
         trace.create_via_fence("1mm", "1mm", "via_0")
 
         edb.close()

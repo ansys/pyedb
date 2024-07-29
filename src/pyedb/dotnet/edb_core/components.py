@@ -127,7 +127,7 @@ class Components(object):
         return self._pedb.edb_api
 
     def _init_parts(self):
-        a = self.components
+        a = self.instances
         a = self.resistors
         a = self.ICs
         a = self.Others
@@ -160,29 +160,6 @@ class Components(object):
         return self._pedb.active_db
 
     @property
-    def components(self):
-        """Component setup information.
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`instances` instead.
-
-        Returns
-        -------
-        dict[str, :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`]
-            Default dictionary for the EDB component.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.components
-
-        """
-        warnings.warn("Use new property :func:`instances` instead.", DeprecationWarning)
-        return self.instances
-
-    @property
     def instances(self):
         """All Cell components objects.
 
@@ -196,7 +173,7 @@ class Components(object):
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.components
+        >>> edbapp.components.instances
 
         """
         if not self._cmp:
@@ -1603,47 +1580,6 @@ class Components(object):
         self._cmp[new_cmp.GetName()] = new_edb_comp
         return new_edb_comp
 
-    def create_component_from_pins(
-        self, pins, component_name, placement_layer=None, component_part_name=None
-    ):  # pragma: no cover
-        """Create a component from pins.
-
-        .. deprecated:: 0.6.62
-           Use :func:`create` method instead.
-
-        Parameters
-        ----------
-        pins : list
-            List of EDB core pins.
-        component_name : str
-            Name of the reference designator for the component.
-        placement_layer : str, optional
-            Name of the layer used for placing the component.
-        component_part_name : str, optional
-            Part name of the component. It's created a new definition if doesn't exists.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> pins = edbapp.components.get_pin_from_component("A1")
-        >>> edbapp.components.create(pins, "A1New")
-
-        """
-        warnings.warn("`create_component_from_pins` is deprecated. Use `create` method instead.", DeprecationWarning)
-        return self.create(
-            pins=pins,
-            component_name=component_name,
-            placement_layer=placement_layer,
-            component_part_name=component_part_name,
-            is_rlc=False,
-        )
 
     def set_component_model(self, componentname, model_type="Spice", modelpath=None, modelname=None):
         """Assign a Spice or Touchstone model to a component.
@@ -1841,32 +1777,6 @@ class Components(object):
 
         return deleted_comps
 
-    def delete_component(self, component_name):  # pragma: no cover
-        """Delete a component.
-
-        .. deprecated:: 0.6.62
-           Use :func:`delete` method instead.
-
-        Parameters
-        ----------
-        component_name : str
-            Name of the component.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.delete("A1")
-
-        """
-        warnings.warn("`delete_component` is deprecated. Use `delete` property instead.", DeprecationWarning)
-        return self.delete(component_name=component_name)
 
     def delete(self, component_name):
         """Delete a component.
@@ -2188,7 +2098,7 @@ class Components(object):
                         self.set_component_rlc(new_refdes, ind_value=new_value)
                         unmount_comp_list.remove(new_refdes)
             for comp in unmount_comp_list:
-                self.components[comp].is_enabled = False
+                self.instances[comp].is_enabled = False
         return found
 
     def import_bom(
@@ -2233,7 +2143,7 @@ class Components(object):
                 l = l.split(delimiter)
 
                 refdes = l[refdes_col]
-                comp = self.components[refdes]
+                comp = self.instances[refdes]
                 if not part_name_col == None:
                     part_name = l[part_name_col]
                     if comp.partname == part_name:
@@ -2255,7 +2165,7 @@ class Components(object):
 
                         self.create(pinlist, refdes, p_layer, part_name)
                         self.refresh_components()
-                        comp = self.components[refdes]
+                        comp = self.instances[refdes]
 
                 comp_type = l[comp_type_col]
                 if comp_type.capitalize() in ["Resistor", "Capacitor", "Inductor", "Other"]:
@@ -2278,7 +2188,7 @@ class Components(object):
                         elif comp_type == "Inductor":
                             self.set_component_rlc(refdes, ind_value=value)
             for comp in unmount_comp_list:
-                self.components[comp].is_enabled = False
+                self.instances[comp].is_enabled = False
         return True
 
     def export_bom(self, bom_file, delimiter=","):
@@ -2639,7 +2549,7 @@ class Components(object):
         >>> edbapp.components.short_component_pins("J4A2", ["G4", "9", "3"])
 
         """
-        component = self.components[component_name]
+        component = self.instances[component_name]
         pins = component.pins
         pins_list = []
 
