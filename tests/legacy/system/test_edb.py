@@ -1657,30 +1657,32 @@ class TestClass:
         edbapp.close()
 
     def test_create_port_ob_component_no_ref_pins_in_component(self, edb_examples):
+        from pyedb.generic.constants import SourceType
+
         edbapp = edb_examples.get_no_ref_pins_component()
-        sim_setup = edbapp.new_simulation_configuration()
-        sim_setup.signal_nets = [
-            "net1",
-            "net2",
-            "net3",
-            "net4",
-            "net5",
-            "net6",
-            "net7",
-            "net8",
-            "net9",
-            "net10",
-            "net11",
-            "net12",
-            "net13",
-            "net14",
-            "net15",
-        ]
-        sim_setup.power_nets = ["GND"]
-        sim_setup.solver_type = 7
-        sim_setup.components = ["J2E2"]
-        sim_setup.do_cutout_subdesign = False
-        edbapp.build_simulation_project(sim_setup)
+        edbapp.components.create_port_on_component(
+            component="J2E2",
+            net_list=[
+                "net1",
+                "net2",
+                "net3",
+                "net4",
+                "net5",
+                "net6",
+                "net7",
+                "net8",
+                "net9",
+                "net10",
+                "net11",
+                "net12",
+                "net13",
+                "net14",
+                "net15",
+            ],
+            port_type=SourceType.CircPort,
+            reference_net=["GND"],
+            extend_reference_pins_outside_component=True,
+        )
         assert len(edbapp.ports) == 15
 
     def test_create_ping_group(self, edb_examples):
@@ -1699,3 +1701,12 @@ class TestClass:
             pins_by_name=["A11", "A12", "A15", "A16"],
         )
         edbapp.close()
+
+    def test_create_edb_with_zip(self):
+        """Create EDB from zip file."""
+        src = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1_0.zip")
+        zip_path = self.local_scratch.copyfile(src)
+        edb = Edb(zip_path, edbversion=desktop_version)
+        assert edb.nets
+        assert edb.components
+        edb.close()
