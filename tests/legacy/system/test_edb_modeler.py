@@ -285,7 +285,7 @@ class TestClass:
         poly = self.edbapp.modeler.create_polygon([[0, 0], [100, 0], [100, 100], [0, 100]], "1_Top")
         assert poly
         poly.add_void([[20, 20], [20, 30], [100, 30], [100, 20]])
-        poly2 = (self.edbapp.modeler.create_polygon([[60, 60], [60, 150], [150, 150], [150, 60]], "1_Top"))
+        poly2 = self.edbapp.modeler.create_polygon([[60, 60], [60, 150], [150, 150], [150, 60]], "1_Top")
         new_polys = poly.subtract(poly2)
         assert len(new_polys) == 1
         circle = self.edbapp.modeler.create_circle("1_Top", 40, 40, 15)

@@ -263,11 +263,7 @@ class TestClass:
 
     def test_vias_metal_volume(self):
         """Metal volume of the via hole instance."""
-        vias = [
-            via
-            for via in list(self.edbapp.padstacks.instances.values())
-            if not via.start_layer == via.stop_layer
-        ]
+        vias = [via for via in list(self.edbapp.padstacks.instances.values()) if not via.start_layer == via.stop_layer]
         assert vias[0].metal_volume
         assert vias[1].metal_volume
 
