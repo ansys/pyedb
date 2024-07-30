@@ -96,14 +96,16 @@ edb = pyedb.Edb(edbpath=aedb_path, edbversion=edb_version)
 # -
 
 # Add stackup layers
-layers = {"materials": {"copper_high_cond": {"conductivity": 60000000}},
-          "layers": {"TOP": {"type": "signal", "thicness": "35um", "material": "copper_high_cond"},
-                     "Substrat": {"type": "dielectric", "thicness": "0.5mm", "material": "Duroid (tm)"},
-                     "GND": {"type": "signal", "thicness": "35um", "material": "copper"},
-                     "Gap": {"type": "dielectric", "thicness": "0.05mm", "material": "Air"},
-                     "Virt_GND": {"type": "signal", "thicness": "35um", "material": "copper"},
-                     }
-          }
+layers = {
+    "materials": {"copper_high_cond": {"conductivity": 60000000}},
+    "layers": {
+        "TOP": {"type": "signal", "thicness": "35um", "material": "copper_high_cond"},
+        "Substrat": {"type": "dielectric", "thicness": "0.5mm", "material": "Duroid (tm)"},
+        "GND": {"type": "signal", "thicness": "35um", "material": "copper"},
+        "Gap": {"type": "dielectric", "thicness": "0.05mm", "material": "Air"},
+        "Virt_GND": {"type": "signal", "thicness": "35um", "material": "copper"},
+    },
+}
 
 edb.stackup.load(layers)
 

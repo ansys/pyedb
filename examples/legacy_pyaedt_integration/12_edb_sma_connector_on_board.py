@@ -49,20 +49,22 @@ edb = pyedb.Edb(edbpath=aedb_path, edbversion=edb_version)
 
 edb.add_design_variable("$DIEL_T", "0.15mm")
 
-layers = {"materials": {"ANSYS_FR4": {"permittivity":3.5, "dielectric_loss_tangent":0.005}},
-         "layers":{"TOP": {"type": "signal", "thickness": "0.05"},
-          "D1": {"type": "dielectric", "thickness":"$DIEL_T", "material":"ANSYS_FR4"},
-          "L2": {"type": "signal", "thickness": "0.05"},
-          "D2": {"type": "dielectric", "thickness": "$DIEL_T", "material": "ANSYS_FR4"},
-          "L3": {"type": "signal", "thickness": "0.05"},
-          "D3": {"type": "dielectric", "thickness": "$DIEL_T", "material": "ANSYS_FR4"},
-          "L4": {"type": "signal", "thickness": "0.05"},
-          "D4": {"type": "dielectric", "thickness": "$DIEL_T", "material": "ANSYS_FR4"},
-          "L5": {"type": "signal", "thickness": "0.05"},
-          "D5": {"type": "dielectric", "thickness": "$DIEL_T", "material": "ANSYS_FR4"},
-          "BOT": {"type": "signal", "thickness": "0.035"},
-          }
-          }
+layers = {
+    "materials": {"ANSYS_FR4": {"permittivity": 3.5, "dielectric_loss_tangent": 0.005}},
+    "layers": {
+        "TOP": {"type": "signal", "thickness": "0.05"},
+        "D1": {"type": "dielectric", "thickness": "$DIEL_T", "material": "ANSYS_FR4"},
+        "L2": {"type": "signal", "thickness": "0.05"},
+        "D2": {"type": "dielectric", "thickness": "$DIEL_T", "material": "ANSYS_FR4"},
+        "L3": {"type": "signal", "thickness": "0.05"},
+        "D3": {"type": "dielectric", "thickness": "$DIEL_T", "material": "ANSYS_FR4"},
+        "L4": {"type": "signal", "thickness": "0.05"},
+        "D4": {"type": "dielectric", "thickness": "$DIEL_T", "material": "ANSYS_FR4"},
+        "L5": {"type": "signal", "thickness": "0.05"},
+        "D5": {"type": "dielectric", "thickness": "$DIEL_T", "material": "ANSYS_FR4"},
+        "BOT": {"type": "signal", "thickness": "0.035"},
+    },
+}
 
 edb.stackup.load(layers)
 

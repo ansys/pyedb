@@ -845,18 +845,18 @@ class Stackup(LayerCollection):
         if material not in materials:
             material_properties = self._pedb.materials.read_syslib_material(material)
             if material_properties:
-                logger.info(f'Material {material} found in syslib. Adding it to aedb project.')
+                logger.info(f"Material {material} found in syslib. Adding it to aedb project.")
                 materials.add_material(material, **material_properties)
             else:
-                logger.warning(f'Material {material} not found. Check the library and retry.')
+                logger.warning(f"Material {material} not found. Check the library and retry.")
 
         if layer_type != "dielectric" and fillMaterial not in materials:
             material_properties = self._pedb.materials.read_syslib_material(fillMaterial)
             if material_properties:
-                logger.info(f'Material {fillMaterial} found in syslib. Adding it to aedb project.')
+                logger.info(f"Material {fillMaterial} found in syslib. Adding it to aedb project.")
                 materials.add_material(fillMaterial, **material_properties)
             else:
-                logger.warning(f'Material {fillMaterial} not found. Check the library and retry.')
+                logger.warning(f"Material {fillMaterial} not found. Check the library and retry.")
 
         if layer_type in ["signal", "dielectric"]:
             new_layer = self._create_stackup_layer(layer_name, thickness, layer_type)
