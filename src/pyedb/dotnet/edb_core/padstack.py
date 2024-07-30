@@ -194,6 +194,21 @@ class EdbPadstacks(object):
                 self._definitions[padstackdef.GetName()] = EDBPadstack(padstackdef, self)
         return self._definitions
 
+    @property
+    def padstacks(self):
+        """Padstacks via padstack definitions.
+
+        .. deprecated:: 0.6.58
+        Use :func:`definitions` property instead.
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.dotnet.edb_core.edb_data.EdbPadstack`]
+            List of definitions via padstack definitions.
+
+        """
+        warnings.warn("Use `definitions` property instead.", DeprecationWarning)
+        return self.definitions
 
     @property
     def instances(self):
@@ -279,6 +294,21 @@ class EdbPadstacks(object):
         vias = {i: j for i, j in self.instances.items() if i not in pnames}
         return vias
 
+    @property
+    def padstack_instances(self):
+        """List of padstack instances.
+
+        .. deprecated:: 0.6.58
+        Use :func:`instances` property instead.
+
+        Returns
+        -------
+        dict[str, :class:`dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
+            List of padstack instances.
+        """
+
+        warnings.warn("Use `instances` property instead.", DeprecationWarning)
+        return self.instances
 
     @property
     def pingroups(self):
@@ -737,6 +767,87 @@ class EdbPadstacks(object):
                     via_list.append(lobj)
         return via_list
 
+    def create_padstack(
+        self,
+        padstackname=None,
+        holediam="300um",
+        paddiam="400um",
+        antipaddiam="600um",
+        startlayer=None,
+        endlayer=None,
+        antipad_shape="Circle",
+        x_size="600um",
+        y_size="600um",
+        corner_radius="300um",
+        offset_x="0.0",
+        offset_y="0.0",
+        rotation="0.0",
+        has_hole=True,
+        pad_offset_x="0.0",
+        pad_offset_y="0.0",
+        pad_rotation="0.0",
+    ):  # pragma: no cover
+        """Create a padstack.
+
+        .. deprecated:: 0.6.62
+        Use :func:`create` method instead.
+
+        Parameters
+        ----------
+        padstackname : str, optional
+            Name of the padstack. The default is ``None``.
+        holediam : str, optional
+            Diameter of the hole with units. The default is ``"300um"``.
+        paddiam : str, optional
+            Diameter of the pad with units. The default is ``"400um"``.
+        antipaddiam : str, optional
+            Diameter of the antipad with units. The default is ``"600um"``.
+        startlayer : str, optional
+            Starting layer. The default is ``None``, in which case the top
+            is the starting layer.
+        endlayer : str, optional
+            Ending layer. The default is ``None``, in which case the bottom
+            is the ending layer.
+        antipad_shape : str, optional
+            Shape of the antipad. The default is ``"Circle"``. Options are ``"Circle"`` and ``"Bullet"``.
+        x_size : str, optional
+            Only applicable to bullet shape. The default is ``"600um"``.
+        y_size : str, optional
+            Only applicable to bullet shape. The default is ``"600um"``.
+        corner_radius :
+            Only applicable to bullet shape. The default is ``"300um"``.
+        offset_x : str, optional
+            X offset of antipad. The default is ``"0.0"``.
+        offset_y : str, optional
+            Y offset of antipad. The default is ``"0.0"``.
+        rotation : str, optional
+            rotation of antipad. The default is ``"0.0"``.
+        has_hole : bool, optional
+            Whether this padstack has a hole.
+
+        Returns
+        -------
+        str
+            Name of the padstack if the operation is successful.
+        """
+        warnings.warn("Use :func:`create` method instead.", DeprecationWarning)
+        return self.create(
+            padstackname=padstackname,
+            holediam=holediam,
+            paddiam=paddiam,
+            antipaddiam=antipaddiam,
+            antipad_shape=antipad_shape,
+            x_size=x_size,
+            y_size=y_size,
+            corner_radius=corner_radius,
+            offset_x=offset_x,
+            offset_y=offset_y,
+            rotation=rotation,
+            has_hole=has_hole,
+            pad_offset_x=pad_offset_x,
+            pad_offset_y=pad_offset_y,
+            pad_rotation=pad_rotation,
+        )
 
     def create(
         self,
@@ -971,6 +1082,27 @@ class EdbPadstacks(object):
         else:
             return False
 
+    def duplicate_padstack(self, target_padstack_name, new_padstack_name=""):
+        """Duplicate a padstack.
+
+        .. deprecated:: 0.6.62
+        Use :func:`duplicate` method instead.
+
+        Parameters
+        ----------
+        target_padstack_name : str
+            Name of the padstack to be duplicated.
+        new_padstack_name : str, optional
+            Name of the new padstack.
+
+        Returns
+        -------
+        str
+            Name of the new padstack.
+        """
+        warnings.warn("Use :func:`create` method instead.", DeprecationWarning)
+        return self.duplicate(target_padstack_name=target_padstack_name, new_padstack_name=new_padstack_name)
+
     def duplicate(self, target_padstack_name, new_padstack_name=""):
         """Duplicate a padstack.
 
@@ -1083,6 +1215,59 @@ class EdbPadstacks(object):
         else:
             return False
 
+    def place_padstack(
+        self,
+        position,
+        definition_name,
+        net_name="",
+        via_name="",
+        rotation=0.0,
+        fromlayer=None,
+        tolayer=None,
+        solderlayer=None,
+        is_pin=False,
+    ):
+        """Place the padstack.
+
+        .. deprecated:: 0.6.62
+        Use :func:`place` method instead.
+
+        Parameters
+        ----------
+        position : list
+            List of float values for the [x,y] positions where the via is to be placed.
+        definition_name : str
+            Name of the padstack definition.
+        net_name : str, optional
+            Name of the net. The default is ``""``.
+        via_name : str, optional
+            The default is ``""``.
+        rotation : float, optional
+            Rotation of the padstack in degrees. The default
+            is ``0``.
+        fromlayer :
+            The default is ``None``.
+        tolayer :
+            The default is ``None``.
+        solderlayer :
+            The default is ``None``.
+
+        Returns
+        -------
+
+        """
+        warnings.warn(" Use :func:`place` method instead.", DeprecationWarning)
+        return self.place(
+            position=position,
+            definition_name=definition_name,
+            net_name=net_name,
+            via_name=via_name,
+            rotation=rotation,
+            fromlayer=fromlayer,
+            tolayer=tolayer,
+            solderlayer=solderlayer,
+            is_pin=is_pin,
+        )
 
     def remove_pads_from_padstack(self, padstack_name, layer_name=None):
         """Remove the Pad from a padstack on a specific layer by setting it as a 0 thickness circle.

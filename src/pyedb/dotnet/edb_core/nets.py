@@ -129,6 +129,35 @@ class EdbNets(object):
         """
         return list(self.nets.keys())
 
+    @property
+    def signal_nets(self):
+        """Signal nets.
+
+        .. deprecated:: 0.6.62
+           Use :func:`signal` instead.
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.dotnet.edb_core.edb_data.EDBNetsData`]
+            Dictionary of signal nets.
+        """
+        warnings.warn("Use :func:`signal` instead.", DeprecationWarning)
+        return self.signal
+
+    @property
+    def power_nets(self):
+        """Power nets.
+
+        .. deprecated:: 0.6.62
+           Use :func:`power` instead.
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.dotnet.edb_core.edb_data.EDBNetsData`]
+            Dictionary of power nets.
+        """
+        warnings.warn("Use :func:`power` instead.", DeprecationWarning)
+        return self.power
 
     @property
     def signal(self):
@@ -974,6 +1003,29 @@ class EdbNets(object):
         if edb_net is not None:
             return edb_net
 
+    def delete_nets(self, netlist):
+        """Delete one or more nets from EDB.
+
+        .. deprecated:: 0.6.62
+           Use :func:`delete` method instead.
+
+        Parameters
+        ----------
+        netlist : str or list
+            One or more nets to delete.
+
+        Returns
+        -------
+        list
+            List of nets that were deleted.
+
+        Examples
+        --------
+
+        >>> deleted_nets = edb_core.nets.delete(["Net1","Net2"])
+        """
+        warnings.warn("Use :func:`delete` method instead.", DeprecationWarning)
+        return self.delete(netlist=netlist)
 
     def delete(self, netlist):
         """Delete one or more nets from EDB.
@@ -1104,6 +1156,40 @@ class EdbNets(object):
                 return True
         return False
 
+    def find_and_fix_disjoint_nets(
+        self, net_list=None, keep_only_main_net=False, clean_disjoints_less_than=0.0, order_by_area=False
+    ):
+        """Find and fix disjoint nets from a given netlist.
+
+        .. deprecated::
+           Use new property :func:`edb.layout_validation.disjoint_nets` instead.
+
+        Parameters
+        ----------
+        net_list : str, list, optional
+            List of nets on which check disjoints. If `None` is provided then the algorithm will loop on all nets.
+        keep_only_main_net : bool, optional
+            Remove all secondary nets other than principal one (the one with more objects in it). Default is `False`.
+        clean_disjoints_less_than : bool, optional
+            Clean all disjoint nets with area less than specified area in square meters. Default is `0.0` to disable it.
+        order_by_area : bool, optional
+            Whether if the naming order has to be by number of objects (fastest) or area (slowest but more accurate).
+            Default is ``False``.
+
+        Returns
+        -------
+        List
+            New nets created.
+
+        Examples
+        --------
+
+        >>> renamed_nets = edb_core.nets.find_and_fix_disjoint_nets(["GND","Net2"])
+        """
+        warnings.warn("Use new function :func:`edb.layout_validation.disjoint_nets` instead.", DeprecationWarning)
+        return self._pedb.layout_validation.disjoint_nets(
+            net_list, keep_only_main_net, clean_disjoints_less_than, order_by_area
+        )
 
     def merge_nets_polygons(self, net_names_list):
         """Convert paths from net into polygons, evaluate all connected polygons and perform the merge.

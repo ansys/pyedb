@@ -595,6 +595,29 @@ class Stackup(LayerCollection):
             self._layer_collection.SetMode(mode.MultiZone)
         self.update_layout()
 
+    @property
+    def stackup_mode(self):
+        """Stackup mode.
+
+        .. deprecated:: 0.6.52
+           Use :func:`mode` method instead.
+
+        Returns
+        -------
+        int, str
+            Type of the stackup mode, where:
+
+            * 0 - Laminate
+            * 1 - Overlapping
+            * 2 - MultiZone
+        """
+        warnings.warn("`stackup_mode` is deprecated. Use `mode` method instead.", DeprecationWarning)
+        return self.mode
+
+    @stackup_mode.setter
+    def stackup_mode(self, value):
+        warnings.warn("`stackup_mode` is deprecated. Use `mode` method instead.", DeprecationWarning)
+        self.mode = value
 
     @property
     def _edb_layer_list(self):
@@ -914,6 +937,34 @@ class Stackup(LayerCollection):
             self._logger.warning("Layer stackup format is not supported. Skipping import.")
             return False
 
+    def export_stackup(self, fpath, file_format="xml", include_material_with_layer=False):
+        """Export stackup definition to a CSV or JSON file.
+
+        .. deprecated:: 0.6.61
+           Use :func:`export` instead.
+
+        Parameters
+        ----------
+        fpath : str
+            File path to CSV or JSON file.
+        file_format : str, optional
+            Format of the file to export. The default is ``"csv"``. Options are ``"csv"``, ``"xlsx"``
+            and ``"json"``.
+        include_material_with_layer : bool, optional.
+            Whether to include the material definition inside layer objects. This parameter is only used
+            when a JSON file is exported. The default is ``False``, which keeps the material definition
+            section in the JSON file. If ``True``, the material definition is included inside the layer ones.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.stackup.export_stackup("stackup.xml")
+        """
+
+        self._logger.warning("Method export_stackup is deprecated. Use .export.")
+        return self.export(fpath, file_format=file_format, include_material_with_layer=include_material_with_layer)
+
     def _export_layer_stackup_to_csv_xlsx(self, fpath=None, file_format=None):
         if not pd:
             self._pedb.logger.error("Pandas is needed. Please, install it first.")
@@ -1028,6 +1079,25 @@ class Stackup(LayerCollection):
                             self.layers[layer["name"]]._load_layer(layer)
             self.refresh_layer_collection()
             return True
+
+    def stackup_limits(self, only_metals=False):
+        """Retrieve stackup limits.
+
+        .. deprecated:: 0.6.62
+           Use :func:`Edb.stackup.limits` function instead.
+
+        Parameters
+        ----------
+        only_metals : bool, optional
+            Whether to retrieve only metals. The default is ``False``.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        warnings.warn("`stackup_limits` is deprecated. Use `limits` property instead.", DeprecationWarning)
+        return self.limits(only_metals=only_metals)
 
     def limits(self, only_metals=False):
         """Retrieve stackup limits.

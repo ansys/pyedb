@@ -695,6 +695,34 @@ class Modeler(object):
         else:
             return cast(polygon, self._pedb)
 
+    def create_polygon_from_points(self, point_list, layer_name, net_name=""):
+        """Create a new polygon from a point list.
+
+        .. deprecated:: 0.6.73
+        Use :func:`create_polygon` method instead. It now supports point lists as arguments.
+
+        Parameters
+        ----------
+        point_list : list
+            Point list in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
+            Each point can be:
+            - [x,y] coordinate
+            - [x,y, height] for an arc with specific height (between previous point and actual point)
+            - [x,y, rotation, xc,yc] for an arc given a point, rotation and center.
+        layer_name : str
+            Name of layer on which create the polygon.
+        net_name : str, optional
+            Name of the net on which create the polygon.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        """
+        warnings.warn(
+            "Use :func:`create_polygon` method instead. It now supports point lists as arguments.", DeprecationWarning
+        )
+        return self.create_polygon(point_list, layer_name, net_name=net_name)
+
     def create_rectangle(
         self,
         layer_name,
