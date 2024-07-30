@@ -4106,6 +4106,7 @@ class Edb(Database):
         open_aedb_at_end=True,
         expand_polygons_size=0,
         expand_voids_size=0,
+        via_offset=True,
     ):
         """Assign automatically design and project variables with current values.
 
@@ -4141,6 +4142,12 @@ class Edb(Database):
             Full path and name for the new AEDB file. If None, then current aedb will be cutout.
         open_aedb_at_end : bool, optional
             Whether to open the cutout at the end. The default is ``True``.
+        expand_polygons_size : float, optional
+            Expansion size on polygons. Polygons will be expanded in all directions. The default is ``0``.
+        expand_voids_size : float, optional
+            Expansion size on polygon voids. Polygons voids will be expanded in all directions. The default is ``0``.
+        via_offset : bool, optional
+            Whether if offset the via position or not. The default is ``True``.
 
         Returns
         -------
@@ -4304,6 +4311,18 @@ class Edb(Database):
                         antipad.parameters = {"XSize": var, "YSize": var2}
                         parameters.append(val)
                         parameters.append(val2)
+
+        if via_offset:
+            var_x = "via_offset_x"
+            if var_x not in self.variables:
+                self.add_design_variable(var_x, 0.0)
+            var_y = "via_offset_y"
+            if var_y not in self.variables:
+                self.add_design_variable(var_y, 0.0)
+            for via in self.padstacks.instances.values():
+                if not via.is_pin and (not trace_net_filter or (trace_net_filter and via.net_name in trace_net_filter)):
+                    via.position = [f"{via.position[0]}+via_offset_x", f"{via.position[1]}+via_offset_y"]
+
         if expand_polygons_size:
             for poly in self.modeler.polygons:
                 if not poly.is_void:
