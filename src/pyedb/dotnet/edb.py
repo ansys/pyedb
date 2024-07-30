@@ -4321,7 +4321,7 @@ class Edb(Database):
                 self.add_design_variable(var_y, 0.0)
             for via in self.padstacks.instances.values():
                 if not via.is_pin and (not trace_net_filter or (trace_net_filter and via.net_name in trace_net_filter)):
-                    via.position = [ f'{via.position[0]}+via_offset_x', f'{via.position[1]}+via_offset_y']
+                    via.position = [f"{via.position[0]}+via_offset_x", f"{via.position[1]}+via_offset_y"]
 
         if expand_polygons_size:
             for poly in self.modeler.polygons:
