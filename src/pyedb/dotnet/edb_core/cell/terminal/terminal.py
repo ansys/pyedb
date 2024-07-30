@@ -418,7 +418,7 @@ class Terminal(Connectable):
         if gnd_net is not None:
             power_ground_net_names = [gnd_net]
         else:
-            power_ground_net_names = [net for net in self._pedb.nets.power_nets.keys()]
+            power_ground_net_names = [net for net in self._pedb.nets.power.keys()]
         comp_ref_pins = [i for i in pin_list if i.GetNet().GetName() in power_ground_net_names]
         if len(comp_ref_pins) == 0:  # pragma: no cover
             self._pedb.logger.error(

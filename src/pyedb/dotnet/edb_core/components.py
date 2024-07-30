@@ -133,7 +133,7 @@ class Components(object):
         return self._pedb.edb_api
 
     def _init_parts(self):
-        a = self.components
+        a = self.instances
         a = self.resistors
         a = self.ICs
         a = self.Others
@@ -202,7 +202,7 @@ class Components(object):
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.components
+        >>> edbapp.components.instances
 
         """
         if not self._cmp:
@@ -2257,7 +2257,7 @@ class Components(object):
                         self.set_component_rlc(new_refdes, ind_value=new_value)
                         unmount_comp_list.remove(new_refdes)
             for comp in unmount_comp_list:
-                self.components[comp].is_enabled = False
+                self.instances[comp].is_enabled = False
         return found
 
     def import_bom(
@@ -2302,7 +2302,7 @@ class Components(object):
                 l = l.split(delimiter)
 
                 refdes = l[refdes_col]
-                comp = self.components[refdes]
+                comp = self.instances[refdes]
                 if not part_name_col == None:
                     part_name = l[part_name_col]
                     if comp.partname == part_name:
@@ -2324,7 +2324,7 @@ class Components(object):
 
                         self.create(pinlist, refdes, p_layer, part_name)
                         self.refresh_components()
-                        comp = self.components[refdes]
+                        comp = self.instances[refdes]
 
                 comp_type = l[comp_type_col]
                 if comp_type.capitalize() in ["Resistor", "Capacitor", "Inductor", "Other"]:
@@ -2347,7 +2347,7 @@ class Components(object):
                         elif comp_type == "Inductor":
                             self.set_component_rlc(refdes, ind_value=value)
             for comp in unmount_comp_list:
-                self.components[comp].is_enabled = False
+                self.instances[comp].is_enabled = False
         return True
 
     def export_bom(self, bom_file, delimiter=","):
@@ -2708,7 +2708,7 @@ class Components(object):
         >>> edbapp.components.short_component_pins("J4A2", ["G4", "9", "3"])
 
         """
-        component = self.components[component_name]
+        component = self.instances[component_name]
         pins = component.pins
         pins_list = []
 

@@ -155,7 +155,7 @@ class CfgComponents:
     def _load_data_from_db(self):
         self.components = []
         comps_in_db = self._pedb.components
-        for _, comp in comps_in_db.components.items():
+        for _, comp in comps_in_db.instances.items():
             cfg_comp = CfgComponent(
                 enabled=comp.enabled,
                 reference_designator=comp.name,

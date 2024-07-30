@@ -726,9 +726,7 @@ class EDBPadstack(object):
         -------
         dict
         """
-        return {
-            id: via for id, via in self._ppadstack.padstack_instances.items() if via.padstack_definition == self.name
-        }
+        return {id: via for id, via in self._ppadstack.instances.items() if via.padstack_definition == self.name}
 
     @property
     def hole_range(self):
@@ -801,7 +799,7 @@ class EDBPadstack(object):
         layer_names = [i for i in list(layers.keys())]
         if convert_only_signal_vias:
             signal_nets = [i for i in list(self._ppadstack._pedb.nets.signal_nets.keys())]
-        topl, topz, bottoml, bottomz = self._ppadstack._pedb.stackup.stackup_limits(True)
+        topl, topz, bottoml, bottomz = self._ppadstack._pedb.stackup.limits(True)
         if self.via_start_layer in layers:
             start_elevation = layers[self.via_start_layer].lower_elevation
         else:
@@ -1770,16 +1768,6 @@ class EDBPadstackInstance(Primitive):
         self._pedb.add_project_variable(var_name + "Y", p[1])
         self.position = [var_name + "X", var_name + "Y"]
         return [var_name + "X", var_name + "Y"]
-
-    def delete_padstack_instance(self):
-        """Delete this padstack instance.
-
-        .. deprecated:: 0.6.28
-           Use :func:`delete` property instead.
-        """
-        warnings.warn("`delete_padstack_instance` is deprecated. Use `delete` instead.", DeprecationWarning)
-        self._edb_padstackinstance.Delete()
-        return True
 
     def in_voids(self, net_name=None, layer_name=None):
         """Check if this padstack instance is in any void.

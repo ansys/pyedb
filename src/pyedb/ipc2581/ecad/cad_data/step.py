@@ -252,7 +252,7 @@ class Step(object):
                     padstack_def = padstack_defs[pdef_name]
                     comp_name = padstack_instance.GetComponent().GetName()
                     if padstack_instance.is_pin and comp_name:
-                        component_inst = self._pedb.components.components[comp_name]
+                        component_inst = self._pedb.components.instances[comp_name]
                         layers[layer_name].add_component_padstack_instance_feature(
                             component_inst, padstack_instance, top_bottom_layers, padstack_def
                         )

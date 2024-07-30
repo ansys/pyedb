@@ -35,7 +35,7 @@ class Configuration:
 
     def __init__(self, pedb):
         self._pedb = pedb
-        self._components = self._pedb.components.components
+        self._components = self._pedb.components.instances
         self.data = {}
         self._s_parameter_library = ""
         self._spice_model_library = ""
@@ -210,7 +210,7 @@ class Configuration:
 
     def _load_package_def(self):
         """Imports package definition information from JSON."""
-        comps = self._pedb.components.components
+        comps = self._pedb.components.instances
         for pkgd in self.data["package_definitions"]:
             name = pkgd["name"]
             if name in self._pedb.definitions.package:
