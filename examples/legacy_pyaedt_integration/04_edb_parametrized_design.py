@@ -65,29 +65,20 @@ for par_name in params:
 
 # Define the stackup layers from bottom to top.
 
-layers = [
-    {"name": "bottom", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-    {"name": "diel_3", "layer_type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
-    {"name": "sig_2", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-    {"name": "diel_2", "layer_type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
-    {"name": "sig_1", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-    {"name": "diel_1", "layer_type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
-    {"name": "top", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-]
-
+layers = {
+    "top": {"type": "signal", "thickness": "35um", "material": "copper"},
+    "diel_1": {"type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
+    "sig_1": {"type": "signal", "thickness": "35um", "material": "copper"},
+    "diel_2": {"type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
+    "sig_2": {"type": "signal", "thickness": "35um", "material": "copper"},
+    "diel_3": {"type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
+    "bottom": {"type": "signal", "thickness": "35um", "material": "copper"},
+}
+layer_names = list(layers.keys())[::-1]
 # Create the EDB stackup.
 # Define the bottom layer
+edb.stackup.load(layers)
 
-prev = None
-for layer in layers:
-    edb.stackup.add_layer(
-        layer["name"],
-        base_layer=prev,
-        layer_type=layer["layer_type"],
-        thickness=layer["thickness"],
-        material=layer["material"],
-    )
-    prev = layer["name"]
 
 # Create a parametrized padstack for the signal via.
 
@@ -101,8 +92,8 @@ edb.padstacks.create(
     x_size="$x_size",
     y_size="$y_size",
     corner_radius="$corner_rad",
-    start_layer=layers[-1]["name"],
-    stop_layer=layers[-3]["name"],
+    start_layer=layer_names[-1],
+    stop_layer=layer_names[-3],
 )
 
 # Assign net names. There are only two signal nets.
@@ -153,7 +144,7 @@ edb.padstacks.place(
 # Trace width, n and p
 width = ["$ms_width", "$sl_width", "$ms_width"]
 # Routing layer, n and p
-route_layer = [layers[-1]["name"], layers[4]["name"], layers[-1]["name"]]
+route_layer = [layer_names[-1], layer_names[4], layer_names[-1]]
 
 # Define points for three traces in the "p" net
 
@@ -230,7 +221,7 @@ edb.hfss.create_differential_wave_port(
     "wave_port_2",
 )
 
-# Draw a conducting rectangle on the the ground layers.
+# Draw a conducting rectangle on the ground layers.
 
 gnd_poly = [
     [0.0, "-$pcb_w/2"],
@@ -277,11 +268,11 @@ void_shape = edb.modeler.Shape("polygon", points=void_poly)
 # Add ground conductors.
 
 # +
-for layer in layers[:-1:2]:
+for layer in layer_names[:-1:2]:
     # add void if the layer is the signal routing layer.
-    void = [void_shape] if layer["name"] == route_layer[1] else []
+    void = [void_shape] if layer == route_layer[1] else []
 
-    edb.modeler.create_polygon(main_shape=gnd_shape, layer_name=layer["name"], voids=void, net_name="gnd")
+    edb.modeler.create_polygon(main_shape=gnd_shape, layer_name=layer, voids=void, net_name="gnd")
 # -
 
 # Plot the layout.
