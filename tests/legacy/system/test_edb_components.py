@@ -583,3 +583,14 @@ class TestClass:
         assert edbapp.components.create_pingroup_from_pins([*edbapp.components.instances["Q1"].pins.values()])
         assert edbapp.components._create_pin_group_terminal(edbapp.padstacks.pingroups[0], term_type="circuit")
         edbapp.close()
+
+    def test_component_lib(self):
+        edbapp = Edb()
+        comp_lib = edbapp.components.get_vendor_libraries()
+        assert len(comp_lib.capacitors) == 13
+        assert len(comp_lib.inductors) == 7
+        network = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].s_parameters
+        assert network
+        assert network.frequency.npoints == 400
+        network.write_touchstone(os.path.join(edbapp.directory, "test_export.s2p"))
+        assert os.path.isfile(os.path.join(edbapp.directory, "test_export.s2p"))

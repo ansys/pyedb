@@ -430,12 +430,21 @@ class TestClass:
 
     def test_via_fence(self):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "via_fence_generic_project.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        target_path1 = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence1.aedb")
+        target_path2 = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence2.aedb")
+        self.local_scratch.copyfolder(source_path, target_path1)
+        self.local_scratch.copyfolder(source_path, target_path2)
+        edbapp = Edb(target_path1, edbversion=desktop_version)
         assert edbapp.padstacks.merge_via_along_lines(net_name="GND", distance_threshold=2e-3, minimum_via_number=6)
         assert not edbapp.padstacks.merge_via_along_lines(
             net_name="test_dummy", distance_threshold=2e-3, minimum_via_number=6
+        )
+        assert "main_via" in edbapp.padstacks.definitions
+        assert "via_central" in edbapp.padstacks.definitions
+        edbapp.close()
+        edbapp = Edb(target_path2, edbversion=desktop_version)
+        assert edbapp.padstacks.merge_via_along_lines(
+            net_name="GND", distance_threshold=2e-3, minimum_via_number=6, selected_angles=[0, 180]
         )
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions

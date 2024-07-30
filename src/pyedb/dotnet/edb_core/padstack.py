@@ -1394,7 +1394,9 @@ class EdbPadstacks(object):
             bounding_box = tuple(bounding_box)
         return list(index.intersection(bounding_box))
 
-    def merge_via_along_lines(self, net_name="GND", distance_threshold=5e-3, minimum_via_number=6):
+    def merge_via_along_lines(
+        self, net_name="GND", distance_threshold=5e-3, minimum_via_number=6, selected_angles=None
+    ):
         """Replace padstack instances along lines into a single polygon.
 
         Detect all padstack instances that are placed along lines and replace them by a single polygon based one
@@ -1412,6 +1414,11 @@ class EdbPadstacks(object):
 
         minimum_via_number : int, optional
             The minimum number of points that a line must contain. Default is ``6``.
+
+        selected_angles : list[int, float]
+            Specify angle in degrees to detected, for instance [0, 180] is only detecting horizontal and vertical lines.
+            Other values can be assigned like 45 degrees. When `None` is provided all lines are detected. Default value
+            is `None`.
 
         Returns
         -------
@@ -1437,6 +1444,7 @@ class EdbPadstacks(object):
                 points=instances_location,
                 minimum_number_of_points=minimum_via_number,
                 distance_threshold=distance_threshold,
+                selected_angles=selected_angles,
             )
             for line in line_indexes:
                 [_instances_to_delete.append(pdstk_series[ind]) for ind in line]
