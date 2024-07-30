@@ -843,18 +843,20 @@ class Stackup(LayerCollection):
 
         materials = self._pedb.materials
         if material not in materials:
-            logger.warning(
-                f"Material '{material}' does not exist in material library. Intempt to create it from syslib."
-            )
             material_properties = self._pedb.materials.read_syslib_material(material)
-            materials.add_material(material, **material_properties)
+            if material_properties:
+                logger.info(f'Material {material} found in syslib. Adding it to aedb project.')
+                materials.add_material(material, **material_properties)
+            else:
+                logger.warning(f'Material {material} not found. Check the library and retry.')
 
         if layer_type != "dielectric" and fillMaterial not in materials:
-            logger.warning(
-                f"Material '{fillMaterial}' does not exist in material library. Intempt to create it from syslib."
-            )
             material_properties = self._pedb.materials.read_syslib_material(fillMaterial)
-            materials.add_material(fillMaterial, **material_properties)
+            if material_properties:
+                logger.info(f'Material {fillMaterial} found in syslib. Adding it to aedb project.')
+                materials.add_material(fillMaterial, **material_properties)
+            else:
+                logger.warning(f'Material {fillMaterial} not found. Check the library and retry.')
 
         if layer_type in ["signal", "dielectric"]:
             new_layer = self._create_stackup_layer(layer_name, thickness, layer_type)
@@ -1816,21 +1818,22 @@ class Stackup(LayerCollection):
     def _import_dict(self, json_dict, rename=False):
         """Import stackup from a dictionary."""
         if not "materials" in json_dict:
-            self._logger.warning("Configuration file does not have material definition")
-            self._logger.warning(
-                "Please check your json or xml file, if no material are defined your project will"
-                "likely fail to simulate"
-            )
+            self._logger.info("Configuration file does not have material definition. Using aedb and syslib materials.")
         else:
             mats = json_dict["materials"]
-            for material in mats.values():
-                material_name = material["name"]
-                del material["name"]
+            for name, material in mats.items():
+                try:
+                    material_name = material["name"]
+                    del material["name"]
+                except KeyError:
+                    material_name = name
                 if material_name not in self._pedb.materials:
                     self._pedb.materials.add_material(material_name, **material)
                 else:
                     self._pedb.materials.update_material(material_name, material)
-        temp = {i: j for i, j in json_dict["layers"].items() if j["type"] in ["signal", "dielectric"]}
+        temp = json_dict
+        if "layers" in json_dict:
+            temp = {i: j for i, j in json_dict["layers"].items() if j["type"] in ["signal", "dielectric"]}
         config_file_layers = list(temp.keys())
         layout_layers = list(self.stackup_layers.keys())
         renamed_layers = {}
@@ -2354,12 +2357,12 @@ class Stackup(LayerCollection):
 
         Parameters
         ----------
-        file_path : str
-            Path to stackup file.
+        file_path : str, dict
+            Path to stackup file or dict with stackup details.
         rename : bool
             If rename is ``False`` then layer in layout not found in the stackup file are deleted.
             Otherwise, if the number of layer in the stackup file equals the number of stackup layer
-            in the layout, layers are renamed according the the file.
+            in the layout, layers are renamed according the file.
             Note that layer order matters, and has to be writtent from top to bottom layer in the file.
 
         Returns

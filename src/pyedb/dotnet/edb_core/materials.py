@@ -1035,7 +1035,7 @@ class Materials(object):
         amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")
         for material in self.iterate_materials_in_amat(amat_file):
             iter_material_name = material["name"]
-            if iter_material_name == material_name:
+            if iter_material_name == material_name or iter_material_name.lower() == material_name.lower():
                 for material_property, value in material.items():
                     if material_property != "name":
                         res[material_property] = value

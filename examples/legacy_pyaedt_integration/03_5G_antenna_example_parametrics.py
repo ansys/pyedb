@@ -96,14 +96,18 @@ edb = pyedb.Edb(edbpath=aedb_path, edbversion=edb_version)
 # -
 
 # Add stackup layers
+layers = {"materials": {"copper_high_cond": {"conductivity": 60000000}},
+          "layers": {"TOP": {"type": "signal", "thicness": "35um", "material": "copper_high_cond"},
+                     "Substrat": {"type": "dielectric", "thicness": "0.5mm", "material": "Duroid (tm)"},
+                     "GND": {"type": "signal", "thicness": "35um", "material": "copper"},
+                     "Gap": {"type": "dielectric", "thicness": "0.05mm", "material": "Air"},
+                     "Virt_GND": {"type": "signal", "thicness": "35um", "material": "copper"},
+                     }
+          }
 
-edb.stackup.add_layer("Virt_GND")
-edb.stackup.add_layer("Gap", "Virt_GND", layer_type="dielectric", thickness="0.05mm", material="Air")
-edb.stackup.add_layer("GND", "Gap")
-edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.5mm", material="Duroid (tm)")
-edb.stackup.add_layer("TOP", "Substrat")
+edb.stackup.load(layers)
 
-# Create the the first patch and feed line using the ``Patch``, ``Line``classes defined above.
+# Create the first patch and feed line using the ``Patch``, ``Line``classes defined above.
 #
 # Define parameters:
 

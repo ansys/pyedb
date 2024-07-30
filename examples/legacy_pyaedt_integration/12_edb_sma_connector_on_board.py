@@ -40,28 +40,32 @@ print("AEDB file is located in {}".format(aedb_path))
 edb = pyedb.Edb(edbpath=aedb_path, edbversion=edb_version)
 # -
 
-# Add the FR4 dielectric for the PCB.
-
-edb.materials.add_dielectric_material("ANSYS_FR4", 3.5, 0.005)
 
 # ## Create Stackup
 #
 # While this code explicitly defines the stackup, you can import it
 # from a from a CSV or XML file using the
-# ``Edb.stackup.import_stackup()`` method.
+# ``Edb.stackup.load()`` method.
 
 edb.add_design_variable("$DIEL_T", "0.15mm")
-edb.stackup.add_layer("BOT")
-edb.stackup.add_layer("D5", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4")
-edb.stackup.add_layer("L5", "Diel", thickness="0.05mm")
-edb.stackup.add_layer("D4", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4")
-edb.stackup.add_layer("L4", "Diel", thickness="0.05mm")
-edb.stackup.add_layer("D3", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4")
-edb.stackup.add_layer("L3", "Diel", thickness="0.05mm")
-edb.stackup.add_layer("D2", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4")
-edb.stackup.add_layer("L2", "Diel", thickness="0.05mm")
-edb.stackup.add_layer("D1", "GND", layer_type="dielectric", thickness="$DIEL_T", material="ANSYS_FR4")
-edb.stackup.add_layer("TOP", "Diel", thickness="0.05mm")
+
+layers = {"materials": {"ANSYS_FR4": {"permittivity":3.5, "dielectric_loss_tangent":0.005}},
+         "layers":{"TOP": {"type": "signal", "thickness": "0.05"},
+          "D1": {"type": "dielectric", "thickness":"$DIEL_T", "material":"ANSYS_FR4"},
+          "L2": {"type": "signal", "thickness": "0.05"},
+          "D2": {"type": "dielectric", "thickness": "$DIEL_T", "material": "ANSYS_FR4"},
+          "L3": {"type": "signal", "thickness": "0.05"},
+          "D3": {"type": "dielectric", "thickness": "$DIEL_T", "material": "ANSYS_FR4"},
+          "L4": {"type": "signal", "thickness": "0.05"},
+          "D4": {"type": "dielectric", "thickness": "$DIEL_T", "material": "ANSYS_FR4"},
+          "L5": {"type": "signal", "thickness": "0.05"},
+          "D5": {"type": "dielectric", "thickness": "$DIEL_T", "material": "ANSYS_FR4"},
+          "BOT": {"type": "signal", "thickness": "0.035"},
+          }
+          }
+
+edb.stackup.load(layers)
+
 
 # Create ground conductors.
 

@@ -65,29 +65,19 @@ for par_name in params:
 
 # Define the stackup layers from bottom to top.
 
-layers = [
-    {"name": "bottom", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-    {"name": "diel_3", "layer_type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
-    {"name": "sig_2", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-    {"name": "diel_2", "layer_type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
-    {"name": "sig_1", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-    {"name": "diel_1", "layer_type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
-    {"name": "top", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-]
-
+layers = {
+    "top": {"type": "signal", "thickness": "35um", "material": "copper"},
+    "diel_1": {"type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
+    "sig_1": {"type": "signal", "thickness": "35um", "material": "copper"},
+    "diel_2": {"type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
+    "sig_2": {"type": "signal", "thickness": "35um", "material": "copper"},
+    "diel_3": {"type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
+    "bottom": {"type": "signal", "thickness": "35um", "material": "copper"},
+}
 # Create the EDB stackup.
 # Define the bottom layer
+edb.stackup.load(layers)
 
-prev = None
-for layer in layers:
-    edb.stackup.add_layer(
-        layer["name"],
-        base_layer=prev,
-        layer_type=layer["layer_type"],
-        thickness=layer["thickness"],
-        material=layer["material"],
-    )
-    prev = layer["name"]
 
 # Create a parametrized padstack for the signal via.
 
