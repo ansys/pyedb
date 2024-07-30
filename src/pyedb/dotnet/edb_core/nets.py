@@ -521,7 +521,7 @@ class EdbNets(object):
         bottom_layer = list(self._pedb.stackup.signal_layers.keys())[-1]
         if plot_components_on_top or plot_components_on_bottom:
             nc = 0
-            for comp in self._pedb.components.components.values():
+            for comp in self._pedb.components.instances.values():
                 if not comp.is_enabled:
                     continue
                 net_names = comp.nets
@@ -1149,9 +1149,9 @@ class EdbNets(object):
             ``True`` if the net is found in component pins.
 
         """
-        if component_name not in self._pedb.components.components:
+        if component_name not in self._pedb.components.instances:
             return False
-        for net in self._pedb.components.components[component_name].nets:
+        for net in self._pedb.components.instances[component_name].nets:
             if net_name == net:
                 return True
         return False

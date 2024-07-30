@@ -108,7 +108,7 @@ class EdbPadstacks(object):
     @property
     def _layers(self):
         """ """
-        return self._pedb.stackup.stackup_layers
+        return self._pedb.stackup.layers
 
     def int_to_pad_type(self, val=0):
         """Convert an integer to an EDB.PadGeometryType.
@@ -592,13 +592,13 @@ class EdbPadstacks(object):
         """
         pinlist = []
         if refdes:
-            if refdes in self._pedb.components.components:
+            if refdes in self._pedb.components.instances:
                 if netname:
-                    for pin, val in self._pedb.components.components[refdes].pins.items():
+                    for pin, val in self._pedb.components.instances[refdes].pins.items():
                         if val.net_name == netname:
                             pinlist.append(val)
                 else:
-                    for pin in self._pedb.components.components[refdes].pins.values():
+                    for pin in self._pedb.components.instances[refdes].pins.values():
                         pinlist.append(pin)
             elif netname:
                 for pin in self._pedb.pins:

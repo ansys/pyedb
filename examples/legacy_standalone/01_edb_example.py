@@ -37,13 +37,13 @@ edb = pyedb.Edb(edbpath=targetfile, edbversion=edb_version)
 
 # ## Identify nets and components
 #
-# The ``Edb.nets.netlist`` and ``Edb.components.components`` properties contain information
+# The ``Edb.nets.netlist`` and ``Edb.components.instances`` properties contain information
 # about all of the nets and components. The following cell uses this information to print the
 # number of nets and components.
 
 print("Nets {}".format(len(edb.nets.netlist)))
 start = time.time()
-print("Components {}".format(len(edb.components.components.keys())))
+print("Components {}".format(len(edb.components.instances.keys())))
 print("elapsed time = ", time.time() - start)
 
 # ## Identify pin positions

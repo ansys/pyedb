@@ -170,7 +170,7 @@ class TestClass:
         edbapp.auto_parametrize_design(
             layers=True, materials=False, via_holes=False, pads=False, antipads=False, traces=False
         )
-        assert len(list(edbapp.variables.keys())) == len(list(edbapp.stackup.stackup_layers.keys()))
+        assert len(list(edbapp.variables.keys())) == len(list(edbapp.stackup.layers.keys()))
         edbapp.auto_parametrize_design(
             layers=False,
             materials=True,

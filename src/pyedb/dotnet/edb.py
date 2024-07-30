@@ -2396,7 +2396,7 @@ class Edb(Database):
         self.logger.reset_timer()
 
         i = 0
-        for _, val in self.components.components.items():
+        for _, val in self.components.instances.items():
             if val.numpins == 0:
                 val.edbcomponent.Delete()
                 i += 1
@@ -2579,28 +2579,6 @@ class Edb(Database):
             return value
         else:
             return "{0}{1}".format(value, units)
-
-    def arg_with_dim(self, Value, sUnits):
-        """Convert a number to a string with units. If value is a string, it's returned as is.
-
-        .. deprecated:: 0.6.56
-           Use :func:`number_with_units` property instead.
-
-        Parameters
-        ----------
-        Value : float, int, str
-            Input  number or string.
-        sUnits : optional
-            Units for formatting. The default is ``None``, which uses ``"meter"``.
-
-        Returns
-        -------
-        str
-           String concatenating the value and unit.
-
-        """
-        warnings.warn("Use :func:`number_with_units` instead.", DeprecationWarning)
-        return self.number_with_units(Value, sUnits)
 
     def _decompose_variable_value(self, value, unit_system=None):
         val, units = decompose_variable_value(value)
