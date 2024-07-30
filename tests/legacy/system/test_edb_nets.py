@@ -181,7 +181,7 @@ class TestClass:
             material_filter=["copper"],
             expand_voids_size=0.0001,
             expand_polygons_size=0.0001,
-            via_offset=True
+            via_offset=True,
         )
         assert "via_offset_x" in edbapp.variables
         assert "$sigma_copper_delta" in edbapp.variables
