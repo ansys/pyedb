@@ -9,11 +9,14 @@ automatically initialized by an app to the latest installed AEDT version.
 from __future__ import absolute_import  # noreorder
 
 import os
+from pathlib import Path
 import pkgutil
 import sys
+import tempfile
 import time
 import warnings
 
+from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
 from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import _pythonver, is_windows
@@ -28,9 +31,33 @@ def wait_export_file(flag, file_path, time_sleep=0.5):
         else:
             time.sleep(1)
         os.path.getsize(file_path)
+
     while True:
         file_size = os.path.getsize(file_path)
         if file_size > 0:
+            break
+        else:
+            time.sleep(time_sleep)
+    return True
+
+
+def wait_export_folder(flag, folder_path, time_sleep=0.5):
+    while True:
+        if os.path.isdir(folder_path):
+            break
+        else:
+            time.sleep(1)
+        os.path.getsize(folder_path)
+
+    while True:
+        total_size = 0
+        for dirpath, dirnames, filenames in os.walk(folder_path):
+            for filename in filenames:
+                file_path = os.path.join(dirpath, filename)
+                if os.path.isfile(file_path):
+                    total_size += os.path.getsize(file_path)
+
+        if total_size > 0:
             break
         else:
             time.sleep(time_sleep)
@@ -425,3 +452,68 @@ class Siwave(object):  # pragma no cover
 
         """
         return self.oproject.ScrRunIcepakSimulation(icepak_simulation_name, dc_simulation_name)
+
+    def export_edb(self, file_path: str):
+        """Export the layout as EDB.
+
+        Parameters
+        ----------
+        file_path : str
+            Path to the EDB.
+
+        Returns
+        -------
+        bool
+        """
+        if isinstance(file_path, Path):
+            file_path = str(file_path)
+        flag = self.oproject.ScrExportEDB(file_path)
+        if flag == 0:
+            self._logger.info(f"Exporting EDB to {file_path}.")
+            return wait_export_folder(flag, file_path, time_sleep=1)
+        else:  # pragma no cover
+            raise f"Failed to export EDB to {file_path}."
+
+    def import_edb(self, file_path: str):
+        """Import layout from EDB.
+
+        Parameters
+        ----------
+        file_path : Str
+            Path to the EDB file.
+        Returns
+        -------
+        bool
+        """
+        if isinstance(file_path, Path):
+            file_path = str(file_path)
+        flag = self.oproject.ScrImportEDB(file_path)
+        if flag == 0:
+            self._logger.info(f"Importing EDB to {file_path}.")
+            return True
+        else:  # pragma no cover
+            raise f"Failed to export EDB to {file_path}."
+
+    def load_configuration(self, file_path: str):
+        """Import configuration settings from a configure file.Import
+
+        Parameters
+        ----------
+        file_path : str
+            Path to the configuration file.
+        """
+        if isinstance(file_path, Path):
+            file_path = str(file_path)
+
+        temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
+        temp_edb = os.path.join(temp_folder.name, "temp.aedb")
+
+        self.export_edb(temp_edb)
+        self.save_project()
+        self.oproject.ScrCloseProject()
+        edbapp = Edb(temp_edb, edbversion=self.current_version)
+        edbapp.configuration.load(file_path)
+        edbapp.configuration.run()
+        edbapp.save()
+        edbapp.close()
+        self.import_edb(temp_edb)
