@@ -2,19 +2,42 @@ Use configuration
 ~~~~~~~~~~~~~~~~~
 The following examples illustrate the use of configuration files in PyEDB.
 
-Examples
---------
+End-to-end workflow
+-------------------
 
 .. nbgallery::
 
-    set_up_edb_for_signal_integrity_analysis.py
+    .. figure:: _static/101_getting_started.png
+       :alt: Signal Integrity
+       :figclass: align-center
 
-User Guide
-----------
+        set_up_edb_for_signal_integrity_analysis.py
+
+Step explanation
+-------------------------
 
 .. nbgallery::
 
-    import_stackup.py
-    import_material.py
-    import_ports.py
-    import_setup_ac.py
+    .. figure:: _static/101_getting_started.png
+       :alt: Import Stackup
+       :figclass: align-center
+
+        import_stackup.py
+
+    .. figure:: _static/101_getting_started.png
+       :alt: Import Material
+       :figclass: align-center
+
+        import_material.py
+
+    .. figure:: _static/101_getting_started.png
+       :alt: Import ports
+       :figclass: align-center
+
+        import_ports.py
+
+    .. figure:: _static/101_getting_started.png
+       :alt: Import AC setup
+       :figclass: align-center
+
+        import_setup_ac.py
