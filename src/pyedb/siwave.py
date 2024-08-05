@@ -495,7 +495,7 @@ class Siwave(object):  # pragma no cover
             raise f"Failed to export EDB to {file_path}."
 
     def load_configuration(self, file_path: str):
-        """Import configuration settings from a configure file.Import
+        """Load configuration settings from a configure file.Import
 
         Parameters
         ----------
@@ -517,3 +517,24 @@ class Siwave(object):  # pragma no cover
         edbapp.save()
         edbapp.close()
         self.import_edb(temp_edb)
+
+    def export_configuration(self, file_path: str):
+        """Export layout information into a configuration file.
+
+        Parameters
+        ----------
+        file_path : str
+            Path to the configuration file.
+        """
+        if isinstance(file_path, Path):
+            file_path = str(file_path)
+        if isinstance(file_path, Path):
+            file_path = str(file_path)
+
+        temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
+        temp_edb = os.path.join(temp_folder.name, "temp.aedb")
+
+        self.export_edb(temp_edb)
+        edbapp = Edb(temp_edb, edbversion=self.current_version)
+        edbapp.configuration.export(file_path)
+        edbapp.close()

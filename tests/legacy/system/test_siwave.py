@@ -79,4 +79,6 @@ class TestClass:
         siw = Siwave(desktop_version)
         siw.import_edb(edbapp)
         siw.load_configuration(cfg_json)
+        cfg_json_2 = os.path.join(edb_examples.test_folder, "cfg2.json")
+        siw.export_configuration(cfg_json_2)
         siw.quit_application()
