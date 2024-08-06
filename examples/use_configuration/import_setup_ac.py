@@ -16,7 +16,7 @@ from pyaedt.downloads import download_file
 
 from pyedb import Edb
 
-AEDT_VERSION = "2024.1"
+AEDT_VERSION = "2024.2"
 NG_MODE = False
 
 # -
