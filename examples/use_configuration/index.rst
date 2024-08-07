@@ -7,7 +7,7 @@ End-to-end workflow
 
 .. nbgallery::
 
-    .. figure:: _static/101_getting_started.png
+    .. figure:: _static/thumbnails/101_getting_started.png
        :alt: Signal Integrity
        :figclass: align-center
 
@@ -18,25 +18,25 @@ Step explanation
 
 .. nbgallery::
 
-    .. figure:: _static/101_getting_started.png
+    .. figure:: _static/thumbnails/101_getting_started.png
        :alt: Import Stackup
        :figclass: align-center
 
         import_stackup.py
 
-    .. figure:: _static/101_getting_started.png
+    .. figure:: _static/thumbnails/101_getting_started.png
        :alt: Import Material
        :figclass: align-center
 
         import_material.py
 
-    .. figure:: _static/101_getting_started.png
+    .. figure:: _static/thumbnails/101_getting_started.png
        :alt: Import ports
        :figclass: align-center
 
         import_ports.py
 
-    .. figure:: _static/101_getting_started.png
+    .. figure:: _static/thumbnails/101_getting_started.png
        :alt: Import AC setup
        :figclass: align-center
 
