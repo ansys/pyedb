@@ -480,7 +480,7 @@ class Siwave(object):  # pragma no cover
             self._logger.info(f"Importing EDB to {file_path}.")
             return True
         else:  # pragma no cover
-            raise f"Failed to export EDB to {file_path}."
+            raise RuntimeError(f"Failed to import EDB to {file_path}.")
 
     def load_configuration(self, file_path: str):
         """Load configuration settings from a configure file.Import
