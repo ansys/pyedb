@@ -876,3 +876,17 @@ class TestClass:
             assert len(data["nets"]["signal_nets"]) == 342
             assert len(data["nets"]["power_ground_nets"]) == 6
         edbapp.close()
+
+    def test_16b_export_cutout(self,edb_examples):
+        data = {
+            "operations": {
+                "cutout": {
+                    "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
+                    "reference_list": ["GND"],
+                }
+            }
+        }
+        edbapp = edb_examples.get_si_verse()
+        edbapp.configuration.load(data, apply_file=True)
+        data = edbapp.configuration.get_data_from_db(operations=True)
+        edbapp.close()

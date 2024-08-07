@@ -280,6 +280,8 @@ class Configuration:
             data["nets"] = self.cfg_data.nets.get_data_from_db()
         if kwargs.get("pin_groups", False):
             data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
+        if kwargs.get("operations", False):
+            data["operations"] = self.cfg_data.operations.get_data_from_db()
 
         return data
 
