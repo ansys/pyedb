@@ -58,16 +58,4 @@ class CfgOperations(CfgBase):
     def apply(self):
         """Imports operation information from JSON."""
         if self.op_cutout:
-            cutout_polygon = self._pedb.cutout(**self.op_cutout.get_attributes())
-            if "pyedb_cutout" not in self._pedb.stackup.all_layers:
-                self._pedb.stackup.add_document_layer(name="pyedb_cutout")
-            else:
-                prims = self._pedb.modeler.get_primitives(layer_name="pyedb_cutout")
-                for i in prims:
-                    i.delete()
-            self._pedb.modeler.create_polygon_from_points(point_list=cutout_polygon, layer_name="pyedb_cutout")
-
-    def get_data_from_db(self):
-        prim = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")[0]
-        prim[0]
-        return prim
+            self._pedb.cutout(**self.op_cutout.get_attributes())
