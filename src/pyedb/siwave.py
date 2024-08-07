@@ -516,8 +516,6 @@ class Siwave(object):  # pragma no cover
         """
         if isinstance(file_path, Path):
             file_path = str(file_path)
-        if isinstance(file_path, Path):
-            file_path = str(file_path)
 
         temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
         temp_edb = os.path.join(temp_folder.name, "temp.aedb")
