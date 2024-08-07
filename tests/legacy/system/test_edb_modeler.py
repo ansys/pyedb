@@ -47,7 +47,7 @@ class TestClass:
     def test_modeler_polygons(self):
         """Evaluate modeler polygons"""
         assert len(self.edbapp.modeler.polygons) > 0
-        assert self.edbapp.modeler.polygons[0].is_void == self.edbapp.modeler.polygons[0].IsVoid()
+        assert not self.edbapp.modeler.polygons[0].is_void
 
         poly0 = self.edbapp.modeler.polygons[0]
         assert self.edbapp.modeler.polygons[0].clone()

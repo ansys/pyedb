@@ -23,7 +23,7 @@
 import re
 
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.dotnet.edb_core.edb_data.primitives_data import EDBPrimitives
+from pyedb.dotnet.edb_core.edb_data.primitives_data import Primitive
 from pyedb.generic.general_methods import generate_unique_name
 
 
@@ -204,7 +204,7 @@ class LayoutValidation:
                     sum = 0
                     for el in elem:
                         try:
-                            if isinstance(obj_dict[el], EDBPrimitives):
+                            if isinstance(obj_dict[el], Primitive):
                                 if not obj_dict[el].is_void:
                                     sum += obj_dict[el].area()
                         except:

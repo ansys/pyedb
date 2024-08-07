@@ -2309,7 +2309,7 @@ class Edb(Database):
             return poly.Subtract(convert_py_list_to_net_list(poly), convert_py_list_to_net_list(voids))
 
         def clip_path(path):
-            pdata = path.polygon_data.edb_api
+            pdata = path.polygon_data._edb_object
             int_data = _poly.GetIntersectionType(pdata)
             if int_data == 0:
                 prims_to_delete.append(path)
@@ -2320,7 +2320,7 @@ class Edb(Database):
                 reference_prims.append(path)
 
         def clean_prim(prim_1):  # pragma: no cover
-            pdata = prim_1.polygon_data.edb_api
+            pdata = prim_1.polygon_data._edb_object
             int_data = _poly.GetIntersectionType(pdata)
             if int_data == 2:
                 if not inlcude_voids_in_extents:
@@ -2347,7 +2347,7 @@ class Edb(Database):
                     # points = list(p.Points)
                     list_void = []
                     if voids:
-                        voids_data = [void.polygon_data.edb_api for void in voids]
+                        voids_data = [void.polygon_data._edb_object for void in voids]
                         list_prims = subtract(p, voids_data)
                         for prim in list_prims:
                             if not prim.IsNull():

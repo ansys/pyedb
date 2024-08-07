@@ -19,8 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+import math
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.cell.connectable import Connectable
+from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
 
 
 class Primitive(Connectable):
@@ -153,10 +156,7 @@ class Primitive(Connectable):
         -------
         bool
         """
-        try:
-            return self._edb_object.IsVoid()
-        except AttributeError:  # pragma: no cover
-            return None
+        return self._edb_object.IsVoid()
 
     def get_connected_objects(self):
         """Get connected objects.
@@ -167,186 +167,737 @@ class Primitive(Connectable):
         """
         return self._pedb.get_connected_objects(self._layout_obj_instance)
 
-
-class Bondwire(Primitive):
-    """Class representing a bondwire object."""
-
-    def __init__(self, pedb, edb_object=None, **kwargs):
-        super().__init__(pedb, edb_object)
-        if self._edb_object is None:
-            self._edb_object = self.__create(**kwargs)
-
-    def __create(self, **kwargs):
-        return self._pedb._edb.Cell.Primitive.Bondwire.Create(
-            self._pedb.layout._edb_object,
-            kwargs.get("net"),
-            self._bondwire_type[kwargs.get("bondwire_type")],
-            kwargs.get("definition_name"),
-            kwargs.get("placement_layer"),
-            kwargs.get("width"),
-            kwargs.get("material"),
-            kwargs.get("start_context"),
-            kwargs.get("start_layer_name"),
-            kwargs.get("start_x"),
-            kwargs.get("start_y"),
-            kwargs.get("end_context"),
-            kwargs.get("end_layer_name"),
-            kwargs.get("end_x"),
-            kwargs.get("end_y"),
-        )
-
-    def get_material(self, evaluated=True):
-        """Get material of the bondwire.
+    def area(self, include_voids=True):
+        """Return the total area.
 
         Parameters
         ----------
-        evaluated : bool, optional
-            True if an evaluated material name is wanted.
+        include_voids : bool, optional
+            Either if the voids have to be included in computation.
+            The default value is ``True``.
+
+        Returns
+        -------
+        float
+        """
+        area = self._edb_object.GetPolygonData().Area()
+        if include_voids:
+            for el in self._edb_object.Voids:
+                area -= el.GetPolygonData().Area()
+        return area
+
+    @property
+    def is_negative(self):
+        """Determine whether this primitive is negative.
+
+        Returns
+        -------
+        bool
+            True if it is negative, False otherwise.
+        """
+        return self._edb_object.GetIsNegative()
+
+    @is_negative.setter
+    def is_negative(self, value):
+        self._edb_object.SetIsNegative(value)
+
+    @staticmethod
+    def _eval_arc_points(p1, p2, h, n=6, tol=1e-12):
+        """Get the points of the arc
+
+        Parameters
+        ----------
+        p1 : list
+            Arc starting point.
+        p2 : list
+            Arc ending point.
+        h : float
+            Arc height.
+        n : int
+            Number of points to generate along the arc.
+        tol : float
+            Geometric tolerance.
+
+        Returns
+        -------
+        list, list
+            Points generated along the arc.
+        """
+        # fmt: off
+        if abs(h) < tol:
+            return [], []
+        elif h > 0:
+            reverse = False
+            x1 = p1[0]
+            y1 = p1[1]
+            x2 = p2[0]
+            y2 = p2[1]
+        else:
+            reverse = True
+            x1 = p2[0]
+            y1 = p2[1]
+            x2 = p1[0]
+            y2 = p1[1]
+            h *= -1
+        xa = (x2 - x1) / 2
+        ya = (y2 - y1) / 2
+        xo = x1 + xa
+        yo = y1 + ya
+        a = math.sqrt(xa ** 2 + ya ** 2)
+        if a < tol:
+            return [], []
+        r = (a ** 2) / (2 * h) + h / 2
+        if abs(r - a) < tol:
+            b = 0
+            th = 2 * math.asin(1)  # chord angle
+        else:
+            b = math.sqrt(r ** 2 - a ** 2)
+            th = 2 * math.asin(a / r)  # chord angle
+
+        # center of the circle
+        xc = xo + b * ya / a
+        yc = yo - b * xa / a
+
+        alpha = math.atan2((y1 - yc), (x1 - xc))
+        xr = []
+        yr = []
+        for i in range(n):
+            i += 1
+            dth = (float(i) / (n + 1)) * th
+            xi = xc + r * math.cos(alpha - dth)
+            yi = yc + r * math.sin(alpha - dth)
+            xr.append(xi)
+            yr.append(yi)
+
+        if reverse:
+            xr.reverse()
+            yr.reverse()
+        # fmt: on
+        return xr, yr
+
+    def _get_points_for_plot(self, my_net_points, num):
+        """
+        Get the points to be plotted.
+        """
+        # fmt: off
+        x = []
+        y = []
+        for i, point in enumerate(my_net_points):
+            if not self.is_arc(point):
+                x.append(point.X.ToDouble())
+                y.append(point.Y.ToDouble())
+                # i += 1
+            else:
+                arc_h = point.GetArcHeight().ToDouble()
+                p1 = [my_net_points[i - 1].X.ToDouble(), my_net_points[i - 1].Y.ToDouble()]
+                if i + 1 < len(my_net_points):
+                    p2 = [my_net_points[i + 1].X.ToDouble(), my_net_points[i + 1].Y.ToDouble()]
+                else:
+                    p2 = [my_net_points[0].X.ToDouble(), my_net_points[0].Y.ToDouble()]
+                x_arc, y_arc = self._eval_arc_points(p1, p2, arc_h, num)
+                x.extend(x_arc)
+                y.extend(y_arc)
+                # i += 1
+        # fmt: on
+        return x, y
+
+    @property
+    def center(self):
+        """Return the primitive bounding box center coordinate.
+
+        Returns
+        -------
+        list
+            [x, y]
+
+        """
+        bbox = self.bbox
+        return [(bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2]
+
+    def is_arc(self, point):
+        """Either if a point is an arc or not.
+
+        Returns
+        -------
+        bool
+        """
+        return point.IsArc()
+
+    def get_connected_object_id_set(self):
+        """Produce a list of all geometries physically connected to a given layout object.
+
+        Returns
+        -------
+        list
+            Found connected objects IDs with Layout object.
+        """
+        layoutInst = self._edb_object.GetLayout().GetLayoutInstance()
+        layoutObjInst = layoutInst.GetLayoutObjInstance(self._edb_object, None)  # 2nd arg was []
+        return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
+
+    @property
+    def bbox(self):
+        """Return the primitive bounding box points. Lower left corner, upper right corner.
+
+        Returns
+        -------
+        list
+            [lower_left x, lower_left y, upper right x, upper right y]
+
+        """
+        bbox = self.polygon_data._edb_object.GetBBox()
+        return [bbox.Item1.X.ToDouble(), bbox.Item1.Y.ToDouble(), bbox.Item2.X.ToDouble(), bbox.Item2.Y.ToDouble()]
+
+    def convert_to_polygon(self):
+        """Convert path to polygon.
+
+        Returns
+        -------
+        bool, :class:`dotnet.edb_core.edb_data.primitives.EDBPrimitives`
+            Polygon when successful, ``False`` when failed.
+
+        """
+        if self.type == "Path":
+            polygon_data = self._edb_object.GetPolygonData()
+            polygon = self._app.modeler.create_polygon(polygon_data, self.layer_name, [], self.net_name)
+            self._edb_object.Delete()
+            return polygon
+        else:
+            return False
+
+    def intersection_type(self, primitive):
+        """Get intersection type between actual primitive and another primitive or polygon data.
+
+        Parameters
+        ----------
+        primitive : :class:`pyaeedt.edb_core.edb_data.primitives_data.EDBPrimitives` or `PolygonData`
+
+        Returns
+        -------
+        int
+            Intersection type:
+            0 - objects do not intersect,
+            1 - this object fully inside other (no common contour points),
+            2 - other object fully inside this,
+            3 - common contour points,
+            4 - undefined intersection.
+        """
+        poly = primitive
+        try:
+            poly = primitive.polygon_data
+        except AttributeError:
+            pass
+        return int(self.polygon_data._edb_object.GetIntersectionType(poly._edb_object))
+
+    def is_intersecting(self, primitive):
+        """Check if actual primitive and another primitive or polygon data intesects.
+
+        Parameters
+        ----------
+        primitive : :class:`pyaeedt.edb_core.edb_data.primitives_data.EDBPrimitives` or `PolygonData`
+
+        Returns
+        -------
+        bool
+        """
+        return True if self.intersection_type(primitive) >= 1 else False
+
+    def get_closest_point(self, point):
+        """Get the closest point of the primitive to the input data.
+
+        Parameters
+        ----------
+        point : list of float or PointData
+
+        Returns
+        -------
+        list of float
+        """
+        if isinstance(point, (list, tuple)):
+            point = self._app.edb_api.geometry.point_data(self._app.edb_value(point[0]), self._app.edb_value(point[1]))
+
+        p0 = self.polygon_data._edb_object.GetClosestPoint(point)
+        return [p0.X.ToDouble(), p0.Y.ToDouble()]
+
+    @property
+    def arcs(self):
+        """Get the Primitive Arc Data."""
+        return self.polygon_data.arcs
+
+    @property
+    def longest_arc(self):
+        """Get the longest arc."""
+        len = 0
+        arc = None
+        for i in self.arcs:
+            if i.is_segment and i.length > len:
+                arc = i
+                len = i.length
+        return arc
+
+    def subtract(self, primitives):
+        """Subtract active primitive with one or more primitives.
+
+        Parameters
+        ----------
+        primitives : :class:`dotnet.edb_core.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
+
+        Returns
+        -------
+        List of :class:`dotnet.edb_core.edb_data.EDBPrimitives`
+        """
+        poly = self.primitive_object.GetPolygonData()
+        if not isinstance(primitives, list):
+            primitives = [primitives]
+        primi_polys = []
+        voids_of_prims = []
+        for prim in primitives:
+            if isinstance(prim, Primitive):
+                primi_polys.append(prim.primitive_object.GetPolygonData())
+                for void in prim.voids:
+                    voids_of_prims.append(void.polygon_data._edb_object)
+            else:
+                try:
+                    primi_polys.append(prim.GetPolygonData())
+                except:
+                    primi_polys.append(prim)
+        for v in self.voids[:]:
+            primi_polys.append(v.polygon_data._edb_object)
+        primi_polys = poly.Unite(convert_py_list_to_net_list(primi_polys))
+        p_to_sub = poly.Unite(convert_py_list_to_net_list([poly] + voids_of_prims))
+        list_poly = poly.Subtract(p_to_sub, primi_polys)
+        new_polys = []
+        if list_poly:
+            for p in list_poly:
+                if p.IsNull():
+                    continue
+            new_polys.append(
+                    self._app.modeler.create_polygon(p, self.layer_name, net_name=self.net_name, voids=[]),
+            )
+        self.delete()
+        for prim in primitives:
+            if isinstance(prim, Primitive):
+                prim.delete()
+            else:
+                try:
+                    prim.Delete()
+                except AttributeError:
+                    continue
+        return new_polys
+
+    def intersect(self, primitives):
+        """Intersect active primitive with one or more primitives.
+
+        Parameters
+        ----------
+        primitives : :class:`dotnet.edb_core.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
+
+        Returns
+        -------
+        List of :class:`dotnet.edb_core.edb_data.EDBPrimitives`
+        """
+        poly = self._edb_object.GetPolygonData()
+        if not isinstance(primitives, list):
+            primitives = [primitives]
+        primi_polys = []
+        for prim in primitives:
+            if isinstance(prim, Primitive):
+                primi_polys.append(prim.primitive_object.GetPolygonData())
+            else:
+                try:
+                    primi_polys.append(prim.GetPolygonData())
+                except:
+                    primi_polys.append(prim)
+        list_poly = poly.Intersect(convert_py_list_to_net_list([poly]), convert_py_list_to_net_list(primi_polys))
+        new_polys = []
+        if list_poly:
+            voids = self.voids
+            for p in list_poly:
+                if p.IsNull():
+                    continue
+                list_void = []
+                void_to_subtract = []
+                if voids:
+                    for void in voids:
+                        void_pdata = void.prim_obj.GetPolygonData()
+                        int_data2 = p.GetIntersectionType(void_pdata)
+                        if int_data2 > 2 or int_data2 == 1:
+                            void_to_subtract.append(void_pdata)
+                        elif int_data2 == 2:
+                            list_void.append(void_pdata)
+                    if void_to_subtract:
+                        polys_cleans = p.Subtract(
+                            convert_py_list_to_net_list(p), convert_py_list_to_net_list(void_to_subtract)
+                        )
+                        for polys_clean in polys_cleans:
+                            if not polys_clean.IsNull():
+                                void_to_append = [v for v in list_void if polys_clean.GetIntersectionType(v) == 2]
+                        new_polys.append(
+                                self._app.modeler.create_polygon(
+                                    polys_clean, self.layer_name, net_name=self.net_name, voids=void_to_append
+                            )
+                        )
+                    else:
+                        new_polys.append(
+                                self._app.modeler.create_polygon(
+                                    p, self.layer_name, net_name=self.net_name, voids=list_void
+                            )
+                        )
+                else:
+                    new_polys.append(
+                            self._app.modeler.create_polygon(
+                                p, self.layer_name, net_name=self.net_name, voids=list_void
+                        )
+                    )
+        self.delete()
+        for prim in primitives:
+            if isinstance(prim, Primitive):
+                prim.delete()
+            else:
+                try:
+                    prim.Delete()
+                except AttributeError:
+                    continue
+        return new_polys
+
+    def unite(self, primitives):
+        """Unite active primitive with one or more primitives.
+
+        Parameters
+        ----------
+        primitives : :class:`dotnet.edb_core.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
+
+        Returns
+        -------
+        List of :class:`dotnet.edb_core.edb_data.EDBPrimitives`
+        """
+        poly = self._edb_object.GetPolygonData()
+        if not isinstance(primitives, list):
+            primitives = [primitives]
+        primi_polys = []
+        for prim in primitives:
+            if isinstance(prim, Primitive):
+                primi_polys.append(prim.primitive_object.GetPolygonData())
+            else:
+                try:
+                    primi_polys.append(prim.GetPolygonData())
+                except:
+                    primi_polys.append(prim)
+        list_poly = poly.Unite(convert_py_list_to_net_list([poly] + primi_polys))
+        new_polys = []
+        if list_poly:
+            voids = self.voids
+            for p in list_poly:
+                if p.IsNull():
+                    continue
+                list_void = []
+                if voids:
+                    for void in voids:
+                        void_pdata = void.primitive_object.GetPolygonData()
+                        int_data2 = p.GetIntersectionType(void_pdata)
+                        if int_data2 > 1:
+                            list_void.append(void_pdata)
+                new_polys.append(
+                        self._app.modeler.create_polygon(p, self.layer_name, net_name=self.net_name, voids=list_void),
+                )
+        self.delete()
+        for prim in primitives:
+            if isinstance(prim, Primitive):
+                prim.delete()
+            else:
+                try:
+                    prim.Delete()
+                except AttributeError:
+                    continue
+        return new_polys
+
+    def get_closest_arc_midpoint(self, point):
+        """Get the closest arc midpoint of the primitive to the input data.
+
+        Parameters
+        ----------
+        point : list of float or PointData
+
+        Returns
+        -------
+        list of float
+        """
+        if isinstance(point, self._app.edb_api.geometry.geometry.PointData):
+            point = [point.X.ToDouble(), point.Y.ToDouble()]
+        dist = 1e12
+        out = None
+        for arc in self.arcs:
+            mid_point = arc.mid_point
+            mid_point = [mid_point.X.ToDouble(), mid_point.Y.ToDouble()]
+            if GeometryOperators.points_distance(mid_point, point) < dist:
+                out = arc.mid_point
+                dist = GeometryOperators.points_distance(mid_point, point)
+        return [out.X.ToDouble(), out.Y.ToDouble()]
+
+    @property
+    def voids(self):
+        """:obj:`list` of :class:`Primitive <ansys.edb.primitive.Primitive>`: List of void\
+        primitive objects inside the primitive.
+
+        Read-Only.
+        """
+        from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
+        return [cast(void, self._app) for void in self._edb_object.Voids]
+
+    @property
+    def shortest_arc(self):
+        """Get the longest arc."""
+        len = 1e12
+        arc = None
+        for i in self.arcs:
+            if i.is_segment and i.length < len:
+                arc = i
+                len = i.length
+        return arc
+
+    @property
+    def aedt_name(self):
+        """Name to be visualized in AEDT.
 
         Returns
         -------
         str
-            Material name.
+            Name.
         """
-        return self._edb_object.GetMaterial(evaluated)
+        from System import String
 
-    def set_material(self, material):
-        """Set the material of a bondwire.
+        val = String("")
+
+        _, name = self._edb_object.GetProductProperty(self._pedb._edb.ProductId.Designer, 1, val)
+        name = str(name).strip("'")
+        if name == "":
+            if str(self.primitive_type) == "Path":
+                ptype = "line"
+            elif str(self.primitive_type) == "Rectangle":
+                ptype = "rect"
+            elif str(self.primitive_type) == "Polygon":
+                ptype = "poly"
+            elif str(self.primitive_type) == "Bondwire":
+                ptype = "bwr"
+            else:
+                ptype = str(self.primitive_type).lower()
+            name = "{}_{}".format(ptype, self.id)
+            self._edb_object.SetProductProperty(self._pedb._edb.ProductId.Designer, 1, name)
+        return name
+
+    @aedt_name.setter
+    def aedt_name(self, value):
+        self._edb_object.SetProductProperty(self._pedb._edb.ProductId.Designer, 1, value)
+
+    @property
+    def polygon_data(self):
+        """:class:`pyedb.dotnet.edb_core.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
+        return PolygonData(self._pedb, self._edb_object.GetPolygonData())
+
+    @polygon_data.setter
+    def polygon_data(self, poly):
+        self._edb_object.SetPolygonData(poly._edb_object)
+
+    def add_void(self, point_list):
+        """Add a void to current primitive.
+
+        Parameters
+        ----------
+        point_list : list or :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives` \
+            or EDB Primitive Object. Point list in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
+
+        Returns
+        -------
+        bool
+            ``True`` if successful, either  ``False``.
+        """
+        if isinstance(point_list, list):
+            plane = self._pedb.modeler.Shape("polygon", points=point_list)
+            _poly = self._pedb.modeler.shape_to_polygon_data(plane)
+            if _poly is None or _poly.IsNull() or _poly is False:
+                self._logger.error("Failed to create void polygon data")
+                return False
+            point_list = self._pedb.edb_api.cell.primitive.polygon.create(
+                self._pedb.active_layout, self.layer_name, self._edb_object.GetNet(), _poly
+            )._edb_object
+        elif "_edb_object" in dir(point_list):
+            point_list = point_list._edb_object
+        elif "primitive_obj" in dir(point_list):
+            point_list = point_list.primitive_obj
+        return self._edb_object.AddVoid(point_list)
+
+    @property
+    def api_class(self):
+        return self._pedb._edb.Cell.Primitive
+
+
+    def set_hfss_prop(self, material, solve_inside):
+        """Set HFSS properties.
 
         Parameters
         ----------
         material : str
-            Material name.
+            Material property name to be set.
+        solve_inside : bool
+            Whether to do solve inside.
         """
-        self._edb_object.SetMaterial(material)
+        self._edb_object.SetHfssProp(material, solve_inside)
 
     @property
-    def type(self):
-        """:class:`BondwireType`: Bondwire-type of a bondwire object."""
+    def has_voids(self):
+        """:obj:`bool`: If a primitive has voids inside.
 
-        type_name = self._edb_object.GetType()
-        return [i for i, j in self._bondwire_type.items() if j == type_name][0]
-
-    @type.setter
-    def type(self, bondwire_type):
-        self._edb_object.SetType(self._bondwire_type[bondwire_type])
+        Read-Only.
+        """
+        return self._edb_object.HasVoids()
 
     @property
-    def cross_section_type(self):
-        """:class:`BondwireCrossSectionType`: Bondwire-cross-section-type of a bondwire object."""
-        cs_type = self._edb_object.GetCrossSectionType()
-        return [i for i, j in self._bondwire_cross_section_type.items() if j == cs_type][0]
+    def owner(self):
+        """:class:`Primitive <ansys.edb.primitive.Primitive>`: Owner of the primitive object.
 
-    @cross_section_type.setter
-    def cross_section_type(self, bondwire_type):
-        self._edb_object.SetCrossSectionType(self._bondwire_cross_section_type[bondwire_type])
+        Read-Only.
+        """
+        pid = self._edb_object.GetOwner().GetId()
+        return self._pedb.layout.self.find_object_by_id(pid)
 
     @property
-    def cross_section_height(self):
-        """:class:`Value <ansys.edb.utility.Value>`: Bondwire-cross-section height of a bondwire object."""
-        return self._edb_object.GetCrossSectionHeight().ToDouble()
+    def is_parameterized(self):
+        """:obj:`bool`: Primitive's parametrization.
 
-    @cross_section_height.setter
-    def cross_section_height(self, height):
-        self._edb_object.SetCrossSectionHeight(self._pedb.edb_value(height))
+        Read-Only.
+        """
+        return self._edb_object.IsParameterized()
 
-    def get_definition_name(self, evaluated=True):
-        """Get definition name of a bondwire object.
-
-        Parameters
-        ----------
-        evaluated : bool, optional
-            True if an evaluated (in variable namespace) material name is wanted.
+    def get_hfss_prop(self):
+        """
+        Get HFSS properties.
 
         Returns
         -------
-        str
-            Bondwire name.
+        material : str
+            Material property name.
+        solve_inside : bool
+            If solve inside.
         """
-        return self._edb_object.GetDefinitionName(evaluated)
+        material = ""
+        solve_inside = True
+        self._edb_object.GetHfssProp(material, solve_inside)
+        return material, solve_inside
 
-    def set_definition_name(self, definition_name):
-        """Set the definition name of a bondwire.
+    def remove_hfss_prop(self):
+        """Remove HFSS properties."""
+        self._edb_object.RemoveHfssProp()
+
+    @property
+    def is_zone_primitive(self):
+        """:obj:`bool`: If primitive object is a zone.
+
+        Read-Only.
+        """
+        return self._edb_object.IsZonePrimitive()
+
+    @property
+    def can_be_zone_primitive(self):
+        """:obj:`bool`: If a primitive can be a zone.
+
+        Read-Only.
+        """
+        return True
+
+    def make_zone_primitive(self, zone_id):
+        """Make primitive a zone primitive with a zone specified by the provided id.
 
         Parameters
         ----------
-        definition_name : str
-            Bondwire name to be set.
-        """
-        self._edb_object.SetDefinitionName(definition_name)
+        zone_id : int
+            Id of zone primitive will use.
 
-    def get_trajectory(self):
-        """Get trajectory parameters of a bondwire object.
+        """
+        self._edb_object.MakeZonePrimitive(zone_id)
+
+    def points(self, arc_segments=6):
+        """Return the list of points with arcs converted to segments.
+
+        Parameters
+        ----------
+        arc_segments : int
+            Number of facets to convert an arc. Default is `6`.
 
         Returns
         -------
-        tuple[
-            :class:`Value <ansys.edb.utility.Value>`,
-            :class:`Value <ansys.edb.utility.Value>`,
-            :class:`Value <ansys.edb.utility.Value>`,
-            :class:`Value <ansys.edb.utility.Value>`
-        ]
-
-            Returns a tuple of the following format:
-
-            **(x1, y1, x2, y2)**
-
-            **x1** : X value of the start point.
-
-            **y1** : Y value of the start point.
-
-            **x1** : X value of the end point.
-
-            **y1** : Y value of the end point.
+        tuple
+            The tuple contains 2 lists made of X and Y points coordinates.
         """
-        return [i.ToDouble() for i in self._edb_object.GetTrajectory() if not isinstance(i, bool)]
+        my_net_points = list(self._edb_object.GetPolygonData().Points)
+        xt, yt = self._get_points_for_plot(my_net_points, arc_segments)
+        if not xt:
+            return []
+        x, y = GeometryOperators.orient_polygon(xt, yt, clockwise=True)
+        return x, y
 
-    def set_trajectory(self, x1, y1, x2, y2):
-        """Set the parameters of the trajectory of a bondwire.
+    def points_raw(self):
+        """Return a list of Edb points.
+
+        Returns
+        -------
+        list
+            Edb Points.
+        """
+        points = []
+        my_net_points = list(self._edb_object.GetPolygonData().Points)
+        for point in my_net_points:
+            points.append(point)
+        return points
+
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
+        """Expand the polygon shape by an absolute value in all direction.
+        Offset can be negative for negative expansion.
 
         Parameters
         ----------
-        x1 : :class:`Value <ansys.edb.utility.Value>`
-            X value of the start point.
-        y1 : :class:`Value <ansys.edb.utility.Value>`
-            Y value of the start point.
-        x2 : :class:`Value <ansys.edb.utility.Value>`
-            X value of the end point.
-        y2 : :class:`Value <ansys.edb.utility.Value>`
-            Y value of the end point.
+        offset : float, optional
+            Offset value in meters.
+        tolerance : float, optional
+            Tolerance in meters.
+        round_corners : bool, optional
+            Whether to round corners or not.
+            If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+        maximum_corner_extension : float, optional
+            The maximum corner extension (when round corners are not used) at which point the corner is clipped.
         """
-        values = [self._pedb.edb_value(i) for i in [x1, y1, x2, y2]]
-        self._edb_object.SetTrajectory(*values)
+        return self.polygon_data.expand(offset, tolerance, round_corners, maximum_corner_extension)
 
-    @property
-    def width(self):
-        """:class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object."""
-        return self._edb_object.GetWidth().ToDouble()
-
-    @width.setter
-    def width(self, width):
-        self._edb_object.SetWidth(self._pedb.edb_value(width))
-
-    def set_start_elevation(self, layer, start_context=None):
-        """Set the start elevation of a bondwire.
+    def scale(self, factor, center=None):
+        """Scales the polygon relative to a center point by a factor.
 
         Parameters
         ----------
-        start_context : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
-            Start cell context of the bondwire. None means top level.
-        layer : str or :class:`Layer <ansys.edb.layer.Layer>`
-            Start layer of the bondwire.
-        """
-        self._edb_object.SetStartElevation(start_context, layer)
+        factor : float
+            Scaling factor.
+        center : List of float or str [x,y], optional
+            If None scaling is done from polygon center.
 
-    def set_end_elevation(self, layer, end_context=None):
-        """Set the end elevation of a bondwire.
-
-        Parameters
-        ----------
-        end_context : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
-            End cell context of the bondwire. None means top level.
-        layer : str or :class:`Layer <ansys.edb.layer.Layer>`
-            End layer of the bondwire.
+        Returns
+        -------
+        bool
+           ``True`` when successful, ``False`` when failed.
         """
-        self._edb_object.SetEndElevation(end_context, layer)
+        if not isinstance(factor, str):
+            factor = float(factor)
+            polygon_data = self.polygon_data.create_from_arcs(self.polygon_data._edb_object.GetArcData(), True)
+            if not center:
+                center = self.polygon_data._edb_object.GetBoundingCircleCenter()
+                if center:
+                    polygon_data.Scale(factor, center)
+                    self.polygon_data = polygon_data
+                    return True
+                else:
+                    self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
+            elif isinstance(center, list) and len(center) == 2:
+                center = self._edb.Geometry.PointData(
+                    self._edb.Utility.Value(center[0]), self._edb.Utility.Value(center[1])
+                )
+                polygon_data.Scale(factor, center)
+                self.polygon_data = polygon_data
+                return True
+        return False

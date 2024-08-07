@@ -51,6 +51,13 @@ class PolygonData:
             self._edb_object = edb_object
 
     @property
+    def arcs(self):
+        """Get the Primitive Arc Data."""
+        from pyedb.dotnet.edb_core.edb_data.primitives_data import EDBArcs
+        arcs = [EDBArcs(self._pedb, i) for i in self._edb_object.GetArcData()]
+        return arcs
+
+    @property
     def points(self):
         """Get all points in polygon.
 
@@ -72,3 +79,23 @@ class PolygonData:
     def create_from_bounding_box(self, points):
         bbox = BBox(self._pedb, point_1=points[0], point_2=points[1])
         return self._pedb.edb_api.geometry.api_class.PolygonData.CreateFromBBox(bbox._edb_object)
+
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
+        """Expand the polygon shape by an absolute value in all direction.
+        Offset can be negative for negative expansion.
+
+        Parameters
+        ----------
+        offset : float, optional
+            Offset value in meters.
+        tolerance : float, optional
+            Tolerance in meters.
+        round_corners : bool, optional
+            Whether to round corners or not.
+            If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+        maximum_corner_extension : float, optional
+            The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+        """
+        new_poly = self._edb_object.Expand(offset, tolerance, round_corners, maximum_corner_extension)
+        self._edb_object = new_poly[0]
+        return True

@@ -26,14 +26,13 @@ This module contains these classes: `EdbLayout` and `Shape`.
 import math
 import warnings
 
-from pyedb.dotnet.edb_core.cell.primitive import Bondwire
+from pyedb.dotnet.edb_core.cell.bondwire import Bondwire
 from pyedb.dotnet.edb_core.dotnet.primitive import (
     CircleDotNet,
     PathDotNet,
-    PolygonDotNet,
     RectangleDotNet,
 )
-from pyedb.dotnet.edb_core.edb_data.primitives_data import EDBPrimitives, cast
+from pyedb.dotnet.edb_core.edb_data.primitives_data import Primitive, cast
 from pyedb.dotnet.edb_core.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 
@@ -128,7 +127,7 @@ class Modeler(object):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of primitives.
         """
         for p in self._layout.primitives:
@@ -145,16 +144,10 @@ class Modeler(object):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of primitives.
         """
-        if len(self._primitives) == len(self._layout.primitives):
-            return self._primitives
-        self._primitives = []
-        if self._active_layout:
-            for lay_obj in self._layout.primitives:
-                self._primitives.append(cast(lay_obj, self._pedb))
-        return self._primitives
+        return self._pedb.layout.primitives
 
     @property
     def polygons_by_layer(self):
@@ -214,7 +207,7 @@ class Modeler(object):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of rectangles.
 
         """
@@ -226,7 +219,7 @@ class Modeler(object):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of circles.
 
         """
@@ -238,7 +231,7 @@ class Modeler(object):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of paths.
         """
         return [i for i in self.primitives if isinstance(i, PathDotNet)]
@@ -249,10 +242,10 @@ class Modeler(object):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of polygons.
         """
-        return [i for i in self.primitives if isinstance(i, PolygonDotNet)]
+        return [i for i in self.primitives if i.primitive_type == "polygon"]
 
     def get_polygons_by_layer(self, layer_name, net_list=None):
         """Retrieve polygons by a layer.
@@ -297,7 +290,7 @@ class Modeler(object):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of primitives, polygons, paths and rectangles.
         """
         if isinstance(layer, str) and layer not in list(self._pedb.stackup.signal_layers.keys()):
@@ -379,7 +372,7 @@ class Modeler(object):
         Parameters
         ----------
         polygon :
-            class: `dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+            class: `dotnet.edb_core.edb_data.primitives_data.Primitive`
 
         Returns
         -------
@@ -536,7 +529,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             ``True`` when successful, ``False`` when failed.
         """
         net = self._pedb.nets.find_or_create_net(net_name)
@@ -613,7 +606,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
         """
         path = self.Shape("Polygon", points=path_list)
         primitive = self._create_path(
@@ -648,7 +641,7 @@ class Modeler(object):
 
         Returns
         -------
-        bool, :class:`dotnet.edb_core.edb_data.primitives.EDBPrimitives`
+        bool, :class:`dotnet.edb_core.edb_data.primitives.Primitive`
             Polygon when successful, ``False`` when failed.
         """
         net = self._pedb.nets.find_or_create_net(net_name)
@@ -688,7 +681,8 @@ class Modeler(object):
                 self._logger.error("Failed to create void polygon data")
                 return False
             polygonData.AddHole(voidPolygonData)
-        polygon = self._edb.cell.primitive.polygon.create(self._active_layout, layer_name, net, polygonData)
+        polygon = self._pedb._edb.Cell.Primitive.Polygon.Create(self._active_layout, layer_name, net.net_obj, polygonData)
+        #polygon = self._edb.cell.primitive.polygon.create(self._active_layout, layer_name, net, polygonData)
         if polygon.IsNull() or polygonData is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
@@ -716,7 +710,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
         """
         warnings.warn(
             "Use :func:`create_polygon` method instead. It now supports point lists as arguments.", DeprecationWarning
@@ -764,7 +758,7 @@ class Modeler(object):
 
         Returns
         -------
-         :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+         :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             Rectangle when successful, ``False`` when failed.
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
@@ -819,7 +813,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             Objects of the circle created when successful.
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
@@ -940,12 +934,12 @@ class Modeler(object):
             Shape of the voids.
         """
         flag = False
-        if isinstance(shape, EDBPrimitives):
+        if isinstance(shape, Primitive):
             shape = shape.primitive_object
         if not isinstance(void_shape, list):
             void_shape = [void_shape]
         for void in void_shape:
-            if isinstance(void, EDBPrimitives):
+            if isinstance(void, Primitive):
                 flag = shape.AddVoid(void.primitive_object)
             else:
                 flag = shape.AddVoid(void)

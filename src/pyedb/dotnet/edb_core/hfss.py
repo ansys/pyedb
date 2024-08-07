@@ -27,7 +27,7 @@ import math
 
 from pyedb.dotnet.edb_core.edb_data.hfss_extent_info import HfssExtentInfo
 from pyedb.dotnet.edb_core.edb_data.ports import BundleWavePort, WavePort
-from pyedb.dotnet.edb_core.edb_data.primitives_data import EDBPrimitives
+from pyedb.dotnet.edb_core.edb_data.primitives_data import Primitive
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
@@ -523,10 +523,10 @@ class EdbHfss(object):
         if not port_name:
             port_name = generate_unique_name("diff")
 
-        if isinstance(positive_primitive_id, EDBPrimitives):
+        if isinstance(positive_primitive_id, Primitive):
             positive_primitive_id = positive_primitive_id.id
 
-        if isinstance(negative_primitive_id, EDBPrimitives):
+        if isinstance(negative_primitive_id, Primitive):
             negative_primitive_id = negative_primitive_id.id
 
         _, pos_term = self.create_wave_port(
@@ -591,7 +591,7 @@ class EdbHfss(object):
         if not port_name:
             port_name = generate_unique_name("bundle_port")
 
-        if isinstance(primitives_id[0], EDBPrimitives):
+        if isinstance(primitives_id[0], Primitive):
             primitives_id = [i.id for i in primitives_id]
 
         terminals = []
@@ -718,7 +718,7 @@ class EdbHfss(object):
             )
         if not port_name:
             port_name = generate_unique_name("Port_")
-        edge = self._edb.cell.terminal.PrimitiveEdge.Create(polygon.prim_obj, terminal_point)
+        edge = self._edb.cell.terminal.PrimitiveEdge.Create(polygon._edb_object, terminal_point)
         edges = convert_py_list_to_net_list(edge, self._edb.cell.terminal.Edge)
         edge_term = self._edb.cell.terminal.EdgeTerminal.Create(
             polygon.GetLayout(), polygon.GetNet(), port_name, edges, isRef=False
@@ -732,7 +732,7 @@ class EdbHfss(object):
             edge_term.SetImpedance(self._pedb.edb_value(port_impedance))
         edge_term.SetName(port_name)
         if reference_polygon and reference_point:
-            ref_edge = self._edb.cell.terminal.PrimitiveEdge.Create(reference_polygon.prim_obj, reference_point)
+            ref_edge = self._edb.cell.terminal.PrimitiveEdge.Create(reference_polygon._edb_object, reference_point)
             ref_edges = convert_py_list_to_net_list(ref_edge, self._edb.cell.terminal.Edge)
             ref_edge_term = self._edb.cell.terminal.EdgeTerminal.Create(
                 reference_polygon.GetLayout(), reference_polygon.GetNet(), port_name + "_ref", ref_edges, isRef=True
@@ -763,7 +763,7 @@ class EdbHfss(object):
 
         Parameters
         ----------
-        prim_id : int, EDBPrimitives
+        prim_id : int, Primitive
             Primitive ID.
         point_on_edge : list
             Coordinate of the point to define the edge terminal.
@@ -792,7 +792,7 @@ class EdbHfss(object):
         if not port_name:
             port_name = generate_unique_name("Terminal_")
 
-        if isinstance(prim_id, EDBPrimitives):
+        if isinstance(prim_id, Primitive):
             prim_id = prim_id.id
 
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
