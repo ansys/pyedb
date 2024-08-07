@@ -25,7 +25,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "cffi>=1.16.0,<1.17; platform_system=='Linux'",
+    "cffi>=1.16.0,<1.18; platform_system=='Linux'",
     "pywin32 >= 303;platform_system=='Windows'",
     "ansys-pythonnet >= 3.1.0rc3",
     "dotnetcore2 ==3.1.23;platform_system=='Linux'",
