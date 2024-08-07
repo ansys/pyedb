@@ -43,25 +43,13 @@ def wait_export_file(flag, file_path, time_sleep=0.5):
 
 def wait_export_folder(flag, folder_path, time_sleep=0.5):
     while True:
-        if os.path.isdir(folder_path):
-            break
-        else:
-            time.sleep(1)
-        os.path.getsize(folder_path)
-
-    while True:
-        total_size = 0
-        for dirpath, dirnames, filenames in os.walk(folder_path):
-            for filename in filenames:
-                file_path = os.path.join(dirpath, filename)
-                if os.path.isfile(file_path):
-                    total_size += os.path.getsize(file_path)
-
-        if total_size > 0:
-            break
-        else:
-            time.sleep(time_sleep)
-    return True
+        if os.path.exists(folder_path):
+            for root, _, files in os.walk(folder_path):
+                if any(os.path.getsize(os.path.join(root, file)) > 0 for file in files):
+                    return True
+        
+        # Wait before checking again.
+        time.sleep(time_sleep)
 
 
 class Siwave(object):  # pragma no cover
