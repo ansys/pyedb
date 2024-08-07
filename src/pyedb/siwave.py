@@ -47,7 +47,7 @@ def wait_export_folder(flag, folder_path, time_sleep=0.5):
             for root, _, files in os.walk(folder_path):
                 if any(os.path.getsize(os.path.join(root, file)) > 0 for file in files):
                     return True
-        
+
         # Wait before checking again.
         time.sleep(time_sleep)
 
