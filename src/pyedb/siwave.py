@@ -460,7 +460,7 @@ class Siwave(object):  # pragma no cover
             self._logger.info(f"Exporting EDB to {file_path}.")
             return wait_export_folder(flag, file_path, time_sleep=1)
         else:  # pragma no cover
-            raise f"Failed to export EDB to {file_path}."
+            raise RuntimeError(f"Failed to export EDB to {file_path}.")
 
     def import_edb(self, file_path: str):
         """Import layout from EDB.
