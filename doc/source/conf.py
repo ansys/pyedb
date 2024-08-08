@@ -361,7 +361,7 @@ nbsphinx_allow_errors = False
 
 # Sphinx gallery customization
 nbsphinx_thumbnails = {
-    #"examples/legacy_standalone/00_EDB_Create_VIA": "_static/thumbnails/diff_via.png",
+    # "examples/legacy_standalone/00_EDB_Create_VIA": "_static/thumbnails/diff_via.png",
     "examples/use_configuration/set_up_edb_for_signal_integrity_analysis": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_stackup": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_material": "_static/thumbnails/101_getting_started.png",
