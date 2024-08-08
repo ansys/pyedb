@@ -454,13 +454,13 @@ class Edb(Database):
     @property
     def excitations(self):
         """Get all layout excitations."""
-        terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) == 0]
+        terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) == 0]
         temp = {}
         for ter in terms:
-            if "BundleTerminal" in ter.GetType().ToString():
-                temp[ter.GetName()] = BundleWavePort(self, ter)
+            if "BundleTerminal" in ter._edb_object.GetType().ToString():
+                temp[ter.name] = BundleWavePort(self, ter)
             else:
-                temp[ter.GetName()] = GapPort(self, ter)
+                temp[ter.name] = GapPort(self, ter)
         return temp
 
     @property
@@ -498,15 +498,15 @@ class Edb(Database):
     @property
     def excitations_nets(self):
         """Get all excitations net names."""
-        names = list(set([i.GetNet().GetName() for i in self.layout.terminals]))
+        names = list(set([i.net.name for i in self.layout.terminals]))
         names = [i for i in names if i]
         return names
 
     @property
     def sources(self):
         """Get all layout sources."""
-        terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [3, 4, 7]]
-        terms = [term for term in terms if not term.IsReferenceTerminal()]
+        terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) in [3, 4, 7]]
+        terms = [term for term in terms if not term._edb_object.IsReferenceTerminal()]
         return {ter.GetName(): ExcitationSources(self, ter) for ter in terms}
 
     @property
@@ -1167,9 +1167,9 @@ class Edb(Database):
             elif obj_type == LayoutObjType.Primitive.name:
                 prim_type = i.GetPrimitiveType().ToString()
                 if prim_type == Primitives.Path.name:
-                    from pyedb.dotnet.edb_core.edb_data.primitives_data import EdbPath
+                    from pyedb.dotnet.edb_core.cell.primitive.path import Path
 
-                    temp.append(EdbPath(i, self))
+                    temp.append(Path(self, i))
                 elif prim_type == Primitives.Rectangle.name:
                     from pyedb.dotnet.edb_core.edb_data.primitives_data import (
                         EdbRectangle,

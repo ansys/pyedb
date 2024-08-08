@@ -24,7 +24,7 @@
 This module contains these classes: `EdbLayout` and `Shape`.
 """
 from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
-from pyedb.dotnet.edb_core.cell.bondwire import Bondwire
+from pyedb.dotnet.edb_core.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
 from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
 from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
@@ -42,7 +42,6 @@ from pyedb.dotnet.edb_core.edb_data.nets_data import (
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.primitives_data import (
     EdbCircle,
-    EdbPath,
     EdbPolygon,
     EdbRectangle,
     EdbText,
@@ -50,6 +49,8 @@ from pyedb.dotnet.edb_core.edb_data.primitives_data import (
 from pyedb.dotnet.edb_core.edb_data.sources import PinGroup
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
+
+from pyedb.dotnet.edb_core.cell.primitive.path import Path
 
 
 class Layout(ObjBase):
@@ -289,7 +290,7 @@ class Layout(ObjBase):
             elif obj.GetPrimitiveType().ToString() == "Polygon":
                 return EdbPolygon(obj, self._pedb)
             elif obj.GetPrimitiveType().ToString() == "Path":
-                return EdbPath(obj, self._pedb)
+                return Path(self._pedb, obj)
             elif obj.GetPrimitiveType().ToString() == "Bondwire":
                 return Bondwire(obj, self._pedb)
             elif obj.GetPrimitiveType().ToString() == "Text":

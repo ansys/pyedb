@@ -43,15 +43,6 @@ class EDBNetsData(NetDotNet):
     >>> edb_net.name # EDB Object Property
     """
 
-    def __getattr__(self, key):
-        try:
-            return self[key]
-        except:
-            try:
-                return getattr(self.net_object, key)
-            except AttributeError:
-                raise AttributeError("Attribute not present")
-
     def __init__(self, raw_net, core_app):
         self._app = core_app
         self._core_components = core_app.components
@@ -68,7 +59,7 @@ class EDBNetsData(NetDotNet):
         -------
         list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
         """
-        return [cast(i, self._app) for i in self.net_object.Primitives]
+        return [self._app.layout.find_object_by_id(i.GetId()) for i in self.net_object.Primitives]
 
     @property
     def padstack_instances(self):

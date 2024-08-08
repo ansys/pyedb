@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.cell.primitive import Primitive
+from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
 
 
 class Bondwire(Primitive):

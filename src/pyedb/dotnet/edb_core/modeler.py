@@ -26,7 +26,7 @@ This module contains these classes: `EdbLayout` and `Shape`.
 import math
 import warnings
 
-from pyedb.dotnet.edb_core.cell.bondwire import Bondwire
+from pyedb.dotnet.edb_core.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.edb_core.dotnet.primitive import (
     CircleDotNet,
     PathDotNet,
@@ -192,13 +192,9 @@ class Modeler(object):
         for lay in self._pedb.stackup.non_stackup_layers:
             _primitives_by_layer[lay] = []
         for i in self._layout.primitives:
-            try:
-                lay = i.GetLayer().GetName()
-                if lay in _primitives_by_layer:
-                    _primitives_by_layer[lay].append(cast(i, self._pedb))
-            except:
-                self._logger.warning(f"Failed to get layer on primitive {i}, skipping.")
-                continue
+            lay = i.layer.name
+            if lay in _primitives_by_layer:
+                _primitives_by_layer[lay].append(i)
         return _primitives_by_layer
 
     @property
@@ -234,7 +230,7 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of paths.
         """
-        return [i for i in self.primitives if isinstance(i, PathDotNet)]
+        return [i for i in self.primitives if i.primitive_type == "path"]
 
     @property
     def polygons(self):
@@ -264,14 +260,11 @@ class Modeler(object):
         """
         objinst = []
         for el in self.polygons:
-            try:
-                if el.GetLayer().GetName() == layer_name:
-                    if net_list and el.GetNet().GetName() in net_list:
-                        objinst.append(el)
-                    else:
-                        objinst.append(el)
-            except:
-                self._logger.warning(f"Failed to retrieve layer on polygon {el}")
+            if el.layer.name == layer_name:
+                if net_list and el.net.name in net_list:
+                    objinst.append(el)
+                else:
+                    objinst.append(el)
         return objinst
 
     def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):
@@ -1182,23 +1175,23 @@ class Modeler(object):
         for net_name in nets_name:
             var_server = False
             for p in self.paths:
-                if p.GetNet().GetName() == net_name:
+                if p.net.name == net_name:
                     if not layers_name:
                         if not var_server:
                             if not variable_value:
-                                variable_value = p.GetWidth()
+                                variable_value = p.width
                             result, var_server = self._pedb.add_design_variable(
                                 parameter_name, variable_value, is_parameter=True
                             )
-                        p.SetWidth(self._pedb.edb_value(parameter_name))
-                    elif p.GetLayer().GetName() in layers_name:
+                        p.width = self._pedb.edb_value(parameter_name)
+                    elif p.layer.name in layers_name:
                         if not var_server:
                             if not variable_value:
-                                variable_value = p.GetWidth()
+                                variable_value = p.width
                             result, var_server = self._pedb.add_design_variable(
                                 parameter_name, variable_value, is_parameter=True
                             )
-                        p.SetWidth(self._pedb.edb_value(parameter_name))
+                        p.width = self._pedb.edb_value(parameter_name)
         return True
 
     def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_names_list=[]):
@@ -1231,15 +1224,16 @@ class Modeler(object):
             delete_list = []
             if lay in list(self.polygons_by_layer.keys()):
                 for poly in self.polygons_by_layer[lay]:
-                    if not poly.GetNet().GetName() in list(poly_by_nets.keys()):
-                        if poly.GetNet().GetName():
-                            poly_by_nets[poly.GetNet().GetName()] = [poly]
+                    if not poly.layer.name in list(poly_by_nets.keys()):
+                        if poly.layer.name:
+                            poly_by_nets[poly.net.name] = [poly]
                     else:
-                        if poly.GetNet().GetName():
-                            poly_by_nets[poly.GetNet().GetName()].append(poly)
+                        if poly.net.name:
+                            poly_by_nets[poly.net.name].append(poly)
             for net in poly_by_nets:
                 if net in net_names_list or not net_names_list:
                     for i in poly_by_nets[net]:
+                        i = i._edb_object
                         list_polygon_data.append(i.GetPolygonData())
                         delete_list.append(i)
                         all_voids.append(i.Voids)
@@ -1249,16 +1243,11 @@ class Modeler(object):
                     for void in v:
                         if int(item.GetIntersectionType(void.GetPolygonData())) == 2:
                             item.AddHole(void.GetPolygonData())
-                poly = self._edb.cell.primitive.polygon.create(
-                    self._active_layout,
-                    lay,
-                    self._pedb.nets.nets[net],
-                    item,
-                )
+                self.create_polygon(item, layer_name=lay, voids=[], net_name=net)
             for v in all_voids:
                 for void in v:
                     for poly in poly_by_nets[net]:  # pragma no cover
-                        if int(void.GetPolygonData().GetIntersectionType(poly.GetPolygonData())) >= 2:
+                        if int(void.GetPolygonData().GetIntersectionType(poly._edb_object.GetPolygonData())) >= 2:
                             try:
                                 id = delete_list.index(poly)
                             except ValueError:
@@ -1344,7 +1333,7 @@ class Modeler(object):
                         if prim.type == "Path":
                             surface += prim.length * prim.width
                         if prim.type == "Polygon":
-                            surface += prim.polygon_data.edb_api.Area()
+                            surface += prim.polygon_data._edb_object.Area()
                             stat_model.occupying_surface[layer] = surface
                             stat_model.occupying_ratio[layer] = surface / outline_surface
         return stat_model

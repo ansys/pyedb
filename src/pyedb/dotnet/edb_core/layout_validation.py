@@ -246,7 +246,7 @@ class LayoutValidation:
                         new_net_name = generate_unique_name(net, n=6)
                         net_obj = self._pedb.nets.find_or_create_net(new_net_name)
                         if net_obj:
-                            new_nets.append(net_obj.GetName())
+                            new_nets.append(net_obj.name)
                             for geo in disjoints:
                                 try:
                                     obj_dict[geo].net_name = net_obj

@@ -440,39 +440,7 @@ class PathDotNet(PrimitiveDotNet):
             polygon_data = self._edb.geometry.polygon_data.dotnetobj(convert_py_list_to_net_list(points), False)
             self.prim_obj.SetCenterLine(polygon_data)
 
-    @property
-    def end_cap_style(self):
-        """Get path end cap styles.
 
-        Returns
-        -------
-        tuple[
-            :class:`PathEndCapType`,
-            :class:`PathEndCapType`
-        ]
-
-            Returns a tuple of the following format:
-
-            **(end_cap1, end_cap2)**
-
-            **end_cap1** : End cap style of path start end cap.
-
-            **end_cap2** : End cap style of path end end cap.
-        """
-        return self._edb_object.GetEndCapStyle()
-
-    @end_cap_style.setter
-    def end_cap_style(self, end_cap1, end_cap2):
-        """Set path end cap styles.
-
-        Parameters
-        ----------
-        end_cap1: :class:`PathEndCapType`
-            End cap style of path start end cap.
-        end_cap2: :class:`PathEndCapType`
-            End cap style of path end end cap.
-        """
-        self._edb_object.SetEndCapStyle(end_cap1, end_cap2)
 
     @property
     def get_clip_info(self):
