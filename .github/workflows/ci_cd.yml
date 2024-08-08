@@ -11,8 +11,8 @@ on:
 env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   PYEDB_USE_DOTNET: '1'
+  MAIN_PYTHON_VERSION: '3.11'
   PYEDB_CI_NO_DISPLAY: '1'
-  MAIN_PYTHON_VERSION: '3.10'
   PACKAGE_NAME: 'pyedb'
   DOCUMENTATION_CNAME: 'edb.docs.pyansys.com'
   MEILISEARCH_API_KEY: ${{ secrets.MEILISEARCH_API_KEY }}
@@ -83,7 +83,7 @@ jobs:
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@main
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -223,7 +223,7 @@ jobs:
 
       # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@main
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
