@@ -253,10 +253,17 @@ jobs:
           . .venv\Scripts\Activate.ps1
           echo "PyEDB version is: $(python -c "from pyedb import __version__; print(); print(__version__)")"
 
-      - name: Install pyaedt
+      - name: Clone PyAEDT on main branch
+        uses: actions/checkout@v4
+        with:
+          repository: ansys/pyaedt
+          path: "external/pyaedt"
+          ref: "main"
+
+      - name: Install PyAEDT main branch version with its test dependencies
         run: |
           . .venv\Scripts\Activate.ps1
-          pip install pyaedt
+          pip install --no-cache-dir external/pyaedt[tests]
 
       # Use environment variable to keep the doctree and avoid redundant build for PDF pages
       - name: Create HTML documentation

@@ -40,9 +40,9 @@ temp_folder = generate_unique_folder_name()
 targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
 # ## opening EDB
-# Opening EDB with ANSYS release 2024.1
+# Opening EDB with ANSYS release 2024.2
 
-EDB_VERSION = "2024.1"
+EDB_VERSION = "2024.2"
 edbapp = Edb(edbpath=targetfile, edbversion=EDB_VERSION)
 
 # ## Renaming all signal nets

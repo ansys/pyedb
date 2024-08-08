@@ -1160,7 +1160,7 @@ class EDBArcs(object):
 
         Examples
         --------
-        >>> appedb = Edb(fpath, edbversion="2024.1")
+        >>> appedb = Edb(fpath, edbversion="2024.2")
         >>> start_coordinate = appedb.nets["V1P0_S0"].primitives[0].arcs[0].start
         >>> print(start_coordinate)
         [x_value, y_value]
@@ -1179,7 +1179,7 @@ class EDBArcs(object):
 
         Examples
         --------
-        >>> appedb = Edb(fpath, edbversion="2024.1")
+        >>> appedb = Edb(fpath, edbversion="2024.2")
         >>> end_coordinate = appedb.nets["V1P0_S0"].primitives[0].arcs[0].end
         """
         point = self.arc_object.End
@@ -1197,7 +1197,7 @@ class EDBArcs(object):
 
         Examples
         --------
-        >>> appedb = Edb(fpath, edbversion="2024.1")
+        >>> appedb = Edb(fpath, edbversion="2024.2")
         >>> arc_height = appedb.nets["V1P0_S0"].primitives[0].arcs[0].height
         """
         return self.arc_object.Height

@@ -32,8 +32,8 @@ non_graphical = False
 aedb_path = os.path.join(generate_unique_folder_name(), generate_unique_name("pcb") + ".aedb")
 print(aedb_path)
 
-# Select EDB version (change it manually if needed, e.g. "2024.1")
-edb_version = "2024.1"
+# Select EDB version (change it manually if needed, e.g. "2024.2")
+edb_version = "2024.2"
 print(f"EDB version: {edb_version}")
 aedt_version = edb_version
 

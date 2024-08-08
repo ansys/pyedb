@@ -16,7 +16,7 @@ This page shows how edit a layer in the current layer stackup.
 
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-    edbapp = Edb(edbpath=targetfile, edbversion="2024.1")
+    edbapp = Edb(edbpath=targetfile, edbversion="2024.2")
 
     # plot layer stackup in Matplotlib
     edbapp.stackup.plot()
