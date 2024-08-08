@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 """Primitive."""
-from pyedb.dotnet.edb_core.dotnet.database import NetDotNet, PolygonDataDotNet
+from pyedb.dotnet.edb_core.dotnet.database import NetDotNet
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -56,6 +56,7 @@ class PrimitiveDotNet:
         self.api = api._edb.Cell.Primitive
         self.edb_api = api._edb
         self.prim_obj = prim_object
+        self._edb_object = prim_object
 
     @property
     def api_class(self):

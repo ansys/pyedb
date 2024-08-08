@@ -105,8 +105,8 @@ class EdbPolygon(Primitive):
         """
         new_polys = []
         if self.has_self_intersections:
-            new_polygons = list(self.polygon_data.edb_api.RemoveSelfIntersections())
-            self.polygon_data = new_polygons[0]
+            new_polygons = list(self.polygon_data._edb_object.RemoveSelfIntersections())
+            self._edb_object.SetPolygonData(new_polygons[0])
             for p in new_polygons[1:]:
                 cloned_poly = self._app.edb_api.cell.primitive.polygon.create(
                     self._app.active_layout, self.layer_name, self.net, p
@@ -129,15 +129,15 @@ class EdbPolygon(Primitive):
         """
         for layer in layers:
             if layer in self._pedb.stackup.layers:
-                duplicate_polygon = self._app.edb_api.cell.primitive.polygon.create(
-                    self._app.active_layout, layer, self.net, self.polygon_data.edb_api
-                )
+                duplicate_polygon = self._pedb.modeler.create_polygon(self.polygon_data._edb_object, layer, net_name=self.net.name)
                 if duplicate_polygon:
                     for void in self.voids:
-                        duplicate_void = self._app.edb_api.cell.primitive.polygon.create(
-                            self._app.active_layout, layer, self.net, void.polygon_data.edb_api
+                        duplicate_void = self._pedb.modeler.create_polygon(
+                            void.polygon_data._edb_object,
+                            layer,
+                            net_name = self.net.name,
                         )
-                        duplicate_polygon.prim_obj.AddVoid(duplicate_void.prim_obj)
+                        duplicate_polygon._edb_object.AddVoid(duplicate_void._edb_object)
             else:
                 return False
         return True

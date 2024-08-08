@@ -339,7 +339,7 @@ class Path(Primitive):
         if isinstance(value, list):
             points = [self._pedb.point_data(i[0], i[1]) for i in value]
             polygon_data = self._edb.geometry.polygon_data.dotnetobj(convert_py_list_to_net_list(points), False)
-            self.prim_obj.SetCenterLine(polygon_data)
+            self._edb_object.SetCenterLine(polygon_data)
 
     @property
     def corner_style(self):

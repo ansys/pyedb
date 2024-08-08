@@ -671,7 +671,7 @@ class Modeler(object):
             elif isinstance(void, Modeler.Shape):
                 voidPolygonData = self.shape_to_polygon_data(void)
             else:
-                voidPolygonData = void
+                voidPolygonData = void.polygon_data._edb_object
             if voidPolygonData is False or voidPolygonData is None or voidPolygonData.IsNull():
                 self._logger.error("Failed to create void polygon data")
                 return False
@@ -786,7 +786,7 @@ class Modeler(object):
                 self._get_edb_value(rotation),
             )
         if rect:
-            return rect
+            return self._pedb.layout.find_object_by_id(rect._edb_object.GetId())
         return False  # pragma: no cover
 
     def create_circle(self, layer_name, x, y, radius, net_name=""):
@@ -822,7 +822,7 @@ class Modeler(object):
             self._get_edb_value(radius),
         )
         if circle:
-            return circle
+            return self._pedb.layout.find_object_by_id(circle._edb_object.GetId())
         return False  # pragma: no cover
 
     def delete_primitives(self, net_names):
@@ -1284,8 +1284,8 @@ class Modeler(object):
             ``True`` when successful, ``False`` when failed.
         """
         poly_data = poly.polygon_data
-        new_poly = poly_data.edb_api.Defeature(tolerance)
-        poly.polygon_data = new_poly
+        new_poly = poly_data._edb_object.Defeature(tolerance)
+        poly._edb_object.SetPolygonData(new_poly)
         return True
 
     def get_layout_statistics(self, evaluate_area=False, net_list=None):

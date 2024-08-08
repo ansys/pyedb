@@ -637,7 +637,7 @@ class Primitive(Connectable):
         Read-Only.
         """
         from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
-        return [cast(void, self._app) for void in self._edb_object.Voids]
+        return [self._pedb.layout.find_object_by_id(void.GetId()) for void in self._edb_object.Voids]
 
     @property
     def shortest_arc(self):
