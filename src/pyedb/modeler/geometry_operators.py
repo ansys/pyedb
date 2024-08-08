@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
 import math
 import re
 import sys
 
+import numpy as np
+
 from pyedb.generic.constants import AXIS, PLANE, SWEEPDRAFT, scale_units
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class GeometryOperators(object):
     """Manages geometry operators."""
 
     @staticmethod
-    @pyedb_function_handler()
     def List2list(input_list):  # pragma: no cover
         """Convert a C# list object to a Python list.
 
@@ -37,7 +38,6 @@ class GeometryOperators(object):
         return output_list
 
     @staticmethod
-    @pyedb_function_handler()
     def parse_dim_arg(string, scale_to_unit=None, variable_manager=None):  # pragma: no cover
         """Convert a number and unit to a float.
         Angles are converted in radians.
@@ -106,7 +106,6 @@ class GeometryOperators(object):
                 return value
 
     @staticmethod
-    @pyedb_function_handler()
     def cs_plane_to_axis_str(val):  # pragma: no cover
         """Retrieve a string for a coordinate system plane.
 
@@ -129,7 +128,6 @@ class GeometryOperators(object):
             return "Y"
 
     @staticmethod
-    @pyedb_function_handler()
     def cs_plane_to_plane_str(val):  # pragma: no cover
         """Retrieve a string for a coordinate system plane.
 
@@ -152,7 +150,6 @@ class GeometryOperators(object):
             return "ZX"
 
     @staticmethod
-    @pyedb_function_handler()
     def cs_axis_str(val):  # pragma: no cover
         """Retrieve a string for a coordinate system axis.
 
@@ -176,7 +173,6 @@ class GeometryOperators(object):
             return "Z"
 
     @staticmethod
-    @pyedb_function_handler()
     def draft_type_str(val):  # pragma: no cover
         """Retrieve the draft type.
 
@@ -199,7 +195,6 @@ class GeometryOperators(object):
             return "Natural"
 
     @staticmethod
-    @pyedb_function_handler()
     def get_mid_point(v1, v2):
         """Evaluate the midpoint between two points.
 
@@ -220,7 +215,6 @@ class GeometryOperators(object):
         return m
 
     @staticmethod
-    @pyedb_function_handler()
     def get_triangle_area(v1, v2, v3):  # pragma: no cover
         """Evaluate the area of a triangle defined by its three vertices.
 
@@ -249,7 +243,6 @@ class GeometryOperators(object):
         return area
 
     @staticmethod
-    @pyedb_function_handler()
     def v_cross(a, b):  # pragma: no cover
         """Evaluate the cross product of two geometry vectors.
 
@@ -269,7 +262,6 @@ class GeometryOperators(object):
         return c
 
     @staticmethod
-    @pyedb_function_handler()
     def _v_dot(a, b):  # pragma: no cover
         """Evaluate the dot product between two geometry vectors.
 
@@ -295,7 +287,6 @@ class GeometryOperators(object):
         return False
 
     @staticmethod
-    @pyedb_function_handler()
     def v_dot(a, b):  # pragma: no cover
         """Evaluate the dot product between two geometry vectors.
 
@@ -315,7 +306,6 @@ class GeometryOperators(object):
         return GeometryOperators._v_dot(a, b)
 
     @staticmethod
-    @pyedb_function_handler()
     def v_prod(s, v):  # pragma: no cover
         """Evaluate the product between a scalar value and a vector.
 
@@ -338,7 +328,6 @@ class GeometryOperators(object):
         return r
 
     @staticmethod
-    @pyedb_function_handler()
     def v_rotate_about_axis(vector, angle, radians=False, axis="z"):  # pragma: no cover
         """Evaluate rotation of a vector around an axis.
 
@@ -380,7 +369,6 @@ class GeometryOperators(object):
         return rotated_x, rotated_y, rotated_z
 
     @staticmethod
-    @pyedb_function_handler()
     def v_sub(a, b):  # pragma: no cover
         """Evaluate two geometry vectors by subtracting them (a-b).
 
@@ -401,7 +389,6 @@ class GeometryOperators(object):
         return c
 
     @staticmethod
-    @pyedb_function_handler()
     def v_sum(a, b):  # pragma: no cover
         """Evaluate two geometry vectors by adding them (a+b).
 
@@ -422,7 +409,6 @@ class GeometryOperators(object):
         return c
 
     @staticmethod
-    @pyedb_function_handler()
     def v_norm(a):  # pragma: no cover
         """Evaluate the Euclidean norm of a geometry vector.
 
@@ -444,7 +430,6 @@ class GeometryOperators(object):
         return m
 
     @staticmethod
-    @pyedb_function_handler()
     def normalize_vector(v):  # pragma: no cover
         """Normalize a geometry vector.
 
@@ -465,7 +450,6 @@ class GeometryOperators(object):
         return vn
 
     @staticmethod
-    @pyedb_function_handler()
     def v_points(p1, p2):  # pragma: no cover
         """Vector from one point to another point.
 
@@ -484,7 +468,6 @@ class GeometryOperators(object):
         return GeometryOperators.v_sub(p2, p1)
 
     @staticmethod
-    @pyedb_function_handler()
     def points_distance(p1, p2):  # pragma: no cover
         """Evaluate the distance between two points expressed as their Cartesian coordinates.
 
@@ -510,7 +493,6 @@ class GeometryOperators(object):
         # fmt: on
 
     @staticmethod
-    @pyedb_function_handler()
     def find_point_on_plane(pointlists, direction=0):  # pragma: no cover
         """Find a point on a plane.
 
@@ -539,7 +521,6 @@ class GeometryOperators(object):
         return point
 
     @staticmethod
-    @pyedb_function_handler()
     def distance_vector(p, a, b):  # pragma: no cover
         """Evaluate the vector distance between point ``p`` and a line defined by two points, ``a`` and ``b``.
 
@@ -571,7 +552,6 @@ class GeometryOperators(object):
         return vd
 
     @staticmethod
-    @pyedb_function_handler()
     def is_between_points(p, a, b, tol=1e-6):  # pragma: no cover
         """Check if a point lies on the segment defined by two points.
 
@@ -604,7 +584,6 @@ class GeometryOperators(object):
             return True
 
     @staticmethod
-    @pyedb_function_handler()
     def is_parallel(a1, a2, b1, b2, tol=1e-6):  # pragma: no cover
         """Check if a segment defined by two points is parallel to a segment defined by two other points.
 
@@ -633,7 +612,6 @@ class GeometryOperators(object):
             return False
 
     @staticmethod
-    @pyedb_function_handler()
     def parallel_coeff(a1, a2, b1, b2):  # pragma: no cover
         """ADD DESCRIPTION.
 
@@ -661,7 +639,6 @@ class GeometryOperators(object):
         return abs(var)
 
     @staticmethod
-    @pyedb_function_handler()
     def is_collinear(a, b, tol=1e-6):  # pragma: no cover
         """Check if two vectors are collinear (parallel or anti-parallel).
 
@@ -689,7 +666,6 @@ class GeometryOperators(object):
             return False
 
     @staticmethod
-    @pyedb_function_handler()
     def is_projection_inside(a1, a2, b1, b2):  # pragma: no cover
         """Project a segment onto another segment and check if the projected segment is inside it.
 
@@ -722,7 +698,6 @@ class GeometryOperators(object):
         return True
 
     @staticmethod
-    @pyedb_function_handler()
     def arrays_positions_sum(vertlist1, vertlist2):  # pragma: no cover
         """Return the sum of two vertices lists.
 
@@ -744,7 +719,6 @@ class GeometryOperators(object):
         return s / (len(vertlist1) + len(vertlist2))
 
     @staticmethod
-    @pyedb_function_handler()
     def v_angle(a, b):  # pragma: no cover
         """Evaluate the angle between two geometry vectors.
 
@@ -770,7 +744,6 @@ class GeometryOperators(object):
             return math.acos(d / (an * bn))
 
     @staticmethod
-    @pyedb_function_handler()
     def pointing_to_axis(x_pointing, y_pointing):  # pragma: no cover
         """Retrieve the axes from the HFSS X axis and Y pointing axis as per
         the definition of the AEDT interface coordinate system.
@@ -798,7 +771,6 @@ class GeometryOperators(object):
         return xp, yp, zp
 
     @staticmethod
-    @pyedb_function_handler()
     def axis_to_euler_zxz(x, y, z):  # pragma: no cover
         """Retrieve Euler angles of a frame following the rotation sequence ZXZ.
 
@@ -842,7 +814,6 @@ class GeometryOperators(object):
         return phi, theta, psi
 
     @staticmethod
-    @pyedb_function_handler()
     def axis_to_euler_zyz(x, y, z):  # pragma: no cover
         """Retrieve Euler angles of a frame following the rotation sequence ZYZ.
 
@@ -886,7 +857,6 @@ class GeometryOperators(object):
         return phi, theta, psi
 
     @staticmethod
-    @pyedb_function_handler()
     def quaternion_to_axis(q):  # pragma: no cover
         """Convert a quaternion to a rotated frame defined by X, Y, and Z axes.
 
@@ -925,7 +895,6 @@ class GeometryOperators(object):
         return x, y, z
 
     @staticmethod
-    @pyedb_function_handler()
     def quaternion_to_axis_angle(q):  # pragma: no cover
         """Convert a quaternion to the axis angle rotation formulation.
 
@@ -951,7 +920,6 @@ class GeometryOperators(object):
         return u, theta
 
     @staticmethod
-    @pyedb_function_handler()
     def axis_angle_to_quaternion(u, theta):  # pragma: no cover
         """Convert the axis angle rotation formulation to a quaternion.
 
@@ -978,7 +946,6 @@ class GeometryOperators(object):
         return [q1, q2, q3, q4]
 
     @staticmethod
-    @pyedb_function_handler()
     def quaternion_to_euler_zxz(q):  # pragma: no cover
         """Convert a quaternion to Euler angles following rotation sequence ZXZ.
 
@@ -1008,7 +975,6 @@ class GeometryOperators(object):
         return phi, theta, psi
 
     @staticmethod
-    @pyedb_function_handler()
     def euler_zxz_to_quaternion(phi, theta, psi):  # pragma: no cover
         """Convert the Euler angles following rotation sequence ZXZ to a quaternion.
 
@@ -1039,7 +1005,6 @@ class GeometryOperators(object):
         return [q1, q2, q3, q4]
 
     @staticmethod
-    @pyedb_function_handler()
     def quaternion_to_euler_zyz(q):  # pragma: no cover
         """Convert a quaternion to Euler angles following rotation sequence ZYZ.
 
@@ -1069,7 +1034,6 @@ class GeometryOperators(object):
         return phi, theta, psi
 
     @staticmethod
-    @pyedb_function_handler()
     def euler_zyz_to_quaternion(phi, theta, psi):  # pragma: no cover
         """Convert the Euler angles following rotation sequence ZYZ to a quaternion.
 
@@ -1100,7 +1064,6 @@ class GeometryOperators(object):
         return [q1, q2, q3, q4]
 
     @staticmethod
-    @pyedb_function_handler()
     def deg2rad(angle):
         """Convert the angle from degrees to radians.
 
@@ -1119,7 +1082,6 @@ class GeometryOperators(object):
         return angle / 180.0 * pi
 
     @staticmethod
-    @pyedb_function_handler()
     def rad2deg(angle):
         """Convert the angle from radians to degrees.
 
@@ -1138,7 +1100,6 @@ class GeometryOperators(object):
         return angle * 180.0 / pi
 
     @staticmethod
-    @pyedb_function_handler()
     def atan2(y, x):  # pragma: no cover
         """Implementation of atan2 that does not suffer from the following issues:
         math.atan2(0.0, 0.0) = 0.0
@@ -1168,7 +1129,6 @@ class GeometryOperators(object):
         return math.atan2(y, x)
 
     @staticmethod
-    @pyedb_function_handler()
     def q_prod(p, q):  # pragma: no cover
         """Evaluate the product of two quaternions, ``p`` and ``q``, defined as:
         p = p0 + p' = p0 + ip1 + jp2 + kp3.
@@ -1204,7 +1164,6 @@ class GeometryOperators(object):
         return [r0, rv[0], rv[1], rv[2]]
 
     @staticmethod
-    @pyedb_function_handler()
     def q_rotation(v, q):  # pragma: no cover
         """Evaluate the rotation of a vector, defined by a quaternion.
         Evaluated as:
@@ -1240,7 +1199,6 @@ class GeometryOperators(object):
         return w
 
     @staticmethod
-    @pyedb_function_handler()
     def q_rotation_inv(v, q):
         """Evaluate the inverse rotation of a vector that is defined by a quaternion.
 
@@ -1268,7 +1226,6 @@ class GeometryOperators(object):
         return GeometryOperators.q_rotation(v, q1)
 
     @staticmethod
-    @pyedb_function_handler()
     def get_polygon_centroid(pts):  # pragma: no cover
         """Evaluate the centroid of a polygon defined by its points.
 
@@ -1304,7 +1261,6 @@ class GeometryOperators(object):
         return [xc, yc, zc]
 
     @staticmethod
-    @pyedb_function_handler()
     def cs_xy_pointing_expression(yaw, pitch, roll):  # pragma: no cover
         """Return x_pointing and y_pointing vectors as expressions from
         the yaw, ptich, and roll input (as strings).
@@ -1343,7 +1299,6 @@ class GeometryOperators(object):
         return [x_pointing, y_pointing]
 
     @staticmethod
-    @pyedb_function_handler()
     def get_numeric(s):
         """Convert a string to a numeric value. Discard the suffix."""
         if type(s) == str:
@@ -1357,7 +1312,6 @@ class GeometryOperators(object):
             return float(s)
 
     @staticmethod
-    @pyedb_function_handler()
     def is_small(s):
         """Return ``True`` if the number represented by s is zero (i.e very small).
 
@@ -1375,7 +1329,6 @@ class GeometryOperators(object):
         return True if math.fabs(n) < 2.0 * abs(sys.float_info.epsilon) else False
 
     @staticmethod
-    @pyedb_function_handler()
     def numeric_cs(cs_in):  # pragma: no cover
         """Return a list of [x,y,z] numeric values given a coordinate system as input.
 
@@ -1396,7 +1349,6 @@ class GeometryOperators(object):
                 return [0, 0, 0]
 
     @staticmethod
-    @pyedb_function_handler()
     def orient_polygon(x, y, clockwise=True):
         """
         Orient a polygon clockwise or counterclockwise. The vertices should be already ordered either way.
@@ -1472,7 +1424,6 @@ class GeometryOperators(object):
         return x_ret, y_ret
 
     @staticmethod
-    @pyedb_function_handler()
     def v_angle_sign(va, vb, vn, right_handed=True):  # pragma: no cover
         """Evaluate the signed angle between two geometry vectors.
         The sign is evaluated respect to the normal to the plane containing the two vectors as per the following rule.
@@ -1517,7 +1468,6 @@ class GeometryOperators(object):
             return math.atan2(GeometryOperators.v_dot(mcross, vnn), GeometryOperators.v_dot(va, vb))
 
     @staticmethod
-    @pyedb_function_handler()
     def v_angle_sign_2D(va, vb, right_handed=True):
         """Evaluate the signed angle between two 2D geometry vectors.
         Iit the 2D version of the ``GeometryOperators.v_angle_sign`` considering vn = [0,0,1].
@@ -1547,7 +1497,6 @@ class GeometryOperators(object):
             return math.atan2(-c, GeometryOperators.v_dot(va, vb))
 
     @staticmethod
-    @pyedb_function_handler()
     def point_in_polygon(point, polygon, tolerance=1e-8):
         """Determine if a point is inside, outside the polygon or at exactly at the border.
 
@@ -1595,7 +1544,6 @@ class GeometryOperators(object):
         # fmt: on
 
     @staticmethod
-    @pyedb_function_handler()
     def is_point_in_polygon(point, polygon):
         """Determine if a point is inside or outside a polygon, both located on the same plane.
 
@@ -1619,7 +1567,6 @@ class GeometryOperators(object):
             return True
 
     @staticmethod
-    @pyedb_function_handler()
     def are_segments_intersecting(a1, a2, b1, b2, include_collinear=True):
         """
         Determine if the two segments a and b are intersecting.
@@ -1708,7 +1655,6 @@ class GeometryOperators(object):
         # fmt: on
 
     @staticmethod
-    @pyedb_function_handler()
     def is_segment_intersecting_polygon(a, b, polygon):
         """
         Determine if a segment defined by two points ``a`` and ``b`` intersects a polygon.
@@ -1743,7 +1689,6 @@ class GeometryOperators(object):
         return False
 
     @staticmethod
-    @pyedb_function_handler()
     def is_perpendicular(a, b, tol=1e-6):
         """Check if two vectors are perpendicular.
 
@@ -1769,7 +1714,6 @@ class GeometryOperators(object):
             return False
 
     @staticmethod
-    @pyedb_function_handler()
     def is_point_projection_in_segment(p, a, b):
         """Check if a point projection lies on the segment defined by two points.
 
@@ -1796,7 +1740,6 @@ class GeometryOperators(object):
         # fmt: on
 
     @staticmethod
-    @pyedb_function_handler()
     def point_segment_distance(p, a, b):  # pragma: no cover
         """Calculate the distance between a point ``p`` and a segment defined by two points ``a`` and ``b``.
 
@@ -1822,7 +1765,6 @@ class GeometryOperators(object):
         # fmt: on
 
     @staticmethod
-    @pyedb_function_handler()
     def find_largest_rectangle_inside_polygon(polygon, partition_max_order=16):
         """Find the largest area rectangles of arbitrary orientation in a polygon.
 
@@ -1931,7 +1873,6 @@ class GeometryOperators(object):
         # fmt: on
 
     @staticmethod
-    @pyedb_function_handler()
     def degrees_over_rounded(angle, digits):
         """Ceil of angle.
 
@@ -1950,7 +1891,6 @@ class GeometryOperators(object):
         return math.ceil(math.degrees(angle) * 10**digits) / (10**digits)
 
     @staticmethod
-    @pyedb_function_handler()
     def radians_over_rounded(angle, digits):
         """Radian angle ceiling.
 
@@ -1969,7 +1909,6 @@ class GeometryOperators(object):
         return math.ceil(math.radians(angle) * 10**digits) / (10**digits)
 
     @staticmethod
-    @pyedb_function_handler()
     def degrees_default_rounded(angle, digits):
         """Convert angle to degree with given digits rounding.
 
@@ -1988,7 +1927,6 @@ class GeometryOperators(object):
         return math.floor(math.degrees(angle) * 10**digits) / (10**digits)
 
     @staticmethod
-    @pyedb_function_handler()
     def radians_default_rounded(angle, digits):
         """Convert to radians with given round.
 
@@ -2007,7 +1945,6 @@ class GeometryOperators(object):
         return math.floor(math.radians(angle) * 10**digits) / (10**digits)
 
     @staticmethod
-    @pyedb_function_handler()
     def find_closest_points(points_list, reference_point, tol=1e-6):  # pragma: no cover
         """Given a list of points, finds the closest points to a reference point.
         It returns a list of points because more than one can be found.
@@ -2055,7 +1992,6 @@ class GeometryOperators(object):
         # fmt: on
 
     @staticmethod
-    @pyedb_function_handler()
     def mirror_point(start, reference, vector):  # pragma: no cover
         """Mirror point about a plane defining by a point on the plane and a normal point.
 
@@ -2080,3 +2016,190 @@ class GeometryOperators(object):
         dot_product = sum([distance[i] * vector[i] for i in range(3)])
         reflection = [-dot_product * vector[i] * 2 + start[i] for i in range(3)]
         return reflection
+
+    @staticmethod
+    def find_points_along_lines(
+        points, minimum_number_of_points=3, distance_threshold=None, selected_angles=None, return_additional_info=False
+    ):
+        """Detect all points that are placed along lines.
+
+        The method takes as input a list of 2D points and detects all lines that contain at least 3 points.
+        Optionally, the minimum number of points contained in a line can be specified by setting the
+        argument ``minimum_number_of_points``.
+        As default, all points along the lines are returned, regardless of their relative distance.
+        Optionally, a `distance_threshold` can be set. If two points in a line are separated by a distance larger than
+        ``distance_threshold``, the line is divided in two parts. If one of those parts does not satisfy the
+        ``minimum_number_of_points`` requirement, it is discarded.
+        If `distance_threshold` is set (not ``None``), the computational time increases.
+
+        points : List, numpy.ndarray
+            The points to process. Can be a list of lists where each sublist
+            represents a 2D point ``[x, y]`` coordinates, or a numpy array of shape (n, 2).
+        minimum_number_of_points : int, optional
+            The minimum number of points that a line must contain. Default is ``3``.
+        distance_threshold : float, None, optional
+            If two points in a line are separated by a distance larger than `distance_threshold`,
+            the line is divided in two parts. Default is ``None``, in which case the control is not performed.
+        selected_angles : list, None, optional
+            Specify a list of angles in degrees. If specified, the method returns only the lines which
+            have one of the specified angles.
+            The angle is defined as the positive angle of the infinite line with respect to the x-axis
+            It is positive, and between 0 and 180 degrees.
+            For example, ``[90]`` indicated vertical lines parallel to the y-axis,
+            ``[0]`` or ``[180]`` identifies horizontal lines parallel to the x-axis,
+            ``45`` identifies lines parallel to the first quadrant bisector.
+            Default is ``None``, in which case all lines are returned.
+        return_additional_info : bool, optional
+            Whether to return additional information about the number of elements processed.
+            The default is ``True``.
+
+        Returns
+        -------
+        tuple
+            The tuple contains:
+            - lines: a list of lists where each sublist represents a 2D point ``[x, y]`` coordinates in each line.
+            - lines indexes: a list of lists where each sublist represents the index of the point in each line.
+                            The index is referring to the point position in the input point list.
+            - number of processed points: optional, returned if ``return_additional_info`` is ``True``
+            - number of processed lines: optional, returned if ``return_additional_info`` is ``True``
+            - number of detected lines after ``minimum_number_of_points`` is applied: optional,
+                returned if ``return_additional_info`` is ``True``
+            - number of detected lines after ``distance_threshold`` is applied: optional,
+                returned if ``return_additional_info`` is ``True``
+        """
+
+        # Parameters
+        min_num_points = max(3, int(minimum_number_of_points))
+        cluster_lines_flag = False if distance_threshold is None else True
+        if selected_angles is not None:
+            if 0 in selected_angles or 180 in selected_angles:
+                selected_angles.extend([0, 180])
+            selected_angles = set(selected_angles)
+            selected_angles = np.deg2rad(np.array(list(selected_angles)))
+        tol_rad = 1e-10
+
+        # Converts the input
+        points = np.array(points)
+        # Number of points
+        num_points = len(points)
+
+        angles = []
+        # Evaluate the angle with x-axis for every possible line defined by 2 points
+        # Nested for loops to iterate over each point
+        for i in range(num_points - 1):
+            angles.append([])
+            for j in range(i + 1, num_points):
+                p1 = points[i]
+                p2 = points[j]
+                x1 = p1[0]
+                y1 = p1[1]
+                x2 = p2[0]
+                y2 = p2[1]
+
+                dx = x2 - x1
+                dy = y2 - y1
+
+                # Calculate the angle in radians with the x-axis
+                angle_rad = np.arctan2(dy, dx)
+                if abs(angle_rad - np.pi) < tol_rad:
+                    angles[i].append(0.0)
+                elif angle_rad < 0:
+                    angles[i].append(angle_rad + np.pi)
+                else:
+                    angles[i].append(angle_rad)
+
+        # rounding the angles float number
+        def bin_float(value, bin_size):
+            return round(value / bin_size) * bin_size
+
+        for col in angles:
+            for i, a in enumerate(col):
+                col[i] = bin_float(a, tol_rad)
+
+        # Group the lines based on angles
+        detected_lines_idx = []
+        for i in range(num_points - 1):
+            column = angles[i]
+            new_lines = defaultdict(set)  # sets are more efficient than lists for inclusion check
+            lines_to_check = [line for line in detected_lines_idx if i in line]
+            for k in range(len(column)):
+                j = k + i + 1
+                angle = column[k]
+
+                # Check if both indexes (points) are in any of the sets (lines)
+                # Note that lines containing `i` are pre-selected outside this loop.
+                # This makes the check O(n^2) instead of O(n^3)
+                found = any(j in l for l in lines_to_check)
+                if found:
+                    # this two points already belong to a line, no need to store them again
+                    continue
+                new_lines[angle].update((i, j))
+
+            # Depending on user choice, it checks if the angle is among the desired angles
+            if selected_angles is not None:
+                selected_lines = []
+                for ang, v in new_lines.items():
+                    if any(abs(sa - ang) < tol_rad for sa in selected_angles):
+                        selected_lines.append(v)
+            else:
+                selected_lines = [l for l in new_lines.values()]
+
+            # considering only lines with at least 3 points
+            lines_to_add = [l for l in selected_lines if len(l) >= 3]
+            detected_lines_idx.extend(lines_to_add)
+
+        # Discard the lines with less than min_num_points
+        selected_lines_idx = [line for line in detected_lines_idx if len(line) >= min_num_points]
+
+        # Convert the lines' indexes in ndarrays
+        selected_lines_idx = [np.array(list(line)) for line in selected_lines_idx]
+
+        # First sort the points in the detected lines
+        lines_with_sorted_points_idx = []
+        for line_idx in selected_lines_idx:
+            pts_in_line = points[list(line_idx)]
+            min_x = pts_in_line[:, 0].min()
+            max_x = pts_in_line[:, 0].max()
+            if max_x - min_x < 1e-7:
+                # cluster on y because the line is vertical
+                sort_idx = pts_in_line[:, 1].argsort()
+            else:
+                # cluster on x on the other cases
+                sort_idx = pts_in_line[:, 0].argsort()
+            sorted_points_idx = line_idx[sort_idx]
+            lines_with_sorted_points_idx.append(sorted_points_idx)
+        lines_idx = lines_with_sorted_points_idx
+
+        def cluster_line_points(points_idx, threshold):
+            # Requires sorted points, points must be in numpy array format
+            # Initialize clusters
+            clusters = []
+            current_cluster = [points_idx[0]]
+            # Iterate through the sorted points
+            for i in range(1, len(points_idx)):
+                # Check if the current point is within the distance threshold from the last point in the current cluster
+                if np.linalg.norm(points[points_idx[i]] - points[points_idx[i - 1]]) <= threshold:
+                    current_cluster.append(points_idx[i])
+                else:
+                    # The current point is too far from the last point, finalize the current cluster and start a new one
+                    clusters.append(current_cluster)
+                    current_cluster = [points_idx[i]]
+            # Append the last cluster
+            clusters.append(current_cluster)
+            return clusters
+
+        # separate lines based on required minimum distance btw points
+        # It requires the points of the line to be sorted
+        if cluster_lines_flag:
+            clustered_lines = []
+            for p_idx in lines_with_sorted_points_idx:
+                clusters_in_line = cluster_line_points(p_idx, distance_threshold)
+                clustered_lines.extend([c for c in clusters_in_line if len(c) >= min_num_points])
+            lines_idx = clustered_lines
+
+        # Convert indexes to points coordinates
+        lines = [points[list(line)].tolist() for line in lines_idx]
+
+        if return_additional_info:
+            return lines, lines_idx, num_points, len(detected_lines_idx), len(selected_lines_idx), len(lines_idx)
+        return lines, lines_idx

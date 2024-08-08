@@ -12,19 +12,30 @@ env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   PYEDB_USE_DOTNET: '1'
   MAIN_PYTHON_VERSION: '3.11'
+  PYEDB_CI_NO_DISPLAY: '1'
   PACKAGE_NAME: 'pyedb'
   DOCUMENTATION_CNAME: 'edb.docs.pyansys.com'
-  IS_WORKFLOW_RUNNING: True
-  ARTIFACTORY_VERSION: v242
   MEILISEARCH_API_KEY: ${{ secrets.MEILISEARCH_API_KEY }}
   MEILISEARCH_HOST_URL: ${{ vars.MEILISEARCH_HOST_URL }}
   MEILISEARCH_PUBLIC_API_KEY: ${{ secrets.MEILISEARCH_PUBLIC_API_KEY }}
+  ON_CI: True
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+
+  check_title:
+    if: github.event_name == 'pull_request'
+    name: Check the title of the pull request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check commit name
+        uses: ansys/actions/commit-style@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          use-upper-case: true
 
   doc-style:
     name: Documentation style check
@@ -44,7 +55,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.8', '3.9', '3.10', '3.11']
         should-release:
           - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
     steps:
@@ -70,6 +81,7 @@ jobs:
       - name: "Install Git and clone project"
         uses: actions/checkout@v4
 
+      # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
         uses: actions/setup-python@main
         with:
@@ -95,7 +107,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 10
+          timeout_minutes: 15
           command: |
             . .venv\Scripts\Activate.ps1
             pytest -m "legacy" -n auto --dist loadfile -v --cov
@@ -115,11 +127,88 @@ jobs:
           retention-days: 7
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           files: .cov/legacy.xml
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  test-pyaedt-main:
+    name: Testing PyAEDT main branch
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    needs: [smoke-tests]
+    runs-on: [ self-hosted, Windows, pyaedt ]
+    steps:
+      - name: Install Git and checkout project
+        uses: actions/checkout@v4
+
+      # Revert to previous verison due too setup-python#819
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+          . .venv\Scripts\Activate.ps1
+
+      - name: Update pip
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install -U pip
+
+      - name: Clone PyAEDT on main branch
+        uses: actions/checkout@v4
+        with:
+          repository: ansys/pyaedt
+          path: "external/pyaedt"
+          ref: "main"
+
+      - name: Install PyAEDT main branch version with its test dependencies
+        run: |
+          . .venv\Scripts\Activate.ps1
+          pip install --no-cache-dir external/pyaedt[tests]
+
+      - name: Install PyEDB
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install .
+
+      - name: Install CI dependencies (e.g. vtk-osmesa)
+        run: |
+          .venv\Scripts\Activate.ps1
+          # Uninstall conflicting dependencies
+          pip uninstall --yes vtk
+          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.2.20230527.dev0
+
+      - name: Run PyAEDT tests
+        uses: nick-fields/retry@v3
+        env:
+          PYTHONMALLOC: malloc
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            .venv\Scripts\Activate.ps1
+            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/_unittest
+
+      - name: Run PyAEDT solvers tests
+        uses: nick-fields/retry@v3
+        env:
+          PYTHONMALLOC: malloc
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            .venv\Scripts\Activate.ps1
+            pytest --durations=50 -v external/pyaedt/_unittest_solvers
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -132,6 +221,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
         uses: actions/setup-python@main
         with:
@@ -168,37 +258,44 @@ jobs:
           . .venv\Scripts\Activate.ps1
           pip install pyaedt
 
-      - name: Build the documentation (HTML)
+      # Use environment variable to keep the doctree and avoid redundant build for PDF pages
+      - name: Create HTML documentation
+        env:
+          SPHINXBUILD_KEEP_DOCTREEDIR: "1"
         run: |
-          .\.venv\Scripts\Activate.ps1
-          cd doc
-          .\make.bat html
+          .venv\Scripts\Activate.ps1
+          . .\doc\make.bat html
 
-      - name: Build the documentation (PDF)
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          cd doc
-          .\make.bat pdf
-
-      # Verify that sphinx generates no warnings
-      - name: Check for warnings
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python doc/print_errors.py
-
-      - name: Upload HTML Documentation artifact
-        uses: actions/upload-artifact@v4
+      # Verify https://github.com/actions/upload-artifact/issues/591 is fixed before upgrading.
+      - name: Upload HTML documentation artifact
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: documentation-html
           path: doc/_build/html
-          retention-days: 1
+          retention-days: 7
+
+      # Use environment variable to remove the doctree after the build of PDF pages
+      # Keeping doctree could cause an issue, see https://github.com/ansys/pyaedt/pull/3844/files
+      - name: Create PDF documentation
+        env:
+          SPHINXBUILD_KEEP_DOCTREEDIR: "0"
+        run: |
+          .venv\Scripts\Activate.ps1
+          . .\doc\make.bat pdf
 
       - name: Upload PDF Documentation artifact
-        uses: actions/upload-artifact@v4
+        # Verify https://github.com/actions/upload-artifact/issues/591 is fixed before upgrading.
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: documentation-pdf
-          path: doc/_build/latex/*.pdf
+          path: doc/_build/latex/pyedb.pdf
           retention-days: 7
+
+      - name: Add assets to HTML docs
+        run: |
+          zip -r documentation-html.zip .\doc\_build\html
+          mv documentation-html.zip .\doc\_build\html\_static\assets\download\
+          cp doc/_build/latex/pyedb.pdf .\doc\_build\html\_static\assets\download\
 
   package:
     name: Package library
@@ -216,16 +313,20 @@ jobs:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [package]
     runs-on: ubuntu-latest
+    # Specifying a GitHub environment is optional, but strongly encouraged
+    environment: release
+    permissions:
+      id-token: write
+      contents: write
     steps:
       - name: Release to the public PyPI repository
-        uses: ansys/actions/release-pypi-public@v5
+        uses: ansys/actions/release-pypi-public@v6
         with:
           library-name: ${{ env.PACKAGE_NAME }}
-          twine-username: "__token__"
-          twine-token: ${{ secrets.PYPI_TOKEN }}
+          use-trusted-publisher: true
 
       - name: Release to GitHub
-        uses: ansys/actions/release-github@v5
+        uses: ansys/actions/release-github@v6
         with:
           library-name: ${{ env.PACKAGE_NAME }}
 

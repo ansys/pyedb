@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Tests related to Edb nets
 """
 
@@ -26,7 +48,6 @@ class TestClass:
         assert len(self.edbapp.nets.netlist) > 0
         signalnets = self.edbapp.nets.signal
         assert not signalnets[list(signalnets.keys())[0]].is_power_ground
-        assert not signalnets[list(signalnets.keys())[0]].IsPowerGround()
         assert len(list(signalnets[list(signalnets.keys())[0]].primitives)) > 0
         assert len(signalnets) > 2
 
@@ -37,7 +58,7 @@ class TestClass:
         assert not powernets["AVCC_1V3"].is_power_ground
         powernets["AVCC_1V3"].is_power_ground = True
         assert powernets["AVCC_1V3"].name == "AVCC_1V3"
-        assert powernets["AVCC_1V3"].IsPowerGround()
+        assert powernets["AVCC_1V3"].is_power_ground
         assert len(list(powernets["AVCC_1V3"].components.keys())) > 0
         assert len(powernets["AVCC_1V3"].primitives) > 0
 
@@ -98,11 +119,8 @@ class TestClass:
         assert self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
 
     @pytest.mark.slow
-    def test_nets_dc_shorts(self):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_dc_shorts", "ANSYS-HSD_V1_dc_shorts.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+    def test_nets_dc_shorts(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         dc_shorts = edbapp.layout_validation.dc_shorts()
         assert dc_shorts
         edbapp.nets.nets["DDR4_A0"].name = "DDR4$A0"
@@ -133,9 +151,10 @@ class TestClass:
     def test_layout_auto_parametrization(self):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_auto_parameters", "test.aedb")
+        output_path = os.path.join(self.local_scratch.path, "test_auto_parameters", "test_absolute.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = Edb(target_path, desktop_version)
-        edbapp.auto_parametrize_design(
+        parameters = edbapp.auto_parametrize_design(
             layers=True,
             layer_filter="1_Top",
             materials=False,
@@ -143,12 +162,15 @@ class TestClass:
             pads=False,
             antipads=False,
             traces=False,
+            use_relative_variables=False,
+            output_aedb_path=output_path,
+            open_aedb_at_end=False,
         )
-        assert "$1_Top_thick" in edbapp.variables
+        assert "$1_Top_value" in parameters
         edbapp.auto_parametrize_design(
-            layers=True, materials=False, via_holes=False, pads=False, antipads=False, traces=False
+            layers=True, materials=False, via_holes=False, pads=False, antipads=False, traces=False, via_offset=False
         )
-        assert len(list(edbapp.variables.keys())) == len(list(edbapp.stackup.stackup_layers.keys()))
+        assert len(list(edbapp.variables.keys())) == len(list(edbapp.stackup.layers.keys()))
         edbapp.auto_parametrize_design(
             layers=False,
             materials=True,
@@ -157,24 +179,28 @@ class TestClass:
             antipads=False,
             traces=False,
             material_filter=["copper"],
+            expand_voids_size=0.0001,
+            expand_polygons_size=0.0001,
+            via_offset=True,
         )
-        assert "$sigma_copper" in edbapp.variables
+        assert "via_offset_x" in edbapp.variables
+        assert "$sigma_copper_delta" in edbapp.variables
         edbapp.auto_parametrize_design(
             layers=False, materials=True, via_holes=False, pads=False, antipads=False, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 26
+        assert len(list(edbapp.variables.values())) == 28
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=True, pads=False, antipads=False, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 65
+        assert len(list(edbapp.variables.values())) == 29
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=True, antipads=False, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 469
+        assert len(list(edbapp.variables.values())) == 32
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=False, antipads=True, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 469
+        assert len(list(edbapp.variables.values())) == 32
         edbapp.auto_parametrize_design(
             layers=False,
             materials=False,
@@ -184,9 +210,5 @@ class TestClass:
             traces=True,
             trace_net_filter=["SFPA_Tx_Fault", "SFPA_Tx_Disable", "SFPA_SDA", "SFPA_SCL", "SFPA_Rx_LOS"],
         )
-        assert len(list(edbapp.variables.keys())) == 474
-        edbapp.auto_parametrize_design(
-            layers=False, materials=False, via_holes=False, pads=False, antipads=False, traces=True
-        )
-        assert len(list(edbapp.variables.values())) == 2308
+        assert len(list(edbapp.variables.keys())) == 33
         edbapp.close_edb()

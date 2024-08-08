@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from __future__ import absolute_import  # noreorder
 
 import re
@@ -7,7 +29,6 @@ from pyedb.dotnet.edb_core.edb_data.nets_data import (
     EDBExtendedNetData,
     EDBNetClassData,
 )
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class EdbCommon:
@@ -20,7 +41,6 @@ class EdbCommon:
 
         Returns
         -------
-        :class:` :class:`pyedb.dotnet.edb_core.dotnet.layout.LayoutDotNet`
         """
         return self._pedb.layout
 
@@ -29,7 +49,6 @@ class EdbCommon:
         """EDB logger."""
         return self._pedb.logger
 
-    @pyedb_function_handler()
     def __getitem__(self, name):
         """Get  a net from the EDB project.
 
@@ -70,12 +89,11 @@ class EdbNetClasses(EdbCommon, object):
         dict[str, :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBDifferentialPairData`]
             Dictionary of extended nets.
         """
-        net_classes = {}
-        for net_class in self._layout.net_classes:
-            net_classes[net_class.GetName()] = EDBNetClassData(self._pedb, net_class)
-        return net_classes
+        temp = {}
+        for i in self._layout.net_classes:
+            temp[i.name] = i
+        return temp
 
-    @pyedb_function_handler()
     def create(self, name, net):
         # type: (str, str|list)->EDBNetClassData
         """Create a new net class.
@@ -128,11 +146,10 @@ class EdbExtendedNets(EdbCommon, object):
             Dictionary of extended nets.
         """
         nets = {}
-        for extended_net in self._layout.extended_nets:
-            nets[extended_net.GetName()] = EDBExtendedNetData(self._pedb, extended_net)
+        for extended_net in self._pedb.layout.extended_nets:
+            nets[extended_net.name] = extended_net
         return nets
 
-    @pyedb_function_handler()
     def create(self, name, net):
         # type: (str, str|list)->EDBExtendedNetData
         """Create a new Extended net.
@@ -161,7 +178,6 @@ class EdbExtendedNets(EdbCommon, object):
 
         return self.items[name]
 
-    @pyedb_function_handler()
     def auto_identify_signal(self, resistor_below=10, inductor_below=1, capacitor_above=1e-9, exception_list=None):
         # type: (int | float, int | float, int |float, list) -> list
         """Get extended signal net and associated components.
@@ -196,7 +212,6 @@ class EdbExtendedNets(EdbCommon, object):
             resistor_below, inductor_below, capacitor_above, exception_list, True, True
         )
 
-    @pyedb_function_handler()
     def auto_identify_power(self, resistor_below=10, inductor_below=1, capacitor_above=1, exception_list=None):
         # type: (int | float, int | float, int |float, list) -> list
         """Get all extended power nets and their associated components.
@@ -257,10 +272,9 @@ class EdbDifferentialPairs(EdbCommon, object):
         """
         diff_pairs = {}
         for diff_pair in self._layout.differential_pairs:
-            diff_pairs[diff_pair.GetName()] = EDBDifferentialPairData(self._pedb, diff_pair)
+            diff_pairs[diff_pair.name] = diff_pair
         return diff_pairs
 
-    @pyedb_function_handler()
     def create(self, name, net_p, net_n):
         # type: (str, str, str) -> EDBDifferentialPairData
         """
@@ -287,7 +301,6 @@ class EdbDifferentialPairs(EdbCommon, object):
 
         return self.items[name]
 
-    @pyedb_function_handler()
     def auto_identify(self, positive_differentiator="_P", negative_differentiator="_N"):
         """Auto identify differential pairs by naming conversion.
 

@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """This module contains the ``Edb`` class.
 
 This module is implicitly loaded in HFSS 3D Layout when launched.
@@ -5,28 +27,32 @@ This module is implicitly loaded in HFSS 3D Layout when launched.
 """
 from itertools import combinations
 import os
+from pathlib import Path
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
 import traceback
+from typing import Union
 import warnings
+from zipfile import ZipFile as zpf
 
+import rtree
+
+from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.application.Variables import decompose_variable_value
+from pyedb.dotnet.edb_core.cell.layout import Layout
+from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
 from pyedb.dotnet.edb_core.components import Components
-from pyedb.dotnet.edb_core.configuration import Configuration
 from pyedb.dotnet.edb_core.dotnet.database import Database
-from pyedb.dotnet.edb_core.dotnet.layout import LayoutDotNet
 from pyedb.dotnet.edb_core.edb_data.control_file import (
     ControlFile,
     convert_technology_file,
 )
 from pyedb.dotnet.edb_core.edb_data.design_options import EdbDesignOptions
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.edb_core.edb_data.hfss_simulation_setup_data import (
-    HfssSimulationSetup,
-)
 from pyedb.dotnet.edb_core.edb_data.ports import (
     BundleWavePort,
     CircuitPort,
@@ -35,15 +61,13 @@ from pyedb.dotnet.edb_core.edb_data.ports import (
     GapPort,
     WavePort,
 )
+from pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data import (
+    RaptorXSimulationSetup,
+)
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
-from pyedb.dotnet.edb_core.edb_data.siwave_simulation_setup_data import (
-    SiwaveDCSimulationSetup,
-    SiwaveSYZSimulationSetup,
-)
 from pyedb.dotnet.edb_core.edb_data.sources import SourceType
-from pyedb.dotnet.edb_core.edb_data.terminals import Terminal
 from pyedb.dotnet.edb_core.edb_data.variables import Variable
 from pyedb.dotnet.edb_core.general import (
     LayoutObjType,
@@ -51,9 +75,9 @@ from pyedb.dotnet.edb_core.general import (
     convert_py_list_to_net_list,
 )
 from pyedb.dotnet.edb_core.hfss import EdbHfss
-from pyedb.dotnet.edb_core.layout import EdbLayout
 from pyedb.dotnet.edb_core.layout_validation import LayoutValidation
 from pyedb.dotnet.edb_core.materials import Materials
+from pyedb.dotnet.edb_core.modeler import Modeler
 from pyedb.dotnet.edb_core.net_class import (
     EdbDifferentialPairs,
     EdbExtendedNets,
@@ -63,25 +87,26 @@ from pyedb.dotnet.edb_core.nets import EdbNets
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 from pyedb.dotnet.edb_core.siwave import EdbSiwave
 from pyedb.dotnet.edb_core.stackup import Stackup
+from pyedb.dotnet.edb_core.utilities.hfss_simulation_setup import (
+    HFSSPISimulationSetup,
+    HfssSimulationSetup,
+)
+from pyedb.dotnet.edb_core.utilities.siwave_simulation_setup import (
+    SiwaveDCSimulationSetup,
+    SiwaveSimulationSetup,
+)
 from pyedb.generic.constants import AEDT_UNITS, SolverType
 from pyedb.generic.general_methods import (
     generate_unique_name,
     get_string_version,
-    inside_desktop,
-    is_ironpython,
     is_linux,
     is_windows,
-    pyedb_function_handler,
 )
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
-
-if is_linux and is_ironpython:
-    import subprocessdotnet as subprocess
-else:
-    import subprocess
+from pyedb.workflow import Workflow
 
 
 class Edb(Database):
@@ -94,7 +119,7 @@ class Edb(Database):
     edbpath : str, optional
         Full path to the ``aedb`` folder. The variable can also contain
         the path to a layout to import. Allowed formats are BRD, MCM,
-        XML (IPC2581), GDS, and DXF. The default is ``None``.
+        XML (IPC2581), GDS, ODB++(TGZ and ZIP) and DXF. The default is ``None``.
         For GDS import, the Ansys control file (also XML) should have the same
         name as the GDS file. Only the file extension differs.
     cellname : str, optional
@@ -120,7 +145,7 @@ class Edb(Database):
     --------
     Create an ``Edb`` object and a new EDB cell.
 
-    >>> from pyedb.dotnet.edb import Edb
+    >>> from pyedb import Edb
     >>> app = Edb()
 
     Add a new variable named "s1" to the ``Edb`` instance.
@@ -152,23 +177,26 @@ class Edb(Database):
 
     def __init__(
         self,
-        edbpath=None,
-        cellname=None,
-        isreadonly=False,
-        edbversion=None,
-        isaedtowned=False,
+        edbpath: Union[str, Path] = None,
+        cellname: str = None,
+        isreadonly: bool = False,
+        edbversion: str = None,
+        isaedtowned: bool = False,
         oproject=None,
-        student_version=False,
-        use_ppe=False,
-        technology_file=None,
+        student_version: bool = False,
+        use_ppe: bool = False,
+        technology_file: str = None,
+        remove_existing_aedt: bool = False,
     ):
+        if isinstance(edbpath, Path):
+            edbpath = str(edbpath)
+
         edbversion = get_string_version(edbversion)
         self._clean_variables()
         Database.__init__(self, edbversion=edbversion, student_version=student_version)
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
-        self.edbversion = edbversion
         self.isaedtowned = isaedtowned
         self.isreadonly = isreadonly
         self.cellname = cellname
@@ -191,10 +219,34 @@ class Edb(Database):
                 os.path.dirname(edbpath),
                 "pyedb_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log",
             )
+            if not isreadonly:
+                self._check_remove_project_files(edbpath, remove_existing_aedt)
 
-        if isaedtowned and (inside_desktop or settings.remote_rpc_session):
-            self.open_edb_inside_aedt()
-        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz"]:
+        if edbpath[-3:] == "zip":
+            self.edbpath = edbpath[:-4] + ".aedb"
+            working_dir = os.path.dirname(edbpath)
+            zipped_file = zpf(edbpath, "r")
+            top_level_folders = {item.split("/")[0] for item in zipped_file.namelist()}
+            if len(top_level_folders) == 1:
+                self.logger.info("Unzipping ODB++...")
+                zipped_file.extractall(working_dir)
+            else:
+                self.logger.info("Unzipping ODB++ before translating to EDB...")
+                zipped_file.extractall(edbpath[:-4])
+                self.logger.info("ODB++ unzipped successfully.")
+            zipped_file.close()
+            control_file = None
+            if technology_file:
+                if os.path.splitext(technology_file)[1] == ".xml":
+                    control_file = technology_file
+                else:
+                    control_file = convert_technology_file(technology_file, edbversion=edbversion)
+            self.logger.info("Translating ODB++ to EDB...")
+            self.import_layout_pcb(edbpath[:-4], working_dir, use_ppe=use_ppe, control_file=control_file)
+            if settings.enable_local_log_file and self.log_name:
+                self._logger.add_file_logger(self.log_name, "Edb")
+            self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)
+        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
             control_file = None
@@ -234,7 +286,6 @@ class Edb(Database):
         if ex_type:
             self.edb_exception(ex_value, ex_traceback)
 
-    @pyedb_function_handler()
     def __getitem__(self, variable_name):
         """Get or Set a variable to the Edb project. The variable can be project using ``$`` prefix or
         it can be a design variable, in which case the ``$`` is omitted.
@@ -252,7 +303,6 @@ class Edb(Database):
             return self.variables[variable_name]
         return
 
-    @pyedb_function_handler()
     def __setitem__(self, variable_name, variable_value):
         type_error_message = "Allowed values are str, numeric or two-item list with variable description."
         if type(variable_value) in [
@@ -278,6 +328,24 @@ class Edb(Database):
         if description:  # Add the variable description if a two-item list is passed for variable_value.
             self.__getitem__(variable_name).description = description
 
+    def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
+        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+        files = [aedt_file, aedt_file + ".lock"]
+        for file in files:
+            if os.path.isfile(file):
+                if not remove_existing_aedt:
+                    self.logger.warning(
+                        f"AEDT project-related file {file} exists and may need to be deleted before opening the EDB in "
+                        f"HFSS 3D Layout."
+                        # noqa: E501
+                    )
+                else:
+                    try:
+                        os.unlink(file)
+                        self.logger.info(f"Deleted AEDT project-related file {file}.")
+                    except:
+                        self.logger.info(f"Failed to delete AEDT project-related file {file}.")
+
     def _clean_variables(self):
         """Initialize internal variables and perform garbage collection."""
         self._materials = None
@@ -295,15 +363,14 @@ class Edb(Database):
         self._layout = None
         self._configuration = None
 
-    @pyedb_function_handler()
     def _init_objects(self):
         self._components = Components(self)
-        self._stackup = Stackup(self)
+        self._stackup = Stackup(self, self.layout.layer_collection)
         self._padstack = EdbPadstacks(self)
         self._siwave = EdbSiwave(self)
         self._hfss = EdbHfss(self)
         self._nets = EdbNets(self)
-        self._core_primitives = EdbLayout(self)
+        self._core_primitives = Modeler(self)
         self._stackup2 = self._stackup
         self._materials = Materials(self)
 
@@ -379,17 +446,10 @@ class Edb(Database):
 
         Returns
         -------
-        Terminal dictionary : Dict[str, pyedb.dotnet.edb_core.edb_data.terminals.Terminal]
+        Dict
         """
 
-        temp = {}
-        terminal_mapping = Terminal(self)._terminal_mapping
-        for i in self.layout.terminals:
-            terminal_type = i.ToString().split(".")[-1]
-            ter = terminal_mapping[terminal_type](self, i)
-            temp[ter.name] = ter
-
-        return temp
+        return {i.name: i for i in self.layout.terminals}
 
     @property
     def excitations(self):
@@ -446,7 +506,17 @@ class Edb(Database):
     def sources(self):
         """Get all layout sources."""
         terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [3, 4, 7]]
+        terms = [term for term in terms if not term.IsReferenceTerminal()]
         return {ter.GetName(): ExcitationSources(self, ter) for ter in terms}
+
+    @property
+    def voltage_regulator_modules(self):
+        """Get all voltage regulator modules"""
+        vrms = self.layout.voltage_regulators
+        _vrms = {}
+        for vrm in vrms:
+            _vrms[vrm.name] = vrm
+        return _vrms
 
     @property
     def probes(self):
@@ -458,7 +528,6 @@ class Edb(Database):
                     temp[name] = val
         return temp
 
-    @pyedb_function_handler()
     def open_edb(self):
         """Open EDB.
 
@@ -501,42 +570,6 @@ class Edb(Database):
 
         return True
 
-    @pyedb_function_handler()
-    def open_edb_inside_aedt(self):
-        """Open EDB inside AEDT.
-
-        Returns
-        -------
-        ``True`` when succeed ``False`` if failed : bool
-
-        """
-        self.logger.info("Opening EDB from HDL")
-        self.run_as_standalone(False)
-        if self.oproject.GetEDBHandle():
-            self.attach(self.oproject.GetEDBHandle())
-            if not self.active_db:
-                self.logger.warning("Error getting the database.")
-                self._active_cell = None
-                return None
-            self._active_cell = self.edb_api.cell.cell.FindByName(
-                self.active_db,
-                self.edb_api.cell._cell.CellType.CircuitCell,
-                self.cellname,
-            )
-            if self._active_cell is None:
-                self._active_cell = list(self.top_circuit_cells)[0]
-            if self._active_cell:
-                if not os.path.exists(self.edbpath):
-                    os.makedirs(self.edbpath)
-                self._init_objects()
-                return True
-            else:
-                return None
-        else:
-            self._active_cell = None
-            return None
-
-    @pyedb_function_handler()
     def create_edb(self):
         """Create EDB.
 
@@ -563,7 +596,6 @@ class Edb(Database):
             return True
         return None
 
-    @pyedb_function_handler()
     def import_layout_pcb(
         self,
         input_file,
@@ -574,7 +606,7 @@ class Edb(Database):
     ):
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
-        This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM and TGZ.
+        This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
 
         Parameters
         ----------
@@ -637,7 +669,6 @@ class Edb(Database):
         self.edbpath = os.path.join(working_dir, aedb_name)
         return self.open_edb()
 
-    @pyedb_function_handler()
     def export_to_ipc2581(self, ipc_path=None, units="MILLIMETER"):
         """Create an XML IPC2581 file from the active EDB.
 
@@ -734,7 +765,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> comp = edbapp.components.get_component_by_name("J1")
         """
@@ -751,7 +782,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> comp = edbapp.components.get_component_by_name("J1")
         """
@@ -794,15 +825,13 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.stackup.layers["TOP"].thickness = 4e-5
         >>> edbapp.stackup.layers["TOP"].thickness == 4e-05
         >>> edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
         """
-        if not self._stackup2 and self.active_db:
-            self._stackup2 = Stackup(self)
-        return self._stackup2
+        return Stackup(self, self.layout.layer_collection)
 
     @property
     def materials(self):
@@ -814,13 +843,12 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> edbapp.materials["FR4_epoxy"].conductivity = 1
-        >>> edbapp.materials.add_debye_material("My_Debye2", 5, 3, 0.02, 0.05, 1e5, 1e9)
-        >>> edbapp.materials.add_djordjevicsarkar_material("MyDjord2", 3.3, 0.02, 3.3)
+        >>> from pyedb import Edb
+        >>> edbapp = Edb()
+        >>> edbapp.materials.add_material("air", permittivity=1.0)
+        >>> edbapp.materials.add_debye_material("debye_mat", 5, 3, 0.02, 0.05, 1e5, 1e9)
+        >>> edbapp.materials.add_djordjevicsarkar_material("djord_mat", 3.3, 0.02, 3.3)
         """
-
         if not self._materials and self.active_db:
             self._materials = Materials(self)
         return self._materials
@@ -839,7 +867,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
         >>> edbapp.padstacks.get_pad_parameters(
@@ -861,7 +889,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
         >>> edbapp.padstacks.get_pad_parameters(
@@ -886,7 +914,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
         """
@@ -903,7 +931,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
         """
@@ -924,7 +952,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
         """
@@ -945,7 +973,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> sim_config = edbapp.new_simulation_configuration()
         >>> sim_config.mesh_freq = "10Ghz"
@@ -968,7 +996,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.nets.find_or_create_net("GND")
         >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
@@ -986,7 +1014,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb"myproject.aedb")
         >>> edbapp.nets.find_or_create_net("GND")
         >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
@@ -1007,7 +1035,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.net_classes
         """
@@ -1025,7 +1053,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.extended_nets
         """
@@ -1043,7 +1071,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.differential_pairs
         """
@@ -1065,7 +1093,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
@@ -1082,12 +1110,12 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
         if not self._core_primitives and self.active_db:
-            self._core_primitives = EdbLayout(self)
+            self._core_primitives = Modeler(self)
         return self._core_primitives
 
     @property
@@ -1098,7 +1126,7 @@ class Edb(Database):
         -------
         :class:`legacy.edb_core.dotnet.layout.Layout`
         """
-        return LayoutDotNet(self)
+        return Layout(self, self._active_cell.GetLayout())
 
     @property
     def active_layout(self):
@@ -1108,14 +1136,13 @@ class Edb(Database):
         -------
         Instance of EDB API Layout Class.
         """
-        return self.layout._layout
+        return self.layout._edb_object
 
     @property
     def layout_instance(self):
         """Edb Layout Instance."""
-        return self.layout.layout_instance
+        return self.layout._edb_object.GetLayoutInstance()
 
-    @pyedb_function_handler()
     def get_connected_objects(self, layout_object_instance):
         """Get connected objects.
 
@@ -1180,7 +1207,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> pin_net_name = edbapp.pins[424968329].netname
         """
@@ -1207,7 +1234,6 @@ class Edb(Database):
             VoltageProbe,
         ) = range(0, 9)
 
-    @pyedb_function_handler()
     def edb_value(self, val):
         """Convert a value to an EDB value. Value can be a string, float or integer. Mainly used in internal calls.
 
@@ -1223,7 +1249,6 @@ class Edb(Database):
         """
         return self.edb_api.utility.value(val)
 
-    @pyedb_function_handler()
     def point_3d(self, x, y, z=0.0):
         """Compute the Edb 3d Point Data.
 
@@ -1242,7 +1267,6 @@ class Edb(Database):
         """
         return self.edb_api.geometry.point3d_data(x, y, z)
 
-    @pyedb_function_handler()
     def point_data(self, x, y=None):
         """Compute the Edb Point Data.
 
@@ -1263,7 +1287,6 @@ class Edb(Database):
         else:
             return self.edb_api.geometry.point_data(x, y)
 
-    @pyedb_function_handler()
     def _is_file_existing_and_released(self, filename):
         if os.path.exists(filename):
             try:
@@ -1275,14 +1298,12 @@ class Edb(Database):
         else:
             return False
 
-    @pyedb_function_handler()
     def _is_file_existing(self, filename):
         if os.path.exists(filename):
             return True
         else:
             return False
 
-    @pyedb_function_handler()
     def _wait_for_file_release(self, timeout=30, file_to_release=None):
         if not file_to_release:
             file_to_release = os.path.join(self.edbpath)
@@ -1295,7 +1316,6 @@ class Edb(Database):
             else:
                 time.sleep(0.250)
 
-    @pyedb_function_handler()
     def _wait_for_file_exists(self, timeout=30, file_to_release=None, wait_count=4):
         if not file_to_release:
             file_to_release = os.path.join(self.edbpath)
@@ -1314,7 +1334,6 @@ class Edb(Database):
                 times = 0
                 time.sleep(0.250)
 
-    @pyedb_function_handler()
     def close_edb(self):
         """Close EDB and cleanup variables.
 
@@ -1335,7 +1354,6 @@ class Edb(Database):
         self._clean_variables()
         return True
 
-    @pyedb_function_handler()
     def save_edb(self):
         """Save the EDB file.
 
@@ -1352,7 +1370,6 @@ class Edb(Database):
         self.logger.info("EDB file save time: {0:.2f}ms".format(elapsed_time * 1000.0))
         return True
 
-    @pyedb_function_handler()
     def save_edb_as(self, fname):
         """Save the EDB file as another file.
 
@@ -1386,7 +1403,6 @@ class Edb(Database):
             self._logger.remove_file_logger(origin_name)
         return True
 
-    @pyedb_function_handler()
     def execute(self, func):
         """Execute a function.
 
@@ -1404,7 +1420,6 @@ class Edb(Database):
         """
         return self.edb_api.utility.utility.Command.Execute(func)
 
-    @pyedb_function_handler()
     def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False):
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
@@ -1437,7 +1452,6 @@ class Edb(Database):
         else:
             return False
 
-    @pyedb_function_handler()
     def import_gds_file(
         self,
         inputGDS,
@@ -1480,26 +1494,22 @@ class Edb(Database):
             ``True`` when successful, ``False`` when failed.
 
         """
-        if tech_file or map_file:
-            control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(inputGDS)[-1][:-3] + "xml")
-            control_file = ControlFile(xml_input=control_file, tecnhology=tech_file, layer_map=map_file).write_xml(
-                control_file_temp
-            )
-        elif tech_file:
+        if not is_linux and tech_file:
             self.logger.error("Technology files are supported only in Linux. Use control file instead.")
             return False
+        control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(inputGDS)[-1][:-3] + "xml")
+        ControlFile(xml_input=control_file, tecnhology=tech_file, layer_map=map_file).write_xml(control_file_temp)
         if self.import_layout_pcb(
             inputGDS,
             working_dir=WorkDir,
             anstranslator_full_path=anstranslator_full_path,
             use_ppe=use_ppe,
-            control_file=control_file,
+            control_file=control_file_temp,
         ):
             return True
         else:
             return False
 
-    @pyedb_function_handler()
     def _create_extent(
         self,
         net_signals,
@@ -1511,6 +1521,7 @@ class Edb(Database):
         reference_list=[],
         include_pingroups=True,
         pins_to_preserve=None,
+        inlcude_voids_in_extents=False,
     ):
         if extent_type in [
             "Conforming",
@@ -1527,6 +1538,7 @@ class Edb(Database):
                     smart_cut,
                     reference_list,
                     pins_to_preserve,
+                    inlcude_voids_in_extents=inlcude_voids_in_extents,
                 )
             else:
                 _poly = self.layout.expanded_extent(
@@ -1575,7 +1587,6 @@ class Edb(Database):
                 _poly = self.edb_api.geometry.polygon_data.get_convex_hull_of_polygons(_poly_list)
         return _poly
 
-    @pyedb_function_handler()
     def _create_conformal(
         self,
         net_signals,
@@ -1586,6 +1597,7 @@ class Edb(Database):
         smart_cutout=False,
         reference_list=[],
         pins_to_preserve=None,
+        inlcude_voids_in_extents=False,
     ):
         names = []
         _polys = []
@@ -1603,7 +1615,7 @@ class Edb(Database):
 
         for prim in self.modeler.primitives:
             if prim is not None and prim.net_name in names:
-                _polys.append(prim.primitive_object.GetPolygonData())
+                _polys.append(prim)
         if smart_cutout:
             objs_data = self._smart_cut(reference_list, expansion_size)
             _polys.extend(objs_data)
@@ -1612,9 +1624,33 @@ class Edb(Database):
         while k < 10:
             unite_polys = []
             for i in _polys:
-                obj_data = i.Expand(expansion_size, tolerance, round_corner, round_extension)
+                if "PolygonData" not in str(i):
+                    obj_data = i.primitive_object.GetPolygonData().Expand(
+                        expansion_size, tolerance, round_corner, round_extension
+                    )
+                else:
+                    obj_data = i.Expand(expansion_size, tolerance, round_corner, round_extension)
                 if obj_data:
-                    unite_polys.extend(list(obj_data))
+                    if not inlcude_voids_in_extents:
+                        unite_polys.extend(list(obj_data))
+                    else:
+                        voids_poly = []
+                        try:
+                            if i.HasVoids():
+                                area = i.area()
+                                for void in i.Voids:
+                                    void_polydata = void.GetPolygonData()
+                                    if void_polydata.Area() >= 0.05 * area:
+                                        voids_poly.append(void_polydata)
+                                if voids_poly:
+                                    obj_data = obj_data[0].Subtract(
+                                        convert_py_list_to_net_list(list(obj_data)),
+                                        convert_py_list_to_net_list(voids_poly),
+                                    )
+                        except:
+                            pass
+                        finally:
+                            unite_polys.extend(list(obj_data))
             _poly_unite = self.edb_api.geometry.polygon_data.unite(unite_polys)
             if len(_poly_unite) == 1:
                 self.logger.info("Correctly computed Extension at first iteration.")
@@ -1629,7 +1665,6 @@ class Edb(Database):
             areas = [i.Area() for i in _poly_unite]
             return _poly_unite[areas.index(max(areas))]
 
-    @pyedb_function_handler()
     def _smart_cut(self, reference_list=[], expansion_size=1e-12):
         from pyedb.dotnet.clr_module import Tuple
 
@@ -1657,7 +1692,6 @@ class Edb(Database):
             _polys.append(self.edb_api.geometry.polygon_data.create_from_bbox(points))
         return _polys
 
-    @pyedb_function_handler()
     def _create_convex_hull(
         self,
         net_signals,
@@ -1692,7 +1726,6 @@ class Edb(Database):
         _poly = _poly.Expand(expansion_size, tolerance, round_corner, round_extension)[0]
         return _poly
 
-    @pyedb_function_handler()
     def cutout(
         self,
         signal_list=None,
@@ -1718,6 +1751,7 @@ class Edb(Database):
         preserve_components_with_model=False,
         simple_pad_check=True,
         keep_lines_as_path=False,
+        include_voids_in_extents=False,
     ):
         """Create a cutout using an approach entirely based on PyAEDT.
         This method replaces all legacy cutout methods in PyAEDT.
@@ -1794,6 +1828,11 @@ class Edb(Database):
             This feature works only in Electronics Desktop (3D Layout).
             If the flag is set to ``True`` it can cause issues in SiWave once the Edb is imported.
             Default is ``False`` to generate PolygonData of cut lines.
+        include_voids_in_extents : bool, optional
+            Whether to compute and include voids in pyaedt extent before the cutout. Cutout time can be affected.
+            It works only with Conforming cutout.
+            Default is ``False`` to generate extent without voids.
+
 
         Returns
         -------
@@ -1803,7 +1842,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb(r'C:\\test.aedb', edbversion="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
@@ -1853,6 +1892,7 @@ class Edb(Database):
                 use_pyaedt_extent_computing=use_pyaedt_extent_computing,
                 check_terminals=check_terminals,
                 include_pingroups=include_pingroups,
+                inlcude_voids_in_extents=include_voids_in_extents,
             )
         else:
             legacy_path = self.edbpath
@@ -1886,6 +1926,7 @@ class Edb(Database):
                         include_partial=include_partial_instances,
                         simple_pad_check=simple_pad_check,
                         keep_lines_as_path=keep_lines_as_path,
+                        inlcude_voids_in_extents=include_voids_in_extents,
                     )
                     if self.are_port_reference_terminals_connected():
                         if output_aedb_path:
@@ -1926,6 +1967,7 @@ class Edb(Database):
                     include_partial=include_partial_instances,
                     simple_pad_check=simple_pad_check,
                     keep_lines_as_path=keep_lines_as_path,
+                    inlcude_voids_in_extents=include_voids_in_extents,
                 )
             if result and not open_cutout_at_end and self.edbpath != legacy_path:
                 self.save_edb()
@@ -1934,7 +1976,6 @@ class Edb(Database):
                 self.open_edb()
             return result
 
-    @pyedb_function_handler()
     def _create_cutout_legacy(
         self,
         signal_list=[],
@@ -1948,6 +1989,7 @@ class Edb(Database):
         remove_single_pin_components=False,
         check_terminals=False,
         include_pingroups=True,
+        inlcude_voids_in_extents=False,
     ):
         expansion_size = self.edb_value(expansion_size).ToDouble()
 
@@ -1968,8 +2010,14 @@ class Edb(Database):
             smart_cut=check_terminals,
             reference_list=reference_list,
             include_pingroups=include_pingroups,
+            inlcude_voids_in_extents=inlcude_voids_in_extents,
         )
-
+        _poly1 = _poly.CreateFromArcs(_poly.GetArcData(), True)
+        if inlcude_voids_in_extents:
+            for hole in list(_poly.Holes):
+                if hole.Area() >= 0.05 * _poly1.Area():
+                    _poly1.AddHole(hole)
+        _poly = _poly1
         # Create new cutout cell/design
         included_nets_list = signal_list + reference_list
         included_nets = convert_py_list_to_net_list(
@@ -2049,7 +2097,6 @@ class Edb(Database):
                 self.components.refresh_components()
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(_poly.GetPolygonWithoutArcs().Points)]
 
-    @pyedb_function_handler()
     def create_cutout(
         self,
         signal_list=[],
@@ -2111,7 +2158,6 @@ class Edb(Database):
             use_pyaedt_extent_computing=use_pyaedt_extent_computing,
         )
 
-    @pyedb_function_handler()
     def _create_cutout_multithread(
         self,
         signal_list=[],
@@ -2132,10 +2178,8 @@ class Edb(Database):
         include_partial=False,
         simple_pad_check=True,
         keep_lines_as_path=False,
+        inlcude_voids_in_extents=False,
     ):
-        if is_ironpython:  # pragma: no cover
-            self.logger.error("Method working only in Cpython")
-            return False
         from concurrent.futures import ThreadPoolExecutor
 
         if output_aedb_path:
@@ -2229,10 +2273,18 @@ class Edb(Database):
                 reference_list=reference_list,
                 include_pingroups=include_pingroups,
                 pins_to_preserve=pins_to_preserve,
+                inlcude_voids_in_extents=inlcude_voids_in_extents,
             )
-            if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1] and extent_defeature > 0:
-                _poly = _poly.Defeature(extent_defeature)
+            if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1]:
+                if extent_defeature > 0:
+                    _poly = _poly.Defeature(extent_defeature)
 
+                _poly1 = _poly.CreateFromArcs(_poly.GetArcData(), True)
+                if inlcude_voids_in_extents:
+                    for hole in list(_poly.Holes):
+                        if hole.Area() >= 0.05 * _poly1.Area():
+                            _poly1.AddHole(hole)
+                _poly = _poly1
         if not _poly or _poly.IsNull():
             self._logger.error("Failed to create Extent.")
             return []
@@ -2271,29 +2323,39 @@ class Edb(Database):
             pdata = prim_1.polygon_data.edb_api
             int_data = _poly.GetIntersectionType(pdata)
             if int_data == 2:
-                return
+                if not inlcude_voids_in_extents:
+                    return
+                skip = False
+                for hole in list(_poly.Holes):
+                    if hole.GetIntersectionType(pdata) == 0:
+                        prims_to_delete.append(prim_1)
+                        return
+                    elif hole.GetIntersectionType(pdata) == 1:
+                        skip = True
+                if skip:
+                    return
             elif int_data == 0:
                 prims_to_delete.append(prim_1)
-            else:
-                list_poly = intersect(_poly, pdata)
-                if list_poly:
-                    net = prim_1.net_name
-                    voids = prim_1.voids
-                    for p in list_poly:
-                        if p.IsNull():
-                            continue
-                        # points = list(p.Points)
-                        list_void = []
-                        if voids:
-                            voids_data = [void.polygon_data.edb_api for void in voids]
-                            list_prims = subtract(p, voids_data)
-                            for prim in list_prims:
-                                if not prim.IsNull():
-                                    poly_to_create.append([prim, prim_1.layer_name, net, list_void])
-                        else:
-                            poly_to_create.append([p, prim_1.layer_name, net, list_void])
+                return
+            list_poly = intersect(_poly, pdata)
+            if list_poly:
+                net = prim_1.net_name
+                voids = prim_1.voids
+                for p in list_poly:
+                    if p.IsNull():
+                        continue
+                    # points = list(p.Points)
+                    list_void = []
+                    if voids:
+                        voids_data = [void.polygon_data.edb_api for void in voids]
+                        list_prims = subtract(p, voids_data)
+                        for prim in list_prims:
+                            if not prim.IsNull():
+                                poly_to_create.append([prim, prim_1.layer.name, net, list_void])
+                    else:
+                        poly_to_create.append([p, prim_1.layer.name, net, list_void])
 
-                prims_to_delete.append(prim_1)
+            prims_to_delete.append(prim_1)
 
         def pins_clean(pinst):
             if not pinst.in_polygon(_poly, include_partial=include_partial, simple_check=simple_pad_check):
@@ -2309,7 +2371,9 @@ class Edb(Database):
         for pin in pins_to_delete:
             pin.delete()
 
-        self.logger.info_timer("Padstack Instances removal completed")
+        self.logger.info_timer(
+            "Padstack Instances removal completed. {} instances removed.".format(len(pins_to_delete))
+        )
         self.logger.reset_timer()
 
         # with ThreadPoolExecutor(number_of_threads) as pool:
@@ -2317,8 +2381,10 @@ class Edb(Database):
 
         for item in reference_paths:
             clip_path(item)
-        with ThreadPoolExecutor(number_of_threads) as pool:
-            pool.map(lambda item: clean_prim(item), reference_prims)
+        for prim in reference_prims:  # removing multithreading as failing with new layer from primitive
+            clean_prim(prim)
+        # with ThreadPoolExecutor(number_of_threads) as pool:
+        #    pool.map(lambda item: clean_prim(item), reference_prims)
 
         for el in poly_to_create:
             self.modeler.create_polygon(el[0], el[1], net_name=el[2], voids=el[3])
@@ -2326,11 +2392,11 @@ class Edb(Database):
         for prim in prims_to_delete:
             prim.delete()
 
-        self.logger.info_timer("Primitives cleanup completed")
+        self.logger.info_timer("Primitives cleanup completed. {} primitives deleted.".format(len(prims_to_delete)))
         self.logger.reset_timer()
 
         i = 0
-        for _, val in self.components.components.items():
+        for _, val in self.components.instances.items():
             if val.numpins == 0:
                 val.edbcomponent.Delete()
                 i += 1
@@ -2347,7 +2413,6 @@ class Edb(Database):
         self.logger.reset_timer()
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(_poly.GetPolygonWithoutArcs().Points)]
 
-    @pyedb_function_handler()
     def create_cutout_multithread(
         self,
         signal_list=[],
@@ -2420,7 +2485,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb(r'C:\\test.aedb', edbversion="2022.2")
         >>> edb.logger.info_timer("Edb Opening")
         >>> edb.logger.reset_timer()
@@ -2456,7 +2521,6 @@ class Edb(Database):
             return_extent=return_extent,
         )
 
-    @pyedb_function_handler()
     def get_conformal_polygon_from_netlist(self, netlist=None):
         """Return an EDB conformal polygon based on a netlist.
 
@@ -2493,7 +2557,6 @@ class Edb(Database):
         else:
             return False
 
-    @pyedb_function_handler()
     def number_with_units(self, value, units=None):
         """Convert a number to a string with units. If value is a string, it's returned as is.
 
@@ -2517,29 +2580,6 @@ class Edb(Database):
         else:
             return "{0}{1}".format(value, units)
 
-    @pyedb_function_handler()
-    def arg_with_dim(self, Value, sUnits):
-        """Convert a number to a string with units. If value is a string, it's returned as is.
-
-        .. deprecated:: 0.6.56
-           Use :func:`number_with_units` property instead.
-
-        Parameters
-        ----------
-        Value : float, int, str
-            Input  number or string.
-        sUnits : optional
-            Units for formatting. The default is ``None``, which uses ``"meter"``.
-
-        Returns
-        -------
-        str
-           String concatenating the value and unit.
-
-        """
-        warnings.warn("Use :func:`number_with_units` instead.", DeprecationWarning)
-        return self.number_with_units(Value, sUnits)
-
     def _decompose_variable_value(self, value, unit_system=None):
         val, units = decompose_variable_value(value)
         if units and unit_system and units in AEDT_UNITS[unit_system]:
@@ -2547,7 +2587,6 @@ class Edb(Database):
         else:
             return val
 
-    @pyedb_function_handler()
     def _create_cutout_on_point_list(
         self,
         point_list,
@@ -2648,20 +2687,12 @@ class Edb(Database):
 
         for void_circle in voids_to_add:
             if void_circle.type == "Circle":
-                if is_ironpython:  # pragma: no cover
-                    (
-                        res,
-                        center_x,
-                        center_y,
-                        radius,
-                    ) = void_circle.primitive_object.GetParameters()
-                else:
-                    (
-                        res,
-                        center_x,
-                        center_y,
-                        radius,
-                    ) = void_circle.primitive_object.GetParameters(0.0, 0.0, 0.0)
+                (
+                    res,
+                    center_x,
+                    center_y,
+                    radius,
+                ) = void_circle.primitive_object.GetParameters(0.0, 0.0, 0.0)
                 cloned_circle = self.edb_api.cell.primitive.circle.create(
                     layout,
                     void_circle.layer_name,
@@ -2734,7 +2765,6 @@ class Edb(Database):
                         pass
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(polygonData.GetPolygonWithoutArcs().Points)]
 
-    @pyedb_function_handler()
     def create_cutout_on_point_list(
         self,
         point_list,
@@ -2788,7 +2818,6 @@ class Edb(Database):
             keep_voids=keep_voids,
         )
 
-    @pyedb_function_handler()
     def write_export3d_option_config_file(self, path_to_output, config_dictionaries=None):
         """Write the options for a 3D export to a configuration file.
 
@@ -2826,7 +2855,6 @@ class Edb(Database):
                 f.write(el + " " + str(val) + "\n")
         return os.path.join(path_to_output, "options.config")
 
-    @pyedb_function_handler()
     def export_hfss(
         self,
         path_to_output,
@@ -2860,7 +2888,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2023.2")
 
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
@@ -2870,7 +2898,6 @@ class Edb(Database):
         siwave_s = SiwaveSolve(self.edbpath, aedt_installer_path=self.base_path)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
 
-    @pyedb_function_handler()
     def export_q3d(
         self,
         path_to_output,
@@ -2904,7 +2931,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
         >>> options_config = {'UNITE_NETS' : 1, 'LAUNCH_Q3D' : 0}
         >>> edb.write_export3d_option_config_file(r"C:\temp", options_config)
@@ -2921,7 +2948,6 @@ class Edb(Database):
             hidden=hidden,
         )
 
-    @pyedb_function_handler()
     def export_maxwell(
         self,
         path_to_output,
@@ -2955,7 +2981,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
 
         >>> edb = Edb(edbpath=r"C:\temp\myproject.aedb", edbversion="2021.2")
 
@@ -2973,7 +2999,6 @@ class Edb(Database):
             hidden=hidden,
         )
 
-    @pyedb_function_handler()
     def solve_siwave(self):
         """Close EDB and solve it with Siwave.
 
@@ -2990,7 +3015,6 @@ class Edb(Database):
         process.solve()
         return self.edbpath[:-5] + ".siw"
 
-    @pyedb_function_handler()
     def export_siwave_dc_results(
         self,
         siwave_project,
@@ -3053,7 +3077,6 @@ class Edb(Database):
             hidden=True,
         )
 
-    @pyedb_function_handler()
     def variable_exists(self, variable_name):
         """Check if a variable exists or not.
 
@@ -3078,7 +3101,6 @@ class Edb(Database):
             return True, var_server
         return False, var_server
 
-    @pyedb_function_handler()
     def get_variable(self, variable_name):
         """Return Variable Value if variable exists.
 
@@ -3097,7 +3119,6 @@ class Edb(Database):
         self.logger.info("Variable %s doesn't exists.", variable_name)
         return None
 
-    @pyedb_function_handler()
     def add_project_variable(self, variable_name, variable_value):
         """Add a variable to edb database (project). The variable will have the prefix `$`.
 
@@ -3119,7 +3140,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> boolean_1, ant_length = edb_app.add_project_variable("my_local_variable", "1cm")
         >>> print(edb_app["$my_local_variable"])    #using getitem
@@ -3130,7 +3151,6 @@ class Edb(Database):
             variable_name = "${}".format(variable_name)
         return self.add_design_variable(variable_name=variable_name, variable_value=variable_value)
 
-    @pyedb_function_handler()
     def add_design_variable(self, variable_name, variable_value, is_parameter=False):
         """Add a variable to edb. The variable can be a design one or a project variable (using ``$`` prefix).
 
@@ -3156,7 +3176,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> boolean_1, ant_length = edb_app.add_design_variable("my_local_variable", "1cm")
         >>> print(edb_app["my_local_variable"])    #using getitem
@@ -3173,7 +3193,6 @@ class Edb(Database):
         self.logger.error("Variable %s already exists.", variable_name)
         return False, var_server[1]
 
-    @pyedb_function_handler()
     def change_design_variable_value(self, variable_name, variable_value):
         """Change a variable value.
 
@@ -3195,7 +3214,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> boolean, ant_length = edb_app.add_design_variable("ant_length", "1cm")
         >>> boolean, ant_length = edb_app.change_design_variable_value("ant_length", "1m")
@@ -3208,7 +3227,6 @@ class Edb(Database):
         self.logger.error("Variable %s does not exists.", variable_name)
         return False, var_server[1]
 
-    @pyedb_function_handler()
     def get_bounding_box(self):
         """Get the layout bounding box.
 
@@ -3223,7 +3241,6 @@ class Edb(Database):
             [bbox.Item2.X.ToDouble(), bbox.Item2.Y.ToDouble()],
         ]
 
-    @pyedb_function_handler()
     def build_simulation_project(self, simulation_setup):
         # type: (SimulationConfiguration) -> bool
         """Build a ready-to-solve simulation project.
@@ -3242,7 +3259,7 @@ class Edb(Database):
         Examples
         --------
 
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> from pyedb.dotnet.edb_core.edb_data.simulation_configuration import SimulationConfiguration
         >>> config_file = path_configuration_file
         >>> source_file = path_to_edb_folder
@@ -3256,165 +3273,157 @@ class Edb(Database):
         legacy_name = self.edbpath
         if simulation_setup.output_aedb:
             self.save_edb_as(simulation_setup.output_aedb)
-        try:
-            if simulation_setup.signal_layer_etching_instances:
-                for layer in simulation_setup.signal_layer_etching_instances:
-                    if layer in self.stackup.layers:
-                        idx = simulation_setup.signal_layer_etching_instances.index(layer)
-                        if len(simulation_setup.etching_factor_instances) > idx:
-                            self.stackup[layer].etch_factor = float(simulation_setup.etching_factor_instances[idx])
+        if simulation_setup.signal_layer_etching_instances:
+            for layer in simulation_setup.signal_layer_etching_instances:
+                if layer in self.stackup.layers:
+                    idx = simulation_setup.signal_layer_etching_instances.index(layer)
+                    if len(simulation_setup.etching_factor_instances) > idx:
+                        self.stackup[layer].etch_factor = float(simulation_setup.etching_factor_instances[idx])
 
-            if not simulation_setup.signal_nets and simulation_setup.components:
-                nets_to_include = []
-                pnets = list(self.nets.power.keys())[:]
-                for el in simulation_setup.components:
-                    nets_to_include.append([i for i in self.components[el].nets if i not in pnets])
-                simulation_setup.signal_nets = [
-                    i
-                    for i in list(set.intersection(*map(set, nets_to_include)))
-                    if i not in simulation_setup.power_nets and i != ""
-                ]
-            self.nets.classify_nets(simulation_setup.power_nets, simulation_setup.signal_nets)
-            if not simulation_setup.power_nets or not simulation_setup.signal_nets:
-                self.logger.info("Disabling cutout as no signals or power nets have been defined.")
-                simulation_setup.do_cutout_subdesign = False
-            if simulation_setup.do_cutout_subdesign:
-                self.logger.info("Cutting out using method: {0}".format(simulation_setup.cutout_subdesign_type))
-                if simulation_setup.use_default_cutout:
-                    old_cell_name = self.active_cell.GetName()
-                    if self.cutout(
-                        signal_list=simulation_setup.signal_nets,
-                        reference_list=simulation_setup.power_nets,
-                        expansion_size=simulation_setup.cutout_subdesign_expansion,
-                        use_round_corner=simulation_setup.cutout_subdesign_round_corner,
-                        extent_type=simulation_setup.cutout_subdesign_type,
-                        use_pyaedt_cutout=False,
-                        use_pyaedt_extent_computing=False,
-                    ):
-                        self.logger.info("Cutout processed.")
-                        old_cell = self.active_cell.FindByName(
-                            self.db,
-                            self.edb_api.cell.CellType.CircuitCell,
-                            old_cell_name,
-                        )
-                        if old_cell:
-                            old_cell.Delete()
-                    else:  # pragma: no cover
-                        self.logger.error("Cutout failed.")
-                else:
-                    self.logger.info("Cutting out using method: {0}".format(simulation_setup.cutout_subdesign_type))
-                    self.cutout(
-                        signal_list=simulation_setup.signal_nets,
-                        reference_list=simulation_setup.power_nets,
-                        expansion_size=simulation_setup.cutout_subdesign_expansion,
-                        use_round_corner=simulation_setup.cutout_subdesign_round_corner,
-                        extent_type=simulation_setup.cutout_subdesign_type,
-                        use_pyaedt_cutout=True,
-                        use_pyaedt_extent_computing=True,
-                        remove_single_pin_components=True,
-                    )
+        if not simulation_setup.signal_nets and simulation_setup.components:
+            nets_to_include = []
+            pnets = list(self.nets.power.keys())[:]
+            for el in simulation_setup.components:
+                nets_to_include.append([i for i in self.components[el].nets if i not in pnets])
+            simulation_setup.signal_nets = [
+                i
+                for i in list(set.intersection(*map(set, nets_to_include)))
+                if i not in simulation_setup.power_nets and i != ""
+            ]
+        self.nets.classify_nets(simulation_setup.power_nets, simulation_setup.signal_nets)
+        if not simulation_setup.power_nets or not simulation_setup.signal_nets:
+            self.logger.info("Disabling cutout as no signals or power nets have been defined.")
+            simulation_setup.do_cutout_subdesign = False
+        if simulation_setup.do_cutout_subdesign:
+            self.logger.info("Cutting out using method: {0}".format(simulation_setup.cutout_subdesign_type))
+            if simulation_setup.use_default_cutout:
+                old_cell_name = self.active_cell.GetName()
+                if self.cutout(
+                    signal_list=simulation_setup.signal_nets,
+                    reference_list=simulation_setup.power_nets,
+                    expansion_size=simulation_setup.cutout_subdesign_expansion,
+                    use_round_corner=simulation_setup.cutout_subdesign_round_corner,
+                    extent_type=simulation_setup.cutout_subdesign_type,
+                    use_pyaedt_cutout=False,
+                    use_pyaedt_extent_computing=False,
+                ):
                     self.logger.info("Cutout processed.")
+                    old_cell = self.active_cell.FindByName(
+                        self.db,
+                        self.edb_api.cell.CellType.CircuitCell,
+                        old_cell_name,
+                    )
+                    if old_cell:
+                        old_cell.Delete()
+                else:  # pragma: no cover
+                    self.logger.error("Cutout failed.")
             else:
-                if simulation_setup.include_only_selected_nets:
-                    included_nets = simulation_setup.signal_nets + simulation_setup.power_nets
-                    nets_to_remove = [
-                        net.name for net in list(self.nets.nets.values()) if not net.name in included_nets
-                    ]
-                    self.nets.delete(nets_to_remove)
-            self.logger.info("Deleting existing ports.")
-            map(lambda port: port.Delete(), self.layout.terminals)
-            map(lambda pg: pg.Delete(), self.layout.pin_groups)
-            if simulation_setup.solver_type == SolverType.Hfss3dLayout:
-                if simulation_setup.generate_excitations:
-                    self.logger.info("Creating HFSS ports for signal nets.")
-                    source_type = SourceType.CoaxPort
-                    if not simulation_setup.generate_solder_balls:
-                        source_type = SourceType.CircPort
-                    for cmp in simulation_setup.components:
-                        if isinstance(cmp, str):  # keep legacy component
+                self.logger.info("Cutting out using method: {0}".format(simulation_setup.cutout_subdesign_type))
+                self.cutout(
+                    signal_list=simulation_setup.signal_nets,
+                    reference_list=simulation_setup.power_nets,
+                    expansion_size=simulation_setup.cutout_subdesign_expansion,
+                    use_round_corner=simulation_setup.cutout_subdesign_round_corner,
+                    extent_type=simulation_setup.cutout_subdesign_type,
+                    use_pyaedt_cutout=True,
+                    use_pyaedt_extent_computing=True,
+                    remove_single_pin_components=True,
+                )
+                self.logger.info("Cutout processed.")
+        else:
+            if simulation_setup.include_only_selected_nets:
+                included_nets = simulation_setup.signal_nets + simulation_setup.power_nets
+                nets_to_remove = [net.name for net in list(self.nets.nets.values()) if not net.name in included_nets]
+                self.nets.delete(nets_to_remove)
+        self.logger.info("Deleting existing ports.")
+        map(lambda port: port.Delete(), self.layout.terminals)
+        map(lambda pg: pg.Delete(), self.layout.pin_groups)
+        if simulation_setup.solver_type == SolverType.Hfss3dLayout:
+            if simulation_setup.generate_excitations:
+                self.logger.info("Creating HFSS ports for signal nets.")
+                source_type = SourceType.CoaxPort
+                if not simulation_setup.generate_solder_balls:
+                    source_type = SourceType.CircPort
+                for cmp in simulation_setup.components:
+                    if isinstance(cmp, str):  # keep legacy component
+                        self.components.create_port_on_component(
+                            cmp,
+                            net_list=simulation_setup.signal_nets,
+                            do_pingroup=False,
+                            reference_net=simulation_setup.power_nets,
+                            port_type=source_type,
+                        )
+                    elif isinstance(cmp, dict):
+                        if "refdes" in cmp:
+                            if not "solder_balls_height" in cmp:  # pragma no cover
+                                cmp["solder_balls_height"] = None
+                            if not "solder_balls_size" in cmp:  # pragma no cover
+                                cmp["solder_balls_size"] = None
+                                cmp["solder_balls_mid_size"] = None
+                            if not "solder_balls_mid_size" in cmp:  # pragma no cover
+                                cmp["solder_balls_mid_size"] = None
                             self.components.create_port_on_component(
-                                cmp,
+                                cmp["refdes"],
                                 net_list=simulation_setup.signal_nets,
                                 do_pingroup=False,
                                 reference_net=simulation_setup.power_nets,
                                 port_type=source_type,
+                                solder_balls_height=cmp["solder_balls_height"],
+                                solder_balls_size=cmp["solder_balls_size"],
+                                solder_balls_mid_size=cmp["solder_balls_mid_size"],
                             )
-                        elif isinstance(cmp, dict):
-                            if "refdes" in cmp:
-                                if not "solder_balls_height" in cmp:  # pragma no cover
-                                    cmp["solder_balls_height"] = None
-                                if not "solder_balls_size" in cmp:  # pragma no cover
-                                    cmp["solder_balls_size"] = None
-                                    cmp["solder_balls_mid_size"] = None
-                                if not "solder_balls_mid_size" in cmp:  # pragma no cover
-                                    cmp["solder_balls_mid_size"] = None
-                                self.components.create_port_on_component(
-                                    cmp["refdes"],
-                                    net_list=simulation_setup.signal_nets,
-                                    do_pingroup=False,
-                                    reference_net=simulation_setup.power_nets,
-                                    port_type=source_type,
-                                    solder_balls_height=cmp["solder_balls_height"],
-                                    solder_balls_size=cmp["solder_balls_size"],
-                                    solder_balls_mid_size=cmp["solder_balls_mid_size"],
-                                )
-                    if simulation_setup.generate_solder_balls and not self.hfss.set_coax_port_attributes(
-                        simulation_setup
-                    ):  # pragma: no cover
-                        self.logger.error("Failed to configure coaxial port attributes.")
-                    self.logger.info("Number of ports: {}".format(self.hfss.get_ports_number()))
-                    self.logger.info("Configure HFSS extents.")
-                    if (
-                        simulation_setup.generate_solder_balls and simulation_setup.trim_reference_size
-                    ):  # pragma: no cover
-                        self.logger.info(
-                            "Trimming the reference plane for coaxial ports: {0}".format(
-                                bool(simulation_setup.trim_reference_size)
-                            )
+                if simulation_setup.generate_solder_balls and not self.hfss.set_coax_port_attributes(
+                    simulation_setup
+                ):  # pragma: no cover
+                    self.logger.error("Failed to configure coaxial port attributes.")
+                self.logger.info("Number of ports: {}".format(self.hfss.get_ports_number()))
+                self.logger.info("Configure HFSS extents.")
+                if simulation_setup.generate_solder_balls and simulation_setup.trim_reference_size:  # pragma: no cover
+                    self.logger.info(
+                        "Trimming the reference plane for coaxial ports: {0}".format(
+                            bool(simulation_setup.trim_reference_size)
                         )
-                        self.hfss.trim_component_reference_size(simulation_setup)  # pragma: no cover
-                self.hfss.configure_hfss_extents(simulation_setup)
-                if not self.hfss.configure_hfss_analysis_setup(simulation_setup):
-                    self.logger.error("Failed to configure HFSS simulation setup.")
-            if simulation_setup.solver_type == SolverType.SiwaveSYZ:
-                if simulation_setup.generate_excitations:
-                    for cmp in simulation_setup.components:
-                        if isinstance(cmp, str):  # keep legacy
+                    )
+                    self.hfss.trim_component_reference_size(simulation_setup)  # pragma: no cover
+            self.hfss.configure_hfss_extents(simulation_setup)
+            if not self.hfss.configure_hfss_analysis_setup(simulation_setup):
+                self.logger.error("Failed to configure HFSS simulation setup.")
+        if simulation_setup.solver_type == SolverType.SiwaveSYZ:
+            if simulation_setup.generate_excitations:
+                for cmp in simulation_setup.components:
+                    if isinstance(cmp, str):  # keep legacy
+                        self.components.create_port_on_component(
+                            cmp,
+                            net_list=simulation_setup.signal_nets,
+                            do_pingroup=simulation_setup.do_pingroup,
+                            reference_net=simulation_setup.power_nets,
+                            port_type=SourceType.CircPort,
+                        )
+                    elif isinstance(cmp, dict):
+                        if "refdes" in cmp:  # pragma no cover
                             self.components.create_port_on_component(
-                                cmp,
+                                cmp["refdes"],
                                 net_list=simulation_setup.signal_nets,
                                 do_pingroup=simulation_setup.do_pingroup,
                                 reference_net=simulation_setup.power_nets,
                                 port_type=SourceType.CircPort,
                             )
-                        elif isinstance(cmp, dict):
-                            if "refdes" in cmp:  # pragma no cover
-                                self.components.create_port_on_component(
-                                    cmp["refdes"],
-                                    net_list=simulation_setup.signal_nets,
-                                    do_pingroup=simulation_setup.do_pingroup,
-                                    reference_net=simulation_setup.power_nets,
-                                    port_type=SourceType.CircPort,
-                                )
-                self.logger.info("Configuring analysis setup.")
-                if not self.siwave.configure_siw_analysis_setup(simulation_setup):  # pragma: no cover
-                    self.logger.error("Failed to configure Siwave simulation setup.")
-            if simulation_setup.solver_type == SolverType.SiwaveDC:
-                if simulation_setup.generate_excitations:
-                    self.components.create_source_on_component(simulation_setup.sources)
-                if not self.siwave.configure_siw_analysis_setup(simulation_setup):  # pragma: no cover
-                    self.logger.error("Failed to configure Siwave simulation setup.")
-            self.padstacks.check_and_fix_via_plating()
-            self.save_edb()
-            if not simulation_setup.open_edb_after_build and simulation_setup.output_aedb:
-                self.close_edb()
-                self.edbpath = legacy_name
-                self.open_edb()
-            return True
-        except:
-            return False
+            self.logger.info("Configuring analysis setup.")
+            if not self.siwave.configure_siw_analysis_setup(simulation_setup):  # pragma: no cover
+                self.logger.error("Failed to configure Siwave simulation setup.")
+        if simulation_setup.solver_type == SolverType.SiwaveDC:
+            if simulation_setup.generate_excitations:
+                self.components.create_source_on_component(simulation_setup.sources)
+            if not self.siwave.configure_siw_analysis_setup(simulation_setup):  # pragma: no cover
+                self.logger.error("Failed to configure Siwave simulation setup.")
+        self.padstacks.check_and_fix_via_plating()
+        self.save_edb()
+        if not simulation_setup.open_edb_after_build and simulation_setup.output_aedb:
+            self.close_edb()
+            self.edbpath = legacy_name
+            self.open_edb()
+        return True
 
-    @pyedb_function_handler()
     def get_statistics(self, compute_area=False):
         """Get the EDBStatistics object.
 
@@ -3424,7 +3433,6 @@ class Edb(Database):
         """
         return self.modeler.get_layout_statistics(evaluate_area=compute_area, net_list=None)
 
-    @pyedb_function_handler()
     def are_port_reference_terminals_connected(self, common_reference=None):
         """Check if all terminal references in design are connected.
         If the reference nets are different, there is no hope for the terminal references to be connected.
@@ -3444,7 +3452,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>>edb = Edb()
         >>> edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
         >>> edb.hfss.create_edge_port_horizontal(
@@ -3514,7 +3522,6 @@ class Edb(Database):
         # If the intersections are non-zero, the terminal references are connected.
         return True if len(iDintersection) > 0 else False
 
-    @pyedb_function_handler()
     def new_simulation_configuration(self, filename=None):
         # type: (str) -> SimulationConfiguration
         """New SimulationConfiguration Object.
@@ -3546,9 +3553,13 @@ class Edb(Database):
             if i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kHFSS:
                 setups[i.GetName()] = HfssSimulationSetup(self, i)
             elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWave:
-                setups[i.GetName()] = SiwaveSYZSimulationSetup(self, i)
+                setups[i.GetName()] = SiwaveSimulationSetup(self, i)
             elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWaveDCIR:
                 setups[i.GetName()] = SiwaveDCSimulationSetup(self, i)
+            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kRaptorX:
+                setups[i.GetName()] = RaptorXSimulationSetup(self, i)
+            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kHFSSPI:
+                setups[i.GetName()] = HFSSPISimulationSetup(self, i)
         return setups
 
     @property
@@ -3580,7 +3591,7 @@ class Edb(Database):
         -------
         Dict[str, :class:`legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
         """
-        return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSYZSimulationSetup)}
+        return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSimulationSetup)}
 
     def create_hfss_setup(self, name=None):
         """Create an HFSS simulation setup from a template.
@@ -3596,18 +3607,68 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb()
         >>> setup1 = edbapp.create_hfss_setup("setup1")
         >>> setup1.hfss_port_settings.max_delta_z0 = 0.5
         """
         if name in self.setups:
+            self.logger.info("setup already exists")
             return False
-        setup = HfssSimulationSetup(self).create(name)
+        elif not name:
+            name = generate_unique_name("setup")
+        setup = HfssSimulationSetup(self, name=name)
+        setup.set_solution_single_frequency("1GΗz")
         return setup
 
-    @pyedb_function_handler()
-    def create_siwave_syz_setup(self, name=None):
+    def create_raptorx_setup(self, name=None):
+        """Create an RaptorX simulation setup from a template.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name.
+
+        Returns
+        -------
+        :class:`legacy.edb_core.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
+
+        """
+        if name in self.setups:
+            self.logger.error("Setup name already used in the layout")
+            return False
+        version = self.edbversion.split(".")
+        if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
+            setup = RaptorXSimulationSetup(self).create(name)
+            return setup
+        else:
+            self.logger.error("RaptorX simulation only supported with Ansys release 2024R2 and higher")
+            return False
+
+    def create_hfsspi_setup(self, name=None):
+        """Create an HFSS PI simulation setup from a template.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name.
+
+        Returns
+        -------
+        :class:`legacy.edb_core.edb_data.hfss_pi_simulation_setup_data.HFSSPISimulationSetup when succeeded, ``False``
+        when failed.
+
+        """
+        if name in self.setups:
+            self.logger.error("Setup name already used in the layout")
+            return False
+        version = self.edbversion.split(".")
+        if float(self.edbversion) < 2024.2:
+            self.logger.error("HFSSPI simulation only supported with Ansys release 2024R2 and higher")
+            return False
+        return HFSSPISimulationSetup(self, name=name)
+
+    def create_siwave_syz_setup(self, name=None, **kwargs):
         """Create a setup from a template.
 
         Parameters
@@ -3621,7 +3682,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb()
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
         >>> setup1.add_frequency_sweep(frequency_sweep=[
@@ -3634,11 +3695,12 @@ class Edb(Database):
             name = generate_unique_name("Siwave_SYZ")
         if name in self.setups:
             return False
-        SiwaveSYZSimulationSetup(self).create(name)
+        setup = SiwaveSimulationSetup(self, name=name)
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
         return self.setups[name]
 
-    @pyedb_function_handler()
-    def create_siwave_dc_setup(self, name=None):
+    def create_siwave_dc_setup(self, name=None, **kwargs):
         """Create a setup from a template.
 
         Parameters
@@ -3652,7 +3714,7 @@ class Edb(Database):
 
         Examples
         --------
-        >>> from pyedb.dotnet.edb import Edb
+        >>> from pyedb import Edb
         >>> edbapp = Edb()
         >>> setup1 = edbapp.create_siwave_dc_setup("setup1")
         >>> setup1.mesh_bondwires = True
@@ -3662,10 +3724,11 @@ class Edb(Database):
             name = generate_unique_name("Siwave_DC")
         if name in self.setups:
             return False
-        setup = SiwaveDCSimulationSetup(self).create(name)
+        setup = SiwaveDCSimulationSetup(self, name=name)
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
         return setup
 
-    @pyedb_function_handler()
     def calculate_initial_extent(self, expansion_factor):
         """Compute a float representing the larger number between the dielectric thickness or trace width
         multiplied by the nW factor. The trace width search is limited to nets with ports attached.
@@ -3698,7 +3761,6 @@ class Edb(Database):
         self.logger.info("The W factor is {}, The initial extent = {:e}".format(expansion_factor, max_width))
         return max_width
 
-    @pyedb_function_handler()
     def copy_zones(self, working_directory=None):
         """Copy multizone EDB project to one new edb per zone.
 
@@ -3747,7 +3809,6 @@ class Edb(Database):
                 edb_zones[edb_zone_path] = (-1, poly_data)
         return edb_zones
 
-    @pyedb_function_handler()
     def cutout_multizone_layout(self, zone_dict, common_reference_net=None):
         """Create a multizone project cutout.
 
@@ -3808,7 +3869,6 @@ class Edb(Database):
             edb.close_edb()
         return defined_ports, project_connexions
 
-    @pyedb_function_handler()
     def _get_connected_ports_from_multizone_cutout(self, terminal_info_dict):
         """Return connected port list from clipped multizone layout.
 
@@ -3882,8 +3942,7 @@ class Edb(Database):
                                                 connected_ports_list.append((port1_connexion, port2_connexion))
             return connected_ports_list
 
-    @pyedb_function_handler
-    def create_port(self, terminal, ref_terminal=None, is_circuit_port=False):
+    def create_port(self, terminal, ref_terminal=None, is_circuit_port=False, name=None):
         """Create a port.
 
         Parameters
@@ -3901,7 +3960,8 @@ class Edb(Database):
             Negative terminal of the port.
         is_circuit_port : bool, optional
             Whether it is a circuit port. The default is ``False``.
-
+        name: str, optional
+            Name of the created port. The default is None, a random name is generated.
         Returns
         -------
         list: [:class:`pyedb.dotnet.edb_core.edb_data.ports.GapPort`,
@@ -3914,10 +3974,10 @@ class Edb(Database):
         if ref_terminal:
             ref_terminal.boundary_type = "PortBoundary"
             terminal.ref_terminal = ref_terminal
-
+        if name:
+            terminal.name = name
         return self.ports[terminal.name]
 
-    @pyedb_function_handler
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
 
@@ -3947,7 +4007,6 @@ class Edb(Database):
         term.ref_terminal = ref_terminal
         return self.probes[term.name]
 
-    @pyedb_function_handler
     def create_voltage_source(self, terminal, ref_terminal):
         """Create a voltage source.
 
@@ -3977,7 +4036,6 @@ class Edb(Database):
         term.ref_terminal = ref_terminal
         return self.sources[term.name]
 
-    @pyedb_function_handler
     def create_current_source(self, terminal, ref_terminal):
         """Create a current source.
 
@@ -4007,7 +4065,6 @@ class Edb(Database):
         term.ref_terminal = ref_terminal
         return self.sources[term.name]
 
-    @pyedb_function_handler
     def get_point_terminal(self, name, net_name, location, layer):
         """Place a voltage probe between two points.
 
@@ -4026,12 +4083,11 @@ class Edb(Database):
         -------
         :class:`legacy.edb_core.edb_data.terminals.PointTerminal`
         """
-        from pyedb.dotnet.edb_core.edb_data.terminals import PointTerminal
+        from pyedb.dotnet.edb_core.cell.terminal.point_terminal import PointTerminal
 
         point_terminal = PointTerminal(self)
         return point_terminal.create(name, net_name, location, layer)
 
-    @pyedb_function_handler
     def auto_parametrize_design(
         self,
         layers=True,
@@ -4044,6 +4100,13 @@ class Edb(Database):
         material_filter=None,
         padstack_definition_filter=None,
         trace_net_filter=None,
+        use_single_variable_for_padstack_definitions=True,
+        use_relative_variables=True,
+        output_aedb_path=None,
+        open_aedb_at_end=True,
+        expand_polygons_size=0,
+        expand_voids_size=0,
+        via_offset=True,
     ):
         """Assign automatically design and project variables with current values.
 
@@ -4069,27 +4132,62 @@ class Edb(Database):
             Enable padstack definition filter. Default value is ``None``, all padsatcks are parametrized.
         trace_net_filter : str, List(str), optional
             Enable nets filter for trace width parametrization. Default value is ``None``, all layers are parametrized.
+        use_single_variable_for_padstack_definitions : bool, optional
+            Whether to use a single design variable for each padstack definition or a variable per pad layer.
+            Default value is ``True``.
+        use_relative_variables : bool, optional
+            Whether if use an absolute variable for each trace, padstacks and layers or a delta variable instead.
+            Default value is ``True``.
+        output_aedb_path : str, optional
+            Full path and name for the new AEDB file. If None, then current aedb will be cutout.
+        open_aedb_at_end : bool, optional
+            Whether to open the cutout at the end. The default is ``True``.
+        expand_polygons_size : float, optional
+            Expansion size on polygons. Polygons will be expanded in all directions. The default is ``0``.
+        expand_voids_size : float, optional
+            Expansion size on polygon voids. Polygons voids will be expanded in all directions. The default is ``0``.
+        via_offset : bool, optional
+            Whether if offset the via position or not. The default is ``True``.
 
         Returns
         -------
         List(str)
             List of all parameters name created.
         """
+        edb_original_path = self.edbpath
+        if output_aedb_path:
+            self.save_edb_as(output_aedb_path)
+        if isinstance(trace_net_filter, str):
+            trace_net_filter = [trace_net_filter]
         parameters = []
+
+        def _apply_variable(orig_name, orig_value):
+            if use_relative_variables:
+                var = f"{orig_name}_delta"
+            else:
+                var = f"{orig_name}_value"
+            var = self._clean_string_for_variable_name(var)
+            if var not in self.variables:
+                if use_relative_variables:
+                    self.add_design_variable(var, 0.0)
+                else:
+                    self.add_design_variable(var, orig_value)
+            if use_relative_variables:
+                return f"{orig_value}+{var}", var
+            else:
+                return var, var
+
         if layers:
             if not layer_filter:
-                _layers = self.stackup.stackup_layers
+                _layers = self.stackup.layers
             else:
                 if isinstance(layer_filter, str):
                     layer_filter = [layer_filter]
-                _layers = {k: v for k, v in self.stackup.stackup_layers.items() if k in layer_filter}
+                _layers = {k: v for k, v in self.stackup.layers.items() if k in layer_filter}
             for layer_name, layer in _layers.items():
-                thickness_variable = "${}_thick".format(layer_name)
-                thickness_variable = self._clean_string_for_variable_name(thickness_variable)
-                if thickness_variable not in self.variables:
-                    self.add_design_variable(thickness_variable, layer.thickness)
-                layer.thickness = thickness_variable
-                parameters.append(thickness_variable)
+                var, val = _apply_variable(f"${layer_name}", layer.thickness)
+                layer.thickness = var
+                parameters.append(val)
         if materials:
             if not material_filter:
                 _materials = self.materials.materials
@@ -4097,123 +4195,156 @@ class Edb(Database):
                 _materials = {k: v for k, v in self.materials.materials.items() if k in material_filter}
             for mat_name, material in _materials.items():
                 if material.conductivity < 1e4:
-                    epsr_variable = "$epsr_{}".format(mat_name)
-                    epsr_variable = self._clean_string_for_variable_name(epsr_variable)
-                    if epsr_variable not in self.variables:
-                        self.add_design_variable(epsr_variable, material.permittivity)
-                    material.permittivity = epsr_variable
-                    parameters.append(epsr_variable)
-                    loss_tg_variable = "$loss_tangent_{}".format(mat_name)
-                    loss_tg_variable = self._clean_string_for_variable_name(loss_tg_variable)
-                    if not loss_tg_variable in self.variables:
-                        self.add_design_variable(loss_tg_variable, material.loss_tangent)
-                    material.loss_tangent = loss_tg_variable
-                    parameters.append(loss_tg_variable)
+                    var, val = _apply_variable(f"$epsr_{mat_name}", material.permittivity)
+                    material.permittivity = var
+                    parameters.append(val)
+                    var, val = _apply_variable(f"$loss_tangent_{mat_name}", material.dielectric_loss_tangent)
+                    material.dielectric_loss_tangent = var
+                    parameters.append(val)
                 else:
-                    sigma_variable = "$sigma_{}".format(mat_name)
-                    sigma_variable = self._clean_string_for_variable_name(sigma_variable)
-                    if not sigma_variable in self.variables:
-                        self.add_design_variable(sigma_variable, material.conductivity)
-                    material.conductivity = sigma_variable
-                    parameters.append(sigma_variable)
+                    var, val = _apply_variable(f"$sigma_{mat_name}", material.conductivity)
+                    material.conductivity = var
+                    parameters.append(val)
         if traces:
             if not trace_net_filter:
                 paths = self.modeler.paths
             else:
                 paths = [path for path in self.modeler.paths if path.net_name in trace_net_filter]
             for path in paths:
-                trace_width_variable = "trace_w_{}_{}".format(path.net_name, path.id)
-                trace_width_variable = self._clean_string_for_variable_name(trace_width_variable)
-                if trace_width_variable not in self.variables:
-                    self.add_design_variable(trace_width_variable, path.width)
-                path.width = trace_width_variable
-                parameters.append(trace_width_variable)
+                net_name = path.net_name
+                if use_relative_variables:
+                    trace_width_variable = "trace"
+                elif net_name:
+                    trace_width_variable = f"{path.net_name}_{path.aedt_name}"
+                else:
+                    trace_width_variable = f"{path.aedt_name}"
+                var, val = _apply_variable(trace_width_variable, path.width)
+                path.width = var
+                parameters.append(val)
         if not padstack_definition_filter:
-            used_padsatck_defs = list(
-                set([padstack_inst.padstack_definition for padstack_inst in list(self.padstacks.instances.values())])
-            )
-            padstack_defs = {k: v for k, v in self.padstacks.definitions.items() if k in used_padsatck_defs}
+            if trace_net_filter:
+                padstack_defs = {}
+                for net in trace_net_filter:
+                    for via in self.nets[net].padstack_instances:
+                        padstack_defs[via.padstack_definition] = self.padstacks.definitions[via.padstack_definition]
+            else:
+                used_padsatck_defs = list(
+                    set(
+                        [padstack_inst.padstack_definition for padstack_inst in list(self.padstacks.instances.values())]
+                    )
+                )
+                padstack_defs = {k: v for k, v in self.padstacks.definitions.items() if k in used_padsatck_defs}
         else:
             padstack_defs = {k: v for k, v in self.padstacks.definitions.items() if k in padstack_definition_filter}
+
         for def_name, padstack_def in padstack_defs.items():
             if not padstack_def.via_start_layer == padstack_def.via_stop_layer:
                 if via_holes:  # pragma no cover
-                    hole_variable = self._clean_string_for_variable_name("$hole_diam_{}".format(def_name))
-                    if hole_variable not in self.variables:
-                        self.add_design_variable(hole_variable, padstack_def.hole_properties[0])
-                    padstack_def.hole_properties = hole_variable
-                    parameters.append(hole_variable)
+                    if use_relative_variables:
+                        hole_variable = "$hole_diameter"
+                    else:
+                        hole_variable = f"${def_name}_hole_diameter"
+                    var, val = _apply_variable(hole_variable, padstack_def.hole_diameter_string)
+                    padstack_def.hole_properties = var
+                    parameters.append(val)
             if pads:
                 for layer, pad in padstack_def.pad_by_layer.items():
-                    if pad.geometry_type == 1:
-                        pad_diameter_variable = self._clean_string_for_variable_name(
-                            "$pad_diam_{}_{}".format(def_name, layer)
-                        )
-                        if pad_diameter_variable not in self.variables:
-                            self.add_design_variable(pad_diameter_variable, pad.parameters_values[0])
-                        pad.parameters = {"Diameter": pad_diameter_variable}
-                        parameters.append(pad_diameter_variable)
-                    if pad.geometry_type == 2:  # pragma no cover
-                        pad_size_variable = self._clean_string_for_variable_name(
-                            "$pad_size_{}_{}".format(def_name, layer)
-                        )
-                        if pad_size_variable not in self.variables:
-                            self.add_design_variable(pad_size_variable, pad.parameters_values[0])
-                        pad.parameters = {"Size": pad_size_variable}
-                        parameters.append(pad_size_variable)
+                    if use_relative_variables:
+                        pad_name = "$pad"
+                    elif use_single_variable_for_padstack_definitions:
+                        pad_name = f"${def_name}_pad"
+                    else:
+                        pad_name = f"${def_name}_{layer}_pad"
+
+                    if pad.geometry_type in [1, 2]:
+                        var, val = _apply_variable(pad_name, pad.parameters_values_string[0])
+                        if pad.geometry_type == 1:
+                            pad.parameters = {"Diameter": var}
+                        else:
+                            pad.parameters = {"Size": var}
+                        parameters.append(val)
                     elif pad.geometry_type == 3:  # pragma no cover
-                        pad_size_variable_x = self._clean_string_for_variable_name(
-                            "$pad_size_x_{}_{}".format(def_name, layer)
-                        )
-                        pad_size_variable_y = self._clean_string_for_variable_name(
-                            "$pad_size_y_{}_{}".format(def_name, layer)
-                        )
-                        if pad_size_variable_x not in self.variables and pad_size_variable_y not in self.variables:
-                            self.add_design_variable(pad_size_variable_x, pad.parameters_values[0])
-                            self.add_design_variable(pad_size_variable_y, pad.parameters_values[1])
-                        pad.parameters = {"XSize": pad_size_variable_x, "YSize": pad_size_variable_y}
-                        parameters.append(pad_size_variable_x)
-                        parameters.append(pad_size_variable_y)
+                        if use_relative_variables:
+                            pad_name_x = "$pad_x"
+                            pad_name_y = "$pad_y"
+                        elif use_single_variable_for_padstack_definitions:
+                            pad_name_x = f"${def_name}_pad_x"
+                            pad_name_y = f"${def_name}_pad_y"
+                        else:
+                            pad_name_x = f"${def_name}_{layer}_pad_x"
+                            pad_name_y = f"${def_name}_pad_y"
+                        var, val = _apply_variable(pad_name_x, pad.parameters_values_string[0])
+                        var2, val2 = _apply_variable(pad_name_y, pad.parameters_values_string[1])
+
+                        pad.parameters = {"XSize": var, "YSize": var2}
+                        parameters.append(val)
+                        parameters.append(val2)
             if antipads:
                 for layer, antipad in padstack_def.antipad_by_layer.items():
-                    if antipad.geometry_type == 1:  # pragma no cover
-                        antipad_diameter_variable = self._clean_string_for_variable_name(
-                            "$antipad_diam_{}_{}".format(def_name, layer)
-                        )
-                        if antipad_diameter_variable not in self.variables:  # pragma no cover
-                            self.add_design_variable(antipad_diameter_variable, antipad.parameters_values[0])
-                        antipad.parameters = {"Diameter": antipad_diameter_variable}
-                        parameters.append(antipad_diameter_variable)
-                    if antipad.geometry_type == 2:  # pragma no cover
-                        antipad_size_variable = self._clean_string_for_variable_name(
-                            "$antipad_size_{}_{}".format(def_name, layer)
-                        )
-                        if antipad_size_variable not in self.variables:  # pragma no cover
-                            self.add_design_variable(antipad_size_variable, antipad.parameters_values[0])
-                        antipad.parameters = {"Size": antipad_size_variable}
-                        parameters.append(antipad_size_variable)
+                    if use_relative_variables:
+                        pad_name = "$antipad"
+                    elif use_single_variable_for_padstack_definitions:
+                        pad_name = f"${def_name}_antipad"
+                    else:
+                        pad_name = f"${def_name}_{layer}_antipad"
+
+                    if antipad.geometry_type in [1, 2]:
+                        var, val = _apply_variable(pad_name, antipad.parameters_values_string[0])
+                        if antipad.geometry_type == 1:  # pragma no cover
+                            antipad.parameters = {"Diameter": var}
+                        else:
+                            antipad.parameters = {"Size": var}
+                        parameters.append(val)
                     elif antipad.geometry_type == 3:  # pragma no cover
-                        antipad_size_variable_x = self._clean_string_for_variable_name(
-                            "$antipad_size_x_{}_{}".format(def_name, layer)
-                        )
-                        antipad_size_variable_y = self._clean_string_for_variable_name(
-                            "$antipad_size_y_{}_{}".format(def_name, layer)
-                        )
-                        if (
-                            antipad_size_variable_x not in self.variables
-                            and antipad_size_variable_y not in self.variables
-                        ):  # pragma no cover
-                            self.add_design_variable(antipad_size_variable_x, antipad.parameters_values[0])
-                            self.add_design_variable(antipad_size_variable_y, antipad.parameters_values[1])
-                        antipad.parameters = {"XSize": antipad_size_variable_x, "YSize": antipad_size_variable_y}
-                        parameters.append(antipad_size_variable_x)
-                        parameters.append(antipad_size_variable_y)
+                        if use_relative_variables:
+                            pad_name_x = "$antipad_x"
+                            pad_name_y = "$antipad_y"
+                        elif use_single_variable_for_padstack_definitions:
+                            pad_name_x = f"${def_name}_antipad_x"
+                            pad_name_y = f"${def_name}_antipad_y"
+                        else:
+                            pad_name_x = f"${def_name}_{layer}_antipad_x"
+                            pad_name_y = f"${def_name}_antipad_y"
+
+                        var, val = _apply_variable(pad_name_x, antipad.parameters_values_string[0])
+                        var2, val2 = _apply_variable(pad_name_y, antipad.parameters_values_string[1])
+                        antipad.parameters = {"XSize": var, "YSize": var2}
+                        parameters.append(val)
+                        parameters.append(val2)
+
+        if via_offset:
+            var_x = "via_offset_x"
+            if var_x not in self.variables:
+                self.add_design_variable(var_x, 0.0)
+            var_y = "via_offset_y"
+            if var_y not in self.variables:
+                self.add_design_variable(var_y, 0.0)
+            for via in self.padstacks.instances.values():
+                if not via.is_pin and (not trace_net_filter or (trace_net_filter and via.net_name in trace_net_filter)):
+                    via.position = [f"{via.position[0]}+via_offset_x", f"{via.position[1]}+via_offset_y"]
+
+        if expand_polygons_size:
+            for poly in self.modeler.polygons:
+                if not poly.is_void:
+                    poly.expand(expand_polygons_size)
+        if expand_voids_size:
+            for poly in self.modeler.polygons:
+                if poly.is_void:
+                    poly.expand(expand_voids_size, round_corners=False)
+                elif poly.has_voids:
+                    for void in poly.voids:
+                        void.expand(expand_voids_size, round_corners=False)
+
+        if not open_aedb_at_end and self.edbpath != edb_original_path:
+            self.save_edb()
+            self.close_edb()
+            self.edbpath = edb_original_path
+            self.open_edb()
         return parameters
 
-    @pyedb_function_handler
     def _clean_string_for_variable_name(self, variable_name):
         """Remove forbidden character for variable name.
-        Parameter
+        Parameters
         ----------
         variable_name : str
                 Variable name.
@@ -4230,8 +4361,166 @@ class Edb(Database):
 
         return variable_name
 
+    def create_model_for_arbitrary_wave_ports(
+        self,
+        temp_directory,
+        mounting_side="top",
+        signal_nets=None,
+        terminal_diameter=None,
+        output_edb=None,
+        launching_box_thickness="100um",
+    ):
+        """Generate EDB design to be consumed by PyAEDT to generate arbitrary wave ports shapes.
+        This model has to be considered as merged onto another one. The current opened design must have voids
+        surrounding the pad-stacks where wave ports terminal will be created. THe open design won't be edited, only
+        primitives like voids and pads-stack definition included in the voids are collected to generate a new design.
+
+        Parameters
+        ----------
+        temp_directory : str
+            Temporary directory used during the method execution.
+
+        mounting_side : str
+            Gives the orientation to be considered for the current design. 2 options are available ``"top"`` and
+            ``"bottom". Default value is ``"top"``. If ``"top"`` is selected the method will voids at the top signal
+            layer, and the bottom layer if ``"bottom"`` is used.
+
+        signal_nets : List[str], optional
+            Provides the nets to be included for the model creation. Default value is ``None``. If None is provided,
+            all nets will be included.
+
+        terminal_diameter : float, str, optional
+            When ``None``, the terminal diameter is evaluated at each pads-tack instance found inside the voids. The top
+            or bottom layer pad diameter will be taken, depending on ``mounting_side`` selected. If value is provided,
+            it will overwrite the evaluated diameter.
+
+        output_edb : str, optional
+            The output EDB absolute. If ``None`` the edb is created in the ``temp_directory`` as default name
+            `"waveport_model.aedb"``
+
+        launching_box_thickness : float, str, optional
+            Launching box thickness  used for wave ports. Default value is ``"100um"``.
+
+        Returns
+        -------
+        bool
+            ``True`` when succeeded, ``False`` if failed.
+        """
+        if not temp_directory:
+            self.logger.error("Temp directory must be provided when creating model foe arbitrary wave port")
+            return False
+        if not output_edb:
+            output_edb = os.path.join(temp_directory, "waveport_model.aedb")
+        if os.path.isdir(temp_directory):
+            shutil.rmtree(temp_directory)
+        reference_layer = list(self.stackup.signal_layers.keys())[0]
+        if mounting_side.lower == "bottom":
+            reference_layer = list(self.stackup.signal_layers.keys())[-1]
+        if not signal_nets:
+            signal_nets = list(self.nets.signal.keys())
+
+        used_padstack_defs = []
+        padstack_instances_index = rtree.index.Index()
+        for padstack_inst in list(self.padstacks.instances.values()):
+            if not reference_layer in [padstack_inst.start_layer, padstack_inst.stop_layer]:
+                padstack_inst.delete()
+            else:
+                if padstack_inst.net_name in signal_nets:
+                    padstack_instances_index.insert(padstack_inst.id, padstack_inst.position)
+                    if not padstack_inst.padstack_definition in used_padstack_defs:
+                        used_padstack_defs.append(padstack_inst.padstack_definition)
+
+        polys = [
+            poly
+            for poly in self.modeler.primitives
+            if poly.layer_name == reference_layer and poly.type == "Polygon" and poly.has_voids
+        ]
+        if not polys:
+            self.logger.error(
+                f"No polygon found with voids on layer {reference_layer} during model creation for "
+                f"arbitrary wave ports"
+            )
+            return False
+        void_padstacks = []
+        for poly in polys:
+            for void in poly.voids:
+                void_bbox = (
+                    void.polygon_data.edb_api.GetBBox().Item1.X.ToDouble(),
+                    void.polygon_data.edb_api.GetBBox().Item1.Y.ToDouble(),
+                    void.polygon_data.edb_api.GetBBox().Item2.X.ToDouble(),
+                    void.polygon_data.edb_api.GetBBox().Item2.Y.ToDouble(),
+                )
+                included_instances = list(padstack_instances_index.intersection(void_bbox))
+                if included_instances:
+                    void_padstacks.append((void, [self.padstacks.instances[edb_id] for edb_id in included_instances]))
+
+        if not void_padstacks:
+            self.logger.error(
+                "No padstack instances found inside evaluated voids during model creation for arbitrary" "waveports"
+            )
+            return False
+        cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion)
+        cloned_edb.stackup.add_layer(layer_name="ref", layer_type="signal", thickness=0.0, material="pec")
+        cloned_edb.stackup.add_layer(
+            layer_name="ports",
+            layer_type="signal",
+            thickness=self.stackup.signal_layers[reference_layer].thickness,
+            material="pec",
+        )
+        box_thick = "100um"
+        if launching_box_thickness:
+            box_thick = self.edb_value(launching_box_thickness).ToString()
+        if mounting_side == "top":
+            cloned_edb.stackup.add_layer(
+                layer_name="port_pec", layer_type="signal", thickness=box_thick, method="add_on_bottom", material="pec"
+            )
+        else:
+            cloned_edb.stackup.add_layer(
+                layer_name="port_pec", layer_type="signal", thickness=box_thick, method="add_on_top", material="pec"
+            )
+
+        for void_info in void_padstacks:
+            port_poly = cloned_edb.modeler.create_polygon(
+                main_shape=void_info[0].polygon_data.edb_api, layer_name="ref", net_name="GND"
+            )
+            pec_poly = cloned_edb.modeler.create_polygon(
+                main_shape=port_poly.polygon_data.edb_api, layer_name="port_pec", net_name="GND"
+            )
+            pec_poly.scale(1.5)
+
+        for void_info in void_padstacks:
+            for inst in void_info[1]:
+                if not terminal_diameter:
+                    pad_diameter = (
+                        self.padstacks.definitions[inst.padstack_definition]
+                        .pad_by_layer[reference_layer]
+                        .parameters_values[0]
+                    )
+                else:
+                    pad_diameter = self.edb_value(terminal_diameter).ToDouble()
+                _temp_circle = cloned_edb.modeler.create_circle(
+                    layer_name="ports",
+                    x=inst.position[0],
+                    y=inst.position[1],
+                    radius=pad_diameter / 2,
+                    net_name=inst.net_name,
+                )
+                if not _temp_circle:
+                    self.logger.error(
+                        f"Failed to create circle for terminal during create_model_for_arbitrary_wave_ports"
+                    )
+        cloned_edb.save_as(output_edb)
+        cloned_edb.close()
+        return True
+
     @property
     def definitions(self):
         """Definitions class."""
         from pyedb.dotnet.edb_core.definition.definitions import Definitions
+
         return Definitions(self)
+
+    @property
+    def workflow(self):
+        """Workflow class."""
+        return Workflow(self)

@@ -1,10 +1,29 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import os
 
-from pyedb.dotnet.edb_core.edb_data.obj_base import ObjBase
-from pyedb.generic.general_methods import pyedb_function_handler
-from pyedb.dotnet.edb_core.definition.component_model import (
-    NPortComponentModel
-)
+from pyedb.dotnet.edb_core.definition.component_model import NPortComponentModel
+from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 
 
 class EDBComponentDef(ObjBase):
@@ -64,7 +83,8 @@ class EDBComponentDef(ObjBase):
         -------
         dict of :class:`EDBComponent`
         """
-        from pyedb.dotnet.edb_core.edb_data.components_data import EDBComponent
+        from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
+
         comp_list = [
             EDBComponent(self._pedb, l)
             for l in self._pedb.edb_api.cell.hierarchy.component.FindByComponentDef(
@@ -73,7 +93,6 @@ class EDBComponentDef(ObjBase):
         ]
         return {comp.refdes: comp for comp in comp_list}
 
-    @pyedb_function_handler()
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
         """Assign RLC to all components under this part name.
 
@@ -93,7 +112,6 @@ class EDBComponentDef(ObjBase):
             comp.assign_rlc_model(res, ind, cap, is_parallel)
         return True
 
-    @pyedb_function_handler()
     def assign_s_param_model(self, file_path, model_name=None, reference_net=None):
         """Assign S-parameter to all components under this part name.
 
@@ -112,7 +130,6 @@ class EDBComponentDef(ObjBase):
             comp.assign_s_param_model(file_path, model_name, reference_net)
         return True
 
-    @pyedb_function_handler()
     def assign_spice_model(self, file_path, model_name=None):
         """Assign Spice model to all components under this part name.
 
@@ -132,6 +149,15 @@ class EDBComponentDef(ObjBase):
         return True
 
     @property
+    def reference_file(self):
+        ref_files = []
+        for comp_model in self._comp_model:
+            model_type = str(comp_model.GetComponentModelType())
+            if model_type == "NPortComponentModel" or model_type == "DynamicLinkComponentModel":
+                ref_files.append(comp_model.GetReferenceFile())
+        return ref_files
+
+    @property
     def component_models(self):
         temp = {}
         for i in list(self._edb_object.GetComponentModels()):
@@ -141,11 +167,9 @@ class EDBComponentDef(ObjBase):
                 temp[edb_object.name] = edb_object
         return temp
 
-    @pyedb_function_handler
     def _add_component_model(self, value):
         self._edb_object.AddComponentModel(value._edb_object)
 
-    @pyedb_function_handler
     def add_n_port_model(self, fpath, name=None):
         if not name:
             name = os.path.splitext(os.path.basename(fpath)[0])
@@ -158,7 +182,6 @@ class EDBComponentDef(ObjBase):
 
         self._add_component_model(n_port_comp_model)
 
-    @pyedb_function_handler
     def create(self, name):
         cell_type = self._pedb.edb_api.cell.CellType.FootprintCell
         footprint_cell = self._pedb._active_cell.cell.Create(self._pedb.active_db, cell_type, name)

@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 This module contains EDB general methods and related methods.
 
@@ -8,20 +30,16 @@ from __future__ import absolute_import  # noreorder
 import logging
 
 from pyedb.dotnet.clr_module import Dictionary, List, Tuple
-from pyedb.generic.general_methods import is_ironpython, pyedb_function_handler
 
-if not is_ironpython:  # pragma: no cover
-    try:
-        from enum import Enum
-    except ImportError:
-        Enum = None
-else:  # pragma: no cover
-    Enum = object
+try:
+    from enum import Enum
+except ImportError:
+    Enum = None
+
 
 logger = logging.getLogger(__name__)
 
 
-@pyedb_function_handler()
 def convert_netdict_to_pydict(dict_in):
     """Convert a net dictionary to a Python dictionary.
 
@@ -42,7 +60,6 @@ def convert_netdict_to_pydict(dict_in):
     return pydict
 
 
-@pyedb_function_handler()
 def convert_pytuple_to_nettuple(_tuple):
     """Convert a Python tuple into a .NET tuple.
     Parameters
@@ -56,7 +73,6 @@ def convert_pytuple_to_nettuple(_tuple):
     return Tuple.Create(_tuple[0], _tuple[1])
 
 
-@pyedb_function_handler()
 def convert_pydict_to_netdict(input_dict):
     """Convert a Python dictionary to a .NET dictionary.
 
@@ -78,7 +94,6 @@ def convert_pydict_to_netdict(input_dict):
     # to be completed
 
 
-@pyedb_function_handler()
 def convert_py_list_to_net_list(pylist, list_type=None):
     """Convert a Python list to a Net list.
 
@@ -105,7 +120,6 @@ def convert_py_list_to_net_list(pylist, list_type=None):
         return net_list
 
 
-@pyedb_function_handler()
 def convert_net_list_to_py_list(netlist):
     """Convert a Net list to a Python list.
 

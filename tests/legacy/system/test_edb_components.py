@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Tests related to Edb components
 """
 import math
@@ -45,7 +67,7 @@ class TestClass:
 
     def test_components_properties(self):
         """Access components properties."""
-        assert len(self.edbapp.components.components) > 2
+        assert len(self.edbapp.components.instances) > 2
         assert len(self.edbapp.components.inductors) > 0
         assert len(self.edbapp.components.resistors) > 0
         assert len(self.edbapp.components.capacitors) > 0
@@ -60,39 +82,43 @@ class TestClass:
 
     def test_components_R1_queries(self):
         """Evaluate queries over component R1."""
-        assert "R1" in list(self.edbapp.components.components.keys())
-        assert not self.edbapp.components.components["R1"].is_null
-        assert self.edbapp.components.components["R1"].res_value
-        assert self.edbapp.components.components["R1"].placement_layer
-        assert isinstance(self.edbapp.components.components["R1"].lower_elevation, float)
-        assert isinstance(self.edbapp.components.components["R1"].upper_elevation, float)
-        assert self.edbapp.components.components["R1"].top_bottom_association == 2
-        assert self.edbapp.components.components["R1"].pinlist
-        assert self.edbapp.components.components["R1"].pins
-        assert self.edbapp.components.components["R1"].pins["1"].pin_number
-        assert self.edbapp.components.components["R1"].pins["1"].component
+        assert "R1" in list(self.edbapp.components.instances.keys())
+        assert not self.edbapp.components.instances["R1"].is_null
+        assert self.edbapp.components.instances["R1"].res_value
+        assert self.edbapp.components.instances["R1"].placement_layer
+        assert self.edbapp.components.instances["R1"].component_def
+        assert self.edbapp.components.instances["R1"].location
+        assert isinstance(self.edbapp.components.instances["R1"].lower_elevation, float)
+        assert isinstance(self.edbapp.components.instances["R1"].upper_elevation, float)
+        assert self.edbapp.components.instances["R1"].top_bottom_association == 2
+        assert self.edbapp.components.instances["R1"].pinlist
+        assert self.edbapp.components.instances["R1"].pins
+        assert self.edbapp.components.instances["R1"].pins["1"].pin_number
+        assert self.edbapp.components.instances["R1"].pins["1"].component_pin
+
+        assert self.edbapp.components.instances["R1"].pins["1"].component
         assert (
-            self.edbapp.components.components["R1"].pins["1"].lower_elevation
-            == self.edbapp.components.components["R1"].lower_elevation
+            self.edbapp.components.instances["R1"].pins["1"].lower_elevation
+            == self.edbapp.components.instances["R1"].lower_elevation
         )
         assert (
-            self.edbapp.components.components["R1"].pins["1"].placement_layer
-            == self.edbapp.components.components["R1"].placement_layer
+            self.edbapp.components.instances["R1"].pins["1"].placement_layer
+            == self.edbapp.components.instances["R1"].placement_layer
         )
         assert (
-            self.edbapp.components.components["R1"].pins["1"].upper_elevation
-            == self.edbapp.components.components["R1"].upper_elevation
+            self.edbapp.components.instances["R1"].pins["1"].upper_elevation
+            == self.edbapp.components.instances["R1"].upper_elevation
         )
         assert (
-            self.edbapp.components.components["R1"].pins["1"].top_bottom_association
-            == self.edbapp.components.components["R1"].top_bottom_association
+            self.edbapp.components.instances["R1"].pins["1"].top_bottom_association
+            == self.edbapp.components.instances["R1"].top_bottom_association
         )
-        assert self.edbapp.components.components["R1"].pins["1"].position
-        assert self.edbapp.components.components["R1"].pins["1"].rotation
+        assert self.edbapp.components.instances["R1"].pins["1"].position
+        assert self.edbapp.components.instances["R1"].pins["1"].rotation
 
     def test_components_create_clearance_on_component(self):
         """Evaluate the creation of a clearance on soldermask."""
-        comp = self.edbapp.components.components["U1"]
+        comp = self.edbapp.components.instances["U1"]
         assert comp.create_clearance_on_component()
 
     def test_components_get_components_from_nets(self):
@@ -159,8 +185,8 @@ class TestClass:
     def test_components_get_pins_name_from_net(self):
         """Retrieve pins belonging to a net."""
         cmp_pinlist = self.edbapp.components.get_pin_from_component("U6")
-        assert len(self.edbapp.components.get_pins_name_from_net(cmp_pinlist, "GND")) > 0
-        assert len(self.edbapp.components.get_pins_name_from_net(cmp_pinlist, "5V")) == 0
+        assert len(self.edbapp.components.get_pins_name_from_net("GND", cmp_pinlist)) > 0
+        assert len(self.edbapp.components.get_pins_name_from_net("5V", cmp_pinlist)) == 0
 
     def test_components_delete_single_pin_rlc(self):
         """Delete all RLC components with a single pin."""
@@ -220,9 +246,9 @@ class TestClass:
             comptype="Prod name",
             refdes="RefDes",
         )
-        assert not self.edbapp.components.components["R2"].is_enabled
-        self.edbapp.components.components["R2"].is_enabled = True
-        assert self.edbapp.components.components["R2"].is_enabled
+        assert not self.edbapp.components.instances["R2"].is_enabled
+        self.edbapp.components.instances["R2"].is_enabled = True
+        assert self.edbapp.components.instances["R2"].is_enabled
 
     def test_components_export_bom(self):
         """Export Bom file from layout."""
@@ -291,6 +317,10 @@ class TestClass:
         assert self.edbapp.components["C2"].is_enabled is False
         self.edbapp.components["C2"].is_enabled = True
         assert self.edbapp.components["C2"].is_enabled is True
+        pins = [*self.edbapp.components.instances["L10"].pins.values()]
+        self.edbapp.components.create_port_on_pins("L10", pins[0], pins[1])
+        assert self.edbapp.components["L10"].is_enabled is False
+        assert "L10" in self.edbapp.ports.keys()
 
     def test_components_definitions(self):
         """Evaluate components definition."""
@@ -298,7 +328,7 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "test_0126.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = Edb(target_path, edbversion=desktop_version)
-        assert edbapp.components.components
+        assert edbapp.components.instances
         assert edbapp.components.definitions
         comp_def = edbapp.components.definitions["CAPC2012X12N"]
         assert comp_def
@@ -317,6 +347,8 @@ class TestClass:
         assert edbapp.components.definitions["CAPC3216X180X20ML20"].assign_rlc_model(1, 2, 3)
         sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
         assert edbapp.components.definitions["CAPC3216X180X55ML20T25"].assign_s_param_model(sparam_path)
+        ref_file = edbapp.components.definitions["CAPC3216X180X55ML20T25"].reference_file
+        assert ref_file
         spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
         assert edbapp.components.definitions["CAPMP7343X31N"].assign_spice_model(spice_path)
         edbapp.close()
@@ -367,7 +399,7 @@ class TestClass:
         target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_boundaries.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = Edb(target_path, edbversion=desktop_version)
-        for refdes, cmp in edbapp.components.components.items():
+        for refdes, cmp in edbapp.components.instances.items():
             edbapp.components.replace_rlc_by_gap_boundaries(refdes)
         rlc_list = [
             term for term in list(edbapp.active_layout.Terminals) if str(term.GetBoundaryType()) == "RlcBoundary"
@@ -380,8 +412,8 @@ class TestClass:
         edb2 = Edb(self.target_path4, edbversion=desktop_version)
         for _, cmp in edb2.components.instances.items():
             assert isinstance(cmp.solder_ball_placement, int)
-        mounted_cmp = edb2.components.get_component_by_name("BGA")
-        hosting_cmp = self.edbapp.components.get_component_by_name("U1")
+        mounted_cmp = edb2.components.get_component_by_name("BGA")._edb_object
+        hosting_cmp = self.edbapp.components.get_component_by_name("U1")._edb_object
         (
             result,
             vector,
@@ -514,6 +546,51 @@ class TestClass:
 
     def test_create_package_def(self):
         """Check the creation of package definition."""
-        assert self.edbapp.components["C200"].create_package_def()
+        assert self.edbapp.components["C200"].create_package_def(component_part_name="SMTC-MECT-110-01-M-D-RA1_V")
         assert not self.edbapp.components["C200"].create_package_def()
-        assert self.edbapp.components["C200"].package_def.name == 'C200_CAPC3216X180X55ML20T25'
+        assert self.edbapp.components["C200"].package_def.name == "C200_CAPC3216X180X55ML20T25"
+
+    def test_solder_ball_getter_setter(self):
+        cmp = self.edbapp.components["X1"]
+        cmp.solder_ball_height = 0.0
+        assert cmp.solder_ball_height == 0.0
+        cmp.solder_ball_height = "100um"
+        assert cmp.solder_ball_height == 100e-6
+        assert cmp.solder_ball_shape
+        cmp.solder_ball_shape = "Cylinder"
+        assert cmp.solder_ball_shape == "Cylinder"
+        cmp.solder_ball_shape = 0
+        assert cmp.solder_ball_shape == "None"
+        cmp.solder_ball_shape = 1
+        assert cmp.solder_ball_shape == "Cylinder"
+        cmp.solder_ball_shape = "Spheroid"
+        assert cmp.solder_ball_shape == "Spheroid"
+        cmp.solder_ball_shape = "Cylinder"
+        cmp.solder_ball_shape = 2
+        assert cmp.solder_ball_shape == "Spheroid"
+        assert cmp.solder_ball_diameter == (0.0, 0.0)
+        cmp.solder_ball_diameter = "200um"
+        diam1, diam2 = cmp.solder_ball_diameter
+        assert round(diam1, 6) == 200e-6
+        assert round(diam2, 6) == 200e-6
+        cmp.solder_ball_diameter = ("100um", "100um")
+        diam1, diam2 = cmp.solder_ball_diameter
+        assert round(diam1, 6) == 100e-6
+        assert round(diam2, 6) == 100e-6
+
+    def test_create_pingroup_from_pins_types(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.components.create_pingroup_from_pins([*edbapp.components.instances["Q1"].pins.values()])
+        assert edbapp.components._create_pin_group_terminal(edbapp.padstacks.pingroups[0], term_type="circuit")
+        edbapp.close()
+
+    def test_component_lib(self):
+        edbapp = Edb()
+        comp_lib = edbapp.components.get_vendor_libraries()
+        assert len(comp_lib.capacitors) == 13
+        assert len(comp_lib.inductors) == 7
+        network = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].s_parameters
+        assert network
+        assert network.frequency.npoints == 400
+        network.write_touchstone(os.path.join(edbapp.directory, "test_export.s2p"))
+        assert os.path.isfile(os.path.join(edbapp.directory, "test_export.s2p"))

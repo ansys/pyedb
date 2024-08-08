@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from __future__ import absolute_import  # noreorder
 
 import math
@@ -7,11 +29,7 @@ import warnings
 
 from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
 from pyedb.generic.constants import CSS4_COLORS
-from pyedb.generic.general_methods import (
-    generate_unique_name,
-    is_ironpython,
-    pyedb_function_handler,
-)
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -20,12 +38,11 @@ class EdbNets(object):
 
     Examples
     --------
-    >>> from pyedb.dotnet.edb import Edb
+    >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_nets = edbapp.nets
     """
 
-    @pyedb_function_handler()
     def __getitem__(self, name):
         """Get  a net from the Edb project.
 
@@ -38,12 +55,8 @@ class EdbNets(object):
         :class:` :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBNetsData`
 
         """
-        if name in self.nets:
-            return self.nets[name]
-        self._pedb.logger.error("Component or definition not found.")
-        return
+        return self._pedb.layout.find_net_by_name(name)
 
-    @pyedb_function_handler()
     def __contains__(self, name):
         """Determine if a net is named ``name`` or not.
 
@@ -103,11 +116,7 @@ class EdbNets(object):
         dict[str, :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBNetsData`]
             Dictionary of nets.
         """
-
-        temp = {}
-        for net in self._layout.nets:
-            temp[net.name] = EDBNetsData(net.api_object, self._pedb)
-        return temp
+        return {i.name: i for i in self._pedb.layout.nets}
 
     @property
     def netlist(self):
@@ -161,7 +170,7 @@ class EdbNets(object):
         """
         nets = {}
         for net, value in self.nets.items():
-            if not value.IsPowerGround():
+            if not value.is_power_ground:
                 nets[net] = value
         return nets
 
@@ -176,11 +185,10 @@ class EdbNets(object):
         """
         nets = {}
         for net, value in self.nets.items():
-            if value.IsPowerGround():
+            if value.is_power_ground:
                 nets[net] = value
         return nets
 
-    @pyedb_function_handler()
     def eligible_power_nets(self, threshold=0.3):
         """Return a list of nets calculated by area to be eligible for PWR/Ground net classification.
             It uses the same algorithm implemented in SIwave.
@@ -235,7 +243,6 @@ class EdbNets(object):
                     self._comps_by_nets_dict[n] = [comp]
         return self._comps_by_nets_dict
 
-    @pyedb_function_handler()
     def generate_extended_nets(
         self,
         resistor_below=10,
@@ -447,10 +454,9 @@ class EdbNets(object):
         # fmt: on
         return x, y
 
-    @pyedb_function_handler()
     def get_plot_data(
         self,
-        nets,
+        nets=None,
         layers=None,
         color_by_net=False,
         outline=None,
@@ -461,8 +467,8 @@ class EdbNets(object):
 
         Parameters
         ----------
-        nets : str, list
-            Name of the net or list of nets to plot. If `None` all nets will be plotted.
+        nets : str, list, optional
+            Name of the net or list of nets to plot. If `None` (default value) all nets will be plotted.
         layers : str, list, optional
             Name of the layers to include in the plot. If `None` all the signal layers will be considered.
         color_by_net : bool, optional
@@ -515,7 +521,7 @@ class EdbNets(object):
         bottom_layer = list(self._pedb.stackup.signal_layers.keys())[-1]
         if plot_components_on_top or plot_components_on_bottom:
             nc = 0
-            for comp in self._pedb.components.components.values():
+            for comp in self._pedb.components.instances.values():
                 if not comp.is_enabled:
                     continue
                 net_names = comp.nets
@@ -756,7 +762,6 @@ class EdbNets(object):
         else:
             return objects_lists
 
-    @pyedb_function_handler()
     def classify_nets(self, power_nets=None, signal_nets=None):
         """Reassign power/ground or signal nets based on list of nets.
 
@@ -788,7 +793,6 @@ class EdbNets(object):
                 self.nets[net].net_object.SetIsPowerGround(False)
         return True
 
-    @pyedb_function_handler()
     def plot(
         self,
         nets=None,
@@ -800,6 +804,7 @@ class EdbNets(object):
         size=(2000, 1000),
         plot_components_on_top=False,
         plot_components_on_bottom=False,
+        show=True,
     ):
         """Plot a Net to Matplotlib 2D Chart.
 
@@ -816,8 +821,8 @@ class EdbNets(object):
             If ``True`` the legend is shown in the plot. (default)
             If ``False`` the legend is not shown.
         save_plot : str, optional
-            If ``None`` the plot will be shown.
-            If a file path is specified the plot will be saved to such file.
+            If a path is specified the plot will be saved in this location.
+            If ``save_plot`` is provided, the ``show`` parameter is ignored.
         outline : list, optional
             List of points of the outline to plot.
         size : tuple, int, optional
@@ -830,10 +835,9 @@ class EdbNets(object):
             If ``True``  the components placed on bottom layer are plotted.
             If ``False`` the components are not plotted. (default)
             If nets and/or layers is specified, only the components belonging to the specified nets/layers are plotted.
+        show : bool, optional
+            Whether to show the plot or not. Default is `True`.
         """
-        if is_ironpython:
-            self._logger.warning("Plot functionalities are enabled only in CPython.")
-            return False
         from pyedb.generic.plot import plot_matplotlib
 
         object_lists = self.get_plot_data(
@@ -858,11 +862,11 @@ class EdbNets(object):
             xlabel="X (m)",
             ylabel="Y (m)",
             title=self._pedb.active_cell.GetName(),
-            snapshot_path=save_plot,
+            save_plot=save_plot,
             axis_equal=True,
+            show=show,
         )
 
-    @pyedb_function_handler()
     def is_power_gound_net(self, netname_list):
         """Determine if one of the  nets in a list is power or ground.
 
@@ -884,7 +888,6 @@ class EdbNets(object):
                 return True
         return False
 
-    @pyedb_function_handler()
     def get_dcconnected_net_list(self, ground_nets=["GND"], res_value=0.001):
         """Get the nets connected to the direct current through inductors.
 
@@ -935,7 +938,6 @@ class EdbNets(object):
 
         return dcconnected_net_list
 
-    @pyedb_function_handler()
     def get_powertree(self, power_net_name, ground_nets):
         """Retrieve the power tree.
 
@@ -995,14 +997,12 @@ class EdbNets(object):
         ]
         return component_list, component_list_columns, net_group
 
-    @pyedb_function_handler()
     def get_net_by_name(self, net_name):
         """Find a net by name."""
         edb_net = self._edb.cell.net.find_by_name(self._active_layout, net_name)
         if edb_net is not None:
             return edb_net
 
-    @pyedb_function_handler()
     def delete_nets(self, netlist):
         """Delete one or more nets from EDB.
 
@@ -1027,7 +1027,6 @@ class EdbNets(object):
         warnings.warn("Use :func:`delete` method instead.", DeprecationWarning)
         return self.delete(netlist=netlist)
 
-    @pyedb_function_handler()
     def delete(self, netlist):
         """Delete one or more nets from EDB.
 
@@ -1060,7 +1059,6 @@ class EdbNets(object):
                 nets_deleted.append(i.name)
         return nets_deleted
 
-    @pyedb_function_handler()
     def find_or_create_net(self, net_name="", start_with="", contain="", end_with=""):
         """Find or create the net with the given name in the layout.
 
@@ -1135,7 +1133,6 @@ class EdbNets(object):
                 nets_found = [self.nets[net].net_object for net in list(self.nets.keys()) if contain in net.lower()]
                 return nets_found
 
-    @pyedb_function_handler()
     def is_net_in_component(self, component_name, net_name):
         """Check if a net belongs to a component.
 
@@ -1152,14 +1149,13 @@ class EdbNets(object):
             ``True`` if the net is found in component pins.
 
         """
-        if component_name not in self._pedb.components.components:
+        if component_name not in self._pedb.components.instances:
             return False
-        for net in self._pedb.components.components[component_name].nets:
+        for net in self._pedb.components.instances[component_name].nets:
             if net_name == net:
                 return True
         return False
 
-    @pyedb_function_handler()
     def find_and_fix_disjoint_nets(
         self, net_list=None, keep_only_main_net=False, clean_disjoints_less_than=0.0, order_by_area=False
     ):
@@ -1195,13 +1191,12 @@ class EdbNets(object):
             net_list, keep_only_main_net, clean_disjoints_less_than, order_by_area
         )
 
-    @pyedb_function_handler()
-    def merge_nets_polygons(self, net_list):
+    def merge_nets_polygons(self, net_names_list):
         """Convert paths from net into polygons, evaluate all connected polygons and perform the merge.
 
         Parameters
         ----------
-        net_list : str or list[str]
+        net_names_list : str or list[str]
             Net name of list of net name.
 
         Returns
@@ -1210,6 +1205,6 @@ class EdbNets(object):
             ``True`` when successful, ``False`` when failed.
 
         """
-        if isinstance(net_list, str):
-            net_list = [net_list]
-        return self._pedb.modeler.unite_polygons_on_layer(net_list=net_list)
+        if isinstance(net_names_list, str):
+            net_names_list = [net_names_list]
+        return self._pedb.modeler.unite_polygons_on_layer(net_names_list=net_names_list)

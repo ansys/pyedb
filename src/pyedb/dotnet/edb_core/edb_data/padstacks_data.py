@@ -1,18 +1,36 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from collections import OrderedDict
 import math
 import re
 import warnings
 
-from pyedb.dotnet.clr_module import String, _clr
+from pyedb.dotnet.clr_module import String
+from pyedb.dotnet.edb_core.cell.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.edb_core.edb_data.primitives_data import EDBPrimitivesMain
 from pyedb.dotnet.edb_core.general import PadGeometryTpe, convert_py_list_to_net_list
-from pyedb.generic.general_methods import (
-    generate_unique_name,
-    is_ironpython,
-    pyedb_function_handler,
-)
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -38,10 +56,12 @@ class EDBPadProperties(object):
     """
 
     def __init__(self, edb_padstack, layer_name, pad_type, p_edb_padstack):
-        self._edb_padstack = edb_padstack
+        self._edb_object = edb_padstack
         self._pedbpadstack = p_edb_padstack
         self.layer_name = layer_name
         self.pad_type = pad_type
+
+        self._edb_padstack = self._edb_object
 
     @property
     def _padstack_methods(self):
@@ -121,6 +141,11 @@ class EDBPadProperties(object):
             List of parameters.
         """
         return [i.tofloat for i in self.parameters.values()]
+
+    @property
+    def parameters_values_string(self):
+        """Parameters value in string format."""
+        return [i.tostring for i in self.parameters.values()]
 
     @property
     def polygon_data(self):
@@ -271,7 +296,6 @@ class EDBPadProperties(object):
     def rotation(self, rotation_value):
         self._update_pad_parameters_parameters(rotation=rotation_value)
 
-    @pyedb_function_handler()
     def int_to_pad_type(self, val=0):
         """Convert an integer to an EDB.PadGeometryType.
 
@@ -286,7 +310,6 @@ class EDBPadProperties(object):
         """
         return self._pedbpadstack._ppadstack.int_to_pad_type(val)
 
-    @pyedb_function_handler()
     def int_to_geometry_type(self, val=0):
         """Convert an integer to an EDB.PadGeometryType.
 
@@ -301,7 +324,6 @@ class EDBPadProperties(object):
         """
         return self._pedbpadstack._ppadstack.int_to_geometry_type(val)
 
-    @pyedb_function_handler()
     def _update_pad_parameters_parameters(
         self,
         layer_name=None,
@@ -477,7 +499,21 @@ class EDBPadstack(object):
         self._hole_parameters = self.hole_params[2]
         return self._hole_parameters
 
-    @pyedb_function_handler()
+    @property
+    def hole_diameter(self):
+        """Hole diameter."""
+        return list(self.hole_params[2])[0].ToDouble()
+
+    @hole_diameter.setter
+    def hole_diameter(self, value):
+        params = convert_py_list_to_net_list([self._get_edb_value(value)])
+        self._update_hole_parameters(params=params)
+
+    @property
+    def hole_diameter_string(self):
+        """Hole diameter in string format."""
+        return list(self.hole_params[2])[0].ToString()
+
     def _update_hole_parameters(self, hole_type=None, params=None, offsetx=None, offsety=None, rotation=None):
         """Update hole parameters.
 
@@ -646,6 +682,7 @@ class EDBPadstack(object):
         float
             Thickness of the hole plating if present.
         """
+        value = self._get_edb_value(value).ToDouble()
         hr = 200 * float(value) / float(self.hole_properties[0])
         self.hole_plating_ratio = hr
 
@@ -689,9 +726,7 @@ class EDBPadstack(object):
         -------
         dict
         """
-        return {
-            id: via for id, via in self._ppadstack.padstack_instances.items() if via.padstack_definition == self.name
-        }
+        return {id: via for id, via in self._ppadstack.instances.items() if via.padstack_definition == self.name}
 
     @property
     def hole_range(self):
@@ -732,7 +767,6 @@ class EDBPadstack(object):
                 return
             self.edb_padstack.SetData(cloned_padstackdef_data)
 
-    @pyedb_function_handler()
     def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True):
         """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
 
@@ -741,10 +775,10 @@ class EDBPadstack(object):
         convert_only_signal_vias : bool, optional
             Either to convert only vias belonging to signal nets or all vias. Defaults is ``True``.
         hole_wall_angle : float, optional
-            Angle of laser penetration in degrees. The angle defines the bottom hole diameter with this formula:
+            Angle of laser penetration in degrees. The angle defines the lowest hole diameter with this formula:
             HoleDiameter -2*tan(laser_angle* Hole depth). Hole depth is the height of the via (dielectric thickness).
             The default is ``15``.
-            The bottom hole is ``0.75*HoleDepth/HoleDiam``.
+            The lowest hole is ``0.75*HoleDepth/HoleDiam``.
         delete_padstack_def : bool, optional
             Whether to delete the padstack definition. The default is ``True``.
             If ``False``, the padstack definition is not deleted and the hole size is set to zero.
@@ -765,19 +799,19 @@ class EDBPadstack(object):
         layer_names = [i for i in list(layers.keys())]
         if convert_only_signal_vias:
             signal_nets = [i for i in list(self._ppadstack._pedb.nets.signal_nets.keys())]
-        topl, topz, bottoml, bottomz = self._ppadstack._pedb.stackup.stackup_limits(True)
-        try:
+        topl, topz, bottoml, bottomz = self._ppadstack._pedb.stackup.limits(True)
+        if self.via_start_layer in layers:
             start_elevation = layers[self.via_start_layer].lower_elevation
-        except KeyError:  # pragma: no cover
+        else:
             start_elevation = layers[self.instances[0].start_layer].lower_elevation
-        try:
-            stop_elevation = layers[self.via_start_layer].upper_elevation
-        except KeyError:  # pragma: no cover
+        if self.via_stop_layer in layers:
+            stop_elevation = layers[self.via_stop_layer].upper_elevation
+        else:
             stop_elevation = layers[self.instances[0].stop_layer].upper_elevation
 
         diel_thick = abs(start_elevation - stop_elevation)
-        rad1 = self.hole_properties[0] / 2
-        rad2 = self.hole_properties[0] / 2 - math.tan(hole_wall_angle * diel_thick * math.pi / 180)
+        rad1 = self.hole_properties[0] / 2 - math.tan(hole_wall_angle * diel_thick * math.pi / 180)
+        rad2 = self.hole_properties[0] / 2
 
         if start_elevation < (topz + bottomz) / 2:
             rad1, rad2 = rad2, rad1
@@ -860,7 +894,6 @@ class EDBPadstack(object):
         self._ppadstack._pedb.logger.info("{} Converted successfully to 3D Objects.".format(i))
         return True
 
-    @pyedb_function_handler()
     def split_to_microvias(self):
         """Convert actual padstack definition to multiple microvias definitions.
 
@@ -1000,7 +1033,6 @@ class EDBPadstack(object):
         self._ppadstack._pedb.logger.info("Created {} new microvias.".format(i))
         return new_instances
 
-    @pyedb_function_handler()
     def _update_layer_names(self, old_name, updated_name):
         """Update padstack definition layer name when layer name is edited with the layer name setter.
         Parameters
@@ -1099,7 +1131,7 @@ class EDBPadstack(object):
         return True
 
 
-class EDBPadstackInstance(EDBPrimitivesMain):
+class EDBPadstackInstance(Primitive):
     """Manages EDB functionalities for a padstack.
 
     Parameters
@@ -1117,7 +1149,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     """
 
     def __init__(self, edb_padstackinstance, _pedb):
-        super().__init__(edb_padstackinstance, _pedb)
+        super().__init__(_pedb, edb_padstackinstance)
         self._edb_padstackinstance = self._edb_object
         self._bounding_box = []
         self._object_instance = None
@@ -1138,11 +1170,11 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         -------
         :class:`pyedb.dotnet.edb_core.edb_data.terminals`
         """
-
+        warnings.warn("Use new property :func:`terminal` instead.", DeprecationWarning)
         if create_new_terminal:
             term = self._create_terminal(name)
         else:
-            from pyedb.dotnet.edb_core.edb_data.terminals import (
+            from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
                 PadstackInstanceTerminal,
             )
 
@@ -1150,22 +1182,36 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         if not term.is_null:
             return term
 
-    @pyedb_function_handler()
+    @property
+    def terminal(self):
+        """Terminal."""
+        from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
+            PadstackInstanceTerminal,
+        )
+
+        term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
+        return term if not term.is_null else None
+
     def _create_terminal(self, name=None):
         """Create a padstack instance terminal"""
-        from pyedb.dotnet.edb_core.edb_data.terminals import PadstackInstanceTerminal
+        warnings.warn("`_create_terminal` is deprecated. Use `create_terminal` instead.", DeprecationWarning)
+        return self.create_terminal(name)
+
+    def create_terminal(self, name=None):
+        """Create a padstack instance terminal"""
+        from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
+            PadstackInstanceTerminal,
+        )
 
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term.create(self, name)
 
-    @pyedb_function_handler()
     def create_coax_port(self, name=None, radial_extent_factor=0):
         """Create a coax port."""
         port = self.create_port(name)
         port.radial_extent_factor = radial_extent_factor
         return port
 
-    @pyedb_function_handler
     def create_port(self, name=None, reference=None, is_circuit_port=False):
         """Create a port on the padstack.
 
@@ -1180,9 +1226,9 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         is_circuit_port : bool, optional
             Whether it is a circuit port.
         """
-        terminal = self._create_terminal(name)
+        terminal = self.create_terminal(name)
         if reference:
-            ref_terminal = reference._create_terminal(terminal.name + "_ref")
+            ref_terminal = reference.create_terminal(terminal.name + "_ref")
             if reference._edb_object.ToString() == "PinGroup":
                 is_circuit_port = True
         else:
@@ -1282,7 +1328,6 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         ]
         return self._bounding_box
 
-    @pyedb_function_handler()
     def in_polygon(self, polygon_data, include_partial=True, simple_check=False):
         """Check if padstack Instance is in given polygon data.
 
@@ -1356,17 +1401,12 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
         val = self._pedb.edb_value(0)
         offset = self._pedb.edb_value(0.0)
-        if is_ironpython:  # pragma: no cover
-            diameter = _clr.StrongBox[type(val)]()
-            drill_to_layer = _clr.StrongBox[self._pedb.edb_api.Cell.ILayerReadOnly]()
-            flag = self._edb_padstackinstance.GetBackDrillParametersLayerValue(drill_to_layer, offset, diameter, False)
-        else:
-            (
-                flag,
-                drill_to_layer,
-                offset,
-                diameter,
-            ) = self._edb_padstackinstance.GetBackDrillParametersLayerValue(layer, offset, val, False)
+        (
+            flag,
+            drill_to_layer,
+            offset,
+            diameter,
+        ) = self._edb_padstackinstance.GetBackDrillParametersLayerValue(layer, offset, val, False)
         if flag:
             if offset.ToDouble():
                 return drill_to_layer.GetName(), diameter.ToString(), offset.ToString()
@@ -1414,17 +1454,12 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
         val = self._pedb.edb_value(0)
         offset = self._pedb.edb_value(0.0)
-        if is_ironpython:  # pragma: no cover
-            diameter = _clr.StrongBox[type(val)]()
-            drill_to_layer = _clr.StrongBox[self._pedb.edb_api.Cell.ILayerReadOnly]()
-            flag = self._edb_padstackinstance.GetBackDrillParametersLayerValue(drill_to_layer, offset, diameter, True)
-        else:
-            (
-                flag,
-                drill_to_layer,
-                offset,
-                diameter,
-            ) = self._edb_padstackinstance.GetBackDrillParametersLayerValue(layer, offset, val, True)
+        (
+            flag,
+            drill_to_layer,
+            offset,
+            diameter,
+        ) = self._edb_padstackinstance.GetBackDrillParametersLayerValue(layer, offset, val, True)
         if flag:
             if offset.ToDouble():
                 return drill_to_layer.GetName(), diameter.ToString(), offset.ToString()
@@ -1456,9 +1491,9 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         val = self._pedb.edb_value(drill_diameter)
         offset = self._pedb.edb_value(offset)
         if offset.ToDouble():
-            return self._edb_padstackinstance.SetBackDrillParameters(layer, offset, val, True)
+            return self._edb_object.SetBackDrillParameters(layer, offset, val, True)
         else:
-            return self._edb_padstackinstance.SetBackDrillParameters(layer, val, True)
+            return self._edb_object.SetBackDrillParameters(layer, val, True)
 
     @property
     def start_layer(self):
@@ -1470,7 +1505,7 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             Name of the starting layer.
         """
         layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
-        _, start_layer, stop_layer = self._edb_padstackinstance.GetLayerRange()
+        _, start_layer, stop_layer = self._edb_object.GetLayerRange()
 
         if start_layer:
             return start_layer.GetName()
@@ -1576,6 +1611,14 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         self._edb_padstackinstance.SetIsLayoutPin(pin)
 
     @property
+    def component(self):
+        """Component."""
+        from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
+
+        comp = EDBComponent(self._pedb, self._edb_object.GetComponent())
+        return comp if not comp.is_null else False
+
+    @property
     def position(self):
         """Padstack instance position.
 
@@ -1623,11 +1666,9 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     def name(self):
         """Padstack Instance Name. If it is a pin, the syntax will be like in AEDT ComponentName-PinName."""
         if self.is_pin:
-            comp_name = self._edb_padstackinstance.GetComponent().GetName()
-            pin_name = self._edb_padstackinstance.GetName()
-            return "-".join([comp_name, pin_name])
+            return self.aedt_name
         else:
-            return self._edb_padstackinstance.GetName()
+            return self.component_pin
 
     @name.setter
     def name(self, value):
@@ -1670,6 +1711,12 @@ class EDBPadstackInstance(EDBPrimitivesMain):
     @property
     def pin_number(self):
         """Get pin number."""
+        warnings.warn("`pin_number` is deprecated. Use `component_pin` method instead.", DeprecationWarning)
+        return self.component_pin
+
+    @property
+    def component_pin(self):
+        """Get component pin."""
         return self._edb_padstackinstance.GetName()
 
     @property
@@ -1692,16 +1739,12 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         >>> edbapp.padstacks.instances[111].get_aedt_pin_name()
 
         """
-        if is_ironpython:
-            name = _clr.Reference[String]()
-            self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, name)
-        else:
-            val = String("")
-            _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
+
+        val = String("")
+        _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
         name = str(name).strip("'")
         return name
 
-    @pyedb_function_handler()
     def parametrize_position(self, prefix=None):
         """Parametrize the instance position.
 
@@ -1726,18 +1769,6 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         self.position = [var_name + "X", var_name + "Y"]
         return [var_name + "X", var_name + "Y"]
 
-    @pyedb_function_handler()
-    def delete_padstack_instance(self):
-        """Delete this padstack instance.
-
-        .. deprecated:: 0.6.28
-           Use :func:`delete` property instead.
-        """
-        warnings.warn("`delete_padstack_instance` is deprecated. Use `delete` instead.", DeprecationWarning)
-        self._edb_padstackinstance.Delete()
-        return True
-
-    @pyedb_function_handler()
     def in_voids(self, net_name=None, layer_name=None):
         """Check if this padstack instance is in any void.
 
@@ -1830,7 +1861,6 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         """
         return int(self._edb_padstackinstance.GetGroup().GetPlacementLayer().GetTopBottomAssociation())
 
-    @pyedb_function_handler()
     def create_rectangle_in_pad(self, layer_name, return_points=False, partition_max_order=16):
         """Create a rectangle inscribed inside a padstack instance pad.
 
@@ -2028,7 +2058,6 @@ class EDBPadstackInstance(EDBPrimitivesMain):
             created_polygon = self._pedb.modeler.create_polygon(path, layer_name)
             return created_polygon
 
-    @pyedb_function_handler()
     def get_connected_object_id_set(self):
         """Produce a list of all geometries physically connected to a given layout object.
 
@@ -2041,7 +2070,6 @@ class EDBPadstackInstance(EDBPrimitivesMain):
         layoutObjInst = self.object_instance
         return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
 
-    @pyedb_function_handler()
     def get_reference_pins(self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True):
         """Search for reference pins using given criteria.
 

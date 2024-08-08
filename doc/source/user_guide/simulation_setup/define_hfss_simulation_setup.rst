@@ -10,19 +10,19 @@ This page shows how to set up an HFSS simulation.
 
 .. code:: python
 
-    from pyedb.dotnet.edb import Edb
+    from pyedb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
     # Ansys release version
-    ansys_version = "2023.2"
+    ansys_version = "2024.1"
 
     # download and copy the layout file from examples
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
 
     # load EDB
-    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2024.1")
 
     # create HFSS simulation setup
     setup1 = edbapp.create_hfss_setup("setup1")
@@ -69,7 +69,7 @@ This page shows how to set up an HFSS simulation.
     # enable save radiate fields only
     setup1.adaptive_settings.save_rad_field_only = True
 
-    # enable defeature based on absloute length
+    # enable defeature based on absolute length
     setup1.defeature_settings.defeature_abs_length = "1um"
 
     # enable defeature based on aspect ratio

@@ -1,16 +1,41 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 This module contains the `EdbPadstacks` class.
 """
 import math
 import warnings
 
+import rtree
+
 from pyedb.dotnet.clr_module import Array
+from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import (
     EDBPadstack,
     EDBPadstackInstance,
 )
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -24,7 +49,6 @@ class EdbPadstacks(object):
     >>> edb_padstacks = edbapp.padstacks
     """
 
-    @pyedb_function_handler()
     def __getitem__(self, name):
         """Get  a padstack definition or instance from the Edb project.
 
@@ -34,11 +58,11 @@ class EdbPadstacks(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponent`
+        :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`
 
         """
-        if name in self.instances:
-            return self.instances[name]
+        if isinstance(name, int) and name in self.instances:
+            return self._pedb.layout.find_object_by_id(name)
         elif name in self.definitions:
             return self.definitions[name]
         else:
@@ -50,6 +74,8 @@ class EdbPadstacks(object):
 
     def __init__(self, p_edb):
         self._pedb = p_edb
+        self._instances = {}
+        self._definitions = {}
 
     @property
     def _edb(self):
@@ -82,9 +108,8 @@ class EdbPadstacks(object):
     @property
     def _layers(self):
         """ """
-        return self._pedb.stackup.stackup_layers
+        return self._pedb.stackup.layers
 
-    @pyedb_function_handler()
     def int_to_pad_type(self, val=0):
         """Convert an integer to an EDB.PadGeometryType.
 
@@ -111,7 +136,6 @@ class EdbPadstacks(object):
         else:
             return val
 
-    @pyedb_function_handler()
     def int_to_geometry_type(self, val=0):
         """Convert an integer to an EDB.PadGeometryType.
 
@@ -161,12 +185,14 @@ class EdbPadstacks(object):
             List of definitions via padstack definitions.
 
         """
-        _padstacks = {}
+        if len(self._definitions) == len(self._pedb.padstack_defs):
+            return self._definitions
+        self._definitions = {}
         for padstackdef in self._pedb.padstack_defs:
             PadStackData = padstackdef.GetData()
             if len(PadStackData.GetLayerNames()) >= 1:
-                _padstacks[padstackdef.GetName()] = EDBPadstack(padstackdef, self)
-        return _padstacks
+                self._definitions[padstackdef.GetName()] = EDBPadstack(padstackdef, self)
+        return self._definitions
 
     @property
     def padstacks(self):
@@ -190,16 +216,43 @@ class EdbPadstacks(object):
 
         Returns
         -------
-        dict[str, :class:`dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
+        dict[int, :class:`dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
             List of padstack instances.
 
         """
 
-        padstack_instances = {}
         edb_padstack_inst_list = self._pedb.layout.padstack_instances
-        for edb_padstack_instance in edb_padstack_inst_list:
-            padstack_instances[edb_padstack_instance.GetId()] = EDBPadstackInstance(edb_padstack_instance, self._pedb)
+        if len(self._instances) == len(edb_padstack_inst_list):
+            return self._instances
+        self._instances = {i.id: i for i in edb_padstack_inst_list}
+        return self._instances
+
+    @property
+    def instances_by_name(self):
+        """Dictionary  of all padstack instances (vias and pins) by name.
+
+        Returns
+        -------
+        dict[str, :class:`dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`]
+            List of padstack instances.
+
+        """
+        padstack_instances = {}
+        for _, edb_padstack_instance in self.instances.items():
+            if edb_padstack_instance.aedt_name:
+                padstack_instances[edb_padstack_instance.aedt_name] = EDBPadstackInstance(
+                    edb_padstack_instance, self._pedb
+                )
         return padstack_instances
+
+    def find_instance_by_id(self, value: int):
+        """Find a padstack instance by database id.
+
+        Parameters
+        ----------
+        value : int
+        """
+        return self._pedb.modeler.find_object_by_id(value)
 
     @property
     def pins(self):
@@ -286,7 +339,6 @@ class EdbPadstacks(object):
 
         return PadType
 
-    @pyedb_function_handler()
     def create_circular_padstack(
         self,
         padstackname=None,
@@ -388,7 +440,6 @@ class EdbPadstacks(object):
                 )
         PadStack.SetData(new_PadStackData)
 
-    @pyedb_function_handler()
     def delete_padstack_instances(self, net_names):  # pragma: no cover
         """Delete padstack instances by net names.
 
@@ -416,7 +467,6 @@ class EdbPadstacks(object):
                     return False
         return True
 
-    @pyedb_function_handler()
     def set_solderball(self, padstackInst, sballLayer_name, isTopPlaced=True, ballDiam=100e-6):
         """Set solderball for the given PadstackInstance.
 
@@ -459,7 +509,6 @@ class EdbPadstacks(object):
 
         return False
 
-    @pyedb_function_handler()
     def create_coax_port(self, padstackinstance, use_dot_separator=True, name=None):
         """Create HFSS 3Dlayout coaxial lumped port on a pastack
         Requires to have solder ball defined before calling this method.
@@ -521,11 +570,9 @@ class EdbPadstacks(object):
             return port_name
         return ""
 
-    @pyedb_function_handler()
     def _port_exist(self, port_name):
         return any(port for port in list(self._pedb.excitations.keys()) if port == port_name)
 
-    @pyedb_function_handler()
     def get_pinlist_from_component_and_net(self, refdes=None, netname=None):
         """Retrieve pins given a component's reference designator and net name.
 
@@ -545,13 +592,13 @@ class EdbPadstacks(object):
         """
         pinlist = []
         if refdes:
-            if refdes in self._pedb.components.components:
+            if refdes in self._pedb.components.instances:
                 if netname:
-                    for pin, val in self._pedb.components.components[refdes].pins.items():
+                    for pin, val in self._pedb.components.instances[refdes].pins.items():
                         if val.net_name == netname:
                             pinlist.append(val)
                 else:
-                    for pin in self._pedb.components.components[refdes].pins.values():
+                    for pin in self._pedb.components.instances[refdes].pins.values():
                         pinlist.append(pin)
             elif netname:
                 for pin in self._pedb.pins:
@@ -562,7 +609,6 @@ class EdbPadstacks(object):
 
         return pinlist
 
-    @pyedb_function_handler()
     def get_pad_parameters(self, pin, layername, pad_type=0):
         """Get Padstack Parameters from Pin or Padstack Definition.
 
@@ -618,7 +664,6 @@ class EdbPadstacks(object):
                 return geometry_type, parameters, offset_x, offset_y, rotation
             return 0, [0], 0, 0, 0
 
-    @pyedb_function_handler()
     def set_all_antipad_value(self, value):
         """Set all anti-pads from all pad-stack definition to the given value.
 
@@ -667,7 +712,6 @@ class EdbPadstacks(object):
                 padstack.edb_padstack.SetData(cloned_padstack_data)
             return all_succeed
 
-    @pyedb_function_handler()
     def check_and_fix_via_plating(self, minimum_value_to_replace=0.0, default_plating_ratio=0.2):
         """Check for minimum via plating ration value, values found below the minimum one are replaced by default
         plating ratio.
@@ -693,7 +737,6 @@ class EdbPadstacks(object):
                 )
         return True
 
-    @pyedb_function_handler()
     def get_via_instance_from_net(self, net_list=None):
         """Get the list for EDB vias from a net name list.
 
@@ -724,7 +767,6 @@ class EdbPadstacks(object):
                     via_list.append(lobj)
         return via_list
 
-    @pyedb_function_handler()
     def create_padstack(
         self,
         padstackname=None,
@@ -807,7 +849,6 @@ class EdbPadstacks(object):
             pad_rotation=pad_rotation,
         )
 
-    @pyedb_function_handler()
     def create(
         self,
         padstackname=None,
@@ -826,6 +867,9 @@ class EdbPadstacks(object):
         pad_offset_x="0.0",
         pad_offset_y="0.0",
         pad_rotation="0.0",
+        pad_polygon=None,
+        antipad_polygon=None,
+        polygon_hole=None,
         start_layer=None,
         stop_layer=None,
         add_default_layer=False,
@@ -846,7 +890,7 @@ class EdbPadstacks(object):
         antipaddiam : str, optional
             Diameter of the antipad with units. The default is ``"600um"``.
         pad_shape : str, optional
-            Shape of the pad. The default is ``"Circle``. Options are ``"Circle"`` and ``"Rectangle"``.
+            Shape of the pad. The default is ``"Circle``. Options are ``"Circle"``, ``"Rectangle"`` and ``"Polygon"``.
         antipad_shape : str, optional
             Shape of the antipad. The default is ``"Circle"``. Options are ``"Circle"`` ``"Rectangle"`` and
             ``"Bullet"``.
@@ -892,17 +936,34 @@ class EdbPadstacks(object):
         holediam = self._get_edb_value(holediam)
         paddiam = self._get_edb_value(paddiam)
         antipaddiam = self._get_edb_value(antipaddiam)
-
+        layers = list(self._pedb.stackup.signal_layers.keys())[:]
+        value0 = self._get_edb_value("0.0")
         if not padstackname:
             padstackname = generate_unique_name("VIA")
         # assert not self.isreadonly, "Write Functions are not available within AEDT"
         padstackData = self._edb.definition.PadstackDefData.Create()
-        if has_hole:
+        if has_hole and not polygon_hole:
             ptype = self._edb.definition.PadGeometryType.Circle
+            hole_param = Array[type(holediam)]([holediam])
+            padstackData.SetHoleParameters(ptype, hole_param, value0, value0, value0)
+            padstackData.SetHolePlatingPercentage(self._get_edb_value(20.0))
+        elif polygon_hole:
+            if isinstance(polygon_hole, list):
+                _poly = self._pedb.modeler.create_polygon(polygon_hole, layers[0], net_name="dummy")
+                if not _poly.is_null:
+                    hole_param = _poly.polygon_data
+                    _poly.delete()
+                else:
+                    return False
+            elif isinstance(polygon_hole, PolygonDataDotNet):
+                hole_param = polygon_hole.edb_api
+            else:
+                return False
+            padstackData.SetPolygonalHoleParameters(hole_param, value0, value0, value0)
+            padstackData.SetHolePlatingPercentage(self._get_edb_value(20.0))
         else:
             ptype = self._edb.definition.PadGeometryType.NoGeometry
-        holparam = Array[type(holediam)]([holediam])
-        value0 = self._get_edb_value("0.0")
+
         x_size = self._get_edb_value(x_size)
         y_size = self._get_edb_value(y_size)
         corner_radius = self._get_edb_value(corner_radius)
@@ -915,8 +976,7 @@ class EdbPadstacks(object):
         pad_rotation = self._get_edb_value(pad_rotation)
         anti_pad_x_size = self._get_edb_value(anti_pad_x_size)
         anti_pad_y_size = self._get_edb_value(anti_pad_y_size)
-        padstackData.SetHoleParameters(ptype, holparam, value0, value0, value0)
-        padstackData.SetHolePlatingPercentage(self._get_edb_value(20.0))
+
         if hole_range == "through":  # pragma no cover
             padstackData.SetHoleRange(self._edb.definition.PadstackHoleRange.Through)
         elif hole_range == "begin_on_upper_pad":  # pragma no cover
@@ -928,7 +988,7 @@ class EdbPadstacks(object):
         else:  # pragma no cover
             self._logger.error("Unknown padstack hole range")
         padstackData.SetMaterial("copper")
-        layers = list(self._pedb.stackup.signal_layers.keys())[:]
+
         if start_layer and start_layer in layers:  # pragma no cover
             layers = layers[layers.index(start_layer) :]
         if stop_layer and stop_layer in layers:  # pragma no cover
@@ -939,44 +999,82 @@ class EdbPadstacks(object):
         elif pad_shape == "Rectangle":  # pragma no cover
             pad_array = Array[type(x_size)]([x_size, y_size])
             pad_shape = self._edb.definition.PadGeometryType.Rectangle
+        elif pad_shape == "Polygon":
+            if isinstance(pad_polygon, list):
+                _poly = self._pedb.modeler.create_polygon(pad_polygon, layers[0], net_name="dummy")
+                if not _poly.is_null:
+                    pad_array = _poly.polygon_data
+                    _poly.delete()
+                else:
+                    return False
+            elif isinstance(pad_polygon, PolygonDataDotNet):
+                pad_array = pad_polygon
         if antipad_shape == "Bullet":  # pragma no cover
             antipad_array = Array[type(x_size)]([x_size, y_size, corner_radius])
             antipad_shape = self._edb.definition.PadGeometryType.Bullet
         elif antipad_shape == "Rectangle":  # pragma no cover
             antipad_array = Array[type(anti_pad_x_size)]([anti_pad_x_size, anti_pad_y_size])
             antipad_shape = self._edb.definition.PadGeometryType.Rectangle
+        elif antipad_shape == "Polygon":
+            if isinstance(antipad_polygon, list):
+                _poly = self._pedb.modeler.create_polygon(antipad_polygon, layers[0], net_name="dummy")
+                if not _poly.is_null:
+                    antipad_array = _poly.polygon_data
+                    _poly.delete()
+                else:
+                    return False
+            elif isinstance(antipad_polygon, PolygonDataDotNet):
+                antipad_array = antipad_polygon
         else:  # pragma no cover
             antipad_array = Array[type(antipaddiam)]([antipaddiam])
             antipad_shape = self._edb.definition.PadGeometryType.Circle
         if add_default_layer:  # pragma no cover
             layers = layers + ["Default"]
-        for layer in layers:
-            padstackData.SetPadParameters(
-                layer,
-                self._edb.definition.PadType.RegularPad,
-                pad_shape,
-                pad_array,
-                pad_offset_x,
-                pad_offset_y,
-                pad_rotation,
-            )
+        if antipad_shape == "Polygon" and pad_shape == "Polygon":
+            for layer in layers:
+                padstackData.SetPolygonalPadParameters(
+                    layer,
+                    self._edb.definition.PadType.RegularPad,
+                    pad_array.edb_api,
+                    pad_offset_x,
+                    pad_offset_y,
+                    pad_rotation,
+                )
+                padstackData.SetPolygonalPadParameters(
+                    layer,
+                    self._edb.definition.PadType.AntiPad,
+                    antipad_array.edb_api,
+                    pad_offset_x,
+                    pad_offset_y,
+                    pad_rotation,
+                )
+        else:
+            for layer in layers:
+                padstackData.SetPadParameters(
+                    layer,
+                    self._edb.definition.PadType.RegularPad,
+                    pad_shape,
+                    pad_array,
+                    pad_offset_x,
+                    pad_offset_y,
+                    pad_rotation,
+                )
 
-            padstackData.SetPadParameters(
-                layer,
-                self._edb.definition.PadType.AntiPad,
-                antipad_shape,
-                antipad_array,
-                offset_x,
-                offset_y,
-                rotation,
-            )
+                padstackData.SetPadParameters(
+                    layer,
+                    self._edb.definition.PadType.AntiPad,
+                    antipad_shape,
+                    antipad_array,
+                    offset_x,
+                    offset_y,
+                    rotation,
+                )
 
         padstackDefinition = self._edb.definition.PadstackDef.Create(self.db, padstackname)
         padstackDefinition.SetData(padstackData)
         self._logger.info("Padstack %s create correctly", padstackname)
         return padstackname
 
-    @pyedb_function_handler()
     def _get_pin_layer_range(self, pin):
         res, fromlayer, tolayer = pin.GetLayerRange()
         if res:
@@ -984,7 +1082,6 @@ class EdbPadstacks(object):
         else:
             return False
 
-    @pyedb_function_handler()
     def duplicate_padstack(self, target_padstack_name, new_padstack_name=""):
         """Duplicate a padstack.
 
@@ -1006,7 +1103,6 @@ class EdbPadstacks(object):
         warnings.warn("Use :func:`create` method instead.", DeprecationWarning)
         return self.duplicate(target_padstack_name=target_padstack_name, new_padstack_name=new_padstack_name)
 
-    @pyedb_function_handler()
     def duplicate(self, target_padstack_name, new_padstack_name=""):
         """Duplicate a padstack.
 
@@ -1033,7 +1129,6 @@ class EdbPadstacks(object):
 
         return new_padstack_name
 
-    @pyedb_function_handler()
     def place(
         self,
         position,
@@ -1120,7 +1215,6 @@ class EdbPadstacks(object):
         else:
             return False
 
-    @pyedb_function_handler()
     def place_padstack(
         self,
         position,
@@ -1175,7 +1269,6 @@ class EdbPadstacks(object):
             is_pin=is_pin,
         )
 
-    @pyedb_function_handler()
     def remove_pads_from_padstack(self, padstack_name, layer_name=None):
         """Remove the Pad from a padstack on a specific layer by setting it as a 0 thickness circle.
 
@@ -1208,7 +1301,6 @@ class EdbPadstacks(object):
         self.definitions[padstack_name].edb_padstack.SetData(newPadstackDefinitionData)
         return True
 
-    @pyedb_function_handler()
     def set_pad_property(
         self,
         padstack_name,
@@ -1310,7 +1402,61 @@ class EdbPadstacks(object):
         self.definitions[padstack_name].edb_padstack.SetData(new_padstack_def)
         return True
 
-    @pyedb_function_handler()
+    def get_instances(
+        self,
+        name=None,
+        pid=None,
+        definition_name=None,
+        net_name=None,
+        component_reference_designator=None,
+        component_pin=None,
+    ):
+        """Get padstack instances by conditions.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the padstack.
+        pid : int, optional
+            Id of the padstack.
+        definition_name : str, list, optional
+            Name of the padstack definition.
+        net_name : str, optional
+            The net name to be used for filtering padstack instances.
+        component_pin: str, optional
+            Pin Number of the component.
+        Returns
+        -------
+        list
+            List of :class:`dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`.
+        """
+
+        instances_by_id = self.instances
+        if pid:
+            return instances_by_id[pid]
+        elif name:
+            return self.instances_by_name[name]
+        else:
+            instances = list(instances_by_id.values())
+            if definition_name:
+                definition_name = definition_name if isinstance(definition_name, list) else [definition_name]
+                instances = [inst for inst in instances if inst.padstack_definition in definition_name]
+            if net_name:
+                net_name = net_name if isinstance(net_name, list) else [net_name]
+                instances = [inst for inst in instances if inst.net_name in net_name]
+            if component_reference_designator:
+                refdes = (
+                    component_reference_designator
+                    if isinstance(component_reference_designator, list)
+                    else [component_reference_designator]
+                )
+                instances = [inst for inst in instances if inst.component]
+                instances = [inst for inst in instances if inst.component.refdes in refdes]
+                if component_pin:
+                    component_pin = component_pin if isinstance(component_pin, list) else [component_pin]
+                    instances = [inst for inst in instances if inst.component_pin in component_pin]
+            return instances
+
     def get_padstack_instance_by_net_name(self, net_name):
         """Get a list of padstack instances by net name.
 
@@ -1324,13 +1470,9 @@ class EdbPadstacks(object):
         list
             List of :class:`dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`.
         """
-        padstack_instances = []
-        for inst_id, inst in self.instances.items():
-            if inst.net_name == net_name:
-                padstack_instances.append(inst)
-        return padstack_instances
+        warnings.warn("Use new property :func:`get_padstack_instance` instead.", DeprecationWarning)
+        return self.get_instances(net_name=net_name)
 
-    @pyedb_function_handler()
     def get_reference_pins(
         self, positive_pin, reference_net="gnd", search_radius=5e-3, max_limit=0, component_only=True
     ):
@@ -1387,3 +1529,133 @@ class EdbPadstacks(object):
             pin_dict = {GeometryOperators.points_distance(positive_pin.position, p.position): p for p in pinlist}
             pinlist = [pin[1] for pin in sorted(pin_dict.items())[:max_limit]]
         return pinlist
+
+    def get_padstack_instances_rtree_index(self, nets=None):
+        """Returns padstack instances Rtree index.
+
+        Parameters
+        ----------
+        nets : str or list, optional
+            net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+            all instances are included in the index. Default value is ``None``.
+
+        Returns
+        -------
+        Rtree index object.
+
+        """
+        if isinstance(nets, str):
+            nets = [nets]
+        padstack_instances_index = rtree.index.Index()
+        if nets:
+            instances = [inst for inst in list(self.instances.values()) if inst.net_name in nets]
+        else:
+            instances = list(self.instances.values())
+        for inst in instances:
+            padstack_instances_index.insert(inst.id, inst.position)
+        return padstack_instances_index
+
+    def get_padstack_instances_intersecting_bounding_box(self, bounding_box, nets=None):
+        """Returns the list of padstack instances ID intersecting a given bounding box and nets.
+
+        Parameters
+        ----------
+        bounding_box : tuple or list.
+            bounding box, [x1, y1, x2, y2]
+        nets : str or list, optional
+            net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+            all instances are included in the index. Default value is ``None``.
+
+        Returns
+        -------
+        List of padstack instances ID intersecting the bounding box.
+        """
+        if not bounding_box:
+            raise Exception("No bounding box was provided")
+        index = self.get_padstack_instances_rtree_index(nets=nets)
+        if not len(bounding_box) == 4:
+            raise Exception("The bounding box length must be equal to 4")
+        if isinstance(bounding_box, list):
+            bounding_box = tuple(bounding_box)
+        return list(index.intersection(bounding_box))
+
+    def merge_via_along_lines(
+        self, net_name="GND", distance_threshold=5e-3, minimum_via_number=6, selected_angles=None
+    ):
+        """Replace padstack instances along lines into a single polygon.
+
+        Detect all padstack instances that are placed along lines and replace them by a single polygon based one
+        forming a wall shape. This method is designed to simplify meshing on via fence usually added to shield RF traces
+        on PCB.
+
+        Parameters
+        ----------
+        net_name : str
+            Net name used for detected padstack instances. Default value is ``"GND"``.
+
+        distance_threshold : float, None, optional
+            If two points in a line are separated by a distance larger than `distance_threshold`,
+            the line is divided in two parts. Default is ``5e-3`` (5mm), in which case the control is not performed.
+
+        minimum_via_number : int, optional
+            The minimum number of points that a line must contain. Default is ``6``.
+
+        selected_angles : list[int, float]
+            Specify angle in degrees to detected, for instance [0, 180] is only detecting horizontal and vertical lines.
+            Other values can be assigned like 45 degrees. When `None` is provided all lines are detected. Default value
+            is `None`.
+
+        Returns
+        -------
+        bool
+            ``True`` when succeeded ``False`` when failed. <
+
+        """
+        _def = list(
+            set([inst.padstack_definition for inst in list(self.instances.values()) if inst.net_name == net_name])
+        )
+        if not _def:
+            self._logger.error(f"No padstack definition found for net {net_name}")
+            return False
+        _instances_to_delete = []
+        padstack_instances = []
+        for pdstk_def in _def:
+            padstack_instances.append(
+                [inst for inst in self.definitions[pdstk_def].instances if inst.net_name == net_name]
+            )
+        for pdstk_series in padstack_instances:
+            instances_location = [inst.position for inst in pdstk_series]
+            lines, line_indexes = GeometryOperators.find_points_along_lines(
+                points=instances_location,
+                minimum_number_of_points=minimum_via_number,
+                distance_threshold=distance_threshold,
+                selected_angles=selected_angles,
+            )
+            for line in line_indexes:
+                [_instances_to_delete.append(pdstk_series[ind]) for ind in line]
+                start_point = pdstk_series[line[0]]
+                stop_point = pdstk_series[line[-1]]
+                padstack_def = start_point.padstack_definition
+                trace_width = self.definitions[padstack_def].pad_by_layer[stop_point.start_layer].parameters_values[0]
+                trace = self._pedb.modeler.create_trace(
+                    path_list=[start_point.position, stop_point.position],
+                    layer_name=start_point.start_layer,
+                    width=trace_width,
+                )
+                polygon_data = trace.polygon_data
+                trace.delete()
+                new_padstack_def = generate_unique_name(padstack_def)
+                if not self.create(
+                    padstackname=new_padstack_def,
+                    pad_shape="Polygon",
+                    antipad_shape="Polygon",
+                    pad_polygon=polygon_data,
+                    antipad_polygon=polygon_data,
+                    polygon_hole=polygon_data,
+                ):
+                    self._logger.error(f"Failed to create padstack definition {new_padstack_def}")
+                if not self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net_name):
+                    self._logger.error(f"Failed to place padstack instance {new_padstack_def}")
+            for inst in _instances_to_delete:
+                inst.delete()
+        return True

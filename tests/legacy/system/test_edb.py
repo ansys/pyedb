@@ -1,7 +1,30 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Tests related to Edb
 """
 
 import os
+from pathlib import Path
 
 import pytest
 
@@ -10,7 +33,7 @@ from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
-from pyedb.generic.constants import RadiationBoxType, SolverType, SourceType
+from pyedb.generic.constants import RadiationBoxType, SourceType
 from pyedb.generic.general_methods import is_linux
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
@@ -53,8 +76,9 @@ class TestClass:
         # TODO: Moves this piece of code in another place
         assert "test" in self.edbapp.terminals
         assert self.edbapp.siwave.create_pin_group_on_net("U1", "1V0", "PG_V1P0_S0")
+        assert self.edbapp.siwave.create_pin_group_on_net("U1", "GND", "U1_GND")
         assert self.edbapp.siwave.create_circuit_port_on_pin_group(
-            "PG_V1P0_S0", "PinGroup_2", impedance=50, name="test_port"
+            "PG_V1P0_S0", "U1_GND", impedance=50, name="test_port"
         )
         self.edbapp.excitations["test_port"].name = "test_rename"
         assert any(port for port in list(self.edbapp.excitations) if port == "test_rename")
@@ -63,19 +87,20 @@ class TestClass:
         """Create a voltage source."""
         assert len(self.edbapp.sources) == 0
         assert "Vsource_" in self.edbapp.siwave.create_voltage_source_on_net("U1", "USB3_D_P", "U1", "GND", 3.3, 0)
-        assert len(self.edbapp.sources) == 2
+        assert len(self.edbapp.sources) == 1
         assert list(self.edbapp.sources.values())[0].magnitude == 3.3
 
         pins = self.edbapp.components.get_pin_from_component("U1")
         assert "VSource_" in self.edbapp.siwave.create_voltage_source_on_pin(pins[300], pins[10], 3.3, 0)
-        assert len(self.edbapp.sources) == 3
+        assert len(self.edbapp.sources) == 2
         assert len(self.edbapp.probes) == 0
         list(self.edbapp.sources.values())[0].phase = 1
         assert list(self.edbapp.sources.values())[0].phase == 1
         u6 = self.edbapp.components["U6"]
-        self.edbapp.create_voltage_source(
+        voltage_source = self.edbapp.create_voltage_source(
             u6.pins["F2"].get_terminal(create_new_terminal=True), u6.pins["F1"].get_terminal(create_new_terminal=True)
         )
+        assert not voltage_source.is_null
 
     def test_siwave_create_current_source(self):
         """Create a current source."""
@@ -92,11 +117,16 @@ class TestClass:
         self.edbapp.siwave.create_pin_group(
             reference_designator="U1", pin_numbers=["R23", "P23"], group_name="sink_pos"
         )
+        self.edbapp.siwave.create_pin_group_on_net(reference_designator="U1", net_name="GND", group_name="gnd2")
 
         # TODO: Moves this piece of code in another place
-        assert self.edbapp.siwave.create_voltage_source_on_pin_group("sink_pos", "gnd", name="vrm_voltage_source")
+        assert self.edbapp.siwave.create_voltage_source_on_pin_group("sink_pos", "gnd2", name="vrm_voltage_source")
         self.edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["A27", "A28"], group_name="vp_pos")
-        self.edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["R23", "P23"], group_name="vp_neg")
+        assert self.edbapp.siwave.create_pin_group_on_net(
+            reference_designator="U1", net_name="GND", group_name="vp_neg"
+        )
+        assert self.edbapp.siwave.pin_groups["vp_pos"]
+        assert self.edbapp.siwave.pin_groups["vp_pos"].pins
         assert self.edbapp.siwave.create_voltage_probe_on_pin_group("vprobe", "vp_pos", "vp_neg")
         assert self.edbapp.probes["vprobe"]
         self.edbapp.siwave.place_voltage_probe(
@@ -249,9 +279,10 @@ class TestClass:
             keep_lines_as_path=True,
         )
         assert "A0_N" not in edbapp.nets.nets
-        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", order_by_area=True), list)
-        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True), list)
-        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
+        assert isinstance(edbapp.layout_validation.disjoint_nets("GND", order_by_area=True), list)
+        assert isinstance(edbapp.layout_validation.disjoint_nets("GND", keep_only_main_net=True), list)
+        assert isinstance(edbapp.layout_validation.disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
+        assert edbapp.layout_validation.fix_self_intersections("PGND")
 
         edbapp.close()
 
@@ -341,6 +372,7 @@ class TestClass:
             use_pyaedt_extent_computing=True,
             check_terminals=True,
             expansion_factor=2,
+            include_voids_in_extents=True,
         )
         edbapp.close()
         source_path = os.path.join(local_path, "example_models", test_subfolder, "Multizone_GroundVoids.aedb")
@@ -374,9 +406,9 @@ class TestClass:
             edbversion=desktop_version,
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
         assert os.path.exists(out)
-        out = edb.export_hfss(self.local_scratch)
+        out = edb.export_hfss(self.local_scratch.path)
         assert os.path.exists(out)
         edb.close()
 
@@ -387,9 +419,9 @@ class TestClass:
             edbversion=desktop_version,
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
         assert os.path.exists(out)
-        out = edb.export_q3d(self.local_scratch, net_list=["ANALOG_A0", "ANALOG_A1", "ANALOG_A2"], hidden=True)
+        out = edb.export_q3d(self.local_scratch.path, net_list=["ANALOG_A0", "ANALOG_A1", "ANALOG_A2"], hidden=True)
         assert os.path.exists(out)
         edb.close()
 
@@ -400,9 +432,9 @@ class TestClass:
             edbversion=desktop_version,
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_MAXWELL": 0}
-        out = edb.write_export3d_option_config_file(self.local_scratch, options_config)
+        out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
         assert os.path.exists(out)
-        out = edb.export_maxwell(self.local_scratch, num_cores=6)
+        out = edb.export_maxwell(self.local_scratch.path, num_cores=6)
         assert os.path.exists(out)
         edb.close()
 
@@ -517,45 +549,6 @@ class TestClass:
         assert gap_port.is_circuit_port
         edb.close()
 
-    def test_create_dc_simulation(self):
-        """Create Siwave DC simulation"""
-        edb = Edb(
-            edbpath=os.path.join(local_path, "example_models", test_subfolder, "dc_flow.aedb"),
-            edbversion=desktop_version,
-        )
-        sim_setup = edb.new_simulation_configuration()
-        sim_setup.do_cutout_subdesign = False
-        sim_setup.solver_type = SolverType.SiwaveDC
-        sim_setup.add_voltage_source(
-            positive_node_component="Q3",
-            positive_node_net="SOURCE_HBA_PHASEA",
-            negative_node_component="Q3",
-            negative_node_net="HV_DC+",
-        )
-        sim_setup.add_current_source(
-            name="I25",
-            positive_node_component="Q5",
-            positive_node_net="SOURCE_HBB_PHASEB",
-            negative_node_component="Q5",
-            negative_node_net="HV_DC+",
-        )
-        assert len(sim_setup.sources) == 2
-        sim_setup.open_edb_after_build = False
-        sim_setup.batch_solve_settings.output_aedb = os.path.join(self.local_scratch.path, "build.aedb")
-        original_path = edb.edbpath
-        assert sim_setup.batch_solve_settings.use_pyaedt_cutout
-        assert not sim_setup.batch_solve_settings.use_default_cutout
-        sim_setup.batch_solve_settings.use_pyaedt_cutout = True
-        assert sim_setup.batch_solve_settings.use_pyaedt_cutout
-        assert not sim_setup.batch_solve_settings.use_default_cutout
-        assert sim_setup.build_simulation_project()
-        assert edb.edbpath == original_path
-        sim_setup.open_edb_after_build = True
-        assert sim_setup.build_simulation_project()
-        assert edb.edbpath == os.path.join(self.local_scratch.path, "build.aedb")
-
-        edb.close()
-
     def test_edb_statistics(self):
         """Get statistics."""
         example_project = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
@@ -577,6 +570,9 @@ class TestClass:
         assert edb_stats.num_inductors
         assert edb_stats.num_capacitors
         assert edb_stats.num_resistors
+        assert edb_stats.occupying_ratio["1_Top"] == 0.3016820127679697
+        assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.9374673461236078
+        assert edb_stats.occupying_ratio["16_Bottom"] == 0.20492545496020312
         edb.close()
 
     def test_hfss_set_bounding_box_extent(self):
@@ -685,7 +681,7 @@ class TestClass:
         port_hori = edb.ports["port_hori"]
         assert port_hori.ref_terminal
 
-        args = {
+        kwargs = {
             "layer_name": "1_Top",
             "net_name": "SIGP",
             "width": "0.1mm",
@@ -699,7 +695,7 @@ class TestClass:
             [["-40mm", "-10.4mm"], ["-30mm", "-10.4mm"]],
         ]
         for p in trace_paths:
-            t = edb.modeler.create_trace(path_list=p, **args)
+            t = edb.modeler.create_trace(path_list=p, **kwargs)
             traces.append(t)
 
         assert edb.hfss.create_wave_port(traces[0].id, trace_paths[0][0], "wave_port")
@@ -750,7 +746,7 @@ class TestClass:
             edbpath=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
             edbversion=desktop_version,
         )
-        args = {
+        kwargs = {
             "layer_name": "1_Top",
             "net_name": "SIGP",
             "width": "0.1mm",
@@ -764,7 +760,7 @@ class TestClass:
             [["-40mm", "-10.4mm"], ["-30mm", "-10.4mm"]],
         ]
         for p in trace_pathes:
-            t = edb.modeler.create_trace(path_list=p, **args)
+            t = edb.modeler.create_trace(path_list=p, **kwargs)
             traces.append(t)
 
         assert edb.hfss.create_wave_port(traces[0], trace_pathes[0][0], "wave_port")
@@ -790,22 +786,6 @@ class TestClass:
         assert p.radial_extent_factor == 1
         edb.close()
 
-    def test_build_hfss_project_from_config_file(self):
-        """Build a simulation project from config file."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_0122.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
-        cfg_file = os.path.join(os.path.dirname(edbapp.edbpath), "test.cfg")
-        with open(cfg_file, "w") as f:
-            f.writelines("SolverType = 'Hfss3dLayout'\n")
-            f.writelines("PowerNets = ['GND']\n")
-            f.writelines("Components = ['U1', 'U7']")
-
-        sim_config = SimulationConfiguration(cfg_file)
-        assert edbapp.build_simulation_project(sim_config)
-        edbapp.close()
-
     def test_set_all_antipad_values(self):
         """Set all anti-pads from all pad-stack definition to the given value."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
@@ -822,9 +802,13 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = Edb(target_path, edbversion=desktop_version)
         setup1 = edbapp.create_hfss_setup("setup1")
+        assert not edbapp.create_hfss_setup("setup1")
         assert setup1.set_solution_single_frequency()
         assert setup1.set_solution_multi_frequencies()
         assert setup1.set_solution_broadband()
+
+        setup1.solver_slider_type = 0
+        assert setup1.solver_slider_type == 0
 
         setup1.hfss_solver_settings.enhanced_low_freq_accuracy = True
         setup1.hfss_solver_settings.order_basis = "first"
@@ -884,7 +868,7 @@ class TestClass:
 
         via_settings = setup1.via_settings
         via_settings.via_density = 1
-        if edbapp.version[0] >= 10:
+        if float(edbapp.edbversion) >= 2024.1:
             via_settings.via_mesh_plating = True
         via_settings.via_material = "pec"
         via_settings.via_num_sides = 8
@@ -892,7 +876,7 @@ class TestClass:
 
         via_settings = edbapp.setups["setup1"].via_settings
         assert via_settings.via_density == 1
-        if edbapp.version[0] >= 10:
+        if float(edbapp.edbversion) >= 2024.1:
             assert via_settings.via_mesh_plating
         assert via_settings.via_material == "pec"
         assert via_settings.via_num_sides == 8
@@ -945,47 +929,29 @@ class TestClass:
         hfss_port_settings.set_triangles_wave_port = True
         assert hfss_port_settings.set_triangles_wave_port
 
-        # mesh_operations = setup1.mesh_operations
-        # setup1.mesh_operations = mesh_operations
-
-        setup1.add_frequency_sweep(
-            "sweep1",
-            frequency_sweep=[
-                ["linear count", "0", "1kHz", 1],
-                ["log scale", "1kHz", "0.1GHz", 10],
-                ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-            ],
-        )
-        assert "sweep1" in setup1.frequency_sweeps
-        sweep1 = setup1.frequency_sweeps["sweep1"]
-        sweep1.adaptive_sampling = True
-        assert sweep1.adaptive_sampling
-
         edbapp.setups["setup1"].name = "setup1a"
         assert "setup1" not in edbapp.setups
         assert "setup1a" in edbapp.setups
+        edbapp.close()
 
-        mop = edbapp.setups["setup1a"].add_length_mesh_operation({"GND": ["1_Top", "16_Bottom"]}, "m1")
+    def test_hfss_simulation_setup_mesh_operation(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        setup = edbapp.create_hfss_setup(name="setup")
+        mop = setup.add_length_mesh_operation({"GND": ["1_Top", "16_Bottom"]}, "m1")
+        assert mop.nets_layers_list == {"GND": ["1_Top", "16_Bottom"]}
+        assert mop.type == "length"
         assert mop.name == "m1"
-        assert mop.max_elements == "1000"
+        assert mop.max_elements == 1000
         assert mop.restrict_max_elements
         assert mop.restrict_length
         assert mop.max_length == "1mm"
+        setup = edbapp.setups["setup"]
+        assert setup.mesh_operations
+        assert edbapp.setups["setup"].mesh_operations
 
-        mop.name = "m2"
-        mop.max_elements = 2000
-        mop.restrict_max_elements = False
-        mop.restrict_length = False
-        mop.max_length = "2mm"
-
-        assert mop.name == "m2"
-        assert mop.max_elements == "2000"
-        assert not mop.restrict_max_elements
-        assert not mop.restrict_length
-        assert mop.max_length == "2mm"
-
-        mop = edbapp.setups["setup1a"].add_skin_depth_mesh_operation({"GND": ["1_Top", "16_Bottom"]})
-        assert mop.max_elements == "1000"
+        mop = edbapp.setups["setup"].add_skin_depth_mesh_operation({"GND": ["1_Top", "16_Bottom"]})
+        assert mop.nets_layers_list == {"GND": ["1_Top", "16_Bottom"]}
+        assert mop.max_elements == 1000
         assert mop.restrict_max_elements
         assert mop.skin_depth == "1um"
         assert mop.surface_triangle_length == "1mm"
@@ -998,6 +964,46 @@ class TestClass:
         assert mop.skin_depth == "5um"
         assert mop.surface_triangle_length == "2mm"
         assert mop.number_of_layer_elements == "3"
+        edbapp.close()
+
+    def test_hfss_frequency_sweep(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        setup1 = edbapp.create_hfss_setup("setup1")
+        assert edbapp.setups["setup1"].name == "setup1"
+        setup1.add_sweep("sw1", ["linear count", "1MHz", "100MHz", 10])
+        assert edbapp.setups["setup1"].sweeps["sw1"].name == "sw1"
+        assert len(setup1.sweeps["sw1"].frequencies) == 10
+        setup1.sweeps["sw1"].add("linear_scale", "210MHz", "300MHz", "10MHz")
+        assert len(setup1.sweeps["sw1"].frequencies) == 20
+        setup1.sweeps["sw1"].add("log_scale", "1GHz", "10GHz", 10)
+        assert len(setup1.sweeps["sw1"].frequencies) == 31
+
+        setup1.sweeps["sw1"].adaptive_sampling = True
+        assert setup1.sweeps["sw1"].adaptive_sampling
+
+        edbapp.close()
+
+    def test_hfss_simulation_setup_b(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        setup1 = edbapp.create_hfss_setup("setup1")
+        sweep1 = setup1.add_sweep(
+            name="sweep1",
+            frequency_set=[
+                ["linear count", "1MHz", "10MHz", 10],
+            ],
+        )
+        sweep2 = setup1.add_sweep(
+            name="sweep2",
+            frequency_set=[
+                ["log scale", "1kHz", "100kHz", 10],
+            ],
+        )
+        sweep3 = setup1.add_sweep(
+            name="sweep3",
+            frequency_set=[
+                ["linear scale", "20MHz", "30MHz", "1MHz"],
+            ],
+        )
         edbapp.close()
 
     def test_siwave_dc_simulation_setup(self):
@@ -1048,20 +1054,20 @@ class TestClass:
                 assert settings["advanced_settings"][k] == v[p]
 
         for p in [0, 1, 2]:
-            setup1.set_pi_slider(p)
+            setup1.pi_slider_position = p
             settings = self.edbapp.setups["AC1"].get_configurations()
             for k, v in setup1.advanced_settings.pi_defaults.items():
                 assert settings["advanced_settings"][k] == v[p]
 
-        sweep = setup1.add_frequency_sweep(
-            "sweep1",
-            frequency_sweep=[
+        sweep = setup1.add_sweep(
+            name="sweep1",
+            frequency_set=[
                 ["linear count", "0", "1kHz", 1],
                 ["log scale", "1kHz", "0.1GHz", 10],
                 ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
             ],
         )
-        assert "0" in sweep.frequencies
+        assert 0 in sweep.frequencies
         assert not sweep.adaptive_sampling
         assert not sweep.adv_dc_extrapolation
         assert sweep.auto_s_mat_only_solve
@@ -1121,19 +1127,6 @@ class TestClass:
         assert sweep.save_rad_fields_only
         assert sweep.use_q3d_for_dc
 
-    def test_siwave_build_ac_project(self):
-        """Build ac simulation project."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_133_simconfig.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
-        simconfig = edbapp.new_simulation_configuration()
-        simconfig.solver_type = SolverType.SiwaveSYZ
-        simconfig.mesh_freq = "40.25GHz"
-        edbapp.build_simulation_project(simconfig)
-        assert edbapp.siwave_ac_setups[simconfig.setup_name].advanced_settings.mesh_frequency == simconfig.mesh_freq
-        edbapp.close()
-
     def test_siwave_create_port_between_pin_and_layer(self):
         """Create circuit port between pin and a reference layer."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
@@ -1150,12 +1143,23 @@ class TestClass:
         _, pin_group = edbapp.siwave.create_pin_group_on_net(
             reference_designator="U7", net_name="GND", group_name="U7_GND"
         )
-        U7.pins["F7"].create_port(reference=pin_group)
+        U7.pins["F7"].create_port(name="test", reference=pin_group)
         padstack_instance_terminals = [
             term for term in list(edbapp.terminals.values()) if "PadstackInstanceTerminal" in str(term.type)
         ]
         for term in padstack_instance_terminals:
             assert term.position
+        pos_pin = edbapp.padstacks.get_pinlist_from_component_and_net("C173")[1]
+        neg_pin = edbapp.padstacks.get_pinlist_from_component_and_net("C172")[0]
+        edbapp.create_port(
+            pos_pin.get_terminal(create_new_terminal=True),
+            neg_pin.get_terminal(create_new_terminal=True),
+            is_circuit_port=True,
+            name="test1",
+        )
+        assert edbapp.ports["test1"]
+        edbapp.ports["test1"].is_circuit_port = True
+        assert edbapp.ports["test1"].is_circuit_port == True
         edbapp.close()
 
     def test_siwave_source_setter(self):
@@ -1169,8 +1173,6 @@ class TestClass:
         assert sources[0].magnitude == 1.45
         sources[1].magnitude = 1.45
         assert sources[1].magnitude == 1.45
-        sources[2].magnitude = 1.45
-        assert sources[2].magnitude == 1.45
         edbapp.close()
 
     def test_delete_pingroup(self):
@@ -1193,13 +1195,13 @@ class TestClass:
 
     def test_pins(self):
         """Evaluate the pins."""
-        assert len(self.edbapp.pins) > 0
+        assert len(self.edbapp.padstacks.pins) > 0
 
     def test_create_padstack_instance(self):
         """Create padstack instances."""
         edb = Edb(edbversion=desktop_version)
-        edb.stackup.add_layer(layer_name="1_Top", fillMaterial="AIR", thickness="30um")
-        edb.stackup.add_layer(layer_name="contact", fillMaterial="AIR", thickness="100um", base_layer="1_Top")
+        edb.stackup.add_layer(layer_name="1_Top", fillMaterial="air", thickness="30um")
+        edb.stackup.add_layer(layer_name="contact", fillMaterial="air", thickness="100um", base_layer="1_Top")
 
         assert edb.padstacks.create(
             pad_shape="Rectangle",
@@ -1244,103 +1246,19 @@ class TestClass:
         assert not pad_instance3.dcir_equipotential_region
 
         trace = edb.modeler.create_trace([[0, 0], [0, 10e-3]], "1_Top", "0.1mm", "trace_with_via_fence")
-        edb.padstacks.create_padstack("via_0")
+        edb.padstacks.create("via_0")
         trace.create_via_fence("1mm", "1mm", "via_0")
 
-        edb.close()
-
-    def test_assign_hfss_extent_non_multiple_with_simconfig(self):
-        """Build simulation project without multiple."""
-        edb = Edb()
-        edb.stackup.add_layer(layer_name="GND", fillMaterial="AIR", thickness="30um")
-        edb.stackup.add_layer(layer_name="FR4", base_layer="gnd", thickness="250um")
-        edb.stackup.add_layer(layer_name="SIGNAL", base_layer="FR4", thickness="30um")
-        edb.modeler.create_trace(layer_name="SIGNAL", width=0.02, net_name="net1", path_list=[[-1e3, 0, 1e-3, 0]])
-        edb.modeler.create_rectangle(
-            layer_name="GND",
-            representation_type="CenterWidthHeight",
-            center_point=["0mm", "0mm"],
-            width="4mm",
-            height="4mm",
-            net_name="GND",
-        )
-        sim_setup = edb.new_simulation_configuration()
-        sim_setup.signal_nets = ["net1"]
-        # sim_setup.power_nets = ["GND"]
-        sim_setup.use_dielectric_extent_multiple = False
-        sim_setup.use_airbox_horizontal_extent_multiple = False
-        sim_setup.use_airbox_negative_vertical_extent_multiple = False
-        sim_setup.use_airbox_positive_vertical_extent_multiple = False
-        sim_setup.dielectric_extent = 0.0005
-        sim_setup.airbox_horizontal_extent = 0.001
-        sim_setup.airbox_negative_vertical_extent = 0.05
-        sim_setup.airbox_positive_vertical_extent = 0.04
-        sim_setup.add_frequency_sweep = False
-        sim_setup.include_only_selected_nets = True
-        sim_setup.do_cutout_subdesign = False
-        sim_setup.generate_excitations = False
-        edb.build_simulation_project(sim_setup)
-        hfss_ext_info = edb.active_cell.GetHFSSExtentInfo()
-        assert list(edb.nets.nets.values())[0].name == "net1"
-        assert not edb.setups["Pyaedt_setup"].frequency_sweeps
-        assert hfss_ext_info
-        assert hfss_ext_info.AirBoxHorizontalExtent.Item1 == 0.001
-        assert not hfss_ext_info.AirBoxHorizontalExtent.Item2
-        assert hfss_ext_info.AirBoxNegativeVerticalExtent.Item1 == 0.05
-        assert not hfss_ext_info.AirBoxNegativeVerticalExtent.Item2
-        assert hfss_ext_info.AirBoxPositiveVerticalExtent.Item1 == 0.04
-        assert not hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
-        assert hfss_ext_info.DielectricExtentSize.Item1 == 0.0005
-        assert not hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
-        edb.close()
-
-    def test_assign_hfss_extent_multiple_with_simconfig(self):
-        """Build simulation project with multiple."""
-        edb = Edb()
-        edb.stackup.add_layer(layer_name="GND", fillMaterial="AIR", thickness="30um")
-        edb.stackup.add_layer(layer_name="FR4", base_layer="gnd", thickness="250um")
-        edb.stackup.add_layer(layer_name="SIGNAL", base_layer="FR4", thickness="30um")
-        edb.modeler.create_trace(layer_name="SIGNAL", width=0.02, net_name="net1", path_list=[[-1e3, 0, 1e-3, 0]])
-        edb.modeler.create_rectangle(
-            layer_name="GND",
-            representation_type="CenterWidthHeight",
-            center_point=["0mm", "0mm"],
-            width="4mm",
-            height="4mm",
-            net_name="GND",
-        )
-        sim_setup = edb.new_simulation_configuration()
-        sim_setup.signal_nets = ["net1"]
-        sim_setup.power_nets = ["GND"]
-        sim_setup.use_dielectric_extent_multiple = True
-        sim_setup.use_airbox_horizontal_extent_multiple = True
-        sim_setup.use_airbox_negative_vertical_extent_multiple = True
-        sim_setup.use_airbox_positive_vertical_extent_multiple = True
-        sim_setup.dielectric_extent = 0.0005
-        sim_setup.airbox_horizontal_extent = 0.001
-        sim_setup.airbox_negative_vertical_extent = 0.05
-        sim_setup.airbox_positive_vertical_extent = 0.04
-        edb.build_simulation_project(sim_setup)
-        hfss_ext_info = edb.active_cell.GetHFSSExtentInfo()
-        assert hfss_ext_info
-        assert hfss_ext_info.AirBoxHorizontalExtent.Item1 == 0.001
-        assert hfss_ext_info.AirBoxHorizontalExtent.Item2
-        assert hfss_ext_info.AirBoxNegativeVerticalExtent.Item1 == 0.05
-        assert hfss_ext_info.AirBoxNegativeVerticalExtent.Item2
-        assert hfss_ext_info.AirBoxPositiveVerticalExtent.Item1 == 0.04
-        assert hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
-        assert hfss_ext_info.DielectricExtentSize.Item1 == 0.0005
-        assert hfss_ext_info.AirBoxPositiveVerticalExtent.Item2
         edb.close()
 
     def test_stackup_properties(self):
         """Evaluate stackup properties."""
         edb = Edb(edbversion=desktop_version)
-        edb.stackup.add_layer(layer_name="gnd", fillMaterial="AIR", thickness="10um")
-        edb.stackup.add_layer(layer_name="diel1", fillMaterial="AIR", thickness="200um", base_layer="gnd")
-        edb.stackup.add_layer(layer_name="sig1", fillMaterial="AIR", thickness="10um", base_layer="diel1")
-        edb.stackup.add_layer(layer_name="diel2", fillMaterial="AIR", thickness="200um", base_layer="sig1")
-        edb.stackup.add_layer(layer_name="sig3", fillMaterial="AIR", thickness="10um", base_layer="diel2")
+        edb.stackup.add_layer(layer_name="gnd", fillMaterial="air", thickness="10um")
+        edb.stackup.add_layer(layer_name="diel1", fillMaterial="air", thickness="200um", base_layer="gnd")
+        edb.stackup.add_layer(layer_name="sig1", fillMaterial="air", thickness="10um", base_layer="diel1")
+        edb.stackup.add_layer(layer_name="diel2", fillMaterial="air", thickness="200um", base_layer="sig1")
+        edb.stackup.add_layer(layer_name="sig3", fillMaterial="air", thickness="10um", base_layer="diel2")
         assert edb.stackup.thickness == 0.00043
         assert edb.stackup.num_layers == 5
         edb.close()
@@ -1362,11 +1280,11 @@ class TestClass:
             "dielectric_base_polygon": self.edbapp.modeler.polygons[1],
             "dielectric_extent_size": 0.1,
             "dielectric_extent_size_enabled": False,
-            "dielectric_extent_type": "Conforming",
-            "extent_type": "Conforming",
+            "dielectric_extent_type": "conforming",
+            "extent_type": "conforming",
             "honor_user_dielectric": False,
             "is_pml_visible": False,
-            "open_region_type": "PML",
+            "open_region_type": "pml",
             "operating_freq": "2GHz",
             "radiation_level": 1,
             "sync_air_box_vertical_extent": False,
@@ -1541,19 +1459,6 @@ class TestClass:
         edb3.close()
         del edb3
 
-    def test_build_siwave_project_from_config_file(self):
-        """Build Siwave simulation project from configuration file."""
-        example_project = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_15.aedb")
-        self.local_scratch.copyfolder(example_project, target_path)
-        cfg_file = os.path.join(target_path, "test.cfg")
-        with open(cfg_file, "w") as f:
-            f.writelines("SolverType = 'SiwaveSYZ'\n")
-            f.writelines("PowerNets = ['GND']\n")
-            f.writelines("Components = ['U1', 'U2']")
-        sim_config = SimulationConfiguration(cfg_file)
-        assert Edb(target_path, edbversion=desktop_version).build_simulation_project(sim_config)
-
     @pytest.mark.skipif(is_linux, reason="Not supported in IPY")
     def test_solve_siwave(self):
         """Solve EDB with Siwave."""
@@ -1568,85 +1473,6 @@ class TestClass:
         for i in res:
             assert os.path.exists(i)
         edbapp.close()
-
-    def test_build_simulation_project(self):
-        """Build a ready-to-solve simulation project."""
-        target_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        out_edb = os.path.join(self.local_scratch.path, "Build_project.aedb")
-        self.local_scratch.copyfolder(target_path, out_edb)
-        edbapp = Edb(out_edb, edbversion=desktop_version)
-        sim_setup = SimulationConfiguration()
-        sim_setup.signal_nets = [
-            "DDR4_A0",
-            "DDR4_A1",
-            "DDR4_A2",
-            "DDR4_A3",
-            "DDR4_A4",
-            "DDR4_A5",
-        ]
-        sim_setup.power_nets = ["GND"]
-        sim_setup.do_cutout_subdesign = True
-        sim_setup.components = ["U1", "U15"]
-        sim_setup.use_default_coax_port_radial_extension = False
-        sim_setup.cutout_subdesign_expansion = 0.001
-        sim_setup.start_freq = 0
-        sim_setup.stop_freq = 20e9
-        sim_setup.step_freq = 10e6
-        assert edbapp.build_simulation_project(sim_setup)
-        edbapp.close()
-
-    def test_build_simulation_project_with_multiple_batch_solve_settings(self):
-        """Build a ready-to-solve simulation project."""
-        target_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        out_edb = os.path.join(self.local_scratch.path, "build_project2.aedb")
-        self.local_scratch.copyfolder(target_path, out_edb)
-        edbapp = Edb(out_edb, edbversion=desktop_version)
-        sim_setup = SimulationConfiguration()
-        sim_setup.batch_solve_settings.signal_nets = [
-            "DDR4_A0",
-            "DDR4_A1",
-            "DDR4_A2",
-            "DDR4_A3",
-            "DDR4_A4",
-            "DDR4_A5",
-        ]
-        sim_setup.batch_solve_settings.power_nets = ["GND"]
-        sim_setup.batch_solve_settings.do_cutout_subdesign = True
-        sim_setup.batch_solve_settings.components = ["U1", "U15"]
-        sim_setup.batch_solve_settings.use_default_coax_port_radial_extension = False
-        sim_setup.batch_solve_settings.cutout_subdesign_expansion = 0.001
-        sim_setup.batch_solve_settings.start_freq = 0
-        sim_setup.batch_solve_settings.stop_freq = 20e9
-        sim_setup.batch_solve_settings.step_freq = 10e6
-        sim_setup.batch_solve_settings.use_pyaedt_cutout = True
-        assert edbapp.build_simulation_project(sim_setup)
-        assert edbapp.are_port_reference_terminals_connected()
-        port1 = list(edbapp.excitations.values())[0]
-        assert port1.magnitude == 0.0
-        assert port1.phase == 0
-        assert port1.reference_net_name == "GND"
-        assert not port1.deembed
-        assert port1.impedance == 50.0
-        assert not port1.is_circuit_port
-        assert not port1.renormalize
-        assert port1.renormalize_z0 == (50.0, 0.0)
-        assert not port1.get_pin_group_terminal_reference_pin()
-        assert not port1.get_pad_edge_terminal_reference_pin()
-        edbapp.close()
-
-    def test_simconfig_built_custom_sballs_height(self):
-        """Build simulation project from custom sballs JSON file."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_custom_sball_height", "ANSYS-HSD_V1.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        json_file = os.path.join(target_path, "simsetup_custom_sballs.json")
-        edbapp = Edb(target_path, edbversion=desktop_version)
-        simconfig = edbapp.new_simulation_configuration()
-        simconfig.import_json(json_file)
-        edbapp.build_simulation_project(simconfig)
-        assert round(edbapp.components["X1"].solder_ball_height, 6) == 0.00025
-        assert round(edbapp.components["U1"].solder_ball_height, 6) == 0.00035
-        edbapp.close_edb()
 
     def test_cutout_return_clipping_extent(self):
         """"""
@@ -1693,3 +1519,194 @@ class TestClass:
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
+
+    def test_multizone(self, edb_examples):
+        edbapp = edb_examples.get_multizone_pcb()
+        common_reference_net = "gnd"
+        edb_zones = edbapp.copy_zones()
+        assert edb_zones
+        defined_ports, project_connexions = edbapp.cutout_multizone_layout(edb_zones, common_reference_net)
+
+        assert defined_ports
+        assert project_connexions
+        edbapp.close_edb()
+
+    @pytest.mark.skipif(
+        not desktop_version == "2024.2" or int(desktop_version.split(".")[0]) >= 2025,
+        reason="Only supported with 2024.2 and higher",
+    )
+    def test_icepak(self, edb_examples):
+        edbapp = edb_examples.get_si_verse(additional_files_folders=["siwave/icepak_component.pwrd"])
+        edbapp.siwave.icepak_use_minimal_comp_defaults = True
+        assert edbapp.siwave.icepak_use_minimal_comp_defaults
+        edbapp.siwave.icepak_use_minimal_comp_defaults = False
+        assert not edbapp.siwave.icepak_use_minimal_comp_defaults
+        edbapp.siwave.icepak_component_file = edb_examples.get_local_file_folder("siwave/icepak_component.pwrd")
+        assert edbapp.siwave.icepak_component_file == edb_examples.get_local_file_folder("siwave/icepak_component.pwrd")
+        edbapp.close()
+
+    @pytest.mark.skipif(
+        not desktop_version == "2024.2" or int(desktop_version.split(".")[0]) >= 2025,
+        reason="Only supported with 2024.2 and higher",
+    )
+    def test_dcir_properties(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        setup = edbapp.create_siwave_dc_setup()
+        setup.dc_ir_settings.export_dc_thermal_data = True
+        assert setup.dc_ir_settings.export_dc_thermal_data == True
+        assert not setup.dc_ir_settings.import_thermal_data
+        setup.dc_ir_settings.dc_report_show_active_devices = True
+        assert setup.dc_ir_settings.dc_report_show_active_devices == True
+        assert not setup.dc_ir_settings.per_pin_use_pin_format
+        assert setup.dc_ir_settings.use_loop_res_for_per_pin
+        setup.dc_ir_settings.dc_report_config_file = edbapp.edbpath
+        assert setup.dc_ir_settings.dc_report_config_file
+        setup.dc_ir_settings.full_dc_report_path = edbapp.edbpath
+        assert setup.dc_ir_settings.full_dc_report_path
+        setup.dc_ir_settings.icepak_temp_file = edbapp.edbpath
+        assert setup.dc_ir_settings.icepak_temp_file
+        setup.dc_ir_settings.per_pin_res_path = edbapp.edbpath
+        assert setup.dc_ir_settings.per_pin_res_path
+        setup.dc_ir_settings.via_report_path = edbapp.edbpath
+        assert setup.dc_ir_settings.via_report_path
+        setup.dc_ir_settings.source_terms_to_ground = {"test": 1}
+        assert setup.dc_ir_settings.source_terms_to_ground
+        edbapp.close()
+
+    def test_arbitrary_wave_ports(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        edbapp.create_model_for_arbitrary_wave_ports(
+            temp_directory=self.local_scratch.path,
+            output_edb="wave_ports.aedb",
+            mounting_side="top",
+        )
+        edb_model = os.path.join(self.local_scratch.path, "wave_ports.aedb")
+        test_edb = Edb(edbpath=edb_model, edbversion=desktop_version)
+        edbapp.close()
+
+    def test_bondwire(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        bondwire_1 = edbapp.modeler.create_bondwire(
+            definition_name="Default",
+            placement_layer="Postprocessing",
+            width="0.5mm",
+            material="copper",
+            start_layer_name="1_Top",
+            start_x="82mm",
+            start_y="30mm",
+            end_layer_name="1_Top",
+            end_x="71mm",
+            end_y="23mm",
+            bondwire_type="apd",
+            net="1V0",
+        )
+        bondwire_1.set_material("Gold")
+        assert bondwire_1.get_material() == "Gold"
+        bondwire_1.type = "jedec_4"
+        assert bondwire_1.type == "jedec_4"
+        bondwire_1.cross_section_type = "round"
+        assert bondwire_1.cross_section_type == "round"
+        bondwire_1.cross_section_height = "0.1mm"
+        assert bondwire_1.cross_section_height == 0.0001
+        bondwire_1.set_definition_name("J4_LH10")
+        assert bondwire_1.get_definition_name() == "J4_LH10"
+        bondwire_1.set_trajectory(1, 0.1, 0.2, 0.3)
+        assert bondwire_1.get_trajectory() == [1, 0.1, 0.2, 0.3]
+        bondwire_1.width = "0.2mm"
+        assert bondwire_1.width == 0.0002
+        bondwire_1.set_start_elevation("16_Bottom")
+        bondwire_1.set_end_elevation("16_Bottom")
+        assert len(edbapp.layout.bondwires) == 1
+        edbapp.close()
+
+    def test_voltage_regulator(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        positive_sensor_pin = edbapp.components["U1"].pins["A2"]
+        negative_sensor_pin = edbapp.components["U1"].pins["A3"]
+        vrm = edbapp.siwave.create_vrm_module(
+            name="test",
+            positive_sensor_pin=positive_sensor_pin,
+            negative_sensor_pin=negative_sensor_pin,
+            voltage="1.5V",
+            load_regulation_current="0.5A",
+            load_regulation_percent=0.2,
+        )
+        assert vrm.component
+        assert vrm.component.refdes == "U1"
+        assert vrm.negative_remote_sense_pin
+        assert vrm.negative_remote_sense_pin.name == "U1-A3"
+        assert vrm.positive_remote_sense_pin
+        assert vrm.positive_remote_sense_pin.name == "U1-A2"
+        assert vrm.voltage == 1.5
+        assert vrm.is_active
+        assert not vrm.is_null
+        assert vrm.id
+        assert edbapp.voltage_regulator_modules
+        assert "test" in edbapp.voltage_regulator_modules
+        edbapp.close()
+
+    def test_workflow(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        path_bom = Path(edb_examples.test_folder) / "bom.csv"
+        edbapp.workflow.export_bill_of_materials(path_bom)
+        assert path_bom.exists()
+        edbapp.close()
+
+    def test_create_port_ob_component_no_ref_pins_in_component(self, edb_examples):
+        from pyedb.generic.constants import SourceType
+
+        edbapp = edb_examples.get_no_ref_pins_component()
+        edbapp.components.create_port_on_component(
+            component="J2E2",
+            net_list=[
+                "net1",
+                "net2",
+                "net3",
+                "net4",
+                "net5",
+                "net6",
+                "net7",
+                "net8",
+                "net9",
+                "net10",
+                "net11",
+                "net12",
+                "net13",
+                "net14",
+                "net15",
+            ],
+            port_type=SourceType.CircPort,
+            reference_net=["GND"],
+            extend_reference_pins_outside_component=True,
+        )
+        assert len(edbapp.ports) == 15
+
+    def test_create_ping_group(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.modeler.create_pin_group(
+            name="test1", pins_by_id=[4294969495, 4294969494, 4294969496, 4294969497]
+        )
+
+        assert edbapp.modeler.create_pin_group(
+            name="test2", pins_by_id=[4294969502, 4294969503], pins_by_aedt_name=["U1-A11", "U1-A12", "U1-A13"]
+        )
+        assert edbapp.modeler.create_pin_group(
+            name="test3",
+            pins_by_id=[4294969502, 4294969503],
+            pins_by_aedt_name=["U1-A11", "U1-A12", "U1-A13"],
+            pins_by_name=["A11", "A12", "A15", "A16"],
+        )
+        edbapp.close()
+
+    def test_create_edb_with_zip(self):
+        """Create EDB from zip file."""
+        src = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1_0.zip")
+        zip_path = self.local_scratch.copyfile(src)
+        edb = Edb(zip_path, edbversion=desktop_version)
+        assert edb.nets
+        assert edb.components
+        edb.close()

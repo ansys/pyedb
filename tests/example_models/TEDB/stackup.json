@@ -4,14 +4,14 @@
       "name": "copper",
       "conductivity": 58000000.0
     },
-    "fr4_epoxy": {
-      "name": "fr4_epoxy",
-      "loss_tangent": 0.02,
+    "FR4_epoxy": {
+      "name": "FR4_epoxy",
+      "dielectric_loss_tangent": 0.02,
       "permittivity": 4.4
     },
-    "solder_mask": {
-      "name": "solder_mask",
-      "loss_tangent": 0.035,
+    "SolderMask": {
+      "name": "SolderMask",
+      "dielectric_loss_tangent": 0.035,
       "permittivity": 3.1
     }
   },
@@ -26,7 +26,7 @@
     "D1": {
       "name": "D1",
       "type": "dielectric",
-      "material": "fr4_epoxy",
+      "material": "FR4_epoxy",
       "thickness": 0.0001
     },
     "L2": {
@@ -39,7 +39,7 @@
     "D2": {
       "name": "D2",
       "type": "dielectric",
-      "material": "fr4_epoxy",
+      "material": "FR4_epoxy",
       "thickness": 0.0001
     },
     "L3": {
@@ -52,7 +52,7 @@
     "D3": {
       "name": "D3",
       "type": "dielectric",
-      "material": "fr4_epoxy",
+      "material": "FR4_epoxy",
       "thickness": 0.0001
     },
     "L4": {
@@ -65,7 +65,7 @@
     "D4": {
       "name": "D4",
       "type": "dielectric",
-      "material": "fr4_epoxy",
+      "material": "FR4_epoxy",
       "thickness": 0.0001
     },
     "L5": {
@@ -78,7 +78,7 @@
     "D5": {
       "name": "D5",
       "type": "dielectric",
-      "material": "fr4_epoxy",
+      "material": "FR4_epoxy",
       "thickness": 0.0001
     },
     "BOT": {

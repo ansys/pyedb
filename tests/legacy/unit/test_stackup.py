@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from mock import MagicMock, PropertyMock, patch
 import pytest
 
@@ -81,7 +103,7 @@ class TestClass:
         outline_layer = self.stackup._layer_types_to_int(self.stackup.layer_types.OutlineLayer)
         assert outline_layer == 18
 
-    @patch("pyedb.dotnet.edb_core.stackup.Stackup.stackup_layers", new_callable=PropertyMock)
+    @patch("pyedb.dotnet.edb_core.stackup.Stackup.layers", new_callable=PropertyMock)
     def test_110_layout_tchickness(self, mock_stackup_layers):
         """"""
         mock_stackup_layers.return_value = {"layer": MagicMock(upper_elevation=42, lower_elevation=0)}

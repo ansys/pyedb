@@ -1,5 +1,29 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+import warnings
+
 from pyedb.generic.constants import NodeType, SourceType
-from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name
 
 
 class Node(object):
@@ -253,8 +277,16 @@ class PinGroup(object):
         self._component = value
 
     @property
+    def pins(self):
+        """Gets the pins belong to this pin group."""
+        from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+
+        return {i.GetName(): EDBPadstackInstance(i, self._pedb) for i in list(self._edb_object.GetPins())}
+
+    @property
     def node_pins(self):
         """Node pins."""
+        warnings.warn("`node_pins` is deprecated. Use `pins` method instead.", DeprecationWarning)
         return self._node_pins
 
     @node_pins.setter
@@ -274,19 +306,24 @@ class PinGroup(object):
     def net_name(self):
         return self._edb_pin_group.GetNet().GetName()
 
-    @pyedb_function_handler
     def get_terminal(self, name=None, create_new_terminal=False):
         """Terminal."""
-
+        warnings.warn("Use new property :func:`terminal` instead.", DeprecationWarning)
         if create_new_terminal:
             term = self._create_terminal(name)
         else:
-            from pyedb.dotnet.edb_core.edb_data.terminals import PinGroupTerminal
+            return self.terminal
 
-            term = PinGroupTerminal(self._pedb, self._edb_pin_group.GetPinGroupTerminal())
+    @property
+    def terminal(self):
+        """Terminal."""
+        from pyedb.dotnet.edb_core.cell.terminal.pingroup_terminal import (
+            PinGroupTerminal,
+        )
+
+        term = PinGroupTerminal(self._pedb, self._edb_pin_group.GetPinGroupTerminal())
         return term if not term.is_null else None
 
-    @pyedb_function_handler()
     def _create_terminal(self, name=None):
         """Create a terminal on the pin group.
 
@@ -300,60 +337,64 @@ class PinGroup(object):
         -------
         :class:`pyedb.dotnet.edb_core.edb_data.terminals.PinGroupTerminal`
         """
+        warnings.warn("`_create_terminal` is deprecated. Use `create_terminal` instead.", DeprecationWarning)
+
         terminal = self.get_terminal()
         if terminal:
             return terminal
+        else:
+            return self.create_terminal(name)
 
+    def create_terminal(self, name=None):
+        """Create a terminal.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the terminal.
+        """
         if not name:
             name = generate_unique_name(self.name)
+        from pyedb.dotnet.edb_core.cell.terminal.pingroup_terminal import (
+            PinGroupTerminal,
+        )
 
-        from pyedb.dotnet.edb_core.edb_data.terminals import PinGroupTerminal
-
-        term = PinGroupTerminal(self._pedb)
-
+        term = PinGroupTerminal(self._pedb, self._edb_object)
         term = term.create(name, self.net_name, self.name)
         return term
 
-    @pyedb_function_handler()
     def _json_format(self):
-        dict_out = {"component": self.component,
-                    "name": self.name, "net": self.net,
-                    "node_type": self.node_type}
+        dict_out = {"component": self.component, "name": self.name, "net": self.net, "node_type": self.node_type}
         return dict_out
 
-    @pyedb_function_handler()
     def create_current_source_terminal(self, magnitude=1, phase=0):
-        terminal = self._create_terminal()._edb_object
+        terminal = self.create_terminal()._edb_object
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kCurrentSource)
         terminal.SetSourceAmplitude(self._pedb.edb_value(magnitude))
         terminal.SetSourcePhase(self._pedb.edb_api.utility.value(phase))
         return terminal
 
-    @pyedb_function_handler()
     def create_voltage_source_terminal(self, magnitude=1, phase=0, impedance=0.001):
-        terminal = self._create_terminal()._edb_object
+        terminal = self.create_terminal()._edb_object
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageSource)
         terminal.SetSourceAmplitude(self._pedb.edb_value(magnitude))
         terminal.SetSourcePhase(self._pedb.edb_api.utility.value(phase))
         terminal.SetImpedance(self._pedb.edb_value(impedance))
         return terminal
 
-    @pyedb_function_handler()
     def create_voltage_probe_terminal(self, impedance=1000000):
-        terminal = self._create_terminal()._edb_object
+        terminal = self.create_terminal()._edb_object
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageProbe)
         terminal.SetImpedance(self._pedb.edb_value(impedance))
         return terminal
 
-    @pyedb_function_handler()
     def create_port_terminal(self, impedance=50):
-        terminal = self._create_terminal()._edb_object
+        terminal = self.create_terminal()._edb_object
         terminal.SetBoundaryType(self._pedb.edb_api.cell.terminal.BoundaryType.PortBoundary)
         terminal.SetImpedance(self._pedb.edb_value(impedance))
         terminal.SetIsCircuitPort(True)
         return terminal
 
-    @pyedb_function_handler()
     def delete(self):
         """Delete active pin group.
 

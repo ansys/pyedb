@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Database."""
 import os
 import re
@@ -10,7 +32,6 @@ from pyedb.generic.general_methods import (
     env_path,
     env_path_student,
     env_value,
-    is_ironpython,
     is_linux,
     settings,
 )
@@ -699,10 +720,11 @@ class EdbDotNet(object):
         """Initialize DLLs."""
         from pyedb.dotnet.clr_module import _clr, edb_initialized
 
-        if settings.enable_screen_logs:
-            self._logger.enable_stdout_log()
-        else:  # pragma: no cover
-            self._logger.disable_stdout_log()
+        if not settings.use_pyaedt_log:
+            if settings.enable_screen_logs:
+                self._logger.enable_stdout_log()
+            else:  # pragma: no cover
+                self._logger.disable_stdout_log()
         if not edb_initialized:  # pragma: no cover
             self._logger.error("Failed to initialize Dlls.")
             return
@@ -728,14 +750,10 @@ class EdbDotNet(object):
                         self.base_path = edb_path
                         sys.path.append(edb_path)
                         os.environ[env_value(self.edbversion)] = self.base_path
-            if is_ironpython:
-                _clr.AddReferenceToFile("Ansys.Ansoft.Edb.dll")
-                _clr.AddReferenceToFile("Ansys.Ansoft.EdbBuilderUtils.dll")
-                _clr.AddReferenceToFileAndPath(os.path.join(self.base_path, "Ansys.Ansoft.SimSetupData.dll"))
-            else:
-                _clr.AddReference("Ansys.Ansoft.Edb")
-                _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
-                _clr.AddReference("Ansys.Ansoft.SimSetupData")
+
+            _clr.AddReference("Ansys.Ansoft.Edb")
+            _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
+            _clr.AddReference("Ansys.Ansoft.SimSetupData")
         else:
             if settings.edb_dll_path:
                 self.base_path = settings.edb_dll_path
@@ -1211,7 +1229,7 @@ class Database(EdbDotNet):
         -------
 
         """
-        from pyedb.generic.clr_module import Convert
+        from pyedb.dotnet.clr_module import Convert
 
         hdl = Convert.ToUInt64(hdb)
         self._db = self.edb_api.database.Attach(hdl)

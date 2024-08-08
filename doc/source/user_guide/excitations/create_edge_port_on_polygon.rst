@@ -11,19 +11,19 @@ This page shows how to create an edge port on a polygon and trace.
 .. code:: python
 
 
-    from pyedb.dotnet.edb import Edb
+    from pyedb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
     # Ansys release version
-    ansys_version = "2023.2"
+    ansys_version = "2024.1"
 
     # download and copy the layout file from examples
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/edb_edge_ports.aedb", destination=temp_folder)
 
     # load EDB
-    edbapp = Edb(edbpath=targetfile, edbversion="2023.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2024.1")
 
     # retrieve polygon list
     poly_list = [
@@ -96,6 +96,6 @@ This page shows how to create an edge port on a polygon and trace.
     edbapp.save_edb()
     edbapp.close_edb()
 
-.. image:: ../../Resources/create_edge_port_on_polygon_and_trace.png
-..   :width: 800
-..   :alt: Edge port created on a polygon and trace
+.. image:: ../../resources/create_edge_port_on_polygon_and_trace.png
+    :width: 800
+    :alt: Edge port created on a polygon and trace

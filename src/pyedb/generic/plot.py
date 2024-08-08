@@ -1,49 +1,35 @@
 import ast
-from collections import defaultdict
-import csv
-from datetime import datetime
-import math
 import os
-import tempfile
-import time
 import warnings
 
-from pyedb.generic.constants import AEDT_UNITS, CSS4_COLORS
-from pyedb.generic.general_methods import (
-    is_ironpython,
-    open_file,
-    pyedb_function_handler,
-)
+try:
+    import numpy  # noqa: F401
+except ImportError:
+    warnings.warn(
+        "The NumPy module is required to run some functionalities of PostProcess.\n"
+        "Install with \n\npip install numpy\n\nRequires CPython."
+    )
 
-if not is_ironpython:  # pragma: no cover
-    try:
-        import numpy as np
-    except ImportError:
-        warnings.warn(
-            "The NumPy module is required to run some functionalities of PostProcess.\n"
-            "Install with \n\npip install numpy\n\nRequires CPython."
-        )
+try:
+    from matplotlib.patches import PathPatch
+    from matplotlib.path import Path
 
-    try:
-        from matplotlib.patches import PathPatch
-        from matplotlib.path import Path
+    # Use matplotlib agg backend (non-interactive) when the CI is running.
+    if bool(int(os.getenv("PYEDB_CI_NO_DISPLAY", "0"))):  # pragma: no cover
+        import matplotlib
 
-        # Use matplotlib agg backend (non-interactive) when the CI is running.
-        if bool(int(os.getenv("PYEDB_CI_NO_DISPLAY", "0"))):  # pragma: no cover
-            import matplotlib
+        matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
 
-            matplotlib.use("Agg")
-        import matplotlib.pyplot as plt
+except ImportError:
+    warnings.warn(
+        "The Matplotlib module is required to run some functionalities of PostProcess.\n"
+        "Install with \n\npip install matplotlib\n\nRequires CPython."
+    )
+except:
+    pass
 
-    except ImportError:
-        warnings.warn(
-            "The Matplotlib module is required to run some functionalities of PostProcess.\n"
-            "Install with \n\npip install matplotlib\n\nRequires CPython."
-        )
-    except:
-        pass
 
-@pyedb_function_handler()
 def plot_matplotlib(
     plot_data,
     size=(2000, 1000),
@@ -51,7 +37,7 @@ def plot_matplotlib(
     xlabel="",
     ylabel="",
     title="",
-    snapshot_path=None,
+    save_plot=None,
     x_limits=None,
     y_limits=None,
     axis_equal=False,
@@ -77,8 +63,9 @@ def plot_matplotlib(
         Plot Y label. Default is `""`.
     title : str, optional
         Plot Title label. Default is `""`.
-    snapshot_path : str, optional
-        Full path to image file if a snapshot is needed. Default is `None`.
+    save_plot : str, optional
+        If a path is specified the plot will be saved in this location.
+        If ``save_plot`` is provided, the ``show`` parameter is ignored.
     x_limits : list, optional
         List of x limits (left and right). Default is `None`.
     y_limits : list, optional
@@ -151,8 +138,8 @@ def plot_matplotlib(
         for annotation in annotations:
             plt.text(annotation[0], annotation[1], annotation[2], **annotation[3])
 
-    if snapshot_path:
-        plt.savefig(snapshot_path)
+    if save_plot:
+        plt.savefig(save_plot)
     elif show:
         plt.show()
     return plt

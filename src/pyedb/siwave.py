@@ -9,16 +9,47 @@ automatically initialized by an app to the latest installed AEDT version.
 from __future__ import absolute_import  # noreorder
 
 import os
+from pathlib import Path
 import pkgutil
 import sys
+import tempfile
 import time
+import warnings
 
+from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
-from pyedb.generic.general_methods import _pythonver
-from pyedb.generic.general_methods import is_ironpython
-from pyedb.generic.general_methods import is_windows
-from pyedb.generic.general_methods import pyedb_function_handler
+from pyedb.edb_logger import pyedb_logger
+from pyedb.generic.general_methods import _pythonver, is_windows
 from pyedb.misc.misc import list_installed_ansysem
+from pyedb.siwave_core.icepak import Icepak
+
+
+def wait_export_file(flag, file_path, time_sleep=0.5):
+    while True:
+        if os.path.isfile(file_path):
+            break
+        else:
+            time.sleep(1)
+        os.path.getsize(file_path)
+
+    while True:
+        file_size = os.path.getsize(file_path)
+        if file_size > 0:
+            break
+        else:
+            time.sleep(time_sleep)
+    return True
+
+
+def wait_export_folder(flag, folder_path, time_sleep=0.5):
+    while True:
+        if os.path.exists(folder_path):
+            for root, _, files in os.walk(folder_path):
+                if any(os.path.getsize(os.path.join(root, file)) > 0 for file in files):
+                    return True
+
+        # Wait before checking again.
+        time.sleep(time_sleep)
 
 
 class Siwave(object):  # pragma no cover
@@ -63,10 +94,8 @@ class Siwave(object):  # pragma no cover
         return self.version_keys[0]
 
     def __init__(self, specified_version=None):
-        if is_ironpython:
-            _com = "pythonnet"
-            import System
-        elif is_windows:  # pragma: no cover
+        self._logger = pyedb_logger
+        if is_windows:  # pragma: no cover
             modules = [tup[1] for tup in pkgutil.iter_modules()]
             if _clr:
                 import win32com.client
@@ -211,7 +240,10 @@ class Siwave(object):  # pragma no cover
         """Project."""
         return self._oproject
 
-    @pyedb_function_handler()
+    @property
+    def icepak(self):
+        return Icepak(self)
+
     def open_project(self, proj_path=None):
         """Open a project.
 
@@ -234,7 +266,6 @@ class Siwave(object):  # pragma no cover
         else:
             return False
 
-    @pyedb_function_handler()
     def save_project(self, projectpath=None, projectName=None):
         """Save the project.
 
@@ -257,7 +288,6 @@ class Siwave(object):  # pragma no cover
             self.oproject.Save()
         return True
 
-    @pyedb_function_handler()
     def close_project(self, save_project=False):
         """Close the project.
 
@@ -278,7 +308,6 @@ class Siwave(object):  # pragma no cover
         self._oproject = None
         return True
 
-    @pyedb_function_handler()
     def quit_application(self):
         """Quit the application.
 
@@ -291,7 +320,6 @@ class Siwave(object):  # pragma no cover
         self._main.oSiwave.Quit()
         return True
 
-    @pyedb_function_handler()
     def export_element_data(self, simulation_name, file_path, data_type="Vias"):
         """Export element data.
 
@@ -309,10 +337,13 @@ class Siwave(object):  # pragma no cover
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        self.oproject.ScrExportElementData(simulation_name, file_path, data_type)
-        return True
+        flag = self.oproject.ScrExportElementData(simulation_name, file_path, data_type)
+        if flag == 0:
+            self._logger.info(f"Exporting element data to {file_path}.")
+            return wait_export_file(flag, file_path, time_sleep=1)
+        else:
+            return False
 
-    @pyedb_function_handler()
     def export_siwave_report(self, simulation_name, file_path, bkground_color="White"):
         """Export the Siwave report.
 
@@ -325,6 +356,26 @@ class Siwave(object):  # pragma no cover
         bkground_color : str, optional
             Color of the report's background. The default is ``"White"``.
 
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        """
+        warnings.warn("Use new property :func:`export_dc_simulation_report` instead.", DeprecationWarning)
+        return self.export_dc_simulation_report(simulation_name, file_path, bkground_color)
+
+    def export_dc_simulation_report(self, simulation_name, file_path, background_color="White"):
+        """Export the Siwave DC simulation report.
+
+        Parameters
+        ----------
+        simulation_name : str
+            Name of the setup.
+        file_path : str
+            Path to the exported report.
+        background_color : str, optional
+            Color of the report's background. The default is ``"White"``.
 
         Returns
         -------
@@ -332,8 +383,144 @@ class Siwave(object):  # pragma no cover
             ``True`` when successful, ``False`` when failed.
 
         """
+        if not os.path.splitext(file_path)[-1] == ".htm":
+            fpath = file_path + ".htm"
+        else:
+            fpath = file_path
         self.oproject.ScrExportDcSimReportScaling("All", "All", -1, -1, False)
-        self.oproject.ScrExportDcSimReport(simulation_name, bkground_color, file_path)
-        while not os.path.exists(file_path):
-            time.sleep(0.1)
-        return True
+        flag = self.oproject.ScrExportDcSimReport(simulation_name, background_color, fpath)
+        if flag == 0:
+            self._logger.info(f"Exporting Siwave DC simulation report to {fpath}.")
+            return wait_export_file(flag, fpath, time_sleep=1)
+        else:
+            return False
+
+    def run_dc_simulation(self, export_dc_power_data_to_icepak=False):
+        """Run DC simulation."""
+        self._logger.info("Running DC simulation.")
+        self.oproject.ScrExportDcPowerDataToIcepak(export_dc_power_data_to_icepak)
+        return self.oproject.ScrRunDcSimulation(1)
+
+    def export_icepak_project(self, file_path, dc_simulation_name):
+        """Exports an Icepak project for standalone use.
+
+        Parameters
+        ----------
+        file_path : str,
+            Path of the Icepak project.
+        dc_simulation_name : str
+            Name of the DC simulation.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        """
+
+        self.oproject.ScrExportDcPowerDataToIcepak(True)
+        self._logger.info("Exporting Icepak project.")
+        code = self.oproject.ScrExportIcepakProject(file_path, dc_simulation_name)
+        return True if code == 0 else False
+
+    def run_icepak_simulation(self, icepak_simulation_name, dc_simulation_name):
+        """Runs an Icepak simulation.
+
+        Parameters
+        ----------
+        icepak_simulation_name : str
+            Name of the Icepak simulation.
+        dc_simulation_name : str
+            Name of the DC simulation.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        """
+        return self.oproject.ScrRunIcepakSimulation(icepak_simulation_name, dc_simulation_name)
+
+    def export_edb(self, file_path: str):
+        """Export the layout as EDB.
+
+        Parameters
+        ----------
+        file_path : str
+            Path to the EDB.
+
+        Returns
+        -------
+        bool
+        """
+        if isinstance(file_path, Path):
+            file_path = str(file_path)
+        flag = self.oproject.ScrExportEDB(file_path)
+        if flag == 0:
+            self._logger.info(f"Exporting EDB to {file_path}.")
+            return wait_export_folder(flag, file_path, time_sleep=1)
+        else:  # pragma no cover
+            raise RuntimeError(f"Failed to export EDB to {file_path}.")
+
+    def import_edb(self, file_path: str):
+        """Import layout from EDB.
+
+        Parameters
+        ----------
+        file_path : Str
+            Path to the EDB file.
+        Returns
+        -------
+        bool
+        """
+        if isinstance(file_path, Path):
+            file_path = str(file_path)
+        flag = self.oproject.ScrImportEDB(file_path)
+        if flag == 0:
+            self._logger.info(f"Importing EDB to {file_path}.")
+            return True
+        else:  # pragma no cover
+            raise RuntimeError(f"Failed to import EDB to {file_path}.")
+
+    def load_configuration(self, file_path: str):
+        """Load configuration settings from a configure file.Import
+
+        Parameters
+        ----------
+        file_path : str
+            Path to the configuration file.
+        """
+        if isinstance(file_path, Path):
+            file_path = str(file_path)
+
+        temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
+        temp_edb = os.path.join(temp_folder.name, "temp.aedb")
+
+        self.export_edb(temp_edb)
+        self.save_project()
+        self.oproject.ScrCloseProject()
+        edbapp = Edb(temp_edb, edbversion=self.current_version)
+        edbapp.configuration.load(file_path)
+        edbapp.configuration.run()
+        edbapp.save()
+        edbapp.close()
+        self.import_edb(temp_edb)
+
+    def export_configuration(self, file_path: str):
+        """Export layout information into a configuration file.
+
+        Parameters
+        ----------
+        file_path : str
+            Path to the configuration file.
+        """
+        if isinstance(file_path, Path):
+            file_path = str(file_path)
+
+        temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
+        temp_edb = os.path.join(temp_folder.name, "temp.aedb")
+
+        self.export_edb(temp_edb)
+        edbapp = Edb(temp_edb, edbversion=self.current_version)
+        edbapp.configuration.export(file_path)
+        edbapp.close()

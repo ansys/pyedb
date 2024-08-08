@@ -1,7 +1,30 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Tests related to Edb modeler
 """
 
 import os
+
 import pytest
 
 from pyedb.dotnet.edb import Edb
@@ -52,20 +75,40 @@ class TestClass:
         assert isinstance(poly0.arcs[0].points, tuple)
         assert isinstance(poly0.intersection_type(poly0), int)
         assert poly0.is_intersecting(poly0)
+        poly_3022 = self.edbapp.modeler.get_primitive(3022)
+        assert self.edbapp.modeler.get_primitive(3023)
+        assert poly_3022.aedt_name == "poly_3022"
+        poly_3022.aedt_name = "poly3022"
+        assert poly_3022.aedt_name == "poly3022"
+        for i, k in enumerate(poly_3022.voids):
+            assert k.id
+            assert k.expand(0.0005)
+            # edb.modeler.parametrize_polygon(k, poly_5953, offset_name=f"offset_{i}", origin=centroid)
 
-    def test_modeler_paths(self):
+        poly_167 = [i for i in self.edbapp.modeler.paths if i.id == 167][0]
+        assert poly_167.expand(0.0005)
+
+    def test_modeler_paths(self, edb_examples):
         """Evaluate modeler paths"""
-        assert len(self.edbapp.modeler.paths) > 0
-        assert self.edbapp.modeler.paths[0].type == "Path"
-        assert self.edbapp.modeler.paths[0].clone()
-        assert isinstance(self.edbapp.modeler.paths[0].width, float)
-        self.edbapp.modeler.paths[0].width = "1mm"
-        assert self.edbapp.modeler.paths[0].width == 0.001
+        edbapp = edb_examples.get_si_verse()
+        assert len(edbapp.modeler.paths) > 0
+        assert edbapp.modeler.paths[0].type == "Path"
+        assert edbapp.modeler.paths[0].clone()
+        assert isinstance(edbapp.modeler.paths[0].width, float)
+        edbapp.modeler.paths[0].width = "1mm"
+        assert edbapp.modeler.paths[0].width == 0.001
+        assert edbapp.modeler["line_167"].type == "Path"
+        assert edbapp.modeler["poly_3022"].type == "Polygon"
+        line_number = len(edbapp.modeler.primitives)
+        assert edbapp.modeler["line_167"].delete()
+        assert edbapp.modeler._primitives == []
+        assert line_number == len(edbapp.modeler.primitives) + 1
+        assert edbapp.modeler["poly_3022"].type == "Polygon"
+        edbapp.close()
 
     def test_modeler_primitives_by_layer(self):
         """Evaluate modeler primitives by layer"""
         assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].layer_name == "1_Top"
-        assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].layer.GetName() == "1_Top"
         assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative
         assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_void
         self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative = True
@@ -81,7 +124,7 @@ class TestClass:
         """Evaluate modeler primitives"""
         assert len(self.edbapp.modeler.rectangles) > 0
         assert len(self.edbapp.modeler.circles) > 0
-        assert len(self.edbapp.modeler.bondwires) == 0
+        assert len(self.edbapp.layout.bondwires) == 0
         assert "1_Top" in self.edbapp.modeler.polygons_by_layer.keys()
         assert len(self.edbapp.modeler.polygons_by_layer["1_Top"]) > 0
         assert len(self.edbapp.modeler.polygons_by_layer["DE1"]) == 0
@@ -141,6 +184,22 @@ class TestClass:
         ]
         assert self.edbapp.modeler.create_polygon(points, "1_Top")
         settings.enable_error_handler = False
+        points = [
+            [-0.025, -0.02],
+            [0.025, -0.02],
+            [-0.025, -0.02],
+            [0.025, 0.02],
+            [-0.025, 0.02],
+            [-0.025, -0.02],
+        ]
+        plane = self.edbapp.modeler.Shape("polygon", points=points)
+        poly = self.edbapp.modeler.create_polygon(
+            plane,
+            "1_Top",
+        )
+        assert poly.has_self_intersections
+        assert poly.fix_self_intersections() == []
+        assert not poly.has_self_intersections
 
     def test_modeler_create_polygon_from_shape(self):
         """Create polygon from shape."""
@@ -156,6 +215,10 @@ class TestClass:
         assert len(poly_test) == 1
         assert poly_test[0].center == [0.005, 0.005]
         assert poly_test[0].bbox == [0.0, 0.0, 0.01, 0.01]
+        assert poly_test[0].move_layer("16_Bottom")
+        poly_test = [poly for poly in edbapp.modeler.polygons if poly.net_name == "test"]
+        assert len(poly_test) == 1
+        assert poly_test[0].layer_name == "16_Bottom"
         edbapp.close_edb()
 
     def test_modeler_create_trace(self):
@@ -219,10 +282,10 @@ class TestClass:
 
     def test_modeler_create_circle(self):
         """Create circle."""
-        poly = self.edbapp.modeler.create_polygon_from_points([[0, 0], [100, 0], [100, 100], [0, 100]], "1_Top")
+        poly = self.edbapp.modeler.create_polygon([[0, 0], [100, 0], [100, 100], [0, 100]], "1_Top")
         assert poly
         poly.add_void([[20, 20], [20, 30], [100, 30], [100, 20]])
-        poly2 = self.edbapp.modeler.create_polygon_from_points([[60, 60], [60, 150], [150, 150], [150, 60]], "1_Top")
+        poly2 = self.edbapp.modeler.create_polygon([[60, 60], [60, 150], [150, 150], [150, 60]], "1_Top")
         new_polys = poly.subtract(poly2)
         assert len(new_polys) == 1
         circle = self.edbapp.modeler.create_circle("1_Top", 40, 40, 15)
@@ -288,7 +351,7 @@ class TestClass:
         edbapp = Edb(target_path, edbversion=desktop_version)
         for path in edbapp.modeler.paths:
             assert path.convert_to_polygon()
-        assert edbapp.nets.merge_nets_polygons("test")
+        # cannot merge one net only - see test: test_unite_polygon for reference
         edbapp.close()
 
     def test_156_check_path_length(self):
@@ -323,3 +386,184 @@ class TestClass:
             net5_length += path.length
         assert net5_length == 0.026285623899038543
         edbapp.close_edb()
+
+    def test_duplicate(self):
+        edbapp = Edb()
+        edbapp["$H"] = "0.65mil"
+        assert edbapp["$H"].value_string == "0.65mil"
+        edbapp["$S_D"] = "10.65mil"
+        edbapp["$T"] = "21.3mil"
+        edbapp["$Antipad_R"] = "24mil"
+        edbapp["Via_S"] = "40mil"
+        edbapp.stackup.add_layer("bot_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d1", layer_type="dielectric", thickness="$S_D", material="FR4_epoxy")
+        edbapp.stackup.add_layer("trace2", thickness="$H")
+        edbapp.stackup.add_layer("d2", layer_type="dielectric", thickness="$T-$S_D", material="FR4_epoxy")
+        edbapp.stackup.add_layer("mid_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d3", layer_type="dielectric", thickness="13mil", material="FR4_epoxy")
+        edbapp.stackup.add_layer("top_gnd", thickness="0.65mil")
+        edbapp.stackup.add_layer("d4", layer_type="dielectric", thickness="13mil", material="FR4_epoxy")
+        edbapp.stackup.add_layer("trace1", thickness="$H")
+        r1 = edbapp.modeler.create_rectangle(
+            center_point=("0,0"),
+            width="200mil",
+            height="200mil",
+            layer_name="top_gnd",
+            representation_type="CenterWidthHeight",
+            net_name="r1",
+        )
+        r2 = edbapp.modeler.create_rectangle(
+            center_point=("0,0"),
+            width="40mil",
+            height="$Antipad_R*2",
+            layer_name="top_gnd",
+            representation_type="CenterWidthHeight",
+            net_name="r2",
+        )
+        assert r2
+        assert r1.subtract(r2)
+        lay_list = ["bot_gnd", "mid_gnd"]
+        assert edbapp.modeler.primitives[0].duplicate_across_layers(lay_list)
+        assert edbapp.modeler.primitives_by_layer["mid_gnd"]
+        assert edbapp.modeler.primitives_by_layer["bot_gnd"]
+        edbapp.close()
+
+    def test_unite_polygon(self):
+        edbapp = Edb()
+        edbapp["$H"] = "0.65mil"
+        edbapp["Via_S"] = "40mil"
+        edbapp["MS_W"] = "4.75mil"
+        edbapp["MS_S"] = "5mil"
+        edbapp["SL_W"] = "6.75mil"
+        edbapp["SL_S"] = "8mil"
+        edbapp.stackup.add_layer("trace1", thickness="$H")
+        t1_1 = edbapp.modeler.create_trace(
+            width="MS_W",
+            layer_name="trace1",
+            path_list=[("-Via_S/2", "0"), ("-MS_S/2-MS_W/2", "-16 mil"), ("-MS_S/2-MS_W/2", "-100 mil")],
+            start_cap_style="FLat",
+            end_cap_style="FLat",
+            net_name="t1_1",
+        )
+        t2_1 = edbapp.modeler.create_trace(
+            width="MS_W",
+            layer_name="trace1",
+            path_list=[("-Via_S/2", "0"), ("-SL_S/2-SL_W/2", "16 mil"), ("-SL_S/2-SL_W/2", "100 mil")],
+            start_cap_style="FLat",
+            end_cap_style="FLat",
+            net_name="t2_1",
+        )
+        t3_1 = edbapp.modeler.create_trace(
+            width="MS_W",
+            layer_name="trace1",
+            path_list=[("-Via_S/2", "0"), ("-SL_S/2-SL_W/2", "16 mil"), ("+SL_S/2+MS_W/2", "100 mil")],
+            start_cap_style="FLat",
+            end_cap_style="FLat",
+            net_name="t3_1",
+        )
+        t1_1.convert_to_polygon()
+        t2_1.convert_to_polygon()
+        t3_1.convert_to_polygon()
+        net_list = ["t1_1", "t2_1"]
+        assert len(edbapp.modeler.polygons) == 3
+        edbapp.nets.merge_nets_polygons(net_names_list=net_list)
+        assert len(edbapp.modeler.polygons) == 2
+        edbapp.modeler.unite_polygons_on_layer("trace1")
+        assert len(edbapp.modeler.polygons) == 1
+        edbapp.close()
+
+    def test_layer_name(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        assert edbapp.modeler.polygons[50].layer_name == "1_Top"
+        edbapp.modeler.polygons[50].layer_name = "16_Bottom"
+        assert edbapp.modeler.polygons[50].layer_name == "16_Bottom"
+        edbapp.close()
+
+    def test_287_circuit_ports(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        cap = edbapp.components.capacitors["C1"]
+        edbapp.siwave.create_circuit_port_on_pin(pos_pin=cap.pins["1"], neg_pin=cap.pins["2"])
+        edbapp.save_edb_as(r"C:\Users\gkorompi\Downloads\AFT")
+        edbapp.components.capacitors["C3"].pins
+        edbapp.padstacks.pins
+        edbapp.close()
+
+    def rlc_component_302(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        pins = edbapp.components.get_pin_from_component("C31")
+        assert edbapp.components.create_rlc_component([pins[0], pins[1]], r_value=0, component_name="TEST")
+        assert edbapp.siwave.create_rlc_component([pins[0], pins[1]])
+        pl = edbapp.components.get_pin_from_component("B1")
+        pins = [pl[0], pl[1], pl[2], pl[3]]
+        assert edbapp.siwave.create_rlc_component(pins, component_name="random")
+        edbapp.close()
+
+    def get_primitives_by_point_layer_and_nets(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        primitives = edbapp.modeler.get_primitive_by_layer_and_point(layer="Inner6(GND2)", point=[20e-3, 30e-3])
+        assert primitives
+        assert len(primitives) == 1
+        assert primitives[0].type == "Polygon"
+        primitives = edbapp.modeler.get_primitive_by_layer_and_point(point=[20e-3, 30e-3])
+        assert len(primitives) == 3
+        primitives = edbapp.modeler.get_primitive_by_layer_and_point(layer="Inner3(Sig1)", point=[109e3, 16.5e-3])
+        assert primitives
+        assert primitives[0].type == "Path"
+        edbapp.close()
+
+    def arbitrary_wave_ports(self):
+        example_folder = os.path.join(local_path, "example_models", test_subfolder)
+        source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
+        target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
+        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
+        edbapp = Edb(target_path_edb, desktop_version)
+        edbapp.create_model_for_arbitrary_wave_ports(
+            temp_directory=self.local_scratch.path,
+            output_edb="wave_ports.aedb",
+            mounting_side="top",
+        )
+        edbapp.close()
+        edb_model = os.path.join(self.local_scratch, "wave_ports.aedb")
+        test_edb = Edb(edbpath=edb_model, edbversion=desktop_version)
+        assert len(list(test_edb.nets.signal.keys())) == 13
+        assert len(list(test_edb.stackup.layers.keys())) == 3
+        assert "ref" in test_edb.stackup.layers
+        assert len(test_edb.modeler.polygons) == 12
+        test_edb.close()
+
+    def test_path_center_line(self):
+        edb = Edb()
+        edb.stackup.add_layer("GND", "Gap")
+        edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.2mm", material="Duroid (tm)")
+        edb.stackup.add_layer("TOP", "Substrat")
+        trace_length = 10e-3
+        trace_width = 200e-6
+        trace_gap = 1e-3
+        edb.modeler.create_trace(
+            path_list=[[-trace_gap / 2, 0.0], [-trace_gap / 2, trace_length]],
+            layer_name="TOP",
+            width=trace_width,
+            net_name="signal1",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        centerline = edb.modeler.paths[0].center_line
+        assert centerline == [[-0.0005, 0.0], [-0.0005, 0.01]]
+        edb.modeler.paths[0].center_line = [[0.0, 0.0], [0.0, 5e-3]]
+        assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.0, 5e-3]]

@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiwave``,
 ``PinGroup``, ``ResistorSource``, ``Source``, ``SourceType``, and ``VoltageSource``.
@@ -5,6 +27,7 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 import os
 import time
 
+from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
     SourceType,
@@ -13,17 +36,13 @@ from pyedb.dotnet.edb_core.edb_data.sources import (
     CircuitPort,
     CurrentSource,
     DCTerminal,
-    PinGroup,
     ResistorSource,
     VoltageSource,
 )
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.constants import SolverType, SweepType
-from pyedb.generic.general_methods import (
-    _retry_ntimes,
-    generate_unique_name,
-    pyedb_function_handler,
-)
+from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
+from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -95,6 +114,11 @@ class EdbSiwave(object):
         return self._pedb.probes
 
     @property
+    def voltage_regulator_modules(self):
+        """Get all voltage regulator modules"""
+        return self._pedb.voltage_regulator_modules
+
+    @property
     def pin_groups(self):
         """All Layout Pin groups.
 
@@ -104,11 +128,10 @@ class EdbSiwave(object):
             List of all layout pin groups.
         """
         _pingroups = {}
-        for el in self._layout.pin_groups:
-            _pingroups[el.GetName()] = PinGroup(el.GetName(), el, self._pedb)
+        for el in self._pedb.layout.pin_groups:
+            _pingroups[el._edb_object.GetName()] = el
         return _pingroups
 
-    @pyedb_function_handler()
     def _create_terminal_on_pins(self, source):
         """Create a terminal on pins.
 
@@ -118,8 +141,14 @@ class EdbSiwave(object):
             Name of the source.
 
         """
-        pos_pin = source.positive_node.node_pins
-        neg_pin = source.negative_node.node_pins
+        if isinstance(source.positive_node.node_pins, EDBPadstackInstance):
+            pos_pin = source.positive_node.node_pins._edb_padstackinstance
+        else:
+            pos_pin = source.positive_node.node_pins
+        if isinstance(source.negative_node.node_pins, EDBPadstackInstance):
+            neg_pin = source.negative_node.node_pins._edb_padstackinstance
+        else:
+            neg_pin = source.negative_node.node_pins
 
         res, fromLayer_pos, toLayer_pos = pos_pin.GetLayerRange()
         res, fromLayer_neg, toLayer_neg = neg_pin.GetLayerRange()
@@ -204,7 +233,6 @@ class EdbSiwave(object):
             pass
         return pos_pingroup_terminal.GetName()
 
-    @pyedb_function_handler()
     def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
         """Create a circuit port on a pin.
 
@@ -296,10 +324,10 @@ class EdbSiwave(object):
                 pin = [
                     pin
                     for pin in self._pedb.padstacks.get_pinlist_from_component_and_net(component_name)
-                    if pin.GetName() == pin_name
+                    if pin.component_pin == pin_name
                 ][0]
-                term_name = "{}_{}_{}".format(pin.GetComponent().GetName(), pin.GetNet().GetName(), pin.GetName())
-                res, start_layer, stop_layer = pin.GetLayerRange()
+                term_name = "{}_{}_{}".format(pin.component.name, pin._edb_object.GetNet().GetName(), pin.component_pin)
+                res, start_layer, stop_layer = pin._edb_object.GetLayerRange()
                 if res:
                     pin_instance = pin._edb_padstackinstance
                     positive_terminal = self._edb.cell.terminal.PadstackInstanceTerminal.Create(
@@ -327,7 +355,6 @@ class EdbSiwave(object):
                         return positive_terminal
             return False
 
-    @pyedb_function_handler()
     def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
         """Create a voltage source.
 
@@ -377,7 +404,6 @@ class EdbSiwave(object):
         voltage_source.negative_node.node_pins = pos_pin
         return self._create_terminal_on_pins(voltage_source)
 
-    @pyedb_function_handler()
     def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
         """Create a current source.
 
@@ -426,7 +452,6 @@ class EdbSiwave(object):
         current_source.negative_node.node_pins = neg_pin
         return self._create_terminal_on_pins(current_source)
 
-    @pyedb_function_handler()
     def create_resistor_on_pin(self, pos_pin, neg_pin, rvalue=1, resistor_name=""):
         """Create a Resistor boundary between two given pins..
 
@@ -472,7 +497,6 @@ class EdbSiwave(object):
         resistor.negative_node.node_pins = neg_pin
         return self._create_terminal_on_pins(resistor)
 
-    @pyedb_function_handler()
     def _check_gnd(self, component_name):
         negative_net_name = None
         if self._pedb.nets.is_net_in_component(component_name, "GND"):
@@ -487,7 +511,6 @@ class EdbSiwave(object):
             raise ValueError("No GND, PGND, AGND, DGND found. Please setup the negative net name manually.")
         return negative_net_name
 
-    @pyedb_function_handler()
     def create_circuit_port_on_net(
         self,
         positive_component_name,
@@ -555,7 +578,6 @@ class EdbSiwave(object):
         circuit_port.negative_node.node_pins = neg_node_pins
         return self.create_pin_group_terminal(circuit_port)
 
-    @pyedb_function_handler()
     def create_voltage_source_on_net(
         self,
         positive_component_name,
@@ -626,7 +648,6 @@ class EdbSiwave(object):
         voltage_source.negative_node.node_pins = neg_node_pins
         return self.create_pin_group_terminal(voltage_source)
 
-    @pyedb_function_handler()
     def create_current_source_on_net(
         self,
         positive_component_name,
@@ -697,7 +718,6 @@ class EdbSiwave(object):
         current_source.negative_node.node_pins = neg_node_pins
         return self.create_pin_group_terminal(current_source)
 
-    @pyedb_function_handler()
     def create_dc_terminal(
         self,
         component_name,
@@ -744,7 +764,6 @@ class EdbSiwave(object):
         dc_source.positive_node.node_pins = pos_node_pins
         return self.create_pin_group_terminal(dc_source)
 
-    @pyedb_function_handler()
     def create_exec_file(
         self, add_dc=False, add_ac=False, add_syz=False, export_touchstone=False, touchstone_file_path=""
     ):
@@ -790,7 +809,6 @@ class EdbSiwave(object):
 
         return True if os.path.exists(file_name) else False
 
-    @pyedb_function_handler()
     def add_siwave_syz_analysis(
         self,
         accuracy_level=1,
@@ -854,7 +872,6 @@ class EdbSiwave(object):
         self.create_exec_file(add_ac=True)
         return setup
 
-    @pyedb_function_handler()
     def add_siwave_dc_analysis(self, name=None):
         """Add a Siwave DC analysis in EDB.
 
@@ -886,7 +903,6 @@ class EdbSiwave(object):
         self.create_exec_file(add_dc=True)
         return setup
 
-    @pyedb_function_handler()
     def create_pin_group_terminal(self, source):
         """Create a pin group terminal.
 
@@ -985,7 +1001,6 @@ class EdbSiwave(object):
             pass
         return pos_pingroup_terminal.GetName()
 
-    @pyedb_function_handler()
     def configure_siw_analysis_setup(self, simulation_setup=None, delete_existing_setup=True):
         """Configure Siwave analysis setup.
 
@@ -1134,7 +1149,6 @@ class EdbSiwave(object):
                 self._logger.warning("Setup {} has been delete".format(setup.GetName()))
             return self._cell.AddSimulationSetup(sim_setup)
 
-    @pyedb_function_handler()
     def _setup_decade_count_sweep(self, sweep, start_freq, stop_freq, decade_count):
         import math
 
@@ -1153,7 +1167,6 @@ class EdbSiwave(object):
             freq = freq * math.pow(10, 1.0 / decade_cnt)
             sweep.Frequencies.Add(str(freq))
 
-    @pyedb_function_handler()
     def create_rlc_component(
         self,
         pins,
@@ -1167,8 +1180,8 @@ class EdbSiwave(object):
 
         Parameters
         ----------
-        pins : list[Edb.Primitive.PadstackInstance]
-             List of EDB pins, length must be 2, since only 2 pins component are currently supported.
+        pins : list[Edb.Cell.Primitive.PadstackInstance]
+             List of EDB pins.
 
         component_name : str
             Component name.
@@ -1201,7 +1214,6 @@ class EdbSiwave(object):
             is_parallel=is_parallel,
         )  # pragma no cover
 
-    @pyedb_function_handler()
     def create_pin_group(self, reference_designator, pin_numbers, group_name=None):
         """Create pin group on the component.
 
@@ -1223,19 +1235,20 @@ class EdbSiwave(object):
         pin_numbers = [str(p) for p in pin_numbers]
         if group_name is None:
             group_name = self._edb.cell.hierarchy.pin_group.GetUniqueName(self._active_layout)
-        comp = self._pedb.components.components[reference_designator]
+        comp = self._pedb.components.instances[reference_designator]
         pins = [pin.pin for name, pin in comp.pins.items() if name in pin_numbers]
         edb_pingroup = self._edb.cell.hierarchy.pin_group.Create(
             self._active_layout, group_name, convert_py_list_to_net_list(pins)
         )
 
         if edb_pingroup.IsNull():  # pragma: no cover
+            self._logger.error(f"Failed to create pin group {group_name}.")
             return False
         else:
-            edb_pingroup.SetNet(pins[0].GetNet())
+            names = [i for i in pins if i.GetNet().GetName()]
+            edb_pingroup.SetNet(names[0].GetNet())
             return group_name, self.pin_groups[group_name]
 
-    @pyedb_function_handler()
     def create_pin_group_on_net(self, reference_designator, net_name, group_name=None):
         """Create pin group on component by net name.
 
@@ -1256,7 +1269,6 @@ class EdbSiwave(object):
         pin_names = [p.GetName() for p in pins]
         return self.create_pin_group(reference_designator, pin_names, group_name)
 
-    @pyedb_function_handler()
     def create_current_source_on_pin_group(
         self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None
     ):
@@ -1291,7 +1303,6 @@ class EdbSiwave(object):
         pos_terminal.SetReferenceTerminal(neg_terminal)
         return True
 
-    @pyedb_function_handler()
     def create_voltage_source_on_pin_group(
         self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None, impedance=0.001
     ):
@@ -1326,7 +1337,6 @@ class EdbSiwave(object):
         pos_terminal.SetReferenceTerminal(neg_terminal)
         return True
 
-    @pyedb_function_handler()
     def create_voltage_probe_on_pin_group(self, probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1000000):
         """Create voltage probe between two pin groups.
 
@@ -1353,13 +1363,12 @@ class EdbSiwave(object):
         else:
             probe_name = generate_unique_name("vprobe")
             pos_terminal.SetName(probe_name)
-        neg_pin_group_name = self.pin_groups[neg_pin_group_name]
-        neg_terminal = neg_pin_group_name.create_voltage_probe_terminal()
+        neg_pin_group = self.pin_groups[neg_pin_group_name]
+        neg_terminal = neg_pin_group.create_voltage_probe_terminal()
         neg_terminal.SetName(probe_name + "_ref")
         pos_terminal.SetReferenceTerminal(neg_terminal)
         return not pos_terminal.IsNull()
 
-    @pyedb_function_handler()
     def create_circuit_port_on_pin_group(self, pos_pin_group_name, neg_pin_group_name, impedance=50, name=None):
         """Create a port between two pin groups.
 
@@ -1386,13 +1395,12 @@ class EdbSiwave(object):
         else:
             name = generate_unique_name("port")
             pos_terminal.SetName(name)
-        neg_pin_group_name = self.pin_groups[neg_pin_group_name]
-        neg_terminal = neg_pin_group_name.create_port_terminal(impedance)
+        neg_pin_group = self.pin_groups[neg_pin_group_name]
+        neg_terminal = neg_pin_group.create_port_terminal(impedance)
         neg_terminal.SetName(name + "_ref")
         pos_terminal.SetReferenceTerminal(neg_terminal)
         return True
 
-    @pyedb_function_handler
     def place_voltage_probe(
         self,
         name,
@@ -1425,3 +1433,91 @@ class EdbSiwave(object):
         p_terminal = self._pedb.get_point_terminal(name, positive_net_name, positive_location, positive_layer)
         n_terminal = self._pedb.get_point_terminal(name + "_ref", negative_net_name, negative_location, negative_layer)
         return self._pedb.create_voltage_probe(p_terminal, n_terminal)
+
+    def create_vrm_module(
+        self,
+        name=None,
+        is_active=True,
+        voltage="3V",
+        positive_sensor_pin=None,
+        negative_sensor_pin=None,
+        load_regulation_current="1A",
+        load_regulation_percent=0.1,
+    ):
+        """Create a voltage regulator module.
+
+        Parameters
+        ----------
+        name : str
+            Name of the voltage regulator.
+        is_active : bool optional
+            Set the voltage regulator active or not. Default value is ``True``.
+        voltage ; str, float
+            Set the voltage value.
+        positive_sensor_pin : int, .class pyedb.dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance
+            defining the positive sensor pin.
+        negative_sensor_pin : int, .class pyedb.dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance
+            defining the negative sensor pin.
+        load_regulation_current : str or float
+            definition the load regulation current value.
+        load_regulation_percent : float
+            definition the load regulation percent value.
+        """
+        from pyedb.dotnet.edb_core.cell.voltage_regulator import VoltageRegulator
+
+        voltage = self._pedb.edb_value(voltage)
+        load_regulation_current = self._pedb.edb_value(load_regulation_current)
+        load_regulation_percent = self._pedb.edb_value(load_regulation_percent)
+        edb_vrm = self._edb_object = self._pedb._edb.Cell.VoltageRegulator.Create(
+            self._pedb.active_layout, name, is_active, voltage, load_regulation_current, load_regulation_percent
+        )
+        vrm = VoltageRegulator(self._pedb, edb_vrm)
+        if positive_sensor_pin:
+            vrm.positive_remote_sense_pin = positive_sensor_pin
+        if negative_sensor_pin:
+            vrm.negative_remote_sense_pin = negative_sensor_pin
+        return vrm
+
+    @property
+    def icepak_use_minimal_comp_defaults(self):
+        """Icepak default setting. If "True", only resistor are active in Icepak simulation.
+        The power dissipation of the resistors are calculated from DC results.
+        """
+        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        cell = self._pedb.active_cell._active_cell
+        _, value = cell.GetProductProperty(siwave_id, 422, "")
+        return bool(value)
+
+    def create_impedance_crosstalk_scan(self, scan_type="impedance"):
+        """Create Siwave crosstalk scan object
+
+        Parameters
+        ----------
+        scan_type : str
+            Scan type to be analyzed. 3 options are available, ``impedance`` for frequency impedance scan,
+            ``frequency_xtalk`` for frequency domain crosstalk and ``time_xtalk`` for time domain crosstalk.
+            Default value is ``frequency``.
+
+        """
+        return SiwaveScanConfig(self._pedb, scan_type)
+
+    @icepak_use_minimal_comp_defaults.setter
+    def icepak_use_minimal_comp_defaults(self, value):
+        value = "True" if bool(value) else ""
+        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        cell = self._pedb.active_cell._active_cell
+        cell.SetProductProperty(siwave_id, 422, value)
+
+    @property
+    def icepak_component_file(self):
+        """Icepak component file path."""
+        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        cell = self._pedb.active_cell._active_cell
+        _, value = cell.GetProductProperty(siwave_id, 420, "")
+        return value
+
+    @icepak_component_file.setter
+    def icepak_component_file(self, value):
+        siwave_id = self._pedb.edb_api.ProductId.SIWave
+        cell = self._pedb.active_cell._active_cell
+        cell.SetProductProperty(siwave_id, 420, value)

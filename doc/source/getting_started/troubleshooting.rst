@@ -7,10 +7,10 @@ describes  how to troubleshoot some common issues related to installing and usin
 Issues and discussions
 ----------------------
 
-On the `PyEDB Issues <https://github.com/ansys/Pansys-edb/issues>`_ page, you can
+On the `PyEDB Issues <https://github.com/ansys/pyedb/issues>`_ page, you can
 create issues to report bugs and request new features.
 
-On the `PyEDB Discussions <https://github.com/ansys/pyansys-edb/discussions>`_ page or
+On the `PyEDB Discussions <https://github.com/ansys/pyedb/discussions>`_ page or
 the `Discussions <https://discuss.ansys.com/>`_ page on the Ansys Developer portal, you
 can post questions, share ideas, and get community feedback.
 
@@ -27,14 +27,13 @@ use the Python interpreter available in the AEDT installation.
 
 .. note::
 
-   Python 3.7 is available in AEDT 2023 R1 and earlier. Python 3.10 is available in AEDT 2023 R2
-   and later.
+   Python 3.10 is available in AEDT 2023 R2 and later.
 
-Here is the path to the Python 3.7 interpreter for the 2023 R1 installation:
+Here is the path to the Python 3.10 interpreter for the 2023 R1 installation:
 
 .. code:: python
 
-   "path\to\AnsysEM\v231\commonfiles\CPython\3_7\winx64\Release\python"
+   "path\to\AnsysEM\v231\commonfiles\CPython\3_10\winx64\Release\python"
 
 
 Error installing PyEDB using ``pip``
@@ -64,7 +63,9 @@ Run PyEDB with gRPC
 
 `gRPC <https://grpc.io/>`_ is a modern open source, high-performance RPC (remote procedure call)
 framework that can run in any environment and supports client/server remote calls.
-Starting from 2024 R1, the EDB-Core API with a gRPC interface is available as Beta. Both .NET and gRPC interfaces will be maintained during the Beta phase. Once gRPC is officially released PyEDB will use it by default and .NET version will be set as legacy.
+Starting from 2024 R1, the EDB-Core API with a gRPC interface is available as Beta.
+During the Beta phase, both .NET and gRPC interfaces are set to be maintained.
+Once gRPC is officially released, it is planned for gRPC to become the default usage in PyEDB, with .NET being set up as an legacy.
 
 .. list-table:: *gRPC compatibility:*
    :widths: 65 65 65

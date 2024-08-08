@@ -1,4 +1,25 @@
-import logging
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import os
 import time
 
@@ -30,12 +51,33 @@ class Settings(object):
         self._force_error_on_missing_project = False
         self._enable_pandas_output = False
         self.time_tick = time.time()
+        self.retry_n_times_time_interval = 0.1
         self._global_log_file_name = "pyedb_{}.log".format(os.path.split(os.path.expanduser("~"))[-1])
         self._enable_global_log_file = True
         self._enable_local_log_file = False
         self._global_log_file_size = 10
         self._lsf_queue = None
         self._edb_environment_variables = {}
+        self._use_pyaedt_log = False
+        self._logger = None
+
+    @property
+    def logger(self):
+        """Active logger."""
+        return self._logger
+
+    @logger.setter
+    def logger(self, val):
+        self._logger = val
+
+    @property
+    def use_pyaedt_log(self):
+        """Flag that disable Edb log when PyAEDT is used."""
+        return self._use_pyaedt_log
+
+    @use_pyaedt_log.setter
+    def use_pyaedt_log(self, value):
+        self._use_pyaedt_log = value
 
     @property
     def edb_environment_variables(self):
@@ -106,14 +148,6 @@ class Settings(object):
     @enable_debug_methods_argument_logger.setter
     def enable_debug_methods_argument_logger(self, val):
         self._enable_debug_methods_argument_logger = val
-
-    @property
-    def logger(self):
-        """Active logger."""
-        try:
-            return logging.getLogger("Global")
-        except:  # pragma: no cover
-            return logging.getLogger(__name__)
 
     @property
     def enable_error_handler(self):
@@ -217,6 +251,15 @@ class Settings(object):
     def edb_dll_path(self, value):
         if os.path.exists(value):
             self._edb_dll_path = value
+
+    @property
+    def retry_n_times_time_interval(self):
+        """Time interval between the retries by the ``_retry_n_times`` method."""
+        return self._retry_n_times_time_interval
+
+    @retry_n_times_time_interval.setter
+    def retry_n_times_time_interval(self, value):
+        self._retry_n_times_time_interval = float(value)
 
 
 settings = Settings()

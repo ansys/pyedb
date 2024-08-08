@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from pyedb.dotnet.edb_core.dotnet.database import (
     DifferentialPairDotNet,
     ExtendedNetDotNet,
@@ -6,7 +28,6 @@ from pyedb.dotnet.edb_core.dotnet.database import (
 )
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
-from pyedb.generic.general_methods import pyedb_function_handler
 
 
 class EDBNetsData(NetDotNet):
@@ -36,6 +57,7 @@ class EDBNetsData(NetDotNet):
         self._core_components = core_app.components
         self._core_primitive = core_app.modeler
         self.net_object = raw_net
+        self._edb_object = raw_net
         NetDotNet.__init__(self, self._app, raw_net)
 
     @property
@@ -66,7 +88,7 @@ class EDBNetsData(NetDotNet):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.edb_core.edb_data.components_data.EDBComponent`]
+        dict[str, :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`]
         """
         comps = {}
         for p in self.padstack_instances:
@@ -76,7 +98,6 @@ class EDBNetsData(NetDotNet):
                     comps[comp.refdes] = comp
         return comps
 
-    @pyedb_function_handler()
     def find_dc_short(self, fix=False):
         """Find DC-shorted nets.
 
@@ -93,7 +114,6 @@ class EDBNetsData(NetDotNet):
         """
         return self._app.layout_validation.dc_shorts(self.name, fix)
 
-    @pyedb_function_handler()
     def plot(
         self,
         layers=None,
@@ -101,6 +121,7 @@ class EDBNetsData(NetDotNet):
         save_plot=None,
         outline=None,
         size=(2000, 1000),
+        show=True,
     ):
         """Plot a net to Matplotlib 2D chart.
 
@@ -112,12 +133,14 @@ class EDBNetsData(NetDotNet):
             If `True` the legend is shown in the plot. (default)
             If `False` the legend is not shown.
         save_plot : str, optional
-            If `None` the plot will be shown.
-            If a file path is specified the plot will be saved to such file.
+            If a path is specified the plot will be saved in this location.
+            If ``save_plot`` is provided, the ``show`` parameter is ignored.
         outline : list, optional
             List of points of the outline to plot.
         size : tuple, optional
             Image size in pixel (width, height).
+        show : bool, optional
+            Whether to show the plot or not. Default is `True`.
         """
 
         self._app.nets.plot(
@@ -127,9 +150,9 @@ class EDBNetsData(NetDotNet):
             save_plot=save_plot,
             outline=outline,
             size=size,
+            show=show,
         )
 
-    @pyedb_function_handler()
     def get_smallest_trace_width(self):
         """Retrieve the smallest trace width from paths.
 
@@ -243,7 +266,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
             if set(comp_obj.nets).issubset(set(nets)):
                 res[comp_name] = comp_obj
         return res
-    
+
     @property
     def shunt_rlc(self):
         """Dictionary of shunt RLC components."""

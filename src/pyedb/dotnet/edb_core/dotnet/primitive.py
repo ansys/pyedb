@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Primitive."""
 from pyedb.dotnet.edb_core.dotnet.database import NetDotNet, PolygonDataDotNet
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
@@ -51,8 +73,46 @@ class PrimitiveDotNet:
         self.prim_obj = prim_object
 
     @property
+    def id(self):
+        return self.prim_obj.GetId()
+
+    @property
     def api_class(self):
         return self.api
+
+    @property
+    def aedt_name(self):
+        """Name to be visualized in AEDT.
+
+        Returns
+        -------
+        str
+            Name.
+        """
+        from System import String
+
+        val = String("")
+
+        _, name = self.prim_obj.GetProductProperty(self._app._edb.ProductId.Designer, 1, val)
+        name = str(name).strip("'")
+        if name == "":
+            if str(self.primitive_type) == "Path":
+                ptype = "line"
+            elif str(self.primitive_type) == "Rectangle":
+                ptype = "rect"
+            elif str(self.primitive_type) == "Polygon":
+                ptype = "poly"
+            elif str(self.primitive_type) == "Bondwire":
+                ptype = "bwr"
+            else:
+                ptype = str(self.primitive_type).lower()
+            name = "{}_{}".format(ptype, self.id)
+            self.prim_obj.SetProductProperty(self._app._edb.ProductId.Designer, 1, name)
+        return name
+
+    @aedt_name.setter
+    def aedt_name(self, value):
+        self.prim_obj.SetProductProperty(self._app._edb.ProductId.Designer, 1, value)
 
     @property
     def api_object(self):
@@ -276,9 +336,9 @@ class PrimitiveDotNet:
                 # i += 1
             else:
                 arc_h = point.GetArcHeight().ToDouble()
-                p1 = [my_net_points[i-1].X.ToDouble(), my_net_points[i-1].Y.ToDouble()]
-                if i+1 < len(my_net_points):
-                    p2 = [my_net_points[i+1].X.ToDouble(), my_net_points[i+1].Y.ToDouble()]
+                p1 = [my_net_points[i - 1].X.ToDouble(), my_net_points[i - 1].Y.ToDouble()]
+                if i + 1 < len(my_net_points):
+                    p2 = [my_net_points[i + 1].X.ToDouble(), my_net_points[i + 1].Y.ToDouble()]
                 else:
                     p2 = [my_net_points[0].X.ToDouble(), my_net_points[0].Y.ToDouble()]
                 x_arc, y_arc = self._eval_arc_points(p1, p2, arc_h, num)
@@ -329,6 +389,61 @@ class PrimitiveDotNet:
             return points
         except:
             return points
+
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
+        """Expand the polygon shape by an absolute value in all direction.
+        Offset can be negative for negative expansion.
+
+        Parameters
+        ----------
+        offset : float, optional
+            Offset value in meters.
+        tolerance : float, optional
+            Tolerance in meters.
+        round_corners : bool, optional
+            Whether to round corners or not.
+            If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+        maximum_corner_extension : float, optional
+            The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+        """
+        new_poly = self.polygon_data.edb_api.Expand(offset, tolerance, round_corners, maximum_corner_extension)
+        self.polygon_data = new_poly[0]
+        return True
+
+    def scale(self, factor, center=None):
+        """Scales the polygon relative to a center point by a factor.
+
+        Parameters
+        ----------
+        factor : float
+            Scaling factor.
+        center : List of float or str [x,y], optional
+            If None scaling is done from polygon center.
+
+        Returns
+        -------
+        bool
+           ``True`` when successful, ``False`` when failed.
+        """
+        if not isinstance(factor, str):
+            factor = float(factor)
+            polygon_data = self.polygon_data.create_from_arcs(self.polygon_data.edb_api.GetArcData(), True)
+            if not center:
+                center = self.polygon_data.edb_api.GetBoundingCircleCenter()
+                if center:
+                    polygon_data.Scale(factor, center)
+                    self.polygon_data = polygon_data
+                    return True
+                else:
+                    self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
+            elif isinstance(center, list) and len(center) == 2:
+                center = self._edb.Geometry.PointData(
+                    self._edb.Utility.Value(center[0]), self._edb.Utility.Value(center[1])
+                )
+                polygon_data.Scale(factor, center)
+                self.polygon_data = polygon_data
+                return True
+        return False
 
 
 class RectangleDotNet(PrimitiveDotNet):
@@ -555,6 +670,28 @@ class CircleDotNet(PrimitiveDotNet):
         """:obj:`bool`: If a circle can be a zone."""
         return True
 
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
+        """Expand the polygon shape by an absolute value in all direction.
+        Offset can be negative for negative expansion.
+
+        Parameters
+        ----------
+        offset : float, optional
+            Offset value in meters.
+        tolerance : float, optional
+            Tolerance in meters. Ignored for Circle and Path.
+        round_corners : bool, optional
+            Whether to round corners or not.
+            If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+             Ignored for Circle and Path.
+        maximum_corner_extension : float, optional
+            The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+             Ignored for Circle and Path.
+        """
+        center_x, center_y, radius = self.get_parameters()
+        self.set_parameters(center_x, center_y, radius.ToFloat() + offset)
+        return True
+
 
 class TextDotNet(PrimitiveDotNet):
     """Class representing a text object."""
@@ -710,9 +847,8 @@ class PathDotNet(PrimitiveDotNet):
             net = net.api_object
         width = self._app.edb_api.utility.value(width)
         if isinstance(points, list):
-            points = self._app.edb_api.geometry.polygon_data.api_class(
-                convert_py_list_to_net_list([self._app.geometry.point_data(i) for i in points]), False
-            )
+            points = convert_py_list_to_net_list([self._app.point_data(i[0], i[1]) for i in points])
+            points = self._app.edb_api.geometry.polygon_data.dotnetobj(points)
         return PathDotNet(
             self._app, self.api.Path.Create(layout, layer, net, width, end_cap1, end_cap2, corner_style, points)
         )
@@ -720,11 +856,15 @@ class PathDotNet(PrimitiveDotNet):
     @property
     def center_line(self):
         """:class:`PolygonData <ansys.edb.geometry.PolygonData>`: Center line for this Path."""
-        return self.prim_obj.GetCenterLine()
+        edb_center_line = self.prim_obj.GetCenterLine()
+        return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(edb_center_line.Points)]
 
     @center_line.setter
-    def center_line(self, center_line):
-        self.prim_obj.SetCenterLineMessage(center_line)
+    def center_line(self, value):
+        if isinstance(value, list):
+            points = [self._pedb.point_data(i[0], i[1]) for i in value]
+            polygon_data = self._edb.geometry.polygon_data.dotnetobj(convert_py_list_to_net_list(points), False)
+            self.prim_obj.SetCenterLine(polygon_data)
 
     @property
     def end_cap_style(self):
@@ -827,6 +967,27 @@ class PathDotNet(PrimitiveDotNet):
 
         Read-Only.
         """
+        return True
+
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
+        """Expand the polygon shape by an absolute value in all direction.
+        Offset can be negative for negative expansion.
+
+        Parameters
+        ----------
+        offset : float, optional
+            Offset value in meters.
+        tolerance : float, optional
+            Tolerance in meters. Ignored for Circle and Path.
+        round_corners : bool, optional
+            Whether to round corners or not.
+            If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+             Ignored for Circle and Path.
+        maximum_corner_extension : float, optional
+            The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+             Ignored for Circle and Path.
+        """
+        self.width = self.width + offset
         return True
 
 

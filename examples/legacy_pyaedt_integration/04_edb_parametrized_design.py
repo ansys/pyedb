@@ -1,46 +1,48 @@
-"""
-EDB: fully parametrized design
-------------------------------
-This example shows how you can use HFSS 3D Layout to create and solve a parametric design.
-"""
+# # EDB: fully parametrized design
+#
+# This example shows how to use the EDB interface along with HFSS 3D Layout to create and solve a
+# parameterized layout. The layout shows a differential via transition on a printed circuit board
+# with back-to-back microstrip to stripline transitions.
+# The model is fully parameterized to enable investigation of the transition performance on the
+# many degrees of freedom.
+#
+# The resulting model is shown below
+#
+# <img src="_static\pcb_transition_parameterized.png" width="500">
 
-###############################################################################
-# Perform required imports
-# ~~~~~~~~~~~~~~~~~~~~~~~~
-# Perform required imports, which includes importing the ``Hfss3dlayout`` object
-# and initializing it on version 2023 R2.
-
+# +
 import os
+import tempfile
 
-from pyaedt import Hfss3dLayout
+import pyaedt
 
 import pyedb
-from pyedb.generic.general_methods import (
-    generate_unique_folder_name,
-    generate_unique_name,
-)
 
-##########################################################
-# Set non-graphical mode
-# ~~~~~~~~~~~~~~~~~~~~~~
-# Set non-graphical mode. The default is ``False``.
+# -
+
+# ## Set non-graphical mode
+#
+# Set non-graphical mode. The default is ``False``, which opens
+# the AEDT UI.
 
 non_graphical = False
 
-##########################################################
-# Launch EDB
-# ~~~~~~~~~~
-# Launch EDB.
+# ## Launch EDB.
 
-aedb_path = os.path.join(generate_unique_folder_name(), generate_unique_name("pcb") + ".aedb")
-print(aedb_path)
-edb = pyedb.Edb(edbpath=aedb_path, edbversion="2023.2")
+# +
+temp_dir = tempfile.TemporaryDirectory(suffix=".ansys")
+aedb_path = os.path.join(temp_dir.name, "pcb.aedb")
 
-######################################################################
-# Define parameters
-# ~~~~~~~~~~~~~~~~~
+# Select EDB version (change it manually if needed, e.g. "2024.1")
+edb_version = "2024.1"
+print(f"EDB version: {edb_version}")
+
+edb = pyedb.Edb(edbpath=aedb_path, edbversion=edb_version)
+# -
+
 # Define the parameters.
 
+# +
 params = {
     "$ms_width": "0.4mm",
     "$sl_width": "0.2mm",
@@ -50,7 +52,7 @@ params = {
     "$via_diam": "0.3mm",
     "$pad_diam": "0.6mm",
     "$anti_pad_diam": "0.7mm",
-    "$pcb_len": "30mm",
+    "$pcb_len": "15mm",
     "$pcb_w": "5mm",
     "$x_size": "1.2mm",
     "$y_size": "1mm",
@@ -59,39 +61,25 @@ params = {
 
 for par_name in params:
     edb.add_project_variable(par_name, params[par_name])
+# -
 
-######################################################################
-# Define stackup layers
-# ~~~~~~~~~~~~~~~~~~~~~
 # Define the stackup layers from bottom to top.
 
+layers = {
+    "top": {"type": "signal", "thickness": "35um", "material": "copper"},
+    "diel_1": {"type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
+    "sig_1": {"type": "signal", "thickness": "35um", "material": "copper"},
+    "diel_2": {"type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
+    "sig_2": {"type": "signal", "thickness": "35um", "material": "copper"},
+    "diel_3": {"type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
+    "bottom": {"type": "signal", "thickness": "35um", "material": "copper"},
+}
+layer_names = list(layers.keys())[::-1]
+# Create the EDB stackup.
+# Define the bottom layer
+edb.stackup.load(layers)
 
-layers = [
-    {"name": "bottom", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-    {"name": "diel_3", "layer_type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
-    {"name": "sig_2", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-    {"name": "diel_2", "layer_type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
-    {"name": "sig_1", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-    {"name": "diel_1", "layer_type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
-    {"name": "top", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-]
 
-# Create EDB stackup.
-# Bottom layer
-prev = None
-for layer in layers:
-    edb.stackup.add_layer(
-        layer["name"],
-        base_layer=prev,
-        layer_type=layer["layer_type"],
-        thickness=layer["thickness"],
-        material=layer["material"],
-    )
-    prev = layer["name"]
-
-###############################################################################
-# Create padstack for signal via
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a parametrized padstack for the signal via.
 
 signal_via_padstack = "automated_via"
@@ -104,22 +92,16 @@ edb.padstacks.create(
     x_size="$x_size",
     y_size="$y_size",
     corner_radius="$corner_rad",
-    start_layer=layers[-1]["name"],
-    stop_layer=layers[-3]["name"],
+    start_layer=layer_names[-1],
+    stop_layer=layer_names[-3],
 )
 
-###############################################################################
-# Assign net names
-# ~~~~~~~~~~~~~~~~
-# # Assign net names. There are only two signal nets.
+# Assign net names. There are only two signal nets.
 
 net_p = "p"
 net_n = "n"
 
-###############################################################################
-# Place signal vias
-# ~~~~~~~~~~~~~~~~~
-# Place signal vias.
+# Place the signal vias.
 
 edb.padstacks.place(
     position=["$pcb_len/3", "($ms_width+$ms_spacing+$via_spacing)/2"],
@@ -153,15 +135,16 @@ edb.padstacks.place(
     rotation=-90.0,
 )
 
-# ###############################################################################
-# Draw parametrized traces
-# ~~~~~~~~~~~~~~~~~~~~~~~~
-# Draw parametrized traces.
-# Trace the width and the routing (Microstrip-Stripline-Microstrip).
+
+# ## Draw parametrized traces
+#
+# Trace width and the routing (Microstrip-Stripline-Microstrip).
 # Applies to both p and n nets.
 
-width = ["$ms_width", "$sl_width", "$ms_width"]  # Trace width, n and p
-route_layer = [layers[-1]["name"], layers[4]["name"], layers[-1]["name"]]  # Routing layer, n and p
+# Trace width, n and p
+width = ["$ms_width", "$sl_width", "$ms_width"]
+# Routing layer, n and p
+route_layer = [layer_names[-1], layer_names[4], layer_names[-1]]
 
 # Define points for three traces in the "p" net
 
@@ -212,10 +195,8 @@ points_n = [
         ["$pcb_len", "-($ms_width + $ms_spacing)/2"],
     ],
 ]
-# ###############################################################################
-# Add traces to EDB
-# ~~~~~~~~~~~~~~~~~
-# Add traces to EDB.
+
+# Add traces to the EDB.
 
 trace_p = []
 trace_n = []
@@ -223,10 +204,7 @@ for n in range(len(points_p)):
     trace_p.append(edb.modeler.create_trace(points_p[n], route_layer[n], width[n], net_p, "Flat", "Flat"))
     trace_n.append(edb.modeler.create_trace(points_n[n], route_layer[n], width[n], net_n, "Flat", "Flat"))
 
-###############################################################################
-# Create wave ports
-# ~~~~~~~~~~~~~~~~~
-# Create wave ports:
+# Create the wave ports
 
 edb.hfss.create_differential_wave_port(
     trace_p[0].id,
@@ -243,71 +221,83 @@ edb.hfss.create_differential_wave_port(
     "wave_port_2",
 )
 
-###############################################################################
-# Draw ground polygons
-# ~~~~~~~~~~~~~~~~~~~~
-# Draw ground polygons.
+# Draw a conducting rectangle on the ground layers.
 
-gnd_poly = [[0.0, "-$pcb_w/2"], ["$pcb_len", "-$pcb_w/2"], ["$pcb_len", "$pcb_w/2"], [0.0, "$pcb_w/2"]]
+gnd_poly = [
+    [0.0, "-$pcb_w/2"],
+    ["$pcb_len", "-$pcb_w/2"],
+    ["$pcb_len", "$pcb_w/2"],
+    [0.0, "$pcb_w/2"],
+]
 gnd_shape = edb.modeler.Shape("polygon", points=gnd_poly)
 
 # Void in ground for traces on the signal routing layer
 
+# +
 void_poly = [
     ["$pcb_len/3", "-($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2-$via_spacing/2"],
-    ["$pcb_len/3 + $via_spacing", "-($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2-$via_spacing/2"],
+    [
+        "$pcb_len/3 + $via_spacing",
+        "-($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2-$via_spacing/2",
+    ],
     ["$pcb_len/3 + 2*$via_spacing", "-($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2"],
     ["2*$pcb_len/3 - 2*$via_spacing", "-($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2"],
-    ["2*$pcb_len/3 - $via_spacing", "-($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2-$via_spacing/2"],
+    [
+        "2*$pcb_len/3 - $via_spacing",
+        "-($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2-$via_spacing/2",
+    ],
     ["2*$pcb_len/3", "-($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2-$via_spacing/2"],
     ["2*$pcb_len/3", "($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2+$via_spacing/2"],
-    ["2*$pcb_len/3 - $via_spacing", "($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2+$via_spacing/2"],
+    [
+        "2*$pcb_len/3 - $via_spacing",
+        "($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2+$via_spacing/2",
+    ],
     ["2*$pcb_len/3 - 2*$via_spacing", "($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2"],
     ["$pcb_len/3 + 2*$via_spacing", "($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2"],
-    ["$pcb_len/3 + $via_spacing", "($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2+$via_spacing/2"],
+    [
+        "$pcb_len/3 + $via_spacing",
+        "($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2+$via_spacing/2",
+    ],
     ["$pcb_len/3", "($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2+$via_spacing/2"],
     ["$pcb_len/3", "($ms_width+$ms_spacing+$via_spacing+$anti_pad_diam)/2"],
 ]
 
 void_shape = edb.modeler.Shape("polygon", points=void_poly)
+# -
 
-# Add ground layers
+# Add ground conductors.
 
-for layer in layers[:-1:2]:
+# +
+for layer in layer_names[:-1:2]:
     # add void if the layer is the signal routing layer.
-    void = [void_shape] if layer["name"] == route_layer[1] else []
+    void = [void_shape] if layer == route_layer[1] else []
 
-    edb.modeler.create_polygon(main_shape=gnd_shape, layer_name=layer["name"], voids=void, net_name="gnd")
+    edb.modeler.create_polygon(main_shape=gnd_shape, layer_name=layer, voids=void, net_name="gnd")
+# -
 
-###############################################################################
-# Plot EDB
-# ~~~~~~~~
-# Plot EDB.
+# Plot the layout.
 
 edb.nets.plot(None)
 
-###############################################################################
-# Save EDB
-# ~~~~~~~~
-# Save EDB.
+# Save the EDB.
 
 edb.save_edb()
 edb.close_edb()
 
-###############################################################################
-# Open EDB in AEDT
-# ~~~~~~~~~~~~~~~~
-# Open EDB in AEDT.
+# Open the project in HFSS 3D Layout.
 
-h3d = Hfss3dLayout(
-    projectname=aedb_path, specified_version="2023.2", non_graphical=non_graphical, new_desktop_session=True
+h3d = pyaedt.Hfss3dLayout(
+    projectname=aedb_path,
+    specified_version="2024.1",
+    non_graphical=non_graphical,
+    new_desktop_session=True,
 )
 
-###############################################################################
-# Add HFSS simulation setup
-# ~~~~~~~~~~~~~~~~~~~~~~~~~
+# ## Add HFSS simulation setup
+#
 # Add HFSS simulation setup.
 
+# +
 setup = h3d.create_setup()
 setup.props["AdaptiveSettings"]["SingleFrequencyDataList"]["AdaptiveFrequencyData"]["MaxPasses"] = 3
 
@@ -324,33 +314,29 @@ h3d.create_linear_count_sweep(
     save_fields=False,
     use_q3d_for_dc=False,
 )
+# -
 
-###############################################################################
-# Set Differential Pairs.
-# ~~~~~~~~~~~~~~~~~~~~~~
-# Define the differential pairs to be used in the postprocessing.
+# Define the differential pairs to used to calculate differential and common mode
+# s-parameters.
+
 h3d.set_differential_pair(diff_name="In", positive_terminal="wave_port_1:T1", negative_terminal="wave_port_1:T2")
 h3d.set_differential_pair(diff_name="Out", positive_terminal="wave_port_2:T1", negative_terminal="wave_port_2:T2")
 
-###############################################################################
-# Start HFSS solver
-# ~~~~~~~~~~~~~~~~~
-# Start the HFSS solver by uncommenting the ``h3d.analyze()`` command.
+# Solve the project.
 
 h3d.analyze()
 
-###############################################################################
-# Generate Plot
-# ~~~~~~~~~~~~~
-# Generate the plot of differential pairs.
+# Plot the results and shut down AEDT.
 
 solutions = h3d.post.get_solution_data(["dB(S(In,In))", "dB(S(In,Out))"], context="Differential Pairs")
 solutions.plot()
-
 h3d.release_desktop()
 
-###############################################################################
 # Note that the ground nets are only connected to each other due
 # to the wave ports. The problem with poor grounding can be seen in the
-# S-parameters. Try to modify this script to add ground vias and eliminate
-# the resonance.
+# S-parameters. This example can be downloaded as a Jupyter Notebook, so
+# you can modify it. Try changing parameters or adding ground vias to improve performance.
+#
+# The final cell cleans up the temporary directory, removing all files.
+
+temp_dir.cleanup()

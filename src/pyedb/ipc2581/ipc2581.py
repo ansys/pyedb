@@ -1,6 +1,28 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import os.path
 
-from pyedb.generic.general_methods import ET, pyedb_function_handler
+from pyedb.generic.general_methods import ET
 from pyedb.ipc2581.bom.bom import Bom
 from pyedb.ipc2581.bom.bom_item import BomItem
 from pyedb.ipc2581.content.content import Content
@@ -26,7 +48,6 @@ class Ipc2581(object):
         self.design_name = ""
         self.top_bottom_layers = []
 
-    @pyedb_function_handler()
     def load_ipc_model(self):
         self.design_name = self._pedb.cell_names[0]
         self.content.step_ref = self.design_name
@@ -47,7 +68,6 @@ class Ipc2581(object):
         self.add_drills()
         self._pedb.logger.info("Parsing EDB Completed!")
 
-    @pyedb_function_handler()
     def add_pdstack_definition(self):
         for padstack_name, padstackdef in self._pedb.padstacks.definitions.items():
             padstack_def = PadstackDef()
@@ -196,7 +216,6 @@ class Ipc2581(object):
             if not padstack_def.name in self.ecad.cad_data.cad_data_step.padstack_defs:
                 self.ecad.cad_data.cad_data_step.padstack_defs[padstack_def.name] = padstack_def
 
-    @pyedb_function_handler()
     def add_bom(self):
         # Bom
         for part_name, components in self._pedb.components.components_by_partname.items():
@@ -220,7 +239,6 @@ class Ipc2581(object):
                 )
             self.bom.bom_items.append(bom_item)
 
-    @pyedb_function_handler()
     def add_layers_info(self):
         self.design_name = self._pedb.layout.cell.GetName()
         self.ecad.design_name = self.design_name
@@ -232,7 +250,7 @@ class Ipc2581(object):
         self.layers_name = list(self._pedb.stackup.signal_layers.keys())
         self.top_bottom_layers = [self.layers_name[0], self.layers_name[-1]]
         sequence = 0
-        for layer_name in list(self._pedb.stackup.stackup_layers.keys()):
+        for layer_name in list(self._pedb.stackup.layers.keys()):
             sequence += 1
             self.content.add_layer_ref(layer_name)
             layer_color = self._pedb.stackup.layers[layer_name].color
@@ -297,24 +315,24 @@ class Ipc2581(object):
         self.content.add_layer_ref("Drill")
         self.content.dict_colors.add_color("{}".format("Drill"), "255", "255", "255")
 
-    @pyedb_function_handler()
     def add_components(self):
-        for item in self._pedb.components.components.values():
+        for item in self._pedb.components.instances.values():
             self.ecad.cad_data.cad_data_step.add_component(item)
 
-    @pyedb_function_handler()
     def add_logical_nets(self):
         nets = [i for i in self._pedb.nets.nets.values()]
         for net in nets:
             self.ecad.cad_data.cad_data_step.add_logical_net(net)
 
-    @pyedb_function_handler()
     def add_profile(self):
-        profile = self._pedb.modeler.primitives_by_layer["Outline"]
-        for prim in profile:
-            self.ecad.cad_data.cad_data_step.add_profile(prim)
+        profile = self._pedb.modeler.primitives_by_layer.get("Outline")
+        if profile is None:
+            self._pedb.logger.warning("Layer 'Outline' not found.")
+        else:
+            profile = self._pedb.modeler.primitives_by_layer["Outline"]
+            for prim in profile:
+                self.ecad.cad_data.cad_data_step.add_profile(prim)
 
-    @pyedb_function_handler()
     def add_layer_features(self):
         layers = {i: j for i, j in self._pedb.stackup.layers.items()}
         padstack_instances = list(self._pedb.padstacks.instances.values())
@@ -324,7 +342,6 @@ class Ipc2581(object):
             self.ecad.cad_data.cad_data_step.add_layer_feature(layer, polys[layer_name])
         self.ecad.cad_data.cad_data_step.add_padstack_instances(padstack_instances, padstack_defs)
 
-    @pyedb_function_handler()
     def add_drills(self):
         via_list = [
             obj for obj in list(self._pedb.padstacks.instances.values()) if not obj.start_layer == obj.stop_layer
@@ -333,7 +350,6 @@ class Ipc2581(object):
 
         self.ecad.cad_data.cad_data_step.add_drill_layer_feature(via_list, "DRILL_1-{}".format(l1))
 
-    @pyedb_function_handler()
     def from_meter_to_units(self, value, units):
         if isinstance(value, str):
             value = float(value)
@@ -365,7 +381,6 @@ class Ipc2581(object):
             if units.lower() == "centimeter":
                 return round(value * 100, 4)
 
-    @pyedb_function_handler()
     def write_xml(self):
         if self.file_path:
             ipc = ET.Element("IPC-2581")

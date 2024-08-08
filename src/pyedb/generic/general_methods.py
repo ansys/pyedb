@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
@@ -8,10 +30,8 @@ import csv
 import datetime
 import difflib
 import fnmatch
-from functools import update_wrapper
 import inspect
 import itertools
-import json
 import logging
 import math
 import os
@@ -23,17 +43,14 @@ import tempfile
 import time
 import traceback
 
+from pyedb.exceptions import MaterialModelException
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.settings import settings
 
-is_ironpython = "IronPython" in sys.version or ".NETFramework" in sys.version
 is_linux = os.name == "posix"
 is_windows = not is_linux
 _pythonver = sys.version_info[0]
-inside_desktop = True if is_ironpython and "4.0.30319.42000" in sys.version else False
 
-if not is_ironpython:
-    import psutil
 
 try:
     import xml.etree.cElementTree as ET
@@ -160,33 +177,46 @@ def _function_handler_wrapper(user_function):  # pragma: no cover
             except IOError:
                 _exception(sys.exc_info(), user_function, args, kwargs, "IO Error")
                 return False
+            except MaterialModelException:
+                _exception(sys.exc_info(), user_function, args, kwargs, "Material Model")
+                return False
 
     return wrapper
 
 
-def pyedb_function_handler(direct_func=None):
-    """Provides an exception handler, logging mechanism, and argument converter for client-server
-    communications.
-
-    This method returns the function itself if correctly executed. Otherwise, it returns ``False``
-    and displays errors.
-
-    """
-    if callable(direct_func):
-        user_function = direct_func
-        wrapper = _function_handler_wrapper(user_function)
-        return update_wrapper(wrapper, user_function)
-    elif direct_func is not None:
-        raise TypeError("Expected first argument to be a callable, or None")
-
-    def decorating_function(user_function):
-        wrapper = _function_handler_wrapper(user_function)
-        return update_wrapper(wrapper, user_function)
-
-    return decorating_function
+import functools
+import warnings
 
 
-@pyedb_function_handler()
+def deprecate_argument_name(argument_map):
+    """Decorator to deprecate certain argument names in favor of new ones."""
+
+    def decorator(func):
+        """Decorator that wraps the function to handle deprecated arguments."""
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            """Wrapper function that checks for deprecated arguments."""
+            func_name = func.__name__
+            for old_arg, new_arg in argument_map.items():
+                if old_arg in kwargs:
+                    warnings.warn(
+                        f"Argument `{old_arg}` is deprecated for method `{func_name}`; use `{new_arg}` instead.",
+                        DeprecationWarning,
+                        stacklevel=2,
+                    )
+                    # NOTE: Use old argument if new argument is not provided
+                    if new_arg not in kwargs:
+                        kwargs[new_arg] = kwargs.pop(old_arg)
+                    else:
+                        kwargs.pop(old_arg)
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
 def get_filename_without_extension(path):
     """Get the filename without its extension.
 
@@ -265,7 +295,6 @@ def _get_args_dicts(func, args, kwargs):
     return args_dict
 
 
-@pyedb_function_handler()
 def env_path(input_version):
     """Get the path of the version environment variable for an AEDT version.
 
@@ -292,7 +321,6 @@ def env_path(input_version):
     )
 
 
-@pyedb_function_handler()
 def get_version_and_release(input_version):
     version = int(input_version[2:4])
     release = int(input_version[5])
@@ -304,7 +332,6 @@ def get_version_and_release(input_version):
     return (version, release)
 
 
-@pyedb_function_handler()
 def env_value(input_version):
     """Get the name of the version environment variable for an AEDT version.
 
@@ -328,7 +355,6 @@ def env_value(input_version):
     )
 
 
-@pyedb_function_handler()
 def generate_unique_name(rootname, suffix="", n=6):
     """Generate a new name given a root name and optional suffix.
 
@@ -375,7 +401,6 @@ def normalize_path(path_in, sep=None):
     return path_in.replace("\\", sep).replace("/", sep)
 
 
-@pyedb_function_handler()
 def check_numeric_equivalence(a, b, relative_tolerance=1e-7):
     """Check if two numeric values are equivalent to within a relative tolerance.
 
@@ -401,7 +426,6 @@ def check_numeric_equivalence(a, b, relative_tolerance=1e-7):
     return True if reldiff < relative_tolerance else False
 
 
-@pyedb_function_handler()
 def check_and_download_file(local_path, remote_path, overwrite=True):
     """Check if a file is remote and either download it or return the path.
 
@@ -443,7 +467,6 @@ def check_if_path_exists(path):
     return os.path.exists(path)
 
 
-@pyedb_function_handler()
 def check_and_download_folder(local_path, remote_path, overwrite=True):
     """Check if a folder is remote and either download it or return the path.
 
@@ -500,7 +523,6 @@ def open_file(file_path, file_options="r"):  # pragma: no cover
         settings.logger.error("The file or folder %s does not exist", dir_name)
 
 
-@pyedb_function_handler()
 def get_string_version(input_version):
     output_version = input_version
     if isinstance(input_version, float):
@@ -518,7 +540,6 @@ def get_string_version(input_version):
     return output_version
 
 
-@pyedb_function_handler()
 def env_path_student(input_version):
     """Get the path of the version environment variable for an AEDT student version.
 
@@ -545,7 +566,6 @@ def env_path_student(input_version):
     )
 
 
-@pyedb_function_handler()
 def env_value_student(input_version):
     """Get the name of the version environment variable for an AEDT student version.
 
@@ -569,7 +589,6 @@ def env_value_student(input_version):
     )
 
 
-@pyedb_function_handler()
 def generate_unique_folder_name(rootname=None, folder_name=None):  # pragma: no cover
     """Generate a new AEDT folder name given a rootname.
 
@@ -600,7 +619,6 @@ def generate_unique_folder_name(rootname=None, folder_name=None):  # pragma: no 
     return temp_folder
 
 
-@pyedb_function_handler()
 def generate_unique_project_name(rootname=None, folder_name=None, project_name=None, project_format="aedt"):
     """Generate a new AEDT project name given a rootname.
 
@@ -737,7 +755,6 @@ def is_project_locked(project_path):
     return check_if_path_exists(project_path + ".lock")
 
 
-@pyedb_function_handler()
 def remove_project_lock(project_path):  # pragma: no cover
     """Check if an AEDT project exists and try to remove the lock file.
 
@@ -759,7 +776,6 @@ def remove_project_lock(project_path):  # pragma: no cover
     return True
 
 
-@pyedb_function_handler()
 def read_csv(filename, encoding="utf-8"):  # pragma: no cover
     """Read information from a CSV file and return a list.
 
@@ -784,7 +800,6 @@ def read_csv(filename, encoding="utf-8"):  # pragma: no cover
     return lines
 
 
-@pyedb_function_handler()
 def read_csv_pandas(filename, encoding="utf-8"):  # pragma: no cover
     """Read information from a CSV file and return a list.
 
@@ -809,7 +824,6 @@ def read_csv_pandas(filename, encoding="utf-8"):  # pragma: no cover
         return None
 
 
-@pyedb_function_handler()
 def read_tab(filename):  # pragma: no cover
     """Read information from a TAB file and return a list.
 
@@ -828,7 +842,6 @@ def read_tab(filename):  # pragma: no cover
     return lines
 
 
-@pyedb_function_handler()
 def read_xlsx(filename):  # pragma: no cover
     """Read information from an XLSX file and return a list.
 
@@ -852,12 +865,8 @@ def read_xlsx(filename):  # pragma: no cover
         return lines
 
 
-@pyedb_function_handler()
 def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL):  # pragma: no cover
-    if is_ironpython:
-        f = open(output, "wb")
-    else:
-        f = open(output, "w", newline="")
+    f = open(output, "w", newline="")
     writer = csv.writer(f, delimiter=delimiter, quotechar=quotechar, quoting=quoting)
     for data in list_data:
         writer.writerow(data)
@@ -865,7 +874,6 @@ def write_csv(output, list_data, delimiter=",", quotechar="|", quoting=csv.QUOTE
     return True
 
 
-@pyedb_function_handler()
 def filter_tuple(value, search_key1, search_key2):  # pragma: no cover
     """Filter a tuple of two elements with two search keywords."""
     ignore_case = True
@@ -889,7 +897,6 @@ def filter_tuple(value, search_key1, search_key2):  # pragma: no cover
     return False
 
 
-@pyedb_function_handler()
 def filter_string(value, search_key1):  # pragma: no cover
     """Filter a string"""
     ignore_case = True
@@ -911,7 +918,6 @@ def filter_string(value, search_key1):  # pragma: no cover
     return False
 
 
-@pyedb_function_handler()
 def recursive_glob(startpath, filepattern):  # pragma: no cover
     """Get a list of files matching a pattern, searching recursively from a start path.
 
@@ -936,7 +942,6 @@ def recursive_glob(startpath, filepattern):  # pragma: no cover
         ]
 
 
-@pyedb_function_handler()
 def number_aware_string_key(s):  # pragma: no cover
     """Get a key for sorting strings that treats embedded digit sequences as integers.
 
@@ -974,119 +979,6 @@ def number_aware_string_key(s):  # pragma: no cover
     return tuple(result)
 
 
-@pyedb_function_handler()
-def active_sessions(version=None, student_version=False, non_graphical=False):  # pragma: no cover
-    """Get information for the active AEDT sessions.
-
-    Parameters
-    ----------
-    version : str, optional
-        Version to check. The default is ``None``, in which case all versions are checked.
-        When specifying a version, you can use a three-digit format like ``"222"`` or a
-        five-digit format like ``"2022.2"``.
-    student_version : bool, optional
-    non_graphical : bool, optional
-
-
-    Returns
-    -------
-    dict
-        {AEDT PID: port}
-        If the PID corresponds to a COM session port is set to -1
-    """
-    return_dict = {}
-    if student_version:
-        keys = ["ansysedtsv.exe", "ansysedtsv"]
-    else:
-        keys = ["ansysedt.exe", "ansysedt"]
-    if version and "." in version:
-        version = version[-4:].replace(".", "")
-    if version and version < "221":
-        version = version[:2] + "." + version[2]
-    for p in psutil.process_iter():
-        try:
-            if p.name() in keys:
-                cmd = p.cmdline()
-                if non_graphical and "-ng" in cmd or not non_graphical:
-                    if not version or (version and version in cmd[0]):
-                        if "-grpcsrv" in cmd:
-                            if not version or (version and version in cmd[0]):
-                                try:
-                                    return_dict[p.pid] = int(cmd[cmd.index("-grpcsrv") + 1])
-                                except (IndexError, ValueError):
-                                    # default desktop grpc port.
-                                    return_dict[p.pid] = 50051
-                        else:
-                            return_dict[p.pid] = -1
-                            for i in psutil.net_connections():
-                                if i.pid == p.pid and (i.laddr.port > 50050 and i.laddr.port < 50200):
-                                    return_dict[p.pid] = i.laddr.port
-                                    break
-        except:
-            pass
-    return return_dict
-
-
-@pyedb_function_handler()
-def com_active_sessions(version=None, student_version=False, non_graphical=False):  # pragma: no cover
-    """Get information for the active COM AEDT sessions.
-
-    Parameters
-    ----------
-    version : str, optional
-        Version to check. The default is ``None``, in which case all versions are checked.
-        When specifying a version, you can use a three-digit format like ``"222"`` or a
-        five-digit format like ``"2022.2"``.
-    student_version : bool, optional
-        Whether to check for student version sessions. The default is ``False``.
-    non_graphical : bool, optional
-        Whether to check only for active non-graphical sessions. The default is ``False``.
-
-    Returns
-    -------
-    List
-        List of AEDT process IDs.
-    """
-
-    all_sessions = active_sessions(version, student_version, non_graphical)
-
-    return_list = []
-    for s, p in all_sessions.items():
-        if p == -1:
-            return_list.append(s)
-    return return_list
-
-
-@pyedb_function_handler()
-def grpc_active_sessions(version=None, student_version=False, non_graphical=False):  # pragma: no cover
-    """Get information for the active gRPC AEDT sessions.
-
-    Parameters
-    ----------
-    version : str, optional
-        Version to check. The default is ``None``, in which case all versions are checked.
-        When specifying a version, you can use a three-digit format like ``"222"`` or a
-        five-digit format like ``"2022.2"``.
-    student_version : bool, optional
-        Whether to check for student version sessions. The default is ``False``.
-    non_graphical : bool, optional
-        Whether to check only for active non-graphical sessions. The default is ``False``.
-
-    Returns
-    -------
-    List
-        List of gRPC ports.
-    """
-    all_sessions = active_sessions(version, student_version, non_graphical)
-
-    return_list = []
-    for _, p in all_sessions.items():
-        if p > -1:
-            return_list.append(p)
-    return return_list
-
-
-@pyedb_function_handler()
 def compute_fft(time_vals, value):  # pragma: no cover
     """Compute FFT of input transient data.
 
@@ -1321,7 +1213,6 @@ class PropsManager(object):
             self.update()
             self._app.logger.warning("Key %s not found. Trying to applying new key ", key)
 
-    @pyedb_function_handler()
     def _recursive_search(self, dict_in, key="", matching_percentage=0.8):  # pragma: no cover
         f = difflib.get_close_matches(key, list(dict_in.keys()), 1, matching_percentage)
         if f:
@@ -1339,7 +1230,6 @@ class PropsManager(object):
                             return out_val
         return False
 
-    @pyedb_function_handler()
     def _recursive_list(self, dict_in, prefix=""):  # pragma: no cover
         available_list = []
         for k, v in dict_in.items():
@@ -1364,7 +1254,6 @@ class PropsManager(object):
             return self._recursive_list(self.props)
         return []
 
-    @pyedb_function_handler()
     def update(self):
         """Update method."""
         pass
@@ -1408,10 +1297,9 @@ def install_with_pip(package_name, package_path=None, upgrade=False, uninstall=F
     uninstall : bool, optional
         Whether to install the package or uninstall the package.
     """
-    if is_linux and is_ironpython:
-        import subprocessdotnet as subprocess
-    else:
-        import subprocess
+
+    import subprocess
+
     executable = '"{}"'.format(sys.executable) if is_windows else sys.executable
 
     commands = []
@@ -1515,17 +1403,17 @@ class Help:  # pragma: no cover
 
 # class Property(property):
 #
-#     @pyedb_function_handler()
+#
 #     def getter(self, fget):
 #         """Property getter."""
 #         return self.__class__.__base__(fget, self.fset, self.fdel, self.__doc__)
 #
-#     @pyedb_function_handler()
+#
 #     def setter(self, fset):
 #         """Property setter."""
 #         return self.__class__.__base__(self.fget, fset, self.fdel, self.__doc__)
 #
-#     @pyedb_function_handler()
+#
 #     def deleter(self, fdel):
 #         """Property deleter."""
 #         return self.__class__.__base__(self.fget, self.fset, fdel, self.__doc__)

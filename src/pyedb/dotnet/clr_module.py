@@ -83,7 +83,7 @@ except ImportError:  # pragma: no cover
         )
         edb_initialized = False
     elif sys.version[0] == 3 and sys.version[1] < 7:
-        warnings.warn("EDB requires Linux Python 3.7 or later.")
+        warnings.warn("EDB requires Linux Python 3.8 or later.")
     _clr = None
     String = None
     Double = None

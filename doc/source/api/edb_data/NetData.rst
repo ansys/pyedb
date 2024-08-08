@@ -1,0 +1,32 @@
+Nets
+====
+
+Net properties
+--------------
+The following class is the container of data management for nets, extended nets and differential pairs.
+
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.nets_data
+
+.. autosummary::
+   :toctree: _autosummary
+   :nosignatures:
+
+   EDBNetsData
+   EDBNetClassData
+   EDBExtendedNetData
+   EDBDifferentialPairData
+
+.. code:: python
+
+    from pyedb import Edb
+
+    edb = Edb(myedb, edbversion="2024.2")
+
+    edb.nets["M_MA<6>"].delete()
+    edb.net_classes
+    edb.differential_pairs
+    edb.extended_nets
+
+
+    ...

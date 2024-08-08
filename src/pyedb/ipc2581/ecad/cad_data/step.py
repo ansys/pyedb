@@ -1,6 +1,28 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import math
 
-from pyedb.generic.general_methods import ET, pyedb_function_handler
+from pyedb.generic.general_methods import ET
 from pyedb.ipc2581.ecad.cad_data.component import Component
 from pyedb.ipc2581.ecad.cad_data.layer_feature import LayerFeature
 from pyedb.ipc2581.ecad.cad_data.logical_net import LogicalNet
@@ -63,7 +85,6 @@ class Step(object):
     def logical_nets(self):
         return self._logical_nets
 
-    @pyedb_function_handler()
     def add_logical_net(self, net=None):  # pragma no cover
         net_name = net.name
         logical_net = LogicalNet()
@@ -104,19 +125,16 @@ class Step(object):
             if len([phy_net for phy_net in value if isinstance(phy_net, PhyNet)]) == len(value):
                 self._physical_nets = value
 
-    @pyedb_function_handler()
     def add_physical_net(self, phy_net=None):  # pragma no cover
         if isinstance(phy_net, PhyNet):
             self._physical_nets.append(phy_net)
             return True
         return False
 
-    @pyedb_function_handler()
     def add_padstack_def(self, padstackdef=None):  # pragma no cover
         if isinstance(padstackdef, PadstackDef):
             self._padstack_defs.append(padstackdef)
 
-    @pyedb_function_handler()
     def add_component(self, component=None):  # pragma no cover
         # adding component add package in Step
         if component:
@@ -195,7 +213,6 @@ class Step(object):
                     break
         return layer_list
 
-    @pyedb_function_handler()
     def add_layer_feature(self, layer, polys):  # pragma no cover
         layer_name = layer.name
         layer_feature = LayerFeature(self._ipc)
@@ -207,7 +224,6 @@ class Step(object):
                 layer_feature.add_feature(poly)
         self._ipc.ecad.cad_data.cad_data_step.layer_features.append(layer_feature)
 
-    @pyedb_function_handler()
     def add_profile(self, poly):  # pragma no cover
         profile = LayerFeature(self._ipc)
         profile.layer_name = "profile"
@@ -216,7 +232,6 @@ class Step(object):
                 profile.add_feature(poly)
         self.profile.add_polygon(profile)
 
-    @pyedb_function_handler()
     def add_padstack_instances(self, padstack_instances, padstack_defs):  # pragma no cover
         top_bottom_layers = self._ipc.top_bottom_layers
         layers = {j.layer_name: j for j in self._ipc.ecad.cad_data.cad_data_step.layer_features}
@@ -237,14 +252,13 @@ class Step(object):
                     padstack_def = padstack_defs[pdef_name]
                     comp_name = padstack_instance.GetComponent().GetName()
                     if padstack_instance.is_pin and comp_name:
-                        component_inst = self._pedb.components.components[comp_name]
+                        component_inst = self._pedb.components.instances[comp_name]
                         layers[layer_name].add_component_padstack_instance_feature(
                             component_inst, padstack_instance, top_bottom_layers, padstack_def
                         )
                     else:
                         layers[layer_name].add_via_instance_feature(padstack_instance, padstack_def, layer_name)
 
-    @pyedb_function_handler()
     def add_drill_layer_feature(self, via_list=None, layer_feature_name=""):  # pragma no cover
         if via_list:
             drill_layer_feature = LayerFeature(self._ipc)
@@ -258,7 +272,6 @@ class Step(object):
                     pass
             self.layer_features.append(drill_layer_feature)
 
-    @pyedb_function_handler()
     def write_xml(self, cad_data):  # pragma no cover
         step = ET.SubElement(cad_data, "Step")
         step.set("name", self._ipc.design_name)

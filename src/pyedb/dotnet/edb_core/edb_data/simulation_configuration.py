@@ -1,9 +1,32 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from collections import OrderedDict
 import json
 import os
 
 from pyedb.dotnet.clr_module import Dictionary
 from pyedb.dotnet.edb_core.edb_data.sources import Source, SourceType
+from pyedb.dotnet.edb_core.utilities.simulation_setup import AdaptiveType
 from pyedb.generic.constants import (
     BasisOrder,
     CutoutSubdesignType,
@@ -12,7 +35,7 @@ from pyedb.generic.constants import (
     SweepType,
     validate_enum_class_value,
 )
-from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name
 
 
 class SimulationConfigurationBatch(object):
@@ -502,7 +525,6 @@ class SimulationConfigurationBatch(object):
             if len([src for src in value if isinstance(src, Source)]) == len(value):
                 self._sources = value
 
-    @pyedb_function_handler()
     def add_source(self, source=None):  # pragma: no cover
         """Add a new source to configuration.
 
@@ -1227,6 +1249,9 @@ class SimulationConfigurationAc(object):
         self._snap_length_threshold = "2.5um"
         self._min_plane_area_to_mesh = "4mil2"  # Newly Added
         self._mesh_sizefactor = 0.0
+        self._adaptive_type = AdaptiveType.SingleFrequency
+        self._adaptive_low_freq = "0GHz"
+        self._adaptive_high_freq = "20GHz"
 
     @property
     def sweep_interpolating(self):  # pragma: no cover
@@ -1880,6 +1905,51 @@ class SimulationConfigurationAc(object):
             if value > 0.0:
                 self._do_lambda_refinement = False
 
+    @property
+    def adaptive_type(self):
+        """HFSS adaptive type.
+
+        Returns
+        -------
+        class: pyedb.dotnet.edb_core.edb_data.simulation_setup.AdaptiveType
+        """
+        return self._adaptive_type
+
+    @adaptive_type.setter
+    def adaptive_type(self, value):
+        if isinstance(value, int) and value in range(3):
+            self._adaptive_type = value
+
+    @property
+    def adaptive_low_freq(self):
+        """HFSS broadband low frequency adaptive meshing.
+
+        Returns
+        -------
+        str
+        """
+        return self._adaptive_low_freq
+
+    @adaptive_low_freq.setter
+    def adaptive_low_freq(self, value):
+        if isinstance(value, str):
+            self._adaptive_low_freq = value
+
+    @property
+    def adaptive_high_freq(self):
+        """HFSS broadband high frequency adaptive meshing.
+
+        Returns
+        -------
+        str
+        """
+        return self._adaptive_high_freq
+
+    @adaptive_high_freq.setter
+    def adaptive_high_freq(self, value):
+        if isinstance(value, str):
+            self._adaptive_high_freq = value
+
 
 class SimulationConfiguration(object):
     """Provides an ASCII simulation configuration file parser.
@@ -2284,7 +2354,6 @@ class SimulationConfiguration(object):
         """
         return self._batch_solve_settings
 
-    @pyedb_function_handler()
     def build_simulation_project(self):
         """Build active simulation project. This method requires to be run inside Edb Class.
 
@@ -2362,7 +2431,6 @@ class SimulationConfiguration(object):
                 prop_values = [value.strip()]
             return prop_values
 
-    @pyedb_function_handler()
     def add_dc_ground_source_term(self, source_name=None, node_to_ground=1):
         """Add a dc ground source terminal for Siwave.
 
@@ -2382,25 +2450,6 @@ class SimulationConfiguration(object):
                 self._dc_source_terms_to_ground[source_name] = node_to_ground
 
     def _read_cfg(self):  # pragma: no cover
-        """Configuration file reader.
-
-        .. deprecated:: 0.6.78
-           Use :func:`import_json` instead.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> from dotnet.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-        >>> config_file = path_configuration_file
-        >>> source_file = path_to_edb_folder
-        >>> edb = Edb(source_file)
-        >>> sim_setup = SimulationConfiguration(config_file)
-        >>> edb.build_simulation_project(sim_setup)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
-        """
-
         if not self.filename or not os.path.exists(self.filename):
             # raise Exception("{} does not exist.".format(self.filename))
             return
@@ -2410,7 +2459,7 @@ class SimulationConfiguration(object):
                 cfg_lines = cfg_file.read().split("\n")
                 for line in cfg_lines:
                     if line.strip() != "":
-                        if line.find("="):
+                        if line.find("=") > 0:
                             i, prop_value = line.strip().split("=")
                             value = prop_value.replace("'", "").strip()
                             if i.lower().startswith("generatesolderballs"):
@@ -2634,7 +2683,6 @@ class SimulationConfiguration(object):
             else:
                 self.__setattr__(k, v)
 
-    @pyedb_function_handler()
     def export_json(self, output_file):
         """Export Json file from SimulationConfiguration object.
 
@@ -2664,7 +2712,6 @@ class SimulationConfiguration(object):
         else:
             return False
 
-    @pyedb_function_handler()
     def import_json(self, input_file):
         """Import Json file into SimulationConfiguration object instance.
 
@@ -2693,7 +2740,6 @@ class SimulationConfiguration(object):
         else:
             return False
 
-    @pyedb_function_handler()
     def add_voltage_source(
         self,
         name="",
@@ -2765,7 +2811,6 @@ class SimulationConfiguration(object):
         except:  # pragma: no cover
             return False
 
-    @pyedb_function_handler()
     def add_current_source(
         self,
         name="",
@@ -2837,7 +2882,6 @@ class SimulationConfiguration(object):
         except:  # pragma: no cover
             return False
 
-    @pyedb_function_handler()
     def add_rlc(
         self,
         name="",

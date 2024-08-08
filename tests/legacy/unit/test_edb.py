@@ -1,5 +1,29 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
 import os
 
+from mock import MagicMock, PropertyMock, patch
 import pytest
 
 from pyedb.dotnet.edb import Edb
@@ -15,7 +39,10 @@ class TestClass:
 
     def test_create_edb(self):
         """Create EDB."""
-        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        edb = Edb(
+            os.path.join(self.local_scratch.path, "temp.aedb"),
+            edbversion=desktop_version,
+        )
         assert edb
         assert edb.active_layout
         edb.close()
@@ -32,7 +59,10 @@ class TestClass:
         """Evaluate variables value."""
         from pyedb.generic.general_methods import check_numeric_equivalence
 
-        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        edb = Edb(
+            os.path.join(self.local_scratch.path, "temp.aedb"),
+            edbversion=desktop_version,
+        )
         edb["var1"] = 0.01
         edb["var2"] = "10um"
         edb["var3"] = [0.03, "test description"]
@@ -49,7 +79,10 @@ class TestClass:
 
     def test_add_design_variable(self):
         """Add a variable value."""
-        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        edb = Edb(
+            os.path.join(self.local_scratch.path, "temp.aedb"),
+            edbversion=desktop_version,
+        )
         is_added, _ = edb.add_design_variable("ant_length", "1cm")
         assert is_added
         is_added, _ = edb.add_design_variable("ant_length", "1cm")
@@ -65,14 +98,20 @@ class TestClass:
 
     def test_add_design_variable_with_setitem(self):
         """Add a variable value."""
-        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        edb = Edb(
+            os.path.join(self.local_scratch.path, "temp.aedb"),
+            edbversion=desktop_version,
+        )
         edb["ant_length"] = "1cm"
         assert edb.variable_exists("ant_length")[0]
         assert edb["ant_length"].value == 0.01
 
     def test_change_design_variable_value(self):
         """Change a variable value."""
-        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        edb = Edb(
+            os.path.join(self.local_scratch.path, "temp.aedb"),
+            edbversion=desktop_version,
+        )
         edb.add_design_variable("ant_length", "1cm")
         edb.add_design_variable("my_parameter_default", "1mm", is_parameter=True)
         edb.add_design_variable("$my_project_variable", "1mm")
@@ -90,7 +129,10 @@ class TestClass:
 
     def test_change_design_variable_value_with_setitem(self):
         """Change a variable value."""
-        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        edb = Edb(
+            os.path.join(self.local_scratch.path, "temp.aedb"),
+            edbversion=desktop_version,
+        )
         edb["ant_length"] = "1cm"
         assert edb["ant_length"].value == 0.01
         edb["ant_length"] = "2cm"
@@ -98,7 +140,10 @@ class TestClass:
 
     def test_create_padstack_instance(self):
         """Create padstack instances."""
-        edb = Edb(os.path.join(self.local_scratch.path, "temp.aedb"), edbversion=desktop_version)
+        edb = Edb(
+            os.path.join(self.local_scratch.path, "temp.aedb"),
+            edbversion=desktop_version,
+        )
 
         pad_name = edb.padstacks.create(
             pad_shape="Rectangle",
@@ -125,3 +170,67 @@ class TestClass:
         )
         pad_name == "test2"
         edb.close()
+
+    @patch("os.path.isfile")
+    @patch("os.unlink")
+    @patch(
+        "pyedb.dotnet.edb_core.dotnet.database.EdbDotNet.logger",
+        new_callable=PropertyMock,
+    )
+    def test_conflict_files_removal_success(self, mock_logger, mock_unlink, mock_isfile):
+        logger_mock = MagicMock()
+        mock_logger.return_value = logger_mock
+        mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
+
+        edbpath = "file.edb"
+        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+        files = [aedt_file, aedt_file + ".lock"]
+        _ = Edb(edbpath, remove_existing_aedt=True)
+
+        for file in files:
+            mock_unlink.assert_any_call(file)
+            logger_mock.info.assert_any_call(f"Deleted AEDT project-related file {file}.")
+
+    @patch("os.path.isfile")
+    @patch("os.unlink")
+    @patch(
+        "pyedb.dotnet.edb_core.dotnet.database.EdbDotNet.logger",
+        new_callable=PropertyMock,
+    )
+    def test_conflict_files_removal_failure(self, mock_logger, mock_unlink, mock_isfile):
+        logger_mock = MagicMock()
+        mock_logger.return_value = logger_mock
+        mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
+        mock_unlink.side_effect = Exception("Could not delete file")
+
+        edbpath = "file.edb"
+        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+        files = [aedt_file, aedt_file + ".lock"]
+        _ = Edb(edbpath, remove_existing_aedt=True)
+
+        for file in files:
+            mock_unlink.assert_any_call(file)
+            logger_mock.info.assert_any_call(f"Failed to delete AEDT project-related file {file}.")
+
+    @patch("os.path.isfile")
+    @patch("os.unlink")
+    @patch(
+        "pyedb.dotnet.edb_core.dotnet.database.EdbDotNet.logger",
+        new_callable=PropertyMock,
+    )
+    def test_conflict_files_leave_in_place(self, mock_logger, mock_unlink, mock_isfile):
+        logger_mock = MagicMock()
+        mock_logger.return_value = logger_mock
+        mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
+        mock_unlink.side_effect = Exception("Could not delete file")
+
+        edbpath = "file.edb"
+        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+        files = [aedt_file, aedt_file + ".lock"]
+        _ = Edb(edbpath)
+
+        mock_unlink.assert_not_called()
+        for file in files:
+            logger_mock.warning.assert_any_call(
+                f"AEDT project-related file {file} exists and may need to be deleted before opening the EDB in HFSS 3D Layout."  # noqa: E501
+            )

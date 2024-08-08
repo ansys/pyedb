@@ -1,3 +1,25 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 This module contains these classes: `CSVDataset`, `DataSet`, `Expression`, `Variable`, and `VariableManager`.
 
@@ -32,7 +54,6 @@ from pyedb.generic.general_methods import (
     is_array,
     is_number,
     open_file,
-    pyedb_function_handler,
 )
 
 
@@ -151,7 +172,6 @@ class CSVDataset:
 
         pass
 
-    @pyedb_function_handler()
     def __getitem__(self, item):  # pragma: no cover
         variable_list = item.split(",")
         data_out = CSVDataset()
@@ -166,7 +186,6 @@ class CSVDataset:
             data_out._header.append(variable)
         return data_out
 
-    @pyedb_function_handler()
     def __add__(self, other):  # pragma: no cover
         assert self.number_of_columns == other.number_of_columns, "Inconsistent number of columns"
         # Create a new object to return, avoiding changing the original inputs
@@ -236,7 +255,6 @@ class CSVDataset:
         return self.__next__()
 
 
-@pyedb_function_handler()
 def _find_units_in_dependent_variables(variable_value, full_variables={}):  # pragma: no cover
     m2 = re.findall(r"[0-9.]+ *([a-z_A-Z]+)", variable_value)
     if len(m2) > 0:
@@ -255,7 +273,6 @@ def _find_units_in_dependent_variables(variable_value, full_variables={}):  # pr
     return ""
 
 
-@pyedb_function_handler()
 def decompose_variable_value(variable_value, full_variables={}):  # pragma: no cover
     """Decompose a variable value.
 
@@ -298,7 +315,6 @@ def decompose_variable_value(variable_value, full_variables={}):  # pragma: no c
     return float_value, units
 
 
-@pyedb_function_handler()
 def _generate_property_validation_errors(property_name, expected, actual):  # pragma: no cover
     expected_value, expected_unit = decompose_variable_value(expected)
     actual_value, actual_unit = decompose_variable_value(actual)
@@ -313,7 +329,6 @@ def _generate_property_validation_errors(property_name, expected, actual):  # pr
             yield "Error {0}: Expected {1}, got {2}".format(property_name, expected, actual)
 
 
-@pyedb_function_handler()
 def generate_validation_errors(property_names, expected_settings, actual_settings):  # pragma: no cover
     """From the given property names, expected settings and actual settings, return a list of validation errors.
     If no errors are found, an empty list is returned. The validation of values such as "10mm"
@@ -459,7 +474,6 @@ class VariableManager(object):
         """
         return self._variable_dict([self._odesign, self._oproject])
 
-    @pyedb_function_handler()
     def decompose(self, variable_value):  # pragma: no cover
         """Decompose a variable string to a floating with its unit.
 
@@ -811,21 +825,17 @@ class VariableManager(object):
         all.update(self._dependent_variables)
         return all
 
-    @pyedb_function_handler()
     def __delitem__(self, key):  # pragma: no cover
         """Implement del with array name or index."""
         self.delete_variable(key)
 
-    @pyedb_function_handler()
     def __getitem__(self, variable_name):  # pragma: no cover
         return self.variables[variable_name]
 
-    @pyedb_function_handler()
     def __setitem__(self, variable, value):  # pragma: no cover
         self.set_variable(variable, value)
         return True
 
-    @pyedb_function_handler()
     def _cleanup_variables(self):  # pragma: no cover
         variables = self._get_var_list_from_aedt(self._app.odesign) + self._get_var_list_from_aedt(self._app.oproject)
         all_dicts = [
@@ -839,7 +849,6 @@ class VariableManager(object):
                 if var_name not in variables:
                     del dict_var[var_name]
 
-    @pyedb_function_handler()
     def _variable_dict(self, object_list, dependent=True, independent=True):  # pragma: no cover
         """Retrieve the variable dictionary.
 
@@ -895,7 +904,7 @@ class VariableManager(object):
         return vars_to_output
 
     # TODO: Should be renamed to "evaluate"
-    @pyedb_function_handler()
+
     def get_expression(self, variable_name):  # pragma: no cover
         """Retrieve the variable value of a project or design variable as a string.
 
@@ -914,7 +923,6 @@ class VariableManager(object):
         else:
             return False
 
-    @pyedb_function_handler()
     def aedt_object(self, variable):  # pragma: no cover
         """Retrieve an AEDT object.
 
@@ -929,7 +937,6 @@ class VariableManager(object):
         else:
             return self._odesign
 
-    @pyedb_function_handler()
     def set_variable(
         self,
         variable_name,
@@ -1158,7 +1165,6 @@ class VariableManager(object):
             return False
         return True
 
-    @pyedb_function_handler()
     def delete_separator(self, separator_name):  # pragma: no cover
         """Delete a separator from either the active project or design.
 
@@ -1199,7 +1205,6 @@ class VariableManager(object):
                 pass
         return False
 
-    @pyedb_function_handler()
     def delete_variable(self, var_name):  # pragma: no cover
         """Delete a variable.
 
@@ -1243,7 +1248,6 @@ class VariableManager(object):
                 return True
         return False
 
-    @pyedb_function_handler()
     def _get_var_list_from_aedt(self, desktop_object):  # pragma: no cover
         var_list = []
         if self._app._is_object_oriented_enabled() and self._app.design_type != "Maxwell Circuit":
@@ -1362,7 +1366,6 @@ class Variable(object):
             return self._app._odesign
         return None
 
-    @pyedb_function_handler()
     def _update_var(self):  # pragma: no cover
         if self._app:
             return self._app.variable_manager.set_variable(
@@ -1376,7 +1379,6 @@ class Variable(object):
             )
         return False
 
-    @pyedb_function_handler()
     def _set_prop_val(self, prop, val, n_times=10):  # pragma: no cover
         if self._app.design_type == "Maxwell Circuit":
             return
@@ -1408,7 +1410,6 @@ class Variable(object):
         except:
             pass
 
-    @pyedb_function_handler()
     def _get_prop_val(self, prop):  # pragma: no cover
         if self._app.design_type == "Maxwell Circuit":
             return
@@ -1690,7 +1691,6 @@ class Variable(object):
         """
         return ("{}{}").format(self.numeric_value, self._units)
 
-    @pyedb_function_handler()
     def decompose(self):  # pragma: no cover
         """Decompose a variable value to a floating with its unit.
 
@@ -1709,7 +1709,6 @@ class Variable(object):
         """
         return decompose_variable_value(self.evaluated_value)
 
-    @pyedb_function_handler()
     def rescale_to(self, units):  # pragma: no cover
         """Rescale the expression to a new unit within the current unit system.
 
@@ -1737,7 +1736,6 @@ class Variable(object):
         self._units = units
         return self
 
-    @pyedb_function_handler()
     def format(self, format):  # pragma: no cover
         """Retrieve the string value with the specified numerical formatting.
 
@@ -1764,7 +1762,6 @@ class Variable(object):
         """
         return ("{0:" + format + "}{1}").format(self.numeric_value, self._units)
 
-    @pyedb_function_handler()
     def __mul__(self, other):  # pragma: no cover
         """Multiply the variable with a number or another variable and return a new object.
 
@@ -1823,7 +1820,6 @@ class Variable(object):
 
     __rmul__ = __mul__
 
-    @pyedb_function_handler()
     def __add__(self, other):  # pragma: no cover
         """Add the variable to another variable to return a new object.
 
@@ -1864,7 +1860,6 @@ class Variable(object):
 
         return result_variable
 
-    @pyedb_function_handler()
     def __sub__(self, other):  # pragma: no cover
         """Subtract another variable from the variable to return a new object.
 
@@ -1907,7 +1902,7 @@ class Variable(object):
         return result_variable
 
     # Python 3.x version
-    @pyedb_function_handler()
+
     def __truediv__(self, other):  # pragma: no cover
         """Divide the variable by a number or another variable to return a new object.
 
@@ -1947,11 +1942,10 @@ class Variable(object):
         return Variable("{}{}".format(result_value, result_units))
 
     # Python 2.7 version
-    @pyedb_function_handler()
+
     def __div__(self, other):  # pragma: no cover
         return self.__truediv__(other)
 
-    @pyedb_function_handler()
     def __rtruediv__(self, other):  # pragma: no cover
         """Divide another object by this object.
 
@@ -1990,7 +1984,7 @@ class Variable(object):
         return Variable("{}{}".format(result_value, result_units))
 
     # # Python 2.7 version
-    # @pyedb_function_handler()
+    #
     # def __div__(self, other):
     #     return self.__rtruediv__(other)
 
@@ -2034,7 +2028,6 @@ class DataSet(object):
         self.zunit = zunit
         self.vunit = vunit
 
-    @pyedb_function_handler()
     def _args(self):  # pragma: no cover
         """Retrieve arguments."""
         arg = []
@@ -2074,7 +2067,6 @@ class DataSet(object):
         arg.append(arg2)
         return arg
 
-    @pyedb_function_handler()
     def create(self):  # pragma: no cover
         """Create a dataset.
 
@@ -2095,7 +2087,6 @@ class DataSet(object):
             self._app._odesign.AddDataset(self._args())
         return True
 
-    @pyedb_function_handler()
     def add_point(self, x, y, z=None, v=None):  # pragma: no cover
         """Add a point to the dataset.
 
@@ -2129,7 +2120,6 @@ class DataSet(object):
 
         return self.update()
 
-    @pyedb_function_handler()
     def remove_point_from_x(self, x):  # pragma: no cover
         """Remove a point from an X-axis value.
 
@@ -2154,7 +2144,6 @@ class DataSet(object):
         id_to_remove = self.x.index(x)
         return self.remove_point_from_index(id_to_remove)
 
-    @pyedb_function_handler()
     def remove_point_from_index(self, id_to_remove):  # pragma: no cover
         """Remove a point from an index.
 
@@ -2184,7 +2173,6 @@ class DataSet(object):
         self._app.logger.error("cannot Remove {} index.".format(id_to_remove))
         return False
 
-    @pyedb_function_handler()
     def update(self):  # pragma: no cover
         """Update the dataset.
 
@@ -2208,7 +2196,6 @@ class DataSet(object):
             self._app._odesign.EditDataset(self.name, self._args())
         return True
 
-    @pyedb_function_handler()
     def delete(self):  # pragma: no cover
         """Delete the dataset.
 
@@ -2231,7 +2218,6 @@ class DataSet(object):
             del self._app.project_datasets[self.name]
         return True
 
-    @pyedb_function_handler()
     def export(self, dataset_path=None):  # pragma: no cover
         """Export the dataset.
 

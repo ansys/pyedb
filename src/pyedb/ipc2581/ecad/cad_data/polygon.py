@@ -1,6 +1,28 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import math
 
-from pyedb.generic.general_methods import ET, pyedb_function_handler
+from pyedb.generic.general_methods import ET
 
 
 class Polygon(object):
@@ -11,7 +33,6 @@ class Polygon(object):
         self.solid_fill_id = ""
         self.cutout = []
 
-    @pyedb_function_handler()
     def add_poly_step(self, polygon=None):  # pragma no cover
         if polygon:
             polygon_data = polygon.GetPolygonData()
@@ -74,13 +95,11 @@ class Polygon(object):
                                 new_poly_step.clock_wise = not void_arc.IsCCW()
                                 void_polygon.poly_steps.append(new_poly_step)
 
-    @pyedb_function_handler()
     def add_cutout(self, cutout):  # pragma no cover
         if not isinstance(cutout, Cutout):
             return False
         self.cutout.append(cutout)
 
-    @pyedb_function_handler()
     def write_xml(self, root_net):  # pragma no cover
         if not self.poly_steps:
             return
@@ -104,7 +123,6 @@ class Cutout(object):
         self._ipc = ipc
         self.poly_steps = []
 
-    @pyedb_function_handler()
     def write_xml(self, contour, ipc):  # pragma no cover
         cutout = ET.SubElement(contour, "Cutout")
         cutout_begin = ET.SubElement(cutout, "PolyBegin")
@@ -133,7 +151,6 @@ class PolyStep(object):
         self.center_y = 0.0
         self.clock_wise = False
 
-    @pyedb_function_handler()
     def write_xml(self, polygon, ipc):  # pragma no cover
         if self.poly_type == 0:
             poly = ET.SubElement(polygon, "PolyStepSegment")

@@ -16,16 +16,10 @@ def search_files(dirname, pattern="*"):
     -------
     list
     """
-    from pyedb.generic.general_methods import is_ironpython
 
-    if is_ironpython:
-        import glob
+    import pathlib
 
-        return list(glob.glob(os.path.join(dirname, pattern)))
-    else:
-        import pathlib
-
-        return [os.path.abspath(i) for i in pathlib.Path(dirname).glob(pattern)]
+    return [os.path.abspath(i) for i in pathlib.Path(dirname).glob(pattern)]
 
 
 def my_location():
@@ -108,7 +102,7 @@ class Scratch:
 
         return dst_file
 
-    def copyfolder(self, src_folder, destfolder):
+    def copyfolder(self, src_folder, destfolder=None):
         """
 
         Parameters
@@ -124,8 +118,12 @@ class Scratch:
         """
         from distutils.dir_util import copy_tree
 
-        copy_tree(src_folder, destfolder)
-        return True
+        if destfolder:
+            copy_tree(src_folder, destfolder)
+        else:
+            destfolder = os.path.join(self.path, os.path.split(src_folder)[-1])
+            copy_tree(src_folder, destfolder)
+        return destfolder
 
     def __enter__(self):
         return self

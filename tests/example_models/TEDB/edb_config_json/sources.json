@@ -5,10 +5,10 @@
       "reference_designator": "U2",
       "type": "voltage",
       "magnitude": 1,
-      "from": {
+      "positive_terminal": {
         "net": "1V0"
       },
-      "to": {
+      "negative_terminal": {
         "net": "GND"
       }
     },
@@ -17,10 +17,10 @@
       "reference_designator": "U1",
       "type": "current",
       "magnitude": 1,
-      "from": {
+      "positive_terminal": {
         "net": "1V0"
       },
-      "to": {
+      "negative_terminal": {
         "net": "GND"
       }
     },
@@ -29,10 +29,10 @@
       "reference_designator": "U4",
       "type": "voltage",
       "magnitude": 2.5,
-      "from": {
+      "positive_terminal": {
         "net": "2V5"
       },
-      "to": {
+      "negative_terminal": {
         "net": "GND"
       }
     },
@@ -41,10 +41,10 @@
       "reference_designator": "U1",
       "type": "current",
       "magnitude": 1,
-      "from": {
+      "positive_terminal": {
         "net": "2V5"
       },
-      "to": {
+      "negative_terminal": {
         "net": "GND"
       }
     },
@@ -53,10 +53,10 @@
       "reference_designator": "U11",
       "type": "current",
       "magnitude": 1,
-      "from": {
+      "positive_terminal": {
         "pin": "1"
       },
-      "to": {
+      "negative_terminal": {
         "pin": "11"
       }
     }

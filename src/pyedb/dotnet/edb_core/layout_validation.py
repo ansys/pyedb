@@ -1,8 +1,30 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import re
 
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.primitives_data import EDBPrimitives
-from pyedb.generic.general_methods import generate_unique_name, pyedb_function_handler
+from pyedb.generic.general_methods import generate_unique_name
 
 
 class LayoutValidation:
@@ -11,7 +33,6 @@ class LayoutValidation:
     def __init__(self, pedb):
         self._pedb = pedb
 
-    @pyedb_function_handler()
     def dc_shorts(self, net_list=None, fix=False):
         """Find DC shorts on layout.
 
@@ -73,7 +94,7 @@ class LayoutValidation:
             all_shorted_nets.append(net)
             if net_dc_shorts:
                 dc_nets = list(set([obj.net.name for obj in net_dc_shorts]))
-                dc_nets =  [i for i in dc_nets if i != net]
+                dc_nets = [i for i in dc_nets if i != net]
                 for dc in dc_nets:
                     if dc:
                         dc_shorts.append([net, dc])
@@ -96,10 +117,9 @@ class LayoutValidation:
                     rename_shorts = [i for i in net_dc_shorts if i._edb_object.GetNet().GetName() != temp_name]
                     for i in rename_shorts:
                         i._edb_object.SetNet(self._pedb.nets.nets[temp_name].net_obj)
-                        #i.net = temp_name
+                        # i.net = temp_name
         return dc_shorts
 
-    @pyedb_function_handler()
     def disjoint_nets(
         self,
         net_list=None,
@@ -237,6 +257,32 @@ class LayoutValidation:
         self._pedb._logger.info_timer("Disjoint Cleanup Completed.", timer_start)
 
         return new_nets
+
+    def fix_self_intersections(self, net_list=None):
+        """Find and fix self intersections from a given netlist.
+
+        Parameters
+        ----------
+        net_list : str, list, optional
+            List of nets on which check disjoints. If `None` is provided then the algorithm will loop on all nets.
+
+        Returns
+        -------
+        bool
+        """
+        if not net_list:
+            net_list = list(self._pedb.nets.keys())
+        elif isinstance(net_list, str):
+            net_list = [net_list]
+        new_prims = []
+        for prim in self._pedb.modeler.polygons:
+            if prim.net_name in net_list:
+                new_prims.extend(prim.fix_self_intersections())
+        if new_prims:
+            self._pedb._logger.info("Self-intersections detected and removed.")
+        else:
+            self._pedb._logger.info("Self-intersection not found.")
+        return True
 
     def illegal_net_names(self, fix=False):
         """Find and fix illegal net names."""
