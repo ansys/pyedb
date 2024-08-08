@@ -240,9 +240,7 @@ class EdbPadstacks(object):
         padstack_instances = {}
         for _, edb_padstack_instance in self.instances.items():
             if edb_padstack_instance.aedt_name:
-                padstack_instances[edb_padstack_instance.aedt_name] = EDBPadstackInstance(
-                    edb_padstack_instance, self._pedb
-                )
+                padstack_instances[edb_padstack_instance.aedt_name] = edb_padstack_instance
         return padstack_instances
 
     def find_instance_by_id(self, value: int):
@@ -1208,7 +1206,7 @@ class EdbPadstacks(object):
                 solderlayer,
                 None,
             )
-            padstack_instance.SetIsLayoutPin(is_pin)
+            padstack_instance.is_layout_pin = is_pin
             py_padstack_instance = EDBPadstackInstance(padstack_instance.api_object, self._pedb)
 
             return py_padstack_instance

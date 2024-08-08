@@ -22,6 +22,7 @@
 
 from pyedb.dotnet.edb_core.geometry.point_data import PointData
 from pyedb.dotnet.edb_core.utilities.obj_base import BBox
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 
 
 class PolygonData:
@@ -99,3 +100,17 @@ class PolygonData:
         new_poly = self._edb_object.Expand(offset, tolerance, round_corners, maximum_corner_extension)
         self._edb_object = new_poly[0]
         return True
+
+    def create_from_arcs(self, arcs, flag):
+        """Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.
+
+        Parameters
+        ----------
+        arcs : list or `Edb.Geometry.ArcData`
+            List of ArcData.
+        flag : bool
+        """
+        if isinstance(arcs, list):
+            arcs = convert_py_list_to_net_list(arcs)
+        poly = self._edb_object.CreateFromArcs(arcs, flag)
+        return PolygonData(self._pedb, poly)

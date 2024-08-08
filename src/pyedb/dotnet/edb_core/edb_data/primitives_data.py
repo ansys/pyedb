@@ -93,7 +93,7 @@ class EdbPolygon(Primitive):
         -------
         bool
         """
-        return self.polygon_data.edb_api.HasSelfIntersections()
+        return self.polygon_data._edb_object.HasSelfIntersections()
 
     def fix_self_intersections(self):
         """Remove self intersections if they exists.
@@ -165,9 +165,9 @@ class EdbPolygon(Primitive):
             _vector = self._edb.Geometry.PointData(
                 self._edb.Utility.Value(vector[0]), self._edb.Utility.Value(vector[1])
             )
-            polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(self.polygon_data.edb_api.GetArcData(), True)
+            polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(self.polygon_data._edb_object.GetArcData(), True)
             polygon_data.Move(_vector)
-            return self.api_object.SetPolygonData(polygon_data)
+            return self._edb_object.SetPolygonData(polygon_data)
         return False
 
     def rotate(self, angle, center=None):
@@ -193,18 +193,18 @@ class EdbPolygon(Primitive):
         >>>     polygon.rotate(angle=45)
         """
         if angle:
-            polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(self.polygon_data.edb_api.GetArcData(), True)
+            polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(self.polygon_data._edb_object.GetArcData(), True)
             if not center:
                 center = polygon_data.GetBoundingCircleCenter()
                 if center:
                     polygon_data.Rotate(angle * math.pi / 180, center)
-                    return self.api_object.SetPolygonData(polygon_data)
+                    return self._edb_object.SetPolygonData(polygon_data)
             elif isinstance(center, list) and len(center) == 2:
                 center = self._edb.Geometry.PointData(
                     self._edb.Utility.Value(center[0]), self._edb.Utility.Value(center[1])
                 )
                 polygon_data.Rotate(angle * math.pi / 180, center)
-                return self.api_object.SetPolygonData(polygon_data)
+                return self._edb_object.SetPolygonData(polygon_data)
         return False
 
     def move_layer(self, layer):
@@ -221,7 +221,7 @@ class EdbPolygon(Primitive):
            ``True`` when successful, ``False`` when failed.
         """
         if layer and isinstance(layer, str) and layer in self._pedb.stackup.signal_layers:
-            polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(self.polygon_data.edb_api.GetArcData(), True)
+            polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(self.polygon_data._edb_object.GetArcData(), True)
             moved_polygon = self._pedb.modeler.create_polygon(
                 main_shape=polygon_data, net_name=self.net_name, layer_name=layer
             )

@@ -507,9 +507,9 @@ class TestClass:
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "edge_ports.aedb"),
             edbversion=desktop_version,
         )
-        poly_list = [poly for poly in edb.layout.primitives if int(poly.GetPrimitiveType()) == 2]
-        port_poly = [poly for poly in poly_list if poly.GetId() == 17][0]
-        ref_poly = [poly for poly in poly_list if poly.GetId() == 19][0]
+        poly_list = [poly for poly in edb.layout.primitives if int(poly._edb_object.GetPrimitiveType()) == 2]
+        port_poly = [poly for poly in poly_list if poly.id == 17][0]
+        ref_poly = [poly for poly in poly_list if poly.id == 19][0]
         port_location = [-65e-3, -13e-3]
         ref_location = [-63e-3, -13e-3]
         assert edb.hfss.create_edge_port_on_polygon(
@@ -518,8 +518,8 @@ class TestClass:
             terminal_point=port_location,
             reference_point=ref_location,
         )
-        port_poly = [poly for poly in poly_list if poly.GetId() == 23][0]
-        ref_poly = [poly for poly in poly_list if poly.GetId() == 22][0]
+        port_poly = [poly for poly in poly_list if poly.id == 23][0]
+        ref_poly = [poly for poly in poly_list if poly.id == 22][0]
         port_location = [-65e-3, -10e-3]
         ref_location = [-65e-3, -10e-3]
         assert edb.hfss.create_edge_port_on_polygon(
@@ -528,7 +528,7 @@ class TestClass:
             terminal_point=port_location,
             reference_point=ref_location,
         )
-        port_poly = [poly for poly in poly_list if poly.GetId() == 25][0]
+        port_poly = [poly for poly in poly_list if poly.id == 25][0]
         port_location = [-65e-3, -7e-3]
         assert edb.hfss.create_edge_port_on_polygon(
             polygon=port_poly, terminal_point=port_location, reference_layer="gnd"
@@ -1265,9 +1265,7 @@ class TestClass:
 
     def test_hfss_extent_info(self):
         """HFSS extent information."""
-        from pyedb.dotnet.edb_core.edb_data.primitives_data import (
-            EDBPrimitives as EDBPrimitives,
-        )
+        from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
 
         config = {
             "air_box_horizontal_extent_enabled": False,
@@ -1298,7 +1296,7 @@ class TestClass:
         for i, j in exported_config.items():
             if not i in config:
                 continue
-            if isinstance(j, EDBPrimitives):
+            if isinstance(j, Primitive):
                 assert j.id == config[i].id
             elif isinstance(j, EdbValue):
                 assert j.tofloat == hfss_extent_info._get_edb_value(config[i]).ToDouble()

@@ -1134,7 +1134,7 @@ class Components(object):
                                     self.create_port_on_pins(
                                         component,
                                         [EDBPadstackInstance(pin, self._pedb).name],
-                                        [EDBPadstackInstance(ref_pin[0], self._pedb).id],
+                                        [EDBPadstackInstance(ref_pin[0]._edb_object, self._pedb).id],
                                     )
                             else:
                                 self._logger.error("Skipping port creation no reference pin found.")
@@ -1505,7 +1505,7 @@ class Components(object):
                 return None
             ind = 1
             for pin in pins:
-                if not pin.GetName():
+                if not pin.name:
                     pin.SetName(str(ind))
                 ind += 1
                 componentDefinitionPin = self._pedb.edb_api.definition.ComponentDefPin.Create(

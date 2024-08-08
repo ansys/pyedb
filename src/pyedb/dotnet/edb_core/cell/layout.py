@@ -292,7 +292,7 @@ class Layout(ObjBase):
             elif obj.GetPrimitiveType().ToString() == "Path":
                 return Path(self._pedb, obj)
             elif obj.GetPrimitiveType().ToString() == "Bondwire":
-                return Bondwire(obj, self._pedb)
+                return Bondwire( self._pedb, obj)
             elif obj.GetPrimitiveType().ToString() == "Text":
                 return EdbText(obj, self._pedb)
             elif obj.GetPrimitiveType().ToString() == "PrimitivePlugin":

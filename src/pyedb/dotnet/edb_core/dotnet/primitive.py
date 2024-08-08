@@ -57,6 +57,330 @@ class PrimitiveDotNet:
         self.edb_api = api._edb
         self.prim_obj = prim_object
 
+    @property
+    def api_class(self):
+        return self.api
+
+    @property
+    def api_object(self):
+        return self.prim_obj
+
+    @property
+    def path(self):
+        return PathDotNet(self._app)
+
+    @property
+    def rectangle(self):
+        return RectangleDotNet(self._app)
+
+    @property
+    def circle(self):
+        return CircleDotNet(self._app)
+
+    @property
+    def text(self):
+        return TextDotNet(self._app)
+
+    @property
+    def bondwire(self):
+        return BondwireDotNet(self._app)
+
+    @property
+    def padstack_instance(self):
+        return PadstackInstanceDotNet(self._app)
+
+    @property
+    def net(self):
+        return self.prim_obj.GetNet()
+
+    @net.setter
+    def net(self, value):
+        try:
+            if "net" in dir(value):
+                self.prim_obj.SetNet(value.net_obj)
+            else:
+                self.prim_obj.SetNet(value)
+        except TypeError:
+            self._app.logger.error("Error setting net object")
+
+
+
+    @property
+    def primitive_type(self):
+        """:class:`PrimitiveType`: Primitive type of the primitive.
+
+        Read-Only.
+        """
+        return self.prim_obj.GetPrimitiveType()
+
+    def add_void(self, point_list):
+        """Add a void to current primitive.
+
+        Parameters
+        ----------
+        point_list : list or :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives` \
+            or EDB Primitive Object. Point list in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
+
+        Returns
+        -------
+        bool
+            ``True`` if successful, either  ``False``.
+        """
+        if isinstance(point_list, list):
+            plane = self._app.modeler.Shape("polygon", points=point_list)
+            _poly = self._app.modeler.shape_to_polygon_data(plane)
+            if _poly is None or _poly.IsNull() or _poly is False:
+                self._logger.error("Failed to create void polygon data")
+                return False
+            point_list = self._app.edb_api.cell.primitive.polygon.create(
+                self._app.active_layout, self.layer_name, self.prim_obj.GetNet(), _poly
+            ).prim_obj
+        elif "prim_obj" in dir(point_list):
+            point_list = point_list.prim_obj
+        elif "primitive_obj" in dir(point_list):
+            point_list = point_list.primitive_obj
+        return self.prim_obj.AddVoid(point_list)
+
+    def set_hfss_prop(self, material, solve_inside):
+        """Set HFSS properties.
+
+        Parameters
+        ----------
+        material : str
+            Material property name to be set.
+        solve_inside : bool
+            Whether to do solve inside.
+        """
+        self.prim_obj.SetHfssProp(material, solve_inside)
+
+    @property
+    def layer(self):
+        """:class:`Layer <ansys.edb.layer.Layer>`: Layer that the primitive object is on."""
+        layer_msg = self.prim_obj.GetLayer()
+        return layer_msg
+
+    @layer.setter
+    def layer(self, layer):
+        self.prim_obj.SetLayer(layer)
+
+    @property
+    def is_negative(self):
+        """:obj:`bool`: If the primitive is negative."""
+        return self.prim_obj.GetIsNegative()
+
+    @is_negative.setter
+    def is_negative(self, is_negative):
+        self.prim_obj.SetIsNegative(is_negative)
+
+    @property
+    def is_void(self):
+        """:obj:`bool`: If a primitive is a void."""
+        return self.prim_obj.IsVoid()
+
+    @property
+    def has_voids(self):
+        """:obj:`bool`: If a primitive has voids inside.
+
+        Read-Only.
+        """
+        return self.prim_obj.HasVoids()
+
+    @property
+    def voids(self):
+        """:obj:`list` of :class:`Primitive <ansys.edb.primitive.Primitive>`: List of void\
+        primitive objects inside the primitive.
+
+        Read-Only.
+        """
+        return [cast(self._app, void) for void in self.prim_obj.Voids]
+
+    @property
+    def owner(self):
+        """:class:`Primitive <ansys.edb.primitive.Primitive>`: Owner of the primitive object.
+
+        Read-Only.
+        """
+        return cast(self._app, self.prim_obj)
+
+    @property
+    def is_parameterized(self):
+        """:obj:`bool`: Primitive's parametrization.
+
+        Read-Only.
+        """
+        return self.prim_obj.IsParameterized()
+
+    def get_hfss_prop(self):
+        """
+        Get HFSS properties.
+
+        Returns
+        -------
+        material : str
+            Material property name.
+        solve_inside : bool
+            If solve inside.
+        """
+        material = ""
+        solve_inside = True
+        self.prim_obj.GetHfssProp(material, solve_inside)
+        return material, solve_inside
+
+    def remove_hfss_prop(self):
+        """Remove HFSS properties."""
+        self.prim_obj.RemoveHfssProp()
+
+    @property
+    def is_zone_primitive(self):
+        """:obj:`bool`: If primitive object is a zone.
+
+        Read-Only.
+        """
+        return self.prim_obj.IsZonePrimitive()
+
+    @property
+    def can_be_zone_primitive(self):
+        """:obj:`bool`: If a primitive can be a zone.
+
+        Read-Only.
+        """
+        return True
+
+    def make_zone_primitive(self, zone_id):
+        """Make primitive a zone primitive with a zone specified by the provided id.
+
+        Parameters
+        ----------
+        zone_id : int
+            Id of zone primitive will use.
+
+        """
+        self.prim_obj.MakeZonePrimitive(zone_id)
+
+    def _get_points_for_plot(self, my_net_points, num):
+        """
+        Get the points to be plot
+        """
+        # fmt: off
+        x = []
+        y = []
+        for i, point in enumerate(my_net_points):
+            # point = my_net_points[i]
+            if not point.IsArc():
+                x.append(point.X.ToDouble())
+                y.append(point.Y.ToDouble())
+                # i += 1
+            else:
+                arc_h = point.GetArcHeight().ToDouble()
+                p1 = [my_net_points[i - 1].X.ToDouble(), my_net_points[i - 1].Y.ToDouble()]
+                if i + 1 < len(my_net_points):
+                    p2 = [my_net_points[i + 1].X.ToDouble(), my_net_points[i + 1].Y.ToDouble()]
+                else:
+                    p2 = [my_net_points[0].X.ToDouble(), my_net_points[0].Y.ToDouble()]
+                x_arc, y_arc = self._eval_arc_points(p1, p2, arc_h, num)
+                x.extend(x_arc)
+                y.extend(y_arc)
+                # i += 1
+        # fmt: on
+        return x, y
+
+    def points(self, arc_segments=6):
+        """Return the list of points with arcs converted to segments.
+
+        Parameters
+        ----------
+        arc_segments : int
+            Number of facets to convert an arc. Default is `6`.
+
+        Returns
+        -------
+        tuple
+            The tuple contains 2 lists made of X and Y points coordinates.
+        """
+        try:
+            my_net_points = list(self.prim_obj.GetPolygonData().Points)
+            xt, yt = self._get_points_for_plot(my_net_points, arc_segments)
+            if not xt:
+                return []
+            x, y = GeometryOperators.orient_polygon(xt, yt, clockwise=True)
+            return x, y
+        except:
+            x = []
+            y = []
+        return x, y
+
+    def points_raw(self):
+        """Return a list of Edb points.
+
+        Returns
+        -------
+        list
+            Edb Points.
+        """
+        points = []
+        try:
+            my_net_points = list(self.prim_obj.GetPolygonData().Points)
+            for point in my_net_points:
+                points.append(point)
+            return points
+        except:
+            return points
+
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
+        """Expand the polygon shape by an absolute value in all direction.
+        Offset can be negative for negative expansion.
+
+        Parameters
+        ----------
+        offset : float, optional
+            Offset value in meters.
+        tolerance : float, optional
+            Tolerance in meters.
+        round_corners : bool, optional
+            Whether to round corners or not.
+            If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+        maximum_corner_extension : float, optional
+            The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+        """
+        new_poly = self.polygon_data.edb_api.Expand(offset, tolerance, round_corners, maximum_corner_extension)
+        self.polygon_data = new_poly[0]
+        return True
+
+    def scale(self, factor, center=None):
+        """Scales the polygon relative to a center point by a factor.
+
+        Parameters
+        ----------
+        factor : float
+            Scaling factor.
+        center : List of float or str [x,y], optional
+            If None scaling is done from polygon center.
+
+        Returns
+        -------
+        bool
+           ``True`` when successful, ``False`` when failed.
+        """
+        if not isinstance(factor, str):
+            factor = float(factor)
+            polygon_data = self.polygon_data.create_from_arcs(self.polygon_data.edb_api.GetArcData(), True)
+            if not center:
+                center = self.polygon_data.edb_api.GetBoundingCircleCenter()
+                if center:
+                    polygon_data.Scale(factor, center)
+                    self.polygon_data = polygon_data
+                    return True
+                else:
+                    self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
+            elif isinstance(center, list) and len(center) == 2:
+                center = self._edb.Geometry.PointData(
+                    self._edb.Utility.Value(center[0]), self._edb.Utility.Value(center[1])
+                )
+                polygon_data.Scale(factor, center)
+                self.polygon_data = polygon_data
+                return True
+        return False
+
 
 class RectangleDotNet(PrimitiveDotNet):
     """Class representing a rectangle object."""
@@ -195,6 +519,7 @@ class CircleDotNet(PrimitiveDotNet):
 
     def __init__(self, api, prim_obj=None):
         PrimitiveDotNet.__init__(self, api, prim_obj)
+        self._edb_object = prim_obj
 
     def create(self, layout, layer, net, center_x, center_y, radius):
         """Create a circle.

@@ -19,10 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import math
 
 from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
 from pyedb.dotnet.edb_core.geometry.point_data import PointData
-from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 
 
 class Path(Primitive):
@@ -119,8 +120,8 @@ class Path(Primitive):
             x = self._pedb.edb_value(x)
             y = self._pedb.edb_value(y)
             last_point = list(center_line.Points)[-1]
-            x = "({})+({})".format(x, last_point[0].ToString())
-            y = "({})+({})".format(y, last_point[1].ToString())
+            x = "({})+({})".format(x, last_point.X.ToString())
+            y = "({})+({})".format(y, last_point.Y.ToString())
         center_line.AddPoint(PointData(self._pedb, x=x, y=y)._edb_object)
         return self._edb_object.SetCenterLine(center_line)
 
@@ -153,7 +154,7 @@ class Path(Primitive):
         center_line = self.center_line
         width = self.width
         corner_style = self.corner_style
-        end_cap_style = self.end_cap_style
+        end_cap_style = self.get_end_cap_style()
         cloned_path = self._app.edb_api.cell.primitive.path.create(
             self._app.active_layout,
             self.layer_name,
@@ -326,3 +327,25 @@ class Path(Primitive):
         leftline, rightline = getParalletLines(center_line, distance)
         for x, y in getLocations(rightline, gap) + getLocations(leftline, gap):
             self._pedb.padstacks.place([x, y], padstack_name, net_name=net_name)
+
+    @property
+    def center_line(self):
+        """:class:`PolygonData <ansys.edb.geometry.PolygonData>`: Center line for this Path."""
+        edb_center_line = self._edb_object.GetCenterLine()
+        return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(edb_center_line.Points)]
+
+    @center_line.setter
+    def center_line(self, value):
+        if isinstance(value, list):
+            points = [self._pedb.point_data(i[0], i[1]) for i in value]
+            polygon_data = self._edb.geometry.polygon_data.dotnetobj(convert_py_list_to_net_list(points), False)
+            self.prim_obj.SetCenterLine(polygon_data)
+
+    @property
+    def corner_style(self):
+        """:class:`PathCornerType`: Path's corner style."""
+        return self._edb_object.GetCornerStyle()
+
+    @corner_style.setter
+    def corner_style(self, corner_type):
+        self._edb_object.SetCornerStyle(corner_type)

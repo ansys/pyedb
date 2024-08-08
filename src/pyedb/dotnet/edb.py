@@ -458,9 +458,9 @@ class Edb(Database):
         temp = {}
         for ter in terms:
             if "BundleTerminal" in ter._edb_object.GetType().ToString():
-                temp[ter.name] = BundleWavePort(self, ter)
+                temp[ter.name] = BundleWavePort(self, ter._edb_object)
             else:
-                temp[ter.name] = GapPort(self, ter)
+                temp[ter.name] = GapPort(self, ter._edb_object)
         return temp
 
     @property
@@ -473,26 +473,26 @@ class Edb(Database):
                    :class:`pyedb.dotnet.edb_core.edb_data.ports.WavePort`,]]
 
         """
-        temp = [term for term in self.layout.terminals if not term.IsReferenceTerminal()]
+        temp = [term for term in self.layout.terminals if not term.is_reference_terminal]
 
         ports = {}
         for t in temp:
-            t2 = Terminal(self, t)
+            t2 = Terminal(self, t._edb_object)
             if not t2.boundary_type == "PortBoundary":
                 continue
 
             if t2.is_circuit_port:
-                port = CircuitPort(self, t)
+                port = CircuitPort(self, t._edb_object)
                 ports[port.name] = port
             elif t2.terminal_type == "BundleTerminal":
-                port = BundleWavePort(self, t)
+                port = BundleWavePort(self, t._edb_object)
                 ports[port.name] = port
             elif t2.hfss_type == "Wave":
-                ports[t2.name] = WavePort(self, t)
+                ports[t2.name] = WavePort(self, t._edb_object)
             elif t2.terminal_type == "PadstackInstanceTerminal":
-                ports[t2.name] = CoaxPort(self, t)
+                ports[t2.name] = CoaxPort(self, t._edb_object)
             else:
-                ports[t2.name] = GapPort(self, t)
+                ports[t2.name] = GapPort(self, t._edb_object)
         return ports
 
     @property
@@ -507,7 +507,7 @@ class Edb(Database):
         """Get all layout sources."""
         terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) in [3, 4, 7]]
         terms = [term for term in terms if not term._edb_object.IsReferenceTerminal()]
-        return {ter.GetName(): ExcitationSources(self, ter) for ter in terms}
+        return {ter.name: ExcitationSources(self, ter._edb_object) for ter in terms}
 
     @property
     def voltage_regulator_modules(self):
@@ -1669,11 +1669,11 @@ class Edb(Database):
         from pyedb.dotnet.clr_module import Tuple
 
         _polys = []
-        terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [0, 3, 4, 7, 8]]
+        terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) in [0, 3, 4, 7, 8]]
         locations = []
         for term in terms:
-            if term.GetTerminalType().ToString() == "PointTerminal" and term.GetNet().GetName() in reference_list:
-                pd = term.GetParameters()[1]
+            if term._edb_object.GetTerminalType().ToString() == "PointTerminal" and term.net.name in reference_list:
+                pd = term._edb_object.GetParameters()[1]
                 locations.append([pd.X.ToDouble(), pd.Y.ToDouble()])
         for point in locations:
             pointA = self.edb_api.geometry.point_data(
@@ -2214,11 +2214,11 @@ class Edb(Database):
                     if pin.pingroups:
                         pins_to_preserve.append(pin.id)
         if check_terminals:
-            terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [0, 3, 4, 7, 8]]
+            terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) in [0, 3, 4, 7, 8]]
             for term in terms:
-                if term.GetTerminalType().ToString() == "PadstackInstanceTerminal":
-                    if term.GetParameters()[1].GetNet().GetName() in reference_list:
-                        pins_to_preserve.append(term.GetParameters()[1].GetId())
+                if term._edb_object.GetTerminalType().ToString() == "PadstackInstanceTerminal":
+                    if term._edb_object.GetParameters()[1].GetNet().GetName() in reference_list:
+                        pins_to_preserve.append(term._edb_object.GetParameters()[1].GetId())
 
         for i in self.nets.nets.values():
             name = i.name
@@ -4445,10 +4445,10 @@ class Edb(Database):
         for poly in polys:
             for void in poly.voids:
                 void_bbox = (
-                    void.polygon_data.edb_api.GetBBox().Item1.X.ToDouble(),
-                    void.polygon_data.edb_api.GetBBox().Item1.Y.ToDouble(),
-                    void.polygon_data.edb_api.GetBBox().Item2.X.ToDouble(),
-                    void.polygon_data.edb_api.GetBBox().Item2.Y.ToDouble(),
+                    void.polygon_data._edb_object.GetBBox().Item1.X.ToDouble(),
+                    void.polygon_data._edb_object.GetBBox().Item1.Y.ToDouble(),
+                    void.polygon_data._edb_object.GetBBox().Item2.X.ToDouble(),
+                    void.polygon_data._edb_object.GetBBox().Item2.Y.ToDouble(),
                 )
                 included_instances = list(padstack_instances_index.intersection(void_bbox))
                 if included_instances:
@@ -4481,10 +4481,10 @@ class Edb(Database):
 
         for void_info in void_padstacks:
             port_poly = cloned_edb.modeler.create_polygon(
-                main_shape=void_info[0].polygon_data.edb_api, layer_name="ref", net_name="GND"
+                main_shape=void_info[0].polygon_data._edb_object, layer_name="ref", net_name="GND"
             )
             pec_poly = cloned_edb.modeler.create_polygon(
-                main_shape=port_poly.polygon_data.edb_api, layer_name="port_pec", net_name="GND"
+                main_shape=port_poly.polygon_data._edb_object, layer_name="port_pec", net_name="GND"
             )
             pec_poly.scale(1.5)
 

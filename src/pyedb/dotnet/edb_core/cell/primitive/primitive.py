@@ -501,10 +501,8 @@ class Primitive(Connectable):
             if isinstance(prim, Primitive):
                 primi_polys.append(prim.primitive_object.GetPolygonData())
             else:
-                try:
-                    primi_polys.append(prim.GetPolygonData())
-                except:
-                    primi_polys.append(prim)
+                primi_polys.append(prim._edb_object.GetPolygonData())
+                #primi_polys.append(prim)
         list_poly = poly.Intersect(convert_py_list_to_net_list([poly]), convert_py_list_to_net_list(primi_polys))
         new_polys = []
         if list_poly:
@@ -516,7 +514,7 @@ class Primitive(Connectable):
                 void_to_subtract = []
                 if voids:
                     for void in voids:
-                        void_pdata = void.prim_obj.GetPolygonData()
+                        void_pdata = void._edb_object.GetPolygonData()
                         int_data2 = p.GetIntersectionType(void_pdata)
                         if int_data2 > 2 or int_data2 == 1:
                             void_to_subtract.append(void_pdata)
@@ -714,9 +712,7 @@ class Primitive(Connectable):
             if _poly is None or _poly.IsNull() or _poly is False:
                 self._logger.error("Failed to create void polygon data")
                 return False
-            point_list = self._pedb.edb_api.cell.primitive.polygon.create(
-                self._pedb.active_layout, self.layer_name, self._edb_object.GetNet(), _poly
-            )._edb_object
+            point_list = self._pedb.modeler.create_polygon(_poly, layer_name=self.layer_name, net_name=self.net.name)._edb_object
         elif "_edb_object" in dir(point_list):
             point_list = point_list._edb_object
         elif "primitive_obj" in dir(point_list):
@@ -885,7 +881,7 @@ class Primitive(Connectable):
             if not center:
                 center = self.polygon_data._edb_object.GetBoundingCircleCenter()
                 if center:
-                    polygon_data.Scale(factor, center)
+                    polygon_data._edb_object.Scale(factor, center)
                     self.polygon_data = polygon_data
                     return True
                 else:
@@ -894,7 +890,7 @@ class Primitive(Connectable):
                 center = self._edb.Geometry.PointData(
                     self._edb.Utility.Value(center[0]), self._edb.Utility.Value(center[1])
                 )
-                polygon_data.Scale(factor, center)
+                polygon_data._edb_object.Scale(factor, center)
                 self.polygon_data = polygon_data
                 return True
         return False

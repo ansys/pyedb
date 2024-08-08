@@ -174,7 +174,7 @@ class Modeler(object):
         """
         _prim_by_net = {}
         for net, net_obj in self._pedb.nets.nets.items():
-            _prim_by_net[net] = [cast(i, self._pedb) for i in net_obj.primitives]
+            _prim_by_net[net] = [i for i in net_obj.primitives]
         return _prim_by_net
 
     @property
@@ -527,23 +527,23 @@ class Modeler(object):
         """
         net = self._pedb.nets.find_or_create_net(net_name)
         if start_cap_style.lower() == "round":
-            start_cap_style = self._edb.cell.primitive.PathEndCapStyle.Round
+            start_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Round
         elif start_cap_style.lower() == "extended":
-            start_cap_style = self._edb.cell.primitive.PathEndCapStyle.Extended  # pragma: no cover
+            start_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Extended  # pragma: no cover
         else:
-            start_cap_style = self._edb.cell.primitive.PathEndCapStyle.Flat  # pragma: no cover
+            start_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Flat  # pragma: no cover
         if end_cap_style.lower() == "round":
-            end_cap_style = self._edb.cell.primitive.PathEndCapStyle.Round  # pragma: no cover
+            end_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Round  # pragma: no cover
         elif end_cap_style.lower() == "extended":
-            end_cap_style = self._edb.cell.primitive.PathEndCapStyle.Extended  # pragma: no cover
+            end_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Extended  # pragma: no cover
         else:
-            end_cap_style = self._edb.cell.primitive.PathEndCapStyle.Flat
+            end_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Flat
         if corner_style.lower() == "round":
-            corner_style = self._edb.cell.primitive.PathCornerStyle.RoundCorner
+            corner_style = self._edb.cell.primitive.api.PathCornerStyle.RoundCorner
         elif corner_style.lower() == "sharp":
-            corner_style = self._edb.cell.primitive.PathCornerStyle.SharpCorner  # pragma: no cover
+            corner_style = self._edb.cell.primitive.api.PathCornerStyle.SharpCorner  # pragma: no cover
         else:
-            corner_style = self._edb.cell.primitive.PathCornerStyle.MiterCorner  # pragma: no cover
+            corner_style = self._edb.cell.primitive.api.PathCornerStyle.MiterCorner  # pragma: no cover
 
         pointlists = [self._pedb.point_data(i[0], i[1]) for i in path_list.points]
         polygonData = self._edb.geometry.polygon_data.dotnetobj(convert_py_list_to_net_list(pointlists), False)
@@ -557,10 +557,12 @@ class Modeler(object):
             corner_style,
             polygonData,
         )
-        if polygon.IsNull():  # pragma: no cover
+
+        if polygon.prim_obj.IsNull():  # pragma: no cover
             self._logger.error("Null path created")
             return False
-        return cast(polygon, self._pedb)
+        polygon = self._pedb.layout.find_object_by_id(polygon.prim_obj.GetId())
+        return polygon
 
     def create_trace(
         self,
@@ -756,7 +758,7 @@ class Modeler(object):
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "LowerLeftUpperRight":
-            rep_type = self._edb.cell.primitive.RectangleRepresentationType.LowerLeftUpperRight
+            rep_type = self._edb.cell.primitive.api.RectangleRepresentationType.LowerLeftUpperRight
             rect = self._edb.cell.primitive.rectangle.create(
                 self._active_layout,
                 layer_name,
@@ -770,7 +772,7 @@ class Modeler(object):
                 self._get_edb_value(rotation),
             )
         else:
-            rep_type = self._edb.cell.primitive.RectangleRepresentationType.CenterWidthHeight
+            rep_type = self._edb.cell.primitive.api.RectangleRepresentationType.CenterWidthHeight
             rect = self._edb.cell.primitive.rectangle.create(
                 self._active_layout,
                 layer_name,
@@ -784,7 +786,7 @@ class Modeler(object):
                 self._get_edb_value(rotation),
             )
         if rect:
-            return cast(rect, self._pedb)
+            return rect
         return False  # pragma: no cover
 
     def create_circle(self, layer_name, x, y, radius, net_name=""):
@@ -820,7 +822,7 @@ class Modeler(object):
             self._get_edb_value(radius),
         )
         if circle:
-            return cast(circle, self._pedb)
+            return circle
         return False  # pragma: no cover
 
     def delete_primitives(self, net_names):
