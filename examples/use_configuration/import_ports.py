@@ -1,6 +1,7 @@
 # # Import Ports
 # This example shows how to import ports. In this example, we are going to
-# - Download a example board
+#
+# - Download an example board
 # - Create a configuration file
 #   - Add a circuit port between two nets
 #   - Add a circuit port between two pins
