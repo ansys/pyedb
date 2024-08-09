@@ -668,6 +668,7 @@ class Modeler(object):
                 voidPolygonData = self.shape_to_polygon_data(void)
             else:
                 voidPolygonData = void.polygon_data._edb_object
+
             if voidPolygonData is False or voidPolygonData is None or voidPolygonData.IsNull():
                 self._logger.error("Failed to create void polygon data")
                 return False
