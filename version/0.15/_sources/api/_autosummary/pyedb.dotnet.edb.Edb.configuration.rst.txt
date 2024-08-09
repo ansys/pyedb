@@ -1,0 +1,6 @@
+configuration
+=============
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.configuration
