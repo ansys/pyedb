@@ -26,7 +26,7 @@ import re
 import warnings
 
 from pyedb.dotnet.clr_module import String
-from pyedb.dotnet.edb_core.cell.primitive import Primitive
+from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.general import PadGeometryTpe, convert_py_list_to_net_list
@@ -821,11 +821,10 @@ class EDBPadstack(object):
                 pos = via.position
                 started = False
                 if len(self.pad_by_layer[self.via_start_layer].parameters) == 0:
-                    self._edb.cell.primitive.polygon.create(
-                        layout,
-                        self.via_start_layer,
-                        via._edb_padstackinstance.GetNet(),
-                        self.pad_by_layer[self.via_start_layer].polygon_data.edb_api,
+                    self._ppadstack._pedb.modeler.create_polygon(
+                        self.pad_by_layer[self.via_start_layer].polygon_data._edb_object,
+                        layer_name=self.via_start_layer,
+                        net_name=via._edb_padstackinstance.GetNet().GetName(),
                     )
                 else:
                     self._edb.cell.primitive.circle.create(
@@ -837,11 +836,10 @@ class EDBPadstack(object):
                         self._get_edb_value(self.pad_by_layer[self.via_start_layer].parameters_values[0] / 2),
                     )
                 if len(self.pad_by_layer[self.via_stop_layer].parameters) == 0:
-                    self._edb.cell.primitive.polygon.create(
-                        layout,
-                        self.via_stop_layer,
-                        via._edb_padstackinstance.GetNet(),
-                        self.pad_by_layer[self.via_stop_layer].polygon_data.edb_api,
+                    self._ppadstack._pedb.modeler.create_polygon(
+                        self.pad_by_layer[self.via_stop_layer].polygon_data._edb_object,
+                        layer_name=self.via_stop_layer,
+                        net_name=via._edb_padstackinstance.GetNet().GetName(),
                     )
                 else:
                     self._edb.cell.primitive.circle.create(
@@ -1027,7 +1025,7 @@ class EDBPadstack(object):
                     None,
                     None,
                 )
-                padstack_instance.SetIsLayoutPin(via.is_pin)
+                padstack_instance._edb_object.SetIsLayoutPin(via.is_pin)
                 i += 1
             via.delete()
         self._ppadstack._pedb.logger.info("Created {} new microvias.".format(i))
@@ -2057,18 +2055,6 @@ class EDBPadstackInstance(Primitive):
             path = self._pedb.modeler.Shape("polygon", points=new_rect)
             created_polygon = self._pedb.modeler.create_polygon(path, layer_name)
             return created_polygon
-
-    def get_connected_object_id_set(self):
-        """Produce a list of all geometries physically connected to a given layout object.
-
-        Returns
-        -------
-        list
-            Found connected objects IDs with Layout object.
-        """
-        layoutInst = self._edb_padstackinstance.GetLayout().GetLayoutInstance()
-        layoutObjInst = self.object_instance
-        return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
 
     def get_reference_pins(self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True):
         """Search for reference pins using given criteria.

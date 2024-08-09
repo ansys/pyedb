@@ -90,7 +90,7 @@ class TestClass:
         assert len(self.edbapp.sources) == 1
         assert list(self.edbapp.sources.values())[0].magnitude == 3.3
 
-        pins = self.edbapp.components.get_pin_from_component("U1")
+        pins = [i._edb_object for i in self.edbapp.components.get_pin_from_component("U1")]
         assert "VSource_" in self.edbapp.siwave.create_voltage_source_on_pin(pins[300], pins[10], 3.3, 0)
         assert len(self.edbapp.sources) == 2
         assert len(self.edbapp.probes) == 0
@@ -105,7 +105,7 @@ class TestClass:
     def test_siwave_create_current_source(self):
         """Create a current source."""
         assert self.edbapp.siwave.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0) != ""
-        pins = self.edbapp.components.get_pin_from_component("U1")
+        pins = [i._edb_object for i in self.edbapp.components.get_pin_from_component("U1")]
         assert "I22" == self.edbapp.siwave.create_current_source_on_pin(pins[301], pins[10], 0.1, 0, "I22")
 
         assert self.edbapp.siwave.create_pin_group_on_net(reference_designator="U1", net_name="GND", group_name="gnd")
@@ -149,7 +149,7 @@ class TestClass:
 
     def test_siwave_create_resistors_on_pin(self):
         """Create a resistor on pin."""
-        pins = self.edbapp.components.get_pin_from_component("U1")
+        pins = [i._edb_object for i in self.edbapp.components.get_pin_from_component("U1")]
         assert "RST4000" == self.edbapp.siwave.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")
 
     def test_siwave_add_syz_analsyis(self):
@@ -507,9 +507,9 @@ class TestClass:
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "edge_ports.aedb"),
             edbversion=desktop_version,
         )
-        poly_list = [poly for poly in edb.layout.primitives if int(poly.GetPrimitiveType()) == 2]
-        port_poly = [poly for poly in poly_list if poly.GetId() == 17][0]
-        ref_poly = [poly for poly in poly_list if poly.GetId() == 19][0]
+        poly_list = [poly for poly in edb.layout.primitives if int(poly._edb_object.GetPrimitiveType()) == 2]
+        port_poly = [poly for poly in poly_list if poly.id == 17][0]
+        ref_poly = [poly for poly in poly_list if poly.id == 19][0]
         port_location = [-65e-3, -13e-3]
         ref_location = [-63e-3, -13e-3]
         assert edb.hfss.create_edge_port_on_polygon(
@@ -518,8 +518,8 @@ class TestClass:
             terminal_point=port_location,
             reference_point=ref_location,
         )
-        port_poly = [poly for poly in poly_list if poly.GetId() == 23][0]
-        ref_poly = [poly for poly in poly_list if poly.GetId() == 22][0]
+        port_poly = [poly for poly in poly_list if poly.id == 23][0]
+        ref_poly = [poly for poly in poly_list if poly.id == 22][0]
         port_location = [-65e-3, -10e-3]
         ref_location = [-65e-3, -10e-3]
         assert edb.hfss.create_edge_port_on_polygon(
@@ -528,7 +528,7 @@ class TestClass:
             terminal_point=port_location,
             reference_point=ref_location,
         )
-        port_poly = [poly for poly in poly_list if poly.GetId() == 25][0]
+        port_poly = [poly for poly in poly_list if poly.id == 25][0]
         port_location = [-65e-3, -7e-3]
         assert edb.hfss.create_edge_port_on_polygon(
             polygon=port_poly, terminal_point=port_location, reference_layer="gnd"
@@ -597,7 +597,9 @@ class TestClass:
         self.local_scratch.copyfolder(example_project, target_path)
         edb = Edb(target_path, edbversion=desktop_version)
         pins = edb.components.get_pin_from_component("U1", "1V0")
+        pins = [edb.layout.find_object_by_id(i.GetId()) for i in pins]
         ref_pins = edb.components.get_pin_from_component("U1", "GND")
+        ref_pins = [edb.layout.find_object_by_id(i.GetId()) for i in ref_pins]
         assert edb.components.create([pins[0], ref_pins[0]], "test_0rlc", r_value=1.67, l_value=1e-13, c_value=1e-11)
         assert edb.components.create([pins[0], ref_pins[0]], "test_1rlc", r_value=None, l_value=1e-13, c_value=1e-11)
         assert edb.components.create([pins[0], ref_pins[0]], "test_2rlc", r_value=None, c_value=1e-13)
@@ -1265,9 +1267,7 @@ class TestClass:
 
     def test_hfss_extent_info(self):
         """HFSS extent information."""
-        from pyedb.dotnet.edb_core.edb_data.primitives_data import (
-            EDBPrimitives as EDBPrimitives,
-        )
+        from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
 
         config = {
             "air_box_horizontal_extent_enabled": False,
@@ -1298,7 +1298,7 @@ class TestClass:
         for i, j in exported_config.items():
             if not i in config:
                 continue
-            if isinstance(j, EDBPrimitives):
+            if isinstance(j, Primitive):
                 assert j.id == config[i].id
             elif isinstance(j, EdbValue):
                 assert j.tofloat == hfss_extent_info._get_edb_value(config[i]).ToDouble()

@@ -26,14 +26,9 @@ This module contains these classes: `EdbLayout` and `Shape`.
 import math
 import warnings
 
-from pyedb.dotnet.edb_core.cell.primitive import Bondwire
-from pyedb.dotnet.edb_core.dotnet.primitive import (
-    CircleDotNet,
-    PathDotNet,
-    PolygonDotNet,
-    RectangleDotNet,
-)
-from pyedb.dotnet.edb_core.edb_data.primitives_data import EDBPrimitives, cast
+from pyedb.dotnet.edb_core.cell.primitive.bondwire import Bondwire
+from pyedb.dotnet.edb_core.dotnet.primitive import CircleDotNet, RectangleDotNet
+from pyedb.dotnet.edb_core.edb_data.primitives_data import Primitive, cast
 from pyedb.dotnet.edb_core.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 
@@ -128,7 +123,7 @@ class Modeler(object):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of primitives.
         """
         for p in self._layout.primitives:
@@ -145,16 +140,10 @@ class Modeler(object):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of primitives.
         """
-        if len(self._primitives) == len(self._layout.primitives):
-            return self._primitives
-        self._primitives = []
-        if self._active_layout:
-            for lay_obj in self._layout.primitives:
-                self._primitives.append(cast(lay_obj, self._pedb))
-        return self._primitives
+        return self._pedb.layout.primitives
 
     @property
     def polygons_by_layer(self):
@@ -181,7 +170,7 @@ class Modeler(object):
         """
         _prim_by_net = {}
         for net, net_obj in self._pedb.nets.nets.items():
-            _prim_by_net[net] = [cast(i, self._pedb) for i in net_obj.primitives]
+            _prim_by_net[net] = [i for i in net_obj.primitives]
         return _prim_by_net
 
     @property
@@ -199,13 +188,9 @@ class Modeler(object):
         for lay in self._pedb.stackup.non_stackup_layers:
             _primitives_by_layer[lay] = []
         for i in self._layout.primitives:
-            try:
-                lay = i.GetLayer().GetName()
-                if lay in _primitives_by_layer:
-                    _primitives_by_layer[lay].append(cast(i, self._pedb))
-            except:
-                self._logger.warning(f"Failed to get layer on primitive {i}, skipping.")
-                continue
+            lay = i.layer.name
+            if lay in _primitives_by_layer:
+                _primitives_by_layer[lay].append(i)
         return _primitives_by_layer
 
     @property
@@ -214,7 +199,7 @@ class Modeler(object):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of rectangles.
 
         """
@@ -226,7 +211,7 @@ class Modeler(object):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of circles.
 
         """
@@ -238,10 +223,10 @@ class Modeler(object):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of paths.
         """
-        return [i for i in self.primitives if isinstance(i, PathDotNet)]
+        return [i for i in self.primitives if i.primitive_type == "path"]
 
     @property
     def polygons(self):
@@ -249,10 +234,10 @@ class Modeler(object):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of polygons.
         """
-        return [i for i in self.primitives if isinstance(i, PolygonDotNet)]
+        return [i for i in self.primitives if i.primitive_type == "polygon"]
 
     def get_polygons_by_layer(self, layer_name, net_list=None):
         """Retrieve polygons by a layer.
@@ -271,14 +256,11 @@ class Modeler(object):
         """
         objinst = []
         for el in self.polygons:
-            try:
-                if el.GetLayer().GetName() == layer_name:
-                    if net_list and el.GetNet().GetName() in net_list:
-                        objinst.append(el)
-                    else:
-                        objinst.append(el)
-            except:
-                self._logger.warning(f"Failed to retrieve layer on polygon {el}")
+            if el.layer.name == layer_name:
+                if net_list and el.net.name in net_list:
+                    objinst.append(el)
+                else:
+                    objinst.append(el)
         return objinst
 
     def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):
@@ -297,7 +279,7 @@ class Modeler(object):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of primitives, polygons, paths and rectangles.
         """
         if isinstance(layer, str) and layer not in list(self._pedb.stackup.signal_layers.keys()):
@@ -379,7 +361,7 @@ class Modeler(object):
         Parameters
         ----------
         polygon :
-            class: `dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+            class: `dotnet.edb_core.edb_data.primitives_data.Primitive`
 
         Returns
         -------
@@ -536,28 +518,28 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             ``True`` when successful, ``False`` when failed.
         """
         net = self._pedb.nets.find_or_create_net(net_name)
         if start_cap_style.lower() == "round":
-            start_cap_style = self._edb.cell.primitive.PathEndCapStyle.Round
+            start_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Round
         elif start_cap_style.lower() == "extended":
-            start_cap_style = self._edb.cell.primitive.PathEndCapStyle.Extended  # pragma: no cover
+            start_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Extended  # pragma: no cover
         else:
-            start_cap_style = self._edb.cell.primitive.PathEndCapStyle.Flat  # pragma: no cover
+            start_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Flat  # pragma: no cover
         if end_cap_style.lower() == "round":
-            end_cap_style = self._edb.cell.primitive.PathEndCapStyle.Round  # pragma: no cover
+            end_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Round  # pragma: no cover
         elif end_cap_style.lower() == "extended":
-            end_cap_style = self._edb.cell.primitive.PathEndCapStyle.Extended  # pragma: no cover
+            end_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Extended  # pragma: no cover
         else:
-            end_cap_style = self._edb.cell.primitive.PathEndCapStyle.Flat
+            end_cap_style = self._edb.cell.primitive.api.PathEndCapStyle.Flat
         if corner_style.lower() == "round":
-            corner_style = self._edb.cell.primitive.PathCornerStyle.RoundCorner
+            corner_style = self._edb.cell.primitive.api.PathCornerStyle.RoundCorner
         elif corner_style.lower() == "sharp":
-            corner_style = self._edb.cell.primitive.PathCornerStyle.SharpCorner  # pragma: no cover
+            corner_style = self._edb.cell.primitive.api.PathCornerStyle.SharpCorner  # pragma: no cover
         else:
-            corner_style = self._edb.cell.primitive.PathCornerStyle.MiterCorner  # pragma: no cover
+            corner_style = self._edb.cell.primitive.api.PathCornerStyle.MiterCorner  # pragma: no cover
 
         pointlists = [self._pedb.point_data(i[0], i[1]) for i in path_list.points]
         polygonData = self._edb.geometry.polygon_data.dotnetobj(convert_py_list_to_net_list(pointlists), False)
@@ -571,10 +553,12 @@ class Modeler(object):
             corner_style,
             polygonData,
         )
-        if polygon.IsNull():  # pragma: no cover
+
+        if polygon.prim_obj.IsNull():  # pragma: no cover
             self._logger.error("Null path created")
             return False
-        return cast(polygon, self._pedb)
+        polygon = self._pedb.layout.find_object_by_id(polygon.prim_obj.GetId())
+        return polygon
 
     def create_trace(
         self,
@@ -613,7 +597,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
         """
         path = self.Shape("Polygon", points=path_list)
         primitive = self._create_path(
@@ -648,7 +632,7 @@ class Modeler(object):
 
         Returns
         -------
-        bool, :class:`dotnet.edb_core.edb_data.primitives.EDBPrimitives`
+        bool, :class:`dotnet.edb_core.edb_data.primitives.Primitive`
             Polygon when successful, ``False`` when failed.
         """
         net = self._pedb.nets.find_or_create_net(net_name)
@@ -683,12 +667,15 @@ class Modeler(object):
             elif isinstance(void, Modeler.Shape):
                 voidPolygonData = self.shape_to_polygon_data(void)
             else:
-                voidPolygonData = void
+                voidPolygonData = void.polygon_data._edb_object
+
             if voidPolygonData is False or voidPolygonData is None or voidPolygonData.IsNull():
                 self._logger.error("Failed to create void polygon data")
                 return False
             polygonData.AddHole(voidPolygonData)
-        polygon = self._edb.cell.primitive.polygon.create(self._active_layout, layer_name, net, polygonData)
+        polygon = self._pedb._edb.Cell.Primitive.Polygon.Create(
+            self._active_layout, layer_name, net.net_obj, polygonData
+        )
         if polygon.IsNull() or polygonData is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
@@ -716,7 +703,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
         """
         warnings.warn(
             "Use :func:`create_polygon` method instead. It now supports point lists as arguments.", DeprecationWarning
@@ -764,12 +751,12 @@ class Modeler(object):
 
         Returns
         -------
-         :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+         :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             Rectangle when successful, ``False`` when failed.
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "LowerLeftUpperRight":
-            rep_type = self._edb.cell.primitive.RectangleRepresentationType.LowerLeftUpperRight
+            rep_type = self._edb.cell.primitive.api.RectangleRepresentationType.LowerLeftUpperRight
             rect = self._edb.cell.primitive.rectangle.create(
                 self._active_layout,
                 layer_name,
@@ -783,7 +770,7 @@ class Modeler(object):
                 self._get_edb_value(rotation),
             )
         else:
-            rep_type = self._edb.cell.primitive.RectangleRepresentationType.CenterWidthHeight
+            rep_type = self._edb.cell.primitive.api.RectangleRepresentationType.CenterWidthHeight
             rect = self._edb.cell.primitive.rectangle.create(
                 self._active_layout,
                 layer_name,
@@ -797,7 +784,7 @@ class Modeler(object):
                 self._get_edb_value(rotation),
             )
         if rect:
-            return cast(rect, self._pedb)
+            return self._pedb.layout.find_object_by_id(rect._edb_object.GetId())
         return False  # pragma: no cover
 
     def create_circle(self, layer_name, x, y, radius, net_name=""):
@@ -819,7 +806,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
+        :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             Objects of the circle created when successful.
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
@@ -833,7 +820,7 @@ class Modeler(object):
             self._get_edb_value(radius),
         )
         if circle:
-            return cast(circle, self._pedb)
+            return self._pedb.layout.find_object_by_id(circle._edb_object.GetId())
         return False  # pragma: no cover
 
     def delete_primitives(self, net_names):
@@ -940,12 +927,12 @@ class Modeler(object):
             Shape of the voids.
         """
         flag = False
-        if isinstance(shape, EDBPrimitives):
+        if isinstance(shape, Primitive):
             shape = shape.primitive_object
         if not isinstance(void_shape, list):
             void_shape = [void_shape]
         for void in void_shape:
-            if isinstance(void, EDBPrimitives):
+            if isinstance(void, Primitive):
                 flag = shape.AddVoid(void.primitive_object)
             else:
                 flag = shape.AddVoid(void)
@@ -1188,23 +1175,23 @@ class Modeler(object):
         for net_name in nets_name:
             var_server = False
             for p in self.paths:
-                if p.GetNet().GetName() == net_name:
+                if p.net.name == net_name:
                     if not layers_name:
                         if not var_server:
                             if not variable_value:
-                                variable_value = p.GetWidth()
+                                variable_value = p.width
                             result, var_server = self._pedb.add_design_variable(
                                 parameter_name, variable_value, is_parameter=True
                             )
-                        p.SetWidth(self._pedb.edb_value(parameter_name))
-                    elif p.GetLayer().GetName() in layers_name:
+                        p.width = self._pedb.edb_value(parameter_name)
+                    elif p.layer.name in layers_name:
                         if not var_server:
                             if not variable_value:
-                                variable_value = p.GetWidth()
+                                variable_value = p.width
                             result, var_server = self._pedb.add_design_variable(
                                 parameter_name, variable_value, is_parameter=True
                             )
-                        p.SetWidth(self._pedb.edb_value(parameter_name))
+                        p.width = self._pedb.edb_value(parameter_name)
         return True
 
     def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_names_list=[]):
@@ -1237,6 +1224,7 @@ class Modeler(object):
             delete_list = []
             if lay in list(self.polygons_by_layer.keys()):
                 for poly in self.polygons_by_layer[lay]:
+                    poly = poly._edb_object
                     if not poly.GetNet().GetName() in list(poly_by_nets.keys()):
                         if poly.GetNet().GetName():
                             poly_by_nets[poly.GetNet().GetName()] = [poly]
@@ -1255,12 +1243,7 @@ class Modeler(object):
                     for void in v:
                         if int(item.GetIntersectionType(void.GetPolygonData())) == 2:
                             item.AddHole(void.GetPolygonData())
-                poly = self._edb.cell.primitive.polygon.create(
-                    self._active_layout,
-                    lay,
-                    self._pedb.nets.nets[net],
-                    item,
-                )
+                self.create_polygon(item, layer_name=lay, voids=[], net_name=net)
             for v in all_voids:
                 for void in v:
                     for poly in poly_by_nets[net]:  # pragma no cover
@@ -1299,8 +1282,8 @@ class Modeler(object):
             ``True`` when successful, ``False`` when failed.
         """
         poly_data = poly.polygon_data
-        new_poly = poly_data.edb_api.Defeature(tolerance)
-        poly.polygon_data = new_poly
+        new_poly = poly_data._edb_object.Defeature(tolerance)
+        poly._edb_object.SetPolygonData(new_poly)
         return True
 
     def get_layout_statistics(self, evaluate_area=False, net_list=None):
@@ -1350,7 +1333,7 @@ class Modeler(object):
                         if prim.type == "Path":
                             surface += prim.length * prim.width
                         if prim.type == "Polygon":
-                            surface += prim.polygon_data.edb_api.Area()
+                            surface += prim.polygon_data._edb_object.Area()
                             stat_model.occupying_surface[layer] = surface
                             stat_model.occupying_ratio[layer] = surface / outline_surface
         return stat_model

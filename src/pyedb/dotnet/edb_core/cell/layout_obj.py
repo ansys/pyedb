@@ -27,15 +27,6 @@ from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 class LayoutObj(ObjBase):
     """Manages EDB functionalities for the layout object."""
 
-    def __getattr__(self, key):  # pragma: no cover
-        try:
-            return super().__getattribute__(key)
-        except AttributeError:
-            try:
-                return getattr(self._edb_object, key)
-            except AttributeError:
-                raise AttributeError(f"Attribute '{key}' not present")
-
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
 

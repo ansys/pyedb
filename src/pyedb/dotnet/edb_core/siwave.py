@@ -261,21 +261,21 @@ class EdbSiwave(object):
         >>> edbapp.siwave.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
         """
         circuit_port = CircuitPort()
-        circuit_port.positive_node.net = pos_pin.GetNet().GetName()
-        circuit_port.negative_node.net = neg_pin.GetNet().GetName()
+        circuit_port.positive_node.net = pos_pin.net.name
+        circuit_port.negative_node.net = neg_pin.net.name
         circuit_port.impedance = impedance
 
         if not port_name:
             port_name = "Port_{}_{}_{}_{}".format(
-                pos_pin.GetComponent().GetName(),
-                pos_pin.GetNet().GetName(),
-                neg_pin.GetComponent().GetName(),
-                neg_pin.GetNet().GetName(),
+                pos_pin._edb_object.GetComponent().GetName(),
+                pos_pin._edb_object.GetNet().GetName(),
+                neg_pin._edb_object.GetComponent().GetName(),
+                neg_pin._edb_object.GetNet().GetName(),
             )
         circuit_port.name = port_name
-        circuit_port.positive_node.component_node = pos_pin.GetComponent()
+        circuit_port.positive_node.component_node = pos_pin._edb_object.GetComponent()
         circuit_port.positive_node.node_pins = pos_pin
-        circuit_port.negative_node.component_node = neg_pin.GetComponent()
+        circuit_port.negative_node.component_node = neg_pin._edb_object.GetComponent()
         circuit_port.negative_node.node_pins = neg_pin
         return self._create_terminal_on_pins(circuit_port)
 
@@ -912,7 +912,7 @@ class EdbSiwave(object):
             Name of the source.
 
         """
-        if source.name in [i.GetName() for i in self._layout.terminals]:
+        if source.name in [i.name for i in self._layout.terminals]:
             source.name = generate_unique_name(source.name, n=3)
             self._logger.warning("Port already exists with same name. Renaming to {}".format(source.name))
         pos_pin_group = self._pedb.components.create_pingroup_from_pins(source.positive_node.node_pins)

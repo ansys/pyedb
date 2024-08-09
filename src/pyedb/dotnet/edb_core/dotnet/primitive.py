@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 """Primitive."""
-from pyedb.dotnet.edb_core.dotnet.database import NetDotNet, PolygonDataDotNet
+from pyedb.dotnet.edb_core.dotnet.database import NetDotNet
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -36,8 +36,6 @@ def cast(api, prim_object):
     prim_type = prim_object.GetPrimitiveType()
     if prim_type == prim_type.Rectangle:
         return RectangleDotNet(api, prim_object)
-    elif prim_type == prim_type.Polygon:
-        return PolygonDotNet(api, prim_object)
     elif prim_type == prim_type.Path:
         return PathDotNet(api, prim_object)
     elif prim_type == prim_type.Bondwire:
@@ -53,66 +51,16 @@ def cast(api, prim_object):
 class PrimitiveDotNet:
     """Base class representing primitive objects."""
 
-    def __getattr__(self, key):
-        try:
-            return super().__getattribute__(key)
-        except AttributeError:
-            if self.prim_obj and key in dir(self.prim_obj):
-                obj = self.prim_obj
-            else:
-                obj = self.api
-            try:
-                return getattr(obj, key)
-            except AttributeError:  # pragma: no cover
-                raise AttributeError("Attribute {} not present".format(key))
-
     def __init__(self, api, prim_object=None):
         self._app = api
         self.api = api._edb.Cell.Primitive
         self.edb_api = api._edb
         self.prim_obj = prim_object
-
-    @property
-    def id(self):
-        return self.prim_obj.GetId()
+        self._edb_object = prim_object
 
     @property
     def api_class(self):
         return self.api
-
-    @property
-    def aedt_name(self):
-        """Name to be visualized in AEDT.
-
-        Returns
-        -------
-        str
-            Name.
-        """
-        from System import String
-
-        val = String("")
-
-        _, name = self.prim_obj.GetProductProperty(self._app._edb.ProductId.Designer, 1, val)
-        name = str(name).strip("'")
-        if name == "":
-            if str(self.primitive_type) == "Path":
-                ptype = "line"
-            elif str(self.primitive_type) == "Rectangle":
-                ptype = "rect"
-            elif str(self.primitive_type) == "Polygon":
-                ptype = "poly"
-            elif str(self.primitive_type) == "Bondwire":
-                ptype = "bwr"
-            else:
-                ptype = str(self.primitive_type).lower()
-            name = "{}_{}".format(ptype, self.id)
-            self.prim_obj.SetProductProperty(self._app._edb.ProductId.Designer, 1, name)
-        return name
-
-    @aedt_name.setter
-    def aedt_name(self, value):
-        self.prim_obj.SetProductProperty(self._app._edb.ProductId.Designer, 1, value)
 
     @property
     def api_object(self):
@@ -129,10 +77,6 @@ class PrimitiveDotNet:
     @property
     def circle(self):
         return CircleDotNet(self._app)
-
-    @property
-    def polygon(self):
-        return PolygonDotNet(self._app)
 
     @property
     def text(self):
@@ -159,15 +103,6 @@ class PrimitiveDotNet:
                 self.prim_obj.SetNet(value)
         except TypeError:
             self._app.logger.error("Error setting net object")
-
-    @property
-    def polygon_data(self):
-        """:class:`pyedb.dotnet.edb_core.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
-        return PolygonDataDotNet(self._app, self.prim_obj.GetPolygonData())
-
-    @polygon_data.setter
-    def polygon_data(self, poly):
-        return self.prim_obj.SetPolygonData(poly)
 
     @property
     def primitive_type(self):
@@ -583,6 +518,7 @@ class CircleDotNet(PrimitiveDotNet):
 
     def __init__(self, api, prim_obj=None):
         PrimitiveDotNet.__init__(self, api, prim_obj)
+        self._edb_object = prim_obj
 
     def create(self, layout, layer, net, center_x, center_y, radius):
         """Create a circle.
@@ -772,44 +708,6 @@ class TextDotNet(PrimitiveDotNet):
         )
 
 
-class PolygonDotNet(PrimitiveDotNet):
-    """Class representing a polygon object."""
-
-    def __init__(self, api, prim_obj=None):
-        PrimitiveDotNet.__init__(self, api, prim_obj)
-
-    def create(self, layout, layer, net, polygon_data):
-        """Create a polygon.
-
-        Parameters
-        ----------
-        layout : :class:`Layout <ansys.edb.layout.Layout>`
-            Layout the polygon will be in.
-        layer : str or :class:`Layer <ansys.edb.layer.Layer>`
-            Layer this Polygon will be in.
-        net : str or :class:`Net <ansys.edb.net.Net>` or None
-            Net of the Polygon object.
-        polygon_data : :class:`PolygonData <ansys.edb.geometry.PolygonData>`
-            The outer contour of the Polygon.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.edb_core.dotnet.primitive.PolygonDotNet`
-            Polygon object created.
-        """
-        if isinstance(net, NetDotNet):
-            net = net.api_object
-        return PolygonDotNet(self._app, self.api.Polygon.Create(layout, layer, net, polygon_data))
-
-    @property
-    def can_be_zone_primitive(self):
-        """:obj:`bool`: If a polygon can be a zone.
-
-        Read-Only.
-        """
-        return True
-
-
 class PathDotNet(PrimitiveDotNet):
     """Class representing a path object."""
 
@@ -865,40 +763,6 @@ class PathDotNet(PrimitiveDotNet):
             points = [self._pedb.point_data(i[0], i[1]) for i in value]
             polygon_data = self._edb.geometry.polygon_data.dotnetobj(convert_py_list_to_net_list(points), False)
             self.prim_obj.SetCenterLine(polygon_data)
-
-    @property
-    def end_cap_style(self):
-        """Get path end cap styles.
-
-        Returns
-        -------
-        tuple[
-            :class:`PathEndCapType`,
-            :class:`PathEndCapType`
-        ]
-
-            Returns a tuple of the following format:
-
-            **(end_cap1, end_cap2)**
-
-            **end_cap1** : End cap style of path start end cap.
-
-            **end_cap2** : End cap style of path end end cap.
-        """
-        return self._edb_object.GetEndCapStyle()
-
-    @end_cap_style.setter
-    def end_cap_style(self, end_cap1, end_cap2):
-        """Set path end cap styles.
-
-        Parameters
-        ----------
-        end_cap1: :class:`PathEndCapType`
-            End cap style of path start end cap.
-        end_cap2: :class:`PathEndCapType`
-            End cap style of path end end cap.
-        """
-        self._edb_object.SetEndCapStyle(end_cap1, end_cap2)
 
     @property
     def get_clip_info(self):

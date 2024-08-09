@@ -302,6 +302,7 @@ class Terminal(Connectable):
         # Get the pastack instance of the terminal
         compInst = self._edb_object.GetComponent()
         pins = self._pedb.components.get_pin_from_component(compInst.GetName())
+        pins = [i._edb_object for i in pins]
         return self._get_closest_pin(padStackInstance, pins, gnd_net_name_preference)
 
     def get_pin_group_terminal_reference_pin(self, gnd_net_name_preference=None):  # pragma : no cover
@@ -406,6 +407,7 @@ class Terminal(Connectable):
         """
         comp_inst = self._edb_object.GetComponent()
         pins = self._pedb.components.get_pin_from_component(comp_inst.GetName())
+        pins = [i._edb_object for i in pins]
         try:
             edges = self._edb_object.GetEdges()
         except AttributeError:
