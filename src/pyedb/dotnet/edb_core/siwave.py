@@ -329,7 +329,6 @@ class EdbSiwave(object):
                 term_name = "{}_{}_{}".format(pin.component.name, pin._edb_object.GetNet().GetName(), pin.component_pin)
                 res, start_layer, stop_layer = pin._edb_object.GetLayerRange()
                 if res:
-                    pin_edbapi_obj = pin_instance
                     pin_instance = pin._edb_padstackinstance
                     positive_terminal = self._edb.cell.terminal.PadstackInstanceTerminal.Create(
                         self._active_layout, pin_instance.GetNet(), term_name, pin_instance, start_layer
@@ -337,7 +336,7 @@ class EdbSiwave(object):
                     positive_terminal.SetBoundaryType(self._edb.cell.terminal.BoundaryType.PortBoundary)
                     positive_terminal.SetImpedance(self._edb.utility.value(impedance))
                     positive_terminal.SetIsCircuitPort(True)
-                    pos = self._pedb.components.get_pin_position(pin_edbapi_obj)
+                    pos = self._pedb.components.get_pin_position(pin_instance)
                     position = self._edb.geometry.point_data(
                         self._edb.utility.value(pos[0]), self._edb.utility.value(pos[1])
                     )

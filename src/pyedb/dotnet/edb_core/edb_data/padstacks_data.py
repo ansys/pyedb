@@ -821,11 +821,10 @@ class EDBPadstack(object):
                 pos = via.position
                 started = False
                 if len(self.pad_by_layer[self.via_start_layer].parameters) == 0:
-                    self._edb.cell.primitive.polygon.create(
-                        layout,
-                        self.via_start_layer,
-                        via._edb_padstackinstance.GetNet(),
-                        self.pad_by_layer[self.via_start_layer].polygon_data.edb_api,
+                    self._ppadstack._pedb.modeler.create_polygon(
+                        self.pad_by_layer[self.via_start_layer].polygon_data._edb_object,
+                        layer_name=self.via_start_layer,
+                        net_name=via._edb_padstackinstance.GetNet().GetName(),
                     )
                 else:
                     self._edb.cell.primitive.circle.create(
@@ -837,11 +836,10 @@ class EDBPadstack(object):
                         self._get_edb_value(self.pad_by_layer[self.via_start_layer].parameters_values[0] / 2),
                     )
                 if len(self.pad_by_layer[self.via_stop_layer].parameters) == 0:
-                    self._edb.cell.primitive.polygon.create(
-                        layout,
-                        self.via_stop_layer,
-                        via._edb_padstackinstance.GetNet(),
-                        self.pad_by_layer[self.via_stop_layer].polygon_data.edb_api,
+                    self._ppadstack._pedb.modeler.create_polygon(
+                        self.pad_by_layer[self.via_stop_layer].polygon_data._edb_object,
+                        layer_name=self.via_stop_layer,
+                        net_name=via._edb_padstackinstance.GetNet().GetName(),
                     )
                 else:
                     self._edb.cell.primitive.circle.create(
@@ -1027,7 +1025,7 @@ class EDBPadstack(object):
                     None,
                     None,
                 )
-                padstack_instance.SetIsLayoutPin(via.is_pin)
+                padstack_instance._edb_object.SetIsLayoutPin(via.is_pin)
                 i += 1
             via.delete()
         self._ppadstack._pedb.logger.info("Created {} new microvias.".format(i))

@@ -586,21 +586,18 @@ class Components(object):
 
         if mounted_component_pin1:
             m_pin1 = self._get_edb_pin_from_pin_name(mounted_component, mounted_component_pin1)
-            m_pin1=self._pedb.layout.find_object_by_id(m_pin1.GetId())
             m_pin1_pos = self.get_pin_position(m_pin1)
+            print(mounted_component_pin1, m_pin1_pos)
         if mounted_component_pin2:
             m_pin2 = self._get_edb_pin_from_pin_name(mounted_component, mounted_component_pin2)
-            m_pin2 = self._pedb.layout.find_object_by_id(m_pin2.GetId())
             m_pin2_pos = self.get_pin_position(m_pin2)
 
         if hosting_component_pin1:
             h_pin1 = self._get_edb_pin_from_pin_name(hosting_component, hosting_component_pin1)
-            h_pin1 = self._pedb.layout.find_object_by_id(h_pin1.GetId())
             h_pin1_pos = self.get_pin_position(h_pin1)
 
         if hosting_component_pin2:
             h_pin2 = self._get_edb_pin_from_pin_name(hosting_component, hosting_component_pin2)
-            h_pin2 = self._pedb.layout.find_object_by_id(h_pin2.GetId())
             h_pin2_pos = self.get_pin_position(h_pin2)
         #
         vector = [h_pin1_pos[0] - m_pin1_pos[0], h_pin1_pos[1] - m_pin1_pos[1]]
@@ -2533,7 +2530,10 @@ class Components(object):
         >>> edbapp.components.get_pin_position(pin)
 
         """
-        pin = pin._edb_object
+        try:
+            pin = pin._edb_object
+        except:
+            pin = pin
         res, pt_pos, rot_pos = pin.GetPositionAndRotation()
 
         if pin.GetComponent().IsNull():

@@ -29,12 +29,12 @@ import warnings
 import rtree
 
 from pyedb.dotnet.clr_module import Array
-from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import (
     EDBPadstack,
     EDBPadstackInstance,
 )
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -755,6 +755,7 @@ class EdbPadstacks(object):
         if not isinstance(net_list, list):
             net_list = [net_list]
         layout_lobj_collection = self._layout.padstack_instances
+        layout_lobj_collection = [i._edb_object for i in layout_lobj_collection]
         via_list = []
         for lobj in layout_lobj_collection:
             pad_layers_name = lobj.GetPadstackDef().GetData().GetLayerNames()
@@ -1005,7 +1006,7 @@ class EdbPadstacks(object):
                     _poly.delete()
                 else:
                     return False
-            elif isinstance(pad_polygon, PolygonDataDotNet):
+            elif isinstance(pad_polygon, PolygonData):
                 pad_array = pad_polygon
         if antipad_shape == "Bullet":  # pragma no cover
             antipad_array = Array[type(x_size)]([x_size, y_size, corner_radius])
@@ -1021,7 +1022,7 @@ class EdbPadstacks(object):
                     _poly.delete()
                 else:
                     return False
-            elif isinstance(antipad_polygon, PolygonDataDotNet):
+            elif isinstance(antipad_polygon, PolygonData):
                 antipad_array = antipad_polygon
         else:  # pragma no cover
             antipad_array = Array[type(antipaddiam)]([antipaddiam])
@@ -1033,7 +1034,7 @@ class EdbPadstacks(object):
                 padstackData.SetPolygonalPadParameters(
                     layer,
                     self._edb.definition.PadType.RegularPad,
-                    pad_array.edb_api,
+                    pad_array._edb_object,
                     pad_offset_x,
                     pad_offset_y,
                     pad_rotation,
@@ -1041,7 +1042,7 @@ class EdbPadstacks(object):
                 padstackData.SetPolygonalPadParameters(
                     layer,
                     self._edb.definition.PadType.AntiPad,
-                    antipad_array.edb_api,
+                    antipad_array._edb_object,
                     pad_offset_x,
                     pad_offset_y,
                     pad_rotation,

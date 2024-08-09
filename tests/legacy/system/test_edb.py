@@ -597,7 +597,9 @@ class TestClass:
         self.local_scratch.copyfolder(example_project, target_path)
         edb = Edb(target_path, edbversion=desktop_version)
         pins = edb.components.get_pin_from_component("U1", "1V0")
+        pins = [edb.layout.find_object_by_id(i.GetId()) for i in pins]
         ref_pins = edb.components.get_pin_from_component("U1", "GND")
+        ref_pins = [edb.layout.find_object_by_id(i.GetId()) for i in ref_pins]
         assert edb.components.create([pins[0], ref_pins[0]], "test_0rlc", r_value=1.67, l_value=1e-13, c_value=1e-11)
         assert edb.components.create([pins[0], ref_pins[0]], "test_1rlc", r_value=None, l_value=1e-13, c_value=1e-11)
         assert edb.components.create([pins[0], ref_pins[0]], "test_2rlc", r_value=None, c_value=1e-13)

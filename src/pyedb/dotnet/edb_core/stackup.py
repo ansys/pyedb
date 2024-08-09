@@ -1800,7 +1800,7 @@ class Stackup(LayerCollection):
         temp_data = {name: 0 for name, _ in self.signal_layers.items()}
         outline_area = 0
         for i in self._pedb.modeler.primitives:
-            layer_name = i.GetLayer().GetName()
+            layer_name = i.layer.name
             if layer_name.lower() == "outline":
                 if i.area() > outline_area:
                     outline_area = i.area()

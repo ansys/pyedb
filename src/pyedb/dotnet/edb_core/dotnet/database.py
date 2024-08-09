@@ -92,6 +92,7 @@ class PolygonDataDotNet:  # pragma: no cover
         self._pedb = pedb
         self.dotnetobj = pedb.edb_api.geometry.api_class.PolygonData
         self.edb_api = api_object
+        self._edb_object = api_object
 
     @property
     def api_class(self):  # pragma: no cover
