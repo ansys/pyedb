@@ -955,7 +955,7 @@ class EdbPadstacks(object):
                 else:
                     return False
             elif isinstance(polygon_hole, PolygonData):
-                hole_param = polygon_hole.edb_api
+                hole_param = polygon_hole._edb_object
             else:
                 return False
             padstackData.SetPolygonalHoleParameters(hole_param, value0, value0, value0)
