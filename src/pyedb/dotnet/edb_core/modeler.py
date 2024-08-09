@@ -27,11 +27,7 @@ import math
 import warnings
 
 from pyedb.dotnet.edb_core.cell.primitive.bondwire import Bondwire
-from pyedb.dotnet.edb_core.dotnet.primitive import (
-    CircleDotNet,
-    PathDotNet,
-    RectangleDotNet,
-)
+from pyedb.dotnet.edb_core.dotnet.primitive import CircleDotNet, RectangleDotNet
 from pyedb.dotnet.edb_core.edb_data.primitives_data import Primitive, cast
 from pyedb.dotnet.edb_core.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
@@ -676,8 +672,9 @@ class Modeler(object):
                 self._logger.error("Failed to create void polygon data")
                 return False
             polygonData.AddHole(voidPolygonData)
-        polygon = self._pedb._edb.Cell.Primitive.Polygon.Create(self._active_layout, layer_name, net.net_obj, polygonData)
-        #polygon = self._edb.cell.primitive.polygon.create(self._active_layout, layer_name, net, polygonData)
+        polygon = self._pedb._edb.Cell.Primitive.Polygon.Create(
+            self._active_layout, layer_name, net.net_obj, polygonData
+        )
         if polygon.IsNull() or polygonData is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False

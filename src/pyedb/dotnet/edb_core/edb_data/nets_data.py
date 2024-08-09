@@ -27,7 +27,6 @@ from pyedb.dotnet.edb_core.dotnet.database import (
     NetDotNet,
 )
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
 
 
 class EDBNetsData(NetDotNet):
