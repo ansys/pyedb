@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.geometry.point_data import PointData
 from pyedb.dotnet.edb_core.utilities.obj_base import BBox
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 
 
 class PolygonData:
@@ -55,6 +55,7 @@ class PolygonData:
     def arcs(self):
         """Get the Primitive Arc Data."""
         from pyedb.dotnet.edb_core.edb_data.primitives_data import EDBArcs
+
         arcs = [EDBArcs(self._pedb, i) for i in self._edb_object.GetArcData()]
         return arcs
 

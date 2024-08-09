@@ -20,10 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import math
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+
 from pyedb.dotnet.edb_core.cell.connectable import Connectable
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
+from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 class Primitive(Connectable):
@@ -469,7 +470,7 @@ class Primitive(Connectable):
                 if p.IsNull():
                     continue
             new_polys.append(
-                    self._app.modeler.create_polygon(p, self.layer_name, net_name=self.net_name, voids=[]),
+                self._app.modeler.create_polygon(p, self.layer_name, net_name=self.net_name, voids=[]),
             )
         self.delete()
         for prim in primitives:
@@ -502,7 +503,7 @@ class Primitive(Connectable):
                 primi_polys.append(prim.primitive_object.GetPolygonData())
             else:
                 primi_polys.append(prim._edb_object.GetPolygonData())
-                #primi_polys.append(prim)
+                # primi_polys.append(prim)
         list_poly = poly.Intersect(convert_py_list_to_net_list([poly]), convert_py_list_to_net_list(primi_polys))
         new_polys = []
         if list_poly:
@@ -528,21 +529,19 @@ class Primitive(Connectable):
                             if not polys_clean.IsNull():
                                 void_to_append = [v for v in list_void if polys_clean.GetIntersectionType(v) == 2]
                         new_polys.append(
-                                self._app.modeler.create_polygon(
-                                    polys_clean, self.layer_name, net_name=self.net_name, voids=void_to_append
+                            self._app.modeler.create_polygon(
+                                polys_clean, self.layer_name, net_name=self.net_name, voids=void_to_append
                             )
                         )
                     else:
                         new_polys.append(
-                                self._app.modeler.create_polygon(
-                                    p, self.layer_name, net_name=self.net_name, voids=list_void
+                            self._app.modeler.create_polygon(
+                                p, self.layer_name, net_name=self.net_name, voids=list_void
                             )
                         )
                 else:
                     new_polys.append(
-                            self._app.modeler.create_polygon(
-                                p, self.layer_name, net_name=self.net_name, voids=list_void
-                        )
+                        self._app.modeler.create_polygon(p, self.layer_name, net_name=self.net_name, voids=list_void)
                     )
         self.delete()
         for prim in primitives:
@@ -593,7 +592,7 @@ class Primitive(Connectable):
                         if int_data2 > 1:
                             list_void.append(void_pdata)
                 new_polys.append(
-                        self._app.modeler.create_polygon(p, self.layer_name, net_name=self.net_name, voids=list_void),
+                    self._app.modeler.create_polygon(p, self.layer_name, net_name=self.net_name, voids=list_void),
                 )
         self.delete()
         for prim in primitives:
@@ -711,7 +710,9 @@ class Primitive(Connectable):
             if _poly is None or _poly.IsNull() or _poly is False:
                 self._logger.error("Failed to create void polygon data")
                 return False
-            point_list = self._pedb.modeler.create_polygon(_poly, layer_name=self.layer_name, net_name=self.net.name)._edb_object
+            point_list = self._pedb.modeler.create_polygon(
+                _poly, layer_name=self.layer_name, net_name=self.net.name
+            )._edb_object
         elif "_edb_object" in dir(point_list):
             point_list = point_list._edb_object
         elif "primitive_obj" in dir(point_list):
@@ -721,7 +722,6 @@ class Primitive(Connectable):
     @property
     def api_class(self):
         return self._pedb._edb.Cell.Primitive
-
 
     def set_hfss_prop(self, material, solve_inside):
         """Set HFSS properties.

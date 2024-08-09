@@ -676,8 +676,10 @@ class Modeler(object):
                 self._logger.error("Failed to create void polygon data")
                 return False
             polygonData.AddHole(voidPolygonData)
-        polygon = self._pedb._edb.Cell.Primitive.Polygon.Create(self._active_layout, layer_name, net.net_obj, polygonData)
-        #polygon = self._edb.cell.primitive.polygon.create(self._active_layout, layer_name, net, polygonData)
+        polygon = self._pedb._edb.Cell.Primitive.Polygon.Create(
+            self._active_layout, layer_name, net.net_obj, polygonData
+        )
+        # polygon = self._edb.cell.primitive.polygon.create(self._active_layout, layer_name, net, polygonData)
         if polygon.IsNull() or polygonData is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
