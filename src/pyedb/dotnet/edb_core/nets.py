@@ -207,9 +207,10 @@ class EdbNets(object):
             total_plane_area = 0.0
             total_trace_area = 0.0
             for primitive in net.primitives:
-                if primitive.GetPrimitiveType() == self._edb.cell.primitive.PrimitiveType.Bondwire:
+                primitive = primitive._edb_object
+                if primitive.GetPrimitiveType() == self._edb.cell.primitive.api_class.PrimitiveType.Bondwire:
                     continue
-                if primitive.GetPrimitiveType() != self._edb.cell.primitive.PrimitiveType.Path:
+                if primitive.GetPrimitiveType() != self._edb.cell.primitive.api_class.PrimitiveType.Path:
                     total_plane_area += float(primitive.GetPolygonData().Area())
                 else:
                     total_trace_area += float(primitive.GetPolygonData().Area())

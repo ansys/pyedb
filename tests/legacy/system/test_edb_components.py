@@ -234,6 +234,7 @@ class TestClass:
             if el.GetId() == 5953:
                 poly = el
         for el in self.edbapp.modeler.polygons:
+            el = el._edb_object
             if el.GetId() == 5954:
                 selection_poly = el
         assert self.edbapp.modeler.parametrize_polygon(poly, selection_poly)
@@ -267,7 +268,7 @@ class TestClass:
 
     def test_components_create_component_from_pins(self):
         """Create a component from a pin."""
-        pins = self.edbapp.components.get_pin_from_component("R13")
+        pins = [i for i in self.edbapp.components.get_pin_from_component("R13")]
         component = self.edbapp.components.create(pins, "newcomp")
         assert component
         assert component.part_name == "newcomp"

@@ -586,17 +586,21 @@ class Components(object):
 
         if mounted_component_pin1:
             m_pin1 = self._get_edb_pin_from_pin_name(mounted_component, mounted_component_pin1)
+            m_pin1=self._pedb.layout.find_object_by_id(m_pin1.GetId())
             m_pin1_pos = self.get_pin_position(m_pin1)
         if mounted_component_pin2:
             m_pin2 = self._get_edb_pin_from_pin_name(mounted_component, mounted_component_pin2)
+            m_pin2 = self._pedb.layout.find_object_by_id(m_pin2.GetId())
             m_pin2_pos = self.get_pin_position(m_pin2)
 
         if hosting_component_pin1:
             h_pin1 = self._get_edb_pin_from_pin_name(hosting_component, hosting_component_pin1)
+            h_pin1 = self._pedb.layout.find_object_by_id(h_pin1.GetId())
             h_pin1_pos = self.get_pin_position(h_pin1)
 
         if hosting_component_pin2:
             h_pin2 = self._get_edb_pin_from_pin_name(hosting_component, hosting_component_pin2)
+            h_pin2 = self._pedb.layout.find_object_by_id(h_pin2.GetId())
             h_pin2_pos = self.get_pin_position(h_pin2)
         #
         vector = [h_pin1_pos[0] - m_pin1_pos[0], h_pin1_pos[1] - m_pin1_pos[1]]
@@ -1323,6 +1327,7 @@ class Components(object):
             return False
         self.set_component_rlc(component.refdes)
         pins = self.get_pin_from_component(component.refdes)
+        pins = [i._edb_object for i in pins]
         if len(pins) == 2:  # pragma: no cover
             pin_layers = self._padstack._get_pin_layer_range(pins[0])
             pos_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
@@ -1389,6 +1394,7 @@ class Components(object):
             return False
         self.set_component_rlc(component.refdes)
         pins = self.get_pin_from_component(component.refdes)
+        pins = [i._edb_object for i in pins]
         if len(pins) == 2:  # pragma: no cover
             pin_layer = self._padstack._get_pin_layer_range(pins[0])[0]
             pos_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
@@ -1505,11 +1511,11 @@ class Components(object):
                 return None
             ind = 1
             for pin in pins:
-                if not pin.name:
+                if not pin.GetName():
                     pin.SetName(str(ind))
                 ind += 1
                 componentDefinitionPin = self._pedb.edb_api.definition.ComponentDefPin.Create(
-                    componentDefinition, pin.name
+                    componentDefinition, pin.GetName()
                 )
                 if componentDefinitionPin.IsNull():
                     self._logger.error("Failed to create component definition pin {}-{}".format(name, pin.GetName()))
@@ -1609,8 +1615,10 @@ class Components(object):
         if not component_name:
             component_name = generate_unique_name("Comp_")
         if component_part_name:
+            pins = [i._edb_object for i in pins]
             compdef = self._getComponentDefinition(component_part_name, pins)
         else:
+            pins = [i._edb_object for i in pins]
             compdef = self._getComponentDefinition(component_name, pins)
         if not compdef:
             return False
@@ -1619,7 +1627,7 @@ class Components(object):
         )
 
         if isinstance(pins[0], EDBPadstackInstance):
-            pins = [i._edb_padstackinstance for i in pins]
+            pins = [i._edb_object for i in pins]
         hosting_component_location = pins[0].GetComponent().GetTransform()
         for pin in pins:
             pin.SetIsLayoutPin(True)
@@ -2314,6 +2322,7 @@ class Components(object):
                             footprint_cell = self.definitions[comp.partname]._edb_object.GetFootprintCell()
                             comp_def = self._edb.definition.ComponentDef.Create(self._db, part_name, footprint_cell)
                             for pin in pinlist:
+                                pin = pin._edb_object
                                 self._edb.definition.ComponentDefPin.Create(comp_def, pin.GetName())
 
                         p_layer = comp.placement_layer
@@ -2567,6 +2576,7 @@ class Components(object):
                 for j in [*i.pins.values()]:
                     pin_list.append(j)
         for pin in pin_list:
+            pin = pin._edb_object
             if pin.GetNet().GetName() == net_name:
                 pin_names.append(self.get_aedt_pin_name(pin))
         return pin_names
@@ -2594,6 +2604,7 @@ class Components(object):
         """
         netlist = []
         for pin in PinList:
+            pin = pin._edb_object
             netlist.append(pin.GetNet().GetName())
         return list(set(netlist))
 
@@ -2621,6 +2632,7 @@ class Components(object):
         component_pins = self.get_pin_from_component(refdes)
         data = {"refdes": [], "pin_name": [], "net_name": []}
         for pin_obj in component_pins:
+            pin_obj = pin_obj._edb_object
             pin_name = pin_obj.GetName()
             net_name = pin_obj.GetNet().GetName()
             if pin_name is not None:
