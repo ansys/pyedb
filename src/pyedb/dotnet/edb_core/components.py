@@ -1509,7 +1509,7 @@ class Components(object):
                     pin.SetName(str(ind))
                 ind += 1
                 componentDefinitionPin = self._pedb.edb_api.definition.ComponentDefPin.Create(
-                    componentDefinition, pin.GetName()
+                    componentDefinition, pin.name
                 )
                 if componentDefinitionPin.IsNull():
                     self._logger.error("Failed to create component definition pin {}-{}".format(name, pin.GetName()))
@@ -1746,7 +1746,7 @@ class Components(object):
         """
         if not modelname:
             modelname = get_filename_without_extension(modelpath)
-        edbComponent = self.get_component_by_name(componentname)
+        edbComponent = self.get_component_by_name(componentname)._edb_object
         if str(edbComponent.EDBHandle) == "0":
             return False
         edbRlcComponentProperty = edbComponent.GetComponentProperty().Clone()
@@ -1958,7 +1958,7 @@ class Components(object):
         >>> edbapp.components.delete("A1")
 
         """
-        edb_cmp = self.get_component_by_name(component_name)
+        edb_cmp = self.get_component_by_name(component_name)._edb_object
         if edb_cmp is not None:
             edb_cmp.Delete()
             if edb_cmp in list(self.instances.keys()):
@@ -1989,6 +1989,7 @@ class Components(object):
         """
         edb_cmp = self.get_component_by_name(component_name)
         if edb_cmp is not None:
+            edb_cmp = edb_cmp._edb_object
             rlc_property = edb_cmp.GetComponentProperty().Clone()
             pin_pair_model = rlc_property.GetModel().Clone()
             pprlc = pin_pair_model.GetPinPairRlc(list(pin_pair_model.PinPairs)[0])
@@ -2149,7 +2150,7 @@ class Components(object):
             self.instances[componentname].is_enabled = False
             self._logger.info("No parameters passed, component %s  is disabled.", componentname)
             return True
-        edb_component = self.get_component_by_name(componentname)
+        edb_component = self.get_component_by_name(componentname)._edb_object
         edb_rlc_component_property = self._edb.cell.hierarchy._hierarchy.RLCComponentProperty()
         component_pins = self.get_pin_from_component(componentname)
         pin_number = len(component_pins)
@@ -2173,7 +2174,7 @@ class Components(object):
                 rlc.C = self._get_edb_value(cap_value)
             else:
                 rlc.CEnabled = False
-            pin_pair = self._edb.utility.utility.PinPair(from_pin.GetName(), to_pin.GetName())
+            pin_pair = self._edb.utility.utility.PinPair(from_pin.name, to_pin.name)
             rlc_model = self._edb.cell.hierarchy._hierarchy.PinPairModel()
             rlc_model.SetPinPairRlc(pin_pair, rlc)
             if not edb_rlc_component_property.SetModel(rlc_model) or not edb_component.SetComponentProperty(
@@ -2441,6 +2442,7 @@ class Components(object):
             ]
         else:
             pins = [p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.IsLayoutPin()]
+            pins = [self._pedb.layout.find_object_by_id(p.GetId()) for p in pins]
         return pins
 
     def get_aedt_pin_name(self, pin):
@@ -2522,6 +2524,7 @@ class Components(object):
         >>> edbapp.components.get_pin_position(pin)
 
         """
+        pin = pin._edb_object
         res, pt_pos, rot_pos = pin.GetPositionAndRotation()
 
         if pin.GetComponent().IsNull():

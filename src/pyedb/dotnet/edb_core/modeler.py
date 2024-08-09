@@ -1226,16 +1226,16 @@ class Modeler(object):
             delete_list = []
             if lay in list(self.polygons_by_layer.keys()):
                 for poly in self.polygons_by_layer[lay]:
-                    if not poly.layer.name in list(poly_by_nets.keys()):
-                        if poly.layer.name:
-                            poly_by_nets[poly.net.name] = [poly]
+                    poly = poly._edb_object
+                    if not poly.GetNet().GetName() in list(poly_by_nets.keys()):
+                        if poly.GetNet().GetName():
+                            poly_by_nets[poly.GetNet().GetName()] = [poly]
                     else:
-                        if poly.net.name:
-                            poly_by_nets[poly.net.name].append(poly)
+                        if poly.GetNet().GetName():
+                            poly_by_nets[poly.GetNet().GetName()].append(poly)
             for net in poly_by_nets:
                 if net in net_names_list or not net_names_list:
                     for i in poly_by_nets[net]:
-                        i = i._edb_object
                         list_polygon_data.append(i.GetPolygonData())
                         delete_list.append(i)
                         all_voids.append(i.Voids)
@@ -1249,7 +1249,7 @@ class Modeler(object):
             for v in all_voids:
                 for void in v:
                     for poly in poly_by_nets[net]:  # pragma no cover
-                        if int(void.GetPolygonData().GetIntersectionType(poly._edb_object.GetPolygonData())) >= 2:
+                        if int(void.GetPolygonData().GetIntersectionType(poly.GetPolygonData())) >= 2:
                             try:
                                 id = delete_list.index(poly)
                             except ValueError:

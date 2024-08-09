@@ -636,7 +636,6 @@ class Primitive(Connectable):
 
         Read-Only.
         """
-        from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
         return [self._pedb.layout.find_object_by_id(void.GetId()) for void in self._edb_object.Voids]
 
     @property
