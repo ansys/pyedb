@@ -266,9 +266,8 @@ jobs:
           .venv\Scripts\Activate.ps1
           . .\doc\make.bat html
 
-      # Verify https://github.com/actions/upload-artifact/issues/591 is fixed before upgrading.
       - name: Upload HTML documentation artifact
-        uses: actions/upload-artifact@v4.3.4
+        uses: actions/upload-artifact@v4
         with:
           name: documentation-html
           path: doc/_build/html
@@ -284,8 +283,7 @@ jobs:
           . .\doc\make.bat pdf
 
       - name: Upload PDF Documentation artifact
-        # Verify https://github.com/actions/upload-artifact/issues/591 is fixed before upgrading.
-        uses: actions/upload-artifact@v4.3.4
+        uses: actions/upload-artifact@v4
         with:
           name: documentation-pdf
           path: doc/_build/latex/pyedb.pdf
