@@ -489,7 +489,7 @@ class EdbPadstacks(object):
             padstackInst = self.instances[padstackInst]._edb_padstackinstance
 
         else:
-            psdef = padstackInst.GetPadstackDef()
+            psdef = padstackInst._edb_object.GetPadstackDef()
         newdefdata = self._edb.definition.PadstackDefData(psdef.GetData())
         newdefdata.SetSolderBallShape(self._edb.definition.SolderballShape.Cylinder)
         newdefdata.SetSolderBallParameter(self._get_edb_value(ballDiam), self._get_edb_value(ballDiam))
@@ -502,7 +502,7 @@ class EdbPadstacks(object):
         psdef.SetData(newdefdata)
         sball_layer = [lay._edb_layer for lay in list(self._layers.values()) if lay.name == sballLayer_name][0]
         if sball_layer is not None:
-            padstackInst.SetSolderBallLayer(sball_layer)
+            padstackInst._edb_object.SetSolderBallLayer(sball_layer)
             return True
 
         return False
@@ -954,7 +954,7 @@ class EdbPadstacks(object):
                     _poly.delete()
                 else:
                     return False
-            elif isinstance(polygon_hole, PolygonDataDotNet):
+            elif isinstance(polygon_hole, PolygonData):
                 hole_param = polygon_hole.edb_api
             else:
                 return False
