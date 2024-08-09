@@ -104,8 +104,6 @@ class PrimitiveDotNet:
         except TypeError:
             self._app.logger.error("Error setting net object")
 
-
-
     @property
     def primitive_type(self):
         """:class:`PrimitiveType`: Primitive type of the primitive.
@@ -765,8 +763,6 @@ class PathDotNet(PrimitiveDotNet):
             points = [self._pedb.point_data(i[0], i[1]) for i in value]
             polygon_data = self._edb.geometry.polygon_data.dotnetobj(convert_py_list_to_net_list(points), False)
             self.prim_obj.SetCenterLine(polygon_data)
-
-
 
     @property
     def get_clip_info(self):

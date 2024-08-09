@@ -2214,7 +2214,9 @@ class Edb(Database):
                     if pin.pingroups:
                         pins_to_preserve.append(pin.id)
         if check_terminals:
-            terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) in [0, 3, 4, 7, 8]]
+            terms = [
+                term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) in [0, 3, 4, 7, 8]
+            ]
             for term in terms:
                 if term._edb_object.GetTerminalType().ToString() == "PadstackInstanceTerminal":
                     if term._edb_object.GetParameters()[1].GetNet().GetName() in reference_list:

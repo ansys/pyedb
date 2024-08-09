@@ -735,7 +735,11 @@ class EdbHfss(object):
             ref_edge = self._edb.cell.terminal.PrimitiveEdge.Create(reference_polygon._edb_object, reference_point)
             ref_edges = convert_py_list_to_net_list(ref_edge, self._edb.cell.terminal.Edge)
             ref_edge_term = self._edb.cell.terminal.EdgeTerminal.Create(
-                reference_polygon._edb_object.GetLayout(), reference_polygon._edb_object.GetNet(), port_name + "_ref", ref_edges, isRef=True
+                reference_polygon._edb_object.GetLayout(),
+                reference_polygon._edb_object.GetNet(),
+                port_name + "_ref",
+                ref_edges,
+                isRef=True,
             )
             if reference_layer:
                 ref_edge_term.SetReferenceLayer(reference_layer)
@@ -1108,9 +1112,7 @@ class EdbHfss(object):
                             if not term.IsNull():
                                 self._logger.info("Terminal {} created".format(term.GetName()))
                                 term.SetIsCircuitPort(True)
-                                terminal_info.append(
-                                    [poly.net.name, mid_point[0], mid_point[1], term.GetName()]
-                                )
+                                terminal_info.append([poly.net.name, mid_point[0], mid_point[1], term.GetName()])
                                 mid_pt_data = self._edb.geometry.point_data(
                                     self._edb.utility.value(mid_point[0]), self._edb.utility.value(mid_point[1])
                                 )
