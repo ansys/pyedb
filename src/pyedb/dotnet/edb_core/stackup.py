@@ -217,7 +217,7 @@ class LayerCollection(object):
         kwargs["layer_type"] = layer_type
         return self._add_layer(add_method="add_layer_above", base_layer_name=base_layer_name, **kwargs)
 
-    def add_document_layer(self, name, layer_type="UndefinedLayerType", **kwargs):
+    def add_document_layer(self, name, layer_type="user", **kwargs):
         """Add a document layer.
 
         Parameters
@@ -225,7 +225,7 @@ class LayerCollection(object):
         name : str
             Name of the layer.
         layer_type: str, optional
-            Type of the layer. The default to ``"signal"``. Options are ``"signal"``, ``"dielectric"``
+            Type of the layer. The default is ``"user"``. Options are ``"user"``, ``"outline"``
         kwargs
 
         Returns
