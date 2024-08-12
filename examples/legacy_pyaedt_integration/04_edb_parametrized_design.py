@@ -206,20 +206,27 @@ for n in range(len(points_p)):
 
 # Create the wave ports
 
-edb.hfss.create_differential_wave_port(
+p1 = edb.hfss.create_differential_wave_port(
     trace_p[0].id,
     ["0.0", "($ms_width+$ms_spacing)/2"],
     trace_n[0].id,
     ["0.0", "-($ms_width+$ms_spacing)/2"],
     "wave_port_1",
 )
-edb.hfss.create_differential_wave_port(
+
+pos_p1 = p1[1].terminals[0].name
+neg_p1 = p1[1].terminals[1].name
+
+p2 = edb.hfss.create_differential_wave_port(
     trace_p[2].id,
     ["$pcb_len", "($ms_width+$ms_spacing)/2"],
     trace_n[2].id,
     ["$pcb_len", "-($ms_width + $ms_spacing)/2"],
     "wave_port_2",
 )
+
+pos_p2 = p2[1].terminals[0].name
+neg_p2 = p2[1].terminals[1].name
 
 # Draw a conducting rectangle on the ground layers.
 
@@ -287,10 +294,10 @@ edb.close_edb()
 # Open the project in HFSS 3D Layout.
 
 h3d = pyaedt.Hfss3dLayout(
-    projectname=aedb_path,
-    specified_version="2024.2",
+    project=aedb_path,
+    version=edb_version,
     non_graphical=non_graphical,
-    new_desktop_session=True,
+    new_desktop=True,
 )
 
 # ## Add HFSS simulation setup
@@ -302,12 +309,12 @@ setup = h3d.create_setup()
 setup.props["AdaptiveSettings"]["SingleFrequencyDataList"]["AdaptiveFrequencyData"]["MaxPasses"] = 3
 
 h3d.create_linear_count_sweep(
-    setupname=setup.name,
+    setup=setup.name,
     unit="GHz",
-    freqstart=0,
-    freqstop=10,
+    start_frequency=0,
+    stop_frequency=10,
     num_of_freq_points=1001,
-    sweepname="sweep1",
+    name="sweep1",
     sweep_type="Interpolating",
     interpolation_tol_percent=1,
     interpolation_max_solutions=255,
@@ -319,8 +326,8 @@ h3d.create_linear_count_sweep(
 # Define the differential pairs to used to calculate differential and common mode
 # s-parameters.
 
-h3d.set_differential_pair(diff_name="In", positive_terminal="wave_port_1:T1", negative_terminal="wave_port_1:T2")
-h3d.set_differential_pair(diff_name="Out", positive_terminal="wave_port_2:T1", negative_terminal="wave_port_2:T2")
+h3d.set_differential_pair(differential_mode="In", assignment=pos_p1, reference=neg_p1)
+h3d.set_differential_pair(differential_mode="Out", assignment=pos_p2, reference=neg_p2)
 
 # Solve the project.
 
