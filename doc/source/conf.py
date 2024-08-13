@@ -360,9 +360,13 @@ nbsphinx_execute = "auto"
 nbsphinx_allow_errors = False
 
 # Sphinx gallery customization
-# nbsphinx_thumbnails = {
-#     "examples/legacy_standalone/00_EDB_Create_VIA": "_static/thumbnails/diff_via.png",
-# }
+nbsphinx_thumbnails = {
+    "examples/use_configuration/set_up_edb_for_signal_integrity_analysis": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/import_stackup": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/import_material": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/import_ports": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/import_setup_ac": "_static/thumbnails/101_getting_started.png",
+}
 
 nbsphinx_custom_formats = {
     ".py": ["jupytext.reads", {"fmt": ""}],
