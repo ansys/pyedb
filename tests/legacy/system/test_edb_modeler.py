@@ -490,7 +490,7 @@ class TestClass:
         self.local_scratch.copyfolder(source_path_edb, target_path_edb)
         edbapp = Edb(target_path_edb, desktop_version)
         cap = edbapp.components.capacitors["C1"]
-        edbapp.siwave.create_circuit_port_on_pin(pos_pin=cap.pins["1"], neg_pin=cap.pins["2"])
+        edbapp.siwave.create_circuit_port_on_pin(pos_pin=cap.pins["1"]._edb_object, neg_pin=cap.pins["2"]._edb_object)
         edbapp.save_edb_as(r"C:\Users\gkorompi\Downloads\AFT")
         edbapp.components.capacitors["C3"].pins
         edbapp.padstacks.pins

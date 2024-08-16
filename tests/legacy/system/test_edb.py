@@ -90,7 +90,7 @@ class TestClass:
         assert len(self.edbapp.sources) == 1
         assert list(self.edbapp.sources.values())[0].magnitude == 3.3
 
-        pins = [i._edb_object for i in self.edbapp.components.get_pin_from_component("U1")]
+        pins = self.edbapp.components.get_pin_from_component("U1")
         assert "VSource_" in self.edbapp.siwave.create_voltage_source_on_pin(pins[300], pins[10], 3.3, 0)
         assert len(self.edbapp.sources) == 2
         assert len(self.edbapp.probes) == 0
@@ -105,7 +105,7 @@ class TestClass:
     def test_siwave_create_current_source(self):
         """Create a current source."""
         assert self.edbapp.siwave.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0) != ""
-        pins = [i._edb_object for i in self.edbapp.components.get_pin_from_component("U1")]
+        pins = self.edbapp.components.get_pin_from_component("U1")
         assert "I22" == self.edbapp.siwave.create_current_source_on_pin(pins[301], pins[10], 0.1, 0, "I22")
 
         assert self.edbapp.siwave.create_pin_group_on_net(reference_designator="U1", net_name="GND", group_name="gnd")
@@ -149,7 +149,7 @@ class TestClass:
 
     def test_siwave_create_resistors_on_pin(self):
         """Create a resistor on pin."""
-        pins = [i._edb_object for i in self.edbapp.components.get_pin_from_component("U1")]
+        pins = self.edbapp.components.get_pin_from_component("U1")
         assert "RST4000" == self.edbapp.siwave.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")
 
     def test_siwave_add_syz_analsyis(self):

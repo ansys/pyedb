@@ -587,7 +587,6 @@ class Components(object):
         if mounted_component_pin1:
             m_pin1 = self._get_edb_pin_from_pin_name(mounted_component, mounted_component_pin1)
             m_pin1_pos = self.get_pin_position(m_pin1)
-            print(mounted_component_pin1, m_pin1_pos)
         if mounted_component_pin2:
             m_pin2 = self._get_edb_pin_from_pin_name(mounted_component, mounted_component_pin2)
             m_pin2_pos = self.get_pin_position(m_pin2)
@@ -1324,7 +1323,6 @@ class Components(object):
             return False
         self.set_component_rlc(component.refdes)
         pins = self.get_pin_from_component(component.refdes)
-        pins = [i._edb_object for i in pins]
         if len(pins) == 2:  # pragma: no cover
             pin_layers = self._padstack._get_pin_layer_range(pins[0])
             pos_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
@@ -1391,7 +1389,6 @@ class Components(object):
             return False
         self.set_component_rlc(component.refdes)
         pins = self.get_pin_from_component(component.refdes)
-        pins = [i._edb_object for i in pins]
         if len(pins) == 2:  # pragma: no cover
             pin_layer = self._padstack._get_pin_layer_range(pins[0])[0]
             pos_pin_term = self._pedb.edb_api.cell.terminal.PadstackInstanceTerminal.Create(
@@ -1609,13 +1606,12 @@ class Components(object):
         >>> edbapp.components.create(pins, "A1New")
 
         """
+        pins = [p._edb_object for p in pins]
         if not component_name:
             component_name = generate_unique_name("Comp_")
         if component_part_name:
-            pins = [i._edb_object for i in pins]
             compdef = self._getComponentDefinition(component_part_name, pins)
         else:
-            pins = [i._edb_object for i in pins]
             compdef = self._getComponentDefinition(component_name, pins)
         if not compdef:
             return False
@@ -2179,7 +2175,7 @@ class Components(object):
                 rlc.C = self._get_edb_value(cap_value)
             else:
                 rlc.CEnabled = False
-            pin_pair = self._edb.utility.utility.PinPair(from_pin.name, to_pin.name)
+            pin_pair = self._edb.utility.utility.PinPair(from_pin.GetName(), to_pin.GetName())
             rlc_model = self._edb.cell.hierarchy._hierarchy.PinPairModel()
             rlc_model.SetPinPairRlc(pin_pair, rlc)
             if not edb_rlc_component_property.SetModel(rlc_model) or not edb_component.SetComponentProperty(
@@ -2319,7 +2315,6 @@ class Components(object):
                             footprint_cell = self.definitions[comp.partname]._edb_object.GetFootprintCell()
                             comp_def = self._edb.definition.ComponentDef.Create(self._db, part_name, footprint_cell)
                             for pin in pinlist:
-                                pin = pin._edb_object
                                 self._edb.definition.ComponentDefPin.Create(comp_def, pin.GetName())
 
                         p_layer = comp.placement_layer
@@ -2329,6 +2324,7 @@ class Components(object):
                         unmount_comp_list.remove(refdes)
                         comp.edbcomponent.Ungroup(True)
 
+                        pinlist = [self._pedb.layout.find_object_by_id(i.GetId()) for i in pinlist]
                         self.create(pinlist, refdes, p_layer, part_name)
                         self.refresh_components()
                         comp = self.instances[refdes]
@@ -2448,7 +2444,6 @@ class Components(object):
             ]
         else:
             pins = [p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.IsLayoutPin()]
-            pins = [self._pedb.layout.find_object_by_id(p.GetId()) for p in pins]
         return pins
 
     def get_aedt_pin_name(self, pin):
@@ -2576,7 +2571,6 @@ class Components(object):
                 for j in [*i.pins.values()]:
                     pin_list.append(j)
         for pin in pin_list:
-            pin = pin._edb_object
             if pin.GetNet().GetName() == net_name:
                 pin_names.append(self.get_aedt_pin_name(pin))
         return pin_names
@@ -2604,7 +2598,6 @@ class Components(object):
         """
         netlist = []
         for pin in PinList:
-            pin = pin._edb_object
             netlist.append(pin.GetNet().GetName())
         return list(set(netlist))
 
@@ -2632,7 +2625,6 @@ class Components(object):
         component_pins = self.get_pin_from_component(refdes)
         data = {"refdes": [], "pin_name": [], "net_name": []}
         for pin_obj in component_pins:
-            pin_obj = pin_obj._edb_object
             pin_name = pin_obj.GetName()
             net_name = pin_obj.GetNet().GetName()
             if pin_name is not None:

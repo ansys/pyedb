@@ -268,7 +268,8 @@ class TestClass:
 
     def test_components_create_component_from_pins(self):
         """Create a component from a pin."""
-        pins = [i for i in self.edbapp.components.get_pin_from_component("R13")]
+        pins = self.edbapp.components.get_pin_from_component("R13")
+        pins = [self.edbapp.layout.find_object_by_id(i.GetId()) for i in pins]
         component = self.edbapp.components.create(pins, "newcomp")
         assert component
         assert component.part_name == "newcomp"
