@@ -212,10 +212,10 @@ class Material(object):
     @dc_conductivity.setter
     def dc_conductivity(self, value: Union[int, float]):
         """Set material dielectric conductivity."""
-        if self.__dc_model:
+        if self.__dc_model and value:
             self.__dc_model.SetDCConductivity(value)
         else:
-            self.__edb.logger.error(f"DC conductivity cannot be updated in material without DC model.")
+            self.__edb.logger.error(f"DC conductivity cannot be updated in material without DC model or value {value}.")
 
     @property
     def dc_permittivity(self):
@@ -227,10 +227,12 @@ class Material(object):
     @dc_permittivity.setter
     def dc_permittivity(self, value: Union[int, float]):
         """Set material dielectric relative permittivity"""
-        if self.__dc_model:
+        if self.__dc_model and value:
             self.__dc_model.SetDCRelativePermitivity(value)
         else:
-            self.__edb.logger.error(f"DC permittivity cannot be updated in material without DC model.")
+            self.__edb.logger.error(
+                f"DC permittivity cannot be updated in material without DC model or value {value}." f""
+            )
 
     @property
     def dielectric_model_frequency(self):
@@ -1033,7 +1035,7 @@ class Materials(object):
         amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")
         for material in self.iterate_materials_in_amat(amat_file):
             iter_material_name = material["name"]
-            if iter_material_name == material_name:
+            if iter_material_name == material_name or iter_material_name.lower() == material_name.lower():
                 for material_property, value in material.items():
                     if material_property != "name":
                         res[material_property] = value

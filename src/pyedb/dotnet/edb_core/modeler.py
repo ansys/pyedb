@@ -1320,7 +1320,7 @@ class Modeler(object):
 
         """
         stat_model = EDBStatistics()
-        stat_model.num_layers = len(list(self._pedb.stackup.stackup_layers.values()))
+        stat_model.num_layers = len(list(self._pedb.stackup.layers.values()))
         stat_model.num_capacitors = len(self._pedb.components.capacitors)
         stat_model.num_resistors = len(self._pedb.components.resistors)
         stat_model.num_inductors = len(self._pedb.components.inductors)

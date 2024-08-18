@@ -206,7 +206,6 @@ class TestClass:
         assert isinstance(edbapp.stackup.layers, dict)
         assert isinstance(edbapp.stackup.signal_layers, dict)
         assert isinstance(edbapp.stackup.dielectric_layers, dict)
-        assert isinstance(edbapp.stackup.stackup_layers, dict)
         assert isinstance(edbapp.stackup.non_stackup_layers, dict)
         assert not edbapp.stackup["Outline"].is_stackup_layer
         assert edbapp.stackup["1_Top"].conductivity
@@ -274,8 +273,8 @@ class TestClass:
     def test_stackup_properties_2(self):
         """Evaluate various stackup properties."""
         edbapp = Edb(edbversion=desktop_version)
-        import_method = edbapp.stackup.import_stackup
-        export_method = edbapp.stackup.export_stackup
+        import_method = edbapp.stackup.load
+        export_method = edbapp.stackup.export
 
         assert import_method(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.csv"))
         assert "18_Bottom" in edbapp.stackup.layers.keys()
@@ -1107,9 +1106,9 @@ class TestClass:
     def test_19(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.stackup.add_layer_top(name="add_layer_top")
-        assert list(edbapp.stackup.stackup_layers.values())[0].name == "add_layer_top"
+        assert list(edbapp.stackup.layers.values())[0].name == "add_layer_top"
         assert edbapp.stackup.add_layer_bottom(name="add_layer_bottom")
-        assert list(edbapp.stackup.stackup_layers.values())[-1].name == "add_layer_bottom"
+        assert list(edbapp.stackup.layers.values())[-1].name == "add_layer_bottom"
         assert edbapp.stackup.add_layer_below(name="add_layer_below", base_layer_name="1_Top")
         base_layer = edbapp.stackup.layers["1_Top"]
         l_id = edbapp.stackup.layers_by_id.index([base_layer.id, base_layer.name])

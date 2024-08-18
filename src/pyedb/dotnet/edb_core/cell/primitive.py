@@ -109,11 +109,11 @@ class Primitive(Connectable):
     @property
     def layer(self):
         """Get the primitive edb layer object."""
-        try:
-            layer_name = self.primitive_object.GetLayer().GetName()
-            return self._pedb.stackup.layers[layer_name]
-        except (KeyError, AttributeError):  # pragma: no cover
+        layer = self.primitive_object.GetLayer()
+        if layer.IsNull():
             return None
+        else:
+            return self._pedb.stackup.all_layers[layer.GetName()]
 
     @property
     def layer_name(self):

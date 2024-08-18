@@ -726,9 +726,7 @@ class EDBPadstack(object):
         -------
         dict
         """
-        return {
-            id: via for id, via in self._ppadstack.padstack_instances.items() if via.padstack_definition == self.name
-        }
+        return {id: via for id, via in self._ppadstack.instances.items() if via.padstack_definition == self.name}
 
     @property
     def hole_range(self):
@@ -777,10 +775,10 @@ class EDBPadstack(object):
         convert_only_signal_vias : bool, optional
             Either to convert only vias belonging to signal nets or all vias. Defaults is ``True``.
         hole_wall_angle : float, optional
-            Angle of laser penetration in degrees. The angle defines the bottom hole diameter with this formula:
+            Angle of laser penetration in degrees. The angle defines the lowest hole diameter with this formula:
             HoleDiameter -2*tan(laser_angle* Hole depth). Hole depth is the height of the via (dielectric thickness).
             The default is ``15``.
-            The bottom hole is ``0.75*HoleDepth/HoleDiam``.
+            The lowest hole is ``0.75*HoleDepth/HoleDiam``.
         delete_padstack_def : bool, optional
             Whether to delete the padstack definition. The default is ``True``.
             If ``False``, the padstack definition is not deleted and the hole size is set to zero.
@@ -801,7 +799,7 @@ class EDBPadstack(object):
         layer_names = [i for i in list(layers.keys())]
         if convert_only_signal_vias:
             signal_nets = [i for i in list(self._ppadstack._pedb.nets.signal_nets.keys())]
-        topl, topz, bottoml, bottomz = self._ppadstack._pedb.stackup.stackup_limits(True)
+        topl, topz, bottoml, bottomz = self._ppadstack._pedb.stackup.limits(True)
         if self.via_start_layer in layers:
             start_elevation = layers[self.via_start_layer].lower_elevation
         else:
@@ -812,8 +810,8 @@ class EDBPadstack(object):
             stop_elevation = layers[self.instances[0].stop_layer].upper_elevation
 
         diel_thick = abs(start_elevation - stop_elevation)
-        rad1 = self.hole_properties[0] / 2
-        rad2 = self.hole_properties[0] / 2 - math.tan(hole_wall_angle * diel_thick * math.pi / 180)
+        rad1 = self.hole_properties[0] / 2 - math.tan(hole_wall_angle * diel_thick * math.pi / 180)
+        rad2 = self.hole_properties[0] / 2
 
         if start_elevation < (topz + bottomz) / 2:
             rad1, rad2 = rad2, rad1
@@ -1770,16 +1768,6 @@ class EDBPadstackInstance(Primitive):
         self._pedb.add_project_variable(var_name + "Y", p[1])
         self.position = [var_name + "X", var_name + "Y"]
         return [var_name + "X", var_name + "Y"]
-
-    def delete_padstack_instance(self):
-        """Delete this padstack instance.
-
-        .. deprecated:: 0.6.28
-           Use :func:`delete` property instead.
-        """
-        warnings.warn("`delete_padstack_instance` is deprecated. Use `delete` instead.", DeprecationWarning)
-        self._edb_padstackinstance.Delete()
-        return True
 
     def in_voids(self, net_name=None, layer_name=None):
         """Check if this padstack instance is in any void.

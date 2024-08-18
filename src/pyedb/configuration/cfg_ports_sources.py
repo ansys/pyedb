@@ -228,7 +228,7 @@ class CfgCircuitElement(CfgBase):
                 neg_obj = self._create_pin_group(pins)
                 pos_objs.update(neg_obj)
         elif pos_type == "pin":
-            pins = {pos_value: self._pedb.components.components[self.reference_designator].pins[pos_value]}
+            pins = {pos_value: self._pedb.components.instances[self.reference_designator].pins[pos_value]}
             pos_objs.update(pins)
         else:
             raise f"Wrong positive terminal type {pos_type}"
@@ -263,7 +263,7 @@ class CfgCircuitElement(CfgBase):
                     # create pin group
                     neg_obj = self._create_pin_group(pins, True)
                 elif neg_type == "pin":
-                    neg_obj = {neg_value: self._pedb.components.components[self.reference_designator].pins[neg_value]}
+                    neg_obj = {neg_value: self._pedb.components.instances[self.reference_designator].pins[neg_value]}
                 else:
                     raise f"Wrong negative terminal type {neg_type}"
                 self.neg_terminal = [
@@ -274,7 +274,7 @@ class CfgCircuitElement(CfgBase):
         terminal_value = terminal_value if isinstance(terminal_value, list) else [terminal_value]
 
         def get_pin_obj(pin_name):
-            return {pin_name: self._pedb.components.components[self.reference_designator].pins[pin_name]}
+            return {pin_name: self._pedb.components.instances[self.reference_designator].pins[pin_name]}
 
         pins = dict()
         if terminal_type == "pin":

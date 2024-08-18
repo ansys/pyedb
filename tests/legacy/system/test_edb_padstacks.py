@@ -79,7 +79,7 @@ class TestClass:
         self.edbapp.padstacks["via_test1"].net_name = "GND"
         assert self.edbapp.padstacks["via_test1"].net_name == "GND"
         padstack = self.edbapp.padstacks.place(["via_x", "via_x+via_y*3"], "myVia", is_pin=True)
-        for test_prop in (self.edbapp.padstacks.padstack_instances, self.edbapp.padstacks.instances):
+        for test_prop in (self.edbapp.padstacks.instances, self.edbapp.padstacks.instances):
             padstack_instance = test_prop[padstack.id]
             assert padstack_instance.is_pin
             assert padstack_instance.position
@@ -263,11 +263,7 @@ class TestClass:
 
     def test_vias_metal_volume(self):
         """Metal volume of the via hole instance."""
-        vias = [
-            via
-            for via in list(self.edbapp.padstacks.padstack_instances.values())
-            if not via.start_layer == via.stop_layer
-        ]
+        vias = [via for via in list(self.edbapp.padstacks.instances.values()) if not via.start_layer == via.stop_layer]
         assert vias[0].metal_volume
         assert vias[1].metal_volume
 
@@ -283,7 +279,7 @@ class TestClass:
             edbversion=desktop_version,
             isreadonly=True,
         )
-        for test_prop in (edb.padstacks.instances, edb.padstacks.padstack_instances):
+        for test_prop in (edb.padstacks.instances, edb.padstacks.instances):
             padstack_instances = list(test_prop.values())
             for padstack_instance in padstack_instances:
                 result = padstack_instance.create_rectangle_in_pad("s", partition_max_order=8)
@@ -351,13 +347,13 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
 
         edbapp = Edb(target_path, edbversion=desktop_version)
-        signal_layer_list = [layer for layer in list(edbapp.stackup.stackup_layers.values()) if layer.type == "signal"]
+        signal_layer_list = [layer for layer in list(edbapp.stackup.layers.values()) if layer.type == "signal"]
         old_layers = []
         for n_layer, layer in enumerate(signal_layer_list):
             new_name = f"new_signal_name_{n_layer}"
             old_layers.append(layer.name)
             layer.name = new_name
-        for layer_name in list(edbapp.stackup.stackup_layers.keys()):
+        for layer_name in list(edbapp.stackup.layers.keys()):
             print(f"New layer name is {layer_name}")
         for padstack_inst in list(edbapp.padstacks.instances.values()):
             assert not [lay for lay in padstack_inst.layer_range_names if lay in old_layers]
@@ -430,12 +426,21 @@ class TestClass:
 
     def test_via_fence(self):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "via_fence_generic_project.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        target_path1 = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence1.aedb")
+        target_path2 = os.path.join(self.local_scratch.path, "test_pvia_fence", "via_fence2.aedb")
+        self.local_scratch.copyfolder(source_path, target_path1)
+        self.local_scratch.copyfolder(source_path, target_path2)
+        edbapp = Edb(target_path1, edbversion=desktop_version)
         assert edbapp.padstacks.merge_via_along_lines(net_name="GND", distance_threshold=2e-3, minimum_via_number=6)
         assert not edbapp.padstacks.merge_via_along_lines(
             net_name="test_dummy", distance_threshold=2e-3, minimum_via_number=6
+        )
+        assert "main_via" in edbapp.padstacks.definitions
+        assert "via_central" in edbapp.padstacks.definitions
+        edbapp.close()
+        edbapp = Edb(target_path2, edbversion=desktop_version)
+        assert edbapp.padstacks.merge_via_along_lines(
+            net_name="GND", distance_threshold=2e-3, minimum_via_number=6, selected_angles=[0, 180]
         )
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions

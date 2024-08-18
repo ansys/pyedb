@@ -279,9 +279,9 @@ class TestClass:
             keep_lines_as_path=True,
         )
         assert "A0_N" not in edbapp.nets.nets
-        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", order_by_area=True), list)
-        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True), list)
-        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
+        assert isinstance(edbapp.layout_validation.disjoint_nets("GND", order_by_area=True), list)
+        assert isinstance(edbapp.layout_validation.disjoint_nets("GND", keep_only_main_net=True), list)
+        assert isinstance(edbapp.layout_validation.disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
         assert edbapp.layout_validation.fix_self_intersections("PGND")
 
         edbapp.close()
@@ -1054,7 +1054,7 @@ class TestClass:
                 assert settings["advanced_settings"][k] == v[p]
 
         for p in [0, 1, 2]:
-            setup1.set_pi_slider(p)
+            setup1.pi_slider_position = p
             settings = self.edbapp.setups["AC1"].get_configurations()
             for k, v in setup1.advanced_settings.pi_defaults.items():
                 assert settings["advanced_settings"][k] == v[p]
@@ -1195,7 +1195,7 @@ class TestClass:
 
     def test_pins(self):
         """Evaluate the pins."""
-        assert len(self.edbapp.pins) > 0
+        assert len(self.edbapp.padstacks.pins) > 0
 
     def test_create_padstack_instance(self):
         """Create padstack instances."""
@@ -1246,7 +1246,7 @@ class TestClass:
         assert not pad_instance3.dcir_equipotential_region
 
         trace = edb.modeler.create_trace([[0, 0], [0, 10e-3]], "1_Top", "0.1mm", "trace_with_via_fence")
-        edb.padstacks.create_padstack("via_0")
+        edb.padstacks.create("via_0")
         trace.create_via_fence("1mm", "1mm", "via_0")
 
         edb.close()
@@ -1657,30 +1657,32 @@ class TestClass:
         edbapp.close()
 
     def test_create_port_ob_component_no_ref_pins_in_component(self, edb_examples):
+        from pyedb.generic.constants import SourceType
+
         edbapp = edb_examples.get_no_ref_pins_component()
-        sim_setup = edbapp.new_simulation_configuration()
-        sim_setup.signal_nets = [
-            "net1",
-            "net2",
-            "net3",
-            "net4",
-            "net5",
-            "net6",
-            "net7",
-            "net8",
-            "net9",
-            "net10",
-            "net11",
-            "net12",
-            "net13",
-            "net14",
-            "net15",
-        ]
-        sim_setup.power_nets = ["GND"]
-        sim_setup.solver_type = 7
-        sim_setup.components = ["J2E2"]
-        sim_setup.do_cutout_subdesign = False
-        edbapp.build_simulation_project(sim_setup)
+        edbapp.components.create_port_on_component(
+            component="J2E2",
+            net_list=[
+                "net1",
+                "net2",
+                "net3",
+                "net4",
+                "net5",
+                "net6",
+                "net7",
+                "net8",
+                "net9",
+                "net10",
+                "net11",
+                "net12",
+                "net13",
+                "net14",
+                "net15",
+            ],
+            port_type=SourceType.CircPort,
+            reference_net=["GND"],
+            extend_reference_pins_outside_component=True,
+        )
         assert len(edbapp.ports) == 15
 
     def test_create_ping_group(self, edb_examples):
@@ -1699,3 +1701,12 @@ class TestClass:
             pins_by_name=["A11", "A12", "A15", "A16"],
         )
         edbapp.close()
+
+    def test_create_edb_with_zip(self):
+        """Create EDB from zip file."""
+        src = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1_0.zip")
+        zip_path = self.local_scratch.copyfile(src)
+        edb = Edb(zip_path, edbversion=desktop_version)
+        assert edb.nets
+        assert edb.components
+        edb.close()

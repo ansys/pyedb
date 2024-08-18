@@ -37,6 +37,7 @@ import time
 import traceback
 from typing import Union
 import warnings
+from zipfile import ZipFile as zpf
 
 import rtree
 
@@ -118,7 +119,7 @@ class Edb(Database):
     edbpath : str, optional
         Full path to the ``aedb`` folder. The variable can also contain
         the path to a layout to import. Allowed formats are BRD, MCM,
-        XML (IPC2581), GDS, and DXF. The default is ``None``.
+        XML (IPC2581), GDS, ODB++(TGZ and ZIP) and DXF. The default is ``None``.
         For GDS import, the Ansys control file (also XML) should have the same
         name as the GDS file. Only the file extension differs.
     cellname : str, optional
@@ -221,7 +222,31 @@ class Edb(Database):
             if not isreadonly:
                 self._check_remove_project_files(edbpath, remove_existing_aedt)
 
-        if edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
+        if edbpath[-3:] == "zip":
+            self.edbpath = edbpath[:-4] + ".aedb"
+            working_dir = os.path.dirname(edbpath)
+            zipped_file = zpf(edbpath, "r")
+            top_level_folders = {item.split("/")[0] for item in zipped_file.namelist()}
+            if len(top_level_folders) == 1:
+                self.logger.info("Unzipping ODB++...")
+                zipped_file.extractall(working_dir)
+            else:
+                self.logger.info("Unzipping ODB++ before translating to EDB...")
+                zipped_file.extractall(edbpath[:-4])
+                self.logger.info("ODB++ unzipped successfully.")
+            zipped_file.close()
+            control_file = None
+            if technology_file:
+                if os.path.splitext(technology_file)[1] == ".xml":
+                    control_file = technology_file
+                else:
+                    control_file = convert_technology_file(technology_file, edbversion=edbversion)
+            self.logger.info("Translating ODB++ to EDB...")
+            self.import_layout_pcb(edbpath[:-4], working_dir, use_ppe=use_ppe, control_file=control_file)
+            if settings.enable_local_log_file and self.log_name:
+                self._logger.add_file_logger(self.log_name, "Edb")
+            self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)
+        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
             control_file = None
@@ -581,7 +606,7 @@ class Edb(Database):
     ):
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
-        This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM and TGZ.
+        This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
 
         Parameters
         ----------
@@ -2371,7 +2396,7 @@ class Edb(Database):
         self.logger.reset_timer()
 
         i = 0
-        for _, val in self.components.components.items():
+        for _, val in self.components.instances.items():
             if val.numpins == 0:
                 val.edbcomponent.Delete()
                 i += 1
@@ -2554,28 +2579,6 @@ class Edb(Database):
             return value
         else:
             return "{0}{1}".format(value, units)
-
-    def arg_with_dim(self, Value, sUnits):
-        """Convert a number to a string with units. If value is a string, it's returned as is.
-
-        .. deprecated:: 0.6.56
-           Use :func:`number_with_units` property instead.
-
-        Parameters
-        ----------
-        Value : float, int, str
-            Input  number or string.
-        sUnits : optional
-            Units for formatting. The default is ``None``, which uses ``"meter"``.
-
-        Returns
-        -------
-        str
-           String concatenating the value and unit.
-
-        """
-        warnings.warn("Use :func:`number_with_units` instead.", DeprecationWarning)
-        return self.number_with_units(Value, sUnits)
 
     def _decompose_variable_value(self, value, unit_system=None):
         val, units = decompose_variable_value(value)
@@ -4103,6 +4106,7 @@ class Edb(Database):
         open_aedb_at_end=True,
         expand_polygons_size=0,
         expand_voids_size=0,
+        via_offset=True,
     ):
         """Assign automatically design and project variables with current values.
 
@@ -4138,6 +4142,12 @@ class Edb(Database):
             Full path and name for the new AEDB file. If None, then current aedb will be cutout.
         open_aedb_at_end : bool, optional
             Whether to open the cutout at the end. The default is ``True``.
+        expand_polygons_size : float, optional
+            Expansion size on polygons. Polygons will be expanded in all directions. The default is ``0``.
+        expand_voids_size : float, optional
+            Expansion size on polygon voids. Polygons voids will be expanded in all directions. The default is ``0``.
+        via_offset : bool, optional
+            Whether if offset the via position or not. The default is ``True``.
 
         Returns
         -------
@@ -4301,6 +4311,18 @@ class Edb(Database):
                         antipad.parameters = {"XSize": var, "YSize": var2}
                         parameters.append(val)
                         parameters.append(val2)
+
+        if via_offset:
+            var_x = "via_offset_x"
+            if var_x not in self.variables:
+                self.add_design_variable(var_x, 0.0)
+            var_y = "via_offset_y"
+            if var_y not in self.variables:
+                self.add_design_variable(var_y, 0.0)
+            for via in self.padstacks.instances.values():
+                if not via.is_pin and (not trace_net_filter or (trace_net_filter and via.net_name in trace_net_filter)):
+                    via.position = [f"{via.position[0]}+via_offset_x", f"{via.position[1]}+via_offset_y"]
+
         if expand_polygons_size:
             for poly in self.modeler.polygons:
                 if not poly.is_void:
