@@ -958,7 +958,7 @@ class EDBComponent(Group):
         opening.append(bounding_box[3] + extra_soldermask_clearance)
 
         comp_layer = self.placement_layer
-        layer_names = list(self._pedb.stackup.stackup_layers.keys())
+        layer_names = list(self._pedb.stackup.layers.keys())
         layer_index = layer_names.index(comp_layer)
         if comp_layer in [layer_names[0] + layer_names[-1]]:
             return False

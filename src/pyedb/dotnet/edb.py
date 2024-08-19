@@ -37,6 +37,7 @@ import time
 import traceback
 from typing import Union
 import warnings
+from zipfile import ZipFile as zpf
 
 import rtree
 
@@ -118,7 +119,7 @@ class Edb(Database):
     edbpath : str, optional
         Full path to the ``aedb`` folder. The variable can also contain
         the path to a layout to import. Allowed formats are BRD, MCM,
-        XML (IPC2581), GDS, and DXF. The default is ``None``.
+        XML (IPC2581), GDS, ODB++(TGZ and ZIP) and DXF. The default is ``None``.
         For GDS import, the Ansys control file (also XML) should have the same
         name as the GDS file. Only the file extension differs.
     cellname : str, optional
@@ -221,7 +222,31 @@ class Edb(Database):
             if not isreadonly:
                 self._check_remove_project_files(edbpath, remove_existing_aedt)
 
-        if edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
+        if edbpath[-3:] == "zip":
+            self.edbpath = edbpath[:-4] + ".aedb"
+            working_dir = os.path.dirname(edbpath)
+            zipped_file = zpf(edbpath, "r")
+            top_level_folders = {item.split("/")[0] for item in zipped_file.namelist()}
+            if len(top_level_folders) == 1:
+                self.logger.info("Unzipping ODB++...")
+                zipped_file.extractall(working_dir)
+            else:
+                self.logger.info("Unzipping ODB++ before translating to EDB...")
+                zipped_file.extractall(edbpath[:-4])
+                self.logger.info("ODB++ unzipped successfully.")
+            zipped_file.close()
+            control_file = None
+            if technology_file:
+                if os.path.splitext(technology_file)[1] == ".xml":
+                    control_file = technology_file
+                else:
+                    control_file = convert_technology_file(technology_file, edbversion=edbversion)
+            self.logger.info("Translating ODB++ to EDB...")
+            self.import_layout_pcb(edbpath[:-4], working_dir, use_ppe=use_ppe, control_file=control_file)
+            if settings.enable_local_log_file and self.log_name:
+                self._logger.add_file_logger(self.log_name, "Edb")
+            self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)
+        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
             control_file = None
@@ -429,13 +454,13 @@ class Edb(Database):
     @property
     def excitations(self):
         """Get all layout excitations."""
-        terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) == 0]
+        terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) == 0]
         temp = {}
         for ter in terms:
-            if "BundleTerminal" in ter.GetType().ToString():
-                temp[ter.GetName()] = BundleWavePort(self, ter)
+            if "BundleTerminal" in ter._edb_object.GetType().ToString():
+                temp[ter.name] = BundleWavePort(self, ter._edb_object)
             else:
-                temp[ter.GetName()] = GapPort(self, ter)
+                temp[ter.name] = GapPort(self, ter._edb_object)
         return temp
 
     @property
@@ -448,41 +473,41 @@ class Edb(Database):
                    :class:`pyedb.dotnet.edb_core.edb_data.ports.WavePort`,]]
 
         """
-        temp = [term for term in self.layout.terminals if not term.IsReferenceTerminal()]
+        temp = [term for term in self.layout.terminals if not term.is_reference_terminal]
 
         ports = {}
         for t in temp:
-            t2 = Terminal(self, t)
+            t2 = Terminal(self, t._edb_object)
             if not t2.boundary_type == "PortBoundary":
                 continue
 
             if t2.is_circuit_port:
-                port = CircuitPort(self, t)
+                port = CircuitPort(self, t._edb_object)
                 ports[port.name] = port
             elif t2.terminal_type == "BundleTerminal":
-                port = BundleWavePort(self, t)
+                port = BundleWavePort(self, t._edb_object)
                 ports[port.name] = port
             elif t2.hfss_type == "Wave":
-                ports[t2.name] = WavePort(self, t)
+                ports[t2.name] = WavePort(self, t._edb_object)
             elif t2.terminal_type == "PadstackInstanceTerminal":
-                ports[t2.name] = CoaxPort(self, t)
+                ports[t2.name] = CoaxPort(self, t._edb_object)
             else:
-                ports[t2.name] = GapPort(self, t)
+                ports[t2.name] = GapPort(self, t._edb_object)
         return ports
 
     @property
     def excitations_nets(self):
         """Get all excitations net names."""
-        names = list(set([i.GetNet().GetName() for i in self.layout.terminals]))
+        names = list(set([i.net.name for i in self.layout.terminals]))
         names = [i for i in names if i]
         return names
 
     @property
     def sources(self):
         """Get all layout sources."""
-        terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [3, 4, 7]]
-        terms = [term for term in terms if not term.IsReferenceTerminal()]
-        return {ter.GetName(): ExcitationSources(self, ter) for ter in terms}
+        terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) in [3, 4, 7]]
+        terms = [term for term in terms if not term._edb_object.IsReferenceTerminal()]
+        return {ter.name: ExcitationSources(self, ter._edb_object) for ter in terms}
 
     @property
     def voltage_regulator_modules(self):
@@ -581,7 +606,7 @@ class Edb(Database):
     ):
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
-        This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM and TGZ.
+        This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
 
         Parameters
         ----------
@@ -1142,9 +1167,9 @@ class Edb(Database):
             elif obj_type == LayoutObjType.Primitive.name:
                 prim_type = i.GetPrimitiveType().ToString()
                 if prim_type == Primitives.Path.name:
-                    from pyedb.dotnet.edb_core.edb_data.primitives_data import EdbPath
+                    from pyedb.dotnet.edb_core.cell.primitive.path import Path
 
-                    temp.append(EdbPath(i, self))
+                    temp.append(Path(self, i))
                 elif prim_type == Primitives.Rectangle.name:
                     from pyedb.dotnet.edb_core.edb_data.primitives_data import (
                         EdbRectangle,
@@ -1644,11 +1669,11 @@ class Edb(Database):
         from pyedb.dotnet.clr_module import Tuple
 
         _polys = []
-        terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [0, 3, 4, 7, 8]]
+        terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) in [0, 3, 4, 7, 8]]
         locations = []
         for term in terms:
-            if term.GetTerminalType().ToString() == "PointTerminal" and term.GetNet().GetName() in reference_list:
-                pd = term.GetParameters()[1]
+            if term._edb_object.GetTerminalType().ToString() == "PointTerminal" and term.net.name in reference_list:
+                pd = term._edb_object.GetParameters()[1]
                 locations.append([pd.X.ToDouble(), pd.Y.ToDouble()])
         for point in locations:
             pointA = self.edb_api.geometry.point_data(
@@ -2189,11 +2214,13 @@ class Edb(Database):
                     if pin.pingroups:
                         pins_to_preserve.append(pin.id)
         if check_terminals:
-            terms = [term for term in self.layout.terminals if int(term.GetBoundaryType()) in [0, 3, 4, 7, 8]]
+            terms = [
+                term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) in [0, 3, 4, 7, 8]
+            ]
             for term in terms:
-                if term.GetTerminalType().ToString() == "PadstackInstanceTerminal":
-                    if term.GetParameters()[1].GetNet().GetName() in reference_list:
-                        pins_to_preserve.append(term.GetParameters()[1].GetId())
+                if term._edb_object.GetTerminalType().ToString() == "PadstackInstanceTerminal":
+                    if term._edb_object.GetParameters()[1].GetNet().GetName() in reference_list:
+                        pins_to_preserve.append(term._edb_object.GetParameters()[1].GetId())
 
         for i in self.nets.nets.values():
             name = i.name
@@ -2284,7 +2311,7 @@ class Edb(Database):
             return poly.Subtract(convert_py_list_to_net_list(poly), convert_py_list_to_net_list(voids))
 
         def clip_path(path):
-            pdata = path.polygon_data.edb_api
+            pdata = path.polygon_data._edb_object
             int_data = _poly.GetIntersectionType(pdata)
             if int_data == 0:
                 prims_to_delete.append(path)
@@ -2295,7 +2322,7 @@ class Edb(Database):
                 reference_prims.append(path)
 
         def clean_prim(prim_1):  # pragma: no cover
-            pdata = prim_1.polygon_data.edb_api
+            pdata = prim_1.polygon_data._edb_object
             int_data = _poly.GetIntersectionType(pdata)
             if int_data == 2:
                 if not inlcude_voids_in_extents:
@@ -2322,7 +2349,7 @@ class Edb(Database):
                     # points = list(p.Points)
                     list_void = []
                     if voids:
-                        voids_data = [void.polygon_data.edb_api for void in voids]
+                        voids_data = [void.polygon_data._edb_object for void in voids]
                         list_prims = subtract(p, voids_data)
                         for prim in list_prims:
                             if not prim.IsNull():
@@ -2371,7 +2398,7 @@ class Edb(Database):
         self.logger.reset_timer()
 
         i = 0
-        for _, val in self.components.components.items():
+        for _, val in self.components.instances.items():
             if val.numpins == 0:
                 val.edbcomponent.Delete()
                 i += 1
@@ -2554,28 +2581,6 @@ class Edb(Database):
             return value
         else:
             return "{0}{1}".format(value, units)
-
-    def arg_with_dim(self, Value, sUnits):
-        """Convert a number to a string with units. If value is a string, it's returned as is.
-
-        .. deprecated:: 0.6.56
-           Use :func:`number_with_units` property instead.
-
-        Parameters
-        ----------
-        Value : float, int, str
-            Input  number or string.
-        sUnits : optional
-            Units for formatting. The default is ``None``, which uses ``"meter"``.
-
-        Returns
-        -------
-        str
-           String concatenating the value and unit.
-
-        """
-        warnings.warn("Use :func:`number_with_units` instead.", DeprecationWarning)
-        return self.number_with_units(Value, sUnits)
 
     def _decompose_variable_value(self, value, unit_system=None):
         val, units = decompose_variable_value(value)
@@ -4103,6 +4108,7 @@ class Edb(Database):
         open_aedb_at_end=True,
         expand_polygons_size=0,
         expand_voids_size=0,
+        via_offset=True,
     ):
         """Assign automatically design and project variables with current values.
 
@@ -4138,6 +4144,12 @@ class Edb(Database):
             Full path and name for the new AEDB file. If None, then current aedb will be cutout.
         open_aedb_at_end : bool, optional
             Whether to open the cutout at the end. The default is ``True``.
+        expand_polygons_size : float, optional
+            Expansion size on polygons. Polygons will be expanded in all directions. The default is ``0``.
+        expand_voids_size : float, optional
+            Expansion size on polygon voids. Polygons voids will be expanded in all directions. The default is ``0``.
+        via_offset : bool, optional
+            Whether if offset the via position or not. The default is ``True``.
 
         Returns
         -------
@@ -4301,6 +4313,18 @@ class Edb(Database):
                         antipad.parameters = {"XSize": var, "YSize": var2}
                         parameters.append(val)
                         parameters.append(val2)
+
+        if via_offset:
+            var_x = "via_offset_x"
+            if var_x not in self.variables:
+                self.add_design_variable(var_x, 0.0)
+            var_y = "via_offset_y"
+            if var_y not in self.variables:
+                self.add_design_variable(var_y, 0.0)
+            for via in self.padstacks.instances.values():
+                if not via.is_pin and (not trace_net_filter or (trace_net_filter and via.net_name in trace_net_filter)):
+                    via.position = [f"{via.position[0]}+via_offset_x", f"{via.position[1]}+via_offset_y"]
+
         if expand_polygons_size:
             for poly in self.modeler.polygons:
                 if not poly.is_void:
@@ -4423,10 +4447,10 @@ class Edb(Database):
         for poly in polys:
             for void in poly.voids:
                 void_bbox = (
-                    void.polygon_data.edb_api.GetBBox().Item1.X.ToDouble(),
-                    void.polygon_data.edb_api.GetBBox().Item1.Y.ToDouble(),
-                    void.polygon_data.edb_api.GetBBox().Item2.X.ToDouble(),
-                    void.polygon_data.edb_api.GetBBox().Item2.Y.ToDouble(),
+                    void.polygon_data._edb_object.GetBBox().Item1.X.ToDouble(),
+                    void.polygon_data._edb_object.GetBBox().Item1.Y.ToDouble(),
+                    void.polygon_data._edb_object.GetBBox().Item2.X.ToDouble(),
+                    void.polygon_data._edb_object.GetBBox().Item2.Y.ToDouble(),
                 )
                 included_instances = list(padstack_instances_index.intersection(void_bbox))
                 if included_instances:
@@ -4459,10 +4483,10 @@ class Edb(Database):
 
         for void_info in void_padstacks:
             port_poly = cloned_edb.modeler.create_polygon(
-                main_shape=void_info[0].polygon_data.edb_api, layer_name="ref", net_name="GND"
+                main_shape=void_info[0].polygon_data._edb_object, layer_name="ref", net_name="GND"
             )
             pec_poly = cloned_edb.modeler.create_polygon(
-                main_shape=port_poly.polygon_data.edb_api, layer_name="port_pec", net_name="GND"
+                main_shape=port_poly.polygon_data._edb_object, layer_name="port_pec", net_name="GND"
             )
             pec_poly.scale(1.5)
 

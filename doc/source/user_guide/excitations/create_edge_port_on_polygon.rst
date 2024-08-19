@@ -16,14 +16,14 @@ This page shows how to create an edge port on a polygon and trace.
     import pyedb.misc.downloads as downloads
 
     # Ansys release version
-    ansys_version = "2024.1"
+    ansys_version = "2024.2"
 
     # download and copy the layout file from examples
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/edb_edge_ports.aedb", destination=temp_folder)
 
     # load EDB
-    edbapp = Edb(edbpath=targetfile, edbversion="2024.1")
+    edbapp = Edb(edbpath=targetfile, edbversion="2024.2")
 
     # retrieve polygon list
     poly_list = [
