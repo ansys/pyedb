@@ -18,7 +18,7 @@ This page shows how to retrieve pins and create a circuit port on a component.
 
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-    edbapp = Edb(edbpath=targetfile, edbversion="2024.1")
+    edbapp = Edb(edbpath=targetfile, edbversion="2024.2")
 
     edbapp.siwave.create_circuit_port_on_net("U1", "1V0", "U1", "GND", 50, "test")
     edbapp.components.get_pin_from_component("U1")
