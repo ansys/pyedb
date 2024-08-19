@@ -549,8 +549,8 @@ class EdbHfss(object):
         _edb_boundle_terminal = self._edb.cell.terminal.BundleTerminal.Create(edb_list)
         if float(self._pedb.edbversion) > 2024.1:
             pos, neg = list(_edb_boundle_terminal.GetTerminals())
-            pos.SetName(port_name+":T1")
-            neg.SetName(port_name+":T2")
+            pos.SetName(port_name + ":T1")
+            neg.SetName(port_name + ":T2")
         else:
             pos_term._edb_object.SetName(port_name)
         return port_name, BundleWavePort(self._pedb, _edb_boundle_terminal)
