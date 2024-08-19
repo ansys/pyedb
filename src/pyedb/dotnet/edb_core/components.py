@@ -1134,7 +1134,7 @@ class Components(object):
                                     self.create_port_on_pins(
                                         component,
                                         [EDBPadstackInstance(pin, self._pedb).name],
-                                        [EDBPadstackInstance(ref_pin[0], self._pedb).id],
+                                        [EDBPadstackInstance(ref_pin[0]._edb_object, self._pedb).id],
                                     )
                             else:
                                 self._logger.error("Skipping port creation no reference pin found.")
@@ -1606,6 +1606,7 @@ class Components(object):
         >>> edbapp.components.create(pins, "A1New")
 
         """
+        pins = [p._edb_object for p in pins]
         if not component_name:
             component_name = generate_unique_name("Comp_")
         if component_part_name:
@@ -1619,7 +1620,7 @@ class Components(object):
         )
 
         if isinstance(pins[0], EDBPadstackInstance):
-            pins = [i._edb_padstackinstance for i in pins]
+            pins = [i._edb_object for i in pins]
         hosting_component_location = pins[0].GetComponent().GetTransform()
         for pin in pins:
             pin.SetIsLayoutPin(True)
@@ -1746,7 +1747,7 @@ class Components(object):
         """
         if not modelname:
             modelname = get_filename_without_extension(modelpath)
-        edbComponent = self.get_component_by_name(componentname)
+        edbComponent = self.get_component_by_name(componentname)._edb_object
         if str(edbComponent.EDBHandle) == "0":
             return False
         edbRlcComponentProperty = edbComponent.GetComponentProperty().Clone()
@@ -1958,7 +1959,7 @@ class Components(object):
         >>> edbapp.components.delete("A1")
 
         """
-        edb_cmp = self.get_component_by_name(component_name)
+        edb_cmp = self.get_component_by_name(component_name)._edb_object
         if edb_cmp is not None:
             edb_cmp.Delete()
             if edb_cmp in list(self.instances.keys()):
@@ -1989,6 +1990,7 @@ class Components(object):
         """
         edb_cmp = self.get_component_by_name(component_name)
         if edb_cmp is not None:
+            edb_cmp = edb_cmp._edb_object
             rlc_property = edb_cmp.GetComponentProperty().Clone()
             pin_pair_model = rlc_property.GetModel().Clone()
             pprlc = pin_pair_model.GetPinPairRlc(list(pin_pair_model.PinPairs)[0])
@@ -2149,7 +2151,7 @@ class Components(object):
             self.instances[componentname].is_enabled = False
             self._logger.info("No parameters passed, component %s  is disabled.", componentname)
             return True
-        edb_component = self.get_component_by_name(componentname)
+        edb_component = self.get_component_by_name(componentname)._edb_object
         edb_rlc_component_property = self._edb.cell.hierarchy._hierarchy.RLCComponentProperty()
         component_pins = self.get_pin_from_component(componentname)
         pin_number = len(component_pins)
@@ -2322,6 +2324,7 @@ class Components(object):
                         unmount_comp_list.remove(refdes)
                         comp.edbcomponent.Ungroup(True)
 
+                        pinlist = [self._pedb.layout.find_object_by_id(i.GetId()) for i in pinlist]
                         self.create(pinlist, refdes, p_layer, part_name)
                         self.refresh_components()
                         comp = self.instances[refdes]
@@ -2522,6 +2525,10 @@ class Components(object):
         >>> edbapp.components.get_pin_position(pin)
 
         """
+        try:
+            pin = pin._edb_object
+        except:
+            pin = pin
         res, pt_pos, rot_pos = pin.GetPositionAndRotation()
 
         if pin.GetComponent().IsNull():
