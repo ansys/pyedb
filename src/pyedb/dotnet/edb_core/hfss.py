@@ -549,8 +549,8 @@ class EdbHfss(object):
         _edb_boundle_terminal = self._edb.cell.terminal.BundleTerminal.Create(edb_list)
         _edb_boundle_terminal.SetName(port_name)
         pos, neg = list(_edb_boundle_terminal.GetTerminals())
-        pos.SetName(port_name+":T1")
-        neg.SetName(port_name+":T2")
+        pos.SetName(port_name + ":T1")
+        neg.SetName(port_name + ":T2")
         return port_name, BundleWavePort(self._pedb, _edb_boundle_terminal)
 
     def create_bundle_wave_port(
