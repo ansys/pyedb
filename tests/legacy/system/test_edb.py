@@ -682,7 +682,7 @@ class TestClass:
         assert port_hori.ref_terminal
 
         kwargs = {
-            "layer_name": "1_Top",
+            "layer_name": "Top",
             "net_name": "SIGP",
             "width": "0.1mm",
             "start_cap_style": "Flat",
@@ -713,15 +713,17 @@ class TestClass:
         wave_port.do_renormalize = False
         assert not wave_port.do_renormalize
         assert edb.hfss.create_differential_wave_port(
-            traces[0].id,
-            trace_paths[0][0],
             traces[1].id,
+            trace_paths[0][0],
+            traces[2].id,
             trace_paths[1][0],
             horizontal_extent_factor=8,
             port_name="df_port",
         )
         assert edb.ports["df_port"]
         p, n = edb.ports["df_port"].terminals
+        assert p.name == "df_port:T1"
+        assert n.name == "df_port:T2"
         assert edb.ports["df_port"].decouple()
         p.couple_ports(n)
 
