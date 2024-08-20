@@ -386,7 +386,6 @@ warnings.filterwarnings(
 # -- Options for HTML output -------------------------------------------------
 html_short_title = html_title = "PyEDB"
 html_theme = "ansys_sphinx_theme"
-html_logo = pyansys_logo_black
 html_context = {
     "github_user": USERNAME,
     "github_repo": REPOSITORY_NAME,
@@ -397,6 +396,7 @@ html_context = {
 
 # specify the location of your github repo
 html_theme_options = {
+    "logo": "ansys",
     "switcher": {
         "json_url": f"https://{cname}/versions.json",
         "version_match": switcher_version,
