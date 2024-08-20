@@ -37,8 +37,9 @@ class ComponentPart:
 
     @property
     def s_parameters(self):
-        """Returns skrf.network.Network object
-        See `scikit-rf documentation <https://scikit-rf.readthedocs.io/en/latest/api/network.html#network-class>`
+        """Return a skrf.network.Network object.
+        
+        See `scikit-rf documentation <https://scikit-rf.readthedocs.io/en/latest/api/network.html#network-class>`_.
         """
         if not self._s_parameters:
             self._extract_impedance()
@@ -46,7 +47,7 @@ class ComponentPart:
 
     @property
     def esr(self):
-        """Returns equivalent serial resistor for capacitor only."""
+        """Return the equivalent serial resistor for capacitor only."""
         if self.type == "Capacitor":
             z11 = 1 / self.s_parameters.y[:, 0, 0]
             return np.abs(abs(np.abs(np.real((z11.min()))) - 50))
@@ -55,7 +56,7 @@ class ComponentPart:
 
     @property
     def f0(self):
-        """Returns capacitor self resonant frequency in Hz."""
+        """Return the capacitor self resonant frequency in Hz."""
         if self.type == "Capacitor":
             z11 = 1 / self.s_parameters.y[:, 0, 0]
             fo_index = np.where(np.abs(z11) == np.min(np.abs(z11)))[0][0]
