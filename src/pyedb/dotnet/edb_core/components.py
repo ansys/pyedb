@@ -855,7 +855,7 @@ class Components(object):
                             if pin_name == pin.name.split("-")[1]:
                                 cmp_pins.append(pin)
             if not cmp_pins:
-                self._logger.warning("No pin found for creating port, skipping.")
+                self._logger.warning("No pin found during port creation. Port is not defined.")
                 return
             pins = cmp_pins
         if not len([pin for pin in pins if isinstance(pin, EDBPadstackInstance)]) == len(pins):
