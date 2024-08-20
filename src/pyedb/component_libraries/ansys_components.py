@@ -33,15 +33,58 @@ class ComponentPart:
         self.nb_freq = 0
         self.ref_impedance = 50.0
         self._s_parameters = None
+        self.type = ""
 
     @property
     def s_parameters(self):
-        """Return skrf.network.Network object
+        """Returns skrf.network.Network object
         See `scikit-rf documentation <https://scikit-rf.readthedocs.io/en/latest/api/network.html#network-class>`
         """
         if not self._s_parameters:
             self._extract_impedance()
         return self._s_parameters
+
+    @property
+    def esr(self):
+        """Returns equivalent serial resistor for capacitor only."""
+        if self.type == "Capacitor":
+            z11 = 1 / self.s_parameters.y[:, 0, 0]
+            return np.abs(abs(np.abs(np.real((z11.min()))) - 50))
+        else:
+            return 0.0
+
+    @property
+    def f0(self):
+        """Returns capacitor self resonant frequency in Hz."""
+        if self.type == "Capacitor":
+            z11 = 1 / self.s_parameters.y[:, 0, 0]
+            fo_index = np.where(np.abs(z11) == np.min(np.abs(z11)))[0][0]
+            return self.s_parameters.f[fo_index]
+        else:
+            return None
+
+    @property
+    def esl(self):
+        """Returns equivalent serial inductor for capacitor only."""
+        if self.type == "Capacitor":
+            omega_r = 2 * np.pi * self.f0
+            return 1 / (np.power(omega_r, 2) * self.cap_value)
+        else:
+            return 0.0
+
+    @property
+    def cap_value(self):
+        if self.type == "Capacitor":
+            return round(np.imag(self.s_parameters.y[0, 0, 0]) / (2 * np.pi * self._s_parameters.f[0]), 15)
+        else:
+            return 0.0
+
+    @property
+    def ind_value(self):
+        if self.type == "Inductor":
+            return round(np.imag(1 / self.s_parameters.y[0, 0, 0]) / (2 * np.pi * self._s_parameters.f[0]), 15)
+        else:
+            return 0.0
 
     def _extract_impedance(self):
         with open(self._sbin_file, mode="rb") as file:
