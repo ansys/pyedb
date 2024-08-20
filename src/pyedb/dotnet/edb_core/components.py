@@ -848,12 +848,14 @@ class Components(object):
         if len([pin for pin in pins if isinstance(pin, str)]) == len(pins):
             cmp_pins = []
             for pin_name in pins:
-                cmp_pin = [pin for pin in list(refdes_pins.values()) if pin_name == pin.name]
-                if not cmp_pin:
-                    cmp_pin = [pin for pin in list(refdes_pins.values()) if pin_name == pin.name.split("-")[1]]
-                if cmp_pin:
-                    cmp_pins.append(cmp_pin[0])
+                cmp_pins = [pin for pin in list(refdes_pins.values()) if pin_name == pin.name]
+                if not cmp_pins:
+                    for pin in list(refdes_pins.values()):
+                        if pin.name and "-" in pin.name:
+                            if pin_name == pin.name.split("-")[1]:
+                                cmp_pins.append(pin)
             if not cmp_pins:
+                self._logger.warning("No pin found for creating port, skipping.")
                 return
             pins = cmp_pins
         if not len([pin for pin in pins if isinstance(pin, EDBPadstackInstance)]) == len(pins):
@@ -869,6 +871,7 @@ class Components(object):
                 elif "-" in ref_pin_name and ref_pin_name.split("-")[1] in refdes_pins:
                     ref_cmp_pins.append(refdes_pins[ref_pin_name.split("-")[1]])
             if not ref_cmp_pins:
+                self._logger.warning("No reference pins found during port creation. Port is not defined.")
                 return
             reference_pins = ref_cmp_pins
         if not reference_pins:
