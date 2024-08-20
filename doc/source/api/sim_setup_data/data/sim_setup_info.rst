@@ -1,4 +1,4 @@
-Simulation Setup Info
+Simulation setup info
 ======================
 This class is the container of simulation setup info.
 

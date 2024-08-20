@@ -1,5 +1,5 @@
 =====================
-Simulation Setup Data
+Simulation setup data
 =====================
 
 This section describes Simulation setup data.

@@ -13,6 +13,7 @@ codecov
 Conda
 CPython
 DC
+DC-IR
 docstring
 [Dd]ocstrings
 EDB
@@ -21,6 +22,7 @@ GDS
 [Gg]gRPC
 HFSS
 Icepak
+IO
 IronPython
 [Ll]ayout
 matplotlib
@@ -35,6 +37,7 @@ postprocessing
 Python
 Python.NET
 Q3D
+RaptorX
 RLC
 SimulationConfiguration
 Siwave
