@@ -44,3 +44,4 @@ Siwave
 SYZ
 (?i)stackup(?:\s3D|s)?
 vias
+XML
