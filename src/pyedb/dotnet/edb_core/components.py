@@ -776,7 +776,7 @@ class Components(object):
         Parameters
         ----------
         refdes : Component reference designator
-            str or EDBComponent object.
+            str or EDBComponent object
         pins : pin name where the terminal has to be created. Single pin or several ones can be provided.If several
         pins are provided a pin group will is created. Pin names can be the EDB name or the EDBPadstackInstance one.
         For instance the pin called ``Pin1`` located on component ``U1``, ``U1-Pin1`` or ``Pin1`` can be provided and
