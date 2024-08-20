@@ -13,7 +13,6 @@ codecov
 Conda
 CPython
 DC
-DC-IR
 docstring
 [Dd]ocstrings
 EDB
@@ -23,6 +22,7 @@ GDS
 HFSS
 Icepak
 IO
+IR
 IronPython
 [Ll]ayout
 matplotlib
