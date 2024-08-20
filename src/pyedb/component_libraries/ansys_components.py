@@ -65,7 +65,7 @@ class ComponentPart:
 
     @property
     def esl(self):
-        """Returns equivalent serial inductor for capacitor only."""
+        """Return the equivalent serial inductor for capacitor only."""
         if self.type == "Capacitor":
             omega_r = 2 * np.pi * self.f0
             return 1 / (np.power(omega_r, 2) * self.cap_value)
