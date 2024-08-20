@@ -217,7 +217,7 @@ class LayerCollection(object):
         kwargs["layer_type"] = layer_type
         return self._add_layer(add_method="add_layer_above", base_layer_name=base_layer_name, **kwargs)
 
-    def add_document_layer(self, name, layer_type="UndefinedLayerType", **kwargs):
+    def add_document_layer(self, name, layer_type="user", **kwargs):
         """Add a document layer.
 
         Parameters
@@ -225,7 +225,7 @@ class LayerCollection(object):
         name : str
             Name of the layer.
         layer_type: str, optional
-            Type of the layer. The default to ``"signal"``. Options are ``"signal"``, ``"dielectric"``
+            Type of the layer. The default is ``"user"``. Options are ``"user"``, ``"outline"``
         kwargs
 
         Returns
@@ -1800,7 +1800,7 @@ class Stackup(LayerCollection):
         temp_data = {name: 0 for name, _ in self.signal_layers.items()}
         outline_area = 0
         for i in self._pedb.modeler.primitives:
-            layer_name = i.GetLayer().GetName()
+            layer_name = i.layer.name
             if layer_name.lower() == "outline":
                 if i.area() > outline_area:
                     outline_area = i.area()
