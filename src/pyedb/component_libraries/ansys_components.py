@@ -74,6 +74,7 @@ class ComponentPart:
 
     @property
     def cap_value(self):
+        """Returns capacitance value."""
         if self.type == "Capacitor":
             return round(np.imag(self.s_parameters.y[0, 0, 0]) / (2 * np.pi * self._s_parameters.f[0]), 15)
         else:
@@ -81,6 +82,7 @@ class ComponentPart:
 
     @property
     def ind_value(self):
+        """Returns inductance value."""
         if self.type == "Inductor":
             return round(np.imag(1 / self.s_parameters.y[0, 0, 0]) / (2 * np.pi * self._s_parameters.f[0]), 15)
         else:
