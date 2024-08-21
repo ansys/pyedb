@@ -1,4 +1,4 @@
-XML Control File
+XML control file
 ================
 Convert a technology file to edb control file.
 

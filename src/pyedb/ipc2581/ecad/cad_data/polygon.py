@@ -35,7 +35,7 @@ class Polygon(object):
 
     def add_poly_step(self, polygon=None):  # pragma no cover
         if polygon:
-            polygon_data = polygon.GetPolygonData()
+            polygon_data = polygon._edb_object.GetPolygonData()
             if polygon_data.IsClosed():
                 arcs = polygon_data.GetArcData()
                 if not arcs:
@@ -64,7 +64,7 @@ class Polygon(object):
                         new_poly_step.clock_wise = not arc.IsCCW()
                         self.poly_steps.append(new_poly_step)
                 for void in polygon.voids:
-                    void_polygon_data = void.GetPolygonData()
+                    void_polygon_data = void._edb_object.GetPolygonData()
                     if void_polygon_data.IsClosed():
                         void_arcs = void_polygon_data.GetArcData()
                         if not void_arcs:

@@ -1,5 +1,5 @@
 ===================
-Simulation Setup IO
+Simulation setup IO
 ===================
 
 This section describes Simulation setup IO.

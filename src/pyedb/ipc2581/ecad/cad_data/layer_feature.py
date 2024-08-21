@@ -113,7 +113,7 @@ class LayerFeature(object):
                 is_via = False
                 if not pin.start_layer == pin.stop_layer:
                     is_via = True
-                pin_net = pin.GetNet().GetName()
+                pin_net = pin._edb_object.GetNet().GetName()
                 pos_rot = pin._edb_padstackinstance.GetPositionAndRotationValue()
                 pin_rotation = pos_rot[2].ToDouble()
                 if pin._edb_padstackinstance.IsLayoutPin():

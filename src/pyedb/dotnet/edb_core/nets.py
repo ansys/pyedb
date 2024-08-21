@@ -206,10 +206,11 @@ class EdbNets(object):
         for net in self._layout.nets[:]:
             total_plane_area = 0.0
             total_trace_area = 0.0
-            for primitive in net.Primitives:
-                if primitive.GetPrimitiveType() == self._edb.cell.primitive.PrimitiveType.Bondwire:
+            for primitive in net.primitives:
+                primitive = primitive._edb_object
+                if primitive.GetPrimitiveType() == self._edb.cell.primitive.api_class.PrimitiveType.Bondwire:
                     continue
-                if primitive.GetPrimitiveType() != self._edb.cell.primitive.PrimitiveType.Path:
+                if primitive.GetPrimitiveType() != self._edb.cell.primitive.api_class.PrimitiveType.Path:
                     total_plane_area += float(primitive.GetPolygonData().Area())
                 else:
                     total_trace_area += float(primitive.GetPolygonData().Area())
@@ -1088,7 +1089,7 @@ class EdbNets(object):
         else:
             if not start_with and not contain and not end_with:
                 net = self._edb.cell.net.find_by_name(self._active_layout, net_name)
-                if net.IsNull():
+                if net.is_null:
                     net = self._edb.cell.net.create(self._active_layout, net_name)
                 return net
             elif start_with:
