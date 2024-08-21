@@ -78,7 +78,7 @@ class CfgCutout(CfgBase):
 class CfgOperations(CfgBase):
     def __init__(self, pedb, data):
         self._pedb = pedb
-        self.op_cutout = CfgCutout(pedb, **data["cutout"]) if "cutout" in data else CfgCutout(pedb)
+        self.op_cutout = CfgCutout(pedb, **data["cutout"]) if "cutout" in data else None
 
     def apply(self):
         """Imports operation information from JSON."""
@@ -91,4 +91,5 @@ class CfgOperations(CfgBase):
             # create a polygon on pyedb layer
 
     def get_data_from_db(self):
+        self.op_cutout = CfgCutout(self._pedb)
         return {"cutout": self.op_cutout.get_data_from_db()}
