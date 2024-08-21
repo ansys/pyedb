@@ -1,4 +1,4 @@
-simulation settings
+Simulation settings
 ===================
 These classes are the containers of simulation settings.
 
