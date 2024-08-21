@@ -352,6 +352,9 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(ports=True)
+        assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["layer"] == "1_Top"
+        assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
         edbapp.close()
 
     def test_06_s_parameters(self, edb_examples):

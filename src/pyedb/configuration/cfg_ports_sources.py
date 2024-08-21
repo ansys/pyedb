@@ -45,7 +45,7 @@ class CfgCoordianteTerminalInfo(CfgTerminalInfo):
         self.net = self.value["net"]
 
     def export_properties(self):
-        return {"layer": self.layer, "point_x": self.point_x, "point_y": self.point_y, "net": self.net}
+        return {"coordinates": {"layer": self.layer, "point": [self.point_x, self.point_y], "net": self.net}}
 
 
 class CfgNearestPinTerminalInfo(CfgTerminalInfo):
@@ -126,7 +126,10 @@ class CfgPorts:
         ports = {name: t for name, t in ports.items() if t.is_port}
 
         for _, p in ports.items():
-            port_type = "circuit" if p.is_circuit_port else "coax"
+            if not p.ref_terminal:
+                port_type = "coax"
+            else:
+                port_type = "circuit"
 
             if p.terminal_type == "PinGroupTerminal":
                 refdes = ""
@@ -135,6 +138,15 @@ class CfgPorts:
             elif p.terminal_type == "PadstackInstanceTerminal":
                 refdes = p.component.refdes if p.component else ""
                 pos_term_info = {"pin": p.padstack_instance.component_pin}
+            elif p.terminal_type == "PointTerminal":
+                refdes = ""
+                pos_term_info = {"coordinates":
+                    {
+                        "layer": p.layer.name,
+                        "point": p.location,
+                        "net": p.net.name
+                    }
+                }
 
             if port_type == "circuit":
                 neg_term = self._pedb.terminals[p.ref_terminal.name]
@@ -143,6 +155,14 @@ class CfgPorts:
                     neg_term_info = {"pin_group": pg.name}
                 elif neg_term.terminal_type == "PadstackInstanceTerminal":
                     neg_term_info = {"pin": neg_term.padstack_instance.component_pin}
+                elif neg_term.terminal_type == "PointTerminal":
+                    neg_term_info = {"coordinates":
+                        {
+                            "layer": neg_term.layer.name,
+                            "point": neg_term.location,
+                            "net": neg_term.net.name
+                        }
+                    }
 
                 cfg_port = CfgPort(
                     self._pedb,
