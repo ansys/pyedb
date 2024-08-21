@@ -78,7 +78,7 @@ class CfgCutout(CfgBase):
 class CfgOperations(CfgBase):
     def __init__(self, pedb, data):
         self._pedb = pedb
-        self.op_cutout = CfgCutout(pedb, **data["cutout"]) if "cutout" in data else None
+        self.op_cutout = CfgCutout(pedb, **data["cutout"]) if "cutout" in data else CfgCutout(pedb)
 
     def apply(self):
         """Imports operation information from JSON."""
