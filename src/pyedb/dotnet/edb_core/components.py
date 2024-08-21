@@ -2070,8 +2070,8 @@ class Components(object):
             pin1 = list(cmp.pins.values())[0].pin
             pin_layers = pin1.GetPadstackDef().GetData().GetLayerNames()
             pad_params = self._padstack.get_pad_parameters(pin=pin1, layername=pin_layers[0], pad_type=0)
-            _sb_diam = min([self._get_edb_value(val).ToDouble() for val in pad_params[1]])
-            sball_diam = _sb_diam
+            _sb_diam = abs(min([self._get_edb_value(val).ToDouble() for val in pad_params[1]]))
+            sball_diam = 0.8 * _sb_diam
         if sball_height:
             sball_height = round(self._edb.utility.Value(sball_height).ToDouble(), 9)
         else:
