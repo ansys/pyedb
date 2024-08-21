@@ -1602,7 +1602,7 @@ class Edb(Database):
         names = []
         _polys = []
         for net in net_signals:
-            names.append(net.GetName())
+            names.append(net.name)
         if pins_to_preserve:
             insts = self.padstacks.instances
             for i in pins_to_preserve:
