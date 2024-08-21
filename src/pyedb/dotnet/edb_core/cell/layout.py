@@ -346,8 +346,4 @@ class Layout(ObjBase):
         list
         """
         layer_name = layer_name if isinstance(layer_name, list) else [layer_name]
-        prims = []
-        for i in self.primitives:
-            if i.layer_name in layer_name:
-                prims.append(i)
-        return prims
+        return [i for i in self.primitives if i.layer_name in layer_name]
