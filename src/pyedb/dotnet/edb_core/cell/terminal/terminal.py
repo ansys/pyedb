@@ -128,7 +128,7 @@ class Terminal(Connectable):
     @location.setter
     def location(self, value):
         layer = self.layer
-        self._edb_object.SetParameters(self._pedb.point_data(*value), layer)
+        self._edb_object.SetParameters(self._pedb.point_data(*value), layer._edb_object)
 
     @property
     def is_circuit_port(self):
