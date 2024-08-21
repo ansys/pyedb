@@ -332,7 +332,17 @@ class Layout(ObjBase):
         obj = self._pedb._edb.Cell.Hierarchy.Component.FindByName(self._edb_object, value)
         return EDBComponent(self._pedb, obj) if obj is not None else None
 
-    def find_primitive(self, layer_name: str=None):
+    def find_primitive(self, layer_name: str = None):
+        """Find a primitive objects by layer name.
+
+        Parameters
+        ----------
+        layer_name : str
+            Name of the layer.
+        Returns
+        -------
+
+        """
         all_prims = self.primitives
         prims = []
         if layer_name:
