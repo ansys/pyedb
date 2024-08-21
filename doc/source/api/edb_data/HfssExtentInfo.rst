@@ -1,4 +1,4 @@
-HFSS Extent Info
+HFSS extent info
 ================
 These class is the containers of HFSS Extent.
 

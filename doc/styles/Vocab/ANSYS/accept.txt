@@ -21,6 +21,8 @@ GDS
 [Gg]gRPC
 HFSS
 Icepak
+IO
+IR
 IronPython
 [Ll]ayout
 matplotlib
@@ -35,9 +37,11 @@ postprocessing
 Python
 Python.NET
 Q3D
+RaptorX
 RLC
 SimulationConfiguration
 Siwave
 SYZ
 (?i)stackup(?:\s3D|s)?
 vias
+XML
