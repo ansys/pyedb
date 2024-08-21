@@ -47,7 +47,7 @@ class TestClass:
     def test_modeler_polygons(self):
         """Evaluate modeler polygons"""
         assert len(self.edbapp.modeler.polygons) > 0
-        assert self.edbapp.modeler.polygons[0].is_void == self.edbapp.modeler.polygons[0].IsVoid()
+        assert not self.edbapp.modeler.polygons[0].is_void
 
         poly0 = self.edbapp.modeler.polygons[0]
         assert self.edbapp.modeler.polygons[0].clone()
@@ -88,14 +88,23 @@ class TestClass:
         poly_167 = [i for i in self.edbapp.modeler.paths if i.id == 167][0]
         assert poly_167.expand(0.0005)
 
-    def test_modeler_paths(self):
+    def test_modeler_paths(self, edb_examples):
         """Evaluate modeler paths"""
-        assert len(self.edbapp.modeler.paths) > 0
-        assert self.edbapp.modeler.paths[0].type == "Path"
-        assert self.edbapp.modeler.paths[0].clone()
-        assert isinstance(self.edbapp.modeler.paths[0].width, float)
-        self.edbapp.modeler.paths[0].width = "1mm"
-        assert self.edbapp.modeler.paths[0].width == 0.001
+        edbapp = edb_examples.get_si_verse()
+        assert len(edbapp.modeler.paths) > 0
+        assert edbapp.modeler.paths[0].type == "Path"
+        assert edbapp.modeler.paths[0].clone()
+        assert isinstance(edbapp.modeler.paths[0].width, float)
+        edbapp.modeler.paths[0].width = "1mm"
+        assert edbapp.modeler.paths[0].width == 0.001
+        assert edbapp.modeler["line_167"].type == "Path"
+        assert edbapp.modeler["poly_3022"].type == "Polygon"
+        line_number = len(edbapp.modeler.primitives)
+        assert edbapp.modeler["line_167"].delete()
+        assert edbapp.modeler._primitives == []
+        assert line_number == len(edbapp.modeler.primitives) + 1
+        assert edbapp.modeler["poly_3022"].type == "Polygon"
+        edbapp.close()
 
     def test_modeler_primitives_by_layer(self):
         """Evaluate modeler primitives by layer"""
@@ -115,7 +124,7 @@ class TestClass:
         """Evaluate modeler primitives"""
         assert len(self.edbapp.modeler.rectangles) > 0
         assert len(self.edbapp.modeler.circles) > 0
-        assert len(self.edbapp.modeler.bondwires) == 0
+        assert len(self.edbapp.layout.bondwires) == 0
         assert "1_Top" in self.edbapp.modeler.polygons_by_layer.keys()
         assert len(self.edbapp.modeler.polygons_by_layer["1_Top"]) > 0
         assert len(self.edbapp.modeler.polygons_by_layer["DE1"]) == 0
@@ -273,10 +282,10 @@ class TestClass:
 
     def test_modeler_create_circle(self):
         """Create circle."""
-        poly = self.edbapp.modeler.create_polygon_from_points([[0, 0], [100, 0], [100, 100], [0, 100]], "1_Top")
+        poly = self.edbapp.modeler.create_polygon([[0, 0], [100, 0], [100, 100], [0, 100]], "1_Top")
         assert poly
         poly.add_void([[20, 20], [20, 30], [100, 30], [100, 20]])
-        poly2 = self.edbapp.modeler.create_polygon_from_points([[60, 60], [60, 150], [150, 150], [150, 60]], "1_Top")
+        poly2 = self.edbapp.modeler.create_polygon([[60, 60], [60, 150], [150, 150], [150, 60]], "1_Top")
         new_polys = poly.subtract(poly2)
         assert len(new_polys) == 1
         circle = self.edbapp.modeler.create_circle("1_Top", 40, 40, 15)
@@ -481,7 +490,7 @@ class TestClass:
         self.local_scratch.copyfolder(source_path_edb, target_path_edb)
         edbapp = Edb(target_path_edb, desktop_version)
         cap = edbapp.components.capacitors["C1"]
-        edbapp.siwave.create_circuit_port_on_pin(pos_pin=cap.pins["1"], neg_pin=cap.pins["2"])
+        edbapp.siwave.create_circuit_port_on_pin(pos_pin=cap.pins["1"]._edb_object, neg_pin=cap.pins["2"]._edb_object)
         edbapp.save_edb_as(r"C:\Users\gkorompi\Downloads\AFT")
         edbapp.components.capacitors["C3"].pins
         edbapp.padstacks.pins

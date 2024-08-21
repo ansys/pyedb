@@ -30,15 +30,12 @@ from __future__ import absolute_import  # noreorder
 import logging
 
 from pyedb.dotnet.clr_module import Dictionary, List, Tuple
-from pyedb.generic.general_methods import is_ironpython
 
-if not is_ironpython:  # pragma: no cover
-    try:
-        from enum import Enum
-    except ImportError:
-        Enum = None
-else:  # pragma: no cover
-    Enum = object
+try:
+    from enum import Enum
+except ImportError:
+    Enum = None
+
 
 logger = logging.getLogger(__name__)
 

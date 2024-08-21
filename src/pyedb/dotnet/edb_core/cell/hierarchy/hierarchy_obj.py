@@ -22,7 +22,7 @@
 
 import logging
 
-from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
+from pyedb.dotnet.edb_core.cell.connectable import Connectable
 
 
 class HierarchyObj(Connectable):
@@ -48,3 +48,14 @@ class HierarchyObj(Connectable):
 class Group(HierarchyObj):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
+
+    def ungroup(self, recursive=False):
+        """Dissolve a group.
+
+        Parameters
+        ----------
+        recursive : bool, optional
+         If True, all subgroups will also be dissolved.
+
+        """
+        return self._edb_object.Ungroup(recursive)

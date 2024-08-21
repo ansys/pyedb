@@ -4,28 +4,6 @@ These classes are the containers of primitives and all relative methods.
 Primitives are planes, lines, rectangles, and circles.
 
 
-.. code:: python
-
-    from pyedb import Edb
-
-    edb = Edb(myedb, edbversion="2023.1")
-
-    top_layer_obj = edb.modeler.create_rectangle(
-        "TOP", net_name="gnd", lower_left_point=plane_lw_pt, upper_right_point=plane_up_pt
-    )
-
-    ...
-
-.. currentmodule:: pyedb.dotnet.edb_core.layout
-
-.. autosummary::
-   :toctree: _autosummary
-   :nosignatures:
-
-
-   EdbLayout
-
-
 Primitives properties
 ---------------------
 These classes are the containers of data management for primitives and arcs.

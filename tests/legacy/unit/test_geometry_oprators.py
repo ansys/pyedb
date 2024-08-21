@@ -43,3 +43,20 @@ class TestClass:
         assert nplines == 28
         assert nslines == 8
         assert nlines == 20
+
+    def test_find_points_along_lines_2(self, points_for_line_detection_135):
+        distance_threshold = 0.015
+        minimum_number_of_points = 10
+
+        lines, lines_idx, nppoints, nplines, nslines, nlines = go.find_points_along_lines(
+            points=points_for_line_detection_135,
+            minimum_number_of_points=minimum_number_of_points,
+            distance_threshold=distance_threshold,
+            selected_angles=[0, 135],
+            return_additional_info=True,
+        )
+        assert len(lines) == 21
+        assert nppoints == 1200
+        assert nplines == 24
+        assert nslines == 7
+        assert nlines == 21

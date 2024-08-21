@@ -20,6 +20,7 @@ from pyedb.misc.downloads import download_file
 #
 # Download the EDB folder and copy it to a temporary folder.
 # The following files are used in this example:
+#
 # - _sky130_fictious_dtc_exmple_contol_no_map.xml_
 #   defines physical information such
 #   as material properties, stackup layers, and boundary conditions.
@@ -93,8 +94,8 @@ c.write_xml(os.path.join(temp_dir.name, "output.xml"))
 # Import the gds and open the edb.
 
 # +
-# Select EDB version (change it manually if needed, e.g. "2024.1")
-edb_version = "2024.1"
+# Select EDB version (change it manually if needed, e.g. "2024.2")
+edb_version = "2024.2"
 print(f"EDB version: {edb_version}")
 
 edb = pyedb.Edb(gds_out, edbversion=edb_version, technology_file=os.path.join(temp_dir.name, "output.xml"))

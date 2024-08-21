@@ -25,12 +25,12 @@ import math
 import re
 import warnings
 
-from pyedb.dotnet.clr_module import String, _clr
-from pyedb.dotnet.edb_core.cell.primitive import Primitive
+from pyedb.dotnet.clr_module import String
+from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.general import PadGeometryTpe, convert_py_list_to_net_list
-from pyedb.generic.general_methods import generate_unique_name, is_ironpython
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -726,9 +726,7 @@ class EDBPadstack(object):
         -------
         dict
         """
-        return {
-            id: via for id, via in self._ppadstack.padstack_instances.items() if via.padstack_definition == self.name
-        }
+        return {id: via for id, via in self._ppadstack.instances.items() if via.padstack_definition == self.name}
 
     @property
     def hole_range(self):
@@ -777,10 +775,10 @@ class EDBPadstack(object):
         convert_only_signal_vias : bool, optional
             Either to convert only vias belonging to signal nets or all vias. Defaults is ``True``.
         hole_wall_angle : float, optional
-            Angle of laser penetration in degrees. The angle defines the bottom hole diameter with this formula:
+            Angle of laser penetration in degrees. The angle defines the lowest hole diameter with this formula:
             HoleDiameter -2*tan(laser_angle* Hole depth). Hole depth is the height of the via (dielectric thickness).
             The default is ``15``.
-            The bottom hole is ``0.75*HoleDepth/HoleDiam``.
+            The lowest hole is ``0.75*HoleDepth/HoleDiam``.
         delete_padstack_def : bool, optional
             Whether to delete the padstack definition. The default is ``True``.
             If ``False``, the padstack definition is not deleted and the hole size is set to zero.
@@ -801,7 +799,7 @@ class EDBPadstack(object):
         layer_names = [i for i in list(layers.keys())]
         if convert_only_signal_vias:
             signal_nets = [i for i in list(self._ppadstack._pedb.nets.signal_nets.keys())]
-        topl, topz, bottoml, bottomz = self._ppadstack._pedb.stackup.stackup_limits(True)
+        topl, topz, bottoml, bottomz = self._ppadstack._pedb.stackup.limits(True)
         if self.via_start_layer in layers:
             start_elevation = layers[self.via_start_layer].lower_elevation
         else:
@@ -812,8 +810,8 @@ class EDBPadstack(object):
             stop_elevation = layers[self.instances[0].stop_layer].upper_elevation
 
         diel_thick = abs(start_elevation - stop_elevation)
-        rad1 = self.hole_properties[0] / 2
-        rad2 = self.hole_properties[0] / 2 - math.tan(hole_wall_angle * diel_thick * math.pi / 180)
+        rad1 = self.hole_properties[0] / 2 - math.tan(hole_wall_angle * diel_thick * math.pi / 180)
+        rad2 = self.hole_properties[0] / 2
 
         if start_elevation < (topz + bottomz) / 2:
             rad1, rad2 = rad2, rad1
@@ -823,11 +821,10 @@ class EDBPadstack(object):
                 pos = via.position
                 started = False
                 if len(self.pad_by_layer[self.via_start_layer].parameters) == 0:
-                    self._edb.cell.primitive.polygon.create(
-                        layout,
-                        self.via_start_layer,
-                        via._edb_padstackinstance.GetNet(),
-                        self.pad_by_layer[self.via_start_layer].polygon_data.edb_api,
+                    self._ppadstack._pedb.modeler.create_polygon(
+                        self.pad_by_layer[self.via_start_layer].polygon_data._edb_object,
+                        layer_name=self.via_start_layer,
+                        net_name=via._edb_padstackinstance.GetNet().GetName(),
                     )
                 else:
                     self._edb.cell.primitive.circle.create(
@@ -839,11 +836,10 @@ class EDBPadstack(object):
                         self._get_edb_value(self.pad_by_layer[self.via_start_layer].parameters_values[0] / 2),
                     )
                 if len(self.pad_by_layer[self.via_stop_layer].parameters) == 0:
-                    self._edb.cell.primitive.polygon.create(
-                        layout,
-                        self.via_stop_layer,
-                        via._edb_padstackinstance.GetNet(),
-                        self.pad_by_layer[self.via_stop_layer].polygon_data.edb_api,
+                    self._ppadstack._pedb.modeler.create_polygon(
+                        self.pad_by_layer[self.via_stop_layer].polygon_data._edb_object,
+                        layer_name=self.via_stop_layer,
+                        net_name=via._edb_padstackinstance.GetNet().GetName(),
                     )
                 else:
                     self._edb.cell.primitive.circle.create(
@@ -1029,7 +1025,7 @@ class EDBPadstack(object):
                     None,
                     None,
                 )
-                padstack_instance.SetIsLayoutPin(via.is_pin)
+                padstack_instance._edb_object.SetIsLayoutPin(via.is_pin)
                 i += 1
             via.delete()
         self._ppadstack._pedb.logger.info("Created {} new microvias.".format(i))
@@ -1403,17 +1399,12 @@ class EDBPadstackInstance(Primitive):
         layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
         val = self._pedb.edb_value(0)
         offset = self._pedb.edb_value(0.0)
-        if is_ironpython:  # pragma: no cover
-            diameter = _clr.StrongBox[type(val)]()
-            drill_to_layer = _clr.StrongBox[self._pedb.edb_api.Cell.ILayerReadOnly]()
-            flag = self._edb_padstackinstance.GetBackDrillParametersLayerValue(drill_to_layer, offset, diameter, False)
-        else:
-            (
-                flag,
-                drill_to_layer,
-                offset,
-                diameter,
-            ) = self._edb_padstackinstance.GetBackDrillParametersLayerValue(layer, offset, val, False)
+        (
+            flag,
+            drill_to_layer,
+            offset,
+            diameter,
+        ) = self._edb_padstackinstance.GetBackDrillParametersLayerValue(layer, offset, val, False)
         if flag:
             if offset.ToDouble():
                 return drill_to_layer.GetName(), diameter.ToString(), offset.ToString()
@@ -1461,17 +1452,12 @@ class EDBPadstackInstance(Primitive):
         layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
         val = self._pedb.edb_value(0)
         offset = self._pedb.edb_value(0.0)
-        if is_ironpython:  # pragma: no cover
-            diameter = _clr.StrongBox[type(val)]()
-            drill_to_layer = _clr.StrongBox[self._pedb.edb_api.Cell.ILayerReadOnly]()
-            flag = self._edb_padstackinstance.GetBackDrillParametersLayerValue(drill_to_layer, offset, diameter, True)
-        else:
-            (
-                flag,
-                drill_to_layer,
-                offset,
-                diameter,
-            ) = self._edb_padstackinstance.GetBackDrillParametersLayerValue(layer, offset, val, True)
+        (
+            flag,
+            drill_to_layer,
+            offset,
+            diameter,
+        ) = self._edb_padstackinstance.GetBackDrillParametersLayerValue(layer, offset, val, True)
         if flag:
             if offset.ToDouble():
                 return drill_to_layer.GetName(), diameter.ToString(), offset.ToString()
@@ -1503,9 +1489,9 @@ class EDBPadstackInstance(Primitive):
         val = self._pedb.edb_value(drill_diameter)
         offset = self._pedb.edb_value(offset)
         if offset.ToDouble():
-            return self._edb_padstackinstance.SetBackDrillParameters(layer, offset, val, True)
+            return self._edb_object.SetBackDrillParameters(layer, offset, val, True)
         else:
-            return self._edb_padstackinstance.SetBackDrillParameters(layer, val, True)
+            return self._edb_object.SetBackDrillParameters(layer, val, True)
 
     @property
     def start_layer(self):
@@ -1517,7 +1503,7 @@ class EDBPadstackInstance(Primitive):
             Name of the starting layer.
         """
         layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
-        _, start_layer, stop_layer = self._edb_padstackinstance.GetLayerRange()
+        _, start_layer, stop_layer = self._edb_object.GetLayerRange()
 
         if start_layer:
             return start_layer.GetName()
@@ -1751,12 +1737,9 @@ class EDBPadstackInstance(Primitive):
         >>> edbapp.padstacks.instances[111].get_aedt_pin_name()
 
         """
-        if is_ironpython:
-            name = _clr.Reference[String]()
-            self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, name)
-        else:
-            val = String("")
-            _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
+
+        val = String("")
+        _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
         name = str(name).strip("'")
         return name
 
@@ -1783,16 +1766,6 @@ class EDBPadstackInstance(Primitive):
         self._pedb.add_project_variable(var_name + "Y", p[1])
         self.position = [var_name + "X", var_name + "Y"]
         return [var_name + "X", var_name + "Y"]
-
-    def delete_padstack_instance(self):
-        """Delete this padstack instance.
-
-        .. deprecated:: 0.6.28
-           Use :func:`delete` property instead.
-        """
-        warnings.warn("`delete_padstack_instance` is deprecated. Use `delete` instead.", DeprecationWarning)
-        self._edb_padstackinstance.Delete()
-        return True
 
     def in_voids(self, net_name=None, layer_name=None):
         """Check if this padstack instance is in any void.
@@ -2082,18 +2055,6 @@ class EDBPadstackInstance(Primitive):
             path = self._pedb.modeler.Shape("polygon", points=new_rect)
             created_polygon = self._pedb.modeler.create_polygon(path, layer_name)
             return created_polygon
-
-    def get_connected_object_id_set(self):
-        """Produce a list of all geometries physically connected to a given layout object.
-
-        Returns
-        -------
-        list
-            Found connected objects IDs with Layout object.
-        """
-        layoutInst = self._edb_padstackinstance.GetLayout().GetLayoutInstance()
-        layoutObjInst = self.object_instance
-        return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
 
     def get_reference_pins(self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True):
         """Search for reference pins using given criteria.

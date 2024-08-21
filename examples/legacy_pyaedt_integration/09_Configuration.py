@@ -32,8 +32,8 @@ print("Project folder is", target_aedb)
 # Launch the ``pyedb.Edb`` class using EDB 2023 R2. Length units are SI.
 
 # +
-# Select EDB version (change it manually if needed, e.g. "2024.1")
-edb_version = "2024.1"
+# Select EDB version (change it manually if needed, e.g. "2024.2")
+edb_version = "2024.2"
 print(f"EDB version: {edb_version}")
 
 edbapp = pyedb.Edb(target_aedb, edbversion=edb_version)
@@ -131,7 +131,7 @@ edbapp.save_edb()
 # ## Configure the simulation setup
 #
 # This step enables the following:
-
+#
 # - Definition of the nets to include in the cutout region
 # - Cutout details
 # - Components to create the ports on

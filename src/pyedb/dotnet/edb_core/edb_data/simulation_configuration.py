@@ -2450,25 +2450,6 @@ class SimulationConfiguration(object):
                 self._dc_source_terms_to_ground[source_name] = node_to_ground
 
     def _read_cfg(self):  # pragma: no cover
-        """Configuration file reader.
-
-        .. deprecated:: 0.6.78
-           Use :func:`import_json` instead.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> from dotnet.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-        >>> config_file = path_configuration_file
-        >>> source_file = path_to_edb_folder
-        >>> edb = Edb(source_file)
-        >>> sim_setup = SimulationConfiguration(config_file)
-        >>> edb.build_simulation_project(sim_setup)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
-        """
-
         if not self.filename or not os.path.exists(self.filename):
             # raise Exception("{} does not exist.".format(self.filename))
             return
@@ -2478,7 +2459,7 @@ class SimulationConfiguration(object):
                 cfg_lines = cfg_file.read().split("\n")
                 for line in cfg_lines:
                     if line.strip() != "":
-                        if line.find("="):
+                        if line.find("=") > 0:
                             i, prop_value = line.strip().split("=")
                             value = prop_value.replace("'", "").strip()
                             if i.lower().startswith("generatesolderballs"):

@@ -2,8 +2,7 @@
 # This example shows how to set up the electronics database (EDB) for power integrity analysis from a single
 # configuration file.
 
-# ## Preparation
-# Import the required packages
+# ## Import the required packages
 
 import json
 
@@ -16,7 +15,7 @@ from pyaedt.downloads import download_file
 
 from pyedb import Edb
 
-AEDT_VERSION = "2024.1"
+AEDT_VERSION = "2024.2"
 NG_MODE = False
 
 # -
@@ -27,24 +26,24 @@ temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
 download_file(source="touchstone", name="GRM32_DC0V_25degC_series.s2p", destination=temp_folder.name)
 file_edb = download_file(source="edb/ANSYS-HSD_V1.aedb", destination=temp_folder.name)
 
-# Load example layout.
+# ## Load example layout
 
 edbapp = Edb(file_edb, edbversion=AEDT_VERSION)
 
-# ## Create a configuration file
-# In this example, we are going to use a configuration file to set up the layout for analysis.
-# ### Initialize a dictionary
-# Create an empty dictionary to host all configurations.
+# ## Create an empty dictionary to host all configurations
 
 cfg = dict()
 
-# ### Assign S-parameter model to capactitors.
+# ## Assign S-parameter model to capactitors.
 
 # Set S-parameter library path.
 
 cfg["general"] = {"s_parameter_library": os.path.join(temp_folder.name, "touchstone")}
 
-# Assign the S-parameter model. Keywords
+# Assign the S-parameter model.
+#
+# Keywords
+#
 # - **name**. Name of the S-parameter model in AEDT.
 # - **component**_definition. Known as component part number of part name.
 # - **file_path**. Touchstone file or full path to the touchstone file.
@@ -65,8 +64,11 @@ cfg["s_parameters"] = [
     }
 ]
 
-# ### Define ports
-# Create a circuit port between power and ground nets. Keywords
+# ## Define ports
+# Create a circuit port between power and ground nets.
+#
+# Keywords
+#
 # - **name**. Name of the port.
 # - **reference_desinator**.
 # - **type**. Type of the port. Supported types are 'ciruict', 'coax'.
@@ -83,8 +85,10 @@ cfg["ports"] = [
     }
 ]
 
-# ### Define SIwave SYZ analysis setup
+# ## Define SIwave SYZ analysis setup
+#
 # Keywords
+#
 # - **name**. Name of the setup.
 # - **type**. Type of the analysis setup. Supported types are 'siwave_ac', 'siwave_dc', 'hfss'.
 # - **pi_slider_position**. PI slider position. Supported values are from '0', '1', '2'. 0:speed, 1:balanced,
@@ -113,8 +117,10 @@ cfg["setups"] = [
     }
 ]
 
-# ### Define Cutout
+# ## Define Cutout
+#
 # Keywords
+#
 # - **signal_list**. List of nets to be kept after cutout.
 # - **reference_list**. List of nets as reference planes.
 # - **extent_type**. Supported extend types are 'Conforming', 'ConvexHull', 'Bounding'.
@@ -128,16 +134,13 @@ cfg["operations"] = {
     }
 }
 
-# ## Save the configuration as a JSON file
-# The configuration file can be saved in JSON format and applied to layout data using the EDB.
+# ## Write configuration into as json file
 
 file_json = os.path.join(temp_folder.name, "edb_configuration.json")
 with open(file_json, "w") as f:
     json.dump(cfg, f, indent=4, ensure_ascii=False)
 
-# ## Load configuration into EDB
-
-# Load configuration file
+# ## Import configuration into example layout
 
 edbapp.configuration.load(config_file=file_json)
 
@@ -154,17 +157,15 @@ edbapp.close()
 
 print(temp_folder.name)
 
-# ## Analyze in HFSS 3D Layout
-
-# ### Load edb into HFSS 3D Layout.
+# ## Load edb into HFSS 3D Layout.
 
 h3d = Hfss3dLayout(edbapp.edbpath, version=AEDT_VERSION, non_graphical=NG_MODE, new_desktop=True)
 
-# ### Analyze
+# ## Analyze
 
 h3d.analyze()
 
-# ### Plot impedance
+# ## Plot impedance
 
 solutions = h3d.post.get_solution_data(expressions="Z(port1,port1)")
 solutions.plot()
@@ -174,11 +175,4 @@ solutions.plot()
 h3d.close_desktop()
 
 # All project files are saved in the folder ``temp_file.dir``. If you've run this example as a Jupyter notbook you
-# can retrieve those project files. The following cell removes all temporary files, including the project folder.
-
-# ## Cleanup
-#
-# All project files are saved in the folder ``temp_file.dir``. If you've run this example as a Jupyter notbook you
-# can retrieve those project files. The following cell removes all temporary files, including the project folder.
-
-temp_folder.cleanup()
+# can retrieve those project files.

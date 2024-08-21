@@ -36,7 +36,6 @@ from pyedb.dotnet.edb_core.edb_data.sources import (
     CircuitPort,
     CurrentSource,
     DCTerminal,
-    PinGroup,
     ResistorSource,
     VoltageSource,
 )
@@ -129,8 +128,8 @@ class EdbSiwave(object):
             List of all layout pin groups.
         """
         _pingroups = {}
-        for el in self._layout.pin_groups:
-            _pingroups[el.GetName()] = PinGroup(el.GetName(), el, self._pedb)
+        for el in self._pedb.layout.pin_groups:
+            _pingroups[el._edb_object.GetName()] = el
         return _pingroups
 
     def _create_terminal_on_pins(self, source):
@@ -325,10 +324,10 @@ class EdbSiwave(object):
                 pin = [
                     pin
                     for pin in self._pedb.padstacks.get_pinlist_from_component_and_net(component_name)
-                    if pin.GetName() == pin_name
+                    if pin.component_pin == pin_name
                 ][0]
-                term_name = "{}_{}_{}".format(pin.GetComponent().GetName(), pin.GetNet().GetName(), pin.GetName())
-                res, start_layer, stop_layer = pin.GetLayerRange()
+                term_name = "{}_{}_{}".format(pin.component.name, pin._edb_object.GetNet().GetName(), pin.component_pin)
+                res, start_layer, stop_layer = pin._edb_object.GetLayerRange()
                 if res:
                     pin_instance = pin._edb_padstackinstance
                     positive_terminal = self._edb.cell.terminal.PadstackInstanceTerminal.Create(
@@ -913,7 +912,7 @@ class EdbSiwave(object):
             Name of the source.
 
         """
-        if source.name in [i.GetName() for i in self._layout.terminals]:
+        if source.name in [i.name for i in self._layout.terminals]:
             source.name = generate_unique_name(source.name, n=3)
             self._logger.warning("Port already exists with same name. Renaming to {}".format(source.name))
         pos_pin_group = self._pedb.components.create_pingroup_from_pins(source.positive_node.node_pins)
@@ -1236,7 +1235,7 @@ class EdbSiwave(object):
         pin_numbers = [str(p) for p in pin_numbers]
         if group_name is None:
             group_name = self._edb.cell.hierarchy.pin_group.GetUniqueName(self._active_layout)
-        comp = self._pedb.components.components[reference_designator]
+        comp = self._pedb.components.instances[reference_designator]
         pins = [pin.pin for name, pin in comp.pins.items() if name in pin_numbers]
         edb_pingroup = self._edb.cell.hierarchy.pin_group.Create(
             self._active_layout, group_name, convert_py_list_to_net_list(pins)

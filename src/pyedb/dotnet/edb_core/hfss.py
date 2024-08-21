@@ -27,7 +27,7 @@ import math
 
 from pyedb.dotnet.edb_core.edb_data.hfss_extent_info import HfssExtentInfo
 from pyedb.dotnet.edb_core.edb_data.ports import BundleWavePort, WavePort
-from pyedb.dotnet.edb_core.edb_data.primitives_data import EDBPrimitives
+from pyedb.dotnet.edb_core.edb_data.primitives_data import Primitive
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
@@ -36,7 +36,7 @@ from pyedb.dotnet.edb_core.general import (
     convert_pytuple_to_nettuple,
 )
 from pyedb.generic.constants import RadiationBoxType, SweepType
-from pyedb.generic.general_methods import generate_unique_name, is_ironpython
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -453,7 +453,7 @@ class EdbHfss(object):
         if not isinstance(net_list, list):
             net_list = [net_list]
         for ref in ref_des_list:
-            for _, py_inst in self._pedb.components.components[ref].pins.items():
+            for _, py_inst in self._pedb.components.instances[ref].pins.items():
                 if py_inst.net_name in net_list and py_inst.is_pin:
                     port_name = "{}_{}_{}".format(ref, py_inst.net_name, py_inst.pin.GetName())
                     (
@@ -523,10 +523,10 @@ class EdbHfss(object):
         if not port_name:
             port_name = generate_unique_name("diff")
 
-        if isinstance(positive_primitive_id, EDBPrimitives):
+        if isinstance(positive_primitive_id, Primitive):
             positive_primitive_id = positive_primitive_id.id
 
-        if isinstance(negative_primitive_id, EDBPrimitives):
+        if isinstance(negative_primitive_id, Primitive):
             negative_primitive_id = negative_primitive_id.id
 
         _, pos_term = self.create_wave_port(
@@ -547,8 +547,10 @@ class EdbHfss(object):
             [pos_term._edb_object, neg_term._edb_object], self._edb.cell.terminal.Terminal
         )
         _edb_boundle_terminal = self._edb.cell.terminal.BundleTerminal.Create(edb_list)
-        # _edb_boundle_terminal.SetName("Wave_"+port_name)
-        pos_term._edb_object.SetName(port_name)
+        _edb_boundle_terminal.SetName(port_name)
+        pos, neg = list(_edb_boundle_terminal.GetTerminals())
+        pos.SetName(port_name + ":T1")
+        neg.SetName(port_name + ":T2")
         return port_name, BundleWavePort(self._pedb, _edb_boundle_terminal)
 
     def create_bundle_wave_port(
@@ -591,7 +593,7 @@ class EdbHfss(object):
         if not port_name:
             port_name = generate_unique_name("bundle_port")
 
-        if isinstance(primitives_id[0], EDBPrimitives):
+        if isinstance(primitives_id[0], Primitive):
             primitives_id = [i.id for i in primitives_id]
 
         terminals = []
@@ -718,10 +720,10 @@ class EdbHfss(object):
             )
         if not port_name:
             port_name = generate_unique_name("Port_")
-        edge = self._edb.cell.terminal.PrimitiveEdge.Create(polygon.prim_obj, terminal_point)
+        edge = self._edb.cell.terminal.PrimitiveEdge.Create(polygon._edb_object, terminal_point)
         edges = convert_py_list_to_net_list(edge, self._edb.cell.terminal.Edge)
         edge_term = self._edb.cell.terminal.EdgeTerminal.Create(
-            polygon.GetLayout(), polygon.GetNet(), port_name, edges, isRef=False
+            polygon._edb_object.GetLayout(), polygon._edb_object.GetNet(), port_name, edges, isRef=False
         )
         if force_circuit_port:
             edge_term.SetIsCircuitPort(True)
@@ -732,10 +734,14 @@ class EdbHfss(object):
             edge_term.SetImpedance(self._pedb.edb_value(port_impedance))
         edge_term.SetName(port_name)
         if reference_polygon and reference_point:
-            ref_edge = self._edb.cell.terminal.PrimitiveEdge.Create(reference_polygon.prim_obj, reference_point)
+            ref_edge = self._edb.cell.terminal.PrimitiveEdge.Create(reference_polygon._edb_object, reference_point)
             ref_edges = convert_py_list_to_net_list(ref_edge, self._edb.cell.terminal.Edge)
             ref_edge_term = self._edb.cell.terminal.EdgeTerminal.Create(
-                reference_polygon.GetLayout(), reference_polygon.GetNet(), port_name + "_ref", ref_edges, isRef=True
+                reference_polygon._edb_object.GetLayout(),
+                reference_polygon._edb_object.GetNet(),
+                port_name + "_ref",
+                ref_edges,
+                isRef=True,
             )
             if reference_layer:
                 ref_edge_term.SetReferenceLayer(reference_layer)
@@ -763,7 +769,7 @@ class EdbHfss(object):
 
         Parameters
         ----------
-        prim_id : int, EDBPrimitives
+        prim_id : int, Primitive
             Primitive ID.
         point_on_edge : list
             Coordinate of the point to define the edge terminal.
@@ -792,7 +798,7 @@ class EdbHfss(object):
         if not port_name:
             port_name = generate_unique_name("Terminal_")
 
-        if isinstance(prim_id, EDBPrimitives):
+        if isinstance(prim_id, Primitive):
             prim_id = prim_id.id
 
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
@@ -1097,27 +1103,25 @@ class EdbHfss(object):
                 net_polygons = [
                     pp
                     for pp in net.primitives
-                    if pp.GetPrimitiveType() == self._edb.cell.primitive.PrimitiveType.Polygon
+                    if pp._edb_object.GetPrimitiveType() == self._edb.cell.primitive.api.PrimitiveType.Polygon
                 ]
                 for poly in net_polygons:
                     mid_points = [[arc.mid_point.X.ToDouble(), arc.mid_point.Y.ToDouble()] for arc in poly.arcs]
                     for mid_point in mid_points:
                         if GeometryOperators.point_in_polygon(mid_point, user_defined_extent) == 0:
-                            port_name = generate_unique_name("{}_{}".format(poly.GetNet().GetName(), poly.GetId()))
-                            term = self._create_edge_terminal(poly.GetId(), mid_point, port_name)  # pragma no cover
+                            port_name = generate_unique_name("{}_{}".format(poly.net.name, poly.id))
+                            term = self._create_edge_terminal(poly.id, mid_point, port_name)  # pragma no cover
                             if not term.IsNull():
                                 self._logger.info("Terminal {} created".format(term.GetName()))
                                 term.SetIsCircuitPort(True)
-                                terminal_info.append(
-                                    [poly.GetNet().GetName(), mid_point[0], mid_point[1], term.GetName()]
-                                )
+                                terminal_info.append([poly.net.name, mid_point[0], mid_point[1], term.GetName()])
                                 mid_pt_data = self._edb.geometry.point_data(
                                     self._edb.utility.value(mid_point[0]), self._edb.utility.value(mid_point[1])
                                 )
                                 ref_prim = [
                                     prim
                                     for prim in reference_net.primitives
-                                    if prim.polygon_data.edb_api.PointInPolygon(mid_pt_data)
+                                    if prim.polygon_data._edb_object.PointInPolygon(mid_pt_data)
                                 ]
                                 if not ref_prim:
                                     self._logger.warning("no reference primitive found, trying to extend scanning area")
@@ -1258,13 +1262,9 @@ class EdbHfss(object):
             adapt.AdaptiveFrequency = simulation_setup.mesh_freq
             adapt.MaxPasses = int(simulation_setup.max_num_passes)
             adapt.MaxDelta = str(simulation_setup.max_mag_delta_s)
-            if is_ironpython:
-                simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Clear()
-                simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Add(adapt)
-            else:
-                simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList = (
-                    convert_py_list_to_net_list([adapt])
-                )
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList = convert_py_list_to_net_list(
+                [adapt]
+            )
         elif simulation_setup.ac_settings.adaptive_type == 2:
             low_freq_adapt_data = self._pedb.simsetupdata.AdaptiveFrequencyData()
             low_freq_adapt_data.MaxDelta = str(simulation_setup.max_mag_delta_s)
@@ -1446,7 +1446,7 @@ class EdbHfss(object):
             as argument."
             )
             return False
-        net_names = [net.name for net in self._layout.nets if not net.IsPowerGround()]
+        net_names = [net.name for net in self._layout.nets if not net._edb_object.IsPowerGround()]
         if simulation_setup.components and isinstance(simulation_setup.components[0], str):
             cmp_names = (
                 simulation_setup.components
@@ -1556,8 +1556,8 @@ class EdbHfss(object):
            Number of ports.
 
         """
-        terms = [term for term in self._layout.terminals if int(term.GetBoundaryType()) == 0]
-        return len([i for i in terms if not i.IsReferenceTerminal()])
+        terms = [term for term in self._layout.terminals if int(term._edb_object.GetBoundaryType()) == 0]
+        return len([i for i in terms if not i.is_reference_terminal])
 
     def layout_defeaturing(self, simulation_setup=None):
         """Defeature the layout by reducing the number of points for polygons based on surface deviation criteria.

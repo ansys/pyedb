@@ -43,10 +43,6 @@ class BundleTerminal(Terminal):
         """Get terminals belonging to this excitation."""
         return [EdgeTerminal(self._pedb, i) for i in list(self._edb_object.GetTerminals())]
 
-    @property
-    def name(self):
-        return self.terminals[0].name
-
     def decouple(self):
         """Ungroup a bundle of terminals."""
         return self._edb_object.Ungroup()

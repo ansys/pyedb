@@ -22,7 +22,7 @@
 
 import re
 
-from pyedb.dotnet.edb_core.cell.layout_obj import Connectable
+from pyedb.dotnet.edb_core.cell.connectable import Connectable
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
 
@@ -158,24 +158,6 @@ class Terminal(Connectable):
         ppp = self._port_post_processing_prop
         ppp.DoRenormalize = value
         self._port_post_processing_prop = ppp
-
-    @property
-    def name(self):
-        """Port Name.
-
-        Returns
-        -------
-        str
-        """
-        return self._edb_object.GetName()
-
-    @name.setter
-    def name(self, value):
-        if isinstance(value, str):
-            if not any(port for port in list(self._pedb.excitations.keys()) if port == value):
-                self._edb_object.SetName(value)
-            else:
-                self._pedb.logger.warning("An existing port already has this same name. A port name must be unique.")
 
     @property
     def net_name(self):
@@ -436,7 +418,7 @@ class Terminal(Connectable):
         if gnd_net is not None:
             power_ground_net_names = [gnd_net]
         else:
-            power_ground_net_names = [net for net in self._pedb.nets.power_nets.keys()]
+            power_ground_net_names = [net for net in self._pedb.nets.power.keys()]
         comp_ref_pins = [i for i in pin_list if i.GetNet().GetName() in power_ground_net_names]
         if len(comp_ref_pins) == 0:  # pragma: no cover
             self._pedb.logger.error(

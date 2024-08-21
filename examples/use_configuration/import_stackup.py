@@ -14,7 +14,7 @@ from pyaedt.downloads import download_file
 
 from pyedb import Edb
 
-AEDT_VERSION = "2024.1"
+AEDT_VERSION = "2024.2"
 NG_MODE = False
 
 # -
@@ -76,8 +76,5 @@ edbapp.stackup.plot()
 edbapp.stackup["1_Top"].thickness
 
 # ## Cleanup
-#
-# All project files are saved in the folder ``temp_file.dir``. If you've run this example as a Jupyter notbook you
-# can retrieve those project files. The following cell removes all temporary files, including the project folder.
+
 edbapp.close()
-temp_folder.cleanup()

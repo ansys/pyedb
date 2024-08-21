@@ -94,18 +94,21 @@ class LinearArray:
 tmpfold = tempfile.gettempdir()
 aedb_path = os.path.join(tmpfold, generate_unique_name("pcb") + ".aedb")
 print(aedb_path)
-edb = pyedb.Edb(edbpath=aedb_path, edbversion="2024.1")
+edb = pyedb.Edb(edbpath=aedb_path, edbversion="2024.2")
 
 # ## Add stackup layers
 #
 # Add the stackup layers.
+layers = {
+    "TOP": {"type": "signal", "thicness": "35um", "material": "copper"},
+    "Substrat": {"type": "dielectric", "thicness": "0.5mm", "material": "Duroid (tm)"},
+    "GND": {"type": "signal", "thicness": "35um", "material": "copper"},
+    "Gap": {"type": "dielectric", "thicness": "0.05mm", "material": "Air"},
+    "Virt_GND": {"type": "signal", "thicness": "35um", "material": "copper"},
+}
 
-if edb:
-    edb.stackup.add_layer("Virt_GND")
-    edb.stackup.add_layer("Gap", "Virt_GND", layer_type="dielectric", thickness="0.05mm", material="Air")
-    edb.stackup.add_layer("GND", "Gap")
-    edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.5mm", material="Duroid (tm)")
-    edb.stackup.add_layer("TOP", "Substrat")
+edb.stackup.load(layers)
+
 
 # ## Create linear array
 #
@@ -223,7 +226,7 @@ print("EDB saved correctly to {}. You can import in AEDT.".format(aedb_path))
 # Launch HFSS 3D Layout and open EDB.
 
 h3d = Hfss3dLayout(
-    projectname=aedb_path, specified_version="2024.1", new_desktop_session=True, non_graphical=non_graphical
+    projectname=aedb_path, specified_version="2024.2", new_desktop_session=True, non_graphical=non_graphical
 )
 
 # ## Plot geometry

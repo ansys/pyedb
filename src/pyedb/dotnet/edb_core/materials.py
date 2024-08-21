@@ -32,10 +32,8 @@ import warnings
 from pydantic import BaseModel, confloat
 
 from pyedb import Edb
-from pyedb.dotnet.clr_module import _clr
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.exceptions import MaterialModelException
-from pyedb.generic.general_methods import is_ironpython
 
 logger = logging.getLogger(__name__)
 
@@ -214,10 +212,10 @@ class Material(object):
     @dc_conductivity.setter
     def dc_conductivity(self, value: Union[int, float]):
         """Set material dielectric conductivity."""
-        if self.__dc_model:
+        if self.__dc_model and value:
             self.__dc_model.SetDCConductivity(value)
         else:
-            self.__edb.logger.error(f"DC conductivity cannot be updated in material without DC model.")
+            self.__edb.logger.error(f"DC conductivity cannot be updated in material without DC model or value {value}.")
 
     @property
     def dc_permittivity(self):
@@ -229,10 +227,12 @@ class Material(object):
     @dc_permittivity.setter
     def dc_permittivity(self, value: Union[int, float]):
         """Set material dielectric relative permittivity"""
-        if self.__dc_model:
+        if self.__dc_model and value:
             self.__dc_model.SetDCRelativePermitivity(value)
         else:
-            self.__edb.logger.error(f"DC permittivity cannot be updated in material without DC model.")
+            self.__edb.logger.error(
+                f"DC permittivity cannot be updated in material without DC model or value {value}." f""
+            )
 
     @property
     def dielectric_model_frequency(self):
@@ -426,16 +426,11 @@ class Material(object):
 
     def __property_value(self, material_property_id):
         """Get property value from a material property id."""
-        if is_ironpython:  # pragma: no cover
-            property_box = _clr.StrongBox[float]()
-            self.__material_def.GetProperty(material_property_id, property_box)
-            return float(property_box)
+        _, property_box = self.__material_def.GetProperty(material_property_id)
+        if isinstance(property_box, float):
+            return property_box
         else:
-            _, property_box = self.__material_def.GetProperty(material_property_id)
-            if isinstance(property_box, float):
-                return property_box
-            else:
-                return property_box.ToDouble()
+            return property_box.ToDouble()
 
     # def __reset_property(self, name):
     #     """Reset a property using the default value of the EDB API.
@@ -1040,7 +1035,7 @@ class Materials(object):
         amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")
         for material in self.iterate_materials_in_amat(amat_file):
             iter_material_name = material["name"]
-            if iter_material_name == material_name:
+            if iter_material_name == material_name or iter_material_name.lower() == material_name.lower():
                 for material_property, value in material.items():
                     if material_property != "name":
                         res[material_property] = value

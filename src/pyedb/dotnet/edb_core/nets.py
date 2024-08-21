@@ -29,7 +29,7 @@ import warnings
 
 from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
 from pyedb.generic.constants import CSS4_COLORS
-from pyedb.generic.general_methods import generate_unique_name, is_ironpython
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -55,10 +55,7 @@ class EdbNets(object):
         :class:` :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBNetsData`
 
         """
-        if name in self.nets:
-            return self.nets[name]
-        self._pedb.logger.error("Component or definition not found.")
-        return
+        return self._pedb.layout.find_net_by_name(name)
 
     def __contains__(self, name):
         """Determine if a net is named ``name`` or not.
@@ -119,7 +116,7 @@ class EdbNets(object):
         dict[str, :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBNetsData`]
             Dictionary of nets.
         """
-        return self._pedb.modeler.nets
+        return {i.name: i for i in self._pedb.layout.nets}
 
     @property
     def netlist(self):
@@ -209,10 +206,11 @@ class EdbNets(object):
         for net in self._layout.nets[:]:
             total_plane_area = 0.0
             total_trace_area = 0.0
-            for primitive in net.Primitives:
-                if primitive.GetPrimitiveType() == self._edb.cell.primitive.PrimitiveType.Bondwire:
+            for primitive in net.primitives:
+                primitive = primitive._edb_object
+                if primitive.GetPrimitiveType() == self._edb.cell.primitive.api_class.PrimitiveType.Bondwire:
                     continue
-                if primitive.GetPrimitiveType() != self._edb.cell.primitive.PrimitiveType.Path:
+                if primitive.GetPrimitiveType() != self._edb.cell.primitive.api_class.PrimitiveType.Path:
                     total_plane_area += float(primitive.GetPolygonData().Area())
                 else:
                     total_trace_area += float(primitive.GetPolygonData().Area())
@@ -524,7 +522,7 @@ class EdbNets(object):
         bottom_layer = list(self._pedb.stackup.signal_layers.keys())[-1]
         if plot_components_on_top or plot_components_on_bottom:
             nc = 0
-            for comp in self._pedb.components.components.values():
+            for comp in self._pedb.components.instances.values():
                 if not comp.is_enabled:
                     continue
                 net_names = comp.nets
@@ -841,9 +839,6 @@ class EdbNets(object):
         show : bool, optional
             Whether to show the plot or not. Default is `True`.
         """
-        if is_ironpython:
-            self._logger.warning("Plot functionalities are enabled only in CPython.")
-            return False
         from pyedb.generic.plot import plot_matplotlib
 
         object_lists = self.get_plot_data(
@@ -1094,7 +1089,7 @@ class EdbNets(object):
         else:
             if not start_with and not contain and not end_with:
                 net = self._edb.cell.net.find_by_name(self._active_layout, net_name)
-                if net.IsNull():
+                if net.is_null:
                     net = self._edb.cell.net.create(self._active_layout, net_name)
                 return net
             elif start_with:
@@ -1155,9 +1150,9 @@ class EdbNets(object):
             ``True`` if the net is found in component pins.
 
         """
-        if component_name not in self._pedb.components.components:
+        if component_name not in self._pedb.components.instances:
             return False
-        for net in self._pedb.components.components[component_name].nets:
+        for net in self._pedb.components.instances[component_name].nets:
             if net_name == net:
                 return True
         return False
