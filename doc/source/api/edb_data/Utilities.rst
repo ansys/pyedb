@@ -1,4 +1,4 @@
-EDB Utilities
+EDB utilities
 =============
 Class managing EDB utilities.
 

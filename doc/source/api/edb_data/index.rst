@@ -1,5 +1,5 @@
 ================
-EDB DATA classes
+EDB data classes
 ================
 
 This section describes EDB data classes.
