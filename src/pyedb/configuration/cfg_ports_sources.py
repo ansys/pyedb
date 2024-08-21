@@ -140,13 +140,7 @@ class CfgPorts:
                 pos_term_info = {"pin": p.padstack_instance.component_pin}
             elif p.terminal_type == "PointTerminal":
                 refdes = ""
-                pos_term_info = {"coordinates":
-                    {
-                        "layer": p.layer.name,
-                        "point": p.location,
-                        "net": p.net.name
-                    }
-                }
+                pos_term_info = {"coordinates": {"layer": p.layer.name, "point": p.location, "net": p.net.name}}
 
             if port_type == "circuit":
                 neg_term = self._pedb.terminals[p.ref_terminal.name]
@@ -156,11 +150,11 @@ class CfgPorts:
                 elif neg_term.terminal_type == "PadstackInstanceTerminal":
                     neg_term_info = {"pin": neg_term.padstack_instance.component_pin}
                 elif neg_term.terminal_type == "PointTerminal":
-                    neg_term_info = {"coordinates":
-                        {
+                    neg_term_info = {
+                        "coordinates": {
                             "layer": neg_term.layer.name,
                             "point": neg_term.location,
-                            "net": neg_term.net.name
+                            "net": neg_term.net.name,
                         }
                     }
 
