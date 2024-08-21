@@ -770,7 +770,16 @@ class Components(object):
                 )
         return True
 
-    def create_port_on_pins(self, refdes, pins, reference_pins, impedance=50.0, port_name=None, pec_boundary=False):
+    def create_port_on_pins(
+        self,
+        refdes,
+        pins,
+        reference_pins,
+        impedance=50.0,
+        port_name=None,
+        pec_boundary=False,
+        pingroup_on_single_pin=False,
+    ):
         """Create circuit port between pins and reference ones.
 
         Parameters
@@ -796,6 +805,9 @@ class Components(object):
         a perfect short is created between the pin and impedance is ignored. This
         parameter is only supported on a port created between two pins, such as
         when there is no pin group.
+        pingroup_on_single_pin : bool
+            If ``True`` force using pingroup definition on single pin to have the port created at the pad center. If
+            ``False`` the port is created at the pad edge. Default value is ``False``.
 
         Returns
         -------
@@ -876,7 +888,7 @@ class Components(object):
         if not reference_pins:
             self._logger.error("No reference pins found.")
             return
-        if len(pins) > 1:
+        if len(pins) > 1 or pingroup_on_single_pin:
             pec_boundary = False
             self._logger.info(
                 "Disabling PEC boundary creation, this feature is supported on single pin "
@@ -889,7 +901,7 @@ class Components(object):
         else:
             term = self._create_terminal(pins[0].primitive_object, term_name=port_name)
         term.SetIsCircuitPort(True)
-        if len(reference_pins) > 1:
+        if len(reference_pins) > 1 or pingroup_on_single_pin:
             pec_boundary = False
             self._logger.info(
                 "Disabling PEC boundary creation. This feature is supported on single pin"
