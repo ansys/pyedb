@@ -1,4 +1,4 @@
-Simulation configuration V2.0
+Simulation configuration v2.0
 =============================
 These classes are the containers of simulation configuration constructors V2.0 for the EDB.
 
