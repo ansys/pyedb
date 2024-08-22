@@ -109,6 +109,7 @@ class Layout(ObjBase):
         -----
         Method returns the expansion of the contour, so any voids within expanded objects are ignored.
         """
+        nets = [i._edb_object for i in nets]
         return self._edb_object.GetExpandedExtentFromNets(
             convert_py_list_to_net_list(nets),
             extent,
