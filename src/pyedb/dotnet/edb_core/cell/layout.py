@@ -23,6 +23,8 @@
 """
 This module contains these classes: `EdbLayout` and `Shape`.
 """
+from typing import Union
+
 from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.edb_core.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.edb_core.cell.primitive.path import Path
@@ -331,3 +333,17 @@ class Layout(ObjBase):
         """
         obj = self._pedb._edb.Cell.Hierarchy.Component.FindByName(self._edb_object, value)
         return EDBComponent(self._pedb, obj) if obj is not None else None
+
+    def find_primitive(self, layer_name: Union[str, list]) -> list:
+        """Find a primitive objects by layer name.
+
+        Parameters
+        ----------
+        layer_name : str, list
+            Name of the layer.
+        Returns
+        -------
+        list
+        """
+        layer_name = layer_name if isinstance(layer_name, list) else [layer_name]
+        return [i for i in self.primitives if i.layer_name in layer_name]
