@@ -1994,7 +1994,7 @@ class Edb(Database):
         expansion_size = self.edb_value(expansion_size).ToDouble()
 
         # validate nets in layout
-        net_signals = [net.api_object for net in self.layout.nets if net.name in signal_list]
+        net_signals = [net for net in self.layout.nets if net.name in signal_list]
 
         # validate references in layout
         _netsClip = convert_py_list_to_net_list(
