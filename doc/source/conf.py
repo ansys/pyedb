@@ -395,7 +395,7 @@ html_context = {
 
 # specify the location of your github repo
 html_theme_options = {
-    "logo": "ansys",
+    "logo": "pyansys",
     "switcher": {
         "json_url": f"https://{cname}/versions.json",
         "version_match": switcher_version,

@@ -108,7 +108,7 @@ class Terminal(Connectable):
         point_data = self._pedb.point_data(0, 0)
         layer = list(self._pedb.stackup.layers.values())[0]._edb_layer
         if self._edb_object.GetParameters(point_data, layer):
-            return layer
+            return self._pedb.stackup.all_layers[layer.GetName()]
         else:
             self._pedb.logger.warning(f"No pad parameters found for terminal {self.name}")
 
@@ -128,7 +128,7 @@ class Terminal(Connectable):
     @location.setter
     def location(self, value):
         layer = self.layer
-        self._edb_object.SetParameters(self._pedb.point_data(*value), layer)
+        self._edb_object.SetParameters(self._pedb.point_data(*value), layer._edb_object)
 
     @property
     def is_circuit_port(self):
