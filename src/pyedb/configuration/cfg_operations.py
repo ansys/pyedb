@@ -24,7 +24,9 @@ from pyedb.configuration.cfg_common import CfgBase
 
 
 class CfgCutout(CfgBase):
-    def __init__(self, **kwargs):
+    def __init__(self, pedb, **kwargs):
+        self._pedb = pedb
+
         self.signal_list = kwargs.get("signal_list")
         self.reference_list = kwargs.get("reference_list")
         self.extent_type = kwargs.get("extent_type")
@@ -38,7 +40,7 @@ class CfgCutout(CfgBase):
         self.extent_defeature = kwargs.get("extent_defeature")
         self.remove_single_pin_components = kwargs.get("remove_single_pin_components")
         self.custom_extent = kwargs.get("custom_extent")
-        self.custom_extent_units = kwargs.get("custom_extent_units")
+        self.custom_extent_units = kwargs.get("custom_extent_units", "meter")
         self.include_partial_instances = kwargs.get("include_partial_instances")
         self.keep_voids = kwargs.get("keep_voids")
         self.check_terminals = kwargs.get("check_terminals")
@@ -49,13 +51,45 @@ class CfgCutout(CfgBase):
         self.simple_pad_check = kwargs.get("simple_pad_check")
         self.keep_lines_as_path = kwargs.get("keep_lines_as_path")
 
+    def get_data_from_db(self):
+        if "pyedb_cutout" in self._pedb.stackup.all_layers:
+            poly = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")[0]
+            self.custom_extent = poly.polygon_data.points
+
+            net_names = []
+            for name, obj in self._pedb.nets.nets.items():
+                if obj.primitives[0].layer.name == "pyedb_cutout":
+                    continue
+                if len(obj.primitives) > 0:
+                    net_names.append(name)
+
+            self.reference_list = []
+            self.signal_list = net_names
+        return self.export_properties()
+
+    def export_properties(self):
+        return {
+            "signal_list": self.signal_list,
+            "reference_list": self.reference_list,
+            "custom_extent": self.custom_extent,
+        }
+
 
 class CfgOperations(CfgBase):
     def __init__(self, pedb, data):
         self._pedb = pedb
-        self.op_cutout = CfgCutout(**data["cutout"]) if "cutout" in data else None
+        self.op_cutout = CfgCutout(pedb, **data["cutout"]) if "cutout" in data else None
 
     def apply(self):
         """Imports operation information from JSON."""
         if self.op_cutout:
-            self._pedb.cutout(**self.op_cutout.get_attributes())
+            polygon_points = self._pedb.cutout(**self.op_cutout.get_attributes())
+            if not "pyedb_cutout" in self._pedb.stackup.all_layers:
+                self._pedb.stackup.add_document_layer(name="pyedb_cutout")
+                self._pedb.modeler.create_polygon(polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout")
+
+            # create a polygon on pyedb layer
+
+    def get_data_from_db(self):
+        self.op_cutout = CfgCutout(self._pedb)
+        return {"cutout": self.op_cutout.get_data_from_db()}
