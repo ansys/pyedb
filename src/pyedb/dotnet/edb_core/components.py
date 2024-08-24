@@ -651,9 +651,8 @@ class Components(object):
 
         Returns
         -------
-        pyedb.component_libraries.ansys_components import ComponentLib object. ComponentLib object contains nested
-        dictionaries to navigate through [component tpe][vendors][series]
-        [class: `pyedb.component_libraries.ansys_components.ComponentPart`]
+        ComponentLib object contains nested dictionaries to navigate through [component type][vendors][series]
+        :class: `pyedb.component_libraries.ansys_components.ComponentPart`
 
         Examples
         --------
@@ -681,6 +680,7 @@ class Components(object):
                             for line in f.readlines():
                                 part_name, index = line.split()
                                 _serie[part_name] = ComponentPart(part_name, int(index), sbin_file)
+                                _serie[part_name].type = cmp_type[:-1]
                             f.close()
                         series[serie_name] = _serie
                 vendors[vendor] = series
