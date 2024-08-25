@@ -593,6 +593,10 @@ class TestClass:
         assert len(comp_lib.capacitors) == 13
         assert len(comp_lib.inductors) == 7
         network = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].s_parameters
+        test_esr = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].esr
+        test_esl = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].esl
+        assert round(test_esr, 4) == 1.7552
+        assert round(test_esl, 12) == 2.59e-10
         assert network
         assert network.frequency.npoints == 400
         network.write_touchstone(os.path.join(edbapp.directory, "test_export.s2p"))
