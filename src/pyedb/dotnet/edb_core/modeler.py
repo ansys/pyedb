@@ -188,7 +188,7 @@ class Modeler(object):
         for lay in self._pedb.stackup.non_stackup_layers:
             _primitives_by_layer[lay] = []
         for i in self._layout.primitives:
-            lay = i.layer.name
+            lay = i._edb_object.GetLayer().GetName()
             if lay in _primitives_by_layer:
                 _primitives_by_layer[lay].append(i)
         return _primitives_by_layer
@@ -256,7 +256,7 @@ class Modeler(object):
         """
         objinst = []
         for el in self.polygons:
-            if el.layer.name == layer_name:
+            if el._edb_object.GetLayer().GetName() == layer_name:
                 if net_list and el.net.name in net_list:
                     objinst.append(el)
                 else:
@@ -1184,7 +1184,7 @@ class Modeler(object):
                                 parameter_name, variable_value, is_parameter=True
                             )
                         p.width = self._pedb.edb_value(parameter_name)
-                    elif p.layer.name in layers_name:
+                    elif p._edb_object.GetLayer().GetName() in layers_name:
                         if not var_server:
                             if not variable_value:
                                 variable_value = p.width

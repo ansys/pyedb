@@ -125,7 +125,7 @@ class Primitive(Connectable):
         str
         """
         try:
-            return self.layer.name
+            return self._edb_object.GetLayer().GetName()
         except (KeyError, AttributeError):  # pragma: no cover
             return None
 
