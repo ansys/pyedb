@@ -266,6 +266,16 @@ class Siwave(object):  # pragma no cover
         else:
             return False
 
+    @property
+    def file_dir(self) -> str:
+        """Directory path of the open project."""
+        return self.oproject.GetFileDir()
+
+    @property
+    def file_path(self) -> str:
+        """Path of the open project file."""
+        return self.oproject.GetFilePath()
+
     def save_project(self, projectpath=None, projectName=None):
         """Save the project.
 
@@ -283,7 +293,9 @@ class Siwave(object):  # pragma no cover
 
         """
         if projectName and projectpath:
-            self.oproject.ScrSaveProjectAs(os.path.join(projectpath, projectName + ".siw"))
+            if not projectName.endswith(".siw"):
+                projectName = projectName + ".siw"
+            self.oproject.ScrSaveProjectAs(os.path.join(projectpath, projectName))
         else:
             self.oproject.Save()
         return True
@@ -476,6 +488,7 @@ class Siwave(object):  # pragma no cover
         if isinstance(file_path, Path):
             file_path = str(file_path)
         flag = self.oproject.ScrImportEDB(file_path)
+        # self.save_project(self.di)
         if flag == 0:
             self._logger.info(f"Importing EDB to {file_path}.")
             return True
@@ -493,11 +506,12 @@ class Siwave(object):  # pragma no cover
         if isinstance(file_path, Path):
             file_path = str(file_path)
 
-        temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
-        temp_edb = os.path.join(temp_folder.name, "temp.aedb")
+        # temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
+        # temp_edb = os.path.join(temp_folder.name, "temp.aedb")
+
+        temp_edb = os.path.join(self.file_dir, "temp.aedb")
 
         self.export_edb(temp_edb)
-        self.save_project()
         self.oproject.ScrCloseProject()
         edbapp = Edb(temp_edb, edbversion=self.current_version)
         edbapp.configuration.load(file_path)
