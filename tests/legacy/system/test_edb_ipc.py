@@ -50,11 +50,7 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
         edbapp = Edb(target_path, edbversion=desktop_version)
         xml_file = os.path.join(self.local_scratch.path, "test.xml")
-        from datetime import datetime
-
-        now = datetime.now()
         edbapp.export_to_ipc2581(xml_file)
-        print(datetime.now() - now)
         assert os.path.exists(xml_file)
 
         # Export should be made with units set to default -millimeter-.
