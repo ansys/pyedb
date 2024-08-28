@@ -34,6 +34,7 @@ import math
 import warnings
 
 from pyedb.dotnet.edb_core.edb_data.layer_data import (
+    layer_cast,
     LayerEdbClass,
     StackupLayerEdbClass,
 )
@@ -284,10 +285,7 @@ class LayerCollection(object):
         layer_list = list(self._edb_object.Layers(self._pedb.edb_api.cell.layer_type_set.AllLayerSet))
         temp = dict()
         for i in layer_list:
-            if i.IsStackupLayer():
-                obj = StackupLayerEdbClass(self._pedb, i.Clone(), name=i.GetName())
-            else:
-                obj = LayerEdbClass(self._pedb, i.Clone(), name=i.GetName())
+            obj = layer_cast(self._pedb, i)
             temp[obj.name] = obj
         return temp
 
@@ -306,12 +304,20 @@ class LayerCollection(object):
         """
         return {name: obj for name, obj in self.all_layers.items() if obj.is_stackup_layer}
 
+    def find_layer_by_name(self, name: str):
+        """Finds a layer in a layer with given name. """
+        obj = self._pedb.edb_api.cell._cell.Layer.FindByName(self._edb_object, name)
+        if obj.IsNull():
+            raise ValueError("Layer with name '{}' was not found.".format(name))
+        else:
+            return layer_cast(self._pedb, obj.Clone())
+
 
 class Stackup(LayerCollection):
     """Manages EDB methods for stackup accessible from `Edb.stackup` property."""
 
     def __getitem__(self, item):
-        return self.all_layers[item]
+        return self.find_layer_by_name(item)
 
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)

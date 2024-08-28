@@ -2353,9 +2353,9 @@ class Edb(Database):
                         list_prims = subtract(p, voids_data)
                         for prim in list_prims:
                             if not prim.IsNull():
-                                poly_to_create.append([prim, prim_1._edb_object.GetLayer().GetName(), net, list_void])
+                                poly_to_create.append([prim, prim_1.layer.name, net, list_void])
                     else:
-                        poly_to_create.append([p, prim_1._edb_object.GetLayer().GetName(), net, list_void])
+                        poly_to_create.append([p, prim_1.layer.name, net, list_void])
 
             prims_to_delete.append(prim_1)
 
