@@ -305,7 +305,7 @@ class LayerCollection(object):
         return {name: obj for name, obj in self.all_layers.items() if obj.is_stackup_layer}
 
     def find_layer_by_name(self, name: str):
-        """Finds a layer in a layer with given name."""
+        """Finds a layer with the given name."""
         obj = self._pedb.edb_api.cell._cell.Layer.FindByName(self._edb_object, name)
         if obj.IsNull():
             raise ValueError("Layer with name '{}' was not found.".format(name))
