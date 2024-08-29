@@ -651,9 +651,8 @@ class Components(object):
 
         Returns
         -------
-        pyedb.component_libraries.ansys_components import ComponentLib object. ComponentLib object contains nested
-        dictionaries to navigate through [component tpe][vendors][series]
-        [class: `pyedb.component_libraries.ansys_components.ComponentPart`]
+        ComponentLib object contains nested dictionaries to navigate through [component type][vendors][series]
+        :class: `pyedb.component_libraries.ansys_components.ComponentPart`
 
         Examples
         --------
@@ -681,6 +680,7 @@ class Components(object):
                             for line in f.readlines():
                                 part_name, index = line.split()
                                 _serie[part_name] = ComponentPart(part_name, int(index), sbin_file)
+                                _serie[part_name].type = cmp_type[:-1]
                             f.close()
                         series[serie_name] = _serie
                 vendors[vendor] = series
@@ -829,6 +829,9 @@ class Components(object):
             pins = [pins]
         elif isinstance(pins, EDBPadstackInstance):
             pins = [pins.name]
+        if not reference_pins:
+            self._logger.error("No reference pin provided.")
+            return False
         if isinstance(reference_pins, str):
             reference_pins = [reference_pins]
         if isinstance(reference_pins, list):
@@ -872,7 +875,7 @@ class Components(object):
             pins = cmp_pins
         if not len([pin for pin in pins if isinstance(pin, EDBPadstackInstance)]) == len(pins):
             self._logger.error("Pin list must contain only pins instances")
-            return
+            return False
         if not port_name:
             port_name = "Port_{}_{}".format(pins[0].net_name, pins[0].name)
         if len([pin for pin in reference_pins if isinstance(pin, str)]) == len(reference_pins):
@@ -880,14 +883,13 @@ class Components(object):
             for ref_pin_name in reference_pins:
                 if ref_pin_name in refdes_pins:
                     ref_cmp_pins.append(refdes_pins[ref_pin_name])
-                elif "-" in ref_pin_name and ref_pin_name.split("-")[1] in refdes_pins:
-                    ref_cmp_pins.append(refdes_pins[ref_pin_name.split("-")[1]])
+                elif "-" in ref_pin_name:
+                    if ref_pin_name.split("-")[1] in refdes_pins:
+                        ref_cmp_pins.append(refdes_pins[ref_pin_name.split("-")[1]])
             if not ref_cmp_pins:
-                return
+                self._logger.error("No reference pins found.")
+                return False
             reference_pins = ref_cmp_pins
-        if not reference_pins:
-            self._logger.error("No reference pins found.")
-            return
         if len(pins) > 1 or pingroup_on_single_pin:
             pec_boundary = False
             self._logger.info(
@@ -2082,7 +2084,7 @@ class Components(object):
             pin1 = list(cmp.pins.values())[0].pin
             pin_layers = pin1.GetPadstackDef().GetData().GetLayerNames()
             pad_params = self._padstack.get_pad_parameters(pin=pin1, layername=pin_layers[0], pad_type=0)
-            _sb_diam = abs(min([self._get_edb_value(val).ToDouble() for val in pad_params[1]]))
+            _sb_diam = min([abs(self._get_edb_value(val).ToDouble()) for val in pad_params[1]])
             sball_diam = 0.8 * _sb_diam
         if sball_height:
             sball_height = round(self._edb.utility.Value(sball_height).ToDouble(), 9)

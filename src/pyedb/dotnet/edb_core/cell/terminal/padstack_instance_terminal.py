@@ -84,8 +84,13 @@ class PadstackInstanceTerminal(Terminal):
             isRef=is_ref,
         )
         terminal = PadstackInstanceTerminal(self._pedb, terminal)
-
-        return terminal if not terminal.is_null else False
+        if terminal.is_null:
+            msg = f"Failed to create terminal. "
+            if name in self._pedb.terminals:
+                msg += f"Terminal {name} already exists."
+            raise Exception(msg)
+        else:
+            return terminal
 
     def _get_parameters(self):
         """Gets the parameters of the padstack instance terminal."""

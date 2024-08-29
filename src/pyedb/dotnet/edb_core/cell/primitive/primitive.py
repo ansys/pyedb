@@ -113,8 +113,11 @@ class Primitive(Connectable):
     @property
     def layer(self):
         """Get the primitive edb layer object."""
-        layer_name = self._edb_object.GetLayer().GetName()
-        return self._pedb.stackup.all_layers[layer_name]
+        obj = self._edb_object.GetLayer()
+        if obj.IsNull():
+            return None
+        else:
+            return self._pedb.stackup.find_layer_by_name(obj.GetName())
 
     @property
     def layer_name(self):
