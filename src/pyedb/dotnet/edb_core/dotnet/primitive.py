@@ -21,10 +21,10 @@
 # SOFTWARE.
 
 """Primitive."""
-import math
 
 from pyedb.dotnet.edb_core.dotnet.database import NetDotNet
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.misc.utilities import compute_arc_points
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -262,7 +262,6 @@ class PrimitiveDotNet:
         """
         Get the points to be plot
         """
-        # fmt: off
         x = []
         y = []
         for i, point in enumerate(my_net_points):
@@ -278,61 +277,9 @@ class PrimitiveDotNet:
                     p2 = [my_net_points[i + 1].X.ToDouble(), my_net_points[i + 1].Y.ToDouble()]
                 else:
                     p2 = [my_net_points[0].X.ToDouble(), my_net_points[0].Y.ToDouble()]
-                # x_arc, y_arc = self._eval_arc_points(p1, p2, arc_h, num)
-                # check usage of seff._eval_arc_points
-                if abs(arc_h) < tol:
-                    return [], []
-                elif arc_h > 0:
-                    reverse = False
-                    x1 = p1[0]
-                    y1 = p1[1]
-                    x2 = p2[0]
-                    y2 = p2[1]
-                else:
-                    reverse = True
-                    x1 = p2[0]
-                    y1 = p2[1]
-                    x2 = p1[0]
-                    y2 = p1[1]
-                    arc_h *= -1
-                xa = (x2 - x1) / 2
-                ya = (y2 - y1) / 2
-                xo = x1 + xa
-                yo = y1 + ya
-                a = math.sqrt(xa ** 2 + ya ** 2)
-                if a < tol:
-                    return [], []
-                r = (a ** 2) / (2 * arc_h) + arc_h / 2
-                if abs(r - a) < tol:
-                    b = 0
-                    th = 2 * math.asin(1)  # chord angle
-                else:
-                    b = math.sqrt(r ** 2 - a ** 2)
-                    th = 2 * math.asin(a / r)  # chord angle
-
-                # center of the circle
-                xc = xo + b * ya / a
-                yc = yo - b * xa / a
-
-                alpha = math.atan2((y1 - yc), (x1 - xc))
-                xr = []
-                yr = []
-                for i in range(n):
-                    i += 1
-                    dth = (float(i) / (n + 1)) * th
-                    xi = xc + r * math.cos(alpha - dth)
-                    yi = yc + r * math.sin(alpha - dth)
-                    xr.append(xi)
-                    yr.append(yi)
-
-                if reverse:
-                    xr.reverse()
-                    yr.reverse()
-                # fmt: on
-                x.extend(xr)
-                y.extend(yr)
-                # i += 1
-        # fmt: on
+                x_arc, y_arc = compute_arc_points(p1, p2, arc_h, n, tol)
+                x.extend(x_arc)
+                y.extend(y_arc)
         return x, y
 
     def points(self, arc_segments=6):
