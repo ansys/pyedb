@@ -4462,23 +4462,46 @@ class Edb(Database):
             )
             return False
         cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion)
-        cloned_edb.stackup.add_layer(layer_name="ref", layer_type="signal", thickness=0.0, material="pec")
+
         cloned_edb.stackup.add_layer(
             layer_name="ports",
             layer_type="signal",
             thickness=self.stackup.signal_layers[reference_layer].thickness,
             material="pec",
         )
-        box_thick = "100um"
-        if launching_box_thickness:
-            box_thick = self.edb_value(launching_box_thickness).ToString()
         if mounting_side == "top":
             cloned_edb.stackup.add_layer(
-                layer_name="port_pec", layer_type="signal", thickness=box_thick, method="add_on_bottom", material="pec"
+                layer_name="ref",
+                layer_type="signal",
+                thickness=0.0,
+                material="pec",
+                method="add_on_bottom",
+                base_layer="ports",
+            )
+            cloned_edb.stackup.add_layer(
+                layer_name="port_pec",
+                layer_type="signal",
+                thickness=launching_box_thickness,
+                method="add_on_bottom",
+                material="pec",
+                base_layer="ports",
             )
         else:
             cloned_edb.stackup.add_layer(
-                layer_name="port_pec", layer_type="signal", thickness=box_thick, method="add_on_top", material="pec"
+                layer_name="ref",
+                layer_type="signal",
+                thickness=0.0,
+                material="pec",
+                method="add_on_top",
+                base_layer="ports",
+            )
+            cloned_edb.stackup.add_layer(
+                layer_name="port_pec",
+                layer_type="signal",
+                thickness=launching_box_thickness,
+                method="add_on_top",
+                material="pec",
+                base_layer="ports",
             )
 
         for void_info in void_padstacks:
