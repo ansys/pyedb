@@ -21,8 +21,10 @@
 # SOFTWARE.
 
 """Primitive."""
+
 from pyedb.dotnet.edb_core.dotnet.database import NetDotNet
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.misc.utilities import compute_arc_points
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -256,11 +258,10 @@ class PrimitiveDotNet:
         """
         self.prim_obj.MakeZonePrimitive(zone_id)
 
-    def _get_points_for_plot(self, my_net_points, num):
+    def _get_points_for_plot(self, my_net_points, n=6, tol=1e-12):
         """
         Get the points to be plot
         """
-        # fmt: off
         x = []
         y = []
         for i, point in enumerate(my_net_points):
@@ -276,11 +277,9 @@ class PrimitiveDotNet:
                     p2 = [my_net_points[i + 1].X.ToDouble(), my_net_points[i + 1].Y.ToDouble()]
                 else:
                     p2 = [my_net_points[0].X.ToDouble(), my_net_points[0].Y.ToDouble()]
-                x_arc, y_arc = self._eval_arc_points(p1, p2, arc_h, num)
+                x_arc, y_arc = compute_arc_points(p1, p2, arc_h, n, tol)
                 x.extend(x_arc)
                 y.extend(y_arc)
-                # i += 1
-        # fmt: on
         return x, y
 
     def points(self, arc_segments=6):
