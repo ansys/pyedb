@@ -25,7 +25,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "cffi>=1.16.0,<1.17; platform_system=='Linux'",
+    "cffi>=1.16.0,<1.18; platform_system=='Linux'",
     "pywin32 >= 303;platform_system=='Windows'",
     "ansys-pythonnet >= 3.1.0rc3",
     "dotnetcore2 ==3.1.23;platform_system=='Linux'",
@@ -48,14 +48,14 @@ tests = [
 ]
 doc = [
     "ansys-sphinx-theme>=0.10.0,<1.1",
-    "imageio>=2.30.0,<2.35",
-    "ipython>=8.13.0,<8.27",
+    "imageio>=2.30.0,<2.36",
+    "ipython>=8.13.0,<8.28",
     "jupyterlab>=4.0.0,<4.3",
     "jupytext>=1.16.0,<1.17",
     "matplotlib>=3.5.0,<3.10",
     "nbsphinx>=0.9.0,<0.10",
     "nbconvert < 7.17",
-    "numpydoc>=1.5.0,<1.8",
+    "numpydoc>=1.5.0,<1.9",
     "pypandoc>=1.10.0,<1.14",
     # NOTE: Remove recommonmark once examples are reworked.
     "recommonmark",

@@ -352,6 +352,9 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(ports=True)
+        assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["layer"] == "1_Top"
+        assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
         edbapp.close()
 
     def test_06_s_parameters(self, edb_examples):
@@ -407,7 +410,7 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND"])
+        assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND", "pyedb_cutout"])
         edbapp.close()
 
     def test_09_padstacks(self, edb_examples):
@@ -875,4 +878,26 @@ class TestClass:
             assert data["nets"]
             assert len(data["nets"]["signal_nets"]) == 342
             assert len(data["nets"]["power_ground_nets"]) == 6
+        edbapp.close()
+
+    def test_16b_export_cutout(self, edb_examples):
+        data = {
+            "operations": {
+                "cutout": {
+                    "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
+                    "reference_list": ["GND"],
+                }
+            }
+        }
+        edbapp = edb_examples.get_si_verse()
+        edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(operations=True)
+        assert len(data_from_db["operations"]["cutout"]["signal_list"]) == 3
+        assert len(data_from_db["operations"]["cutout"]["custom_extent"]) > 0
+        edbapp.close()
+
+        data_from_db["operations"]["cutout"]["signal_list"].remove("GND")
+        data_from_db["operations"]["cutout"]["reference_list"].append("GND")
+        edbapp = edb_examples.get_si_verse()
+        edbapp.configuration.load(data_from_db, apply_file=True)
         edbapp.close()

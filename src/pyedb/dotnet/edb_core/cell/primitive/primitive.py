@@ -19,11 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import math
 
 from pyedb.dotnet.edb_core.cell.connectable import Connectable
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
+from pyedb.misc.utilities import compute_arc_points
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -113,8 +113,11 @@ class Primitive(Connectable):
     @property
     def layer(self):
         """Get the primitive edb layer object."""
-        layer_name = self._edb_object.GetLayer().GetName()
-        return self._pedb.stackup.all_layers[layer_name]
+        obj = self._edb_object.GetLayer()
+        if obj.IsNull():
+            return None
+        else:
+            return self._pedb.stackup.find_layer_by_name(obj.GetName())
 
     @property
     def layer_name(self):
@@ -199,80 +202,6 @@ class Primitive(Connectable):
     def is_negative(self, value):
         self._edb_object.SetIsNegative(value)
 
-    @staticmethod
-    def _eval_arc_points(p1, p2, h, n=6, tol=1e-12):
-        """Get the points of the arc
-
-        Parameters
-        ----------
-        p1 : list
-            Arc starting point.
-        p2 : list
-            Arc ending point.
-        h : float
-            Arc height.
-        n : int
-            Number of points to generate along the arc.
-        tol : float
-            Geometric tolerance.
-
-        Returns
-        -------
-        list, list
-            Points generated along the arc.
-        """
-        # fmt: off
-        if abs(h) < tol:
-            return [], []
-        elif h > 0:
-            reverse = False
-            x1 = p1[0]
-            y1 = p1[1]
-            x2 = p2[0]
-            y2 = p2[1]
-        else:
-            reverse = True
-            x1 = p2[0]
-            y1 = p2[1]
-            x2 = p1[0]
-            y2 = p1[1]
-            h *= -1
-        xa = (x2 - x1) / 2
-        ya = (y2 - y1) / 2
-        xo = x1 + xa
-        yo = y1 + ya
-        a = math.sqrt(xa ** 2 + ya ** 2)
-        if a < tol:
-            return [], []
-        r = (a ** 2) / (2 * h) + h / 2
-        if abs(r - a) < tol:
-            b = 0
-            th = 2 * math.asin(1)  # chord angle
-        else:
-            b = math.sqrt(r ** 2 - a ** 2)
-            th = 2 * math.asin(a / r)  # chord angle
-
-        # center of the circle
-        xc = xo + b * ya / a
-        yc = yo - b * xa / a
-
-        alpha = math.atan2((y1 - yc), (x1 - xc))
-        xr = []
-        yr = []
-        for i in range(n):
-            i += 1
-            dth = (float(i) / (n + 1)) * th
-            xi = xc + r * math.cos(alpha - dth)
-            yi = yc + r * math.sin(alpha - dth)
-            xr.append(xi)
-            yr.append(yi)
-
-        if reverse:
-            xr.reverse()
-            yr.reverse()
-        # fmt: on
-        return xr, yr
-
     def _get_points_for_plot(self, my_net_points, num):
         """
         Get the points to be plotted.
@@ -292,7 +221,7 @@ class Primitive(Connectable):
                     p2 = [my_net_points[i + 1].X.ToDouble(), my_net_points[i + 1].Y.ToDouble()]
                 else:
                     p2 = [my_net_points[0].X.ToDouble(), my_net_points[0].Y.ToDouble()]
-                x_arc, y_arc = self._eval_arc_points(p1, p2, arc_h, num)
+                x_arc, y_arc = compute_arc_points(p1, p2, arc_h, num)
                 x.extend(x_arc)
                 y.extend(y_arc)
                 # i += 1
