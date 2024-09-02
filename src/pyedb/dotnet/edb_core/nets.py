@@ -22,7 +22,6 @@
 
 from __future__ import absolute_import  # noreorder
 
-import math
 import os
 import time
 import warnings
@@ -30,6 +29,7 @@ import warnings
 from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.misc.utilities import compute_arc_points
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -354,80 +354,6 @@ class EdbNets(object):
 
         return _extended_nets
 
-    @staticmethod
-    def _eval_arc_points(p1, p2, h, n=6, tol=1e-12):
-        """Get the points of the arc.
-
-        Parameters
-        ----------
-        p1 : list
-            Arc starting point.
-        p2 : list
-            Arc ending point.
-        h : float
-            Arc height.
-        n : int
-            Number of points to generate along the arc.
-        tol : float
-            Geometric tolerance.
-
-        Returns
-        -------
-        list
-            points generated along the arc.
-        """
-        # fmt: off
-        if abs(h) < tol:
-            return [], []
-        elif h > 0:
-            reverse = False
-            x1 = p1[0]
-            y1 = p1[1]
-            x2 = p2[0]
-            y2 = p2[1]
-        else:
-            reverse = True
-            x1 = p2[0]
-            y1 = p2[1]
-            x2 = p1[0]
-            y2 = p1[1]
-            h *= -1
-        xa = (x2 - x1) / 2
-        ya = (y2 - y1) / 2
-        xo = x1 + xa
-        yo = y1 + ya
-        a = math.sqrt(xa ** 2 + ya ** 2)
-        if a < tol:
-            return [], []
-        r = (a ** 2) / (2 * h) + h / 2
-        if abs(r - a) < tol:
-            b = 0
-            th = 2 * math.asin(1)  # chord angle
-        else:
-            b = math.sqrt(r ** 2 - a ** 2)
-            th = 2 * math.asin(a / r)  # chord angle
-
-        # center of the circle
-        xc = xo + b * ya / a
-        yc = yo - b * xa / a
-
-        alpha = math.atan2((y1 - yc), (x1 - xc))
-        xr = []
-        yr = []
-        for i in range(n):
-            i += 1
-            dth = (i / (n + 1)) * th
-            xi = xc + r * math.cos(alpha - dth)
-            yi = yc + r * math.sin(alpha - dth)
-            xr.append(xi)
-            yr.append(yi)
-
-        if reverse:
-            xr.reverse()
-            yr.reverse()
-        # fmt: on
-        return xr, yr
-
     def _get_points_for_plot(self, my_net_points):
         """
         Get the points to be plot
@@ -448,7 +374,7 @@ class EdbNets(object):
                     p2 = [my_net_points[i + 1].X.ToDouble(), my_net_points[i + 1].Y.ToDouble()]
                 else:
                     p2 = [my_net_points[0].X.ToDouble(), my_net_points[0].Y.ToDouble()]
-                x_arc, y_arc = self._eval_arc_points(p1, p2, arc_h)
+                x_arc, y_arc = compute_arc_points(p1, p2, arc_h)
                 x.extend(x_arc)
                 y.extend(y_arc)
                 # i += 1
