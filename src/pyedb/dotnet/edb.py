@@ -4475,6 +4475,8 @@ class Edb(Database):
             thickness=self.stackup.signal_layers[reference_layer].thickness,
             material="pec",
         )
+        if launching_box_thickness:
+            launching_box_thickness = self.edb_value(launching_box_thickness).ToString()
         cloned_edb.stackup.add_layer(
             layer_name="ref",
             layer_type="signal",
