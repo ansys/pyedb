@@ -17,13 +17,14 @@ import tempfile
 import time
 import warnings
 
+from ansys.aedt.core import generate_unique_name
+
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
 from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import _pythonver, is_windows
 from pyedb.misc.misc import list_installed_ansysem
 from pyedb.siwave_core.icepak import Icepak
-from ansys.aedt.core import generate_unique_name
 
 
 def wait_export_file(flag, file_path, time_sleep=0.5):
