@@ -23,7 +23,7 @@ from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import _pythonver, is_windows
 from pyedb.misc.misc import list_installed_ansysem
 from pyedb.siwave_core.icepak import Icepak
-from tests.conftest import generate_random_string
+from ansys.aedt.core import generate_unique_name
 
 
 def wait_export_file(flag, file_path, time_sleep=0.5):
@@ -517,7 +517,7 @@ class Siwave(object):  # pragma no cover
         # temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
         # temp_edb = os.path.join(temp_folder.name, "temp.aedb")
 
-        temp_edb = os.path.join(tempfile.gettempdir(), generate_random_string(6) + ".aedb")
+        temp_edb = os.path.join(tempfile.gettempdir(), generate_unique_name("temp") + ".aedb")
 
         self.export_edb(temp_edb)
         self.oproject.ScrCloseProject()
