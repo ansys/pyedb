@@ -4411,6 +4411,12 @@ class Edb(Database):
         if not temp_directory:
             self.logger.error("Temp directory must be provided when creating model foe arbitrary wave port")
             return False
+        if mounting_side not in ["top", "bottom"]:
+            self.logger.error(
+                "Mounting side must be provided and only `top` or `bottom` are supported. Setting to "
+                "`top` will take the top layer from the current design as reference. Setting to `bottom` "
+                "will take the bottom one."
+            )
         if not output_edb:
             output_edb = os.path.join(temp_directory, "waveport_model.aedb")
         if os.path.isdir(temp_directory):
@@ -4469,41 +4475,22 @@ class Edb(Database):
             thickness=self.stackup.signal_layers[reference_layer].thickness,
             material="pec",
         )
-        if mounting_side == "top":
-            cloned_edb.stackup.add_layer(
-                layer_name="ref",
-                layer_type="signal",
-                thickness=0.0,
-                material="pec",
-                method="add_on_bottom",
-                base_layer="ports",
-            )
-            cloned_edb.stackup.add_layer(
-                layer_name="port_pec",
-                layer_type="signal",
-                thickness=launching_box_thickness,
-                method="add_on_bottom",
-                material="pec",
-                base_layer="ports",
-            )
-        else:
-            cloned_edb.stackup.add_layer(
-                layer_name="ref",
-                layer_type="signal",
-                thickness=0.0,
-                material="pec",
-                method="add_on_top",
-                base_layer="ports",
-            )
-            cloned_edb.stackup.add_layer(
-                layer_name="port_pec",
-                layer_type="signal",
-                thickness=launching_box_thickness,
-                method="add_on_top",
-                material="pec",
-                base_layer="ports",
-            )
-
+        cloned_edb.stackup.add_layer(
+            layer_name="ref",
+            layer_type="signal",
+            thickness=0.0,
+            material="pec",
+            method="add_on_top",
+            base_layer="ports",
+        )
+        cloned_edb.stackup.add_layer(
+            layer_name="port_pec",
+            layer_type="signal",
+            thickness=launching_box_thickness,
+            method="add_on_top",
+            material="pec",
+            base_layer="ports",
+        )
         for void_info in void_padstacks:
             port_poly = cloned_edb.modeler.create_polygon(
                 main_shape=void_info[0].polygon_data._edb_object, layer_name="ref", net_name="GND"
