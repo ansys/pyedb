@@ -56,7 +56,13 @@ class PinGroupTerminal(Terminal):
             is_ref,
         )
         term = PinGroupTerminal(self._pedb, term)
-        return term if not term.is_null else False
+        if term.is_null:
+            msg = f"Failed to create terminal. "
+            if name in self._pedb.terminals:
+                msg += f"Terminal {name} already exists."
+            raise Exception(msg)
+        else:
+            return term
 
     def pin_group(self):
         """Gets the pin group the terminal refers to."""

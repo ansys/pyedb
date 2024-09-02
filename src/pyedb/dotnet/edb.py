@@ -1602,7 +1602,7 @@ class Edb(Database):
         names = []
         _polys = []
         for net in net_signals:
-            names.append(net.GetName())
+            names.append(net.name)
         if pins_to_preserve:
             insts = self.padstacks.instances
             for i in pins_to_preserve:
@@ -1706,7 +1706,7 @@ class Edb(Database):
         names = []
         _polys = []
         for net in net_signals:
-            names.append(net.GetName())
+            names.append(net.name)
         if pins_to_preserve:
             insts = self.padstacks.instances
             for i in pins_to_preserve:
@@ -1994,7 +1994,7 @@ class Edb(Database):
         expansion_size = self.edb_value(expansion_size).ToDouble()
 
         # validate nets in layout
-        net_signals = [net.api_object for net in self.layout.nets if net.name in signal_list]
+        net_signals = [net for net in self.layout.nets if net.name in signal_list]
 
         # validate references in layout
         _netsClip = convert_py_list_to_net_list(
@@ -2264,7 +2264,7 @@ class Edb(Database):
         elif custom_extent:
             _poly = custom_extent
         else:
-            net_signals = [net.api_object for net in self.layout.nets if net.name in signal_list]
+            net_signals = [net for net in self.layout.nets if net.name in signal_list]
             _poly = self._create_extent(
                 net_signals,
                 extent_type,
