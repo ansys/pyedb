@@ -11,6 +11,7 @@ from __future__ import absolute_import  # noreorder
 import os
 from pathlib import Path
 import pkgutil
+import shutil
 import sys
 import tempfile
 import time
@@ -22,6 +23,7 @@ from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import _pythonver, is_windows
 from pyedb.misc.misc import list_installed_ansysem
 from pyedb.siwave_core.icepak import Icepak
+from tests.conftest import generate_random_string
 
 
 def wait_export_file(flag, file_path, time_sleep=0.5):
@@ -62,6 +64,11 @@ class Siwave(object):  # pragma no cover
         the active setup is used or the latest installed version is used.
 
     """
+
+    @property
+    def version(self):
+        ver = self.oSiwave.GetVersion()
+        return ".".join(ver.split(".")[:-1])
 
     @property
     def version_keys(self):
@@ -330,6 +337,7 @@ class Siwave(object):  # pragma no cover
 
         """
         self._main.oSiwave.Quit()
+        self._main.oSiwave = None
         return True
 
     def export_element_data(self, simulation_name, file_path, data_type="Vias"):
@@ -509,16 +517,17 @@ class Siwave(object):  # pragma no cover
         # temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
         # temp_edb = os.path.join(temp_folder.name, "temp.aedb")
 
-        temp_edb = os.path.join(self.file_dir, "temp.aedb")
+        temp_edb = os.path.join(tempfile.gettempdir(), generate_random_string(6) + ".aedb")
 
         self.export_edb(temp_edb)
         self.oproject.ScrCloseProject()
-        edbapp = Edb(temp_edb, edbversion=self.current_version)
+        edbapp = Edb(temp_edb, edbversion=self.version)
         edbapp.configuration.load(file_path)
         edbapp.configuration.run()
         edbapp.save()
         edbapp.close()
         self.import_edb(temp_edb)
+        shutil.rmtree(Path(temp_edb))
 
     def export_configuration(self, file_path: str):
         """Export layout information into a configuration file.
