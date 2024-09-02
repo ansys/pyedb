@@ -4480,14 +4480,14 @@ class Edb(Database):
             layer_type="signal",
             thickness=0.0,
             material="pec",
-            method="add_on_top",
+            method=f"add_on_{mounting_side}",
             base_layer="ports",
         )
         cloned_edb.stackup.add_layer(
             layer_name="port_pec",
             layer_type="signal",
             thickness=launching_box_thickness,
-            method="add_on_top",
+            method=f"add_on_{mounting_side}",
             material="pec",
             base_layer="ports",
         )
