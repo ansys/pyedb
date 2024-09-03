@@ -17,7 +17,7 @@ import tempfile
 import time
 import warnings
 
-from ansys.aedt.core import generate_unique_name
+from pyedb.generic.general_methods import generate_unique_name
 
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
