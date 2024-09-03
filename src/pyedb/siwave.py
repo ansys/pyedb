@@ -528,7 +528,7 @@ class Siwave(object):  # pragma no cover
         edbapp.save()
         edbapp.close()
         self.import_edb(temp_edb)
-        shutil.rmtree(Path(temp_edb))
+        shutil.rmtree(Path(temp_edb), ignore_errors=True)
 
     def export_configuration(self, file_path: str):
         """Export layout information into a configuration file.
