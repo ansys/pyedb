@@ -17,12 +17,10 @@ import tempfile
 import time
 import warnings
 
-from pyedb.generic.general_methods import generate_unique_name
-
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
 from pyedb.edb_logger import pyedb_logger
-from pyedb.generic.general_methods import _pythonver, is_windows
+from pyedb.generic.general_methods import _pythonver, generate_unique_name, is_windows
 from pyedb.misc.misc import list_installed_ansysem
 from pyedb.siwave_core.icepak import Icepak
 
