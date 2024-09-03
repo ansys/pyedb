@@ -204,8 +204,7 @@ class TestClass:
         }
         assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.components["C236"].model.model_name
-        assert edbapp.components["C236"].model.spice_file_path
-        assert edbapp.components["C236"].model.spice_file_path
+        assert edbapp.components["C142"].model.spice_file_path
         edbapp.close()
 
     def test_04_nets(self, edb_examples):
