@@ -22,6 +22,7 @@
 
 import logging
 import re
+from typing import Optional
 import warnings
 
 from pyedb.dotnet.edb_core.cell.hierarchy.hierarchy_obj import Group
@@ -808,7 +809,13 @@ class EDBComponent(Group):
             return False
         return True
 
-    def assign_spice_model(self, file_path, name=None, sub_circuit_name=None):
+    def assign_spice_model(
+        self,
+        file_path: str,
+        name: Optional[str] = None,
+        sub_circuit_name: Optional[str] = None,
+        terminal_pairs: Optional[list] = None,
+    ):
         """Assign Spice model to this component.
 
         Parameters
@@ -828,23 +835,30 @@ class EDBComponent(Group):
         with open(file_path, "r") as f:
             for line in f:
                 if "subckt" in line.lower():
-                    pinNames = [i.strip() for i in re.split(" |\t", line) if i]
-                    pinNames.remove(pinNames[0])
-                    pinNames.remove(pinNames[0])
+                    pin_names_sp = [i.strip() for i in re.split(" |\t", line) if i]
+                    pin_names_sp.remove(pin_names_sp[0])
+                    pin_names_sp.remove(pin_names_sp[0])
                     break
-        if len(pinNames) == self.numpins:
-            model = self._edb.cell.hierarchy._hierarchy.SPICEModel()
-            model.SetModelPath(file_path)
-            model.SetModelName(name)
-            if sub_circuit_name:
-                model.SetSubCkt(sub_circuit_name)
-            terminal = 1
-            for pn in pinNames:
-                model.AddTerminalPinPair(pn, str(terminal))
-                terminal += 1
-        else:  # pragma: no cover
-            logging.error("Wrong number of Pins")
-            return False
+        if not len(pin_names_sp) == self.numpins:  # pragma: no cover
+            raise ValueError(f"Pin counts doesn't match component {self.name}.")
+
+        model = self._edb.cell.hierarchy._hierarchy.SPICEModel()
+        model.SetModelPath(file_path)
+        model.SetModelName(name)
+        if sub_circuit_name:
+            model.SetSubCkt(sub_circuit_name)
+
+        if terminal_pairs:
+            terminal_pairs = terminal_pairs if isinstance(terminal_pairs[0], list) else [terminal_pairs]
+            for pair in terminal_pairs:
+                pname, pnumber = pair
+                if pname not in pin_names_sp:  # pragma: no cover
+                    raise ValueError(f"Pin name {pname} doesn't exist in {file_path}.")
+                model.AddTerminalPinPair(pname, str(pnumber))
+        else:
+            for idx, pname in enumerate(pin_names_sp):
+                model.AddTerminalPinPair(pname, str(idx + 1))
+
         return self._set_model(model)
 
     def assign_s_param_model(self, file_path, name=None, reference_net=None):
