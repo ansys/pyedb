@@ -832,6 +832,8 @@ class EDBComponent(Group):
                     pin_names_sp.remove(pin_names_sp[0])
                     pin_names_sp.remove(pin_names_sp[0])
                     break
+        if not len(pin_names_sp) == self.numpins:  # pragma: no cover
+            raise ValueError(f"Pin counts doesn't match component {self.name}.")
 
         model = self._edb.cell.hierarchy._hierarchy.SPICEModel()
         model.SetModelPath(file_path)
@@ -839,8 +841,6 @@ class EDBComponent(Group):
         if sub_circuit_name:
             model.SetSubCkt(sub_circuit_name)
 
-        if not len(pin_names_sp) == self.numpins:  # pragma: no cover
-            raise ValueError(f"Pin counts doesn't match component {self.name}.")
         if terminal_pairs:
             terminal_pairs = terminal_pairs if isinstance(terminal_pairs[0], list) else [terminal_pairs]
             for pair in terminal_pairs:
