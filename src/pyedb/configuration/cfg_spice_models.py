@@ -39,11 +39,14 @@ class CfgSpiceModel:
         """Apply Spice model on layout."""
         if not Path(self.file_path).anchor:
             fpath = str(Path(self.path_libraries) / self.file_path)
-            comps = self._pedb.components.definitions[self.component_definition].components
-            if self.apply_to_all:
-                for ref_des, comp in comps.items():
+        else:
+            fpath = self.file_path
+
+        comps = self._pedb.components.definitions[self.component_definition].components
+        if self.apply_to_all:
+            for ref_des, comp in comps.items():
+                comp.assign_spice_model(fpath, self.name, self.sub_circuit_name)
+        else:
+            for ref_des, comp in comps.items():
+                if ref_des in self.components:
                     comp.assign_spice_model(fpath, self.name, self.sub_circuit_name)
-            else:
-                for ref_des, comp in comps.items():
-                    if ref_des in self.components:
-                        comp.assign_spice_model(fpath, self.name, self.sub_circuit_name)

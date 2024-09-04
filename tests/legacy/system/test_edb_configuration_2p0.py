@@ -169,15 +169,41 @@ class TestClass:
         edbapp.close()
 
     def test_03_spice_models(self, edb_examples):
-        with open(self.local_input_folder / "spice.json") as f:
-            data = json.load(f)
-        data["general"]["spice_model_library"] = self.local_input_folder
-
-        edbapp = edb_examples.get_si_verse()
+        edbapp = edb_examples.get_si_verse(
+            additional_files_folders=["TEDB/GRM32_DC0V_25degC.mod", "TEDB/GRM32ER72A225KA35_25C_0V.sp"]
+        )
+        data = {
+            "general": {"spice_model_library": edb_examples.test_folder},
+            "spice_models": [
+                {
+                    "name": "GRM32ER72A225KA35_25C_0V",
+                    "component_definition": "CAPC0603X33X15LL03T05",
+                    "file_path": "GRM32ER72A225KA35_25C_0V.sp",
+                    "sub_circuit_name": "GRM32ER72A225KA35_25C_0V",
+                    "apply_to_all": True,
+                    "components": [],
+                },
+                {
+                    "name": "GRM32ER72A225KA35_25C_0V",
+                    "component_definition": "CAPC1005X55X25LL05T10",
+                    "file_path": "GRM32ER72A225KA35_25C_0V.sp",
+                    "sub_circuit_name": "GRM32ER72A225KA35_25C_0V",
+                    "apply_to_all": False,
+                    "components": ["C236"],
+                },
+                {
+                    "name": "GRM32_DC0V_25degC",
+                    "component_definition": "CAPC0603X33X15LL03T05",
+                    "file_path": "GRM32_DC0V_25degC.mod",
+                    "sub_circuit_name": "GRM32ER60J227ME05_DC0V_25degC",
+                    "apply_to_all": False,
+                    "components": ["C142"],
+                },
+            ],
+        }
         assert edbapp.configuration.load(data, apply_file=True)
-        assert edbapp.components["R107"].model.model_name
-        assert edbapp.components["R107"].model.spice_file_path
-        assert edbapp.components["R106"].model.spice_file_path
+        assert edbapp.components["C236"].model.model_name
+        assert edbapp.components["C142"].model.spice_file_path
         edbapp.close()
 
     def test_04_nets(self, edb_examples):
