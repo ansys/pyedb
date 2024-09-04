@@ -98,20 +98,20 @@ class TestClass:
 
         assert self.edbapp.components.instances["R1"].pins["1"].component
         assert (
-            self.edbapp.components.instances["R1"].pins["1"].lower_elevation
-            == self.edbapp.components.instances["R1"].lower_elevation
+                self.edbapp.components.instances["R1"].pins["1"].lower_elevation
+                == self.edbapp.components.instances["R1"].lower_elevation
         )
         assert (
-            self.edbapp.components.instances["R1"].pins["1"].placement_layer
-            == self.edbapp.components.instances["R1"].placement_layer
+                self.edbapp.components.instances["R1"].pins["1"].placement_layer
+                == self.edbapp.components.instances["R1"].placement_layer
         )
         assert (
-            self.edbapp.components.instances["R1"].pins["1"].upper_elevation
-            == self.edbapp.components.instances["R1"].upper_elevation
+                self.edbapp.components.instances["R1"].pins["1"].upper_elevation
+                == self.edbapp.components.instances["R1"].upper_elevation
         )
         assert (
-            self.edbapp.components.instances["R1"].pins["1"].top_bottom_association
-            == self.edbapp.components.instances["R1"].top_bottom_association
+                self.edbapp.components.instances["R1"].pins["1"].top_bottom_association
+                == self.edbapp.components.instances["R1"].top_bottom_association
         )
         assert self.edbapp.components.instances["R1"].pins["1"].position
         assert self.edbapp.components.instances["R1"].pins["1"].rotation
@@ -454,7 +454,7 @@ class TestClass:
         assert len(vector) == 2
         edb2.close()
 
-    def test_components_assign(self):
+    def test_components_assign(self, edb_examples):
         """Assign RLC model, S-parameter model and spice model."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_17.aedb")
@@ -462,23 +462,23 @@ class TestClass:
         sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
         spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
 
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.get_si_verse()
         comp = edbapp.components.instances["R2"]
         assert not comp.assign_rlc_model()
         comp.assign_rlc_model(1, None, 3, False)
         assert (
-            not comp.is_parallel_rlc
-            and float(comp.res_value) == 1
-            and float(comp.ind_value) == 0
-            and float(comp.cap_value) == 3
+                not comp.is_parallel_rlc
+                and float(comp.res_value) == 1
+                and float(comp.ind_value) == 0
+                and float(comp.cap_value) == 3
         )
         comp.assign_rlc_model(1, 2, 3, True)
         assert comp.is_parallel_rlc
         assert (
-            comp.is_parallel_rlc
-            and float(comp.res_value) == 1
-            and float(comp.ind_value) == 2
-            and float(comp.cap_value) == 3
+                comp.is_parallel_rlc
+                and float(comp.res_value) == 1
+                and float(comp.ind_value) == 2
+                and float(comp.cap_value) == 3
         )
         assert comp.value
         assert not comp.spice_model and not comp.s_param_model and not comp.netlist_model
@@ -490,6 +490,8 @@ class TestClass:
         comp.type = "Inductor"
         comp.value = 10  # This command set the model back to ideal RLC
         assert comp.type == "Inductor" and comp.value == 10 and float(comp.ind_value) == 10
+
+        edbapp.components["C164"].assign_spice_model(spice_path, sub_circuit_name="GRM32ER60J227ME05_DC0V_25degC", terminal_pairs=[['port1', 2], ['port2', 1]])
         edbapp.close()
 
     def test_components_bounding_box(self):
