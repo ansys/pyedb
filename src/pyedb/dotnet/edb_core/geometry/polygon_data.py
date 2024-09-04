@@ -52,6 +52,19 @@ class PolygonData:
             self._edb_object = edb_object
 
     @property
+    def bounding_box(self):
+        """Bounding box.
+
+        Returns
+        -------
+        List[float]
+            List of coordinates for the component's bounding box, with the list of
+            coordinates in this order: [X lower left corner, Y lower left corner,
+            X upper right corner, Y upper right corner].
+        """
+        return BBox(self._pedb, self._edb_object.GetBBox()).corner_points
+
+    @property
     def arcs(self):
         """Get the Primitive Arc Data."""
         from pyedb.dotnet.edb_core.edb_data.primitives_data import EDBArcs

@@ -567,3 +567,17 @@ class TestClass:
         assert centerline == [[-0.0005, 0.0], [-0.0005, 0.01]]
         edb.modeler.paths[0].center_line = [[0.0, 0.0], [0.0, 5e-3]]
         assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.0, 5e-3]]
+
+    def test_polygon_data_refaxtoring_bounding_box(self):
+        from pyedb.dotnet.edb import Edb
+        from pyedb.generic.general_methods import generate_unique_folder_name
+        import pyedb.misc.downloads as downloads
+
+        temp_folder = generate_unique_folder_name()
+        targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
+        edbapp = Edb(edbpath=targetfile, edbversion="2024.1", remove_existing_aedt=True)
+
+        poly_with_voids = [pp for pp in edbapp.modeler.polygons if pp.has_voids]
+        for poly in poly_with_voids:
+            for void in poly.voids:
+                assert void.polygon_data.bounding_box

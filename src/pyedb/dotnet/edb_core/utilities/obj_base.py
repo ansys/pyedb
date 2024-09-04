@@ -79,16 +79,3 @@ class ObjBase(object):
     @name.setter
     def name(self, value):
         self._edb_object.SetName(value)
-
-    @property
-    def bounding_box(self):
-        """Bounding box.
-
-        Returns
-        -------
-        List[float]
-            List of coordinates for the component's bounding box, with the list of
-            coordinates in this order: [X lower left corner, Y lower left corner,
-            X upper right corner, Y upper right corner].
-        """
-        return BBox(self._pedb, self._edb_object.GetBBox()).corner_points
