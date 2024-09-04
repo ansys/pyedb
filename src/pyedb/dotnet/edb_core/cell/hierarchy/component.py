@@ -808,7 +808,9 @@ class EDBComponent(Group):
             return False
         return True
 
-    def assign_spice_model(self, file_path:str, name:str=None, sub_circuit_name:str=None, terminal_pairs:list=None):
+    def assign_spice_model(
+        self, file_path: str, name: str = None, sub_circuit_name: str = None, terminal_pairs: list = None
+    ):
         """Assign Spice model to this component.
 
         Parameters
@@ -850,7 +852,7 @@ class EDBComponent(Group):
                 model.AddTerminalPinPair(pname, str(pnumber))
         else:
             for idx, pname in enumerate(pin_names_sp):
-                model.AddTerminalPinPair(pname, str(idx+1))
+                model.AddTerminalPinPair(pname, str(idx + 1))
 
         return self._set_model(model)
 
