@@ -4421,8 +4421,9 @@ class Edb(Database):
             output_edb = os.path.join(temp_directory, "waveport_model.aedb")
         if os.path.isdir(temp_directory):
             shutil.rmtree(temp_directory)
+        os.mkdir(temp_directory)
         reference_layer = list(self.stackup.signal_layers.keys())[0]
-        if mounting_side.lower == "bottom":
+        if mounting_side.lower() == "bottom":
             reference_layer = list(self.stackup.signal_layers.keys())[-1]
         if not signal_nets:
             signal_nets = list(self.nets.signal.keys())
