@@ -34,6 +34,7 @@ class CfgSpiceModel:
         self.sub_circuit_name = self._spice_dict.get("sub_circuit_name", "")
         self.apply_to_all = self._spice_dict.get("apply_to_all", True)
         self.components = list(self._spice_dict.get("components", []))
+        self.terminal_pairs = self._spice_dict.get("terminal_pairs", None)
 
     def apply(self):
         """Apply Spice model on layout."""
@@ -45,8 +46,8 @@ class CfgSpiceModel:
         comps = self._pedb.components.definitions[self.component_definition].components
         if self.apply_to_all:
             for ref_des, comp in comps.items():
-                comp.assign_spice_model(fpath, self.name, self.sub_circuit_name)
+                comp.assign_spice_model(fpath, self.name, self.sub_circuit_name, self.terminal_pairs)
         else:
             for ref_des, comp in comps.items():
                 if ref_des in self.components:
-                    comp.assign_spice_model(fpath, self.name, self.sub_circuit_name)
+                    comp.assign_spice_model(fpath, self.name, self.sub_circuit_name, self.terminal_pairs)

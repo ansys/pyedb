@@ -182,6 +182,7 @@ class TestClass:
                     "sub_circuit_name": "GRM32ER72A225KA35_25C_0V",
                     "apply_to_all": True,
                     "components": [],
+                    "terminal_pairs": [["port1", 2], ["port2", 1]],
                 },
                 {
                     "name": "GRM32ER72A225KA35_25C_0V",
