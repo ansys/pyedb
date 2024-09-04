@@ -22,9 +22,9 @@
 
 import logging
 import re
+from typing import Optional
 import warnings
 
-from typing import Optional
 from pyedb.dotnet.edb_core.cell.hierarchy.hierarchy_obj import Group
 from pyedb.dotnet.edb_core.cell.hierarchy.model import PinPairModel, SPICEModel
 from pyedb.dotnet.edb_core.cell.hierarchy.netlist_model import NetlistModel
@@ -810,7 +810,11 @@ class EDBComponent(Group):
         return True
 
     def assign_spice_model(
-        self, file_path: str, name: Optional[str] = None, sub_circuit_name: Optional[str] = None, terminal_pairs: Optional[list] = None
+        self,
+        file_path: str,
+        name: Optional[str] = None,
+        sub_circuit_name: Optional[str] = None,
+        terminal_pairs: Optional[list] = None,
     ):
         """Assign Spice model to this component.
 
