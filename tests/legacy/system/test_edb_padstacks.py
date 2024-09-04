@@ -289,6 +289,11 @@ class TestClass:
                     assert not result
         edb.close()
 
+    def test_nets_plot(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.nets.plot()
+        edbapp.close()
+
     def test_padstaks_plot_on_matplotlib(self):
         """Plot a Net to Matplotlib 2D Chart."""
         edb_plot = Edb(self.target_path3, edbversion=desktop_version)

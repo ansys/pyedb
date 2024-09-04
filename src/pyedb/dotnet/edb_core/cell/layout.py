@@ -26,8 +26,6 @@ This module contains these classes: `EdbLayout` and `Shape`.
 from typing import Union
 
 from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
-from pyedb.dotnet.edb_core.cell.primitive.bondwire import Bondwire
-from pyedb.dotnet.edb_core.cell.primitive.path import Path
 from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
 from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
 from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
@@ -43,15 +41,41 @@ from pyedb.dotnet.edb_core.edb_data.nets_data import (
     EDBNetsData,
 )
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+
+from pyedb.dotnet.edb_core.edb_data.sources import PinGroup
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 from pyedb.dotnet.edb_core.edb_data.primitives_data import (
     EdbCircle,
     EdbPolygon,
     EdbRectangle,
     EdbText,
 )
-from pyedb.dotnet.edb_core.edb_data.sources import PinGroup
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
-from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
+from pyedb.dotnet.edb_core.cell.primitive.bondwire import Bondwire
+from pyedb.dotnet.edb_core.cell.primitive.path import Path
+
+
+def primitive_cast(pedb, edb_object):
+    if edb_object.GetPrimitiveType().ToString() == "Rectangle":
+        return EdbRectangle(edb_object, pedb)
+    elif edb_object.GetPrimitiveType().ToString() == "Circle":
+        return EdbCircle(edb_object, pedb)
+    elif edb_object.GetPrimitiveType().ToString() == "Polygon":
+        return EdbPolygon(edb_object, pedb)
+    elif edb_object.GetPrimitiveType().ToString() == "Path":
+        return Path(pedb, edb_object)
+    elif edb_object.GetPrimitiveType().ToString() == "Bondwire":
+        return Bondwire(pedb, edb_object)
+    elif edb_object.GetPrimitiveType().ToString() == "Text":
+        return EdbText(edb_object, pedb)
+    elif edb_object.GetPrimitiveType().ToString() == "PrimitivePlugin":
+        return
+    elif edb_object.GetPrimitiveType().ToString() == "Path3D":
+        return
+    elif edb_object.GetPrimitiveType().ToString() == "BoardBendDef":
+        return
+    else:
+        return
 
 
 class Layout(ObjBase):
@@ -209,7 +233,7 @@ class Layout(ObjBase):
         """
         prims = []
         for p in self._edb_object.Primitives:
-            obj = self.find_object_by_id(p.GetId())
+            obj = primitive_cast(self._pedb, p)
             prims.append(obj)
         return prims
 
@@ -285,26 +309,7 @@ class Layout(ObjBase):
             return EDBPadstackInstance(obj, self._pedb)
 
         if obj.GetObjType().ToString() == "Primitive":
-            if obj.GetPrimitiveType().ToString() == "Rectangle":
-                return EdbRectangle(obj, self._pedb)
-            elif obj.GetPrimitiveType().ToString() == "Circle":
-                return EdbCircle(obj, self._pedb)
-            elif obj.GetPrimitiveType().ToString() == "Polygon":
-                return EdbPolygon(obj, self._pedb)
-            elif obj.GetPrimitiveType().ToString() == "Path":
-                return Path(self._pedb, obj)
-            elif obj.GetPrimitiveType().ToString() == "Bondwire":
-                return Bondwire(self._pedb, obj)
-            elif obj.GetPrimitiveType().ToString() == "Text":
-                return EdbText(obj, self._pedb)
-            elif obj.GetPrimitiveType().ToString() == "PrimitivePlugin":
-                pass
-            elif obj.GetPrimitiveType().ToString() == "Path3D":
-                pass
-            elif obj.GetPrimitiveType().ToString() == "BoardBendDef":
-                pass
-            else:
-                pass
+            return primitive_cast(self._pedb, obj)
 
     def find_net_by_name(self, value: str):
         """Find a net object by name
