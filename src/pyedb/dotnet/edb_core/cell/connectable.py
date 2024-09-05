@@ -66,7 +66,7 @@ class Connectable(LayoutObj):
             obj = self._pedb.nets.nets[name].net_object
             self._edb_object.SetNet(obj)
         else:
-            raise ValueError(f'Net {name} not found.')
+            raise ValueError(f"Net {name} not found.")
 
     @property
     def component(self):
