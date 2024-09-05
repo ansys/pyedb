@@ -160,16 +160,6 @@ class Terminal(Connectable):
         self._port_post_processing_prop = ppp
 
     @property
-    def net_name(self):
-        """Net name.
-
-        Returns
-        -------
-        str
-        """
-        return self.net.name
-
-    @property
     def terminal_type(self):
         """Terminal Type.
 

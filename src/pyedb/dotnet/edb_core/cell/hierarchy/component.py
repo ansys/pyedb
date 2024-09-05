@@ -63,6 +63,15 @@ class EDBComponent(Group):
         self._comp_instance = None
 
     @property
+    def name(self):
+        """Name of the definition."""
+        return self._edb_object.GetName()
+
+    @name.setter
+    def name(self, value):
+        self._edb_object.SetName(value)
+
+    @property
     def group_type(self):
         return self._edb_object.ToString().split(".")[-1].lower()
 

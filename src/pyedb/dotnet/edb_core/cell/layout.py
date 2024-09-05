@@ -54,6 +54,29 @@ from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 
 
+def primitive_cast(pedb, edb_object):
+    if edb_object.GetPrimitiveType().ToString() == "Rectangle":
+        return EdbRectangle(edb_object, pedb)
+    elif edb_object.GetPrimitiveType().ToString() == "Circle":
+        return EdbCircle(edb_object, pedb)
+    elif edb_object.GetPrimitiveType().ToString() == "Polygon":
+        return EdbPolygon(edb_object, pedb)
+    elif edb_object.GetPrimitiveType().ToString() == "Path":
+        return Path(pedb, edb_object)
+    elif edb_object.GetPrimitiveType().ToString() == "Bondwire":
+        return Bondwire(pedb, edb_object)
+    elif edb_object.GetPrimitiveType().ToString() == "Text":
+        return EdbText(edb_object, pedb)
+    elif edb_object.GetPrimitiveType().ToString() == "PrimitivePlugin":
+        return
+    elif edb_object.GetPrimitiveType().ToString() == "Path3D":
+        return
+    elif edb_object.GetPrimitiveType().ToString() == "BoardBendDef":
+        return
+    else:
+        return
+
+
 class Layout(ObjBase):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
@@ -209,7 +232,7 @@ class Layout(ObjBase):
         """
         prims = []
         for p in self._edb_object.Primitives:
-            obj = self.find_object_by_id(p.GetId())
+            obj = primitive_cast(self._pedb, p)
             prims.append(obj)
         return prims
 
@@ -285,26 +308,7 @@ class Layout(ObjBase):
             return EDBPadstackInstance(obj, self._pedb)
 
         if obj.GetObjType().ToString() == "Primitive":
-            if obj.GetPrimitiveType().ToString() == "Rectangle":
-                return EdbRectangle(obj, self._pedb)
-            elif obj.GetPrimitiveType().ToString() == "Circle":
-                return EdbCircle(obj, self._pedb)
-            elif obj.GetPrimitiveType().ToString() == "Polygon":
-                return EdbPolygon(obj, self._pedb)
-            elif obj.GetPrimitiveType().ToString() == "Path":
-                return Path(self._pedb, obj)
-            elif obj.GetPrimitiveType().ToString() == "Bondwire":
-                return Bondwire(self._pedb, obj)
-            elif obj.GetPrimitiveType().ToString() == "Text":
-                return EdbText(obj, self._pedb)
-            elif obj.GetPrimitiveType().ToString() == "PrimitivePlugin":
-                pass
-            elif obj.GetPrimitiveType().ToString() == "Path3D":
-                pass
-            elif obj.GetPrimitiveType().ToString() == "BoardBendDef":
-                pass
-            else:
-                pass
+            return primitive_cast(self._pedb, obj)
 
     def find_net_by_name(self, value: str):
         """Find a net object by name

@@ -90,27 +90,6 @@ class Primitive(Connectable):
         return self._edb_object.GetPrimitiveType().ToString().lower()
 
     @property
-    def net_name(self):
-        """Get the primitive net name.
-
-        Returns
-        -------
-        str
-        """
-        return self.net.name
-
-    @net_name.setter
-    def net_name(self, name):
-        if isinstance(name, str):
-            net = self._app.nets.nets[name].net_object
-            self.primitive_object.SetNet(net)
-        else:
-            try:
-                self.net = name.name
-            except:  # pragma: no cover
-                self._app.logger.error("Failed to set net name.")
-
-    @property
     def layer(self):
         """Get the primitive edb layer object."""
         obj = self._edb_object.GetLayer()
@@ -128,7 +107,7 @@ class Primitive(Connectable):
         str
         """
         try:
-            return self.layer.name
+            return self._edb_object.GetLayer().GetName()
         except (KeyError, AttributeError):  # pragma: no cover
             return None
 
