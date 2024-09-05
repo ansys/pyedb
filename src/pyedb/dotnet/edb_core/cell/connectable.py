@@ -48,6 +48,27 @@ class Connectable(LayoutObj):
         self._edb_object.SetNet(net.net_object)
 
     @property
+    def net_name(self):
+        """Get the primitive layer name.
+
+        Returns
+        -------
+        str
+        """
+        try:
+            return self._edb_object.GetNet().GetName()
+        except (KeyError, AttributeError):  # pragma: no cover
+            return None
+
+    @net_name.setter
+    def net_name(self, name):
+        if name in self._pedb.nets.netlist:
+            obj = self._pedb.nets.nets[name].net_object
+            self._edb_object.SetNet(obj)
+        else:
+            raise ValueError(f'Net {name} not found.')
+
+    @property
     def component(self):
         """Component connected to this object.
 

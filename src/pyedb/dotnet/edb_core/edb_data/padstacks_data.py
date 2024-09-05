@@ -1563,30 +1563,6 @@ class EDBPadstackInstance(Primitive):
         return layer_list
 
     @property
-    def net_name(self):
-        """Net name.
-
-        Returns
-        -------
-        str
-            Name of the net.
-        """
-        return self._edb_padstackinstance.GetNet().GetName()
-
-    @net_name.setter
-    def net_name(self, val):
-        if not isinstance(val, str):
-            try:
-                self._edb_padstackinstance.SetNet(val.net_obj)
-            except:
-                raise AttributeError("Value inserted not found. Input has to be net name or net object.")
-        elif val in self._pedb.nets.netlist:
-            net = self._pedb.nets.nets[val].net_object
-            self._edb_padstackinstance.SetNet(net)
-        else:
-            raise AttributeError("Value inserted not found. Input has to be net name or net object.")
-
-    @property
     def is_pin(self):
         """Determines whether this padstack instance is a layout pin.
 
