@@ -531,8 +531,8 @@ class EdbNets(object):
         for poly in self._pedb.modeler.polygons:
             if poly.is_void:
                 continue
-            net_name = path.net_name
-            layer_name = path.layer_name
+            net_name = poly.net_name
+            layer_name = poly.layer_name
             if nets and (net_name != "" and net_name not in nets or layer_name not in layers):
                 continue
             xt, yt = poly.points()
