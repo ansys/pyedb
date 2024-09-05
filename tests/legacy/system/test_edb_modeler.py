@@ -567,3 +567,10 @@ class TestClass:
         assert centerline == [[-0.0005, 0.0], [-0.0005, 0.01]]
         edb.modeler.paths[0].center_line = [[0.0, 0.0], [0.0, 5e-3]]
         assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.0, 5e-3]]
+
+    def test_polygon_data_refaxtoring_bounding_box(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        poly_with_voids = [pp for pp in edbapp.modeler.polygons if pp.has_voids]
+        for poly in poly_with_voids:
+            for void in poly.voids:
+                assert void.polygon_data.bounding_box
