@@ -130,8 +130,13 @@ class EDBComponentDef(ObjBase):
             comp.assign_s_param_model(file_path, model_name, reference_net)
         return True
 
-    def assign_spice_model(self, file_path, model_name=None, sub_circuit_name=None,
-                           terminal_pairs=None, ):
+    def assign_spice_model(
+        self,
+        file_path,
+        model_name=None,
+        sub_circuit_name=None,
+        terminal_pairs=None,
+    ):
         """Assign Spice model to all components under this part name.
 
         Parameters
