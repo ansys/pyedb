@@ -89,8 +89,6 @@ class Primitive(Connectable):
         """
         return self._edb_object.GetPrimitiveType().ToString().lower()
 
-
-
     @property
     def layer(self):
         """Get the primitive edb layer object."""
