@@ -833,6 +833,10 @@ class EDBComponent(Group):
             File path of the Spice model.
         name : str, optional
             Name of the Spice model.
+        sub_circuit_name : str, optional
+            Name of the sub circuit.
+        terminal_pairs : list, optional
+            list of terminal pairs.
 
         Returns
         -------
@@ -879,7 +883,8 @@ class EDBComponent(Group):
             File path of the S-parameter model.
         name : str, optional
             Name of the S-parameter model.
-
+        reference_net : str, optional
+            Name of the reference net.
         Returns
         -------
 
