@@ -225,7 +225,7 @@ class EDBComponent(ComponentGroup):
             sball_height = round(EDBValue(value).value, 9)
             cmp_property = self.component_property
             solder_ball_prop = cmp_property.solder_ball_property
-            solder_ball_prop.height = self._pedb.utility.Value(sball_height)
+            solder_ball_prop.height = EDBValue(sball_height)
             cmp_property.solder_ball_property = solder_ball_prop
             self.component_property = cmp_property
 
@@ -325,12 +325,12 @@ class EDBComponent(ComponentGroup):
     @property
     def is_null(self):
         """Flag indicating if the current object exists."""
-        return self.edbcomponent.is_null
+        return self.is_null
 
     @property
     def model_type(self):
         """Retrieve assigned model type."""
-        _model_type = self._edb_model.ToString().split(".")[-1]
+        _model_type = str(self._edb_model).split(".")[-1]
         if _model_type == "PinPairModel":
             return "RLC"
         else:
@@ -580,7 +580,7 @@ class EDBComponent(ComponentGroup):
         list
         """
         center = self.component_instance.location
-        return [center.x.value, center.y.value]
+        return [center[0].value, center[1].value]
 
     @property
     def bounding_box(self):
@@ -596,7 +596,7 @@ class EDBComponent(ComponentGroup):
         bbox = self.component_instance.bbox
         pt1 = bbox[0]
         pt2 = bbox[1]
-        return [pt1.x.value, pt1.y.value, pt2.x.value, pt2.y.value]
+        return [pt1[0][0].value, pt1[0][1].value, pt2[1][0].value, pt2[1][1].value]
 
     @property
     def rotation(self):
@@ -606,7 +606,7 @@ class EDBComponent(ComponentGroup):
         -------
         float
         """
-        return self.edbcomponent.transform.rotation.value
+        return self.transform.rotation.value
 
     @property
     def pinlist(self):
@@ -617,7 +617,7 @@ class EDBComponent(ComponentGroup):
         list
             List of Pins of Component.
         """
-        pins = [p for p in self.edbcomponent.members if p.is_layout_pin]
+        pins = [p for p in self.members if p.is_layout_pin]
         return pins
 
     @property
@@ -654,7 +654,7 @@ class EDBComponent(ComponentGroup):
         str
             Component type.
         """
-        cmp_type = self.edbcomponent.component_type
+        cmp_type = self.component_type
         mapping = {
             ComponentType.OTHER: 0,
             ComponentType.RESISTOR: 1,
