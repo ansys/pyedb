@@ -37,7 +37,7 @@ class CfgPinGroups:
     def get_data_from_db(self):
         self.pin_groups = []
         for name, pg in self._pedb.siwave.pin_groups.items():
-            pins = [p.aedt_name for p in pg.pins.values()]
+            pins = [f"{p.component.name}-{p.pin_number}" for p in pg.pins.values()]
             cfg_pg = CfgPinGroup(
                 self._pedb,
                 name=name,
