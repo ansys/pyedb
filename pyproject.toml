@@ -34,7 +34,9 @@ dependencies = [
     "pydantic>=2.6.4,<2.9",
     "Rtree >= 1.2.0",
     "toml == 0.10.2",
-    "scikit-rf"
+    "scikit-rf",
+    "ansys-edb-core",
+    "ansys-api-edb"
     ]
 
 [project.optional-dependencies]
