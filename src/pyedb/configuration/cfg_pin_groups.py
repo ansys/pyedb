@@ -66,7 +66,14 @@ class CfgPinGroup(CfgBase):
         """Apply pin group on layout."""
         if self.pins:
             if self.reference_designator is None:
-                self._pedb.modeler.create_pin_group(self.name, pins_by_aedt_name=self.pins)
+                temp = []
+                for i in self.pins:
+                    x = i.split("-")
+                    comp_refdes = x[0]
+                    pin_number = x[1]
+                    pin_obj = self._pedb.components[comp_refdes].pins[pin_number]
+                    temp.append(pin_obj.id)
+                self._pedb.modeler.create_pin_group(self.name, pins_by_id=temp)
             else:
                 self._pedb.siwave.create_pin_group(self.reference_designator, list(self.pins), self.name)
         elif self.net:
