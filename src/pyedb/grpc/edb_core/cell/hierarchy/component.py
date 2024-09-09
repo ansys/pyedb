@@ -30,12 +30,13 @@ from ansys.edb.core.definition.solder_ball_property import (
     SolderballShape,
 )
 from ansys.edb.core.hierarchy.component_group import ComponentGroup, ComponentType
+from ansys.edb.core.hierarchy.sparameter_model import SParameterModel
+from ansys.edb.core.utility.rlc import PinPair, Rlc
 from ansys.edb.core.utility.value import Value as EDBValue
 
 from pyedb.grpc.edb_core.cell.hierarchy.model import PinPairModel, SPICEModel
 from pyedb.grpc.edb_core.cell.hierarchy.netlist_model import NetlistModel
-from pyedb.grpc.edb_core.cell.hierarchy.s_parameter_model import SparamModel
-from pyedb.grpc.edb_core.cell.hierarchy.spice_model import SpiceModel
+from pyedb.grpc.edb_core.cell.hierarchy.spice_model import EDBSpiceModel
 from pyedb.grpc.edb_core.definition.package_def import PackageDef
 from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 
@@ -194,7 +195,7 @@ class EDBComponent(ComponentGroup):
         if not self.model_type == "SPICEModel":
             return None
         else:
-            return SpiceModel(self._edb_model)
+            return EDBSpiceModel(self._edb_model)
 
     @property
     def s_param_model(self):
@@ -202,7 +203,7 @@ class EDBComponent(ComponentGroup):
         if not self.model_type == "SParameterModel":
             return None
         else:
-            return SparamModel(self._edb_model)
+            return SParameterModel(self._edb_model)
 
     @property
     def netlist_model(self):
@@ -353,16 +354,14 @@ class EDBComponent(ComponentGroup):
             pin_names = list(self.pins.keys())
             for idx, i in enumerate(np.arange(len(pin_names) // 2)):
                 pin_pair = (pin_names[idx], pin_names[idx + 1])
-                rlc = model.rlc(pin_pair)
-                rlc = (
-                    EDBValue(rlc_values[0]),
-                    rlc_enabled[0],
-                    EDBValue(rlc_values[1]),
-                    rlc_enabled[1],
-                    EDBValue(rlc_values[2]),
-                    rlc_enabled[2],
-                    False,
-                )
+                rlc = model.get_rlc(pin_pair)
+                rlc.r = EDBValue(rlc_values[0])
+                rlc.r_enabled = rlc_enabled[0]
+                rlc.l = EDBValue(rlc_values[1])
+                rlc.l_enabled = rlc_enabled[1]
+                rlc.c = EDBValue(rlc_values[2])
+                rlc.c_enabled = rlc_enabled[2]
+                rlc.is_parallel = False
                 model.set_rlc(pin_pair, rlc)
             self._set_model(model)
 
@@ -401,16 +400,15 @@ class EDBComponent(ComponentGroup):
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
             pin_pair = (pin_names[idx], pin_names[idx + 1])
-            rlc = model.rlc(pin_pair)
-            rlc = (
-                EDBValue(rlc_values[0]),
-                rlc_enabled[0],
-                EDBValue(rlc_values[1]),
-                rlc_enabled[1],
-                EDBValue(rlc_values[2]),
-                rlc_enabled[2],
-                False,
-            )
+            rlc = model.get_rlc(pin_pair)
+            rlc = model.get_rlc(pin_pair)
+            rlc.r = EDBValue(rlc_values[0])
+            rlc.r_enabled = rlc_enabled[0]
+            rlc.l = EDBValue(rlc_values[1])
+            rlc.l_enabled = rlc_enabled[1]
+            rlc.c = EDBValue(rlc_values[2])
+            rlc.c_enabled = rlc_enabled[2]
+            rlc.is_parallel = False
             model.set_rlc(pin_pair, rlc)
         self._set_model(model)
 
@@ -423,17 +421,8 @@ class EDBComponent(ComponentGroup):
         str
             Resistance value or ``None`` if not an RLC type.
         """
-        cmp_type = self.edbcomponent.component_type
-        mapping = {
-            ComponentType.OTHER: 0,
-            ComponentType.RESISTOR: 1,
-            ComponentType.INDUCTOR: 2,
-            ComponentType.CAPACITOR: 3,
-            ComponentType.IC: 4,
-            ComponentType.IO: 5,
-            ComponentType.INVALID: 6,
-        }
-        if 0 < mapping[cmp_type] < 4:
+        cmp_type = self.component_type
+        if 0 < cmp_type.value < 4:
             model = self.component_property.model
             pinpairs = model.pin_pair_model
             if not list(pinpairs):
@@ -460,17 +449,8 @@ class EDBComponent(ComponentGroup):
         str
             Capacitance Value. ``None`` if not an RLC Type.
         """
-        cmp_type = self.edbcomponent.component_type
-        mapping = {
-            ComponentType.OTHER: 0,
-            ComponentType.RESISTOR: 1,
-            ComponentType.INDUCTOR: 2,
-            ComponentType.CAPACITOR: 3,
-            ComponentType.IC: 4,
-            ComponentType.IO: 5,
-            ComponentType.INVALID: 6,
-        }
-        if 0 < mapping[cmp_type] < 4:
+        cmp_type = self.component_type
+        if 0 < cmp_type.value < 4:
             model = self.component_property.model
             pinpairs = model.pin_pair_model
             if not list(pinpairs):
@@ -497,17 +477,8 @@ class EDBComponent(ComponentGroup):
         str
             Inductance Value. ``None`` if not an RLC Type.
         """
-        cmp_type = self.edbcomponent.component_type
-        mapping = {
-            ComponentType.OTHER: 0,
-            ComponentType.RESISTOR: 1,
-            ComponentType.INDUCTOR: 2,
-            ComponentType.CAPACITOR: 3,
-            ComponentType.IC: 4,
-            ComponentType.IO: 5,
-            ComponentType.INVALID: 6,
-        }
-        if 0 < mapping[cmp_type] < 4:
+        cmp_type = self.component_type
+        if 0 < cmp_type.value < 4:
             model = self.component_property.model
             pinpairs = model.pin_pair_model
             if not list(pinpairs):
@@ -534,17 +505,8 @@ class EDBComponent(ComponentGroup):
         bool
             ``True`` if it is a parallel rlc model. ``False`` for series RLC. ``None`` if not an RLC Type.
         """
-        cmp_type = self.edbcomponent.component_type
-        mapping = {
-            ComponentType.OTHER: 0,
-            ComponentType.RESISTOR: 1,
-            ComponentType.INDUCTOR: 2,
-            ComponentType.CAPACITOR: 3,
-            ComponentType.IC: 4,
-            ComponentType.IO: 5,
-            ComponentType.INVALID: 6,
-        }
-        if 0 < mapping[cmp_type] < 4:
+        cmp_type = self.component_type
+        if 0 < cmp_type.value < 4:
             model = self.component_property.model
             pinpairs = model.pin_pair_model
             for pinpair in pinpairs:
@@ -713,7 +675,7 @@ class EDBComponent(ComponentGroup):
         int
             Number of Pins of Component.
         """
-        return self.edbcomponent.num_pins
+        return self.num_pins
 
     @property
     def partname(self):  # pragma: no cover
@@ -740,12 +702,12 @@ class EDBComponent(ComponentGroup):
         str
             Component part name.
         """
-        return self.edbcomponent.GetComponentDef().GetName()
+        return self.component_def.name
 
     @part_name.setter
     def part_name(self, name):  # pragma: no cover
         """Set component part name."""
-        self.edbcomponent.GetComponentDef().SetName(name)
+        self.component_def.name = name
 
     @property
     def placement_layer(self):
@@ -756,7 +718,7 @@ class EDBComponent(ComponentGroup):
         str
            Name of the placement layer.
         """
-        return self.edbcomponent.GetPlacementLayer().Clone().GetName()
+        return self.placement_layer.name
 
     @property
     def is_top_mounted(self):
@@ -781,7 +743,8 @@ class EDBComponent(ComponentGroup):
         float
             Lower elevation of the placement layer.
         """
-        return self.edbcomponent.GetPlacementLayer().Clone().GetLowerElevation()
+        layer = self.placement_layer
+        return layer.lower_elevation
 
     @property
     def upper_elevation(self):
@@ -793,7 +756,8 @@ class EDBComponent(ComponentGroup):
             Upper elevation of the placement layer.
 
         """
-        return self.edbcomponent.GetPlacementLayer().Clone().GetUpperElevation()
+        layer = self.placement_layer()
+        return layer.upper_elevation
 
     @property
     def top_bottom_association(self):
@@ -810,18 +774,12 @@ class EDBComponent(ComponentGroup):
             * 4 - Number of top/bottom associations.
             * -1 - Undefined
         """
-        return int(self.edbcomponent.GetPlacementLayer().GetTopBottomAssociation())
-
-    def _get_edb_value(self, value):
-        return self._pedb.edb_value(value)
+        return self.placement_layer.top_bottom_association.value
 
     def _set_model(self, model):  # pragma: no cover
         comp_prop = self.component_property
-        comp_prop.SetModel(model)
-        if not self.edbcomponent.SetComponentProperty(comp_prop):
-            logging.error("Fail to assign model on {}.".format(self.refdes))
-            return False
-        return True
+        comp_prop.model = model
+        self.component_property = comp_prop
 
     def assign_spice_model(
         self,
@@ -856,11 +814,11 @@ class EDBComponent(ComponentGroup):
         if not len(pin_names_sp) == self.numpins:  # pragma: no cover
             raise ValueError(f"Pin counts doesn't match component {self.name}.")
 
-        model = self._edb.cell.hierarchy._hierarchy.SPICEModel()
-        model.SetModelPath(file_path)
-        model.SetModelName(name)
+        model = SPICEModel(self._pedb)
+        model.model_path = file_path
+        model.model_name = name
         if sub_circuit_name:
-            model.SetSubCkt(sub_circuit_name)
+            model.sub_circuit = sub_circuit_name
 
         if terminal_pairs:
             terminal_pairs = terminal_pairs if isinstance(terminal_pairs[0], list) else [terminal_pairs]
@@ -868,10 +826,10 @@ class EDBComponent(ComponentGroup):
                 pname, pnumber = pair
                 if pname not in pin_names_sp:  # pragma: no cover
                     raise ValueError(f"Pin name {pname} doesn't exist in {file_path}.")
-                model.AddTerminalPinPair(pname, str(pnumber))
+                model.add_terminal(str(pnumber), pname)
         else:
             for idx, pname in enumerate(pin_names_sp):
-                model.AddTerminalPinPair(pname, str(idx + 1))
+                model.add_terminal(str(idx + 1), pname)
 
         return self._set_model(model)
 
@@ -892,17 +850,16 @@ class EDBComponent(ComponentGroup):
         if not name:
             name = get_filename_without_extension(file_path)
 
-        edbComponentDef = self.edbcomponent.GetComponentDef()
-        nPortModel = self._edb.definition.NPortComponentModel.FindByName(edbComponentDef, name)
-        if nPortModel.IsNull():
-            nPortModel = self._edb.definition.NPortComponentModel.Create(name)
-            nPortModel.SetReferenceFile(file_path)
-            edbComponentDef.AddComponentModel(nPortModel)
+        s_param_model = SParameterModel.find_by_name(self.component_def, name)
+        if s_param_model.is_null:
+            n_port_model = SParameterModel.create(name=name, ref_net=reference_net)
+            n_port_model.reference_file = file_path
+            self.component_def.add_component_model(n_port_model)
 
-        model = self._edb.cell.hierarchy._hierarchy.SParameterModel()
-        model.SetComponentModelName(name)
+        model = SParameterModel()
+        model.component_model = name
         if reference_net:
-            model.SetReferenceNet(reference_net)
+            model.reference_net = reference_net
         return self._set_model(model)
 
     def use_s_parameter_model(self, name, reference_net=None):
@@ -927,10 +884,10 @@ class EDBComponent(ComponentGroup):
         >>>comp_def.add_n_port_model("c:GRM32_DC0V_25degC_series.s2p", "GRM32_DC0V_25degC_series")
         >>>edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
         """
-        model = self._edb.cell.hierarchy._hierarchy.SParameterModel()
-        model.SetComponentModelName(name)
+        model = SParameterModel()
+        model.component_model = name
         if reference_net:
-            model.SetReferenceNet(reference_net)
+            model.reference_net = reference_net
         return self._set_model(model)
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
@@ -956,15 +913,22 @@ class EDBComponent(ComponentGroup):
         res = 0 if res is None else res
         ind = 0 if ind is None else ind
         cap = 0 if cap is None else cap
-        res, ind, cap = self._get_edb_value(res), self._get_edb_value(ind), self._get_edb_value(cap)
-        model = self._edb.cell.hierarchy._hierarchy.PinPairModel()
+        res, ind, cap = EDBValue(res), EDBValue(ind), EDBValue(cap)
+        model = PinPairModel(self._edb_model)._edb_object
 
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
-            pin_pair = self._edb.utility.utility.PinPair(pin_names[idx], pin_names[idx + 1])
-
-            rlc = self._edb.utility.utility.Rlc(res, r_enabled, ind, l_enabled, cap, c_enabled, is_parallel)
-            model.SetPinPairRlc(pin_pair, rlc)
+            pin_pair = PinPair(pin_names[idx], pin_names[idx + 1])
+            rlc = Rlc(
+                r=res,
+                r_enabled=r_enabled,
+                l=ind,
+                l_enabled=l_enabled,
+                c=cap,
+                c_enabled=c_enabled,
+                is_parallel=is_parallel,
+            )
+            model.set_rlc(pin_pair, rlc)
         return self._set_model(model)
 
     def create_clearance_on_component(self, extra_soldermask_clearance=1e-4):

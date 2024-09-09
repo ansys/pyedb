@@ -20,15 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from ansys.edb.core.hierarchy.spice_model import SPICEModel
 
-class SpiceModel(object):  # pragma: no cover
+
+class EDBSpiceModel(SPICEModel):  # pragma: no cover
     def __init__(self, edb_model):
         self._edb_model = edb_model
+        super().__init__(edb_model)
 
     @property
     def file_path(self):
-        return self._edb_model.GetSPICEFilePath()
+        return self.file_path
 
     @property
     def name(self):
-        return self._edb_model.GetSPICEName()
+        return self.model_name
