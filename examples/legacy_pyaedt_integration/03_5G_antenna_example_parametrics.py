@@ -12,7 +12,7 @@
 import os
 import tempfile
 
-import pyaedt
+import ansys.aedt.core
 
 import pyedb
 
@@ -243,7 +243,7 @@ print("EDB saved correctly to {}. You can import in AEDT.".format(aedb_path))
 # It is now possible to monitor the progress in the UI as each of the following cells is executed.
 # All commands can be run without the UI by changing the value of ``non_graphical``.
 
-h3d = pyaedt.Hfss(
+h3d = ansys.aedt.core.Hfss(
     projectname="Demo_3DComp",
     designname="Linear_Array",
     specified_version="2024.2",
@@ -369,7 +369,7 @@ h3d.post.create_fieldplot_layers_nets(
 # ## Close AEDT
 #
 # After the simulation completes, the application can be released from the
-# :func:`pyaedt.Desktop.release_desktop` method.
+# :func:`ansys.aedt.core.Desktop.release_desktop` method.
 # All methods provide for saving the project before closing AEDT.
 
 h3d.save_project(os.path.join(temp_dir.name, "test_layout.aedt"))
