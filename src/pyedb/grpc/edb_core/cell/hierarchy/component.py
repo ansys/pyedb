@@ -25,18 +25,21 @@ import re
 from typing import Optional
 import warnings
 
-from ansys.edb.core.definition.solder_ball_property import (
-    SolderballPlacement,
-    SolderballShape,
+from ansys.edb.core.definition.solder_ball_property import SolderballShape
+from ansys.edb.core.hierarchy.component_group import (
+    ComponentGroup as GrpcComponentGroup,
 )
-from ansys.edb.core.hierarchy.component_group import ComponentGroup, ComponentType
-from ansys.edb.core.hierarchy.sparameter_model import SParameterModel
-from ansys.edb.core.utility.rlc import PinPair, Rlc
+from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
+from ansys.edb.core.hierarchy.netlist_model import NetlistModel as GrpcNetlistModel
+from ansys.edb.core.hierarchy.sparameter_model import (
+    SParameterModel as GrpcSParameterModel,
+)
+from ansys.edb.core.utility.rlc import PinPair as GrpcPinPair
+from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as EDBValue
 
-from pyedb.grpc.edb_core.cell.hierarchy.netlist_model import NetlistModel
-from pyedb.grpc.edb_core.cell.hierarchy.pin_pair_model import EDBPinPairModel
-from pyedb.grpc.edb_core.cell.hierarchy.spice_model import EDBSpiceModel, SPICEModel
+from pyedb.grpc.edb_core.cell.hierarchy.pin_pair_model import PinPairModel
+from pyedb.grpc.edb_core.cell.hierarchy.spice_model import SPICEModel
 from pyedb.grpc.edb_core.definition.package_def import PackageDef
 from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 
@@ -50,7 +53,7 @@ except ImportError:
 from pyedb.generic.general_methods import get_filename_without_extension
 
 
-class EDBComponent(ComponentGroup):
+class Component(GrpcComponentGroup):
     """Manages EDB functionalities for components.
 
     Parameters
@@ -195,7 +198,7 @@ class EDBComponent(ComponentGroup):
         if not self.model_type == "SPICEModel":
             return None
         else:
-            return EDBSpiceModel(self._edb_model)
+            return SPICEModel(self._edb_model)
 
     @property
     def s_param_model(self):
@@ -203,7 +206,7 @@ class EDBComponent(ComponentGroup):
         if not self.model_type == "SParameterModel":
             return None
         else:
-            return SParameterModel(self._edb_model)
+            return GrpcSParameterModel(self._edb_model)
 
     @property
     def netlist_model(self):
@@ -211,7 +214,7 @@ class EDBComponent(ComponentGroup):
         if not self.model_type == "NetlistModel":
             return None
         else:
-            return NetlistModel(self._edb_model)
+            return GrpcNetlistModel(self._edb_model)
 
     @property
     def solder_ball_height(self):
@@ -299,14 +302,7 @@ class EDBComponent(ComponentGroup):
         """Solder ball placement if available.."""
         if "solder_ball_property" in dir(self.component_property):
             solder_placement = self.component_property.solder_ball_property.placement
-            if solder_placement == SolderballPlacement.ABOVE_PADSTACK:
-                return 0
-            elif solder_placement == SolderballPlacement.BELOW_PADSTACK:
-                return 1
-            elif solder_placement == SolderballPlacement.UNKNOWN_PLACEMENT:
-                return 2
-            else:
-                return 2
+            return solder_placement.value
 
     @property
     def refdes(self):
@@ -350,7 +346,7 @@ class EDBComponent(ComponentGroup):
         if isinstance(value, list):  # pragma no cover
             rlc_enabled = [True if i else False for i in value]
             rlc_values = [EDBValue(i) for i in value]
-            model = EDBPinPairModel(self._pedb)._edb_object
+            model = PinPairModel(self._pedb)
             pin_names = list(self.pins.keys())
             for idx, i in enumerate(np.arange(len(pin_names) // 2)):
                 pin_pair = (pin_names[idx], pin_names[idx + 1])
@@ -617,26 +613,17 @@ class EDBComponent(ComponentGroup):
             Component type.
         """
         cmp_type = self.component_type
-        mapping = {
-            ComponentType.OTHER: 0,
-            ComponentType.RESISTOR: 1,
-            ComponentType.INDUCTOR: 2,
-            ComponentType.CAPACITOR: 3,
-            ComponentType.IC: 4,
-            ComponentType.IO: 5,
-            ComponentType.INVALID: 6,
-        }
-        if mapping[cmp_type] == 1:
+        if cmp_type.value == 1:
             return "Resistor"
-        elif mapping[cmp_type] == 2:
+        elif cmp_type.value == 2:
             return "Inductor"
-        elif mapping[cmp_type] == 3:
+        elif cmp_type.value == 3:
             return "Capacitor"
-        elif mapping[cmp_type] == 4:
+        elif cmp_type.value == 4:
             return "IC"
-        elif mapping[cmp_type] == 5:
+        elif cmp_type.value == 5:
             return "IO"
-        elif mapping[cmp_type] == 0:
+        elif cmp_type.value == 0:
             return "Other"
 
     @type.setter
@@ -651,17 +638,17 @@ class EDBComponent(ComponentGroup):
         """
         new_type = new_type.lower()
         if new_type == "resistor":
-            type_id = ComponentType.RESISTOR
+            type_id = GrpcComponentType.RESISTOR
         elif new_type == "inductor":
-            type_id = ComponentType.INDUCTOR
+            type_id = GrpcComponentType.INDUCTOR
         elif new_type == "capacitor":
-            type_id = ComponentType.CAPACITOR
+            type_id = GrpcComponentType.CAPACITOR
         elif new_type == "ic":
-            type_id = ComponentType.IC
+            type_id = GrpcComponentType.IC
         elif new_type == "io":
-            type_id = ComponentType.IO
+            type_id = GrpcComponentType.IO
         elif new_type == "other":
-            type_id = ComponentType.OTHER
+            type_id = GrpcComponentType.OTHER
         else:
             return
         self.edbcomponent.component_type = type_id
@@ -850,13 +837,13 @@ class EDBComponent(ComponentGroup):
         if not name:
             name = get_filename_without_extension(file_path)
 
-        s_param_model = SParameterModel.find_by_name(self.component_def, name)
+        s_param_model = GrpcSParameterModel.find_by_name(self.component_def, name)
         if s_param_model.is_null:
-            n_port_model = SParameterModel.create(name=name, ref_net=reference_net)
+            n_port_model = GrpcSParameterModel.create(name=name, ref_net=reference_net)
             n_port_model.reference_file = file_path
             self.component_def.add_component_model(n_port_model)
 
-        model = SParameterModel()
+        model = GrpcSParameterModel()
         model.component_model = name
         if reference_net:
             model.reference_net = reference_net
@@ -884,7 +871,7 @@ class EDBComponent(ComponentGroup):
         >>>comp_def.add_n_port_model("c:GRM32_DC0V_25degC_series.s2p", "GRM32_DC0V_25degC_series")
         >>>edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
         """
-        model = SParameterModel()
+        model = GrpcSParameterModel()
         model.component_model = name
         if reference_net:
             model.reference_net = reference_net
@@ -918,8 +905,8 @@ class EDBComponent(ComponentGroup):
 
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
-            pin_pair = PinPair(pin_names[idx], pin_names[idx + 1])
-            rlc = Rlc(
+            pin_pair = GrpcPinPair(pin_names[idx], pin_names[idx + 1])
+            rlc = GrpcRlc(
                 r=res,
                 r_enabled=r_enabled,
                 l=ind,

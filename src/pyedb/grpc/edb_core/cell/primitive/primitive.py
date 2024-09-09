@@ -20,14 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.cell.connectable import Connectable
+from ansys.edb.core.primitive.primitive import Primitive as GrpcPrimitive
+
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
 from pyedb.misc.utilities import compute_arc_points
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
-class Primitive(Connectable):
+class Primitive(GrpcPrimitive):
     """Manages EDB functionalities for a primitives.
     It inherits EDB Object properties.
 
@@ -41,7 +42,7 @@ class Primitive(Connectable):
     """
 
     def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
+        super().__init__(edb_object)
         self._app = self._pedb
         self._core_stackup = pedb.stackup
         self._core_net = pedb.nets

@@ -22,7 +22,7 @@
 
 
 from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel
-from ansys.edb.core.utility.value import EDBValue
+from ansys.edb.core.utility.value import Value as EDBValue
 
 
 class EDBPinPairModel(PinPairModel):  # pragma: no cover
