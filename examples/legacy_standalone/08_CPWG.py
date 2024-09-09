@@ -11,8 +11,8 @@
 
 import os
 
-import numpy as np
 import ansys.aedt.core
+import numpy as np
 
 from pyedb import Edb
 from pyedb.generic.general_methods import (

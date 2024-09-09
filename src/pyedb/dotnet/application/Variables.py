@@ -1765,42 +1765,42 @@ class Variable(object):
     def __mul__(self, other):  # pragma: no cover
         """Multiply the variable with a number or another variable and return a new object.
 
-                Parameters
-                ----------
-                other : numbers.Number or variable
-                    Object to be multiplied.
+        Parameters
+        ----------
+        other : numbers.Number or variable
+            Object to be multiplied.
 
-                Returns
-                -------
-                type
-                    Variable.
+        Returns
+        -------
+        type
+            Variable.
 
-                Examples
-                --------
-                >>> from pyedb.dotnet.application.Variables import Variable
+        Examples
+        --------
+        >>> from pyedb.dotnet.application.Variables import Variable
 
-                Multiply ``'Length1'`` by unitless ``'None'``` to obtain ``'Length'``.
-                A numerical value is also considered to be unitless.
+        Multiply ``'Length1'`` by unitless ``'None'``` to obtain ``'Length'``.
+        A numerical value is also considered to be unitless.
 
-                >>> import ansys.aedt.core.generic.constants
-                >>> v1 = Variable("10mm")
-                >>> v2 = Variable(3)
-                >>> result_1 = v1 * v2
-                >>> result_2 = v1 * 3
-                >>> assert result_1.numeric_value == 30.0
-                >>> assert result_1.unit_system == "Length"
-                >>> assert result_2.numeric_value == result_1.numeric_value
-                >>> assert result_2.unit_system == "Length"
+        >>> import ansys.aedt.core.generic.constants
+        >>> v1 = Variable("10mm")
+        >>> v2 = Variable(3)
+        >>> result_1 = v1 * v2
+        >>> result_2 = v1 * 3
+        >>> assert result_1.numeric_value == 30.0
+        >>> assert result_1.unit_system == "Length"
+        >>> assert result_2.numeric_value == result_1.numeric_value
+        >>> assert result_2.unit_system == "Length"
 
-                Multiply voltage times current to obtain power.
+        Multiply voltage times current to obtain power.
 
-                >>> import ansys.aedt.core.generic.constants
-                >>> v3 = Variable("3mA")
-                >>> v4 = Variable("40V")
-                >>> result_3 = v3 * v4
-                >>> assert result_3.numeric_value == 0.12
-                >>> assert result_3.units == "W"
-                >>> assert result_3.unit_system == "Power"
+        >>> import ansys.aedt.core.generic.constants
+        >>> v3 = Variable("3mA")
+        >>> v4 = Variable("40V")
+        >>> result_3 = v3 * v4
+        >>> assert result_3.numeric_value == 0.12
+        >>> assert result_3.units == "W"
+        >>> assert result_3.unit_system == "Power"
 
         """
         assert is_number(other) or isinstance(other, Variable), "Multiplier must be a scalar quantity or a variable."

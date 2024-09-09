@@ -18,8 +18,8 @@
 import os
 import tempfile
 
-import numpy as np
 import ansys.aedt.core
+import numpy as np
 
 import pyedb
 from pyedb.misc.downloads import download_file
