@@ -158,7 +158,7 @@ class EdbPolygon(Primitive):
 
         Examples
         --------
-        >>> edbapp = pyaedt.Edb("myproject.aedb")
+        >>> edbapp = ansys.aedt.core.Edb("myproject.aedb")
         >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
         >>> for polygon in top_layer_polygon:
         >>>     polygon.move(vector=["2mm", "100um"])
@@ -191,7 +191,7 @@ class EdbPolygon(Primitive):
 
         Examples
         --------
-        >>> edbapp = pyaedt.Edb("myproject.aedb")
+        >>> edbapp = ansys.aedt.core.Edb("myproject.aedb")
         >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
         >>> for polygon in top_layer_polygon:
         >>>     polygon.rotate(angle=45)

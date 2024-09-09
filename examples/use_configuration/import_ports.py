@@ -19,7 +19,7 @@ import json
 from pathlib import Path
 import tempfile
 
-from pyaedt.downloads import download_file
+from ansys.aedt.core.downloads import download_file
 
 from pyedb import Edb
 

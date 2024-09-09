@@ -14,7 +14,7 @@
 import os
 import tempfile
 
-import pyaedt
+import ansys.aedt.core
 
 import pyedb
 
@@ -293,7 +293,7 @@ edb.close_edb()
 
 # Open the project in HFSS 3D Layout.
 
-h3d = pyaedt.Hfss3dLayout(
+h3d = ansys.aedt.core.Hfss3dLayout(
     project=aedb_path,
     version=edb_version,
     non_graphical=non_graphical,
