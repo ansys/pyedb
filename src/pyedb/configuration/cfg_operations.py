@@ -65,7 +65,7 @@ class CfgCutout(CfgBase):
 
             self.reference_list = []
             self.signal_list = net_names
-        return self.export_properties()
+            return self.export_properties()
 
     def export_properties(self):
         return {
@@ -84,7 +84,7 @@ class CfgOperations(CfgBase):
         """Imports operation information from JSON."""
         if self.op_cutout:
             polygon_points = self._pedb.cutout(**self.op_cutout.get_attributes())
-            if not "pyedb_cutout" in self._pedb.stackup.all_layers:
+            if "pyedb_cutout" not in self._pedb.stackup.all_layers:
                 self._pedb.stackup.add_document_layer(name="pyedb_cutout")
                 self._pedb.modeler.create_polygon(polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout")
 
@@ -92,4 +92,5 @@ class CfgOperations(CfgBase):
 
     def get_data_from_db(self):
         self.op_cutout = CfgCutout(self._pedb)
-        return {"cutout": self.op_cutout.get_data_from_db()}
+        if self.op_cutout.get_data_from_db():
+            return {"cutout": self.op_cutout.get_data_from_db()}

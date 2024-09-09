@@ -36,12 +36,14 @@ class CfgPinGroups:
 
     def get_data_from_db(self):
         self.pin_groups = []
-        for name, pg in self._pedb.siwave.pin_groups.items():
-            pins = [f"{p.component.name}-{p.pin_number}" for p in pg.pins.values()]
+        layout_pin_groups = self._pedb.siwave.pin_groups
+        for pg_name, pg_obj in layout_pin_groups.items():
+            pins = list(pg_obj.pins.keys())
+            refdes = list(pg_obj.pins.values())[0].component.name
             cfg_pg = CfgPinGroup(
                 self._pedb,
-                name=name,
-                reference_designator=None,
+                name=pg_name,
+                reference_designator=refdes,
                 pins=pins,
             )
             self.pin_groups.append(cfg_pg)
@@ -65,17 +67,7 @@ class CfgPinGroup(CfgBase):
     def create(self):
         """Apply pin group on layout."""
         if self.pins:
-            if self.reference_designator is None:
-                temp = []
-                for i in self.pins:
-                    x = i.split("-")
-                    comp_refdes = x[0]
-                    pin_number = x[1]
-                    pin_obj = self._pedb.components[comp_refdes].pins[pin_number]
-                    temp.append(pin_obj.id)
-                self._pedb.modeler.create_pin_group(self.name, pins_by_id=temp)
-            else:
-                self._pedb.siwave.create_pin_group(self.reference_designator, list(self.pins), self.name)
+            self._pedb.siwave.create_pin_group(self.reference_designator, list(self.pins), self.name)
         elif self.net:
             if self.reference_designator in self._pedb.components.instances:
                 comp = self._pedb.components.instances[self.reference_designator]
