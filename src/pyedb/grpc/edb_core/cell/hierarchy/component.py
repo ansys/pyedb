@@ -34,9 +34,9 @@ from ansys.edb.core.hierarchy.sparameter_model import SParameterModel
 from ansys.edb.core.utility.rlc import PinPair, Rlc
 from ansys.edb.core.utility.value import Value as EDBValue
 
-from pyedb.grpc.edb_core.cell.hierarchy.model import PinPairModel, SPICEModel
 from pyedb.grpc.edb_core.cell.hierarchy.netlist_model import NetlistModel
-from pyedb.grpc.edb_core.cell.hierarchy.spice_model import EDBSpiceModel
+from pyedb.grpc.edb_core.cell.hierarchy.pin_pair_model import EDBPinPairModel
+from pyedb.grpc.edb_core.cell.hierarchy.spice_model import EDBSpiceModel, SPICEModel
 from pyedb.grpc.edb_core.definition.package_def import PackageDef
 from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 
@@ -350,7 +350,7 @@ class EDBComponent(ComponentGroup):
         if isinstance(value, list):  # pragma no cover
             rlc_enabled = [True if i else False for i in value]
             rlc_values = [EDBValue(i) for i in value]
-            model = PinPairModel(self._pedb)._edb_object
+            model = EDBPinPairModel(self._pedb)._edb_object
             pin_names = list(self.pins.keys())
             for idx, i in enumerate(np.arange(len(pin_names) // 2)):
                 pin_pair = (pin_names[idx], pin_names[idx + 1])
