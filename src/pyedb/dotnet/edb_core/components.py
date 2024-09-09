@@ -1807,8 +1807,8 @@ class Components(object):
 
             sParameterMod = self._edb.cell.hierarchy._hierarchy.SParameterModel()
             sParameterMod.SetComponentModelName(nPortModelName)
-            gndnets = filter(lambda x: "gnd" in x.lower(), componentNets)
-            if len(list(gndnets)) > 0:  # pragma: no cover
+            gndnets = list(filter(lambda x: "gnd" in x.lower(), componentNets))
+            if len(gndnets) > 0:  # pragma: no cover
                 net = gndnets[0]
             else:  # pragma: no cover
                 net = componentNets[len(componentNets) - 1]
