@@ -81,8 +81,7 @@ class TestClass:
                     ],
                     "custom_extent_units": "mm",
                 }
-
-            }
+            },
         }
 
         cfg_json = os.path.join(edb_examples.test_folder, "cfg.json")
