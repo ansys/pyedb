@@ -31,7 +31,7 @@
 import os
 import tempfile
 
-import pyaedt
+import ansys.aedt.core
 
 from pyedb import Edb
 
@@ -224,7 +224,7 @@ edb.build_simulation_project(sim_setup)
 
 edb.save_edb()
 edb.close_edb()
-h3d = pyaedt.Hfss3dLayout(
+h3d = ansys.aedt.core.Hfss3dLayout(
     specified_version="2024.2",
     projectname=aedb_path,
     non_graphical=False,  # Set non_graphical = False to launch AEDT in graphical mode.
