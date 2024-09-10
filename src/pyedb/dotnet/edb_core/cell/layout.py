@@ -323,11 +323,10 @@ class Layout(ObjBase):
 
         """
         obj = self._pedb._edb.Cell.Net.FindByName(self._edb_object, value)
-        net = EDBNetsData(obj, self._pedb)
-        if net.is_null:
+        if obj.IsNull():
             raise ValueError(f"Net {value} doesn't exist")
         else:
-            return net
+            return EDBNetsData(obj, self._pedb)
 
     def find_component_by_name(self, value: str):
         """Find a component object by name. Component name is the reference designator in layout.
