@@ -1462,6 +1462,7 @@ class Modeler(object):
         if obj.IsNull():
             raise f"Failed to create pin group {name}."
         else:
-            net_obj = [i.GetNet() for i in pins if not i.GetNet().IsNull()][0]
-            obj.SetNet(net_obj)
+            net_obj = [i.GetNet() for i in pins if not i.GetNet().IsNull()]
+            if net_obj:
+                obj.SetNet(net_obj[0])
         return self._pedb.siwave.pin_groups[name]
