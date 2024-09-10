@@ -20,19 +20,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
+from ansys.edb.core.primitive.primitive import (
+    BondwireCrossSectionType as GrpcBondwireCrossSectionType,
+)
+from ansys.edb.core.primitive.primitive import Bondwire as GrpcBondWire
+from ansys.edb.core.primitive.primitive import BondwireType as GrpcBondWireType
+from ansys.edb.core.utility.value import Value as GrpcValue
 
 
-class Bondwire(Primitive):
-    """Class representing a bondwire object."""
+class Bondwire(GrpcBondWire):
+    """Class representing a bond-wire object."""
 
-    def __init__(self, pedb, edb_object=None, **kwargs):
-        super().__init__(pedb, edb_object)
-        if self._edb_object is None:
-            self._edb_object = self.__create(**kwargs)
+    def __init__(self):
+        super().__init__(self.msg)
 
     def __create(self, **kwargs):
-        return self._pedb._edb.Cell.Primitive.Bondwire.Create(
+        return Bondwire.create(
             self._pedb.layout._edb_object,
             kwargs.get("net"),
             self._bondwire_type[kwargs.get("bondwire_type")],
@@ -50,158 +53,80 @@ class Bondwire(Primitive):
             kwargs.get("end_y"),
         )
 
-    def get_material(self, evaluated=True):
-        """Get material of the bondwire.
-
-        Parameters
-        ----------
-        evaluated : bool, optional
-            True if an evaluated material name is wanted.
-
-        Returns
-        -------
-        str
-            Material name.
-        """
-        return self._edb_object.GetMaterial(evaluated)
-
-    def set_material(self, material):
-        """Set the material of a bondwire.
-
-        Parameters
-        ----------
-        material : str
-            Material name.
-        """
-        self._edb_object.SetMaterial(material)
-
     @property
     def type(self):
-        """:class:`BondwireType`: Bondwire-type of a bondwire object."""
-
-        type_name = self._edb_object.GetType()
-        return [i for i, j in self._bondwire_type.items() if j == type_name][0]
+        """str: Bondwire-type of a bondwire object. Supported values for setter: `"apd"`, `"jedec4"`, `"jedec5"`,
+        `"num_of_type"`"""
+        return self.type.name.lower()
 
     @type.setter
     def type(self, bondwire_type):
-        self._edb_object.SetType(self._bondwire_type[bondwire_type])
+        mapping = {
+            "apd": GrpcBondWireType.APD,
+            "jedec4": GrpcBondWireType.JEDEC4,
+            "jedec5": GrpcBondWireType.JEDEC5,
+            "num_of_type": GrpcBondWireType.NUM_OF_TYPE,
+        }
+        self.type = mapping[bondwire_type]
 
     @property
     def cross_section_type(self):
-        """:class:`BondwireCrossSectionType`: Bondwire-cross-section-type of a bondwire object."""
-        cs_type = self._edb_object.GetCrossSectionType()
-        return [i for i, j in self._bondwire_cross_section_type.items() if j == cs_type][0]
+        """str: Bondwire-cross-section-type of a bondwire object. Supported values for setter: `"round",
+        `"rectangle"`"""
+        return self.cross_section_type.name
 
     @cross_section_type.setter
     def cross_section_type(self, bondwire_type):
-        self._edb_object.SetCrossSectionType(self._bondwire_cross_section_type[bondwire_type])
+        mapping = {"round": GrpcBondwireCrossSectionType.ROUND, "rectangle": GrpcBondwireCrossSectionType.RECTANGLE}
+        self.cross_section_type = mapping[bondwire_type]
 
     @property
     def cross_section_height(self):
-        """:class:`Value <ansys.edb.utility.Value>`: Bondwire-cross-section height of a bondwire object."""
-        return self._edb_object.GetCrossSectionHeight().ToDouble()
+        """float: Bondwire-cross-section height of a bondwire object."""
+        return self.cross_section_height.value
 
     @cross_section_height.setter
     def cross_section_height(self, height):
-        self._edb_object.SetCrossSectionHeight(self._pedb.edb_value(height))
-
-    def get_definition_name(self, evaluated=True):
-        """Get definition name of a bondwire object.
-
-        Parameters
-        ----------
-        evaluated : bool, optional
-            True if an evaluated (in variable namespace) material name is wanted.
-
-        Returns
-        -------
-        str
-            Bondwire name.
-        """
-        return self._edb_object.GetDefinitionName(evaluated)
-
-    def set_definition_name(self, definition_name):
-        """Set the definition name of a bondwire.
-
-        Parameters
-        ----------
-        definition_name : str
-            Bondwire name to be set.
-        """
-        self._edb_object.SetDefinitionName(definition_name)
+        self.cross_section_height = GrpcValue(height)
 
     def get_trajectory(self):
         """Get trajectory parameters of a bondwire object.
 
         Returns
         -------
-        tuple[
-            :class:`Value <ansys.edb.utility.Value>`,
-            :class:`Value <ansys.edb.utility.Value>`,
-            :class:`Value <ansys.edb.utility.Value>`,
-            :class:`Value <ansys.edb.utility.Value>`
-        ]
+        tuple[float, float, float, float]
 
-            Returns a tuple of the following format:
-
-            **(x1, y1, x2, y2)**
-
-            **x1** : X value of the start point.
-
-            **y1** : Y value of the start point.
-
-            **x1** : X value of the end point.
-
-            **y1** : Y value of the end point.
+        Returns a tuple of the following format:
+        **(x1, y1, x2, y2)**
+        **x1** : X value of the start point.
+        **y1** : Y value of the start point.
+        **x1** : X value of the end point.
+        **y1** : Y value of the end point.
         """
-        return [i.ToDouble() for i in self._edb_object.GetTrajectory() if not isinstance(i, bool)]
+        return [i.value for i in self.get_trajectory()]
 
     def set_trajectory(self, x1, y1, x2, y2):
         """Set the parameters of the trajectory of a bondwire.
 
         Parameters
         ----------
-        x1 : :class:`Value <ansys.edb.utility.Value>`
+        x1 : float
             X value of the start point.
-        y1 : :class:`Value <ansys.edb.utility.Value>`
+        y1 : float
             Y value of the start point.
-        x2 : :class:`Value <ansys.edb.utility.Value>`
+        x2 : float
             X value of the end point.
-        y2 : :class:`Value <ansys.edb.utility.Value>`
+        y2 : float
             Y value of the end point.
         """
-        values = [self._pedb.edb_value(i) for i in [x1, y1, x2, y2]]
-        self._edb_object.SetTrajectory(*values)
+        values = [GrpcValue(i) for i in [x1, y1, x2, y2]]
+        self.set_trajectory(*values)
 
     @property
     def width(self):
         """:class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object."""
-        return self._edb_object.GetWidth().ToDouble()
+        return self.width.value
 
     @width.setter
     def width(self, width):
-        self._edb_object.SetWidth(self._pedb.edb_value(width))
-
-    def set_start_elevation(self, layer, start_context=None):
-        """Set the start elevation of a bondwire.
-
-        Parameters
-        ----------
-        start_context : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
-            Start cell context of the bondwire. None means top level.
-        layer : str or :class:`Layer <ansys.edb.layer.Layer>`
-            Start layer of the bondwire.
-        """
-        self._edb_object.SetStartElevation(start_context, layer)
-
-    def set_end_elevation(self, layer, end_context=None):
-        """Set the end elevation of a bondwire.
-
-        Parameters
-        ----------
-        end_context : :class:`CellInstance <ansys.edb.hierarchy.CellInstance>`
-            End cell context of the bondwire. None means top level.
-        layer : str or :class:`Layer <ansys.edb.layer.Layer>`
-            End layer of the bondwire.
-        """
-        self._edb_object.SetEndElevation(end_context, layer)
+        self.width = GrpcValue(width)
