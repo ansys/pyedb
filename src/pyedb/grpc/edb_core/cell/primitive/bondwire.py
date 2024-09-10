@@ -31,8 +31,9 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 class Bondwire(GrpcBondWire):
     """Class representing a bond-wire object."""
 
-    def __init__(self):
+    def __init__(self, _pedb):
         super().__init__(self.msg)
+        self._pedb = _pedb
 
     def __create(self, **kwargs):
         return Bondwire.create(

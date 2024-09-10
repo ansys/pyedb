@@ -20,16 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
-from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from ansys.edb.core.terminal.terminals import (
+    PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
+)
+
 from pyedb.generic.general_methods import generate_unique_name
 
 
-class PadstackInstanceTerminal(Terminal):
+class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
     """Manages bundle terminal properties."""
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(pedb, edb_object)
+    def __init__(self, pedb):
+        super().__init__(self.msg)
+        self._pedb = pedb
 
     @property
     def position(self):
@@ -38,10 +41,8 @@ class PadstackInstanceTerminal(Terminal):
         -------
         Position [x,y] : [float, float]
         """
-        edb_padstack_instance = self._edb_object.GetParameters()
-        if edb_padstack_instance[0]:
-            return EDBPadstackInstance(edb_padstack_instance[1], self._pedb).position
-        return False
+        pos_x, pos_y, rotation = self.padstack_instance.get_position_and_rotation()
+        return [pos_x.value, pos_y.value]
 
     def create(self, padstack_instance, name=None, layer=None, is_ref=False):
         """Create an edge terminal.
@@ -65,7 +66,7 @@ class PadstackInstanceTerminal(Terminal):
         Edb.Cell.Terminal.EdgeTerminal
         """
         if not name:
-            pin_name = padstack_instance._edb_object.GetName()
+            pin_name = padstack_instance.name
             refdes = padstack_instance.component.refdes
             name = "{}_{}".format(refdes, pin_name)
             name = generate_unique_name(name)
@@ -75,15 +76,15 @@ class PadstackInstanceTerminal(Terminal):
 
         layer_obj = self._pedb.stackup.signal_layers[layer]
 
-        terminal = self._edb.cell.terminal.PadstackInstanceTerminal.Create(
-            self._pedb.active_layout,
-            padstack_instance.net.net_object,
-            name,
-            padstack_instance._edb_object,
-            layer_obj._edb_layer,
+        terminal = PadstackInstanceTerminal.create(
+            layout=self._pedb.active_layout,
+            net=padstack_instance.net,
+            name=name,
+            padstack_instance=padstack_instance,
+            layer=layer_obj,
             isRef=is_ref,
         )
-        terminal = PadstackInstanceTerminal(self._pedb, terminal)
+        # terminal = PadstackInstanceTerminal(self._pedb, terminal)
         if terminal.is_null:
             msg = f"Failed to create terminal. "
             if name in self._pedb.terminals:
@@ -92,12 +93,13 @@ class PadstackInstanceTerminal(Terminal):
         else:
             return terminal
 
-    def _get_parameters(self):
-        """Gets the parameters of the padstack instance terminal."""
-        _, padstack_inst, layer_obj = self._edb_object.GetParameters()
-        return padstack_inst, layer_obj
-
     @property
     def padstack_instance(self):
-        p_inst, _ = self._get_parameters()
-        return self._pedb.layout.find_object_by_id(p_inst.GetId())
+        p_inst, _ = self.params
+        return p_inst
+
+    @property
+    def location(self):
+        p_inst, _ = self.params
+        pos_x, pos_y, _ = p_inst.get_position_and_rotation()
+        return [pos_x.value, pos_y.value]

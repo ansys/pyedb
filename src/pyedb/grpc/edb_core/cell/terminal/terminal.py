@@ -33,8 +33,9 @@ from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
 
 
 class Terminal(GrpcTerminal):
-    def __init__(self):
+    def __init__(self, pedb):
         super().__init__(self.msg)
+        self._pedb = pedb
         self._reference_object = None
 
         self._boundary_type_mapping = {
@@ -118,20 +119,6 @@ class Terminal(GrpcTerminal):
             self.reference_layer = value
         if isinstance(value, str):
             self.reference_layer = self._pedb.stackup.layers[value]
-
-    @property
-    def location(self):
-        """Location of the terminal."""
-        # layer = list(self._pedb.stackup.layers.values())[0]
-        # _, point_data, _ = self.get_parameters(None, layer)
-        # return [point_data.x.value, point_data.y.value]
-        pass  # Not found in Grpc
-
-    @location.setter
-    def location(self, value):
-        # layer = self.layer
-        # self._edb_object.SetParameters(self._pedb.point_data(*value), layer._edb_object)
-        pass
 
     @property
     def do_renormalize(self):

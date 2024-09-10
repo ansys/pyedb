@@ -20,11 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.geometry.point_data import PointData
+from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.primitive.primitive import Primitive as GrpcPrimitive
 from ansys.edb.core.utility.value import Value as GrpcValue
 
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.misc.utilities import compute_arc_points
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -42,12 +41,11 @@ class Primitive(GrpcPrimitive):
     >>> edb_prim.IsVoid() # EDB Object Property
     """
 
-    def __init__(self, pedb, edb_object):
+    def __init__(self, pedb):
         super().__init__(self.msg)
-        self._app = self._pedb
+        self._pedb = pedb
         self._core_stackup = pedb.stackup
         self._core_net = pedb.nets
-        self.primitive_object = edb_object
 
     @property
     def type(self):
@@ -241,7 +239,7 @@ class Primitive(GrpcPrimitive):
         list of float
         """
         if isinstance(point, (list, tuple)):
-            point = PointData(point)
+            point = GrpcPointData(point)
 
         p0 = self.polygon_data.closest_point(point)
         return [p0.x.value, p0.y.value]
@@ -385,34 +383,32 @@ class Primitive(GrpcPrimitive):
         -------
         List of :class:`dotnet.edb_core.edb_data.EDBPrimitives`
         """
-        poly = self._edb_object.GetPolygonData()
+        poly = self.polygon_data
         if not isinstance(primitives, list):
             primitives = [primitives]
         primi_polys = []
         for prim in primitives:
             if isinstance(prim, Primitive):
-                primi_polys.append(prim.primitive_object.GetPolygonData())
+                primi_polys.append(prim.polygon_data)
             else:
-                try:
-                    primi_polys.append(prim.GetPolygonData())
-                except:
-                    primi_polys.append(prim)
-        list_poly = poly.Unite(convert_py_list_to_net_list([poly] + primi_polys))
+                primi_polys.append(prim.polygon_data)
+                primi_polys.append(prim)
+        list_poly = poly.unite([poly] + primi_polys)
         new_polys = []
         if list_poly:
             voids = self.voids
             for p in list_poly:
-                if p.IsNull():
+                if p.is_null:
                     continue
                 list_void = []
                 if voids:
                     for void in voids:
-                        void_pdata = void.primitive_object.GetPolygonData()
-                        int_data2 = p.GetIntersectionType(void_pdata)
+                        void_pdata = void.polygon_data
+                        int_data2 = p.intersection_type(void_pdata)
                         if int_data2 > 1:
                             list_void.append(void_pdata)
                 new_polys.append(
-                    self._app.modeler.create_polygon(p, self.layer_name, net_name=self.net_name, voids=list_void),
+                    self._pedb.modeler.create_polygon(p, self.layer_name, net_name=self.net.name, voids=list_void),
                 )
         self.delete()
         for prim in primitives:
@@ -420,7 +416,7 @@ class Primitive(GrpcPrimitive):
                 prim.delete()
             else:
                 try:
-                    prim.Delete()
+                    prim.delete()
                 except AttributeError:
                     continue
         return new_polys
@@ -436,7 +432,7 @@ class Primitive(GrpcPrimitive):
         -------
         list of float
         """
-        if isinstance(point, PointData):
+        if isinstance(point, GrpcPointData):
             point = [point.x.value, point.y.value]
         dist = 1e12
         out = None

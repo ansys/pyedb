@@ -65,16 +65,15 @@ class Component(GrpcComponentGroup):
 
     """
 
-    def __init__(self, pedb, edb_object):
+    def __init__(self, pedb):
         super().__init__(self.msg)
         self._pedb = pedb
-        self.edbcomponent = edb_object
         self._layout_instance = None
         self._comp_instance = None
 
     @property
     def group_type(self):
-        return str(self.edbcomponent).split(".")[-1].lower()
+        return str(self.type).split(".")[-1].lower()
 
     @property
     def layout_instance(self):
@@ -85,7 +84,7 @@ class Component(GrpcComponentGroup):
     def component_instance(self):
         """Edb component instance."""
         if self._comp_instance is None:
-            self._comp_instance = self.layout_instance.get_layout_obj_instance_in_context(self.edbcomponent, None)
+            self._comp_instance = self.layout_instance.get_layout_obj_instance_in_context(self, None)
         return self._comp_instance
 
     @property
@@ -110,19 +109,16 @@ class Component(GrpcComponentGroup):
     def _pin_pairs(self):
         edb_comp_prop = self.component_property
         edb_model = self._edb_model
-        return [
-            PinPairModel(self, self.edbcomponent, edb_comp_prop, edb_model, pin_pair)
-            for pin_pair in list(edb_model.PinPairs)
-        ]
+        return [PinPairModel(self, self, edb_comp_prop, edb_model, pin_pair) for pin_pair in list(edb_model.PinPairs)]
 
     @property
     def model(self):
         """Component model."""
         edb_object = self.component_property.model
         if self.model_type == "PinPairModel":
-            return PinPairModel(self._pedb, edb_object)
+            return PinPairModel(self._pedb, self)
         elif self.model_type == "SPICEModel":
-            return SPICEModel(self._pedb, edb_object)
+            return SPICEModel(self._pedb, self)
 
     @model.setter
     def model(self, value):
@@ -130,7 +126,7 @@ class Component(GrpcComponentGroup):
             self._pedb.logger.error("Invalid input. Set model failed.")
 
         comp_prop = self.component_property
-        comp_prop.model = value._edb_object
+        comp_prop.model = value
         self.component_property = comp_prop
 
     @property
@@ -145,7 +141,7 @@ class Component(GrpcComponentGroup):
     def package_def(self, value):
         package_def = self._pedb.definitions.package[value]
         comp_prop = self.component_property
-        comp_prop.package_def = package_def._edb_object
+        comp_prop.package_def = package_def
         self.component_property = comp_prop
 
     def create_package_def(self, name="", component_part_name=None):

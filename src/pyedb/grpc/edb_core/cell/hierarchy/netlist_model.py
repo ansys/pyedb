@@ -20,24 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.terminal.terminals import BundleTerminal as GrpcBundleTerminal
+from ansys.edb.core.hierarchy.netlist_model import NetlistModel as GrpcNetlistModel
 
 
-class BundleTerminal(GrpcBundleTerminal):
-    """Manages bundle terminal properties.
-
-    Parameters
-    ----------
-    pedb : pyedb.edb.Edb
-        EDB object from the ``Edblib`` library.
-    edb_object : Ansys.Ansoft.Edb.Cell.Terminal.BundleTerminal
-        BundleTerminal instance from EDB.
-    """
-
-    def __init__(self, pedb):
+class NetlistModel(GrpcNetlistModel):  # pragma: no cover
+    def __init__(self):
         super().__init__(self.msg)
-        self._pedb = pedb
-
-    def decouple(self):
-        """Ungroup a bundle of terminals."""
-        return self.ungroup()

@@ -23,17 +23,16 @@ import math
 
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.primitive.primitive import GrpcPathEndCapType
 from ansys.edb.core.primitive.primitive import Path as GrpcPath
 from ansys.edb.core.primitive.primitive import PathCornerType as GrpcPatCornerType
+from ansys.edb.core.primitive.primitive import PathEndCapType as GrpcPathEndCapType
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 
 class Path(GrpcPath):
-    def __init__(
-        self,
-    ):
+    def __init__(self, pedb):
         super().__init__(self.msg)
+        self._pedb = pedb
 
     @property
     def width(self):
@@ -68,7 +67,7 @@ class Path(GrpcPath):
 
             **end_cap2** : End cap style of path end  cap.
         """
-        return self.get.end_cap_style().name.lower()
+        return self.get_end_cap_style().name.lower()
 
     def set_end_cap_style(self, end_cap1, end_cap2):
         """Set path end cap styles.
@@ -165,19 +164,15 @@ class Path(GrpcPath):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        center_line = self.center_line
-        width = self.width
-        corner_style = self.corner_style
-        end_cap_style = self.get_end_cap_style()
-        cloned_path = self._app.edb_api.cell.primitive.path.create(
-            self._app.active_layout,
-            self.layer_name,
-            self.net,
-            width,
-            end_cap_style[1],
-            end_cap_style[2],
-            corner_style,
-            center_line,
+        cloned_path = GrpcPath.create(
+            layout=self._pedb.active_layout,
+            layer=self.layer,
+            net=self.net,
+            width=self.width,
+            end_cap1=self.get_end_cap_style()[0],
+            end_cap2=self.get_end_cap_style()[1],
+            corner_style=self.corner_style,
+            points=self.center_line,
         )
         if cloned_path:
             return cloned_path
@@ -266,7 +261,7 @@ class Path(GrpcPath):
 
             return dtheta
 
-        def getLocations(line, gap):  # pragma: no cover
+        def get_locations(line, gap):  # pragma: no cover
             location = [line[0]]
             residual = 0
 
@@ -287,7 +282,7 @@ class Path(GrpcPath):
                 residual = length
             return location
 
-        def getParalletLines(pts, distance):  # pragma: no cover
+        def get_parallet_lines(pts, distance):  # pragma: no cover
             leftline = []
             rightline = []
 
@@ -338,8 +333,8 @@ class Path(GrpcPath):
         distance = GrpcValue(distance).value
         gap = GrpcValue(gap).value
         center_line = self.center_line
-        leftline, rightline = getParalletLines(center_line, distance)
-        for x, y in getLocations(rightline, gap) + getLocations(leftline, gap):
+        leftline, rightline = get_parallet_lines(center_line, distance)
+        for x, y in get_locations(rightline, gap) + get_locations(leftline, gap):
             self._pedb.padstacks.place([x, y], padstack_name, net_name=net_name)
 
     @property
