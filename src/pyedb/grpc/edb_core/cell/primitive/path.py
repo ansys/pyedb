@@ -21,14 +21,19 @@
 # SOFTWARE.
 import math
 
-from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
-from pyedb.dotnet.edb_core.geometry.point_data import PointData
+from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
+from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.primitive.primitive import GrpcPathEndCapType
+from ansys.edb.core.primitive.primitive import Path as GrpcPath
+from ansys.edb.core.primitive.primitive import PathCornerType as GrpcPatCornerType
+from ansys.edb.core.utility.value import Value as GrpcValue
 
 
-class Path(Primitive):
-    def __init__(self, pedb, edb_object=None):
-        super().__init__(pedb, edb_object)
+class Path(GrpcPath):
+    def __init__(
+        self,
+    ):
+        super().__init__(self.msg)
 
     @property
     def width(self):
@@ -39,11 +44,11 @@ class Path(Primitive):
         float
             Path width or None.
         """
-        return self._edb_object.GetWidth()
+        return self.width.value
 
     @width.setter
     def width(self, value):
-        self.primitive_object.SetWidth(self._pedb.edb_value(value))
+        self.width = GrpcValue(value)
 
     def get_end_cap_style(self):
         """Get path end cap styles.
@@ -63,19 +68,26 @@ class Path(Primitive):
 
             **end_cap2** : End cap style of path end  cap.
         """
-        return self._edb_object.GetEndCapStyle()
+        return self.get.end_cap_style().name.lower()
 
     def set_end_cap_style(self, end_cap1, end_cap2):
         """Set path end cap styles.
 
         Parameters
         ----------
-        end_cap1: :class:`PathEndCapType`
-            End cap style of path start end cap.
-        end_cap2: :class:`PathEndCapType`
-            End cap style of path end cap.
+        end_cap1: str
+            End cap style of path start end cap. Accepted values: `"round"`, `"flat"`, `"extended"`, `"clipped"`.
+        end_cap2: str
+            End cap style of path end cap. Accepted values: `"round"`, `"flat"`, `"extended"`, `"clipped"`.
         """
-        self._edb_object.SetEndCapStyle(end_cap1, end_cap2)
+        mapping = {
+            "round": GrpcPathEndCapType.ROUND,
+            "flat": GrpcPathEndCapType.FLAT,
+            "extended": GrpcPathEndCapType.EXTENDED,
+            "clipped": GrpcPathEndCapType.CLIPPED,
+        }
+        if isinstance(end_cap1, str) and isinstance(end_cap2, str):
+            self.set_end_cap_style(mapping[end_cap1.lower()], mapping[end_cap2.lower()])
 
     @property
     def length(self):
@@ -86,14 +98,14 @@ class Path(Primitive):
         float
             Path length in meters.
         """
-        center_line_arcs = list(self._edb_object.GetCenterLine().GetArcData())
+        center_line_arcs = self.center_line.arc_data
         path_length = 0.0
         for arc in center_line_arcs:
-            path_length += arc.GetLength()
-        if self.get_end_cap_style()[0]:
-            if not self.get_end_cap_style()[1].value__ == 1:
+            path_length += arc.length
+        if self.get_end_cap_style():
+            if not self.get_end_cap_style()[1].value == 1:
                 path_length += self.width / 2
-            if not self.get_end_cap_style()[2].value__ == 1:
+            if not self.get_end_cap_style()[2].value == 1:
                 path_length += self.width / 2
         return path_length
 
@@ -114,16 +126,18 @@ class Path(Primitive):
         -------
         bool
         """
-        center_line = self._edb_object.GetCenterLine()
+        center_line = self.center_line
 
         if incremental:
-            x = self._pedb.edb_value(x)
-            y = self._pedb.edb_value(y)
-            last_point = list(center_line.Points)[-1]
-            x = "({})+({})".format(x, last_point.X.ToString())
-            y = "({})+({})".format(y, last_point.Y.ToString())
-        center_line.AddPoint(PointData(self._pedb, x=x, y=y)._edb_object)
-        return self._edb_object.SetCenterLine(center_line)
+            x = GrpcValue(x)
+            y = GrpcValue(y)
+            points = center_line.points
+            last_point = points[-1]
+            x = "({})+({})".format(x.value, last_point.x.value)
+            y = "({})+({})".format(y.value, last_point.y.value)
+        points.append(GrpcPointData([x, y]))
+        self.center_line.points = points
+        return True
 
     def get_center_line(self, to_string=False):
         """Get the center line of the trace.
@@ -139,9 +153,9 @@ class Path(Primitive):
 
         """
         if to_string:
-            return [[p.X.ToString(), p.Y.ToString()] for p in list(self._edb_object.GetCenterLine().Points)]
+            return [[str(p.x.value), str(p.y.value)] for p in self.center_line.points]
         else:
-            return [[p.X.ToDouble(), p.Y.ToDouble()] for p in list(self._edb_object.GetCenterLine().Points)]
+            return [[p.x.value, p.y.value] for p in self.center_line.points]
 
     def clone(self):
         """Clone a primitive object with keeping same definition and location.
@@ -321,31 +335,36 @@ class Path(Primitive):
             rightline.append(rightPt)
             return leftline, rightline
 
-        distance = self._pedb.edb_value(distance).ToDouble()
-        gap = self._pedb.edb_value(gap).ToDouble()
-        center_line = self.get_center_line()
+        distance = GrpcValue(distance).value
+        gap = GrpcValue(gap).value
+        center_line = self.center_line
         leftline, rightline = getParalletLines(center_line, distance)
         for x, y in getLocations(rightline, gap) + getLocations(leftline, gap):
             self._pedb.padstacks.place([x, y], padstack_name, net_name=net_name)
 
     @property
     def center_line(self):
-        """:class:`PolygonData <ansys.edb.geometry.PolygonData>`: Center line for this Path."""
-        edb_center_line = self._edb_object.GetCenterLine()
-        return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(edb_center_line.Points)]
+        """Retrieve center line points list."""
+        return [[pt.x.value, pt.y.value] for pt in self.center_line.points]
 
     @center_line.setter
     def center_line(self, value):
         if isinstance(value, list):
-            points = [self._pedb.point_data(i[0], i[1]) for i in value]
-            polygon_data = self._edb.geometry.polygon_data.dotnetobj(convert_py_list_to_net_list(points), False)
-            self._edb_object.SetCenterLine(polygon_data)
+            points = [GrpcPointData(i) for i in value]
+            polygon_data = GrpcPolygonData(points, False)
+            self.center_line = polygon_data
 
     @property
     def corner_style(self):
-        """:class:`PathCornerType`: Path's corner style."""
-        return self._edb_object.GetCornerStyle()
+        """Return Path's corner style as string. Values supported for the setter `"round"``, `"mitter"``, `"sharpt"`"""
+        return self.corner_style.name.lower()
 
     @corner_style.setter
     def corner_style(self, corner_type):
-        self._edb_object.SetCornerStyle(corner_type)
+        if isinstance(corner_type, str):
+            mapping = {
+                "round": GrpcPatCornerType.ROUND,
+                "mitter": GrpcPatCornerType.MITER,
+                "sharp": GrpcPatCornerType.SHARP,
+            }
+            self.corner_style = mapping[corner_type]
