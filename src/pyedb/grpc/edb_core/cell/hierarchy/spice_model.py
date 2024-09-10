@@ -26,7 +26,7 @@ from ansys.edb.core.hierarchy.spice_model import SPICEModel
 class EDBSpiceModel(SPICEModel):  # pragma: no cover
     def __init__(self, edb_model):
         self._edb_model = edb_model
-        super().__init__(edb_model)
+        super().__init__(self.msg)
 
     @property
     def file_path(self):

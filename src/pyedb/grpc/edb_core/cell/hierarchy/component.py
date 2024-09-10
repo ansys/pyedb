@@ -66,7 +66,7 @@ class Component(GrpcComponentGroup):
     """
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+        super().__init__(self.msg)
         self._pedb = pedb
         self.edbcomponent = edb_object
         self._layout_instance = None
@@ -74,7 +74,7 @@ class Component(GrpcComponentGroup):
 
     @property
     def group_type(self):
-        return str(self._edb_object).split(".")[-1].lower()
+        return str(self.edbcomponent).split(".")[-1].lower()
 
     @property
     def layout_instance(self):

@@ -32,7 +32,7 @@ class EDBPinPairModel(PinPairModel):  # pragma: no cover
         self._edb_comp_prop = edb_comp_prop
         self._edb_model = edb_model
         self._edb_pin_pair = edb_pin_pair
-        super().__init__(edb_model)
+        super().__init__(self.msg)
 
     @property
     def rlc(self):
