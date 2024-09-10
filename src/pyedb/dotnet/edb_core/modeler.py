@@ -1460,7 +1460,7 @@ class Modeler(object):
             self._pedb.active_layout, name, convert_py_list_to_net_list(pins)
         )
         if obj.IsNull():
-            raise f"Failed to create pin group {name}."
+            raise RuntimeError(f"Failed to create pin group {name}.")
         else:
             net_obj = [i.GetNet() for i in pins if not i.GetNet().IsNull()]
             if net_obj:
