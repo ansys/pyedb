@@ -92,5 +92,6 @@ class CfgOperations(CfgBase):
 
     def get_data_from_db(self):
         self.op_cutout = CfgCutout(self._pedb)
-        if self.op_cutout.get_data_from_db():
-            return {"cutout": self.op_cutout.get_data_from_db()}
+        data_from_db = self.op_cutout.get_data_from_db()
+        if data_from_db:
+            return {"cutout": data_from_db}
