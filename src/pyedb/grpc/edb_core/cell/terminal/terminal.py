@@ -22,37 +22,40 @@
 
 import re
 
-from pyedb.dotnet.edb_core.cell.connectable import Connectable
+from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
+from ansys.edb.core.terminal.terminals import EdgeType as GrpcEdgeType
+from ansys.edb.core.terminal.terminals import Terminal as GrpcTerminal
+from ansys.edb.core.terminal.terminals import TerminalType as GrpcTerminalType
+from ansys.edb.core.utility.value import Value as GrpcValue
+
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
 
 
-class Terminal(Connectable):
-    def __init__(self, pedb, edb_object=None):
-        super().__init__(pedb, edb_object)
+class Terminal(GrpcTerminal):
+    def __init__(self):
+        super().__init__(self.msg)
         self._reference_object = None
 
         self._boundary_type_mapping = {
-            "InvalidBoundary": self._pedb.edb_api.cell.terminal.BoundaryType.InvalidBoundary,
-            "PortBoundary": self._pedb.edb_api.cell.terminal.BoundaryType.PortBoundary,
-            "PecBoundary": self._pedb.edb_api.cell.terminal.BoundaryType.PecBoundary,
-            "RlcBoundary": self._pedb.edb_api.cell.terminal.BoundaryType.RlcBoundary,
-            "kCurrentSource": self._pedb.edb_api.cell.terminal.BoundaryType.kCurrentSource,
-            "kVoltageSource": self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageSource,
-            "kNexximGround": self._pedb.edb_api.cell.terminal.BoundaryType.kNexximGround,
-            "kNexximPort": self._pedb.edb_api.cell.terminal.BoundaryType.kNexximPort,
-            "kDcTerminal": self._pedb.edb_api.cell.terminal.BoundaryType.kDcTerminal,
-            "kVoltageProbe": self._pedb.edb_api.cell.terminal.BoundaryType.kVoltageProbe,
+            "port": GrpcBoundaryType.PORT,
+            "pec": GrpcBoundaryType.PEC,
+            "rlc": GrpcBoundaryType.RLC,
+            "current_source": GrpcBoundaryType.CURRENT_SOURCE,
+            "vltage_source": GrpcBoundaryType.VOLTAGE_SOURCE,
+            "nexxim_ground": GrpcBoundaryType.NEXXIM_GROUND,
+            "nxxim_port": GrpcBoundaryType.NEXXIM_PORT,
+            "dc_terminal": GrpcBoundaryType.DC_TERMINAL,
+            "voltage_probe": GrpcBoundaryType.VOLTAGE_PROBE,
         }
 
         self._terminal_type_mapping = {
-            "InvalidTerminal": self._pedb.edb_api.cell.terminal.TerminalType.InvalidTerminal,
-            "EdgeTerminal": self._pedb.edb_api.cell.terminal.TerminalType.EdgeTerminal,
-            "PointTerminal": self._pedb.edb_api.cell.terminal.TerminalType.PointTerminal,
-            "TerminalInstanceTerminal": self._pedb.edb_api.cell.terminal.TerminalType.TerminalInstanceTerminal,
-            "PadstackInstanceTerminal": self._pedb.edb_api.cell.terminal.TerminalType.PadstackInstanceTerminal,
-            "BundleTerminal": self._pedb.edb_api.cell.terminal.TerminalType.BundleTerminal,
-            "PinGroupTerminal": self._pedb.edb_api.cell.terminal.TerminalType.PinGroupTerminal,
+            "edge": GrpcTerminalType.EDGE,
+            "point": GrpcTerminalType.POINT,
+            "terminal_instance": GrpcTerminalType.TERM_INST,
+            "padstack_instance": GrpcTerminalType.PADSTACK_INST,
+            "bundle": GrpcTerminalType.BUNDLE,
+            "pin_group": GrpcTerminalType.PIN_GROUP,
         }
 
     @property
@@ -105,59 +108,39 @@ class Terminal(Connectable):
     @property
     def layer(self):
         """Get layer of the terminal."""
-        point_data = self._pedb.point_data(0, 0)
-        layer = list(self._pedb.stackup.layers.values())[0]._edb_layer
-        if self._edb_object.GetParameters(point_data, layer):
-            return self._pedb.stackup.all_layers[layer.GetName()]
-        else:
-            self._pedb.logger.warning(f"No pad parameters found for terminal {self.name}")
+        return self.reference_layer.name
 
     @layer.setter
     def layer(self, value):
-        layer = self._pedb.stackup.layers[value]._edb_layer
-        point_data = self._pedb.point_data(*self.location)
-        self._edb_object.SetParameters(point_data, layer)
+        from ansys.edb.core.layer.layer import Layer
+
+        if isinstance(value, Layer):
+            self.reference_layer = value
+        if isinstance(value, str):
+            self.reference_layer = self._pedb.stackup.layers[value]
 
     @property
     def location(self):
         """Location of the terminal."""
-        layer = list(self._pedb.stackup.layers.values())[0]._edb_layer
-        _, point_data, _ = self._edb_object.GetParameters(None, layer)
-        return [point_data.X.ToDouble(), point_data.Y.ToDouble()]
+        # layer = list(self._pedb.stackup.layers.values())[0]
+        # _, point_data, _ = self.get_parameters(None, layer)
+        # return [point_data.x.value, point_data.y.value]
+        pass  # Not found in Grpc
 
     @location.setter
     def location(self, value):
-        layer = self.layer
-        self._edb_object.SetParameters(self._pedb.point_data(*value), layer._edb_object)
-
-    @property
-    def is_circuit_port(self):
-        """Whether it is a circuit port."""
-        return self._edb_object.GetIsCircuitPort()
-
-    @is_circuit_port.setter
-    def is_circuit_port(self, value):
-        self._edb_object.SetIsCircuitPort(value)
-
-    @property
-    def _port_post_processing_prop(self):
-        """Get port post processing properties."""
-        return self._edb_object.GetPortPostProcessingProp()
-
-    @_port_post_processing_prop.setter
-    def _port_post_processing_prop(self, value):
-        self._edb_object.SetPortPostProcessingProp(value)
+        # layer = self.layer
+        # self._edb_object.SetParameters(self._pedb.point_data(*value), layer._edb_object)
+        pass
 
     @property
     def do_renormalize(self):
         """Determine whether port renormalization is enabled."""
-        return self._port_post_processing_prop.DoRenormalize
+        return self.port_post_processing_prop.do_renormalize
 
     @do_renormalize.setter
     def do_renormalize(self, value):
-        ppp = self._port_post_processing_prop
-        ppp.DoRenormalize = value
-        self._port_post_processing_prop = ppp
+        self.port_post_processing_prop.do_renormalize = value
 
     @property
     def net_name(self):
@@ -171,17 +154,18 @@ class Terminal(Connectable):
 
     @property
     def terminal_type(self):
-        """Terminal Type.
+        """Terminal Type. Accepted values for setter: `"eEdge"`, `"point"`, `"terminal_instance"`,
+        `"padstack_instance"`, `"bundle_terminal"`, `"pin_group"`.
 
         Returns
         -------
         int
         """
-        return self._edb_object.GetTerminalType().ToString()
+        return self.type.name.lower()
 
     @terminal_type.setter
     def terminal_type(self, value):
-        self._edb_object.GetTerminalType(self._terminal_type_mapping[value])
+        self.type = self._terminal_type_mapping[value]
 
     @property
     def boundary_type(self):
@@ -190,56 +174,37 @@ class Terminal(Connectable):
         Returns
         -------
         str
-            InvalidBoundary, PortBoundary, PecBoundary, RlcBoundary, kCurrentSource, kVoltageSource, kNexximGround,
-            kNexximPort, kDcTerminal, kVoltageProbe
+            port, pec, rlc, current_source, voltage_source, nexxim_ground, nexxim_pPort, dc_terminal, voltage_probe.
         """
-        return self._edb_object.GetBoundaryType().ToString()
+        return self.boundary_type.name.lower()
 
     @boundary_type.setter
     def boundary_type(self, value):
-        self._edb_object.SetBoundaryType(self._boundary_type_mapping[value])
+        self.boundary_type = self._boundary_type_mapping[value]
 
     @property
     def is_port(self):
         """Whether it is a port."""
-        return True if self.boundary_type == "PortBoundary" else False
+        return True if self.boundary_type == "port" else False
 
     @property
     def is_current_source(self):
         """Whether it is a current source."""
-        return True if self.boundary_type == "kCurrentSource" else False
+        return True if self.boundary_type == "current_source" else False
 
     @property
     def is_voltage_source(self):
         """Whether it is a voltage source."""
-        return True if self.boundary_type == "kVoltageSource" else False
+        return True if self.boundary_type == "voltage_source" else False
 
     @property
     def impedance(self):
         """Impedance of the port."""
-        return self._edb_object.GetImpedance().ToDouble()
+        return self.impedance.value
 
     @impedance.setter
     def impedance(self, value):
-        self._edb_object.SetImpedance(self._pedb.edb_value(value))
-
-    @property
-    def is_reference_terminal(self):
-        """Whether it is a reference terminal."""
-        return self._edb_object.IsReferenceTerminal()
-
-    @property
-    def ref_terminal(self):
-        """Get reference terminal."""
-
-        edb_terminal = self._edb_object.GetReferenceTerminal()
-        terminal = self._pedb.terminals[edb_terminal.GetName()]
-        if not terminal.is_null:
-            return terminal
-
-    @ref_terminal.setter
-    def ref_terminal(self, value):
-        self._edb_object.SetReferenceTerminal(value._edb_object)
+        self.impedance = GrpcValue(value)
 
     @property
     def reference_object(self):  # pragma : no cover
@@ -252,32 +217,30 @@ class Terminal(Connectable):
         :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
         """
         if not self._reference_object:
-            term = self._edb_object
-
-            if self.terminal_type == self._pedb.edb_api.cell.terminal.TerminalType.EdgeTerminal:
-                edges = self._edb_object.GetEdges()
-                edgeType = edges[0].GetEdgeType()
-                if edgeType == self._pedb.edb_api.cell.terminal.EdgeType.PadEdge:
+            if self.terminal_type == "edge":
+                edges = self.edges
+                edgeType = edges[0].type
+                if edgeType == GrpcEdgeType.PADSTACK:
                     self._reference_object = self.get_pad_edge_terminal_reference_pin()
                 else:
                     self._reference_object = self.get_edge_terminal_reference_primitive()
-            elif self.terminal_type == "PinGroupTerminal":
+            elif self.terminal_type == "pin_group":
                 self._reference_object = self.get_pin_group_terminal_reference_pin()
-            elif self.terminal_type == "PointTerminal":
+            elif self.terminal_type == "point":
                 self._reference_object = self.get_point_terminal_reference_primitive()
-            elif self.terminal_type == "PadstackInstanceTerminal":
+            elif self.terminal_type == "padstack_instance":
                 self._reference_object = self.get_padstack_terminal_reference_pin()
             else:
-                self._pedb.logger.warning("Invalid Terminal Type={}".format(term.GetTerminalType()))
+                self._pedb.logger.warning("Invalid Terminal Type={}")
+                return False
 
         return self._reference_object
 
     @property
     def reference_net_name(self):
         """Net name to which reference_object belongs."""
-        ref_obj = self._reference_object if self._reference_object else self.reference_object
-        if ref_obj:
-            return ref_obj.net_name
+        if self.reference_object:
+            return self.reference_object.net_name
 
         return ""
 
@@ -295,13 +258,12 @@ class Terminal(Connectable):
         :class:`dotnet.edb_core.edb_data.padstack_data.EDBPadstackInstance`
         """
 
-        if self._edb_object.GetIsCircuitPort():
+        if self.is_circuit_port:
             return self.get_pin_group_terminal_reference_pin()
-        _, padStackInstance, _ = self._edb_object.GetParameters()
+        _, padStackInstance, _ = self.get_parameters()
 
         # Get the pastack instance of the terminal
-        compInst = self._edb_object.GetComponent()
-        pins = self._pedb.components.get_pin_from_component(compInst.GetName())
+        pins = self._pedb.components.get_pin_from_component(self.component.name)
         return self._get_closest_pin(padStackInstance, pins, gnd_net_name_preference)
 
     def get_pin_group_terminal_reference_pin(self, gnd_net_name_preference=None):  # pragma : no cover
@@ -317,23 +279,21 @@ class Terminal(Connectable):
         :class:`dotnet.edb_core.edb_data.padstack_data.EDBPadstackInstance`
         """
 
-        refTerm = self._edb_object.GetReferenceTerminal()
-        if self._edb_object.GetTerminalType() == self._pedb.edb_api.cell.terminal.TerminalType.PinGroupTerminal:
-            padStackInstance = self._edb_object.GetPinGroup().GetPins()[0]
-            pingroup = refTerm.GetPinGroup()
-            refPinList = pingroup.GetPins()
+        refTerm = self.reference_terminal
+        if self.type == GrpcTerminalType.PIN_GROUP:
+            padStackInstance = self.pin_group.pins[0]
+            pingroup = refTerm.pin_group
+            refPinList = pingroup.pins
             return self._get_closest_pin(padStackInstance, refPinList, gnd_net_name_preference)
-        elif (
-            self._edb_object.GetTerminalType() == self._pedb.edb_api.cell.terminal.TerminalType.PadstackInstanceTerminal
-        ):
-            _, padStackInstance, _ = self._edb_object.GetParameters()
-            if refTerm.GetTerminalType() == self._pedb.edb_api.cell.terminal.TerminalType.PinGroupTerminal:
-                pingroup = refTerm.GetPinGroup()
-                refPinList = pingroup.GetPins()
+        elif self.type == GrpcTerminalType.PADSTACK_INST:
+            _, padStackInstance, _ = self.get_parameters()
+            if refTerm.type == GrpcTerminalType.PIN_GROUP:
+                pingroup = refTerm.pin_group
+                refPinList = pingroup.pins
                 return self._get_closest_pin(padStackInstance, refPinList, gnd_net_name_preference)
             else:
                 try:
-                    _, refTermPSI, _ = refTerm.GetParameters()
+                    _, refTermPSI, _ = refTerm.get_parameters()
                     return EDBPadstackInstance(refTermPSI, self._pedb)
                 except AttributeError:
                     return False
@@ -348,17 +308,14 @@ class Terminal(Connectable):
         :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
         """
 
-        ref_layer = self._edb_object.GetReferenceLayer()
-        edges = self._edb_object.GetEdges()
-        _, _, point_data = edges[0].GetParameters()
-        X = point_data.X
-        Y = point_data.Y
-        shape_pd = self._pedb.edb_api.geometry.point_data(X, Y)
-        layer_name = ref_layer.GetName()
+        ref_layer = self.reference_layer
+        edges = self.edges
+        _, _, point_data = edges[0].get_parameters()
+        # shape_pd = self._pedb.edb_api.geometry.point_data(X, Y)
+        layer_name = ref_layer.name
         for primitive in self._pedb.layout.primitives:
-            if primitive.GetLayer().GetName() == layer_name or not layer_name:
-                prim_shape_data = primitive.GetPolygonData()
-                if prim_shape_data.PointInPolygon(shape_pd):
+            if primitive.layer.name == layer_name:
+                if primitive.polygon_data.point_in_polygon(point_data):
                     return cast(primitive, self._pedb)
         return None  # pragma: no cover
 
@@ -371,16 +328,14 @@ class Terminal(Connectable):
         :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
         """
 
-        ref_term = self._edb_object.GetReferenceTerminal()  # return value is type terminal
-        _, point_data, layer = ref_term.GetParameters()
-        X = point_data.X
-        Y = point_data.Y
-        shape_pd = self._pedb.edb_api.geometry.point_data(X, Y)
-        layer_name = layer.GetName()
+        ref_term = self.reference_terminal  # return value is type terminal
+        _, point_data, layer = ref_term.get_parameters()
+        # shape_pd = self._pedb.edb_api.geometry.point_data(X, Y)
+        layer_name = layer.name
         for primitive in self._pedb.layout.primitives:
-            if primitive.GetLayer().GetName() == layer_name:
+            if primitive.layer.name == layer_name:
                 prim_shape_data = primitive.GetPolygonData()
-                if prim_shape_data.PointInPolygon(shape_pd):
+                if primitive.polygon_data.point_in_polygon(point_data):
                     return cast(primitive, self._pedb)
         for vias in self._pedb.padstacks.instances.values():
             if layer_name in vias.layer_range_names:
@@ -388,7 +343,7 @@ class Terminal(Connectable):
                     "rectangle", pointA=vias.position, pointB=vias.padstack_definition.bounding_box[1]
                 )
                 rectangle_data = vias._pedb.modeler.shape_to_polygon_data(plane)
-                if rectangle_data.PointInPolygon(shape_pd):
+                if rectangle_data.point_in_polygon(point_data):
                     return vias
         return False
 
@@ -404,22 +359,19 @@ class Terminal(Connectable):
         -------
         :class:`pyedb.dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`
         """
-        comp_inst = self._edb_object.GetComponent()
-        pins = self._pedb.components.get_pin_from_component(comp_inst.GetName())
-        try:
-            edges = self._edb_object.GetEdges()
-        except AttributeError:
-            return False
-        _, pad_edge_pstack_inst, _, _ = edges[0].GetParameters()
+        comp_inst = self.component
+        pins = self._pedb.components.get_pin_from_component(comp_inst.name)
+        edges = self.edges
+        _, pad_edge_pstack_inst, _, _ = edges[0].get_parameters()
         return self._get_closest_pin(pad_edge_pstack_inst, pins, gnd_net_name_preference)
 
     def _get_closest_pin(self, ref_pin, pin_list, gnd_net=None):
-        _, pad_stack_inst_point, _ = ref_pin.GetPositionAndRotation()  # get the xy of the padstack
+        _, pad_stack_inst_point, _ = ref_pin.position_and_rotation  # get the xy of the padstack
         if gnd_net is not None:
             power_ground_net_names = [gnd_net]
         else:
             power_ground_net_names = [net for net in self._pedb.nets.power.keys()]
-        comp_ref_pins = [i for i in pin_list if i.GetNet().GetName() in power_ground_net_names]
+        comp_ref_pins = [i for i in pin_list if i.net.name in power_ground_net_names]
         if len(comp_ref_pins) == 0:  # pragma: no cover
             self._pedb.logger.error(
                 "Terminal with PadStack Instance Name {} component has no reference pins.".format(ref_pin.GetName())
@@ -428,10 +380,10 @@ class Terminal(Connectable):
         closest_pin_distance = None
         pin_obj = None
         for pin in comp_ref_pins:  # find the distance to all the pins to the terminal pin
-            if pin.GetName() == ref_pin.GetName():  # skip the reference psi
+            if pin.name == ref_pin.name:  # skip the reference psi
                 continue  # pragma: no cover
-            _, pin_point, _ = pin.GetPositionAndRotation()
-            distance = pad_stack_inst_point.Distance(pin_point)
+            _, pin_point, _ = pin.position_and_rotation
+            distance = pad_stack_inst_point.distance(pin_point)
             if closest_pin_distance is None:
                 closest_pin_distance = distance
                 pin_obj = pin
@@ -446,17 +398,17 @@ class Terminal(Connectable):
     @property
     def magnitude(self):
         """Get the magnitude of the source."""
-        return self._edb_object.GetSourceAmplitude().ToDouble()
+        return self.source_amplitude.value
 
     @magnitude.setter
     def magnitude(self, value):
-        self._edb_object.SetSourceAmplitude(self._edb.utility.value(value))
+        self.source_amplitude = GrpcValue(value)
 
     @property
     def phase(self):
         """Get the phase of the source."""
-        return self._edb_object.GetSourcePhase().ToDouble()
+        return self.source_phase.value
 
     @phase.setter
     def phase(self, value):
-        self._edb_object.SetSourcePhase(self._edb.utility.value(value))
+        self.source_phase = GrpcValue(value)
