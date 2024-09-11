@@ -9,8 +9,8 @@ from pathlib import Path
 import tempfile
 
 from IPython.display import display
+from ansys.aedt.core.downloads import download_file
 import pandas as pd
-from pyaedt.downloads import download_file
 
 from pyedb import Edb
 

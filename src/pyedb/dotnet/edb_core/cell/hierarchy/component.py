@@ -63,6 +63,15 @@ class EDBComponent(Group):
         self._comp_instance = None
 
     @property
+    def name(self):
+        """Name of the definition."""
+        return self._edb_object.GetName()
+
+    @name.setter
+    def name(self, value):
+        self._edb_object.SetName(value)
+
+    @property
     def group_type(self):
         return self._edb_object.ToString().split(".")[-1].lower()
 
@@ -824,6 +833,10 @@ class EDBComponent(Group):
             File path of the Spice model.
         name : str, optional
             Name of the Spice model.
+        sub_circuit_name : str, optional
+            Name of the sub circuit.
+        terminal_pairs : list, optional
+            list of terminal pairs.
 
         Returns
         -------
@@ -870,7 +883,8 @@ class EDBComponent(Group):
             File path of the S-parameter model.
         name : str, optional
             Name of the S-parameter model.
-
+        reference_net : str, optional
+            Name of the reference net.
         Returns
         -------
 

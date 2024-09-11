@@ -156,7 +156,7 @@ class TestClass:
         pin_groups = [
             {"name": "U9_5V_1", "reference_designator": "U9", "pins": ["32", "33"]},
             {"name": "U9_GND", "reference_designator": "U9", "net": "GND"},
-            {"name": "J3", "pins": ["J3-6", "J3-8"]},
+            {"name": "X1_5V", "reference_designator": "X1", "pins": ["A17", "A18", "B17", "B18"]},
         ]
         data = {"pin_groups": pin_groups}
         assert edbapp.configuration.load(data, apply_file=True)
@@ -165,7 +165,7 @@ class TestClass:
 
         data_from_db = edbapp.configuration.cfg_data.pin_groups.get_data_from_db()
         assert data_from_db[0]["name"] == "U9_5V_1"
-        assert data_from_db[0]["pins"] == ["U9-32", "U9-33"]
+        assert data_from_db[0]["pins"] == ["32", "33"]
         edbapp.close()
 
     def test_03_spice_models(self, edb_examples):

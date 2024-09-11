@@ -20,49 +20,66 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.dotnet.edb_core.cell.layout_obj import LayoutObj
 
-class EdbValue:
-    """Class defining Edb Value properties."""
 
-    def __init__(self, edb_obj):
-        self._edb_obj = edb_obj
+class Connectable(LayoutObj):
+    """Manages EDB functionalities for a connectable object."""
+
+    def __init__(self, pedb, edb_object):
+        super().__init__(pedb, edb_object)
 
     @property
-    def value(self):
-        """Variable Value Object.
+    def net(self):
+        """Net Object.
 
         Returns
         -------
-        Edb Object
+        :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBNetsData`
         """
-        return self._edb_obj
+        from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
+
+        return EDBNetsData(self._edb_object.GetNet(), self._pedb)
+
+    @net.setter
+    def net(self, value):
+        """Set net."""
+        net = self._pedb.nets[value]
+        self._edb_object.SetNet(net.net_object)
 
     @property
-    def name(self):
-        """Variable name.
-
-        Returns
-        -------
-        str
-        """
-        return self._edb_obj.GetName()
-
-    @property
-    def tofloat(self):
-        """Returns the float number of the variable.
-
-        Returns
-        -------
-        float
-        """
-        return self._edb_obj.ToDouble()
-
-    @property
-    def tostring(self):
-        """Returns the string of the variable.
+    def net_name(self):
+        """Get the primitive layer name.
 
         Returns
         -------
         str
         """
-        return self._edb_obj.ToString()
+        try:
+            return self._edb_object.GetNet().GetName()
+        except (KeyError, AttributeError):  # pragma: no cover
+            return None
+
+    @net_name.setter
+    def net_name(self, name):
+        if name in self._pedb.nets.netlist:
+            obj = self._pedb.nets.nets[name].net_object
+            self._edb_object.SetNet(obj)
+        else:
+            raise ValueError(f"Net {name} not found.")
+
+    @property
+    def component(self):
+        """Component connected to this object.
+
+        Returns
+        -------
+        :class:`dotnet.edb_core.edb_data.nets_data.EDBComponent`
+        """
+        from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
+
+        edb_comp = self._edb_object.GetComponent()
+        if edb_comp.IsNull():
+            return None
+        else:
+            return EDBComponent(self._pedb, edb_comp)
