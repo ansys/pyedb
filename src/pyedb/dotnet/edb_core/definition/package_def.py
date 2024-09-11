@@ -20,12 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
-from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
+from ansys.edb.core.definition.package_def import PackageDef as GrpcPackageDef
+from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.utility.value import Value as GrpcValue
+
 from pyedb.edb_logger import pyedb_logger
 
 
-class PackageDef(ObjBase):
+class PackageDef(GrpcPackageDef):
     """Manages EDB functionalities for package definitions.
 
     Parameters
@@ -42,7 +44,8 @@ class PackageDef(ObjBase):
     """
 
     def __init__(self, pedb, edb_object=None, name=None, component_part_name=None, extent_bounding_box=None):
-        super().__init__(pedb, edb_object)
+        super().__init__(self.msg)
+        self._pedb = pedb
         if self._edb_object is None and name is not None:
             self._edb_object = self.__create_from_name(name, component_part_name, extent_bounding_box)
         else:
@@ -61,7 +64,7 @@ class PackageDef(ObjBase):
         edb_object: object
             EDB PackageDef Object
         """
-        edb_object = self._pedb.edb_api.definition.PackageDef.Create(self._pedb.active_db, name)
+        edb_object = GrpcPackageDef.create(self._pedb.active_db, name)
         if component_part_name:
             x_pt1, y_pt1, x_pt2, y_pt2 = list(
                 self._pedb.components.definitions[component_part_name].components.values()
@@ -76,92 +79,85 @@ class PackageDef(ObjBase):
                 "Package creation uses bounding box but it cannot be inferred. "
                 "Please set argument 'component_part_name' or 'extent_bounding_box'."
             )
-        polygon_data = PolygonData(self._pedb, create_from_bounding_box=True, points=bbox)
+        polygon_data = GrpcPolygonData(points=bbox)
 
-        edb_object.SetExteriorBoundary(polygon_data._edb_object)
+        self.exterior_boundary = polygon_data
         return edb_object
-
-    def delete(self):
-        """Delete a package definition object from the database."""
-        return self._edb_object.Delete()
 
     @property
     def exterior_boundary(self):
         """Get the exterior boundary of a package definition."""
-        return PolygonData(self._pedb, self._edb_object.GetExteriorBoundary()).points
+        return GrpcPolygonData(self.exterior_boundary.points)
 
     @exterior_boundary.setter
     def exterior_boundary(self, value):
-        self._edb_object.SetExteriorBoundary(value._edb_object)
+        self.exterior_boundary = value
 
     @property
     def maximum_power(self):
         """Maximum power of the package."""
-        return self._edb_object.GetMaximumPower().ToDouble()
+        return self.maximum_power.value
 
     @maximum_power.setter
     def maximum_power(self, value):
-        value = self._pedb.edb_value(value)
-        self._edb_object.SetMaximumPower(value)
+        self.maximum_power = GrpcValue(value)
 
     @property
     def therm_cond(self):
         """Thermal conductivity of the package."""
-        return self._edb_object.GetTherm_Cond().ToDouble()
+        return self.therm_cond.value
 
     @therm_cond.setter
     def therm_cond(self, value):
-        value = self._pedb.edb_value(value)
-        self._edb_object.SetTherm_Cond(value)
+        self.therm_cond = GrpcValue(value)
 
     @property
     def theta_jb(self):
         """Theta Junction-to-Board of the package."""
-        return self._edb_object.GetTheta_JB().ToDouble()
+        return self.theta_jb.value
 
     @theta_jb.setter
     def theta_jb(self, value):
-        value = self._pedb.edb_value(value)
-        self._edb_object.SetTheta_JB(value)
+        self.theta_jb = GrpcValue(value)
 
     @property
     def theta_jc(self):
         """Theta Junction-to-Case of the package."""
-        return self._edb_object.GetTheta_JC().ToDouble()
+        return self.theta_jc.value
 
     @theta_jc.setter
     def theta_jc(self, value):
-        value = self._pedb.edb_value(value)
-        self._edb_object.SetTheta_JC(value)
+        self.theta_jc = GrpcValue(value)
 
     @property
     def height(self):
         """Height of the package."""
-        return self._edb_object.GetHeight().ToDouble()
+        return self.height.value
 
     @height.setter
     def height(self, value):
-        value = self._pedb.edb_value(value)
-        self._edb_object.SetHeight(value)
+        self.height = GrpcValue(value)
 
     def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness):
-        from pyedb.dotnet.edb_core.utilities.heatsink import HeatSink
+        from ansys.edb.core.utility.heat_sink import (
+            HeatSinkFinOrientation as GrpcHeatSinkFinOrientation,
+        )
 
-        heatsink = HeatSink(self._pedb)
-        heatsink.fin_base_height = fin_base_height
-        heatsink.fin_height = fin_height
-        heatsink.fin_orientation = fin_orientation
-        heatsink.fin_spacing = fin_spacing
-        heatsink.fin_thickness = fin_thickness
-        self._edb_object.SetHeatSink(heatsink._edb_object)
+        if fin_orientation == "x_oriented":
+            orientation = GrpcHeatSinkFinOrientation.X_ORIENTED
+        elif fin_orientation == "y_oriented":
+            orientation = GrpcHeatSinkFinOrientation.Y_ORIENTED
+        else:
+            orientation = GrpcHeatSinkFinOrientation.OTHER_ORIENTED
+        self.set_heatsink(
+            fin_base_height=GrpcValue(fin_base_height),
+            fin_height=GrpcValue(fin_height),
+            fin_orientation=orientation,
+            fin_spacing=GrpcValue(fin_spacing),
+            fin_thickness=GrpcValue(fin_thickness),
+        )
 
     @property
     def heatsink(self):
         """Component heatsink."""
-        from pyedb.dotnet.edb_core.utilities.heatsink import HeatSink
-
-        flag, edb_object = self._edb_object.GetHeatSink()
-        if flag:
-            return HeatSink(self._pedb, edb_object)
-        else:
-            return None
+        return self.heat_sink
