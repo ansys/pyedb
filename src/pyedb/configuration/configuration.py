@@ -282,6 +282,8 @@ class Configuration:
             data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
         if kwargs.get("operations", False):
             data["operations"] = self.cfg_data.operations.get_data_from_db()
+        if kwargs.get("padstacks", False):
+            data["padstacks"] = self.cfg_data.padstacks.get_data_from_db()
 
         return data
 

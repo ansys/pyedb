@@ -448,7 +448,7 @@ class TestClass:
 
     def test_pad_parameter(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        o_pad_params = edbapp.padstacks.definitions["v35h15"].get_pad_parameter()
+        o_pad_params = edbapp.padstacks.definitions["v35h15"].pad_parameters
         assert o_pad_params["regular_pad"][0]["shape"] == "circle"
 
         i_pad_params = {}
@@ -462,10 +462,17 @@ class TestClass:
             {'layer_name': '1_Top', 'shape': 'round90', "inner": "1mm", "channel_width": "0.2mm",
              "isolation_gap": "0.3mm"}
         ]
-        edbapp.padstacks.definitions["v35h15"].set_pad_parameter(i_pad_params)
-        o2_pad_params = edbapp.padstacks.definitions["v35h15"].get_pad_parameter()
+        edbapp.padstacks.definitions["v35h15"].pad_parameters = i_pad_params
+        o2_pad_params = edbapp.padstacks.definitions["v35h15"].pad_parameters
         assert o2_pad_params["regular_pad"][0]["diameter"] == "0.5mm"
         assert o2_pad_params["regular_pad"][0]["offset_x"] == "0.1mm"
         assert o2_pad_params["anti_pad"][0]["diameter"] == "1mm"
         assert o2_pad_params["thermal_pad"][0]["inner"] == "1mm"
         assert o2_pad_params["thermal_pad"][0]["channel_width"] == "0.2mm"
+
+    def test_pad_parameter(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        o_hole_params = edbapp.padstacks.definitions["v35h15"].hole_parameters
+        assert o_hole_params["shape"] == "circle"
+        edbapp.padstacks.definitions["v35h15"].hole_parameters = {"shape": "circle", "diameter": "0.2mm"}
+        assert edbapp.padstacks.definitions["v35h15"].hole_parameters["diameter"] == "0.2mm"
