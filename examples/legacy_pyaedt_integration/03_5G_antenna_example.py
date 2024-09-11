@@ -31,7 +31,7 @@
 import os
 import tempfile
 
-from pyaedt import Hfss3dLayout
+from ansys.aedt.core import Hfss3dLayout
 
 import pyedb
 from pyedb.generic.general_methods import generate_unique_name

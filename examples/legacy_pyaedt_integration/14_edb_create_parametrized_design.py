@@ -13,7 +13,7 @@
 
 import tempfile
 
-import pyaedt
+import ansys.aedt.core
 
 import pyedb
 from pyedb.misc.downloads import download_file
@@ -76,7 +76,7 @@ edb.close_edb()
 #
 # Note that there may be some delay while AEDT is being launched.
 
-hfss = pyaedt.Hfss3dLayout(
+hfss = ansys.aedt.core.Hfss3dLayout(
     projectname=target_aedb,
     specified_version=edb_version,
     non_graphical=False,

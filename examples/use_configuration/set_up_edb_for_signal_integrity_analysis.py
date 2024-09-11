@@ -10,8 +10,8 @@ import json
 import os
 import tempfile
 
-from pyaedt import Hfss3dLayout
-from pyaedt.downloads import download_file
+from ansys.aedt.core import Hfss3dLayout
+from ansys.aedt.core.downloads import download_file
 
 from pyedb import Edb
 

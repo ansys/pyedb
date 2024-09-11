@@ -249,7 +249,7 @@ class LayoutValidation:
                             new_nets.append(net_obj.name)
                             for geo in disjoints:
                                 try:
-                                    obj_dict[geo].net_name = net_obj
+                                    obj_dict[geo].net_name = net_obj.name
                                 except KeyError:
                                     pass
                             disjoints_objects.extend(disjoints)

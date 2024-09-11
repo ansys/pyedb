@@ -18,8 +18,8 @@
 import os
 import tempfile
 
+import ansys.aedt.core
 import numpy as np
-import pyaedt
 
 import pyedb
 from pyedb.misc.downloads import download_file
@@ -179,7 +179,7 @@ edb.close_edb()
 
 # Launch HFSS 3D Layout.
 
-h3d = pyaedt.Hfss3dLayout(aedb_path, specified_version=edb_version, new_desktop_session=True)
+h3d = ansys.aedt.core.Hfss3dLayout(aedb_path, specified_version=edb_version, new_desktop_session=True)
 
 # Place a 3D component.
 

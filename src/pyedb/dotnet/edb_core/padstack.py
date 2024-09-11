@@ -62,7 +62,7 @@ class EdbPadstacks(object):
 
         """
         if isinstance(name, int) and name in self.instances:
-            return self._pedb.layout.find_object_by_id(name)
+            return self.instances(name)
         elif name in self.definitions:
             return self.definitions[name]
         else:
