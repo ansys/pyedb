@@ -1460,6 +1460,9 @@ class Modeler(object):
             self._pedb.active_layout, name, convert_py_list_to_net_list(pins)
         )
         if obj.IsNull():
-            self._logger.debug("Pin group creation returned Null obj.")
-            return False
+            raise RuntimeError(f"Failed to create pin group {name}.")
+        else:
+            net_obj = [i.GetNet() for i in pins if not i.GetNet().IsNull()]
+            if net_obj:
+                obj.SetNet(net_obj[0])
         return self._pedb.siwave.pin_groups[name]
