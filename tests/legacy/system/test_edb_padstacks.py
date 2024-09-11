@@ -168,6 +168,14 @@ class TestClass:
         pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1, "CornerRadius": 1}
         pad.pad_by_layer[pad.via_stop_layer].parameters = [1, 1, 1]
 
+    def test_pad_parameter(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        pad_params = edbapp.padstacks.definitions["v35h15"].get_pad_parameter()
+        pad_params["regular_pad"][0]["diameter"]="0.5mm"
+        edbapp.padstacks.definitions["v35h15"].set_pad_parameter(pad_params)
+        pad_params2 = edbapp.padstacks.definitions["v35h15"].get_pad_parameter()
+        assert pad_params2["regular_pad"][0]["diameter"] == "0.5mm"
+
     def test_padstack_get_instance(self):
         assert self.edbapp.padstacks.get_instances(name="Via1961")
         assert self.edbapp.padstacks.get_instances(definition_name="v35h15")

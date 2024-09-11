@@ -35,43 +35,64 @@ class CfgPadstacks:
         if self._padstack_dict:
             if self._padstack_dict.get("definitions", ""):
                 self._definitions_dict = self._padstack_dict.get("definitions", "")
-                self.definitions = [Definition(pdata, definition) for definition in self._definitions_dict]
+                self.definitions = [Definition(**definition) for definition in self._definitions_dict]
             if self._padstack_dict.get("instances", None):
                 self._instances_dict = self._padstack_dict.get("instances", "")
                 self.instances = [Instance(pdata, inst) for inst in self._instances_dict]
 
     def apply(self):
         """Apply padstack definition and instances on layout."""
-        for definition in self.definitions:
-            definition.apply()
+        padstack_defs_layout = self._pedb.padstacks.definitions
+        for pdef in self.definitions:
+            pdef_layout = padstack_defs_layout[pdef.name]
+            if pdef.hole_diameter:
+                pdef_layout.hole_diameter = pdef.hole_diameter
+            if pdef.hole_plating_thickness:
+                pdef_layout.hole_plating_thickness = pdef.hole_plating_thickness
+            if pdef.hole_material:
+                pdef_layout.material = pdef.hole_material
+            if pdef.hole_range:
+                pdef_layout.hole_range = pdef.hole_range
+            if pdef.pads:
+                for p in pdef.pads:
+                    pad = pdef_layout.pad_by_layer[p.layer]
+                    pad.shape = p.SHAPE_MAPPING[p.shape]
+                    pad.diameter = p.diameter
         for instance in self.instances:
             instance.apply()
+
+
+class CfgPad:
+    SHAPE_MAPPING = {
+        "circle": "Circle",
+        "square": "Square",
+        "rectangle": "Rectangle",
+        "oval": "Oval",
+        "bullet": "Bullet",
+        "nsidedpolygon": "NSidedPolygon",
+        "polygon": "Polygon",
+        "round45": "Round45",
+        "round90": "Round90",
+        "square45": "Square45",
+        "square90": "Square90",
+    }
+
+    def __init__(self, **kwargs):
+        self.layer = kwargs["layer"]
+        self.shape = kwargs["shape"]
+        self.diameter = kwargs["diameter"]
 
 
 class Definition:
     """Padstack definition data class."""
 
-    def __init__(self, pdata, definition_dict):
-        self._pedb = pdata._pedb
-        self._definition_dict = definition_dict
-        self.name = self._definition_dict.get("name", None)
-        self.hole_diameter = self._definition_dict.get("hole_diameter", None)
-        self.hole_plating_thickness = self._definition_dict.get("hole_plating_thickness", None)
-        self.hole_material = self._definition_dict.get("hole_material", None)
-        self.hole_range = self._definition_dict.get("hole_range", None)
-
-    def apply(self):
-        """Apply padstack definition on layout."""
-        padstack_defs = self._pedb.padstacks.definitions
-        pdef = padstack_defs[self.name]
-        if self.hole_diameter:
-            pdef.hole_diameter = self.hole_diameter
-        if self.hole_plating_thickness:
-            pdef.hole_plating_thickness = self.hole_plating_thickness
-        if self.hole_material:
-            pdef.material = self.hole_material
-        if self.hole_range:
-            pdef.hole_range = self.hole_range
+    def __init__(self, **kwargs):
+        self.name = kwargs.get("name", None)
+        self.hole_diameter = kwargs.get("hole_diameter", None)
+        self.hole_plating_thickness = kwargs.get("hole_plating_thickness", None)
+        self.hole_material = kwargs.get("hole_material", None)
+        self.hole_range = kwargs.get("hole_range", None)
+        self.pads = [CfgPad(**i) for i in kwargs.get("pads", [])]
 
 
 class Instance:

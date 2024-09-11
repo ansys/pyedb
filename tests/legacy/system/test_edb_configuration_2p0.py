@@ -445,16 +445,21 @@ class TestClass:
             "padstacks": {
                 "definitions": [
                     {
-                        "name": "v40h20",
+                        "name": "v35h15",
                         # "hole_diameter": "0.18mm",
                         "hole_plating_thickness": "25um",
                         "hole_material": "copper",
                         "hole_range": "through",
+                        "pads": [
+                            {"layer": "1_Top", "shape": "circle", "diameter": 0.35e-3},
+                            {"layer": "Inner1(GND1)", "shape": "circle", "diameter": 0.35e-3},
+                        ]
                     }
                 ],
                 "instances": [
                     {
                         "name": "Via998",
+                        "definition": "v35h15",
                         "backdrill_top": {
                             "drill_to_layer": "Inner3(Sig1)",
                             "drill_diameter": "0.5mm",
