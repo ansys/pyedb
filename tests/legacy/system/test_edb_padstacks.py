@@ -168,14 +168,6 @@ class TestClass:
         pad.pad_by_layer[pad.via_stop_layer].parameters = {"XSize": 1, "YSize": 1, "CornerRadius": 1}
         pad.pad_by_layer[pad.via_stop_layer].parameters = [1, 1, 1]
 
-    def test_pad_parameter(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        pad_params = edbapp.padstacks.definitions["v35h15"].get_pad_parameter()
-        pad_params["regular_pad"][0]["diameter"]="0.5mm"
-        edbapp.padstacks.definitions["v35h15"].set_pad_parameter(pad_params)
-        pad_params2 = edbapp.padstacks.definitions["v35h15"].get_pad_parameter()
-        assert pad_params2["regular_pad"][0]["diameter"] == "0.5mm"
-
     def test_padstack_get_instance(self):
         assert self.edbapp.padstacks.get_instances(name="Via1961")
         assert self.edbapp.padstacks.get_instances(definition_name="v35h15")
@@ -453,3 +445,27 @@ class TestClass:
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions
         edbapp.close()
+
+    def test_pad_parameter(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        o_pad_params = edbapp.padstacks.definitions["v35h15"].get_pad_parameter()
+        assert o_pad_params["regular_pad"][0]["shape"] == "circle"
+
+        i_pad_params = {}
+        i_pad_params['regular_pad'] = [
+            {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0.1mm', 'rotation': '0', 'diameter': '0.5mm'}
+        ]
+        i_pad_params['anti_pad'] = [
+            {'layer_name': '1_Top', 'shape': 'circle', 'diameter': '1mm'}
+        ]
+        i_pad_params['thermal_pad'] = [
+            {'layer_name': '1_Top', 'shape': 'round90', "inner": "1mm", "channel_width": "0.2mm",
+             "isolation_gap": "0.3mm"}
+        ]
+        edbapp.padstacks.definitions["v35h15"].set_pad_parameter(i_pad_params)
+        o2_pad_params = edbapp.padstacks.definitions["v35h15"].get_pad_parameter()
+        assert o2_pad_params["regular_pad"][0]["diameter"] == "0.5mm"
+        assert o2_pad_params["regular_pad"][0]["offset_x"] == "0.1mm"
+        assert o2_pad_params["anti_pad"][0]["diameter"] == "1mm"
+        assert o2_pad_params["thermal_pad"][0]["inner"] == "1mm"
+        assert o2_pad_params["thermal_pad"][0]["channel_width"] == "0.2mm"

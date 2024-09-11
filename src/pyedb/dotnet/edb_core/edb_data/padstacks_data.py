@@ -422,6 +422,12 @@ class EDBPadstack(object):
 
     @property
     def _padstack_def_data(self):
+        """Get padstack definition data.
+
+        Returns
+        -------
+
+        """
         pstack_data = self.edb_padstack.GetData()
         return self._edb.definition.PadstackDefData(pstack_data)
 
@@ -429,103 +435,153 @@ class EDBPadstack(object):
     def _padstack_def_data(self, value):
         self.edb_padstack.SetData(value)
 
-    def set_pad_parameter(self, params):
+    def set_pad_parameter(self, params:dict):
+        """Set pad parameters by layer name and pad type.
+
+        Parameters
+        ----------
+        params: dict
+            Pad parameters. Example is as below
+            params = {
+            'regular_pad': [
+                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0.1mm', 'offset_y': '0', 'rotation': '0',
+                 'diameter': '0.5mm'}
+            ],
+            'anti_pad': [
+                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+                'diameter': '1mm'}
+            ],
+            'thermal_pad': [
+                {'layer_name': '1_Top', 'shape': 'round90', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+                'inner': '1mm', 'channel_width': '0.2mm', 'isolation_gap': '0.3mm'},
+            ],
+            'hole': [
+                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+                 'diameter': '0.1499997mm'},
+            ]
+        }
+        """
         original_params = self.get_pad_parameter()
         pdef_data = self._padstack_def_data
-        rpp = params.get("regular_pad")
-        if rpp:
+
+        pad_type_list = [
+            [self._ppadstack._pedb._edb.Definition.PadType.RegularPad, "regular_pad"],
+            [self._ppadstack._pedb._edb.Definition.PadType.AntiPad, "anti_pad"],
+            [self._ppadstack._pedb._edb.Definition.PadType.ThermalPad, "thermal_pad"],
+            [self._ppadstack._pedb._edb.Definition.PadType.Hole, "hole"]
+        ]
+        for pad_type, pad_type_name in pad_type_list:
+
+            rpp = params.get(pad_type_name, [])
             for idx, layer_data in enumerate(rpp):
                 # Get geometry type from kwargs
-                p = layer_data.get("geometry_type")
+                p = layer_data.get("shape")
                 temp_param = []
 
                 # Handle Circle geometry type
                 if p == self._ppadstack._pedb._edb.Definition.PadGeometryType.Circle.ToString().lower():
                     temp_param.append(layer_data["diameter"])
-                    pad_geom_type = self._ppadstack._pedb._edb.Definition.PadGeometryType.Circle
+                    pad_shape = self._ppadstack._pedb._edb.Definition.PadGeometryType.Circle
 
                 # Handle Square geometry type
                 elif p == self._ppadstack._pedb._edb.Definition.PadGeometryType.Square.ToString().lower():
                     temp_param.append(layer_data["x_size"])
                     temp_param.append(layer_data["y_size"])
-                    pad_geom_type = self._ppadstack._pedb._edb.Definition.PadGeometryType.Square
+                    pad_shape = self._ppadstack._pedb._edb.Definition.PadGeometryType.Square
 
                 # Handle Oval geometry type
                 elif p == self._ppadstack._pedb._edb.Definition.PadGeometryType.Oval.ToString().lower():
                     temp_param.append(layer_data["x_size"])
                     temp_param.append(layer_data["y_size"])
                     temp_param.append(layer_data["corner_radius"])
-                    pad_geom_type = self._ppadstack._pedb._edb.Definition.PadGeometryType.Oval
+                    pad_shape = self._ppadstack._pedb._edb.Definition.PadGeometryType.Oval
 
                 # Handle Bullet geometry type
                 elif p == self._ppadstack._pedb._edb.Definition.PadGeometryType.Bullet.ToString().lower():
                     temp_param.append(layer_data["x_size"])
                     temp_param.append(layer_data["y_size"])
                     temp_param.append(layer_data["corner_radius"])
-                    pad_geom_type = self._ppadstack._pedb._edb.Definition.PadGeometryType.Bullet
+                    pad_shape = self._ppadstack._pedb._edb.Definition.PadGeometryType.Bullet
 
                 # Handle Round45 geometry type
                 elif p == self._ppadstack._pedb._edb.Definition.PadGeometryType.Round45.ToString().lower():
                     temp_param.append(layer_data["inner"])
                     temp_param.append(layer_data["channel_width"])
                     temp_param.append(layer_data["isolation_gap"])
-                    pad_geom_type = self._ppadstack._pedb._edb.Definition.PadGeometryType.Round45
+                    pad_shape = self._ppadstack._pedb._edb.Definition.PadGeometryType.Round45
 
                 # Handle Round90 geometry type
                 elif p == self._ppadstack._pedb._edb.Definition.PadGeometryType.Round90.ToString().lower():
                     temp_param.append(layer_data["inner"])
                     temp_param.append(layer_data["channel_width"])
                     temp_param.append(layer_data["isolation_gap"])
-                    pad_geom_type = self._ppadstack._pedb._edb.Definition.PadGeometryType.Round90
+                    pad_shape = self._ppadstack._pedb._edb.Definition.PadGeometryType.Round90
+                elif p == self._ppadstack._pedb._edb.Definition.PadGeometryType.NoGeometry.ToString().lower():
+                    pad_shape = self._ppadstack._pedb._edb.Definition.PadGeometryType.NoGeometry
 
                 # Set pad parameters for the current layer
-                o_regular_pad = original_params["regular_pad"]
+                o_regular_pad = original_params[pad_type_name]
                 pdef_data.SetPadParameters(
                     layer_data["layer_name"],
-                    self._ppadstack._pedb._edb.Definition.PadType.RegularPad,
-                    pad_geom_type,
+                    pad_type,
+                    pad_shape,
                     convert_py_list_to_net_list([self._ppadstack._pedb.edb_value(i) for i in temp_param]),
-                    self._ppadstack._pedb.edb_value(layer_data.get("offset_x", o_regular_pad[idx]["offset_x"])),
-                    self._ppadstack._pedb.edb_value(layer_data.get("offset_y", o_regular_pad[idx]["offset_y"])),
-                    self._ppadstack._pedb.edb_value(layer_data.get("rotation", o_regular_pad[idx]["rotation"])),
+                    self._ppadstack._pedb.edb_value(layer_data.get("offset_x", o_regular_pad[idx].get("offset_x", 0))),
+                    self._ppadstack._pedb.edb_value(layer_data.get("offset_y", o_regular_pad[idx].get("offset_y", 0))),
+                    self._ppadstack._pedb.edb_value(layer_data.get("rotation", o_regular_pad[idx].get("rotation", 0))),
                 )
         self._padstack_def_data = pdef_data
 
-    def get_pad_parameter(self):
+    def get_pad_parameter(self)->dict:
+        """Get a pad parameters.
+
+        Returns
+        -------
+
+        """
         pdef_data = self._padstack_def_data
-        regular_pad = []
-        for lyr_name in pdef_data.GetLayerNames():
-            result = pdef_data.GetPadParametersValue(lyr_name,
-                                                     self._ppadstack._pedb._edb.Definition.PadType.RegularPad,
-                                                     )
-            _, pad_geom_type, params, offset_x, offset_y, rotation = result
-            pad_geom_type = pad_geom_type.ToString().lower()
+        pad_type_list = [
+            [self._ppadstack._pedb._edb.Definition.PadType.RegularPad, "regular_pad"],
+            [self._ppadstack._pedb._edb.Definition.PadType.AntiPad, "anti_pad"],
+            [self._ppadstack._pedb._edb.Definition.PadType.ThermalPad, "thermal_pad"],
+            [self._ppadstack._pedb._edb.Definition.PadType.Hole, "hole"]
+        ]
+        data = {}
+        for pad_type, pad_type_name in pad_type_list:
+            temp_list = []
+            for lyr_name in pdef_data.GetLayerNames():
+                result = pdef_data.GetPadParametersValue(lyr_name, pad_type)
+                _, pad_shape, params, offset_x, offset_y, rotation = result
+                pad_shape = pad_shape.ToString().lower()
 
-            pad_params = {}
-            pad_params["layer_name"] = lyr_name
-            pad_params["geometry_type"] = pad_geom_type
-            pad_params["offset_x"] = offset_x.ToString().lower()
-            pad_params["offset_y"] = offset_y.ToString().lower()
-            pad_params["rotation"] = rotation.ToString().lower()
-            if pad_geom_type == "circle":
-                pad_params["diameter"] = params[0].ToString()
-            elif pad_geom_type == "rect":
-                pad_params["x_size"], pad_params["y_size"] = [i.ToString() for i in params]
-            elif pad_geom_type == "oval":
-                pad_params["x_size"], pad_params["y_size"], pad_params["corner_radius"] = [i.ToString() for i in params]
-            elif pad_geom_type == "bullet":
-                pad_params["x_size"], pad_params["y_size"], pad_params["corner_radius"] = [i.ToString() for i in params]
-            elif pad_geom_type == "round45":
-                pad_params["inner"], pad_params["channel_width"], pad_params["isolation_gap"] = [i.ToString() for i in
-                                                                                                 params]
-            elif pad_geom_type == "round90":
-                pad_params["inner"], pad_params["channel_width"], pad_params["isolation_gap"] = [i.ToString() for i in
-                                                                                                 params]
-            regular_pad.append(pad_params)
-
-        data = {
-            "regular_pad": regular_pad
-        }
+                pad_params = {}
+                pad_params["layer_name"] = lyr_name
+                pad_params["shape"] = pad_shape
+                pad_params["offset_x"] = offset_x.ToString().lower()
+                pad_params["offset_y"] = offset_y.ToString().lower()
+                pad_params["rotation"] = rotation.ToString().lower()
+                if pad_shape == "circle":
+                    pad_params["diameter"] = params[0].ToString()
+                elif pad_shape == "rect":
+                    pad_params["x_size"], pad_params["y_size"] = [i.ToString() for i in params]
+                elif pad_shape == "oval":
+                    pad_params["x_size"], pad_params["y_size"], pad_params["corner_radius"] = [i.ToString() for i in
+                                                                                               params]
+                elif pad_shape == "bullet":
+                    pad_params["x_size"], pad_params["y_size"], pad_params["corner_radius"] = [i.ToString() for i in
+                                                                                               params]
+                elif pad_shape == "round45":
+                    pad_params["inner"], pad_params["channel_width"], pad_params["isolation_gap"] = [i.ToString() for i
+                                                                                                     in
+                                                                                                     params]
+                elif pad_shape == "round90":
+                    pad_params["inner"], pad_params["channel_width"], pad_params["isolation_gap"] = [i.ToString() for i
+                                                                                                     in
+                                                                                                     params]
+                elif pad_shape == "nogeometry":
+                    pass
+                temp_list.append(pad_params)
+            data[pad_type_name] = temp_list
         return data
 
     @property
