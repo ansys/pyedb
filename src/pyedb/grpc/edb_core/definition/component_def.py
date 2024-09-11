@@ -22,11 +22,10 @@
 
 import os
 
-from pyedb.dotnet.edb_core.definition.component_model import NPortComponentModel
-from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
+from ansys.edb.core.definition.component_def import ComponentDef as GrpcComponentDef
 
 
-class EDBComponentDef(ObjBase):
+class EDBComponentDef(GrpcComponentDef):
     """Manages EDB functionalities for component definitions.
 
     Parameters
@@ -37,22 +36,18 @@ class EDBComponentDef(ObjBase):
         Edb ComponentDef Object
     """
 
-    def __init__(self, pedb, edb_object=None):
-        super().__init__(pedb, edb_object)
+    def __init__(self, pedb):
+        super().__init__(self.msg)
         self._pedb = pedb
-
-    @property
-    def _comp_model(self):
-        return list(self._edb_object.GetComponentModels())  # pragma: no cover
 
     @property
     def part_name(self):
         """Retrieve component definition name."""
-        return self._edb_object.GetName()
+        return self.name
 
     @part_name.setter
     def part_name(self, name):
-        self._edb_object.SetName(name)
+        self.name = name
 
     @property
     def type(self):
@@ -62,18 +57,7 @@ class EDBComponentDef(ObjBase):
         -------
         str
         """
-        num = len(set(comp.type for refdes, comp in self.components.items()))
-        if num == 0:  # pragma: no cover
-            return None
-        elif num == 1:
-            return list(self.components.values())[0].type
-        else:
-            return "mixed"  # pragma: no cover
-
-    @type.setter
-    def type(self, value):
-        for comp in list(self.components.values()):
-            comp.type = value
+        return self.definition_type.name.lower()
 
     @property
     def components(self):
@@ -83,13 +67,15 @@ class EDBComponentDef(ObjBase):
         -------
         dict of :class:`EDBComponent`
         """
+        from ansys.edb.core.hierarchy.component_group import (
+            ComponentGroup as GrpcComponentGroup,
+        )
+
         from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 
         comp_list = [
             EDBComponent(self._pedb, l)
-            for l in self._pedb.edb_api.cell.hierarchy.component.FindByComponentDef(
-                self._pedb.active_layout, self.part_name
-            )
+            for l in GrpcComponentGroup.find_by_def(self._pedb.active_layout, self.part_name)
         ]
         return {comp.refdes: comp for comp in comp_list}
 
@@ -150,40 +136,27 @@ class EDBComponentDef(ObjBase):
 
     @property
     def reference_file(self):
-        ref_files = []
-        for comp_model in self._comp_model:
-            model_type = str(comp_model.GetComponentModelType())
-            if model_type == "NPortComponentModel" or model_type == "DynamicLinkComponentModel":
-                ref_files.append(comp_model.GetReferenceFile())
-        return ref_files
+        return [model.reference_file for model in self.component_models]
 
     @property
     def component_models(self):
-        temp = {}
-        for i in list(self._edb_object.GetComponentModels()):
-            temp_type = i.ToString().split(".")[0]
-            if temp_type == "NPortComponentModel":
-                edb_object = NPortComponentModel(self._pedb, i)
-                temp[edb_object.name] = edb_object
-        return temp
-
-    def _add_component_model(self, value):
-        self._edb_object.AddComponentModel(value._edb_object)
+        return {model.name: model for model in self.component_models}
 
     def add_n_port_model(self, fpath, name=None):
+        from ansys.edb.core.definition.component_model import (
+            NPortComponentModel as GrpcNPortComponentModel,
+        )
+
         if not name:
             name = os.path.splitext(os.path.basename(fpath)[0])
-
-        from pyedb.dotnet.edb_core.definition.component_model import NPortComponentModel
-
-        edb_object = self._pedb.definition.NPortComponentModel.Create(name)
-        n_port_comp_model = NPortComponentModel(self._pedb, edb_object)
+        n_port_comp_model = GrpcNPortComponentModel.create(name)
         n_port_comp_model.reference_file = fpath
-
-        self._add_component_model(n_port_comp_model)
+        self.add_component_model(n_port_comp_model)
 
     def create(self, name):
-        cell_type = self._pedb.edb_api.cell.CellType.FootprintCell
-        footprint_cell = self._pedb._active_cell.cell.Create(self._pedb.active_db, cell_type, name)
-        edb_object = self._pedb.edb_api.definition.ComponentDef.Create(self._pedb.active_db, name, footprint_cell)
+        from ansys.edb.core.layout.cell import Cell as GrpcCell
+        from ansys.edb.core.layout.cell import CellType as GrpcCellType
+
+        footprint_cell = GrpcCell.create(self._pedb.active_db, GrpcCellType.FOOTPRINT_CELL, name)
+        edb_object = GrpcComponentDef.create(self._pedb.active_db, name, footprint_cell)
         return EDBComponentDef(self._pedb, edb_object)

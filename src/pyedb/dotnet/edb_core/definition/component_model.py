@@ -20,20 +20,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.definition.component_model import (
-    ComponentModel as GrpcComponentModel,
-)
+from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 
 
-class ComponentModel(GrpcComponentModel):
+class ComponentModel(ObjBase):
     """Manages component model class."""
 
-    def __init__(self):
-        super().__init__(self.msg)
+    def __init__(self, pedb, edb_object):
+        super().__init__(pedb, edb_object)
+        self._model_type_mapping = {"PinPairModel": self._pedb.edb_api.cell}
+
+    def name(self):
+        """Name of the component model."""
+        return self._edb_object.GetName()
 
 
-class NPortComponentModel(GrpcComponentModel):
+class NPortComponentModel(ComponentModel):
     """Class for n-port component models."""
 
-    def __init__(self):
-        super().__init__(self.msg)
+    def __init__(self, pedb, edb_object):
+        super().__init__(pedb, edb_object)
+
+    @property
+    def reference_file(self):
+        return self._edb_object.GetReferenceFile()
+
+    @reference_file.setter
+    def reference_file(self, value):
+        self._edb_object.SetReferenceFile(value)
