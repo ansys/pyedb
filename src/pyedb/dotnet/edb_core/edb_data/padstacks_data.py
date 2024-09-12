@@ -407,6 +407,16 @@ class EDBPadstack(object):
     >>> edb_padstack = edb.padstacks.definitions["MyPad"]
     """
 
+    PAD_SHAPE_PARAMETERS = {
+        "circle": ["diameter"],
+        "square": ["size"],
+        "rectangle": ["x_size", "y_size"],
+        "oval": ["x_size", "y_size", "corner_radius"],
+        "bullet": ["x_size", "y_size", "corner_radius"],
+        "round45": ["inner", "channel_width", "isolation_gap"],
+        "round90": ["inner", "channel_width", "isolation_gap"],
+        "no_geometry": []
+    }
     def __init__(self, edb_padstack, ppadstack):
         self._edb_object = edb_padstack
         self.edb_padstack = edb_padstack
@@ -465,45 +475,29 @@ class EDBPadstack(object):
         """
         pdef_data = self._padstack_def_data
         pad_type_list = [
-            [self._ppadstack._pedb._edb.Definition.PadType.RegularPad, "regular_pad"],
-            [self._ppadstack._pedb._edb.Definition.PadType.AntiPad, "anti_pad"],
-            [self._ppadstack._pedb._edb.Definition.PadType.ThermalPad, "thermal_pad"],
-            [self._ppadstack._pedb._edb.Definition.PadType.Hole, "hole"]
+            self._ppadstack._pedb._edb.Definition.PadType.RegularPad,
+            self._ppadstack._pedb._edb.Definition.PadType.AntiPad,
+            self._ppadstack._pedb._edb.Definition.PadType.ThermalPad,
+            self._ppadstack._pedb._edb.Definition.PadType.Hole
         ]
         data = {}
-        for pad_type, pad_type_name in pad_type_list:
+        for pad_type in pad_type_list:
+            pad_type_name = pascal_to_snake(pad_type.ToString())
             temp_list = []
-            for lyr_name in pdef_data.GetLayerNames():
+            for lyr_name in list(pdef_data.GetLayerNames()):
                 result = pdef_data.GetPadParametersValue(lyr_name, pad_type)
                 _, pad_shape, params, offset_x, offset_y, rotation = result
-                pad_shape = pad_shape.ToString().lower()
+                pad_shape = pascal_to_snake(pad_shape.ToString())
 
                 pad_params = {}
                 pad_params["layer_name"] = lyr_name
                 pad_params["shape"] = pad_shape
-                pad_params["offset_x"] = offset_x.ToString().lower()
-                pad_params["offset_y"] = offset_y.ToString().lower()
-                pad_params["rotation"] = rotation.ToString().lower()
-                if pad_shape == "circle":
-                    pad_params["diameter"] = params[0].ToString()
-                elif pad_shape == "rect":
-                    pad_params["x_size"], pad_params["y_size"] = [i.ToString() for i in params]
-                elif pad_shape == "oval":
-                    pad_params["x_size"], pad_params["y_size"], pad_params["corner_radius"] = [i.ToString() for i in
-                                                                                               params]
-                elif pad_shape == "bullet":
-                    pad_params["x_size"], pad_params["y_size"], pad_params["corner_radius"] = [i.ToString() for i in
-                                                                                               params]
-                elif pad_shape == "round45":
-                    pad_params["inner"], pad_params["channel_width"], pad_params["isolation_gap"] = [i.ToString() for i
-                                                                                                     in
-                                                                                                     params]
-                elif pad_shape == "round90":
-                    pad_params["inner"], pad_params["channel_width"], pad_params["isolation_gap"] = [i.ToString() for i
-                                                                                                     in
-                                                                                                     params]
-                elif pad_shape == "nogeometry":
-                    pass
+                pad_params["offset_x"] = offset_x.ToString()
+                pad_params["offset_y"] = offset_y.ToString()
+                pad_params["rotation"] = rotation.ToString()
+
+                for idx, i in enumerate(self.PAD_SHAPE_PARAMETERS[pad_shape]):
+                    pad_params[i] = params[idx].ToString()
                 temp_list.append(pad_params)
             data[pad_type_name] = temp_list
         return data
@@ -570,7 +564,8 @@ class EDBPadstack(object):
                     temp_param.append(layer_data["isolation_gap"])
                     pad_shape = self._ppadstack._pedb._edb.Definition.PadGeometryType.Round90
                 elif p == pascal_to_snake(self._ppadstack._pedb._edb.Definition.PadGeometryType.NoGeometry.ToString()):
-                    pad_shape = self._ppadstack._pedb._edb.Definition.PadGeometryType.NoGeometry
+                    continue
+
 
                 # Set pad parameters for the current layer
                 default = original_params[pad_type_name]
@@ -593,19 +588,11 @@ class EDBPadstack(object):
 
         hole_params = {}
         hole_params["shape"] = hole_shape
+        for idx, i in enumerate(self.PAD_SHAPE_PARAMETERS[hole_shape]):
+            hole_params[i] = params[idx].ToString()
         hole_params["offset_x"] = offset_x.ToString()
         hole_params["offset_y"] = offset_y.ToString()
         hole_params["rotation"] = rotation.ToString()
-
-        if hole_shape == "circle":
-            hole_params["diameter"] = params[0].ToString()
-        elif hole_shape == "rect":
-            hole_params["x_size"], hole_params["y_size"] = [i.ToString() for i in params]
-        elif hole_shape == "square":
-            hole_params["size"] = params[0].ToString()
-        elif hole_shape == "no_geometry":
-            pass
-
         return hole_params
 
     @hole_parameters.setter
@@ -615,19 +602,14 @@ class EDBPadstack(object):
 
         temp_param = []
         shape = params["shape"]
-        if shape == self._ppadstack._pedb._edb.Definition.PadGeometryType.Circle.ToString().lower():
-            temp_param.append(params["diameter"])
-            shape = self._ppadstack._pedb._edb.Definition.PadGeometryType.Circle
-        elif shape == self._ppadstack._pedb._edb.Definition.PadGeometryType.Square.ToString().lower():
-            temp_param.append(params["size"])
-            shape = self._ppadstack._pedb._edb.Definition.PadGeometryType.Square
-        elif shape == self._ppadstack._pedb._edb.Definition.PadGeometryType.Rectangle.ToString().lower():
-            temp_param.append(params["x_size"])
-            temp_param.append(params["y_size"])
-            shape = self._ppadstack._pedb._edb.Definition.PadGeometryType.Rectangle
+        if shape == "no_geometry":
+            return  # .net api doesn't tell how to set no_geometry shape.
+        for idx, i in enumerate(self.PAD_SHAPE_PARAMETERS[shape]):
+            temp_param.append(params[i])
+            pedb_shape = getattr(self._ppadstack._pedb._edb.Definition.PadGeometryType, snake_to_pascal(shape))
 
         pdef_data.SetHoleParameters(
-            shape,
+            pedb_shape,
             convert_py_list_to_net_list([self._ppadstack._pedb.edb_value(i) for i in temp_param]),
             self._ppadstack._pedb.edb_value(params.get("offset_x", original_params.get("offset_x", 0))),
             self._ppadstack._pedb.edb_value(params.get("offset_y", original_params.get("offset_y", 0))),
@@ -1320,6 +1302,29 @@ class EDBPadstack(object):
         self.edb_padstack.SetData(new_padstack_data)
         return True
 
+    def set_properties(self, **kwargs):
+        for k in [
+            "hole_plating_thickness",
+            "material",
+            "hole_range",
+            "pad_parameters",
+            "hole_parameters"
+        ]:
+            value = kwargs.get(k, False)
+            if value:
+                setattr(self, k, value)
+
+    def get_properties(self):
+        kwargs = {}
+        for k in [
+            "hole_plating_thickness",
+            "material",
+            "hole_range",
+            "pad_parameters",
+            "hole_parameters"
+        ]:
+            kwargs[k] = getattr(self, k)
+        return kwargs
 
 class EDBPadstackInstance(Primitive):
     """Manages EDB functionalities for a padstack.

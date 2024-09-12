@@ -43,16 +43,7 @@ class CfgPadstacks:
         padstack_defs_layout = self._pedb.padstacks.definitions
         for pdef in self.definitions:
             pdef_layout = padstack_defs_layout[pdef.name]
-            if pdef.hole_plating_thickness:
-                pdef_layout.hole_plating_thickness = pdef.hole_plating_thickness
-            if pdef.hole_material:
-                pdef_layout.material = pdef.hole_material
-            if pdef.hole_range:
-                pdef_layout.hole_range = pdef.hole_range
-            if pdef.pad_parameters:
-                padstack_defs_layout[pdef.name].pad_parameters = pdef.pad_parameters
-            if pdef.hole_parameters:
-                padstack_defs_layout[pdef.name].hole_parameters = pdef.hole_parameters
+            pdef_layout.set_properties(**pdef.get_attributes())
         for instance in self.instances:
             instance.apply()
 
@@ -83,7 +74,7 @@ class Definition(CfgBase):
     def __init__(self, **kwargs):
         self.name = kwargs.get("name", None)
         self.hole_plating_thickness = kwargs.get("hole_plating_thickness", None)
-        self.hole_material = kwargs.get("hole_material", None)
+        self.material = kwargs.get("hole_material", None)
         self.hole_range = kwargs.get("hole_range", None)
         self.pad_parameters = kwargs.get("pad_parameters", None)
         self.hole_parameters = kwargs.get("hole_parameters", None)

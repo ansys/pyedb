@@ -103,7 +103,7 @@ class Configuration:
                 self._pedb.open_edb()
         return self.cfg_data
 
-    def run(self):
+    def run(self, **kwargs):
         """Apply configuration settings to the current design"""
 
         # Configure boundary settings
@@ -134,7 +134,16 @@ class Configuration:
         self.cfg_data.setups.apply()
 
         # Configure stackup
-        self.cfg_data.stackup.apply()
+        if kwargs.get("fix_padstack_def"):
+            pedb_defs = self._pedb.padstacks.definitions
+            temp = {}
+            for name, pdef in pedb_defs.items():
+                temp[name] = pdef.get_properties()
+            self.cfg_data.stackup.apply()
+            for name, pdef_p in temp.items():
+                pedb_defs[name].set_properties(**pdef_p)
+        else:
+            self.cfg_data.stackup.apply()
 
         # Configure S-parameter
         for s_parameter_model in self.cfg_data.s_parameters:
