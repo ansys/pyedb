@@ -452,15 +452,18 @@ class TestClass:
         assert o_pad_params["regular_pad"][0]["shape"] == "circle"
 
         i_pad_params = {}
-        i_pad_params['regular_pad'] = [
-            {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0.1mm', 'rotation': '0', 'diameter': '0.5mm'}
+        i_pad_params["regular_pad"] = [
+            {"layer_name": "1_Top", "shape": "circle", "offset_x": "0.1mm", "rotation": "0", "diameter": "0.5mm"}
         ]
-        i_pad_params['anti_pad'] = [
-            {'layer_name': '1_Top', 'shape': 'circle', 'diameter': '1mm'}
-        ]
-        i_pad_params['thermal_pad'] = [
-            {'layer_name': '1_Top', 'shape': 'round90', "inner": "1mm", "channel_width": "0.2mm",
-             "isolation_gap": "0.3mm"}
+        i_pad_params["anti_pad"] = [{"layer_name": "1_Top", "shape": "circle", "diameter": "1mm"}]
+        i_pad_params["thermal_pad"] = [
+            {
+                "layer_name": "1_Top",
+                "shape": "round90",
+                "inner": "1mm",
+                "channel_width": "0.2mm",
+                "isolation_gap": "0.3mm",
+            }
         ]
         edbapp.padstacks.definitions["v35h15"].pad_parameters = i_pad_params
         o2_pad_params = edbapp.padstacks.definitions["v35h15"].pad_parameters

@@ -29,8 +29,12 @@ from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.edb_core.general import (PadGeometryTpe, convert_py_list_to_net_list, pascal_to_snake,
-                                           snake_to_pascal)
+from pyedb.dotnet.edb_core.general import (
+    PadGeometryTpe,
+    convert_py_list_to_net_list,
+    pascal_to_snake,
+    snake_to_pascal,
+)
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -326,14 +330,14 @@ class EDBPadProperties(object):
         return self._pedbpadstack._ppadstack.int_to_geometry_type(val)
 
     def _update_pad_parameters_parameters(
-            self,
-            layer_name=None,
-            pad_type=None,
-            geom_type=None,
-            params=None,
-            offsetx=None,
-            offsety=None,
-            rotation=None,
+        self,
+        layer_name=None,
+        pad_type=None,
+        geom_type=None,
+        params=None,
+        offsetx=None,
+        offsety=None,
+        rotation=None,
     ):
         """Update padstack parameters.
 
@@ -415,8 +419,9 @@ class EDBPadstack(object):
         "bullet": ["x_size", "y_size", "corner_radius"],
         "round45": ["inner", "channel_width", "isolation_gap"],
         "round90": ["inner", "channel_width", "isolation_gap"],
-        "no_geometry": []
+        "no_geometry": [],
     }
+
     def __init__(self, edb_padstack, ppadstack):
         self._edb_object = edb_padstack
         self.edb_padstack = edb_padstack
@@ -478,7 +483,7 @@ class EDBPadstack(object):
             self._ppadstack._pedb._edb.Definition.PadType.RegularPad,
             self._ppadstack._pedb._edb.Definition.PadType.AntiPad,
             self._ppadstack._pedb._edb.Definition.PadType.ThermalPad,
-            self._ppadstack._pedb._edb.Definition.PadType.Hole
+            self._ppadstack._pedb._edb.Definition.PadType.Hole,
         ]
         data = {}
         for pad_type in pad_type_list:
@@ -511,7 +516,7 @@ class EDBPadstack(object):
             self._ppadstack._pedb._edb.Definition.PadType.RegularPad,
             self._ppadstack._pedb._edb.Definition.PadType.AntiPad,
             self._ppadstack._pedb._edb.Definition.PadType.ThermalPad,
-            self._ppadstack._pedb._edb.Definition.PadType.Hole
+            self._ppadstack._pedb._edb.Definition.PadType.Hole,
         ]
         for pad_type in pad_type_list:
             pad_type_name = pascal_to_snake(pad_type.ToString())
@@ -565,7 +570,6 @@ class EDBPadstack(object):
                     pad_shape = self._ppadstack._pedb._edb.Definition.PadGeometryType.Round90
                 elif p == pascal_to_snake(self._ppadstack._pedb._edb.Definition.PadGeometryType.NoGeometry.ToString()):
                     continue
-
 
                 # Set pad parameters for the current layer
                 default = original_params[pad_type_name]
@@ -1303,28 +1307,17 @@ class EDBPadstack(object):
         return True
 
     def set_properties(self, **kwargs):
-        for k in [
-            "hole_plating_thickness",
-            "material",
-            "hole_range",
-            "pad_parameters",
-            "hole_parameters"
-        ]:
+        for k in ["hole_plating_thickness", "material", "hole_range", "pad_parameters", "hole_parameters"]:
             value = kwargs.get(k, False)
             if value:
                 setattr(self, k, value)
 
     def get_properties(self):
         kwargs = {}
-        for k in [
-            "hole_plating_thickness",
-            "material",
-            "hole_range",
-            "pad_parameters",
-            "hole_parameters"
-        ]:
+        for k in ["hole_plating_thickness", "material", "hole_range", "pad_parameters", "hole_parameters"]:
             kwargs[k] = getattr(self, k)
         return kwargs
+
 
 class EDBPadstackInstance(Primitive):
     """Manages EDB functionalities for a padstack.
@@ -1873,8 +1866,8 @@ class EDBPadstackInstance(Primitive):
             if hole_diam:  # pragma no cover
                 hole_finished_size = padstack_def.hole_finished_size
                 via_length = (
-                        self._pedb.stackup.signal_layers[start_layer].upper_elevation
-                        - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
+                    self._pedb.stackup.signal_layers[start_layer].upper_elevation
+                    - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
                 )
                 volume = (math.pi * (hole_diam / 2) ** 2 - math.pi * (hole_finished_size / 2) ** 2) * via_length
         return volume

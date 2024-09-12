@@ -451,20 +451,29 @@ class TestClass:
                         "hole_range": "through",
                         "pad_parameters": {
                             "regular_pad": [
-                                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0.1mm', 'rotation': '0',
-                                 'diameter': '0.5mm'}
+                                {
+                                    "layer_name": "1_Top",
+                                    "shape": "circle",
+                                    "offset_x": "0.1mm",
+                                    "rotation": "0",
+                                    "diameter": "0.5mm",
+                                }
                             ],
-                            "anti_pad": [
-                                {'layer_name': '1_Top', 'shape': 'circle', 'diameter': '1mm'}
-                            ],
+                            "anti_pad": [{"layer_name": "1_Top", "shape": "circle", "diameter": "1mm"}],
                             "thermal_pad": [
-                                {'layer_name': '1_Top', 'shape': 'round90', "inner": "1mm", "channel_width": "0.2mm",
-                                 "isolation_gap": "0.3mm"}
-                            ]
+                                {
+                                    "layer_name": "1_Top",
+                                    "shape": "round90",
+                                    "inner": "1mm",
+                                    "channel_width": "0.2mm",
+                                    "isolation_gap": "0.3mm",
+                                }
+                            ],
                         },
                         "hole_parameters": {
-                            "shape": "circle", "diameter": "0.2mm",
-                        }
+                            "shape": "circle",
+                            "diameter": "0.2mm",
+                        },
                     }
                 ],
             }

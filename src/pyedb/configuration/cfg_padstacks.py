@@ -22,6 +22,7 @@
 
 
 from enum import Enum
+
 from pyedb.configuration.cfg_common import CfgBase
 
 
@@ -33,9 +34,9 @@ class CfgPadstacks:
         self.definitions = []
         self.instances = []
         if padstack_dict:
-            for pdef in padstack_dict.get('definitions', []):
+            for pdef in padstack_dict.get("definitions", []):
                 self.definitions.append(Definition(**pdef))
-            for inst in padstack_dict.get('instances', []):
+            for inst in padstack_dict.get("instances", []):
                 self.instances.append(Instance(self._pedb, inst))
 
     def apply(self):
@@ -57,7 +58,7 @@ class CfgPadstacks:
                     hole_material=pdef.material,
                     hole_range=pdef.hole_range,
                     pad_parameters=pdef.pad_parameters,
-                    hole_parameters=pdef.hole_parameters
+                    hole_parameters=pdef.hole_parameters,
                 )
             )
         data = {}

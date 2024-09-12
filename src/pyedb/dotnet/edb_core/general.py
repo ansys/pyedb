@@ -143,12 +143,13 @@ def convert_net_list_to_py_list(netlist):
 
 def pascal_to_snake(s):
     # Convert PascalCase to snake_case
-    return re.sub(r'(?<!^)(?=[A-Z])', '_', s).lower()
+    return re.sub(r"(?<!^)(?=[A-Z])", "_", s).lower()
 
 
 def snake_to_pascal(s):
     # Split the string at underscores and capitalize the first letter of each part
-    return ''.join(word.capitalize() for word in s.split('_'))
+    return "".join(word.capitalize() for word in s.split("_"))
+
 
 class PadGeometryTpe(Enum):  # pragma: no cover
     Circle = 1
