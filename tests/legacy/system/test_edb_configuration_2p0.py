@@ -446,7 +446,6 @@ class TestClass:
                 "definitions": [
                     {
                         "name": "v35h15",
-                        # "hole_diameter": "0.18mm",
                         "hole_plating_thickness": "25um",
                         "hole_material": "copper",
                         "hole_range": "through",
