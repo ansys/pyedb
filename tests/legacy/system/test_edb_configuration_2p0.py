@@ -440,21 +440,68 @@ class TestClass:
         assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND", "pyedb_cutout"])
         edbapp.close()
 
-    def test_09_padstacks(self, edb_examples):
+    def test_09_padstack_definition(self, edb_examples):
         data = {
             "padstacks": {
                 "definitions": [
                     {
-                        "name": "v40h20",
-                        # "hole_diameter": "0.18mm",
+                        "name": "v35h15",
                         "hole_plating_thickness": "25um",
-                        "hole_material": "copper",
+                        "material": "copper",
                         "hole_range": "through",
+                        "pad_parameters": {
+                            "regular_pad": [
+                                {
+                                    "layer_name": "1_Top",
+                                    "shape": "circle",
+                                    "offset_x": "0.1mm",
+                                    "rotation": "0",
+                                    "diameter": "0.5mm",
+                                }
+                            ],
+                            "anti_pad": [{"layer_name": "1_Top", "shape": "circle", "diameter": "1mm"}],
+                            "thermal_pad": [
+                                {
+                                    "layer_name": "1_Top",
+                                    "shape": "round90",
+                                    "inner": "1mm",
+                                    "channel_width": "0.2mm",
+                                    "isolation_gap": "0.3mm",
+                                }
+                            ],
+                        },
+                        "hole_parameters": {
+                            "shape": "circle",
+                            "diameter": "0.2mm",
+                        },
                     }
                 ],
+            }
+        }
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        pad_params = edbapp.padstacks.definitions["v35h15"].pad_parameters
+        assert pad_params["regular_pad"][0]["diameter"] == "0.5mm"
+        assert pad_params["regular_pad"][0]["offset_x"] == "0.1mm"
+        assert pad_params["anti_pad"][0]["diameter"] == "1mm"
+        assert pad_params["thermal_pad"][0]["inner"] == "1mm"
+        assert pad_params["thermal_pad"][0]["channel_width"] == "0.2mm"
+
+        hole_params = edbapp.padstacks.definitions["v35h15"].hole_parameters
+        assert hole_params["shape"] == "circle"
+        assert hole_params["diameter"] == "0.2mm"
+
+        data_from_db = edbapp.configuration.get_data_from_db(padstacks=True)
+        assert data_from_db["padstacks"]["definitions"]
+        edbapp.close()
+
+    def test_09_padstack_instance(self, edb_examples):
+        data = {
+            "padstacks": {
                 "instances": [
                     {
                         "name": "Via998",
+                        "definition": "v35h15",
                         "backdrill_top": {
                             "drill_to_layer": "Inner3(Sig1)",
                             "drill_diameter": "0.5mm",
