@@ -41,9 +41,10 @@ class Primitive(GrpcPrimitive):
     >>> edb_prim.IsVoid() # EDB Object Property
     """
 
-    def __init__(self, pedb):
-        super().__init__(self.msg)
+    def __init__(self, pedb, edb_object):
+        super().__init__(edb_object)
         self._pedb = pedb
+        self._edb_object = edb_object
         self._core_stackup = pedb.stackup
         self._core_net = pedb.nets
 

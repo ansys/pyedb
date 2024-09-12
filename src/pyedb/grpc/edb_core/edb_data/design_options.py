@@ -35,11 +35,11 @@ class EdbDesignOptions:
             ``True`` if suppress non-functional pads is on, ``False`` otherwise.
 
         """
-        return self._active_cell.GetSuppressPads()
+        return self._active_cell.suppress_pads
 
     @suppress_pads.setter
     def suppress_pads(self, value):
-        self._active_cell.SetSuppressPads(value)
+        self._active_cell.suppress_pads = value
 
     @property
     def antipads_always_on(self):
@@ -51,8 +51,8 @@ class EdbDesignOptions:
             ``True`` if antipad is always on, ``False`` otherwise.
 
         """
-        return self._active_cell.GetAntiPadsAlwaysOn()
+        return self._active_cell.anti_pads_always_on
 
     @antipads_always_on.setter
     def antipads_always_on(self, value):
-        self._active_cell.SetAntiPadsAlwaysOn(value)
+        self._active_cell.anti_pads_always_on = value
