@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 
-class EDBStatistics(object):
+class LayoutStatistics(object):
     """Statistics object
 
     Object properties example.

@@ -22,58 +22,10 @@
 
 from __future__ import absolute_import
 
-from ansys.edb.core.layer.layer import Layer as GrpcLayer
 from ansys.edb.core.layer.layer import LayerType as GrpcLayerType
 from ansys.edb.core.layer.stackup_layer import RoughnessRegion as GrpcRoughnessRegion
 from ansys.edb.core.layer.stackup_layer import StackupLayer as GrpcStackupLayer
 from ansys.edb.core.utility.value import Value as GrpcValue
-
-
-class Layer(GrpcLayer):
-    """Manages Edb Layers. Replaces EDBLayer."""
-
-    def __init__(self, pedb, edb_object=None, name="", layer_type="undefined", **kwargs):
-        super().__init__(edb_object)
-        self._pedb = pedb
-        self._name = name
-        self._color = ()
-        self._type = ""
-        if edb_object:
-            self._cloned_layer = self.clone()
-        else:
-            layer_type_mapping = {
-                "conducting_layer": GrpcLayerType.CONDUCTING_LAYER,
-                "air_lines_layer": GrpcLayerType.AIRLINES_LAYER,
-                "errors_layer": GrpcLayerType.ERRORS_LAYER,
-                "symbol_layer": GrpcLayerType.SYMBOL_LAYER,
-                "measure_layer": GrpcLayerType.MEASURE_LAYER,
-                "assembly_layer": GrpcLayerType.ASSEMBLY_LAYER,
-                "silkscreen_layer": GrpcLayerType.SILKSCREEN_LAYER,
-                "solder_mask_layer": GrpcLayerType.SOLDER_MASK_LAYER,
-                "solder_paste_layer": GrpcLayerType.SOLDER_PASTE_LAYER,
-                "glue_layer": GrpcLayerType.GLUE_LAYER,
-                "wirebond_layer": GrpcLayerType.WIREBOND_LAYER,
-                "user_layer": GrpcLayerType.USER_LAYER,
-                "siwave_hfss_solver_regions": GrpcLayerType.SIWAVE_HFSS_SOLVER_REGIONS,
-                "postprocessing_layer": GrpcLayerType.POST_PROCESSING_LAYER,
-                "outline_layer": GrpcLayerType.OUTLINE_LAYER,
-                "layer_types_count": GrpcLayerType.LAYER_TYPES_COUNT,
-                "undefined_layer_type": GrpcLayerType.UNDEFINED_LAYER_TYPE,
-            }
-            if layer_type in layer_type_mapping:
-                self.create(name=name, lyr_type=layer_type_mapping[layer_type])
-                self.update(**kwargs)
-
-    def update(self, **kwargs):
-        for k, v in kwargs.items():
-            if k in dir(self):
-                self.__setattr__(k, v)
-            else:
-                self._pedb.logger.error(f"{k} is not a valid layer attribute")
-
-    @property
-    def _layer_name_mapping_reversed(self):
-        return {j: i for i, j in self._layer_name_mapping.items()}
 
 
 class StackupLayer(GrpcStackupLayer):
