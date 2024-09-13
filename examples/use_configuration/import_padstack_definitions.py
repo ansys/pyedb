@@ -9,14 +9,14 @@
 
 # +
 import json
-import tempfile
-import pandas as pd
-
-from ansys.aedt.core.downloads import download_file
-from pyedb import Edb
 from pathlib import Path
+import tempfile
 
 from IPython.display import display
+from ansys.aedt.core.downloads import download_file
+import pandas as pd
+
+from pyedb import Edb
 
 AEDT_VERSION = "2024.2"
 
@@ -56,7 +56,7 @@ cfg["padstacks"]["definitions"] = [
         "hole_parameters": {
             "shape": "circle",
             "diameter": "0.15mm",
-        }
+        },
     }
 ]
 
@@ -117,10 +117,8 @@ cfg["padstacks"]["definitions"] = [
                     "size": "0.5mm",
                 },
             ],
-            "anti_pad": [
-                {"layer_name": "1_Top", "shape": "circle", "diameter": "1mm"}
-            ]
-        }
+            "anti_pad": [{"layer_name": "1_Top", "shape": "circle", "diameter": "1mm"}],
+        },
     }
 ]
 
