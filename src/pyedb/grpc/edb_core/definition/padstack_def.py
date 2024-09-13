@@ -20,7 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import math
+
 from ansys.edb.core.definition.package_def import PackageDef as GrpcPackageDef
+from ansys.edb.core.definition.padstack_def_data import (
+    PadstackHoleRange as GrpcPadstackHoleRange,
+)
+from ansys.edb.core.primitive.primitive import Circle as GrpcCircle
+from ansys.edb.core.utility.value import Value as GrpcValue
 
 
 class PadstackDef(GrpcPackageDef):
@@ -110,89 +117,11 @@ class PadstackDef(GrpcPackageDef):
 
     @hole_diameter.setter
     def hole_diameter(self, value):
-        params = convert_py_list_to_net_list([self._get_edb_value(value)])
-        self._update_hole_parameters(params=params)
-
-    @property
-    def hole_diameter_string(self):
-        """Hole diameter in string format."""
-        return list(self.hole_params[2])[0].ToString()
-
-    def _update_hole_parameters(self, hole_type=None, params=None, offsetx=None, offsety=None, rotation=None):
-        """Update hole parameters.
-
-        Parameters
-        ----------
-        hole_type : optional
-            Type of the hole. The default is ``None``.
-        params : optional
-            The default is ``None``.
-        offsetx : float, optional
-            Offset value for the X axis. The default is ``None``.
-        offsety :  float, optional
-            Offset value for the Y axis. The default is ``None``.
-        rotation : float, optional
-            Rotation value in degrees. The default is ``None``.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-        """
-        originalPadstackDefinitionData = self.edb_padstack.GetData()
-        newPadstackDefinitionData = self._edb.definition.PadstackDefData(originalPadstackDefinitionData)
-        if not hole_type:
-            hole_type = self.hole_type
-        if not params:
-            params = self.hole_parameters
-        if isinstance(params, list):
-            params = convert_py_list_to_net_list(params)
-        if not offsetx:
-            offsetx = self.hole_offset_x
-        if not offsety:
-            offsety = self.hole_offset_y
-        if not rotation:
-            rotation = self.hole_rotation
-        newPadstackDefinitionData.SetHoleParameters(
-            hole_type,
-            params,
-            self._get_edb_value(offsetx),
-            self._get_edb_value(offsety),
-            self._get_edb_value(rotation),
-        )
-        self.edb_padstack.SetData(newPadstackDefinitionData)
-
-    @property
-    def hole_properties(self):
-        """Hole properties.
-
-        Returns
-        -------
-        list
-            List of float values for hole properties.
-        """
-        self._hole_properties = [i.ToDouble() for i in self.hole_params[2]]
-        return self._hole_properties
-
-    @hole_properties.setter
-    def hole_properties(self, propertylist):
-        if not isinstance(propertylist, list):
-            propertylist = [self._get_edb_value(propertylist)]
-        else:
-            propertylist = [self._get_edb_value(i) for i in propertylist]
-        self._update_hole_parameters(params=propertylist)
-
-    @property
-    def hole_type(self):
-        """Hole type.
-
-        Returns
-        -------
-        int
-            Type of the hole.
-        """
-        self._hole_type = self.hole_params[1]
-        return self._hole_type
+        hole_geometry = GrpcCircle(self.__hole_parameters()[0])
+        hole_parameters = hole_geometry.get_parameters()
+        updated_parameters = (hole_parameters[0], hole_parameters[1], GrpcValue(value))
+        self.data.set_hole_parameters(updated_parameters)
+        self.edb_padstack.set_data(self.data)
 
     @property
     def hole_offset_x(self):
@@ -203,13 +132,14 @@ class PadstackDef(GrpcPackageDef):
         str
             Hole offset value for the X axis.
         """
-        self._hole_offset_x = self.hole_params[3].ToString()
-        return self._hole_offset_x
+        return self.__hole_parameters()[1].value
 
     @hole_offset_x.setter
-    def hole_offset_x(self, offset):
-        self._hole_offset_x = offset
-        self._update_hole_parameters(offsetx=offset)
+    def hole_offset_x(self, value):
+        hole_parameters = self.__hole_parameters()
+        updated_parameters = (hole_parameters[0], GrpcValue(value), hole_parameters[2], hole_parameters[3])
+        self.data.set_hole_parameters(updated_parameters)
+        self.edb_padstack.set_data(self.data)
 
     @property
     def hole_offset_y(self):
@@ -220,13 +150,14 @@ class PadstackDef(GrpcPackageDef):
         str
             Hole offset value for the Y axis.
         """
-        self._hole_offset_y = self.hole_params[4].ToString()
-        return self._hole_offset_y
+        return self.__hole_parameters()[2].value
 
     @hole_offset_y.setter
-    def hole_offset_y(self, offset):
-        self._hole_offset_y = offset
-        self._update_hole_parameters(offsety=offset)
+    def hole_offset_y(self, value):
+        hole_parameters = self.__hole_parameters()
+        updated_parameters = (hole_parameters[0], hole_parameters[1], GrpcValue(value), hole_parameters[3])
+        self.data.set_hole_parameters(updated_parameters)
+        self.edb_padstack.set_data(self.data)
 
     @property
     def hole_rotation(self):
@@ -237,13 +168,14 @@ class PadstackDef(GrpcPackageDef):
         str
             Value for the hole rotation.
         """
-        self._hole_rotation = self.hole_params[5].ToString()
-        return self._hole_rotation
+        return self.__hole_parameters()[3].value
 
     @hole_rotation.setter
-    def hole_rotation(self, rotation):
-        self._hole_rotation = rotation
-        self._update_hole_parameters(rotation=rotation)
+    def hole_rotation(self, value):
+        hole_parameters = self.__hole_parameters()
+        updated_parameters = (hole_parameters[0], hole_parameters[1], hole_parameters[2], GrpcValue(value))
+        self.data.set_hole_parameters(updated_parameters)
+        self.edb_padstack.set_data(self.data)
 
     @property
     def hole_plating_ratio(self):
@@ -254,14 +186,12 @@ class PadstackDef(GrpcPackageDef):
         float
             Percentage for the hole plating.
         """
-        return self._edb.definition.PadstackDefData(self.edb_padstack.GetData()).GetHolePlatingPercentage()
+        return self.data.plating_percentage.value
 
     @hole_plating_ratio.setter
     def hole_plating_ratio(self, ratio):
-        originalPadstackDefinitionData = self.edb_padstack.GetData()
-        newPadstackDefinitionData = self._edb.definition.PadstackDefData(originalPadstackDefinitionData)
-        newPadstackDefinitionData.SetHolePlatingPercentage(self._get_edb_value(ratio))
-        self.edb_padstack.SetData(newPadstackDefinitionData)
+        self.data.plating_percentage = GrpcValue(ratio)
+        self.edb_padstack.set_data(self.data)
 
     @property
     def hole_plating_thickness(self):
@@ -272,8 +202,8 @@ class PadstackDef(GrpcPackageDef):
         float
             Thickness of the hole plating if present.
         """
-        if len(self.hole_properties) > 0:
-            return (float(self.hole_properties[0]) * self.hole_plating_ratio / 100) / 2
+        if len(self.__hole_parameters()) > 0:
+            return (self.hole_diameter * self.hole_plating_ratio / 100) / 2
         else:
             return 0
 
@@ -286,8 +216,7 @@ class PadstackDef(GrpcPackageDef):
         float
             Thickness of the hole plating if present.
         """
-        value = self._get_edb_value(value).ToDouble()
-        hr = 200 * float(value) / float(self.hole_properties[0])
+        hr = 200 * GrpcValue(value).value / self.hole_diameter
         self.hole_plating_ratio = hr
 
     @property
@@ -299,28 +228,10 @@ class PadstackDef(GrpcPackageDef):
         float
             Finished size of the hole (Total Size + PlatingThickess*2).
         """
-        if len(self.hole_properties) > 0:
-            return float(self.hole_properties[0]) - (self.hole_plating_thickness * 2)
+        if len(self.__hole_parameters()) > 0:
+            return self.hole_diameter - (self.hole_plating_thickness * 2)
         else:
             return 0
-
-    @property
-    def material(self):
-        """Hole material.
-
-        Returns
-        -------
-        str
-            Material of the hole.
-        """
-        return self.edb_padstack.GetData().GetMaterial()
-
-    @material.setter
-    def material(self, materialname):
-        originalPadstackDefinitionData = self.edb_padstack.GetData()
-        newPadstackDefinitionData = self._edb.definition.PadstackDefData(originalPadstackDefinitionData)
-        newPadstackDefinitionData.SetMaterial(materialname)
-        self.edb_padstack.SetData(newPadstackDefinitionData)
 
     @property
     def padstack_instances(self):
@@ -330,7 +241,7 @@ class PadstackDef(GrpcPackageDef):
         -------
         dict
         """
-        return {id: via for id, via in self._ppadstack.instances.items() if via.padstack_definition == self.name}
+        return {id: inst for id, inst in self._ppadstack.instances.items() if inst.padstack_definition == self.name}
 
     @property
     def hole_range(self):
@@ -342,34 +253,22 @@ class PadstackDef(GrpcPackageDef):
             Possible returned values are ``"through"``, ``"begin_on_upper_pad"``,
             ``"end_on_lower_pad"``, ``"upper_pad_to_lower_pad"``, and ``"undefined"``.
         """
-        cloned_padstackdef_data = self._edb.definition.PadstackDefData(self.edb_padstack.GetData())
-        hole_ange_type = int(cloned_padstackdef_data.GetHoleRange())
-        if hole_ange_type == 0:  # pragma no cover
-            return "through"
-        elif hole_ange_type == 1:  # pragma no cover
-            return "begin_on_upper_pad"
-        elif hole_ange_type == 2:  # pragma no cover
-            return "end_on_lower_pad"
-        elif hole_ange_type == 3:  # pragma no cover
-            return "upper_pad_to_lower_pad"
-        else:  # pragma no cover
-            return "undefined"
+        return self.data.hole_range.value.name.lower()
 
     @hole_range.setter
     def hole_range(self, value):
-        if isinstance(value, str):  # pragma no cover
-            cloned_padstackdef_data = self._edb.definition.PadstackDefData(self.edb_padstack.GetData())
-            if value == "through":  # pragma no cover
-                cloned_padstackdef_data.SetHoleRange(self._edb.definition.PadstackHoleRange.Through)
-            elif value == "begin_on_upper_pad":  # pragma no cover
-                cloned_padstackdef_data.SetHoleRange(self._edb.definition.PadstackHoleRange.BeginOnUpperPad)
-            elif value == "end_on_lower_pad":  # pragma no cover
-                cloned_padstackdef_data.SetHoleRange(self._edb.definition.PadstackHoleRange.EndOnLowerPad)
-            elif value == "upper_pad_to_lower_pad":  # pragma no cover
-                cloned_padstackdef_data.SetHoleRange(self._edb.definition.PadstackHoleRange.UpperPadToLowerPad)
+        if isinstance(value, str):
+            if value == "through":
+                self.data.hole_range = GrpcPadstackHoleRange.THROUGH
+            elif value == "begin_on_upper_pad":
+                self.data.hole_range = GrpcPadstackHoleRange.BEGIN_ON_UPPER_PAD
+            elif value == "end_on_lower_pad":
+                self.data.hole_range = GrpcPadstackHoleRange.END_ON_LOWER_PAD
+            elif value == "upper_pad_to_lower_pad":
+                self.data.hole_range = GrpcPadstackHoleRange.UPPER_PAD_TO_LOWER_PAD
             else:  # pragma no cover
-                return
-            self.edb_padstack.SetData(cloned_padstackdef_data)
+                self.data.hole_range = GrpcPadstackHoleRange.UNKNOWN_RANGE
+            self.edb_padstack.SetData(self.data)
 
     def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True):
         """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
@@ -392,11 +291,11 @@ class PadstackDef(GrpcPackageDef):
             ``True`` when successful, ``False`` when failed.
         """
 
-        if len(self.hole_properties) == 0:
+        if len(self.__hole_parameters()) == 0:
             self._ppadstack._pedb.logger.error("Microvias cannot be applied on vias using hole shape polygon")
             return False
 
-        if self.via_start_layer == self.via_stop_layer:
+        if self.start_layer == self.stop_layer:
             self._ppadstack._pedb.logger.error("Microvias cannot be applied when Start and Stop Layers are the same.")
         layout = self._ppadstack._pedb.active_layout
         layers = self._ppadstack._pedb.stackup.signal_layers
@@ -404,18 +303,18 @@ class PadstackDef(GrpcPackageDef):
         if convert_only_signal_vias:
             signal_nets = [i for i in list(self._ppadstack._pedb.nets.signal_nets.keys())]
         topl, topz, bottoml, bottomz = self._ppadstack._pedb.stackup.limits(True)
-        if self.via_start_layer in layers:
-            start_elevation = layers[self.via_start_layer].lower_elevation
+        if self.start_layer in layers:
+            start_elevation = layers[self.start_layer].lower_elevation
         else:
             start_elevation = layers[self.instances[0].start_layer].lower_elevation
-        if self.via_stop_layer in layers:
-            stop_elevation = layers[self.via_stop_layer].upper_elevation
+        if self.stop_layer in layers:
+            stop_elevation = layers[self.stop_layer].upper_elevation
         else:
             stop_elevation = layers[self.instances[0].stop_layer].upper_elevation
 
         diel_thick = abs(start_elevation - stop_elevation)
-        rad1 = self.hole_properties[0] / 2 - math.tan(hole_wall_angle * diel_thick * math.pi / 180)
-        rad2 = self.hole_properties[0] / 2
+        rad1 = self.hole_diameter / 2 - math.tan(hole_wall_angle * diel_thick * math.pi / 180)
+        rad2 = self.hole_diameter / 2
 
         if start_elevation < (topz + bottomz) / 2:
             rad1, rad2 = rad2, rad1
@@ -424,35 +323,35 @@ class PadstackDef(GrpcPackageDef):
             if convert_only_signal_vias and via.net_name in signal_nets or not convert_only_signal_vias:
                 pos = via.position
                 started = False
-                if len(self.pad_by_layer[self.via_start_layer].parameters) == 0:
+                if len(self.pad_by_layer[self.start_layer].parameters) == 0:
                     self._ppadstack._pedb.modeler.create_polygon(
-                        self.pad_by_layer[self.via_start_layer].polygon_data._edb_object,
-                        layer_name=self.via_start_layer,
+                        self.pad_by_layer[self.start_layer].polygon_data._edb_object,
+                        layer_name=self.start_layer,
                         net_name=via._edb_padstackinstance.GetNet().GetName(),
                     )
                 else:
-                    self._edb.cell.primitive.circle.create(
+                    GrpcCircle.create(
                         layout,
-                        self.via_start_layer,
-                        via._edb_padstackinstance.GetNet(),
-                        self._get_edb_value(pos[0]),
-                        self._get_edb_value(pos[1]),
-                        self._get_edb_value(self.pad_by_layer[self.via_start_layer].parameters_values[0] / 2),
+                        self.start_layer,
+                        via._edb_padstackinstance.net,
+                        GrpcValue(pos[0]),
+                        GrpcValue(pos[1]),
+                        GrpcValue(self.pad_by_layer[self.start_layer].parameters_values[0] / 2),
                     )
-                if len(self.pad_by_layer[self.via_stop_layer].parameters) == 0:
+                if len(self.pad_by_layer[self.stop_layer].parameters) == 0:
                     self._ppadstack._pedb.modeler.create_polygon(
-                        self.pad_by_layer[self.via_stop_layer].polygon_data._edb_object,
-                        layer_name=self.via_stop_layer,
-                        net_name=via._edb_padstackinstance.GetNet().GetName(),
+                        self.pad_by_layer[self.stop_layer].polygon_data,
+                        layer_name=self.stop_layer,
+                        net_name=via._edb_padstackinstance.net.name,
                     )
                 else:
-                    self._edb.cell.primitive.circle.create(
+                    GrpcCircle.create(
                         layout,
-                        self.via_stop_layer,
+                        self.stop_layer,
                         via._edb_padstackinstance.GetNet(),
-                        self._get_edb_value(pos[0]),
-                        self._get_edb_value(pos[1]),
-                        self._get_edb_value(self.pad_by_layer[self.via_stop_layer].parameters_values[0] / 2),
+                        GrpcValue(pos[0]),
+                        GrpcValue(pos[1]),
+                        GrpcValue(self.pad_by_layer[self.stop_layer].parameters_values[0] / 2),
                     )
                 for layer_name in layer_names:
                     stop = ""
@@ -462,18 +361,18 @@ class PadstackDef(GrpcPackageDef):
                         cloned_circle = self._edb.cell.primitive.circle.create(
                             layout,
                             start,
-                            via._edb_padstackinstance.GetNet(),
-                            self._get_edb_value(pos[0]),
-                            self._get_edb_value(pos[1]),
-                            self._get_edb_value(rad1),
+                            via._edb_padstackinstance.net,
+                            GrpcValue(pos[0]),
+                            GrpcValue(pos[1]),
+                            GrpcValue(rad1),
                         )
-                        cloned_circle2 = self._edb.cell.primitive.circle.create(
+                        cloned_circle2 = GrpcCircle.create(
                             layout,
                             stop,
-                            via._edb_padstackinstance.GetNet(),
-                            self._get_edb_value(pos[0]),
-                            self._get_edb_value(pos[1]),
-                            self._get_edb_value(rad2),
+                            via._edb_padstackinstance.net,
+                            GrpcValue(pos[0]),
+                            GrpcValue(pos[1]),
+                            GrpcValue(rad2),
                         )
                         s3d = self._edb.cell.hierarchy._hierarchy.Structure3D.Create(
                             layout, generate_unique_name("via3d_" + via.aedt_name.replace("via_", ""), n=3)
@@ -635,99 +534,4 @@ class PadstackDef(GrpcPackageDef):
         self._ppadstack._pedb.logger.info("Created {} new microvias.".format(i))
         return new_instances
 
-    def _update_layer_names(self, old_name, updated_name):
-        """Update padstack definition layer name when layer name is edited with the layer name setter.
-        Parameters
-        ----------
-        old_name
-            old name : str
-        updated_name
-            new name : str
-        Returns
-        -------
-        bool
-            ``True`` when succeed ``False`` when failed.
-        """
-        cloned_padstack_data = self._edb.definition.PadstackDefData(self.edb_padstack.GetData())
-        new_padstack_data = self._edb.definition.PadstackDefData.Create()
-        layers_name = cloned_padstack_data.GetLayerNames()
-        layers_to_add = []
-        for layer in layers_name:
-            if layer == old_name:
-                layers_to_add.append(updated_name)
-            else:
-                layers_to_add.append(layer)
-        new_padstack_data.AddLayers(convert_py_list_to_net_list(layers_to_add))
-        for layer in layers_name:
-            updated_pad = self.pad_by_layer[layer]
-            if not updated_pad.geometry_type == 0:  # pragma no cover
-                pad_type = self._edb.definition.PadType.RegularPad
-                geom_type = self.pad_by_layer[layer]._pad_parameter_value[1]
-                parameters = self.pad_by_layer[layer]._pad_parameter_value[2]
-                offset_x = self.pad_by_layer[layer]._pad_parameter_value[3]
-                offset_y = self.pad_by_layer[layer]._pad_parameter_value[4]
-                rot = self.pad_by_layer[layer]._pad_parameter_value[5]
-                if layer == old_name:  # pragma no cover
-                    new_padstack_data.SetPadParameters(
-                        updated_name, pad_type, geom_type, parameters, offset_x, offset_y, rot
-                    )
-                else:
-                    new_padstack_data.SetPadParameters(layer, pad_type, geom_type, parameters, offset_x, offset_y, rot)
-
-            updated_anti_pad = self.antipad_by_layer[layer]
-            if not updated_anti_pad.geometry_type == 0:  # pragma no cover
-                pad_type = self._edb.definition.PadType.AntiPad
-                geom_type = self.pad_by_layer[layer]._pad_parameter_value[1]
-                parameters = self.pad_by_layer[layer]._pad_parameter_value[2]
-                offset_x = self.pad_by_layer[layer]._pad_parameter_value[3]
-                offset_y = self.pad_by_layer[layer]._pad_parameter_value[4]
-                rotation = self.pad_by_layer[layer]._pad_parameter_value[5]
-                if layer == old_name:  # pragma no cover
-                    new_padstack_data.SetPadParameters(
-                        updated_name, pad_type, geom_type, parameters, offset_x, offset_y, rotation
-                    )
-                else:
-                    new_padstack_data.SetPadParameters(
-                        layer, pad_type, geom_type, parameters, offset_x, offset_y, rotation
-                    )
-
-            updated_thermal_pad = self.thermalpad_by_layer[layer]
-            if not updated_thermal_pad.geometry_type == 0:  # pragma no cover
-                pad_type = self._edb.definition.PadType.ThermalPad
-                geom_type = self.pad_by_layer[layer]._pad_parameter_value[1]
-                parameters = self.pad_by_layer[layer]._pad_parameter_value[2]
-                offset_x = self.pad_by_layer[layer]._pad_parameter_value[3]
-                offset_y = self.pad_by_layer[layer]._pad_parameter_value[4]
-                rotation = self.pad_by_layer[layer]._pad_parameter_value[5]
-                if layer == old_name:  # pragma no cover
-                    new_padstack_data.SetPadParameters(
-                        updated_name, pad_type, geom_type, parameters, offset_x, offset_y, rotation
-                    )
-                else:
-                    new_padstack_data.SetPadParameters(
-                        layer, pad_type, geom_type, parameters, offset_x, offset_y, rotation
-                    )
-
-        hole_param = cloned_padstack_data.GetHoleParameters()
-        if hole_param[0]:
-            hole_geom = hole_param[1]
-            hole_params = convert_py_list_to_net_list([self._get_edb_value(i) for i in hole_param[2]])
-            hole_off_x = self._get_edb_value(hole_param[3])
-            hole_off_y = self._get_edb_value(hole_param[4])
-            hole_rot = self._get_edb_value(hole_param[5])
-            new_padstack_data.SetHoleParameters(hole_geom, hole_params, hole_off_x, hole_off_y, hole_rot)
-
-        new_padstack_data.SetHolePlatingPercentage(self._get_edb_value(cloned_padstack_data.GetHolePlatingPercentage()))
-
-        new_padstack_data.SetHoleRange(cloned_padstack_data.GetHoleRange())
-        new_padstack_data.SetMaterial(cloned_padstack_data.GetMaterial())
-        new_padstack_data.SetSolderBallMaterial(cloned_padstack_data.GetSolderBallMaterial())
-        solder_ball_param = cloned_padstack_data.GetSolderBallParameter()
-        if solder_ball_param[0]:
-            new_padstack_data.SetSolderBallParameter(
-                self._get_edb_value(solder_ball_param[1]), self._get_edb_value(solder_ball_param[2])
-            )
-        new_padstack_data.SetSolderBallPlacement(cloned_padstack_data.GetSolderBallPlacement())
-        new_padstack_data.SetSolderBallShape(cloned_padstack_data.GetSolderBallShape())
-        self.edb_padstack.SetData(new_padstack_data)
-        return True
+    # TODO check if update layer name is needed.
