@@ -1,0 +1,98 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+from ansys.edb.core.utility.heat_sink import (
+    HeatSinkFinOrientation as GrpcHeatSinkFinOrientation,
+)
+from ansys.edb.core.utility.heat_sink import HeatSink as GrpcHeatSink
+from ansys.edb.core.utility.value import Value as GrpcValue
+
+
+class HeatSink(GrpcHeatSink):
+
+    """Heatsink model description.
+
+    Parameters
+    ----------
+    pedb : :class:`pyedb.dotnet.edb.Edb`
+        Inherited object.
+    edb_object : :class:`Ansys.Ansoft.Edb.Utility.HeatSink`,
+    """
+
+    def __init__(self, pedb, edb_object=None):
+        self._pedb = pedb
+        super().__init__(edb_object)
+        self._fin_orientation_type = {
+            "x_oriented": GrpcHeatSinkFinOrientation.X_ORIENTED,
+            "y_oriented": GrpcHeatSinkFinOrientation.Y_ORIENTED,
+            "other_oriented": GrpcHeatSinkFinOrientation.OTHER_ORIENTED,
+        }
+
+        if edb_object:
+            self._edb_object = edb_object
+        else:
+            self._edb_object = GrpcHeatSink()
+
+    @property
+    def fin_base_height(self):
+        """The base elevation of the fins."""
+        return self.fin_base_height.value
+
+    @fin_base_height.setter
+    def fin_base_height(self, value):
+        self.fin_height = GrpcValue(value)
+
+    @property
+    def fin_height(self):
+        """The fin height."""
+        return self.fin_base_height.value
+
+    @fin_height.setter
+    def fin_height(self, value):
+        self.fin_base_height = GrpcValue(value)
+
+    @property
+    def fin_orientation(self):
+        """The fin orientation."""
+        return self.fin_orientation.name.lower()
+
+    @fin_orientation.setter
+    def fin_orientation(self, value):
+        self.fin_orientation = self._fin_orientation_type[value]
+
+    @property
+    def fin_spacing(self):
+        """The fin spacing."""
+        return self.fin_spacing.value
+
+    @fin_spacing.setter
+    def fin_spacing(self, value):
+        self.fin_spacing = GrpcValue(value)
+
+    @property
+    def fin_thickness(self):
+        """The fin thickness."""
+        return self.fin_thickness.value
+
+    @fin_thickness.setter
+    def fin_thickness(self, value):
+        self.fin_thickness = GrpcValue(value)
