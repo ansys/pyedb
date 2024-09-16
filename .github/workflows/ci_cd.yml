@@ -152,6 +152,11 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
+      - name: "Install os packages"
+        run: |
+          sudo apt update
+          sudo apt install libgl1-mesa-glx xvfb
+
       - name: Create Python venv
         run: |
           python -m venv .venv
@@ -174,7 +179,7 @@ jobs:
           timeout_minutes: 15
           command: |
             . .venv/bin/activate
-            pytest -m "legacy" -n auto --dist loadfile -v --cov
+            xvfb-run pytest -m "legacy" -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
