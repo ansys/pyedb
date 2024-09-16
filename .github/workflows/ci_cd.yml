@@ -144,7 +144,6 @@ jobs:
       - name: "Install Git and clone project"
         uses: actions/checkout@v4
 
-      # Revert to previous verison due too setup-python#819
       - name: "Set up Python"
         uses: actions/setup-python@v5
         with:
@@ -366,7 +365,7 @@ jobs:
 
   package:
     name: Package library
-    needs: [legacy-tests, docs-build]
+    needs: [legacy-tests-windows, legacy-tests-linux, docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
