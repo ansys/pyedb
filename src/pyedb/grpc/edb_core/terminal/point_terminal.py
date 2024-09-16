@@ -26,9 +26,10 @@ from ansys.edb.core.terminal.terminals import PointTerminal as GrpcPointTerminal
 class PointTerminal(GrpcPointTerminal):
     """Manages point terminal properties."""
 
-    def __init__(self, pedb):
-        super().__init__(self.msg)
+    def __init__(self, pedb, edb_object):
+        super().__init__(edb_object)
         self._pedb = pedb
+        self._edb_object = edb_object
 
     @property
     def location(self):

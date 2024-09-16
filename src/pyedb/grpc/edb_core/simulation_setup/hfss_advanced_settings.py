@@ -20,13 +20,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.terminal.terminals import PinGroupTerminal as GrpcPinGroupTerminal
+
+from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
+    HFSSAdvancedSettings as GrpcHFSSAdvancedSettings,
+)
+from ansys.edb.core.simulation_setup.simulation_settings import ViaStyle as GrpcViaStyle
 
 
-class PinGroupTerminal(GrpcPinGroupTerminal):
-    """Manages pin group terminal properties."""
-
+class HFSSAdvancedSettings(GrpcHFSSAdvancedSettings):
     def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
-        self._edb_object = edb_object
         self._pedb = pedb
+
+    @property
+    def via_model_type(self):
+        return self.via_model_type.name
+
+    @via_model_type.setter
+    def via_model_type(self, value):
+        if isinstance(value, str):
+            if value.upper() == "WIREBOND":
+                self.via_model_type = GrpcViaStyle.WIREBOND
+            elif value.lower() == "RIBBON":
+                self.via_model_type = GrpcViaStyle.RIBBON
+            elif value.lower() == "MESH":
+                self.via_model_type = GrpcViaStyle.MESH
+            elif value.lower() == "FIELD":
+                self.via_model_type = GrpcViaStyle.FIELD
+            elif value.lower() == "NUM_VIA_STYLE":
+                self.via_model_type = GrpcViaStyle.NUM_VIA_STYLE

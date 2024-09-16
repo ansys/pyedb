@@ -20,13 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.terminal.terminals import PinGroupTerminal as GrpcPinGroupTerminal
+
+from ansys.edb.core.simulation_setup.adaptive_solutions import (
+    AdaptiveFrequency as GrpcAdaptiveFrequency,
+)
 
 
-class PinGroupTerminal(GrpcPinGroupTerminal):
-    """Manages pin group terminal properties."""
+class AdaptiveFrequency(GrpcAdaptiveFrequency):
+    """Manages EDB methods for adaptive frequency data."""
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
-        self._edb_object = edb_object
-        self._pedb = pedb
+    def __init__(self, adaptive_frequency):
+        super().__init__(adaptive_frequency)

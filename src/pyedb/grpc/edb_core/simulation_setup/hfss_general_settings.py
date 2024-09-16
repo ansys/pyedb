@@ -20,13 +20,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.terminal.terminals import PinGroupTerminal as GrpcPinGroupTerminal
+
+from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
+    AdaptType as GrpcAdaptType,
+)
+from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
+    HFSSGeneralSettings as GrpcHFSSGeneralSettings,
+)
 
 
-class PinGroupTerminal(GrpcPinGroupTerminal):
-    """Manages pin group terminal properties."""
-
+class HFSSGeneralSettings(GrpcHFSSGeneralSettings):
     def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
-        self._edb_object = edb_object
         self._pedb = pedb
+
+    @property
+    def adaptive_solution_type(self):
+        return self.adaptive_solution_type.name
+
+    @adaptive_solution_type.setter
+    def adaptive_solution_type(self, value):
+        if isinstance(value, str):
+            if value.lower() == "singlw":
+                self.adaptive_solution_type = GrpcAdaptType.SINGLE
+            elif value.lower() == "multi_frequencies":
+                self.adaptive_solution_type = GrpcAdaptType.MULTI_FREQUENCIES
+            elif value.lower() == "broad_band":
+                self.adaptive_solution_type = GrpcAdaptType.BROADBAND
+            elif value.lower() == "num_adapt_type":
+                self.adaptive_solution_type = GrpcAdaptType.NUM_ADAPT_TYPE

@@ -20,22 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.net.differential_pair import (
-    DifferentialPair as GrpcDifferentialPair,
-)
-from ansys.edb.core.net.extended_net import ExtendedNet as GrpcExtendedNet
 from ansys.edb.core.net.net import Net as GrpcNet
-from ansys.edb.core.net.net_class import NetClass as GrpcNetClass
 from ansys.edb.core.primitive.primitive import PrimitiveType as GrpcPrimitiveType
 
-from pyedb.grpc.edb_core.cell.primitive.primitive import Primitive
-
-# from pyedb.dotnet.edb_core.dotnet.database import (
-#    DifferentialPairDotNet,
-#    ExtendedNetDotNet,
-#    NetClassDotNet,
-#    NetDotNet,
-# )
+from pyedb.grpc.edb_core.hierarchy.component import Component
+from pyedb.grpc.edb_core.nets.extended_net import ExtendedNet
+from pyedb.grpc.edb_core.primitive.padstack_instances import PadstackInstance
+from pyedb.grpc.edb_core.primitive.primitive import Primitive
 
 
 class Net(GrpcNet):
@@ -75,7 +66,7 @@ class Net(GrpcNet):
         Returns
         -------
         list of :class:`pyedb.dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`"""
-        return [PadstackInstance(i, self._pedb) for i in self.padstack_instances]
+        return [PadstackInstance(self._pedb, i) for i in self.padstack_instances]
 
     @property
     def components(self):
@@ -173,103 +164,3 @@ class Net(GrpcNet):
         >>> app.nets["BST_V3P3_S5"].extended_net
         """
         return ExtendedNet(self._pedb, self.extended_net)
-
-
-class NetClass(GrpcNetClass):
-    """Manages EDB functionalities for a primitives.
-    It inherits EDB Object properties.
-
-    Examples
-    --------
-    >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2021.2")
-    >>> edb.net_classes
-    """
-
-    def __init__(self, core_app, raw_extended_net=None):
-        super().__init__(raw_extended_net)
-        self._app = core_app
-        self._core_components = core_app.components
-        self._core_primitive = core_app.modeler
-        self._core_nets = core_app.nets
-
-
-class ExtendedNet(GrpcExtendedNet):
-    """Manages EDB functionalities for a primitives.
-    It Inherits EDB Object properties.
-    """
-
-    def __init__(self, core_app, raw_extended_net=None):
-        self._app = core_app
-        self._core_components = core_app.components
-        self._core_primitive = core_app.modeler
-        self._core_nets = core_app.nets
-        ExtendedNet.__init__(self, self._app, raw_extended_net)
-
-    @property
-    def nets(self):
-        """Nets dictionary."""
-        return {net.name: Net(self._app, net) for net in self.nets}
-
-    @property
-    def components(self):
-        """Dictionary of components."""
-        comps = {}
-        for _, obj in self.nets.items():
-            comps.update(obj.components)
-        return comps
-
-    @property
-    def rlc(self):
-        """Dictionary of RLC components."""
-        return {
-            name: comp for name, comp in self.components.items() if comp.type in ["Inductor", "Resistor", "Capacitor"]
-        }
-
-    @property
-    def serial_rlc(self):
-        """Dictionary of serial RLC components."""
-        res = {}
-        nets = self.nets
-        for comp_name, comp_obj in self.components.items():
-            if comp_obj.type not in ["Resistor", "Inductor", "Capacitor"]:
-                continue
-            if set(comp_obj.nets).issubset(set(nets)):
-                res[comp_name] = comp_obj
-        return res
-
-    @property
-    def shunt_rlc(self):
-        """Dictionary of shunt RLC components."""
-        res = {}
-        nets = self.nets
-        for comp_name, comp_obj in self.components.items():
-            if comp_obj.type not in ["Resistor", "Inductor", "Capacitor"]:
-                continue
-            if not set(comp_obj.nets).issubset(set(nets)):
-                res[comp_name] = comp_obj
-        return res
-
-
-class DifferentialPair(GrpcDifferentialPair):
-    """Manages EDB functionalities for a primitive.
-    It inherits EDB object properties.
-    """
-
-    def __init__(self, core_app, edb_object=None):
-        super().__init__(edb_object)
-        self._app = core_app
-        self._core_components = core_app.components
-        self._core_primitive = core_app.modeler
-        self._core_nets = core_app.nets
-        DifferentialPair.__init__(self, self._app, edb_object)
-
-    @property
-    def positive_net(self):
-        """Positive Net."""
-        return Net(self._app, self.positive_net)
-
-    @property
-    def negative_net(self):
-        """Negative Net."""
-        return Net(self._app, self.negative_net)

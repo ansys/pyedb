@@ -47,7 +47,7 @@ class PadstackInstance(GrpcPadstackInstance):
     >>> edb_padstack_instance = edb.padstacks.instances[0]
     """
 
-    def __init__(self, edb_instance, pedb):
+    def __init__(self, pedb, edb_instance):
         super().__init__(edb_instance)
         self._edb_object = edb_instance
         self._bounding_box = []

@@ -25,25 +25,24 @@ This module contains these classes: `EdbLayout` and `Shape`.
 """
 from typing import Union
 
+from ansys.edb.core.hierarchy.component_group import ComponentGroup
 from ansys.edb.core.layout.layout import Layout as GrpcLayout
 
-from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
-from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
-from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
-from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
+from pyedb.grpc.edb_core.hierarchy.component import Component
+from pyedb.grpc.edb_core.hierarchy.pingroup import PinGroup
+from pyedb.grpc.edb_core.layout.voltage_regulator import VoltageRegulator
+from pyedb.grpc.edb_core.nets.differential_pair import DifferentialPair
+from pyedb.grpc.edb_core.nets.extended_net import ExtendedNet
+from pyedb.grpc.edb_core.nets.net import Net
+from pyedb.grpc.edb_core.nets.net_class import NetClass
+from pyedb.grpc.edb_core.primitive.padstack_instances import PadstackInstance
+from pyedb.grpc.edb_core.terminal.bundle_terminal import BundleTerminal
+from pyedb.grpc.edb_core.terminal.edge_terminal import EdgeTerminal
+from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
-from pyedb.dotnet.edb_core.cell.terminal.pingroup_terminal import PinGroupTerminal
-from pyedb.dotnet.edb_core.cell.terminal.point_terminal import PointTerminal
-from pyedb.dotnet.edb_core.cell.voltage_regulator import VoltageRegulator
-from pyedb.dotnet.edb_core.edb_data.nets_data import (
-    EDBDifferentialPairData,
-    EDBExtendedNetData,
-    EDBNetClassData,
-    EDBNetsData,
-)
-from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.dotnet.edb_core.edb_data.sources import PinGroup
+from pyedb.grpc.edb_core.terminal.pingroup_terminal import PinGroupTerminal
+from pyedb.grpc.edb_core.terminal.point_terminal import PointTerminal
 
 
 class Layout(GrpcLayout):
@@ -69,15 +68,15 @@ class Layout(GrpcLayout):
         """
         temp = []
         for i in self.terminals:
-            if i.terminal_type == "pin_group":
+            if i.type == "pin_group":
                 temp.append(PinGroupTerminal(self._pedb, i))
-            elif i.terminal_type == "padstack_instance":
+            elif i.type == "padstack_instance":
                 temp.append(PadstackInstanceTerminal(self._pedb, i))
-            elif i.terminal_type == "edge":
+            elif i.type == "edge":
                 temp.append(EdgeTerminal(self._pedb, i))
-            elif i.terminal_type == "Bundle":
+            elif i.type == "bundle":
                 temp.append(BundleTerminal(self._pedb, i))
-            elif i.terminal_type == "Point":
+            elif i.type == "point":
                 temp.append(PointTerminal(self._pedb, i))
         return temp
 
@@ -88,7 +87,7 @@ class Layout(GrpcLayout):
         Returns
         -------
         """
-        return [EDBNetsData(net, self._pedb) for net in self.nets]
+        return [Net(self._pedb, net) for net in self.nets]
 
     @property
     def bondwires(self):
@@ -103,13 +102,7 @@ class Layout(GrpcLayout):
 
     @property
     def groups(self):
-        temp = []
-        for i in self.groups:
-            if i.component:
-                temp.append(EDBComponent(self._pedb, i))
-            else:
-                pass
-        return temp
+        return [Component(self._pedb, g) for g in self.groups if g.type == ComponentGroup]
 
     @property
     def pin_groups(self):
@@ -117,20 +110,20 @@ class Layout(GrpcLayout):
 
     @property
     def net_classes(self):
-        return [EDBNetClassData(self._pedb, i) for i in self.net_classes]
+        return [NetClass(self._pedb, i) for i in self.net_classes]
 
     @property
     def extended_nets(self):
-        return [EDBExtendedNetData(self._pedb, i) for i in self.extended_nets]
+        return [ExtendedNet(self._pedb, i) for i in self.extended_nets]
 
     @property
     def differential_pairs(self):
-        return [EDBDifferentialPairData(self._pedb, i) for i in self.differential_pairs]
+        return [DifferentialPair(self._pedb, i) for i in self.differential_pairs]
 
     @property
     def padstack_instances(self):
         """Get all padstack instances in a list."""
-        return [EDBPadstackInstance(i, self._pedb) for i in self.padstack_instances]
+        return [PadstackInstance(self._pedb, i) for i in self.padstack_instances]
 
     @property
     def voltage_regulators(self):

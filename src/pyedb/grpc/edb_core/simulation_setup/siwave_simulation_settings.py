@@ -20,13 +20,47 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.terminal.terminals import PinGroupTerminal as GrpcPinGroupTerminal
+
+from ansys.edb.core.simulation_setup.siwave_simulation_settings import (
+    SIWaveSimulationSettings as GrpcSIWaveSimulationSettings,
+)
+
+from pyedb.grpc.edb_core.simulation_setup.siwave_advanced_settings import (
+    SIWaveAdvancedSettings,
+)
+from pyedb.grpc.edb_core.simulation_setup.siwave_dc_advanced import (
+    SIWaveDCAdvancedSettings,
+)
+from pyedb.grpc.edb_core.simulation_setup.siwave_dc_settings import SIWaveDCSettings
+from pyedb.grpc.edb_core.simulation_setup.siwave_general_settings import (
+    SIWaveGeneralSettings,
+)
+from pyedb.grpc.edb_core.simulation_setup.siwave_s_parmaters_settings import (
+    SIWaveSParameterSettings,
+)
 
 
-class PinGroupTerminal(GrpcPinGroupTerminal):
-    """Manages pin group terminal properties."""
-
+class SIWaveSimulationSettings(GrpcSIWaveSimulationSettings):
     def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
-        self._edb_object = edb_object
         self._pedb = pedb
+
+    @property
+    def advanced(self):
+        return SIWaveAdvancedSettings(self._pedb, self.advanced)
+
+    @property
+    def dc(self):
+        return SIWaveDCSettings(self._pedb, self.dc)
+
+    @property
+    def dc_advanced(self):
+        return SIWaveDCAdvancedSettings(self._pedb, self.dc_advanced)
+
+    @property
+    def general(self):
+        return SIWaveGeneralSettings(self._pedb, self.general)
+
+    @property
+    def s_parameter(self):
+        return SIWaveSParameterSettings(self._pedb, self.s_parameter)

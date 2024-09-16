@@ -34,9 +34,10 @@ class BundleTerminal(GrpcBundleTerminal):
         BundleTerminal instance from EDB.
     """
 
-    def __init__(self, pedb):
-        super().__init__(self.msg)
+    def __init__(self, pedb, edb_object):
+        super().__init__(edb_object)
         self._pedb = pedb
+        self._edb_object = edb_object
 
     def decouple(self):
         """Ungroup a bundle of terminals."""

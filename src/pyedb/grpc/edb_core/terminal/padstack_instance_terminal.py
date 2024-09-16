@@ -30,9 +30,10 @@ from pyedb.generic.general_methods import generate_unique_name
 class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
     """Manages bundle terminal properties."""
 
-    def __init__(self, pedb):
-        super().__init__(self.msg)
+    def __init__(self, pedb, edb_object):
+        super().__init__(edb_object)
         self._pedb = pedb
+        self._edb_object = edb_object
 
     @property
     def position(self):

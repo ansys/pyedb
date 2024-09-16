@@ -20,13 +20,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.terminal.terminals import PinGroupTerminal as GrpcPinGroupTerminal
+
+from ansys.edb.core.net.net_class import NetClass as GrpcNetClass
 
 
-class PinGroupTerminal(GrpcPinGroupTerminal):
-    """Manages pin group terminal properties."""
+class NetClass(GrpcNetClass):
+    """Manages EDB functionalities for a primitives.
+    It inherits EDB Object properties.
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
-        self._edb_object = edb_object
+    Examples
+    --------
+    >>> from pyedb import Edb
+    >>> edb = Edb(myedb, edbversion="2021.2")
+    >>> edb.net_classes
+    """
+
+    def __init__(self, pedb, raw_extended_net=None):
+        super().__init__(raw_extended_net)
         self._pedb = pedb
+        self.components = self._pedb.components
+        self.primitive = self._pedb.modeler
+        self.nets = self._pedb.nets

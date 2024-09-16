@@ -31,8 +31,9 @@ from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 class VoltageRegulator(GrpcVoltageRegulator):
     """Class managing EDB voltage regulator."""
 
-    def __init__(self, pedb):
-        super().__init__(self.msg)
+    def __init__(self, pedb, edb_object):
+        super().__init__(edb_object)
+        self._pedb = pedb
 
     @property
     def component(self):

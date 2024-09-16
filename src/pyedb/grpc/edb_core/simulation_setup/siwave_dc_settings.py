@@ -20,13 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.terminal.terminals import PinGroupTerminal as GrpcPinGroupTerminal
+
+from ansys.edb.core.simulation_setup.siwave_simulation_settings import (
+    SIWaveDCSettings as GrpcSIWaveDCSettings,
+)
 
 
-class PinGroupTerminal(GrpcPinGroupTerminal):
-    """Manages pin group terminal properties."""
-
+class SIWaveDCSettings(GrpcSIWaveDCSettings):
     def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
-        self._edb_object = edb_object
         self._pedb = pedb
