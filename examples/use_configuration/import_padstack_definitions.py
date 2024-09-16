@@ -39,7 +39,7 @@ edbapp = Edb(file_edb, edbversion=AEDT_VERSION)
 # - **hole_plating_thickness**. Hole plating thickness.
 # - **hole_range**. Supported types are 'through', 'begin_on_upper_pad', 'end_on_lower_pad', 'upper_pad_to_lower_pad'.
 # - **hole_parameters**.
-#   - **shape**. Suported types are 'circle', 'square', 'rectangle'.
+#   - **shape**. Supported types are 'circle', 'square', 'rectangle'.
 #   - Other parameters are shape dependent.
 #     - When shape is 'circle', supported parameter si 'diameter'.
 #     - When shape is 'square', supported parameter is 'size'.
@@ -85,7 +85,7 @@ display(pd.DataFrame([pdef.hole_parameters]))
 # - **pad_parameters**.
 #   - **regular_pad**. List of pad definition per layer.
 #     - **layer_name**. Name of the layer.
-#     - **shape**. Suported types are 'circle', 'square', 'rectangle', 'oval', 'bullet'.
+#     - **shape**. Supported types are 'circle', 'square', 'rectangle', 'oval', 'bullet'.
 #     - Other parameters are shape dependent.
 #       - When shape is 'circle', supported parameter si 'diameter'.
 #       - When shape is 'square', supported parameter is 'size'.
