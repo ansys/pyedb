@@ -431,6 +431,7 @@ class EDBPadstack(object):
 
     @property
     def pad_by_layer(self):
+        """Regular pad property."""
         temp = {}
         for layer in self.via_layers:
             temp[layer] = EDBPadProperties(self._edb_object, layer, 0, self)
@@ -438,6 +439,7 @@ class EDBPadstack(object):
 
     @property
     def antipad_by_layer(self):
+        """Anti pad property."""
         temp = {}
         for layer in self.via_layers:
             temp[layer] = EDBPadProperties(self._edb_object, layer, 1, self)
@@ -445,6 +447,7 @@ class EDBPadstack(object):
 
     @property
     def thermalpad_by_layer(self):
+        """Thermal pad property."""
         temp = {}
         for layer in self.via_layers:
             temp[layer] = EDBPadProperties(self._edb_object, layer, 2, self)
