@@ -17,6 +17,8 @@ import tempfile
 import time
 import warnings
 
+from typing import Optional, Union
+
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
 from pyedb.edb_logger import pyedb_logger
@@ -51,6 +53,15 @@ def wait_export_folder(flag, folder_path, time_sleep=0.5):
 
         # Wait before checking again.
         time.sleep(time_sleep)
+
+
+def parser_file_path(file_path):
+    if isinstance(file_path, Path):
+        file_path = str(file_path)
+
+    if not Path(file_path).root:
+        file_path = str(Path().cwd() / file_path)
+    return file_path
 
 
 class Siwave(object):  # pragma no cover
@@ -264,9 +275,9 @@ class Siwave(object):  # pragma no cover
             ``True`` when successful, ``False`` when failed.
 
         """
-
-        if os.path.exists(proj_path):
-            open_result = self.oSiwave.OpenProject(proj_path)
+        file_path = parser_file_path(proj_path)
+        if os.path.exists(file_path):
+            open_result = self.oSiwave.OpenProject(file_path)
             self._oproject = self.oSiwave.GetActiveProject()
             return open_result
         else:
@@ -305,6 +316,22 @@ class Siwave(object):  # pragma no cover
         else:
             self.oproject.Save()
         return True
+
+    def save(self, file_path: Optional[Union[str, Path]]):
+        """Save the project.
+
+        Parameters
+        ----------
+        file_path : str, optional
+            Full path to the project. The default is ``None``.
+        """
+
+        if file_path:
+            file_path = parser_file_path(file_path)
+            file_path = str(Path(file_path).with_suffix(".siw"))
+            self.oproject.ScrSaveProjectAs(file_path)
+        else:
+            self.oproject.Save()
 
     def close_project(self, save_project=False):
         """Close the project.
@@ -494,6 +521,8 @@ class Siwave(object):  # pragma no cover
         """
         if isinstance(file_path, Path):
             file_path = str(file_path)
+        if not Path(file_path).root:
+            file_path = str(Path().cwd() / file_path)
         flag = self.oproject.ScrImportEDB(file_path)
         # self.save_project(self.di)
         if flag == 0:
@@ -510,8 +539,7 @@ class Siwave(object):  # pragma no cover
         file_path : str
             Path to the configuration file.
         """
-        if isinstance(file_path, Path):
-            file_path = str(file_path)
+        file_path = parser_file_path(file_path)
 
         # temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
         # temp_edb = os.path.join(temp_folder.name, "temp.aedb")
@@ -536,8 +564,7 @@ class Siwave(object):  # pragma no cover
         file_path : str
             Path to the configuration file.
         """
-        if isinstance(file_path, Path):
-            file_path = str(file_path)
+        file_path = parser_file_path(file_path)
 
         temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
         temp_edb = os.path.join(temp_folder.name, "temp.aedb")

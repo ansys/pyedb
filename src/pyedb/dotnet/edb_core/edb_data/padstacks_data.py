@@ -426,16 +426,29 @@ class EDBPadstack(object):
         self._edb_object = edb_padstack
         self.edb_padstack = edb_padstack
         self._ppadstack = ppadstack
-        self.pad_by_layer = {}
-        self.antipad_by_layer = {}
-        self.thermalpad_by_layer = {}
         self._bounding_box = []
         self._hole_params = None
+
+    @property
+    def pad_by_layer(self):
+        temp = {}
         for layer in self.via_layers:
-            self.pad_by_layer[layer] = EDBPadProperties(edb_padstack, layer, 0, self)
-            self.antipad_by_layer[layer] = EDBPadProperties(edb_padstack, layer, 1, self)
-            self.thermalpad_by_layer[layer] = EDBPadProperties(edb_padstack, layer, 2, self)
-        pass
+            temp[layer] = EDBPadProperties(self._edb_object, layer, 0, self)
+        return temp
+
+    @property
+    def antipad_by_layer(self):
+        temp = {}
+        for layer in self.via_layers:
+            temp[layer] = EDBPadProperties(self._edb_object, layer, 1, self)
+        return temp
+
+    @property
+    def thermalpad_by_layer(self):
+        temp = {}
+        for layer in self.via_layers:
+            temp[layer] = EDBPadProperties(self._edb_object, layer, 2, self)
+        return temp
 
     @property
     def _padstack_def_data(self):

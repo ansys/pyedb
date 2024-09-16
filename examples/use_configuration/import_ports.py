@@ -102,7 +102,7 @@ port_4 = {
 
 port_5 = {"name": "port_5", "reference_designator": "U1", "type": "coax", "positive_terminal": {"pin": "AM17"}}
 
-# ## Add a port reference to the neareast pin
+# ## Add a port reference to the nearest pin
 
 # Keywords
 #
