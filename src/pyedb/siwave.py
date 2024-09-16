@@ -15,9 +15,8 @@ import shutil
 import sys
 import tempfile
 import time
-import warnings
-
 from typing import Optional, Union
+import warnings
 
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr

@@ -386,9 +386,7 @@ class TestClass:
 
     def test_06_s_parameters(self, edb_examples):
         data = {
-            "general": {
-                "s_parameter_library": self.local_input_folder
-            },
+            "general": {"s_parameter_library": self.local_input_folder},
             "s_parameters": [
                 {
                     "name": "GRM32_DC0V_25degC_series",
@@ -396,7 +394,7 @@ class TestClass:
                     "component_definition": "CAPC3216X180X55ML20T25",
                     "apply_to_all": True,
                     "components": [],
-                    "reference_net": "GND"
+                    "reference_net": "GND",
                 },
                 {
                     "name": "GRM32_DC0V_25degC_series",
@@ -405,11 +403,9 @@ class TestClass:
                     "component_definition": "CAPC3216X190X55ML30T25",
                     "components": ["C59"],
                     "reference_net": "GND",
-                    "reference_net_per_component": {
-                        "C59": "GND"
-                    }
-                }
-            ]
+                    "reference_net_per_component": {"C59": "GND"},
+                },
+            ],
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
