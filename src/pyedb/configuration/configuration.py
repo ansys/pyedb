@@ -74,7 +74,7 @@ class Configuration:
                     elif config_file.endswith(".toml"):
                         data = toml.load(f)
             else:  # pragma: no cover
-                return False
+                raise RuntimeError(f"File {config_file} does not exist.")
 
         if not append:  # pragma: no cover
             self.data = {}
