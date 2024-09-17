@@ -34,7 +34,7 @@ from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
 from pyedb.generic.constants import RadiationBoxType, SourceType
-from pyedb.generic.general_methods import is_linux
+from pyedb.generic.general_methods import is_linux, isclose
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
@@ -1510,14 +1510,23 @@ class TestClass:
         assert polygon.move(["1mm", 1e-3])
         assert round(polygon.center[0], 6) == 0.051
         assert round(polygon.center[1], 6) == -0.0045
+
         assert polygon.rotate(angle=45)
-        assert polygon.bbox == [0.012462680425333156, -0.043037319574666846, 0.08953731957466685, 0.034037319574666845]
+        expected_bbox = [0.012462680425333156, -0.043037319574666846, 0.08953731957466685, 0.034037319574666845]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.rotate(angle=34, center=[0, 0])
-        assert polygon.bbox == [0.03083951217158376, -0.025151830651067256, 0.05875505636026722, 0.07472816865208806]
+        expected_bbox = [0.03083951217158376, -0.025151830651067256, 0.05875505636026722, 0.07472816865208806]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.scale(factor=1.5)
-        assert polygon.bbox == [0.0238606261244129, -0.05012183047685609, 0.06573394240743807, 0.09969816847787688]
+        expected_bbox = [0.0238606261244129, -0.05012183047685609, 0.06573394240743807, 0.09969816847787688]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.scale(factor=-0.5, center=[0, 0])
-        assert polygon.bbox == [-0.032866971203719036, -0.04984908423893844, -0.01193031306220645, 0.025060915238428044]
+        expected_bbox = [-0.032866971203719036, -0.04984908423893844, -0.01193031306220645, 0.025060915238428044]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
