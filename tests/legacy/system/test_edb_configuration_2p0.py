@@ -901,15 +901,19 @@ class TestClass:
             {
                 "reference_designator": "C375",
                 "enabled": False,
-                'pin_pair_model': [{'first_pin': '2',
-                                    'second_pin': '1',
-                                    'is_parallel': False,
-                                    'resistance': '10ohm',
-                                    'resistance_enabled': True,
-                                    'inductance': '1nH',
-                                    'inductance_enabled': False,
-                                    'capacitance': '10nF',
-                                    'capacitance_enabled': True}],
+                "pin_pair_model": [
+                    {
+                        "first_pin": "2",
+                        "second_pin": "1",
+                        "is_parallel": False,
+                        "resistance": "10ohm",
+                        "resistance_enabled": True,
+                        "inductance": "1nH",
+                        "inductance_enabled": False,
+                        "capacitance": "10nF",
+                        "capacitance_enabled": True,
+                    }
+                ],
             },
         ]
         data = {"components": components}

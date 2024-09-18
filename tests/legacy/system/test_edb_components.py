@@ -98,20 +98,20 @@ class TestClass:
 
         assert self.edbapp.components.instances["R1"].pins["1"].component
         assert (
-                self.edbapp.components.instances["R1"].pins["1"].lower_elevation
-                == self.edbapp.components.instances["R1"].lower_elevation
+            self.edbapp.components.instances["R1"].pins["1"].lower_elevation
+            == self.edbapp.components.instances["R1"].lower_elevation
         )
         assert (
-                self.edbapp.components.instances["R1"].pins["1"].placement_layer
-                == self.edbapp.components.instances["R1"].placement_layer
+            self.edbapp.components.instances["R1"].pins["1"].placement_layer
+            == self.edbapp.components.instances["R1"].placement_layer
         )
         assert (
-                self.edbapp.components.instances["R1"].pins["1"].upper_elevation
-                == self.edbapp.components.instances["R1"].upper_elevation
+            self.edbapp.components.instances["R1"].pins["1"].upper_elevation
+            == self.edbapp.components.instances["R1"].upper_elevation
         )
         assert (
-                self.edbapp.components.instances["R1"].pins["1"].top_bottom_association
-                == self.edbapp.components.instances["R1"].top_bottom_association
+            self.edbapp.components.instances["R1"].pins["1"].top_bottom_association
+            == self.edbapp.components.instances["R1"].top_bottom_association
         )
         assert self.edbapp.components.instances["R1"].pins["1"].position
         assert self.edbapp.components.instances["R1"].pins["1"].rotation
@@ -467,18 +467,18 @@ class TestClass:
         assert not comp.assign_rlc_model()
         comp.assign_rlc_model(1, None, 3, False)
         assert (
-                not comp.is_parallel_rlc
-                and float(comp.res_value) == 1
-                and float(comp.ind_value) == 0
-                and float(comp.cap_value) == 3
+            not comp.is_parallel_rlc
+            and float(comp.res_value) == 1
+            and float(comp.ind_value) == 0
+            and float(comp.cap_value) == 3
         )
         comp.assign_rlc_model(1, 2, 3, True)
         assert comp.is_parallel_rlc
         assert (
-                comp.is_parallel_rlc
-                and float(comp.res_value) == 1
-                and float(comp.ind_value) == 2
-                and float(comp.cap_value) == 3
+            comp.is_parallel_rlc
+            and float(comp.res_value) == 1
+            and float(comp.ind_value) == 2
+            and float(comp.cap_value) == 3
         )
         assert comp.value
         assert not comp.spice_model and not comp.s_param_model and not comp.netlist_model
@@ -608,14 +608,20 @@ class TestClass:
 
     def test_properties(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        pp = {'pin_pair_model': [{'first_pin': '2',
-                                  'second_pin': '1',
-                                  'is_parallel': True,
-                                  'resistance': '10ohm',
-                                  'resistance_enabled': True,
-                                  'inductance': '1nH',
-                                  'inductance_enabled': True,
-                                  'capacitance': '1nF',
-                                  'capacitance_enabled': True}]}
+        pp = {
+            "pin_pair_model": [
+                {
+                    "first_pin": "2",
+                    "second_pin": "1",
+                    "is_parallel": True,
+                    "resistance": "10ohm",
+                    "resistance_enabled": True,
+                    "inductance": "1nH",
+                    "inductance_enabled": True,
+                    "capacitance": "1nF",
+                    "capacitance_enabled": True,
+                }
+            ]
+        }
         edbapp.components["C378"].set_model_properties(**pp)
         assert edbapp.components["C378"].get_model_properties() == pp
