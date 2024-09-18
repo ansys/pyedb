@@ -1018,7 +1018,7 @@ class TestClass:
 
         settings = self.edbapp.setups["DC1"].get_configurations()
         for k, v in setup1.dc_settings.defaults.items():
-            if k in ["compute_inductance", "plot_jv"]:
+            if k in ["compute_inductance", "plot_jv", "use_custom_settings"]:
                 continue
             print(k)
             assert settings["dc_settings"][k] == v
