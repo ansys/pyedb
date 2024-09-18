@@ -81,7 +81,7 @@ class CfgComponent(CfgBase):
         data_comp["reference_designator"] = self.reference_designator
         data_comp["definition"] = self.definition
         data_comp["type"] = self.type
-        data_comp["value"] = self.value
+        data_comp["pin_pair_model"] = self.pin_pair_model
         data_comp["x_location"] = self.x_location
         data_comp["y_location"] = self.y_location
         # data_comp["angle"] = self.angle
@@ -132,7 +132,7 @@ class CfgComponents:
                 enabled=comp.enabled,
                 reference_designator=comp.name,
                 part_type=comp.type,
-                value=comp.value,
+                pin_pair_model=comp.get_model_properties().get("pin_pair_model"),
                 definition=comp.component_def,
                 location=comp.location,
                 placement_layer=comp.placement_layer,

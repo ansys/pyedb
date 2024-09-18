@@ -916,6 +916,7 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.components["C375"].get_model_properties()["pin_pair_model"] == components[0]["pin_pair_model"]
+        edbapp.configuration.get_data_from_db(components=True)
 
         edbapp.close()
 
