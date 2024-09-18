@@ -24,8 +24,10 @@ import os
 
 from ansys.edb.core.definition.component_def import ComponentDef as GrpcComponentDef
 
+from pyedb.grpc.edb_core.definition.component_pins import ComponentPin
 
-class EDBComponentDef(GrpcComponentDef):
+
+class ComponentDef(GrpcComponentDef):
     """Manages EDB functionalities for component definitions.
 
     Parameters
@@ -78,6 +80,10 @@ class EDBComponentDef(GrpcComponentDef):
             for l in GrpcComponentGroup.find_by_def(self._pedb.active_layout, self.part_name)
         ]
         return {comp.refdes: comp for comp in comp_list}
+
+    @property
+    def component_pins(self):
+        return [ComponentPin(self._pedb, pin) for pin in self.component_pins]
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
         """Assign RLC to all components under this part name.
@@ -159,4 +165,4 @@ class EDBComponentDef(GrpcComponentDef):
 
         footprint_cell = GrpcCell.create(self._pedb.active_db, GrpcCellType.FOOTPRINT_CELL, name)
         edb_object = GrpcComponentDef.create(self._pedb.active_db, name, footprint_cell)
-        return EDBComponentDef(self._pedb, edb_object)
+        return ComponentDef(self._pedb, edb_object)

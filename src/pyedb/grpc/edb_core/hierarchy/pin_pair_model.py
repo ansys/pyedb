@@ -26,23 +26,10 @@ from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as GrpcPinPairM
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 
-class EDBPinPairModel(GrpcPinPairModel):  # pragma: no cover
-    def __init__(self, pcomp, edb_comp, edb_comp_prop, edb_model, edb_pin_pair):
-        self._pedb_comp = pcomp
-        self._edb_comp = edb_comp
-        self._edb_comp_prop = edb_comp_prop
-        self._edb_model = edb_model
-        self._edb_pin_pair = edb_pin_pair
-        super().__init__(self.msg)
-
-    @property
-    def is_parallel(self):
-        return self.rlc.is_parallel
-
-    @is_parallel.setter
-    def is_parallel(self, value):
-        self.rlc.is_parallel = value
-        self._set_comp_prop()  # pragma: no cover
+class PinPairModel(GrpcPinPairModel):  # pragma: no cover
+    def __init__(self, pedb, edb_object):
+        self._pedb_comp = pedb
+        super().__init__(edb_object)
 
     @property
     def rlc_enable(self):
@@ -50,10 +37,9 @@ class EDBPinPairModel(GrpcPinPairModel):  # pragma: no cover
 
     @rlc_enable.setter
     def rlc_enable(self, value):
-        self.rlc.r_enabled = value[0]
-        self.rlc.l_enabled = value[1]
-        self.rlc.c_enabled = value[2]
-        self._set_comp_prop()  # pragma: no cover
+        self.rlc.r_enabled = GrpcValue(value[0])
+        self.rlc.l_enabled = GrpcValue(value[1])
+        self.rlc.c_enabled = GrpcValue(value[2])
 
     @property
     def resistance(self):
@@ -62,7 +48,6 @@ class EDBPinPairModel(GrpcPinPairModel):  # pragma: no cover
     @resistance.setter
     def resistance(self, value):
         self.rlc.r = GrpcValue(value)
-        self._set_comp_prop()  # pragma: no cover
 
     @property
     def inductance(self):
@@ -71,7 +56,6 @@ class EDBPinPairModel(GrpcPinPairModel):  # pragma: no cover
     @inductance.setter
     def inductance(self, value):
         self.rlc.l = GrpcValue(value)
-        self._set_comp_prop()  # pragma: no cover
 
     @property
     def capacitance(self):
@@ -80,7 +64,6 @@ class EDBPinPairModel(GrpcPinPairModel):  # pragma: no cover
     @capacitance.setter
     def capacitance(self, value):
         self.rlc.c = GrpcValue(value)
-        self._set_comp_prop()  # pragma: no cover
 
     @property
     def rlc_values(self):  # pragma: no cover
@@ -91,9 +74,3 @@ class EDBPinPairModel(GrpcPinPairModel):  # pragma: no cover
         self.rlc.r = GrpcValue(values[0])
         self.rlc.l = GrpcValue(values[1])
         self.rlc.c = GrpcValue(values[2])
-        self._set_comp_prop()  # pragma: no cover
-
-    def _set_comp_prop(self):  # pragma: no cover
-        self._edb_model.set_rlc(self._edb_pin_pair, self.rlc)
-        self._edb_comp_prop.model = self._edb_model
-        self._edb_comp.component_property = self._edb_comp_prop

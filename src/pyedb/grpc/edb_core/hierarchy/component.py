@@ -26,6 +26,7 @@ from typing import Optional
 import warnings
 
 from ansys.edb.core.definition.solder_ball_property import SolderballShape
+from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.component_group import (
     ComponentGroup as GrpcComponentGroup,
 )
@@ -38,10 +39,10 @@ from ansys.edb.core.utility.rlc import PinPair as GrpcPinPair
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as EDBValue
 
-from pyedb.grpc.edb_core.cell.hierarchy.pin_pair_model import PinPairModel
-from pyedb.grpc.edb_core.cell.hierarchy.spice_model import SPICEModel
 from pyedb.grpc.edb_core.definition.package_def import PackageDef
-from pyedb.grpc.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.grpc.edb_core.hierarchy.pin_pair_model import PinPairModel
+from pyedb.grpc.edb_core.hierarchy.spice_model import SPICEModel
+from pyedb.grpc.edb_core.primitive.padstack_instances import PadstackInstance
 
 try:
     import numpy as np
@@ -165,11 +166,8 @@ class Component(GrpcComponentGroup):
         if name not in self._pedb.definitions.package:
             self._pedb.definitions.add_package_def(name, component_part_name=component_part_name)
             self.package_def = name
-
-            from pyedb.grpc.edb_core.grpc.database import PolygonDataGrpc
-
-            polygon = PolygonDataGrpc(self._pedb).create_from_bbox(self.component_instance.GetBBox())
-            self.package_def._edb_object.exterior_boundary = polygon.api_class
+            polygon = GrpcPolygonData(self.component_instance.GetBBox())
+            self.package_def.exterior_boundary = polygon
             return True
         else:
             logging.error(f"Package definition {name} already exists")
@@ -217,7 +215,7 @@ class Component(GrpcComponentGroup):
     def solder_ball_height(self):
         """Solder ball height if available."""
         if "GetSolderBallProperty" in dir(self.component_property):
-            return self.component_property.solderB_bll_property.height.value
+            return self.component_property.solder_ball_property.height.value
         return None
 
     @solder_ball_height.setter
@@ -597,7 +595,7 @@ class Component(GrpcComponentGroup):
         """
         pins = {}
         for el in self.pinlist:
-            pins[el.name] = EDBPadstackInstance(el, self._pedb)
+            pins[el.name] = PadstackInstance(el, self._pedb)
         return pins
 
     @property
@@ -609,19 +607,7 @@ class Component(GrpcComponentGroup):
         str
             Component type.
         """
-        cmp_type = self.component_type
-        if cmp_type.value == 1:
-            return "Resistor"
-        elif cmp_type.value == 2:
-            return "Inductor"
-        elif cmp_type.value == 3:
-            return "Capacitor"
-        elif cmp_type.value == 4:
-            return "IC"
-        elif cmp_type.value == 5:
-            return "IO"
-        elif cmp_type.value == 0:
-            return "Other"
+        return self.component_type.name
 
     @type.setter
     def type(self, new_type):

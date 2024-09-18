@@ -20,17 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.hierarchy.spice_model import SPICEModel as GrpcSpiceModel
+
+from ansys.edb.core.definition.component_model import (
+    NPortComponentModel as GrpcNPortComponentModel,
+)
 
 
-class SpiceModel(GrpcSpiceModel):  # pragma: no cover
-    def __init__(self, edb_object):
+class NPortComponentModel(GrpcNPortComponentModel):
+    def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
-
-    @property
-    def file_path(self):
-        return self.file_path
-
-    @property
-    def name(self):
-        return self.model_name
+        self._pedb = pedb
