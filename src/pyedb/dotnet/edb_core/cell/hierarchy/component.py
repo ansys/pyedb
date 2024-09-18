@@ -616,8 +616,8 @@ class EDBComponent(Group):
             p
             for p in self.edbcomponent.LayoutObjs
             if p.GetObjType() == self._edb.cell.layout_object_type.PadstackInstance
-            and p.IsLayoutPin()
-            and p.GetComponent().GetName() == self.refdes
+               and p.IsLayoutPin()
+               and p.GetComponent().GetName() == self.refdes
         ]
         return pins
 
@@ -819,11 +819,11 @@ class EDBComponent(Group):
         return True
 
     def assign_spice_model(
-        self,
-        file_path: str,
-        name: Optional[str] = None,
-        sub_circuit_name: Optional[str] = None,
-        terminal_pairs: Optional[list] = None,
+            self,
+            file_path: str,
+            name: Optional[str] = None,
+            sub_circuit_name: Optional[str] = None,
+            terminal_pairs: Optional[list] = None,
     ):
         """Assign Spice model to this component.
 
@@ -1008,3 +1008,86 @@ class EDBComponent(Group):
         )
         void.is_negative = True
         return True
+
+    def get_model_properties(self):
+        pp = {}
+        c_p = self.component_property
+        model = c_p.GetModel().Clone()
+        netlist_model = {}
+        pin_pair_model = []
+        s_parameter_model = []
+        spice_model = {}
+        if model.GetModelType().ToString() == "NetlistModel":
+            netlist_model["netlist"] = model.GetNetlist()
+        elif model.GetModelType().ToString() == "PinPairModel":
+            temp = {}
+            for i in model.PinPairs:
+                temp["first_pin"] = i.FirstPin
+                temp["second_pin"] = i.SecondPin
+                rlc = model.GetPinPairRlc(i)
+                temp["is_parallel"] = rlc.IsParallel
+                temp["resistance"] = rlc.R.ToString()
+                temp["resistance_enabled"] = rlc.REnabled
+                temp["inductance"] = rlc.L.ToString()
+                temp["inductance_enabled"] = rlc.LEnabled
+                temp["capacitance"] = rlc.C.ToString()
+                temp["capacitance_enabled"] = rlc.CEnabled
+                pin_pair_model.append(temp)
+        elif model.GetModelType().ToString() == "SParameterModel":
+            s_parameter_model["reference_net"] = model.GetReferenceNet()
+            s_parameter_model["model_name"] = model.GetComponentModelName()
+        elif model.GetModelType().ToString() == "SPICEModel":
+            spice_model["model_name"] = model.GetModelName()
+            spice_model["model_path"] = model.GetModelPath()
+            spice_model["sub_circuit"] = model.GetSubCkt()
+            spice_model["terminal_pairs"] = [[i, j] for i, j in dict(model.GetTerminalPinPairs()).items()]
+
+        if netlist_model:
+            pp["netlist_model"] = netlist_model
+        if pin_pair_model:
+            pp["pin_pair_model"] = pin_pair_model
+        if s_parameter_model:
+            pp["s_parameter_model"] = s_parameter_model
+        if spice_model:
+            pp["spice_model"] = spice_model
+        return pp
+
+    def set_model_properties(self, **kwargs):
+        netlist_model = kwargs.get("netlist_model")
+        pin_pair_model = kwargs.get("pin_pair_model")
+        s_parameter_model = kwargs.get("s_parameter_model")
+        spice_model = kwargs.get("spice_model")
+
+        c_p = self.component_property
+        if netlist_model:
+            m = self._pedb._edb.Cell.Hierarchy.SParameterModel()
+            m.SetNetlist(netlist_model["netlist"])
+            c_p.SetModel(m)
+            self.component_property = c_p
+        elif pin_pair_model:
+            m = self._pedb._edb.Cell.Hierarchy.PinPairModel()
+            for i in pin_pair_model:
+                p = self._pedb._edb.Utility.PinPair(str(i["first_pin"]), str(i["second_pin"]))
+                rlc = self._pedb._edb.Utility.Rlc(
+                    self._pedb.edb_value(i["resistance"]),
+                    i["resistance_enabled"],
+                    self._pedb.edb_value(i["inductance"]),
+                    i["inductance_enabled"],
+                    self._pedb.edb_value(i["capacitance"]),
+                    i["capacitance_enabled"],
+                    i["is_parallel"],
+                )
+                m.SetPinPairRlc(p, rlc)
+            c_p.SetModel(m)
+            self.component_property = c_p
+        elif s_parameter_model:
+            m = self._pedb._edb.Cell.Hierarchy.SParameterModel()
+            m.SetComponentModelName(s_parameter_model["model_name"])
+            m.SetReferenceNet(s_parameter_model["reference_net"])
+            c_p.SetModel(m)
+            self.component_property = c_p
+        elif spice_model:
+            self.assign_spice_model(spice_model["model_path"],
+                                    spice_model["model_name"],
+                                    spice_model["sub_circuit"],
+                                    spice_model["terminal_pairs"])
