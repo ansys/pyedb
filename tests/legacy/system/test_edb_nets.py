@@ -175,6 +175,10 @@ class TestClass:
             layers=True, materials=False, via_holes=False, pads=False, antipads=False, traces=False, via_offset=False
         )
         assert len(list(edbapp.variables.keys())) == len(list(edbapp.stackup.layers.keys()))
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization_3(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False,
             materials=True,
@@ -189,22 +193,42 @@ class TestClass:
         )
         assert "via_offset_x" in edbapp.variables
         assert "$sigma_copper_delta" in edbapp.variables
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization_4(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=True, via_holes=False, pads=False, antipads=False, traces=False
         )
         assert len(list(edbapp.variables.values())) == 28
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization_5(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=True, pads=False, antipads=False, traces=False
         )
         assert len(list(edbapp.variables.values())) == 29
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization_6(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=True, antipads=False, traces=False
         )
         assert len(list(edbapp.variables.values())) == 32
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization_7(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=False, antipads=True, traces=False
         )
         assert len(list(edbapp.variables.values())) == 32
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization_8(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False,
             materials=False,
