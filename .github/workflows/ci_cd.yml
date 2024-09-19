@@ -176,7 +176,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 15
+          timeout_minutes: 20
           command: |
             . .venv/bin/activate
             xvfb-run pytest -m "legacy" -n auto --dist loadfile -v --cov
