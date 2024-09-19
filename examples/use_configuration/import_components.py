@@ -65,7 +65,12 @@ cfg["components"] = [
     {
         "reference_designator": "U1",
         "part_type": "io",
-        "solder_ball_properties": {"shape": "spheroid", "diameter": "244um", "mid_diameter":"400um", "height": "300um"},
+        "solder_ball_properties": {
+            "shape": "spheroid",
+            "diameter": "244um",
+            "mid_diameter": "400um",
+            "height": "300um",
+        },
         "port_properties": {
             "reference_offset": "0.1mm",
             "reference_size_auto": True,
