@@ -190,16 +190,15 @@ class LayoutValidation:
                 l1 = objs[0].get_connected_object_id_set()
                 l1.append(objs[0].id)
                 repetition = False
-                for net_list in net_groups:
-                    if set(l1).intersection(net_list):
-                        net_groups.append([i for i in l1 if i not in net_list])
+                for id_by_net in net_groups:
+                    if set(l1).intersection(id_by_net):
+                        net_groups.append([i for i in l1 if i not in id_by_net])
                         repetition = True
                 if not repetition:
                     net_groups.append(l1)
                 objs = [i for i in objs if i.id not in l1]
                 l = len(objs)
             if len(net_groups) > 1:
-
                 def area_calc(elem):
                     sum = 0
                     for el in elem:
