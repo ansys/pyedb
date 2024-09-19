@@ -27,6 +27,7 @@ from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as GrpcValue
 
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.edb_core.components import Component
 from pyedb.grpc.edb_core.hierarchy.pingroup import PinGroup
 from pyedb.grpc.edb_core.primitive.padstack_instances import PadstackInstance
@@ -706,3 +707,67 @@ class Excitations:
         if term_type == "circuit" or "auto":
             pingroup_term.is_circuit_port = True
         return pingroup_term
+
+    def create_coax_port(self, padstackinstance, use_dot_separator=True, name=None, create_on_top=True):
+        """Create HFSS 3Dlayout coaxial lumped port on a pastack
+        Requires to have solder ball defined before calling this method.
+
+        Parameters
+        ----------
+        padstackinstance : `Edb.Cell.Primitive.PadstackInstance` or int
+            Padstack instance object.
+        use_dot_separator : bool, optional
+            Whether to use ``.`` as the separator for the naming convention, which
+            is ``[component][net][pin]``. The default is ``True``. If ``False``, ``_`` is
+            used as the separator instead.
+        name : str
+            Port name for overwriting the default port-naming convention,
+            which is ``[component][net][pin]``. The port name must be unique.
+            If a port with the specified name already exists, the
+            default naming convention is used so that port creation does
+            not fail.
+
+        Returns
+        -------
+        str
+            Terminal name.
+
+        """
+        if isinstance(padstackinstance, int):
+            padstackinstance = self._pedb.padstacks.instances[padstackinstance]
+        cmp_name = padstackinstance.component.name
+        if cmp_name == "":
+            cmp_name = "no_comp"
+        net_name = padstackinstance.net.name
+        if net_name == "":
+            net_name = "no_net"
+        pin_name = padstackinstance.name
+        if pin_name == "":
+            pin_name = "no_pin_name"
+        if use_dot_separator:
+            port_name = "{0}.{1}.{2}".format(cmp_name, pin_name, net_name)
+        else:
+            port_name = "{0}_{1}_{2}".format(cmp_name, pin_name, net_name)
+        padstackinstance.is_layout_pin = True
+        layer_range = padstackinstance.get_layer_range()
+        if create_on_top:
+            terminal_layer = layer_range[0]
+        else:
+            terminal_layer = layer_range[1]
+        if name:
+            port_name = name
+        if self._port_exist(port_name):
+            port_name = generate_unique_name(port_name, n=2)
+            self._logger.info("An existing port already has this same name. Renaming to {}.".format(port_name))
+        PadstackInstanceTerminal.create(
+            layout=self._pedb._active_layout,
+            name=port_name,
+            padstack_instance=padstackinstance,
+            layer=terminal_layer,
+            net=padstackinstance.net,
+            is_ref=False,
+        )
+        return port_name
+
+    def _port_exist(self, port_name):
+        return any(port for port in list(self._pedb.excitations.keys()) if port == port_name)
