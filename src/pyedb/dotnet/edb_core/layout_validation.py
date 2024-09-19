@@ -199,6 +199,7 @@ class LayoutValidation:
                 objs = [i for i in objs if i.id not in l1]
                 l = len(objs)
             if len(net_groups) > 1:
+
                 def area_calc(elem):
                     sum = 0
                     for el in elem:
