@@ -167,6 +167,10 @@ class TestClass:
             open_aedb_at_end=False,
         )
         assert "$1_Top_value" in parameters
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization_2(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=True, materials=False, via_holes=False, pads=False, antipads=False, traces=False, via_offset=False
         )
