@@ -1630,6 +1630,12 @@ class Edb(Database):
                     )
                 else:
                     obj_data = i.Expand(expansion_size, tolerance, round_corner, round_extension)
+                if inlcude_voids_in_extents and i.has_voids and obj_data:
+                    for void in i.voids:
+                        void_data = void.primitive_object.GetPolygonData().Expand(-1*expansion_size, tolerance, round_corner, round_extension)
+                        if void_data:
+                            for v in list(void_data):
+                                obj_data[0].AddHole(v)
                 if obj_data:
                     if not inlcude_voids_in_extents:
                         unite_polys.extend(list(obj_data))
@@ -2280,12 +2286,12 @@ class Edb(Database):
             if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1]:
                 if extent_defeature > 0:
                     _poly = _poly.Defeature(extent_defeature)
-
                 _poly1 = _poly.CreateFromArcs(_poly.GetArcData(), True)
                 if inlcude_voids_in_extents:
                     for hole in list(_poly.Holes):
                         if hole.Area() >= 0.05 * _poly1.Area():
                             _poly1.AddHole(hole)
+                    self.logger.info(f"Number of voids included:{len(list(_poly1.Holes))}")
                 _poly = _poly1
         if not _poly or _poly.IsNull():
             self._logger.error("Failed to create Extent.")
