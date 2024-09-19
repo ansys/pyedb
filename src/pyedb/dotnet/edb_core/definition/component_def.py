@@ -208,10 +208,8 @@ class EDBComponentDef(ObjBase):
         return data
 
     def set_properties(self, **kwargs):
-
         pin_order = kwargs.get("pin_order")
         if pin_order:
             old = {i.GetName(): i for i in list(self._edb_object.ComponentDefPins)}
             temp = convert_py_list_to_net_list([old[str(i)] for i in pin_order])
             self._edb_object.ReorderPins(temp)
-

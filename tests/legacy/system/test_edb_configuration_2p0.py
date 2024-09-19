@@ -395,7 +395,7 @@ class TestClass:
                     "apply_to_all": True,
                     "components": [],
                     "reference_net": "GND",
-                    "pin_order": ["1", "2"]
+                    "pin_order": ["1", "2"],
                 },
                 {
                     "name": "cap2_model2",

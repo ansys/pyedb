@@ -616,8 +616,8 @@ class EDBComponent(Group):
             p
             for p in self.edbcomponent.LayoutObjs
             if p.GetObjType() == self._edb.cell.layout_object_type.PadstackInstance
-               and p.IsLayoutPin()
-               and p.GetComponent().GetName() == self.refdes
+            and p.IsLayoutPin()
+            and p.GetComponent().GetName() == self.refdes
         ]
         return pins
 
@@ -819,11 +819,11 @@ class EDBComponent(Group):
         return True
 
     def assign_spice_model(
-            self,
-            file_path: str,
-            name: Optional[str] = None,
-            sub_circuit_name: Optional[str] = None,
-            terminal_pairs: Optional[list] = None,
+        self,
+        file_path: str,
+        name: Optional[str] = None,
+        sub_circuit_name: Optional[str] = None,
+        terminal_pairs: Optional[list] = None,
     ):
         """Assign Spice model to this component.
 
