@@ -102,7 +102,7 @@ port_4 = {
 
 port_5 = {"name": "port_5", "reference_designator": "U1", "type": "coax", "positive_terminal": {"pin": "AM17"}}
 
-# ## Add a port reference to the neareast pin
+# ## Add a port reference to the nearest pin
 
 # Keywords
 #
@@ -152,11 +152,9 @@ edbapp.configuration.run()
 
 edbapp.ports
 
-# ## Save EDB
+# ## Save and close Edb
+# The temporary folder will be deleted once the execution of this script is finished. Replace **edbapp.save()** with
+# **edbapp.save_as("C:/example.aedb")** to keep the example project.
 
 edbapp.save()
-print(f"EDB is saved to {edbapp.edbpath}")
-
-# ## Close EDB
-
 edbapp.close()

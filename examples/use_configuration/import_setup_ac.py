@@ -134,11 +134,9 @@ edbapp.configuration.run()
 
 edbapp.setups
 
-# ## Save EDB
+# ## Save and close Edb
+# The temporary folder will be deleted once the execution of this script is finished. Replace **edbapp.save()** with
+# **edbapp.save_as("C:/example.aedb")** to keep the example project.
 
 edbapp.save()
-print(f"EDB is saved to {edbapp.edbpath}")
-
-# ## Close EDB
-
 edbapp.close()
