@@ -2215,9 +2215,9 @@ class Edb(Database):
                     pins_to_preserve.extend([i.id for i in el.pins.values()])
                     nets_to_preserve.extend(el.nets)
         if include_pingroups:
-            for reference in reference_list:
-                for pin in self.nets.nets[reference].padstack_instances:
-                    if pin.pingroups:
+            for pingroup in self.padstacks.pingroups:
+                for pin in pingroup.pins.values():
+                    if pin.net_name in reference_list:
                         pins_to_preserve.append(pin.id)
         if check_terminals:
             terms = [
