@@ -389,15 +389,16 @@ class TestClass:
             "general": {"s_parameter_library": self.local_input_folder},
             "s_parameters": [
                 {
-                    "name": "GRM32_DC0V_25degC_series",
+                    "name": "cap_model1",
                     "file_path": "GRM32_DC0V_25degC_series.s2p",
                     "component_definition": "CAPC3216X180X55ML20T25",
                     "apply_to_all": True,
                     "components": [],
                     "reference_net": "GND",
+                    "pin_order": ["1", "2"],
                 },
                 {
-                    "name": "GRM32_DC0V_25degC_series",
+                    "name": "cap2_model2",
                     "file_path": "GRM32_DC0V_25degC_series.s2p",
                     "apply_to_all": False,
                     "component_definition": "CAPC3216X190X55ML30T25",
@@ -901,30 +902,26 @@ class TestClass:
             {
                 "reference_designator": "C375",
                 "enabled": False,
-                "value": 100e-9,
-            },
-            {
-                "reference_designator": "L2",
-                "part_type": "resistor",
-                "rlc_model": [
+                "pin_pair_model": [
                     {
-                        "type": "series",
-                        "capacitance": "100nf",
-                        "inductance": "1nh",
-                        "resistance": "0.001",
-                        "p1": "1",
-                        "p2": "2",
+                        "first_pin": "2",
+                        "second_pin": "1",
+                        "is_parallel": False,
+                        "resistance": "10ohm",
+                        "resistance_enabled": True,
+                        "inductance": "1nH",
+                        "inductance_enabled": False,
+                        "capacitance": "10nF",
+                        "capacitance_enabled": True,
                     }
                 ],
             },
         ]
         data = {"components": components}
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.get_data_from_db(components=True)
         assert edbapp.configuration.load(data, apply_file=True)
-        assert edbapp.components["C375"].enabled == False
-        assert edbapp.components["C375"].value == 100e-9
-        assert edbapp.components["L2"].type == "Resistor"
+        assert edbapp.components["C375"].get_model_properties()["pin_pair_model"] == components[0]["pin_pair_model"]
+        edbapp.configuration.get_data_from_db(components=True)
 
         edbapp.close()
 

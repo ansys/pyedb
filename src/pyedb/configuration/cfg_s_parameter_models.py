@@ -35,12 +35,15 @@ class CfgSParameterModel:
         self.components = self._sparam_dict.get("components", [])
         self.reference_net = self._sparam_dict.get("reference_net", "")
         self.reference_net_per_component = self._sparam_dict.get("reference_net_per_component", {})
+        self.pin_order = self._sparam_dict.get("pin_order", None)
 
     def apply(self):
         fpath = self.file_path
         if not Path(fpath).anchor:
             fpath = str(Path(self.path_libraries) / fpath)
         comp_def = self._pedb.definitions.component[self.component_definition]
+        if self.pin_order:
+            comp_def.set_properties(pin_order=self.pin_order)
         comp_def.add_n_port_model(fpath, self.name)
         comp_list = dict()
         if self.apply_to_all:
