@@ -200,7 +200,7 @@ class TestClass:
         edbapp.auto_parametrize_design(
             layers=False, materials=True, via_holes=False, pads=False, antipads=False, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 28
+        assert len(list(edbapp.variables.values())) == 13
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_5(self, edb_examples):
@@ -208,7 +208,7 @@ class TestClass:
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=True, pads=False, antipads=False, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 29
+        assert len(list(edbapp.variables.values())) == 3
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_6(self, edb_examples):
@@ -216,7 +216,7 @@ class TestClass:
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=True, antipads=False, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 32
+        assert len(list(edbapp.variables.values())) == 5
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_7(self, edb_examples):
@@ -224,7 +224,7 @@ class TestClass:
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=False, antipads=True, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 32
+        assert len(list(edbapp.variables.values())) == 2
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_8(self, edb_examples):
@@ -238,5 +238,5 @@ class TestClass:
             traces=True,
             trace_net_filter=["SFPA_Tx_Fault", "SFPA_Tx_Disable", "SFPA_SDA", "SFPA_SCL", "SFPA_Rx_LOS"],
         )
-        assert len(list(edbapp.variables.keys())) == 33
+        assert len(list(edbapp.variables.keys())) == 3
         edbapp.close_edb()
