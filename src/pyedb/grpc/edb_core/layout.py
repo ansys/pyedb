@@ -26,7 +26,8 @@ This module contains the ``EdbHfss`` class.
 import math
 import warnings
 
-from pyedb.generic.constants import RadiationBoxType, SweepType
+from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.edb_core.utility.hfss_extent_info import HfssExtentInfo
 from pyedb.modeler.geometry_operators import GeometryOperators
@@ -909,6 +910,9 @@ class EdbHfss(object):
         """Create an edge port on nets. This command looks for traces and polygons on the
         nets and tries to assign vertical lumped port.
 
+        . deprecated:: pyedb 0.28.0
+        Use :func:`pyedb.grpc.core.excitations.create_lumped_port_on_net` instead.
+
         Parameters
         ----------
         nets : list, optional
@@ -934,92 +938,20 @@ class EdbHfss(object):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        if not isinstance(nets, list):
-            if isinstance(nets, str):
-                nets = [self._edb.cell.net.find_by_name(self._active_layout, nets)]
-            elif isinstance(nets, self._edb.cell.net.net):
-                nets = [nets]
-        else:
-            temp_nets = []
-            for nn in nets:
-                if isinstance(nn, str):
-                    temp_nets.append(self._edb.cell.net.find_by_name(self._active_layout, nn))
-                elif isinstance(nn, self._edb.cell.net.net):
-                    temp_nets.append(nn)
-            nets = temp_nets
-        port_created = False
-        if nets:
-            edges_pts = []
-            if isinstance(reference_layer, str):
-                try:
-                    reference_layer = self._pedb.stackup.signal_layers[reference_layer]._edb_layer
-                except:
-                    raise Exception("Failed to get the layer {}".format(reference_layer))
-            if not isinstance(reference_layer, self._edb.Cell.ILayerReadOnly):
-                return False
-            layout = nets[0].GetLayout()
-            layout_bbox = self._pedb.get_conformal_polygon_from_netlist(self._pedb.nets.netlist)
-            layout_extent_segments = [pt for pt in list(layout_bbox.GetArcData()) if pt.IsSegment()]
-            first_pt = layout_extent_segments[0]
-            layout_extent_points = [
-                [first_pt.Start.X.ToDouble(), first_pt.End.X.ToDouble()],
-                [first_pt.Start.Y.ToDouble(), first_pt.End.Y.ToDouble()],
-            ]
-            for segment in layout_extent_segments[1:]:
-                end_point = (segment.End.X.ToDouble(), segment.End.Y.ToDouble())
-                layout_extent_points[0].append(end_point[0])
-                layout_extent_points[1].append(end_point[1])
-            for net in nets:
-                net_primitives = self._pedb.nets[net.name].primitives
-                net_paths = [pp for pp in net_primitives if pp.type == "Path"]
-                for path in net_paths:
-                    trace_path_pts = list(path.center_line.Points)
-                    port_name = "{}_{}".format(net.name, path.GetId())
-                    for pt in trace_path_pts:
-                        _pt = [
-                            round(pt.X.ToDouble(), digit_resolution),
-                            round(pt.Y.ToDouble(), digit_resolution),
-                        ]
-                        if at_bounding_box:
-                            if GeometryOperators.point_in_polygon(_pt, layout_extent_points) == 0:
-                                if return_points_only:
-                                    edges_pts.append(_pt)
-                                else:
-                                    term = self._create_edge_terminal(path.id, pt, port_name)  # pragma no cover
-                                    term.SetReferenceLayer(reference_layer)  # pragma no cover
-                                    port_created = True
-                        else:
-                            if return_points_only:  # pragma: no cover
-                                edges_pts.append(_pt)
-                            else:
-                                term = self._create_edge_terminal(path.id, pt, port_name)
-                                term.SetReferenceLayer(reference_layer)
-                                port_created = True
-                net_poly = [pp for pp in net_primitives if pp.type == "Polygon"]
-                for poly in net_poly:
-                    poly_segment = [aa for aa in poly.arcs if aa.is_segment]
-                    for segment in poly_segment:
-                        if (
-                            GeometryOperators.point_in_polygon(
-                                [segment.mid_point.X.ToDouble(), segment.mid_point.Y.ToDouble()], layout_extent_points
-                            )
-                            == 0
-                        ):
-                            if return_points_only:
-                                edges_pts.append(segment.mid_point)
-                            else:
-                                port_name = "{}_{}".format(net.name, poly.GetId())
-                                term = self._create_edge_terminal(
-                                    poly.id, segment.mid_point, port_name
-                                )  # pragma no cover
-                                term.SetReferenceLayer(reference_layer)  # pragma no cover
-                                port_created = True
-            if return_points_only:
-                return edges_pts
-        return port_created
+        warnings.warn(
+            "`create_lumped_port_on_net` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.create_lumped_port_on_net` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.excitations.create_lumped_port_on_net(
+            nets, reference_layer, return_points_only, digit_resolution, at_bounding_box
+        )
 
     def create_vertical_circuit_port_on_clipped_traces(self, nets=None, reference_net=None, user_defined_extent=None):
         """Create an edge port on clipped signal traces.
+
+        . deprecated:: pyedb 0.28.0
+        Use :func:`pyedb.grpc.core.excitations.create_vertical_circuit_port_on_clipped_traces` instead.
 
         Parameters
         ----------
@@ -1038,80 +970,14 @@ class EdbHfss(object):
             Nested list of str, with net name as first value, X value for point at border, Y value for point at border,
             and terminal name.
         """
-        if not isinstance(nets, list):
-            if isinstance(nets, str):
-                nets = list(self._pedb.nets.signal.values())
-        else:
-            nets = [self._pedb.nets.signal[net] for net in nets]
-        if nets:
-            if isinstance(reference_net, str):
-                reference_net = self._pedb.nets[reference_net]
-            if not reference_net:
-                self._logger.error("No reference net provided for creating port")
-                return False
-            if user_defined_extent:
-                if isinstance(user_defined_extent, self._edb.Geometry.PolygonData):
-                    _points = [pt for pt in list(user_defined_extent.Points)]
-                    _x = []
-                    _y = []
-                    for pt in _points:
-                        if pt.X.ToDouble() < 1e100 and pt.Y.ToDouble() < 1e100:
-                            _x.append(pt.X.ToDouble())
-                            _y.append(pt.Y.ToDouble())
-                    user_defined_extent = [_x, _y]
-            terminal_info = []
-            for net in nets:
-                net_polygons = [
-                    pp
-                    for pp in net.primitives
-                    if pp._edb_object.GetPrimitiveType() == self._edb.cell.primitive.api.PrimitiveType.Polygon
-                ]
-                for poly in net_polygons:
-                    mid_points = [[arc.mid_point.X.ToDouble(), arc.mid_point.Y.ToDouble()] for arc in poly.arcs]
-                    for mid_point in mid_points:
-                        if GeometryOperators.point_in_polygon(mid_point, user_defined_extent) == 0:
-                            port_name = generate_unique_name("{}_{}".format(poly.net.name, poly.id))
-                            term = self._create_edge_terminal(poly.id, mid_point, port_name)  # pragma no cover
-                            if not term.IsNull():
-                                self._logger.info("Terminal {} created".format(term.GetName()))
-                                term.SetIsCircuitPort(True)
-                                terminal_info.append([poly.net.name, mid_point[0], mid_point[1], term.GetName()])
-                                mid_pt_data = self._edb.geometry.point_data(
-                                    self._edb.utility.value(mid_point[0]), self._edb.utility.value(mid_point[1])
-                                )
-                                ref_prim = [
-                                    prim
-                                    for prim in reference_net.primitives
-                                    if prim.polygon_data._edb_object.PointInPolygon(mid_pt_data)
-                                ]
-                                if not ref_prim:
-                                    self._logger.warning("no reference primitive found, trying to extend scanning area")
-                                    scanning_zone = [
-                                        (mid_point[0] - mid_point[0] * 1e-3, mid_point[1] - mid_point[1] * 1e-3),
-                                        (mid_point[0] - mid_point[0] * 1e-3, mid_point[1] + mid_point[1] * 1e-3),
-                                        (mid_point[0] + mid_point[0] * 1e-3, mid_point[1] + mid_point[1] * 1e-3),
-                                        (mid_point[0] + mid_point[0] * 1e-3, mid_point[1] - mid_point[1] * 1e-3),
-                                    ]
-                                    for new_point in scanning_zone:
-                                        mid_pt_data = self._edb.geometry.point_data(
-                                            self._edb.utility.value(new_point[0]), self._edb.utility.value(new_point[1])
-                                        )
-                                        ref_prim = [
-                                            prim
-                                            for prim in reference_net.primitives
-                                            if prim.polygon_data.edb_api.PointInPolygon(mid_pt_data)
-                                        ]
-                                        if ref_prim:
-                                            self._logger.info("Reference primitive found")
-                                            break
-                                    if not ref_prim:
-                                        self._logger.error("Failed to collect valid reference primitives for terminal")
-                                if ref_prim:
-                                    reference_layer = ref_prim[0].layer._edb_layer
-                                    if term.SetReferenceLayer(reference_layer):  # pragma no cover
-                                        self._logger.info("Port {} created".format(port_name))
-            return terminal_info
-        return False
+        warnings.warn(
+            "`create_source_on_component` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.create_source_on_component` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.excitations.create_vertical_circuit_port_on_clipped_traces(
+            nets, reference_net, user_defined_extent
+        )
 
     def get_layout_bounding_box(self, layout=None, digit_resolution=6):
         """Evaluate the layout bounding box.
@@ -1131,23 +997,27 @@ class EdbHfss(object):
         """
         if layout == None:
             return False
-        layout_obj_instances = layout.GetLayoutInstance().GetAllLayoutObjInstances()
+        layout_obj_instances = layout.layout_instance.query_layout_obj_instances()
         tuple_list = []
         for lobj in layout_obj_instances.Items:
-            lobj_bbox = lobj.GetLayoutInstanceContext().GetBBox(False)
+            lobj_bbox = lobj.get_layout_instance_in_context().bbox(False)
             tuple_list.append(lobj_bbox)
-        _bbox = self._edb.geometry.polygon_data.get_bbox_of_boxes(tuple_list)
+        _bbox = GrpcPolygonData.bbox_of_polygons(tuple_list)
         layout_bbox = [
-            round(_bbox.Item1.X.ToDouble(), digit_resolution),
-            round(_bbox.Item1.Y.ToDouble(), digit_resolution),
-            round(_bbox.Item2.X.ToDouble(), digit_resolution),
-            round(_bbox.Item2.Y.ToDouble(), digit_resolution),
+            round(_bbox.Item1.x.value, digit_resolution),
+            round(_bbox.Item1.y.value, digit_resolution),
+            round(_bbox.Item2.x.value, digit_resolution),
+            round(_bbox.Item2.y.value, digit_resolution),
         ]
         return layout_bbox
 
     def configure_hfss_extents(self, simulation_setup=None):
         """Configure the HFSS extent box.
 
+                . deprecated:: pyedb 0.28.0
+        Use :func:`self._pedb.utility.simulation_configuration.ProcessSimulationConfiguration.configure_hfss_extents`
+        instead.
+
         Parameters
         ----------
         simulation_setup :
@@ -1158,47 +1028,26 @@ class EdbHfss(object):
         bool
             True when succeeded, False when failed.
         """
-
-        if not isinstance(simulation_setup, SimulationConfiguration):
-            self._logger.error(
-                "Configure HFSS extent requires edb_data.simulation_configuration.SimulationConfiguration object"
-            )
-            return False
-        hfss_extent = self._edb.utility.utility.HFSSExtentInfo()
-        if simulation_setup.radiation_box == RadiationBoxType.BoundingBox:
-            hfss_extent.ExtentType = self._edb.utility.utility.HFSSExtentInfoType.BoundingBox
-        elif simulation_setup.radiation_box == RadiationBoxType.Conformal:
-            hfss_extent.ExtentType = self._edb.utility.utility.HFSSExtentInfoType.Conforming
-        else:
-            hfss_extent.ExtentType = self._edb.utility.utility.HFSSExtentInfoType.ConvexHull
-        hfss_extent.DielectricExtentSize = convert_pytuple_to_nettuple(
-            (simulation_setup.dielectric_extent, simulation_setup.use_dielectric_extent_multiple)
+        warnings.warn(
+            "`configure_hfss_extents` is deprecated and is now located here "
+            "`pyedb.grpc.core.utility.simulation_confifiguration.ProcessSimulationConfiguration.configure_hfss_extents`"
+            "instead.",
+            DeprecationWarning,
         )
-        hfss_extent.AirBoxHorizontalExtent = convert_pytuple_to_nettuple(
-            (simulation_setup.airbox_horizontal_extent, simulation_setup.use_airbox_horizontal_extent_multiple)
+        return self._pedb.utility.simulation_configuration.ProcessSimulationConfiguration.configure_hfss_extents(
+            simulation_setup
         )
-        hfss_extent.AirBoxNegativeVerticalExtent = convert_pytuple_to_nettuple(
-            (
-                simulation_setup.airbox_negative_vertical_extent,
-                simulation_setup.use_airbox_negative_vertical_extent_multiple,
-            )
-        )
-        hfss_extent.AirBoxPositiveVerticalExtent = convert_pytuple_to_nettuple(
-            (
-                simulation_setup.airbox_positive_vertical_extent,
-                simulation_setup.use_airbox_positive_vertical_extent_multiple,
-            )
-        )
-        hfss_extent.HonorUserDielectric = simulation_setup.honor_user_dielectric
-        hfss_extent.TruncateAirBoxAtGround = simulation_setup.truncate_airbox_at_ground
-        hfss_extent.UseOpenRegion = simulation_setup.use_radiation_boundary
-        self._layout.cell.SetHFSSExtentInfo(hfss_extent)  # returns void
-        return True
 
     def configure_hfss_analysis_setup(self, simulation_setup=None):
         """
         Configure HFSS analysis setup.
 
+        . deprecated:: pyedb 0.28.0
+        Use :func:
+        `pyedb.grpc.core.utility.simulation_confifiguration.ProcessSimulationConfiguration.configure_hfss_analysis_setup`
+        instead.
+
+
         Parameters
         ----------
         simulation_setup :
@@ -1209,99 +1058,15 @@ class EdbHfss(object):
         bool
             True when succeeded, False when failed.
         """
-        if not isinstance(simulation_setup, SimulationConfiguration):
-            self._logger.error(
-                "Configure HFSS analysis requires and edb_data.simulation_configuration.SimulationConfiguration object \
-                               as argument"
-            )
-            return False
-        simsetup_info = self._pedb.simsetupdata.SimSetupInfo[self._pedb.simsetupdata.HFSSSimulationSettings]()
-        simsetup_info.Name = simulation_setup.setup_name
-
-        if simulation_setup.ac_settings.adaptive_type == 0:
-            adapt = self._pedb.simsetupdata.AdaptiveFrequencyData()
-            adapt.AdaptiveFrequency = simulation_setup.mesh_freq
-            adapt.MaxPasses = int(simulation_setup.max_num_passes)
-            adapt.MaxDelta = str(simulation_setup.max_mag_delta_s)
-            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList = convert_py_list_to_net_list(
-                [adapt]
-            )
-        elif simulation_setup.ac_settings.adaptive_type == 2:
-            low_freq_adapt_data = self._pedb.simsetupdata.AdaptiveFrequencyData()
-            low_freq_adapt_data.MaxDelta = str(simulation_setup.max_mag_delta_s)
-            low_freq_adapt_data.MaxPasses = int(simulation_setup.max_num_passes)
-            low_freq_adapt_data.AdaptiveFrequency = simulation_setup.ac_settings.adaptive_low_freq
-            high_freq_adapt_data = self._pedb.simsetupdata.AdaptiveFrequencyData()
-            high_freq_adapt_data.MaxDelta = str(simulation_setup.max_mag_delta_s)
-            high_freq_adapt_data.MaxPasses = int(simulation_setup.max_num_passes)
-            high_freq_adapt_data.AdaptiveFrequency = simulation_setup.ac_settings.adaptive_high_freq
-            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptType = (
-                self._pedb.simsetupdata.AdaptiveSettings.TAdaptType.kBroadband
-            )
-            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Clear()
-            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Add(low_freq_adapt_data)
-            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Add(high_freq_adapt_data)
-
-        simsetup_info.SimulationSettings.CurveApproxSettings.ArcAngle = simulation_setup.arc_angle
-        simsetup_info.SimulationSettings.CurveApproxSettings.UseArcToChordError = (
-            simulation_setup.use_arc_to_chord_error
+        warnings.warn(
+            "`configure_hfss_analysis_setup` is deprecated and is now located here "
+            "`pyedb.grpc.core.utility.simulation_confifiguration.ProcessSimulationConfiguration."
+            "configure_hfss_analysis_setup` instead.",
+            DeprecationWarning,
         )
-        simsetup_info.SimulationSettings.CurveApproxSettings.ArcToChordError = simulation_setup.arc_to_chord_error
-
-        simsetup_info.SimulationSettings.InitialMeshSettings.LambdaRefine = simulation_setup.do_lambda_refinement
-        if simulation_setup.mesh_sizefactor > 0.0:
-            simsetup_info.SimulationSettings.InitialMeshSettings.MeshSizefactor = simulation_setup.mesh_sizefactor
-            simsetup_info.SimulationSettings.InitialMeshSettings.LambdaRefine = False
-        simsetup_info.SimulationSettings.AdaptiveSettings.MaxRefinePerPass = 30
-        simsetup_info.SimulationSettings.AdaptiveSettings.MinPasses = simulation_setup.min_num_passes
-        simsetup_info.SimulationSettings.AdaptiveSettings.MinConvergedPasses = 1
-        simsetup_info.SimulationSettings.HFSSSolverSettings.OrderBasis = simulation_setup.basis_order
-        simsetup_info.SimulationSettings.HFSSSolverSettings.UseHFSSIterativeSolver = False
-        simsetup_info.SimulationSettings.DefeatureSettings.UseDefeature = False  # set True when using defeature ratio
-        simsetup_info.SimulationSettings.DefeatureSettings.UseDefeatureAbsLength = simulation_setup.defeature_layout
-        simsetup_info.SimulationSettings.DefeatureSettings.DefeatureAbsLength = simulation_setup.defeature_abs_length
-
-        try:
-            if simulation_setup.add_frequency_sweep:
-                self._logger.info("Adding frequency sweep")
-                sweep = self._pedb.simsetupdata.SweepData(simulation_setup.sweep_name)
-                sweep.IsDiscrete = False
-                sweep.UseQ3DForDC = simulation_setup.use_q3d_for_dc
-                sweep.RelativeSError = simulation_setup.relative_error
-                sweep.InterpUsePortImpedance = False
-                sweep.EnforceCausality = simulation_setup.enforce_causality
-                # sweep.EnforceCausality = False
-                sweep.EnforcePassivity = simulation_setup.enforce_passivity
-                sweep.PassivityTolerance = simulation_setup.passivity_tolerance
-                sweep.Frequencies.Clear()
-
-                if simulation_setup.sweep_type == SweepType.LogCount:  # setup_info.SweepType == 'DecadeCount'
-                    self._setup_decade_count_sweep(
-                        sweep,
-                        str(simulation_setup.start_freq),
-                        str(simulation_setup.stop_freq),
-                        str(simulation_setup.decade_count),
-                    )  # Added DecadeCount as a new attribute
-
-                else:
-                    sweep.Frequencies = self._pedb.simsetupdata.SweepData.SetFrequencies(
-                        simulation_setup.start_freq,
-                        simulation_setup.stop_freq,
-                        simulation_setup.step_freq,
-                    )
-
-                simsetup_info.SweepDataList.Add(sweep)
-            else:
-                self._logger.info("Adding frequency sweep disabled")
-
-        except Exception as err:
-            self._logger.error("Exception in Sweep configuration: {0}".format(err))
-
-        sim_setup = self._edb.utility.utility.HFSSSimulationSetup(simsetup_info)
-        for setup in self._layout.cell.SimulationSetups:
-            self._layout.cell.DeleteSimulationSetup(setup.GetName())
-            self._logger.warning("Setup {} has been deleted".format(setup.GetName()))
-        return self._layout.cell.AddSimulationSetup(sim_setup)
+        self._pedb.utility.simulation_configuration.ProcessSimulationConfiguration.configure_hfss_analysis_setup(
+            simulation_setup
+        )
 
     def _setup_decade_count_sweep(self, sweep, start_freq="1", stop_freq="1MHz", decade_count="10"):
         start_f = GeometryOperators.parse_dim_arg(start_freq)

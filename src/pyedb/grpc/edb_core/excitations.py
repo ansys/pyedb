@@ -22,9 +22,11 @@
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
+from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.component_group import (
     ComponentGroup as GrpcComponentGroup,
 )
+from ansys.edb.core.primitive.primitive import PrimitiveType as GrpcPrimitiveType
 from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.terminal.terminals import EdgeTerminal as GrpcEdgeTerminal
 from ansys.edb.core.terminal.terminals import PrimitiveEdge as GrpcPrimitiveEdge
@@ -34,6 +36,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.edb_core.components import Component
 from pyedb.grpc.edb_core.hierarchy.pingroup import PinGroup
+from pyedb.grpc.edb_core.layers.stackup_layer import StackupLayer
 from pyedb.grpc.edb_core.nets.net import Net
 from pyedb.grpc.edb_core.ports.ports import WavePort
 from pyedb.grpc.edb_core.primitive.padstack_instances import PadstackInstance
@@ -51,6 +54,7 @@ from pyedb.grpc.edb_core.utility.sources import (
     SourceType,
     VoltageSource,
 )
+from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 class Excitations:
@@ -1719,30 +1723,29 @@ class Excitations:
             ``True`` when successful, ``False`` when failed.
         """
         if isinstance(nets, str):
-            nets = [self._pedb.nets[nets]]
+            nets = [self._pedb.nets.signal[nets]]
         if isinstance(nets, Net):
             nets = [nets]
-        nets = [self._pedb.nets[net] for net in nets if isinstance(net, str)]
+        nets = [self._pedb.nets.signal[net] for net in nets if isinstance(net, str)]
         port_created = False
         if nets:
             edges_pts = []
             if isinstance(reference_layer, str):
                 try:
-                    reference_layer = self._pedb.stackup.signal_layers[reference_layer]._edb_layer
+                    reference_layer = self._pedb.stackup.signal_layers[reference_layer]
                 except:
-                    raise Exception("Failed to get the layer {}".format(reference_layer))
-            if not isinstance(reference_layer, self._edb.Cell.ILayerReadOnly):
+                    raise Exception(f"Failed to get the layer {reference_layer}")
+            if not isinstance(reference_layer, StackupLayer):
                 return False
-            layout = nets[0].GetLayout()
             layout_bbox = self._pedb.get_conformal_polygon_from_netlist(self._pedb.nets.netlist)
-            layout_extent_segments = [pt for pt in list(layout_bbox.GetArcData()) if pt.IsSegment()]
+            layout_extent_segments = [pt for pt in list(layout_bbox.arc_data) if pt.is_segment]
             first_pt = layout_extent_segments[0]
             layout_extent_points = [
-                [first_pt.Start.X.ToDouble(), first_pt.End.X.ToDouble()],
-                [first_pt.Start.Y.ToDouble(), first_pt.End.Y.ToDouble()],
+                [first_pt.start.x.value, first_pt.end.x.value],
+                [first_pt.Start.y.value, first_pt.end.y.value],
             ]
             for segment in layout_extent_segments[1:]:
-                end_point = (segment.End.X.ToDouble(), segment.End.Y.ToDouble())
+                end_point = (segment.end.x.value, segment.end.y.value)
                 layout_extent_points[0].append(end_point[0])
                 layout_extent_points[1].append(end_point[1])
             for net in nets:
@@ -1750,11 +1753,11 @@ class Excitations:
                 net_paths = [pp for pp in net_primitives if pp.type == "Path"]
                 for path in net_paths:
                     trace_path_pts = list(path.center_line.Points)
-                    port_name = "{}_{}".format(net.name, path.GetId())
+                    port_name = f"{net.name}_{path.id}"
                     for pt in trace_path_pts:
                         _pt = [
-                            round(pt.X.ToDouble(), digit_resolution),
-                            round(pt.Y.ToDouble(), digit_resolution),
+                            round(pt.x.value, digit_resolution),
+                            round(pt.y.value, digit_resolution),
                         ]
                         if at_bounding_box:
                             if GeometryOperators.point_in_polygon(_pt, layout_extent_points) == 0:
@@ -1762,14 +1765,14 @@ class Excitations:
                                     edges_pts.append(_pt)
                                 else:
                                     term = self._create_edge_terminal(path.id, pt, port_name)  # pragma no cover
-                                    term.SetReferenceLayer(reference_layer)  # pragma no cover
+                                    term.reference_layer = reference_layer
                                     port_created = True
                         else:
                             if return_points_only:  # pragma: no cover
                                 edges_pts.append(_pt)
                             else:
                                 term = self._create_edge_terminal(path.id, pt, port_name)
-                                term.SetReferenceLayer(reference_layer)
+                                term.reference_layer = reference_layer
                                 port_created = True
                 net_poly = [pp for pp in net_primitives if pp.type == "Polygon"]
                 for poly in net_poly:
@@ -1777,19 +1780,106 @@ class Excitations:
                     for segment in poly_segment:
                         if (
                             GeometryOperators.point_in_polygon(
-                                [segment.mid_point.X.ToDouble(), segment.mid_point.Y.ToDouble()], layout_extent_points
+                                [segment.mid_point.x.value, segment.mid_point.y.value], layout_extent_points
                             )
                             == 0
                         ):
                             if return_points_only:
                                 edges_pts.append(segment.mid_point)
                             else:
-                                port_name = "{}_{}".format(net.name, poly.GetId())
+                                port_name = f"{net.name}_{poly.id}"
                                 term = self._create_edge_terminal(
                                     poly.id, segment.mid_point, port_name
                                 )  # pragma no cover
-                                term.SetReferenceLayer(reference_layer)  # pragma no cover
+                                term.set_reference_layer = reference_layer
                                 port_created = True
             if return_points_only:
                 return edges_pts
         return port_created
+
+    def create_vertical_circuit_port_on_clipped_traces(self, nets=None, reference_net=None, user_defined_extent=None):
+        """Create an edge port on clipped signal traces.
+
+        Parameters
+        ----------
+        nets : list, optional
+            String of one net or EDB net or a list of multiple nets or EDB nets.
+
+        reference_net : str, Edb net.
+             Name or EDB reference net.
+
+        user_defined_extent : [x, y], EDB PolygonData
+            Use this point list or PolygonData object to check if ports are at this polygon border.
+
+        Returns
+        -------
+        [[str]]
+            Nested list of str, with net name as first value, X value for point at border, Y value for point at border,
+            and terminal name.
+        """
+        if not isinstance(nets, list):
+            if isinstance(nets, str):
+                nets = list(self._pedb.nets.signal.values())
+        else:
+            nets = [self._pedb.nets.signal[net] for net in nets]
+        if nets:
+            if isinstance(reference_net, str):
+                reference_net = self._pedb.nets[reference_net]
+            if not reference_net:
+                self._logger.error("No reference net provided for creating port")
+                return False
+            if user_defined_extent:
+                if isinstance(user_defined_extent, GrpcPolygonData):
+                    _points = [pt for pt in list(user_defined_extent.points)]
+                    _x = []
+                    _y = []
+                    for pt in _points:
+                        if pt.x.value < 1e100 and pt.y.value < 1e100:
+                            _x.append(pt.x.value)
+                            _y.append(pt.y.value)
+                    user_defined_extent = [_x, _y]
+            terminal_info = []
+            for net in nets:
+                net_polygons = [pp for pp in net.primitives if pp.type == GrpcPrimitiveType.POLYGON]
+                for poly in net_polygons:
+                    mid_points = [[arc.mid_point.x.value, arc.mid_point.y.value] for arc in poly.arcs]
+                    for mid_point in mid_points:
+                        if GeometryOperators.point_in_polygon(mid_point, user_defined_extent) == 0:
+                            port_name = generate_unique_name(f"{poly.net.name}_{poly.id}")
+                            term = self._create_edge_terminal(poly.id, mid_point, port_name)  # pragma no cover
+                            if not term.is_null:
+                                self._logger.info(f"Terminal {term.name} created")
+                                term.is_circuit_port = True
+                                terminal_info.append([poly.net.name, mid_point[0], mid_point[1], term.name])
+                                mid_pt_data = GrpcPointData(mid_point)
+                                ref_prim = [
+                                    prim
+                                    for prim in reference_net.primitives
+                                    if prim.polygon_data.point_in_polygon(mid_pt_data)
+                                ]
+                                if not ref_prim:
+                                    self._logger.warning("no reference primitive found, trying to extend scanning area")
+                                    scanning_zone = [
+                                        (mid_point[0] - mid_point[0] * 1e-3, mid_point[1] - mid_point[1] * 1e-3),
+                                        (mid_point[0] - mid_point[0] * 1e-3, mid_point[1] + mid_point[1] * 1e-3),
+                                        (mid_point[0] + mid_point[0] * 1e-3, mid_point[1] + mid_point[1] * 1e-3),
+                                        (mid_point[0] + mid_point[0] * 1e-3, mid_point[1] - mid_point[1] * 1e-3),
+                                    ]
+                                    for new_point in scanning_zone:
+                                        mid_pt_data = GrpcPointData(new_point)
+                                        ref_prim = [
+                                            prim
+                                            for prim in reference_net.primitives
+                                            if prim.polygon_data.point_in_polygon(mid_pt_data)
+                                        ]
+                                        if ref_prim:
+                                            self._logger.info("Reference primitive found")
+                                            break
+                                    if not ref_prim:
+                                        self._logger.error("Failed to collect valid reference primitives for terminal")
+                                if ref_prim:
+                                    reference_layer = ref_prim[0].layer
+                                    if term.reference_layer == reference_layer:
+                                        self._logger.info(f"Port {port_name} created")
+            return terminal_info
+        return False

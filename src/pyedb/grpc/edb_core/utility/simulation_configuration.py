@@ -1975,7 +1975,7 @@ class SimulationConfiguration(object):
     From this class you can assign a lot of parameters related the project configuration but also solver options.
     Here is the list of parameters available:
 
-    >>> from dotnet.generic.constants import SolverType
+    >>> from pyedb.generic.constants import SolverType
     >>> sim_setup.solver_type = SolverType.Hfss3dLayout
 
     Solver type can be selected, HFSS 3D Layout and Siwave are supported.
@@ -2001,7 +2001,7 @@ class SimulationConfiguration(object):
 
     When true activates the layout cutout based on net signal net selection and cutout expansion.
 
-    >>> from dotnet.generic.constants import CutoutSubdesignType
+    >>> from pyedb.generic.constants import CutoutSubdesignType
     >>> sim_setup.cutout_subdesign_type = CutoutSubdesignType.Conformal
 
     Define the type of cutout used for computing the clippingextent polygon. CutoutSubdesignType.Conformal
@@ -2078,7 +2078,7 @@ class SimulationConfiguration(object):
     taking the closest reference pin. The last configuration is more often used when users are creating ports on PDN
     (Power delivery Network) and want to connect all pins individually.
 
-    >>> from dotnet.generic.constants import SweepType
+    >>> from pyedb.generic.constants import SweepType
     >>> sim_setup.sweep_type = SweepType.Linear
 
     Specify the frequency sweep type, Linear or Log sweep can be defined.
@@ -2127,7 +2127,7 @@ class SimulationConfiguration(object):
 
     Define the frequency used for adaptive meshing (available for both HFSS and SIwave).
 
-    >>> from dotnet.generic.constants import RadiationBoxType
+    >>> from pyedb.generic.constants import RadiationBoxType
     >>> sim_setup.radiation_box = RadiationBoxType.ConvexHull
 
     Defined the radiation box type, Conformal, Bounding box and ConvexHull are supported (HFSS only).
@@ -2146,7 +2146,7 @@ class SimulationConfiguration(object):
     specify the minimum number of consecutive coberged passes. Setting to 2 is a good practice to avoid converging on
     local minima.
 
-    >>> from dotnet.generic.constants import BasisOrder
+    >>> from pyedb.generic.constants import BasisOrder
     >>> sim_setup.basis_order =  BasisOrder.Single
 
     Select the order basis (HFSS only), Zero, Single, Double and Mixed are supported. For Signal integrity Single or
@@ -2699,7 +2699,7 @@ class SimulationConfiguration(object):
         Examples
         --------
 
-        >>> from dotnet.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+        >>> from pyedb.grpc.edb_core.utility.simulation_configuration import SimulationConfiguration
         >>> config = SimulationConfiguration()
         >>> config.export_json(r"C:\Temp\test_json\test.json")
         """
@@ -2727,7 +2727,7 @@ class SimulationConfiguration(object):
 
         Examples
         --------
-        >>> from dotnet.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+        >>> from pyedb.grpc.edb_core.utility.simulation_configuration import SimulationConfiguration
         >>> test = SimulationConfiguration()
         >>> test.import_json(r"C:\Temp\test_json\test.json")
         """
@@ -2956,3 +2956,163 @@ class SimulationConfiguration(object):
             return True
         except:  # pragma: no cover
             return False
+
+
+class ProcessSimulationConfiguration(object):
+    @staticmethod
+    def configure_hfss_extents(self, simulation_setup=None):
+        """Configure the HFSS extent box.
+
+        Parameters
+        ----------
+        simulation_setup :
+            Edb_DATA.SimulationConfiguration object
+
+        Returns
+        -------
+        bool
+            True when succeeded, False when failed.
+        """
+
+        if not isinstance(simulation_setup, SimulationConfiguration):
+            self._logger.error(
+                "Configure HFSS extent requires edb_data.simulation_configuration.SimulationConfiguration object"
+            )
+            return False
+        hfss_extent = self._edb.utility.utility.HFSSExtentInfo()
+        if simulation_setup.radiation_box == RadiationBoxType.BoundingBox:
+            hfss_extent.ExtentType = self._edb.utility.utility.HFSSExtentInfoType.BoundingBox
+        elif simulation_setup.radiation_box == RadiationBoxType.Conformal:
+            hfss_extent.ExtentType = self._edb.utility.utility.HFSSExtentInfoType.Conforming
+        else:
+            hfss_extent.ExtentType = self._edb.utility.utility.HFSSExtentInfoType.ConvexHull
+        hfss_extent.dielectric_extent_size = (
+            simulation_setup.dielectric_extent,
+            simulation_setup.use_dielectric_extent_multiple,
+        )
+        hfss_extent.air_box_horizontal_extent = (
+            simulation_setup.airbox_horizontal_extent,
+            simulation_setup.use_airbox_horizontal_extent_multiple,
+        )
+        hfss_extent.air_box_negative_vertical_extent = (
+            simulation_setup.airbox_negative_vertical_extent,
+            simulation_setup.use_airbox_negative_vertical_extent_multiple,
+        )
+        hfss_extent.AirBoxPositiveVerticalExtent = (
+            simulation_setup.airbox_positive_vertical_extent,
+            simulation_setup.use_airbox_positive_vertical_extent_multiple,
+        )
+        hfss_extent.HonorUserDielectric = simulation_setup.honor_user_dielectric
+        hfss_extent.TruncateAirBoxAtGround = simulation_setup.truncate_airbox_at_ground
+        hfss_extent.UseOpenRegion = simulation_setup.use_radiation_boundary
+        self._layout.cell.SetHFSSExtentInfo(hfss_extent)  # returns void
+        return True
+
+    @staticmethod
+    def configure_hfss_analysis_setup(self, simulation_setup=None):
+        """
+        Configure HFSS analysis setup.
+
+        Parameters
+        ----------
+        simulation_setup :
+            Edb_DATA.SimulationConfiguration object
+
+        Returns
+        -------
+        bool
+            True when succeeded, False when failed.
+        """
+        if not isinstance(simulation_setup, SimulationConfiguration):
+            self._logger.error(
+                "Configure HFSS analysis requires and edb_data.simulation_configuration.SimulationConfiguration object \
+                               as argument"
+            )
+            return False
+        simsetup_info = self._pedb.simsetupdata.SimSetupInfo[self._pedb.simsetupdata.HFSSSimulationSettings]()
+        simsetup_info.Name = simulation_setup.setup_name
+
+        if simulation_setup.ac_settings.adaptive_type == 0:
+            adapt = self._pedb.simsetupdata.AdaptiveFrequencyData()
+            adapt.AdaptiveFrequency = simulation_setup.mesh_freq
+            adapt.MaxPasses = int(simulation_setup.max_num_passes)
+            adapt.MaxDelta = str(simulation_setup.max_mag_delta_s)
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList = convert_py_list_to_net_list(
+                [adapt]
+            )
+        elif simulation_setup.ac_settings.adaptive_type == 2:
+            low_freq_adapt_data = self._pedb.simsetupdata.AdaptiveFrequencyData()
+            low_freq_adapt_data.MaxDelta = str(simulation_setup.max_mag_delta_s)
+            low_freq_adapt_data.MaxPasses = int(simulation_setup.max_num_passes)
+            low_freq_adapt_data.AdaptiveFrequency = simulation_setup.ac_settings.adaptive_low_freq
+            high_freq_adapt_data = self._pedb.simsetupdata.AdaptiveFrequencyData()
+            high_freq_adapt_data.MaxDelta = str(simulation_setup.max_mag_delta_s)
+            high_freq_adapt_data.MaxPasses = int(simulation_setup.max_num_passes)
+            high_freq_adapt_data.AdaptiveFrequency = simulation_setup.ac_settings.adaptive_high_freq
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptType = (
+                self._pedb.simsetupdata.AdaptiveSettings.TAdaptType.kBroadband
+            )
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Clear()
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Add(low_freq_adapt_data)
+            simsetup_info.SimulationSettings.AdaptiveSettings.AdaptiveFrequencyDataList.Add(high_freq_adapt_data)
+
+        simsetup_info.SimulationSettings.CurveApproxSettings.ArcAngle = simulation_setup.arc_angle
+        simsetup_info.SimulationSettings.CurveApproxSettings.UseArcToChordError = (
+            simulation_setup.use_arc_to_chord_error
+        )
+        simsetup_info.SimulationSettings.CurveApproxSettings.ArcToChordError = simulation_setup.arc_to_chord_error
+
+        simsetup_info.SimulationSettings.InitialMeshSettings.LambdaRefine = simulation_setup.do_lambda_refinement
+        if simulation_setup.mesh_sizefactor > 0.0:
+            simsetup_info.SimulationSettings.InitialMeshSettings.MeshSizefactor = simulation_setup.mesh_sizefactor
+            simsetup_info.SimulationSettings.InitialMeshSettings.LambdaRefine = False
+        simsetup_info.SimulationSettings.AdaptiveSettings.MaxRefinePerPass = 30
+        simsetup_info.SimulationSettings.AdaptiveSettings.MinPasses = simulation_setup.min_num_passes
+        simsetup_info.SimulationSettings.AdaptiveSettings.MinConvergedPasses = 1
+        simsetup_info.SimulationSettings.HFSSSolverSettings.OrderBasis = simulation_setup.basis_order
+        simsetup_info.SimulationSettings.HFSSSolverSettings.UseHFSSIterativeSolver = False
+        simsetup_info.SimulationSettings.DefeatureSettings.UseDefeature = False  # set True when using defeature ratio
+        simsetup_info.SimulationSettings.DefeatureSettings.UseDefeatureAbsLength = simulation_setup.defeature_layout
+        simsetup_info.SimulationSettings.DefeatureSettings.DefeatureAbsLength = simulation_setup.defeature_abs_length
+
+        try:
+            if simulation_setup.add_frequency_sweep:
+                self._logger.info("Adding frequency sweep")
+                sweep = self._pedb.simsetupdata.SweepData(simulation_setup.sweep_name)
+                sweep.IsDiscrete = False
+                sweep.UseQ3DForDC = simulation_setup.use_q3d_for_dc
+                sweep.RelativeSError = simulation_setup.relative_error
+                sweep.InterpUsePortImpedance = False
+                sweep.EnforceCausality = simulation_setup.enforce_causality
+                # sweep.EnforceCausality = False
+                sweep.EnforcePassivity = simulation_setup.enforce_passivity
+                sweep.PassivityTolerance = simulation_setup.passivity_tolerance
+                sweep.Frequencies.Clear()
+
+                if simulation_setup.sweep_type == SweepType.LogCount:  # setup_info.SweepType == 'DecadeCount'
+                    self._setup_decade_count_sweep(
+                        sweep,
+                        str(simulation_setup.start_freq),
+                        str(simulation_setup.stop_freq),
+                        str(simulation_setup.decade_count),
+                    )  # Added DecadeCount as a new attribute
+
+                else:
+                    sweep.Frequencies = self._pedb.simsetupdata.SweepData.SetFrequencies(
+                        simulation_setup.start_freq,
+                        simulation_setup.stop_freq,
+                        simulation_setup.step_freq,
+                    )
+
+                simsetup_info.SweepDataList.Add(sweep)
+            else:
+                self._logger.info("Adding frequency sweep disabled")
+
+        except Exception as err:
+            self._logger.error("Exception in Sweep configuration: {0}".format(err))
+
+        sim_setup = self._edb.utility.utility.HFSSSimulationSetup(simsetup_info)
+        for setup in self._layout.cell.SimulationSetups:
+            self._layout.cell.DeleteSimulationSetup(setup.GetName())
+            self._logger.warning("Setup {} has been deleted".format(setup.GetName()))
+        return self._layout.cell.AddSimulationSetup(sim_setup)
