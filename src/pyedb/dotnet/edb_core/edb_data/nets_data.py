@@ -71,7 +71,7 @@ class EDBNetsData(NetDotNet):
         list of :class:`pyedb.dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`"""
         # name = self.name
         # return [
-        #     EDBPadstackInstance(i, self._app) for i in self.net_object.PadstackInstances if i.GetNet().GetName() == name
+        # EDBPadstackInstance(i, self._app) for i in self.net_object.PadstackInstances if i.GetNet().GetName() == name
         # ]
         return [EDBPadstackInstance(i, self._app) for i in self.net_object.PadstackInstances]
 
