@@ -20,12 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.cell.terminal.bundle_terminal import BundleTerminal
-from pyedb.dotnet.edb_core.cell.terminal.edge_terminal import EdgeTerminal
-from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
+from ansys.edb.core.utility.value import Value as GrpcValue
+
+from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
+from pyedb.grpc.edb_core.terminal.bundle_terminal import BundleTerminal
+from pyedb.grpc.edb_core.terminal.edge_terminal import EdgeTerminal
+from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
-from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
 
 
 class GapPort(EdgeTerminal):
@@ -52,29 +54,29 @@ class GapPort(EdgeTerminal):
     @property
     def magnitude(self):
         """Magnitude."""
-        return self._edb_object.GetSourceAmplitude().ToDouble()
+        return self._edb_object.source_amplitude.value
 
     @property
     def phase(self):
         """Phase."""
-        return self._edb_object.GetSourcePhase().ToDouble()
+        return self._edb_object.source_phase.value
 
     @property
     def renormalize(self):
         """Whether renormalize is active."""
-        return self._edb_object.GetPortPostProcessingProp().DoRenormalize
+        return self._edb_object.port_post_processing_prop.do_renormalize
 
     @property
     def deembed(self):
         """Inductance value of the deembed gap port."""
-        return self._edb_object.GetPortPostProcessingProp().DoDeembedGapL
+        return self._edb_object.port_post_processing_prop.do_deembed
 
     @property
     def renormalize_z0(self):
         """Renormalize Z0 value (real, imag)."""
         return (
-            self._edb_object.GetPortPostProcessingProp().RenormalizionZ0.ToComplex().Item1,
-            self._edb_object.GetPortPostProcessingProp().RenormalizionZ0.ToComplex().Item2,
+            self._edb_object.port_post_processing_prop.renormalizion_z0[0],
+            self._edb_object.port_post_processing_prop.renormalizion_z0[1],
         )
 
 
@@ -153,24 +155,24 @@ class WavePort(EdgeTerminal):
     @property
     def deembed(self):
         """Whether deembed is active."""
-        return self._edb_object.GetPortPostProcessingProp().DoDeembed
+        return self._edb_object.port_post_processing_prop.do_deembed
 
     @deembed.setter
     def deembed(self, value):
-        p = self._edb_object.GetPortPostProcessingProp()
+        p = self._edb_object.port_post_processing_prop
         p.DoDeembed = value
-        self._edb_object.SetPortPostProcessingProp(p)
+        self._edb_object.port_post_processing_prop = p
 
     @property
     def deembed_length(self):
         """Deembed Length."""
-        return self._edb_object.GetPortPostProcessingProp().DeembedLength.ToDouble()
+        return self._edb_object.port_post_processing_prop.deembed_length.value
 
     @deembed_length.setter
     def deembed_length(self, value):
-        p = self._edb_object.GetPortPostProcessingProp()
-        p.DeembedLength = self._pedb.edb_value(value)
-        self._edb_object.SetPortPostProcessingProp(p)
+        p = self._edb_object.port_post_processing_prop
+        p.deembed_length = GrpcValue(value)
+        self._edb_object.port_post_processing_prop = p
 
 
 class ExcitationSources(Terminal):

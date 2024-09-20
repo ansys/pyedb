@@ -20,22 +20,37 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from ansys.edb.core.database import ProductIdType as GrpcProductIdType
+from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.hierarchy.component_group import (
     ComponentGroup as GrpcComponentGroup,
 )
 from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
+from ansys.edb.core.terminal.terminals import EdgeTerminal as GrpcEdgeTerminal
+from ansys.edb.core.terminal.terminals import PrimitiveEdge as GrpcPrimitiveEdge
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.edb_core.components import Component
 from pyedb.grpc.edb_core.hierarchy.pingroup import PinGroup
+from pyedb.grpc.edb_core.nets.net import Net
+from pyedb.grpc.edb_core.ports.ports import WavePort
 from pyedb.grpc.edb_core.primitive.padstack_instances import PadstackInstance
+from pyedb.grpc.edb_core.primitive.primitive import Primitive
+from pyedb.grpc.edb_core.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
 from pyedb.grpc.edb_core.terminal.pingroup_terminal import PinGroupTerminal
-from pyedb.grpc.edb_core.utility.sources import Source, SourceType
+from pyedb.grpc.edb_core.utility.sources import (
+    CircuitPort,
+    CurrentSource,
+    ResistorSource,
+    Source,
+    SourceType,
+    VoltageSource,
+)
 
 
 class Excitations:
@@ -771,3 +786,1010 @@ class Excitations:
 
     def _port_exist(self, port_name):
         return any(port for port in list(self._pedb.excitations.keys()) if port == port_name)
+
+    def _create_edge_terminal(self, prim_id, point_on_edge, terminal_name=None, is_ref=False):
+        """Create an edge terminal.
+
+        Parameters
+        ----------
+        prim_id : int
+            Primitive ID.
+        point_on_edge : list
+            Coordinate of the point to define the edge terminal.
+            The point must be on the target edge but not on the two
+            ends of the edge.
+        terminal_name : str, optional
+            Name of the terminal. The default is ``None``, in which case the
+            default name is assigned.
+        is_ref : bool, optional
+            Whether it is a reference terminal. The default is ``False``.
+
+        Returns
+        -------
+        Edb.Cell.Terminal.EdgeTerminal
+        """
+        if not terminal_name:
+            terminal_name = generate_unique_name("Terminal_")
+        if isinstance(point_on_edge, (list, tuple)):
+            point_on_edge = GrpcPointData(point_on_edge)
+        else:
+            prim = [i for i in self._pedb.modeler.primitives if i.id == prim_id][0]
+        pos_edge = [GrpcPrimitiveEdge.create(prim, point_on_edge)]
+        return GrpcEdgeTerminal.create(
+            layout=prim.layout, name=terminal_name, edges=pos_edge, net=prim.net, is_ref=is_ref
+        )
+
+    def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
+        """Create a circuit port on a pin.
+
+        Parameters
+        ----------
+        pos_pin : Object
+            Edb Pin
+        neg_pin : Object
+            Edb Pin
+        impedance : float
+            Port Impedance
+        port_name : str, optional
+            Port Name
+
+        Returns
+        -------
+        str
+            Port Name.
+
+        Examples
+        --------
+
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+        >>> pins = edbapp.components.get_pin_from_component("U2A5")
+        >>> edbapp.siwave.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
+        """
+        circuit_port = CircuitPort()
+        circuit_port.positive_node.net = pos_pin.net.name
+        circuit_port.negative_node.net = neg_pin.net.name
+        circuit_port.impedance = impedance
+
+        if not port_name:
+            port_name = f"Port_{pos_pin.component.name}_{pos_pin.net.name}_{neg_pin.component.name}_{neg_pin.net.name}"
+        circuit_port.name = port_name
+        circuit_port.positive_node.component_node = pos_pin.component
+        circuit_port.positive_node.node_pins = pos_pin
+        circuit_port.negative_node.component_node = neg_pin.component
+        circuit_port.negative_node.node_pins = neg_pin
+        return self._create_terminal_on_pins(circuit_port)
+
+    def _create_terminal_on_pins(self, source, use_pin_top_layer=True):
+        """Create a terminal on pins.
+
+        Parameters
+        ----------
+        source : .class: `pyedb.grpc.edb_core.utility.sources.Source`
+            Source object.
+
+        """
+        pos_pin = source.positive_node.node_pins
+        neg_pin = source.negative_node.node_pins
+
+        top_layer_pos, bottom_layer_pos = pos_pin.get_layer_range()
+        top_layer_neg, bottom_layer_neg = neg_pin.get_layer_range()
+        pos_term_layer = bottom_layer_pos
+        neg_term_layer = bottom_layer_neg
+        if use_pin_top_layer:
+            pos_term_layer = top_layer_pos
+            neg_term_layer = top_layer_neg
+        pos_terminal = PadstackInstanceTerminal.create(
+            padstack_instance=pos_pin, name=pos_pin.name, layer=pos_term_layer, is_ref=False
+        )
+
+        neg_terminal = PadstackInstanceTerminal.create(
+            padstack_instance=neg_pin, name=neg_pin.name, layer=neg_term_layer, is_ref=False
+        )
+        if source.source_type in [SourceType.CoaxPort, SourceType.CircPort, SourceType.LumpedPort]:
+            pos_terminal.boundary_type = GrpcBoundaryType.PORT
+            neg_terminal.boundary_type = GrpcBoundaryType.PORT
+            pos_terminal.impedance = GrpcValue(source.impedance)
+            if source.source_type == SourceType.CircPort:
+                pos_terminal.is_circuit_port = True
+                neg_terminal.is_circuit_port = True
+            pos_terminal.reference_terminal = neg_terminal
+            try:
+                pos_terminal.name = source.name
+            except:
+                name = generate_unique_name(source.name)
+                pos_terminal.name = name
+                self._logger.warning(f"{source.name} already exists. Renaming to {name}")
+        elif source.source_type == SourceType.Isource:
+            pos_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
+            neg_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
+            pos_terminal.source_amplitude = GrpcValue(source.magnitude)
+            pos_terminal.source_phase = GrpcValue(source.phase)
+            pos_terminal.reference_terminal = neg_terminal
+            try:
+                pos_terminal.name = source.name
+            except Exception as e:
+                name = generate_unique_name(source.name)
+                pos_terminal.name = name
+                self._logger.warning(f"{source.name} already exists. Renaming to {name}")
+
+        elif source.source_type == SourceType.Vsource:
+            pos_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
+            neg_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
+            pos_terminal.source_amplitude = GrpcValue(source.magnitude)
+            pos_terminal.source_phase = GrpcValue(source.phase)
+            pos_terminal.reference_terminal = neg_terminal
+            try:
+                pos_terminal.name = source.name
+            except:
+                name = generate_unique_name(source.name)
+                pos_terminal.name = name
+                self._logger.warning(f"{source.name} already exists. Renaming to {name}")
+
+        elif source.source_type == SourceType.Rlc:
+            pos_terminal.boundary_type = GrpcBoundaryType.RLC
+            neg_terminal.boundary_type = GrpcBoundaryType.RLC
+            pos_terminal.reference_terminal = neg_terminal
+            pos_terminal.source_amplitude = GrpcValue(source.rvalue)
+            rlc = GrpcRlc()
+            rlc.c_enabled = False
+            rlc.l_enabled = False
+            rlc.r_enabled = True
+            rlc.r = GrpcValue(source.rvalue)
+            pos_terminal.rlc_boundary_parameters = rlc
+            try:
+                pos_terminal.name = source.name
+            except:
+                name = generate_unique_name(source.name)
+                pos_terminal.name = name
+                self._logger.warning(f"{source.name} already exists. Renaming to {name}")
+        else:
+            pass
+        return pos_terminal.name
+
+    def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
+        """Create a voltage source.
+
+        Parameters
+        ----------
+        pos_pin : Object
+            Positive Pin.
+        neg_pin : Object
+            Negative Pin.
+        voltage_value : float, optional
+            Value for the voltage. The default is ``3.3``.
+        phase_value : optional
+            Value for the phase. The default is ``0``.
+        source_name : str, optional
+            Name of the source. The default is ``""``.
+
+        Returns
+        -------
+        str
+            Source Name.
+
+        Examples
+        --------
+
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+        >>> pins = edbapp.components.get_pin_from_component("U2A5")
+        >>> edbapp.excitations.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
+        """
+
+        voltage_source = VoltageSource()
+        voltage_source.positive_node.net = pos_pin.net.name
+        voltage_source.negative_node.net = neg_pin.net.name
+        voltage_source.magnitude = voltage_value
+        voltage_source.phase = phase_value
+        if not source_name:
+            source_name = (
+                f"VSource_{pos_pin.component.name}_{pos_pin.net.name}_{neg_pin.component.name}_{neg_pin.net.name}"
+            )
+        voltage_source.name = source_name
+        voltage_source.positive_node.component_node = pos_pin.component
+        voltage_source.positive_node.node_pins = pos_pin
+        voltage_source.negative_node.component_node = neg_pin.component
+        voltage_source.negative_node.node_pins = pos_pin
+        return self._create_terminal_on_pins(voltage_source)
+
+    def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
+        """Create a current source.
+
+        Parameters
+        ----------
+        pos_pin : Object
+            Positive pin.
+        neg_pin : Object
+            Negative pin.
+        current_value : float, optional
+            Value for the current. The default is ``0.1``.
+        phase_value : optional
+            Value for the phase. The default is ``0``.
+        source_name : str, optional
+            Name of the source. The default is ``""``.
+
+        Returns
+        -------
+        str
+            Source Name.
+
+        Examples
+        --------
+
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+        >>> pins = edbapp.components.get_pin_from_component("U2A5")
+        >>> edbapp.excitations.create_current_source_on_pin(pins[0], pins[1], 50, "source_name")
+        """
+        current_source = CurrentSource()
+        current_source.positive_node.net = pos_pin.net.name
+        current_source.negative_node.net = neg_pin.net.name
+        current_source.magnitude = current_value
+        current_source.phase = phase_value
+        if not source_name:
+            source_name = (
+                f"ISource_{pos_pin.component.name}_{pos_pin.net.name}_{neg_pin.component.name}_{neg_pin.net.name}"
+            )
+        current_source.name = source_name
+        current_source.positive_node.component_node = pos_pin.component
+        current_source.positive_node.node_pins = pos_pin
+        current_source.negative_node.component_node = neg_pin.component
+        current_source.negative_node.node_pins = neg_pin
+        return self._create_terminal_on_pins(current_source)
+
+    def create_resistor_on_pin(self, pos_pin, neg_pin, rvalue=1, resistor_name=""):
+        """Create a Resistor boundary between two given pins..
+
+        Parameters
+        ----------
+        pos_pin : Object
+            Positive Pin.
+        neg_pin : Object
+            Negative Pin.
+        rvalue : float, optional
+            Resistance value. The default is ``1``.
+        resistor_name : str, optional
+            Name of the resistor. The default is ``""``.
+
+        Returns
+        -------
+        str
+            Name of the resistor.
+
+        Examples
+        --------
+
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+        >>> pins =edbapp.components.get_pin_from_component("U2A5")
+        >>> edbapp.excitation.create_resistor_on_pin(pins[0], pins[1],50,"res_name")
+        """
+        resistor = ResistorSource()
+        resistor.positive_node.net = pos_pin.net.name
+        resistor.negative_node.net = neg_pin.net.name
+        resistor.rvalue = rvalue
+        if not resistor_name:
+            resistor_name = (
+                f"Res_{pos_pin.component.name}_{pos_pin.net.name}_{neg_pin.component.name}_{neg_pin.net.name}"
+            )
+        resistor.name = resistor_name
+        resistor.positive_node.component_node = pos_pin.component
+        resistor.positive_node.node_pins = pos_pin
+        resistor.negative_node.component_node = neg_pin.component
+        resistor.negative_node.node_pins = neg_pin
+        return self._create_terminal_on_pins(resistor)
+
+    def create_circuit_port_on_net(
+        self,
+        positive_component_name,
+        positive_net_name,
+        negative_component_name=None,
+        negative_net_name=None,
+        impedance_value=50,
+        port_name="",
+    ):
+        """Create a circuit port on a NET.
+
+        It groups all pins belonging to the specified net and then applies the port on PinGroups.
+
+        Parameters
+        ----------
+        positive_component_name : str
+            Name of the positive component.
+        positive_net_name : str
+            Name of the positive net.
+        negative_component_name : str, optional
+            Name of the negative component. The default is ``None``, in which case the name of
+            the positive net is assigned.
+        negative_net_name : str, optional
+            Name of the negative net name. The default is ``None`` which will look for GND Nets.
+        impedance_value : float, optional
+            Port impedance value. The default is ``50``.
+        port_name : str, optional
+            Name of the port. The default is ``""``.
+
+        Returns
+        -------
+        str
+            The name of the port.
+
+        Examples
+        --------
+
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+        >>> edbapp.excitations.create_circuit_port_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 50, "port_name")
+        """
+        if not negative_component_name:
+            negative_component_name = positive_component_name
+        if not negative_net_name:
+            negative_net_name = self._check_gnd(negative_component_name)
+        circuit_port = CircuitPort()
+        circuit_port.positive_node.net = positive_net_name
+        circuit_port.negative_node.net = negative_net_name
+        circuit_port.impedance = impedance_value
+        pos_node_cmp = self._pedb.components.get_component_by_name(positive_component_name)
+        neg_node_cmp = self._pedb.components.get_component_by_name(negative_component_name)
+        pos_node_pins = self._pedb.components.get_pin_from_component(positive_component_name, positive_net_name)
+        neg_node_pins = self._pedb.components.get_pin_from_component(negative_component_name, negative_net_name)
+        if port_name == "":
+            port_name = (
+                f"Port_{positive_component_name}_{positive_net_name}_{negative_component_name}_{negative_net_name}"
+            )
+        circuit_port.name = port_name
+        circuit_port.positive_node.component_node = pos_node_cmp
+        circuit_port.positive_node.node_pins = pos_node_pins
+        circuit_port.negative_node.component_node = neg_node_cmp
+        circuit_port.negative_node.node_pins = neg_node_pins
+        return self.create_pin_group_terminal(circuit_port)
+
+    def create_pin_group_terminal(self, source):
+        """Create a pin group terminal.
+
+        Parameters
+        ----------
+        source : VoltageSource, CircuitPort, CurrentSource, DCTerminal or ResistorSource
+            Name of the source.
+
+        """
+        if source.name in [i.name for i in self._layout.terminals]:
+            source.name = generate_unique_name(source.name, n=3)
+            self._logger.warning("Port already exists with same name. Renaming to {}".format(source.name))
+        pos_pin_group = self._pedb.components.create_pingroup_from_pins(source.positive_node.node_pins)
+        pos_node_net = self._pedb.nets.get_net_by_name(source.positive_node.net)
+
+        pos_pingroup_term_name = source.name
+        pos_pingroup_terminal = PinGroupTerminal.create(
+            layout=self._active_layout,
+            name=pos_pingroup_term_name,
+            pin_group=pos_pin_group,
+            net=pos_node_net,
+            is_ref=False,
+        )
+        if source.negative_node.node_pins:
+            neg_pin_group = self._pedb.components.create_pingroup_from_pins(source.negative_node.node_pins)
+            neg_node_net = self._pedb.nets.get_net_by_name(source.negative_node.net)
+            neg_pingroup_term_name = source.name + "_N"
+            neg_pingroup_terminal = PinGroupTerminal.create(
+                layout=self._active_layout,
+                name=neg_pingroup_term_name,
+                pin_group=neg_pin_group,
+                net=neg_node_net,
+                is_ref=False,
+            )
+
+        if source.source_type in [SourceType.CoaxPort, SourceType.CircPort, SourceType.LumpedPort]:
+            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.PORT
+            pos_pingroup_terminal.impedance = GrpcValue(source.impedance)
+            if source.source_type == SourceType.CircPort:
+                pos_pingroup_terminal.is_circuit_port = True
+                neg_pingroup_terminal.is_circuit_port = True
+            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
+            try:
+                pos_pingroup_terminal.name = source.name
+            except:
+                name = generate_unique_name(source.name)
+                pos_pingroup_terminal.name = name
+                self._logger.warning(f"{source.name} already exists. Renaming to {name}")
+
+        elif source.source_type == SourceType.Isource:
+            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
+            neg_pingroup_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
+            pos_pingroup_terminal.source_amplitude = GrpcValue(source.magnitude)
+            pos_pingroup_terminal.source_phase = GrpcValue(source.phase)
+            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
+            try:
+                pos_pingroup_terminal.name = source.name
+            except Exception as e:
+                name = generate_unique_name(source.name)
+                pos_pingroup_terminal.name = name
+                self._logger.warning(f"{source.name} already exists. Renaming to {name}")
+
+        elif source.source_type == SourceType.Vsource:
+            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
+            neg_pingroup_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
+            pos_pingroup_terminal.source_amplitude = GrpcValue(source.magnitude)
+            pos_pingroup_terminal.source_phase = GrpcValue(source.phase)
+            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
+            try:
+                pos_pingroup_terminal.name = source.name
+            except:
+                name = generate_unique_name(source.name)
+                pos_pingroup_terminal.name = name
+                self._logger.warning(f"{source.name} already exists. Renaming to {name}")
+
+        elif source.source_type == SourceType.Rlc:
+            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.RLC
+            neg_pingroup_terminal.boundary_type = GrpcBoundaryType.RLC
+            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
+            Rlc = GrpcRlc()
+            Rlc.c_enabled = False
+            Rlc.l = False
+            Rlc.r_enabled = True
+            Rlc.r = GrpcValue(source.rvalue)
+            pos_pingroup_terminal.rlc_boundary_parameters = Rlc
+        elif source.source_type == SourceType.DcTerminal:
+            pos_pingroup_terminal.boundary_type = GrpcBoundaryType.DC_TERMINAL
+        else:
+            pass
+        return pos_pingroup_terminal.name
+
+    def _check_gnd(self, component_name):
+        negative_net_name = None
+        if self._pedb.nets.is_net_in_component(component_name, "GND"):
+            negative_net_name = "GND"
+        elif self._pedb.nets.is_net_in_component(component_name, "PGND"):
+            negative_net_name = "PGND"
+        elif self._pedb.nets.is_net_in_component(component_name, "AGND"):
+            negative_net_name = "AGND"
+        elif self._pedb.nets.is_net_in_component(component_name, "DGND"):
+            negative_net_name = "DGND"
+        if not negative_net_name:
+            raise ValueError("No GND, PGND, AGND, DGND found. Please setup the negative net name manually.")
+        return negative_net_name
+
+    def create_voltage_source_on_net(
+        self,
+        positive_component_name,
+        positive_net_name,
+        negative_component_name=None,
+        negative_net_name=None,
+        voltage_value=3.3,
+        phase_value=0,
+        source_name="",
+    ):
+        """Create a voltage source.
+
+        Parameters
+        ----------
+        positive_component_name : str
+            Name of the positive component.
+        positive_net_name : str
+            Name of the positive net.
+        negative_component_name : str, optional
+            Name of the negative component. The default is ``None``, in which case the name of
+            the positive net is assigned.
+        negative_net_name : str, optional
+            Name of the negative net name. The default is ``None`` which will look for GND Nets.
+        voltage_value : float, optional
+            Value for the voltage. The default is ``3.3``.
+        phase_value : optional
+            Value for the phase. The default is ``0``.
+        source_name : str, optional
+            Name of the source. The default is ``""``.
+
+        Returns
+        -------
+        str
+            The name of the source.
+
+        Examples
+        --------
+
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+        >>> edb.excitations.create_voltage_source_on_net("U2A5","V1P5_S3","U2A5","GND",3.3,0,"source_name")
+        """
+        if not negative_component_name:
+            negative_component_name = positive_component_name
+        if not negative_net_name:
+            negative_net_name = self._check_gnd(negative_component_name)
+        voltage_source = VoltageSource()
+        voltage_source.positive_node.net = positive_net_name
+        voltage_source.negative_node.net = negative_net_name
+        voltage_source.magnitude = voltage_value
+        voltage_source.phase = phase_value
+        pos_node_cmp = self._pedb.components.get_component_by_name(positive_component_name)
+        neg_node_cmp = self._pedb.components.get_component_by_name(negative_component_name)
+        pos_node_pins = self._pedb.components.get_pin_from_component(positive_component_name, positive_net_name)
+        neg_node_pins = self._pedb.components.get_pin_from_component(negative_component_name, negative_net_name)
+
+        if source_name == "":
+            source_name = "Vsource_{}_{}_{}_{}".format(
+                positive_component_name,
+                positive_net_name,
+                negative_component_name,
+                negative_net_name,
+            )
+        voltage_source.name = source_name
+        voltage_source.positive_node.component_node = pos_node_cmp
+        voltage_source.positive_node.node_pins = pos_node_pins
+        voltage_source.negative_node.component_node = neg_node_cmp
+        voltage_source.negative_node.node_pins = neg_node_pins
+        return self.create_pin_group_terminal(voltage_source)
+
+    def create_current_source_on_net(
+        self,
+        positive_component_name,
+        positive_net_name,
+        negative_component_name=None,
+        negative_net_name=None,
+        current_value=0.1,
+        phase_value=0,
+        source_name="",
+    ):
+        """Create a current source.
+
+        Parameters
+        ----------
+        positive_component_name : str
+            Name of the positive component.
+        positive_net_name : str
+            Name of the positive net.
+        negative_component_name : str, optional
+            Name of the negative component. The default is ``None``, in which case the name of
+            the positive net is assigned.
+        negative_net_name : str, optional
+            Name of the negative net name. The default is ``None`` which will look for GND Nets.
+        current_value : float, optional
+            Value for the current. The default is ``0.1``.
+        phase_value : optional
+            Value for the phase. The default is ``0``.
+        source_name : str, optional
+            Name of the source. The default is ``""``.
+
+        Returns
+        -------
+        str
+            The name of the source.
+
+        Examples
+        --------
+
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+        >>> edb.siwave.create_current_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 0.1, 0, "source_name")
+        """
+        if not negative_component_name:
+            negative_component_name = positive_component_name
+        if not negative_net_name:
+            negative_net_name = self._check_gnd(negative_component_name)
+        current_source = CurrentSource()
+        current_source.positive_node.net = positive_net_name
+        current_source.negative_node.net = negative_net_name
+        current_source.magnitude = current_value
+        current_source.phase = phase_value
+        pos_node_cmp = self._pedb.components.get_component_by_name(positive_component_name)
+        neg_node_cmp = self._pedb.components.get_component_by_name(negative_component_name)
+        pos_node_pins = self._pedb.components.get_pin_from_component(positive_component_name, positive_net_name)
+        neg_node_pins = self._pedb.components.get_pin_from_component(negative_component_name, negative_net_name)
+
+        if source_name == "":
+            source_name = "Port_{}_{}_{}_{}".format(
+                positive_component_name,
+                positive_net_name,
+                negative_component_name,
+                negative_net_name,
+            )
+        current_source.name = source_name
+        current_source.positive_node.component_node = pos_node_cmp
+        current_source.positive_node.node_pins = pos_node_pins
+        current_source.negative_node.component_node = neg_node_cmp
+        current_source.negative_node.node_pins = neg_node_pins
+        return self.create_pin_group_terminal(current_source)
+
+    def create_coax_port_on_component(self, ref_des_list, net_list):
+        """Create a coaxial port on a component or component list on a net or net list.
+           The name of the new coaxial port is automatically assigned.
+
+        Parameters
+        ----------
+        ref_des_list : list, str
+            List of one or more reference designators.
+
+        net_list : list, str
+            List of one or more nets.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        """
+        coax = []
+        if not isinstance(ref_des_list, list):
+            ref_des_list = [ref_des_list]
+        if not isinstance(net_list, list):
+            net_list = [net_list]
+        for ref in ref_des_list:
+            for _, py_inst in self._pedb.components.instances[ref].pins.items():
+                if py_inst.net_name in net_list and py_inst.is_pin:
+                    port_name = f"{ref}_{py_inst.net_name}_{py_inst.name}"
+                    (top_layer_pos, bottom_layer_pos) = py_inst.pin.get_layer_range()
+                    if top_layer_pos and PadstackInstanceTerminal.create(
+                        name=port_name, layer=top_layer_pos, is_ref=False
+                    ):
+                        coax.append(port_name)
+        return coax
+
+    def create_differential_wave_port(
+        self,
+        positive_primitive_id,
+        positive_points_on_edge,
+        negative_primitive_id,
+        negative_points_on_edge,
+        port_name=None,
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
+    ):
+        """Create a differential wave port.
+
+        Parameters
+        ----------
+        positive_primitive_id : int, EDBPrimitives
+            Primitive ID of the positive terminal.
+        positive_points_on_edge : list
+            Coordinate of the point to define the edge terminal.
+            The point must be close to the target edge but not on the two
+            ends of the edge.
+        negative_primitive_id : int, EDBPrimitives
+            Primitive ID of the negative terminal.
+        negative_points_on_edge : list
+            Coordinate of the point to define the edge terminal.
+            The point must be close to the target edge but not on the two
+            ends of the edge.
+        port_name : str, optional
+            Name of the port. The default is ``None``.
+        horizontal_extent_factor : int, float, optional
+            Horizontal extent factor. The default value is ``5``.
+        vertical_extent_factor : int, float, optional
+            Vertical extent factor. The default value is ``3``.
+        pec_launch_width : str, optional
+            Launch Width of PEC. The default value is ``"0.01mm"``.
+
+        Returns
+        -------
+        tuple
+            The tuple contains: (port_name, pyedb.dotnet.edb_core.edb_data.sources.ExcitationDifferential).
+
+        Examples
+        --------
+        >>> edb.hfss.create_differential_wave_port(0, ["-50mm", "-0mm"], 1, ["-50mm", "-0.2mm"])
+        """
+        if not port_name:
+            port_name = generate_unique_name("diff")
+
+        if isinstance(positive_primitive_id, Primitive):
+            positive_primitive_id = positive_primitive_id.id
+
+        if isinstance(negative_primitive_id, Primitive):
+            negative_primitive_id = negative_primitive_id.id
+
+        _, pos_term = self.create_wave_port(
+            positive_primitive_id,
+            positive_points_on_edge,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+        )
+        _, neg_term = self.create_wave_port(
+            negative_primitive_id,
+            negative_points_on_edge,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+        )
+        edb_list = [pos_term, neg_term]
+
+        boundle_terminal = BundleTerminal.create(edb_list)
+        boundle_terminal.name = port_name
+        bundle_term = boundle_terminal.terminals
+        bundle_term[0].name = port_name + ":T1"
+        bundle_term[1].mame = port_name + ":T2"
+        return port_name, boundle_terminal
+
+    def create_wave_port(
+        self,
+        prim_id,
+        point_on_edge,
+        port_name=None,
+        impedance=50,
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
+    ):
+        """Create a wave port.
+
+        Parameters
+        ----------
+        prim_id : int, Primitive
+            Primitive ID.
+        point_on_edge : list
+            Coordinate of the point to define the edge terminal.
+            The point must be on the target edge but not on the two
+            ends of the edge.
+        port_name : str, optional
+            Name of the port. The default is ``None``.
+        impedance : int, float, optional
+            Impedance of the port. The default value is ``50``.
+        horizontal_extent_factor : int, float, optional
+            Horizontal extent factor. The default value is ``5``.
+        vertical_extent_factor : int, float, optional
+            Vertical extent factor. The default value is ``3``.
+        pec_launch_width : str, optional
+            Launch Width of PEC. The default value is ``"0.01mm"``.
+
+        Returns
+        -------
+        tuple
+            The tuple contains: (Port name, pyedb.dotnet.edb_core.edb_data.sources.Excitation).
+
+        Examples
+        --------
+        >>> edb.excitations.create_wave_port(0, ["-50mm", "-0mm"])
+        """
+        if not port_name:
+            port_name = generate_unique_name("Terminal_")
+
+        if isinstance(prim_id, Primitive):
+            prim_id = prim_id.id
+
+        pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
+        pos_edge_term.impedance = GrpcValue(impedance)
+
+        wave_port = WavePort(self._pedb, pos_edge_term)
+        wave_port.horizontal_extent_factor = horizontal_extent_factor
+        wave_port.vertical_extent_factor = vertical_extent_factor
+        wave_port.pec_launch_width = pec_launch_width
+        wave_port.hfss_type = "Wave"
+        wave_port.do_renormalize = True
+        if pos_edge_term:
+            return port_name, wave_port
+        else:
+            return False
+
+    def create_edge_port_vertical(
+        self,
+        prim_id,
+        point_on_edge,
+        port_name=None,
+        impedance=50,
+        reference_layer=None,
+        hfss_type="Gap",
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
+    ):
+        """Create a vertical edge port.
+
+        Parameters
+        ----------
+        prim_id : int
+            Primitive ID.
+        point_on_edge : list
+            Coordinate of the point to define the edge terminal.
+            The point must be on the target edge but not on the two
+            ends of the edge.
+        port_name : str, optional
+            Name of the port. The default is ``None``.
+        impedance : int, float, optional
+            Impedance of the port. The default value is ``50``.
+        reference_layer : str, optional
+            Reference layer of the port. The default is ``None``.
+        hfss_type : str, optional
+            Type of the port. The default value is ``"Gap"``. Options are ``"Gap"``, ``"Wave"``.
+        horizontal_extent_factor : int, float, optional
+            Horizontal extent factor. The default value is ``5``.
+        vertical_extent_factor : int, float, optional
+            Vertical extent factor. The default value is ``3``.
+        radial_extent_factor : int, float, optional
+            Radial extent factor. The default value is ``0``.
+        pec_launch_width : str, optional
+            Launch Width of PEC. The default value is ``"0.01mm"``.
+
+        Returns
+        -------
+        str
+            Port name.
+        """
+        if not port_name:
+            port_name = generate_unique_name("Terminal_")
+        pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
+        pos_edge_term.impedance = GrpcValue(impedance)
+        if reference_layer:
+            reference_layer = self._pedb.stackup.signal_layers[reference_layer]._edb_layer
+            pos_edge_term.reference_layer = reference_layer
+
+        prop = ", ".join(
+            [
+                f"HFSS('HFSS Type'='{hfss_type}'",
+                " Orientation='Vertical'",
+                " 'Layer Alignment'='Upper'",
+                f" 'Horizontal Extent Factor'='{horizontal_extent_factor}'",
+                f" 'Vertical Extent Factor'='{vertical_extent_factor}'",
+                f" 'PEC Launch Width'='{pec_launch_width}')",
+            ]
+        )
+        pos_edge_term.set_product_solver_option(
+            GrpcProductIdType.DESIGNER,
+            "HFSS",
+            prop,
+        )
+        if pos_edge_term:
+            return port_name, self._pedb.layout.excitations[port_name]
+        else:
+            return False
+
+    def create_edge_port_horizontal(
+        self,
+        prim_id,
+        point_on_edge,
+        ref_prim_id=None,
+        point_on_ref_edge=None,
+        port_name=None,
+        impedance=50,
+        layer_alignment="Upper",
+    ):
+        """Create a horizontal edge port.
+
+        Parameters
+        ----------
+        prim_id : int
+            Primitive ID.
+        point_on_edge : list
+            Coordinate of the point to define the edge terminal.
+            The point must be on the target edge but not on the two
+            ends of the edge.
+        ref_prim_id : int, optional
+            Reference primitive ID. The default is ``None``.
+        point_on_ref_edge : list, optional
+            Coordinate of the point to define the reference edge
+            terminal. The point must be on the target edge but not
+            on the two ends of the edge. The default is ``None``.
+        port_name : str, optional
+            Name of the port. The default is ``None``.
+        impedance : int, float, optional
+            Impedance of the port. The default value is ``50``.
+        layer_alignment : str, optional
+            Layer alignment. The default value is ``Upper``. Options are ``"Upper"``, ``"Lower"``.
+
+        Returns
+        -------
+        str
+            Name of the port.
+        """
+        pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
+        neg_edge_term = self._create_edge_terminal(ref_prim_id, point_on_ref_edge, port_name + "_ref", is_ref=True)
+
+        pos_edge_term.impedance = GrpcValue(impedance)
+        pos_edge_term.reference_terminal = neg_edge_term
+        if not layer_alignment == "Upper":
+            layer_alignment = "Lower"
+        pos_edge_term.set_product_solver_option(
+            GrpcProductIdType.DESIGNER,
+            "HFSS",
+            f"HFSS('HFSS Type'='Gap(coax)', Orientation='Horizontal', 'Layer Alignment'='{layer_alignment}')",
+        )
+        if pos_edge_term:
+            return port_name
+        else:
+            return False
+
+    def create_lumped_port_on_net(
+        self, nets=None, reference_layer=None, return_points_only=False, digit_resolution=6, at_bounding_box=True
+    ):
+        """Create an edge port on nets. This command looks for traces and polygons on the
+        nets and tries to assign vertical lumped port.
+
+        Parameters
+        ----------
+        nets : list, optional
+            List of nets, str or Edb net.
+
+        reference_layer : str, Edb layer.
+             Name or Edb layer object.
+
+        return_points_only : bool, optional
+            Use this boolean when you want to return only the points from the edges and not creating ports. Default
+            value is ``False``.
+
+        digit_resolution : int, optional
+            The number of digits carried for the edge location accuracy. The default value is ``6``.
+
+        at_bounding_box : bool
+            When ``True`` will keep the edges from traces at the layout bounding box location. This is recommended when
+             a cutout has been performed before and lumped ports have to be created on ending traces. Default value is
+             ``True``.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        if isinstance(nets, str):
+            nets = [self._pedb.nets[nets]]
+        if isinstance(nets, Net):
+            nets = [nets]
+        nets = [self._pedb.nets[net] for net in nets if isinstance(net, str)]
+        port_created = False
+        if nets:
+            edges_pts = []
+            if isinstance(reference_layer, str):
+                try:
+                    reference_layer = self._pedb.stackup.signal_layers[reference_layer]._edb_layer
+                except:
+                    raise Exception("Failed to get the layer {}".format(reference_layer))
+            if not isinstance(reference_layer, self._edb.Cell.ILayerReadOnly):
+                return False
+            layout = nets[0].GetLayout()
+            layout_bbox = self._pedb.get_conformal_polygon_from_netlist(self._pedb.nets.netlist)
+            layout_extent_segments = [pt for pt in list(layout_bbox.GetArcData()) if pt.IsSegment()]
+            first_pt = layout_extent_segments[0]
+            layout_extent_points = [
+                [first_pt.Start.X.ToDouble(), first_pt.End.X.ToDouble()],
+                [first_pt.Start.Y.ToDouble(), first_pt.End.Y.ToDouble()],
+            ]
+            for segment in layout_extent_segments[1:]:
+                end_point = (segment.End.X.ToDouble(), segment.End.Y.ToDouble())
+                layout_extent_points[0].append(end_point[0])
+                layout_extent_points[1].append(end_point[1])
+            for net in nets:
+                net_primitives = self._pedb.nets[net.name].primitives
+                net_paths = [pp for pp in net_primitives if pp.type == "Path"]
+                for path in net_paths:
+                    trace_path_pts = list(path.center_line.Points)
+                    port_name = "{}_{}".format(net.name, path.GetId())
+                    for pt in trace_path_pts:
+                        _pt = [
+                            round(pt.X.ToDouble(), digit_resolution),
+                            round(pt.Y.ToDouble(), digit_resolution),
+                        ]
+                        if at_bounding_box:
+                            if GeometryOperators.point_in_polygon(_pt, layout_extent_points) == 0:
+                                if return_points_only:
+                                    edges_pts.append(_pt)
+                                else:
+                                    term = self._create_edge_terminal(path.id, pt, port_name)  # pragma no cover
+                                    term.SetReferenceLayer(reference_layer)  # pragma no cover
+                                    port_created = True
+                        else:
+                            if return_points_only:  # pragma: no cover
+                                edges_pts.append(_pt)
+                            else:
+                                term = self._create_edge_terminal(path.id, pt, port_name)
+                                term.SetReferenceLayer(reference_layer)
+                                port_created = True
+                net_poly = [pp for pp in net_primitives if pp.type == "Polygon"]
+                for poly in net_poly:
+                    poly_segment = [aa for aa in poly.arcs if aa.is_segment]
+                    for segment in poly_segment:
+                        if (
+                            GeometryOperators.point_in_polygon(
+                                [segment.mid_point.X.ToDouble(), segment.mid_point.Y.ToDouble()], layout_extent_points
+                            )
+                            == 0
+                        ):
+                            if return_points_only:
+                                edges_pts.append(segment.mid_point)
+                            else:
+                                port_name = "{}_{}".format(net.name, poly.GetId())
+                                term = self._create_edge_terminal(
+                                    poly.id, segment.mid_point, port_name
+                                )  # pragma no cover
+                                term.SetReferenceLayer(reference_layer)  # pragma no cover
+                                port_created = True
+            if return_points_only:
+                return edges_pts
+        return port_created

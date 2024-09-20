@@ -33,10 +33,11 @@ from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
 
 
 class Terminal(GrpcTerminal):
-    def __init__(self, pedb):
-        super().__init__(self.msg)
+    def __init__(self, pedb, edb_object):
+        super().__init__(edb_object)
         self._pedb = pedb
         self._reference_object = None
+        self.edb_object = edb_object
 
         self._boundary_type_mapping = {
             "port": GrpcBoundaryType.PORT,
