@@ -1761,7 +1761,7 @@ class Edb(Database):
         keep_lines_as_path=False,
         include_voids_in_extents=False,
     ):
-        """create a cutout using an approach entirely based on PyAEDT.
+        """Create a cutout using an approach entirely based on PyAEDT.
         This method replaces all legacy cutout methods in PyAEDT.
         It does in sequence:
         - delete all nets not in list,
