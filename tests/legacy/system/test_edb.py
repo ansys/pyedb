@@ -347,7 +347,9 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
 
         edbapp = Edb(target_path, edbversion=desktop_version)
-        edbapp.components.create_pingroup_from_pins([i for i in list(edbapp.components.instances["U1"].pins.values()) if i.net_name == "GND"])
+        edbapp.components.create_pingroup_from_pins(
+            [i for i in list(edbapp.components.instances["U1"].pins.values()) if i.net_name == "GND"]
+        )
 
         assert edbapp.cutout(
             signal_list=["DDR4_DQS0_P", "DDR4_DQS0_N"],

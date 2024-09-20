@@ -1632,7 +1632,9 @@ class Edb(Database):
                     obj_data = i.Expand(expansion_size, tolerance, round_corner, round_extension)
                 if inlcude_voids_in_extents and i.has_voids and obj_data:
                     for void in i.voids:
-                        void_data = void.primitive_object.GetPolygonData().Expand(-1*expansion_size, tolerance, round_corner, round_extension)
+                        void_data = void.primitive_object.GetPolygonData().Expand(
+                            -1 * expansion_size, tolerance, round_corner, round_extension
+                        )
                         if void_data:
                             for v in list(void_data):
                                 obj_data[0].AddHole(v)
