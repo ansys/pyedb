@@ -41,10 +41,11 @@ class CfgPadstacks:
 
     def apply(self):
         """Apply padstack definition and instances on layout."""
-        padstack_defs_layout = self._pedb.padstacks.definitions
-        for pdef in self.definitions:
-            pdef_layout = padstack_defs_layout[pdef.name]
-            pdef_layout.set_properties(**pdef.get_attributes())
+        if self.definitions:
+            padstack_defs_layout = self._pedb.padstacks.definitions
+            for pdef in self.definitions:
+                pdef_layout = padstack_defs_layout[pdef.name]
+                pdef_layout.set_properties(**pdef.get_attributes())
         for instance in self.instances:
             instance.apply()
 
