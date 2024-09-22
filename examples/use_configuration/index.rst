@@ -18,3 +18,5 @@ Step explanation
         import_material.py
         import_ports.py
         import_setup_ac.py
+        import_padstack_definitions.py
+        import_components.py
