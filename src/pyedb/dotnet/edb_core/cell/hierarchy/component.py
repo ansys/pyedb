@@ -1010,7 +1010,8 @@ class EDBComponent(Group):
         void.is_negative = True
         return True
 
-    def get_model_properties(self):
+    @property
+    def model_properties(self):
         pp = {}
         c_p = self.component_property
         model = c_p.GetModel().Clone()
@@ -1055,7 +1056,8 @@ class EDBComponent(Group):
             pp["spice_model"] = spice_model
         return pp
 
-    def set_model_properties(self, **kwargs):
+    @model_properties.setter
+    def model_properties(self, kwargs):
         netlist_model = kwargs.get("netlist_model")
         pin_pair_model = kwargs.get("pin_pair_model")
         s_parameter_model = kwargs.get("s_parameter_model")
@@ -1097,7 +1099,8 @@ class EDBComponent(Group):
                 spice_model["terminal_pairs"],
             )
 
-    def get_ic_die_properties(self):
+    @property
+    def ic_die_properties(self):
         temp = dict()
         cp = self.component_property
         c_type = self.type.lower()
@@ -1113,7 +1116,8 @@ class EDBComponent(Group):
                     temp["height"] = ic_die_prop.GetHeightValue().ToString()
             return temp
 
-    def set_ic_die_properties(self, **kwargs):
+    @ic_die_properties.setter
+    def ic_die_properties(self, kwargs):
         cp = self.component_property
         c_type = self.type.lower()
         if not c_type == "ic":
@@ -1132,7 +1136,8 @@ class EDBComponent(Group):
             cp.SetDieProperty(ic_die_prop)
             self.component_property = cp
 
-    def get_solder_ball_properties(self):
+    @property
+    def solder_ball_properties(self):
         temp = dict()
         cp = self.component_property
         c_type = self.type.lower()
@@ -1151,7 +1156,8 @@ class EDBComponent(Group):
             temp["height"] = height
             return temp
 
-    def set_solder_ball_properties(self, **kwargs):
+    @solder_ball_properties.setter
+    def solder_ball_properties(self, kwargs):
         cp = self.component_property
         solder_ball_prop = cp.GetSolderBallProperty().Clone()
         shape = kwargs.get("shape")
@@ -1170,7 +1176,8 @@ class EDBComponent(Group):
         cp.SetSolderBallProperty(solder_ball_prop)
         self.component_property = cp
 
-    def get_port_properties(self):
+    @property
+    def port_properties(self):
         temp = dict()
         cp = self.component_property
         c_type = self.type.lower()
@@ -1187,7 +1194,8 @@ class EDBComponent(Group):
             temp["reference_size_y"] = str(reference_size_y)
             return temp
 
-    def set_port_properties(self, **kwargs):
+    @port_properties.setter
+    def port_properties(self, kwargs):
         cp = self.component_property
         port_prop = cp.GetPortProperty().Clone()
         height = kwargs.get("reference_height")

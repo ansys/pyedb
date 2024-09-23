@@ -293,6 +293,8 @@ class Configuration:
             data["operations"] = self.cfg_data.operations.get_data_from_db()
         if kwargs.get("padstacks", False):
             data["padstacks"] = self.cfg_data.padstacks.get_data_from_db()
+        if kwargs.get("boundaries", False):
+            data["boundaries"] = self.cfg_data.boundaries.get_data_from_db()
 
         return data
 
@@ -308,6 +310,7 @@ class Configuration:
         pin_groups=True,
         operations=True,
         components=True,
+        boundaries=True,
     ):
         """Export the configuration data from layout to a file.
 
@@ -333,12 +336,12 @@ class Configuration:
             Whether to export operations.
         components : bool
             Whether to export component.
+        boundaries : bool
+            Whether to export boundaries.
         Returns
         -------
         bool
         """
-        file_path = file_path if isinstance(file_path, Path) else Path(file_path)
-        file_path = file_path if file_path.suffix == ".json" else file_path.with_suffix(".json")
         data = self.get_data_from_db(
             stackup=stackup,
             package_definitions=package_definitions,
@@ -349,7 +352,15 @@ class Configuration:
             pin_groups=pin_groups,
             operations=operations,
             components=components,
+            boundaries=boundaries,
         )
+
+        file_path = file_path if isinstance(file_path, Path) else Path(file_path)
+        file_path = file_path.with_suffix(".json") if file_path.suffix == "" else file_path
+
         with open(file_path, "w") as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+            if file_path.suffix == ".json":
+                json.dump(data, f, ensure_ascii=False, indent=4)
+            else:
+                toml.dump(data, f)
         return True if os.path.isfile(file_path) else False

@@ -97,3 +97,5 @@ class CfgOperations(CfgBase):
         data_from_db = self.op_cutout.get_data_from_db()
         if data_from_db:
             return {"cutout": data_from_db}
+        else:
+            return {}

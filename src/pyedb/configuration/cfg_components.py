@@ -61,17 +61,17 @@ class CfgComponents:
             if comp.type:
                 c_db.type = comp.type
             if comp.solder_ball_properties:
-                c_db.set_solder_ball_properties(**comp.solder_ball_properties)
+                c_db.solder_ball_properties = comp.solder_ball_properties
             if comp.port_properties:
-                c_db.set_port_properties(**comp.port_properties)
+                c_db.port_properties = comp.port_properties
             if comp.ic_die_properties:
-                c_db.set_ic_die_properties(**comp.ic_die_properties)
+                c_db.set_ic_die_properties = comp.ic_die_properties
             if comp.pin_pair_model:
-                c_db.set_model_properties(pin_pair_model=comp.pin_pair_model)
+                c_db.model_properties = {"pin_pair_model": comp.pin_pair_model}
             if comp.spice_model:
-                c_db.set_model_properties(spice_model=comp.spice_model)
+                c_db.model_properties = {"spice_model": comp.spice_model}
             if comp.s_parameter_model:
-                c_db.set_model_properties(s_parameter_model=comp.s_parameter_model)
+                c_db.model_properties = {"s_parameter_model": comp.s_parameter_model}
 
     def _load_data_from_db(self):
         self.components = []
@@ -81,15 +81,15 @@ class CfgComponents:
                 enabled=comp.enabled,
                 reference_designator=comp.name,
                 part_type=comp.type,
-                pin_pair_model=comp.get_model_properties().get("pin_pair_model"),
-                spice_model=comp.get_model_properties().get("spice_model"),
-                s_parameter_model=comp.get_model_properties().get("s_parameter_model"),
+                pin_pair_model=comp.model_properties.get("pin_pair_model"),
+                spice_model=comp.model_properties.get("spice_model"),
+                s_parameter_model=comp.model_properties.get("s_parameter_model"),
                 definition=comp.component_def,
                 location=comp.location,
                 placement_layer=comp.placement_layer,
-                solder_ball_properties=comp.get_solder_ball_properties(),
-                ic_die_properties=comp.get_ic_die_properties(),
-                port_properties=comp.get_port_properties(),
+                solder_ball_properties=comp.solder_ball_properties,
+                ic_die_properties=comp.ic_die_properties,
+                port_properties=comp.port_properties,
             )
             self.components.append(cfg_comp)
 

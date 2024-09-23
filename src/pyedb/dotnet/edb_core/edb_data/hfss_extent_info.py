@@ -22,7 +22,13 @@
 
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
-from pyedb.dotnet.edb_core.general import convert_pytuple_to_nettuple
+from pyedb.dotnet.edb_core.general import (
+    convert_pytuple_to_nettuple,
+    PadGeometryTpe,
+    convert_py_list_to_net_list,
+    pascal_to_snake,
+    snake_to_pascal,
+)
 
 
 class HfssExtentInfo:
@@ -192,7 +198,7 @@ class HfssExtentInfo:
     @property
     def dielectric_extent_type(self):
         """Dielectric extent type."""
-        return self._edb_hfss_extent_info.DielectricExtentType.ToString().lower()
+        return pascal_to_snake(self._edb_hfss_extent_info.DielectricExtentType.ToString())
 
     @dielectric_extent_type.setter
     def dielectric_extent_type(self, value):
@@ -204,7 +210,7 @@ class HfssExtentInfo:
     @property
     def extent_type(self):
         """Extent type."""
-        return self._edb_hfss_extent_info.ExtentType.ToString().lower()
+        return pascal_to_snake(self._edb_hfss_extent_info.ExtentType.ToString())
 
     @extent_type.setter
     def extent_type(self, value):
