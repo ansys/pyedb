@@ -347,6 +347,7 @@ class CfgPort(CfgCircuitElement):
             data.update({"negative_terminal": self.negative_terminal_info.export_properties()})
         return data
 
+
 class CfgSource(CfgCircuitElement):
     CFG_SOURCE_TYPE = {"current": [int, float], "voltage": [int, float]}
 

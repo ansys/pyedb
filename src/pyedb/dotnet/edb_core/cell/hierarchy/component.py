@@ -33,10 +33,7 @@ from pyedb.dotnet.edb_core.cell.hierarchy.s_parameter_model import SparamModel
 from pyedb.dotnet.edb_core.cell.hierarchy.spice_model import SpiceModel
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.dotnet.edb_core.general import (
-    pascal_to_snake,
-    snake_to_pascal,
-)
+from pyedb.dotnet.edb_core.general import pascal_to_snake, snake_to_pascal
 
 try:
     import numpy as np
@@ -620,8 +617,8 @@ class EDBComponent(Group):
             p
             for p in self.edbcomponent.LayoutObjs
             if p.GetObjType() == self._edb.cell.layout_object_type.PadstackInstance
-               and p.IsLayoutPin()
-               and p.GetComponent().GetName() == self.refdes
+            and p.IsLayoutPin()
+            and p.GetComponent().GetName() == self.refdes
         ]
         return pins
 
@@ -823,11 +820,11 @@ class EDBComponent(Group):
         return True
 
     def assign_spice_model(
-            self,
-            file_path: str,
-            name: Optional[str] = None,
-            sub_circuit_name: Optional[str] = None,
-            terminal_pairs: Optional[list] = None,
+        self,
+        file_path: str,
+        name: Optional[str] = None,
+        sub_circuit_name: Optional[str] = None,
+        terminal_pairs: Optional[list] = None,
     ):
         """Assign Spice model to this component.
 
@@ -1159,7 +1156,7 @@ class EDBComponent(Group):
         solder_ball_prop = cp.GetSolderBallProperty().Clone()
         shape = kwargs.get("shape")
         if shape:
-            solder_ball_prop.SetShape(getattr(self._edb.definition.SolderballShape,snake_to_pascal(shape)))
+            solder_ball_prop.SetShape(getattr(self._edb.definition.SolderballShape, snake_to_pascal(shape)))
         if shape == "cylinder":
             diameter = kwargs["diameter"]
             solder_ball_prop.SetDiameter(self._pedb.edb_value(diameter), self._pedb.edb_value(diameter))
@@ -1196,7 +1193,7 @@ class EDBComponent(Group):
         height = kwargs.get("reference_height")
         if height:
             port_prop.SetReferenceHeight(self._pedb.edb_value(height))
-        reference_size_auto= kwargs.get("reference_size_auto")
+        reference_size_auto = kwargs.get("reference_size_auto")
         if reference_size_auto:
             port_prop.SetReferenceSizeAuto(reference_size_auto)
         reference_size_x = kwargs.get("reference_size_x", 0)

@@ -34,7 +34,6 @@ class CfgRlcModel(CfgBase):
 
 
 class CfgComponent(CfgBase):
-
     def __init__(self, **kwargs):
         self.enabled = kwargs.get("enabled", None)
         self.reference_designator = kwargs.get("reference_designator", None)
@@ -90,7 +89,7 @@ class CfgComponents:
                 placement_layer=comp.placement_layer,
                 solder_ball_properties=comp.get_solder_ball_properties(),
                 ic_die_properties=comp.get_ic_die_properties(),
-                port_properties = comp.get_port_properties()
+                port_properties=comp.get_port_properties(),
             )
             self.components.append(cfg_comp)
 
