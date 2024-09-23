@@ -59,14 +59,11 @@ class CfgComponent(CfgBase):
         self.reference_designator = kwargs.get("reference_designator", None)
         self.definition = kwargs.get("definition", None)
         self.type = kwargs.get("part_type", None)
-        self.value = kwargs.get("value", None)
         self.port_properties = CfgPortProperties(**kwargs["port_properties"]) if "port_properties" in kwargs else None
         self.solder_ball_properties = (
             CfgSolderBallsProperties(**kwargs["solder_ball_properties"]) if "solder_ball_properties" in kwargs else None
         )
-        rlc_models = kwargs.get("rlc_model", [])
-
-        self.rlc_model = [CfgRlcModel(**rlc_m) for rlc_m in rlc_models]
+        self.pin_pair_model = kwargs.get("pin_pair_model", None)
 
         self.x_location, self.y_location = kwargs.get("location", [None, None])
         self.angle = kwargs.get("angle", None)
@@ -84,7 +81,7 @@ class CfgComponent(CfgBase):
         data_comp["reference_designator"] = self.reference_designator
         data_comp["definition"] = self.definition
         data_comp["type"] = self.type
-        data_comp["value"] = self.value
+        data_comp["pin_pair_model"] = self.pin_pair_model
         data_comp["x_location"] = self.x_location
         data_comp["y_location"] = self.y_location
         # data_comp["angle"] = self.angle
@@ -119,33 +116,8 @@ class CfgComponents:
                     )
                 elif attr == "port_properties":
                     pass
-                elif attr == "rlc_model":
-                    rlc_models = value
-                    model_layout = c_db.model
-                    for pp in model_layout.pin_pairs:
-                        model_layout.delete_pin_pair_rlc(pp)
-                    for pp in rlc_models:
-                        pin_pair = self._pedb.edb_api.utility.PinPair(pp.p1, pp.p2)
-                        rlc = self._pedb.edb_api.utility.Rlc()
-                        rlc.IsParallel = False if pp.type else True
-                        if pp.resistance is not None:
-                            rlc.REnabled = True
-                            rlc.R = self._pedb.edb_value(pp.resistance)
-                        else:
-                            rlc.REnabled = False
-                        if pp.inductance is not None:
-                            rlc.LEnabled = True
-                            rlc.L = self._pedb.edb_value(pp.inductance)
-                        else:
-                            rlc.LEnabled = False
-
-                        if pp.capacitance is not None:
-                            rlc.CEnabled = True
-                            rlc.C = self._pedb.edb_value(pp.capacitance)
-                        else:
-                            rlc.CEnabled = False
-                        model_layout._set_pin_pair_rlc(pin_pair, rlc)
-                        comps_in_db.model = model_layout
+                elif attr == "pin_pair_model":
+                    c_db.set_model_properties(pin_pair_model=comp.pin_pair_model)
                 else:
                     if attr in dir(c_db):
                         setattr(c_db, attr, value)
@@ -160,7 +132,7 @@ class CfgComponents:
                 enabled=comp.enabled,
                 reference_designator=comp.name,
                 part_type=comp.type,
-                value=comp.value,
+                pin_pair_model=comp.get_model_properties().get("pin_pair_model"),
                 definition=comp.component_def,
                 location=comp.location,
                 placement_layer=comp.placement_layer,

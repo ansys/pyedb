@@ -144,6 +144,9 @@ display(pd.DataFrame(pdef.pad_parameters["regular_pad"]))
 
 display(pd.DataFrame(pdef.pad_parameters["anti_pad"]))
 
-# ## Close Edb
+# ## Save and close Edb
+# The temporary folder will be deleted once the execution of this script is finished. Replace edbapp.save() with
+# edbapp.save_as("C:/example.aedb") to keep the example project.
 
+edbapp.save()
 edbapp.close()

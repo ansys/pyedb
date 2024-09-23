@@ -160,6 +160,8 @@ class Primitive(Connectable):
         -------
         float
         """
+        if "GetPolygonData" not in dir(self._edb_object):
+            return 0
         area = self._edb_object.GetPolygonData().Area()
         if include_voids:
             for el in self._edb_object.Voids:

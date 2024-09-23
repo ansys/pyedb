@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 from pyedb.dotnet.edb_core.dotnet.database import (
     DifferentialPairDotNet,
     ExtendedNetDotNet,
@@ -58,7 +57,10 @@ class EDBNetsData(NetDotNet):
         -------
         list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
         """
-        return [self._app.layout.find_object_by_id(i.GetId()) for i in self.net_object.Primitives]
+        from pyedb.dotnet.edb_core.cell.layout import primitive_cast
+
+        return [primitive_cast(self._app, i) for i in self.net_object.Primitives]
+        # return [self._app.layout.find_object_by_id(i.GetId()) for i in self.net_object.Primitives]
 
     @property
     def padstack_instances(self):
@@ -67,10 +69,11 @@ class EDBNetsData(NetDotNet):
         Returns
         -------
         list of :class:`pyedb.dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`"""
-        name = self.name
-        return [
-            EDBPadstackInstance(i, self._app) for i in self.net_object.PadstackInstances if i.GetNet().GetName() == name
-        ]
+        # name = self.name
+        # return [
+        # EDBPadstackInstance(i, self._app) for i in self.net_object.PadstackInstances if i.GetNet().GetName() == name
+        # ]
+        return [EDBPadstackInstance(i, self._app) for i in self.net_object.PadstackInstances]
 
     @property
     def components(self):

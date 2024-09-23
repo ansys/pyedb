@@ -365,6 +365,8 @@ nbsphinx_thumbnails = {
     "examples/use_configuration/import_material": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_ports": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_setup_ac": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/import_padstack_definitions": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/import_components": "_static/thumbnails/101_getting_started.png",
 }
 
 nbsphinx_custom_formats = {
