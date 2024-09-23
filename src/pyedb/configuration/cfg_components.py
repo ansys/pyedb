@@ -23,23 +23,6 @@
 from pyedb.configuration.cfg_common import CfgBase
 
 
-class CfgPortProperties(CfgBase):
-    def __init__(self, **kwargs):
-        self.reference_offset = kwargs.pop("reference_offset", 0)
-        self.reference_size_auto = kwargs.pop("reference_size_auto", 0)
-        self.reference_size_x = kwargs.pop("reference_size_x", 0)
-        self.reference_size_y = kwargs.pop("reference_size_y", 0)
-
-
-class CfgSolderBallsProperties(CfgBase):
-    def __init__(self, **kwargs):
-        self.shape = kwargs.pop("shape", None)
-        self.diameter = kwargs.pop("diameter", None)
-        self.mid_diameter = kwargs.pop("mid_diameter", None)
-        self.height = kwargs.pop("height", None)
-        self.enabled = kwargs.pop("enabled", None)
-
-
 class CfgRlcModel(CfgBase):
     def __init__(self, **kwargs):
         self.resistance = kwargs.get("resistance", None)
@@ -51,42 +34,18 @@ class CfgRlcModel(CfgBase):
 
 
 class CfgComponent(CfgBase):
-    protected_attributes = ["reference_designator", "definition", "location", "angle", "placement_layer"]
 
     def __init__(self, **kwargs):
         self.enabled = kwargs.get("enabled", None)
-
         self.reference_designator = kwargs.get("reference_designator", None)
         self.definition = kwargs.get("definition", None)
-        self.type = kwargs.get("part_type", None)
-        self.port_properties = CfgPortProperties(**kwargs["port_properties"]) if "port_properties" in kwargs else None
-        self.solder_ball_properties = (
-            CfgSolderBallsProperties(**kwargs["solder_ball_properties"]) if "solder_ball_properties" in kwargs else None
-        )
+        self.type = kwargs["part_type"].lower() if kwargs.get("part_type") else None
+        self.port_properties = kwargs.get("port_properties", {})
+        self.solder_ball_properties = kwargs.get("solder_ball_properties", {})
+        self.ic_die_properties = kwargs.get("ic_die_properties", {})
         self.pin_pair_model = kwargs.get("pin_pair_model", None)
-
-        self.x_location, self.y_location = kwargs.get("location", [None, None])
-        self.angle = kwargs.get("angle", None)
-        self.placement_layer = kwargs.get("placement_layer", None)
-
-    def export_properties(self):
-        """Export component properties.
-
-        Returns
-        -------
-        Dict
-        """
-        data_comp = {}
-        data_comp["enabled"] = self.enabled
-        data_comp["reference_designator"] = self.reference_designator
-        data_comp["definition"] = self.definition
-        data_comp["type"] = self.type
-        data_comp["pin_pair_model"] = self.pin_pair_model
-        data_comp["x_location"] = self.x_location
-        data_comp["y_location"] = self.y_location
-        # data_comp["angle"] = self.angle
-        data_comp["placement_layer"] = self.placement_layer
-        return data_comp
+        self.spice_model = kwargs.get("spice_model", None)
+        self.s_parameter_model = kwargs.get("s_parameter_model", None)
 
 
 class CfgComponents:
@@ -98,31 +57,22 @@ class CfgComponents:
         comps_in_db = self._pedb.components
         for comp in self.components:
             c_db = comps_in_db[comp.reference_designator]
-
-            for attr, value in comp.get_attributes().items():  # All component properties
-                if attr == "solder_ball_properties":
-                    solder_ball_properties = value
-                    port_properties = comp.port_properties
-                    self._pedb.components.set_solder_ball(
-                        component=comp.reference_designator,
-                        sball_diam=solder_ball_properties.diameter,
-                        sball_mid_diam=solder_ball_properties.mid_diameter,
-                        sball_height=solder_ball_properties.height,
-                        shape=solder_ball_properties.shape,
-                        auto_reference_size=port_properties.reference_size_auto,
-                        reference_height=port_properties.reference_offset,
-                        reference_size_x=port_properties.reference_size_x,
-                        reference_size_y=port_properties.reference_size_y,
-                    )
-                elif attr == "port_properties":
-                    pass
-                elif attr == "pin_pair_model":
-                    c_db.set_model_properties(pin_pair_model=comp.pin_pair_model)
-                else:
-                    if attr in dir(c_db):
-                        setattr(c_db, attr, value)
-                    else:
-                        raise AttributeError(f"'{attr}' is not valid component attribute.")
+            if comp.definition:
+                c_db.definition = comp.definition
+            if comp.type:
+                c_db.type = comp.type
+            if comp.solder_ball_properties:
+                c_db.set_solder_ball_properties(**comp.solder_ball_properties)
+            if comp.port_properties:
+                c_db.set_port_properties(**comp.port_properties)
+            if comp.ic_die_properties:
+                c_db.set_ic_die_properties(**comp.ic_die_properties)
+            if comp.pin_pair_model:
+                c_db.set_model_properties(pin_pair_model=comp.pin_pair_model)
+            if comp.spice_model:
+                c_db.set_model_properties(spice_model=comp.spice_model)
+            if comp.s_parameter_model:
+                c_db.set_model_properties(s_parameter_model=comp.s_parameter_model)
 
     def _load_data_from_db(self):
         self.components = []
@@ -133,9 +83,14 @@ class CfgComponents:
                 reference_designator=comp.name,
                 part_type=comp.type,
                 pin_pair_model=comp.get_model_properties().get("pin_pair_model"),
+                spice_model=comp.get_model_properties().get("spice_model"),
+                s_parameter_model=comp.get_model_properties().get("s_parameter_model"),
                 definition=comp.component_def,
                 location=comp.location,
                 placement_layer=comp.placement_layer,
+                solder_ball_properties=comp.get_solder_ball_properties(),
+                ic_die_properties=comp.get_ic_die_properties(),
+                port_properties = comp.get_port_properties()
             )
             self.components.append(cfg_comp)
 
@@ -143,5 +98,5 @@ class CfgComponents:
         self._load_data_from_db()
         data = []
         for comp in self.components:
-            data.append(comp.export_properties())
+            data.append(comp.get_attributes())
         return data

@@ -53,18 +53,20 @@ class CfgCutout(CfgBase):
 
     def get_data_from_db(self):
         if "pyedb_cutout" in self._pedb.stackup.all_layers:
-            poly = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")[0]
-            self.custom_extent = poly.polygon_data.points
+            polygons = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")
+            if polygons:
+                poly = polygons[0]
+                self.custom_extent = poly.polygon_data.points
 
-            net_names = []
-            for name, obj in self._pedb.nets.nets.items():
-                if obj.primitives[0].layer.name == "pyedb_cutout":
-                    continue
-                if len(obj.primitives) > 0:
-                    net_names.append(name)
+                net_names = []
+                for name, obj in self._pedb.nets.nets.items():
+                    if obj.primitives[0].layer.name == "pyedb_cutout":
+                        continue
+                    if len(obj.primitives) > 0:
+                        net_names.append(name)
 
-            self.reference_list = []
-            self.signal_list = net_names
+                self.reference_list = []
+                self.signal_list = net_names
             return self.export_properties()
 
     def export_properties(self):

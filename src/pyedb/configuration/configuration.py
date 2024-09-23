@@ -307,6 +307,7 @@ class Configuration:
         nets=True,
         pin_groups=True,
         operations=True,
+        components=True,
     ):
         """Export the configuration data from layout to a file.
 
@@ -330,6 +331,8 @@ class Configuration:
             Whether to export pin groups.
         operations : bool
             Whether to export operations.
+        components : bool
+            Whether to export component.
         Returns
         -------
         bool
@@ -345,6 +348,7 @@ class Configuration:
             nets=nets,
             pin_groups=pin_groups,
             operations=operations,
+            components=components,
         )
         with open(file_path, "w") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
