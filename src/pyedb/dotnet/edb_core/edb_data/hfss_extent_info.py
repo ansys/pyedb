@@ -23,9 +23,9 @@
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
 from pyedb.dotnet.edb_core.general import (
-    convert_pytuple_to_nettuple,
     PadGeometryTpe,
     convert_py_list_to_net_list,
+    convert_pytuple_to_nettuple,
     pascal_to_snake,
     snake_to_pascal,
 )

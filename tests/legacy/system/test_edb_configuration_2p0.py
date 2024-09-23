@@ -418,23 +418,23 @@ class TestClass:
 
     def test_07_boundaries(self, edb_examples):
         data = {
-                "boundaries": {
-                    "open_region": True,
-                    "open_region_type": "radiation",
-                    "pml_visible": False,
-                    "pml_operation_frequency": "5GHz",
-                    "pml_radiation_factor": "10",
-                    "dielectric_extent_type": "bounding_box",
-                    #"dielectric_base_polygon": "",
-                    "horizontal_padding": 0.0,
-                    "honor_primitives_on_dielectric_layers": True,
-                    "air_box_extent_type": "bounding_box",
-                    #"air_box_base_polygon": "",
-                    "air_box_truncate_model_ground_layers": False,
-                    "air_box_horizontal_padding": 0.15,
-                    "air_box_positive_vertical_padding": 1.0,
-                    "air_box_negative_vertical_padding": 1.0
-                }
+            "boundaries": {
+                "open_region": True,
+                "open_region_type": "radiation",
+                "pml_visible": False,
+                "pml_operation_frequency": "5GHz",
+                "pml_radiation_factor": "10",
+                "dielectric_extent_type": "bounding_box",
+                # "dielectric_base_polygon": "",
+                "horizontal_padding": 0.0,
+                "honor_primitives_on_dielectric_layers": True,
+                "air_box_extent_type": "bounding_box",
+                # "air_box_base_polygon": "",
+                "air_box_truncate_model_ground_layers": False,
+                "air_box_horizontal_padding": 0.15,
+                "air_box_positive_vertical_padding": 1.0,
+                "air_box_negative_vertical_padding": 1.0,
+            }
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
