@@ -32,16 +32,12 @@ class CfgBoundaries(CfgBase):
         self.pml_operation_frequency = boundary_data.get("pml_operation_frequency", None)
         self.pml_radiation_factor = boundary_data.get("pml_radiation_factor", None)
         self.dielectric_extent_type = boundary_data.get("dielectric_extent_type", None)
-        #self.dielectric_base_polygon = self.**kwargs.get("dielectric_base_polygon", None)
+        # self.dielectric_base_polygon = self.**kwargs.get("dielectric_base_polygon", None)
         self.horizontal_padding = boundary_data.get("horizontal_padding", None)
-        self.honor_primitives_on_dielectric_layers = boundary_data.get(
-            "honor_primitives_on_dielectric_layers", False
-        )
+        self.honor_primitives_on_dielectric_layers = boundary_data.get("honor_primitives_on_dielectric_layers", False)
         self.air_box_extent_type = boundary_data.get("air_box_extent_type", None)
         self.air_box_base_polygon = boundary_data.get("air_box_base_polygon", None)
-        self.air_box_truncate_model_ground_layers = boundary_data.get(
-            "air_box_truncate_model_ground_layers", None
-        )
+        self.air_box_truncate_model_ground_layers = boundary_data.get("air_box_truncate_model_ground_layers", None)
         self.air_box_horizontal_padding = boundary_data.get("air_box_horizontal_padding", None)
         self.air_box_positive_vertical_padding = boundary_data.get("air_box_positive_vertical_padding", None)
         self.air_box_negative_vertical_padding = boundary_data.get("air_box_negative_vertical_padding", None)
@@ -60,7 +56,7 @@ class CfgBoundaries(CfgBase):
             self._pedb.hfss.hfss_extent_info.radiation_level = self.pml_radiation_factor
         if self.dielectric_extent_type:
             self._pedb.hfss.hfss_extent_info.extent_type = self.dielectric_extent_type.lower()
-        #if self.dielectric_base_polygon:
+        # if self.dielectric_base_polygon:
         #    self._pedb.hfss.hfss_extent_info.dielectric_base_polygon = self.dielectric_base_polygon
         if self.horizontal_padding:
             self._pedb.hfss.hfss_extent_info.dielectric_extent_size = float(self.horizontal_padding)
@@ -88,7 +84,7 @@ class CfgBoundaries(CfgBase):
         self.pml_operation_frequency = self._pedb.hfss.hfss_extent_info.operating_freq.tostring
         self.pml_radiation_factor = self._pedb.hfss.hfss_extent_info.radiation_level.tostring
         self.dielectric_extent_type = self._pedb.hfss.hfss_extent_info.extent_type
-        #self.dielectric_base_polygon = self._pedb.hfss.hfss_extent_info.dielectric_base_polygon
+        # self.dielectric_base_polygon = self._pedb.hfss.hfss_extent_info.dielectric_base_polygon
         self.horizontal_padding = self._pedb.hfss.hfss_extent_info.dielectric_extent_size
         self.honor_primitives_on_dielectric_layers = self._pedb.hfss.hfss_extent_info.honor_user_dielectric
         self.air_box_extent_type = self._pedb.hfss.hfss_extent_info.extent_type
