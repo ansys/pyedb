@@ -312,6 +312,7 @@ class Configuration:
         operations=True,
         components=True,
         boundaries=True,
+        s_parameters=True,
     ):
         """Export the configuration data from layout to a file.
 
@@ -339,6 +340,8 @@ class Configuration:
             Whether to export component.
         boundaries : bool
             Whether to export boundaries.
+        s_parameters: bool
+            Whether to export s_parameters.
         Returns
         -------
         bool
@@ -354,6 +357,7 @@ class Configuration:
             operations=operations,
             components=components,
             boundaries=boundaries,
+            s_parameters=s_parameters,
         )
 
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)
