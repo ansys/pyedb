@@ -53,7 +53,7 @@ class CfgComponents:
         self.components = [CfgComponent(**comp) for comp in components_data]
 
     def apply(self):
-        comps_in_db = self._pedb.components
+        comps_in_db = self._pedb.components.components
         for comp in self.components:
             c_db = comps_in_db[comp.reference_designator]
             if comp.definition:
