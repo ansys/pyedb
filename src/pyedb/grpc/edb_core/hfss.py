@@ -28,7 +28,6 @@ import warnings
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 
-from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.edb_core.utility.hfss_extent_info import HfssExtentInfo
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -546,6 +545,9 @@ class EdbHfss(object):
     ):
         """Create a bundle wave port.
 
+        . deprecated:: pyedb 0.28.0
+        Use :func:`pyedb.grpc.core.excitations.create_bundle_wave_port` instead.
+
         Parameters
         ----------
         primitives_id : list
@@ -567,37 +569,21 @@ class EdbHfss(object):
         -------
         tuple
             The tuple contains: (port_name, pyedb.egacy.edb_core.edb_data.sources.ExcitationDifferential).
-
-        Examples
-        --------
-        >>> edb.hfss.create_bundle_wave_port(0, ["-50mm", "-0mm"], 1, ["-50mm", "-0.2mm"])
         """
-        if not port_name:
-            port_name = generate_unique_name("bundle_port")
-
-        if isinstance(primitives_id[0], Primitive):
-            primitives_id = [i.id for i in primitives_id]
-
-        terminals = []
-        _port_name = port_name
-        for p_id, loc in list(zip(primitives_id, points_on_edge)):
-            _, term = self.create_wave_port(
-                p_id,
-                loc,
-                port_name=_port_name,
-                horizontal_extent_factor=horizontal_extent_factor,
-                vertical_extent_factor=vertical_extent_factor,
-                pec_launch_width=pec_launch_width,
-            )
-            _port_name = None
-            terminals.append(term)
-
-        edb_list = convert_py_list_to_net_list([i._edb_object for i in terminals], self._edb.cell.terminal.Terminal)
-        _edb_bundle_terminal = self._edb.cell.terminal.BundleTerminal.Create(edb_list)
-        return port_name, BundleWavePort(self._pedb, _edb_bundle_terminal)
+        warnings.warn(
+            "`create_bundle_wave_port` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.create_bundle_wave_port` instead.",
+            DeprecationWarning,
+        )
+        self._pedb.excitations.create_bundle_wave_port(
+            primitives_id, points_on_edge, port_name, horizontal_extent_factor, vertical_extent_factor, pec_launch_width
+        )
 
     def create_hfss_ports_on_padstack(self, pinpos, portname=None):
         """Create an HFSS port on a padstack.
+
+        . deprecated:: pyedb 0.28.0
+        Use :func:`pyedb.grpc.core.excitations.create_hfss_ports_on_padstack` instead.
 
         Parameters
         ----------
@@ -612,17 +598,12 @@ class EdbHfss(object):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        res, fromLayer_pos, toLayer_pos = pinpos.GetLayerRange()
-
-        if not portname:
-            portname = generate_unique_name("Port_" + pinpos.GetNet().GetName())
-        edbpointTerm_pos = self._edb.cell.terminal.PadstackInstanceTerminal.Create(
-            self._active_layout, pinpos.GetNet(), portname, pinpos, toLayer_pos
+        warnings.warn(
+            "`create_hfss_ports_on_padstack` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.create_hfss_ports_on_padstack` instead.",
+            DeprecationWarning,
         )
-        if edbpointTerm_pos:
-            return True
-        else:
-            return False
+        return self._pedb.excitations.create_hfss_ports_on_padstack(pinpos, portname)
 
     def create_edge_port_on_polygon(
         self,
@@ -639,6 +620,10 @@ class EdbHfss(object):
         the reference layer name is only provided. When a port is created between two edge from two polygons which don't
         belong to the same layer, a circuit port will be automatically created instead of lumped. To enforce the circuit
         port instead of lumped,use the boolean force_circuit_port.
+
+        . deprecated:: pyedb 0.28.0
+        Use :func:`pyedb.grpc.core.excitations.create_edge_port_on_polygon` instead.
+
 
         Parameters
         ----------
@@ -668,74 +653,23 @@ class EdbHfss(object):
 
         force_circuit_port ; used to force circuit port creation instead of lumped. Works for vertical and coplanar
         ports.
-
-        Examples
-        --------
-
-        >>> edb_path = path_to_edb
-        >>> edb = Edb(edb_path)
-        >>> poly_list = [poly for poly in list(edb.layout.primitives) if poly.GetPrimitiveType() == 2]
-        >>> port_poly = [poly for poly in poly_list if poly.GetId() == 17][0]
-        >>> ref_poly = [poly for poly in poly_list if poly.GetId() == 19][0]
-        >>> port_location = [-65e-3, -13e-3]
-        >>> ref_location = [-63e-3, -13e-3]
-        >>> edb.hfss.create_edge_port_on_polygon(polygon=port_poly, reference_polygon=ref_poly,
-        >>> terminal_point=port_location, reference_point=ref_location)
-
         """
-        if not polygon:
-            self._logger.error("No polygon provided for port {} creation".format(port_name))
-            return False
-        if reference_layer:
-            reference_layer = self._pedb.stackup.signal_layers[reference_layer]._edb_layer
-            if not reference_layer:
-                self._logger.error("Specified layer for port {} creation was not found".format(port_name))
-        if not isinstance(terminal_point, list):
-            self._logger.error("Terminal point must be a list of float with providing the point location in meter")
-            return False
-        terminal_point = self._edb.geometry.point_data(
-            self._get_edb_value(terminal_point[0]), self._get_edb_value(terminal_point[1])
-        )
-        if reference_point and isinstance(reference_point, list):
-            reference_point = self._edb.geometry.point_data(
-                self._get_edb_value(reference_point[0]), self._get_edb_value(reference_point[1])
-            )
-        if not port_name:
-            port_name = generate_unique_name("Port_")
-        edge = self._edb.cell.terminal.PrimitiveEdge.Create(polygon._edb_object, terminal_point)
-        edges = convert_py_list_to_net_list(edge, self._edb.cell.terminal.Edge)
-        edge_term = self._edb.cell.terminal.EdgeTerminal.Create(
-            polygon._edb_object.GetLayout(), polygon._edb_object.GetNet(), port_name, edges, isRef=False
-        )
-        if force_circuit_port:
-            edge_term.SetIsCircuitPort(True)
-        else:
-            edge_term.SetIsCircuitPort(False)
 
-        if port_impedance:
-            edge_term.SetImpedance(self._pedb.edb_value(port_impedance))
-        edge_term.SetName(port_name)
-        if reference_polygon and reference_point:
-            ref_edge = self._edb.cell.terminal.PrimitiveEdge.Create(reference_polygon._edb_object, reference_point)
-            ref_edges = convert_py_list_to_net_list(ref_edge, self._edb.cell.terminal.Edge)
-            ref_edge_term = self._edb.cell.terminal.EdgeTerminal.Create(
-                reference_polygon._edb_object.GetLayout(),
-                reference_polygon._edb_object.GetNet(),
-                port_name + "_ref",
-                ref_edges,
-                isRef=True,
-            )
-            if reference_layer:
-                ref_edge_term.SetReferenceLayer(reference_layer)
-            if force_circuit_port:
-                ref_edge_term.SetIsCircuitPort(True)
-            else:
-                ref_edge_term.SetIsCircuitPort(False)
-
-            if port_impedance:
-                ref_edge_term.SetImpedance(self._pedb.edb_value(port_impedance))
-            edge_term.SetReferenceTerminal(ref_edge_term)
-        return True
+        warnings.warn(
+            "`create_edge_port_on_polygon` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.create_edge_port_on_polygon` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.excitations.create_edge_port_on_polygon(
+            polygon,
+            reference_polygon,
+            terminal_point,
+            reference_point,
+            reference_layer,
+            port_name,
+            port_impedance,
+            force_circuit_port,
+        )
 
     def create_wave_port(
         self,
@@ -785,11 +719,11 @@ class EdbHfss(object):
         self._pedb.excitations.create_wave_port(
             prim_id,
             point_on_edge,
-            port_name=None,
-            impedance=50,
-            horizontal_extent_factor=5,
-            vertical_extent_factor=3,
-            pec_launch_width="0.01mm",
+            port_name,
+            impedance,
+            horizontal_extent_factor,
+            vertical_extent_factor,
+            pec_launch_width,
         )
 
     def create_edge_port_vertical(
@@ -902,11 +836,11 @@ class EdbHfss(object):
             "`pyedb.grpc.core.excitations.create_edge_port_horizontal` instead.",
             DeprecationWarning,
         )
-        return self._pedb.exc
+        return self._pedb.excitations.create_edge_port_horizontal(
+            prim_id, point_on_edge, ref_prim_id, point_on_ref_edge, port_name, impedance, layer_alignment
+        )
 
-    def create_lumped_port_on_net(
-        self, nets=None, reference_layer=None, return_points_only=False, digit_resolution=6, at_bounding_box=True
-    ):
+    def create_lumped_port_on_net(self, nets, reference_layer, return_points_only, digit_resolution, at_bounding_box):
         """Create an edge port on nets. This command looks for traces and polygons on the
         nets and tries to assign vertical lumped port.
 
@@ -1030,7 +964,7 @@ class EdbHfss(object):
         """
         warnings.warn(
             "`configure_hfss_extents` is deprecated and is now located here "
-            "`pyedb.grpc.core.utility.simulation_confifiguration.ProcessSimulationConfiguration.configure_hfss_extents`"
+            "`pyedb.grpc.core.utility.simulation_configuration.ProcessSimulationConfiguration.configure_hfss_extents`"
             "instead.",
             DeprecationWarning,
         )
@@ -1044,7 +978,7 @@ class EdbHfss(object):
 
         . deprecated:: pyedb 0.28.0
         Use :func:
-        `pyedb.grpc.core.utility.simulation_confifiguration.ProcessSimulationConfiguration.configure_hfss_analysis_setup`
+        `pyedb.grpc.core.utility.simulation_configuration.ProcessSimulationConfiguration.configure_hfss_analysis_setup`
         instead.
 
 
@@ -1060,7 +994,7 @@ class EdbHfss(object):
         """
         warnings.warn(
             "`configure_hfss_analysis_setup` is deprecated and is now located here "
-            "`pyedb.grpc.core.utility.simulation_confifiguration.ProcessSimulationConfiguration."
+            "`pyedb.grpc.core.utility.simulation_configuration.ProcessSimulationConfiguration."
             "configure_hfss_analysis_setup` instead.",
             DeprecationWarning,
         )
@@ -1086,6 +1020,11 @@ class EdbHfss(object):
     def trim_component_reference_size(self, simulation_setup=None, trim_to_terminals=False):
         """Trim the common component reference to the minimally acceptable size.
 
+        . deprecated:: pyedb 0.28.0
+        Use :func:
+        `pyedb.grpc.core.utility.simulation_configuration.ProcessSimulationConfiguration.trim_component_reference_size`
+        instead.
+
         Parameters
         ----------
         simulation_setup :
@@ -1103,57 +1042,23 @@ class EdbHfss(object):
             True when succeeded, False when failed.
         """
 
-        if not isinstance(simulation_setup, SimulationConfiguration):
-            self._logger.error(
-                "Trim component reference size requires an edb_data.simulation_configuration.SimulationConfiguration \
-                    object as argument"
-            )
-            return False
-
-        if not simulation_setup.components:  # pragma: no cover
-            return
-
-        layout = self._cell.GetLayout()
-        l_inst = layout.GetLayoutInstance()
-
-        for inst in simulation_setup.components:  # pragma: no cover
-            comp = self._pedb.edb_api.cell.hierarchy.component.FindByName(layout, inst)
-            if comp.IsNull():
-                continue
-
-            terms_bbox_pts = self._get_terminals_bbox(comp, l_inst, trim_to_terminals)
-            if not terms_bbox_pts:
-                continue
-
-            terms_bbox = self._edb.geometry.polygon_data.create_from_bbox(terms_bbox_pts)
-
-            if trim_to_terminals:
-                # Remove any pins that aren't interior to the Terminals bbox
-                pin_list = [
-                    obj
-                    for obj in list(comp.LayoutObjs)
-                    if obj.GetObjType() == self._edb.cell.layout_object_type.PadstackInstance
-                ]
-                for pin in pin_list:
-                    loi = l_inst.GetLayoutObjInstance(pin, None)
-                    bb_c = loi.GetCenter()
-                    if not terms_bbox.PointInPolygon(bb_c):
-                        comp.RemoveMember(pin)
-
-            # Set the port property reference size
-            cmp_prop = comp.GetComponentProperty().Clone()
-            port_prop = cmp_prop.GetPortProperty().Clone()
-            port_prop.SetReferenceSizeAuto(False)
-            port_prop.SetReferenceSize(
-                terms_bbox_pts.Item2.X.ToDouble() - terms_bbox_pts.Item1.X.ToDouble(),
-                terms_bbox_pts.Item2.Y.ToDouble() - terms_bbox_pts.Item1.Y.ToDouble(),
-            )
-            cmp_prop.SetPortProperty(port_prop)
-            comp.SetComponentProperty(cmp_prop)
-            return True
+        warnings.warn(
+            "`trim_component_reference_size` is deprecated and is now located here "
+            "`pyedb.grpc.core.utility.simulation_configuration.ProcessSimulationConfiguration."
+            "trim_component_reference_size` instead.",
+            DeprecationWarning,
+        )
+        self._pedb.utility.simulation_configuration.ProcessSimulationConfiguration.trim_component_reference_size(
+            simulation_setup
+        )
 
     def set_coax_port_attributes(self, simulation_setup=None):
         """Set coaxial port attribute with forcing default impedance to 50 Ohms and adjusting the coaxial extent radius.
+
+        . deprecated:: pyedb 0.28.0
+        Use :func:
+        `pyedb.grpc.core.utility.simulation_configuration.ProcessSimulationConfiguration.set_coax_port_attributes`
+        instead.
 
         Parameters
         ----------
@@ -1165,91 +1070,33 @@ class EdbHfss(object):
         bool
             True when succeeded, False when failed.
         """
-
-        if not isinstance(simulation_setup, SimulationConfiguration):
-            self._logger.error(
-                "Set coax port attribute requires an edb_data.simulation_configuration.SimulationConfiguration object \
-            as argument."
-            )
-            return False
-        net_names = [net.name for net in self._layout.nets if not net._edb_object.IsPowerGround()]
-        if simulation_setup.components and isinstance(simulation_setup.components[0], str):
-            cmp_names = (
-                simulation_setup.components
-                if simulation_setup.components
-                else [gg.GetName() for gg in self._layout.groups]
-            )
-        elif (
-            simulation_setup.components
-            and isinstance(simulation_setup.components[0], dict)
-            and "refdes" in simulation_setup.components[0]
-        ):
-            cmp_names = [cmp["refdes"] for cmp in simulation_setup.components]
-        else:
-            cmp_names = []
-        ii = 0
-        for cc in cmp_names:
-            cmp = self._pedb.edb_api.cell.hierarchy.component.FindByName(self._active_layout, cc)
-            if cmp.IsNull():
-                self._logger.warning("RenamePorts: could not find component {0}".format(cc))
-                continue
-            terms = [
-                obj for obj in list(cmp.LayoutObjs) if obj.GetObjType() == self._edb.cell.layout_object_type.Terminal
-            ]
-            for nn in net_names:
-                for tt in [term for term in terms if term.GetNet().GetName() == nn]:
-                    if not tt.SetImpedance(self._pedb.edb_value("50ohm")):
-                        self._logger.warning("Could not set terminal {0} impedance as 50ohm".format(tt.GetName()))
-                        continue
-                    ii += 1
-
-            if not simulation_setup.use_default_coax_port_radial_extension:
-                # Set the Radial Extent Factor
-                typ = cmp.GetComponentType()
-                if typ in [
-                    self._edb.definition.ComponentType.Other,
-                    self._edb.definition.ComponentType.IC,
-                    self._edb.definition.ComponentType.IO,
-                ]:
-                    cmp_prop = cmp.GetComponentProperty().Clone()
-                    (
-                        success,
-                        diam1,
-                        diam2,
-                    ) = cmp_prop.GetSolderBallProperty().GetDiameter()
-                    if success and diam1 and diam2 > 0:  # pragma: no cover
-                        option = (
-                            "HFSS('HFSS Type'='**Invalid**', "
-                            "Orientation='**Invalid**', "
-                            "'Layer Alignment'='Upper', "
-                            "'Horizontal Extent Factor'='5', "
-                            "'Vertical Extent Factor'='3', "
-                            "'Radial Extent Factor'='0.25', "
-                            "'PEC Launch Width'='0mm')"
-                        )
-                        for tt in terms:
-                            tt.SetProductSolverOption(self._edb.edb_api.ProductId.Designer, "HFSS", option)
-        return True
+        warnings.warn(
+            "`set_coax_port_attributes` is deprecated and is now located here "
+            "`pyedb.grpc.core.utility.simulation_configuration.ProcessSimulationConfiguration."
+            "set_coax_port_attributes` instead.",
+            DeprecationWarning,
+        )
+        self._pedb.utility.simulation_configuration.ProcessSimulationConfiguration.set_coax_port_attributes(
+            simulation_setup
+        )
 
     def _get_terminals_bbox(self, comp, l_inst, terminals_only):
         terms_loi = []
         if terminals_only:
-            term_list = [
-                obj for obj in list(comp.LayoutObjs) if obj.GetObjType() == self._edb.cell.layout_object_type.Terminal
-            ]
+            term_list = []
+            for pin in comp.pins:
+                padstack_instance_term = pin.get_padstack_instance_terminal()
+                if not padstack_instance_term.is_null:
+                    term_list.append(padstack_instance_term)
             for tt in term_list:
-                success, p_inst, lyr = tt.GetParameters()
-                if success and lyr:
-                    loi = l_inst.GetLayoutObjInstance(p_inst, None)
+                term_param = tt.get_parameters()
+                if term_param:
+                    loi = l_inst.get_layout_obj_instance(term_param[0], None)
                     terms_loi.append(loi)
         else:
-            pin_list = [
-                obj
-                for obj in list(comp.LayoutObjs)
-                if obj.GetObjType() == self._edb.cell.layout_object_type.PadstackInstance
-            ]
+            pin_list = comp.pins
             for pi in pin_list:
-                loi = l_inst.GetLayoutObjInstance(pi, None)
+                loi = l_inst.get_layout_obj_instance(pi, None)
                 terms_loi.append(loi)
 
         if len(terms_loi) == 0:
@@ -1259,15 +1106,13 @@ class EdbHfss(object):
         for loi in terms_loi:
             # Need to account for the coax port dimension
             bb = loi.GetBBox()
-            ll = [bb.Item1.X.ToDouble(), bb.Item1.Y.ToDouble()]
-            ur = [bb.Item2.X.ToDouble(), bb.Item2.Y.ToDouble()]
+            ll = [bb[0].x.value, bb[0].y.value]
+            ur = [bb[1].x.value, bb[1].y.value]
             # dim = 0.26 * max(abs(UR[0]-LL[0]), abs(UR[1]-LL[1]))  # 0.25 corresponds to the default 0.5
             # Radial Extent Factor, so set slightly larger to avoid validation errors
             dim = 0.30 * max(abs(ur[0] - ll[0]), abs(ur[1] - ll[1]))  # 0.25 corresponds to the default 0.5
-            terms_bbox.append(
-                self._edb.geometry.polygon_data.dotnetobj(ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim)
-            )
-        return self._edb.geometry.polygon_data.get_bbox_of_polygons(terms_bbox)
+            terms_bbox.append(GrpcPolygonData([ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim]))
+        return GrpcPolygonData.bbox_of_polygons(terms_bbox)
 
     def get_ports_number(self):
         """Return the total number of excitation ports in a layout.
@@ -1282,11 +1127,20 @@ class EdbHfss(object):
            Number of ports.
 
         """
-        terms = [term for term in self._layout.terminals if int(term._edb_object.GetBoundaryType()) == 0]
-        return len([i for i in terms if not i.is_reference_terminal])
+        warnings.warn(
+            "`get_ports_number` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitation.get_ports_number` instead.",
+            DeprecationWarning,
+        )
+        self._pedb.excitations.get_ports_number()
 
     def layout_defeaturing(self, simulation_setup=None):
         """Defeature the layout by reducing the number of points for polygons based on surface deviation criteria.
+
+        . deprecated:: pyedb 0.28.0
+        Use :func:
+        `pyedb.grpc.core.utility.simulation_configuration.ProcessSimulationConfiguration.layout_defeaturing`
+        instead.
 
         Parameters
         ----------
@@ -1298,42 +1152,19 @@ class EdbHfss(object):
             ``True`` when successful, ``False`` when failed.
 
         """
-        if not isinstance(simulation_setup, SimulationConfiguration):
-            self._logger.error(
-                "Layout defeaturing requires an edb_data.simulation_configuration.SimulationConfiguration object."
-            )
-            return False
-        self._logger.info("Starting Layout Defeaturing")
-        polygon_list = self._pedb.modeler.polygons
-        polygon_with_voids = self._pedb.core_layout.get_poly_with_voids(polygon_list)
-        self._logger.info("Number of polygons with voids found: {0}".format(str(polygon_with_voids.Count)))
-        for _poly in polygon_list:
-            voids_from_current_poly = _poly.Voids
-            new_poly_data = self._pedb.core_layout.defeature_polygon(setup_info=simulation_setup, poly=_poly)
-            _poly.SetPolygonData(new_poly_data)
-            if len(voids_from_current_poly) > 0:
-                for void in voids_from_current_poly:
-                    void_data = void.GetPolygonData()
-                    if void_data.Area() < float(simulation_setup.minimum_void_surface):
-                        void.Delete()
-                        self._logger.warning(
-                            "Defeaturing Polygon {0}: Deleting Void {1} area is lower than the minimum criteria".format(
-                                str(_poly.GetId()), str(void.GetId())
-                            )
-                        )
-                    else:
-                        self._logger.info(
-                            "Defeaturing polygon {0}: void {1}".format(str(_poly.GetId()), str(void.GetId()))
-                        )
-                        new_void_data = self._pedb.core_layout.defeature_polygon(
-                            setup_info=simulation_setup, poly=void_data
-                        )
-                        void.SetPolygonData(new_void_data)
-
-        return True
+        warnings.warn(
+            "`layout_defeaturing` is deprecated and is now located here "
+            "`pyedb.grpc.core.utility.simulation_configuration.ProcessSimulationConfiguration."
+            "layout_defeaturing` instead.",
+            DeprecationWarning,
+        )
+        self._pedb.utility.simulation_configuration.ProcessSimulationConfiguration.layout_defeaturing(simulation_setup)
 
     def create_rlc_boundary_on_pins(self, positive_pin=None, negative_pin=None, rvalue=0.0, lvalue=0.0, cvalue=0.0):
         """Create hfss rlc boundary on pins.
+
+        . deprecated:: pyedb 0.28.0
+        Use :func:`pyedb.grpc.core.excitations.create_rlc_boundary_on_pins` instead.
 
         Parameters
         ----------
@@ -1355,26 +1186,9 @@ class EdbHfss(object):
             ``True`` when successful, ``False`` when failed.
 
         """
-
-        if positive_pin and negative_pin:
-            positive_pin_term = self._pedb.components._create_terminal(positive_pin)
-            negative_pin_term = self._pedb.components._create_terminal(negative_pin)
-            positive_pin_term.SetBoundaryType(self._edb.cell.terminal.BoundaryType.RlcBoundary)
-            negative_pin_term.SetBoundaryType(self._edb.cell.terminal.BoundaryType.RlcBoundary)
-            rlc = self._edb.utility.utility.Rlc()
-            rlc.IsParallel = True
-            rlc.REnabled = True
-            rlc.LEnabled = True
-            rlc.CEnabled = True
-            rlc.R = self._get_edb_value(rvalue)
-            rlc.L = self._get_edb_value(lvalue)
-            rlc.C = self._get_edb_value(cvalue)
-            positive_pin_term.SetRlcBoundaryParameters(rlc)
-            term_name = "{}_{}_{}".format(
-                positive_pin.GetComponent().GetName(), positive_pin.GetNet().GetName(), positive_pin.GetName()
-            )
-            positive_pin_term.SetName(term_name)
-            negative_pin_term.SetName("{}_ref".format(term_name))
-            positive_pin_term.SetReferenceTerminal(negative_pin_term)
-            return True
-        return False  # pragma no cover
+        warnings.warn(
+            "`create_rlc_boundary_on_pins` is deprecated and is now located here "
+            "`pyedb.grpc.core.create_rlc_boundary_on_pins.get_ports_number` instead.",
+            DeprecationWarning,
+        )
+        self._pedb.excitations.create_rlc_boundary_on_pins(positive_pin, negative_pin, rvalue, lvalue, cvalue)

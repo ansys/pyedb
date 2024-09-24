@@ -38,7 +38,7 @@ from pyedb.grpc.edb_core.components import Component
 from pyedb.grpc.edb_core.hierarchy.pingroup import PinGroup
 from pyedb.grpc.edb_core.layers.stackup_layer import StackupLayer
 from pyedb.grpc.edb_core.nets.net import Net
-from pyedb.grpc.edb_core.ports.ports import WavePort
+from pyedb.grpc.edb_core.ports.ports import BundleWavePort, WavePort
 from pyedb.grpc.edb_core.primitive.padstack_instances import PadstackInstance
 from pyedb.grpc.edb_core.primitive.primitive import Primitive
 from pyedb.grpc.edb_core.terminal.bundle_terminal import BundleTerminal
@@ -61,6 +61,25 @@ class Excitations:
     def __init__(self, pedb):
         self._pedb = pedb
         self._logger = pedb._logger
+
+    @property
+    def _logger(self):
+        return self._pedb.logger
+
+    @property
+    def excitations(self):
+        """Get all excitations."""
+        return self._pedb.excitations
+
+    @property
+    def sources(self):
+        """Get all sources."""
+        return self._pedb.sources
+
+    @property
+    def probes(self):
+        """Get all probes."""
+        return self._pedb.probes
 
     def create_source_on_component(self, sources=None):
         """Create voltage, current source, or resistor on component.
@@ -1883,3 +1902,261 @@ class Excitations:
                                         self._logger.info(f"Port {port_name} created")
             return terminal_info
         return False
+
+    def create_bundle_wave_port(
+        self,
+        primitives_id,
+        points_on_edge,
+        port_name=None,
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
+    ):
+        """Create a bundle wave port.
+
+        Parameters
+        ----------
+        primitives_id : list
+            Primitive ID of the positive terminal.
+        points_on_edge : list
+            Coordinate of the point to define the edge terminal.
+            The point must be close to the target edge but not on the two
+            ends of the edge.
+        port_name : str, optional
+            Name of the port. The default is ``None``.
+        horizontal_extent_factor : int, float, optional
+            Horizontal extent factor. The default value is ``5``.
+        vertical_extent_factor : int, float, optional
+            Vertical extent factor. The default value is ``3``.
+        pec_launch_width : str, optional
+            Launch Width of PEC. The default value is ``"0.01mm"``.
+
+        Returns
+        -------
+        tuple
+            The tuple contains: (port_name, pyedb.egacy.edb_core.edb_data.sources.ExcitationDifferential).
+
+        Examples
+        --------
+        >>> edb.excitations.create_bundle_wave_port(0, ["-50mm", "-0mm"], 1, ["-50mm", "-0.2mm"])
+        """
+        if not port_name:
+            port_name = generate_unique_name("bundle_port")
+
+        if isinstance(primitives_id[0], Primitive):
+            primitives_id = [i.id for i in primitives_id]
+
+        terminals = []
+        _port_name = port_name
+        for p_id, loc in list(zip(primitives_id, points_on_edge)):
+            _, term = self.create_wave_port(
+                p_id,
+                loc,
+                port_name=_port_name,
+                horizontal_extent_factor=horizontal_extent_factor,
+                vertical_extent_factor=vertical_extent_factor,
+                pec_launch_width=pec_launch_width,
+            )
+            _port_name = None
+            terminals.append(term)
+
+        _edb_bundle_terminal = BundleTerminal.create(terminals)
+        return port_name, BundleWavePort(self._pedb, _edb_bundle_terminal)
+
+    def create_hfss_ports_on_padstack(self, pinpos, portname=None):
+        """Create an HFSS port on a padstack.
+
+        Parameters
+        ----------
+        pinpos :
+            Position of the pin.
+
+        portname : str, optional
+             Name of the port. The default is ``None``.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        top_layer, bottom_layer = pinpos.get_layer_range()
+
+        if not portname:
+            portname = generate_unique_name("Port_" + pinpos.net.name)
+        edbpointTerm_pos = PadstackInstanceTerminal.create(
+            padstack_instance=pinpos, name=portname, layer=top_layer, is_ref=False
+        )
+        if edbpointTerm_pos:
+            return True
+        else:
+            return False
+
+    def get_ports_number(self):
+        """Return the total number of excitation ports in a layout.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        int
+           Number of ports.
+
+        """
+        terms = [term for term in self._pedb._layout.terminals]
+        return len([i for i in terms if not i.is_reference_terminal])
+
+    def create_rlc_boundary_on_pins(self, positive_pin=None, negative_pin=None, rvalue=0.0, lvalue=0.0, cvalue=0.0):
+        """Create hfss rlc boundary on pins.
+
+        Parameters
+        ----------
+        positive_pin : Positive pin.
+            Edb.Cell.Primitive.PadstackInstance
+
+        negative_pin : Negative pin.
+            Edb.Cell.Primitive.PadstackInstance
+
+        rvalue : Resistance value
+
+        lvalue : Inductance value
+
+        cvalue . Capacitance value.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        """
+
+        if positive_pin and negative_pin:
+            positive_pin_term = self._pedb.components._create_terminal(positive_pin)
+            negative_pin_term = self._pedb.components._create_terminal(negative_pin)
+            positive_pin_term.boundary_type = GrpcBoundaryType.RLC
+            negative_pin_term.boundary_type = GrpcBoundaryType.RLC
+            rlc = GrpcRlc()
+            rlc.is_parallel = True
+            rlc.r_enabled = True
+            rlc.l_enabled = True
+            rlc.c_enabled = True
+            rlc.r = GrpcValue(rvalue)
+            rlc.l = GrpcValue(lvalue)
+            rlc.c = GrpcValue(cvalue)
+            positive_pin_term.rlc_boundary_parameters = rlc
+            term_name = f"{positive_pin.component.name}_{positive_pin.net.name}_{positive_pin.name}"
+            positive_pin_term.name = term_name
+            negative_pin_term.name = f"{term_name}_ref"
+            positive_pin_term.reference_terminal = negative_pin_term
+            return True
+        return False
+
+    def create_edge_port_on_polygon(
+        self,
+        polygon=None,
+        reference_polygon=None,
+        terminal_point=None,
+        reference_point=None,
+        reference_layer=None,
+        port_name=None,
+        port_impedance=50.0,
+        force_circuit_port=False,
+    ):
+        """Create lumped port between two edges from two different polygons. Can also create a vertical port when
+        the reference layer name is only provided. When a port is created between two edge from two polygons which don't
+        belong to the same layer, a circuit port will be automatically created instead of lumped. To enforce the circuit
+        port instead of lumped,use the boolean force_circuit_port.
+
+        Parameters
+        ----------
+        polygon : The EDB polygon object used to assign the port.
+            Edb.Cell.Primitive.Polygon object.
+
+        reference_polygon : The EDB polygon object used to define the port reference.
+            Edb.Cell.Primitive.Polygon object.
+
+        terminal_point : The coordinate of the point to define the edge terminal of the port. This point must be
+        located on the edge of the polygon where the port has to be placed. For instance taking the middle point
+        of an edge is a good practice but any point of the edge should be valid. Taking a corner might cause unwanted
+        port location.
+            list[float, float] with values provided in meter.
+
+        reference_point : same as terminal_point but used for defining the reference location on the edge.
+            list[float, float] with values provided in meter.
+
+        reference_layer : Name used to define port reference for vertical ports.
+            str the layer name.
+
+        port_name : Name of the port.
+            str.
+
+        port_impedance : port impedance value. Default value is 50 Ohms.
+            float, impedance value.
+
+        force_circuit_port ; used to force circuit port creation instead of lumped. Works for vertical and coplanar
+        ports.
+
+        Examples
+        --------
+
+        >>> edb_path = path_to_edb
+        >>> edb = Edb(edb_path)
+        >>> poly_list = [poly for poly in list(edb.layout.primitives) if poly.GetPrimitiveType() == 2]
+        >>> port_poly = [poly for poly in poly_list if poly.GetId() == 17][0]
+        >>> ref_poly = [poly for poly in poly_list if poly.GetId() == 19][0]
+        >>> port_location = [-65e-3, -13e-3]
+        >>> ref_location = [-63e-3, -13e-3]
+        >>> edb.hfss.create_edge_port_on_polygon(polygon=port_poly, reference_polygon=ref_poly,
+        >>> terminal_point=port_location, reference_point=ref_location)
+
+        """
+        if not polygon:
+            self._logger.error("No polygon provided for port {} creation".format(port_name))
+            return False
+        if reference_layer:
+            reference_layer = self._pedb.stackup.signal_layers[reference_layer]._edb_layer
+            if not reference_layer:
+                self._logger.error("Specified layer for port {} creation was not found".format(port_name))
+        if not isinstance(terminal_point, list):
+            self._logger.error("Terminal point must be a list of float with providing the point location in meter")
+            return False
+        terminal_point = GrpcPointData(terminal_point)
+        if reference_point and isinstance(reference_point, list):
+            reference_point = GrpcPointData(reference_point)
+        if not port_name:
+            port_name = generate_unique_name("Port_")
+        edge = GrpcPrimitiveEdge.create(polygon, terminal_point)
+        edges = [edge]
+        edge_term = GrpcEdgeTerminal.create(
+            layout=polygon.layout, edges=edges, net=polygon.net, name=port_name, is_ref=False
+        )
+        if force_circuit_port:
+            edge_term.is_circuit_port = True
+        else:
+            edge_term.is_circuit_port = False
+
+        if port_impedance:
+            edge_term.impedance = GrpcValue(port_impedance)
+        edge_term.name = port_name
+        if reference_polygon and reference_point:
+            ref_edge = GrpcPrimitiveEdge.create(reference_polygon, reference_point)
+            ref_edges = [ref_edge]
+            ref_edge_term = GrpcEdgeTerminal.create(
+                layout=reference_polygon.layout,
+                name=port_name + "_ref",
+                edges=ref_edges,
+                net=reference_polygon.net,
+                is_ref=True,
+            )
+            if reference_layer:
+                ref_edge_term.reference_layer = reference_layer
+            if force_circuit_port:
+                ref_edge_term.is_circuit_port = True
+            else:
+                ref_edge_term.is_circuit_port = False
+
+            if port_impedance:
+                ref_edge_term.impedance = GrpcValue(port_impedance)
+            edge_term.reference_terminal = ref_edge_term
+        return True

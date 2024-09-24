@@ -30,7 +30,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 
 class StackupLayer(GrpcStackupLayer):
     def __init__(self, pedb, edb_object=None, name="", layer_type="signal", **kwargs):
-        super().__init__(pedb, edb_object, name=name, layer_type=layer_type, **kwargs)
+        super().__init__(edb_object)
         self._pedb = pedb
         self._material = ""
         self._conductivity = 0.0

@@ -24,9 +24,11 @@ from collections import OrderedDict
 import json
 import os
 
-from pyedb.dotnet.clr_module import Dictionary
-from pyedb.dotnet.edb_core.edb_data.sources import Source, SourceType
-from pyedb.dotnet.edb_core.utilities.simulation_setup import AdaptiveType
+from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
+from ansys.edb.core.utility.value import Value as GrpcValue
+
+# from pyedb.dotnet.edb_core.edb_data.sources import Source, SourceType
+# from pyedb.dotnet.edb_core.utilities.simulation_setup import AdaptiveType
 from pyedb.generic.constants import (
     BasisOrder,
     CutoutSubdesignType,
@@ -3116,3 +3118,188 @@ class ProcessSimulationConfiguration(object):
             self._layout.cell.DeleteSimulationSetup(setup.GetName())
             self._logger.warning("Setup {} has been deleted".format(setup.GetName()))
         return self._layout.cell.AddSimulationSetup(sim_setup)
+
+    def trim_component_reference_size(self, simulation_setup=None, trim_to_terminals=False):
+        """Trim the common component reference to the minimally acceptable size.
+
+        Parameters
+        ----------
+        simulation_setup :
+            Edb_DATA.SimulationConfiguration object
+
+        trim_to_terminals :
+            bool.
+                True, reduce the reference to a box covering only the active terminals (i.e. those with
+        ports).
+                False, reduce the reference to the minimal size needed to cover all pins
+
+        Returns
+        -------
+        bool
+            True when succeeded, False when failed.
+        """
+
+        if not isinstance(simulation_setup, SimulationConfiguration):
+            self._logger.error(
+                "Trim component reference size requires an edb_data.simulation_configuration.SimulationConfiguration \
+                    object as argument"
+            )
+            return False
+
+        if not simulation_setup.components:  # pragma: no cover
+            return
+
+        layout = self._cell.layout
+        l_inst = layout.layout_instance
+
+        for inst in simulation_setup.components:  # pragma: no cover
+            comp = self._pedb.components.instances[inst]
+            terms_bbox_pts = self._get_terminals_bbox(comp, l_inst, trim_to_terminals)
+            if not terms_bbox_pts:
+                continue
+
+            terms_bbox = self._edb.geometry.polygon_data.create_from_bbox(terms_bbox_pts)
+
+            if trim_to_terminals:
+                # Remove any pins that aren't interior to the Terminals bbox
+                pin_list = [
+                    obj
+                    for obj in list(comp.LayoutObjs)
+                    if obj.GetObjType() == self._edb.cell.layout_object_type.PadstackInstance
+                ]
+                for pin in pin_list:
+                    loi = l_inst.GetLayoutObjInstance(pin, None)
+                    bb_c = loi.GetCenter()
+                    if not terms_bbox.PointInPolygon(bb_c):
+                        comp.RemoveMember(pin)
+
+            # Set the port property reference size
+            cmp_prop = comp.GetComponentProperty().Clone()
+            port_prop = cmp_prop.GetPortProperty().Clone()
+            port_prop.SetReferenceSizeAuto(False)
+            port_prop.SetReferenceSize(
+                terms_bbox_pts.Item2.X.ToDouble() - terms_bbox_pts.Item1.X.ToDouble(),
+                terms_bbox_pts.Item2.Y.ToDouble() - terms_bbox_pts.Item1.Y.ToDouble(),
+            )
+            cmp_prop.SetPortProperty(port_prop)
+            comp.SetComponentProperty(cmp_prop)
+            return True
+
+    def set_coax_port_attributes(self, simulation_setup=None):
+        """Set coaxial port attribute with forcing default impedance to 50 Ohms and adjusting the coaxial extent radius.
+
+        Parameters
+        ----------
+        simulation_setup :
+            Edb_DATA.SimulationConfiguration object.
+
+        Returns
+        -------
+        bool
+            True when succeeded, False when failed.
+        """
+
+        if not isinstance(simulation_setup, SimulationConfiguration):
+            self._logger.error(
+                "Set coax port attribute requires an edb_data.simulation_configuration.SimulationConfiguration object \
+            as argument."
+            )
+            return False
+
+        net_names = [net.name for net in self._pedb.layout.nets if not net.is_power_ground]
+        if simulation_setup.components and isinstance(simulation_setup.components[0], str):
+            cmp_names = (
+                simulation_setup.components
+                if simulation_setup.components
+                else [gg.name for gg in self._pedb.layout.groups]
+            )
+        elif (
+            simulation_setup.components
+            and isinstance(simulation_setup.components[0], dict)
+            and "refdes" in simulation_setup.components[0]
+        ):
+            cmp_names = [cmp["refdes"] for cmp in simulation_setup.components]
+        else:
+            cmp_names = []
+        ii = 0
+        for cc in cmp_names:
+            cmp = self._pedb.components.instances[cc]
+            if cmp.is_null:
+                self._logger.warning("RenamePorts: could not find component {0}".format(cc))
+                continue
+            terms = [pin for pin in cmp.pins if not pin.get_padstack_instance_terminal().is_null]
+            for nn in net_names:
+                for tt in [term for term in terms if term.net.name == nn]:
+                    tt.impedance = GrpcValue("50ohm")
+                    ii += 1
+
+            if not simulation_setup.use_default_coax_port_radial_extension:
+                # Set the Radial Extent Factor
+                typ = cmp.type
+                if typ in [
+                    GrpcComponentType.OTHER,
+                    GrpcComponentType.IC,
+                    GrpcComponentType.IO,
+                ]:
+                    cmp_prop = cmp.component_property
+                    solder_ball_diam = cmp_prop.solder_ball_property.diameter()
+                    if solder_ball_diam[0] and solder_ball_diam[1] > 0:  # pragma: no cover
+                        option = (
+                            "HFSS('HFSS Type'='**Invalid**', "
+                            "Orientation='**Invalid**', "
+                            "'Layer Alignment'='Upper', "
+                            "'Horizontal Extent Factor'='5', "
+                            "'Vertical Extent Factor'='3', "
+                            "'Radial Extent Factor'='0.25', "
+                            "'PEC Launch Width'='0mm')"
+                        )
+                        for tt in terms:
+                            tt.set_product_solver_option(GrpcComponentType.DESIGNER, "HFSS", option)
+        return True
+
+    def layout_defeaturing(self, simulation_setup=None):
+        """Defeature the layout by reducing the number of points for polygons based on surface deviation criteria.
+
+        Parameters
+        ----------
+        simulation_setup : Edb_DATA.SimulationConfiguration object
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+
+        """
+        if not isinstance(simulation_setup, SimulationConfiguration):
+            self._logger.error(
+                "Layout defeaturing requires an edb_data.simulation_configuration.SimulationConfiguration object."
+            )
+            return False
+        self._logger.info("Starting Layout Defeaturing")
+        polygon_list = self._pedb.modeler.polygons
+        polygon_with_voids = self._pedb.core_layout.get_poly_with_voids(polygon_list)
+        self._logger.info("Number of polygons with voids found: {0}".format(str(polygon_with_voids.Count)))
+        for _poly in polygon_list:
+            voids_from_current_poly = _poly.Voids
+            new_poly_data = self._pedb.core_layout.defeature_polygon(setup_info=simulation_setup, poly=_poly)
+            _poly.SetPolygonData(new_poly_data)
+            if len(voids_from_current_poly) > 0:
+                for void in voids_from_current_poly:
+                    void_data = void.GetPolygonData()
+                    if void_data.Area() < float(simulation_setup.minimum_void_surface):
+                        void.Delete()
+                        self._logger.warning(
+                            "Defeaturing Polygon {0}: Deleting Void {1} area is lower than the minimum criteria".format(
+                                str(_poly.GetId()), str(void.GetId())
+                            )
+                        )
+                    else:
+                        self._logger.info(
+                            "Defeaturing polygon {0}: void {1}".format(str(_poly.GetId()), str(void.GetId()))
+                        )
+                        new_void_data = self._pedb.core_layout.defeature_polygon(
+                            setup_info=simulation_setup, poly=void_data
+                        )
+                        void.SetPolygonData(new_void_data)
+
+        return True
