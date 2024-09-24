@@ -74,8 +74,8 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  legacy-tests:
-    name: Test dotnet
+  legacy-tests-windows:
+    name: Test dotnet (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: "Install Git and clone project"
@@ -124,6 +124,75 @@ jobs:
         with:
           path: .cov\legacy-html
           name: html-legacy-coverage
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/legacy.xml
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  legacy-tests-linux:
+    name: Test dotnet (linux)
+    runs-on: [ Linux, self-hosted, toolkits ]
+    env:
+      ANSYSEM_ROOT242: '/ansys_inc/AnsysEM/v242/Linux64'
+      ANS_NODEPCHECK: '1'
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: "Install os packages"
+        run: |
+          sudo apt update
+          sudo apt install libgl1-mesa-glx xvfb
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+
+      - name: "Update pip"
+        run: |
+          . .venv/bin/activate
+          python -m pip install -U pip
+
+      - name: "Install Python library and tests dependencies"
+        run: |
+          . .venv/bin/activate
+          python -m pip install .[tests]
+
+      - name: "Executing legacy tests"
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 20
+          command: |
+            . .venv/bin/activate
+            xvfb-run pytest -m "legacy" -n auto --dist loadfile -v --cov
+
+      - name: "Create coverage files"
+        run: |
+          . .venv/bin/activate
+          python -m coverage html -d .cov\legacy-html
+          python -m coverage xml -o .cov\legacy.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          path: .cov\legacy-html
+          name: html-legacy-linux-coverage
           retention-days: 7
 
       - name: Upload coverage to Codecov
@@ -378,7 +447,7 @@ jobs:
 
   package:
     name: Package library
-    needs: [legacy-tests, docs-build]
+    needs: [legacy-tests-windows, legacy-tests-linux, docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
