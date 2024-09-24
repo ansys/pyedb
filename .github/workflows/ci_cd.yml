@@ -74,8 +74,8 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  legacy-tests:
-    name: Test dotnet
+  legacy-tests-windows:
+    name: Test dotnet (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: "Install Git and clone project"
@@ -137,8 +137,77 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  test-pyaedt-main:
-    name: Testing PyAEDT main branch
+  legacy-tests-linux:
+    name: Test dotnet (linux)
+    runs-on: [ Linux, self-hosted, toolkits ]
+    env:
+      ANSYSEM_ROOT242: '/ansys_inc/AnsysEM/v242/Linux64'
+      ANS_NODEPCHECK: '1'
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: "Install os packages"
+        run: |
+          sudo apt update
+          sudo apt install libgl1-mesa-glx xvfb
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+
+      - name: "Update pip"
+        run: |
+          . .venv/bin/activate
+          python -m pip install -U pip
+
+      - name: "Install Python library and tests dependencies"
+        run: |
+          . .venv/bin/activate
+          python -m pip install .[tests]
+
+      - name: "Executing legacy tests"
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 20
+          command: |
+            . .venv/bin/activate
+            xvfb-run pytest -m "legacy" -n auto --dist loadfile -v --cov
+
+      - name: "Create coverage files"
+        run: |
+          . .venv/bin/activate
+          python -m coverage html -d .cov\legacy-html
+          python -m coverage xml -o .cov\legacy.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          path: .cov\legacy-html
+          name: html-legacy-linux-coverage
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/legacy.xml
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  test-pyaedt-main-windows:
+    name: Testing PyAEDT main branch (Windows)
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
     runs-on: [ self-hosted, Windows, pyaedt ]
@@ -146,9 +215,8 @@ jobs:
       - name: Install Git and checkout project
         uses: actions/checkout@v4
 
-      # Revert to previous verison due too setup-python#819
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -184,7 +252,7 @@ jobs:
           .venv\Scripts\Activate.ps1
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
-          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.2.20230527.dev0
+          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa
 
       - name: Run PyAEDT tests
         uses: nick-fields/retry@v3
@@ -208,6 +276,81 @@ jobs:
           timeout_minutes: 40
           command: |
             .venv\Scripts\Activate.ps1
+            pytest --durations=50 -v external/pyaedt/_unittest_solvers
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  test-pyaedt-main-linux:
+    name: Testing PyAEDT main branch (Linux)
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    needs: [smoke-tests]
+    runs-on: [ self-hosted, Linux, pyaedt ]
+    steps:
+      - name: Install Git and checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+
+      - name: Update pip
+        run: |
+          . .venv/bin/activate
+          python -m pip install -U pip
+
+      - name: Clone PyAEDT on main branch
+        uses: actions/checkout@v4
+        with:
+          repository: ansys/pyaedt
+          path: "external/pyaedt"
+          ref: "main"
+
+      - name: Install PyAEDT main branch version with its test dependencies
+        run: |
+          . .venv/bin/activate
+          pip install --no-cache-dir external/pyaedt[tests]
+
+      - name: Install PyEDB
+        run: |
+          . .venv/bin/activate
+          python -m pip install .
+
+      - name: Install CI dependencies (e.g. vtk-osmesa)
+        run: |
+          . .venv/bin/activate
+          # Uninstall conflicting dependencies
+          pip uninstall --yes vtk
+          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa
+
+      - name: Run PyAEDT tests
+        uses: nick-fields/retry@v3
+        env:
+          PYTHONMALLOC: malloc
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            . .venv/bin/activate
+            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/_unittest
+
+      - name: Run PyAEDT solvers tests
+        uses: nick-fields/retry@v3
+        env:
+          PYTHONMALLOC: malloc
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            . .venv/bin/activate
             pytest --durations=50 -v external/pyaedt/_unittest_solvers
 
 # =================================================================================================
@@ -304,7 +447,7 @@ jobs:
 
   package:
     name: Package library
-    needs: [legacy-tests, docs-build]
+    needs: [legacy-tests-windows, legacy-tests-linux, docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
@@ -316,7 +459,7 @@ jobs:
   release:
     name: Release project
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
-    needs: [package]
+    needs: [package, test-pyaedt-main-windows, test-pyaedt-main-linux]
     runs-on: ubuntu-latest
     # Specifying a GitHub environment is optional, but strongly encouraged
     environment: release
