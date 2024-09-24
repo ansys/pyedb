@@ -223,9 +223,10 @@ class Terminal(Connectable):
         """Get reference terminal."""
 
         edb_terminal = self._edb_object.GetReferenceTerminal()
-        terminal = self._pedb.terminals[edb_terminal.GetName()]
-        if not terminal.is_null:
-            return terminal
+        if not edb_terminal.IsNull():
+            return self._pedb.terminals[edb_terminal.GetName()]
+        else:
+            return None
 
     @ref_terminal.setter
     def ref_terminal(self, value):

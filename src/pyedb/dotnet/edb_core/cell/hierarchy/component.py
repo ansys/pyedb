@@ -33,6 +33,7 @@ from pyedb.dotnet.edb_core.cell.hierarchy.s_parameter_model import SparamModel
 from pyedb.dotnet.edb_core.cell.hierarchy.spice_model import SpiceModel
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.dotnet.edb_core.general import pascal_to_snake, snake_to_pascal
 
 try:
     import numpy as np
@@ -1009,7 +1010,8 @@ class EDBComponent(Group):
         void.is_negative = True
         return True
 
-    def get_model_properties(self):
+    @property
+    def model_properties(self):
         pp = {}
         c_p = self.component_property
         model = c_p.GetModel().Clone()
@@ -1034,8 +1036,10 @@ class EDBComponent(Group):
                 temp["capacitance_enabled"] = rlc.CEnabled
                 pin_pair_model.append(temp)
         elif model.GetModelType().ToString() == "SParameterModel":
-            s_parameter_model["reference_net"] = model.GetReferenceNet()
-            s_parameter_model["model_name"] = model.GetComponentModelName()
+            temp = dict()
+            temp["reference_net"] = model.GetReferenceNet()
+            temp["model_name"] = model.GetComponentModelName()
+            s_parameter_model.append(temp)
         elif model.GetModelType().ToString() == "SPICEModel":
             spice_model["model_name"] = model.GetModelName()
             spice_model["model_path"] = model.GetModelPath()
@@ -1052,7 +1056,8 @@ class EDBComponent(Group):
             pp["spice_model"] = spice_model
         return pp
 
-    def set_model_properties(self, **kwargs):
+    @model_properties.setter
+    def model_properties(self, kwargs):
         netlist_model = kwargs.get("netlist_model")
         pin_pair_model = kwargs.get("pin_pair_model")
         s_parameter_model = kwargs.get("s_parameter_model")
@@ -1093,3 +1098,114 @@ class EDBComponent(Group):
                 spice_model["sub_circuit"],
                 spice_model["terminal_pairs"],
             )
+
+    @property
+    def ic_die_properties(self):
+        temp = dict()
+        cp = self.component_property
+        c_type = self.type.lower()
+        if not c_type == "ic":
+            return temp
+        else:
+            ic_die_prop = cp.GetDieProperty().Clone()
+            die_type = pascal_to_snake(ic_die_prop.GetType().ToString())
+            temp["type"] = die_type
+            if not die_type == "no_die":
+                temp["orientation"] = pascal_to_snake(ic_die_prop.GetOrientation())
+                if die_type == "wire_bond":
+                    temp["height"] = ic_die_prop.GetHeightValue().ToString()
+            return temp
+
+    @ic_die_properties.setter
+    def ic_die_properties(self, kwargs):
+        cp = self.component_property
+        c_type = self.type.lower()
+        if not c_type == "ic":
+            return
+        else:
+            ic_die_prop = cp.GetDieProperty().Clone()
+            die_type = kwargs.get("type")
+            if not die_type == "no_die":
+                orientation = kwargs.get("orientation")
+                if orientation:
+                    ic_die_prop.SetOrientation(getattr(self._edb.definition.DieType, snake_to_pascal(die_type)))
+                if die_type == "wire_bond":
+                    height = kwargs.get("height")
+                    if height:
+                        ic_die_prop.SetHeight(self._pedb.edb_value(height))
+            cp.SetDieProperty(ic_die_prop)
+            self.component_property = cp
+
+    @property
+    def solder_ball_properties(self):
+        temp = dict()
+        cp = self.component_property
+        c_type = self.type.lower()
+        if c_type not in ["io", "other"]:
+            return temp
+        else:
+            solder_ball_prop = cp.GetSolderBallProperty().Clone()
+            _, diam, mid_diam = solder_ball_prop.GetDiameterValue()
+            height = solder_ball_prop.GetHeightValue().ToString()
+            shape = solder_ball_prop.GetShape().ToString()
+            uses_solder_ball = solder_ball_prop.UsesSolderball()
+            temp["uses_solder_ball"] = uses_solder_ball
+            temp["shape"] = pascal_to_snake(shape)
+            temp["diameter"] = diam.ToString()
+            temp["mid_diameter"] = mid_diam.ToString()
+            temp["height"] = height
+            return temp
+
+    @solder_ball_properties.setter
+    def solder_ball_properties(self, kwargs):
+        cp = self.component_property
+        solder_ball_prop = cp.GetSolderBallProperty().Clone()
+        shape = kwargs.get("shape")
+        if shape:
+            solder_ball_prop.SetShape(getattr(self._edb.definition.SolderballShape, snake_to_pascal(shape)))
+        if shape == "cylinder":
+            diameter = kwargs["diameter"]
+            solder_ball_prop.SetDiameter(self._pedb.edb_value(diameter), self._pedb.edb_value(diameter))
+        elif shape == "spheroid":
+            diameter = kwargs["diameter"]
+            mid_diameter = kwargs["mid_diameter"]
+            solder_ball_prop.SetDiameter(self._pedb.edb_value(diameter), self._pedb.edb_value(mid_diameter))
+        else:
+            return
+        solder_ball_prop.SetHeight(self._get_edb_value(kwargs["height"]))
+        cp.SetSolderBallProperty(solder_ball_prop)
+        self.component_property = cp
+
+    @property
+    def port_properties(self):
+        temp = dict()
+        cp = self.component_property
+        c_type = self.type.lower()
+        if c_type not in ["ic", "io", "other"]:
+            return temp
+        else:
+            port_prop = cp.GetPortProperty().Clone()
+            reference_height = port_prop.GetReferenceHeightValue().ToString()
+            reference_size_auto = port_prop.GetReferenceSizeAuto()
+            _, reference_size_x, reference_size_y = port_prop.GetReferenceSize()
+            temp["reference_height"] = reference_height
+            temp["reference_size_auto"] = reference_size_auto
+            temp["reference_size_x"] = str(reference_size_x)
+            temp["reference_size_y"] = str(reference_size_y)
+            return temp
+
+    @port_properties.setter
+    def port_properties(self, kwargs):
+        cp = self.component_property
+        port_prop = cp.GetPortProperty().Clone()
+        height = kwargs.get("reference_height")
+        if height:
+            port_prop.SetReferenceHeight(self._pedb.edb_value(height))
+        reference_size_auto = kwargs.get("reference_size_auto")
+        if reference_size_auto:
+            port_prop.SetReferenceSizeAuto(reference_size_auto)
+        reference_size_x = kwargs.get("reference_size_x", 0)
+        reference_size_y = kwargs.get("reference_size_y", 0)
+        port_prop.SetReferenceSize(self._pedb.edb_value(reference_size_x), self._pedb.edb_value(reference_size_y))
+        cp.SetPortProperty(port_prop)
+        self.component_property = cp

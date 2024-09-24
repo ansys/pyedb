@@ -337,13 +337,15 @@ class CfgPort(CfgCircuitElement):
         return circuit_elements
 
     def export_properties(self):
-        return {
+        data = {
             "name": self.name,
             "type": self.type,
             "reference_designator": self.reference_designator,
             "positive_terminal": self.positive_terminal_info.export_properties(),
-            "negative_terminal": self.negative_terminal_info.export_properties(),
         }
+        if self.negative_terminal_info:
+            data.update({"negative_terminal": self.negative_terminal_info.export_properties()})
+        return data
 
 
 class CfgSource(CfgCircuitElement):

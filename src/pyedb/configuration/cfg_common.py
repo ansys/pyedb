@@ -30,7 +30,7 @@ class CfgBase:
             exclude = exclude if isinstance(exclude, list) else [exclude]
             attrs = {i: j for i, j in attrs.items() if i not in exclude}
         attrs = {i: j for i, j in attrs.items() if not i.startswith("_")}
-        attrs = {i: j for i, j in attrs.items() if j is not None}
+        attrs = {i: j for i, j in attrs.items() if j not in [None, [], {}]}
         return attrs
 
     def set_attributes(self, pedb_object):

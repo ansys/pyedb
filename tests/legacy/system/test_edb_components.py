@@ -623,5 +623,5 @@ class TestClass:
                 }
             ]
         }
-        edbapp.components["C378"].set_model_properties(**pp)
-        assert edbapp.components["C378"].get_model_properties() == pp
+        edbapp.components["C378"].model_properties = pp
+        assert edbapp.components["C378"].model_properties == pp
