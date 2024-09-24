@@ -146,8 +146,7 @@ class Configuration:
             self.cfg_data.stackup.apply()
 
         # Configure S-parameter
-        for s_parameter_model in self.cfg_data.s_parameters:
-            s_parameter_model.apply()
+        self.cfg_data.s_parameters.apply()
 
         # Configure SPICE models
         for spice_model in self.cfg_data.spice_models:
@@ -293,6 +292,8 @@ class Configuration:
             data["operations"] = self.cfg_data.operations.get_data_from_db()
         if kwargs.get("padstacks", False):
             data["padstacks"] = self.cfg_data.padstacks.get_data_from_db()
+        if kwargs.get("s_parameters", False):
+            data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db()
         if kwargs.get("boundaries", False):
             data["boundaries"] = self.cfg_data.boundaries.get_data_from_db()
 
