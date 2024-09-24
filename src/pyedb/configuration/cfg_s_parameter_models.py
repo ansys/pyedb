@@ -61,3 +61,6 @@ class CfgSParameterModel:
             else:
                 ref_net = self.reference_net
             comp.use_s_parameter_model(self.name, reference_net=ref_net)
+
+    def get_data_from_db(self):
+        db_comp_def = self._pedb.definitions.component
