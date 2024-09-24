@@ -146,8 +146,7 @@ class Configuration:
             self.cfg_data.stackup.apply()
 
         # Configure S-parameter
-        for s_parameter_model in self.cfg_data.s_parameters:
-            s_parameter_model.apply()
+        self.cfg_data.s_parameters.apply()
 
         # Configure SPICE models
         for spice_model in self.cfg_data.spice_models:
@@ -293,6 +292,8 @@ class Configuration:
             data["operations"] = self.cfg_data.operations.get_data_from_db()
         if kwargs.get("padstacks", False):
             data["padstacks"] = self.cfg_data.padstacks.get_data_from_db()
+        if kwargs.get("s_parameters", False):
+            data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db()
         if kwargs.get("boundaries", False):
             data["boundaries"] = self.cfg_data.boundaries.get_data_from_db()
 
@@ -311,6 +312,7 @@ class Configuration:
         operations=True,
         components=True,
         boundaries=True,
+        s_parameters=True,
     ):
         """Export the configuration data from layout to a file.
 
@@ -338,6 +340,8 @@ class Configuration:
             Whether to export component.
         boundaries : bool
             Whether to export boundaries.
+        s_parameters: bool
+            Whether to export s_parameters.
         Returns
         -------
         bool
@@ -353,6 +357,7 @@ class Configuration:
             operations=operations,
             components=components,
             boundaries=boundaries,
+            s_parameters=s_parameters,
         )
 
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)

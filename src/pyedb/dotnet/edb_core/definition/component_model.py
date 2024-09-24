@@ -30,10 +30,6 @@ class ComponentModel(ObjBase):
         super().__init__(pedb, edb_object)
         self._model_type_mapping = {"PinPairModel": self._pedb.edb_api.cell}
 
-    def name(self):
-        """Name of the component model."""
-        return self._edb_object.GetName()
-
 
 class NPortComponentModel(ComponentModel):
     """Class for n-port component models."""

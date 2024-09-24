@@ -649,6 +649,8 @@ class TestClass:
             for p, value in setup.items():
                 if p == "freq_sweep":
                     pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
+                elif p == "dc_ir_settings":  # EDB API bug in linux.
+                    pass
                 else:
                     assert value == target[p]
         edbapp.close()
