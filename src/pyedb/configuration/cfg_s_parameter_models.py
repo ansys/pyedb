@@ -96,7 +96,7 @@ class CfgSParameters:
                             apply_to_all=False,
                             components=temp_comp_list,
                             reference_net_per_component=reference_net_per_component,
-                            pin_order=pin_order
+                            pin_order=pin_order,
                         )
                     )
 
@@ -110,7 +110,7 @@ class CfgSParameters:
                     "apply_to_all": i.apply_to_all,
                     "components": i.components,
                     "reference_net_per_component": i.reference_net_per_component,
-                    "pin_order": i.pin_order
+                    "pin_order": i.pin_order,
                 }
             )
         return data
