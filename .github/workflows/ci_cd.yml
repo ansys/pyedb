@@ -287,6 +287,9 @@ jobs:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
     runs-on: [ self-hosted, Linux, pyaedt ]
+    env:
+      ANSYSEM_ROOT242: '/ansys_inc/AnsysEM/v242/Linux64'
+      ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
         uses: actions/checkout@v4
@@ -338,6 +341,7 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/_unittest
 
@@ -350,6 +354,7 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest --durations=50 -v external/pyaedt/_unittest_solvers
 
