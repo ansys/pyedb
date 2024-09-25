@@ -1017,7 +1017,7 @@ class EDBComponent(Group):
         model = c_p.GetModel().Clone()
         netlist_model = {}
         pin_pair_model = []
-        s_parameter_model = []
+        s_parameter_model = {}
         spice_model = {}
         if model.GetModelType().ToString() == "NetlistModel":
             netlist_model["netlist"] = model.GetNetlist()
@@ -1036,10 +1036,8 @@ class EDBComponent(Group):
                 temp["capacitance_enabled"] = rlc.CEnabled
                 pin_pair_model.append(temp)
         elif model.GetModelType().ToString() == "SParameterModel":
-            temp = dict()
-            temp["reference_net"] = model.GetReferenceNet()
-            temp["model_name"] = model.GetComponentModelName()
-            s_parameter_model.append(temp)
+            s_parameter_model["reference_net"] = model.GetReferenceNet()
+            s_parameter_model["model_name"] = model.GetComponentModelName()
         elif model.GetModelType().ToString() == "SPICEModel":
             spice_model["model_name"] = model.GetModelName()
             spice_model["model_path"] = model.GetModelPath()

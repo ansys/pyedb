@@ -24,40 +24,93 @@ from pathlib import Path
 
 
 class CfgSParameterModel:
-    def __init__(self, pdata, path_lib, sparam_dict):
-        self._pedb = pdata._pedb
+    def __init__(self, **kwargs):
+        self.name = kwargs.get("name", "")
+        self.component_definition = kwargs.get("component_definition", "")
+        self.file_path = kwargs.get("file_path", "")
+        self.apply_to_all = kwargs.get("apply_to_all", False)
+        self.components = kwargs.get("components", [])
+        self.reference_net = kwargs.get("reference_net", "")
+        self.reference_net_per_component = kwargs.get("reference_net_per_component", {})
+        self.pin_order = kwargs.get("pin_order", None)
+
+
+class CfgSParameters:
+    def __init__(self, pedb, data, path_lib=None):
+        self._pedb = pedb
         self.path_libraries = path_lib
-        self._sparam_dict = sparam_dict
-        self.name = self._sparam_dict.get("name", "")
-        self.component_definition = self._sparam_dict.get("component_definition", "")
-        self.file_path = self._sparam_dict.get("file_path", "")
-        self.apply_to_all = self._sparam_dict.get("apply_to_all", False)
-        self.components = self._sparam_dict.get("components", [])
-        self.reference_net = self._sparam_dict.get("reference_net", "")
-        self.reference_net_per_component = self._sparam_dict.get("reference_net_per_component", {})
-        self.pin_order = self._sparam_dict.get("pin_order", None)
+        self.s_parameters_models = [CfgSParameterModel(**i) for i in data]
 
     def apply(self):
-        fpath = self.file_path
-        if not Path(fpath).anchor:
-            fpath = str(Path(self.path_libraries) / fpath)
-        comp_def = self._pedb.definitions.component[self.component_definition]
-        if self.pin_order:
-            comp_def.set_properties(pin_order=self.pin_order)
-        comp_def.add_n_port_model(fpath, self.name)
-        comp_list = dict()
-        if self.apply_to_all:
-            comp_list.update(
-                {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in self.components}
-            )
-        else:
-            comp_list.update(
-                {refdes: comp for refdes, comp in comp_def.components.items() if refdes in self.components}
-            )
-
-        for refdes, comp in comp_list.items():
-            if refdes in self.reference_net_per_component:
-                ref_net = self.reference_net_per_component[refdes]
+        for s_param in self.s_parameters_models:
+            fpath = s_param.file_path
+            if not Path(fpath).anchor:
+                fpath = str(Path(self.path_libraries) / fpath)
+            comp_def = self._pedb.definitions.component[s_param.component_definition]
+            if s_param.pin_order:
+                comp_def.set_properties(pin_order=s_param.pin_order)
+            comp_def.add_n_port_model(fpath, s_param.name)
+            comp_list = dict()
+            if s_param.apply_to_all:
+                comp_list.update(
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes not in s_param.components}
+                )
             else:
-                ref_net = self.reference_net
-            comp.use_s_parameter_model(self.name, reference_net=ref_net)
+                comp_list.update(
+                    {refdes: comp for refdes, comp in comp_def.components.items() if refdes in s_param.components}
+                )
+
+            for refdes, comp in comp_list.items():
+                if refdes in s_param.reference_net_per_component:
+                    ref_net = s_param.reference_net_per_component[refdes]
+                else:
+                    ref_net = s_param.reference_net
+                comp.use_s_parameter_model(s_param.name, reference_net=ref_net)
+
+    def get_data_from_db(self):
+        db_comp_def = self._pedb.definitions.component
+        for name, compdef_obj in db_comp_def.items():
+            nport_models = compdef_obj.component_models
+            if not nport_models:
+                continue
+            else:
+                pin_order = compdef_obj.get_properties()["pin_order"]
+                temp_comps = compdef_obj.components
+                for model_name, model_obj in nport_models.items():
+                    temp_comp_list = []
+                    reference_net_per_component = {}
+                    for i in temp_comps.values():
+                        s_param_model = i.model_properties.get("s_parameter_model")
+                        if s_param_model:
+                            if s_param_model["model_name"] == model_name:
+                                temp_comp_list.append(i.refdes)
+                                reference_net_per_component[i.refdes] = s_param_model["reference_net"]
+                        else:
+                            continue
+
+                    self.s_parameters_models.append(
+                        CfgSParameterModel(
+                            name=model_name,
+                            component_definition=name,
+                            file_path=model_obj.reference_file,
+                            apply_to_all=False,
+                            components=temp_comp_list,
+                            reference_net_per_component=reference_net_per_component,
+                            pin_order=pin_order,
+                        )
+                    )
+
+        data = []
+        for i in self.s_parameters_models:
+            data.append(
+                {
+                    "name": i.name,
+                    "component_definition": i.component_definition,
+                    "file_path": i.file_path,
+                    "apply_to_all": i.apply_to_all,
+                    "components": i.components,
+                    "reference_net_per_component": i.reference_net_per_component,
+                    "pin_order": i.pin_order,
+                }
+            )
+        return data
