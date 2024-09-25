@@ -37,7 +37,7 @@ class CfgPadstacks:
             for pdef in padstack_dict.get("definitions", []):
                 self.definitions.append(Definition(**pdef))
             for inst in padstack_dict.get("instances", []):
-                self.instances.append(Instance(self._pedb, inst))
+                self.instances.append(Instance(**inst))
 
     def apply(self):
         """Apply padstack definition and instances on layout."""
@@ -46,8 +46,16 @@ class CfgPadstacks:
             for pdef in self.definitions:
                 pdef_layout = padstack_defs_layout[pdef.name]
                 pdef_layout.set_properties(**pdef.get_attributes())
-        for instance in self.instances:
-            instance.apply()
+        if self.instances:
+            instances_layout = self._pedb.padstacks.instances_by_name
+            for inst in self.instances:
+                inst_layout = instances_layout[inst.name]
+                if inst.definition:
+                    # inst_layout.padstack_definition = inst.definition
+                    # Not supported by EDB API
+                    pass
+                if inst.backdrill_parameters:
+                    inst_layout.backdrill_parameters = inst.backdrill_parameters
 
     def get_data_from_db(self):
         self.definitions = []
@@ -67,6 +75,21 @@ class CfgPadstacks:
         for i in self.definitions:
             definitions.append(i.get_attributes())
         data["definitions"] = definitions
+
+
+        instances_layout = self._pedb.padstacks.instances_by_name
+        for name, obj in instances_layout.items():
+            self.instances.append(
+                Instance(
+                    name=name,
+                    definition=obj.padstack_definition,
+                    backdrill_parameters=obj.backdrill_parameters
+                )
+            )
+        instances = []
+        for i in self.instances:
+            instances.append(i.get_attributes())
+        data["instances"] = instances
         return data
 
 
@@ -82,56 +105,10 @@ class Definition(CfgBase):
         self.hole_parameters = kwargs.get("hole_parameters", None)
 
 
-class Instance:
+class Instance(CfgBase):
     """Instance data class."""
 
-    def __init__(self, pedb, instances_dict):
-        self._pedb = pedb
-        self._instances_dict = instances_dict
-        self.name = self._instances_dict.get("name", "")
-        self.backdrill_top = None
-        self.backdrill_bottom = None
-        self._update_backdrill()
-
-    def _update_backdrill(self):
-        if "backdrill_top" in self._instances_dict:
-            self.backdrill_top = self.BackDrill()
-            self.backdrill_top.type = self.backdrill_top.BackDrillType.TOP
-            backdrill_top_dict = self._instances_dict["backdrill_top"]
-            self.backdrill_top.drill_to_layer = backdrill_top_dict.get("drill_to_layer", "")
-            self.backdrill_top.drill_diameter = backdrill_top_dict.get("drill_diameter", "")
-            self.backdrill_top.stub_length = backdrill_top_dict.get("stub_length", "")
-        if "backdrill_bottom" in self._instances_dict:
-            self.backdrill_bottom = self.BackDrill()
-            backdrill_bottom_dict = self._instances_dict["backdrill_bottom"]
-            self.backdrill_bottom.drill_to_layer = backdrill_bottom_dict.get("drill_to_layer", "")
-            self.backdrill_bottom.drill_diameter = backdrill_bottom_dict.get("drill_diameter", "")
-            self.backdrill_bottom.stub_length = backdrill_bottom_dict.get("stub_length", "")
-
-    class BackDrill:
-        """Backdrill data class."""
-
-        def __init__(self):
-            self.type = self.BackDrillType.BOTTOM
-            self.drill_to_layer = ""
-            self.drill_diameter = ""
-            self.stub_length = ""
-
-        class BackDrillType(Enum):
-            TOP = 0
-            BOTTOM = 1
-
-    def apply(self):
-        """Apply padstack instance on layout."""
-        padstack_instances = self._pedb.padstacks.instances_by_name
-        inst = padstack_instances[self.name]
-        if self.backdrill_top:
-            inst.set_backdrill_top(
-                self.backdrill_top.drill_to_layer, self.backdrill_top.drill_diameter, self.backdrill_top.stub_length
-            )
-        if self.backdrill_bottom:
-            inst.set_backdrill_bottom(
-                self.backdrill_bottom.drill_to_layer,
-                self.backdrill_bottom.drill_diameter,
-                self.backdrill_bottom.stub_length,
-            )
+    def __init__(self, **kwargs):
+        self.name = kwargs["name"]
+        self.definition = kwargs.get("definition", None)
+        self.backdrill_parameters = kwargs.get("backdrill_parameters", None)

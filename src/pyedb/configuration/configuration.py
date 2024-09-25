@@ -117,10 +117,6 @@ class Configuration:
         # Configure components
         self.cfg_data.components.apply()
 
-        # Configure padstacks
-        if self.cfg_data.padstacks:
-            self.cfg_data.padstacks.apply()
-
         # Configure pin groups
         self.cfg_data.pin_groups.apply()
 
@@ -144,6 +140,10 @@ class Configuration:
                 pedb_defs[name].set_properties(**pdef_p)
         else:
             self.cfg_data.stackup.apply()
+
+        # Configure padstacks
+        if self.cfg_data.padstacks:
+            self.cfg_data.padstacks.apply()
 
         # Configure S-parameter
         self.cfg_data.s_parameters.apply()
@@ -276,8 +276,8 @@ class Configuration:
             data["stackup"] = self.cfg_data.stackup.get_data_from_db()
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
-        # if kwargs.get("setups", False):
-        #     data["setups"] = self.cfg_data.setups.get_data_from_db()
+        if kwargs.get("setups", False):
+            data["setups"] = self.cfg_data.setups.get_data_from_db()
         if kwargs.get("sources", False):
             data["sources"] = self.cfg_data.sources.get_data_from_db()
         if kwargs.get("ports", False):
@@ -352,7 +352,7 @@ class Configuration:
         data = self.get_data_from_db(
             stackup=stackup,
             package_definitions=package_definitions,
-            setups=setups,
+            setups=False,
             sources=sources,
             ports=ports,
             nets=nets,

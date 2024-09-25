@@ -539,16 +539,18 @@ class TestClass:
                     {
                         "name": "Via998",
                         "definition": "v35h15",
-                        "backdrill_top": {
-                            "drill_to_layer": "Inner3(Sig1)",
-                            "drill_diameter": "0.5mm",
-                            "stub_length": "0.2mm",
-                        },
-                        "backdrill_bottom": {
-                            "drill_to_layer": "Inner4(Sig2)",
-                            "drill_diameter": "0.5mm",
-                            "stub_length": "0.2mm",
-                        },
+                        "backdrill_parameters":{
+                            "from_top": {
+                                "drill_to_layer": "Inner3(Sig1)",
+                                "diameter": "0.5mm",
+                                "stub_length": "0.2mm",
+                            },
+                            "from_bottom": {
+                                "drill_to_layer": "Inner4(Sig2)",
+                                "diameter": "0.5mm",
+                                "stub_length": "0.2mm",
+                            },
+                        }
                     }
                 ],
             }
@@ -556,6 +558,8 @@ class TestClass:
 
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(padstacks=True)
+        assert data_from_db["padstacks"]["instances"]
         edbapp.close()
 
     def test_10_general(self, edb_examples):
