@@ -483,13 +483,14 @@ class EdbNets(object):
                 nc += 1
             self._logger.debug("Plotted {} component(s)".format(nc))
         for prim in self._pedb.modeler.primitives:
-            if prim.primitive_type == "path":
-                if prim.is_void:
-                    continue
-                net_name = prim.net_name
-                layer_name = prim.layer_name
-                if nets and (net_name not in nets or layer_name not in layers):
-                    continue
+            if prim.is_void:
+                continue
+            net_name = prim.net_name
+            layer_name = prim.layer_name
+            if nets and (net_name not in nets or layer_name not in layers):
+                continue
+            prim_type = prim.primitive_type
+            if prim_type == "path":
                 try:
                     x, y = prim.points()
                 except ValueError:
@@ -528,13 +529,7 @@ class EdbNets(object):
                     n_label += 1
                 else:
                     objects_lists.append([x, y, label_colors[label], None, 0.4, "fill"])
-            elif prim.primitive_type == "polygon":
-                if prim.is_void:
-                    continue
-                net_name = prim.net_name
-                layer_name = prim.layer_name
-                if nets and (net_name not in nets or layer_name not in layers):
-                    continue
+            elif prim_type == "polygon":
                 xt, yt = prim.points()
                 if not xt:
                     continue
@@ -595,13 +590,7 @@ class EdbNets(object):
                         objects_lists.append([vertices, codes, label_colors[label], None, 1.0, 2.0, "contour"])
                     else:
                         objects_lists.append([vertices, codes, label_colors[label], None, 0.4, "path"])
-            elif prim.primitive_type == "circle":
-                if prim.is_void:
-                    continue
-                net_name = prim.net_name
-                layer_name = prim.layer_name
-                if nets and (net_name not in nets or layer_name not in layers):
-                    continue
+            elif prim_type == "circle":
                 x, y = prim.points()
                 if not x:
                     continue
@@ -637,13 +626,7 @@ class EdbNets(object):
                     n_label += 1
                 else:
                     objects_lists.append([x, y, label_colors[label], None, 0.4, "fill"])
-            elif prim.primitive_type == "rectangle":
-                if prim.is_void:
-                    continue
-                net_name = prim.net_name
-                layer_name = prim.layer_name
-                if nets and (net_name not in nets or layer_name not in layers):
-                    continue
+            elif prim_type == "rectangle":
                 x, y = prim.points()
                 if not x:
                     continue
