@@ -102,22 +102,12 @@ class TestClass:
 
         via = self.edbapp.padstacks.instances_by_name["Via1266"]
         via.backdrill_parameters = {
-            "from_bottom": {'drill_to_layer': 'Inner5(PWR2)',
-                            'diameter': '0.4mm',
-                            'stub_length': '0.1mm'},
-            "from_top": {'drill_to_layer': 'Inner2(PWR1)',
-                         'diameter': '0.41mm',
-                         'stub_length': '0.11mm'
-                         }
+            "from_bottom": {"drill_to_layer": "Inner5(PWR2)", "diameter": "0.4mm", "stub_length": "0.1mm"},
+            "from_top": {"drill_to_layer": "Inner2(PWR1)", "diameter": "0.41mm", "stub_length": "0.11mm"},
         }
         assert via.backdrill_parameters == {
-            "from_bottom": {'drill_to_layer': 'Inner5(PWR2)',
-                            'diameter': '0.4mm',
-                            'stub_length': '0.1mm'},
-            "from_top": {'drill_to_layer': 'Inner2(PWR1)',
-                         'diameter': '0.41mm',
-                         'stub_length': '0.11mm'
-                         }
+            "from_bottom": {"drill_to_layer": "Inner5(PWR2)", "diameter": "0.4mm", "stub_length": "0.1mm"},
+            "from_top": {"drill_to_layer": "Inner2(PWR1)", "diameter": "0.41mm", "stub_length": "0.11mm"},
         }
 
     def test_padstacks_get_nets_from_pin_list(self):

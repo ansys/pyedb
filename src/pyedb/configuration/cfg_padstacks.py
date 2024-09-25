@@ -76,15 +76,10 @@ class CfgPadstacks:
             definitions.append(i.get_attributes())
         data["definitions"] = definitions
 
-
         instances_layout = self._pedb.padstacks.instances_by_name
         for name, obj in instances_layout.items():
             self.instances.append(
-                Instance(
-                    name=name,
-                    definition=obj.padstack_definition,
-                    backdrill_parameters=obj.backdrill_parameters
-                )
+                Instance(name=name, definition=obj.padstack_definition, backdrill_parameters=obj.backdrill_parameters)
             )
         instances = []
         for i in self.instances:

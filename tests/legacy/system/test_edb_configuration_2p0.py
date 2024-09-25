@@ -539,7 +539,7 @@ class TestClass:
                     {
                         "name": "Via998",
                         "definition": "v35h15",
-                        "backdrill_parameters":{
+                        "backdrill_parameters": {
                             "from_top": {
                                 "drill_to_layer": "Inner3(Sig1)",
                                 "diameter": "0.5mm",
@@ -550,7 +550,7 @@ class TestClass:
                                 "diameter": "0.5mm",
                                 "stub_length": "0.2mm",
                             },
-                        }
+                        },
                     }
                 ],
             }
