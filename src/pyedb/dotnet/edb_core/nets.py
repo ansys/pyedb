@@ -763,7 +763,7 @@ class EdbNets(object):
             fig_size_y = board_size_y * fig_size_x / board_size_x
             size = (fig_size_x, fig_size_y)
 
-        plot_matplotlib(
+        return plot_matplotlib(
             plot_data=object_lists,
             size=size,
             show_legend=show_legend,
