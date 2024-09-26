@@ -36,6 +36,7 @@ from ansys.edb.core.definition.djordjecvic_sarkar_model import (
 from ansys.edb.core.definition.material_def import (
     MaterialProperty as GrpcMaterialProperty,
 )
+from ansys.edb.core.definition.material_def import MaterialDef as GrpcMaterialDef
 from ansys.edb.core.definition.multipole_debye_model import (
     MultipoleDebyeModel as GrpcMultipoleDebyeModel,
 )
@@ -44,7 +45,6 @@ from pydantic import BaseModel, confloat
 
 from pyedb import Edb
 from pyedb.exceptions import MaterialModelException
-from pyedb.grpc.edb_core.definition.material_def import MaterialDef
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +123,7 @@ class Material(object):
         self.__edb: Edb = edb
         self.__edb_definition = edb.definition
         self.__name: str = material_def.name
-        self.__material_def = MaterialDef(material_def)
+        self.__material_def = GrpcMaterialDef(material_def)
         self.__dc_model = material_def.dielectric_material_model
         self.__properties: MaterialProperties = MaterialProperties()
 
@@ -452,7 +452,7 @@ class Materials(object):
             m = {material.lower(): material for material in curr_materials}[name.lower()]
             raise ValueError(f"Material names are case-insensitive and '{name}' already exists as '{m}'.")
 
-        material_def = MaterialDef.create(self.__edb.active_db, name)
+        material_def = GrpcMaterialDef.create(self.__edb.active_db, name)
         material = Material(self.__edb, material_def)
         attributes_input_dict = {key: val for (key, val) in kwargs.items() if key in ATTRIBUTES + DC_ATTRIBUTES}
         if "loss_tangent" in kwargs:  # pragma: no cover
@@ -706,9 +706,9 @@ class Materials(object):
         if self.__edb_definition.MaterialDef.FindByName(self.__edb.active_db, name).is_null:
             if name.lower() in (material.lower() for material in self.materials):
                 raise ValueError(f"Material names are case-insensitive and {name.lower()} already exists.")
-            MaterialDef.create(self.__edb.active_db, name)
+            GrpcMaterialDef.create(self.__edb.active_db, name)
 
-        material_def = MaterialDef.find_by_name(self.__edb.active_db, name)
+        material_def = GrpcMaterialDef.find_by_name(self.__edb.active_db, name)
         material_def.dielectric_material_model = material_model
         material = Material(self.__edb, material_def)
         return material
@@ -734,7 +734,7 @@ class Materials(object):
             raise ValueError(f"Material names are case-insensitive and {new_material_name.lower()} already exists.")
 
         material = self.materials[material_name]
-        material_def = MaterialDef.create(self.__edb.active_db, new_material_name)
+        material_def = GrpcMaterialDef.create(self.__edb.active_db, new_material_name)
         material_dict = material.to_dict()
         new_material = Material(self.__edb, material_def)
         new_material.update(material_dict)
@@ -743,7 +743,7 @@ class Materials(object):
 
     def delete_material(self, material_name):
         """Remove a material from the database."""
-        material_def = MaterialDef.find_by_name(self.__edb.active_db, material_name)
+        material_def = GrpcMaterialDef.find_by_name(self.__edb.active_db, material_name)
         if material_def.is_null:
             raise ValueError(f"Cannot find material {material_name}.")
         material_def.delete()
