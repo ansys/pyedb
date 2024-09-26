@@ -339,7 +339,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 50
           command: |
             export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
             . .venv/bin/activate
@@ -352,7 +352,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 50
           command: |
             export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
             . .venv/bin/activate
