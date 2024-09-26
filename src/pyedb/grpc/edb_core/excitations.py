@@ -46,9 +46,11 @@ from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
 from pyedb.grpc.edb_core.terminal.pingroup_terminal import PinGroupTerminal
+from pyedb.grpc.edb_core.terminal.point_terminal import PointTerminal
 from pyedb.grpc.edb_core.utility.sources import (
     CircuitPort,
     CurrentSource,
+    DCTerminal,
     ResistorSource,
     Source,
     SourceType,
@@ -2160,3 +2162,295 @@ class Excitations:
                 ref_edge_term.impedance = GrpcValue(port_impedance)
             edge_term.reference_terminal = ref_edge_term
         return True
+
+    def create_port_between_pin_and_layer(
+        self, component_name=None, pins_name=None, layer_name=None, reference_net=None, impedance=50.0
+    ):
+        """Create circuit port between pin and a reference layer.
+
+        Parameters
+        ----------
+        component_name : str
+            Component name. The default is ``None``.
+        pins_name : str
+            Pin name or list of pin names. The default is ``None``.
+        layer_name : str
+            Layer name. The default is ``None``.
+        reference_net : str
+            Reference net name. The default is ``None``.
+        impedance : float, optional
+            Port impedance. The default is ``50.0`` in ohms.
+
+        Returns
+        -------
+        PadstackInstanceTerminal
+            Created terminal.
+
+        """
+        if not pins_name:
+            pins_name = []
+        if pins_name:
+            if not isinstance(pins_name, list):  # pragma no cover
+                pins_name = [pins_name]
+            if not reference_net:
+                self._logger.info("no reference net provided, searching net {} instead.".format(layer_name))
+                reference_net = self._pedb.nets.get_net_by_name(layer_name)
+                if not reference_net:  # pragma no cover
+                    self._logger.error("reference net {} not found.".format(layer_name))
+                    return False
+            else:
+                if not isinstance(reference_net, Net):  # pragma no cover
+                    reference_net = self._pedb.nets.get_net_by_name(reference_net)
+                if not reference_net:
+                    self._logger.error("Net {} not found".format(reference_net))
+                    return False
+            for pin_name in pins_name:  # pragma no cover
+                pin = [
+                    pin
+                    for pin in self._pedb.padstacks.get_pinlist_from_component_and_net(component_name)
+                    if pin.component_pin == pin_name
+                ][0]
+                term_name = f"{pin.component.name}_{pin.net.name}_{pin.omponent}"
+                start_layer, stop_layer = pin.get_layer_range()
+                if start_layer:
+                    positive_terminal = PadstackInstanceTerminal.create(
+                        padstack_instance=pin, name=term_name, layer=start_layer
+                    )
+                    positive_terminal.boundary_type = GrpcBoundaryType.PORT
+                    positive_terminal.impedance = GrpcValue(impedance)
+                    positive_terminal.Is_circuit_port = True
+                    position = GrpcPointData(self._pedb.components.get_pin_position(pin))
+                    negative_terminal = PointTerminal.create(
+                        layout=self._pedb._active_layout,
+                        net=reference_net,
+                        layer=self._pedb.stackup.signal_layers[layer_name],
+                        name=f"{term_name}_ref",
+                        point=position,
+                    )
+                    negative_terminal.boundary_type = GrpcBoundaryType.PORT
+                    negative_terminal.impedance = GrpcValue(impedance)
+                    negative_terminal.is_circuit_port = True
+                    positive_terminal.reference_terminal = negative_terminal
+                    self._logger.info("Port {} successfully created".format(term_name))
+                    return positive_terminal
+            return False
+
+    def create_current_source_on_pin_group(
+        self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None
+    ):
+        """Create current source between two pin groups.
+
+        Parameters
+        ----------
+        pos_pin_group_name : str
+            Name of the positive pin group.
+        neg_pin_group_name : str
+            Name of the negative pin group.
+        magnitude : int, float, optional
+            Magnitude of the source.
+        phase : int, float, optional
+            Phase of the source
+
+        Returns
+        -------
+        bool
+
+        """
+        pos_pin_group = self._pedb.layout.pin_groups[pos_pin_group_name]
+        pos_terminal = pos_pin_group.create_current_source_terminal(magnitude, phase)
+        if name:
+            pos_terminal.name = name
+        else:
+            name = generate_unique_name("isource")
+            pos_terminal.name = name
+        neg_pin_group_name = self._pedb.layout.pin_groups[neg_pin_group_name]
+        neg_terminal = neg_pin_group_name.create_current_source_terminal()
+        neg_terminal.name = f"{name}_ref"
+        pos_terminal.reference_terminal = neg_terminal
+        return True
+
+    def create_voltage_source_on_pin_group(
+        self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None, impedance=0.001
+    ):
+        """Create voltage source between two pin groups.
+
+        Parameters
+        ----------
+        pos_pin_group_name : str
+            Name of the positive pin group.
+        neg_pin_group_name : str
+            Name of the negative pin group.
+        magnitude : int, float, optional
+            Magnitude of the source.
+        phase : int, float, optional
+            Phase of the source
+
+        Returns
+        -------
+        bool
+
+        """
+        pos_pin_group = self._pedb.layout.pin_groups[pos_pin_group_name]
+        pos_terminal = pos_pin_group.create_voltage_source_terminal(magnitude, phase, impedance)
+        if name:
+            pos_terminal.name = name
+        else:
+            name = generate_unique_name("vsource")
+            pos_terminal.name = name
+        neg_pin_group_name = self._pedb.layout.pin_groups[neg_pin_group_name]
+        neg_terminal = neg_pin_group_name.create_voltage_source_terminal(magnitude, phase)
+        neg_terminal.name = f"{name}_ref"
+        pos_terminal.reference_terminal = neg_terminal
+        return True
+
+    def create_voltage_probe_on_pin_group(self, probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1000000):
+        """Create voltage probe between two pin groups.
+
+        Parameters
+        ----------
+        probe_name : str
+            Name of the probe.
+        pos_pin_group_name : str
+            Name of the positive pin group.
+        neg_pin_group_name : str
+            Name of the negative pin group.
+        impedance : int, float, optional
+            Phase of the source.
+
+        Returns
+        -------
+        bool
+
+        """
+        pos_pin_group = self._pedb.layout.pin_groups[pos_pin_group_name]
+        pos_terminal = pos_pin_group.create_voltage_probe_terminal(impedance)
+        if probe_name:
+            pos_terminal.SetName(probe_name)
+        else:
+            probe_name = generate_unique_name("vprobe")
+            pos_terminal.name = probe_name
+        neg_pin_group = self._pedb.layout.pin_groups[neg_pin_group_name]
+        neg_terminal = neg_pin_group.create_voltage_probe_terminal()
+        neg_terminal.name = f"{probe_name}_ref"
+        pos_terminal.reference_terminal = neg_terminal
+        return not pos_terminal.is_null
+
+    def create_dc_terminal(
+        self,
+        component_name,
+        net_name,
+        source_name="",
+    ):
+        """Create a dc terminal.
+
+        Parameters
+        ----------
+        component_name : str
+            Name of the positive component.
+        net_name : str
+            Name of the positive net.
+
+        source_name : str, optional
+            Name of the source. The default is ``""``.
+
+        Returns
+        -------
+        str
+            The name of the source.
+
+        Examples
+        --------
+
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+        >>> edb.siwave.create_dc_terminal("U2A5", "V1P5_S3", "source_name")
+        """
+
+        dc_source = DCTerminal()
+        dc_source.positive_node.net = net_name
+        pos_node_cmp = self._pedb.components.get_component_by_name(component_name)
+        pos_node_pins = self._pedb.components.get_pin_from_component(component_name, net_name)
+
+        if source_name == "":
+            source_name = f"DC_{component_name}_{net_name}"
+        dc_source.name = source_name
+        dc_source.positive_node.component_node = pos_node_cmp
+        dc_source.positive_node.node_pins = pos_node_pins
+        return self.create_pin_group_terminal(dc_source)
+
+    def create_circuit_port_on_pin_group(self, pos_pin_group_name, neg_pin_group_name, impedance=50, name=None):
+        """Create a port between two pin groups.
+
+        Parameters
+        ----------
+        pos_pin_group_name : str
+            Name of the positive pin group.
+        neg_pin_group_name : str
+            Name of the negative pin group.
+        impedance : int, float, optional
+            Impedance of the port. Default is ``50``.
+        name : str, optional
+            Port name.
+
+        Returns
+        -------
+        bool
+
+        """
+        pos_pin_group = self._pedb.layout.pin_groups[pos_pin_group_name]
+        pos_terminal = pos_pin_group.create_port_terminal(impedance)
+        if name:  # pragma: no cover
+            pos_terminal.name = name
+        else:
+            name = generate_unique_name("port")
+            pos_terminal.name = name
+        neg_pin_group = self._pedb.layout.pin_groups[neg_pin_group_name]
+        neg_terminal = neg_pin_group.create_port_terminal(impedance)
+        neg_terminal.name = f"{name}_ref"
+        pos_terminal.reference_terminal = neg_terminal
+        return True
+
+    def place_voltage_probe(
+        self,
+        name,
+        positive_net_name,
+        positive_location,
+        positive_layer,
+        negative_net_name,
+        negative_location,
+        negative_layer,
+    ):
+        """Place a voltage probe between two points.
+
+        Parameters
+        ----------
+        name : str,
+            Name of the probe.
+        positive_net_name : str
+            Name of the positive net.
+        positive_location : list
+            Location of the positive terminal.
+        positive_layer : str,
+            Layer of the positive terminal.
+        negative_net_name : str,
+            Name of the negative net.
+        negative_location : list
+            Location of the negative terminal.
+        negative_layer : str
+            Layer of the negative terminal.
+        """
+        p_terminal = PointTerminal.create(
+            layout=self._pedb.active_layout,
+            net=positive_net_name,
+            layer=positive_layer,
+            name=name,
+            point=GrpcPointData(positive_location),
+        )
+        n_terminal = PointTerminal.create(
+            layout=self._pedb.active_layout,
+            net=negative_net_name,
+            layer=negative_layer,
+            name=f"{name}_ref",
+            point=GrpcPointData(negative_location),
+        )
+        return self._pedb.create_voltage_probe(p_terminal, n_terminal)

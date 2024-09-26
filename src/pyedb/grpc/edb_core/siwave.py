@@ -30,10 +30,7 @@ import warnings
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
-from pyedb.dotnet.edb_core.edb_data.sources import DCTerminal
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.generic.constants import SolverType, SweepType
-from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -121,7 +118,7 @@ class EdbSiwave(object):
         """
         _pingroups = {}
         for el in self._pedb.layout.pin_groups:
-            _pingroups[el._edb_object.GetName()] = el
+            _pingroups[el.name] = el
         return _pingroups
 
     def _create_terminal_on_pins(self, source):
@@ -176,6 +173,9 @@ class EdbSiwave(object):
     ):
         """Create circuit port between pin and a reference layer.
 
+        . deprecated:: pyedb 0.28.0
+        Use :func:`pyedb.grpc.core.excitations.create_port_between_pin_and_layer` instead.
+
         Parameters
         ----------
         component_name : str
@@ -193,59 +193,15 @@ class EdbSiwave(object):
         -------
         PadstackInstanceTerminal
             Created terminal.
-
         """
-        if not pins_name:
-            pins_name = []
-        if pins_name:
-            if not isinstance(pins_name, list):  # pragma no cover
-                pins_name = [pins_name]
-            if not reference_net:
-                self._logger.info("no reference net provided, searching net {} instead.".format(layer_name))
-                reference_net = self._pedb.nets.get_net_by_name(layer_name)
-                if not reference_net:  # pragma no cover
-                    self._logger.error("reference net {} not found.".format(layer_name))
-                    return False
-            else:
-                if not isinstance(reference_net, self._edb.cell.net.net):  # pragma no cover
-                    reference_net = self._pedb.nets.get_net_by_name(reference_net)
-                if not reference_net:
-                    self._logger.error("Net {} not found".format(reference_net))
-                    return False
-            for pin_name in pins_name:  # pragma no cover
-                pin = [
-                    pin
-                    for pin in self._pedb.padstacks.get_pinlist_from_component_and_net(component_name)
-                    if pin.component_pin == pin_name
-                ][0]
-                term_name = "{}_{}_{}".format(pin.component.name, pin._edb_object.GetNet().GetName(), pin.component_pin)
-                res, start_layer, stop_layer = pin._edb_object.GetLayerRange()
-                if res:
-                    pin_instance = pin._edb_padstackinstance
-                    positive_terminal = self._edb.cell.terminal.PadstackInstanceTerminal.Create(
-                        self._active_layout, pin_instance.GetNet(), term_name, pin_instance, start_layer
-                    )
-                    positive_terminal.SetBoundaryType(self._edb.cell.terminal.BoundaryType.PortBoundary)
-                    positive_terminal.SetImpedance(self._edb.utility.value(impedance))
-                    positive_terminal.SetIsCircuitPort(True)
-                    pos = self._pedb.components.get_pin_position(pin_instance)
-                    position = self._edb.geometry.point_data(
-                        self._edb.utility.value(pos[0]), self._edb.utility.value(pos[1])
-                    )
-                    negative_terminal = self._edb.cell.terminal.PointTerminal.Create(
-                        self._active_layout,
-                        reference_net.net_obj,
-                        "{}_ref".format(term_name),
-                        position,
-                        self._pedb.stackup.signal_layers[layer_name]._edb_layer,
-                    )
-                    negative_terminal.SetBoundaryType(self._edb.cell.terminal.BoundaryType.PortBoundary)
-                    negative_terminal.SetImpedance(self._edb.utility.value(impedance))
-                    negative_terminal.SetIsCircuitPort(True)
-                    if positive_terminal.SetReferenceTerminal(negative_terminal):
-                        self._logger.info("Port {} successfully created".format(term_name))
-                        return positive_terminal
-            return False
+        warnings.warn(
+            "`create_port_between_pin_and_layer` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.create_port_between_pin_and_layer` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.excitations.create_port_between_pin_and_layer(
+            component_name, pins_name, layer_name, reference_net, impedance
+        )
 
     def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
         """Create a voltage source.
@@ -269,14 +225,6 @@ class EdbSiwave(object):
         -------
         str
             Source Name.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> pins = edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.siwave.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
         """
 
         warnings.warn(
@@ -284,8 +232,8 @@ class EdbSiwave(object):
             "`pyedb.grpc.core.excitations.create_voltage_source_on_pin` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.create_voltage_source_on_pin(
-            pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""
+        return self._pedb.excitations.create_voltage_source_on_pin(
+            pos_pin, neg_pin, voltage_value, phase_value, source_name
         )
 
     def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
@@ -317,8 +265,8 @@ class EdbSiwave(object):
             "`pyedb.grpc.core.excitations.create_current_source_on_pin` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.create_current_source_on_pin(
-            pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""
+        return self._pedb.excitations.create_current_source_on_pin(
+            pos_pin, neg_pin, current_value, phase_value, source_name
         )
 
     def create_resistor_on_pin(self, pos_pin, neg_pin, rvalue=1, resistor_name=""):
@@ -348,7 +296,7 @@ class EdbSiwave(object):
             "`pyedb.grpc.core.excitations.create_resistor_on_pin` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.create_resistor_on_pin(pos_pin, neg_pin, rvalue=1, resistor_name="")
+        return self._pedb.excitations.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
 
     def _check_gnd(self, component_name):
         """
@@ -408,10 +356,10 @@ class EdbSiwave(object):
         return self._pedb.excitations.create_circuit_port_on_net(
             positive_component_name,
             positive_net_name,
-            negative_component_name=None,
-            negative_net_name=None,
-            impedance_value=50,
-            port_name="",
+            negative_component_name,
+            negative_net_name,
+            impedance_value,
+            port_name,
         )
 
     def create_voltage_source_on_net(
@@ -458,14 +406,14 @@ class EdbSiwave(object):
             "`pyedb.grpc.core.excitations.create_voltage_source_on_net` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.create_voltage_source_on_net(
+        return self._pedb.excitations.create_voltage_source_on_net(
             positive_component_name,
             positive_net_name,
-            negative_component_name=None,
-            negative_net_name=None,
-            voltage_value=3.3,
-            phase_value=0,
-            source_name="",
+            negative_component_name,
+            negative_net_name,
+            voltage_value,
+            phase_value,
+            source_name,
         )
 
     def create_current_source_on_net(
@@ -514,11 +462,11 @@ class EdbSiwave(object):
         return self._pedb.excitations.create_current_source_on_net(
             positive_component_name,
             positive_net_name,
-            negative_component_name=None,
-            negative_net_name=None,
-            current_value=0.1,
-            phase_value=0,
-            source_name="",
+            negative_component_name,
+            negative_net_name,
+            current_value,
+            phase_value,
+            source_name,
         )
 
     def create_dc_terminal(
@@ -528,6 +476,9 @@ class EdbSiwave(object):
         source_name="",
     ):
         """Create a dc terminal.
+
+        . deprecated:: pyedb 0.28.0
+        Use :func:`pyedb.grpc.core.excitations.create_dc_terminal` instead.
 
         Parameters
         ----------
@@ -543,29 +494,13 @@ class EdbSiwave(object):
         -------
         str
             The name of the source.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edb.siwave.create_dc_terminal("U2A5", "V1P5_S3", "source_name")
         """
-
-        dc_source = DCTerminal()
-        dc_source.positive_node.net = net_name
-        pos_node_cmp = self._pedb.components.get_component_by_name(component_name)
-        pos_node_pins = self._pedb.components.get_pin_from_component(component_name, net_name)
-
-        if source_name == "":
-            source_name = "DC_{}_{}".format(
-                component_name,
-                net_name,
-            )
-        dc_source.name = source_name
-        dc_source.positive_node.component_node = pos_node_cmp
-        dc_source.positive_node.node_pins = pos_node_pins
-        return self.create_pin_group_terminal(dc_source)
+        warnings.warn(
+            "`create_dc_terminal` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.create_dc_terminal` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.excitations.create_dc_terminal(component_name, net_name, source_name)
 
     def create_exec_file(
         self, add_dc=False, add_ac=False, add_syz=False, export_touchstone=False, touchstone_file_path=""
@@ -902,6 +837,9 @@ class EdbSiwave(object):
     ):
         """Create physical Rlc component.
 
+        . deprecated:: pyedb 0.28.0
+        Use :func:`pyedb.grpc.core.components.create_pin_group_terminal` instead.
+
         Parameters
         ----------
         pins : list[Edb.Cell.Primitive.PadstackInstance]
@@ -928,6 +866,11 @@ class EdbSiwave(object):
             Created EDB component.
 
         """
+        warnings.warn(
+            "`create_rlc_component` is deprecated and is now located here "
+            "`pyedb.grpc.core.components.create_rlc_component` instead.",
+            DeprecationWarning,
+        )
         return self._pedb.components.create(
             pins,
             component_name=component_name,
@@ -940,6 +883,9 @@ class EdbSiwave(object):
 
     def create_pin_group(self, reference_designator, pin_numbers, group_name=None):
         """Create pin group on the component.
+
+        . deprecated:: pyedb 0.28.0
+        Use :func:`pyedb.grpc.core.components.create_pin_group_terminal` instead.
 
         Parameters
         ----------
@@ -954,27 +900,18 @@ class EdbSiwave(object):
         -------
         PinGroup
         """
-        if not isinstance(pin_numbers, list):
-            pin_numbers = [pin_numbers]
-        pin_numbers = [str(p) for p in pin_numbers]
-        if group_name is None:
-            group_name = self._edb.cell.hierarchy.pin_group.GetUniqueName(self._active_layout)
-        comp = self._pedb.components.instances[reference_designator]
-        pins = [pin.pin for name, pin in comp.pins.items() if name in pin_numbers]
-        edb_pingroup = self._edb.cell.hierarchy.pin_group.Create(
-            self._active_layout, group_name, convert_py_list_to_net_list(pins)
+        warnings.warn(
+            "`create_pin_group` is deprecated and is now located here "
+            "`pyedb.grpc.core.components.create_pin_group` instead.",
+            DeprecationWarning,
         )
-
-        if edb_pingroup.IsNull():  # pragma: no cover
-            self._logger.error(f"Failed to create pin group {group_name}.")
-            return False
-        else:
-            names = [i for i in pins if i.GetNet().GetName()]
-            edb_pingroup.SetNet(names[0].GetNet())
-            return group_name, self.pin_groups[group_name]
+        return self._pedb.components.create_pin_group(reference_designator, pin_numbers, group_name)
 
     def create_pin_group_on_net(self, reference_designator, net_name, group_name=None):
         """Create pin group on component by net name.
+
+        . deprecated:: pyedb 0.28.0
+        Use :func:`pyedb.grpc.core.components.create_pin_group_terminal` instead.
 
         Parameters
         ----------
@@ -989,15 +926,22 @@ class EdbSiwave(object):
         -------
         PinGroup
         """
-        pins = self._pedb.components.get_pin_from_component(reference_designator, net_name)
-        pin_names = [p.GetName() for p in pins]
-        return self.create_pin_group(reference_designator, pin_names, group_name)
+        warnings.warn(
+            "`create_pin_group_on_net` is deprecated and is now located here "
+            "`pyedb.grpc.core.components.create_pin_group_on_net` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.components.create_pin_group_on_net(reference_designator, net_name, group_name)
 
     def create_current_source_on_pin_group(
         self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None
     ):
         """Create current source between two pin groups.
 
+        .deprecated:: pyedb 0.28.0
+        Use: func:`pyedb.grpc.core.excitations.create_current_source_on_pin_group`
+        instead.
+
         Parameters
         ----------
         pos_pin_group_name : str
@@ -1014,55 +958,55 @@ class EdbSiwave(object):
         bool
 
         """
-        pos_pin_group = self.pin_groups[pos_pin_group_name]
-        pos_terminal = pos_pin_group.create_current_source_terminal(magnitude, phase)
-        if name:
-            pos_terminal.SetName(name)
-        else:
-            name = generate_unique_name("isource")
-            pos_terminal.SetName(name)
-        neg_pin_group_name = self.pin_groups[neg_pin_group_name]
-        neg_terminal = neg_pin_group_name.create_current_source_terminal()
-        neg_terminal.SetName(name + "_ref")
-        pos_terminal.SetReferenceTerminal(neg_terminal)
-        return True
+        warnings.warn(
+            "`create_current_source_on_pin_group` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.create_current_source_on_pin_group` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.excitations.create_current_source_on_pin_group(
+            pos_pin_group_name, neg_pin_group_name, magnitude, phase, name
+        )
 
     def create_voltage_source_on_pin_group(
         self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None, impedance=0.001
     ):
         """Create voltage source between two pin groups.
 
-        Parameters
-        ----------
-        pos_pin_group_name : str
-            Name of the positive pin group.
-        neg_pin_group_name : str
-            Name of the negative pin group.
-        magnitude : int, float, optional
-            Magnitude of the source.
-        phase : int, float, optional
-            Phase of the source
+        .deprecated:: pyedb 0.28.0
+        Use: func:`pyedb.grpc.core.excitations.create_voltage_source_on_pin_group`
+        instead.
 
-        Returns
-        -------
-        bool
+            Parameters
+            ----------
+            pos_pin_group_name : str
+                Name of the positive pin group.
+            neg_pin_group_name : str
+                Name of the negative pin group.
+            magnitude : int, float, optional
+                Magnitude of the source.
+            phase : int, float, optional
+                Phase of the source
+
+            Returns
+            -------
+            bool
 
         """
-        pos_pin_group = self.pin_groups[pos_pin_group_name]
-        pos_terminal = pos_pin_group.create_voltage_source_terminal(magnitude, phase, impedance)
-        if name:
-            pos_terminal.SetName(name)
-        else:
-            name = generate_unique_name("vsource")
-            pos_terminal.SetName(name)
-        neg_pin_group_name = self.pin_groups[neg_pin_group_name]
-        neg_terminal = neg_pin_group_name.create_voltage_source_terminal(magnitude, phase)
-        neg_terminal.SetName(name + "_ref")
-        pos_terminal.SetReferenceTerminal(neg_terminal)
-        return True
+        warnings.warn(
+            "`create_voltage_source_on_pin_group` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.create_voltage_source_on_pin_group` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.excitations.create_voltage_source_on_pin_group(
+            pos_pin_group_name, neg_pin_group_name, magnitude, phase, name, impedance
+        )
 
     def create_voltage_probe_on_pin_group(self, probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1000000):
         """Create voltage probe between two pin groups.
+
+        .deprecated:: pyedb 0.28.0
+        Use: func:`pyedb.grpc.core.excitations.create_voltage_probe_on_pin_group`
+        instead.
 
         Parameters
         ----------
@@ -1080,21 +1024,22 @@ class EdbSiwave(object):
         bool
 
         """
-        pos_pin_group = self.pin_groups[pos_pin_group_name]
-        pos_terminal = pos_pin_group.create_voltage_probe_terminal(impedance)
-        if probe_name:
-            pos_terminal.SetName(probe_name)
-        else:
-            probe_name = generate_unique_name("vprobe")
-            pos_terminal.SetName(probe_name)
-        neg_pin_group = self.pin_groups[neg_pin_group_name]
-        neg_terminal = neg_pin_group.create_voltage_probe_terminal()
-        neg_terminal.SetName(probe_name + "_ref")
-        pos_terminal.SetReferenceTerminal(neg_terminal)
-        return not pos_terminal.IsNull()
+
+        warnings.warn(
+            "`create_voltage_probe_on_pin_group` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.create_voltage_probe_on_pin_group` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.excitations.create_voltage_probe_on_pin_group(
+            probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1
+        )
 
     def create_circuit_port_on_pin_group(self, pos_pin_group_name, neg_pin_group_name, impedance=50, name=None):
         """Create a port between two pin groups.
+
+        .deprecated:: pyedb 0.28.0
+        Use: func:`pyedb.grpc.core.excitations.create_circuit_port_on_pin_group`
+        instead.
 
         Parameters
         ----------
@@ -1112,18 +1057,14 @@ class EdbSiwave(object):
         bool
 
         """
-        pos_pin_group = self.pin_groups[pos_pin_group_name]
-        pos_terminal = pos_pin_group.create_port_terminal(impedance)
-        if name:  # pragma: no cover
-            pos_terminal.SetName(name)
-        else:
-            name = generate_unique_name("port")
-            pos_terminal.SetName(name)
-        neg_pin_group = self.pin_groups[neg_pin_group_name]
-        neg_terminal = neg_pin_group.create_port_terminal(impedance)
-        neg_terminal.SetName(name + "_ref")
-        pos_terminal.SetReferenceTerminal(neg_terminal)
-        return True
+        warnings.warn(
+            "`create_circuit_port_on_pin_group` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.create_circuit_port_on_pin_group` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.excitations.create_circuit_port_on_pin_group(
+            pos_pin_group_name, neg_pin_group_name, impedance, name
+        )
 
     def place_voltage_probe(
         self,
@@ -1136,6 +1077,10 @@ class EdbSiwave(object):
         negative_layer,
     ):
         """Place a voltage probe between two points.
+
+        .deprecated:: pyedb 0.28.0
+        Use: func:`pyedb.grpc.core.excitations.place_voltage_probe`
+        instead.
 
         Parameters
         ----------
@@ -1154,9 +1099,20 @@ class EdbSiwave(object):
         negative_layer : str
             Layer of the negative terminal.
         """
-        p_terminal = self._pedb.get_point_terminal(name, positive_net_name, positive_location, positive_layer)
-        n_terminal = self._pedb.get_point_terminal(name + "_ref", negative_net_name, negative_location, negative_layer)
-        return self._pedb.create_voltage_probe(p_terminal, n_terminal)
+        warnings.warn(
+            "`place_voltage_probe` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.place_voltage_probe` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.excitations.place_voltage_probe(
+            name,
+            positive_net_name,
+            positive_location,
+            positive_layer,
+            negative_net_name,
+            negative_location,
+            negative_layer,
+        )
 
     def create_vrm_module(
         self,

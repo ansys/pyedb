@@ -2230,3 +2230,55 @@ class Components(object):
             )
             i += 1
         return True
+
+    def create_pin_group(self, reference_designator, pin_numbers, group_name=None):
+        """Create pin group on the component.
+
+        Parameters
+        ----------
+        reference_designator : str
+            References designator of the component.
+        pin_numbers : int, str, list
+            List of pin names.
+        group_name : str, optional
+            Name of the pin group.
+
+        Returns
+        -------
+        PinGroup
+        """
+        if not isinstance(pin_numbers, list):
+            pin_numbers = [pin_numbers]
+        pin_numbers = [str(p) for p in pin_numbers]
+        if group_name is None:
+            group_name = PinGroup.unique_name(self._active_layout, "")
+        comp = self.instances[reference_designator]
+        pins = [pin.pin for name, pin in comp.pins.items() if name in pin_numbers]
+        edb_pingroup = PinGroup.create(self._active_layout, group_name, pins)
+
+        if edb_pingroup.is_null:  # pragma: no cover
+            self._logger.error(f"Failed to create pin group {group_name}.")
+            return False
+        else:
+            names = [i for i in pins if i.net.name]
+            edb_pingroup.net = names[0].net
+            return group_name, self._pedb.layout.pin_groups[group_name]
+
+    def create_pin_group_on_net(self, reference_designator, net_name, group_name=None):
+        """Create pin group on component by net name.
+
+        Parameters
+        ----------
+        reference_designator : str
+            References designator of the component.
+        net_name : str
+            Name of the net.
+        group_name : str, optional
+            Name of the pin group. The default value is ``None``.
+
+        Returns
+        -------
+        PinGroup
+        """
+        pins = [pin.name for pin in self.instances[reference_designator].pins if pin.name == net_name]
+        return self.create_pin_group(reference_designator, pins, group_name)
