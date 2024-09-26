@@ -136,7 +136,7 @@ class EDBNetsData(NetDotNet):
             Whether to show the plot or not. Default is `True`.
         """
 
-        self._app.nets.plot(
+        return self._app.nets.plot(
             self.name,
             layers=layers,
             show_legend=show_legend,
