@@ -297,8 +297,8 @@ class TestClass:
         layer.type = "dielectric"
         assert layer.type == "dielectric"
         layer.type = "signal"
-        layer.color = (0, 0, 0)
-        assert layer.color == (0, 0, 0)
+        layer.color = [0, 0, 0]
+        assert layer.color == [0, 0, 0]
         layer.transparency = 0
         assert layer.transparency == 0
         layer.etch_factor = 2
