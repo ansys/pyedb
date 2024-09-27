@@ -757,4 +757,3 @@ class StackupLayerEdbClass(LayerEdbClass):
         color = params.get("color")
         if color:
             self.color = color
-
