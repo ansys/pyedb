@@ -178,7 +178,7 @@ class LayerEdbClass(object):
             RGB.
         """
         layer_color = self._edb_layer.GetColor()
-        return layer_color.Item1, layer_color.Item2, layer_color.Item3
+        return [layer_color.Item1, layer_color.Item2, layer_color.Item3]
 
     @color.setter
     def color(self, rgb):
@@ -237,6 +237,26 @@ class LayerEdbClass(object):
         layer_clone.SetLayerType(self._layer_type_mapping[value])
         self._type = value
         self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
+
+    @property
+    def properties(self):
+        data = {}
+        data["name"] = self.name
+        data["type"] = self.type
+        data["color"] = self.color
+        return data
+
+    @properties.setter
+    def properties(self, params):
+        name = params.get("name")
+        if name:
+            self.name = name
+        type = params.get("type")
+        if type:
+            self.type = type
+        color = params.get("color")
+        if color:
+            self.color = color
 
 
 class StackupLayerEdbClass(LayerEdbClass):
@@ -705,3 +725,36 @@ class StackupLayerEdbClass(LayerEdbClass):
                     layer["side_hallhuray_surface_ratio"],
                     apply_on_surface="side",
                 )
+
+    @property
+    def properties(self):
+        data = {}
+        data["name"] = self.name
+        data["type"] = self.type
+        data["material"] = self.material
+        data["fill_material"] = self.fill_material
+        data["thickness"] = self._edb_object.GetThicknessValue().ToString()
+        data["color"] = self.color
+        return data
+
+    @properties.setter
+    def properties(self, params):
+        name = params.get("name")
+        if name:
+            self.name = name
+        type = params.get("type")
+        if type:
+            self.type = type
+        material = params.get("material")
+        if material:
+            self.material = material
+        fill_material = params.get("fill_material")
+        if fill_material:
+            self.fill_material = fill_material
+        thickness = params.get("thickness")
+        if thickness:
+            self.thickness = self._pedb.edb_value(thickness)
+        color = params.get("color")
+        if color:
+            self.color = color
+

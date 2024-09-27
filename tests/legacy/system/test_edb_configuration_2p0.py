@@ -746,7 +746,6 @@ class TestClass:
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
-                value = edbapp.edb_value(value).ToDouble() if p in ["thickness"] else value
                 assert value == target_mat[p]
         edbapp.close()
 
@@ -813,7 +812,6 @@ class TestClass:
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
-                value = edbapp.edb_value(value).ToDouble() if p in ["thickness"] else value
                 assert value == target_mat[p]
         edbapp.close()
 
