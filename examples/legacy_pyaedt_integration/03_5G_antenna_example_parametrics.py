@@ -12,7 +12,7 @@
 import os
 import tempfile
 
-import pyaedt
+import ansys.aedt.core
 
 import pyedb
 
@@ -87,8 +87,8 @@ class LinearArray:
 temp_dir = tempfile.TemporaryDirectory(suffix=".ansys")
 aedb_path = os.path.join(temp_dir.name, "linear_array.aedb")
 
-# Select EDB version (change it manually if needed, e.g. "2024.1")
-edb_version = "2024.1"
+# Select EDB version (change it manually if needed, e.g. "2024.2")
+edb_version = "2024.2"
 print(f"EDB version: {edb_version}")
 
 # Create an instance of the Edb class.
@@ -96,14 +96,20 @@ edb = pyedb.Edb(edbpath=aedb_path, edbversion=edb_version)
 # -
 
 # Add stackup layers
+layers = {
+    "materials": {"copper_high_cond": {"conductivity": 60000000}},
+    "layers": {
+        "TOP": {"type": "signal", "thicness": "35um", "material": "copper_high_cond"},
+        "Substrat": {"type": "dielectric", "thicness": "0.5mm", "material": "Duroid (tm)"},
+        "GND": {"type": "signal", "thicness": "35um", "material": "copper"},
+        "Gap": {"type": "dielectric", "thicness": "0.05mm", "material": "Air"},
+        "Virt_GND": {"type": "signal", "thicness": "35um", "material": "copper"},
+    },
+}
 
-edb.stackup.add_layer("Virt_GND")
-edb.stackup.add_layer("Gap", "Virt_GND", layer_type="dielectric", thickness="0.05mm", material="Air")
-edb.stackup.add_layer("GND", "Gap")
-edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.5mm", material="Duroid (tm)")
-edb.stackup.add_layer("TOP", "Substrat")
+edb.stackup.load(layers)
 
-# Create the the first patch and feed line using the ``Patch``, ``Line``classes defined above.
+# Create the first patch and feed line using the ``Patch``, ``Line``classes defined above.
 #
 # Define parameters:
 
@@ -237,10 +243,10 @@ print("EDB saved correctly to {}. You can import in AEDT.".format(aedb_path))
 # It is now possible to monitor the progress in the UI as each of the following cells is executed.
 # All commands can be run without the UI by changing the value of ``non_graphical``.
 
-h3d = pyaedt.Hfss(
+h3d = ansys.aedt.core.Hfss(
     projectname="Demo_3DComp",
     designname="Linear_Array",
-    specified_version="2024.1",
+    specified_version="2024.2",
     new_desktop_session=True,
     non_graphical=non_graphical,
     close_on_exit=True,
@@ -363,7 +369,7 @@ h3d.post.create_fieldplot_layers_nets(
 # ## Close AEDT
 #
 # After the simulation completes, the application can be released from the
-# :func:`pyaedt.Desktop.release_desktop` method.
+# :func:`ansys.aedt.core.Desktop.release_desktop` method.
 # All methods provide for saving the project before closing AEDT.
 
 h3d.save_project(os.path.join(temp_dir.name, "test_layout.aedt"))

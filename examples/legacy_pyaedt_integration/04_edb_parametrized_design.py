@@ -14,7 +14,7 @@
 import os
 import tempfile
 
-import pyaedt
+import ansys.aedt.core
 
 import pyedb
 
@@ -33,8 +33,8 @@ non_graphical = False
 temp_dir = tempfile.TemporaryDirectory(suffix=".ansys")
 aedb_path = os.path.join(temp_dir.name, "pcb.aedb")
 
-# Select EDB version (change it manually if needed, e.g. "2024.1")
-edb_version = "2024.1"
+# Select EDB version (change it manually if needed, e.g. "2024.2")
+edb_version = "2024.2"
 print(f"EDB version: {edb_version}")
 
 edb = pyedb.Edb(edbpath=aedb_path, edbversion=edb_version)
@@ -65,29 +65,20 @@ for par_name in params:
 
 # Define the stackup layers from bottom to top.
 
-layers = [
-    {"name": "bottom", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-    {"name": "diel_3", "layer_type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
-    {"name": "sig_2", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-    {"name": "diel_2", "layer_type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
-    {"name": "sig_1", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-    {"name": "diel_1", "layer_type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
-    {"name": "top", "layer_type": "signal", "thickness": "35um", "material": "copper"},
-]
-
+layers = {
+    "top": {"type": "signal", "thickness": "35um", "material": "copper"},
+    "diel_1": {"type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
+    "sig_1": {"type": "signal", "thickness": "35um", "material": "copper"},
+    "diel_2": {"type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
+    "sig_2": {"type": "signal", "thickness": "35um", "material": "copper"},
+    "diel_3": {"type": "dielectric", "thickness": "275um", "material": "FR4_epoxy"},
+    "bottom": {"type": "signal", "thickness": "35um", "material": "copper"},
+}
+layer_names = list(layers.keys())[::-1]
 # Create the EDB stackup.
 # Define the bottom layer
+edb.stackup.load(layers)
 
-prev = None
-for layer in layers:
-    edb.stackup.add_layer(
-        layer["name"],
-        base_layer=prev,
-        layer_type=layer["layer_type"],
-        thickness=layer["thickness"],
-        material=layer["material"],
-    )
-    prev = layer["name"]
 
 # Create a parametrized padstack for the signal via.
 
@@ -101,8 +92,8 @@ edb.padstacks.create(
     x_size="$x_size",
     y_size="$y_size",
     corner_radius="$corner_rad",
-    start_layer=layers[-1]["name"],
-    stop_layer=layers[-3]["name"],
+    start_layer=layer_names[-1],
+    stop_layer=layer_names[-3],
 )
 
 # Assign net names. There are only two signal nets.
@@ -153,7 +144,7 @@ edb.padstacks.place(
 # Trace width, n and p
 width = ["$ms_width", "$sl_width", "$ms_width"]
 # Routing layer, n and p
-route_layer = [layers[-1]["name"], layers[4]["name"], layers[-1]["name"]]
+route_layer = [layer_names[-1], layer_names[4], layer_names[-1]]
 
 # Define points for three traces in the "p" net
 
@@ -215,14 +206,18 @@ for n in range(len(points_p)):
 
 # Create the wave ports
 
-edb.hfss.create_differential_wave_port(
+p1 = edb.hfss.create_differential_wave_port(
     trace_p[0].id,
     ["0.0", "($ms_width+$ms_spacing)/2"],
     trace_n[0].id,
     ["0.0", "-($ms_width+$ms_spacing)/2"],
     "wave_port_1",
 )
-edb.hfss.create_differential_wave_port(
+
+pos_p1 = p1[1].terminals[0].name
+neg_p1 = p1[1].terminals[1].name
+
+p2 = edb.hfss.create_differential_wave_port(
     trace_p[2].id,
     ["$pcb_len", "($ms_width+$ms_spacing)/2"],
     trace_n[2].id,
@@ -230,7 +225,10 @@ edb.hfss.create_differential_wave_port(
     "wave_port_2",
 )
 
-# Draw a conducting rectangle on the the ground layers.
+pos_p2 = p2[1].terminals[0].name
+neg_p2 = p2[1].terminals[1].name
+
+# Draw a conducting rectangle on the ground layers.
 
 gnd_poly = [
     [0.0, "-$pcb_w/2"],
@@ -277,11 +275,11 @@ void_shape = edb.modeler.Shape("polygon", points=void_poly)
 # Add ground conductors.
 
 # +
-for layer in layers[:-1:2]:
+for layer in layer_names[:-1:2]:
     # add void if the layer is the signal routing layer.
-    void = [void_shape] if layer["name"] == route_layer[1] else []
+    void = [void_shape] if layer == route_layer[1] else []
 
-    edb.modeler.create_polygon(main_shape=gnd_shape, layer_name=layer["name"], voids=void, net_name="gnd")
+    edb.modeler.create_polygon(main_shape=gnd_shape, layer_name=layer, voids=void, net_name="gnd")
 # -
 
 # Plot the layout.
@@ -295,11 +293,11 @@ edb.close_edb()
 
 # Open the project in HFSS 3D Layout.
 
-h3d = pyaedt.Hfss3dLayout(
-    projectname=aedb_path,
-    specified_version="2024.1",
+h3d = ansys.aedt.core.Hfss3dLayout(
+    project=aedb_path,
+    version=edb_version,
     non_graphical=non_graphical,
-    new_desktop_session=True,
+    new_desktop=True,
 )
 
 # ## Add HFSS simulation setup
@@ -311,12 +309,12 @@ setup = h3d.create_setup()
 setup.props["AdaptiveSettings"]["SingleFrequencyDataList"]["AdaptiveFrequencyData"]["MaxPasses"] = 3
 
 h3d.create_linear_count_sweep(
-    setupname=setup.name,
+    setup=setup.name,
     unit="GHz",
-    freqstart=0,
-    freqstop=10,
+    start_frequency=0,
+    stop_frequency=10,
     num_of_freq_points=1001,
-    sweepname="sweep1",
+    name="sweep1",
     sweep_type="Interpolating",
     interpolation_tol_percent=1,
     interpolation_max_solutions=255,
@@ -328,8 +326,8 @@ h3d.create_linear_count_sweep(
 # Define the differential pairs to used to calculate differential and common mode
 # s-parameters.
 
-h3d.set_differential_pair(diff_name="In", positive_terminal="wave_port_1:T1", negative_terminal="wave_port_1:T2")
-h3d.set_differential_pair(diff_name="Out", positive_terminal="wave_port_2:T1", negative_terminal="wave_port_2:T2")
+h3d.set_differential_pair(differential_mode="In", assignment=pos_p1, reference=neg_p1)
+h3d.set_differential_pair(differential_mode="Out", assignment=pos_p2, reference=neg_p2)
 
 # Solve the project.
 

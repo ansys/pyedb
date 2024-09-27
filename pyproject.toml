@@ -25,43 +25,45 @@ classifiers = [
 ]
 
 dependencies = [
-    "cffi>=1.16.0,<1.17; platform_system=='Linux'",
+    "cffi>=1.16.0,<1.18; platform_system=='Linux'",
     "pywin32 >= 303;platform_system=='Windows'",
     "ansys-pythonnet >= 3.1.0rc3",
     "dotnetcore2 ==3.1.23;platform_system=='Linux'",
     "numpy>=1.20.0,<2",
     "pandas>=1.1.0,<2.3",
-    "pydantic>=2.6.4,<2.9",
+    "pydantic>=2.6.4,<2.10",
     "Rtree >= 1.2.0",
     "toml == 0.10.2",
+    "scikit-rf"
     ]
 
 [project.optional-dependencies]
 tests = [
     "matplotlib>=3.5.0,<3.10",
     "mock>=5.1.0,<5.2",
-    "pytest>=7.4.0,<8.3",
+    "pytest>=7.4.0,<8.4",
     "pytest-cov>=4.0.0,<5.1",
     "pytest-xdist>=3.5.0,<3.7",
+    "scikit-rf"
 ]
 doc = [
-    "ansys-sphinx-theme>=0.10.0,<0.17",
-    "imageio>=2.30.0,<2.35",
-    "ipython>=8.13.0,<8.27",
+    "ansys-sphinx-theme>=0.10.0,<1.1",
+    "imageio>=2.30.0,<2.36",
+    "ipython>=8.13.0,<8.28",
     "jupyterlab>=4.0.0,<4.3",
     "jupytext>=1.16.0,<1.17",
     "matplotlib>=3.5.0,<3.10",
     "nbsphinx>=0.9.0,<0.10",
     "nbconvert < 7.17",
-    "numpydoc>=1.5.0,<1.8",
+    "numpydoc>=1.5.0,<1.9",
     "pypandoc>=1.10.0,<1.14",
     # NOTE: Remove recommonmark once examples are reworked.
     "recommonmark",
-    "Sphinx>=7.1.0,<7.4",
-    "sphinx-autobuild==2024.2.4; python_version == '3.8'",
-    "sphinx-autobuild==2024.2.4; python_version > '3.8'",
+    "Sphinx>=7.1.0,<8.1",
+    "sphinx-autobuild==2021.3.14; python_version == '3.8'",
+    "sphinx-autobuild==2024.9.19; python_version > '3.8'",
     "sphinx-copybutton>=0.5.0,<0.6",
-    "sphinx-gallery>=0.14.0,<0.17",
+    "sphinx-gallery>=0.14.0,<0.18",
     "sphinx_design>=0.4.0,<0.7",
 ]
 full = [

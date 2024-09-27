@@ -35,7 +35,7 @@ class Configuration:
 
     def __init__(self, pedb):
         self._pedb = pedb
-        self._components = self._pedb.components.components
+        self._components = self._pedb.components.instances
         self.data = {}
         self._s_parameter_library = ""
         self._spice_model_library = ""
@@ -74,7 +74,7 @@ class Configuration:
                     elif config_file.endswith(".toml"):
                         data = toml.load(f)
             else:  # pragma: no cover
-                return False
+                raise RuntimeError(f"File {config_file} does not exist.")
 
         if not append:  # pragma: no cover
             self.data = {}
@@ -103,7 +103,7 @@ class Configuration:
                 self._pedb.open_edb()
         return self.cfg_data
 
-    def run(self):
+    def run(self, **kwargs):
         """Apply configuration settings to the current design"""
 
         # Configure boundary settings
@@ -116,10 +116,6 @@ class Configuration:
 
         # Configure components
         self.cfg_data.components.apply()
-
-        # Configure padstacks
-        if self.cfg_data.padstacks:
-            self.cfg_data.padstacks.apply()
 
         # Configure pin groups
         self.cfg_data.pin_groups.apply()
@@ -134,11 +130,23 @@ class Configuration:
         self.cfg_data.setups.apply()
 
         # Configure stackup
-        self.cfg_data.stackup.apply()
+        if kwargs.get("fix_padstack_def"):
+            pedb_defs = self._pedb.padstacks.definitions
+            temp = {}
+            for name, pdef in pedb_defs.items():
+                temp[name] = pdef.get_properties()
+            self.cfg_data.stackup.apply()
+            for name, pdef_p in temp.items():
+                pedb_defs[name].set_properties(**pdef_p)
+        else:
+            self.cfg_data.stackup.apply()
+
+        # Configure padstacks
+        if self.cfg_data.padstacks:
+            self.cfg_data.padstacks.apply()
 
         # Configure S-parameter
-        for s_parameter_model in self.cfg_data.s_parameters:
-            s_parameter_model.apply()
+        self.cfg_data.s_parameters.apply()
 
         # Configure SPICE models
         for spice_model in self.cfg_data.spice_models:
@@ -210,7 +218,7 @@ class Configuration:
 
     def _load_package_def(self):
         """Imports package definition information from JSON."""
-        comps = self._pedb.components.components
+        comps = self._pedb.components.instances
         for pkgd in self.data["package_definitions"]:
             name = pkgd["name"]
             if name in self._pedb.definitions.package:
@@ -280,6 +288,14 @@ class Configuration:
             data["nets"] = self.cfg_data.nets.get_data_from_db()
         if kwargs.get("pin_groups", False):
             data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
+        if kwargs.get("operations", False):
+            data["operations"] = self.cfg_data.operations.get_data_from_db()
+        if kwargs.get("padstacks", False):
+            data["padstacks"] = self.cfg_data.padstacks.get_data_from_db()
+        if kwargs.get("s_parameters", False):
+            data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db()
+        if kwargs.get("boundaries", False):
+            data["boundaries"] = self.cfg_data.boundaries.get_data_from_db()
 
         return data
 
@@ -293,6 +309,11 @@ class Configuration:
         ports=True,
         nets=True,
         pin_groups=True,
+        operations=True,
+        components=True,
+        boundaries=True,
+        s_parameters=True,
+        padstacks=True,
     ):
         """Export the configuration data from layout to a file.
 
@@ -312,21 +333,43 @@ class Configuration:
             Whether to export ports or not.
         nets : bool
             Whether to export nets.
+        pin_groups : bool
+            Whether to export pin groups.
+        operations : bool
+            Whether to export operations.
+        components : bool
+            Whether to export component.
+        boundaries : bool
+            Whether to export boundaries.
+        s_parameters : bool
+            Whether to export s_parameters.
+        padstacks : bool
+            Whether to export padstacks.
         Returns
         -------
         bool
         """
-        file_path = file_path if isinstance(file_path, Path) else Path(file_path)
-        file_path = file_path if file_path.suffix == ".json" else file_path.with_suffix(".json")
         data = self.get_data_from_db(
             stackup=stackup,
             package_definitions=package_definitions,
-            setups=setups,
+            setups=False,
             sources=sources,
             ports=ports,
             nets=nets,
             pin_groups=pin_groups,
+            operations=operations,
+            components=components,
+            boundaries=boundaries,
+            s_parameters=s_parameters,
+            padstacks=padstacks,
         )
+
+        file_path = file_path if isinstance(file_path, Path) else Path(file_path)
+        file_path = file_path.with_suffix(".json") if file_path.suffix == "" else file_path
+
         with open(file_path, "w") as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+            if file_path.suffix == ".json":
+                json.dump(data, f, ensure_ascii=False, indent=4)
+            else:
+                toml.dump(data, f)
         return True if os.path.isfile(file_path) else False

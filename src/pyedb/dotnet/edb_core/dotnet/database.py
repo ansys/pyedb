@@ -92,6 +92,7 @@ class PolygonDataDotNet:  # pragma: no cover
         self._pedb = pedb
         self.dotnetobj = pedb.edb_api.geometry.api_class.PolygonData
         self.edb_api = api_object
+        self._edb_object = api_object
 
     @property
     def api_class(self):  # pragma: no cover
@@ -102,16 +103,6 @@ class PolygonDataDotNet:  # pragma: no cover
     def arcs(self):  # pragma: no cover
         """List of Edb.Geometry.ArcData."""
         return list(self.edb_api.GetArcData())
-
-    def get_points(self):
-        """Get all points in polygon.
-
-        Returns
-        -------
-        list[list[edb_value]]
-        """
-
-        return [[self._pedb.edb_value(i.X), self._pedb.edb_value(i.Y)] for i in list(self.edb_api.Points)]
 
     def add_point(self, x, y, incremental=False):
         """Add a point at the end of the point list of the polygon.
@@ -216,19 +207,6 @@ class PolygonDataDotNet:  # pragma: no cover
 
 class NetDotNet:
     """Net Objects."""
-
-    def __getattr__(self, key):
-        try:
-            return super().__getattribute__(key)
-        except AttributeError:
-            if self.net_obj and key in dir(self.net_obj):
-                obj = self.net_obj
-            else:
-                obj = self.net
-            try:
-                return getattr(obj, key)
-            except AttributeError:
-                raise AttributeError("Attribute not present")
 
     def __init__(self, app, net_obj=None):
         self.net = app._edb.Cell.Net

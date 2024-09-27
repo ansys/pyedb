@@ -47,4 +47,4 @@ class EdgeTerminal(Terminal):
         temp.extend([i._edb_object for i in port])
         edb_list = convert_py_list_to_net_list(temp, self._edb.cell.terminal.Terminal)
         _edb_bundle_terminal = self._edb.cell.terminal.BundleTerminal.Create(edb_list)
-        return self._pedb.ports[self.name]
+        return self._pedb.ports[_edb_bundle_terminal.GetName()]

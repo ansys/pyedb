@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import json
 import os
 import time
 
@@ -57,3 +58,47 @@ class TestClass:
         export_icepak = os.path.join(siw.results_directory, "icepak.aedt")
         assert siw.export_icepak_project(export_icepak, "DC IR Sim 3")
         assert siw.quit_application()
+
+    def test_configuration(self, edb_examples):
+        edbapp = edb_examples.get_si_verse(edbapp=False)
+        data = {
+            "ports": [
+                {
+                    "name": "CIRCUIT_X1_B8_GND",
+                    "reference_designator": "X1",
+                    "type": "circuit",
+                    "positive_terminal": {"pin": "B8"},
+                    "negative_terminal": {"net": "GND"},
+                }
+            ],
+            "operations": {
+                "cutout": {
+                    "custom_extent": [
+                        [77, 54],
+                        [5, 54],
+                        [5, 20],
+                        [77, 20],
+                    ],
+                    "custom_extent_units": "mm",
+                }
+            },
+        }
+
+        cfg_json = os.path.join(edb_examples.test_folder, "cfg.json")
+        with open(cfg_json, "w") as f:
+            json.dump(data, f)
+
+        siw = Siwave(desktop_version)
+        siw.import_edb(edbapp)
+        siw.load_configuration(cfg_json)
+        cfg_json_2 = os.path.join(edb_examples.test_folder, "cfg2.json")
+        siw.export_configuration(cfg_json_2)
+        siw.quit_application()
+        with open(cfg_json_2, "r") as f:
+            json_data = json.load(f)
+        assert json_data["ports"][0]["name"] == "CIRCUIT_X1_B8_GND"
+
+        siw = Siwave(desktop_version)
+        siw.import_edb(edbapp)
+        siw.load_configuration(cfg_json_2)
+        siw.quit_application()

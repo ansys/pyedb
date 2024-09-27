@@ -45,7 +45,7 @@ class CfgCoordianteTerminalInfo(CfgTerminalInfo):
         self.net = self.value["net"]
 
     def export_properties(self):
-        return {"layer": self.layer, "point_x": self.point_x, "point_y": self.point_y, "net": self.net}
+        return {"coordinates": {"layer": self.layer, "point": [self.point_x, self.point_y], "net": self.net}}
 
 
 class CfgNearestPinTerminalInfo(CfgTerminalInfo):
@@ -126,7 +126,10 @@ class CfgPorts:
         ports = {name: t for name, t in ports.items() if t.is_port}
 
         for _, p in ports.items():
-            port_type = "circuit" if p.is_circuit_port else "coax"
+            if not p.ref_terminal:
+                port_type = "coax"
+            else:
+                port_type = "circuit"
 
             if p.terminal_type == "PinGroupTerminal":
                 refdes = ""
@@ -135,6 +138,9 @@ class CfgPorts:
             elif p.terminal_type == "PadstackInstanceTerminal":
                 refdes = p.component.refdes if p.component else ""
                 pos_term_info = {"pin": p.padstack_instance.component_pin}
+            elif p.terminal_type == "PointTerminal":
+                refdes = ""
+                pos_term_info = {"coordinates": {"layer": p.layer.name, "point": p.location, "net": p.net.name}}
 
             if port_type == "circuit":
                 neg_term = self._pedb.terminals[p.ref_terminal.name]
@@ -143,6 +149,14 @@ class CfgPorts:
                     neg_term_info = {"pin_group": pg.name}
                 elif neg_term.terminal_type == "PadstackInstanceTerminal":
                     neg_term_info = {"pin": neg_term.padstack_instance.component_pin}
+                elif neg_term.terminal_type == "PointTerminal":
+                    neg_term_info = {
+                        "coordinates": {
+                            "layer": neg_term.layer.name,
+                            "point": neg_term.location,
+                            "net": neg_term.net.name,
+                        }
+                    }
 
                 cfg_port = CfgPort(
                     self._pedb,
@@ -228,7 +242,7 @@ class CfgCircuitElement(CfgBase):
                 neg_obj = self._create_pin_group(pins)
                 pos_objs.update(neg_obj)
         elif pos_type == "pin":
-            pins = {pos_value: self._pedb.components.components[self.reference_designator].pins[pos_value]}
+            pins = {pos_value: self._pedb.components.instances[self.reference_designator].pins[pos_value]}
             pos_objs.update(pins)
         else:
             raise f"Wrong positive terminal type {pos_type}"
@@ -263,7 +277,7 @@ class CfgCircuitElement(CfgBase):
                     # create pin group
                     neg_obj = self._create_pin_group(pins, True)
                 elif neg_type == "pin":
-                    neg_obj = {neg_value: self._pedb.components.components[self.reference_designator].pins[neg_value]}
+                    neg_obj = {neg_value: self._pedb.components.instances[self.reference_designator].pins[neg_value]}
                 else:
                     raise f"Wrong negative terminal type {neg_type}"
                 self.neg_terminal = [
@@ -274,7 +288,7 @@ class CfgCircuitElement(CfgBase):
         terminal_value = terminal_value if isinstance(terminal_value, list) else [terminal_value]
 
         def get_pin_obj(pin_name):
-            return {pin_name: self._pedb.components.components[self.reference_designator].pins[pin_name]}
+            return {pin_name: self._pedb.components.instances[self.reference_designator].pins[pin_name]}
 
         pins = dict()
         if terminal_type == "pin":
@@ -323,13 +337,15 @@ class CfgPort(CfgCircuitElement):
         return circuit_elements
 
     def export_properties(self):
-        return {
+        data = {
             "name": self.name,
             "type": self.type,
             "reference_designator": self.reference_designator,
             "positive_terminal": self.positive_terminal_info.export_properties(),
-            "negative_terminal": self.negative_terminal_info.export_properties(),
         }
+        if self.negative_terminal_info:
+            data.update({"negative_terminal": self.negative_terminal_info.export_properties()})
+        return data
 
 
 class CfgSource(CfgCircuitElement):

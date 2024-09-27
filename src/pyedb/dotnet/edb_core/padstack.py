@@ -29,12 +29,12 @@ import warnings
 import rtree
 
 from pyedb.dotnet.clr_module import Array
-from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import (
     EDBPadstack,
     EDBPadstackInstance,
 )
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -62,7 +62,7 @@ class EdbPadstacks(object):
 
         """
         if isinstance(name, int) and name in self.instances:
-            return self._pedb.layout.find_object_by_id(name)
+            return self.instances(name)
         elif name in self.definitions:
             return self.definitions[name]
         else:
@@ -108,7 +108,7 @@ class EdbPadstacks(object):
     @property
     def _layers(self):
         """ """
-        return self._pedb.stackup.stackup_layers
+        return self._pedb.stackup.layers
 
     def int_to_pad_type(self, val=0):
         """Convert an integer to an EDB.PadGeometryType.
@@ -240,9 +240,7 @@ class EdbPadstacks(object):
         padstack_instances = {}
         for _, edb_padstack_instance in self.instances.items():
             if edb_padstack_instance.aedt_name:
-                padstack_instances[edb_padstack_instance.aedt_name] = EDBPadstackInstance(
-                    edb_padstack_instance, self._pedb
-                )
+                padstack_instances[edb_padstack_instance.aedt_name] = edb_padstack_instance
         return padstack_instances
 
     def find_instance_by_id(self, value: int):
@@ -491,7 +489,7 @@ class EdbPadstacks(object):
             padstackInst = self.instances[padstackInst]._edb_padstackinstance
 
         else:
-            psdef = padstackInst.GetPadstackDef()
+            psdef = padstackInst._edb_object.GetPadstackDef()
         newdefdata = self._edb.definition.PadstackDefData(psdef.GetData())
         newdefdata.SetSolderBallShape(self._edb.definition.SolderballShape.Cylinder)
         newdefdata.SetSolderBallParameter(self._get_edb_value(ballDiam), self._get_edb_value(ballDiam))
@@ -504,7 +502,7 @@ class EdbPadstacks(object):
         psdef.SetData(newdefdata)
         sball_layer = [lay._edb_layer for lay in list(self._layers.values()) if lay.name == sballLayer_name][0]
         if sball_layer is not None:
-            padstackInst.SetSolderBallLayer(sball_layer)
+            padstackInst._edb_object.SetSolderBallLayer(sball_layer)
             return True
 
         return False
@@ -592,13 +590,13 @@ class EdbPadstacks(object):
         """
         pinlist = []
         if refdes:
-            if refdes in self._pedb.components.components:
+            if refdes in self._pedb.components.instances:
                 if netname:
-                    for pin, val in self._pedb.components.components[refdes].pins.items():
+                    for pin, val in self._pedb.components.instances[refdes].pins.items():
                         if val.net_name == netname:
                             pinlist.append(val)
                 else:
-                    for pin in self._pedb.components.components[refdes].pins.values():
+                    for pin in self._pedb.components.instances[refdes].pins.values():
                         pinlist.append(pin)
             elif netname:
                 for pin in self._pedb.pins:
@@ -757,6 +755,7 @@ class EdbPadstacks(object):
         if not isinstance(net_list, list):
             net_list = [net_list]
         layout_lobj_collection = self._layout.padstack_instances
+        layout_lobj_collection = [i._edb_object for i in layout_lobj_collection]
         via_list = []
         for lobj in layout_lobj_collection:
             pad_layers_name = lobj.GetPadstackDef().GetData().GetLayerNames()
@@ -955,8 +954,8 @@ class EdbPadstacks(object):
                     _poly.delete()
                 else:
                     return False
-            elif isinstance(polygon_hole, PolygonDataDotNet):
-                hole_param = polygon_hole.edb_api
+            elif isinstance(polygon_hole, PolygonData):
+                hole_param = polygon_hole._edb_object
             else:
                 return False
             padstackData.SetPolygonalHoleParameters(hole_param, value0, value0, value0)
@@ -1007,7 +1006,7 @@ class EdbPadstacks(object):
                     _poly.delete()
                 else:
                     return False
-            elif isinstance(pad_polygon, PolygonDataDotNet):
+            elif isinstance(pad_polygon, PolygonData):
                 pad_array = pad_polygon
         if antipad_shape == "Bullet":  # pragma no cover
             antipad_array = Array[type(x_size)]([x_size, y_size, corner_radius])
@@ -1023,7 +1022,7 @@ class EdbPadstacks(object):
                     _poly.delete()
                 else:
                     return False
-            elif isinstance(antipad_polygon, PolygonDataDotNet):
+            elif isinstance(antipad_polygon, PolygonData):
                 antipad_array = antipad_polygon
         else:  # pragma no cover
             antipad_array = Array[type(antipaddiam)]([antipaddiam])
@@ -1035,7 +1034,7 @@ class EdbPadstacks(object):
                 padstackData.SetPolygonalPadParameters(
                     layer,
                     self._edb.definition.PadType.RegularPad,
-                    pad_array.edb_api,
+                    pad_array._edb_object,
                     pad_offset_x,
                     pad_offset_y,
                     pad_rotation,
@@ -1043,7 +1042,7 @@ class EdbPadstacks(object):
                 padstackData.SetPolygonalPadParameters(
                     layer,
                     self._edb.definition.PadType.AntiPad,
-                    antipad_array.edb_api,
+                    antipad_array._edb_object,
                     pad_offset_x,
                     pad_offset_y,
                     pad_rotation,
@@ -1208,7 +1207,7 @@ class EdbPadstacks(object):
                 solderlayer,
                 None,
             )
-            padstack_instance.SetIsLayoutPin(is_pin)
+            padstack_instance.is_layout_pin = is_pin
             py_padstack_instance = EDBPadstackInstance(padstack_instance.api_object, self._pedb)
 
             return py_padstack_instance
@@ -1579,7 +1578,9 @@ class EdbPadstacks(object):
             bounding_box = tuple(bounding_box)
         return list(index.intersection(bounding_box))
 
-    def merge_via_along_lines(self, net_name="GND", distance_threshold=5e-3, minimum_via_number=6):
+    def merge_via_along_lines(
+        self, net_name="GND", distance_threshold=5e-3, minimum_via_number=6, selected_angles=None
+    ):
         """Replace padstack instances along lines into a single polygon.
 
         Detect all padstack instances that are placed along lines and replace them by a single polygon based one
@@ -1597,6 +1598,11 @@ class EdbPadstacks(object):
 
         minimum_via_number : int, optional
             The minimum number of points that a line must contain. Default is ``6``.
+
+        selected_angles : list[int, float]
+            Specify angle in degrees to detected, for instance [0, 180] is only detecting horizontal and vertical lines.
+            Other values can be assigned like 45 degrees. When `None` is provided all lines are detected. Default value
+            is `None`.
 
         Returns
         -------
@@ -1622,6 +1628,7 @@ class EdbPadstacks(object):
                 points=instances_location,
                 minimum_number_of_points=minimum_via_number,
                 distance_threshold=distance_threshold,
+                selected_angles=selected_angles,
             )
             for line in line_indexes:
                 [_instances_to_delete.append(pdstk_series[ind]) for ind in line]

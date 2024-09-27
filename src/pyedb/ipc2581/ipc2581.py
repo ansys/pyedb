@@ -250,7 +250,7 @@ class Ipc2581(object):
         self.layers_name = list(self._pedb.stackup.signal_layers.keys())
         self.top_bottom_layers = [self.layers_name[0], self.layers_name[-1]]
         sequence = 0
-        for layer_name in list(self._pedb.stackup.stackup_layers.keys()):
+        for layer_name in list(self._pedb.stackup.layers.keys()):
             sequence += 1
             self.content.add_layer_ref(layer_name)
             layer_color = self._pedb.stackup.layers[layer_name].color
@@ -316,7 +316,7 @@ class Ipc2581(object):
         self.content.dict_colors.add_color("{}".format("Drill"), "255", "255", "255")
 
     def add_components(self):
-        for item in self._pedb.components.components.values():
+        for item in self._pedb.components.instances.values():
             self.ecad.cad_data.cad_data_step.add_component(item)
 
     def add_logical_nets(self):

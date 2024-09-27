@@ -23,6 +23,7 @@
 import os
 
 from pyedb.dotnet.edb_core.definition.component_model import NPortComponentModel
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 
 
@@ -130,22 +131,32 @@ class EDBComponentDef(ObjBase):
             comp.assign_s_param_model(file_path, model_name, reference_net)
         return True
 
-    def assign_spice_model(self, file_path, model_name=None):
+    def assign_spice_model(
+        self,
+        file_path,
+        model_name=None,
+        sub_circuit_name=None,
+        terminal_pairs=None,
+    ):
         """Assign Spice model to all components under this part name.
 
         Parameters
         ----------
         file_path : str
             File path of the Spice model.
-        name : str, optional
+        model_name : str, optional
             Name of the Spice model.
+        sub_circuit_name : str, optional
+            Name of the sub circuit.
+        terminal_pairs : list, optional
+            list of terminal pairs.
 
         Returns
         -------
 
         """
         for comp in list(self.components.values()):
-            comp.assign_spice_model(file_path, model_name)
+            comp.assign_spice_model(file_path, model_name, sub_circuit_name, terminal_pairs)
         return True
 
     @property
@@ -161,7 +172,7 @@ class EDBComponentDef(ObjBase):
     def component_models(self):
         temp = {}
         for i in list(self._edb_object.GetComponentModels()):
-            temp_type = i.ToString().split(".")[0]
+            temp_type = i.ToString().split(".")[-1]
             if temp_type == "NPortComponentModel":
                 edb_object = NPortComponentModel(self._pedb, i)
                 temp[edb_object.name] = edb_object
@@ -187,3 +198,18 @@ class EDBComponentDef(ObjBase):
         footprint_cell = self._pedb._active_cell.cell.Create(self._pedb.active_db, cell_type, name)
         edb_object = self._pedb.edb_api.definition.ComponentDef.Create(self._pedb.active_db, name, footprint_cell)
         return EDBComponentDef(self._pedb, edb_object)
+
+    def get_properties(self):
+        data = {}
+        temp = []
+        for i in list(self._edb_object.ComponentDefPins):
+            temp.append(i.GetName())
+        data["pin_order"] = temp
+        return data
+
+    def set_properties(self, **kwargs):
+        pin_order = kwargs.get("pin_order")
+        if pin_order:
+            old = {i.GetName(): i for i in list(self._edb_object.ComponentDefPins)}
+            temp = convert_py_list_to_net_list([old[str(i)] for i in pin_order])
+            self._edb_object.ReorderPins(temp)

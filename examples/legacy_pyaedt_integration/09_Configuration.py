@@ -14,7 +14,7 @@
 import os
 import tempfile
 
-import pyaedt
+import ansys.aedt.core
 
 import pyedb
 from pyedb.misc.downloads import download_file
@@ -32,8 +32,8 @@ print("Project folder is", target_aedb)
 # Launch the ``pyedb.Edb`` class using EDB 2023 R2. Length units are SI.
 
 # +
-# Select EDB version (change it manually if needed, e.g. "2024.1")
-edb_version = "2024.1"
+# Select EDB version (change it manually if needed, e.g. "2024.2")
+edb_version = "2024.2"
 print(f"EDB version: {edb_version}")
 
 edbapp = pyedb.Edb(target_aedb, edbversion=edb_version)
@@ -191,7 +191,7 @@ edbapp.close_edb()
 
 aedt_version = edb_version
 
-h3d = pyaedt.Hfss3dLayout(
+h3d = ansys.aedt.core.Hfss3dLayout(
     specified_version=aedt_version,
     projectname=target_aedb,
     non_graphical=False,

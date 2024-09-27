@@ -14,7 +14,7 @@
 import tempfile
 import time
 
-import pyaedt
+import ansys.aedt.core
 
 import pyedb
 from pyedb.misc.downloads import download_file
@@ -36,8 +36,8 @@ print(edb_full_path)
 # Create an instance of the ``pyedb.Edb`` class.
 
 # +
-# Select EDB version (change it manually if needed, e.g. "2024.1")
-edb_version = "2024.1"
+# Select EDB version (change it manually if needed, e.g. "2024.2")
+edb_version = "2024.2"
 print(f"EDB version: {edb_version}")
 
 edbapp = pyedb.Edb(edbpath=edb_full_path, edbversion=edb_version)
@@ -138,9 +138,9 @@ edbapp.close_edb()
 # run the analysis. AEDT 3D Layout can be used to view the model
 # if it is launched in graphical mode.
 
-h3d = pyaedt.Hfss3dLayout(
+h3d = ansys.aedt.core.Hfss3dLayout(
     edb_full_path,
-    specified_version="2024.1",
+    specified_version="2024.2",
     non_graphical=False,  # Set to true for non-graphical mode.
     new_desktop_session=True,
 )

@@ -20,110 +20,87 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
-from enum import Enum
+from pyedb.configuration.cfg_common import CfgBase
 
 
 class CfgPadstacks:
     """Padstack data class."""
 
-    def __init__(self, pdata, padstack_dict=None):
-        self._pedb = pdata._pedb
+    def __init__(self, pedb, padstack_dict=None):
+        self._pedb = pedb
         self.definitions = []
         self.instances = []
-        self._padstack_dict = padstack_dict
-        if self._padstack_dict:
-            if self._padstack_dict.get("definitions", ""):
-                self._definitions_dict = self._padstack_dict.get("definitions", "")
-                self.definitions = [Definition(pdata, definition) for definition in self._definitions_dict]
-            if self._padstack_dict.get("instances", None):
-                self._instances_dict = self._padstack_dict.get("instances", "")
-                self.instances = [Instance(pdata, inst) for inst in self._instances_dict]
+        if padstack_dict:
+            for pdef in padstack_dict.get("definitions", []):
+                self.definitions.append(Definition(**pdef))
+            for inst in padstack_dict.get("instances", []):
+                self.instances.append(Instance(**inst))
 
     def apply(self):
         """Apply padstack definition and instances on layout."""
-        for definition in self.definitions:
-            definition.apply()
-        for instance in self.instances:
-            instance.apply()
+        if self.definitions:
+            padstack_defs_layout = self._pedb.padstacks.definitions
+            for pdef in self.definitions:
+                pdef_layout = padstack_defs_layout[pdef.name]
+                pdef_layout.set_properties(**pdef.get_attributes())
+        if self.instances:
+            instances_layout = self._pedb.padstacks.instances_by_name
+            for inst in self.instances:
+                inst_layout = instances_layout[inst.name]
+                if inst.definition:
+                    # inst_layout.padstack_definition = inst.definition
+                    # Not supported by EDB API
+                    pass
+                if inst.backdrill_parameters:
+                    inst_layout.backdrill_parameters = inst.backdrill_parameters
+
+    def get_data_from_db(self):
+        self.definitions = []
+        for pdef_name, pdef in self._pedb.padstacks.definitions.items():
+            self.definitions.append(
+                Definition(
+                    name=pdef_name,
+                    hole_plating_thickness=pdef.hole_plating_thickness,
+                    hole_material=pdef.material,
+                    hole_range=pdef.hole_range,
+                    pad_parameters=pdef.pad_parameters,
+                    hole_parameters=pdef.hole_parameters,
+                )
+            )
+        data = {}
+        definitions = []
+        for i in self.definitions:
+            definitions.append(i.get_attributes())
+        data["definitions"] = definitions
+
+        instances_layout = self._pedb.padstacks.instances_by_name
+        for name, obj in instances_layout.items():
+            self.instances.append(
+                Instance(name=name, definition=obj.padstack_definition, backdrill_parameters=obj.backdrill_parameters)
+            )
+        instances = []
+        for i in self.instances:
+            instances.append(i.get_attributes())
+        data["instances"] = instances
+        return data
 
 
-class Definition:
+class Definition(CfgBase):
     """Padstack definition data class."""
 
-    def __init__(self, pdata, definition_dict):
-        self._pedb = pdata._pedb
-        self._definition_dict = definition_dict
-        self.name = self._definition_dict.get("name", None)
-        self.hole_diameter = self._definition_dict.get("hole_diameter", None)
-        self.hole_plating_thickness = self._definition_dict.get("hole_plating_thickness", None)
-        self.hole_material = self._definition_dict.get("hole_material", None)
-        self.hole_range = self._definition_dict.get("hole_range", None)
-
-    def apply(self):
-        """Apply padstack definition on layout."""
-        padstack_defs = self._pedb.padstacks.definitions
-        pdef = padstack_defs[self.name]
-        if self.hole_diameter:
-            pdef.hole_diameter = self.hole_diameter
-        if self.hole_plating_thickness:
-            pdef.hole_plating_thickness = self.hole_plating_thickness
-        if self.hole_material:
-            pdef.material = self.hole_material
-        if self.hole_range:
-            pdef.hole_range = self.hole_range
+    def __init__(self, **kwargs):
+        self.name = kwargs.get("name", None)
+        self.hole_plating_thickness = kwargs.get("hole_plating_thickness", None)
+        self.material = kwargs.get("hole_material", None)
+        self.hole_range = kwargs.get("hole_range", None)
+        self.pad_parameters = kwargs.get("pad_parameters", None)
+        self.hole_parameters = kwargs.get("hole_parameters", None)
 
 
-class Instance:
+class Instance(CfgBase):
     """Instance data class."""
 
-    def __init__(self, pdata, instances_dict):
-        self._pedb = pdata._pedb
-        self._instances_dict = instances_dict
-        self.name = self._instances_dict.get("name", "")
-        self.backdrill_top = None
-        self.backdrill_bottom = None
-        self._update_backdrill()
-
-    def _update_backdrill(self):
-        if "backdrill_top" in self._instances_dict:
-            self.backdrill_top = self.BackDrill()
-            self.backdrill_top.type = self.backdrill_top.BackDrillType.TOP
-            backdrill_top_dict = self._instances_dict["backdrill_top"]
-            self.backdrill_top.drill_to_layer = backdrill_top_dict.get("drill_to_layer", "")
-            self.backdrill_top.drill_diameter = backdrill_top_dict.get("drill_diameter", "")
-            self.backdrill_top.stub_length = backdrill_top_dict.get("stub_length", "")
-        if "backdrill_bottom" in self._instances_dict:
-            self.backdrill_bottom = self.BackDrill()
-            backdrill_bottom_dict = self._instances_dict["backdrill_bottom"]
-            self.backdrill_bottom.drill_to_layer = backdrill_bottom_dict.get("drill_to_layer", "")
-            self.backdrill_bottom.drill_diameter = backdrill_bottom_dict.get("drill_diameter", "")
-            self.backdrill_bottom.stub_length = backdrill_bottom_dict.get("stub_length", "")
-
-    class BackDrill:
-        """Backdrill data class."""
-
-        def __init__(self):
-            self.type = self.BackDrillType.BOTTOM
-            self.drill_to_layer = ""
-            self.drill_diameter = ""
-            self.stub_length = ""
-
-        class BackDrillType(Enum):
-            TOP = 0
-            BOTTOM = 1
-
-    def apply(self):
-        """Apply padstack instance on layout."""
-        padstack_instances = self._pedb.padstacks.instances_by_name
-        inst = padstack_instances[self.name]
-        if self.backdrill_top:
-            inst.set_backdrill_top(
-                self.backdrill_top.drill_to_layer, self.backdrill_top.drill_diameter, self.backdrill_top.stub_length
-            )
-        if self.backdrill_bottom:
-            inst.set_backdrill_bottom(
-                self.backdrill_bottom.drill_to_layer,
-                self.backdrill_bottom.drill_diameter,
-                self.backdrill_bottom.stub_length,
-            )
+    def __init__(self, **kwargs):
+        self.name = kwargs["name"]
+        self.definition = kwargs.get("definition", None)
+        self.backdrill_parameters = kwargs.get("backdrill_parameters", None)

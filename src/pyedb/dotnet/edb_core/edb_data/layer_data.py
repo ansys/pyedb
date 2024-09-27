@@ -23,6 +23,13 @@
 from __future__ import absolute_import
 
 
+def layer_cast(pedb, edb_object):
+    if edb_object.IsStackupLayer():
+        return StackupLayerEdbClass(pedb, edb_object.Clone(), name=edb_object.GetName())
+    else:
+        return LayerEdbClass(pedb, edb_object.Clone(), name=edb_object.GetName())
+
+
 class LayerEdbClass(object):
     """Manages Edb Layers. Replaces EDBLayer."""
 
@@ -214,8 +221,9 @@ class LayerEdbClass(object):
         layer_clone.SetName(name)
         self._pedb.stackup._set_layout_stackup(layer_clone, "change_name", self._name)
         self._name = name
-        for padstack_def in list(self._pedb.padstacks.definitions.values()):
-            padstack_def._update_layer_names(old_name=old_name, updated_name=name)
+        if self.type == "signal":
+            for padstack_def in list(self._pedb.padstacks.definitions.values()):
+                padstack_def._update_layer_names(old_name=old_name, updated_name=name)
 
     @property
     def type(self):

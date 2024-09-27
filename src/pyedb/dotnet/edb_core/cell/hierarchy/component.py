@@ -22,6 +22,7 @@
 
 import logging
 import re
+from typing import Optional
 import warnings
 
 from pyedb.dotnet.edb_core.cell.hierarchy.hierarchy_obj import Group
@@ -32,6 +33,7 @@ from pyedb.dotnet.edb_core.cell.hierarchy.s_parameter_model import SparamModel
 from pyedb.dotnet.edb_core.cell.hierarchy.spice_model import SpiceModel
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.dotnet.edb_core.general import pascal_to_snake, snake_to_pascal
 
 try:
     import numpy as np
@@ -60,6 +62,15 @@ class EDBComponent(Group):
         self.edbcomponent = edb_object
         self._layout_instance = None
         self._comp_instance = None
+
+    @property
+    def name(self):
+        """Name of the definition."""
+        return self._edb_object.GetName()
+
+    @name.setter
+    def name(self, value):
+        self._edb_object.SetName(value)
 
     @property
     def group_type(self):
@@ -808,7 +819,13 @@ class EDBComponent(Group):
             return False
         return True
 
-    def assign_spice_model(self, file_path, name=None, sub_circuit_name=None):
+    def assign_spice_model(
+        self,
+        file_path: str,
+        name: Optional[str] = None,
+        sub_circuit_name: Optional[str] = None,
+        terminal_pairs: Optional[list] = None,
+    ):
         """Assign Spice model to this component.
 
         Parameters
@@ -817,6 +834,10 @@ class EDBComponent(Group):
             File path of the Spice model.
         name : str, optional
             Name of the Spice model.
+        sub_circuit_name : str, optional
+            Name of the sub circuit.
+        terminal_pairs : list, optional
+            list of terminal pairs.
 
         Returns
         -------
@@ -828,23 +849,30 @@ class EDBComponent(Group):
         with open(file_path, "r") as f:
             for line in f:
                 if "subckt" in line.lower():
-                    pinNames = [i.strip() for i in re.split(" |\t", line) if i]
-                    pinNames.remove(pinNames[0])
-                    pinNames.remove(pinNames[0])
+                    pin_names_sp = [i.strip() for i in re.split(" |\t", line) if i]
+                    pin_names_sp.remove(pin_names_sp[0])
+                    pin_names_sp.remove(pin_names_sp[0])
                     break
-        if len(pinNames) == self.numpins:
-            model = self._edb.cell.hierarchy._hierarchy.SPICEModel()
-            model.SetModelPath(file_path)
-            model.SetModelName(name)
-            if sub_circuit_name:
-                model.SetSubCkt(sub_circuit_name)
-            terminal = 1
-            for pn in pinNames:
-                model.AddTerminalPinPair(pn, str(terminal))
-                terminal += 1
-        else:  # pragma: no cover
-            logging.error("Wrong number of Pins")
-            return False
+        if not len(pin_names_sp) == self.numpins:  # pragma: no cover
+            raise ValueError(f"Pin counts doesn't match component {self.name}.")
+
+        model = self._edb.cell.hierarchy._hierarchy.SPICEModel()
+        model.SetModelPath(file_path)
+        model.SetModelName(name)
+        if sub_circuit_name:
+            model.SetSubCkt(sub_circuit_name)
+
+        if terminal_pairs:
+            terminal_pairs = terminal_pairs if isinstance(terminal_pairs[0], list) else [terminal_pairs]
+            for pair in terminal_pairs:
+                pname, pnumber = pair
+                if pname not in pin_names_sp:  # pragma: no cover
+                    raise ValueError(f"Pin name {pname} doesn't exist in {file_path}.")
+                model.AddTerminalPinPair(pname, str(pnumber))
+        else:
+            for idx, pname in enumerate(pin_names_sp):
+                model.AddTerminalPinPair(pname, str(idx + 1))
+
         return self._set_model(model)
 
     def assign_s_param_model(self, file_path, name=None, reference_net=None):
@@ -856,7 +884,8 @@ class EDBComponent(Group):
             File path of the S-parameter model.
         name : str, optional
             Name of the S-parameter model.
-
+        reference_net : str, optional
+            Name of the reference net.
         Returns
         -------
 
@@ -958,7 +987,7 @@ class EDBComponent(Group):
         opening.append(bounding_box[3] + extra_soldermask_clearance)
 
         comp_layer = self.placement_layer
-        layer_names = list(self._pedb.stackup.stackup_layers.keys())
+        layer_names = list(self._pedb.stackup.layers.keys())
         layer_index = layer_names.index(comp_layer)
         if comp_layer in [layer_names[0] + layer_names[-1]]:
             return False
@@ -980,3 +1009,201 @@ class EDBComponent(Group):
         )
         void.is_negative = True
         return True
+
+    @property
+    def model_properties(self):
+        pp = {}
+        c_p = self.component_property
+        model = c_p.GetModel().Clone()
+        netlist_model = {}
+        pin_pair_model = []
+        s_parameter_model = {}
+        spice_model = {}
+        if model.GetModelType().ToString() == "NetlistModel":
+            netlist_model["netlist"] = model.GetNetlist()
+        elif model.GetModelType().ToString() == "PinPairModel":
+            temp = {}
+            for i in model.PinPairs:
+                temp["first_pin"] = i.FirstPin
+                temp["second_pin"] = i.SecondPin
+                rlc = model.GetPinPairRlc(i)
+                temp["is_parallel"] = rlc.IsParallel
+                temp["resistance"] = rlc.R.ToString()
+                temp["resistance_enabled"] = rlc.REnabled
+                temp["inductance"] = rlc.L.ToString()
+                temp["inductance_enabled"] = rlc.LEnabled
+                temp["capacitance"] = rlc.C.ToString()
+                temp["capacitance_enabled"] = rlc.CEnabled
+                pin_pair_model.append(temp)
+        elif model.GetModelType().ToString() == "SParameterModel":
+            s_parameter_model["reference_net"] = model.GetReferenceNet()
+            s_parameter_model["model_name"] = model.GetComponentModelName()
+        elif model.GetModelType().ToString() == "SPICEModel":
+            spice_model["model_name"] = model.GetModelName()
+            spice_model["model_path"] = model.GetModelPath()
+            spice_model["sub_circuit"] = model.GetSubCkt()
+            spice_model["terminal_pairs"] = [[i, j] for i, j in dict(model.GetTerminalPinPairs()).items()]
+
+        if netlist_model:
+            pp["netlist_model"] = netlist_model
+        if pin_pair_model:
+            pp["pin_pair_model"] = pin_pair_model
+        if s_parameter_model:
+            pp["s_parameter_model"] = s_parameter_model
+        if spice_model:
+            pp["spice_model"] = spice_model
+        return pp
+
+    @model_properties.setter
+    def model_properties(self, kwargs):
+        netlist_model = kwargs.get("netlist_model")
+        pin_pair_model = kwargs.get("pin_pair_model")
+        s_parameter_model = kwargs.get("s_parameter_model")
+        spice_model = kwargs.get("spice_model")
+
+        c_p = self.component_property
+        if netlist_model:
+            m = self._pedb._edb.Cell.Hierarchy.SParameterModel()
+            m.SetNetlist(netlist_model["netlist"])
+            c_p.SetModel(m)
+            self.component_property = c_p
+        elif pin_pair_model:
+            m = self._pedb._edb.Cell.Hierarchy.PinPairModel()
+            for i in pin_pair_model:
+                p = self._pedb._edb.Utility.PinPair(str(i["first_pin"]), str(i["second_pin"]))
+                rlc = self._pedb._edb.Utility.Rlc(
+                    self._pedb.edb_value(i["resistance"]),
+                    i["resistance_enabled"],
+                    self._pedb.edb_value(i["inductance"]),
+                    i["inductance_enabled"],
+                    self._pedb.edb_value(i["capacitance"]),
+                    i["capacitance_enabled"],
+                    i["is_parallel"],
+                )
+                m.SetPinPairRlc(p, rlc)
+            c_p.SetModel(m)
+            self.component_property = c_p
+        elif s_parameter_model:
+            m = self._pedb._edb.Cell.Hierarchy.SParameterModel()
+            m.SetComponentModelName(s_parameter_model["model_name"])
+            m.SetReferenceNet(s_parameter_model["reference_net"])
+            c_p.SetModel(m)
+            self.component_property = c_p
+        elif spice_model:
+            self.assign_spice_model(
+                spice_model["model_path"],
+                spice_model["model_name"],
+                spice_model["sub_circuit"],
+                spice_model["terminal_pairs"],
+            )
+
+    @property
+    def ic_die_properties(self):
+        temp = dict()
+        cp = self.component_property
+        c_type = self.type.lower()
+        if not c_type == "ic":
+            return temp
+        else:
+            ic_die_prop = cp.GetDieProperty().Clone()
+            die_type = pascal_to_snake(ic_die_prop.GetType().ToString())
+            temp["type"] = die_type
+            if not die_type == "no_die":
+                temp["orientation"] = pascal_to_snake(ic_die_prop.GetOrientation())
+                if die_type == "wire_bond":
+                    temp["height"] = ic_die_prop.GetHeightValue().ToString()
+            return temp
+
+    @ic_die_properties.setter
+    def ic_die_properties(self, kwargs):
+        cp = self.component_property
+        c_type = self.type.lower()
+        if not c_type == "ic":
+            return
+        else:
+            ic_die_prop = cp.GetDieProperty().Clone()
+            die_type = kwargs.get("type")
+            if not die_type == "no_die":
+                orientation = kwargs.get("orientation")
+                if orientation:
+                    ic_die_prop.SetOrientation(getattr(self._edb.definition.DieType, snake_to_pascal(die_type)))
+                if die_type == "wire_bond":
+                    height = kwargs.get("height")
+                    if height:
+                        ic_die_prop.SetHeight(self._pedb.edb_value(height))
+            cp.SetDieProperty(ic_die_prop)
+            self.component_property = cp
+
+    @property
+    def solder_ball_properties(self):
+        temp = dict()
+        cp = self.component_property
+        c_type = self.type.lower()
+        if c_type not in ["io", "other"]:
+            return temp
+        else:
+            solder_ball_prop = cp.GetSolderBallProperty().Clone()
+            _, diam, mid_diam = solder_ball_prop.GetDiameterValue()
+            height = solder_ball_prop.GetHeightValue().ToString()
+            shape = solder_ball_prop.GetShape().ToString()
+            uses_solder_ball = solder_ball_prop.UsesSolderball()
+            temp["uses_solder_ball"] = uses_solder_ball
+            temp["shape"] = pascal_to_snake(shape)
+            temp["diameter"] = diam.ToString()
+            temp["mid_diameter"] = mid_diam.ToString()
+            temp["height"] = height
+            return temp
+
+    @solder_ball_properties.setter
+    def solder_ball_properties(self, kwargs):
+        cp = self.component_property
+        solder_ball_prop = cp.GetSolderBallProperty().Clone()
+        shape = kwargs.get("shape")
+        if shape:
+            solder_ball_prop.SetShape(getattr(self._edb.definition.SolderballShape, snake_to_pascal(shape)))
+        if shape == "cylinder":
+            diameter = kwargs["diameter"]
+            solder_ball_prop.SetDiameter(self._pedb.edb_value(diameter), self._pedb.edb_value(diameter))
+        elif shape == "spheroid":
+            diameter = kwargs["diameter"]
+            mid_diameter = kwargs["mid_diameter"]
+            solder_ball_prop.SetDiameter(self._pedb.edb_value(diameter), self._pedb.edb_value(mid_diameter))
+        else:
+            return
+        solder_ball_prop.SetHeight(self._get_edb_value(kwargs["height"]))
+        cp.SetSolderBallProperty(solder_ball_prop)
+        self.component_property = cp
+
+    @property
+    def port_properties(self):
+        temp = dict()
+        cp = self.component_property
+        c_type = self.type.lower()
+        if c_type not in ["ic", "io", "other"]:
+            return temp
+        else:
+            port_prop = cp.GetPortProperty().Clone()
+            reference_height = port_prop.GetReferenceHeightValue().ToString()
+            reference_size_auto = port_prop.GetReferenceSizeAuto()
+            _, reference_size_x, reference_size_y = port_prop.GetReferenceSize()
+            temp["reference_height"] = reference_height
+            temp["reference_size_auto"] = reference_size_auto
+            temp["reference_size_x"] = str(reference_size_x)
+            temp["reference_size_y"] = str(reference_size_y)
+            return temp
+
+    @port_properties.setter
+    def port_properties(self, kwargs):
+        cp = self.component_property
+        port_prop = cp.GetPortProperty().Clone()
+        height = kwargs.get("reference_height")
+        if height:
+            port_prop.SetReferenceHeight(self._pedb.edb_value(height))
+        reference_size_auto = kwargs.get("reference_size_auto")
+        if reference_size_auto:
+            port_prop.SetReferenceSizeAuto(reference_size_auto)
+        reference_size_x = kwargs.get("reference_size_x", 0)
+        reference_size_y = kwargs.get("reference_size_y", 0)
+        port_prop.SetReferenceSize(self._pedb.edb_value(reference_size_x), self._pedb.edb_value(reference_size_y))
+        cp.SetPortProperty(port_prop)
+        self.component_property = cp

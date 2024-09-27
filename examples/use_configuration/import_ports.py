@@ -1,6 +1,7 @@
 # # Import Ports
 # This example shows how to import ports. In this example, we are going to
-# - Download a example board
+#
+# - Download an example board
 # - Create a configuration file
 #   - Add a circuit port between two nets
 #   - Add a circuit port between two pins
@@ -18,11 +19,11 @@ import json
 from pathlib import Path
 import tempfile
 
-from pyaedt.downloads import download_file
+from ansys.aedt.core.downloads import download_file
 
 from pyedb import Edb
 
-AEDT_VERSION = "2024.1"
+AEDT_VERSION = "2024.2"
 NG_MODE = False
 
 # -
@@ -101,7 +102,7 @@ port_4 = {
 
 port_5 = {"name": "port_5", "reference_designator": "U1", "type": "coax", "positive_terminal": {"pin": "AM17"}}
 
-# ## Add a port reference to the neareast pin
+# ## Add a port reference to the nearest pin
 
 # Keywords
 #
@@ -151,11 +152,9 @@ edbapp.configuration.run()
 
 edbapp.ports
 
-# ## Save EDB
+# ## Save and close Edb
+# The temporary folder will be deleted once the execution of this script is finished. Replace **edbapp.save()** with
+# **edbapp.save_as("C:/example.aedb")** to keep the example project.
 
 edbapp.save()
-print(f"EDB is saved to {edbapp.edbpath}")
-
-# ## Close EDB
-
 edbapp.close()
