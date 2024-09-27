@@ -1453,14 +1453,14 @@ class Edb(Database):
             return False
 
     def import_gds_file(
-            self,
-            inputGDS,
-            anstranslator_full_path="",
-            use_ppe=False,
-            control_file=None,
-            tech_file=None,
-            map_file=None,
-            layer_filter=None
+        self,
+        inputGDS,
+        anstranslator_full_path="",
+        use_ppe=False,
+        control_file=None,
+        tech_file=None,
+        map_file=None,
+        layer_filter=None,
     ):
         """Import a GDS file and generate an ``edb.def`` file in the working directory.
 
@@ -1497,16 +1497,15 @@ class Edb(Database):
 
             ControlFile(xml_input=control_file, tecnhology=tech_file, layer_map=map_file).write_xml(control_file_temp)
             if self.import_layout_pcb(
-                    inputGDS,
-                    anstranslator_full_path=anstranslator_full_path,
-                    use_ppe=use_ppe,
-                    control_file=control_file_temp,
+                inputGDS,
+                anstranslator_full_path=anstranslator_full_path,
+                use_ppe=use_ppe,
+                control_file=control_file_temp,
             ):
                 return True
             else:
                 return False
         else:
-
             temp_map_file = os.path.splitext(inputGDS)[0] + ".map"
             temp_layermap_file = os.path.splitext(inputGDS)[0] + ".layermap"
 
@@ -1526,20 +1525,14 @@ class Edb(Database):
                     else:
                         print("No control or tech file is provided!")
 
-                command = [
-                    anstranslator_full_path,
-                    inputGDS,
-                    f'-g="{map_file}"',
-                    f'-c="{control_file}"'
-                ]
+                command = [anstranslator_full_path, inputGDS, f'-g="{map_file}"', f'-c="{control_file}"']
             else:
                 command = [
                     anstranslator_full_path,
                     inputGDS,
-                    f'-o="{control_file_temp}"'
-                    f'-t="{tech_file}"',
+                    f'-o="{control_file_temp}"' f'-t="{tech_file}"',
                     f'-g="{map_file}"',
-                    f'-f="{layer_filter}"'
+                    f'-f="{layer_filter}"',
                 ]
 
             result = subprocess.run(command, capture_output=True, text=True, shell=True)
