@@ -24,7 +24,6 @@ from ansys.edb.core.net.net import Net as GrpcNet
 from ansys.edb.core.primitive.primitive import PrimitiveType as GrpcPrimitiveType
 
 from pyedb.grpc.edb_core.hierarchy.component import Component
-from pyedb.grpc.edb_core.nets.extended_net import ExtendedNet
 from pyedb.grpc.edb_core.primitive.padstack_instances import PadstackInstance
 from pyedb.grpc.edb_core.primitive.primitive import Primitive
 
