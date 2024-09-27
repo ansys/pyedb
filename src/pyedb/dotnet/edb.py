@@ -1480,7 +1480,8 @@ class Edb(Database):
             the XML file in the same directory as the GDS file. To succeed, the XML file and GDS file must
             have the same name. Only the extension differs.
         tech_file : str, optional
-            Technology file. For versions<2024.1 it uses Helic to convert tech file to xml and then imports the gds. Works on Linux only.
+            Technology file. For versions<2024.1 it uses Helic to convert tech file to xml and then imports
+            the gds. Works on Linux only.
             For versions>=2024.1 it can directly parse through supported foundry tech files.
         map_file : str, optional
             Layer map file.
