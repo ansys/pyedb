@@ -301,10 +301,12 @@ jobs:
 
       - name: Create Python venv
         run: |
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
           python -m venv .venv
 
       - name: Update pip
         run: |
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
           . .venv/bin/activate
           python -m pip install -U pip
 
@@ -317,11 +319,13 @@ jobs:
 
       - name: Install PyAEDT main branch version with its test dependencies
         run: |
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
           . .venv/bin/activate
           pip install --no-cache-dir external/pyaedt[tests]
 
       - name: Install PyEDB
         run: |
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
           . .venv/bin/activate
           python -m pip install .
 
