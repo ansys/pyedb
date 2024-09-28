@@ -32,6 +32,7 @@ jobs:
 
   test-pyaedt-main-linux:
     name: Testing PyAEDT main branch (Linux)
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     runs-on: [ self-hosted, Linux, pyaedt ]
     env:
       ANSYSEM_ROOT242: '/ansys_inc/AnsysEM/v242/Linux64'
