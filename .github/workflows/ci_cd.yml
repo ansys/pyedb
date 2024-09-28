@@ -40,6 +40,11 @@ jobs:
       - name: Install Git and checkout project
         uses: actions/checkout@v4
 
+      - name: Install OS packages
+        run: |
+          sudo apt update
+          sudo apt-get install tk
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
