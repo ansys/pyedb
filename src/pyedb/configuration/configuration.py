@@ -106,6 +106,9 @@ class Configuration:
     def run(self, **kwargs):
         """Apply configuration settings to the current design"""
 
+        if self.cfg_data.general:
+            self.cfg_data.general.apply()
+
         # Configure boundary settings
         if self.cfg_data.boundaries:
             self.cfg_data.boundaries.apply()
@@ -272,6 +275,8 @@ class Configuration:
         """
         self._pedb.logger.info("Getting data from layout database.")
         data = {}
+        if kwargs.get("general", False):
+            data["general"] = self.cfg_data.general.get_data_from_db()
         if kwargs.get("stackup", False):
             data["stackup"] = self.cfg_data.stackup.get_data_from_db()
         if kwargs.get("package_definitions", False):
