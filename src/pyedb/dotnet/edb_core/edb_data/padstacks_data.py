@@ -499,7 +499,7 @@ class EDBPadstack(object):
             self._ppadstack._pedb._edb.Definition.PadType.RegularPad,
             self._ppadstack._pedb._edb.Definition.PadType.AntiPad,
             self._ppadstack._pedb._edb.Definition.PadType.ThermalPad,
-            #self._ppadstack._pedb._edb.Definition.PadType.Hole,
+            # self._ppadstack._pedb._edb.Definition.PadType.Hole,
         ]
         data = {}
         for pad_type in pad_type_list:
