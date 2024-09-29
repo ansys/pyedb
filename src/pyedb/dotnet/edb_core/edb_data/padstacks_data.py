@@ -499,7 +499,7 @@ class EDBPadstack(object):
             self._ppadstack._pedb._edb.Definition.PadType.RegularPad,
             self._ppadstack._pedb._edb.Definition.PadType.AntiPad,
             self._ppadstack._pedb._edb.Definition.PadType.ThermalPad,
-            self._ppadstack._pedb._edb.Definition.PadType.Hole,
+            #self._ppadstack._pedb._edb.Definition.PadType.Hole,
         ]
         data = {}
         for pad_type in pad_type_list:
@@ -588,15 +588,14 @@ class EDBPadstack(object):
                     continue
 
                 # Set pad parameters for the current layer
-                default = original_params[pad_type_name]
                 pdef_data.SetPadParameters(
                     layer_data["layer_name"],
                     pad_type,
                     pad_shape,
                     convert_py_list_to_net_list([self._ppadstack._pedb.edb_value(i) for i in temp_param]),
-                    self._ppadstack._pedb.edb_value(layer_data.get("offset_x", default[idx].get("offset_x", 0))),
-                    self._ppadstack._pedb.edb_value(layer_data.get("offset_y", default[idx].get("offset_y", 0))),
-                    self._ppadstack._pedb.edb_value(layer_data.get("rotation", default[idx].get("rotation", 0))),
+                    self._ppadstack._pedb.edb_value(layer_data.get("offset_x", 0)),
+                    self._ppadstack._pedb.edb_value(layer_data.get("offset_y", 0)),
+                    self._ppadstack._pedb.edb_value(layer_data.get("rotation", 0)),
                 )
         self._padstack_def_data = pdef_data
 
