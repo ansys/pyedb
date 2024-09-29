@@ -242,7 +242,7 @@ class TestClass:
 
         assert edbapp.stackup["1_Top"].color
         edbapp.stackup["1_Top"].color = [0, 120, 0]
-        assert edbapp.stackup["1_Top"].color == (0, 120, 0)
+        assert edbapp.stackup["1_Top"].color == [0, 120, 0]
         edbapp.stackup["1_Top"].transparency = 10
         assert edbapp.stackup["1_Top"].transparency == 10
         assert edbapp.stackup.mode == "Laminate"
