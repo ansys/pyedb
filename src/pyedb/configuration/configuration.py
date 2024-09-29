@@ -352,7 +352,7 @@ class Configuration:
         data = self.get_data_from_db(
             stackup=stackup,
             package_definitions=package_definitions,
-            setups=False,
+            setups=setups,
             sources=sources,
             ports=ports,
             nets=nets,

@@ -177,6 +177,9 @@ class CfgSetups:
     def get_data_from_db(self):
         setups = []
         for _, s in self._pedb.setups.items():
+            if not s.type == "hfss":
+                # todo exporting siwave setup is skipped due to defect in 24.2
+                continue
             stp = {}
             if s.type == "hfss":
                 for p_name in CfgHFSSSetup(self._pedb).__dict__:
