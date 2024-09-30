@@ -1523,7 +1523,7 @@ class Edb(Database):
                     if os.path.isfile(temp_control_file):
                         control_file = temp_control_file
                     else:
-                        print("No control or tech file is provided!")
+                        self.logger.error("Unable to define control file.")
 
                 command = [anstranslator_full_path, inputGDS, f'-g="{map_file}"', f'-c="{control_file}"']
             else:
