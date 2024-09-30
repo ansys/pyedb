@@ -1515,7 +1515,7 @@ class Edb(Database):
                 elif os.path.isfile(temp_layermap_file):
                     map_file = temp_layermap_file
                 else:
-                    print("No layermap file is provided!")
+                    self.logger.error("Unable to define map file.")
 
             if tech_file is None:
                 if control_file is None:
