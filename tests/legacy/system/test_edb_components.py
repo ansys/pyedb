@@ -629,11 +629,17 @@ class TestClass:
 
     def test_ic_die_properties(self):
         component: EDBComponent = self.edbapp.components["U8"]
-        assert component.ic_die_properties["type"] == "no_die"
-        assert "orientation" not in component.ic_die_properties
-        assert "height" not in component.ic_die_properties
-        component.ic_die_properties = {"type": "flip_chip"}
-        assert component.ic_die_properties["type"] == "flip_chip"
-        component.ic_die_properties = {"orientation": "chip_down"}
-        assert component.ic_die_properties["type"] == "flip_chip"
-        assert component.ic_die_properties["orientation"] == "chip_down"
+        _assert_initial_ic_die_properties(component)
+        component.ic_die_properties = {"type": "flip_chip", "orientation": "chip_down"}
+        _assert_final_ic_die_properties(component)
+
+
+def _assert_initial_ic_die_properties(component: EDBComponent):
+    assert component.ic_die_properties["type"] == "no_die"
+    assert "orientation" not in component.ic_die_properties
+    assert "height" not in component.ic_die_properties
+
+
+def _assert_final_ic_die_properties(component: EDBComponent):
+    assert component.ic_die_properties["type"] == "flip_chip"
+    assert component.ic_die_properties["orientation"] == "chip_down"
