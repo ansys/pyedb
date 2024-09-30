@@ -1037,5 +1037,5 @@ class TestClass:
         db: EdbType = edb_examples.get_si_verse()
         component = db.components["U8"]
         _assert_initial_ic_die_properties(component)
-        db.configuration.load(U8_IC_DIE_PROPERTIES)
+        db.configuration.load(U8_IC_DIE_PROPERTIES, apply_file=True)
         _assert_final_ic_die_properties(component)

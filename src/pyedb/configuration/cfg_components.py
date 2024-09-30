@@ -65,7 +65,7 @@ class CfgComponents:
             if comp.port_properties:
                 c_db.port_properties = comp.port_properties
             if comp.ic_die_properties:
-                c_db.set_ic_die_properties = comp.ic_die_properties
+                c_db.ic_die_properties = comp.ic_die_properties
             if comp.pin_pair_model:
                 c_db.model_properties = {"pin_pair_model": comp.pin_pair_model}
             if comp.spice_model:

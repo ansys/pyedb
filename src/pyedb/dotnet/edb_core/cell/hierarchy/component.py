@@ -1109,7 +1109,7 @@ class EDBComponent(Group):
             die_type = pascal_to_snake(ic_die_prop.GetType().ToString())
             temp["type"] = die_type
             if not die_type == "no_die":
-                temp["orientation"] = pascal_to_snake(ic_die_prop.GetOrientation())
+                temp["orientation"] = pascal_to_snake(ic_die_prop.GetOrientation().ToString())
                 if die_type == "wire_bond":
                     temp["height"] = ic_die_prop.GetHeightValue().ToString()
             return temp
@@ -1123,10 +1123,13 @@ class EDBComponent(Group):
         else:
             ic_die_prop = cp.GetDieProperty().Clone()
             die_type = kwargs.get("type")
+            ic_die_prop.SetType(getattr(self._edb.definition.DieType, snake_to_pascal(die_type)))
             if not die_type == "no_die":
                 orientation = kwargs.get("orientation")
                 if orientation:
-                    ic_die_prop.SetOrientation(getattr(self._edb.definition.DieType, snake_to_pascal(die_type)))
+                    ic_die_prop.SetOrientation(
+                        getattr(self._edb.definition.DieOrientation, snake_to_pascal(orientation))
+                    )
                 if die_type == "wire_bond":
                     height = kwargs.get("height")
                     if height:
