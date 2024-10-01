@@ -190,10 +190,7 @@ class EdbPadstacks(object):
         self._definitions = {}
         for padstackdef in self._pedb.padstack_defs:
             PadStackData = padstackdef.GetData()
-            print(padstackdef.GetName())
-            layer_names = list(PadStackData.GetLayerNames())
-            print(layer_names)
-            if layer_names:
+            if len(PadStackData.GetLayerIds()):
                 self._definitions[padstackdef.GetName()] = EDBPadstack(padstackdef, self)
         return self._definitions
 
@@ -761,8 +758,8 @@ class EdbPadstacks(object):
         layout_lobj_collection = [i._edb_object for i in layout_lobj_collection]
         via_list = []
         for lobj in layout_lobj_collection:
-            pad_layers_name = lobj.GetPadstackDef().GetData().GetLayerNames()
-            if len(pad_layers_name) > 1:
+            pad_layers_ids = lobj.GetPadstackDef().GetData().GetLayerIds()
+            if len(pad_layers_ids) > 1:
                 if not net_list:
                     via_list.append(lobj)
                 elif lobj.GetNet().GetName() in net_list:
