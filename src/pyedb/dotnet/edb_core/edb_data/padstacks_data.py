@@ -688,6 +688,8 @@ class EDBPadstack(object):
             for layer in self._ppadstack._pedb.stackup.layers.values()
             if layer.id in self._padstack_def_data.GetLayerIds()
         )
+        print("self._ppadstack._pedb.stackup.layers", self._ppadstack._pedb.stackup.layers)
+        print("self._padstack_def_data.GetLayerIds()", self._padstack_def_data.GetLayerIds())
         res = list(self._padstack_def_data.GetLayerNames())
         print("names through API", res)
         print("names through IDs", tmp_res)
@@ -1223,12 +1225,12 @@ class EDBPadstack(object):
                 from_layer = [
                     l
                     for l in self._ppadstack._pedb.stackup._edb_layer_list
-                    if l.GetId() == list(instance.GetData().GetLayerIds())[0]
+                    if l.GetLayerId() == list(instance.GetData().GetLayerIds())[0]
                 ][0]
                 to_layer = [
                     l
                     for l in self._ppadstack._pedb.stackup._edb_layer_list
-                    if l.GetId() == list(instance.GetData().GetLayerIds())[-1]
+                    if l.GetLayerId() == list(instance.GetData().GetLayerIds())[-1]
                 ][0]
                 padstack_instance = self._edb.cell.primitive.padstack_instance.create(
                     layout,
