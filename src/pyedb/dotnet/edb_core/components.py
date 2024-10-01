@@ -1040,7 +1040,7 @@ class Components(object):
                     "outside the component when not found if argument extend_reference_pins_outside_component is True."
                 )
                 return False
-            pad_params = self._padstack.get_pad_parameters_from_id(pin=cmp_pins[0], layername=pin_ids[0], pad_type=0)
+            pad_params = self._padstack.get_pad_parameters_from_id(pin=cmp_pins[0], layer_id=pin_ids[0], pad_type=0)
             if not pad_params[0] == 7:
                 if not solder_balls_size:  # pragma no cover
                     sball_diam = min([self._pedb.edb_value(val).ToDouble() for val in pad_params[1]])
@@ -2088,7 +2088,7 @@ class Components(object):
         if not sball_diam:
             pin1 = list(cmp.pins.values())[0].pin
             pin_ids = pin1.GetPadstackDef().GetData().GetLayerIds()
-            pad_params = self._padstack.get_pad_parameters_from_id(pin=pin1, layername=pin_ids[0], pad_type=0)
+            pad_params = self._padstack.get_pad_parameters_from_id(pin=pin1, layer_id=pin_ids[0], pad_type=0)
             _sb_diam = min([abs(self._get_edb_value(val).ToDouble()) for val in pad_params[1]])
             sball_diam = 0.8 * _sb_diam
         if sball_height:
