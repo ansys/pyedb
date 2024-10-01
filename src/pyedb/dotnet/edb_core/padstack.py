@@ -194,6 +194,7 @@ class EdbPadstacks(object):
                 self._logger.error("Padstack data is null")
                 exit(12)
             layer_names = PadStackData.GetLayerNames()
+            exit(layer_names)
             if layer_names.IsNull():
                 self._logger.error("Layer names is null")
                 exit(13)
