@@ -248,13 +248,13 @@ class LayerEdbClass(object):
 
     @properties.setter
     def properties(self, params):
-        name = params.get("name")
+        name = params.get("name", "")
         if name:
             self.name = name
-        type = params.get("type")
+        type = params.get("type", "")
         if type:
             self.type = type
-        color = params.get("color")
+        color = params.get("color", "")
         if color:
             self.color = color
 
