@@ -684,12 +684,11 @@ class EDBPadstack(object):
         #     if layer.id in self._padstack_def_data.GetLayerIds()
         # )
         tmp_res = list(
-            layer.GetName()
-            for layer in self._ppadstack._pedb.stackup._edb_layer_list
-            if layer.GetId() in self._padstack_def_data.GetLayerIds()
+            layer.name
+            for layer in self._ppadstack._pedb.stackup.layers.values()
+            if layer.id in self._padstack_def_data.GetLayerIds()
         )
         res = list(self._padstack_def_data.GetLayerNames())
-        # print("self._ppadstack._pedb.stackup", self._ppadstack._pedb.stackup.)
         print("names through API", res)
         print("names through IDs", tmp_res)
         if res != tmp_res:
