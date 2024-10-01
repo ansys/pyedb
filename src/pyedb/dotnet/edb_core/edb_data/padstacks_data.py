@@ -512,7 +512,7 @@ class EDBPadstack(object):
 
                 pad_params = {}
                 layer_name = next(
-                    (layer.name for layer in self._ppadstack._pedb.stackup.layers if layer.id == layer_id), None
+                    (layer.name for layer in self._ppadstack._pedb.stackup.layers.items() if layer.id == layer_id), None
                 )
                 if layer_name is None:
                     self._ppadstack._pedb.logger.error("Could not retrieve layer name.")
