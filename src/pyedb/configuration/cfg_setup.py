@@ -177,9 +177,11 @@ class CfgSetups:
     def get_data_from_db(self):
         setups = []
         for _, s in self._pedb.setups.items():
-            if not s.type == "hfss":
-                # todo exporting siwave setup is skipped due to defect in 24.2
-                continue
+            if float(self._pedb.edbversion) < 2025.1:
+                if not s.type == "hfss":
+                    self._pedb.logger.warning("Only HFSS setups are exported in 2024 R2 and earlier version.")
+                    continue
+
             stp = {}
             if s.type == "hfss":
                 for p_name in CfgHFSSSetup(self._pedb).__dict__:
