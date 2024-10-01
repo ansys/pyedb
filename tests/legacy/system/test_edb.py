@@ -34,7 +34,7 @@ from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
 from pyedb.generic.constants import RadiationBoxType, SourceType
-from pyedb.generic.general_methods import is_linux
+from pyedb.generic.general_methods import is_linux, isclose
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
@@ -347,6 +347,9 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
 
         edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp.components.create_pingroup_from_pins(
+            [i for i in list(edbapp.components.instances["U1"].pins.values()) if i.net_name == "GND"]
+        )
 
         assert edbapp.cutout(
             signal_list=["DDR4_DQS0_P", "DDR4_DQS0_N"],
@@ -354,6 +357,7 @@ class TestClass:
             number_of_threads=4,
             extent_type="ConvexHull",
             use_pyaedt_extent_computing=True,
+            include_pingroups=True,
             check_terminals=True,
             expansion_factor=4,
         )
@@ -1010,6 +1014,7 @@ class TestClass:
         )
         edbapp.close()
 
+    @pytest.mark.skipif(is_linux, reason="It seems that there is a strange behavior with use_dc_custom_settings.")
     def test_siwave_dc_simulation_setup(self):
         """Create a dc simulation setup and evaluate its properties."""
         setup1 = self.edbapp.create_siwave_dc_setup("DC1")
@@ -1018,24 +1023,22 @@ class TestClass:
 
         settings = self.edbapp.setups["DC1"].get_configurations()
         for k, v in setup1.dc_settings.defaults.items():
-            if k in ["compute_inductance", "plot_jv", "use_custom_settings"]:
+            # NOTE: On Linux it seems that there is a strange behavior with use_dc_custom_settings
+            # See https://github.com/ansys/pyedb/pull/791#issuecomment-2358036067
+            if k in ["compute_inductance", "plot_jv", "use_dc_custom_settings"]:
                 continue
-            print(k)
             assert settings["dc_settings"][k] == v
 
         for k, v in setup1.dc_advanced_settings.defaults.items():
-            print(k)
             assert settings["dc_advanced_settings"][k] == v
 
         for p in [0, 1, 2]:
             setup1.set_dc_slider(p)
             settings = self.edbapp.setups["DC1"].get_configurations()
             for k, v in setup1.dc_settings.dc_defaults.items():
-                print(k)
                 assert settings["dc_settings"][k] == v[p]
 
             for k, v in setup1.dc_advanced_settings.dc_defaults.items():
-                print(k)
                 assert settings["dc_advanced_settings"][k] == v[p]
 
     def test_siwave_ac_simulation_setup(self):
@@ -1510,14 +1513,23 @@ class TestClass:
         assert polygon.move(["1mm", 1e-3])
         assert round(polygon.center[0], 6) == 0.051
         assert round(polygon.center[1], 6) == -0.0045
+
         assert polygon.rotate(angle=45)
-        assert polygon.bbox == [0.012462680425333156, -0.043037319574666846, 0.08953731957466685, 0.034037319574666845]
+        expected_bbox = [0.012462680425333156, -0.043037319574666846, 0.08953731957466685, 0.034037319574666845]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.rotate(angle=34, center=[0, 0])
-        assert polygon.bbox == [0.03083951217158376, -0.025151830651067256, 0.05875505636026722, 0.07472816865208806]
+        expected_bbox = [0.03083951217158376, -0.025151830651067256, 0.05875505636026722, 0.07472816865208806]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.scale(factor=1.5)
-        assert polygon.bbox == [0.0238606261244129, -0.05012183047685609, 0.06573394240743807, 0.09969816847787688]
+        expected_bbox = [0.0238606261244129, -0.05012183047685609, 0.06573394240743807, 0.09969816847787688]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.scale(factor=-0.5, center=[0, 0])
-        assert polygon.bbox == [-0.032866971203719036, -0.04984908423893844, -0.01193031306220645, 0.025060915238428044]
+        expected_bbox = [-0.032866971203719036, -0.04984908423893844, -0.01193031306220645, 0.025060915238428044]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"

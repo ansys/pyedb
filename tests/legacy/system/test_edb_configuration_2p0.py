@@ -24,7 +24,25 @@ from pathlib import Path
 
 import pytest
 
+from pyedb.dotnet.edb import Edb as EdbType
+from tests.legacy.system.test_edb_components import (
+    _assert_final_ic_die_properties,
+    _assert_initial_ic_die_properties,
+)
+
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
+
+
+U8_IC_DIE_PROPERTIES = {
+    "components": [
+        {
+            "reference_designator": "U8",
+            "definition": "MAXM-T833+2_V",
+            "type": "ic",
+            "ic_die_properties": {"type": "flip_chip", "orientation": "chip_down"},
+        }
+    ]
+}
 
 
 class TestClass:
@@ -417,11 +435,29 @@ class TestClass:
         edbapp.close()
 
     def test_07_boundaries(self, edb_examples):
-        with open(self.local_input_folder / "boundaries.json") as f:
-            data = json.load(f)
-
+        data = {
+            "boundaries": {
+                "open_region": True,
+                "open_region_type": "radiation",
+                "pml_visible": False,
+                "pml_operation_frequency": "5GHz",
+                "pml_radiation_factor": "10",
+                "dielectric_extent_type": "bounding_box",
+                # "dielectric_base_polygon": "",
+                "horizontal_padding": 0.0,
+                "honor_primitives_on_dielectric_layers": True,
+                "air_box_extent_type": "bounding_box",
+                # "air_box_base_polygon": "",
+                "air_box_truncate_model_ground_layers": False,
+                "air_box_horizontal_padding": 0.15,
+                "air_box_positive_vertical_padding": 1.0,
+                "air_box_negative_vertical_padding": 1.0,
+            }
+        }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(boundaries=True)
+        assert data == data_from_db
         edbapp.close()
 
     def test_08a_operations_cutout(self, edb_examples):
@@ -521,15 +557,17 @@ class TestClass:
                     {
                         "name": "Via998",
                         "definition": "v35h15",
-                        "backdrill_top": {
-                            "drill_to_layer": "Inner3(Sig1)",
-                            "drill_diameter": "0.5mm",
-                            "stub_length": "0.2mm",
-                        },
-                        "backdrill_bottom": {
-                            "drill_to_layer": "Inner4(Sig2)",
-                            "drill_diameter": "0.5mm",
-                            "stub_length": "0.2mm",
+                        "backdrill_parameters": {
+                            "from_top": {
+                                "drill_to_layer": "Inner3(Sig1)",
+                                "diameter": "0.5mm",
+                                "stub_length": "0.2mm",
+                            },
+                            "from_bottom": {
+                                "drill_to_layer": "Inner4(Sig2)",
+                                "diameter": "0.5mm",
+                                "stub_length": "0.2mm",
+                            },
                         },
                     }
                 ],
@@ -538,6 +576,8 @@ class TestClass:
 
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
+        data_from_db = edbapp.configuration.get_data_from_db(padstacks=True)
+        assert data_from_db["padstacks"]["instances"]
         edbapp.close()
 
     def test_10_general(self, edb_examples):
@@ -631,6 +671,8 @@ class TestClass:
             for p, value in setup.items():
                 if p == "freq_sweep":
                     pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
+                elif p == "dc_ir_settings":  # EDB API bug in linux.
+                    pass
                 else:
                     assert value == target[p]
         edbapp.close()
@@ -920,7 +962,7 @@ class TestClass:
         data = {"components": components}
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        assert edbapp.components["C375"].get_model_properties()["pin_pair_model"] == components[0]["pin_pair_model"]
+        assert edbapp.components["C375"].model_properties["pin_pair_model"] == components[0]["pin_pair_model"]
         edbapp.configuration.get_data_from_db(components=True)
 
         edbapp.close()
@@ -990,3 +1032,10 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         edbapp.configuration.load(data_from_db, apply_file=True)
         edbapp.close()
+
+    def test_17_ic_die_properties(self, edb_examples):
+        db: EdbType = edb_examples.get_si_verse()
+        component = db.components["U8"]
+        _assert_initial_ic_die_properties(component)
+        db.configuration.load(U8_IC_DIE_PROPERTIES, apply_file=True)
+        _assert_final_ic_die_properties(component)

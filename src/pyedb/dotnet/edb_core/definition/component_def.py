@@ -172,7 +172,7 @@ class EDBComponentDef(ObjBase):
     def component_models(self):
         temp = {}
         for i in list(self._edb_object.GetComponentModels()):
-            temp_type = i.ToString().split(".")[0]
+            temp_type = i.ToString().split(".")[-1]
             if temp_type == "NPortComponentModel":
                 edb_object = NPortComponentModel(self._pedb, i)
                 temp[edb_object.name] = edb_object
