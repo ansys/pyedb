@@ -505,13 +505,18 @@ class EDBPadstack(object):
         for pad_type in pad_type_list:
             pad_type_name = pascal_to_snake(pad_type.ToString())
             temp_list = []
-            for lyr_name in list(pdef_data.GetLayerNames()):
-                result = pdef_data.GetPadParametersValue(lyr_name, pad_type)
+            for layer_id in list(pdef_data.GetLayerIds()):
+                result = pdef_data.GetPadParametersValue(layer_id, pad_type)
                 _, pad_shape, params, offset_x, offset_y, rotation = result
                 pad_shape = pascal_to_snake(pad_shape.ToString())
 
                 pad_params = {}
-                pad_params["layer_name"] = lyr_name
+                layer_name = next(
+                    (layer.name for layer in self._ppadstack._pedb.stackup.layers if layer.id == layer_id), None
+                )
+                if layer_name is None:
+                    self._ppadstack._pedb.logger.error("Could not retrieve layer name.")
+                pad_params["layer_name"] = layer_name
                 pad_params["shape"] = pad_shape
                 pad_params["offset_x"] = offset_x.ToString()
                 pad_params["offset_y"] = offset_y.ToString()
@@ -959,7 +964,7 @@ class EDBPadstack(object):
     def hole_range(self, value):
         pdef_data = self._padstack_def_data
         pdef_data.SetHoleRange(getattr(self._edb.definition.PadstackHoleRange, snake_to_pascal(value)))
-        self._padstack_def_data = pdef_data
+        self._padstack_def_data = pdef_data.GetData()
 
     def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True):
         """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
@@ -1200,12 +1205,12 @@ class EDBPadstack(object):
                 from_layer = [
                     l
                     for l in self._ppadstack._pedb.stackup._edb_layer_list
-                    if l.GetName() == list(instance.GetData().GetLayerNames())[0]
+                    if l.GetId() == list(instance.GetData().GetLayerIds())[0]
                 ][0]
                 to_layer = [
                     l
                     for l in self._ppadstack._pedb.stackup._edb_layer_list
-                    if l.GetName() == list(instance.GetData().GetLayerNames())[-1]
+                    if l.GetId() == list(instance.GetData().GetLayerIds())[-1]
                 ][0]
                 padstack_instance = self._edb.cell.primitive.padstack_instance.create(
                     layout,

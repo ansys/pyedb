@@ -1261,7 +1261,7 @@ class Modeler(object):
             self._logger.info("Deleting Padstack Definitions")
             for pad in self._pedb.padstacks.definitions:
                 p1 = self._pedb.padstacks.definitions[pad].edb_padstack.GetData()
-                if len(p1.GetLayerNames()) > 1:
+                if len(p1.GetLayerIds()) > 1:
                     self._pedb.padstacks.remove_pads_from_padstack(pad)
         return True
 
