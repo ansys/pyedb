@@ -662,6 +662,61 @@ class EdbPadstacks(object):
                 return geometry_type, parameters, offset_x, offset_y, rotation
             return 0, [0], 0, 0, 0
 
+    def get_pad_parameters_from_id(self, pin, layer_id, pad_type=0):
+        """Get Padstack Parameters from Pin or Padstack Definition.
+
+        Parameters
+        ----------
+        pin : Edb.definition.PadstackDef or Edb.definition.PadstackInstance
+            Pin or PadstackDef on which get values.
+        lyaer_id : int
+            ID of the layer.
+        pad_type : int
+            Pad Type.
+
+        Returns
+        -------
+        tuple
+            Tuple of (GeometryType, ParameterList, OffsetX, OffsetY, Rot).
+        """
+
+        if "PadstackDef" in str(type(pin)):
+            padparams = pin.GetData().GetPadParametersValue(layer_id, self.int_to_pad_type(pad_type))
+        else:
+            padparams = self._edb.definition.PadstackDefData(pin.GetPadstackDef().GetData()).GetPadParametersValue(
+                layer_id, self.int_to_pad_type(pad_type)
+            )
+        if padparams[2]:
+            geometry_type = int(padparams[1])
+            parameters = [i.ToString() for i in padparams[2]]
+            offset_x = padparams[3].ToDouble()
+            offset_y = padparams[4].ToDouble()
+            rotation = padparams[5].ToDouble()
+            return geometry_type, parameters, offset_x, offset_y, rotation
+        else:
+            if isinstance(pin, self._edb.definition.PadstackDef):
+                padparams = self._edb.definition.PadstackDefData(pin.GetData()).GetPolygonalPadParameters(
+                    layer_id, self.int_to_pad_type(pad_type)
+                )
+            else:
+                padparams = self._edb.definition.PadstackDefData(
+                    pin.GetPadstackDef().GetData()
+                ).GetPolygonalPadParameters(layer_id, self.int_to_pad_type(pad_type))
+
+            if padparams[0]:
+                parameters = [
+                    padparams[1].GetBBox().Item1.X.ToDouble(),
+                    padparams[1].GetBBox().Item1.Y.ToDouble(),
+                    padparams[1].GetBBox().Item2.X.ToDouble(),
+                    padparams[1].GetBBox().Item2.Y.ToDouble(),
+                ]
+                offset_x = padparams[2]
+                offset_y = padparams[3]
+                rotation = padparams[4]
+                geometry_type = 7
+                return geometry_type, parameters, offset_x, offset_y, rotation
+            return 0, [0], 0, 0, 0
+
     def set_all_antipad_value(self, value):
         """Set all anti-pads from all pad-stack definition to the given value.
 
@@ -678,11 +733,11 @@ class EdbPadstacks(object):
         if self.definitions:
             for padstack in list(self.definitions.values()):
                 cloned_padstack_data = self._edb.definition.PadstackDefData(padstack.edb_padstack.GetData())
-                layers_name = cloned_padstack_data.GetLayerNames()
+                layers_id = cloned_padstack_data.GetLayerIds()
                 all_succeed = True
-                for layer in layers_name:
-                    geom_type, parameters, offset_x, offset_y, rot = self.get_pad_parameters(
-                        padstack.edb_padstack, layer, 1
+                for layer_id in layers_id:
+                    geom_type, parameters, offset_x, offset_y, rot = self.get_pad_parameters_from_id(
+                        padstack.edb_padstack, layer_id, 1
                     )
                     if geom_type == 1:  # pragma no cover
                         params = convert_py_list_to_net_list(
@@ -693,18 +748,21 @@ class EdbPadstacks(object):
                         offset_y = self._pedb.edb_value(offset_y)
                         rot = self._pedb.edb_value(rot)
                         antipad = self._edb.definition.PadType.AntiPad
+                        layer_name = next(
+                            (layer.name for layer in self._pedb.stackup.layers.values() if layer.id == layer_id), None
+                        )
                         if cloned_padstack_data.SetPadParameters(
-                            layer, antipad, geom, params, offset_x, offset_y, rot
+                            layer_id, antipad, geom, params, offset_x, offset_y, rot
                         ):  # pragma no cover
                             self._logger.info(
                                 "Pad-stack definition {}, anti-pad on layer {}, has been set to {}".format(
-                                    padstack.edb_padstack.GetName(), layer, str(value)
+                                    padstack.edb_padstack.GetName(), layer_name, str(value)
                                 )
                             )
                         else:  # pragma no cover
                             self._logger.error(
                                 "Failed to reassign anti-pad value {} on Pads-stack definition {},"
-                                " layer{}".format(str(value), padstack.edb_padstack.GetName(), layer)
+                                " layer{}".format(str(value), padstack.edb_padstack.GetName(), layer_name)
                             )
                             all_succeed = False
                 padstack.edb_padstack.SetData(cloned_padstack_data)

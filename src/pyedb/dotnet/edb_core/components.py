@@ -1020,7 +1020,7 @@ class Components(object):
                 "No pins found on component {}, searching padstack instances instead".format(component.GetName())
             )
             return False
-        pin_layers = cmp_pins[0].GetPadstackDef().GetData().GetLayerNames()
+        pin_ids = cmp_pins[0].GetPadstackDef().GetData().GetLayerIds()
         if port_type == SourceType.CoaxPort:
             if not solder_balls_height:
                 solder_balls_height = self.instances[component.GetName()].solder_ball_height
@@ -1040,7 +1040,7 @@ class Components(object):
                     "outside the component when not found if argument extend_reference_pins_outside_component is True."
                 )
                 return False
-            pad_params = self._padstack.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
+            pad_params = self._padstack.get_pad_parameters_from_id(pin=cmp_pins[0], layername=pin_ids[0], pad_type=0)
             if not pad_params[0] == 7:
                 if not solder_balls_size:  # pragma no cover
                     sball_diam = min([self._pedb.edb_value(val).ToDouble() for val in pad_params[1]])
@@ -1643,7 +1643,12 @@ class Components(object):
             new_cmp.AddMember(pin)
         new_cmp.SetComponentType(self._edb.definition.ComponentType.Other)
         if not placement_layer:
-            new_cmp_layer_name = pins[0].GetPadstackDef().GetData().GetLayerNames()[0]
+            layer_id = pins[0].GetPadstackDef().GetData().GetLayerIds()[0]
+            new_cmp_layer_name = next(
+                (layer.name for layer in self._pedb.stackup.layers.values() if layer.id == layer_id), None
+            )
+            if new_cmp_layer_name is None:
+                self._logger.error("Error when defining layer name.")
         else:
             new_cmp_layer_name = placement_layer
         new_cmp_placement_layer = self._edb.cell.layer.FindByName(self._layout.layer_collection, new_cmp_layer_name)
@@ -2082,8 +2087,8 @@ class Components(object):
         cmp_type = edb_cmp.GetComponentType()
         if not sball_diam:
             pin1 = list(cmp.pins.values())[0].pin
-            pin_layers = pin1.GetPadstackDef().GetData().GetLayerNames()
-            pad_params = self._padstack.get_pad_parameters(pin=pin1, layername=pin_layers[0], pad_type=0)
+            pin_ids = pin1.GetPadstackDef().GetData().GetLayerIds()
+            pad_params = self._padstack.get_pad_parameters_from_id(pin=pin1, layername=pin_ids[0], pad_type=0)
             _sb_diam = min([abs(self._get_edb_value(val).ToDouble()) for val in pad_params[1]])
             sball_diam = 0.8 * _sb_diam
         if sball_height:

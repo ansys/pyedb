@@ -678,7 +678,11 @@ class EDBPadstack(object):
         list
             List of layers.
         """
-        return self._padstack_def_data.GetLayerNames()
+        return list(
+            layer.name
+            for layer in self._ppadstack._pedb.stackup.layers.values()
+            if layer.id in self._padstack_def_data.GetLayerIds()
+        )
 
     @property
     def via_start_layer(self):
@@ -965,7 +969,7 @@ class EDBPadstack(object):
     def hole_range(self, value):
         pdef_data = self._padstack_def_data
         pdef_data.SetHoleRange(getattr(self._edb.definition.PadstackHoleRange, snake_to_pascal(value)))
-        self._padstack_def_data = pdef_data.GetData()
+        self._padstack_def_data = pdef_data
 
     def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True):
         """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
@@ -1246,7 +1250,11 @@ class EDBPadstack(object):
         """
         cloned_padstack_data = self._edb.definition.PadstackDefData(self.edb_padstack.GetData())
         new_padstack_data = self._edb.definition.PadstackDefData.Create()
-        layers_name = cloned_padstack_data.GetLayerNames()
+        layers_name = list(
+            layer.name
+            for layer in self._ppadstack._pedb.stackup.layers.values()
+            if layer.id in cloned_padstack_data.GetLayerIds()
+        )
         layers_to_add = []
         for layer in layers_name:
             if layer == old_name:
