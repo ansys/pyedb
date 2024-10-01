@@ -29,6 +29,7 @@ import pytest
 
 # from pyedb import Edb
 from pyedb.dotnet.edb import Edb
+from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
@@ -605,3 +606,40 @@ class TestClass:
         assert network.frequency.npoints == 400
         network.write_touchstone(os.path.join(edbapp.directory, "test_export.s2p"))
         assert os.path.isfile(os.path.join(edbapp.directory, "test_export.s2p"))
+
+    def test_properties(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        pp = {
+            "pin_pair_model": [
+                {
+                    "first_pin": "2",
+                    "second_pin": "1",
+                    "is_parallel": True,
+                    "resistance": "10ohm",
+                    "resistance_enabled": True,
+                    "inductance": "1nH",
+                    "inductance_enabled": True,
+                    "capacitance": "1nF",
+                    "capacitance_enabled": True,
+                }
+            ]
+        }
+        edbapp.components["C378"].model_properties = pp
+        assert edbapp.components["C378"].model_properties == pp
+
+    def test_ic_die_properties(self):
+        component: EDBComponent = self.edbapp.components["U8"]
+        _assert_initial_ic_die_properties(component)
+        component.ic_die_properties = {"type": "flip_chip", "orientation": "chip_down"}
+        _assert_final_ic_die_properties(component)
+
+
+def _assert_initial_ic_die_properties(component: EDBComponent):
+    assert component.ic_die_properties["type"] == "no_die"
+    assert "orientation" not in component.ic_die_properties
+    assert "height" not in component.ic_die_properties
+
+
+def _assert_final_ic_die_properties(component: EDBComponent):
+    assert component.ic_die_properties["type"] == "flip_chip"
+    assert component.ic_die_properties["orientation"] == "chip_down"

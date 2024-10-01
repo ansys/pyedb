@@ -426,16 +426,32 @@ class EDBPadstack(object):
         self._edb_object = edb_padstack
         self.edb_padstack = edb_padstack
         self._ppadstack = ppadstack
-        self.pad_by_layer = {}
-        self.antipad_by_layer = {}
-        self.thermalpad_by_layer = {}
         self._bounding_box = []
         self._hole_params = None
+
+    @property
+    def pad_by_layer(self):
+        """Regular pad property."""
+        temp = {}
         for layer in self.via_layers:
-            self.pad_by_layer[layer] = EDBPadProperties(edb_padstack, layer, 0, self)
-            self.antipad_by_layer[layer] = EDBPadProperties(edb_padstack, layer, 1, self)
-            self.thermalpad_by_layer[layer] = EDBPadProperties(edb_padstack, layer, 2, self)
-        pass
+            temp[layer] = EDBPadProperties(self._edb_object, layer, 0, self)
+        return temp
+
+    @property
+    def antipad_by_layer(self):
+        """Anti pad property."""
+        temp = {}
+        for layer in self.via_layers:
+            temp[layer] = EDBPadProperties(self._edb_object, layer, 1, self)
+        return temp
+
+    @property
+    def thermalpad_by_layer(self):
+        """Thermal pad property."""
+        temp = {}
+        for layer in self.via_layers:
+            temp[layer] = EDBPadProperties(self._edb_object, layer, 2, self)
+        return temp
 
     @property
     def _padstack_def_data(self):
@@ -1655,6 +1671,56 @@ class EDBPadstackInstance(Primitive):
                 return drill_to_layer.GetName(), diameter.ToString()
         else:
             return
+
+    @property
+    def backdrill_parameters(self):
+        data = {}
+        flag, drill_to_layer, offset, diameter = self._edb_object.GetBackDrillParametersLayerValue(
+            self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer),
+            self._pedb.edb_value(0),
+            self._pedb.edb_value(0.0),
+            True,
+        )
+        if flag:
+            if drill_to_layer.GetName():
+                data["from_bottom"] = {
+                    "drill_to_layer": drill_to_layer.GetName(),
+                    "diameter": diameter.ToString(),
+                    "stub_length": offset.ToString(),
+                }
+        flag, drill_to_layer, offset, diameter = self._edb_object.GetBackDrillParametersLayerValue(
+            self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer),
+            self._pedb.edb_value(0),
+            self._pedb.edb_value(0.0),
+            False,
+        )
+        if flag:
+            if drill_to_layer.GetName():
+                data["from_top"] = {
+                    "drill_to_layer": drill_to_layer.GetName(),
+                    "diameter": diameter.ToString(),
+                    "stub_length": offset.ToString(),
+                }
+        return data
+
+    @backdrill_parameters.setter
+    def backdrill_parameters(self, params):
+        from_bottom = params.get("from_bottom")
+        if from_bottom:
+            self._edb_object.SetBackDrillParameters(
+                self._pedb.stackup.layers[from_bottom.get("drill_to_layer")]._edb_object,
+                self._pedb.edb_value(from_bottom.get("stub_length")),
+                self._pedb.edb_value(from_bottom.get("diameter")),
+                True,
+            )
+        from_top = params.get("from_top")
+        if from_top:
+            self._edb_object.SetBackDrillParameters(
+                self._pedb.stackup.layers[from_top.get("drill_to_layer")]._edb_object,
+                self._pedb.edb_value(from_top.get("stub_length")),
+                self._pedb.edb_value(from_top.get("diameter")),
+                False,
+            )
 
     def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from bottom.

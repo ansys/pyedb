@@ -17,3 +17,7 @@ ci/cd:
 testing:
 - changed-files:
   - any-glob-to-any-file: ['tests/**/*',]
+
+grpc-transition:
+- changed-files:
+  - any-glob-to-any-file: ['src/pyedb/dotnet/edb_core/*',]

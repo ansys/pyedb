@@ -73,6 +73,9 @@ edbapp.materials.materials
 
 edbapp.materials["fr4_epoxy"].loss_tangent
 
-# ## Close EDB
+# ## Save and close Edb
+# The temporary folder will be deleted once the execution of this script is finished. Replace **edbapp.save()** with
+# **edbapp.save_as("C:/example.aedb")** to keep the example project.
 
+edbapp.save()
 edbapp.close()

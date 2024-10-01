@@ -75,6 +75,9 @@ edbapp.stackup.plot()
 
 edbapp.stackup["1_Top"].thickness
 
-# ## Cleanup
+# ## Save and close Edb
+# The temporary folder will be deleted once the execution of this script is finished. Replace **edbapp.save()** with
+# **edbapp.save_as("C:/example.aedb")** to keep the example project.
 
+edbapp.save()
 edbapp.close()

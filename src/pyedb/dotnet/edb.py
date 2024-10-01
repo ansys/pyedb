@@ -1455,12 +1455,12 @@ class Edb(Database):
     def import_gds_file(
         self,
         inputGDS,
-        WorkDir=None,
         anstranslator_full_path="",
         use_ppe=False,
         control_file=None,
         tech_file=None,
         map_file=None,
+        layer_filter=None,
     ):
         """Import a GDS file and generate an ``edb.def`` file in the working directory.
 
@@ -1471,10 +1471,6 @@ class Edb(Database):
         ----------
         inputGDS : str
             Full path to the GDS file.
-        WorkDir : str, optional
-            Directory in which to create the ``aedb`` folder. The default value is ``None``,
-            in which case the AEDB file is given the same name as the GDS file. Only the extension
-            differs.
         anstranslator_full_path : str, optional
             Full path to the Ansys translator.
         use_ppe : bool, optional
@@ -1484,31 +1480,67 @@ class Edb(Database):
             the XML file in the same directory as the GDS file. To succeed, the XML file and GDS file must
             have the same name. Only the extension differs.
         tech_file : str, optional
-            Technology file. It uses Helic to convert tech file to xml and then imports the gds. Works on Linux only.
+            Technology file. For versions<2024.1 it uses Helic to convert tech file to xml and then imports
+            the gds. Works on Linux only.
+            For versions>=2024.1 it can directly parse through supported foundry tech files.
         map_file : str, optional
             Layer map file.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
+        layer_filter:str,optional
+            Layer filter file.
 
         """
-        if not is_linux and tech_file:
-            self.logger.error("Technology files are supported only in Linux. Use control file instead.")
-            return False
         control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(inputGDS)[-1][:-3] + "xml")
-        ControlFile(xml_input=control_file, tecnhology=tech_file, layer_map=map_file).write_xml(control_file_temp)
-        if self.import_layout_pcb(
-            inputGDS,
-            working_dir=WorkDir,
-            anstranslator_full_path=anstranslator_full_path,
-            use_ppe=use_ppe,
-            control_file=control_file_temp,
-        ):
-            return True
+        if float(self.edbversion) < 2024.1:
+            if not is_linux and tech_file:
+                self.logger.error("Technology files are supported only in Linux. Use control file instead.")
+                return False
+
+            ControlFile(xml_input=control_file, tecnhology=tech_file, layer_map=map_file).write_xml(control_file_temp)
+            if self.import_layout_pcb(
+                inputGDS,
+                anstranslator_full_path=anstranslator_full_path,
+                use_ppe=use_ppe,
+                control_file=control_file_temp,
+            ):
+                return True
+            else:
+                return False
         else:
-            return False
+            temp_map_file = os.path.splitext(inputGDS)[0] + ".map"
+            temp_layermap_file = os.path.splitext(inputGDS)[0] + ".layermap"
+
+            if map_file is None:
+                if os.path.isfile(temp_map_file):
+                    map_file = temp_map_file
+                elif os.path.isfile(temp_layermap_file):
+                    map_file = temp_layermap_file
+                else:
+                    self.logger.error("Unable to define map file.")
+
+            if tech_file is None:
+                if control_file is None:
+                    temp_control_file = os.path.splitext(inputGDS)[0] + ".xml"
+                    if os.path.isfile(temp_control_file):
+                        control_file = temp_control_file
+                    else:
+                        self.logger.error("Unable to define control file.")
+
+                command = [anstranslator_full_path, inputGDS, f'-g="{map_file}"', f'-c="{control_file}"']
+            else:
+                command = [
+                    anstranslator_full_path,
+                    inputGDS,
+                    f'-o="{control_file_temp}"' f'-t="{tech_file}"',
+                    f'-g="{map_file}"',
+                    f'-f="{layer_filter}"',
+                ]
+
+            result = subprocess.run(command, capture_output=True, text=True, shell=True)
+            print(result.stdout)
+            print(command)
+            temp_inputGDS = inputGDS.split(".gds")[0]
+            self.edbpath = temp_inputGDS + ".aedb"
+            return self.open_edb()
 
     def _create_extent(
         self,
@@ -1630,6 +1662,14 @@ class Edb(Database):
                     )
                 else:
                     obj_data = i.Expand(expansion_size, tolerance, round_corner, round_extension)
+                if inlcude_voids_in_extents and "PolygonData" not in str(i) and i.has_voids and obj_data:
+                    for void in i.voids:
+                        void_data = void.primitive_object.GetPolygonData().Expand(
+                            -1 * expansion_size, tolerance, round_corner, round_extension
+                        )
+                        if void_data:
+                            for v in list(void_data):
+                                obj_data[0].AddHole(v)
                 if obj_data:
                     if not inlcude_voids_in_extents:
                         unite_polys.extend(list(obj_data))
@@ -2209,9 +2249,9 @@ class Edb(Database):
                     pins_to_preserve.extend([i.id for i in el.pins.values()])
                     nets_to_preserve.extend(el.nets)
         if include_pingroups:
-            for reference in reference_list:
-                for pin in self.nets.nets[reference].padstack_instances:
-                    if pin.pingroups:
+            for pingroup in self.padstacks.pingroups:
+                for pin in pingroup.pins.values():
+                    if pin.net_name in reference_list:
                         pins_to_preserve.append(pin.id)
         if check_terminals:
             terms = [
@@ -2280,12 +2320,12 @@ class Edb(Database):
             if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1]:
                 if extent_defeature > 0:
                     _poly = _poly.Defeature(extent_defeature)
-
                 _poly1 = _poly.CreateFromArcs(_poly.GetArcData(), True)
                 if inlcude_voids_in_extents:
                     for hole in list(_poly.Holes):
                         if hole.Area() >= 0.05 * _poly1.Area():
                             _poly1.AddHole(hole)
+                    self.logger.info(f"Number of voids included:{len(list(_poly1.Holes))}")
                 _poly = _poly1
         if not _poly or _poly.IsNull():
             self._logger.error("Failed to create Extent.")
