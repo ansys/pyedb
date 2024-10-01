@@ -24,7 +24,25 @@ from pathlib import Path
 
 import pytest
 
+from pyedb.dotnet.edb import Edb as EdbType
+from tests.legacy.system.test_edb_components import (
+    _assert_final_ic_die_properties,
+    _assert_initial_ic_die_properties,
+)
+
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
+
+
+U8_IC_DIE_PROPERTIES = {
+    "components": [
+        {
+            "reference_designator": "U8",
+            "definition": "MAXM-T833+2_V",
+            "type": "ic",
+            "ic_die_properties": {"type": "flip_chip", "orientation": "chip_down"},
+        }
+    ]
+}
 
 
 class TestClass:
@@ -1014,3 +1032,10 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         edbapp.configuration.load(data_from_db, apply_file=True)
         edbapp.close()
+
+    def test_17_ic_die_properties(self, edb_examples):
+        db: EdbType = edb_examples.get_si_verse()
+        component = db.components["U8"]
+        _assert_initial_ic_die_properties(component)
+        db.configuration.load(U8_IC_DIE_PROPERTIES, apply_file=True)
+        _assert_final_ic_die_properties(component)
