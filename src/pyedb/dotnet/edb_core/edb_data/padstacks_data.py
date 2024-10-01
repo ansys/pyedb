@@ -678,17 +678,22 @@ class EDBPadstack(object):
         list
             List of layers.
         """
+
+        print("~~~~", list(self._padstack_def_data.GetLayerIds()))
+        print("~~~~", list(layer.id for layer in self._ppadstack._pedb.stackup.layers.values()))
+
         # return list(
         #     layer.name
         #     for layer in self._ppadstack._pedb.stackup.layers.values()
         #     if layer.id in self._padstack_def_data.GetLayerIds()
+
         # )
         tmp_res = list(
             layer.name
             for layer in self._ppadstack._pedb.stackup.layers.values()
             if layer.id in self._padstack_def_data.GetLayerIds()
         )
-        print("self._ppadstack._pedb.stackup.layers", self._ppadstack._pedb.stackup.layers)
+        # print("self._ppadstack._pedb.stackup.layers", self._ppadstack._pedb.stackup.layers)
         print("IDs", list(self._padstack_def_data.GetLayerIds()))
         print("IDs from _ppadstack", list(layer.id for layer in self._ppadstack._pedb.stackup.layers.values()))
         res = list(self._padstack_def_data.GetLayerNames())
