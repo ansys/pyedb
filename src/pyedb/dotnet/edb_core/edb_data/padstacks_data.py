@@ -691,6 +691,8 @@ class EDBPadstack(object):
         res = list(self._padstack_def_data.GetLayerNames())
         print("names through API", res)
         print("names through IDs", tmp_res)
+        infos = [(layer.getName(), layer.getId()) for layer in self._ppadstack._pedb.stackup._edb_layer_list]
+        print("infos", infos)
         if res != tmp_res:
             raise RuntimeError(f"{res} != {tmp_res}")
         return self._padstack_def_data.GetLayerNames()
