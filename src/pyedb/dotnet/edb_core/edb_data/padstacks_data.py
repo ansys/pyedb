@@ -1255,7 +1255,7 @@ class EDBPadstack(object):
             for layer in self._ppadstack._pedb.stackup.layers.values()
             if layer.id in cloned_padstack_data.GetLayerIds()
         )
-        print(">>>", cloned_padstack_data.GetLayerIds())
+        print(">>>", list(cloned_padstack_data.GetLayerIds()))
         print(">>>>", layers_name)
         print(">>>>", list(cloned_padstack_data.GetLayerNames()))
         layers_to_add = []
