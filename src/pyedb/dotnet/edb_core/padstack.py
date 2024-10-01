@@ -190,7 +190,7 @@ class EdbPadstacks(object):
         self._definitions = {}
         for padstackdef in self._pedb.padstack_defs:
             PadStackData = padstackdef.GetData()
-            if len(PadStackData.GetLayerNames()) >= 1:
+            if len(list(PadStackData.GetLayerNames())) >= 1:
                 self._definitions[padstackdef.GetName()] = EDBPadstack(padstackdef, self)
         return self._definitions
 
