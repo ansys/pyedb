@@ -678,11 +678,12 @@ class EDBPadstack(object):
         list
             List of layers.
         """
-        return list(
-            layer.name
-            for layer in self._ppadstack._pedb.stackup.layers.values()
-            if layer.id in self._padstack_def_data.GetLayerIds()
-        )
+        # return list(
+        #     layer.name
+        #     for layer in self._ppadstack._pedb.stackup.layers.values()
+        #     if layer.id in self._padstack_def_data.GetLayerIds()
+        # )
+        return self._padstack_def_data.GetLayerNames()
 
     @property
     def via_start_layer(self):
