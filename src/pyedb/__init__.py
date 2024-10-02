@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import functools
 import os
 import sys
 import warnings
@@ -11,6 +12,7 @@ if "PYEDB_USE_DOTNET" not in os.environ:
     os.environ["PYEDB_USE_DOTNET"] = "0"
 
 LATEST_DEPRECATED_PYTHON_VERSION = (3, 7)
+UBUNTU_22_04_MSG = "The following code is not running on Ubuntu 22.04."
 
 
 def deprecation_warning():
@@ -50,3 +52,32 @@ version = __version__
 #
 
 from pyedb.generic.design_types import Edb, Siwave
+
+#
+
+
+def get_ubuntu_version():
+    if os.path.exists("/etc/os-release"):
+        with open("/etc/os-release") as f:
+            for line in f:
+                if line.startswith("VERSION_ID"):
+                    version = line.split("=")[1].strip().strip('"')
+                    return version
+    return None
+
+
+def check_if_ubuntu_22_04():
+    version = get_ubuntu_version()
+    if version == "22.04":
+        return True
+    return False
+
+
+def ubuntu_22_04_not_allowed(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        if check_if_ubuntu_22_04():
+            raise EnvironmentError(UBUNTU_22_04_MSG)
+        return func(*args, **kwargs)
+
+    return wrapper

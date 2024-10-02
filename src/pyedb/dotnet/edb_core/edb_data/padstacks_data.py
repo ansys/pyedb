@@ -25,6 +25,7 @@ import math
 import re
 import warnings
 
+from pyedb import ubuntu_22_04_not_allowed
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
@@ -469,6 +470,7 @@ class EDBPadstack(object):
         self._edb_object.SetData(value)
 
     @property
+    @ubuntu_22_04_not_allowed
     def pad_parameters(self) -> dict:
         """Pad parameters.
 
@@ -664,6 +666,7 @@ class EDBPadstack(object):
         return self._ppadstack._get_edb_value(value)
 
     @property
+    @ubuntu_22_04_not_allowed
     def via_layers(self):
         """Layers.
 
@@ -1086,6 +1089,7 @@ class EDBPadstack(object):
         self._ppadstack._pedb.logger.info("{} Converted successfully to 3D Objects.".format(i))
         return True
 
+    @ubuntu_22_04_not_allowed
     def split_to_microvias(self):
         """Convert actual padstack definition to multiple microvias definitions.
 
@@ -1225,6 +1229,7 @@ class EDBPadstack(object):
         self._ppadstack._pedb.logger.info("Created {} new microvias.".format(i))
         return new_instances
 
+    @ubuntu_22_04_not_allowed
     def _update_layer_names(self, old_name, updated_name):
         """Update padstack definition layer name when layer name is edited with the layer name setter.
         Parameters
