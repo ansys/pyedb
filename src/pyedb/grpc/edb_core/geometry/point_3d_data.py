@@ -20,11 +20,36 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
+from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
+from ansys.edb.core.utility.value import Value as GrpcValue
 
 
-class PointData(GrpcPointData):
+class Point3DData(GrpcPoint3DData):
     """Point Data."""
 
-    def __init__(self, edb_object=None):
-        super().__init__(edb_object)
+    def __init__(self, x, y, z):
+        super().__init__(x, y, z)
+
+    @property
+    def x(self):
+        return self.x.value
+
+    @x.setter
+    def x(self, value):
+        self.x = GrpcValue(value)
+
+    @property
+    def y(self):
+        return self.y.value
+
+    @y.setter
+    def y(self, value):
+        self.y = GrpcValue(value)
+
+    @property
+    def z(self):
+        return self.z.value
+
+    @z.setter
+    def z(self, value):
+        self.z = GrpcValue(value)

@@ -20,12 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
-from pyedb.dotnet.edb_core.geometry.point_data import PointData
-from pyedb.dotnet.edb_core.utilities.obj_base import BBox
+
+from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
+from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+
+from pyedb.grpc.edb_core.geometry.arc_data import ArcData
 
 
-class PolygonData:
+class PolygonData(GrpcPolygonData):
     """Polygon Data."""
 
     def __init__(
@@ -39,7 +41,7 @@ class PolygonData:
         **kwargs,
     ):
         self._pedb = pedb
-
+        super().__init__()
         if create_from_points:
             self._edb_object = self.create_from_points(**kwargs)
         elif create_from_circle:
@@ -62,14 +64,13 @@ class PolygonData:
             coordinates in this order: [X lower left corner, Y lower left corner,
             X upper right corner, Y upper right corner].
         """
-        return BBox(self._pedb, self._edb_object.GetBBox()).corner_points
+        bbox = self.bbox()
+        return [bbox[0].x.value, bbox[0].xyvalue, bbox[1].x.value, bbox[1].y.value]
 
     @property
     def arcs(self):
         """Get the Primitive Arc Data."""
-        from pyedb.dotnet.edb_core.edb_data.primitives_data import EDBArcs
-
-        arcs = [EDBArcs(self._pedb, i) for i in self._edb_object.GetArcData()]
+        arcs = [ArcData(self._pedb, i) for i in self.arc_data]
         return arcs
 
     @property
@@ -80,20 +81,17 @@ class PolygonData:
         -------
         list[list[float]]
         """
-        return [
-            [self._pedb.edb_value(i.X).ToDouble(), self._pedb.edb_value(i.Y).ToDouble()]
-            for i in list(self._edb_object.Points)
-        ]
+        return [[i.x.value, i.y.value] for i in list(self.points)]
 
     def create_from_points(self, points, closed=True):
         list_of_point_data = []
         for pt in points:
-            list_of_point_data.append(PointData(self._pedb, x=pt[0], y=pt[1]))
-        return self._pedb.edb_api.geometry.api_class.PolygonData(list_of_point_data, closed)
+            list_of_point_data.append(GrpcPointData(pt))
+        return PolygonData.create_from_points(points=list_of_point_data, closed=closed)
 
-    def create_from_bounding_box(self, points):
-        bbox = BBox(self._pedb, point_1=points[0], point_2=points[1])
-        return self._pedb.edb_api.geometry.api_class.PolygonData.CreateFromBBox(bbox._edb_object)
+    @staticmethod
+    def create_from_bounding_box(points):
+        return PolygonData.create_from_bounding_box(points=points)
 
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
         """Expand the polygon shape by an absolute value in all direction.
@@ -111,20 +109,6 @@ class PolygonData:
         maximum_corner_extension : float, optional
             The maximum corner extension (when round corners are not used) at which point the corner is clipped.
         """
-        new_poly = self._edb_object.Expand(offset, tolerance, round_corners, maximum_corner_extension)
+        new_poly = self.expand(offset, tolerance, round_corners, maximum_corner_extension)
         self._edb_object = new_poly[0]
         return True
-
-    def create_from_arcs(self, arcs, flag):
-        """Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.
-
-        Parameters
-        ----------
-        arcs : list or `Edb.Geometry.ArcData`
-            List of ArcData.
-        flag : bool
-        """
-        if isinstance(arcs, list):
-            arcs = convert_py_list_to_net_list(arcs)
-        poly = self._edb_object.CreateFromArcs(arcs, flag)
-        return PolygonData(self._pedb, poly)

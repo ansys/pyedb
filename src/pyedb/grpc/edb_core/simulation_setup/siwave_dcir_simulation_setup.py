@@ -14,17 +14,34 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# FITNE SS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
+
+from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
+    SIWaveDCIRSimulationSetup as Grpcsiwave_dcir_simulation_setup,
+)
+
+from pyedb.grpc.edb_core.simulation_setup.siwave_dc_settings import SIWaveDCSettings
+from pyedb.grpc.edb_core.simulation_setup.sweep_data import SweepData
 
 
-class PointData(GrpcPointData):
-    """Point Data."""
-
-    def __init__(self, edb_object=None):
+class SIWaveDCIRSimulationSetup(Grpcsiwave_dcir_simulation_setup):
+    def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
+        self._pedb = pedb
+
+    @property
+    def settings(self):
+        return SIWaveDCSettings(self._pedb, self.settings)
+
+    @property
+    def type(self):
+        return self.type.name
+
+    @property
+    def sweep_data(self):
+        return SweepData(self._pedb, self.sweep_data)

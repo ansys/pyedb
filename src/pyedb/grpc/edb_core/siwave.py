@@ -35,7 +35,7 @@ from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfi
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
-class EdbSiwave(object):
+class Siwave(object):
     """Manages EDB methods related to Siwave Setup accessible from `Edb.siwave` property.
 
     Parameters

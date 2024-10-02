@@ -20,11 +20,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
+
+from ansys.edb.core.geometry.arc_data import ArcData as GrpcArcData
 
 
-class PointData(GrpcPointData):
-    """Point Data."""
+class ArcData(GrpcArcData):
+    def __init__(self, pedb, edb_object):
+        self._pedb = pedb
+        optional = {"height": edb_object.height, "direction": edb_object.direction}
+        super.__init__(edb_object.start, edb_object.end, optional)
 
-    def __init__(self, edb_object=None):
-        super().__init__(edb_object)
+    @property
+    def center(self):
+        return [self.center.x.value, self.center.y.value]
+
+    @property
+    def start(self):
+        return [self.start.x.value, self.start.y.value]
+
+    @property
+    def end(self):
+        return [self.end.x.value, self.end.y.value]
+
+    @property
+    def mid_point(self):
+        return [self.midpoint.x.value, self.midpoint.y.value]
+
+    @property
+    def points(self):
+        return [[pt.x.value, pt.y.value] for pt in self.points]

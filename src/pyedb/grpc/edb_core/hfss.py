@@ -32,7 +32,7 @@ from pyedb.grpc.edb_core.utility.hfss_extent_info import HfssExtentInfo
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
-class EdbHfss(object):
+class Hfss(object):
     """Manages EDB method to configure Hfss setup accessible from `Edb.hfss` property."""
 
     def __init__(self, p_edb):

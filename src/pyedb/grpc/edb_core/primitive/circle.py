@@ -26,8 +26,9 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 
 
 class Circle(GrpcCircle):
-    def __init__(self, edb_object):
+    def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
+        self._pedb = pedb
 
     def get_parameters(self):
         params = self.get_parameters()
