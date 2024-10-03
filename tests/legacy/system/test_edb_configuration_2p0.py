@@ -827,14 +827,6 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        """data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        for setup in data["setups"]:
-            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
-            for p, value in setup.items():
-                if p == "freq_sweep":
-                    pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
-                else:
-                    assert value == target[p]"""
         edbapp.close()
 
     def test_15b_sources_net_net(self, edb_examples):
