@@ -28,6 +28,7 @@ import os
 
 import pytest
 
+from pyedb import check_if_ubuntu_22_04
 from pyedb.dotnet.edb import Edb
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
@@ -197,6 +198,9 @@ class TestClass:
         finally:
             laminate_edb.close()
 
+    @pytest.mark.xfail(
+        check_if_ubuntu_22_04(), reason="This test is expected to crash, see https://github.com/ansys/pyedb/issues/836"
+    )
     def test_stackup_properties_0(self):
         """Evaluate various stackup properties."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
