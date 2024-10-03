@@ -163,11 +163,13 @@ jobs:
 
       - name: "Update pip"
         run: |
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
           . .venv/bin/activate
           python -m pip install -U pip
 
       - name: "Install Python library and tests dependencies"
         run: |
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
           . .venv/bin/activate
           python -m pip install .[tests]
 
@@ -178,8 +180,8 @@ jobs:
           retry_on: error
           timeout_minutes: 20
           command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
             . .venv/bin/activate
-
             xvfb-run pytest -m "legacy" -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
