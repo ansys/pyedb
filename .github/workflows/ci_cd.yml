@@ -139,7 +139,7 @@ jobs:
 
   legacy-tests-linux:
     name: Test dotnet (linux)
-    runs-on: [ Linux, self-hosted, toolkits ]
+    runs-on: [ Linux, self-hosted, pyaedt ]
     env:
       ANSYSEM_ROOT242: '/ansys_inc/AnsysEM/v242/Linux64'
       ANS_NODEPCHECK: '1'
