@@ -25,7 +25,6 @@ This module contains these classes: `EdbLayout` and `Shape`.
 """
 from typing import Union
 
-from ansys.edb.core.hierarchy.component_group import ComponentGroup
 from ansys.edb.core.layout.layout import Layout as GrpcLayout
 
 from pyedb.grpc.edb_core.hierarchy.component import Component
@@ -47,7 +46,7 @@ from pyedb.grpc.edb_core.terminal.point_terminal import PointTerminal
 
 class Layout(GrpcLayout):
     def __init__(self, pedb):
-        super().__init__(self.msg)
+        super().__init__(pedb.active_cell._Cell__stub.GetLayout(pedb.active_cell.msg))
         self._pedb = pedb
 
     @property
@@ -67,7 +66,7 @@ class Layout(GrpcLayout):
         Terminal dictionary : Dict[str, pyedb.dotnet.edb_core.edb_data.terminals.Terminal]
         """
         temp = []
-        for i in self.terminals:
+        for i in self._pedb.active_cell.layout.terminals:
             if i.type == "pin_group":
                 temp.append(PinGroupTerminal(self._pedb, i))
             elif i.type == "padstack_instance":
@@ -102,32 +101,35 @@ class Layout(GrpcLayout):
 
     @property
     def groups(self):
-        return [Component(self._pedb, g) for g in self.groups if g.type == ComponentGroup]
+        return [Component(self._pedb, g) for g in self._pedb.active_cell.layout.groups]
 
     @property
     def pin_groups(self):
-        return [PinGroup(pedb=self._pedb, edb_pin_group=i, name=i.name) for i in self.pin_groups]
+        return [
+            PinGroup(pedb=self._pedb, edb_pin_group=i, name=i.name) for i in self._pedb.active_cell.layout.pin_groups
+        ]
 
     @property
     def net_classes(self):
-        return [NetClass(self._pedb, i) for i in self.net_classes]
+        return [NetClass(self._pedb, i) for i in self._pedb.active_cell.layout.net_classes]
 
     @property
     def extended_nets(self):
-        return [ExtendedNet(self._pedb, i) for i in self.extended_nets]
+        return [ExtendedNet(self._pedb, i) for i in self._pedb.active_cell.layout.extended_nets]
 
     @property
     def differential_pairs(self):
-        return [DifferentialPair(self._pedb, i) for i in self.differential_pairs]
+        return [DifferentialPair(self._pedb, i) for i in self._pedb.active_cell.layout.differential_pairs]
 
     @property
     def padstack_instances(self):
         """Get all padstack instances in a list."""
-        return [PadstackInstance(self._pedb, i) for i in self.padstack_instances]
+        return [PadstackInstance(self._pedb, i) for i in self._pedb.active_cell.layout.padstack_instances]
 
+    #
     @property
     def voltage_regulators(self):
-        return [VoltageRegulator(self._pedb, i) for i in self.voltage_regulators]
+        return [VoltageRegulator(self._pedb, i) for i in self._pedb.active_cell.layout.voltage_regulators]
 
     def find_primitive(self, layer_name: Union[str, list]) -> list:
         """Find a primitive objects by layer name.

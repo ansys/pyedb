@@ -26,15 +26,13 @@
 import os
 from pathlib import Path
 
+from ansys.edb.core.utility.value import Value as EdbValue
 import pytest
 
-from pyedb.dotnet.edb import Edb
-from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
-    SimulationConfiguration,
-)
 from pyedb.generic.constants import RadiationBoxType, SourceType
 from pyedb.generic.general_methods import is_linux, isclose
+from pyedb.grpc.edb import EdbGrpc as Edb
+from pyedb.grpc.edb_core.utility.simulation_configuration import SimulationConfiguration
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
@@ -43,8 +41,8 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, legacy_edb_app, local_scratch, target_path, target_path2, target_path4):
-        self.edbapp = legacy_edb_app
+    def init(self, grpc_edb_app, local_scratch, target_path, target_path2, target_path4):
+        self.edbapp = grpc_edb_app
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path2 = target_path2
@@ -52,6 +50,8 @@ class TestClass:
 
     def test_hfss_create_coax_port_on_component_from_hfss(self):
         """Create a coaxial port on a component from its pin."""
+        self.edbapp.padstacks.instances[514].components
+        # self.edbapp.components.instances
         assert self.edbapp.hfss.create_coax_port_on_component("U1", "DDR4_DQS0_P")
         assert self.edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"])
 

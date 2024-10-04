@@ -33,6 +33,7 @@ from pyedb.generic.settings import settings
 from pyedb.grpc.application.Variables import Variable, decompose_variable_value
 from pyedb.grpc.edb_core.components import Components
 from pyedb.grpc.edb_core.control_file import ControlFile, convert_technology_file
+from pyedb.grpc.edb_core.excitation import Excitation
 from pyedb.grpc.edb_core.hfss import Hfss
 from pyedb.grpc.edb_core.layout.layout import Layout
 from pyedb.grpc.edb_core.layout_validation import LayoutValidation
@@ -160,11 +161,11 @@ class EdbGrpc(EdbInit):
         port=50051,
         use_ppe=False,
         technology_file=None,
-        restart_rpc_server=False,
+        restart_rpc_server=True,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
-        super.__init__(edbversion, port, restart_rpc_server)
+        EdbInit.__init__(self, edbversion=edbversion, port=port, restart_server=restart_rpc_server)
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
@@ -336,6 +337,7 @@ class EdbGrpc(EdbInit):
         self._nets = Nets(self)
         self._modeler = Modeler(self)
         self._materials = Materials(self)
+        self._excitation = Excitation(self)
 
     @property
     def cell_names(self):
@@ -739,6 +741,12 @@ class EdbGrpc(EdbInit):
         if self.active_db:
             self._stackup = Stackup(self)
         return self._stackup
+
+    @property
+    def excitation(self):
+        if self.active_db:
+            self._excitation = Excitation(self)
+        return self._excitation
 
     @property
     def materials(self):
@@ -4044,12 +4052,12 @@ class EdbGrpc(EdbInit):
         cloned_edb.close()
         return True
 
-    @property
-    def definitions(self):
-        """Definitions class."""
-        from pyedb.dotnet.edb_core.definition.definitions import Definitions
-
-        return Definitions(self)
+    # @property
+    # def definitions(self):
+    #     """Definitions class."""
+    #     from pyedb.grpc.edb_core.definition import Definitions
+    #
+    #     return Definitions(self)
 
     @property
     def workflow(self):

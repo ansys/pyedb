@@ -77,13 +77,10 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-class LayerCollection(GrpcLayerCollection):
-    def __init__(self, pedb, edb_object, msg):
+class LayerCollection:
+    def __init__(self, pedb, edb_object):
         self._pedb = pedb
-        self._edb_object = edb_object
-        super.__init__(msg)
-
-        self._layer_collection = self._pedb.active_layout.layer_collection
+        self._layer_collection = edb_object
 
         self._layer_type_set_mapping = {
             "stackup_layer_set": GrpcLayerTypeSet.STACKUP_LAYER_SET,
@@ -104,16 +101,7 @@ class LayerCollection(GrpcLayerCollection):
         ----------
         stackup
         """
-        self._pedb.layout.layer_collection = self
-
-    @property
-    def layer_collection(self):
-        return self._pedb.layout.layer_collection
-
-    @layer_collection.setter
-    def layer_collection(self, value):
-        if isinstance(value, GrpcLayerCollection):
-            self._pedb.layout.layer_collection = value
+        self._pedb.layout.layer_collection = self._layer_collection
 
     # def _add_layer(self, add_method, base_layer_name="", **kwargs):
     #     """Add a layer to edb.
@@ -309,7 +297,7 @@ class LayerCollection(GrpcLayerCollection):
 
     @property
     def all_layers(self):
-        layer_list = self.layer_collection.get_layers()
+        layer_list = self._layer_collection.get_layers()
         return {lay.name: Layer(self._pedb, lay) for lay in layer_list}
 
     @property
@@ -349,12 +337,11 @@ class Stackup(LayerCollection):
     """Manages EDB methods for stackup accessible from `Edb.stackup` property."""
 
     def __getitem__(self, item):
-        return self.find_by_name(item)
+        return self._layer_collection.find_by_name(item)
 
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
-        # parent caller class
-        self._lc = self._edb_object
+        self._lc = edb_object
 
     @property
     def _logger(self):
@@ -507,7 +494,7 @@ class Stackup(LayerCollection):
         return True
 
     @property
-    def _layer_collection(self):
+    def layer_collection(self):
         """Copy of EDB layer collection.
 
         Returns

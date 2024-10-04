@@ -28,8 +28,8 @@ from os.path import dirname
 
 import pytest
 
-from pyedb.dotnet.edb import Edb
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.grpc.edb import EdbGrpc as Edb
 from pyedb.misc.misc import list_installed_ansysem
 from tests.conftest import generate_random_string
 
@@ -102,7 +102,7 @@ class EdbExamples:
 
 
 @pytest.fixture(scope="module")
-def add_legacy_edb(local_scratch):
+def add_grpc_edb(local_scratch):
     def _method(project_name=None, subfolder=""):
         if project_name:
             example_folder = os.path.join(example_models_path, subfolder, project_name + ".aedb")
@@ -113,23 +113,20 @@ def add_legacy_edb(local_scratch):
                 target_folder = os.path.join(local_scratch.path, project_name + ".aedb")
         else:
             target_folder = os.path.join(local_scratch.path, generate_unique_name("TestEdb") + ".aedb")
-        return Edb(
-            target_folder,
-            edbversion=desktop_version,
-        )
+        return Edb(target_folder, edbversion=desktop_version)
 
     return _method
 
 
 @pytest.fixture(scope="class")
-def legacy_edb_app(add_legacy_edb):
-    app = add_legacy_edb(test_project_name, subfolder=test_subfolder)
+def grpc_edb_app(add_grpc_edb):
+    app = add_grpc_edb(test_project_name, subfolder=test_subfolder)
     return app
 
 
 @pytest.fixture(scope="class")
-def legacy_edb_app_without_material(add_legacy_edb):
-    app = add_legacy_edb()
+def grpc_edb_app_without_material(add_grpc_edb):
+    app = add_grpc_edb()
     return app
 
 

@@ -27,7 +27,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.edb_core.hierarchy.component import Component
-from pyedb.grpc.edb_core.nets.nets import Net
+from pyedb.grpc.edb_core.nets.net import Net
 from pyedb.grpc.edb_core.primitive.padstack_instances import PadstackInstance
 from pyedb.grpc.edb_core.terminal.pingroup_terminal import PinGroupTerminal
 
@@ -35,7 +35,7 @@ from pyedb.grpc.edb_core.terminal.pingroup_terminal import PinGroupTerminal
 class PinGroup(GrpcPinGroup):
     """Manages pin groups."""
 
-    def __init__(self, name="", edb_pin_group=None, pedb=None):
+    def __init__(self, pedb=None, edb_pin_group=None, name=""):
         super().__init__(edb_pin_group)
         self._pedb = pedb
         self._edb_pin_group = edb_pin_group

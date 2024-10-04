@@ -20,24 +20,61 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.grpc.edb_core.nets.net import Net
 
-from ansys.edb.core.net.net_class import NetClass as GrpcNetClass
 
-
-class NetClass(GrpcNetClass):
+class NetClass:
     """Manages EDB functionalities for a primitives.
     It inherits EDB Object properties.
 
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2021.2")
+    >>> edb = Edb(myedb, edbversion="2025.1")
     >>> edb.net_classes
     """
 
-    def __init__(self, pedb, raw_extended_net=None):
-        super().__init__(raw_extended_net)
+    def __init__(self, pedb, net_class):
         self._pedb = pedb
-        self.components = self._pedb.components
-        self.primitive = self._pedb.modeler
-        self.nets = self._pedb.nets
+        self._net_class = net_class
+
+    @property
+    def nets(self):
+        """list of :class: `.Net` in the net class."""
+        return [Net(self._pedb, i) for i in self._net_class.nets]
+
+    def add_net(self, net):
+        """Add a net to the net class."""
+        if isinstance(net, str):
+            net = Net.find_by_name(self._pedb.active_layout, name=net)
+        if isinstance(net, Net) and not net.is_null:
+            self._net_class.add_net(net)
+            return True
+        return False
+
+    def contains_net(self, net):
+        """Determine if a net exists in the net class."""
+        if isinstance(net, str):
+            net = Net.find_by_name(self._pedb.active_layout, name=net)
+        return self._net_class.contains_net(net)
+
+    def create(self, name):
+        """Create a net."""
+        return self._net_class.create(self._pedb.active_layout, name)
+
+    def delete(self):
+        """Delete net."""
+        self._net_class.delete()
+
+    def find_by_name(self, name):
+        """Find net by name."""
+        return self._net_class.find_by_name(self._pedb.active_layout, name)
+
+    def remove_net(self, net):
+        """Remove net."""
+        if isinstance(net, str):
+            net = Net.find_by_name(self._pedb.active_layout, name=net)
+        if isinstance(net, Net) and not net.is_null:
+            self._net_class.remove(net)
+            return True
+        return False

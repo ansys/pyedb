@@ -34,7 +34,6 @@ from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.generic.general_methods import generate_unique_name
-from pyedb.grpc.edb_core.components import Component
 from pyedb.grpc.edb_core.hierarchy.pingroup import PinGroup
 from pyedb.grpc.edb_core.layers.stackup_layer import StackupLayer
 from pyedb.grpc.edb_core.nets.net import Net
@@ -59,10 +58,9 @@ from pyedb.grpc.edb_core.utility.sources import (
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
-class Excitations:
+class Excitation:
     def __init__(self, pedb):
         self._pedb = pedb
-        self._logger = pedb._logger
 
     @property
     def _logger(self):
@@ -220,6 +218,7 @@ class Excitations:
         >>> edb.save_edb()
         >>> edb.close_edb()
         """
+        from pyedb.grpc.edb_core.components import Component
 
         if isinstance(pins, str):
             pins = [pins]
@@ -587,6 +586,8 @@ class Excitations:
         bool
             ``True`` when successful, ``False`` when failed.
         """
+        from pyedb.grpc.edb_core.components import Component
+
         if isinstance(component, str):  # pragma: no cover
             component = self._pedb.components.instances[component]
         if not isinstance(component, Component):  # pragma: no cover
@@ -653,6 +654,8 @@ class Excitations:
         bool
             ``True`` when successful, ``False`` when failed.
         """
+        from pyedb.grpc.edb_core.components import Component
+
         if isinstance(component, str):  # pragma: no cover
             component = self._pedb.components.instances[component]
         if not isinstance(component, Component):  # pragma: no cover

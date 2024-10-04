@@ -471,7 +471,7 @@ class Hfss(object):
             "`pyedb.grpc.core.excitations.create_coax_port_on_component` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_coax_port_on_component(ref_des_list, net_list)
+        return self._pedb.excitation.create_coax_port_on_component(ref_des_list, net_list)
 
     def create_differential_wave_port(
         self,

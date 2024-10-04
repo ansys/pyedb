@@ -407,7 +407,6 @@ class Materials(object):
 
     def __init__(self, edb: Edb):
         self.__edb = edb
-        self.__edb_definition = edb.edb_api.definition
         self.__syslib = os.path.join(self.__edb.base_path, "syslib")
 
     def __contains__(self, item):

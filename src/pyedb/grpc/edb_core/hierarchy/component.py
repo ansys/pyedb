@@ -41,7 +41,7 @@ from ansys.edb.core.utility.value import Value as EDBValue
 
 from pyedb.grpc.edb_core.definition.package_def import PackageDef
 from pyedb.grpc.edb_core.hierarchy.pin_pair_model import PinPairModel
-from pyedb.grpc.edb_core.hierarchy.spice_model import SPICEModel
+from pyedb.grpc.edb_core.hierarchy.spice_model import SpiceModel
 from pyedb.grpc.edb_core.primitive.padstack_instances import PadstackInstance
 
 try:
@@ -67,7 +67,7 @@ class Component(GrpcComponentGroup):
     """
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+        super().__init__(edb_object._ConnObj__stub.GetGroup(edb_object.msg))
         self._pedb = pedb
         self._edb_object = edb_object
         self._layout_instance = None
@@ -120,7 +120,7 @@ class Component(GrpcComponentGroup):
         if self.model_type == "PinPairModel":
             return PinPairModel(self._pedb, self)
         elif self.model_type == "SPICEModel":
-            return SPICEModel(self._pedb, self)
+            return SpiceModel(self._pedb, self)
 
     @model.setter
     def model(self, value):
@@ -193,7 +193,7 @@ class Component(GrpcComponentGroup):
         if not self.model_type == "SPICEModel":
             return None
         else:
-            return SPICEModel(self._edb_model)
+            return SpiceModel(self._edb_model)
 
     @property
     def s_param_model(self):
@@ -313,11 +313,6 @@ class Component(GrpcComponentGroup):
     @refdes.setter
     def refdes(self, name):
         self.name = name
-
-    @property
-    def is_null(self):
-        """Flag indicating if the current object exists."""
-        return self.is_null
 
     @property
     def model_type(self):
@@ -784,7 +779,7 @@ class Component(GrpcComponentGroup):
         if not len(pin_names_sp) == self.numpins:  # pragma: no cover
             raise ValueError(f"Pin counts doesn't match component {self.name}.")
 
-        model = SPICEModel(self._pedb)
+        model = SpiceModel(self._pedb)
         model.model_path = file_path
         model.model_name = name
         if sub_circuit_name:

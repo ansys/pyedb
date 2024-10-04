@@ -55,11 +55,9 @@ from pyedb.generic.general_methods import (
 )
 from pyedb.grpc.edb_core.definition.component_def import ComponentDef
 from pyedb.grpc.edb_core.definition.component_pins import ComponentPin
-from pyedb.grpc.edb_core.excitations import Excitations
 from pyedb.grpc.edb_core.hierarchy.component import Component
 from pyedb.grpc.edb_core.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.edb_core.hierarchy.pingroup import PinGroup
-from pyedb.grpc.edb_core.padstack import Padstacks
 from pyedb.grpc.edb_core.utility.sources import SourceType
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -135,8 +133,8 @@ class Components(object):
         self._pins = {}
         self._comps_by_part = {}
         self._init_parts()
-        self._padstack = Padstacks(self._pedb)
-        self._excitations = Excitations()
+        # self._padstack = Padstacks(self._pedb)
+        # self._excitations = self._pedb.excitations
 
     @property
     def _logger(self):
@@ -1289,9 +1287,7 @@ class Components(object):
                         pin_names.remove(pin_names[0])
                         break
             if len(pin_names) == pin_number:
-                spice_mod = SPICEModel(
-                    GrpcSPICEModel.create(name=modelname, path=modelpath, sub_circuit=f"{modelname}_sub")
-                )
+                spice_mod = GrpcSPICEModel.create(name=modelname, path=modelpath, sub_circuit=f"{modelname}_sub")
                 terminal = 1
                 for pn in pin_names:
                     spice_mod.add_terminal(terminal=str(terminal), pin=pn)
