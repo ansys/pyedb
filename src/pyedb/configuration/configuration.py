@@ -106,6 +106,9 @@ class Configuration:
     def run(self, **kwargs):
         """Apply configuration settings to the current design"""
 
+        if self.cfg_data.general:
+            self.cfg_data.general.apply()
+
         # Configure boundary settings
         if self.cfg_data.boundaries:
             self.cfg_data.boundaries.apply()
@@ -272,6 +275,8 @@ class Configuration:
         """
         self._pedb.logger.info("Getting data from layout database.")
         data = {}
+        if kwargs.get("general", False):
+            data["general"] = self.cfg_data.general.get_data_from_db()
         if kwargs.get("stackup", False):
             data["stackup"] = self.cfg_data.stackup.get_data_from_db()
         if kwargs.get("package_definitions", False):
@@ -314,6 +319,7 @@ class Configuration:
         boundaries=True,
         s_parameters=True,
         padstacks=True,
+        general=True,
     ):
         """Export the configuration data from layout to a file.
 
@@ -345,6 +351,8 @@ class Configuration:
             Whether to export s_parameters.
         padstacks : bool
             Whether to export padstacks.
+        general : bool
+            Whether to export general information.
         Returns
         -------
         bool
@@ -352,7 +360,7 @@ class Configuration:
         data = self.get_data_from_db(
             stackup=stackup,
             package_definitions=package_definitions,
-            setups=False,
+            setups=setups,
             sources=sources,
             ports=ports,
             nets=nets,
@@ -362,6 +370,7 @@ class Configuration:
             boundaries=boundaries,
             s_parameters=s_parameters,
             padstacks=padstacks,
+            general=general,
         )
 
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)
