@@ -1,4 +1,4 @@
-.. _future_release:
+.. _build_breaking_change:
 
 Build breaking changes in Linux
 ===============================
