@@ -36,7 +36,7 @@ Microsoft documentation for `.NET` on Linux to ensure proper setup and compatibi
 and `Install .NET <https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu#install-net>`_.
 
 .. note:: Linux 22.04 and later versions
-    Starting with Linux 22.04, `.NET` is available in the official Ubuntu repo.
+    Starting with Linux 22.04, `.NET` is available in the official Ubuntu repository.
     If you want to use the Microsoft package to install `.NET`, you can use the following
     approach to *"demote"* the Ubuntu packages so that the Microsoft packages take precedence.
 
