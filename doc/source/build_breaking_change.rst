@@ -35,32 +35,33 @@ Microsoft documentation for `.NET` on Linux to ensure proper setup and compatibi
 `Register Microsoft package repository <https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu#register-the-microsoft-package-repository>`_
 and `Install .NET <https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu#install-net>`_.
 
-.. note:: Linux 22.04 and later versions
-    Starting with Linux 22.04, `.NET` is available in the official Ubuntu repository.
+.. note:: Ubuntu 22.04 and later versions
+    Starting with Ubuntu 22.04, `.NET` is available in the official Ubuntu repository.
     If you want to use the Microsoft package to install `.NET`, you can use the following
     approach to *"demote"* the Ubuntu packages so that the Microsoft packages take precedence.
 
-    1. Ensure the removal of any existing `.NET` installation.
+    1. Ensure the removal of any existing `.NET` installation. In Ubuntu, this can be done with
+    the following command:
 
-    ```
-    sudo apt remove dotnet* aspnetcore* netstandard*
-    ```
+    .. code::
+
+        sudo apt remove dotnet* aspnetcore* netstandard*
 
     2. Create a preference file in `/etc/apt/preferences.d`, for example `microsoft-dotnet.pref`,
     with the following content:
 
-    ```
-    Package: dotnet* aspnet* netstandard*
-    Pin: origin "archive.ubuntu.com"
-    Pin-Priority: -10
+    .. code::
 
-    Package: dotnet* aspnet* netstandard*
-    Pin: origin "security.ubuntu.com"
-    Pin-Priority: -10
-    ```
+        Package: dotnet* aspnet* netstandard*
+        Pin: origin "archive.ubuntu.com"
+        Pin-Priority: -10
+
+        Package: dotnet* aspnet* netstandard*
+        Pin: origin "security.ubuntu.com"
+        Pin-Priority: -10
 
     3. Perform an update and install of the version you want, for example .NET 6.0 or 8.0
 
-    ```
-    sudo apt update && sudo apt install -y dotnet-sdk-6.0
-    ```
+    .. code::
+
+        sudo apt update && sudo apt install -y dotnet-sdk-6.0
