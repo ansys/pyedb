@@ -242,7 +242,7 @@ class TestClass:
 
         assert edbapp.stackup["1_Top"].color
         edbapp.stackup["1_Top"].color = [0, 120, 0]
-        assert edbapp.stackup["1_Top"].color == (0, 120, 0)
+        assert edbapp.stackup["1_Top"].color == [0, 120, 0]
         edbapp.stackup["1_Top"].transparency = 10
         assert edbapp.stackup["1_Top"].transparency == 10
         assert edbapp.stackup.mode == "Laminate"
@@ -297,8 +297,8 @@ class TestClass:
         layer.type = "dielectric"
         assert layer.type == "dielectric"
         layer.type = "signal"
-        layer.color = (0, 0, 0)
-        assert layer.color == (0, 0, 0)
+        layer.color = [0, 0, 0]
+        assert layer.color == [0, 0, 0]
         layer.transparency = 0
         assert layer.transparency == 0
         layer.etch_factor = 2

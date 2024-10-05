@@ -41,7 +41,7 @@ class CfgData(object):
 
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
-        self.general = CfgGeneral(self, kwargs.get("general", None))
+        self.general = CfgGeneral(self._pedb, kwargs.get("general", {}))
 
         self.boundaries = CfgBoundaries(self._pedb, kwargs.get("boundaries", {}))
 

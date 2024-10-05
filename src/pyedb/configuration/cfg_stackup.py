@@ -139,12 +139,7 @@ class CfgStackup:
     def get_layers_from_db(self):
         layers = []
         for name, obj in self._pedb.stackup.all_layers.items():
-            layer = {}
-            for p_name in CfgLayer().__dict__:
-                p_value = getattr(obj, p_name, None)
-                if p_value is not None:
-                    layer[p_name] = getattr(obj, p_name)
-            layers.append(layer)
+            layers.append(obj.properties)
         return layers
 
     def get_data_from_db(self):
