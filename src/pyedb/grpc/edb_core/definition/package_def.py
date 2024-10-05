@@ -44,12 +44,11 @@ class PackageDef(GrpcPackageDef):
     """
 
     def __init__(self, pedb, edb_object=None, name=None, component_part_name=None, extent_bounding_box=None):
-        super().__init__(self.msg)
+        super(GrpcPackageDef, self).__init__(edb_object.msg)
         self._pedb = pedb
+        self._edb_object = edb_object
         if self._edb_object is None and name is not None:
             self._edb_object = self.__create_from_name(name, component_part_name, extent_bounding_box)
-        else:
-            self._edb_object = edb_object
 
     def __create_from_name(self, name, component_part_name=None, extent_bounding_box=None):
         """Create a package definition.
@@ -87,56 +86,57 @@ class PackageDef(GrpcPackageDef):
     @property
     def exterior_boundary(self):
         """Get the exterior boundary of a package definition."""
-        return GrpcPolygonData(self.exterior_boundary.points)
+        return GrpcPolygonData(super().exterior_boundary.points)
 
     @exterior_boundary.setter
     def exterior_boundary(self, value):
-        self.exterior_boundary = value
+        super(PackageDef, self.__class__).exterior_boundary.__set__(self, value)
 
     @property
     def maximum_power(self):
         """Maximum power of the package."""
-        return self.maximum_power.value
+        return super().maximum_power.value
 
     @maximum_power.setter
     def maximum_power(self, value):
-        self.maximum_power = GrpcValue(value)
+        super(PackageDef, self.__class__).maximum_power.__set__(self, GrpcValue(value))
 
     @property
     def therm_cond(self):
         """Thermal conductivity of the package."""
-        return self.therm_cond.value
+        return super().thermal_conductivity.value
 
     @therm_cond.setter
     def therm_cond(self, value):
         self.therm_cond = GrpcValue(value)
+        super(PackageDef, self.__class__).thermal_conductivity.__set__(self, GrpcValue(value))
 
     @property
     def theta_jb(self):
         """Theta Junction-to-Board of the package."""
-        return self.theta_jb.value
+        return super().theta_jb.value
 
     @theta_jb.setter
     def theta_jb(self, value):
-        self.theta_jb = GrpcValue(value)
+        super(PackageDef, self.__class__).theta_jb.__set__(self, GrpcValue(value))
 
     @property
     def theta_jc(self):
         """Theta Junction-to-Case of the package."""
-        return self.theta_jc.value
+        return super().theta_jc.value
 
     @theta_jc.setter
     def theta_jc(self, value):
-        self.theta_jc = GrpcValue(value)
+        super(PackageDef, self.__class__).theta_jc.__set__(self, GrpcValue(value))
 
     @property
     def height(self):
         """Height of the package."""
-        return self.height.value
+        return super().height.value
 
     @height.setter
     def height(self, value):
-        self.height = GrpcValue(value)
+        super(PackageDef, self.__class__).height.__set__(self, GrpcValue(value))
 
     def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness):
         from ansys.edb.core.utility.heat_sink import (

@@ -30,7 +30,7 @@ from ansys.edb.core.primitive.primitive import Polygon as GrpcPolygon
 
 class Polygon(GrpcPolygon):
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+        super().__init__(edb_object.msg)
         self._pedb = pedb
 
     @property
@@ -44,7 +44,7 @@ class Polygon(GrpcPolygon):
         return self.polygon_data.has_self_intersections()
 
     def fix_self_intersections(self):
-        """Remove self intersections if they exists.
+        """Remove self intersections if they exist.
 
         Returns
         -------

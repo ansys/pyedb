@@ -20,12 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.net.extended_net import ExtendedNet as GrpcExtendedNet
-
 from pyedb.grpc.edb_core.nets.net import Net
+from pyedb.grpc.edb_core.nets.net_class import NetClass
 
 
-class ExtendedNet(GrpcExtendedNet):
+class ExtendedNet(NetClass):
     """Manages EDB functionalities for a primitives.
     It Inherits EDB Object properties.
     """
@@ -33,14 +32,15 @@ class ExtendedNet(GrpcExtendedNet):
     def __init__(self, pedb, edb_object=None):
         super().__init__(self, edb_object)
         self._pedb = pedb
-        self.components = self._pedb.components
-        self.primitive = self._pedb.modeler
-        self.nets = self._pedb.nets
+        self._components = self._pedb.components
+        self._modeler = self._pedb.modeler
+        self._nets = self._pedb.nets
+        self._edb_object = edb_object
 
     @property
     def nets(self):
         """Nets dictionary."""
-        return {net.name: Net(self._app, net) for net in self.nets}
+        return {net.name: Net(self._pedb, net) for net in self._edb_object.nets}
 
     @property
     def components(self):

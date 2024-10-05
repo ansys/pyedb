@@ -32,7 +32,7 @@ class Rectangle(GrpcRectangle):
     """Class representing a rectangle object."""
 
     def __init__(self, pedb, edb_object):
-        super.__init__(edb_object)
+        super.__init__(edb_object.msg)
         self._pedb = pedb
         self._mapping_representation_type = {
             "center_width_height": GrpcRectangleRepresentationType.CENTER_WIDTH_HEIGHT,
@@ -83,7 +83,7 @@ class Rectangle(GrpcRectangle):
 
             **rotation** : Rotation.
         """
-        parameters = self.get_parameters()
+        parameters = super().get_parameters()
         representation_type = parameters[0].name.lower()
         parameter1 = parameters[1].value
         parameter2 = parameters[2].value
@@ -114,7 +114,7 @@ class Rectangle(GrpcRectangle):
             Rotation.
         """
 
-        return self.set_parameters(
+        return super().set_parameters(
             self.representation_type[rep_type],
             GrpcValue(param1),
             GrpcValue(param2),

@@ -834,7 +834,6 @@ class EdbGrpc(EdbInit):
         return self._hfss
 
     @property
-    @property
     def nets(self):
         """Core nets.
 

@@ -38,6 +38,7 @@ from ansys.edb.core.hierarchy.sparameter_model import (
 from ansys.edb.core.utility.rlc import PinPair as GrpcPinPair
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as EDBValue
+from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.edb_core.definition.package_def import PackageDef
 from pyedb.grpc.edb_core.hierarchy.pin_pair_model import PinPairModel
@@ -67,11 +68,11 @@ class Component(GrpcComponentGroup):
     """
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object._ConnObj__stub.GetGroup(edb_object.msg))
+        super(GrpcComponentGroup, self).__init__(edb_object.msg)
         self._pedb = pedb
-        self._edb_object = edb_object
         self._layout_instance = None
         self._comp_instance = None
+        self._logger = pedb.logger
 
     @property
     def group_type(self):
@@ -94,29 +95,21 @@ class Component(GrpcComponentGroup):
         return self._pedb.active_layout
 
     @property
-    def component_property(self):
-        """``ComponentProperty`` object."""
-        return self.component_property
-
-    @component_property.setter
-    def component_property(self, value):
-        if value:
-            self.component_property = value
-
-    @property
     def _edb_model(self):  # pragma: no cover
         return self.component_property.model
 
     @property  # pragma: no cover
     def _pin_pairs(self):
-        edb_comp_prop = self.component_property
         edb_model = self._edb_model
-        return [PinPairModel(self, self, edb_comp_prop, edb_model, pin_pair) for pin_pair in list(edb_model.PinPairs)]
+        return edb_model.pin_pairs()
+
+    @property
+    def _rlc(self):
+        return [self._edb_model.rlc(pin_pair) for pin_pair in self._edb_model.pin_pairs()]
 
     @property
     def model(self):
         """Component model."""
-        edb_object = self.component_property.model
         if self.model_type == "PinPairModel":
             return PinPairModel(self._pedb, self)
         elif self.model_type == "SPICEModel":
@@ -134,8 +127,7 @@ class Component(GrpcComponentGroup):
     @property
     def package_def(self):
         """Package definition."""
-        edb_object = self.component_property.package_def
-        package_def = PackageDef(self._pedb, edb_object)
+        package_def = PackageDef(pedb=self._pedb, edb_object=self.component_property.package_def)
         if not package_def.is_null:
             return package_def
 
@@ -145,6 +137,42 @@ class Component(GrpcComponentGroup):
         comp_prop = self.component_property
         comp_prop.package_def = package_def
         self.component_property = comp_prop
+
+    @property
+    def is_mcad(self):
+        return super().is_mcad.value
+
+    @is_mcad.setter
+    def is_mcad(self, value):
+        if isinstance(value, bool):
+            super(Component, self.__class__).is_mcad.__set__(self, GrpcValue(value))
+
+    @property
+    def is_mcad_3d_comp(self):
+        return super().is_mcad_3d_comp.value
+
+    @is_mcad_3d_comp.setter
+    def is_mcad_3d_comp(self, value):
+        if isinstance(value, bool):
+            super(Component, self.__class__).is_mcad_3d_comp.__set__(self, GrpcValue(value))
+
+    @property
+    def is_mcad_hfss(self):
+        return super().is_mcad_hfss.value
+
+    @is_mcad_hfss.setter
+    def is_mcad_hfss(self, value):
+        if isinstance(value, bool):
+            super(Component, self.__class__).is_mcad_hfss.__set__(self, GrpcValue(value))
+
+    @property
+    def is_mcad_stride(self):
+        return super().is_mcad_stride.value
+
+    @is_mcad_stride.setter
+    def is_mcad_stride(self, value):
+        if isinstance(value, bool):
+            super(Component, self.__class__).is_mcad_stride.__set__(self, GrpcValue(value))
 
     def create_package_def(self, name="", component_part_name=None):
         """Create a package definition and assign it to the component.
@@ -162,7 +190,7 @@ class Component(GrpcComponentGroup):
             ``True`` if succeeded, ``False`` otherwise.
         """
         if not name:
-            name = "{}_{}".format(self.refdes, self.part_name)
+            name = f"{self.refdes}_{self.part_name}"
         if name not in self._pedb.definitions.package:
             self._pedb.definitions.add_package_def(name, component_part_name=component_part_name)
             self.package_def = name
@@ -273,24 +301,21 @@ class Component(GrpcComponentGroup):
 
     @solder_ball_diameter.setter
     def solder_ball_diameter(self, value):
-        diameter = None
-        mid_diameter = None  # used with spheroid shape
         if isinstance(value, tuple) or isinstance(value, list):
             if len(value) == 2:
-                diameter = EDBValue(value[0])
-                mid_diameter = EDBValue(value[1])
+                diameter = GrpcValue(value[0])
+                mid_diameter = GrpcValue(value[1])
             elif len(value) == 1:
-                diameter = EDBValue(value[0])
-                mid_diameter = EDBValue(value[0])
-        if isinstance(value, str):
-            diameter = EDBValue(value)
-            mid_diameter = EDBValue(value)
-        if diameter and mid_diameter:
-            cmp_property = self.component_property
-            solder_ball_prop = cmp_property.solder_ball_property
-            solder_ball_prop.set_diameter(diameter, mid_diameter)
-            cmp_property.solder_ball_property = solder_ball_prop
-            self.component_property = cmp_property
+                diameter = GrpcValue(value[0])
+                mid_diameter = GrpcValue(value[0])
+        if isinstance(value, str) or isinstance(value, float):
+            diameter = GrpcValue(value)
+            mid_diameter = GrpcValue(value)
+        cmp_property = self.component_property
+        solder_ball_prop = cmp_property.solder_ball_property
+        solder_ball_prop.set_diameter(diameter, mid_diameter)
+        cmp_property.solder_ball_property = solder_ball_prop
+        self.component_property = cmp_property
 
     @property
     def solder_ball_placement(self):
@@ -326,30 +351,44 @@ class Component(GrpcComponentGroup):
     @property
     def rlc_values(self):
         """Get component rlc values."""
-        if not len(self._pin_pairs):
+        if not len(self._rlc):
             return [None, None, None]
-        pin_pair = self._pin_pairs[0]
-        return pin_pair.rlc_values
+        elif len(self._rlc) == 1:
+            return [self._rlc[0].r.value, self._rlc[0].l.value, self._rlc[0].c.value]
+        else:
+            return [[rlc.r.value, rlc.l.value, rlc.c.value] for rlc in self._rlc]
 
     @rlc_values.setter
     def rlc_values(self, value):
-        if isinstance(value, list):  # pragma no cover
-            rlc_enabled = [True if i else False for i in value]
-            rlc_values = [EDBValue(i) for i in value]
-            model = PinPairModel(self._pedb)
-            pin_names = list(self.pins.keys())
-            for idx, i in enumerate(np.arange(len(pin_names) // 2)):
-                pin_pair = (pin_names[idx], pin_names[idx + 1])
-                rlc = model.get_rlc(pin_pair)
-                rlc.r = EDBValue(rlc_values[0])
-                rlc.r_enabled = rlc_enabled[0]
-                rlc.l = EDBValue(rlc_values[1])
-                rlc.l_enabled = rlc_enabled[1]
-                rlc.c = EDBValue(rlc_values[2])
-                rlc.c_enabled = rlc_enabled[2]
-                rlc.is_parallel = False
-                model.set_rlc(pin_pair, rlc)
-            self._set_model(model)
+        comp_property = self.component_property
+        if not isinstance(value, list) or isinstance(value, tuple):
+            self._logger.error("RLC values must be provided as `List` or `Tuple` in this order.")
+            return
+        if not len(value) == 3:
+            self._logger.error("RLC values must be provided as `List` or `Tuple` in this order.")
+            return
+        _rlc = []
+        for rlc in self._rlc:
+            if value[0]:
+                rlc.r = GrpcValue(value[0])
+                rlc.r_enabled = True
+            else:
+                rlc.r_enabled = False
+            if value[1]:
+                rlc.l = GrpcValue(value[1])
+                rlc.l_enabled = True
+            else:
+                rlc.l_enabled = False
+            if value[2]:
+                rlc.c = GrpcValue(value[2])
+                rlc.c_enabled = True
+            else:
+                rlc.c_enabled = False
+            _rlc.append(rlc)
+        for ind in range(len(self._rlc)):
+            self._edb_model.set_rlc(self._pin_pairs[ind], self._rlc[ind])
+        comp_property.model = self._edb_model
+        self.component_property = comp_property
 
     @property
     def value(self):
@@ -360,43 +399,45 @@ class Component(GrpcComponentGroup):
         str
             Value. ``None`` if not an RLC Type.
         """
-        if self.model_type == "RLC":
-            if not self._pin_pairs:
-                return
-            else:
-                pin_pair = self._pin_pairs[0]
-            if len([i for i in pin_pair.rlc_enable if i]) == 1:
-                return [pin_pair.rlc_values[idx] for idx, val in enumerate(pin_pair.rlc_enable) if val][0]
-            else:
-                return pin_pair.rlc_values
-        elif self.model_type == "SPICEModel":
-            return self.spice_model.file_path
-        elif self.model_type == "SParameterModel":
-            return self.s_param_model.name
-        else:
-            return self.netlist_model.netlist
+        # if self.model_type == "RLC":
+        #     if not self._pin_pairs:
+        #         return
+        #     else:
+        #         pin_pair = self._pin_pairs[0]
+        #     if len([i for i in pin_pair.rlc_enable if i]) == 1:
+        #         return [pin_pair.rlc_values[idx] for idx, val in enumerate(pin_pair.rlc_enable) if val][0]
+        #     else:
+        #         return pin_pair.rlc_values
+        # elif self.model_type == "SPICEModel":
+        #     return self.spice_model.file_path
+        # elif self.model_type == "SParameterModel":
+        #     return self.s_param_model.name
+        # else:
+        #     return self.netlist_model.netlist
+        pass
 
     @value.setter
     def value(self, value):
-        rlc_enabled = [True if i == self.type else False for i in ["Resistor", "Inductor", "Capacitor"]]
-        rlc_values = [value if i == self.type else 0 for i in ["Resistor", "Inductor", "Capacitor"]]
-        rlc_values = [EDBValue(i) for i in rlc_values]
-
-        model = PinPairModel(self._pedb)._edb_object
-        pin_names = list(self.pins.keys())
-        for idx, i in enumerate(np.arange(len(pin_names) // 2)):
-            pin_pair = (pin_names[idx], pin_names[idx + 1])
-            rlc = model.get_rlc(pin_pair)
-            rlc = model.get_rlc(pin_pair)
-            rlc.r = EDBValue(rlc_values[0])
-            rlc.r_enabled = rlc_enabled[0]
-            rlc.l = EDBValue(rlc_values[1])
-            rlc.l_enabled = rlc_enabled[1]
-            rlc.c = EDBValue(rlc_values[2])
-            rlc.c_enabled = rlc_enabled[2]
-            rlc.is_parallel = False
-            model.set_rlc(pin_pair, rlc)
-        self._set_model(model)
+        # rlc_enabled = [True if i == self.type else False for i in ["Resistor", "Inductor", "Capacitor"]]
+        # rlc_values = [value if i == self.type else 0 for i in ["Resistor", "Inductor", "Capacitor"]]
+        # rlc_values = [EDBValue(i) for i in rlc_values]
+        #
+        # model = PinPairModel(self._pedb)
+        # pin_names = list(self.pins.keys())
+        # for idx, i in enumerate(np.arange(len(pin_names) // 2)):
+        #     pin_pair = (pin_names[idx], pin_names[idx + 1])
+        #     rlc = model.get_rlc(pin_pair)
+        #     rlc = model.get_rlc(pin_pair)
+        #     rlc.r = EDBValue(rlc_values[0])
+        #     rlc.r_enabled = rlc_enabled[0]
+        #     rlc.l = EDBValue(rlc_values[1])
+        #     rlc.l_enabled = rlc_enabled[1]
+        #     rlc.c = EDBValue(rlc_values[2])
+        #     rlc.c_enabled = rlc_enabled[2]
+        #     rlc.is_parallel = False
+        #     model.set_rlc(pin_pair, rlc)
+        # self._set_model(model)
+        pass
 
     @property
     def res_value(self):
@@ -409,22 +450,26 @@ class Component(GrpcComponentGroup):
         """
         cmp_type = self.component_type
         if 0 < cmp_type.value < 4:
-            model = self.component_property.model
-            pinpairs = model.pin_pair_model
-            if not list(pinpairs):
-                return "0"
-            for pinpair in pinpairs:
-                pair = model.get_rlc(pinpair)
-                return str(pair.r.value)
+            result = [rlc.r.value for rlc in self._rlc]
+            if len(result) == 1:
+                return result[0]
+            else:
+                return result
         return None
 
     @res_value.setter
     def res_value(self, value):  # pragma no cover
         if value:
-            if self.rlc_values == [None, None, None]:
-                self.rlc_values = [EDBValue(value), EDBValue(0), EDBValue(0)]
-            else:
-                self.rlc_values = [EDBValue(value), EDBValue(self.rlc_values[1]), EDBValue(self.rlc_values[2])]
+            _rlc = []
+            for rlc in self._rlc:
+                rlc.r_enabled = True
+                rlc.r = GrpcValue(value)
+                _rlc.append(rlc)
+            for ind in range(len(self._pin_pairs)):
+                self._edb_model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+            comp_prop = self.component_property
+            comp_prop.model = self._edb_model
+            self.component_property = comp_prop
 
     @property
     def cap_value(self):
@@ -437,22 +482,26 @@ class Component(GrpcComponentGroup):
         """
         cmp_type = self.component_type
         if 0 < cmp_type.value < 4:
-            model = self.component_property.model
-            pinpairs = model.pin_pair_model
-            if not list(pinpairs):
-                return "0"
-            for pinpair in pinpairs:
-                pair = model.get_rlc(pinpair)
-                return str(pair.c.value)
+            result = [rlc.c.value for rlc in self._rlc]
+            if len(result) == 1:
+                return result[0]
+            else:
+                return result
         return None
 
     @cap_value.setter
     def cap_value(self, value):  # pragma no cover
         if value:
-            if self.rlc_values == [None, None, None]:
-                self.rlc_values = [EDBValue(0), EDBValue(0), EDBValue(value)]
-            else:
-                self.rlc_values = [EDBValue(self.rlc_values[1]), EDBValue(self.rlc_values[2]), EDBValue(value)]
+            _rlc = []
+            for rlc in self._rlc:
+                rlc.c_enabled = True
+                rlc.c = GrpcValue(value)
+                _rlc.append(rlc)
+            for ind in range(len(self._pin_pairs)):
+                self._edb_model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+            comp_prop = self.component_property
+            comp_prop.model = self._edb_model
+            self.component_property = comp_prop
 
     @property
     def ind_value(self):
@@ -465,22 +514,26 @@ class Component(GrpcComponentGroup):
         """
         cmp_type = self.component_type
         if 0 < cmp_type.value < 4:
-            model = self.component_property.model
-            pinpairs = model.pin_pair_model
-            if not list(pinpairs):
-                return "0"
-            for pinpair in pinpairs:
-                pair = model.get_rlc(pinpair)
-                return str(pair.l.value)
+            result = [rlc.l.value for rlc in self._rlc]
+            if len(result) == 1:
+                return result[0]
+            else:
+                return result
         return None
 
     @ind_value.setter
     def ind_value(self, value):  # pragma no cover
         if value:
-            if self.rlc_values == [None, None, None]:
-                self.rlc_values = [EDBValue(0), EDBValue(value), EDBValue(0)]
-            else:
-                self.rlc_values = [EDBValue(self.rlc_values[1]), EDBValue(value), EDBValue(self.rlc_values[2])]
+            _rlc = []
+            for rlc in self._rlc:
+                rlc.l_enabled = True
+                rlc.l = GrpcValue(value)
+                _rlc.append(rlc)
+            for ind in range(len(self._pin_pairs)):
+                self._edb_model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+            comp_prop = self.component_property
+            comp_prop.model = self._edb_model
+            self.component_property = comp_prop
 
     @property
     def is_parallel_rlc(self):
@@ -493,11 +546,7 @@ class Component(GrpcComponentGroup):
         """
         cmp_type = self.component_type
         if 0 < cmp_type.value < 4:
-            model = self.component_property.model
-            pinpairs = model.pin_pair_model
-            for pinpair in pinpairs:
-                pair = model.get_rlc(pinpair)
-                return pair.is_parallel
+            return self._rlc[0].is_parallel
         return None
 
     @is_parallel_rlc.setter
@@ -506,18 +555,11 @@ class Component(GrpcComponentGroup):
             logging.warning(self.refdes, " has no pin pair.")
         else:
             if isinstance(value, bool):
-                model = self.component_property.model
-                pinpairs = model.pin_pair_model
-                if not list(pinpairs):
-                    return "0"
-                for pin_pair in pinpairs:
-                    pin_pair_rlc = model.get_rlc(pin_pair)
-                    pin_pair_rlc.is_parallel = value
-                    pin_pair_model = self._edb_model
-                    pin_pair_model.set_rlc(pin_pair, pin_pair_rlc)
-                    comp_prop = self.component_property
-                    comp_prop.model = pin_pair_model
-                    self.component_property = comp_prop
+                for rlc in self._rlc:
+                    rlc.is_parallel = value
+                    comp_property = self.component_property
+                    comp_property.set_rcl(rlc)
+                    self.component_property = comp_property
 
     @property
     def center(self):
@@ -527,8 +569,17 @@ class Component(GrpcComponentGroup):
         -------
         list
         """
-        center = self.component_instance.location
-        return [center[0].value, center[1].value]
+        return self.location
+
+    @property
+    def location(self):
+        return [pt.value for pt in super().location]
+
+    @location.setter
+    def location(self, value):
+        if isinstance(value, list):
+            _location = [GrpcValue(val) for val in value]
+            super(Component, self.__class__).location.__set__(self, _location)
 
     @property
     def bounding_box(self):
@@ -541,10 +592,10 @@ class Component(GrpcComponentGroup):
             coordinates in this order: [X lower left corner, Y lower left corner,
             X upper right corner, Y upper right corner].
         """
-        bbox = self.component_instance.bbox
+        bbox = self.component_instance.get_bbox().points
         pt1 = bbox[0]
-        pt2 = bbox[1]
-        return [pt1[0][0].value, pt1[0][1].value, pt2[1][0].value, pt2[1][1].value]
+        pt2 = bbox[2]
+        return [pt1.x.value, pt1.y.value, pt2.x.value, pt2.y.value]
 
     @property
     def rotation(self):
@@ -565,8 +616,7 @@ class Component(GrpcComponentGroup):
         list
             List of Pins of Component.
         """
-        pins = [p for p in self.members if p.is_layout_pin]
-        return pins
+        return self.pins
 
     @property
     def nets(self):
@@ -588,10 +638,8 @@ class Component(GrpcComponentGroup):
         dic[str, :class:`dotnet.edb_core.edb_data.definitions.EDBPadstackInstance`]
             Dictionary of EDBPadstackInstance Components.
         """
-        pins = {}
-        for el in self.pinlist:
-            pins[el.name] = PadstackInstance(el, self._pedb)
-        return pins
+        pins = [p for p in self.members if p.is_layout_pin]
+        return {pin.name: PadstackInstance(self._pedb, pin) for pin in pins}
 
     @property
     def type(self):
@@ -602,7 +650,7 @@ class Component(GrpcComponentGroup):
         str
             Component type.
         """
-        return self.component_type.name
+        return self.component_type.name.lower()
 
     @type.setter
     def type(self, new_type):
@@ -629,7 +677,7 @@ class Component(GrpcComponentGroup):
             type_id = GrpcComponentType.OTHER
         else:
             return
-        self.edbcomponent.component_type = type_id
+        self.component_type = type_id
 
     @property
     def numpins(self):
@@ -683,7 +731,7 @@ class Component(GrpcComponentGroup):
         str
            Name of the placement layer.
         """
-        return self.placement_layer.name
+        return super().placement_layer.name
 
     @property
     def is_top_mounted(self):
@@ -879,8 +927,7 @@ class Component(GrpcComponentGroup):
         ind = 0 if ind is None else ind
         cap = 0 if cap is None else cap
         res, ind, cap = EDBValue(res), EDBValue(ind), EDBValue(cap)
-        model = PinPairModel(self._edb_model)._edb_object
-
+        model = PinPairModel(self._edb_model)
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
             pin_pair = GrpcPinPair(pin_names[idx], pin_names[idx + 1])

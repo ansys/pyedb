@@ -42,7 +42,7 @@ class Primitive(GrpcPrimitive):
     """
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+        super().__init__(edb_object.msg)
         self._pedb = pedb
         self._edb_object = edb_object
         self._core_stackup = pedb.stackup
@@ -58,19 +58,19 @@ class Primitive(GrpcPrimitive):
         -------
         str
         """
-        return self.primitive_type
+        return super().primitive_type
 
-    @property
-    def primitive_type(self):
-        """Return the type of the primitive.
-
-        Expected output is among ``"circle"``, ``"rectangle"``,``"polygon"``,``"path"`` or ``"bondwire"``.
-
-        Returns
-        -------
-        str
-        """
-        return self.primitive_type.name.lower()
+    # @property
+    # def primitive_type(self):
+    #     """Return the type of the primitive.
+    #
+    #     Expected output is among ``"circle"``, ``"rectangle"``,``"polygon"``,``"path"`` or ``"bondwire"``.
+    #
+    #     Returns
+    #     -------
+    #     str
+    #     """
+    #     return super().primitive_type.name.lower()
 
     @property
     def layer_name(self):

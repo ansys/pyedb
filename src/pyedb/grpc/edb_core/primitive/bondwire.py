@@ -31,8 +31,8 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 class Bondwire(GrpcBondWire):
     """Class representing a bond-wire object."""
 
-    def __init__(self, _pedb):
-        super().__init__(self.msg)
+    def __init__(self, _pedb, edb_object):
+        super().__init__(edb_object.msg)
         self._pedb = _pedb
 
     def __create(self, **kwargs):
@@ -74,21 +74,21 @@ class Bondwire(GrpcBondWire):
     def cross_section_type(self):
         """str: Bondwire-cross-section-type of a bondwire object. Supported values for setter: `"round",
         `"rectangle"`"""
-        return self.cross_section_type.name
+        return super().cross_section_type.name
 
     @cross_section_type.setter
     def cross_section_type(self, bondwire_type):
         mapping = {"round": GrpcBondwireCrossSectionType.ROUND, "rectangle": GrpcBondwireCrossSectionType.RECTANGLE}
-        self.cross_section_type = mapping[bondwire_type]
+        super().cross_section_type = mapping[bondwire_type]
 
     @property
     def cross_section_height(self):
         """float: Bondwire-cross-section height of a bondwire object."""
-        return self.cross_section_height.value
+        return super().cross_section_height.value
 
     @cross_section_height.setter
     def cross_section_height(self, height):
-        self.cross_section_height = GrpcValue(height)
+        super().cross_section_height = GrpcValue(height)
 
     def get_trajectory(self):
         """Get trajectory parameters of a bondwire object.
@@ -126,8 +126,8 @@ class Bondwire(GrpcBondWire):
     @property
     def width(self):
         """:class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object."""
-        return self.width.value
+        return super().width.value
 
     @width.setter
     def width(self, width):
-        self.width = GrpcValue(width)
+        super().width = GrpcValue(width)

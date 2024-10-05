@@ -35,11 +35,11 @@ from pyedb.grpc.edb_core.terminal.pingroup_terminal import PinGroupTerminal
 class PinGroup(GrpcPinGroup):
     """Manages pin groups."""
 
-    def __init__(self, pedb=None, edb_pin_group=None, name=""):
-        super().__init__(edb_pin_group)
+    def __init__(self, pedb, edb_pin_group):
+        super().__init__(edb_pin_group.msg)
         self._pedb = pedb
         self._edb_pin_group = edb_pin_group
-        self._name = name
+        self._name = edb_pin_group.name
         self._component = ""
         self._node_pins = []
         self._net = ""

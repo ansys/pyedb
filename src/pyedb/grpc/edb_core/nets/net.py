@@ -23,9 +23,12 @@
 from ansys.edb.core.net.net import Net as GrpcNet
 from ansys.edb.core.primitive.primitive import PrimitiveType as GrpcPrimitiveType
 
-from pyedb.grpc.edb_core.hierarchy.component import Component
+from pyedb.grpc.edb_core.primitive.bondwire import Bondwire
+from pyedb.grpc.edb_core.primitive.circle import Circle
 from pyedb.grpc.edb_core.primitive.padstack_instances import PadstackInstance
-from pyedb.grpc.edb_core.primitive.primitive import Primitive
+from pyedb.grpc.edb_core.primitive.path import Path
+from pyedb.grpc.edb_core.primitive.polygon import Polygon
+from pyedb.grpc.edb_core.primitive.rectangle import Rectangle
 
 
 class Net(GrpcNet):
@@ -42,7 +45,7 @@ class Net(GrpcNet):
     """
 
     def __init__(self, pedb, raw_net):
-        super().__init__(raw_net)
+        super().__init__(raw_net.msg)
         self._pedb = pedb
         self._core_components = pedb.components
         self._core_primitive = pedb.modeler
@@ -56,7 +59,19 @@ class Net(GrpcNet):
         -------
         list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
         """
-        return [Primitive(self._pedb, prim) for prim in self.primitives]
+        primitives = []
+        for primitive in super().primitives:
+            if primitive.primitive_type == GrpcPrimitiveType.PATH:
+                primitives.append(Path(self._pedb, primitive))
+            elif primitive.primitive_type == GrpcPrimitiveType.POLYGON:
+                primitives.append(Polygon(self._pedb, primitive))
+            elif primitive.primitive_type == GrpcPrimitiveType.CIRCLE:
+                primitives.append(Circle(self._pedb, primitive))
+            elif primitive.primitive_type == GrpcPrimitiveType.RECTANGLE:
+                primitives.append(Rectangle(self._pedb, primitive))
+            elif primitive.primitive_type == GrpcPrimitiveType.BONDWIRE:
+                primitives.append(Bondwire(self._pedb, primitive))
+        return primitives
 
     @property
     def padstack_instances(self):
@@ -65,7 +80,7 @@ class Net(GrpcNet):
         Returns
         -------
         list of :class:`pyedb.dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`"""
-        return [PadstackInstance(self._pedb, i) for i in self.padstack_instances]
+        return [PadstackInstance(self._pedb, i) for i in super().padstack_instances]
 
     @property
     def components(self):
@@ -75,7 +90,15 @@ class Net(GrpcNet):
         -------
         dict[str, :class:`pyedb.dotnet.edb_core.cell.hierarchy.component.EDBComponent`]
         """
-        return {cmp.name: Component(self._pedb, cmp) for cmp in self.components}
+        components = {}
+        for padstack_instance in self.padstack_instances:
+            component = padstack_instance.component
+            if component:
+                try:
+                    component[component.name] = component
+                except:
+                    pass
+        return components
 
     def find_dc_short(self, fix=False):
         """Find DC-shorted nets.

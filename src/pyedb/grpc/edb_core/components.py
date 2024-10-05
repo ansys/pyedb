@@ -36,9 +36,6 @@ from ansys.edb.core.definition.die_property import DieType as GrpcDieType
 from ansys.edb.core.definition.solder_ball_property import (
     SolderballShape as GrpcSolderballShape,
 )
-from ansys.edb.core.hierarchy.component_group import (
-    ComponentGroup as GrpcComponentGroup,
-)
 from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
 from ansys.edb.core.hierarchy.spice_model import SPICEModel as GrpcSPICEModel
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
@@ -289,11 +286,12 @@ class Components(object):
 
     def refresh_components(self):
         """Refresh the component dictionary."""
-        # self._logger.info("Refreshing the Components dictionary.")
+        self._logger.info("Refreshing the Components dictionary.")
         self._cmp = {}
         for i in self._pedb.layout.groups:
-            if isinstance(i.cast(), GrpcComponentGroup):
-                self._cmp[i.name] = i
+            if isinstance(i, Component):
+                if not i.is_null:
+                    self._cmp[i.name] = i
         return True
 
     @property

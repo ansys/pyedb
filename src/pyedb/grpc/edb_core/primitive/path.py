@@ -25,13 +25,13 @@ from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.primitive.primitive import Path as GrpcPath
 from ansys.edb.core.primitive.primitive import PathCornerType as GrpcPatCornerType
-from ansys.edb.core.primitive.primitive import PathEndCapType as GrpcPathEndCapType
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 
 class Path(GrpcPath):
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+        self._edb_object = edb_object
+        super().__init__(edb_object.msg)
         self._pedb = pedb
 
     @property
@@ -43,50 +43,50 @@ class Path(GrpcPath):
         float
             Path width or None.
         """
-        return self.width.value
+        return super().width.value
 
     @width.setter
     def width(self, value):
-        self.width = GrpcValue(value)
+        super(Path, self.__class__).width.__set__(self, GrpcValue(value))
 
-    def get_end_cap_style(self):
-        """Get path end cap styles.
-
-        Returns
-        -------
-        tuple[
-            :class:`PathEndCapType`,
-            :class:`PathEndCapType`
-        ]
-
-            Returns a tuple of the following format:
-
-            **(end_cap1, end_cap2)**
-
-            **end_cap1** : End cap style of path start end cap.
-
-            **end_cap2** : End cap style of path end  cap.
-        """
-        return self.get_end_cap_style().name.lower()
-
-    def set_end_cap_style(self, end_cap1, end_cap2):
-        """Set path end cap styles.
-
-        Parameters
-        ----------
-        end_cap1: str
-            End cap style of path start end cap. Accepted values: `"round"`, `"flat"`, `"extended"`, `"clipped"`.
-        end_cap2: str
-            End cap style of path end cap. Accepted values: `"round"`, `"flat"`, `"extended"`, `"clipped"`.
-        """
-        mapping = {
-            "round": GrpcPathEndCapType.ROUND,
-            "flat": GrpcPathEndCapType.FLAT,
-            "extended": GrpcPathEndCapType.EXTENDED,
-            "clipped": GrpcPathEndCapType.CLIPPED,
-        }
-        if isinstance(end_cap1, str) and isinstance(end_cap2, str):
-            self.set_end_cap_style(mapping[end_cap1.lower()], mapping[end_cap2.lower()])
+    # def get_end_cap_style(self):
+    #     """Get path end cap styles.
+    #
+    #     Returns
+    #     -------
+    #     tuple[
+    #         :class:`PathEndCapType`,
+    #         :class:`PathEndCapType`
+    #     ]
+    #
+    #         Returns a tuple of the following format:
+    #
+    #         **(end_cap1, end_cap2)**
+    #
+    #         **end_cap1** : End cap style of path start end cap.
+    #
+    #         **end_cap2** : End cap style of path end  cap.
+    #     """
+    #     return self.get_end_cap_style().name.lower()
+    #
+    # def set_end_cap_style(self, end_cap1, end_cap2):
+    #     """Set path end cap styles.
+    #
+    #     Parameters
+    #     ----------
+    #     end_cap1: str
+    #         End cap style of path start end cap. Accepted values: `"round"`, `"flat"`, `"extended"`, `"clipped"`.
+    #     end_cap2: str
+    #         End cap style of path end cap. Accepted values: `"round"`, `"flat"`, `"extended"`, `"clipped"`.
+    #     """
+    #     mapping = {
+    #         "round": GrpcPathEndCapType.ROUND,
+    #         "flat": GrpcPathEndCapType.FLAT,
+    #         "extended": GrpcPathEndCapType.EXTENDED,
+    #         "clipped": GrpcPathEndCapType.CLIPPED,
+    #     }
+    #     if isinstance(end_cap1, str) and isinstance(end_cap2, str):
+    #         self.set_end_cap_style(mapping[end_cap1.lower()], mapping[end_cap2.lower()])
 
     @property
     def length(self):
@@ -101,10 +101,11 @@ class Path(GrpcPath):
         path_length = 0.0
         for arc in center_line_arcs:
             path_length += arc.length
-        if self.get_end_cap_style():
-            if not self.get_end_cap_style()[1].value == 1:
+        end_cap_style = self.get_end_cap_style()
+        if end_cap_style:
+            if not end_cap_style[0].value == 1:
                 path_length += self.width / 2
-            if not self.get_end_cap_style()[2].value == 1:
+            if not end_cap_style[1].value == 1:
                 path_length += self.width / 2
         return path_length
 
@@ -125,36 +126,16 @@ class Path(GrpcPath):
         -------
         bool
         """
-        center_line = self.center_line
-
         if incremental:
             x = GrpcValue(x)
             y = GrpcValue(y)
-            points = center_line.points
+            points = self.center_line.points
             last_point = points[-1]
             x = "({})+({})".format(x.value, last_point.x.value)
             y = "({})+({})".format(y.value, last_point.y.value)
-        points.append(GrpcPointData([x, y]))
+            points.append(GrpcPointData([x, y]))
         self.center_line.points = points
         return True
-
-    def get_center_line(self, to_string=False):
-        """Get the center line of the trace.
-
-        Parameters
-        ----------
-        to_string : bool, optional
-            Type of return. The default is ``"False"``.
-
-        Returns
-        -------
-        list
-
-        """
-        if to_string:
-            return [[str(p.x.value), str(p.y.value)] for p in self.center_line.points]
-        else:
-            return [[p.x.value, p.y.value] for p in self.center_line.points]
 
     def clone(self):
         """Clone a primitive object with keeping same definition and location.
@@ -221,15 +202,15 @@ class Path(GrpcPath):
         >>> sig.create_edge_port("pcb_port", "end", "Wave", None, 8, 8)
 
         """
-        center_line = self.get_center_line()
+        center_line = self.center_line
         pos = center_line[-1] if position.lower() == "end" else center_line[0]
 
         if port_type.lower() == "wave":
-            return self._app.hfss.create_wave_port(
+            return self._pedb.hfss.create_wave_port(
                 self.id, pos, name, 50, horizontal_extent_factor, vertical_extent_factor, pec_launch_width
             )
         else:
-            return self._app.hfss.create_edge_port_vertical(self.id, pos, name, 50, reference_layer)
+            return self._pedb.hfss.create_edge_port_vertical(self.id, pos, name, 50, reference_layer)
 
     def create_via_fence(self, distance, gap, padstack_name, net_name="GND"):
         """Create via fences on both sides of the trace.
@@ -337,13 +318,11 @@ class Path(GrpcPath):
         for x, y in get_locations(rightline, gap) + get_locations(leftline, gap):
             self._pedb.padstacks.place([x, y], padstack_name, net_name=net_name)
 
-    @property
-    def center_line(self):
+    def get_center_line(self):
         """Retrieve center line points list."""
         return [[pt.x.value, pt.y.value] for pt in self.center_line.points]
 
-    @center_line.setter
-    def center_line(self, value):
+    def set_center_line(self, value):
         if isinstance(value, list):
             points = [GrpcPointData(i) for i in value]
             polygon_data = GrpcPolygonData(points, False)
@@ -352,7 +331,7 @@ class Path(GrpcPath):
     @property
     def corner_style(self):
         """Return Path's corner style as string. Values supported for the setter `"round"``, `"mitter"``, `"sharpt"`"""
-        return self.corner_style.name.lower()
+        return super().corner_style.name.lower()
 
     @corner_style.setter
     def corner_style(self, corner_type):

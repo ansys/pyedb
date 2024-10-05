@@ -29,6 +29,8 @@ from ansys.edb.core.geometry.point_data import PointData as GrpcPolygonData
 from ansys.edb.core.primitive.primitive import PadstackInstance as GrpcPadstackInstance
 from ansys.edb.core.utility.value import Value as GrpcValue
 
+from pyedb.modeler.geometry_operators import GeometryOperators
+
 
 class PadstackInstance(GrpcPadstackInstance):
     """Manages EDB functionalities for a padstack.
@@ -48,7 +50,7 @@ class PadstackInstance(GrpcPadstackInstance):
     """
 
     def __init__(self, pedb, edb_instance):
-        super().__init__(edb_instance)
+        super().__init__(edb_instance.msg)
         self._edb_object = edb_instance
         self._bounding_box = []
         self._object_instance = None
@@ -349,9 +351,9 @@ class PadstackInstance(GrpcPadstackInstance):
     @property
     def component(self):
         """Component."""
-        from pyedb.grpc.edb_core.cell.hierarchy.component import Component
+        from pyedb.grpc.edb_core.hierarchy.component import Component
 
-        comp = Component(self._pedb, self.component)
+        comp = Component(self._pedb, self._edb_object.component)
         return comp if not comp.is_null else False
 
     @property
@@ -399,7 +401,7 @@ class PadstackInstance(GrpcPadstackInstance):
         if self.is_pin:
             return self.aedt_name
         else:
-            return self.component_pin
+            return super().name
 
     @name.setter
     def name(self, value):
