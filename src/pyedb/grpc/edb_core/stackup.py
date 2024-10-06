@@ -25,7 +25,7 @@ This module contains the `EdbStackup` class.
 
 """
 
-from __future__ import absolute_import  # noreorder
+from __future__ import absolute_import
 
 from collections import OrderedDict
 import json
@@ -77,10 +77,10 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-class LayerCollection:
+class LayerCollection(GrpcLayerCollection):
     def __init__(self, pedb, edb_object):
+        super().__init__(edb_object.msg)
         self._pedb = pedb
-        self._layer_collection = edb_object
 
         self._layer_type_set_mapping = {
             "stackup_layer_set": GrpcLayerTypeSet.STACKUP_LAYER_SET,
@@ -101,7 +101,7 @@ class LayerCollection:
         ----------
         stackup
         """
-        self._pedb.layout.layer_collection = self._layer_collection
+        self._pedb.layout.layer_collection = self
 
     # def _add_layer(self, add_method, base_layer_name="", **kwargs):
     #     """Add a layer to edb.
@@ -254,35 +254,35 @@ class LayerCollection:
         added_layer.type = GrpcLayerType.USER_LAYER
         return added_layer
 
-    def set_layer_clone(self, layer_clone):
-        lc = GrpcLayerCollection()  # empty layer collection
-        lc.mode = self.mode
-        if self.mode.lower() == "laminate":
-            add_method = lc.add_layer_bottom
-        else:
-            add_method = lc.add_stackup_layer_at_elevation
-        obj = False
-        # Add stackup layers
-        for _, i in self.layers.items():
-            if i.id == layer_clone.id:  # replace layer
-                add_method(layer_clone)
-                obj = layer_clone
-            else:  # keep existing layer
-                add_method(i)
-        # Add non stackup layers
-        for _, i in self.non_stackup_layers.items():
-            if i.id == layer_clone.id:
-                lc.AddLayerBottom(layer_clone)
-                obj = layer_clone
-            else:
-                lc.add_layer_bottom(i)
-
-        self._edb_object = lc
-        self.update_layout()
-
-        if not obj:
-            logger.info("Layer clone was not found in stackup or non stackup layers.")
-        return obj
+    # def set_layer_clone(self, layer_clone):
+    #     lc = GrpcLayerCollection()  # empty layer collection
+    #     lc.mode = self.mode
+    #     if self.mode.lower() == "laminate":
+    #         add_method = lc.add_layer_bottom
+    #     else:
+    #         add_method = lc.add_stackup_layer_at_elevation
+    #     obj = False
+    #     # Add stackup layers
+    #     for _, i in self.layers.items():
+    #         if i.id == layer_clone.id:  # replace layer
+    #             add_method(layer_clone)
+    #             obj = layer_clone
+    #         else:  # keep existing layer
+    #             add_method(i)
+    #     # Add non stackup layers
+    #     for _, i in self.non_stackup_layers.items():
+    #         if i.id == layer_clone.id:
+    #             lc.AddLayerBottom(layer_clone)
+    #             obj = layer_clone
+    #         else:
+    #             lc.add_layer_bottom(i)
+    #
+    #     self._edb_object = lc
+    #     self.update_layout()
+    #
+    #     if not obj:
+    #         logger.info("Layer clone was not found in stackup or non stackup layers.")
+    #     return obj
 
     @property
     def stackup_layers(self):
@@ -293,12 +293,20 @@ class LayerCollection:
     @property
     def non_stackup_layers(self):
         """Retrieve the dictionary of signal layers."""
-        return {name: obj for name, obj in self.all_layers.items() if not obj.is_stackup_layer}
+        return {name: Layer(self._pedb, obj) for name, obj in self.all_layers.items() if not obj.is_stackup_layer}
 
     @property
     def all_layers(self):
-        layer_list = self._layer_collection.get_layers()
+        layer_list = self.get_layers()
         return {lay.name: Layer(self._pedb, lay) for lay in layer_list}
+
+    @property
+    def signal_layers(self):
+        return {name: layer for name, layer in self.layers.items() if layer.type == "signal_layer"}
+
+    @property
+    def dielectric_layers(self):
+        return {name: layer for name, layer in self.layers.items() if layer.type == "dielectric_layer"}
 
     @property
     def layers_by_id(self):
@@ -313,13 +321,13 @@ class LayerCollection:
         -------
         Dict[str, :class:`pyedb.dotnet.edb_core.edb_data.layer_data.LayerEdbClass`]
         """
-        return {name: obj for name, obj in self.all_layers.items() if obj.is_stackup_layer}
+        return {name: StackupLayer(self._pedb, obj) for name, obj in self.all_layers.items() if obj.is_stackup_layer}
 
     def find_layer_by_name(self, name: str):
         """Finds a layer with the given name.
 
         . deprecated:: pyedb 0.29.0
-        Use :func:`pyedb.grpc.core.excitations.find_by_name` instead.
+        Use :func:`find_by_name` instead.
 
         """
         warnings.warn(
@@ -336,12 +344,9 @@ class LayerCollection:
 class Stackup(LayerCollection):
     """Manages EDB methods for stackup accessible from `Edb.stackup` property."""
 
-    def __getitem__(self, item):
-        return self._layer_collection.find_by_name(item)
-
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
-        self._lc = edb_object
+        self._pedb = pedb
 
     @property
     def _logger(self):
@@ -494,17 +499,6 @@ class Stackup(LayerCollection):
         return True
 
     @property
-    def layer_collection(self):
-        """Copy of EDB layer collection.
-
-        Returns
-        -------
-        :class:`Ansys.Ansoft.Edb.Cell.LayerCollection`
-            Collection of layers.
-        """
-        return self._lc
-
-    @property
     def mode(self):
         """Stackup mode.
 
@@ -517,46 +511,17 @@ class Stackup(LayerCollection):
             * 1 - Overlapping
             * 2 - MultiZone
         """
-        return self._layer_collection.mode.name.lower()
+        return super().mode.name.lower()
 
     @mode.setter
     def mode(self, value):
         if value == 0 or value == GrpcLayerCollectionMode.LAMINATE or value == "laminate":
-            self._layer_collection.mode = GrpcLayerCollectionMode.LAMINATE
+            super(LayerCollection, self.__class__).mode.__set__(self, GrpcLayerCollectionMode.LAMINATE)
         elif value == 1 or value == GrpcLayerCollectionMode.OVERLAPPING or value == "overlapping":
-            self._layer_collection.mode = GrpcLayerCollectionMode.OVERLAPPING
+            super(LayerCollection, self.__class__).mode.__set__(self, GrpcLayerCollectionMode.OVERLAPPING)
         elif value == 2 or value == GrpcLayerCollectionMode.MULTIZONE or value == "multizone":
-            self._layer_collection.mode = GrpcLayerCollectionMode.MULTIZONE
+            super(LayerCollection, self.__class__).mode.__set__(self, GrpcLayerCollectionMode.MULTIZONE)
         self.update_layout()
-
-    @property
-    def signal_layers(self):
-        """Retrieve the dictionary of signal layers.
-
-        Returns
-        -------
-        Dict[str, :class:`pyedb.dotnet.edb_core.edb_data.layer_data.LayerEdbClass`]
-        """
-        _lays = OrderedDict()
-        for name, obj in self.layers.items():
-            if obj.type == GrpcLayerType.SIGNAL_LAYER:
-                _lays[name] = obj
-        return _lays
-
-    @property
-    def dielectric_layers(self):
-        """Dielectric layers.
-
-        Returns
-        -------
-        dict[str, :class:`dotnet.edb_core.edb_data.layer_data.EDBLayer`]
-            Dictionary of dielectric layers.
-        """
-        _lays = OrderedDict()
-        for name, obj in self.layers.items():
-            if obj.type == GrpcLayerType.DIELECTRIC_LAYER:
-                _lays[name] = obj
-        return _lays
 
     def _set_layout_stackup(self, layer_clone, operation, base_layer=None, method=1):
         """Internal method. Apply stackup change into EDB.

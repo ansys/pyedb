@@ -739,7 +739,7 @@ class EdbGrpc(EdbInit):
         >>> edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
         """
         if self.active_db:
-            self._stackup = Stackup(self)
+            self._stackup = Stackup(self, self.active_cell.layout.layer_collection)
         return self._stackup
 
     @property
