@@ -1417,7 +1417,7 @@ class Excitation:
         current_source.negative_node.node_pins = neg_node_pins
         return self.create_pin_group_terminal(current_source)
 
-    def create_coax_port_on_component(self, ref_des_list, net_list):
+    def create_coax_port_on_component(self, ref_des_list, net_list, delete_existing_terminal=False):
         """Create a coaxial port on a component or component list on a net or net list.
            The name of the new coaxial port is automatically assigned.
 
@@ -1428,6 +1428,10 @@ class Excitation:
 
         net_list : list, str
             List of one or more nets.
+
+        delete_existing_terminal : bool
+            Delete existing terminal with same name if exists.
+            Port naming convention is `ref_des`_`pin.net.name`_`pin.name`
 
         Returns
         -------
@@ -1441,15 +1445,54 @@ class Excitation:
         if not isinstance(net_list, list):
             net_list = [net_list]
         for ref in ref_des_list:
-            for _, py_inst in self._pedb.components.instances[ref].pins.items():
-                if py_inst.net_name in net_list and py_inst.is_pin:
-                    port_name = f"{ref}_{py_inst.net_name}_{py_inst.name}"
-                    (top_layer_pos, bottom_layer_pos) = py_inst.pin.get_layer_range()
-                    if top_layer_pos and PadstackInstanceTerminal.create(
-                        name=port_name, layer=top_layer_pos, is_ref=False
-                    ):
-                        coax.append(port_name)
+            for _, pin in self._pedb.components.instances[ref].pins.items():
+                try:  # trying due to grpc crash when no net is defined on pin.
+                    try:
+                        pin_net = pin.net
+                    except:
+                        pin_net = None
+                    if pin_net and pin.net.is_null:
+                        self._logger.warning(f"Pin {pin.id} has no net defined")
+                    elif pin.net.name in net_list:
+                        pin.is_pin = True
+                        port_name = f"{ref}_{pin.net.name}_{pin.name}"
+                        if self.check_before_terminal_assignement(
+                            connectable=pin, delete_existing_terminal=delete_existing_terminal
+                        ):
+                            top_layer = pin.get_layer_range()[0]
+                            term = PadstackInstanceTerminal.create(
+                                layout=pin.layout,
+                                name=port_name,
+                                padstack_instance=pin,
+                                layer=top_layer,
+                                net=pin.net,
+                                is_ref=False,
+                            )
+                            if not term.is_null:
+                                coax.append(port_name)
+                except RuntimeError as error:
+                    self._logger.error(error)
         return coax
+
+    def check_before_terminal_assignement(self, connectable, delete_existing_terminal=False):
+        if not connectable:
+            return False
+        existing_terminals = [term for term in self._pedb.active_layout.terminals if term.id == connectable.id]
+        if existing_terminals:
+            if not delete_existing_terminal:
+                self._pedb.logger.error(
+                    f"Terminal {connectable.name} already defined in design, please make sure to have unique name."
+                )
+                return False
+            else:
+                if isinstance(connectable, PadstackInstanceTerminal):
+                    self._pedb.logger.error(
+                        f"Terminal {connectable.name} already defined, check status on bug "
+                        f"https://github.com/ansys/pyedb-core/issues/429"
+                    )
+                    return False
+        else:
+            return True
 
     def create_differential_wave_port(
         self,

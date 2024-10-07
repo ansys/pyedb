@@ -24,16 +24,14 @@ from ansys.edb.core.terminal.terminals import (
     PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
 )
 
-from pyedb.generic.general_methods import generate_unique_name
-
 
 class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
     """Manages bundle terminal properties."""
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+    def __init__(self, pedb, edb_object=None):
+        if edb_object:
+            super().__init__(edb_object.msg)
         self._pedb = pedb
-        self._edb_object = edb_object
 
     @property
     def position(self):
@@ -44,60 +42,6 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         """
         pos_x, pos_y, rotation = self.padstack_instance.get_position_and_rotation()
         return [pos_x.value, pos_y.value]
-
-    def create(self, padstack_instance, name=None, layer=None, is_ref=False):
-        """Create an edge terminal.
-
-        Parameters
-        ----------
-        prim_id : int
-            Primitive ID.
-        point_on_edge : list
-            Coordinate of the point to define the edge terminal.
-            The point must be on the target edge but not on the two
-            ends of the edge.
-        terminal_name : str, optional
-            Name of the terminal. The default is ``None``, in which case the
-            default name is assigned.
-        is_ref : bool, optional
-            Whether it is a reference terminal. The default is ``False``.
-
-        Returns
-        -------
-        Edb.Cell.Terminal.EdgeTerminal
-        """
-        if not name:
-            pin_name = padstack_instance.name
-            refdes = padstack_instance.component.refdes
-            name = "{}_{}".format(refdes, pin_name)
-            name = generate_unique_name(name)
-
-        if not layer:
-            layer = padstack_instance.start_layer
-
-        layer_obj = self._pedb.stackup.signal_layers[layer]
-
-        terminal = PadstackInstanceTerminal.create(
-            layout=self._pedb.active_layout,
-            net=padstack_instance.net,
-            name=name,
-            padstack_instance=padstack_instance,
-            layer=layer_obj,
-            isRef=is_ref,
-        )
-        # terminal = PadstackInstanceTerminal(self._pedb, terminal)
-        if terminal.is_null:
-            msg = f"Failed to create terminal. "
-            if name in self._pedb.terminals:
-                msg += f"Terminal {name} already exists."
-            raise Exception(msg)
-        else:
-            return terminal
-
-    @property
-    def padstack_instance(self):
-        p_inst, _ = self.params
-        return p_inst
 
     @property
     def location(self):

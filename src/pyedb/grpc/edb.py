@@ -815,7 +815,7 @@ class EdbGrpc(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.dotnet.edb_core.hfss.EdbHfss`
+        :class:`pyedb.grpc.edb_core.hfss.Hfss`
 
         See Also
         --------

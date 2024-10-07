@@ -445,7 +445,7 @@ class Hfss(object):
             source_name,
         )
 
-    def create_coax_port_on_component(self, ref_des_list, net_list):
+    def create_coax_port_on_component(self, ref_des_list, net_list, delete_existing_terminal=False):
         """Create a coaxial port on a component or component list on a net or net list.
            The name of the new coaxial port is automatically assigned.
 
@@ -471,7 +471,7 @@ class Hfss(object):
             "`pyedb.grpc.core.excitations.create_coax_port_on_component` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitation.create_coax_port_on_component(ref_des_list, net_list)
+        return self._pedb.excitation.create_coax_port_on_component(ref_des_list, net_list, delete_existing_terminal)
 
     def create_differential_wave_port(
         self,

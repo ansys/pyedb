@@ -61,7 +61,7 @@ class PadstackInstance(GrpcPadstackInstance):
     @property
     def terminal(self):
         """Terminal."""
-        from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
+        from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
             PadstackInstanceTerminal,
         )
 
@@ -463,7 +463,7 @@ class PadstackInstance(GrpcPadstackInstance):
 
         """
 
-        name = self.get_product_property(GrpcProductIdType.DESIGNER, 11, "")
+        name = self.get_product_property(GrpcProductIdType.DESIGNER, 11)
         return str(name).strip("'")
 
     def parametrize_position(self, prefix=None):

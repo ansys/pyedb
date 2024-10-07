@@ -50,10 +50,8 @@ class TestClass:
 
     def test_hfss_create_coax_port_on_component_from_hfss(self):
         """Create a coaxial port on a component from its pin."""
-        self.edbapp.padstacks.instances[514].components
-        # self.edbapp.components.instances
         assert self.edbapp.hfss.create_coax_port_on_component("U1", "DDR4_DQS0_P")
-        assert self.edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"])
+        assert self.edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"], True)
 
     def test_layout_bounding_box(self):
         """Evaluate layout bounding box"""

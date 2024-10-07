@@ -67,15 +67,15 @@ class Layout(GrpcLayout):
         """
         temp = []
         for i in self._pedb.active_cell.layout.terminals:
-            if i.type == "pin_group":
+            if i.type.name.lower() == "pin_group":
                 temp.append(PinGroupTerminal(self._pedb, i))
-            elif i.type == "padstack_instance":
+            elif i.type.name.lower() == "padstack_inst":
                 temp.append(PadstackInstanceTerminal(self._pedb, i))
-            elif i.type == "edge":
+            elif i.type.name.lower() == "edge":
                 temp.append(EdgeTerminal(self._pedb, i))
-            elif i.type == "bundle":
+            elif i.type.name.lower() == "bundle":
                 temp.append(BundleTerminal(self._pedb, i))
-            elif i.type == "point":
+            elif i.type.name.lower() == "point":
                 temp.append(PointTerminal(self._pedb, i))
         return temp
 

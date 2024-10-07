@@ -35,6 +35,10 @@ from ansys.edb.core.hierarchy.netlist_model import NetlistModel as GrpcNetlistMo
 from ansys.edb.core.hierarchy.sparameter_model import (
     SParameterModel as GrpcSParameterModel,
 )
+from ansys.edb.core.primitive.primitive import PadstackInstance as GrpcPadstackInstance
+from ansys.edb.core.terminal.terminals import (
+    PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
+)
 from ansys.edb.core.utility.rlc import PinPair as GrpcPinPair
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as EDBValue
@@ -44,6 +48,9 @@ from pyedb.grpc.edb_core.definition.package_def import PackageDef
 from pyedb.grpc.edb_core.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.edb_core.hierarchy.spice_model import SpiceModel
 from pyedb.grpc.edb_core.primitive.padstack_instances import PadstackInstance
+from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
+    PadstackInstanceTerminal,
+)
 
 try:
     import numpy as np
@@ -638,8 +645,13 @@ class Component(GrpcComponentGroup):
         dic[str, :class:`dotnet.edb_core.edb_data.definitions.EDBPadstackInstance`]
             Dictionary of EDBPadstackInstance Components.
         """
-        pins = [p for p in self.members if p.is_layout_pin]
-        return {pin.name: PadstackInstance(self._pedb, pin) for pin in pins}
+        _pins = {}
+        for connectable in self.members:
+            if isinstance(connectable, GrpcPadstackInstanceTerminal):
+                _pins[connectable.name] = PadstackInstanceTerminal(self._pedb, connectable)
+            if isinstance(connectable, GrpcPadstackInstance):
+                _pins[connectable.name] = PadstackInstance(self._pedb, connectable)
+        return _pins
 
     @property
     def type(self):
