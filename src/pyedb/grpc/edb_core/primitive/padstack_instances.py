@@ -188,11 +188,6 @@ class PadstackInstance(GrpcPadstackInstance):
         # TODO check to implement in grpc
         if self._bounding_box:
             return self._bounding_box
-        # bbox = self.bounding_box
-        # self._bounding_box = [
-        #     [bbox.Item1.X.ToDouble(), bbox.Item1.Y.ToDouble()],
-        #     [bbox.Item2.X.ToDouble(), bbox.Item2.Y.ToDouble()],
-        # ]
         return self._bounding_box
 
     def in_polygon(self, polygon_data, include_partial=True):

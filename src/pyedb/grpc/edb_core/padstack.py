@@ -92,11 +92,6 @@ class Padstacks(object):
         self._definitions = {}
 
     @property
-    def _edb(self):
-        """ """
-        return self._pedb
-
-    @property
     def _active_layout(self):
         """ """
         return self._pedb.active_layout
@@ -196,11 +191,11 @@ class Padstacks(object):
             List of definitions via padstack definitions.
 
         """
-        if len(self._definitions) == len(self._pedb.padstack_defs):
+        if len(self._definitions) == len(self.db.padstack_defs):
             return self._definitions
         self._definitions = {}
-        for padstack_def in self._pedb.padstack_defs:
-            if len(padstack_def.data.get_layer_names()) >= 1:
+        for padstack_def in self._pedb.db.padstack_defs:
+            if len(padstack_def.data.layer_names) >= 1:
                 self._definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
         return self._definitions
 
