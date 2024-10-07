@@ -32,7 +32,7 @@ class Rectangle(GrpcRectangle):
     """Class representing a rectangle object."""
 
     def __init__(self, pedb, edb_object):
-        super.__init__(edb_object.msg)
+        super().__init__(edb_object.msg)
         self._pedb = pedb
         self._mapping_representation_type = {
             "center_width_height": GrpcRectangleRepresentationType.CENTER_WIDTH_HEIGHT,

@@ -764,7 +764,7 @@ class EdbGrpc(EdbInit):
         >>> edbapp.materials.add_debye_material("debye_mat", 5, 3, 0.02, 0.05, 1e5, 1e9)
         >>> edbapp.materials.add_djordjevicsarkar_material("djord_mat", 3.3, 0.02, 3.3)
         """
-        if not self._materials and self.active_db:
+        if self.active_db:
             self._materials = Materials(self)
         return self._materials
 
