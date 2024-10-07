@@ -21,26 +21,28 @@
 # SOFTWARE.
 
 
+from ansys.edb.core.net.differential_pair import (
+    DifferentialPair as GrpcDifferentialPair,
+)
+
 from pyedb.grpc.edb_core.nets.net import Net
-from pyedb.grpc.edb_core.nets.net_class import NetClass
 
 
-class DifferentialPair(NetClass):
+class DifferentialPair(GrpcDifferentialPair):
     """Manages EDB functionalities for a primitive.
     It inherits EDB object properties.
     """
 
     def __init__(self, pedb, edb_object):
-        super().__init__(self, edb_object)
+        super().__init__(self, edb_object.msg)
         self._pedb = pedb
-        self._edb_object = edb_object
 
     @property
     def positive_net(self):
         """Positive Net."""
-        return Net(self._pedb, self._edb_object.positive_net)
+        return Net(self._pedb, super().positive_net)
 
     @property
     def negative_net(self):
         """Negative Net."""
-        return Net(self._pedb, self._edb_object.negative_net)
+        return Net(self._pedb, super().negative_net)

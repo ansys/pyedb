@@ -869,7 +869,7 @@ class EdbGrpc(EdbInit):
         """
 
         if self.active_db:
-            return NetClass(self)
+            return [NetClass(self, net) for net in self.active_db.net_classes]
 
     @property
     def extended_nets(self):
@@ -887,7 +887,7 @@ class EdbGrpc(EdbInit):
         """
 
         if self.active_db:
-            return ExtendedNet(self)
+            return [ExtendedNet(self, net) for net in self.active_layout.extended_nets]
 
     @property
     def differential_pairs(self):
@@ -903,10 +903,8 @@ class EdbGrpc(EdbInit):
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.differential_pairs
         """
-        if self.active_db:
-            return DifferentialPair(self)
-        else:  # pragma: no cover
-            return
+        if self.active_layout:
+            return [DifferentialPair(self, pair) for pair in self.active_layout.differential_pairs]
 
     @property
     def modeler(self):
