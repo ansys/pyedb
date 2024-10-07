@@ -313,7 +313,7 @@ class EDBPadProperties(object):
         object
             EDB.PadType enumerator value.
         """
-        return self._pedbpadstack._pedb.int_to_pad_type(val)
+        return self._pedbpadstack._ppadstack.int_to_pad_type(val)
 
     def int_to_geometry_type(self, val=0):
         """Convert an integer to an EDB.PadGeometryType.
@@ -327,7 +327,7 @@ class EDBPadProperties(object):
         object
             EDB.PadGeometryType enumerator value.
         """
-        return self._pedbpadstack._pedb.int_to_geometry_type(val)
+        return self._pedbpadstack._ppadstack.int_to_geometry_type(val)
 
     def _update_pad_parameters_parameters(
         self,
