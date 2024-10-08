@@ -2275,16 +2275,24 @@ class Components(object):
         if group_name is None:
             group_name = PinGroup.unique_name(self._active_layout, "")
         comp = self.instances[reference_designator]
-        pins = [pin for pin in list(comp.pins.values()) if pin.name in pin_numbers]
-        edb_pingroup = PinGroup.create(self._active_layout, group_name, pins)
+        pins = [pin for pin_name, pin in comp.pins.items() if pin_name in pin_numbers]
+        if not pins:
+            pins = [pin for pin_name, pin in comp.pins.items() if pin.name in pin_numbers]
+            if not pins:
+                self._pedb.logger.error("No pin found to create pin group")
+                return False
+        pingroup = PinGroup.create(self._active_layout, group_name, pins)
 
-        if edb_pingroup.is_null:  # pragma: no cover
+        if pingroup.is_null:  # pragma: no cover
             self._logger.error(f"Failed to create pin group {group_name}.")
             return False
         else:
-            names = [i for i in pins if i.net.name]
-            edb_pingroup.net = names[0].net
-            return group_name
+            for pin in pins:
+                if not pin.net.is_null:
+                    if pin.net.name:
+                        pingroup.net = pin.net
+                        return group_name
+        return False
 
     def create_pin_group_on_net(self, reference_designator, net_name, group_name=None):
         """Create pin group on component by net name.

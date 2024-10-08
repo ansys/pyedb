@@ -103,7 +103,7 @@ class TestClass:
 
     def test_siwave_create_current_source(self):
         """Create a current source."""
-        assert self.edbapp.siwave.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0) != ""
+        assert self.edbapp.siwave.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0)
         pins = self.edbapp.components.get_pin_from_component("U1")
         assert "I22" == self.edbapp.siwave.create_current_source_on_pin(pins[301], pins[10], 0.1, 0, "I22")
 
@@ -127,11 +127,11 @@ class TestClass:
         assert self.edbapp.siwave.pin_groups["vp_pos"]
         assert self.edbapp.siwave.pin_groups["vp_pos"].pins
         assert self.edbapp.siwave.create_voltage_probe_on_pin_group("vprobe", "vp_pos", "vp_neg")
-        assert self.edbapp.probes["vprobe"]
+        assert self.edbapp.terminals["vprobe"]
         self.edbapp.siwave.place_voltage_probe(
             "vprobe_2", "1V0", ["112mm", "24mm"], "1_Top", "GND", ["112mm", "27mm"], "Inner1(GND1)"
         )
-        vprobe_2 = self.edbapp.probes["vprobe_2"]
+        vprobe_2 = self.edbapp.terminals["vprobe_2"]
         ref_term = vprobe_2.ref_terminal
         assert isinstance(ref_term.location, list)
         ref_term.location = [0, 0]

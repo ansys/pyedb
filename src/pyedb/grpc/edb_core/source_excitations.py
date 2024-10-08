@@ -47,7 +47,6 @@ from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
 from pyedb.grpc.edb_core.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.grpc.edb_core.terminal.point_terminal import PointTerminal
 from pyedb.grpc.edb_core.utility.sources import (
-    CurrentSource,
     DCTerminal,
     ResistorSource,
     Source,
@@ -1040,17 +1039,17 @@ class SourceExcitation:
             source_type="voltage_source",
         )
 
-    def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
-        """Create a current source.
+    def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0, phase_value=0, source_name=None):
+        """Create a voltage source.
 
         Parameters
         ----------
         pos_pin : Object
-            Positive pin.
+            Positive Pin.
         neg_pin : Object
-            Negative pin.
-        current_value : float, optional
-            Value for the current. The default is ``0.1``.
+            Negative Pin.
+        voltage_value : float, optional
+            Value for the voltage. The default is ``3.3``.
         phase_value : optional
             Value for the phase. The default is ``0``.
         source_name : str, optional
@@ -1067,23 +1066,21 @@ class SourceExcitation:
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.excitations.create_current_source_on_pin(pins[0], pins[1], 50, "source_name")
+        >>> edbapp.excitations.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
         """
-        current_source = CurrentSource()
-        current_source.positive_node.net = pos_pin.net.name
-        current_source.negative_node.net = neg_pin.net.name
-        current_source.magnitude = current_value
-        current_source.phase = phase_value
+
         if not source_name:
             source_name = (
-                f"ISource_{pos_pin.component.name}_{pos_pin.net.name}_{neg_pin.component.name}_{neg_pin.net.name}"
+                f"VSource_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
             )
-        current_source.name = source_name
-        current_source.positive_node.component_node = pos_pin.component
-        current_source.positive_node.node_pins = pos_pin
-        current_source.negative_node.component_node = neg_pin.component
-        current_source.negative_node.node_pins = neg_pin
-        return self._create_terminal_on_pins(current_source)
+        return self._create_terminal_on_pins(
+            positive_pin=pos_pin,
+            negative_pin=neg_pin,
+            name=source_name,
+            magnitude=current_value,
+            phase=phase_value,
+            source_type="current_source",
+        )
 
     def create_resistor_on_pin(self, pos_pin, neg_pin, rvalue=1, resistor_name=""):
         """Create a Resistor boundary between two given pins..
@@ -1409,11 +1406,11 @@ class SourceExcitation:
         positive_net_name,
         negative_component_name=None,
         negative_net_name=None,
-        current_value=0.1,
+        current_value=3.3,
         phase_value=0,
-        source_name="",
+        source_name=None,
     ):
-        """Create a current source.
+        """Create a voltage source.
 
         Parameters
         ----------
@@ -1426,8 +1423,8 @@ class SourceExcitation:
             the positive net is assigned.
         negative_net_name : str, optional
             Name of the negative net name. The default is ``None`` which will look for GND Nets.
-        current_value : float, optional
-            Value for the current. The default is ``0.1``.
+        voltage_value : float, optional
+            Value for the voltage. The default is ``3.3``.
         phase_value : optional
             Value for the phase. The default is ``0``.
         source_name : str, optional
@@ -1443,35 +1440,29 @@ class SourceExcitation:
 
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
-        >>> edb.siwave.create_current_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 0.1, 0, "source_name")
+        >>> edb.excitations.create_voltage_source_on_net("U2A5","V1P5_S3","U2A5","GND",3.3,0,"source_name")
         """
         if not negative_component_name:
             negative_component_name = positive_component_name
         if not negative_net_name:
             negative_net_name = self._check_gnd(negative_component_name)
-        current_source = CurrentSource()
-        current_source.positive_node.net = positive_net_name
-        current_source.negative_node.net = negative_net_name
-        current_source.magnitude = current_value
-        current_source.phase = phase_value
-        pos_node_cmp = self._pedb.components.get_component_by_name(positive_component_name)
-        neg_node_cmp = self._pedb.components.get_component_by_name(negative_component_name)
         pos_node_pins = self._pedb.components.get_pin_from_component(positive_component_name, positive_net_name)
         neg_node_pins = self._pedb.components.get_pin_from_component(negative_component_name, negative_net_name)
 
-        if source_name == "":
-            source_name = "Port_{}_{}_{}_{}".format(
-                positive_component_name,
-                positive_net_name,
-                negative_component_name,
-                negative_net_name,
+        if not source_name:
+            source_name = (
+                f"Vsource_{positive_component_name}_{positive_net_name}_"
+                f"{negative_component_name}_{negative_net_name}"
             )
-        current_source.name = source_name
-        current_source.positive_node.component_node = pos_node_cmp
-        current_source.positive_node.node_pins = pos_node_pins
-        current_source.negative_node.component_node = neg_node_cmp
-        current_source.negative_node.node_pins = neg_node_pins
-        return self.create_pin_group_terminal(current_source)
+        return self.create_pin_group_terminal(
+            positive_pins=pos_node_pins,
+            negatives_pins=neg_node_pins,
+            name=source_name,
+            magnitude=current_value,
+            phase=phase_value,
+            impedance=1e6,
+            source_type="current_source",
+        )
 
     def create_coax_port_on_component(self, ref_des_list, net_list, delete_existing_terminal=False):
         """Create a coaxial port on a component or component list on a net or net list.
@@ -2358,15 +2349,21 @@ class SourceExcitation:
         bool
 
         """
-        pos_pin_group = self._pedb.layout.pin_groups[pos_pin_group_name]
+        pos_pin_group = next(pg for pg in self._pedb.layout.pin_groups if pg.name == pos_pin_group_name)
+        if not pos_pin_group:
+            self._pedb.logger.error(f"Pin group {pos_pin_group_name} not found.")
+            return False
         pos_terminal = pos_pin_group.create_current_source_terminal(magnitude, phase)
         if name:
             pos_terminal.name = name
         else:
             name = generate_unique_name("isource")
             pos_terminal.name = name
-        neg_pin_group_name = self._pedb.layout.pin_groups[neg_pin_group_name]
-        neg_terminal = neg_pin_group_name.create_current_source_terminal()
+        neg_pin_group = next(pg for pg in self._pedb.layout.pin_groups if pg.name == neg_pin_group_name)
+        if not neg_pin_group:
+            self._pedb.logger.error(f"Pin group {pos_pin_group_name} not found.")
+            return False
+        neg_terminal = neg_pin_group.create_current_source_terminal()
         neg_terminal.name = f"{name}_ref"
         pos_terminal.reference_terminal = neg_terminal
         return True
@@ -2392,14 +2389,20 @@ class SourceExcitation:
         bool
 
         """
-        pos_pin_group = self._pedb.layout.pin_groups[pos_pin_group_name]
+        pos_pin_group = next(pg for pg in self._pedb.layout.pin_groups if pg.name == pos_pin_group_name)
+        if not pos_pin_group:
+            self._pedb.logger.error(f"Pingroup {pos_pin_group_name} not found.")
+            return False
         pos_terminal = pos_pin_group.create_voltage_source_terminal(magnitude, phase, impedance)
         if name:
             pos_terminal.name = name
         else:
             name = generate_unique_name("vsource")
             pos_terminal.name = name
-        neg_pin_group_name = self._pedb.layout.pin_groups[neg_pin_group_name]
+        neg_pin_group_name = next(pg for pg in self._pedb.layout.pin_groups if pg.name == neg_pin_group_name)
+        if not neg_pin_group_name:
+            self._pedb.logger.error(f"Pingroup {neg_pin_group_name} not found.")
+            return False
         neg_terminal = neg_pin_group_name.create_voltage_source_terminal(magnitude, phase)
         neg_terminal.name = f"{name}_ref"
         pos_terminal.reference_terminal = neg_terminal
@@ -2424,14 +2427,20 @@ class SourceExcitation:
         bool
 
         """
-        pos_pin_group = self._pedb.layout.pin_groups[pos_pin_group_name]
+        pos_pin_group = next(pg for pg in self._pedb.layout.pin_groups if pg.name == pos_pin_group_name)
+        if not pos_pin_group:
+            self._pedb.logger.error(f"Pingroup {pos_pin_group_name} not found.")
+            return False
         pos_terminal = pos_pin_group.create_voltage_probe_terminal(impedance)
         if probe_name:
-            pos_terminal.SetName(probe_name)
+            pos_terminal.name = probe_name
         else:
             probe_name = generate_unique_name("vprobe")
             pos_terminal.name = probe_name
-        neg_pin_group = self._pedb.layout.pin_groups[neg_pin_group_name]
+        neg_pin_group = next(pg for pg in self._pedb.layout.pin_groups if pg.name == neg_pin_group_name)
+        if not neg_pin_group:
+            self._pedb.logger.error(f"Pingroup {neg_pin_group_name} not found.")
+            return False
         neg_terminal = neg_pin_group.create_voltage_probe_terminal()
         neg_terminal.name = f"{probe_name}_ref"
         pos_terminal.reference_terminal = neg_terminal

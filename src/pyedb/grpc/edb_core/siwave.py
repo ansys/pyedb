@@ -952,6 +952,8 @@ class Siwave(object):
             Magnitude of the source.
         phase : int, float, optional
             Phase of the source
+        name : str, optional
+            source name.
 
         Returns
         -------
@@ -963,7 +965,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_current_source_on_pin_group` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_current_source_on_pin_group(
+        return self._pedb.source_excitation.create_current_source_on_pin_group(
             pos_pin_group_name, neg_pin_group_name, magnitude, phase, name
         )
 
@@ -1001,7 +1003,7 @@ class Siwave(object):
             pos_pin_group_name, neg_pin_group_name, magnitude, phase, name, impedance
         )
 
-    def create_voltage_probe_on_pin_group(self, probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1000000):
+    def create_voltage_probe_on_pin_group(self, probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1e6):
         """Create voltage probe between two pin groups.
 
         .deprecated:: pyedb 0.28.0
@@ -1031,7 +1033,7 @@ class Siwave(object):
             DeprecationWarning,
         )
         return self._pedb.source_excitation.create_voltage_probe_on_pin_group(
-            probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1
+            probe_name, pos_pin_group_name, neg_pin_group_name, impedance=impedance
         )
 
     def create_circuit_port_on_pin_group(self, pos_pin_group_name, neg_pin_group_name, impedance=50, name=None):
