@@ -471,6 +471,34 @@ class Components(object):
         """
         return self.instances[name]
 
+    def get_pin_from_component(self, component, net_name=None, pin_name=None):
+        """Return component pins.
+        Parameters
+        ----------
+        component : :class: `Component` or str.
+            Component object or component name.
+        net_name : str, List[str], optional
+            Apply filter on net name.
+        pin_name : str, optional
+            Apply filter on specific pin name.
+        Return
+        ------
+        List[:clas: `PadstackInstance`]
+
+
+
+        """
+        if isinstance(component, Component):
+            component = component.name
+        pins = [pin for pin in list(self.instances[component].pins.values())]
+        if net_name:
+            if isinstance(net_name, str):
+                net_name = [net_name]
+            pins = [pin for pin in pins if pin.net_name in net_name]
+        if pin_name:
+            pins = [pin for pin in pins if pin.name == pin_name]
+        return pins
+
     def get_components_from_nets(self, netlist=None):
         """Retrieve components from a net list.
 
@@ -2232,8 +2260,8 @@ class Components(object):
         ----------
         reference_designator : str
             References designator of the component.
-        pin_numbers : int, str, list
-            List of pin names.
+        pin_numbers : int, str, list[str] or list[:class: `PadstackInstance]`
+            List of pins.
         group_name : str, optional
             Name of the pin group.
 
@@ -2247,7 +2275,7 @@ class Components(object):
         if group_name is None:
             group_name = PinGroup.unique_name(self._active_layout, "")
         comp = self.instances[reference_designator]
-        pins = [pin.pin for name, pin in comp.pins.items() if name in pin_numbers]
+        pins = [pin for pin in list(comp.pins.values()) if pin.name in pin_numbers]
         edb_pingroup = PinGroup.create(self._active_layout, group_name, pins)
 
         if edb_pingroup.is_null:  # pragma: no cover
@@ -2256,7 +2284,7 @@ class Components(object):
         else:
             names = [i for i in pins if i.net.name]
             edb_pingroup.net = names[0].net
-            return group_name, self._pedb.layout.pin_groups[group_name]
+            return group_name
 
     def create_pin_group_on_net(self, reference_designator, net_name, group_name=None):
         """Create pin group on component by net name.
@@ -2274,5 +2302,7 @@ class Components(object):
         -------
         PinGroup
         """
-        pins = [pin.name for pin in self.instances[reference_designator].pins if pin.name == net_name]
+        pins = [
+            pin.name for pin in list(self.instances[reference_designator].pins.values()) if pin.net_name == net_name
+        ]
         return self.create_pin_group(reference_designator, pins, group_name)

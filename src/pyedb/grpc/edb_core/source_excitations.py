@@ -47,7 +47,6 @@ from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
 from pyedb.grpc.edb_core.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.grpc.edb_core.terminal.point_terminal import PointTerminal
 from pyedb.grpc.edb_core.utility.sources import (
-    CircuitPort,
     CurrentSource,
     DCTerminal,
     ResistorSource,
@@ -58,7 +57,7 @@ from pyedb.grpc.edb_core.utility.sources import (
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
-class Excitation:
+class SourceExcitation:
     def __init__(self, pedb):
         self._pedb = pedb
 
@@ -874,105 +873,129 @@ class Excitation:
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.siwave.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
         """
-        circuit_port = CircuitPort()
-        circuit_port.positive_node.net = pos_pin.net.name
-        circuit_port.negative_node.net = neg_pin.net.name
-        circuit_port.impedance = impedance
-
         if not port_name:
-            port_name = f"Port_{pos_pin.component.name}_{pos_pin.net.name}_{neg_pin.component.name}_{neg_pin.net.name}"
-        circuit_port.name = port_name
-        circuit_port.positive_node.component_node = pos_pin.component
-        circuit_port.positive_node.node_pins = pos_pin
-        circuit_port.negative_node.component_node = neg_pin.component
-        circuit_port.negative_node.node_pins = neg_pin
-        return self._create_terminal_on_pins(circuit_port)
+            port_name = f"Port_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
+        return self._create_terminal_on_pins(
+            positive_pin=pos_pin, negative_pin=neg_pin, impedance=impedance, name=port_name
+        )
 
-    def _create_terminal_on_pins(self, source, use_pin_top_layer=True):
+    def _create_terminal_on_pins(
+        self,
+        positive_pin,
+        negative_pin,
+        name=None,
+        use_pin_top_layer=True,
+        source_type="circuit_port",
+        impedance=50,
+        magnitude=1.0,
+        phase=0,
+        r=0,
+        l=0,
+        c=0,
+    ):
         """Create a terminal on pins.
 
         Parameters
         ----------
-        source : .class: `pyedb.grpc.edb_core.utility.sources.Source`
-            Source object.
-
+        positive_pin : :class: `PadstackInstance`
+            Positive padstack instance.
+        negative_pin : :class: `PadstackInstance`
+            Negative padstack instance.
+        name : str, optional
+            terminal name
+        use_pin_top_layer : bool, optional
+            Use :class: `PadstackInstance` top layer or bottom for terminal assignment.
+        source_type : str, optional
+            Specify the source type created. Supported values: `"circuit_port"`, `"lumped_port"`, `"current_source"`,
+            `"voltage_port"`, `"rlc"`.
+        impedance : float, int or str, optional
+            Terminal impedance value
+        magnitude : float, int or str, optional
+            Terminal magnitude.
+        phase : float, int or str, optional
+            Terminal phase
+        r : float, int
+            Resistor value
+        l : float, int
+            Inductor value
+        c : float, int
+            Capacitor value
         """
-        pos_pin = source.positive_node.node_pins
-        neg_pin = source.negative_node.node_pins
 
-        top_layer_pos, bottom_layer_pos = pos_pin.get_layer_range()
-        top_layer_neg, bottom_layer_neg = neg_pin.get_layer_range()
+        top_layer_pos, bottom_layer_pos = positive_pin.get_layer_range()
+        top_layer_neg, bottom_layer_neg = negative_pin.get_layer_range()
         pos_term_layer = bottom_layer_pos
         neg_term_layer = bottom_layer_neg
         if use_pin_top_layer:
             pos_term_layer = top_layer_pos
             neg_term_layer = top_layer_neg
+        if not name:
+            name = positive_pin.name
         pos_terminal = PadstackInstanceTerminal.create(
-            padstack_instance=pos_pin, name=pos_pin.name, layer=pos_term_layer, is_ref=False
+            layout=self._pedb.active_layout,
+            padstack_instance=positive_pin,
+            name=name,
+            layer=pos_term_layer,
+            is_ref=False,
+            net=positive_pin.net,
         )
 
         neg_terminal = PadstackInstanceTerminal.create(
-            padstack_instance=neg_pin, name=neg_pin.name, layer=neg_term_layer, is_ref=False
+            layout=self._pedb.active_layout,
+            padstack_instance=negative_pin,
+            name=negative_pin.name,
+            layer=neg_term_layer,
+            is_ref=False,
+            net=negative_pin.net,
         )
-        if source.source_type in [SourceType.CoaxPort, SourceType.CircPort, SourceType.LumpedPort]:
+        if source_type in ["circuit_port", "lumped_port"]:
             pos_terminal.boundary_type = GrpcBoundaryType.PORT
             neg_terminal.boundary_type = GrpcBoundaryType.PORT
-            pos_terminal.impedance = GrpcValue(source.impedance)
-            if source.source_type == SourceType.CircPort:
+            pos_terminal.impedance = GrpcValue(impedance)
+            if source_type == "lumped_port":
+                pos_terminal.is_circuit_port = False
+                neg_terminal.is_circuit_port = False
+            else:
                 pos_terminal.is_circuit_port = True
                 neg_terminal.is_circuit_port = True
             pos_terminal.reference_terminal = neg_terminal
-            try:
-                pos_terminal.name = source.name
-            except:
-                name = generate_unique_name(source.name)
-                pos_terminal.name = name
-                self._logger.warning(f"{source.name} already exists. Renaming to {name}")
-        elif source.source_type == SourceType.Isource:
+            pos_terminal.name = name
+
+        elif source_type == "current_source":
             pos_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
             neg_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
-            pos_terminal.source_amplitude = GrpcValue(source.magnitude)
-            pos_terminal.source_phase = GrpcValue(source.phase)
+            pos_terminal.source_amplitude = GrpcValue(magnitude)
+            pos_terminal.source_phase = GrpcValue(phase)
+            pos_terminal.impedance = GrpcValue(impedance)
             pos_terminal.reference_terminal = neg_terminal
-            try:
-                pos_terminal.name = source.name
-            except Exception as e:
-                name = generate_unique_name(source.name)
-                pos_terminal.name = name
-                self._logger.warning(f"{source.name} already exists. Renaming to {name}")
+            pos_terminal.name = name
 
-        elif source.source_type == SourceType.Vsource:
+        elif source_type == "voltage_source":
             pos_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
             neg_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
-            pos_terminal.source_amplitude = GrpcValue(source.magnitude)
-            pos_terminal.source_phase = GrpcValue(source.phase)
+            pos_terminal.source_amplitude = GrpcValue(magnitude)
+            pos_terminal.impedance = GrpcValue(impedance)
+            pos_terminal.source_phase = GrpcValue(phase)
             pos_terminal.reference_terminal = neg_terminal
-            try:
-                pos_terminal.name = source.name
-            except:
-                name = generate_unique_name(source.name)
-                pos_terminal.name = name
-                self._logger.warning(f"{source.name} already exists. Renaming to {name}")
+            pos_terminal.name = name
 
-        elif source.source_type == SourceType.Rlc:
+        elif source_type == "rlc":
             pos_terminal.boundary_type = GrpcBoundaryType.RLC
             neg_terminal.boundary_type = GrpcBoundaryType.RLC
             pos_terminal.reference_terminal = neg_terminal
-            pos_terminal.source_amplitude = GrpcValue(source.rvalue)
             rlc = GrpcRlc()
-            rlc.c_enabled = False
-            rlc.l_enabled = False
-            rlc.r_enabled = True
-            rlc.r = GrpcValue(source.rvalue)
+            rlc.c_enabled = bool(r)
+            rlc.l_enabled = bool(l)
+            rlc.r_enabled = bool(c)
+            rlc.r = GrpcValue(r)
+            rlc.l = GrpcValue(l)
+            rlc.c = GrpcValue(c)
             pos_terminal.rlc_boundary_parameters = rlc
-            try:
-                pos_terminal.name = source.name
-            except:
-                name = generate_unique_name(source.name)
-                pos_terminal.name = name
-                self._logger.warning(f"{source.name} already exists. Renaming to {name}")
+            pos_terminal.name = name
+
         else:
-            pass
+            self._pedb.logger.error("No valid source type specified.")
+            return False
         return pos_terminal.name
 
     def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
@@ -1114,7 +1137,7 @@ class Excitation:
         positive_net_name,
         negative_component_name=None,
         negative_net_name=None,
-        impedance_value=50,
+        impedance=50,
         port_name="",
     ):
         """Create a circuit port on a NET.
@@ -1153,112 +1176,155 @@ class Excitation:
             negative_component_name = positive_component_name
         if not negative_net_name:
             negative_net_name = self._check_gnd(negative_component_name)
-        circuit_port = CircuitPort()
-        circuit_port.positive_node.net = positive_net_name
-        circuit_port.negative_node.net = negative_net_name
-        circuit_port.impedance = impedance_value
-        pos_node_cmp = self._pedb.components.get_component_by_name(positive_component_name)
-        neg_node_cmp = self._pedb.components.get_component_by_name(negative_component_name)
-        pos_node_pins = self._pedb.components.get_pin_from_component(positive_component_name, positive_net_name)
-        neg_node_pins = self._pedb.components.get_pin_from_component(negative_component_name, negative_net_name)
-        if port_name == "":
+        if not port_name:
             port_name = (
                 f"Port_{positive_component_name}_{positive_net_name}_{negative_component_name}_{negative_net_name}"
             )
-        circuit_port.name = port_name
-        circuit_port.positive_node.component_node = pos_node_cmp
-        circuit_port.positive_node.node_pins = pos_node_pins
-        circuit_port.negative_node.component_node = neg_node_cmp
-        circuit_port.negative_node.node_pins = neg_node_pins
-        return self.create_pin_group_terminal(circuit_port)
+        positive_pins = []
+        for pin in list(self._pedb.components.instances[positive_component_name].pins.values()):
+            if pin and not pin.net.is_null:
+                if pin.net_name == positive_net_name:
+                    positive_pins.append(pin)
+        if not positive_pins:
+            self._pedb.logger.error(
+                f"No positive pins found component {positive_component_name} net {positive_net_name}"
+            )
+            return False
+        negative_pins = []
+        for pin in list(self._pedb.components.instances[negative_component_name].pins.values()):
+            if pin and not pin.net.is_null:
+                if pin.net_name == negative_net_name:
+                    negative_pins.append(pin)
+        if not negative_pins:
+            self._pedb.logger.error(
+                f"No negative pins found component {negative_component_name} net {negative_net_name}"
+            )
+            return False
 
-    def create_pin_group_terminal(self, source):
+        return self.create_pin_group_terminal(
+            positive_pins=positive_pins,
+            negatives_pins=negative_pins,
+            name=port_name,
+            impedance=impedance,
+            source_type="circuit_port",
+        )
+
+    def create_pin_group_terminal(
+        self,
+        positive_pins,
+        negatives_pins,
+        name=None,
+        impedance=50,
+        source_type="circuit_port",
+        magnitude=1.0,
+        phase=0,
+        r=0.0,
+        l=0.0,
+        c=0.0,
+    ):
         """Create a pin group terminal.
 
         Parameters
         ----------
-        source : VoltageSource, CircuitPort, CurrentSource, DCTerminal or ResistorSource
-            Name of the source.
-
+        positive_pins : positive pins used.
+            :class: `PadstackInstance` or List[:class: ´PadstackInstance´]
+        negatives_pins : negative pins used.
+            :class: `PadstackInstance` or List[:class: ´PadstackInstance´]
+        impedance : float, int or str
+            Terminal impedance. Default value is `50` Ohms.
+        source_type : str
+            Source type assigned on terminal. Supported values : `"circuit_port"`, `"lumped_port"`, `"current_source"`,
+            `"voltage_source"`, `"rlc"`, `"dc_terminal"`. Default value is `"circuit_port"`.
+        name : str, optional
+            Source name.
+        magnitude : float, int or str, optional
+            source magnitude.
+        phase : float, int or str, optional
+            phase magnitude.
+        r : float, optional
+            Resistor value.
+        l : float, optional
+            Inductor value.
+        c : float, optional
+            Capacitor value.
         """
-        if source.name in [i.name for i in self._layout.terminals]:
-            source.name = generate_unique_name(source.name, n=3)
-            self._logger.warning("Port already exists with same name. Renaming to {}".format(source.name))
-        pos_pin_group = self._pedb.components.create_pingroup_from_pins(source.positive_node.node_pins)
-        pos_node_net = self._pedb.nets.get_net_by_name(source.positive_node.net)
+        if isinstance(positive_pins, PadstackInstance):
+            positive_pins = [positive_pins]
+        if isinstance(negatives_pins, PadstackInstance):
+            negatives_pins = [negatives_pins]
+        if not name:
+            name = (
+                f"Port_{positive_pins[0].component.name}_{positive_pins[0].net.name}_{positive_pins[0].name}_"
+                f"{negatives_pins.name}"
+            )
+        if name in [i.name for i in self._pedb.active_layout.terminals]:
+            name = generate_unique_name(name, n=3)
+            self._logger.warning(f"Port already exists with same name. Renaming to {name}")
 
-        pos_pingroup_term_name = source.name
+        pos_pin_group = self._pedb.components.create_pingroup_from_pins(positive_pins)
         pos_pingroup_terminal = PinGroupTerminal.create(
-            layout=self._active_layout,
-            name=pos_pingroup_term_name,
+            layout=self._pedb.active_layout,
+            name=name,
             pin_group=pos_pin_group,
-            net=pos_node_net,
+            net=positive_pins[0].net,
             is_ref=False,
         )
-        if source.negative_node.node_pins:
-            neg_pin_group = self._pedb.components.create_pingroup_from_pins(source.negative_node.node_pins)
-            neg_node_net = self._pedb.nets.get_net_by_name(source.negative_node.net)
-            neg_pingroup_term_name = source.name + "_N"
-            neg_pingroup_terminal = PinGroupTerminal.create(
-                layout=self._active_layout,
-                name=neg_pingroup_term_name,
-                pin_group=neg_pin_group,
-                net=neg_node_net,
-                is_ref=False,
-            )
-
-        if source.source_type in [SourceType.CoaxPort, SourceType.CircPort, SourceType.LumpedPort]:
+        neg_pin_group = self._pedb.components.create_pingroup_from_pins(negatives_pins)
+        neg_pingroup_terminal = PinGroupTerminal.create(
+            layout=self._pedb.active_layout,
+            name=f"{name}_ref",
+            pin_group=neg_pin_group,
+            net=negatives_pins[0].net,
+            is_ref=False,
+        )
+        if source_type in ["circuit_port", "lumped_port"]:
             pos_pingroup_terminal.boundary_type = GrpcBoundaryType.PORT
-            pos_pingroup_terminal.impedance = GrpcValue(source.impedance)
-            if source.source_type == SourceType.CircPort:
+            pos_pingroup_terminal.impedance = GrpcValue(impedance)
+            if len(positive_pins) > 1 and len(negatives_pins) > 1:
+                if source_type == "lumped_port":
+                    source_type = "circuit_port"
+            if source_type == "circuit_port":
                 pos_pingroup_terminal.is_circuit_port = True
                 neg_pingroup_terminal.is_circuit_port = True
+            else:
+                pos_pingroup_terminal.is_circuit_port = False
+                neg_pingroup_terminal.is_circuit_port = False
             pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
-            try:
-                pos_pingroup_terminal.name = source.name
-            except:
-                name = generate_unique_name(source.name)
-                pos_pingroup_terminal.name = name
-                self._logger.warning(f"{source.name} already exists. Renaming to {name}")
+            pos_pingroup_terminal.name = name
 
-        elif source.source_type == SourceType.Isource:
+        elif source_type == "current_source":
             pos_pingroup_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
             neg_pingroup_terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
-            pos_pingroup_terminal.source_amplitude = GrpcValue(source.magnitude)
-            pos_pingroup_terminal.source_phase = GrpcValue(source.phase)
+            pos_pingroup_terminal.source_amplitude = GrpcValue(magnitude)
+            pos_pingroup_terminal.source_phase = GrpcValue(phase)
             pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
-            try:
-                pos_pingroup_terminal.name = source.name
-            except Exception as e:
-                name = generate_unique_name(source.name)
-                pos_pingroup_terminal.name = name
-                self._logger.warning(f"{source.name} already exists. Renaming to {name}")
+            pos_pingroup_terminal.name = name
 
-        elif source.source_type == SourceType.Vsource:
+        elif source_type == "voltage_source":
             pos_pingroup_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
             neg_pingroup_terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
-            pos_pingroup_terminal.source_amplitude = GrpcValue(source.magnitude)
-            pos_pingroup_terminal.source_phase = GrpcValue(source.phase)
+            pos_pingroup_terminal.source_amplitude = GrpcValue(magnitude)
+            pos_pingroup_terminal.source_phase = GrpcValue(phase)
             pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
-            try:
-                pos_pingroup_terminal.name = source.name
-            except:
-                name = generate_unique_name(source.name)
-                pos_pingroup_terminal.name = name
-                self._logger.warning(f"{source.name} already exists. Renaming to {name}")
+            pos_pingroup_terminal.name = name
 
-        elif source.source_type == SourceType.Rlc:
+        elif source_type == "rlc":
             pos_pingroup_terminal.boundary_type = GrpcBoundaryType.RLC
             neg_pingroup_terminal.boundary_type = GrpcBoundaryType.RLC
             pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
             Rlc = GrpcRlc()
-            Rlc.c_enabled = False
-            Rlc.l = False
-            Rlc.r_enabled = True
-            Rlc.r = GrpcValue(source.rvalue)
+            Rlc.r_enabled = bool(r)
+            Rlc.l_enabled = bool(l)
+            Rlc.c_enabled = bool(c)
+            Rlc.r = GrpcValue(r)
+            Rlc.l = GrpcValue(l)
+            Rlc.c = GrpcValue(c)
             pos_pingroup_terminal.rlc_boundary_parameters = Rlc
-        elif source.source_type == SourceType.DcTerminal:
+
+        elif source_type == "dc_terminal":
             pos_pingroup_terminal.boundary_type = GrpcBoundaryType.DC_TERMINAL
+            neg_pingroup_terminal.boundary_type = GrpcBoundaryType.DC_TERMINAL
+            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
         else:
             pass
         return pos_pingroup_terminal.name
@@ -2443,14 +2509,17 @@ class Excitation:
         bool
 
         """
-        pos_pin_group = self._pedb.layout.pin_groups[pos_pin_group_name]
+        pos_pin_group = next(pg for pg in self._pedb.layout.pin_groups if pg.name == pos_pin_group_name)
+        if not pos_pin_group:
+            self._pedb.logger.error("No positive pin group found")
+            return False
         pos_terminal = pos_pin_group.create_port_terminal(impedance)
         if name:  # pragma: no cover
             pos_terminal.name = name
         else:
             name = generate_unique_name("port")
             pos_terminal.name = name
-        neg_pin_group = self._pedb.layout.pin_groups[neg_pin_group_name]
+        neg_pin_group = next(pg for pg in self._pedb.layout.pin_groups if pg.name == neg_pin_group_name)
         neg_terminal = neg_pin_group.create_port_terminal(impedance)
         neg_terminal.name = f"{name}_ref"
         pos_terminal.reference_terminal = neg_terminal

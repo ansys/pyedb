@@ -22,6 +22,7 @@
 
 
 from pyedb.generic.constants import NodeType, SourceType
+from pyedb.grpc.edb_core.hierarchy.pingroup import PinGroup
 
 
 class Node(object):
@@ -87,11 +88,12 @@ class Node(object):
 class Source(object):
     """Provides for handling Siwave sources."""
 
-    def __init__(self):
+    def __init__(self, pedb):
+        self._pedb = pedb
         self._name = ""
         self._source_type = SourceType.Vsource
-        self._positive_node = PinGroup()
-        self._negative_node = PinGroup()
+        self._positive_node = PinGroup(self._pedb)
+        self._negative_node = PinGroup(self._pedb)
         self._amplitude = 1.0
         self._phase = 0.0
         self._impedance = 1.0
@@ -240,12 +242,12 @@ class Source(object):
                 self.__setattr__(k, v)
 
 
-class CircuitPort(Source, object):
+class CircuitPort(Source):
     """Manages a circuit port."""
 
-    def __init__(self, impedance="50"):
+    def __init__(self, pedb, impedance="50"):
         self._impedance = impedance
-        Source.__init__(self)
+        super().__init__(self)
         self._source_type = SourceType.CircPort
 
     @property

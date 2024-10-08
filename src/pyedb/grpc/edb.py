@@ -33,7 +33,6 @@ from pyedb.generic.settings import settings
 from pyedb.grpc.application.Variables import Variable, decompose_variable_value
 from pyedb.grpc.edb_core.components import Components
 from pyedb.grpc.edb_core.control_file import ControlFile, convert_technology_file
-from pyedb.grpc.edb_core.excitation import Excitation
 from pyedb.grpc.edb_core.hfss import Hfss
 from pyedb.grpc.edb_core.layout.layout import Layout
 from pyedb.grpc.edb_core.layout_validation import LayoutValidation
@@ -69,6 +68,7 @@ from pyedb.grpc.edb_core.simulation_setup.siwave_simulation_setup import (
     SiwaveSimulationSetup,
 )
 from pyedb.grpc.edb_core.siwave import Siwave
+from pyedb.grpc.edb_core.source_excitations import SourceExcitation
 from pyedb.grpc.edb_core.stackup import Stackup
 from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
@@ -337,7 +337,7 @@ class EdbGrpc(EdbInit):
         self._nets = Nets(self)
         self._modeler = Modeler(self)
         self._materials = Materials(self)
-        self._excitation = Excitation(self)
+        self._source_excitation = SourceExcitation(self)
 
     @property
     def cell_names(self):
@@ -743,10 +743,9 @@ class EdbGrpc(EdbInit):
         return self._stackup
 
     @property
-    def excitation(self):
+    def source_excitation(self):
         if self.active_db:
-            self._excitation = Excitation(self)
-        return self._excitation
+            return self._source_excitation
 
     @property
     def materials(self):
@@ -2754,7 +2753,7 @@ class EdbGrpc(EdbInit):
         """
         lay_inst_polygon_data = [obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()]
         layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
-        return [layout_bbox[0].x.value, layout_bbox[0].y.value, layout_bbox[1].x.value, layout_bbox[1].y.value]
+        return [[layout_bbox[0].x.value, layout_bbox[0].y.value], [layout_bbox[1].x.value, layout_bbox[1].y.value]]
 
     def build_simulation_project(self, simulation_setup):
         # type: (SimulationConfiguration) -> bool

@@ -35,15 +35,10 @@ from pyedb.grpc.edb_core.terminal.pingroup_terminal import PinGroupTerminal
 class PinGroup(GrpcPinGroup):
     """Manages pin groups."""
 
-    def __init__(self, pedb, edb_pin_group):
-        super().__init__(edb_pin_group.msg)
+    def __init__(self, pedb, edb_pin_group=None):
+        if edb_pin_group:
+            super().__init__(edb_pin_group.msg)
         self._pedb = pedb
-        self._edb_pin_group = edb_pin_group
-        self._name = edb_pin_group.name
-        self._component = ""
-        self._node_pins = []
-        self._net = ""
-        self._edb_object = self._edb_pin_group
 
     @property
     def _active_layout(self):
@@ -52,37 +47,37 @@ class PinGroup(GrpcPinGroup):
     @property
     def component(self):
         """Component."""
-        return Component(self._pedb, self.component)
+        return Component(self._pedb, super().component)
 
     @component.setter
     def component(self, value):
         if isinstance(value, Component):
-            self.component = value._edb_object
+            super(PinGroup, self.__class__).component.__set__(self, value)
 
     @property
     def pins(self):
         """Gets the pins belong to this pin group."""
-        return {i.name: PadstackInstance(self._pedb, i) for i in self.pins}
+        return {i.name: PadstackInstance(self._pedb, i) for i in super().pins}
 
     @property
     def net(self):
         """Net."""
-        return Net(self._pedb, self.net)
+        return Net(self._pedb, super().net)
 
     @net.setter
     def net(self, value):
         if isinstance(value, Net):
-            self.net = value._edb_object
+            super(PinGroup, self.__class__).net.__set__(self, value)
 
     @property
     def net_name(self):
         return self.net.name
 
-    @property
-    def terminal(self):
-        """Terminal."""
-        term = PinGroupTerminal(self._pedb, self.get_pin_group_terminal())  # TODO check method is missing
-        return term if not term.is_null else None
+    # @property
+    # def terminal(self):
+    #     """Terminal."""
+    #     term = PinGroupTerminal(self._pedb, self.get_pin_group_terminal())  # TODO check method is missing
+    #     return term if not term.is_null else None
 
     def create_terminal(self, name=None):
         """Create a terminal.
@@ -94,16 +89,17 @@ class PinGroup(GrpcPinGroup):
         """
         if not name:
             name = generate_unique_name(self.name)
-        term = PinGroupTerminal(self._pedb, self._edb_object)
-        term = term.create(name, self.net_name, self.name)
-        return term
+        term = PinGroupTerminal.create(
+            layout=self._active_layout, name=name, pin_group=self, net=self.net, is_ref=False
+        )
+        return PinGroupTerminal(self._pedb, term)
 
     def _json_format(self):
         dict_out = {"component": self.component, "name": self.name, "net": self.net, "node_type": self.node_type}
         return dict_out
 
     def create_current_source_terminal(self, magnitude=1, phase=0, impedance=1e6):
-        terminal = self.create_terminal()._edb_object
+        terminal = self.create_terminal()
         terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
         terminal.source_amplitude = GrpcValue(magnitude)
         terminal.source_phase = GrpcValue(phase)
@@ -111,7 +107,7 @@ class PinGroup(GrpcPinGroup):
         return terminal
 
     def create_voltage_source_terminal(self, magnitude=1, phase=0, impedance=0.001):
-        terminal = self.create_terminal()._edb_object
+        terminal = self.create_terminal()
         terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
         terminal.source_amplitude = GrpcValue(magnitude)
         terminal.source_phase = GrpcValue(phase)
@@ -119,27 +115,27 @@ class PinGroup(GrpcPinGroup):
         return terminal
 
     def create_voltage_probe_terminal(self, impedance=1000000):
-        terminal = self.create_terminal()._edb_object
+        terminal = self.create_terminal()
         terminal.boundary_type = GrpcBoundaryType.VOLTAGE_PROBE
         terminal.impedance = GrpcValue(impedance)
         return terminal
 
     def create_port_terminal(self, impedance=50):
-        terminal = self.create_terminal()._edb_object
+        terminal = self.create_terminal()
         terminal.boundary_type = GrpcBoundaryType.PORT
         terminal.impedance = GrpcValue(impedance)
         terminal.is_circuit_port = True
         return terminal
 
-    def delete(self):
-        """Delete active pin group.
-
-        Returns
-        -------
-        bool
-
-        """
-        terminal = self.get_pin_group_terminal()  # TODO check method exists in grpc
-        self.delete()
-        terminal.delete()
-        return True
+    # def delete(self):
+    #     """Delete active pin group.
+    #
+    #     Returns
+    #     -------
+    #     bool
+    #
+    #     """
+    #     terminal = self.get_pin_group_terminal()  # TODO check method exists in grpc
+    #     self.delete()
+    #     terminal.delete()
+    #     return True

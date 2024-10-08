@@ -48,3 +48,24 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
         p_inst, _ = self.params
         pos_x, pos_y, _ = p_inst.get_position_and_rotation()
         return [pos_x.value, pos_y.value]
+
+    @property
+    def net_name(self):
+        """Net name.
+
+        Returns
+        -------
+        str
+            Name of the net.
+        """
+        if self.is_null:
+            return ""
+        elif self.net.is_null:
+            return ""
+        else:
+            return self.net.name
+
+    @net_name.setter
+    def net_name(self, val):
+        if not self.is_null and self.net.is_null:
+            self.net.name = val

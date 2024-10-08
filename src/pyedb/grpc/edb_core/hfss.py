@@ -328,7 +328,7 @@ class Hfss(object):
             "`pyedb.grpc.core.excitations.create_circuit_port_on_net` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_circuit_port_on_net(
+        return self._pedb.source_excitation.create_circuit_port_on_net(
             positive_component_name,
             positive_net_name,
             negative_component_name,

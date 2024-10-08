@@ -105,7 +105,7 @@ class Layout(GrpcLayout):
 
     @property
     def pin_groups(self):
-        return [PinGroup(pedb=self._pedb, edb_pin_group=i) for i in self._pedb.active_cell.layout.pin_groups]
+        return [PinGroup(self._pedb, i) for i in self._pedb.active_cell.layout.pin_groups]
 
     @property
     def net_classes(self):

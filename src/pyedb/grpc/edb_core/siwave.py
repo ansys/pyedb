@@ -137,7 +137,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations._create_terminal_on_pins` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations._create_terminal_on_pins(source)
+        return self._pedb.source_excitation._create_terminal_on_pins(source)
 
     def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
         """Create a circuit port on a pin.
@@ -166,7 +166,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_circuit_port_on_pin` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_circuit_port_on_pin(pos_pin, neg_pin, impedance, port_name)
+        return self._pedb.source_excitation.create_circuit_port_on_pin(pos_pin, neg_pin, impedance, port_name)
 
     def create_port_between_pin_and_layer(
         self, component_name=None, pins_name=None, layer_name=None, reference_net=None, impedance=50.0
@@ -199,7 +199,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_port_between_pin_and_layer` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_port_between_pin_and_layer(
+        return self._pedb.source_excitation.create_port_between_pin_and_layer(
             component_name, pins_name, layer_name, reference_net, impedance
         )
 
@@ -232,7 +232,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_voltage_source_on_pin` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_voltage_source_on_pin(
+        return self._pedb.source_excitation.create_voltage_source_on_pin(
             pos_pin, neg_pin, voltage_value, phase_value, source_name
         )
 
@@ -265,7 +265,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_current_source_on_pin` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_current_source_on_pin(
+        return self._pedb.source_excitation.create_current_source_on_pin(
             pos_pin, neg_pin, current_value, phase_value, source_name
         )
 
@@ -296,7 +296,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_resistor_on_pin` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
+        return self._pedb.source_excitation.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
 
     def _check_gnd(self, component_name):
         """
@@ -308,7 +308,7 @@ class Siwave(object):
             "`_check_gnd` is deprecated and is now located here " "`pyedb.grpc.core.excitations._check_gnd` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations._check_gnd(component_name)
+        return self._pedb.source_excitation._check_gnd(component_name)
 
     def create_circuit_port_on_net(
         self,
@@ -350,10 +350,10 @@ class Siwave(object):
         """
         warnings.warn(
             "`create_circuit_port_on_net` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_circuit_port_on_net` instead.",
+            "`pyedb.grpc.core.source_excitation.create_circuit_port_on_net` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_circuit_port_on_net(
+        return self._pedb.source_excitation.create_circuit_port_on_net(
             positive_component_name,
             positive_net_name,
             negative_component_name,
@@ -406,7 +406,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_voltage_source_on_net` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_voltage_source_on_net(
+        return self._pedb.source_excitation.create_voltage_source_on_net(
             positive_component_name,
             positive_net_name,
             negative_component_name,
@@ -459,7 +459,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_current_source_on_net` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_current_source_on_net(
+        return self._pedb.source_excitation.create_current_source_on_net(
             positive_component_name,
             positive_net_name,
             negative_component_name,
@@ -500,7 +500,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_dc_terminal` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_dc_terminal(component_name, net_name, source_name)
+        return self._pedb.source_excitation.create_dc_terminal(component_name, net_name, source_name)
 
     def create_exec_file(
         self, add_dc=False, add_ac=False, add_syz=False, export_touchstone=False, touchstone_file_path=""
@@ -658,7 +658,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_pin_group_terminal` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_pin_group_terminal(source)
+        return self._pedb.source_excitation.create_pin_group_terminal(source)
 
     def configure_siw_analysis_setup(self, simulation_setup=None, delete_existing_setup=True):
         """Configure Siwave analysis setup.
@@ -997,7 +997,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_voltage_source_on_pin_group` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_voltage_source_on_pin_group(
+        return self._pedb.source_excitation.create_voltage_source_on_pin_group(
             pos_pin_group_name, neg_pin_group_name, magnitude, phase, name, impedance
         )
 
@@ -1030,7 +1030,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_voltage_probe_on_pin_group` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_voltage_probe_on_pin_group(
+        return self._pedb.source_excitation.create_voltage_probe_on_pin_group(
             probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1
         )
 
@@ -1062,7 +1062,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_circuit_port_on_pin_group` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_circuit_port_on_pin_group(
+        return self._pedb.source_excitation.create_circuit_port_on_pin_group(
             pos_pin_group_name, neg_pin_group_name, impedance, name
         )
 
@@ -1104,7 +1104,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.place_voltage_probe` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.place_voltage_probe(
+        return self._pedb.source_excitation.place_voltage_probe(
             name,
             positive_net_name,
             positive_location,

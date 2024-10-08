@@ -313,20 +313,17 @@ class PadstackInstance(GrpcPadstackInstance):
         str
             Name of the net.
         """
-        return self.net.name
+        if self.is_null:
+            return ""
+        elif self.net.is_null:
+            return ""
+        else:
+            return self.net.name
 
     @net_name.setter
     def net_name(self, val):
-        if not isinstance(val, str):
-            try:
-                self.net = val
-            except:
-                raise AttributeError("Value inserted not found. Input has to be net name or net object.")
-        elif val in self._pedb.nets.netlist:
-            net = self._pedb.nets.nets[val]
-            self.net = net
-        else:
-            raise AttributeError("Value inserted not found. Input has to be net name or net object.")
+        if not self.is_null and self.net.is_null:
+            self.net.name = val
 
     @property
     def is_pin(self):
