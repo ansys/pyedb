@@ -588,12 +588,12 @@ class StackupLayerEdbClass(LayerEdbClass):
             return self._edb_layer.GetRoughnessModel(self._pedb.edb_api.Cell.RoughnessModel.Region.Side)
 
     def assign_roughness_model(
-            self,
-            model_type="huray",
-            huray_radius="0.5um",
-            huray_surface_ratio="2.9",
-            groisse_roughness="1um",
-            apply_on_surface="all",
+        self,
+        model_type="huray",
+        huray_radius="0.5um",
+        huray_surface_ratio="2.9",
+        groisse_roughness="1um",
+        apply_on_surface="all",
     ):
         """Assign roughness model on this layer.
 
@@ -670,10 +670,10 @@ class StackupLayerEdbClass(LayerEdbClass):
         self._bottom_hallhuray_surface_ratio = self.bottom_hallhuray_surface_ratio
         for k, v in self.__dict__.items():
             if (
-                    not k == "_pclass"
-                    and not k == "_conductivity"
-                    and not k == "_permittivity"
-                    and not k == "_loss_tangent"
+                not k == "_pclass"
+                and not k == "_conductivity"
+                and not k == "_permittivity"
+                and not k == "_loss_tangent"
             ):
                 dict_out[k[1:]] = v
         return dict_out
@@ -742,7 +742,8 @@ class StackupLayerEdbClass(LayerEdbClass):
         for region in ["top", "bottom", "side"]:
             temp = {}
             r_model = self._edb_object.GetRoughnessModel(
-                getattr(self._pedb._edb.Cell.RoughnessModel.Region, region.capitalize()))
+                getattr(self._pedb._edb.Cell.RoughnessModel.Region, region.capitalize())
+            )
             if r_model.ToString().split(".")[-1] == "HurrayRoughnessModel":
                 temp["model"] = "huray"
                 temp["nodule_radius"] = r_model.NoduleRadius.ToString()
@@ -784,21 +785,17 @@ class StackupLayerEdbClass(LayerEdbClass):
                 if r_data:
                     if r_data["model"] == "huray":
                         r_model = self._pedb._edb.Cell.HurrayRoughnessModel(
-                            self._pedb.edb_value(r_data["nodule_radius"]),
-                            self._pedb.edb_value(r_data["surface_ratio"])
+                            self._pedb.edb_value(r_data["nodule_radius"]), self._pedb.edb_value(r_data["surface_ratio"])
                         )
                     else:
-                        r_model = self._pedb._edb.Cell.GroisseRoughnessModel(
-                            self._pedb.edb_value(r_data["roughness"])
-                        )
+                        r_model = self._pedb._edb.Cell.GroisseRoughnessModel(self._pedb.edb_value(r_data["roughness"]))
                 else:
                     r_model = self._pedb._edb.Cell.HurrayRoughnessModel(
-                        self._pedb.edb_value("0"),
-                        self._pedb.edb_value("0")
+                        self._pedb.edb_value("0"), self._pedb.edb_value("0")
                     )
                 layer_clone.SetRoughnessModel(
-                    getattr(self._pedb._edb.Cell.RoughnessModel.Region, region.capitalize()),
-                    r_model)
+                    getattr(self._pedb._edb.Cell.RoughnessModel.Region, region.capitalize()), r_model
+                )
             self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
 
         layer_clone.SetRoughnessEnabled(True)
