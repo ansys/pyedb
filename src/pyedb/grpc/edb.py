@@ -43,13 +43,7 @@ from pyedb.grpc.edb_core.nets.differential_pair import DifferentialPair
 from pyedb.grpc.edb_core.nets.extended_net import ExtendedNet
 from pyedb.grpc.edb_core.nets.net_class import NetClass
 from pyedb.grpc.edb_core.padstack import Padstacks
-from pyedb.grpc.edb_core.ports.ports import (
-    BundleWavePort,
-    CoaxPort,
-    ExcitationSources,
-    GapPort,
-    WavePort,
-)
+from pyedb.grpc.edb_core.ports.ports import BundleWavePort, CoaxPort, GapPort, WavePort
 from pyedb.grpc.edb_core.primitive.circle import Circle
 from pyedb.grpc.edb_core.primitive.padstack_instances import PadstackInstance
 from pyedb.grpc.edb_core.primitive.path import Path
@@ -455,8 +449,7 @@ class EdbGrpc(EdbInit):
     @property
     def sources(self):
         """Get all layout sources."""
-        terms = [term for term in self.layout.terminals if term.boundary_type.value in [3, 4, 7]]
-        return {ter.name: ExcitationSources(self, ter) for ter in terms}
+        self.terminals
 
     @property
     def voltage_regulator_modules(self):
@@ -3545,16 +3538,14 @@ class EdbGrpc(EdbInit):
         -------
         class:`legacy.edb_core.edb_data.ports.ExcitationSources`
         """
-        from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
-
         term = Terminal(self, terminal)
-        term.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
+        term.boundary_type = "voltage_source"
 
         ref_term = Terminal(self, ref_terminal)
-        ref_term.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
+        ref_term.boundary_type = "voltage_source"
 
         term.ref_terminal = ref_terminal
-        return self.sources[term.name]
+        return term
 
     def create_current_source(self, terminal, ref_terminal):
         """Create a current source.

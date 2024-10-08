@@ -52,7 +52,6 @@ from pyedb.grpc.edb_core.utility.sources import (
     ResistorSource,
     Source,
     SourceType,
-    VoltageSource,
 )
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -887,7 +886,7 @@ class SourceExcitation:
         use_pin_top_layer=True,
         source_type="circuit_port",
         impedance=50,
-        magnitude=1.0,
+        magnitude=0,
         phase=0,
         r=0,
         l=0,
@@ -998,7 +997,7 @@ class SourceExcitation:
             return False
         return pos_terminal.name
 
-    def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
+    def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=0, phase_value=0, source_name=None):
         """Create a voltage source.
 
         Parameters
@@ -1028,21 +1027,18 @@ class SourceExcitation:
         >>> edbapp.excitations.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
         """
 
-        voltage_source = VoltageSource()
-        voltage_source.positive_node.net = pos_pin.net.name
-        voltage_source.negative_node.net = neg_pin.net.name
-        voltage_source.magnitude = voltage_value
-        voltage_source.phase = phase_value
         if not source_name:
             source_name = (
-                f"VSource_{pos_pin.component.name}_{pos_pin.net.name}_{neg_pin.component.name}_{neg_pin.net.name}"
+                f"VSource_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
             )
-        voltage_source.name = source_name
-        voltage_source.positive_node.component_node = pos_pin.component
-        voltage_source.positive_node.node_pins = pos_pin
-        voltage_source.negative_node.component_node = neg_pin.component
-        voltage_source.negative_node.node_pins = pos_pin
-        return self._create_terminal_on_pins(voltage_source)
+        return self._create_terminal_on_pins(
+            positive_pin=pos_pin,
+            negative_pin=neg_pin,
+            name=source_name,
+            magnitude=voltage_value,
+            phase=phase_value,
+            source_type="voltage_source",
+        )
 
     def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
         """Create a current source.
@@ -1351,7 +1347,7 @@ class SourceExcitation:
         negative_net_name=None,
         voltage_value=3.3,
         phase_value=0,
-        source_name="",
+        source_name=None,
     ):
         """Create a voltage source.
 
@@ -1389,29 +1385,23 @@ class SourceExcitation:
             negative_component_name = positive_component_name
         if not negative_net_name:
             negative_net_name = self._check_gnd(negative_component_name)
-        voltage_source = VoltageSource()
-        voltage_source.positive_node.net = positive_net_name
-        voltage_source.negative_node.net = negative_net_name
-        voltage_source.magnitude = voltage_value
-        voltage_source.phase = phase_value
-        pos_node_cmp = self._pedb.components.get_component_by_name(positive_component_name)
-        neg_node_cmp = self._pedb.components.get_component_by_name(negative_component_name)
         pos_node_pins = self._pedb.components.get_pin_from_component(positive_component_name, positive_net_name)
         neg_node_pins = self._pedb.components.get_pin_from_component(negative_component_name, negative_net_name)
 
-        if source_name == "":
-            source_name = "Vsource_{}_{}_{}_{}".format(
-                positive_component_name,
-                positive_net_name,
-                negative_component_name,
-                negative_net_name,
+        if not source_name:
+            source_name = (
+                f"Vsource_{positive_component_name}_{positive_net_name}_"
+                f"{negative_component_name}_{negative_net_name}"
             )
-        voltage_source.name = source_name
-        voltage_source.positive_node.component_node = pos_node_cmp
-        voltage_source.positive_node.node_pins = pos_node_pins
-        voltage_source.negative_node.component_node = neg_node_cmp
-        voltage_source.negative_node.node_pins = neg_node_pins
-        return self.create_pin_group_terminal(voltage_source)
+        return self.create_pin_group_terminal(
+            positive_pins=pos_node_pins,
+            negatives_pins=neg_node_pins,
+            name=source_name,
+            magnitude=voltage_value,
+            phase=phase_value,
+            impedance=1e-6,
+            source_type="voltage_source",
+        )
 
     def create_current_source_on_net(
         self,

@@ -34,7 +34,7 @@ from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
 
 class Terminal(GrpcTerminal):
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+        super().__init__(edb_object.msg)
         self._pedb = pedb
         self._reference_object = None
         self.edb_object = edb_object
@@ -44,7 +44,7 @@ class Terminal(GrpcTerminal):
             "pec": GrpcBoundaryType.PEC,
             "rlc": GrpcBoundaryType.RLC,
             "current_source": GrpcBoundaryType.CURRENT_SOURCE,
-            "vltage_source": GrpcBoundaryType.VOLTAGE_SOURCE,
+            "voltage_source": GrpcBoundaryType.VOLTAGE_SOURCE,
             "nexxim_ground": GrpcBoundaryType.NEXXIM_GROUND,
             "nxxim_port": GrpcBoundaryType.NEXXIM_PORT,
             "dc_terminal": GrpcBoundaryType.DC_TERMINAL,
@@ -164,11 +164,11 @@ class Terminal(GrpcTerminal):
         str
             port, pec, rlc, current_source, voltage_source, nexxim_ground, nexxim_pPort, dc_terminal, voltage_probe.
         """
-        return self.boundary_type.name.lower()
+        return super().boundary_type.name.lower()
 
     @boundary_type.setter
     def boundary_type(self, value):
-        self.boundary_type = self._boundary_type_mapping[value]
+        super(Terminal, self.__class__).boundary_type.__set__(self, self._boundary_type_mapping[value])
 
     @property
     def is_port(self):

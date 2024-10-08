@@ -29,6 +29,9 @@ from ansys.edb.core.geometry.point_data import PointData as GrpcPolygonData
 from ansys.edb.core.primitive.primitive import PadstackInstance as GrpcPadstackInstance
 from ansys.edb.core.utility.value import Value as GrpcValue
 
+from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
+    PadstackInstanceTerminal,
+)
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -76,6 +79,19 @@ class PadstackInstance(GrpcPadstackInstance):
 
         term = PadstackInstanceTerminal(self._pedb, self._edb_object)
         return term.create(self, name)
+
+    def get_terminal(self, create_new_terminal=True):
+        inst_term = self.get_padstack_instance_terminal()
+        if inst_term.is_null and create_new_terminal:
+            inst_term = PadstackInstanceTerminal.create(
+                layout=self.layout,
+                name=self.name,
+                padstack_instance=self,
+                layer=self.get_layer_range()[0],
+                net=self.net,
+                is_ref=False,
+            )
+        return PadstackInstanceTerminal(self._pedb, inst_term)
 
     def create_coax_port(self, name=None, radial_extent_factor=0):
         """Create a coax port."""

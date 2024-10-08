@@ -69,3 +69,43 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
     def net_name(self, val):
         if not self.is_null and self.net.is_null:
             self.net.name = val
+
+    @property
+    def magnitude(self):
+        return self.source_amplitude
+
+    @magnitude.setter
+    def magnitude(self, value):
+        self.source_amplitude = value
+
+    @property
+    def phase(self):
+        return self.source_phase
+
+    @phase.setter
+    def phase(self, value):
+        self.source_phase = value
+
+    @property
+    def source_amplitude(self):
+        return super().source_amplitude
+
+    @source_amplitude.setter
+    def source_amplitude(self, value):
+        super(PadstackInstanceTerminal, self.__class__).source_amplitude.__set__(self, value)
+
+    @property
+    def source_phase(self):
+        return super().source_phase.value
+
+    @source_phase.setter
+    def source_phase(self, value):
+        super(PadstackInstanceTerminal, self.__class__).source_phase.__set__(self, value)
+
+    @property
+    def impedance(self):
+        return super().impedance.value
+
+    @impedance.setter
+    def impedance(self, value):
+        super(PadstackInstanceTerminal, self.__class__).impedance.__set__(self, value)
