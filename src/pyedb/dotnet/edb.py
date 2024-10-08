@@ -2280,6 +2280,22 @@ class Edb(Database):
                 i.delete()
             elif net_name in reference_list and id not in pins_to_preserve:
                 reference_pinsts.append(i)
+        pins_to_delete = []
+
+        def check_instances(item):
+            net_name = item.net_name
+            id = item.id
+            if net_name not in all_list and id not in pins_to_preserve:
+                pins_to_delete.append(item)
+            elif net_name in reference_list and id not in pins_to_preserve:
+                reference_pinsts.append(item)
+
+        with ThreadPoolExecutor(number_of_threads) as pool:
+            pool.map(lambda item: check_instances(item), self.padstacks.instances.values())
+
+        for i in pins_to_delete:
+            i.delete()
+
         for i in self.modeler.primitives:
             if i:
                 net_name = i.net_name
@@ -2290,6 +2306,26 @@ class Edb(Database):
                         reference_paths.append(i)
                     else:
                         reference_prims.append(i)
+
+        prim_to_delete = []
+
+        def check_prims(item):
+            if item:
+                net_name = item.net_name
+                if net_name not in all_list:
+                    prim_to_delete.append(item)
+                elif net_name in reference_list and not item.is_void:
+                    if keep_lines_as_path and item.type == "Path":
+                        reference_paths.append(item)
+                    else:
+                        reference_prims.append(item)
+
+        with ThreadPoolExecutor(number_of_threads) as pool:
+            pool.map(lambda item: check_prims(item), self.modeler.primitives)
+
+        for i in prim_to_delete:
+            i.delete()
+
         self.logger.info_timer("Net clean up")
         self.logger.reset_timer()
 
@@ -2424,11 +2460,14 @@ class Edb(Database):
 
         # with ThreadPoolExecutor(number_of_threads) as pool:
         #     pool.map(lambda item: clip_path(item), reference_paths)
-
-        for item in reference_paths:
-            clip_path(item)
-        for prim in reference_prims:  # removing multithreading as failing with new layer from primitive
-            clean_prim(prim)
+        with ThreadPoolExecutor(number_of_threads) as pool:
+            pool.map(lambda item: clip_path(item), reference_paths)
+        with ThreadPoolExecutor(number_of_threads) as pool:
+            pool.map(lambda item: clean_prim(item), reference_prims)
+        # for item in reference_paths:
+        #     clip_path(item)
+        # for prim in reference_prims:  # removing multithreading as failing with new layer from primitive
+        #     clean_prim(prim)
         # with ThreadPoolExecutor(number_of_threads) as pool:
         #    pool.map(lambda item: clean_prim(item), reference_prims)
 

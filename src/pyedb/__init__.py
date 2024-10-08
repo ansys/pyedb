@@ -3,8 +3,8 @@ import os
 import sys
 import warnings
 
-if os.name == "nt":
-    os.environ["PYTHONMALLOC"] = "malloc"
+# if os.name == "nt":
+#     os.environ["PYTHONMALLOC"] = "malloc"
 
 # By default we use pyedb legacy implementation
 if "PYEDB_USE_DOTNET" not in os.environ:
@@ -75,4 +75,19 @@ version = __version__
 
 #
 
+import atexit
+
 from pyedb.generic.design_types import Edb, Siwave
+
+
+def at_the_end():
+    if bool(os.getenv("PYEDB_USE_DOTNET", "1")):
+        from pythonnet import unload
+
+        unload()
+    import gc
+
+    gc.collect(5)
+
+
+atexit.register(at_the_end)
