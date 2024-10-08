@@ -56,7 +56,7 @@ doc = [
     "nbsphinx>=0.9.0,<0.10",
     "nbconvert < 7.17",
     "numpydoc>=1.5.0,<1.9",
-    "pypandoc>=1.10.0,<1.14",
+    "pypandoc>=1.10.0,<1.15",
     # NOTE: Remove recommonmark once examples are reworked.
     "recommonmark",
     "Sphinx>=7.1.0,<8.1",
