@@ -677,6 +677,11 @@ class TestClass:
                         "name": "1_Top",
                         "thickness": "0.5mm",
                         "type": "signal",
+                        'roughness': {
+                            'top': {'model': 'huray', 'nodule_radius': '0.1um', 'surface_ratio': '1'},
+                            'bottom': {'model': 'groisse', 'roughness': '2um'},
+                            'side': {'model': 'huray', 'nodule_radius': '0.5um', 'surface_ratio': '2.9'},
+                            'enabled': True},
                     },
                     {
                         "fill_material": "Megtron4",

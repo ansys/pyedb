@@ -1094,11 +1094,11 @@ class TestClass:
                         assert (pedb_lay.top_hallhuray_nodule_radius - layer["top_hallhuray_nodule_radius"]) < delta
                         assert (pedb_lay.top_hallhuray_surface_ratio - layer["top_hallhuray_surface_ratio"]) < delta
                         assert (
-                            pedb_lay.bottom_hallhuray_nodule_radius - layer["bottom_hallhuray_nodule_radius"]
-                        ) < delta
+                                       pedb_lay.bottom_hallhuray_nodule_radius - layer["bottom_hallhuray_nodule_radius"]
+                               ) < delta
                         assert (
-                            pedb_lay.bottom_hallhuray_surface_ratio - layer["bottom_hallhuray_surface_ratio"]
-                        ) < delta
+                                       pedb_lay.bottom_hallhuray_surface_ratio - layer["bottom_hallhuray_surface_ratio"]
+                               ) < delta
                         assert (pedb_lay.side_hallhuray_nodule_radius - layer["side_hallhuray_nodule_radius"]) < delta
                         assert (pedb_lay.side_hallhuray_surface_ratio - layer["side_hallhuray_surface_ratio"]) < delta
         edbapp.close()
@@ -1117,3 +1117,21 @@ class TestClass:
         base_layer = edbapp.stackup.layers["1_Top"]
         l_id = edbapp.stackup.layers_by_id.index([base_layer.id, base_layer.name])
         assert edbapp.stackup.layers_by_id[l_id - 1][1] == "add_layer_above"
+
+    def test_20_layer_properties(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        data = {'name': '1_Top',
+                'type': 'signal',
+                'material': 'copper',
+                'fill_material': 'Solder Resist',
+                'thickness': '0.03mm',
+                'color': [255, 0, 0],
+                'roughness': {
+                    'top': {'model': 'huray', 'nodule_radius': '0.1um', 'surface_ratio': '1'},
+                    'bottom': {'model': 'groisse', 'roughness': '2um'},
+                    'side': {'model': 'huray', 'nodule_radius': '0.5um', 'surface_ratio': '2.9'},
+                    'enabled': True}}
+        edbapp.stackup.layers["1_Top"].properties = data
+        layer_data = edbapp.stackup.layers["1_Top"].properties
+        assert layer_data == data
+        edbapp.close()
