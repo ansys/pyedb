@@ -3475,13 +3475,11 @@ class EdbGrpc(EdbInit):
         list: [:class:`pyedb.dotnet.edb_core.edb_data.ports.GapPort`,
             :class:`pyedb.dotnet.edb_core.edb_data.ports.WavePort`,].
         """
-        from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
-
-        terminal.boundary_type = GrpcBoundaryType.PORT
+        terminal.boundary_type = "port"
         terminal.is_circuit_port = is_circuit_port
 
         if ref_terminal:
-            ref_terminal.boundary_type = GrpcBoundaryType.PORT
+            ref_terminal.boundary_type = "port"
             terminal.ref_terminal = ref_terminal
         if name:
             terminal.name = name
@@ -3507,16 +3505,14 @@ class EdbGrpc(EdbInit):
         -------
         pyedb.dotnet.edb_core.edb_data.terminals.Terminal
         """
-        from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
-
         term = Terminal(self, terminal)
-        term.boundary_type = GrpcBoundaryType.VOLTAGE_PROBE
+        term.boundary_type = "voltage_probe"
 
         ref_term = Terminal(self, ref_terminal)
-        ref_term.boundary_type = GrpcBoundaryType.VOLTAGE_PROBE
+        ref_term.boundary_type = "voltage_probe"
 
         term.ref_terminal = ref_terminal
-        return self.probes[term.name]
+        return term
 
     def create_voltage_source(self, terminal, ref_terminal):
         """Create a voltage source.
@@ -3567,16 +3563,14 @@ class EdbGrpc(EdbInit):
         -------
         :class:`legacy.edb_core.edb_data.ports.ExcitationSources`
         """
-        from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
-
         term = Terminal(self, terminal)
-        term.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
+        term.boundary_type = "current_source"
 
         ref_term = Terminal(self, ref_terminal)
-        ref_term.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
+        ref_term.boundary_type = "current_source"
 
         term.ref_terminal = ref_terminal
-        return self.sources[term.name]
+        return term
 
     def get_point_terminal(self, name, net_name, location, layer):
         """Place a voltage probe between two points.

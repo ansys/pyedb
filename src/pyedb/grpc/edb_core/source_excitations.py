@@ -46,12 +46,7 @@ from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
 )
 from pyedb.grpc.edb_core.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.grpc.edb_core.terminal.point_terminal import PointTerminal
-from pyedb.grpc.edb_core.utility.sources import (
-    DCTerminal,
-    ResistorSource,
-    Source,
-    SourceType,
-)
+from pyedb.grpc.edb_core.utility.sources import ResistorSource, Source, SourceType
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -1316,8 +1311,6 @@ class SourceExcitation:
 
         elif source_type == "dc_terminal":
             pos_pingroup_terminal.boundary_type = GrpcBoundaryType.DC_TERMINAL
-            neg_pingroup_terminal.boundary_type = GrpcBoundaryType.DC_TERMINAL
-            pos_pingroup_terminal.reference_terminal = neg_pingroup_terminal
         else:
             pass
         return pos_pingroup_terminal.name
@@ -2477,17 +2470,17 @@ class SourceExcitation:
         >>> edb.siwave.create_dc_terminal("U2A5", "V1P5_S3", "source_name")
         """
 
-        dc_source = DCTerminal()
-        dc_source.positive_node.net = net_name
-        pos_node_cmp = self._pedb.components.get_component_by_name(component_name)
-        pos_node_pins = self._pedb.components.get_pin_from_component(component_name, net_name)
-
-        if source_name == "":
+        node_cmp = self._pedb.components.get_component_by_name(component_name)
+        node_pin = self._pedb.components.get_pin_from_component(component_name, net_name)
+        if node_pin:
+            node_pin = node_pin[0]
+        if not source_name:
             source_name = f"DC_{component_name}_{net_name}"
-        dc_source.name = source_name
-        dc_source.positive_node.component_node = pos_node_cmp
-        dc_source.positive_node.node_pins = pos_node_pins
-        return self.create_pin_group_terminal(dc_source)
+        return self.create_pin_group_terminal(
+            positive_pins=node_pin,
+            na=source_name,
+            source_type="dc_terminal",
+        )
 
     def create_circuit_port_on_pin_group(self, pos_pin_group_name, neg_pin_group_name, impedance=50, name=None):
         """Create a port between two pin groups.
@@ -2567,4 +2560,5 @@ class SourceExcitation:
             name=f"{name}_ref",
             point=GrpcPointData(negative_location),
         )
+        p_terminal.reference_terminal = n_terminal
         return self._pedb.create_voltage_probe(p_terminal, n_terminal)

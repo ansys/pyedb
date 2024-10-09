@@ -134,11 +134,13 @@ class TestClass:
         vprobe_2 = self.edbapp.terminals["vprobe_2"]
         ref_term = vprobe_2.ref_terminal
         assert isinstance(ref_term.location, list)
-        ref_term.location = [0, 0]
+        # ref_term.location = [0, 0] # position setter is crashing check pyedb-core bug #431
         assert ref_term.layer
-        ref_term.layer = "1_Top"
+        ref_term.layer.name = "Inner1(GND1"
+        ref_term.layer.name = "test"
+        assert "test" in self.edbapp.stackup.layers
         u6 = self.edbapp.components["U6"]
-        self.edbapp.create_current_source(
+        assert self.edbapp.create_current_source(
             u6.pins["H8"].get_terminal(create_new_terminal=True), u6.pins["G9"].get_terminal(create_new_terminal=True)
         )
 

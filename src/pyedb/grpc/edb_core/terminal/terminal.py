@@ -88,6 +88,14 @@ class Terminal(GrpcTerminal):
             p["PEC Launch Width"] = ""
         return p
 
+    @property
+    def ref_terminal(self):
+        return self.reference_terminal
+
+    @ref_terminal.setter
+    def ref_terminal(self, value):
+        self.reference_terminal = value
+
     @_hfss_port_property.setter
     def _hfss_port_property(self, value):
         txt = []
