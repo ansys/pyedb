@@ -570,6 +570,5 @@ class Siwave(object):  # pragma no cover
 
         self.export_edb(temp_edb)
         edbapp = Edb(temp_edb, edbversion=self.current_version)
-        edbapp.layout_validation.padstacks_no_name(fix=True)
         edbapp.configuration.export(file_path)
         edbapp.close()
