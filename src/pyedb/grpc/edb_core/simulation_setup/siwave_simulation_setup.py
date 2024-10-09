@@ -27,34 +27,21 @@ from ansys.edb.core.simulation_setup.siwave_simulation_setup import (
     SIWaveSimulationSetup as GrpcSIWaveSimulationSetup,
 )
 
-from pyedb.grpc.edb_core.simulation_setup.siwave_simulation_settings import (
-    SIWaveSimulationSettings,
-)
-from pyedb.grpc.edb_core.simulation_setup.sweep_data import SweepData
-
 
 class SiwaveSimulationSetup(GrpcSIWaveSimulationSetup):
     """Manages EDB methods for SIwave simulation setup."""
 
     def __init__(self, pedb, edb_object=None):
-        super().__init__(edb_object)
+        super().__init__(edb_object.msg)
         self._pedb = pedb
 
     @property
-    def settings(self):
-        return SIWaveSimulationSettings(self._pedb, self.settings)
-
-    @property
     def type(self):
-        return self.type.name
+        return super().type.name
 
     @type.setter
     def type(self, value):
-        if value == "SI_WAVE":
-            self.type = GrpcSimulationSetupType.SI_WAVE
-        elif value == "SI_WAVE_DCIR":
-            self.type = GrpcSimulationSetupType.SI_WAVE_DCIR
-
-    @property
-    def sweep_data(self):
-        return SweepData(self._pedb, self.sweep_data)
+        if value.upper() == "SI_WAVE":
+            super(SiwaveSimulationSetup, self.__class__).type.__set__(self, GrpcSimulationSetupType.SI_WAVE)
+        elif value.upper() == "SI_WAVE_DCIR":
+            super(SiwaveSimulationSetup, self.__class__).type.__set__(self, GrpcSimulationSetupType.SI_WAVE_DCIR)

@@ -25,7 +25,6 @@ from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as Grpcsiwave_dcir_simulation_setup,
 )
 
-from pyedb.grpc.edb_core.simulation_setup.siwave_dc_settings import SIWaveDCSettings
 from pyedb.grpc.edb_core.simulation_setup.sweep_data import SweepData
 
 
@@ -33,10 +32,6 @@ class SIWaveDCIRSimulationSetup(Grpcsiwave_dcir_simulation_setup):
     def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
         self._pedb = pedb
-
-    @property
-    def settings(self):
-        return SIWaveDCSettings(self._pedb, self.settings)
 
     @property
     def type(self):

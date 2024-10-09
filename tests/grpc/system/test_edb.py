@@ -155,7 +155,7 @@ class TestClass:
 
     def test_siwave_add_syz_analsyis(self):
         """Add a sywave AC analysis."""
-        assert self.edbapp.siwave.add_siwave_syz_analysis(start_freq="=GHz", stop_freq="10GHz", step_freq="10MHz")
+        assert self.edbapp.siwave.add_siwave_syz_analysis(start_freq="=1GHz", stop_freq="10GHz", step_freq="10MHz")
 
     def test_siwave_add_dc_analysis(self):
         """Add a sywave DC analysis."""

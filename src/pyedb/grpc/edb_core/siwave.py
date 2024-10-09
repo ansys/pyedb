@@ -27,6 +27,8 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 import os
 import warnings
 
+from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSweepData
+
 from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
@@ -550,8 +552,8 @@ class Siwave(object):
     def add_siwave_syz_analysis(
         self,
         accuracy_level=1,
-        decade_count=10,
-        sweeptype=1,
+        distribution="linear",
+        sweep_type="interpolating",
         start_freq=1,
         stop_freq=1e9,
         step_freq=1e6,
@@ -563,22 +565,22 @@ class Siwave(object):
         ----------
         accuracy_level : int, optional
            Level of accuracy of SI slider. The default is ``1``.
-        decade_count : int
-            The default is ``10``. The value for this parameter is used for these sweep types:
-            linear count and decade count.
-            This parameter is alternative to ``step_freq``, which is used for a linear scale sweep.
-        sweeptype : int, optional
-            Type of the sweep. The default is ``1``. Options are:
-
-            - ``0``: linear count
-            - ``1``: linear scale
-            - ``2``: loc scale
-        start_freq : float, optional
+        sweep_type : str, optional
+            Sweep type. `"interpolating"` or `"discrete"`.
+        distribution : str, optional
+            Type of the sweep. The default is `"linear"`. Options are:
+            - `"linear"`
+            - `"linear_count"`
+            - `"decade_count"`
+            - `"octave_count"`
+            - `"exponential"`
+        start_freq : str, float, optional
             Starting frequency. The default is ``1``.
-        stop_freq : float, optional
+        stop_freq : str, float, optional
             Stopping frequency. The default is ``1e9``.
-        step_freq : float, optional
-            Frequency size of the step. The default is ``1e6``.
+        step_freq : str, float, int, optional
+            Frequency step. The default is ``1e6``. or used for `"decade_count"`, "linear_count"`, "octave_count"`
+            distribution. Must be integer in that case.
         discrete_sweep : bool, optional
             Whether the sweep is discrete. The default is ``False``.
 
@@ -588,25 +590,32 @@ class Siwave(object):
             Setup object class.
         """
         setup = self._pedb.create_siwave_syz_setup()
-        sweep = "linear count"
-        if sweeptype == 2:
-            sweep = "log scale"
-        elif sweeptype == 0:
-            sweep = "linear scale"
         start_freq = self._pedb.number_with_units(start_freq, "Hz")
         stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
-        third_arg = int(decade_count)
-        if sweeptype == 0:
-            third_arg = self._pedb.number_with_units(step_freq, "Hz")
-        setup.si_slider_position = int(accuracy_level)
-        sweep = setup.add_frequency_sweep(
-            frequency_sweep=[
-                [sweep, start_freq, stop_freq, third_arg],
-            ]
-        )
+        setup.settings.general.si_slider_pos = accuracy_level
+        if distribution.lower() == "linear":
+            distribution = "LIN"
+        elif distribution.lower() == "linear_count":
+            distribution = "LINC"
+        elif distribution.lower() == "exponential":
+            distribution = "ESTP"
+        elif distribution.lower() == "decade_count":
+            distribution = "DEC"
+        elif distribution.lower() == "octave_count":
+            distribution = "OCT"
+        else:
+            distribution = "LIN"
+        sweep_name = f"sweep_{len(setup.sweep_data) + 1}"
+        sweep_data = [
+            GrpcSweepData(
+                name=sweep_name, distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step_freq
+            )
+        ]
         if discrete_sweep:
-            sweep.freq_sweep_type = "kDiscreteSweep"
-
+            sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
+        for sweep in setup.sweep_data:
+            sweep_data.append(sweep)
+        setup.sweep_data = sweep_data
         self.create_exec_file(add_ac=True)
         return setup
 

@@ -17,6 +17,9 @@ from zipfile import ZipFile as zpf
 
 from ansys.edb.core.database import Database as GrpcDatabase
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
+    SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
+)
 from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
@@ -3048,26 +3051,25 @@ class EdbGrpc(EdbInit):
 
         Returns
         -------
-        Dict[str, :class:`legacy.edb_core.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`] or
-        Dict[str, :class:`legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveDCSimulationSetup`] or
-        Dict[str, :class:`legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
+        Dict[str, :class:`HfssSimulationSetup`] or
+        Dict[str, :class:`SiwaveSimulationSetup`] or
+        Dict[str, :class:`SIWaveDCIRSimulationSetup`] or
+        Dict[str, :class:`RaptorXSimulationSetup`]
 
         """
-        setups = {}
+        self._setups = {}
         for setup in self.active_cell.simulation_setups:
             setup = setup.cast()
-            if setup.type == "HFSS":
-                setups[setup.name] = HfssSimulationSetup(self, setup)
-            elif setup.type == "SI_WAVE":
-                setups[setup.name] = SiwaveSimulationSetup(self, setup)
-            elif setup.type == "SI_WAVE_DCIR":
-                setups[setup.name] = SIWaveDCIRSimulationSetup(self, setup)
-            elif setup.type == "RAPTOR_X":
-                setups[setup.name] = RaptorXSimulationSetup(self, setup)
-
-        return setups
-
-        pass
+            setup_type = setup.type.name
+            if setup_type == "HFSS":
+                self._setups[setup.name] = HfssSimulationSetup(self, setup)
+            elif setup_type == "SI_WAVE":
+                self._setups[setup.name] = SiwaveSimulationSetup(self, setup)
+            elif setup_type == "SI_WAVE_DCIR":
+                self._setups[setup.name] = SIWaveDCIRSimulationSetup(self, setup)
+            elif setup_type == "RAPTOR_X":
+                self._setups[setup.name] = RaptorXSimulationSetup(self, setup)
+        return self._setups
 
     @property
     def hfss_setups(self):
@@ -3205,7 +3207,11 @@ class EdbGrpc(EdbInit):
             name = generate_unique_name("Siwave_SYZ")
         if name in self.setups:
             return False
-        setup = SiwaveSimulationSetup.create(cell=self.active_cell, name=name)
+        from ansys.edb.core.simulation_setup.siwave_simulation_setup import (
+            SIWaveSimulationSetup as GrpcSIWaveSimulationSetup,
+        )
+
+        setup = SiwaveSimulationSetup(self, GrpcSIWaveSimulationSetup.create(cell=self.active_cell, name=name))
         for k, v in kwargs.items():
             setattr(setup, k, v)
         return self.setups[name]
@@ -3234,7 +3240,7 @@ class EdbGrpc(EdbInit):
             name = generate_unique_name("Siwave_DC")
         if name in self.setups:
             return False
-        setup = SIWaveDCIRSimulationSetup.create(cell=self.active_cell, name=name)
+        setup = SIWaveDCIRSimulationSetup(self, GrpcSIWaveDCIRSimulationSetup.create(cell=self.active_cell, name=name))
         for k, v in kwargs.items():
             setattr(setup, k, v)
         return setup
