@@ -220,7 +220,6 @@ class EdbPadstacks(object):
             List of padstack instances.
 
         """
-
         edb_padstack_inst_list = self._pedb.layout.padstack_instances
         if len(self._instances) == len(edb_padstack_inst_list):
             return self._instances
