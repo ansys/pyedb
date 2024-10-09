@@ -2324,7 +2324,7 @@ class EDBPadstackInstance(Primitive):
             max_limit=max_limit,
             component_only=component_only,
         )
-    
+
     @property
     def properties(self):
         data = {}
