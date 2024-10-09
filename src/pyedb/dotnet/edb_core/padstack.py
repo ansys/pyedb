@@ -76,6 +76,7 @@ class EdbPadstacks(object):
         self._pedb = p_edb
         self._instances = {}
         self._definitions = {}
+        self._number_of_instances = 0
 
     @property
     def _edb(self):
@@ -220,11 +221,11 @@ class EdbPadstacks(object):
             List of padstack instances.
 
         """
-
-        edb_padstack_inst_list = self._pedb.layout.padstack_instances
-        if len(self._instances) == len(edb_padstack_inst_list):
+        if len(self._instances) == self._number_of_instances:
             return self._instances
+        edb_padstack_inst_list = self._pedb.layout.padstack_instances
         self._instances = {i.id: i for i in edb_padstack_inst_list}
+        self._number_of_instances = len(edb_padstack_inst_list)
         return self._instances
 
     @property
