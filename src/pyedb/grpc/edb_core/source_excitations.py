@@ -46,7 +46,7 @@ from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
 )
 from pyedb.grpc.edb_core.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.grpc.edb_core.terminal.point_terminal import PointTerminal
-from pyedb.grpc.edb_core.utility.sources import ResistorSource, Source, SourceType
+from pyedb.grpc.edb_core.utility.sources import Source, SourceType
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -977,9 +977,9 @@ class SourceExcitation:
             neg_terminal.boundary_type = GrpcBoundaryType.RLC
             pos_terminal.reference_terminal = neg_terminal
             rlc = GrpcRlc()
-            rlc.c_enabled = bool(r)
+            rlc.r_enabled = bool(r)
             rlc.l_enabled = bool(l)
-            rlc.r_enabled = bool(c)
+            rlc.c_enabled = bool(c)
             rlc.r = GrpcValue(r)
             rlc.l = GrpcValue(l)
             rlc.c = GrpcValue(c)
@@ -1104,20 +1104,13 @@ class SourceExcitation:
         >>> pins =edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.excitation.create_resistor_on_pin(pins[0], pins[1],50,"res_name")
         """
-        resistor = ResistorSource()
-        resistor.positive_node.net = pos_pin.net.name
-        resistor.negative_node.net = neg_pin.net.name
-        resistor.rvalue = rvalue
         if not resistor_name:
             resistor_name = (
                 f"Res_{pos_pin.component.name}_{pos_pin.net.name}_{neg_pin.component.name}_{neg_pin.net.name}"
             )
-        resistor.name = resistor_name
-        resistor.positive_node.component_node = pos_pin.component
-        resistor.positive_node.node_pins = pos_pin
-        resistor.negative_node.component_node = neg_pin.component
-        resistor.negative_node.node_pins = neg_pin
-        return self._create_terminal_on_pins(resistor)
+        return self._create_terminal_on_pins(
+            positive_pin=pos_pin, negative_pin=neg_pin, name=resistor_name, source_type="rlc", r=rvalue
+        )
 
     def create_circuit_port_on_net(
         self,
@@ -1238,8 +1231,9 @@ class SourceExcitation:
         """
         if isinstance(positive_pins, PadstackInstance):
             positive_pins = [positive_pins]
-        if isinstance(negatives_pins, PadstackInstance):
-            negatives_pins = [negatives_pins]
+        if negatives_pins:
+            if isinstance(negatives_pins, PadstackInstance):
+                negatives_pins = [negatives_pins]
         if not name:
             name = (
                 f"Port_{positive_pins[0].component.name}_{positive_pins[0].net.name}_{positive_pins[0].name}_"
@@ -1257,14 +1251,15 @@ class SourceExcitation:
             net=positive_pins[0].net,
             is_ref=False,
         )
-        neg_pin_group = self._pedb.components.create_pingroup_from_pins(negatives_pins)
-        neg_pingroup_terminal = PinGroupTerminal.create(
-            layout=self._pedb.active_layout,
-            name=f"{name}_ref",
-            pin_group=neg_pin_group,
-            net=negatives_pins[0].net,
-            is_ref=False,
-        )
+        if not source_type == "dc_terminal":
+            neg_pin_group = self._pedb.components.create_pingroup_from_pins(negatives_pins)
+            neg_pingroup_terminal = PinGroupTerminal.create(
+                layout=self._pedb.active_layout,
+                name=f"{name}_ref",
+                pin_group=neg_pin_group,
+                net=negatives_pins[0].net,
+                is_ref=False,
+            )
         if source_type in ["circuit_port", "lumped_port"]:
             pos_pingroup_terminal.boundary_type = GrpcBoundaryType.PORT
             pos_pingroup_terminal.impedance = GrpcValue(impedance)
@@ -2443,7 +2438,7 @@ class SourceExcitation:
         self,
         component_name,
         net_name,
-        source_name="",
+        source_name=None,
     ):
         """Create a dc terminal.
 
@@ -2470,16 +2465,13 @@ class SourceExcitation:
         >>> edb.siwave.create_dc_terminal("U2A5", "V1P5_S3", "source_name")
         """
 
-        node_cmp = self._pedb.components.get_component_by_name(component_name)
         node_pin = self._pedb.components.get_pin_from_component(component_name, net_name)
         if node_pin:
             node_pin = node_pin[0]
         if not source_name:
             source_name = f"DC_{component_name}_{net_name}"
         return self.create_pin_group_terminal(
-            positive_pins=node_pin,
-            na=source_name,
-            source_type="dc_terminal",
+            positive_pins=node_pin, name=source_name, source_type="dc_terminal", negatives_pins=None
         )
 
     def create_circuit_port_on_pin_group(self, pos_pin_group_name, neg_pin_group_name, impedance=50, name=None):
