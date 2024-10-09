@@ -333,12 +333,11 @@ class LayoutValidation:
                 if fix:
                     if not obj.component:
                         obj._edb_object.SetProductProperty(
-                            self._pedb.edb_api.ProductId.Designer, 11,
-                            f"via_{via_count}")
+                            self._pedb.edb_api.ProductId.Designer, 11, f"via_{via_count}"
+                        )
                         via_count = via_count + 1
                     else:
                         obj._edb_object.SetProductProperty(
-                            self._pedb.edb_api.ProductId.Designer, 11,
-                            f"{obj.component.name}-{obj.component_pin}"
+                            self._pedb.edb_api.ProductId.Designer, 11, f"{obj.component.name}-{obj.component_pin}"
                         )
         self._pedb._logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")
