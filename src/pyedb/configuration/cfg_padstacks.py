@@ -48,7 +48,7 @@ class CfgPadstacks:
             for inst in self.instances:
                 inst_layout = instances_layout[inst.name]
                 data = dict()
-                data['backdrill_parameters'] = inst.backdrill_parameters
+                data["backdrill_parameters"] = inst.backdrill_parameters
                 data["hole_override_enabled"] = inst.hole_override_enabled
                 data["hole_override_diameter"] = inst.hole_override_diameter
                 inst_layout.properties = data
@@ -83,7 +83,7 @@ class CfgPadstacks:
                     position=temp["position"],
                     rotation=temp["rotation"],
                     hole_override_enabled=temp["hole_override_enabled"],
-                    hole_override_diameter=temp["hole_override_diameter"]
+                    hole_override_diameter=temp["hole_override_diameter"],
                 )
             )
         instances = []
