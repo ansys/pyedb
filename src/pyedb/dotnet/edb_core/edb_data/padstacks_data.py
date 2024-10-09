@@ -330,14 +330,14 @@ class EDBPadProperties(object):
         return self._pedbpadstack._ppadstack.int_to_geometry_type(val)
 
     def _update_pad_parameters_parameters(
-        self,
-        layer_name=None,
-        pad_type=None,
-        geom_type=None,
-        params=None,
-        offsetx=None,
-        offsety=None,
-        rotation=None,
+            self,
+            layer_name=None,
+            pad_type=None,
+            geom_type=None,
+            params=None,
+            offsetx=None,
+            offsety=None,
+            rotation=None,
     ):
         """Update padstack parameters.
 
@@ -1932,8 +1932,8 @@ class EDBPadstackInstance(Primitive):
             if hole_diam:  # pragma no cover
                 hole_finished_size = padstack_def.hole_finished_size
                 via_length = (
-                    self._pedb.stackup.signal_layers[start_layer].upper_elevation
-                    - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
+                        self._pedb.stackup.signal_layers[start_layer].upper_elevation
+                        - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
                 )
                 volume = (math.pi * (hole_diam / 2) ** 2 - math.pi * (hole_finished_size / 2) ** 2) * via_length
         return volume
@@ -2335,4 +2335,21 @@ class EDBPadstackInstance(Primitive):
         data["position"] = [position.X.ToString(), position.Y.ToString()]
         data["rotation"] = [rotation.ToString()]
         data["id"] = self.id
+        hole_override_enabled, hole_override_diam = self._edb_object.GetHoleOverrideValue()
+        data["hole_override_enabled"] = hole_override_enabled
+        data["hole_override_diameter"] = hole_override_diam.ToString()
         return data
+
+    @properties.setter
+    def properties(self, params):
+        name = params.get("name", None)
+        if name:
+            self.aedt_name = name
+        backdrill_parameters = params.get("backdrill_parameters", None)
+        if backdrill_parameters:
+            self.backdrill_parameters = backdrill_parameters
+        h_o_enabled = params.get("hole_override_enabled", None)
+        h_o_enabled = h_o_enabled if h_o_enabled else self.properties["hole_override_enabled"]
+        h_o_diameter = params.get("hole_override_diameter")
+        h_o_diameter = h_o_diameter if h_o_diameter else self.properties["hole_override_diameter"]
+        self._edb_object.SetHoleOverride(h_o_enabled, self._pedb.edb_value(h_o_diameter))
