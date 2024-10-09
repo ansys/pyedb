@@ -230,11 +230,7 @@ class Layout(ObjBase):
         -------
         list of :class:`dotnet.edb_core.dotnet.primitive.PrimitiveDotNet` cast objects.
         """
-        prims = []
-        for p in self._edb_object.Primitives:
-            obj = primitive_cast(self._pedb, p)
-            prims.append(obj)
-        return prims
+        return [primitive_cast(self._pedb, p) for p in self._edb_object.Primitives]
 
     @property
     def bondwires(self):
@@ -249,14 +245,7 @@ class Layout(ObjBase):
 
     @property
     def groups(self):
-        temp = []
-        for i in list(self._edb_object.Groups):
-            group_type = i.ToString().split(".")[-1].lower()
-            if group_type == "component":
-                temp.append(EDBComponent(self._pedb, i))
-            else:
-                pass
-        return temp
+        return [EDBComponent(self._pedb, i) for i in self._edb_object.Groups if i.ToString().endswith(".Component")]
 
     @property
     def pin_groups(self):
