@@ -73,14 +73,19 @@ class CfgPadstacks:
             definitions.append(i.get_attributes())
         data["definitions"] = definitions
 
-        instances_layout = self._pedb.padstacks.instances_by_name
-        for name, obj in instances_layout.items():
+        for obj in self._pedb.layout.padstack_instances:
+            temp = obj.properties
             self.instances.append(
-                Instance(name=name, definition=obj.padstack_definition, backdrill_parameters=obj.backdrill_parameters)
+                Instance(name=temp["name"],
+                         definition=temp["definition"],
+                         backdrill_parameters=temp["backdrill_parameters"],
+                         id=temp["id"],
+                         position=temp["position"],
+                         rotation=temp["rotation"])
             )
         instances = []
         for i in self.instances:
-            instances.append(i.get_attributes())
+            instances.append(i.get_attributes("id"))
         data["instances"] = instances
         return data
 
@@ -104,3 +109,6 @@ class Instance(CfgBase):
         self.name = kwargs["name"]
         self.definition = kwargs.get("definition", None)
         self.backdrill_parameters = kwargs.get("backdrill_parameters", None)
+        self.id = kwargs.get("id", None)
+        self.position = kwargs.get("position", [])
+        self.rotation = kwargs.get("rotation", None)

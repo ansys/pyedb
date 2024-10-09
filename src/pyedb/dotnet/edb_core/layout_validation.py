@@ -22,6 +22,7 @@
 
 import re
 
+from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.primitives_data import Primitive
 from pyedb.generic.general_methods import generate_unique_name
@@ -318,3 +319,26 @@ class LayoutValidation:
 
         self._pedb._logger.info("Found {} inductors have no value.".format(len(temp)))
         return
+
+    def padstacks_no_name(self, fix=False):
+        pds = self._pedb.layout.padstack_instances
+        counts = 0
+        via_count = 1
+        for obj in pds:
+            val = String("")
+            _, name = obj._edb_object.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
+            name = str(name).strip("'")
+            if name == "":
+                counts += 1
+                if fix:
+                    if not obj.component:
+                        obj._edb_object.SetProductProperty(
+                            self._pedb.edb_api.ProductId.Designer, 11,
+                            f"via_{via_count}")
+                        via_count = via_count + 1
+                    else:
+                        obj._edb_object.SetProductProperty(
+                            self._pedb.edb_api.ProductId.Designer, 11,
+                            f"{obj.component.name}-{obj.component_pin}"
+                        )
+        self._pedb._logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")
