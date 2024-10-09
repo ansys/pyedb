@@ -2244,7 +2244,7 @@ class Edb(Database):
         pins_to_preserve = []
         nets_to_preserve = []
         if preserve_components_with_model:
-            for el in self.components.instances.values():
+            for el in self.layout.groups:
                 if el.model_type in [
                     "SPICEModel",
                     "SParameterModel",
@@ -2284,7 +2284,7 @@ class Edb(Database):
                 reference_pinsts.append(item)
 
         with ThreadPoolExecutor(number_of_threads) as pool:
-            pool.map(lambda item: check_instances(item), self.padstacks.instances.values())
+            pool.map(lambda item: check_instances(item), self.layout.padstack_instances)
 
         for i in pins_to_delete:
             i.delete()
@@ -2352,7 +2352,7 @@ class Edb(Database):
         if not _poly or _poly.IsNull():
             self._logger.error("Failed to create Extent.")
             return []
-        self.logger.info_timer("Expanded Net Polygon Creation")
+        self.logger.info_timer("Extent Creation")
         self.logger.reset_timer()
         _poly_list = convert_py_list_to_net_list([_poly])
         prims_to_delete = []
@@ -2435,13 +2435,9 @@ class Edb(Database):
         for pin in pins_to_delete:
             pin.delete()
 
-        self.logger.info_timer(
-            "Padstack Instances removal completed. {} instances removed.".format(len(pins_to_delete))
-        )
+        self.logger.info_timer("{} Padstack Instances deleted.".format(len(pins_to_delete)))
         self.logger.reset_timer()
 
-        # with ThreadPoolExecutor(number_of_threads) as pool:
-        #     pool.map(lambda item: clip_path(item), reference_paths)
         with ThreadPoolExecutor(number_of_threads) as pool:
             pool.map(lambda item: clip_path(item), reference_paths)
         with ThreadPoolExecutor(number_of_threads) as pool:
@@ -2450,8 +2446,6 @@ class Edb(Database):
         #     clip_path(item)
         # for prim in reference_prims:  # removing multithreading as failing with new layer from primitive
         #     clean_prim(prim)
-        # with ThreadPoolExecutor(number_of_threads) as pool:
-        #    pool.map(lambda item: clean_prim(item), reference_prims)
 
         for el in poly_to_create:
             self.modeler.create_polygon(el[0], el[1], net_name=el[2], voids=el[3])
@@ -2459,7 +2453,7 @@ class Edb(Database):
         for prim in prims_to_delete:
             prim.delete()
 
-        self.logger.info_timer("Primitives cleanup completed. {} primitives deleted.".format(len(prims_to_delete)))
+        self.logger.info_timer("{} Primitives deleted.".format(len(prims_to_delete)))
         self.logger.reset_timer()
 
         i = 0
@@ -2468,7 +2462,7 @@ class Edb(Database):
                 val.edbcomponent.Delete()
                 i += 1
                 i += 1
-        self.logger.info("Deleted {} additional components".format(i))
+        self.logger.info("{} components deleted".format(i))
         if remove_single_pin_components:
             self.components.delete_single_pin_rlc()
             self.logger.info_timer("Single Pins components deleted")
