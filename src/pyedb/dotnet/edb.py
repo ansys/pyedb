@@ -2273,13 +2273,6 @@ class Edb(Database):
         reference_pinsts = []
         reference_prims = []
         reference_paths = []
-        for i in self.padstacks.instances.values():
-            net_name = i.net_name
-            id = i.id
-            if net_name not in all_list and id not in pins_to_preserve:
-                i.delete()
-            elif net_name in reference_list and id not in pins_to_preserve:
-                reference_pinsts.append(i)
         pins_to_delete = []
 
         def check_instances(item):
@@ -2295,17 +2288,6 @@ class Edb(Database):
 
         for i in pins_to_delete:
             i.delete()
-
-        for i in self.modeler.primitives:
-            if i:
-                net_name = i.net_name
-                if net_name not in all_list:
-                    i.delete()
-                elif net_name in reference_list and not i.is_void:
-                    if keep_lines_as_path and i.type == "Path":
-                        reference_paths.append(i)
-                    else:
-                        reference_prims.append(i)
 
         prim_to_delete = []
 
