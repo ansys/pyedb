@@ -75,19 +75,4 @@ version = __version__
 
 #
 
-import atexit
-
 from pyedb.generic.design_types import Edb, Siwave
-
-
-def at_the_end():
-    if bool(os.getenv("PYEDB_USE_DOTNET", "1")):
-        from pythonnet import unload
-
-        unload()
-    import gc
-
-    gc.collect(5)
-
-
-atexit.register(at_the_end)
