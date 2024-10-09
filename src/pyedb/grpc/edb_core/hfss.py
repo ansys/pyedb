@@ -131,9 +131,7 @@ class Hfss(object):
         """
         nets = {}
         for net in self._pedb.excitations_nets:
-            smallest = self._pedb.nets[net].get_smallest_trace_width()
-            if smallest < 1e10:
-                nets[net] = self._pedb.nets[net].get_smallest_trace_width()
+            nets[net] = self._pedb.nets.nets[net].get_smallest_trace_width()
         return nets
 
     def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):

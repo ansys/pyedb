@@ -43,50 +43,11 @@ class Path(GrpcPath):
         float
             Path width or None.
         """
-        return super().width.value
+        return round(super().width.value, 9)
 
     @width.setter
     def width(self, value):
         super(Path, self.__class__).width.__set__(self, GrpcValue(value))
-
-    # def get_end_cap_style(self):
-    #     """Get path end cap styles.
-    #
-    #     Returns
-    #     -------
-    #     tuple[
-    #         :class:`PathEndCapType`,
-    #         :class:`PathEndCapType`
-    #     ]
-    #
-    #         Returns a tuple of the following format:
-    #
-    #         **(end_cap1, end_cap2)**
-    #
-    #         **end_cap1** : End cap style of path start end cap.
-    #
-    #         **end_cap2** : End cap style of path end  cap.
-    #     """
-    #     return self.get_end_cap_style().name.lower()
-    #
-    # def set_end_cap_style(self, end_cap1, end_cap2):
-    #     """Set path end cap styles.
-    #
-    #     Parameters
-    #     ----------
-    #     end_cap1: str
-    #         End cap style of path start end cap. Accepted values: `"round"`, `"flat"`, `"extended"`, `"clipped"`.
-    #     end_cap2: str
-    #         End cap style of path end cap. Accepted values: `"round"`, `"flat"`, `"extended"`, `"clipped"`.
-    #     """
-    #     mapping = {
-    #         "round": GrpcPathEndCapType.ROUND,
-    #         "flat": GrpcPathEndCapType.FLAT,
-    #         "extended": GrpcPathEndCapType.EXTENDED,
-    #         "clipped": GrpcPathEndCapType.CLIPPED,
-    #     }
-    #     if isinstance(end_cap1, str) and isinstance(end_cap2, str):
-    #         self.set_end_cap_style(mapping[end_cap1.lower()], mapping[end_cap2.lower()])
 
     @property
     def length(self):
@@ -107,7 +68,7 @@ class Path(GrpcPath):
                 path_length += self.width / 2
             if not end_cap_style[1].value == 1:
                 path_length += self.width / 2
-        return path_length
+        return round(path_length, 9)
 
     def add_point(self, x, y, incremental=False):
         """Add a point at the end of the path.

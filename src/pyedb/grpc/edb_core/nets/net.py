@@ -167,7 +167,7 @@ class Net(GrpcNet):
         current_value = 1e10
         paths = [prim for prim in self.primitives if prim.primitive_type == GrpcPrimitiveType.PATH]
         for path in paths:
-            if path.width.value < current_value:
+            if path.width < current_value:
                 current_value = path.width
         return current_value
 

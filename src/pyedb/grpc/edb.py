@@ -445,9 +445,7 @@ class EdbGrpc(EdbInit):
     @property
     def excitations_nets(self):
         """Get all excitations net names."""
-        names = list(set([i.net.name for i in self.layout.terminals]))
-        names = [i for i in names if i]
-        return names
+        return list(set([i.net.name for i in self.layout.terminals if not i.is_reference_terminal]))
 
     @property
     def sources(self):

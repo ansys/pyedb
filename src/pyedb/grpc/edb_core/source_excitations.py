@@ -34,7 +34,6 @@ from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.generic.general_methods import generate_unique_name
-from pyedb.grpc.edb_core.hierarchy.pingroup import PinGroup
 from pyedb.grpc.edb_core.layers.stackup_layer import StackupLayer
 from pyedb.grpc.edb_core.nets.net import Net
 from pyedb.grpc.edb_core.ports.ports import BundleWavePort, WavePort
@@ -387,20 +386,19 @@ class SourceExcitation:
         """
         if isinstance(component, str):
             component = self._pedb.components.instances[component]
-
         if not isinstance(net_list, list):
             net_list = [net_list]
         for net in net_list:
             if not isinstance(net, str):
                 try:
                     net_name = net.name
-                    if net_name != "":
+                    if net_name:
                         net_list.append(net_name)
                 except:
                     pass
         if reference_net in net_list:
             net_list.remove(reference_net)
-        cmp_pins = [p for p in component.pins if p.net.name in net_list]
+        cmp_pins = [p for p in list(component.pins.values()) if p.net_name in net_list]
         for p in cmp_pins:  # pragma no cover
             p.is_layout_pin = True
         if len(cmp_pins) == 0:
@@ -408,15 +406,15 @@ class SourceExcitation:
                 "No pins found on component {}, searching padstack instances instead".format(component.GetName())
             )
             return False
-        pin_layers = cmp_pins[0].padstack_def.data.get_layer_names()
-        if port_type == SourceType.CoaxPort:
+        pin_layers = cmp_pins[0].padstack_def.data.layer_names
+        if port_type == "coax_port":
             if not solder_balls_height:
                 solder_balls_height = self._pedb.components.instances[component.name].solder_ball_height
             if not solder_balls_size:
                 solder_balls_size = self._pedb.components.instances[component.name].solder_ball_diameter[0]
             if not solder_balls_mid_size:
                 solder_balls_mid_size = self._pedb.components.instances[component.name].solder_ball_diameter[1]
-            ref_pins = [p for p in component.pins if p.net.name in reference_net]
+            ref_pins = [p for p in list(component.pins.values()) if p.net_name in reference_net]
             if not ref_pins:
                 self._logger.error(
                     "No reference pins found on component. You might consider"
@@ -462,8 +460,8 @@ class SourceExcitation:
             for pin in cmp_pins:
                 self._pedb.padstack.create_coax_port(padstackinstance=pin, name=port_name)
 
-        elif port_type == SourceType.CircPort:  # pragma no cover
-            ref_pins = [p for p in component.pins if p.net.name in reference_net]
+        elif port_type == "circuit_port":  # pragma no cover
+            ref_pins = [p for p in list(component.pins.values()) if p.net_name in reference_net]
             for p in ref_pins:
                 p.is_layout_pin = True
             if not ref_pins:
@@ -482,11 +480,10 @@ class SourceExcitation:
                 else:
                     for pin in ref_pins:
                         pin.is_pin = True
-                    ref_pin_group = self.create_pingroup_from_pins(ref_pins)
-                    if not ref_pin_group:
+                    ref_pin_group = self._pedb.components.create_pingroup_from_pins(ref_pins)
+                    if ref_pin_group.is_null:
                         self._logger.error(f"Failed to create reference pin group on component {component.GetName()}.")
                         return False
-                    ref_pin_group = self._pedb.siwave.pin_groups[ref_pin_group.GetName()]
                     ref_pin_group_term = self._create_pin_group_terminal(ref_pin_group, isref=False)
                     if not ref_pin_group_term:
                         self._logger.error(
@@ -494,7 +491,7 @@ class SourceExcitation:
                         )
                         return False
                 for net in net_list:
-                    pins = [pin for pin in component.pins if pin.net.name == net]
+                    pins = [pin for pin in list(component.pins.values()) if pin.net_name == net]
                     if pins:
                         if len(pins) == 1:
                             pin_term = self._create_terminal(pins[0])
@@ -502,9 +499,11 @@ class SourceExcitation:
                                 pin_term.reference_terminal = ref_pin_group_term
                         else:
                             pin_group = self._pedb.components.create_pingroup_from_pins(pins)
-                            if not pin_group:
+                            if pin_group.is_null:
+                                self._logger.error(
+                                    f"Failed to create pin group terminal on component {component.GetName()}"
+                                )
                                 return False
-                            pin_group = self._pedb.siwave.pin_groups[pin_group.GetName()]
                             pin_group_term = self._create_pin_group_terminal(pin_group)
                             if pin_group_term:
                                 pin_group_term.reference_terminal = ref_pin_group_term
@@ -512,7 +511,7 @@ class SourceExcitation:
                         self._logger.info("No pins found on component {} for the net {}".format(component, net))
             else:
                 for net in net_list:
-                    pins = [pin for pin in component.pins if pin.net.name == net]
+                    pins = [pin for pin in list(component.pins.values()) if pin.net_name == net]
                     for pin in pins:
                         if ref_pins:
                             self.create_port_on_pins(component, pin, ref_pins)
@@ -723,13 +722,12 @@ class SourceExcitation:
         -------
         Edb pin group terminal.
         """
-        if not isinstance(pingroup, PinGroup):
-            self._logger.error(f"{pingroup} is not a PinGroup instance,")
-            return False
-        pin = pingroup.pins[0]
+        if pingroup.is_null:
+            self._logger.error(f"{pingroup} is null")
+        pin = PadstackInstance(self._pedb, pingroup.pins[0])
         if term_name is None:
-            term_name = "{}.{}.{}".format(pin.component.name, pin.name, pin.net.name)
-        for t in list(self._pedb.active_layout.Terminals):
+            term_name = "{}.{}.{}".format(pin.component.name, pin.name, pin.net_name)
+        for t in self._pedb.active_layout.terminals:
             if t.name == term_name:
                 self._logger.warning(
                     f"Terminal {term_name} already created in current layout. Returning the "
@@ -737,7 +735,7 @@ class SourceExcitation:
                 )
                 return t
         pingroup_term = PinGroupTerminal.create(
-            layout=self._pedb._active_layout, name=term_name, net=pingroup.net, pin_group=pingroup, is_ref=isref
+            layout=self._pedb.active_layout, name=term_name, net=pingroup.net, pin_group=pingroup, is_ref=isref
         )
         if term_type == "circuit" or "auto":
             pingroup_term.is_circuit_port = True

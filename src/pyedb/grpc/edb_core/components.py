@@ -839,7 +839,7 @@ class Components(object):
             "`pyedb.grpc.core.excitations.create_port_on_component` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.create_port_on_component(
+        self._pedb.source_excitation.create_port_on_component(
             component,
             net_list,
             port_type=port_type,

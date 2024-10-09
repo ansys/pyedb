@@ -167,7 +167,7 @@ class TestClass:
             "U1",
             ["VDD_DDR"],
             reference_net="GND",
-            port_type=SourceType.CircPort,
+            port_type="circuit_port",
         )
         mesh_ops = self.edbapp.hfss.get_trace_width_for_traces_with_ports()
         assert len(mesh_ops) > 0
