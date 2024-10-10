@@ -158,7 +158,7 @@ class EdbGrpc(EdbInit):
         port=50051,
         use_ppe=False,
         technology_file=None,
-        restart_rpc_server=True,
+        restart_rpc_server=False,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
@@ -406,7 +406,7 @@ class EdbGrpc(EdbInit):
     @property
     def excitations(self):
         """Get all layout excitations."""
-        terms = [term for term in self.layout.terminals if term.boundary_type.value == 0]
+        terms = [term for term in self.layout.terminals if term.boundary_type == "port"]
         temp = {}
         for term in terms:
             if not term.bundle_terminal.is_null:
@@ -1464,13 +1464,16 @@ class EdbGrpc(EdbInit):
                 rectangle_data = self.modeler.shape_to_polygon_data(plane)
                 _polys.append(rectangle_data)
         for prim in self.modeler.primitives:
-            if prim is not None and prim.net_name in names:
-                _polys.append(prim.polygon_data)
+            if not prim.is_null and not prim.net.is_null:
+                if prim.net.name in names:
+                    _polys.append(prim.polygon_data)
         if smart_cut:
             objs_data = self._smart_cut(reference_list, expansion_size)
             _polys.extend(objs_data)
         _poly = GrpcPolygonData.convex_hull(_polys)
-        _poly = _poly.expand(expansion_size, tolerance, round_corner, round_extension)[0]
+        _poly = _poly.expand(
+            offset=expansion_size, round_corner=round_corner, max_corner_ext=round_extension, tol=tolerance
+        )[0]
         return _poly
 
     def cutout(
@@ -1766,26 +1769,9 @@ class EdbGrpc(EdbInit):
         # Create new cutout cell/design
         included_nets_list = signal_list + reference_list
         included_nets = [net for net in self.layout.nets if net.name in included_nets_list]
-        _cutout = self.active_cell.cut_out(included_nets, _netsClip, _poly, True)
-        # Analysis setups do not come over with the clipped design copy,
-        # so add the analysis setups from the original here.
-        id = 1
-        for _setup in self.active_cell.SimulationSetups:  # TODO rewrite the sim setup part with grpc
-            # # Empty string '' if coming from setup copy and don't set explicitly.
-            # _setup_name = _setup.name
-            # if "GetSimSetupInfo" in dir(_setup):
-            #     _hfssSimSetupInfo = _setup.GetSimSetupInfo()
-            #     _hfssSimSetupInfo.Name = "HFSS Setup " + str(id)  # Set name of analysis setup
-            #
-            #     _setup.SetSimSetupInfo(_hfssSimSetupInfo)
-            #     _cutout.AddSimulationSetup(_setup)  # Add simulation setup to the cutout design
-            #     id += 1
-            # else:
-            #     _cutout.AddSimulationSetup(_setup)  # Add simulation setup to the cutout design
-            pass
-
+        _cutout = self.active_cell.cutout(included_nets, _netsClip, _poly, True)
+        # _cutout.simulation_setups = self.active_cell.simulation_setups see bug #433 status.
         _dbCells = [_cutout]
-
         if output_aedb_path:
             db2 = self.create(output_aedb_path)
             _success = db2.save()
@@ -1838,7 +1824,7 @@ class EdbGrpc(EdbInit):
                 self.components.delete_single_pin_rlc()
                 self.logger.info_timer("Single Pins components deleted")
                 self.components.refresh_components()
-        return [[pt.x.value, pt.y.value] for pt in _poly.without_arcs.points]
+        return [[pt.x.value, pt.y.value] for pt in _poly.without_arcs().points]
 
     def _create_cutout_multithread(
         self,
@@ -2161,11 +2147,12 @@ class EdbGrpc(EdbInit):
         include_partial_instances=False,
         keep_voids=True,
     ):
+        from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
+
         if point_list[0] != point_list[-1]:
             point_list.append(point_list[0])
         point_list = [[self.number_with_units(i[0], units), self.number_with_units(i[1], units)] for i in point_list]
-        plane = self.modeler.Shape("polygon", points=point_list)
-        polygon_data = self.modeler.shape_to_polygon_data(plane)
+        polygon_data = GrpcPolygonData(points=[GrpcPointData(pt) for pt in point_list])
         _ref_nets = []
         if nets_to_include:
             self.logger.info(f"Creating cutout on {len(nets_to_include)} nets.")
@@ -2180,7 +2167,8 @@ class EdbGrpc(EdbInit):
             else:
                 pinst = [i for i in list(self.padstacks.instances.values())]
             for p in pinst:
-                if p.in_polygon(polygon_data):
+                pin_position = p.position  # check bug #434 status
+                if polygon_data.is_inside(p.position):  # check bug #434 status
                     pinstance_to_add.append(p)
         # validate references in layout
         for _ref in self.nets.nets:
@@ -2658,7 +2646,7 @@ class EdbGrpc(EdbInit):
         if not variable_name.startswith("$"):
             variable_name = f"${variable_name}"
             if not self.variable_exists(variable_name):
-                return self.add_design_variable(variable_name=variable_name, variable_value=variable_value)
+                return self.active_db.add_variable(variable_name, variable_value)
             else:
                 self.logger.error(f"Variable {variable_name} already exists.")
 
@@ -2699,10 +2687,10 @@ class EdbGrpc(EdbInit):
         """
         if variable_name.startswith("$"):
             variable_name = variable_name[1:]
-            if not self.variable_exists(variable_name):
-                return self.add_design_variable(variable_name=variable_name, variable_value=variable_value)
-            else:
-                self.logger.error(f"Variable {variable_name} already exists.")
+        if not self.variable_exists(variable_name):
+            return self.active_cell.add_variable(variable_name, variable_value)
+        else:
+            self.logger.error(f"Variable {variable_name} already exists.")
 
     def change_design_variable_value(self, variable_name, variable_value):
         """Change a variable value.

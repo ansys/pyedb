@@ -28,7 +28,6 @@ from os.path import dirname
 
 import pytest
 
-from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.edb import EdbGrpc as Edb
 from pyedb.misc.misc import list_installed_ansysem
 from tests.conftest import generate_random_string
@@ -83,7 +82,7 @@ class EdbExamples:
                     self.local_scratch.copyfolder(src, file_folder_name)
         if edbapp:
             version = desktop_version if version is None else version
-            return Edb(aedb, edbversion=version)
+            return Edb(aedb, edbversion=version, restart_rpc_server=True)
         else:
             return aedb
 
@@ -99,23 +98,6 @@ class EdbExamples:
     def get_no_ref_pins_component(self):
         aedb = self._copy_file_folder_into_local_folder("TEDB/component_no_ref_pins.aedb")
         return Edb(aedb, edbversion=desktop_version)
-
-
-@pytest.fixture(scope="module")
-def add_grpc_edb(local_scratch):
-    def _method(project_name=None, subfolder=""):
-        if project_name:
-            example_folder = os.path.join(example_models_path, subfolder, project_name + ".aedb")
-            if os.path.exists(example_folder):
-                target_folder = os.path.join(local_scratch.path, project_name + ".aedb")
-                local_scratch.copyfolder(example_folder, target_folder)
-            else:
-                target_folder = os.path.join(local_scratch.path, project_name + ".aedb")
-        else:
-            target_folder = os.path.join(local_scratch.path, generate_unique_name("TestEdb") + ".aedb")
-        return Edb(target_folder, edbversion=desktop_version)
-
-    return _method
 
 
 @pytest.fixture(scope="class")

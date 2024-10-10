@@ -361,7 +361,7 @@ class PadstackInstance(GrpcPadstackInstance):
         """Component."""
         from pyedb.grpc.edb_core.hierarchy.component import Component
 
-        comp = Component(self._pedb, self._edb_object.component)
+        comp = Component(self._pedb, super().component)
         return comp if not comp.is_null else False
 
     @property
