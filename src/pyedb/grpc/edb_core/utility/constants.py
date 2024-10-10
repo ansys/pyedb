@@ -20,20 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.hierarchy.spice_model import SPICEModel as GrpcSpiceModel
 
-
-class SpiceModel(GrpcSpiceModel):  # pragma: no cover
-    def __init__(self, pedb, edb_object=None, name=None, file_path=None, sub_circuit=None):
-        if edb_object:
-            super().__init__(edb_object)
-        elif name and file_path:
-            if not sub_circuit:
-                sub_circuit = name
-            edb_object = GrpcSpiceModel.create(name=name, path=file_path, sub_circuit=sub_circuit)
-            super().__init__(edb_object.msg)
-        self._pedb = pedb
-
-    @property
-    def name(self):
-        return self.model_name
+def get_terminal_supported_boundary_types():
+    return ["voltage_source", "current_source", "port", "dc_terminal", "voltage_probe"]

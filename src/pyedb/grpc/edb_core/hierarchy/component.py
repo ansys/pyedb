@@ -839,7 +839,7 @@ class Component(GrpcComponentGroup):
         if not len(pin_names_sp) == self.numpins:  # pragma: no cover
             raise ValueError(f"Pin counts doesn't match component {self.name}.")
 
-        model = SpiceModel(self._pedb)
+        model = SpiceModel(self._pedb, file_path=file_path, name=name)
         model.model_path = file_path
         model.model_name = name
         if sub_circuit_name:
@@ -855,8 +855,11 @@ class Component(GrpcComponentGroup):
         else:
             for idx, pname in enumerate(pin_names_sp):
                 model.add_terminal(str(idx + 1), pname)
-
-        return self._set_model(model)
+        self._set_model(model)
+        if not model.is_null:
+            return model
+        else:
+            return False
 
     def assign_s_param_model(self, file_path, name=None, reference_net=None):
         """Assign S-parameter to this component.

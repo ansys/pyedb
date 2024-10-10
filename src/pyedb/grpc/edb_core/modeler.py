@@ -641,7 +641,7 @@ class Modeler(object):
             polygon_data = self.shape_to_polygon_data(main_shape)
         else:
             polygon_data = main_shape
-        if not polygon_data or polygon_data.is_null:
+        if polygon_data or polygon_data.points:
             self._logger.error("Failed to create main shape polygon data")
             return False
         for void in voids:
@@ -921,9 +921,8 @@ class Modeler(object):
                     or endPoint[0].is_parametric
                     or endPoint[1].is_parametric
                 )
-                arc = self._edb.geometry.arc_data(
-                    self._pedb.point_data(startPoint[0].value, startPoint[1].value),
-                    self._pedb.point_data(endPoint[0].value, endPoint[1].value),
+                arc = GrpcArcData(
+                    GrpcPointData([startPoint[0], startPoint[1]]), GrpcPointData([endPoint[0], endPoint[1]])
                 )
                 arcs.append(arc)
             elif len(endPoint) == 3:
@@ -935,10 +934,10 @@ class Modeler(object):
                     or endPoint[1].is_parametric
                     or endPoint[2].is_parametric
                 )
-                arc = self._edb.geometry.arc_data(
-                    self._pedb.point_data(startPoint[0].value, startPoint[1].value),
-                    self._pedb.point_data(endPoint[0].value, endPoint[1].value),
-                    endPoint[2].value,
+                arc = GrpcArcData(
+                    GrpcPointData([startPoint[0], startPoint[1]]),
+                    GrpcPointData([endPoint[0], endPoint[1]]),
+                    kwarg={"height": endPoint[2]},
                 )
                 arcs.append(arc)
             elif len(endPoint) == 5:
@@ -951,9 +950,9 @@ class Modeler(object):
                     or endPoint[3].is_parametric
                     or endPoint[4].is_parametric
                 )
-                if str(endPoint[2]) == "cw":
+                if endPoint[2].is_cw:
                     rotationDirection = GrpcPolygonSenseType.SENSE_CW
-                elif str(endPoint[2]) == "ccw":
+                elif endPoint[2].is_ccw:
                     rotationDirection = GrpcPolygonSenseType.SENSE_CCW
                 else:
                     self._logger.error("Invalid rotation direction %s is specified.", endPoint[2])
@@ -965,7 +964,7 @@ class Modeler(object):
                 # arc.direction = rotationDirection,
                 # arc.center = GrpcPointData([endPoint[3], endPoint[4]]),
                 arcs.append(arc)
-        polygon = self._edb.geometry.polygon_data.create_from_arcs(arcs, True)
+        polygon = GrpcPolygonData(arcs=arcs)
         if not is_parametric:
             return polygon
         else:

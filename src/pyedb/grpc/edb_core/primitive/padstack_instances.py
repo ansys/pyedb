@@ -342,6 +342,17 @@ class PadstackInstance(GrpcPadstackInstance):
             self.net.name = val
 
     @property
+    def layout_object_instance(self):
+        obj_inst = [
+            obj
+            for obj in self._pedb.layout_instance.query_layout_obj_instances(
+                spatial_filter=GrpcPointData(self.position)
+            )
+            if obj.layout_obj.id == self.id
+        ]
+        return obj_inst[0] if obj_inst else None
+
+    @property
     def is_pin(self):
         """Determines whether this padstack instance is a layout pin.
 
@@ -376,9 +387,9 @@ class PadstackInstance(GrpcPadstackInstance):
         position = self.get_position_and_rotation()
         if self.component:
             out2 = self.component.transform.transform_point(GrpcPointData(position[:2]))
-            self._position = [out2.x.value, out2.y.value]
+            self._position = out2
         else:
-            self._position = [position[0].value, position[1].value]
+            self._position = position[:2]
         return self._position
 
     @position.setter

@@ -71,6 +71,7 @@ from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
 from pyedb.grpc.edb_core.terminal.terminal import Terminal
+from pyedb.grpc.edb_core.utility.constants import get_terminal_supported_boundary_types
 from pyedb.grpc.edb_core.utility.simulation_configuration import SimulationConfiguration
 from pyedb.grpc.edb_core.utility.sources import SourceType
 from pyedb.grpc.edb_init import EdbInit
@@ -401,7 +402,10 @@ class EdbGrpc(EdbInit):
         -------
         Dict
         """
-        return {i.name: i for i in self.layout.terminals}
+        _terminals = {}
+        for i in self.layout.terminals:
+            _terminals[i.name]: i
+        return _terminals
 
     @property
     def excitations(self):
@@ -1426,7 +1430,10 @@ class EdbGrpc(EdbInit):
         from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 
         _polys = []
-        terms = [term for term in self.layout.terminals if term.boundary_type.value in [0, 3, 4, 7, 8]]
+        boundary_types = [
+            "port",
+        ]
+        terms = [term for term in self.layout.terminals if term.boundary_type in [0, 3, 4, 7, 8]]
         locations = []
         for term in terms:
             if term.type == "PointTerminal" and term.net.name in reference_list:
@@ -1882,7 +1889,9 @@ class EdbGrpc(EdbInit):
                     if pin.net_name in reference_list:
                         pins_to_preserve.append(pin.id)
         if check_terminals:
-            terms = [term for term in self.layout.terminals if term.boundary_type.value in [0, 3, 4, 7, 8]]
+            terms = [
+                term for term in self.layout.terminals if term.boundary_type in get_terminal_supported_boundary_types()
+            ]
             for term in terms:
                 if isinstance(term, PadstackInstanceTerminal):
                     if term.net.name in reference_list:
@@ -1891,7 +1900,7 @@ class EdbGrpc(EdbInit):
         for i in self.nets.nets.values():
             name = i.name
             if name not in all_list and name not in nets_to_preserve:
-                i.net_object.delete()
+                i.delete()
         reference_pinsts = []
         reference_prims = []
         reference_paths = []
@@ -1903,11 +1912,10 @@ class EdbGrpc(EdbInit):
             elif net_name in reference_list and id not in pins_to_preserve:
                 reference_pinsts.append(i)
         for i in self.modeler.primitives:
-            if i:
-                net_name = i.net_name
-                if net_name not in all_list:
+            if not i.is_null and not i.net.is_null:
+                if i.net.name not in all_list:
                     i.delete()
-                elif net_name in reference_list and not i.is_void:
+                elif i.net.name in reference_list and not i.is_void:
                     if keep_lines_as_path and isinstance(i, Path):
                         reference_paths.append(i)
                     else:
@@ -1950,14 +1958,14 @@ class EdbGrpc(EdbInit):
             if extent_type in ["Conforming", GrpcExtentType.CONFORMING, 1]:
                 if extent_defeature > 0:
                     _poly = _poly.defeature(extent_defeature)
-                _poly1 = GrpcPolygonData(arcs=_poly.GetArcData(), closed=True)
+                _poly1 = GrpcPolygonData(arcs=_poly.arc_data, closed=True)
                 if inlcude_voids_in_extents:
-                    for hole in list(_poly.Holes):
+                    for hole in list(_poly.holes):
                         if hole.area() >= 0.05 * _poly1.area():
                             _poly1.holes.append(hole)
-                    self.logger.info(f"Number of voids included:{len(list(_poly1.Holes))}")
+                    self.logger.info(f"Number of voids included:{len(list(_poly1.holes))}")
                 _poly = _poly1
-        if not _poly or _poly.is_null:
+        if not _poly.points:
             self._logger.error("Failed to create Extent.")
             return []
         self.logger.info_timer("Expanded Net Polygon Creation")
@@ -1970,7 +1978,7 @@ class EdbGrpc(EdbInit):
         def intersect(poly1, poly2):
             if not isinstance(poly2, list):
                 poly2 = [poly2]
-            return poly1.Intersect(poly1, poly2)
+            return poly1.intersect(poly1, poly2)
 
         def subtract(poly, voids):
             return poly.subtract(poly, voids)
@@ -2006,17 +2014,17 @@ class EdbGrpc(EdbInit):
                 return
             list_poly = intersect(_poly, pdata)
             if list_poly:
-                net = prim_1.net_name
+                net = prim_1.net.name
                 voids = prim_1.voids
                 for p in list_poly:
-                    if p.is_null:
+                    if not p.points:
                         continue
                     list_void = []
                     if voids:
                         voids_data = [void.polygon_data for void in voids]
                         list_prims = subtract(p, voids_data)
                         for prim in list_prims:
-                            if not prim.is_null:
+                            if prim.points:
                                 poly_to_create.append([prim, prim_1.layer.name, net, list_void])
                     else:
                         poly_to_create.append([p, prim_1.layer.name, net, list_void])
@@ -2057,7 +2065,7 @@ class EdbGrpc(EdbInit):
         i = 0
         for _, val in self.components.instances.items():
             if val.numpins == 0:
-                val.edbcomponent.delete()
+                val.delete()
                 i += 1
                 i += 1
         self.logger.info(f"Deleted {i} additional components")

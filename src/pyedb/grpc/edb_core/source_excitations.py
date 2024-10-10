@@ -402,9 +402,7 @@ class SourceExcitation:
         for p in cmp_pins:  # pragma no cover
             p.is_layout_pin = True
         if len(cmp_pins) == 0:
-            self._logger.info(
-                "No pins found on component {}, searching padstack instances instead".format(component.GetName())
-            )
+            self._logger.info(f"No pins found on component {component.name}, searching padstack instances instead")
             return False
         pin_layers = cmp_pins[0].padstack_def.data.layer_names
         if port_type == "coax_port":
@@ -828,10 +826,13 @@ class SourceExcitation:
         """
         if not terminal_name:
             terminal_name = generate_unique_name("Terminal_")
-        if isinstance(point_on_edge, (list, tuple)):
+        if isinstance(point_on_edge, tuple):
             point_on_edge = GrpcPointData(point_on_edge)
-        else:
-            prim = [i for i in self._pedb.modeler.primitives if i.id == prim_id][0]
+        prim = [i for i in self._pedb.modeler.primitives if i.id == prim_id]
+        if not prim:
+            self._pedb.logger.error(f"No primitive found for ID {prim_id}")
+            return False
+        prim = prim[0]
         pos_edge = [GrpcPrimitiveEdge.create(prim, point_on_edge)]
         return GrpcEdgeTerminal.create(
             layout=prim.layout, name=terminal_name, edges=pos_edge, net=prim.net, is_ref=is_ref
@@ -1649,10 +1650,8 @@ class SourceExcitation:
 
         if isinstance(prim_id, Primitive):
             prim_id = prim_id.id
-
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
         pos_edge_term.impedance = GrpcValue(impedance)
-
         wave_port = WavePort(self._pedb, pos_edge_term)
         wave_port.horizontal_extent_factor = horizontal_extent_factor
         wave_port.vertical_extent_factor = vertical_extent_factor
@@ -1713,7 +1712,7 @@ class SourceExcitation:
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
         pos_edge_term.impedance = GrpcValue(impedance)
         if reference_layer:
-            reference_layer = self._pedb.stackup.signal_layers[reference_layer]._edb_layer
+            reference_layer = self._pedb.stackup.signal_layers[reference_layer]
             pos_edge_term.reference_layer = reference_layer
 
         prop = ", ".join(
@@ -1731,8 +1730,8 @@ class SourceExcitation:
             "HFSS",
             prop,
         )
-        if pos_edge_term:
-            return port_name, self._pedb.layout.excitations[port_name]
+        if not pos_edge_term.is_null:
+            return pos_edge_term
         else:
             return False
 
@@ -2196,7 +2195,7 @@ class SourceExcitation:
             self._logger.error("No polygon provided for port {} creation".format(port_name))
             return False
         if reference_layer:
-            reference_layer = self._pedb.stackup.signal_layers[reference_layer]._edb_layer
+            reference_layer = self._pedb.stackup.signal_layers[reference_layer]
             if not reference_layer:
                 self._logger.error("Specified layer for port {} creation was not found".format(port_name))
         if not isinstance(terminal_point, list):

@@ -379,7 +379,7 @@ class Hfss(object):
             "`pyedb.grpc.core.excitations.create_voltage_source_on_net` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_voltage_source_on_net(
+        return self._pedb.source_excitation.create_voltage_source_on_net(
             positive_component_name,
             positive_net_name,
             negative_component_name,
@@ -716,7 +716,7 @@ class Hfss(object):
             "`pyedb.grpc.core.excitations.create_source_on_component` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.create_wave_port(
+        self._pedb.source_excitation.create_wave_port(
             prim_id,
             point_on_edge,
             port_name,
@@ -778,7 +778,7 @@ class Hfss(object):
             "`pyedb.grpc.core.excitations.create_edge_port_vertical` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_edge_port_vertical(
+        return self._pedb.source_excitation.create_edge_port_vertical(
             prim_id,
             point_on_edge,
             port_name,

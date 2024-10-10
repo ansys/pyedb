@@ -166,12 +166,22 @@ class Path(GrpcPath):
         center_line = self.center_line
         pos = center_line[-1] if position.lower() == "end" else center_line[0]
 
-        if port_type.lower() == "wave":
-            return self._pedb.hfss.create_wave_port(
-                self.id, pos, name, 50, horizontal_extent_factor, vertical_extent_factor, pec_launch_width
-            )
-        else:
-            return self._pedb.hfss.create_edge_port_vertical(self.id, pos, name, 50, reference_layer)
+        # if port_type.lower() == "wave":
+        #     return self._pedb.hfss.create_wave_port(
+        #         self.id, pos, name, 50, horizontal_extent_factor, vertical_extent_factor, pec_launch_width
+        #     )
+        # else:
+        return self._pedb.hfss.create_edge_port_vertical(
+            self.id,
+            pos,
+            name,
+            50,
+            reference_layer,
+            hfss_type=port_type,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+        )
 
     def create_via_fence(self, distance, gap, padstack_name, net_name="GND"):
         """Create via fences on both sides of the trace.
@@ -279,15 +289,19 @@ class Path(GrpcPath):
         for x, y in get_locations(rightline, gap) + get_locations(leftline, gap):
             self._pedb.padstacks.place([x, y], padstack_name, net_name=net_name)
 
+    @property
+    def center_line(self):
+        return self.get_center_line()
+
     def get_center_line(self):
         """Retrieve center line points list."""
-        return [[pt.x.value, pt.y.value] for pt in self.center_line.points]
+        return [[pt.x.value, pt.y.value] for pt in super().center_line.points]
 
     def set_center_line(self, value):
         if isinstance(value, list):
             points = [GrpcPointData(i) for i in value]
             polygon_data = GrpcPolygonData(points, False)
-            self.center_line = polygon_data
+            super(Path, self.__class__).polygon_data.__set__(self, polygon_data)
 
     @property
     def corner_style(self):
