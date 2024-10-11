@@ -763,10 +763,10 @@ class EdbNets(object):
             fig_size_x = size
             fig_size_y = board_size_y * fig_size_x / board_size_x
             size = (fig_size_x, fig_size_y)
-            
-        plot_title=title
+
+        plot_title = title
         if plot_title is None:
-            plot_title=self._pedb.active_cell.GetName()
+            plot_title = self._pedb.active_cell.GetName()
 
         return plot_matplotlib(
             plot_data=object_lists,
