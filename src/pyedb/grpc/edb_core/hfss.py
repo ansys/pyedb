@@ -933,15 +933,15 @@ class Hfss(object):
             return False
         layout_obj_instances = layout.layout_instance.query_layout_obj_instances()
         tuple_list = []
-        for lobj in layout_obj_instances.Items:
-            lobj_bbox = lobj.get_layout_instance_in_context().bbox(False)
+        for lobj in layout_obj_instances:
+            lobj_bbox = lobj.get_bbox()
             tuple_list.append(lobj_bbox)
         _bbox = GrpcPolygonData.bbox_of_polygons(tuple_list)
         layout_bbox = [
-            round(_bbox.Item1.x.value, digit_resolution),
-            round(_bbox.Item1.y.value, digit_resolution),
-            round(_bbox.Item2.x.value, digit_resolution),
-            round(_bbox.Item2.y.value, digit_resolution),
+            round(_bbox[0].x.value, digit_resolution),
+            round(_bbox[0].y.value, digit_resolution),
+            round(_bbox[1].x.value, digit_resolution),
+            round(_bbox[1].y.value, digit_resolution),
         ]
         return layout_bbox
 

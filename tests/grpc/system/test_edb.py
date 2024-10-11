@@ -502,12 +502,13 @@ class TestClass:
         assert gap_port.is_circuit_port
         edb.close()
 
-    def test_edb_statistics(self):
+    def test_edb_statistics(self, edb_examples):
         """Get statistics."""
-        example_project = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_110.aedb")
-        self.local_scratch.copyfolder(example_project, target_path)
-        edb = Edb(target_path, edbversion=desktop_version)
+        import time
+
+        start = time.time()
+        print("Export layout stat gRPC")
+        edb = edb_examples.get_si_verse()
         edb_stats = edb.get_statistics(compute_area=True)
         assert edb_stats
         assert edb_stats.num_layers
@@ -523,9 +524,11 @@ class TestClass:
         assert edb_stats.num_inductors
         assert edb_stats.num_capacitors
         assert edb_stats.num_resistors
-        assert edb_stats.occupying_ratio["1_Top"] == 0.3016820127679697
-        assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.9374673461236078
-        assert edb_stats.occupying_ratio["16_Bottom"] == 0.20492545496020312
+        assert edb_stats.occupying_ratio["1_Top"] == 0.30168200230804587
+        assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.9374673366306919
+        assert edb_stats.occupying_ratio["16_Bottom"] == 0.20492545425825437
+        end = time.time()
+        print(f" Export layout stat gRPC time: {end - start}")
         edb.close()
 
     def test_hfss_set_bounding_box_extent(self):

@@ -58,7 +58,7 @@ class Path(GrpcPath):
         float
             Path length in meters.
         """
-        center_line_arcs = self.center_line.arc_data
+        center_line_arcs = self._edb_object.center_line.arc_data
         path_length = 0.0
         for arc in center_line_arcs:
             path_length += arc.length

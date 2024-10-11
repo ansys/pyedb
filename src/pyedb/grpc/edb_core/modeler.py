@@ -1259,9 +1259,9 @@ class Modeler(object):
                     surface = 0.0
                     primitives = self.primitives_by_layer[layer]
                     for prim in primitives:
-                        if prim.type == "Path":
-                            surface += prim.length * prim.width
-                        if prim.type == "Polygon":
+                        if prim.primitive_type.name == "PATH":
+                            surface += Path(self._pedb, prim).length * prim.width.value
+                        if prim.primitive_type.name == "POLYGON":
                             surface += prim.polygon_data.area()
                             stat_model.occupying_surface[layer] = surface
                             stat_model.occupying_ratio[layer] = surface / outline_surface
