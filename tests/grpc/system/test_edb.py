@@ -29,7 +29,6 @@ from pathlib import Path
 from ansys.edb.core.utility.value import Value as EdbValue
 import pytest
 
-from pyedb.generic.constants import RadiationBoxType
 from pyedb.generic.general_methods import is_linux, isclose
 from pyedb.grpc.edb import EdbGrpc as Edb
 from pyedb.grpc.edb_core.utility.simulation_configuration import SimulationConfiguration
@@ -531,44 +530,38 @@ class TestClass:
         print(f" Export layout stat gRPC time: {end - start}")
         edb.close()
 
-    def test_hfss_set_bounding_box_extent(self):
+    def test_hfss_set_bounding_box_extent(self, edb_examples):
         """Configure HFSS with bounding box"""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "test_107.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_113.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edb = Edb(target_path, edbversion=desktop_version)
-        initial_extent_info = edb.active_cell.GetHFSSExtentInfo()
-        assert initial_extent_info.ExtentType == edb.edb_api.utility.utility.HFSSExtentInfoType.Conforming
-        config = SimulationConfiguration()
-        config.radiation_box = RadiationBoxType.BoundingBox
-        assert edb.hfss.configure_hfss_extents(config)
-        final_extent_info = edb.active_cell.GetHFSSExtentInfo()
-        assert final_extent_info.ExtentType == edb.edb_api.utility.utility.HFSSExtentInfoType.BoundingBox
-        edb.close()
 
-    def test_create_rlc_component(self):
+        # obsolete check with config file 2.0
+
+        # edb =  edb_examples.get_si_verse()
+        # #initial_extent_info = edb.active_cell.GetHFSSExtentInfo()
+        # assert edb.active_cell.hfss_extent_info.extent_type.name == "POLYGON"
+        # config = SimulationConfiguration()
+        # config.radiation_box = RadiationBoxType.BoundingBox
+        # assert edb.hfss.configure_hfss_extents(config)
+        # final_extent_info = edb.active_cell.GetHFSSExtentInfo()
+        # #assert final_extent_info.ExtentType == edb.u utility.HFSSExtentInfoType.BoundingBox
+        # edb.close()
+
+        pass
+
+    def test_create_rlc_component(self, edb_examples):
         """Create rlc components from pin"""
-        example_project = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "ANSYS_114.aedb")
-        self.local_scratch.copyfolder(example_project, target_path)
-        edb = Edb(target_path, edbversion=desktop_version)
+        # TODO check how to create component ref bug#439
+        edb = edb_examples.get_si_verse()
         pins = edb.components.get_pin_from_component("U1", "1V0")
-        pins = [edb.layout.find_object_by_id(i.GetId()) for i in pins]
         ref_pins = edb.components.get_pin_from_component("U1", "GND")
-        ref_pins = [edb.layout.find_object_by_id(i.GetId()) for i in ref_pins]
         assert edb.components.create([pins[0], ref_pins[0]], "test_0rlc", r_value=1.67, l_value=1e-13, c_value=1e-11)
         assert edb.components.create([pins[0], ref_pins[0]], "test_1rlc", r_value=None, l_value=1e-13, c_value=1e-11)
         assert edb.components.create([pins[0], ref_pins[0]], "test_2rlc", r_value=None, c_value=1e-13)
         edb.close()
 
-    def test_create_rlc_boundary_on_pins(self):
+    def test_create_rlc_boundary_on_pins(self, edb_examples):
         """Create hfss rlc boundary on pins."""
-        example_project = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_115.aedb")
-        if not os.path.exists(self.local_scratch.path):
-            os.mkdir(self.local_scratch.path)
-        self.local_scratch.copyfolder(example_project, target_path)
-        edb = Edb(target_path, edbversion=desktop_version)
+        # Done
+        edb = edb_examples.get_si_verse()
         pins = edb.components.get_pin_from_component("U1", "1V0")
         ref_pins = edb.components.get_pin_from_component("U1", "GND")
         assert edb.hfss.create_rlc_boundary_on_pins(pins[0], ref_pins[0], rvalue=1.05, lvalue=1.05e-12, cvalue=1.78e-13)

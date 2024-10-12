@@ -38,8 +38,8 @@ class ComponentDef(GrpcComponentDef):
         Edb ComponentDef Object
     """
 
-    def __init__(self, pedb):
-        super().__init__(self.msg)
+    def __init__(self, pedb, edb_object):
+        super().__init__(edb_object.msg)
         self._pedb = pedb
 
     @property
@@ -158,11 +158,3 @@ class ComponentDef(GrpcComponentDef):
         n_port_comp_model = GrpcNPortComponentModel.create(name)
         n_port_comp_model.reference_file = fpath
         self.add_component_model(n_port_comp_model)
-
-    def create(self, name):
-        from ansys.edb.core.layout.cell import Cell as GrpcCell
-        from ansys.edb.core.layout.cell import CellType as GrpcCellType
-
-        footprint_cell = GrpcCell.create(self._pedb.active_db, GrpcCellType.FOOTPRINT_CELL, name)
-        edb_object = GrpcComponentDef.create(self._pedb.active_db, name, footprint_cell)
-        return ComponentDef(self._pedb, edb_object)

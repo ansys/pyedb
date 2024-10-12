@@ -1191,4 +1191,6 @@ class Hfss(object):
             "`pyedb.grpc.core.create_rlc_boundary_on_pins.get_ports_number` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.create_rlc_boundary_on_pins(positive_pin, negative_pin, rvalue, lvalue, cvalue)
+        return self._pedb.source_excitation.create_rlc_boundary_on_pins(
+            positive_pin, negative_pin, rvalue, lvalue, cvalue
+        )

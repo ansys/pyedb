@@ -546,10 +546,12 @@ class SourceExcitation:
         from_layer, _ = pin.get_layer_range()
         if term_name is None:
             term_name = "{}.{}.{}".format(pin.component.name, pin.name, pin.net.name)
-        for term in list(self._pedb.active_layout.Terminals):
+        for term in list(self._pedb.active_layout.terminals):
             if term.name == term_name:
                 return term
-        return PadstackInstanceTerminal.create(pin.layout, pin.net, term_name, pin, from_layer)
+        return PadstackInstanceTerminal.create(
+            layout=self._pedb.layout, name=term_name, padstack_instance=pin, layer=from_layer, net=pin.net, is_ref=False
+        )
 
     def add_port_on_rlc_component(self, component=None, circuit_ports=True, pec_boundary=False):
         """Deactivate RLC component and replace it with a circuit port.
@@ -2112,8 +2114,8 @@ class SourceExcitation:
         """
 
         if positive_pin and negative_pin:
-            positive_pin_term = self._pedb.components._create_terminal(positive_pin)
-            negative_pin_term = self._pedb.components._create_terminal(negative_pin)
+            positive_pin_term = positive_pin.get_terminal(create_new_terminal=True)
+            negative_pin_term = negative_pin.get_terminal(create_new_terminal=True)
             positive_pin_term.boundary_type = GrpcBoundaryType.RLC
             negative_pin_term.boundary_type = GrpcBoundaryType.RLC
             rlc = GrpcRlc()
@@ -2129,7 +2131,7 @@ class SourceExcitation:
             positive_pin_term.name = term_name
             negative_pin_term.name = f"{term_name}_ref"
             positive_pin_term.reference_terminal = negative_pin_term
-            return True
+            return positive_pin_term
         return False
 
     def create_edge_port_on_polygon(

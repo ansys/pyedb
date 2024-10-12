@@ -75,7 +75,7 @@ class Component(GrpcComponentGroup):
     """
 
     def __init__(self, pedb, edb_object):
-        super(GrpcComponentGroup, self).__init__(edb_object.msg)
+        super().__init__(edb_object.msg)
         self._pedb = pedb
         self._layout_instance = None
         self._comp_instance = None

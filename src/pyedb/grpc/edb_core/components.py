@@ -1098,10 +1098,14 @@ class Components(object):
         else:
             return False
 
-    def _getComponentDefinition(self, name, pins):
+    def _get_component_definition(self, name, pins):
         component_definition = ComponentDef.find(self._db, name)
         if component_definition.is_null:
-            component_definition = ComponentDef.create(self._db, name)
+            from ansys.edb.core.layout.cell import Cell as GrpcCell
+            from ansys.edb.core.layout.cell import CellType as GrpcCellType
+
+            foot_print_cell = GrpcCell.create(self._pedb.active_db, GrpcCellType.FOOTPRINT_CELL, name)
+            component_definition = ComponentDef.create(self._db, name, fp=foot_print_cell)
             if component_definition.is_null:
                 self._logger.error(f"Failed to create component definition {name}")
                 return False
@@ -1167,22 +1171,26 @@ class Components(object):
         >>> edbapp.components.create(pins, "A1New")
 
         """
+        from ansys.edb.core.hierarchy.component_group import (
+            ComponentGroup as GrpcComponentGroup,
+        )
+
         if not component_name:
             component_name = generate_unique_name("Comp_")
         if component_part_name:
-            compdef = self._getComponentDefinition(component_part_name, pins)
+            compdef = self._get_component_definition(component_part_name, pins)
         else:
-            compdef = self._getComponentDefinition(component_name, pins)
+            compdef = self._get_component_definition(component_name, pins)
         if not compdef:
             return False
-        new_cmp = Component.create(self._active_layout, component_name, compdef.name)
+        new_cmp = GrpcComponentGroup.create_with_component(self._active_layout, compdef.name, component_name)
         hosting_component_location = pins[0].component.transform
         for pin in pins:
             pin.is_layout_pin = True
             new_cmp.add_member(pin)
         new_cmp.component_type = GrpcComponentType.OTHER
         if not placement_layer:
-            new_cmp_layer_name = pins[0].padstack_def.data.get_layer_names()[0]
+            new_cmp_layer_name = pins[0].padstack_def.data.layer_names[0]
         else:
             new_cmp_layer_name = placement_layer
         if new_cmp_layer_name in self._pedb.stackup.signal_layer:
