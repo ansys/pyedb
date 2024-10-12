@@ -32,7 +32,6 @@ from tests.legacy.system.test_edb_components import (
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
-
 U8_IC_DIE_PROPERTIES = {
     "components": [
         {
@@ -1025,3 +1024,46 @@ class TestClass:
         _assert_initial_ic_die_properties(component)
         db.configuration.load(U8_IC_DIE_PROPERTIES, apply_file=True)
         _assert_final_ic_die_properties(component)
+
+    def test_18_modeler(self, edb_examples):
+        data = {
+            "modeler": {
+                "traces": [
+                    {"name": "trace_1", "layer": "TOP", "width": "0.1mm", "path": [[0, 0], [0, "10mm"]],
+                     "net_name": "SIG",
+                     "start_cap_style": "flat", "end_cap_style": "flat", "corner_style": "round"}
+                ],
+                "padstack_definitions": [
+                    {
+                        "name": "via_1",
+                        "hole_plating_thickness": "0.025mm",
+                        "material": "copper",
+                        "pad_parameters": {
+                            'regular_pad': [
+                                {'layer_name': 'TOP', 'shape': 'circle', 'offset_x': '0.1mm', 'offset_y': '0',
+                                 'rotation': '0',
+                                 'diameter': '0.5mm'}
+                            ],
+                            'anti_pad': [
+                                {'layer_name': 'TOP', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0',
+                                 'rotation': '0',
+                                 'diameter': '1mm'}
+                            ],
+                        },
+                        "hole_range": "through",
+                        "hole_parameters": {
+                            "shape": "circle",
+                            "diameter": "0.25mm",
+                        }
+                    }
+                ],
+                "padstack_instances": [
+
+                ]
+            }
+        }
+        edbapp = edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp.configuration.load(data, apply_file=True)
+        #edbapp.nets.plot()
+        edbapp.close()

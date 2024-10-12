@@ -161,6 +161,9 @@ class Configuration:
         # Configure operations
         self.cfg_data.operations.apply()
 
+        # Modeler
+        self.cfg_data.modeler.apply()
+
         return True
 
     def _load_stackup(self):

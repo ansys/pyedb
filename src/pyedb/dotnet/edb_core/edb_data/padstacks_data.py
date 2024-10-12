@@ -1323,16 +1323,38 @@ class EDBPadstack(object):
         return True
 
     def set_properties(self, **kwargs):
-        for k in ["hole_plating_thickness", "material", "hole_range", "pad_parameters", "hole_parameters"]:
-            value = kwargs.get(k, False)
-            if value:
-                setattr(self, k, value)
+        self.properties = kwargs
 
     def get_properties(self):
-        kwargs = {}
-        for k in ["hole_plating_thickness", "material", "hole_range", "pad_parameters", "hole_parameters"]:
-            kwargs[k] = getattr(self, k)
-        return kwargs
+        return self.properties
+
+    @property
+    def properties(self):
+        data = dict()
+        data["hole_parameters"] = self.hole_parameters
+        data["hole_plating_thickness"] = self.hole_plating_thickness
+        data["material"] = self.material
+        data["hole_range"] = self.hole_range
+        data["pad_parameters"] = self.pad_parameters
+        return data
+
+    @properties.setter
+    def properties(self, params):
+        hole_parameters = params.get("hole_parameters")
+        if hole_parameters:
+            self.hole_parameters = hole_parameters
+        hole_plating_thickness = params.get("hole_plating_thickness")
+        if hole_plating_thickness:
+            self.hole_plating_thickness = hole_plating_thickness
+        material = params.get("material")
+        if material:
+            self.material = material
+        hole_range = params.get("hole_range")
+        if hole_range:
+            self.hole_range = hole_range
+        pad_parameters = params.get("pad_parameters")
+        if pad_parameters:
+            self.pad_parameters = pad_parameters
 
 
 class EDBPadstackInstance(Primitive):
