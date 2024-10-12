@@ -330,14 +330,14 @@ class EDBPadProperties(object):
         return self._pedbpadstack._ppadstack.int_to_geometry_type(val)
 
     def _update_pad_parameters_parameters(
-        self,
-        layer_name=None,
-        pad_type=None,
-        geom_type=None,
-        params=None,
-        offsetx=None,
-        offsety=None,
-        rotation=None,
+            self,
+            layer_name=None,
+            pad_type=None,
+            geom_type=None,
+            params=None,
+            offsetx=None,
+            offsety=None,
+            rotation=None,
     ):
         """Update padstack parameters.
 
@@ -1954,8 +1954,8 @@ class EDBPadstackInstance(Primitive):
             if hole_diam:  # pragma no cover
                 hole_finished_size = padstack_def.hole_finished_size
                 via_length = (
-                    self._pedb.stackup.signal_layers[start_layer].upper_elevation
-                    - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
+                        self._pedb.stackup.signal_layers[start_layer].upper_elevation
+                        - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
                 )
                 volume = (math.pi * (hole_diam / 2) ** 2 - math.pi * (hole_finished_size / 2) ** 2) * via_length
         return volume
@@ -1996,6 +1996,10 @@ class EDBPadstackInstance(Primitive):
         _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
         name = str(name).strip("'")
         return name
+
+    @aedt_name.setter
+    def aedt_name(self, value):
+        self._edb_object.SetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, value)
 
     def parametrize_position(self, prefix=None):
         """Parametrize the instance position.
@@ -2350,13 +2354,22 @@ class EDBPadstackInstance(Primitive):
     @property
     def properties(self):
         data = {}
+        data["id"] = self.id
         data["name"] = self.aedt_name
+        net = self._edb_object.GetNet()
+        data["net_name"] = net.GetName() if not net.IsNull() else ""
         data["definition"] = self.padstack_definition
-        data["backdrill_parameters"] = self.backdrill_parameters
+        data["is_pin"] = self.is_pin
+
+        _, start_layer, stop_layer = self._edb_object.GetLayerRange()
+        data["layer_range"] = [start_layer.GetName(), stop_layer.GetName()]
+
         _, position, rotation = self._edb_object.GetPositionAndRotationValue()
         data["position"] = [position.X.ToString(), position.Y.ToString()]
-        data["rotation"] = [rotation.ToString()]
-        data["id"] = self.id
+        data["rotation"] = rotation.ToString()
+
+        data["backdrill_parameters"] = self.backdrill_parameters
+
         hole_override_enabled, hole_override_diam = self._edb_object.GetHoleOverrideValue()
         data["hole_override_enabled"] = hole_override_enabled
         data["hole_override_diameter"] = hole_override_diam.ToString()
@@ -2367,11 +2380,49 @@ class EDBPadstackInstance(Primitive):
         name = params.get("name", None)
         if name:
             self.aedt_name = name
+
+        net_name = params.get("net_name", None)
+        if net_name:
+            net = self._pedb.layout.find_net_by_name(net_name)
+            if net:
+                net = net._edb_object
+            else:
+                net = self._pedb._edb.Cell.Net.Create(self._pedb.active_layout, net_name)
+            self._edb_object.SetNet(net)
+        is_pin = params.get("is_pin", None)
+        if is_pin is not None:
+            self.is_pin = is_pin
+
+        layer_range = params.get("layer_range", None)
+        if layer_range:
+            start_layer = self._pedb.stackup[layer_range[0]]._edb_object
+            stop_layer = self._pedb.stackup[layer_range[1]]._edb_object
+            self._edb_object.SetLayerRange(start_layer, stop_layer)
+
+        position = params.get("position", None)
+        if position:
+            point_data = self._pedb._edb.Geometry.PointData(
+                self._pedb.edb_value(position[0]),
+                self._pedb.edb_value(position[1]))
+            self._edb_object.SetPositionAndRotation(
+                point_data,
+                self._pedb.edb_value(self.properties["rotation"])
+            )
+        rotation = params.get("rotation", None)
+        if rotation is not None:
+            _, point_data, _ = self._edb_object.GetPositionAndRotationValue()
+            self._edb_object.SetPositionAndRotation(
+                point_data,
+                self._pedb.edb_value(rotation)
+            )
+
         backdrill_parameters = params.get("backdrill_parameters", None)
         if backdrill_parameters:
             self.backdrill_parameters = backdrill_parameters
+
         h_o_enabled = params.get("hole_override_enabled", None)
         h_o_enabled = h_o_enabled if h_o_enabled else self.properties["hole_override_enabled"]
+
         h_o_diameter = params.get("hole_override_diameter")
         h_o_diameter = h_o_diameter if h_o_diameter else self.properties["hole_override_diameter"]
         self._edb_object.SetHoleOverride(h_o_enabled, self._pedb.edb_value(h_o_diameter))

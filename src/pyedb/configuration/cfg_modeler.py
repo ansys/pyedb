@@ -45,6 +45,7 @@ class CfgModeler:
         self._pedb = pedb
         self.traces = [CfgTrace(**i) for i in data.get("traces", [])]
         self.padstack_defs = data.get("padstack_definitions", [])
+        self.padstack_instances = data.get("padstack_instances", [])
         self.planes = data.get("planes", [])
 
     def apply(self):
@@ -53,6 +54,7 @@ class CfgModeler:
                 self._pedb.modeler.create_trace(
                     path_list=t.path,
                     layer_name=t.layer,
+                    net_name=t.net_name,
                     width=t.width,
                     start_cap_style=t.start_cap_style,
                     end_cap_style=t.end_cap_style,
@@ -66,3 +68,11 @@ class CfgModeler:
                 pdef.SetData(pdata)
                 pdef = EDBPadstack(pdef, self._pedb.padstacks)
                 pdef.properties = p
+
+        if self.padstack_instances:
+            for p in self.padstack_instances:
+                p_inst = self._pedb.padstacks.place(
+                    position=p["position"],
+                    definition_name=p["definition"],
+                )
+                p_inst.properties = p

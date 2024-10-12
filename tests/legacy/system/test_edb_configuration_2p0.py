@@ -1037,17 +1037,23 @@ class TestClass:
                 ],
                 "padstack_definitions": [
                     {
-                        "name": "via_1",
+                        "name": "via",
                         "hole_plating_thickness": "0.025mm",
                         "material": "copper",
                         "pad_parameters": {
                             'regular_pad': [
-                                {'layer_name': 'TOP', 'shape': 'circle', 'offset_x': '0.1mm', 'offset_y': '0',
+                                {'layer_name': 'TOP', 'shape': 'circle', 'offset_x': '0mm', 'offset_y': '0',
+                                 'rotation': '0',
+                                 'diameter': '0.5mm'},
+                                {'layer_name': 'BOT', 'shape': 'circle', 'offset_x': '0mm', 'offset_y': '0',
                                  'rotation': '0',
                                  'diameter': '0.5mm'}
                             ],
                             'anti_pad': [
                                 {'layer_name': 'TOP', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0',
+                                 'rotation': '0',
+                                 'diameter': '1mm'},
+                                {'layer_name': 'BOT', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0',
                                  'rotation': '0',
                                  'diameter': '1mm'}
                             ],
@@ -1060,12 +1066,16 @@ class TestClass:
                     }
                 ],
                 "padstack_instances": [
-
-                ]
+                    {"name": "via_1",
+                     "definition": "via",
+                     "layer_range": ["TOP", "BOT"],
+                     "position": [0, 0],
+                     "net_name": "SIG"
+                     }
+                ],
             }
         }
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.configuration.load(data, apply_file=True)
-        #edbapp.nets.plot()
         edbapp.close()
