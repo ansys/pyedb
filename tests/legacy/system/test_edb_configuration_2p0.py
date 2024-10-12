@@ -568,6 +568,8 @@ class TestClass:
                                 "stub_length": "0.2mm",
                             },
                         },
+                        "hole_override_enabled": True,
+                        "hole_override_diameter": "0.5mm",
                     }
                 ],
             }

@@ -2357,4 +2357,21 @@ class EDBPadstackInstance(Primitive):
         data["position"] = [position.X.ToString(), position.Y.ToString()]
         data["rotation"] = [rotation.ToString()]
         data["id"] = self.id
+        hole_override_enabled, hole_override_diam = self._edb_object.GetHoleOverrideValue()
+        data["hole_override_enabled"] = hole_override_enabled
+        data["hole_override_diameter"] = hole_override_diam.ToString()
         return data
+
+    @properties.setter
+    def properties(self, params):
+        name = params.get("name", None)
+        if name:
+            self.aedt_name = name
+        backdrill_parameters = params.get("backdrill_parameters", None)
+        if backdrill_parameters:
+            self.backdrill_parameters = backdrill_parameters
+        h_o_enabled = params.get("hole_override_enabled", None)
+        h_o_enabled = h_o_enabled if h_o_enabled else self.properties["hole_override_enabled"]
+        h_o_diameter = params.get("hole_override_diameter")
+        h_o_diameter = h_o_diameter if h_o_diameter else self.properties["hole_override_diameter"]
+        self._edb_object.SetHoleOverride(h_o_enabled, self._pedb.edb_value(h_o_diameter))
