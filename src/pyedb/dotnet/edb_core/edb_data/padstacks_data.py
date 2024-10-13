@@ -2324,3 +2324,15 @@ class EDBPadstackInstance(Primitive):
             max_limit=max_limit,
             component_only=component_only,
         )
+
+    @property
+    def properties(self):
+        data = {}
+        data["name"] = self.aedt_name
+        data["definition"] = self.padstack_definition
+        data["backdrill_parameters"] = self.backdrill_parameters
+        _, position, rotation = self._edb_object.GetPositionAndRotationValue()
+        data["position"] = [position.X.ToString(), position.Y.ToString()]
+        data["rotation"] = [rotation.ToString()]
+        data["id"] = self.id
+        return data
