@@ -25,36 +25,36 @@ from ansys.edb.core.simulation_setup.hfss_simulation_setup import (
     HfssSimulationSetup as GrpcHfssSimulationSetup,
 )
 
-from pyedb.grpc.edb_core.simulation_setup.hfss_simulation_settings import (
-    HFSSSimulationSettings,
-)
-from pyedb.grpc.edb_core.simulation_setup.mesh_operation import MeshOperation
-from pyedb.grpc.edb_core.simulation_setup.sweep_data import SweepData
+# from pyedb.grpc.edb_core.simulation_setup.hfss_simulation_settings import (
+#     HFSSSimulationSettings,
+# )
+# from pyedb.grpc.edb_core.simulation_setup.mesh_operation import MeshOperation
+# from pyedb.grpc.edb_core.simulation_setup.sweep_data import SweepData
 
 
 class HfssSimulationSetup(GrpcHfssSimulationSetup):
     """Manages EDB methods for HFSS simulation setup."""
 
     def __init__(self, pedb, edb_object, name: str = None):
-        super().__init__(edb_object)
+        super().__init__(edb_object.msg)
         self._pedb = pedb
         self._name = name
 
-    @property
-    def settings(self):
-        return HFSSSimulationSettings(self._pedb, self.settings)
-
-    @property
-    def sweep_data(self):
-        return SweepData(self._pedb, self.sweep_data)
-
-    @property
-    def mesh_operations(self):
-        """Mesh operations settings Class.
-
-        Returns
-        -------
-        List of :class:`dotnet.edb_core.edb_data.hfss_simulation_setup_data.MeshOperation`
-
-        """
-        return MeshOperation(self._pedb, self.mesh_operations)
+    # @property
+    # def settings(self):
+    #     return HFSSSimulationSettings(self._pedb, self.settings)
+    #
+    # @property
+    # def sweep_data(self):
+    #     return SweepData(self._pedb, super().sweep_data)
+    #
+    # @property
+    # def mesh_operations(self):
+    #     """Mesh operations settings Class.
+    #
+    #     Returns
+    #     -------
+    #     List of :class:`dotnet.edb_core.edb_data.hfss_simulation_setup_data.MeshOperation`
+    #
+    #     """
+    #     return MeshOperation(self._pedb, super().mesh_operations)

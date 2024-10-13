@@ -483,7 +483,7 @@ class Modeler(object):
 
     def _create_path(
         self,
-        path_list,
+        points,
         layer_name,
         width=1,
         net_name="",
@@ -496,7 +496,7 @@ class Modeler(object):
 
         Parameters
         ----------
-        path_list : :class:`dotnet.edb_core.layout.Shape`
+        points : :class:`dotnet.edb_core.layout.Shape`
             List of points.
         layer_name : str
             Name of the layer on which to create the path.
@@ -540,7 +540,7 @@ class Modeler(object):
             corner_style = GrpcPathCornerType.SHARP
         else:
             corner_style = GrpcPathCornerType.MITER
-        polygon_data = GrpcPolygonData(points=[GrpcPointData(i) for i in path_list.points])
+        polygon_data = GrpcPolygonData(points=[GrpcPointData(i) for i in points])
         path = Path.create(
             layout=self._active_layout,
             layer=layer_name,
@@ -554,7 +554,7 @@ class Modeler(object):
         if path.is_null:  # pragma: no cover
             self._logger.error("Null path created")
             return False
-        return path
+        return Path(self._pedb, path)
 
     def create_trace(
         self,
@@ -595,9 +595,8 @@ class Modeler(object):
         -------
         :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
         """
-        path = self.Shape("Polygon", points=path_list)
         primitive = self._create_path(
-            path,
+            points=path_list,
             layer_name=layer_name,
             net_name=net_name,
             width=width,

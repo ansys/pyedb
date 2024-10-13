@@ -13,6 +13,7 @@ import sys
 import tempfile
 import time
 import traceback
+import warnings
 from zipfile import ZipFile as zpf
 
 from ansys.edb.core.database import Database as GrpcDatabase
@@ -24,7 +25,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
 from pyedb.configuration.configuration import Configuration
-from pyedb.generic.constants import AEDT_UNITS, SolverType
+from pyedb.generic.constants import AEDT_UNITS
 from pyedb.generic.general_methods import (
     generate_unique_name,
     get_string_version,
@@ -72,8 +73,6 @@ from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
 )
 from pyedb.grpc.edb_core.terminal.terminal import Terminal
 from pyedb.grpc.edb_core.utility.constants import get_terminal_supported_boundary_types
-from pyedb.grpc.edb_core.utility.simulation_configuration import SimulationConfiguration
-from pyedb.grpc.edb_core.utility.sources import SourceType
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.ipc2581.ipc2581 import Ipc2581
 from pyedb.modeler.geometry_operators import GeometryOperators
@@ -2745,188 +2744,188 @@ class EdbGrpc(EdbInit):
         layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
         return [[layout_bbox[0].x.value, layout_bbox[0].y.value], [layout_bbox[1].x.value, layout_bbox[1].y.value]]
 
-    def build_simulation_project(self, simulation_setup):
-        # type: (SimulationConfiguration) -> bool
-        """Build a ready-to-solve simulation project.
-
-        Parameters
-        ----------
-        simulation_setup : :class:`pyedb.dotnet.edb_core.edb_data.simulation_configuration.SimulationConfiguration`.
-            SimulationConfiguration object that can be instantiated or directly loaded with a
-            configuration file.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, False when ``Failed``.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> from pyedb.dotnet.edb_core.edb_data.simulation_configuration import SimulationConfiguration
-        >>> config_file = path_configuration_file
-        >>> source_file = path_to_edb_folder
-        >>> edb = Edb(source_file)
-        >>> sim_setup = SimulationConfiguration(config_file)
-        >>> edb.build_simulation_project(sim_setup)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
-        """
-        self.logger.info("Building simulation project.")
-        from ansys.edb.core.layout.cell import CellType as GrpcCellType
-
-        legacy_name = self.edbpath
-        if simulation_setup.output_aedb:
-            self.save_edb_as(simulation_setup.output_aedb)
-        if simulation_setup.signal_layer_etching_instances:
-            for layer in simulation_setup.signal_layer_etching_instances:
-                if layer in self.stackup.layers:
-                    idx = simulation_setup.signal_layer_etching_instances.index(layer)
-                    if len(simulation_setup.etching_factor_instances) > idx:
-                        self.stackup[layer].etch_factor = float(simulation_setup.etching_factor_instances[idx])
-
-        if not simulation_setup.signal_nets and simulation_setup.components:
-            nets_to_include = []
-            pnets = list(self.nets.power.keys())[:]
-            for el in simulation_setup.components:
-                nets_to_include.append([i for i in self.components[el].nets if i not in pnets])
-            simulation_setup.signal_nets = [
-                i
-                for i in list(set.intersection(*map(set, nets_to_include)))
-                if i not in simulation_setup.power_nets and i != ""
-            ]
-        self.nets.classify_nets(simulation_setup.power_nets, simulation_setup.signal_nets)
-        if not simulation_setup.power_nets or not simulation_setup.signal_nets:
-            self.logger.info("Disabling cutout as no signals or power nets have been defined.")
-            simulation_setup.do_cutout_subdesign = False
-        if simulation_setup.do_cutout_subdesign:
-            self.logger.info(f"Cutting out using method: {simulation_setup.cutout_subdesign_type}")
-            if simulation_setup.use_default_cutout:
-                old_cell_name = self.active_cell.name
-                if self.cutout(
-                    signal_list=simulation_setup.signal_nets,
-                    reference_list=simulation_setup.power_nets,
-                    expansion_size=simulation_setup.cutout_subdesign_expansion,
-                    use_round_corner=simulation_setup.cutout_subdesign_round_corner,
-                    extent_type=simulation_setup.cutout_subdesign_type,
-                    use_pyaedt_cutout=False,
-                    use_pyaedt_extent_computing=False,
-                ):
-                    self.logger.info("Cutout processed.")
-                    old_cell = self.active_cell.find_by_name(
-                        self.db,
-                        GrpcCellType.CIRCUIT_CELL,
-                        old_cell_name,
-                    )
-                    if old_cell:
-                        old_cell.delete()
-                else:  # pragma: no cover
-                    self.logger.error("Cutout failed.")
-            else:
-                self.logger.info(f"Cutting out using method: {simulation_setup.cutout_subdesign_type}")
-                self.cutout(
-                    signal_list=simulation_setup.signal_nets,
-                    reference_list=simulation_setup.power_nets,
-                    expansion_size=simulation_setup.cutout_subdesign_expansion,
-                    use_round_corner=simulation_setup.cutout_subdesign_round_corner,
-                    extent_type=simulation_setup.cutout_subdesign_type,
-                    use_pyaedt_cutout=True,
-                    use_pyaedt_extent_computing=True,
-                    remove_single_pin_components=True,
-                )
-                self.logger.info("Cutout processed.")
-        else:
-            if simulation_setup.include_only_selected_nets:
-                included_nets = simulation_setup.signal_nets + simulation_setup.power_nets
-                nets_to_remove = [net.name for net in list(self.nets.nets.values()) if not net.name in included_nets]
-                self.nets.delete(nets_to_remove)
-        self.logger.info("Deleting existing ports.")
-        map(lambda port: port.Delete(), self.layout.terminals)
-        map(lambda pg: pg.delete(), self.layout.pin_groups)
-        if simulation_setup.solver_type == SolverType.Hfss3dLayout:
-            if simulation_setup.generate_excitations:
-                self.logger.info("Creating HFSS ports for signal nets.")
-                source_type = SourceType.CoaxPort
-                if not simulation_setup.generate_solder_balls:
-                    source_type = SourceType.CircPort
-                for cmp in simulation_setup.components:
-                    if isinstance(cmp, str):  # keep legacy component
-                        self.components.create_port_on_component(
-                            cmp,
-                            net_list=simulation_setup.signal_nets,
-                            do_pingroup=False,
-                            reference_net=simulation_setup.power_nets,
-                            port_type=source_type,
-                        )
-                    elif isinstance(cmp, dict):
-                        if "refdes" in cmp:
-                            if not "solder_balls_height" in cmp:  # pragma no cover
-                                cmp["solder_balls_height"] = None
-                            if not "solder_balls_size" in cmp:  # pragma no cover
-                                cmp["solder_balls_size"] = None
-                                cmp["solder_balls_mid_size"] = None
-                            if not "solder_balls_mid_size" in cmp:  # pragma no cover
-                                cmp["solder_balls_mid_size"] = None
-                            self.components.create_port_on_component(
-                                cmp["refdes"],
-                                net_list=simulation_setup.signal_nets,
-                                do_pingroup=False,
-                                reference_net=simulation_setup.power_nets,
-                                port_type=source_type,
-                                solder_balls_height=cmp["solder_balls_height"],
-                                solder_balls_size=cmp["solder_balls_size"],
-                                solder_balls_mid_size=cmp["solder_balls_mid_size"],
-                            )
-                if simulation_setup.generate_solder_balls and not self.hfss.set_coax_port_attributes(
-                    simulation_setup
-                ):  # pragma: no cover
-                    self.logger.error("Failed to configure coaxial port attributes.")
-                self.logger.info(f"Number of ports: {self.hfss.get_ports_number()}")
-                self.logger.info("Configure HFSS extents.")
-                if simulation_setup.generate_solder_balls and simulation_setup.trim_reference_size:  # pragma: no cover
-                    self.logger.info(
-                        f"Trimming the reference plane for coaxial ports: {bool(simulation_setup.trim_reference_size)}"
-                    )
-                    self.hfss.trim_component_reference_size(simulation_setup)  # pragma: no cover
-            self.hfss.configure_hfss_extents(simulation_setup)
-            if not self.hfss.configure_hfss_analysis_setup(simulation_setup):
-                self.logger.error("Failed to configure HFSS simulation setup.")
-        if simulation_setup.solver_type == SolverType.SiwaveSYZ:
-            if simulation_setup.generate_excitations:
-                for cmp in simulation_setup.components:
-                    if isinstance(cmp, str):  # keep legacy
-                        self.components.create_port_on_component(
-                            cmp,
-                            net_list=simulation_setup.signal_nets,
-                            do_pingroup=simulation_setup.do_pingroup,
-                            reference_net=simulation_setup.power_nets,
-                            port_type=SourceType.CircPort,
-                        )
-                    elif isinstance(cmp, dict):
-                        if "refdes" in cmp:  # pragma no cover
-                            self.components.create_port_on_component(
-                                cmp["refdes"],
-                                net_list=simulation_setup.signal_nets,
-                                do_pingroup=simulation_setup.do_pingroup,
-                                reference_net=simulation_setup.power_nets,
-                                port_type=SourceType.CircPort,
-                            )
-            self.logger.info("Configuring analysis setup.")
-            if not self.siwave.configure_siw_analysis_setup(simulation_setup):  # pragma: no cover
-                self.logger.error("Failed to configure Siwave simulation setup.")
-        if simulation_setup.solver_type == SolverType.SiwaveDC:
-            if simulation_setup.generate_excitations:
-                self.components.create_source_on_component(simulation_setup.sources)
-            if not self.siwave.configure_siw_analysis_setup(simulation_setup):  # pragma: no cover
-                self.logger.error("Failed to configure Siwave simulation setup.")
-        self.padstacks.check_and_fix_via_plating()
-        self.save_edb()
-        if not simulation_setup.open_edb_after_build and simulation_setup.output_aedb:
-            self.close_edb()
-            self.edbpath = legacy_name
-            self.open_edb()
-        return True
+    # def build_simulation_project(self, simulation_setup):
+    #     # type: (SimulationConfiguration) -> bool
+    #     """Build a ready-to-solve simulation project.
+    #
+    #     Parameters
+    #     ----------
+    #     simulation_setup : :class:`pyedb.dotnet.edb_core.edb_data.simulation_configuration.SimulationConfiguration`.
+    #         SimulationConfiguration object that can be instantiated or directly loaded with a
+    #         configuration file.
+    #
+    #     Returns
+    #     -------
+    #     bool
+    #         ``True`` when successful, False when ``Failed``.
+    #
+    #     Examples
+    #     --------
+    #
+    #     >>> from pyedb import Edb
+    #     >>> from pyedb.dotnet.edb_core.edb_data.simulation_configuration import SimulationConfiguration
+    #     >>> config_file = path_configuration_file
+    #     >>> source_file = path_to_edb_folder
+    #     >>> edb = Edb(source_file)
+    #     >>> sim_setup = SimulationConfiguration(config_file)
+    #     >>> edb.build_simulation_project(sim_setup)
+    #     >>> edb.save_edb()
+    #     >>> edb.close_edb()
+    #     """
+    #     self.logger.info("Building simulation project.")
+    #     from ansys.edb.core.layout.cell import CellType as GrpcCellType
+    #
+    #     legacy_name = self.edbpath
+    #     if simulation_setup.output_aedb:
+    #         self.save_edb_as(simulation_setup.output_aedb)
+    #     if simulation_setup.signal_layer_etching_instances:
+    #         for layer in simulation_setup.signal_layer_etching_instances:
+    #             if layer in self.stackup.layers:
+    #                 idx = simulation_setup.signal_layer_etching_instances.index(layer)
+    #                 if len(simulation_setup.etching_factor_instances) > idx:
+    #                     self.stackup[layer].etch_factor = float(simulation_setup.etching_factor_instances[idx])
+    #
+    #     if not simulation_setup.signal_nets and simulation_setup.components:
+    #         nets_to_include = []
+    #         pnets = list(self.nets.power.keys())[:]
+    #         for el in simulation_setup.components:
+    #             nets_to_include.append([i for i in self.components[el].nets if i not in pnets])
+    #         simulation_setup.signal_nets = [
+    #             i
+    #             for i in list(set.intersection(*map(set, nets_to_include)))
+    #             if i not in simulation_setup.power_nets and i != ""
+    #         ]
+    #     self.nets.classify_nets(simulation_setup.power_nets, simulation_setup.signal_nets)
+    #     if not simulation_setup.power_nets or not simulation_setup.signal_nets:
+    #         self.logger.info("Disabling cutout as no signals or power nets have been defined.")
+    #         simulation_setup.do_cutout_subdesign = False
+    #     if simulation_setup.do_cutout_subdesign:
+    #         self.logger.info(f"Cutting out using method: {simulation_setup.cutout_subdesign_type}")
+    #         if simulation_setup.use_default_cutout:
+    #             old_cell_name = self.active_cell.name
+    #             if self.cutout(
+    #                 signal_list=simulation_setup.signal_nets,
+    #                 reference_list=simulation_setup.power_nets,
+    #                 expansion_size=simulation_setup.cutout_subdesign_expansion,
+    #                 use_round_corner=simulation_setup.cutout_subdesign_round_corner,
+    #                 extent_type=simulation_setup.cutout_subdesign_type,
+    #                 use_pyaedt_cutout=False,
+    #                 use_pyaedt_extent_computing=False,
+    #             ):
+    #                 self.logger.info("Cutout processed.")
+    #                 old_cell = self.active_cell.find_by_name(
+    #                     self.db,
+    #                     GrpcCellType.CIRCUIT_CELL,
+    #                     old_cell_name,
+    #                 )
+    #                 if old_cell:
+    #                     old_cell.delete()
+    #             else:  # pragma: no cover
+    #                 self.logger.error("Cutout failed.")
+    #         else:
+    #             self.logger.info(f"Cutting out using method: {simulation_setup.cutout_subdesign_type}")
+    #             self.cutout(
+    #                 signal_list=simulation_setup.signal_nets,
+    #                 reference_list=simulation_setup.power_nets,
+    #                 expansion_size=simulation_setup.cutout_subdesign_expansion,
+    #                 use_round_corner=simulation_setup.cutout_subdesign_round_corner,
+    #                 extent_type=simulation_setup.cutout_subdesign_type,
+    #                 use_pyaedt_cutout=True,
+    #                 use_pyaedt_extent_computing=True,
+    #                 remove_single_pin_components=True,
+    #             )
+    #             self.logger.info("Cutout processed.")
+    #     else:
+    #         if simulation_setup.include_only_selected_nets:
+    #             included_nets = simulation_setup.signal_nets + simulation_setup.power_nets
+    #             nets_to_remove = [net.name for net in list(self.nets.nets.values()) if not net.name in included_nets]
+    #             self.nets.delete(nets_to_remove)
+    #     self.logger.info("Deleting existing ports.")
+    #     map(lambda port: port.Delete(), self.layout.terminals)
+    #     map(lambda pg: pg.delete(), self.layout.pin_groups)
+    #     if simulation_setup.solver_type == SolverType.Hfss3dLayout:
+    #         if simulation_setup.generate_excitations:
+    #             self.logger.info("Creating HFSS ports for signal nets.")
+    #             source_type = SourceType.CoaxPort
+    #             if not simulation_setup.generate_solder_balls:
+    #                 source_type = SourceType.CircPort
+    #             for cmp in simulation_setup.components:
+    #                 if isinstance(cmp, str):  # keep legacy component
+    #                     self.components.create_port_on_component(
+    #                         cmp,
+    #                         net_list=simulation_setup.signal_nets,
+    #                         do_pingroup=False,
+    #                         reference_net=simulation_setup.power_nets,
+    #                         port_type=source_type,
+    #                     )
+    #                 elif isinstance(cmp, dict):
+    #                     if "refdes" in cmp:
+    #                         if not "solder_balls_height" in cmp:  # pragma no cover
+    #                             cmp["solder_balls_height"] = None
+    #                         if not "solder_balls_size" in cmp:  # pragma no cover
+    #                             cmp["solder_balls_size"] = None
+    #                             cmp["solder_balls_mid_size"] = None
+    #                         if not "solder_balls_mid_size" in cmp:  # pragma no cover
+    #                             cmp["solder_balls_mid_size"] = None
+    #                         self.components.create_port_on_component(
+    #                             cmp["refdes"],
+    #                             net_list=simulation_setup.signal_nets,
+    #                             do_pingroup=False,
+    #                             reference_net=simulation_setup.power_nets,
+    #                             port_type=source_type,
+    #                             solder_balls_height=cmp["solder_balls_height"],
+    #                             solder_balls_size=cmp["solder_balls_size"],
+    #                             solder_balls_mid_size=cmp["solder_balls_mid_size"],
+    #                         )
+    #             if simulation_setup.generate_solder_balls and not self.hfss.set_coax_port_attributes(
+    #                 simulation_setup
+    #             ):  # pragma: no cover
+    #                 self.logger.error("Failed to configure coaxial port attributes.")
+    #             self.logger.info(f"Number of ports: {self.hfss.get_ports_number()}")
+    #             self.logger.info("Configure HFSS extents.")
+    #             if simulation_setup.generate_solder_balls and simulation_setup.trim_reference_size:
+    #                 self.logger.info(
+    #                    f"Trimming the reference plane for coaxial ports: {bool(simulation_setup.trim_reference_size)}"
+    #                 )
+    #                 self.hfss.trim_component_reference_size(simulation_setup)  # pragma: no cover
+    #         self.hfss.configure_hfss_extents(simulation_setup)
+    #         if not self.hfss.configure_hfss_analysis_setup(simulation_setup):
+    #             self.logger.error("Failed to configure HFSS simulation setup.")
+    #     if simulation_setup.solver_type == SolverType.SiwaveSYZ:
+    #         if simulation_setup.generate_excitations:
+    #             for cmp in simulation_setup.components:
+    #                 if isinstance(cmp, str):  # keep legacy
+    #                     self.components.create_port_on_component(
+    #                         cmp,
+    #                         net_list=simulation_setup.signal_nets,
+    #                         do_pingroup=simulation_setup.do_pingroup,
+    #                         reference_net=simulation_setup.power_nets,
+    #                         port_type=SourceType.CircPort,
+    #                     )
+    #                 elif isinstance(cmp, dict):
+    #                     if "refdes" in cmp:  # pragma no cover
+    #                         self.components.create_port_on_component(
+    #                             cmp["refdes"],
+    #                             net_list=simulation_setup.signal_nets,
+    #                             do_pingroup=simulation_setup.do_pingroup,
+    #                             reference_net=simulation_setup.power_nets,
+    #                             port_type=SourceType.CircPort,
+    #                         )
+    #         self.logger.info("Configuring analysis setup.")
+    #         if not self.siwave.configure_siw_analysis_setup(simulation_setup):  # pragma: no cover
+    #             self.logger.error("Failed to configure Siwave simulation setup.")
+    #     if simulation_setup.solver_type == SolverType.SiwaveDC:
+    #         if simulation_setup.generate_excitations:
+    #             self.components.create_source_on_component(simulation_setup.sources)
+    #         if not self.siwave.configure_siw_analysis_setup(simulation_setup):  # pragma: no cover
+    #             self.logger.error("Failed to configure Siwave simulation setup.")
+    #     self.padstacks.check_and_fix_via_plating()
+    #     self.save_edb()
+    #     if not simulation_setup.open_edb_after_build and simulation_setup.output_aedb:
+    #         self.close_edb()
+    #         self.edbpath = legacy_name
+    #         self.open_edb()
+    #     return True
 
     def get_statistics(self, compute_area=False):
         """Get the EDBStatistics object.
@@ -3024,20 +3023,20 @@ class EdbGrpc(EdbInit):
         # If the intersections are non-zero, the terminal references are connected.
         return True if len(iDintersection) > 0 else False
 
-    def new_simulation_configuration(self, filename=None):
-        # type: (str) -> SimulationConfiguration
-        """New SimulationConfiguration Object.
-
-        Parameters
-        ----------
-        filename : str, optional
-            Input config file.
-
-        Returns
-        -------
-        :class:`legacy.edb_core.edb_data.simulation_configuration.SimulationConfiguration`
-        """
-        return SimulationConfiguration(filename, self)
+    # def new_simulation_configuration(self, filename=None):
+    #     # type: (str) -> SimulationConfiguration
+    #     """New SimulationConfiguration Object.
+    #
+    #     Parameters
+    #     ----------
+    #     filename : str, optional
+    #         Input config file.
+    #
+    #     Returns
+    #     -------
+    #     :class:`legacy.edb_core.edb_data.simulation_configuration.SimulationConfiguration`
+    #     """
+    #     return SimulationConfiguration(filename, self)
 
     @property
     def setups(self):
@@ -3096,8 +3095,11 @@ class EdbGrpc(EdbInit):
         """
         return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSimulationSetup)}
 
-    def create_hfss_setup(self, name=None):
+    def create_hfss_setup(self, name=None, start_frequency="0GHz", stop_frequency="20GHz", step_frequency="10MHz"):
         """Create an HFSS simulation setup from a template.
+
+        . deprecated:: pyedb 0.30.0
+        Use :func:`pyedb.grpc.core.hfss.add_setup` instead.
 
         Parameters
         ----------
@@ -3108,21 +3110,12 @@ class EdbGrpc(EdbInit):
         -------
         :class:`legacy.edb_core.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`
 
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb()
-        >>> setup1 = edbapp.create_hfss_setup("setup1")
-        >>> setup1.hfss_port_settings.max_delta_z0 = 0.5
         """
-        if name in self.setups:
-            self.logger.info("setup already exists")
-            return False
-        elif not name:
-            name = generate_unique_name("setup")
-        setup = HfssSimulationSetup.create(cell=self.active_cell, name=name)
-        setup.settings.general.single_frequency_adaptive_solution = GrpcValue("1GΗz")
-        return setup
+        warnings.warn(
+            "`create_hfss_setup` is deprecated and is now located here " "`pyedb.grpc.core.hfss.add_setup` instead.",
+            DeprecationWarning,
+        )
+        return self._hfss.add_setup(self, name, start_frequency, stop_frequency, step_frequency)
 
     def create_raptorx_setup(self, name=None):
         """Create an RaptorX simulation setup from a template.

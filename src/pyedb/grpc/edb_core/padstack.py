@@ -625,31 +625,38 @@ class Padstacks(object):
         if self.definitions:
             all_succeed = True
             for padstack in list(self.definitions.values()):
-                cloned_padstack_data = GrpcPadstackDefData(padstack.data)
-                layers_name = cloned_padstack_data.get_layer_names()
+                cloned_padstack_data = GrpcPadstackDefData(padstack.data.msg)
+                layers_name = cloned_padstack_data.layer_names
                 for layer in layers_name:
-                    geom_type, points, offset_x, offset_y, rotation = self.get_pad_parameters(padstack, layer, 1)
-                    if geom_type == GrpcPadGeometryType.PADGEOMTYPE_CIRCLE.name:  # pragma no cover
-                        cloned_padstack_data.set_pad_parameters(
-                            layer=layer,
-                            pad_type=GrpcPadType.ANTI_PAD,
-                            offset_x=GrpcValue(offset_x),
-                            offset_y=GrpcValue(offset_y),
-                            rotation=GrpcValue(rotation),
-                            type_geom=GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
-                            sizes=[GrpcValue(value)],
+                    try:
+                        geom_type, points, offset_x, offset_y, rotation = cloned_padstack_data.get_pad_parameters(
+                            layer, GrpcPadType.ANTI_PAD
                         )
-                        self._logger.info(
-                            "Pad-stack definition {}, anti-pad on layer {}, has been set to {}".format(
-                                padstack.edb_padstack.GetName(), layer, str(value)
+                        if geom_type == GrpcPadGeometryType.PADGEOMTYPE_CIRCLE.name:
+                            cloned_padstack_data.set_pad_parameters(
+                                layer=layer,
+                                pad_type=GrpcPadType.ANTI_PAD,
+                                offset_x=GrpcValue(offset_x),
+                                offset_y=GrpcValue(offset_y),
+                                rotation=GrpcValue(rotation),
+                                type_geom=GrpcPadGeometryType.PADGEOMTYPE_CIRCLE,
+                                sizes=[GrpcValue(value)],
                             )
+                            self._logger.info(
+                                "Pad-stack definition {}, anti-pad on layer {}, has been set to {}".format(
+                                    padstack.edb_padstack.GetName(), layer, str(value)
+                                )
+                            )
+                        else:  # pragma no cover
+                            self._logger.error(
+                                f"Failed to reassign anti-pad value {value} on Pads-stack definition {padstack.name},"
+                                f" layer{layer}. This feature only support circular shape anti-pads."
+                            )
+                            all_succeed = False
+                    except:
+                        self._pedb.logger.info(
+                            f"No antipad defined for padstack definition {padstack.name}-layer{layer}"
                         )
-                    else:  # pragma no cover
-                        self._logger.error(
-                            f"Failed to reassign anti-pad value {value} on Pads-stack definition {padstack.name},"
-                            f" layer{layer}. This feature only support circular shape anti-pads."
-                        )
-                        all_succeed = False
                 padstack.data = cloned_padstack_data
             return all_succeed
 

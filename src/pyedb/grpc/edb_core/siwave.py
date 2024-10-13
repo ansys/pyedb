@@ -553,7 +553,6 @@ class Siwave(object):
         self,
         accuracy_level=1,
         distribution="linear",
-        sweep_type="interpolating",
         start_freq=1,
         stop_freq=1e9,
         step_freq=1e6,

@@ -2086,7 +2086,7 @@ class SourceExcitation:
            Number of ports.
 
         """
-        terms = [term for term in self._pedb._layout.terminals]
+        terms = [term for term in self._pedb.layout.terminals]
         return len([i for i in terms if not i.is_reference_terminal])
 
     def create_rlc_boundary_on_pins(self, positive_pin=None, negative_pin=None, rvalue=0.0, lvalue=0.0, cvalue=0.0):

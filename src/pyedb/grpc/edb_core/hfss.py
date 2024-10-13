@@ -28,6 +28,10 @@ import warnings
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.grpc.edb_core.simulation_setup.hfss_simulation_setup import (
+    HfssSimulationSetup,
+)
 from pyedb.grpc.edb_core.utility.hfss_extent_info import HfssExtentInfo
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -1194,3 +1198,78 @@ class Hfss(object):
         return self._pedb.source_excitation.create_rlc_boundary_on_pins(
             positive_pin, negative_pin, rvalue, lvalue, cvalue
         )
+
+    def add_setup(
+        self,
+        name=None,
+        distribution="linear",
+        start_freq=0,
+        stop_freq=20e9,
+        step_freq=1e6,
+        discrete_sweep=False,
+    ):
+        """Add a HFSS analysis to EDB.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name.
+        Sweep type. `"interpolating"` or `"discrete"`.
+        distribution : str, optional
+            Type of the sweep. The default is `"linear"`. Options are:
+            - `"linear"`
+            - `"linear_count"`
+            - `"decade_count"`
+            - `"octave_count"`
+            - `"exponential"`
+        start_freq : str, float, optional
+            Starting frequency. The default is ``0``.
+        stop_freq : str, float, optional
+            Stopping frequency. The default is ``20e9``.
+        step_freq : str, float, int, optional
+            Frequency step. The default is ``1e6``. or used for `"decade_count"`, "linear_count"`, "octave_count"`
+            distribution. Must be integer in that case.
+        discrete_sweep : bool, optional
+            Whether the sweep is discrete. The default is ``False``.
+
+        Returns
+        -------
+        :class:`HfssSimulationSetup`
+            Setup object class.
+        """
+        from ansys.edb.core.simulation_setup.hfss_simulation_setup import (
+            HfssSimulationSetup as GrpcHfssSimulationSetup,
+        )
+        from ansys.edb.core.simulation_setup.simulation_setup import (
+            SweepData as GrpcSweepData,
+        )
+
+        if not name:
+            name = generate_unique_name("HFSS_pyedb")
+        setup = GrpcHfssSimulationSetup.create(self._pedb.active_cell, name)
+        start_freq = self._pedb.number_with_units(start_freq, "Hz")
+        stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
+        if distribution.lower() == "linear":
+            distribution = "LIN"
+        elif distribution.lower() == "linear_count":
+            distribution = "LINC"
+        elif distribution.lower() == "exponential":
+            distribution = "ESTP"
+        elif distribution.lower() == "decade_count":
+            distribution = "DEC"
+        elif distribution.lower() == "octave_count":
+            distribution = "OCT"
+        else:
+            distribution = "LIN"
+        sweep_name = f"sweep_{len(setup.sweep_data) + 1}"
+        sweep_data = [
+            GrpcSweepData(
+                name=sweep_name, distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step_freq
+            )
+        ]
+        if discrete_sweep:
+            sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
+        for sweep in setup.sweep_data:
+            sweep_data.append(sweep)
+        setup.sweep_data = sweep_data
+        return HfssSimulationSetup(self._pedb, setup)
