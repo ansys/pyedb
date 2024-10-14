@@ -38,6 +38,19 @@ class CfgTrace:
         self.corner_style = kwargs.get("corner_style", "sharp")
 
 
+class CfgPlane:
+    def __init__(self, **kwargs):
+        self.name = kwargs.get("name", "")
+        self.layer = kwargs["layer"]
+        self.net_name = kwargs.get("net_name", "")
+        self.type = kwargs.get("type", "rectangle")
+        self.lower_left_point = kwargs["lower_left_point"]
+        self.upper_right_point = kwargs["upper_right_point"]
+        self.corner_radius = kwargs.get("corner_radius", 0)
+        self.rotation = kwargs.get("rotation", 0)
+        self.voids = kwargs.get("voids", [])
+
+
 class CfgModeler:
     """Manage configuration general settings."""
 
@@ -46,7 +59,7 @@ class CfgModeler:
         self.traces = [CfgTrace(**i) for i in data.get("traces", [])]
         self.padstack_defs = data.get("padstack_definitions", [])
         self.padstack_instances = data.get("padstack_instances", [])
-        self.planes = data.get("planes", [])
+        self.planes = [CfgPlane(**i) for i in data.get("planes", [])]
 
     def apply(self):
         if self.traces:
@@ -78,3 +91,20 @@ class CfgModeler:
                     definition_name=p["definition"],
                 )
                 p_inst.properties = p
+
+        if self.planes:
+            for p in self.planes:
+                if p.type == "rectangle":
+                    obj = self._pedb.modeler.create_rectangle(
+                        layer_name=p.layer,
+                        net_name=p.net_name,
+                        lower_left_point=p.lower_left_point,
+                        upper_right_point=p.upper_right_point,
+                        corner_radius=p.corner_radius,
+                        rotation=p.rotation,
+                    )
+                    obj.aedt_name = p.name
+                for v in p.voids:
+                    for i in self._pedb.layout.primitives:
+                        if i.aedt_name == v:
+                            self._pedb.modeler.add_void(obj, i)

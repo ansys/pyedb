@@ -1033,7 +1033,8 @@ class TestClass:
                 "traces": [
                     {"name": "trace_1", "layer": "TOP", "width": "0.1mm", "path": [[0, 0], [0, "10mm"]],
                      "net_name": "SIG",
-                     "start_cap_style": "flat", "end_cap_style": "flat", "corner_style": "round"}
+                     "start_cap_style": "flat", "end_cap_style": "flat", "corner_style": "round"},
+                    {"name": "trace_1_void", "layer": "TOP", "width": "0.3mm", "path": [[0, 0], [0, "10mm"]]}
                 ],
                 "padstack_definitions": [
                     {
@@ -1073,11 +1074,18 @@ class TestClass:
                      "net_name": "SIG"
                      }
                 ],
+                "planes": [
+                    {"name": "GND_TOP", "layer": "TOP", "net_name": "GND", "lower_left_point": [0, 0],
+                     "upper_right_point": [0, "12mm"], "voids": ["trace_1_void"]},
+                ]
             }
         }
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.configuration.load(data, apply_file=True)
+        assert [i for i in edbapp.layout.primitives if i.aedt_name == "trace_1"]
+        plane = [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP"][0]
+        assert plane.voids
         edbapp.close()
 
     def test_19_variables(self, edb_examples):
