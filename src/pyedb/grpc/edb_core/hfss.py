@@ -1246,6 +1246,9 @@ class Hfss(object):
 
         if not name:
             name = generate_unique_name("HFSS_pyedb")
+        if name in self._pedb.setups:
+            self._pedb.logger.error(f"HFSS setup {name} already defined.")
+            return False
         setup = GrpcHfssSimulationSetup.create(self._pedb.active_cell, name)
         start_freq = self._pedb.number_with_units(start_freq, "Hz")
         stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
@@ -1271,5 +1274,6 @@ class Hfss(object):
             sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
         for sweep in setup.sweep_data:
             sweep_data.append(sweep)
-        setup.sweep_data = sweep_data
+        # TODO check bug #441 status
+        # setup.sweep_data = sweep_data
         return HfssSimulationSetup(self._pedb, setup)

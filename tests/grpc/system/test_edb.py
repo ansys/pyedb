@@ -736,143 +736,100 @@ class TestClass:
         assert edb.padstacks.set_all_antipad_value(0.0)
         edb.close()
 
-    def test_hfss_simulation_setup(self):
+    def test_hfss_simulation_setup(self, edb_examples):
         """Create a setup from a template and evaluate its properties."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_0129.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
-        setup1 = edbapp.create_hfss_setup("setup1")
-        assert not edbapp.create_hfss_setup("setup1")
+        # Done
+
+        edbapp = edb_examples.get_si_verse()
+        setup1 = edbapp.hfss.add_setup("setup1")
+        assert not edbapp.hfss.add_setup("setup1")
         assert setup1.set_solution_single_frequency()
         assert setup1.set_solution_multi_frequencies()
         assert setup1.set_solution_broadband()
 
-        setup1.solver_slider_type = 0
-        assert setup1.solver_slider_type == 0
-
-        setup1.hfss_solver_settings.enhanced_low_freq_accuracy = True
-        setup1.hfss_solver_settings.order_basis = "first"
-        setup1.hfss_solver_settings.relative_residual = 0.0002
-        setup1.hfss_solver_settings.use_shell_elements = True
+        setup1.settings.options.enhanced_low_frequency_accuracy = True
+        assert setup1.settings.options.enhanced_low_frequency_accuracy
+        setup1.settings.options.order_basis = setup1.settings.options.order_basis.FIRST_ORDER
+        assert setup1.settings.options.order_basis.name == "FIRST_ORDER"
+        setup1.settings.options.relative_residual = 0.0002
+        assert setup1.settings.options.relative_residual == 0.0002
+        setup1.settings.options.use_shell_elements = True
+        assert setup1.settings.options.use_shell_elements
 
         setup1b = edbapp.setups["setup1"]
-        hfss_solver_settings = edbapp.setups["setup1"].hfss_solver_settings
-        assert hfss_solver_settings.order_basis == "first"
-        assert hfss_solver_settings.relative_residual == 0.0002
-        assert hfss_solver_settings.solver_type
-        assert hfss_solver_settings.enhanced_low_freq_accuracy
-        assert not hfss_solver_settings.use_shell_elements
+        assert not setup1.is_null
+        # setup1b.set_solution_multi_frequencies()
+        assert setup1b.add_adaptive_frequency_data("5GHz", "0.01")
+        # assert setup1b.sweep_data
+        setup1.settings.general.adaptive_solution_type = setup1.settings.general.adaptive_solution_type.BROADBAND
+        setup1.settings.options.max_refinement_per_pass = 20
+        assert setup1.settings.options.max_refinement_per_pass == 20
+        setup1.settings.options.min_passes = 2
+        assert setup1.settings.options.min_passes == 2
+        setup1.settings.general.save_fields = True
+        assert setup1.settings.general.save_fields
+        setup1.settings.general.save_rad_fields_only = True
+        assert setup1.settings.general.save_rad_fields_only
+        setup1.settings.general.use_parallel_refinement = True
+        assert setup1.settings.general.use_parallel_refinement
 
-        assert setup1.adaptive_settings.add_adaptive_frequency_data("5GHz", 8, "0.01")
-        assert setup1.adaptive_settings.adaptive_frequency_data_list
-        setup1.adaptive_settings.adapt_type = "kBroadband"
-        setup1.adaptive_settings.basic = False
-        setup1.adaptive_settings.max_refinement = 1000001
-        setup1.adaptive_settings.max_refine_per_pass = 20
-        setup1.adaptive_settings.min_passes = 2
-        setup1.adaptive_settings.save_fields = True
-        setup1.adaptive_settings.save_rad_field_only = True
-        setup1.adaptive_settings.use_convergence_matrix = True
-        setup1.adaptive_settings.use_max_refinement = True
+        assert edbapp.setups["setup1"].settings.general.adaptive_solution_type.name == "BROADBAND"
+        edbapp.setups["setup1"].settings.options.use_max_refinement = True
+        assert edbapp.setups["setup1"].settings.options.use_max_refinement
 
-        assert edbapp.setups["setup1"].adaptive_settings.adapt_type == "kBroadband"
-        assert not edbapp.setups["setup1"].adaptive_settings.basic
-        assert edbapp.setups["setup1"].adaptive_settings.max_refinement == 1000001
-        assert edbapp.setups["setup1"].adaptive_settings.max_refine_per_pass == 20
-        assert edbapp.setups["setup1"].adaptive_settings.min_passes == 2
-        assert edbapp.setups["setup1"].adaptive_settings.save_fields
-        assert edbapp.setups["setup1"].adaptive_settings.save_rad_field_only
-        # assert adaptive_settings.use_convergence_matrix
-        assert edbapp.setups["setup1"].adaptive_settings.use_max_refinement
+        edbapp.setups["setup1"].settings.advanced.defeature_absolute_length = "1um"
+        assert edbapp.setups["setup1"].settings.advanced.defeature_absolute_length == "1um"
+        edbapp.setups["setup1"].settings.advanced.defeature_ratio = 1e-5
+        assert edbapp.setups["setup1"].settings.advanced.defeature_ratio == 1e-5
+        edbapp.setups["setup1"].settings.advanced.healing_option = 0
+        assert edbapp.setups["setup1"].settings.advanced.healing_option == 0
+        edbapp.setups["setup1"].settings.advanced.remove_floating_geometry = True
+        assert edbapp.setups["setup1"].settings.advanced.remove_floating_geometry
+        edbapp.setups["setup1"].settings.advanced.small_void_area = 0.1
+        assert edbapp.setups["setup1"].settings.advanced.small_void_area == 0.1
+        edbapp.setups["setup1"].settings.advanced.union_polygons = False
+        assert not edbapp.setups["setup1"].settings.advanced.union_polygons
+        edbapp.setups["setup1"].settings.advanced.use_defeature = False
+        assert not edbapp.setups["setup1"].settings.advanced.use_defeature
+        edbapp.setups["setup1"].settings.advanced.use_defeature_absolute_length = True
+        assert edbapp.setups["setup1"].settings.advanced.use_defeature_absolute_length
 
-        setup1.defeature_settings.defeature_abs_length = "1um"
-        setup1.defeature_settings.defeature_ratio = 1e-5
-        setup1.defeature_settings.healing_option = 0
-        setup1.defeature_settings.model_type = 1
-        setup1.defeature_settings.remove_floating_geometry = True
-        setup1.defeature_settings.small_void_area = 0.1
-        setup1.defeature_settings.union_polygons = False
-        setup1.defeature_settings.use_defeature = False
-        setup1.defeature_settings.use_defeature_abs_length = True
+        edbapp.setups["setup1"].settings.advanced.num_via_density = 1.0
+        assert edbapp.setups["setup1"].settings.advanced.num_via_density == 1.0
+        # if float(edbapp.edbversion) >= 2024.1:
+        #     via_settings.via_mesh_plating = True
+        edbapp.setups["setup1"].settings.advanced.via_material = "pec"
+        assert edbapp.setups["setup1"].settings.advanced.via_material == "pec"
+        edbapp.setups["setup1"].settings.advanced.num_via_sides = 8
+        assert edbapp.setups["setup1"].settings.advanced.num_via_sides == 8
+        assert edbapp.setups["setup1"].settings.advanced.via_model_type.name == "MESH"
+        edbapp.setups["setup1"].settings.advanced_meshing.layer_snap_tol = "1e-6"
+        assert edbapp.setups["setup1"].settings.advanced_meshing.layer_snap_tol == "1e-6"
 
-        defeature_settings = edbapp.setups["setup1"].defeature_settings
-        assert defeature_settings.defeature_abs_length == "1um"
-        assert defeature_settings.defeature_ratio == 1e-5
-        # assert defeature_settings.healing_option == 0
-        # assert defeature_settings.model_type == 1
-        assert defeature_settings.remove_floating_geometry
-        assert defeature_settings.small_void_area == 0.1
-        assert not defeature_settings.union_polygons
-        assert not defeature_settings.use_defeature
-        assert defeature_settings.use_defeature_abs_length
+        edbapp.setups["setup1"].settings.advanced_meshing.arc_to_chord_error = "0.1"
+        assert edbapp.setups["setup1"].settings.advanced_meshing.arc_to_chord_error == "0.1"
+        edbapp.setups["setup1"].settings.advanced_meshing.max_num_arc_points = 12
+        assert edbapp.setups["setup1"].settings.advanced_meshing.max_num_arc_points == 12
 
-        via_settings = setup1.via_settings
-        via_settings.via_density = 1
-        if float(edbapp.edbversion) >= 2024.1:
-            via_settings.via_mesh_plating = True
-        via_settings.via_material = "pec"
-        via_settings.via_num_sides = 8
-        via_settings.via_style = "kNum25DViaStyle"
+        edbapp.setups["setup1"].settings.dcr.max_passes = 11
+        assert edbapp.setups["setup1"].settings.dcr.max_passes == 11
+        edbapp.setups["setup1"].settings.dcr.min_converged_passes = 2
+        assert edbapp.setups["setup1"].settings.dcr.min_converged_passes == 2
+        edbapp.setups["setup1"].settings.dcr.min_passes = 5
+        assert edbapp.setups["setup1"].settings.dcr.min_passes == 5
+        edbapp.setups["setup1"].settings.dcr.percent_error = 2.0
+        assert edbapp.setups["setup1"].settings.dcr.percent_error == 2.0
+        edbapp.setups["setup1"].settings.dcr.percent_refinement_per_pass = 20.0
+        assert edbapp.setups["setup1"].settings.dcr.percent_refinement_per_pass == 20.0
 
-        via_settings = edbapp.setups["setup1"].via_settings
-        assert via_settings.via_density == 1
-        if float(edbapp.edbversion) >= 2024.1:
-            assert via_settings.via_mesh_plating
-        assert via_settings.via_material == "pec"
-        assert via_settings.via_num_sides == 8
-        # assert via_settings.via_style == "kNum25DViaStyle"
-
-        advanced_mesh_settings = setup1.advanced_mesh_settings
-        advanced_mesh_settings.layer_snap_tol = "1e-6"
-        advanced_mesh_settings.mesh_display_attributes = "#0000001"
-        advanced_mesh_settings.replace_3d_triangles = False
-
-        advanced_mesh_settings = edbapp.setups["setup1"].advanced_mesh_settings
-        assert advanced_mesh_settings.layer_snap_tol == "1e-6"
-        assert advanced_mesh_settings.mesh_display_attributes == "#0000001"
-        assert not advanced_mesh_settings.replace_3d_triangles
-
-        curve_approx_settings = setup1.curve_approx_settings
-        curve_approx_settings.arc_angle = "15deg"
-        curve_approx_settings.arc_to_chord_error = "0.1"
-        curve_approx_settings.max_arc_points = 12
-        curve_approx_settings.start_azimuth = "1"
-        curve_approx_settings.use_arc_to_chord_error = True
-
-        curve_approx_settings = edbapp.setups["setup1"].curve_approx_settings
-        assert curve_approx_settings.arc_to_chord_error == "0.1"
-        assert curve_approx_settings.max_arc_points == 12
-        assert curve_approx_settings.start_azimuth == "1"
-        assert curve_approx_settings.use_arc_to_chord_error
-
-        dcr_settings = setup1.dcr_settings
-        dcr_settings.conduction_max_passes = 11
-        dcr_settings.conduction_min_converged_passes = 2
-        dcr_settings.conduction_min_passes = 2
-        dcr_settings.conduction_per_error = 2.0
-        dcr_settings.conduction_per_refine = 33.0
-
-        dcr_settings = edbapp.setups["setup1"].dcr_settings
-        assert dcr_settings.conduction_max_passes == 11
-        assert dcr_settings.conduction_min_converged_passes == 2
-        assert dcr_settings.conduction_min_passes == 2
-        assert dcr_settings.conduction_per_error == 2.0
-        assert dcr_settings.conduction_per_refine == 33.0
-
-        hfss_port_settings = setup1.hfss_port_settings
-        hfss_port_settings.max_delta_z0 = 0.5
-        assert hfss_port_settings.max_delta_z0 == 0.5
-        hfss_port_settings.max_triangles_wave_port = 1000
-        assert hfss_port_settings.max_triangles_wave_port == 1000
-        hfss_port_settings.min_triangles_wave_port = 200
-        assert hfss_port_settings.min_triangles_wave_port == 200
-        hfss_port_settings.set_triangles_wave_port = True
-        assert hfss_port_settings.set_triangles_wave_port
-
-        edbapp.setups["setup1"].name = "setup1a"
-        assert "setup1" not in edbapp.setups
-        assert "setup1a" in edbapp.setups
+        edbapp.setups["setup1"].settings.solver.max_delta_z0 = 0.5
+        assert edbapp.setups["setup1"].settings.solver.max_delta_z0 == 0.5
+        edbapp.setups["setup1"].settings.solver.max_triangles_for_wave_port = 1000
+        assert edbapp.setups["setup1"].settings.solver.max_triangles_for_wave_port == 1000
+        edbapp.setups["setup1"].settings.solver.min_triangles_for_wave_port = 500
+        assert edbapp.setups["setup1"].settings.solver.min_triangles_for_wave_port == 500
+        edbapp.setups["setup1"].settings.solver.set_triangles_for_wave_port = True
+        assert edbapp.setups["setup1"].settings.solver.set_triangles_for_wave_port
         edbapp.close()
 
     def test_hfss_simulation_setup_mesh_operation(self, edb_examples):

@@ -21,15 +21,15 @@
 # SOFTWARE.
 
 
+from ansys.edb.core.simulation_setup.adaptive_solutions import (
+    AdaptiveFrequency as GrpcAdaptiveFrequency,
+)
+from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
+    AdaptType as GrpcAdaptType,
+)
 from ansys.edb.core.simulation_setup.hfss_simulation_setup import (
     HfssSimulationSetup as GrpcHfssSimulationSetup,
 )
-
-# from pyedb.grpc.edb_core.simulation_setup.hfss_simulation_settings import (
-#     HFSSSimulationSettings,
-# )
-# from pyedb.grpc.edb_core.simulation_setup.mesh_operation import MeshOperation
-# from pyedb.grpc.edb_core.simulation_setup.sweep_data import SweepData
 
 
 class HfssSimulationSetup(GrpcHfssSimulationSetup):
@@ -40,21 +40,77 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
         self._pedb = pedb
         self._name = name
 
-    # @property
-    # def settings(self):
-    #     return HFSSSimulationSettings(self._pedb, self.settings)
-    #
-    # @property
-    # def sweep_data(self):
-    #     return SweepData(self._pedb, super().sweep_data)
-    #
-    # @property
-    # def mesh_operations(self):
-    #     """Mesh operations settings Class.
-    #
-    #     Returns
-    #     -------
-    #     List of :class:`dotnet.edb_core.edb_data.hfss_simulation_setup_data.MeshOperation`
-    #
-    #     """
-    #     return MeshOperation(self._pedb, super().mesh_operations)
+    def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02):
+        """Set HFSS single frequency solution.
+        Parameters
+        ----------
+        frequency : str, optional
+            Adaptive frequency.
+        max_num_passes : int, optional
+            Maxmímum passes number. Default value `10`.
+        max_delta_s : float, optional
+            Maximum delta S value. Default value `0.02`,
+
+        Returns
+        -------
+         bool
+        """
+        try:
+            self.settings.general.adaptive_solution_type = GrpcAdaptType.SINGLE
+            self.settings.general.single_frequency_adaptive_solution.adaptive_frequency = frequency
+            self.settings.general.single_frequency_adaptive_solution.max_passes = max_num_passes
+            self.settings.general.single_frequency_adaptive_solution.max_delta = str(max_delta_s)
+            return True
+        except:
+            return False
+
+    def set_solution_multi_frequencies(self, frequencies="5GHz", max_delta_s=0.02):
+        """Set HFSS setup multi frequencies adaptive.
+
+        Parameters
+        ----------
+        frequencies : str, List[str].
+            Adaptive frequencies.
+        max_delta_s : float, List[float].
+            Max delta S values.
+
+        Returns
+        -------
+            bool.
+        """
+        try:
+            self.settings.general.adaptive_solution_type = GrpcAdaptType.MULTI_FREQUENCIES
+            if not isinstance(frequencies, list):
+                frequencies = [frequencies]
+            if not isinstance(max_delta_s, list):
+                max_delta_s = [max_delta_s]
+                if len(max_delta_s) < len(frequencies):
+                    for _ in frequencies[len(max_delta_s) :]:
+                        max_delta_s.append(max_delta_s[-1])
+            adapt_frequencies = [
+                GrpcAdaptiveFrequency(frequencies[ind], str(max_delta_s[ind])) for ind in range(len(frequencies))
+            ]
+            self.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = adapt_frequencies
+            return True
+        except:
+            return False
+
+    def set_solution_broadband(self, low_frequency="1GHz", high_frequency="10GHz", max_delta_s=0.02, max_num_passes=10):
+        try:
+            self.settings.general.adaptive_solution_type = GrpcAdaptType.BROADBAND
+            self.settings.general.broadband_adaptive_solution.low_frequency = low_frequency
+            self.settings.general.broadband_adaptive_solution.high_frequency = high_frequency
+            self.settings.general.broadband_adaptive_solution.max_delta = str(max_delta_s)
+            self.settings.general.broadband_adaptive_solution.max_num_passes = max_num_passes
+            return True
+        except:
+            return False
+
+    def add_adaptive_frequency_data(self, frequency="5GHz", max_delta_s="0.01"):
+        try:
+            adapt_frequencies = self.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies
+            adapt_frequencies.append(GrpcAdaptiveFrequency(frequency, str(max_delta_s)))
+            self.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = adapt_frequencies
+            return True
+        except:
+            return False
