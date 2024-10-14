@@ -867,6 +867,7 @@ class TestClass:
         edbapp.close()
 
     def test_hfss_frequency_sweep(self, edb_examples):
+        # TODO check bug #441
         edbapp = edb_examples.get_si_verse()
         setup1 = edbapp.create_hfss_setup("setup1")
         assert edbapp.setups["setup1"].name == "setup1"
@@ -884,6 +885,7 @@ class TestClass:
         edbapp.close()
 
     def test_hfss_simulation_setup_b(self, edb_examples):
+        # TODO check bug #441
         edbapp = edb_examples.get_si_verse()
         setup1 = edbapp.create_hfss_setup("setup1")
         sweep1 = setup1.add_sweep(
@@ -906,10 +908,11 @@ class TestClass:
         )
         edbapp.close()
 
-    @pytest.mark.skipif(is_linux, reason="It seems that there is a strange behavior with use_dc_custom_settings.")
-    def test_siwave_dc_simulation_setup(self):
+    def test_siwave_dc_simulation_setup(self, edb_examples):
         """Create a dc simulation setup and evaluate its properties."""
-        setup1 = self.edbapp.create_siwave_dc_setup("DC1")
+        # TODO check with config file 2.0
+        edb = edb_examples.get_si_verse()
+        setup1 = edb.create_siwave_dc_setup("DC1")
         setup1.dc_settings.restore_default()
         setup1.dc_advanced_settings.restore_default()
 
@@ -926,21 +929,24 @@ class TestClass:
 
         for p in [0, 1, 2]:
             setup1.set_dc_slider(p)
-            settings = self.edbapp.setups["DC1"].get_configurations()
+            settings = edb.setups["DC1"].get_configurations()
             for k, v in setup1.dc_settings.dc_defaults.items():
                 assert settings["dc_settings"][k] == v[p]
 
             for k, v in setup1.dc_advanced_settings.dc_defaults.items():
                 assert settings["dc_advanced_settings"][k] == v[p]
+        edb.close()
 
-    def test_siwave_ac_simulation_setup(self):
+    def test_siwave_ac_simulation_setup(self, edb_examples):
         """Create an ac simulation setup and evaluate its properties."""
-        setup1 = self.edbapp.create_siwave_syz_setup("AC1")
+        # TODO check with config file 2.0
+        edb = edb_examples.get_si_verse()
+        setup1 = edb.create_siwave_syz_setup("AC1")
         assert setup1.name == "AC1"
         assert setup1.enabled
         setup1.advanced_settings.restore_default()
 
-        settings = self.edbapp.setups["AC1"].get_configurations()
+        settings = edb.setups["AC1"].get_configurations()
         for k, v in setup1.advanced_settings.defaults.items():
             if k in ["min_plane_area_to_mesh"]:
                 continue
@@ -948,13 +954,13 @@ class TestClass:
 
         for p in [0, 1, 2]:
             setup1.set_si_slider(p)
-            settings = self.edbapp.setups["AC1"].get_configurations()
+            settings = edb.setups["AC1"].get_configurations()
             for k, v in setup1.advanced_settings.si_defaults.items():
                 assert settings["advanced_settings"][k] == v[p]
 
         for p in [0, 1, 2]:
             setup1.pi_slider_position = p
-            settings = self.edbapp.setups["AC1"].get_configurations()
+            settings = edb.setups["AC1"].get_configurations()
             for k, v in setup1.advanced_settings.pi_defaults.items():
                 assert settings["advanced_settings"][k] == v[p]
 
@@ -1025,6 +1031,7 @@ class TestClass:
         assert sweep.save_fields
         assert sweep.save_rad_fields_only
         assert sweep.use_q3d_for_dc
+        edb.close()
 
     def test_siwave_create_port_between_pin_and_layer(self):
         """Create circuit port between pin and a reference layer."""
