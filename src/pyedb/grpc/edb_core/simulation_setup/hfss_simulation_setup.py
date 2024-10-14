@@ -31,6 +31,8 @@ from ansys.edb.core.simulation_setup.hfss_simulation_setup import (
     HfssSimulationSetup as GrpcHfssSimulationSetup,
 )
 
+from pyedb.generic.general_methods import generate_unique_name
+
 
 class HfssSimulationSetup(GrpcHfssSimulationSetup):
     """Manages EDB methods for HFSS simulation setup."""
@@ -114,3 +116,132 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
             return True
         except:
             return False
+
+    def add_length_mesh_operation(
+        self,
+        net_layer_list,
+        name=None,
+        max_elements=1000,
+        max_length="1mm",
+        restrict_elements=True,
+        restrict_length=True,
+        refine_inside=False,
+        mesh_region=None,
+    ):
+        """Add a mesh operation to the setup.
+
+        Parameters
+        ----------
+        net_layer_list : dict
+            Dictionary containing nets and layers on which enable Mesh operation. Example ``{"A0_N": ["TOP", "PWR"]}``.
+        name : str, optional
+            Mesh operation name.
+        max_elements : int, optional
+            Maximum number of elements. Default is ``1000``.
+        max_length : str, optional
+            Maximum length of elements. Default is ``1mm``.
+        restrict_elements : bool, optional
+            Whether to restrict number of elements. Default is ``True``.
+        restrict_length : bool, optional
+            Whether to restrict length of elements. Default is ``True``.
+        mesh_region : str, optional
+            Mesh region name.
+        refine_inside : bool, optional
+            Whether to refine inside or not.  Default is ``False``.
+
+        Returns
+        -------
+        :class:`dotnet.edb_core.edb_data.hfss_simulation_setup_data.LengthMeshOperation`
+        """
+        from ansys.edb.core.simulation_setup.mesh_operation import (
+            LengthMeshOperation as GrpcLengthMeshOperation,
+        )
+
+        if not name:
+            name = generate_unique_name("skin")
+        net_layer_op = []
+        if net_layer_list:
+            for net, layers in net_layer_list.items():
+                if not isinstance(layers, list):
+                    layers = [layers]
+                for layer in layers:
+                    net_layer_op.append((net, layer, True))
+
+        mop = GrpcLengthMeshOperation(
+            name=name,
+            net_layer_info=net_layer_op,
+            refine_inside=refine_inside,
+            mesh_region=mesh_region,
+            max_length=max_length,
+            restrict_max_length=restrict_length,
+            restrict_max_elements=restrict_elements,
+            max_elements=max_elements,
+        )
+        self.mesh_operations.append(mop)
+        return mop
+
+    def add_skin_depth_mesh_operation(
+        self,
+        net_layer_list,
+        name=None,
+        max_elements=1000,
+        skin_depth="1um",
+        restrict_elements=True,
+        surface_triangle_length="1mm",
+        number_of_layers=2,
+        refine_inside=False,
+        mesh_region=None,
+    ):
+        """Add a mesh operation to the setup.
+
+        Parameters
+        ----------
+        net_layer_list : dict
+            Dictionary containing nets and layers on which enable Mesh operation. Example ``{"A0_N": ["TOP", "PWR"]}``.
+        name : str, optional
+            Mesh operation name.
+        max_elements : int, optional
+            Maximum number of elements. Default is ``1000``.
+        skin_depth : str, optional
+            Skin Depth. Default is ``1um``.
+        restrict_elements : bool, optional
+            Whether to restrict number of elements. Default is ``True``.
+        surface_triangle_length : bool, optional
+            Surface Triangle length. Default is ``1mm``.
+        number_of_layers : int, str, optional
+            Number of layers. Default is ``2``.
+        mesh_region : str, optional
+            Mesh region name.
+        refine_inside : bool, optional
+            Whether to refine inside or not.  Default is ``False``.
+
+        Returns
+        -------
+        :class:`dotnet.edb_core.edb_data.hfss_simulation_setup_data.LengthMeshOperation`
+        """
+        if not name:
+            name = generate_unique_name("length")
+        net_layer_op = []
+        if net_layer_list:
+            for net, layers in net_layer_list.items():
+                if not isinstance(layers, list):
+                    layers = [layers]
+                for layer in layers:
+                    net_layer_op.append((net, layer, True))
+        from ansys.edb.core.simulation_setup.mesh_operation import (
+            SkinDepthMeshOperation as GrpcSkinDepthMeshOperation,
+        )
+
+        mesh_operation = GrpcSkinDepthMeshOperation(
+            name=name,
+            net_layer_info=net_layer_op,
+            refine_inside=refine_inside,
+            mesh_region=mesh_region,
+            skin_depth=skin_depth,
+            surface_triangle_length=surface_triangle_length,
+            restrict_max_elements=restrict_elements,
+            max_elements=max_elements,
+            num_layers=str(number_of_layers),
+        )
+        self.mesh_operations.append(mesh_operation)
+        return mesh_operation

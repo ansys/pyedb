@@ -3115,7 +3115,13 @@ class EdbGrpc(EdbInit):
             "`create_hfss_setup` is deprecated and is now located here " "`pyedb.grpc.core.hfss.add_setup` instead.",
             DeprecationWarning,
         )
-        return self._hfss.add_setup(self, name, start_frequency, stop_frequency, step_frequency)
+        return self._hfss.add_setup(
+            name=name,
+            distribution="linear",
+            start_freq=start_frequency,
+            stop_freq=stop_frequency,
+            step_freq=step_frequency,
+        )
 
     def create_raptorx_setup(self, name=None):
         """Create an RaptorX simulation setup from a template.
