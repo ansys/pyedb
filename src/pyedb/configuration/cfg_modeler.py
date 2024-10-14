@@ -33,8 +33,8 @@ class CfgTrace:
         self.path = kwargs["path"]
         self.width = kwargs["width"]
         self.net_name = kwargs.get("net_name", "")
-        self.start_cap_style = kwargs.get("start_cap_style", "flat")
-        self.end_cap_style = kwargs.get("end_cap_style", "flat")
+        self.start_cap_style = kwargs.get("start_cap_style", "round")
+        self.end_cap_style = kwargs.get("end_cap_style", "round")
         self.corner_style = kwargs.get("corner_style", "sharp")
 
 
@@ -51,7 +51,7 @@ class CfgModeler:
     def apply(self):
         if self.traces:
             for t in self.traces:
-                self._pedb.modeler.create_trace(
+                obj = self._pedb.modeler.create_trace(
                     path_list=t.path,
                     layer_name=t.layer,
                     net_name=t.net_name,
@@ -60,6 +60,7 @@ class CfgModeler:
                     end_cap_style=t.end_cap_style,
                     corner_style=t.corner_style,
                 )
+                obj.aedt_name = t.name
 
         if self.padstack_defs:
             for p in self.padstack_defs:
@@ -72,6 +73,7 @@ class CfgModeler:
         if self.padstack_instances:
             for p in self.padstack_instances:
                 p_inst = self._pedb.padstacks.place(
+                    via_name=p["name"],
                     position=p["position"],
                     definition_name=p["definition"],
                 )

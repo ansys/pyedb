@@ -22,6 +22,7 @@
 
 
 from pyedb.configuration.cfg_boundaries import CfgBoundaries
+from pyedb.configuration.cfg_common import CfgVariables
 from pyedb.configuration.cfg_components import CfgComponents
 from pyedb.configuration.cfg_general import CfgGeneral
 from pyedb.configuration.cfg_modeler import CfgModeler
@@ -75,3 +76,5 @@ class CfgData(object):
         self.operations = CfgOperations(self._pedb, data=kwargs.get("operations", []))
 
         self.modeler = CfgModeler(self._pedb, data=kwargs.get("modeler", {}))
+
+        self.variables = CfgVariables(self._pedb, data=kwargs.get("variables", []))

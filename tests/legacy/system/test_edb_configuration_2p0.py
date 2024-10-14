@@ -1079,3 +1079,15 @@ class TestClass:
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
+
+    def test_19_variables(self, edb_examples):
+        data = {
+            "variables": [
+                {"name": "var_1", "value": "1mm", "description": "No description"},
+                {"name": "$var_2", "value": "1mm", "description": "No description"}
+            ]
+        }
+        edbapp = edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()

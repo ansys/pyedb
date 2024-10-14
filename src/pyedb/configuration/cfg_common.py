@@ -1,3 +1,4 @@
+
 # Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
@@ -39,3 +40,23 @@ class CfgBase:
             if attr not in dir(pedb_object):
                 raise AttributeError(f"Invalid attribute '{attr}' in '{pedb_object}'")
             setattr(pedb_object, attr, value)
+
+
+class CfgVar:
+    def __init__(self, **kwargs):
+        self.name = kwargs["name"]
+        self.value = kwargs["value"]
+        self.description = kwargs.get("description", "")
+
+
+class CfgVariables:
+    def __init__(self, pedb, data):
+        self._pedb = pedb
+        self.variables = [CfgVar(**i) for i in data]
+
+    def apply(self):
+        for i in self.variables:
+            if i.name.startswith("$"):
+                self._pedb.add_project_variable(i.name, i.value)
+            else:
+                self._pedb.add_design_variable(i.name, i.value)

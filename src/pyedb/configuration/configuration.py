@@ -106,6 +106,9 @@ class Configuration:
     def run(self, **kwargs):
         """Apply configuration settings to the current design"""
 
+        if self.cfg_data.variables:
+            self.cfg_data.variables.apply()
+
         if self.cfg_data.general:
             self.cfg_data.general.apply()
 
