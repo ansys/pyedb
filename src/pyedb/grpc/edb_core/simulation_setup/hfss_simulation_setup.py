@@ -32,6 +32,7 @@ from ansys.edb.core.simulation_setup.hfss_simulation_setup import (
 )
 
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.grpc.edb_core.simulation_setup.sweep_data import SweepData
 
 
 class HfssSimulationSetup(GrpcHfssSimulationSetup):
@@ -59,9 +60,11 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
         """
         try:
             self.settings.general.adaptive_solution_type = GrpcAdaptType.SINGLE
-            self.settings.general.single_frequency_adaptive_solution.adaptive_frequency = frequency
-            self.settings.general.single_frequency_adaptive_solution.max_passes = max_num_passes
-            self.settings.general.single_frequency_adaptive_solution.max_delta = str(max_delta_s)
+            sfs = self.settings.general.single_frequency_adaptive_solution
+            sfs.adaptive_frequency = frequency
+            sfs.max_passes = max_num_passes
+            sfs.max_delta = str(max_delta_s)
+            self.settings.general.single_frequency_adaptive_solution = sfs
             return True
         except:
             return False
@@ -100,10 +103,12 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
     def set_solution_broadband(self, low_frequency="1GHz", high_frequency="10GHz", max_delta_s=0.02, max_num_passes=10):
         try:
             self.settings.general.adaptive_solution_type = GrpcAdaptType.BROADBAND
-            self.settings.general.broadband_adaptive_solution.low_frequency = low_frequency
-            self.settings.general.broadband_adaptive_solution.high_frequency = high_frequency
-            self.settings.general.broadband_adaptive_solution.max_delta = str(max_delta_s)
-            self.settings.general.broadband_adaptive_solution.max_num_passes = max_num_passes
+            bfs = self.settings.general.broadband_adaptive_solution
+            bfs.low_frequency = low_frequency
+            bfs.high_frequency = high_frequency
+            bfs.max_delta = str(max_delta_s)
+            bfs.max_num_passes = max_num_passes
+            self.settings.general.broadband_adaptive_solution = bfs
             return True
         except:
             return False
@@ -171,13 +176,15 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
             name=name,
             net_layer_info=net_layer_op,
             refine_inside=refine_inside,
-            mesh_region=mesh_region,
-            max_length=max_length,
+            mesh_region=str(net_layer_op),
+            max_length=str(max_length),
             restrict_max_length=restrict_length,
             restrict_max_elements=restrict_elements,
-            max_elements=max_elements,
+            max_elements=str(max_elements),
         )
-        self.mesh_operations.append(mop)
+        mesh_ops = self.mesh_operations
+        mesh_ops.append(mop)
+        self.mesh_operations = mesh_ops
         return mop
 
     def add_skin_depth_mesh_operation(
@@ -237,11 +244,73 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
             net_layer_info=net_layer_op,
             refine_inside=refine_inside,
             mesh_region=mesh_region,
-            skin_depth=skin_depth,
-            surface_triangle_length=surface_triangle_length,
+            skin_depth=str(skin_depth),
+            surface_triangle_length=str(surface_triangle_length),
             restrict_max_elements=restrict_elements,
-            max_elements=max_elements,
+            max_elements=str(max_elements),
             num_layers=str(number_of_layers),
         )
-        self.mesh_operations.append(mesh_operation)
+        mesh_ops = self.mesh_operations
+        mesh_ops.append(mesh_operation)
+        self.mesh_operations = mesh_ops
         return mesh_operation
+
+    def add_sweep(
+        self, name=None, distribution="linear", start_freq="0GHz", stop_freq="20GHz", step="10MHz", discrete=False
+    ):
+        """Add a HFSS frequency sweep.
+
+        Parameters
+        ----------
+        distribution : str, optional
+            Type of the sweep. The default is `"linear"`. Options are:
+            - `"linear"`
+            - `"linear_count"`
+            - `"decade_count"`
+            - `"octave_count"`
+            - `"exponential"`
+        start_freq : str, float, optional
+            Starting frequency. The default is ``1``.
+        stop_freq : str, float, optional
+            Stopping frequency. The default is ``1e9``.
+        step : str, float, int, optional
+            Frequency step. The default is ``1e6``. or used for `"decade_count"`, "linear_count"`, "octave_count"`
+            distribution. Must be integer in that case.
+        discrete : bool, optional
+            Whether the sweep is discrete. The default is ``False``.
+
+        Returns
+        -------
+        bool
+        """
+        init_sweep_count = len(self.sweep_data)
+        start_freq = self._pedb.number_with_units(start_freq, "Hz")
+        stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
+        step = str(step)
+        if distribution.lower() == "linear":
+            distribution = "LIN"
+        elif distribution.lower() == "linear_count":
+            distribution = "LINC"
+        elif distribution.lower() == "exponential":
+            distribution = "ESTP"
+        elif distribution.lower() == "decade_count":
+            distribution = "DEC"
+        elif distribution.lower() == "octave_count":
+            distribution = "OCT"
+        else:
+            distribution = "LIN"
+        if not name:
+            name = f"sweep_{init_sweep_count + 1}"
+        sweep_data = [
+            SweepData(self._pedb, name=name, distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step)
+        ]
+        if discrete:
+            sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
+        for sweep in self.sweep_data:
+            sweep_data.append(sweep)
+        self.sweep_data = sweep_data
+        if len(self.sweep_data) == init_sweep_count + 1:
+            return True
+        else:
+            self._pedb.logger.error("Failed to add frequency sweep data")
+            return False

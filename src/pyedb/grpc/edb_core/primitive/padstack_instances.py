@@ -26,7 +26,9 @@ import re
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.point_data import PointData as GrpcPolygonData
+from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
 from ansys.edb.core.primitive.primitive import PadstackInstance as GrpcPadstackInstance
+from ansys.edb.core.terminal.terminals import PinGroupTerminal as GrpcPinGroupTerminal
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
@@ -73,24 +75,22 @@ class PadstackInstance(GrpcPadstackInstance):
 
     def create_terminal(self, name=None):
         """Create a padstack instance terminal"""
-        from pyedb.dotnet.edb_core.cell.terminal.padstack_instance_terminal import (
-            PadstackInstanceTerminal,
+        if not name:
+            name = self.name
+        term = PadstackInstanceTerminal.create(
+            layout=self.layout,
+            name=name,
+            padstack_instance=self,
+            layer=self.get_layer_range()[0],
+            net=self.net,
+            is_ref=False,
         )
-
-        term = PadstackInstanceTerminal(self._pedb, self._edb_object)
-        return term.create(self, name)
+        return PadstackInstanceTerminal(self._pedb, term)
 
     def get_terminal(self, create_new_terminal=True):
         inst_term = self.get_padstack_instance_terminal()
         if inst_term.is_null and create_new_terminal:
-            inst_term = PadstackInstanceTerminal.create(
-                layout=self.layout,
-                name=self.name,
-                padstack_instance=self,
-                layer=self.get_layer_range()[0],
-                net=self.net,
-                is_ref=False,
-            )
+            inst_term = self.create_terminal()
         return PadstackInstanceTerminal(self._pedb, inst_term)
 
     def create_coax_port(self, name=None, radial_extent_factor=0):
@@ -111,15 +111,35 @@ class PadstackInstance(GrpcPadstackInstance):
         is_circuit_port : bool, optional
             Whether it is a circuit port.
         """
-        terminal = self.create_terminal(name)
-        if reference:
-            ref_terminal = reference.create_terminal(terminal.name + "_ref")
-            if reference._edb_object.type == "PinGroup":
-                is_circuit_port = True
+        if not reference:
+            return self.create_terminal(name)
         else:
-            ref_terminal = None
-
-        return self._pedb.create_port(terminal, ref_terminal, is_circuit_port)
+            positive_terminal = self.create_terminal()
+            negative_terminal = None
+            if isinstance(reference, list):
+                pg = GrpcPinGroup.create(self.layout, name=f"pingroup_{self.name}_ref", padstack_instances=reference)
+                negative_terminal = GrpcPinGroupTerminal.create(
+                    layout=self.layout,
+                    name=f"pingroup_term{self.name}_ref)",
+                    pin_group=pg,
+                    net=reference[0].net,
+                    is_ref=True,
+                )
+                is_circuit_port = True
+            else:
+                if isinstance(reference, PadstackInstance):
+                    negative_terminal = reference.create_terminal()
+                elif isinstance(reference, str):
+                    reference = self._pedb.padstacks.instances[reference]
+                    negative_terminal = reference.create_terminal()
+            if negative_terminal:
+                positive_terminal.reference_terminal = negative_terminal
+            else:
+                self._pedb.logger.error("No reference terminal created")
+                return False
+            positive_terminal.is_circuit_port = is_circuit_port
+            negative_terminal.is_circuit_port = is_circuit_port
+            return positive_terminal
 
     @property
     def _em_properties(self):

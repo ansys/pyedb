@@ -239,7 +239,7 @@ class TestClass:
         bounding = edbapp.get_bounding_box()
         assert bounding
 
-        # check bug #434 status PolygonData.is_insdie(pt) failing
+        # check bug #434 status PolygonData.is_inside(pt) failing
         # cutout_line_x = 41
         # cutout_line_y = 30
         # points = [[bounding[0][0], bounding[0][1]]]
@@ -758,9 +758,7 @@ class TestClass:
 
         setup1b = edbapp.setups["setup1"]
         assert not setup1.is_null
-        # setup1b.set_solution_multi_frequencies()
         assert setup1b.add_adaptive_frequency_data("5GHz", "0.01")
-        # assert setup1b.sweep_data
         setup1.settings.general.adaptive_solution_type = setup1.settings.general.adaptive_solution_type.BROADBAND
         setup1.settings.options.max_refinement_per_pass = 20
         assert setup1.settings.options.max_refinement_per_pass == 20
@@ -833,6 +831,7 @@ class TestClass:
         edbapp.close()
 
     def test_hfss_simulation_setup_mesh_operation(self, edb_examples):
+        # Done
         edbapp = edb_examples.get_si_verse()
         setup = edbapp.create_hfss_setup(name="setup")
         mop = setup.add_length_mesh_operation(net_layer_list={"GND": ["1_Top", "16_Bottom"]}, name="m1")
@@ -840,18 +839,17 @@ class TestClass:
         assert mop.net_layer_info[0] == ("GND", "1_Top", True)
         assert mop.net_layer_info[1] == ("GND", "16_Bottom", True)
         assert mop.name == "m1"
-        assert mop.max_elements == 1000
+        assert mop.max_elements == "1000"
         assert mop.restrict_max_elements
         assert mop.restrict_max_length
         assert mop.max_length == "1mm"
-        # TODO check bug #444
-        # assert setup.mesh_operations
-        # assert edbapp.setups["setup"].mesh_operations
+        assert setup.mesh_operations
+        assert edbapp.setups["setup"].mesh_operations
 
         mop = edbapp.setups["setup"].add_skin_depth_mesh_operation({"GND": ["1_Top", "16_Bottom"]})
         assert mop.net_layer_info[0] == ("GND", "1_Top", True)
         assert mop.net_layer_info[1] == ("GND", "16_Bottom", True)
-        assert mop.max_elements == 1000
+        assert mop.max_elements == "1000"
         assert mop.restrict_max_elements
         assert mop.skin_depth == "1um"
         assert mop.surface_triangle_length == "1mm"
@@ -867,21 +865,20 @@ class TestClass:
         edbapp.close()
 
     def test_hfss_frequency_sweep(self, edb_examples):
-        # TODO check bug #441
+        # Done
         edbapp = edb_examples.get_si_verse()
         setup1 = edbapp.create_hfss_setup("setup1")
         assert edbapp.setups["setup1"].name == "setup1"
-        setup1.add_sweep("sw1", ["linear count", "1MHz", "100MHz", 10])
-        assert edbapp.setups["setup1"].sweeps["sw1"].name == "sw1"
-        assert len(setup1.sweeps["sw1"].frequencies) == 10
-        setup1.sweeps["sw1"].add("linear_scale", "210MHz", "300MHz", "10MHz")
-        assert len(setup1.sweeps["sw1"].frequencies) == 20
-        setup1.sweeps["sw1"].add("log_scale", "1GHz", "10GHz", 10)
-        assert len(setup1.sweeps["sw1"].frequencies) == 31
-
-        setup1.sweeps["sw1"].adaptive_sampling = True
-        assert setup1.sweeps["sw1"].adaptive_sampling
-
+        setup1.add_sweep(name="sw1", distribution="linear_count", start_freq="1MHz", stop_freq="100MHz", step=10)
+        assert edbapp.setups["setup1"].sweep_data[0].name == "sw1"
+        assert edbapp.setups["setup1"].sweep_data[0].start_f == "1MHz"
+        assert edbapp.setups["setup1"].sweep_data[0].end_f == "100MHz"
+        assert edbapp.setups["setup1"].sweep_data[0].step == "10"
+        setup1.add_sweep(name="sw2", distribution="linear", start_freq="210MHz", stop_freq="300MHz", step="10MHz")
+        assert edbapp.setups["setup1"].sweep_data[0].name == "sw2"
+        setup1.add_sweep(name="sw3", distribution="log_scale", start_freq="1GHz", stop_freq="10GHz", step=10)
+        assert edbapp.setups["setup1"].sweep_data[0].name == "sw3"
+        setup1.sweep_data[2].use_q3d_for_dc = True
         edbapp.close()
 
     def test_hfss_simulation_setup_b(self, edb_examples):
@@ -1033,22 +1030,19 @@ class TestClass:
         assert sweep.use_q3d_for_dc
         edb.close()
 
-    def test_siwave_create_port_between_pin_and_layer(self):
+    def test_siwave_create_port_between_pin_and_layer(self, edb_examples):
         """Create circuit port between pin and a reference layer."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_0134.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
-        edbapp.siwave.create_port_between_pin_and_layer(
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.siwave.create_port_between_pin_and_layer(
             component_name="U1", pins_name="A27", layer_name="16_Bottom", reference_net="GND"
         )
         U7 = edbapp.components["U7"]
-        U7.pins["G7"].create_port()
-        port = U7.pins["F7"].create_port(reference=U7.pins["E7"])
-        port.is_circuit_port = True
-        _, pin_group = edbapp.siwave.create_pin_group_on_net(
+        assert U7.pins["G7"].create_port()
+        assert U7.pins["F7"].create_port(reference=U7.pins["E7"])
+        pin_group = edbapp.siwave.create_pin_group_on_net(
             reference_designator="U7", net_name="GND", group_name="U7_GND"
         )
+        assert pin_group
         U7.pins["F7"].create_port(name="test", reference=pin_group)
         padstack_instance_terminals = [
             term for term in list(edbapp.terminals.values()) if "PadstackInstanceTerminal" in str(term.type)

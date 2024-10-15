@@ -20,9 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.simulation_setup.simulation_setup import (
-    FreqSweepType as GrpcFreqSweepType,
-)
 from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSweepData
 
 
@@ -38,35 +35,7 @@ class SweepData(GrpcSweepData):
         EDB object. The default is ``None``.
     """
 
-    def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+    def __init__(self, pedb, name, distribution, start_f, end_f, step, edb_object=None):
+        super().__init__(name=name, distribution=distribution, start_f=start_f, end_f=end_f, step=step)
+        self._edb_object = edb_object
         self._pedb = pedb
-
-    @property
-    def sweep_type(self):
-        """Sweep type.
-
-        Options are:
-        - ``"INTERPOLATING_SWEEP"``
-        - ``"DISCRETE_SWEEP"``
-        - ``"BROADBAND_SWEEP"``
-
-        Returns
-        -------
-        str
-            Sweep type.
-        """
-        return self.type.name
-
-    @property
-    def type(self):
-        return self.type.name
-
-    @type.setter
-    def type(self, value):
-        if value.upper() == "INTERPOLATING_SWEEP":
-            self.type = GrpcFreqSweepType.INTERPOLATING_SWEEP
-        elif value.upper() == "DISCRETE_SWEEP":
-            self.type = GrpcFreqSweepType.DISCRETE_SWEEP
-        elif value.upper() == "BROADBAND_SWEEP":
-            self.type = GrpcFreqSweepType.BROADBAND_SWEEP

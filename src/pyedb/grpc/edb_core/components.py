@@ -1972,7 +1972,7 @@ class Components(object):
             transformed_pt_pos = pt_pos
         else:
             transformed_pt_pos = pin.component.transform.transform_point(pt_pos)
-        return [transformed_pt_pos.x.value, transformed_pt_pos.y.value]
+        return [transformed_pt_pos[0].value, transformed_pt_pos[1].value]
 
     def get_pins_name_from_net(self, net_name, pin_list=None):
         """Retrieve pins belonging to a net.

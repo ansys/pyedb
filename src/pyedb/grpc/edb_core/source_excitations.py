@@ -2284,35 +2284,39 @@ class SourceExcitation:
                 if not reference_net:
                     self._logger.error("Net {} not found".format(reference_net))
                     return False
-            for pin_name in pins_name:  # pragma no cover
-                pin = [
-                    pin
-                    for pin in self._pedb.padstacks.get_pinlist_from_component_and_net(component_name)
-                    if pin.component_pin == pin_name
-                ][0]
-                term_name = f"{pin.component.name}_{pin.net.name}_{pin.omponent}"
-                start_layer, stop_layer = pin.get_layer_range()
-                if start_layer:
-                    positive_terminal = PadstackInstanceTerminal.create(
-                        padstack_instance=pin, name=term_name, layer=start_layer
-                    )
-                    positive_terminal.boundary_type = GrpcBoundaryType.PORT
-                    positive_terminal.impedance = GrpcValue(impedance)
-                    positive_terminal.Is_circuit_port = True
-                    position = GrpcPointData(self._pedb.components.get_pin_position(pin))
-                    negative_terminal = PointTerminal.create(
-                        layout=self._pedb._active_layout,
-                        net=reference_net,
-                        layer=self._pedb.stackup.signal_layers[layer_name],
-                        name=f"{term_name}_ref",
-                        point=position,
-                    )
-                    negative_terminal.boundary_type = GrpcBoundaryType.PORT
-                    negative_terminal.impedance = GrpcValue(impedance)
-                    negative_terminal.is_circuit_port = True
-                    positive_terminal.reference_terminal = negative_terminal
-                    self._logger.info("Port {} successfully created".format(term_name))
-                    return positive_terminal
+            terms = []
+            pins = self._pedb.components.instances[component_name].pins
+            for __pin in pins_name:
+                if __pin in pins:
+                    pin = pins[__pin]
+                    term_name = f"{pin.component.name}_{pin.net.name}_{pin.component}"
+                    start_layer, stop_layer = pin.get_layer_range()
+                    if start_layer:
+                        positive_terminal = PadstackInstanceTerminal.create(
+                            layout=pin.layout, net=pin.net, padstack_instance=pin, name=term_name, layer=start_layer
+                        )
+                        positive_terminal.boundary_type = GrpcBoundaryType.PORT
+                        positive_terminal.impedance = GrpcValue(impedance)
+                        positive_terminal.Is_circuit_port = True
+                        position = GrpcPointData(self._pedb.components.get_pin_position(pin))
+                        negative_terminal = PointTerminal.create(
+                            layout=self._pedb.active_layout,
+                            net=reference_net,
+                            layer=self._pedb.stackup.signal_layers[layer_name],
+                            name=f"{term_name}_ref",
+                            point=position,
+                        )
+                        negative_terminal.boundary_type = GrpcBoundaryType.PORT
+                        negative_terminal.impedance = GrpcValue(impedance)
+                        negative_terminal.is_circuit_port = True
+                        positive_terminal.reference_terminal = negative_terminal
+                        self._logger.info("Port {} successfully created".format(term_name))
+                        if not positive_terminal.is_null:
+                            terms.append(positive_terminal)
+                else:
+                    self._logger.error(f"pin {__pin} not found on component {component_name}")
+                if terms:
+                    return terms
             return False
 
     def create_current_source_on_pin_group(
