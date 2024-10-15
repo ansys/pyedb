@@ -1365,36 +1365,34 @@ class TestClass:
     @pytest.mark.skipif(is_linux, reason="Not supported in IPY")
     def test_solve_siwave(self):
         """Solve EDB with Siwave."""
+        # DOne
         target_path = os.path.join(local_path, "example_models", "T40", "ANSYS-HSD_V1_DCIR.aedb")
         out_edb = os.path.join(self.local_scratch.path, "to_be_solved.aedb")
         self.local_scratch.copyfolder(target_path, out_edb)
-        edbapp = Edb(out_edb, edbversion=desktop_version)
+        edbapp = Edb(out_edb, edbversion=desktop_version, restart_rpc_server=True)
         edbapp.siwave.create_exec_file(add_dc=True)
         out = edbapp.solve_siwave()
         assert os.path.exists(out)
         res = edbapp.export_siwave_dc_results(out, "SIwaveDCIR1")
         for i in res:
             assert os.path.exists(i)
-        edbapp.close()
 
-    def test_cutout_return_clipping_extent(self):
+    def test_cutout_return_clipping_extent(self, edb_examples):
         """"""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_return_clipping_extent", "test.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, desktop_version)
+        # Done
+        edbapp = edb_examples.get_si_verse()
         extent = edbapp.cutout(
             signal_list=["PCIe_Gen4_RX0_P", "PCIe_Gen4_RX0_N", "PCIe_Gen4_RX1_P", "PCIe_Gen4_RX1_N"],
             reference_list=["GND"],
         )
         assert extent
         assert len(extent) == 55
-        assert extent[0] == [0.011025799702099603, 0.04451508810211455]
-        assert extent[10] == [0.022142311790681247, 0.02851039231475559]
-        assert extent[20] == [0.06722930398844625, 0.026054683772800503]
-        assert extent[30] == [0.06793706863503707, 0.02961898962849831]
-        assert extent[40] == [0.06550327418370948, 0.031478931749766806]
-        assert extent[54] == [0.01102500189, 0.044555027391504444]
+        assert extent[0] == [0.011025799607142596, 0.04451508809926884]
+        assert extent[10] == [0.02214231174553801, 0.02851039223066996]
+        assert extent[20] == [0.06722930402216426, 0.02605468368384399]
+        assert extent[30] == [0.06793706871543964, 0.02961898967909681]
+        assert extent[40] == [0.0655032742298304, 0.03147893183305721]
+        assert extent[50] == [0.01143465157862367, 0.046365530038092975]
         edbapp.close_edb()
 
     def test_move_and_edit_polygons(self):
@@ -1443,10 +1441,6 @@ class TestClass:
         assert project_connexions
         edbapp.close_edb()
 
-    @pytest.mark.skipif(
-        not desktop_version == "2024.2" or int(desktop_version.split(".")[0]) >= 2025,
-        reason="Only supported with 2024.2 and higher",
-    )
     def test_icepak(self, edb_examples):
         edbapp = edb_examples.get_si_verse(additional_files_folders=["siwave/icepak_component.pwrd"])
         edbapp.siwave.icepak_use_minimal_comp_defaults = True
