@@ -1072,11 +1072,34 @@ class TestClass:
                      "layer_range": ["TOP", "BOT"],
                      "position": [0, 0],
                      "net_name": "SIG"
+                     },
+                    {"name": "pin_1",
+                     "definition": "via",
+                     "layer_range": ["TOP", "TOP"],
+                     "position": [0, "1mm"],
+                     "net_name": "SIG",
+                     "is_pin": True
                      }
                 ],
                 "planes": [
                     {"name": "GND_TOP", "layer": "TOP", "net_name": "GND", "lower_left_point": [0, 0],
                      "upper_right_point": [0, "12mm"], "voids": ["trace_1_void"]},
+                ],
+                "components": [
+                    {
+                        "reference_designator": "U1",
+                        "pins": ["pin_1"],
+                        "part_type": "io",
+                        "definition": "BGA",
+                        "placement_layer": "TOP",
+                        "solder_ball_properties": {"shape": "cylinder", "diameter": "244um", "height": "406um"},
+                        "port_properties": {
+                            "reference_offset": "0.1mm",
+                            "reference_size_auto": True,
+                            "reference_size_x": 0,
+                            "reference_size_y": 0,
+                        },
+                    },
                 ]
             }
         }
@@ -1086,6 +1109,7 @@ class TestClass:
         assert [i for i in edbapp.layout.primitives if i.aedt_name == "trace_1"]
         plane = [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP"][0]
         assert plane.voids
+        assert edbapp.components["U1"]
         edbapp.close()
 
     def test_19_variables(self, edb_examples):

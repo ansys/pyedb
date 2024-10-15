@@ -45,6 +45,7 @@ class CfgComponent(CfgBase):
         self.pin_pair_model = kwargs.get("pin_pair_model", None)
         self.spice_model = kwargs.get("spice_model", None)
         self.s_parameter_model = kwargs.get("s_parameter_model", None)
+        self.placement_layer = kwargs.get("placement_layer", None)
 
 
 class CfgComponents:
@@ -72,6 +73,8 @@ class CfgComponents:
                 c_db.model_properties = {"spice_model": comp.spice_model}
             if comp.s_parameter_model:
                 c_db.model_properties = {"s_parameter_model": comp.s_parameter_model}
+            if comp.placement_layer:
+                c_db.placement_layer = comp.placement_layer
 
     def _load_data_from_db(self):
         self.components = []

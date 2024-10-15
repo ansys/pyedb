@@ -51,6 +51,7 @@ class CfgPadstacks:
                 data["backdrill_parameters"] = inst.backdrill_parameters
                 data["hole_override_enabled"] = inst.hole_override_enabled
                 data["hole_override_diameter"] = inst.hole_override_diameter
+                data["is_pin"] = inst.is_pin
                 inst_layout.properties = data
 
     def get_data_from_db(self):
@@ -84,6 +85,7 @@ class CfgPadstacks:
                     rotation=temp["rotation"],
                     hole_override_enabled=temp["hole_override_enabled"],
                     hole_override_diameter=temp["hole_override_diameter"],
+                    is_pin=temp["is_pin"],
                 )
             )
         instances = []
@@ -117,3 +119,4 @@ class Instance(CfgBase):
         self.rotation = kwargs.get("rotation", None)
         self.hole_override_enabled = kwargs.get("hole_override_enabled", None)
         self.hole_override_diameter = kwargs.get("hole_override_diameter", None)
+        self.is_pin = kwargs.get("is_pin", None)

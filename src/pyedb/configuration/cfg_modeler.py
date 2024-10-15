@@ -60,6 +60,7 @@ class CfgModeler:
         self.padstack_defs = data.get("padstack_definitions", [])
         self.padstack_instances = data.get("padstack_instances", [])
         self.planes = [CfgPlane(**i) for i in data.get("planes", [])]
+        self.components = data.get("components", [])
 
     def apply(self):
         if self.traces:
@@ -108,3 +109,15 @@ class CfgModeler:
                     for i in self._pedb.layout.primitives:
                         if i.aedt_name == v:
                             self._pedb.modeler.add_void(obj, i)
+
+        if self.components:
+            pedb_p_inst = self._pedb.padstacks.instances_by_name
+            for c in self.components:
+                obj = self._pedb.components.create(
+                    [pedb_p_inst[i] for i in c["pins"]],
+                    component_name=c["reference_designator"],
+                    placement_layer=c["placement_layer"],
+                    component_part_name=c["definition"],
+                )
+                obj.solder_ball_properties = c["solder_ball_properties"]
+                obj.port_properties = c["port_properties"]
