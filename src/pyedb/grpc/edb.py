@@ -450,7 +450,7 @@ class EdbGrpc(EdbInit):
     @property
     def sources(self):
         """Get all layout sources."""
-        self.terminals
+        return self.terminals
 
     @property
     def voltage_regulator_modules(self):

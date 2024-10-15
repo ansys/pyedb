@@ -254,36 +254,6 @@ class LayerCollection(GrpcLayerCollection):
         added_layer.type = GrpcLayerType.USER_LAYER
         return added_layer
 
-    # def set_layer_clone(self, layer_clone):
-    #     lc = GrpcLayerCollection()  # empty layer collection
-    #     lc.mode = self.mode
-    #     if self.mode.lower() == "laminate":
-    #         add_method = lc.add_layer_bottom
-    #     else:
-    #         add_method = lc.add_stackup_layer_at_elevation
-    #     obj = False
-    #     # Add stackup layers
-    #     for _, i in self.layers.items():
-    #         if i.id == layer_clone.id:  # replace layer
-    #             add_method(layer_clone)
-    #             obj = layer_clone
-    #         else:  # keep existing layer
-    #             add_method(i)
-    #     # Add non stackup layers
-    #     for _, i in self.non_stackup_layers.items():
-    #         if i.id == layer_clone.id:
-    #             lc.AddLayerBottom(layer_clone)
-    #             obj = layer_clone
-    #         else:
-    #             lc.add_layer_bottom(i)
-    #
-    #     self._edb_object = lc
-    #     self.update_layout()
-    #
-    #     if not obj:
-    #         logger.info("Layer clone was not found in stackup or non stackup layers.")
-    #     return obj
-
     @property
     def stackup_layers(self):
         """Retrieve the dictionary of signal and dielectric layers."""

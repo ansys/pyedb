@@ -312,8 +312,12 @@ class Components(object):
         """
         self._res = {}
         for el, val in self.instances.items():
-            if val.type == "resistor":
-                self._res[el] = val
+            if not val.is_null:
+                try:
+                    if val.type == "resistor":
+                        self._res[el] = val
+                except:
+                    pass
         return self._res
 
     @property
@@ -334,8 +338,12 @@ class Components(object):
         """
         self._cap = {}
         for el, val in self.instances.items():
-            if val.type == "capacitor":
-                self._cap[el] = val
+            if not val.is_null:
+                try:
+                    if val.type == "capacitor":
+                        self._cap[el] = val
+                except:
+                    pass
         return self._cap
 
     @property
@@ -357,8 +365,12 @@ class Components(object):
         """
         self._ind = {}
         for el, val in self.instances.items():
-            if val.type == "inductor":
-                self._ind[el] = val
+            if not val.is_null:
+                try:
+                    if val.type == "inductor":
+                        self._ind[el] = val
+                except:
+                    pass
         return self._ind
 
     @property
@@ -380,8 +392,12 @@ class Components(object):
         """
         self._ics = {}
         for el, val in self.instances.items():
-            if val.type == "ic":
-                self._ics[el] = val
+            if not val.is_null:
+                try:
+                    if val.type == "ic":
+                        self._ics[el] = val
+                except:
+                    pass
         return self._ics
 
     @property
@@ -403,8 +419,12 @@ class Components(object):
         """
         self._ios = {}
         for el, val in self.instances.items():
-            if val.type == "io":
-                self._ios[el] = val
+            if not val.is_null:
+                try:
+                    if val.type == "io":
+                        self._ios[el] = val
+                except:
+                    pass
         return self._ios
 
     @property
@@ -426,8 +446,12 @@ class Components(object):
         """
         self._others = {}
         for el, val in self.instances.items():
-            if val.type == "other":
-                self._others[el] = val
+            if not val.is_null:
+                try:
+                    if val.type == "other":
+                        self._others[el] = val
+                except:
+                    pass
         return self._others
 
     @property

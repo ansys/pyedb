@@ -782,9 +782,9 @@ class Materials(object):
 
         begin_regex = re.compile(r"^\$begin '(.+)'")
         end_regex = re.compile(r"^\$end '(.+)'")
-        material_properties = ATTRIBUTES.copy()
+        # material_properties = ATTRIBUTES.copy()
         # Remove cases manually handled
-        material_properties.remove("conductivity")
+        # material_properties.remove("conductivity")
 
         with open(amat_file, "r") as amat_fh:
             in_material_def = False
