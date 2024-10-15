@@ -713,6 +713,7 @@ class EdbNets(object):
         plot_components_on_top=False,
         plot_components_on_bottom=False,
         show=True,
+        title=None,
     ):
         """Plot a Net to Matplotlib 2D Chart.
 
@@ -763,13 +764,17 @@ class EdbNets(object):
             fig_size_y = board_size_y * fig_size_x / board_size_x
             size = (fig_size_x, fig_size_y)
 
+        plot_title = title
+        if plot_title is None:
+            plot_title = self._pedb.active_cell.GetName()
+
         return plot_matplotlib(
             plot_data=object_lists,
             size=size,
             show_legend=show_legend,
             xlabel="X (m)",
             ylabel="Y (m)",
-            title=self._pedb.active_cell.GetName(),
+            title=plot_title,
             save_plot=save_plot,
             axis_equal=True,
             show=show,
