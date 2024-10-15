@@ -567,7 +567,7 @@ class Padstacks(object):
             "`get_pinlist_from_component_and_net` is deprecated use `get_pin_from_component_and_net` instead.",
             DeprecationWarning,
         )
-        self.get_pin_from_component_and_net(refdes=refdes, netname=netname)
+        return self.get_pin_from_component_and_net(refdes=refdes, netname=netname)
 
     def get_pad_parameters(self, pin, layername, pad_type=0):
         """Get Padstack Parameters from Pin or Padstack Definition.

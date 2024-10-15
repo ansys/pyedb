@@ -401,10 +401,7 @@ class EdbGrpc(EdbInit):
         -------
         Dict
         """
-        _terminals = {}
-        for i in self.layout.terminals:
-            _terminals[i.name]: i
-        return _terminals
+        return {i.name: i for i in self.layout.terminals}
 
     @property
     def excitations(self):
@@ -3474,12 +3471,15 @@ class EdbGrpc(EdbInit):
         list: [:class:`pyedb.dotnet.edb_core.edb_data.ports.GapPort`,
             :class:`pyedb.dotnet.edb_core.edb_data.ports.WavePort`,].
         """
-        terminal.boundary_type = "port"
+        from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
+
+        if isinstance(terminal.boundary_type, GrpcBoundaryType):
+            terminal.boundary_type = GrpcBoundaryType.PORT
         terminal.is_circuit_port = is_circuit_port
 
-        if ref_terminal:
-            ref_terminal.boundary_type = "port"
-            terminal.ref_terminal = ref_terminal
+        if isinstance(ref_terminal.boundary_type, GrpcBoundaryType):
+            ref_terminal.boundary_type = GrpcBoundaryType.PORT
+        terminal.ref_terminal = ref_terminal
         if name:
             terminal.name = name
         return self.ports[terminal.name]

@@ -115,6 +115,11 @@ class PadstackInstance(GrpcPadstackInstance):
             return self.create_terminal(name)
         else:
             positive_terminal = self.create_terminal()
+            if positive_terminal.is_null:
+                self._pedb.logger(
+                    f"Positive terminal on padsatck instance {self.name} is null. Make sure a terminal"
+                    f"is not already defined."
+                )
             negative_terminal = None
             if isinstance(reference, list):
                 pg = GrpcPinGroup.create(self.layout, name=f"pingroup_{self.name}_ref", padstack_instances=reference)
@@ -130,7 +135,15 @@ class PadstackInstance(GrpcPadstackInstance):
                 if isinstance(reference, PadstackInstance):
                     negative_terminal = reference.create_terminal()
                 elif isinstance(reference, str):
-                    reference = self._pedb.padstacks.instances[reference]
+                    if reference in self._pedb.padstacks.instances:
+                        reference = self._pedb.padstacks.instances[reference]
+                    else:
+                        pin_groups = [pg for pg in self._pedb.active_layout.pin_groups if pg.name == reference]
+                        if pin_groups:
+                            reference = pin_groups[0]
+                        else:
+                            self._pedb.logger.error(f"No reference found for {reference}")
+                            return False
                     negative_terminal = reference.create_terminal()
             if negative_terminal:
                 positive_terminal.reference_terminal = negative_terminal
