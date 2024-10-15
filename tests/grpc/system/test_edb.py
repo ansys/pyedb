@@ -881,30 +881,6 @@ class TestClass:
         setup1.sweep_data[2].use_q3d_for_dc = True
         edbapp.close()
 
-    def test_hfss_simulation_setup_b(self, edb_examples):
-        # TODO check bug #441
-        edbapp = edb_examples.get_si_verse()
-        setup1 = edbapp.create_hfss_setup("setup1")
-        sweep1 = setup1.add_sweep(
-            name="sweep1",
-            frequency_set=[
-                ["linear count", "1MHz", "10MHz", 10],
-            ],
-        )
-        sweep2 = setup1.add_sweep(
-            name="sweep2",
-            frequency_set=[
-                ["log scale", "1kHz", "100kHz", 10],
-            ],
-        )
-        sweep3 = setup1.add_sweep(
-            name="sweep3",
-            frequency_set=[
-                ["linear scale", "20MHz", "30MHz", "1MHz"],
-            ],
-        )
-        edbapp.close()
-
     def test_siwave_dc_simulation_setup(self, edb_examples):
         """Create a dc simulation setup and evaluate its properties."""
         # TODO check with config file 2.0

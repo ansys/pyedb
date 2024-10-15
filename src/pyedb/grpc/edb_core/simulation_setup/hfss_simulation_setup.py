@@ -262,6 +262,8 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
 
         Parameters
         ----------
+        name : str, optional
+         Sweep name.
         distribution : str, optional
             Type of the sweep. The default is `"linear"`. Options are:
             - `"linear"`
