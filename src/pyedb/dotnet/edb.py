@@ -3609,17 +3609,18 @@ class Edb(Database):
         Dict[str, :class:`legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
 
         """
+        setup_types = {}
         setups = {}
         for i in list(self.active_cell.SimulationSetups):
-            if i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kHFSS:
+            if i.GetType().endswith(".kHFSS"):
                 setups[i.GetName()] = HfssSimulationSetup(self, i)
-            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWave:
+            elif i.GetType().endswith(".kSIWave"):
                 setups[i.GetName()] = SiwaveSimulationSetup(self, i)
-            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWaveDCIR:
+            elif i.GetType().endswith(".kSIWaveDCIR"):
                 setups[i.GetName()] = SiwaveDCSimulationSetup(self, i)
-            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kRaptorX:
+            elif i.GetType().ToString().endswith(".kRaptorX"):
                 setups[i.GetName()] = RaptorXSimulationSetup(self, i)
-            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kHFSSPI:
+            elif i.GetType().endswith(".kHFSSPI"):
                 setups[i.GetName()] = HFSSPISimulationSetup(self, i)
         return setups
 
