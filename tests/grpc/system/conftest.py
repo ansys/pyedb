@@ -93,7 +93,7 @@ class EdbExamples:
 
     def get_multizone_pcb(self):
         aedb = self._copy_file_folder_into_local_folder("multi_zone_project.aedb")
-        return Edb(aedb, edbversion=desktop_version)
+        return Edb(aedb, edbversion=desktop_version, restart_rpc_server=True)
 
     def get_no_ref_pins_component(self):
         aedb = self._copy_file_folder_into_local_folder("TEDB/component_no_ref_pins.aedb")

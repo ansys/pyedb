@@ -27,14 +27,10 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 import os
 import warnings
 
+from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSweepData
 
-from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
-    SimulationConfiguration,
-)
-from pyedb.generic.constants import SolverType, SweepType
 from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
-from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 class Siwave(object):
@@ -58,11 +54,7 @@ class Siwave(object):
     @property
     def _edb(self):
         """EDB."""
-        return self._pedb.edb_api
-
-    def _get_edb_value(self, value):
-        """Get the Edb value."""
-        return self._pedb.edb_value(value)
+        return self._pedb
 
     @property
     def _logger(self):
@@ -103,11 +95,6 @@ class Siwave(object):
     def probes(self):
         """Get all probes."""
         return self._pedb.probes
-
-    @property
-    def voltage_regulator_modules(self):
-        """Get all voltage regulator modules"""
-        return self._pedb.voltage_regulator_modules
 
     @property
     def pin_groups(self):
@@ -564,8 +551,6 @@ class Siwave(object):
         ----------
         accuracy_level : int, optional
            Level of accuracy of SI slider. The default is ``1``.
-        sweep_type : str, optional
-            Sweep type. `"interpolating"` or `"discrete"`.
         distribution : str, optional
             Type of the sweep. The default is `"linear"`. Options are:
             - `"linear"`
@@ -667,172 +652,6 @@ class Siwave(object):
             DeprecationWarning,
         )
         return self._pedb.source_excitation.create_pin_group_terminal(source)
-
-    def configure_siw_analysis_setup(self, simulation_setup=None, delete_existing_setup=True):
-        """Configure Siwave analysis setup.
-
-        Parameters
-        ----------
-        simulation_setup :
-            Edb_DATA.SimulationConfiguration object.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-        """
-
-        if not isinstance(simulation_setup, SimulationConfiguration):  # pragma: no cover
-            return False
-        if simulation_setup.solver_type == SolverType.SiwaveSYZ:  # pragma: no cover
-            simsetup_info = self._pedb.simsetupdata.SimSetupInfo[self._pedb.simsetupdata.SIwave.SIWSimulationSettings]()
-            simsetup_info.Name = simulation_setup.setup_name
-            simsetup_info.SimulationSettings.AdvancedSettings.PerformERC = False
-            simsetup_info.SimulationSettings.UseCustomSettings = True
-            if simulation_setup.mesh_freq:  # pragma: no cover
-                if isinstance(simulation_setup.mesh_freq, str):
-                    simsetup_info.SimulationSettings.UseCustomSettings = True
-                    simsetup_info.SimulationSettings.AdvancedSettings.MeshAutoMatic = False
-                    simsetup_info.SimulationSettings.AdvancedSettings.MeshFrequency = simulation_setup.mesh_freq
-                else:
-                    self._logger.warning("Meshing frequency value must be a string with units")
-            if simulation_setup.include_inter_plane_coupling:  # pragma: no cover
-                simsetup_info.SimulationSettings.AdvancedSettings.IncludeInterPlaneCoupling = (
-                    simulation_setup.include_inter_plane_coupling
-                )
-            if abs(simulation_setup.xtalk_threshold):  # pragma: no cover
-                simsetup_info.SimulationSettings.AdvancedSettings.XtalkThreshold = str(simulation_setup.xtalk_threshold)
-            if simulation_setup.min_void_area:  # pragma: no cover
-                simsetup_info.SimulationSettings.AdvancedSettings.MinVoidArea = simulation_setup.min_void_area
-            if simulation_setup.min_pad_area_to_mesh:  # pragma: no cover
-                simsetup_info.SimulationSettings.AdvancedSettings.MinPadAreaToMesh = (
-                    simulation_setup.min_pad_area_to_mesh
-                )
-            if simulation_setup.min_plane_area_to_mesh:  # pragma: no cover
-                simsetup_info.SimulationSettings.AdvancedSettings.MinPlaneAreaToMesh = (
-                    simulation_setup.min_plane_area_to_mesh
-                )
-            if simulation_setup.snap_length_threshold:  # pragma: no cover
-                simsetup_info.SimulationSettings.AdvancedSettings.SnapLengthThreshold = (
-                    simulation_setup.snap_length_threshold
-                )
-            if simulation_setup.return_current_distribution:  # pragma: no cover
-                simsetup_info.SimulationSettings.AdvancedSettings.ReturnCurrentDistribution = (
-                    simulation_setup.return_current_distribution
-                )
-            if simulation_setup.ignore_non_functional_pads:  # pragma: no cover
-                simsetup_info.SimulationSettings.AdvancedSettings.IgnoreNonFunctionalPads = (
-                    simulation_setup.ignore_non_functional_pads
-                )
-            if simulation_setup.min_void_area:  # pragma: no cover
-                simsetup_info.SimulationSettings.DCAdvancedSettings.DcMinVoidAreaToMesh = simulation_setup.min_void_area
-            try:
-                if simulation_setup.add_frequency_sweep:
-                    self._logger.info("Adding frequency sweep")
-                    sweep = self._pedb.simsetupdata.SweepData(simulation_setup.sweep_name)
-                    sweep.IsDiscrete = False  # need True for package??
-                    sweep.UseQ3DForDC = simulation_setup.use_q3d_for_dc
-                    sweep.RelativeSError = simulation_setup.relative_error
-                    sweep.InterpUsePortImpedance = False
-                    sweep.EnforceCausality = (GeometryOperators.parse_dim_arg(simulation_setup.start_freq) - 0) < 1e-9
-                    sweep.EnforcePassivity = simulation_setup.enforce_passivity
-                    sweep.PassivityTolerance = simulation_setup.passivity_tolerance
-                    sweep.Frequencies.Clear()
-                    if simulation_setup.sweep_type == SweepType.LogCount:  # pragma: no cover
-                        self._setup_decade_count_sweep(
-                            sweep,
-                            simulation_setup.start_freq,
-                            simulation_setup.stop_freq,
-                            simulation_setup.decade_count,
-                        )
-                    else:
-                        sweep.Frequencies = self._pedb.simsetupdata.SweepData.SetFrequencies(
-                            simulation_setup.start_freq, simulation_setup.stop_freq, simulation_setup.step_freq
-                        )
-                    simsetup_info.SweepDataList.Add(sweep)
-                else:
-                    self._logger.info("Adding frequency sweep disabled")
-            except Exception as err:
-                self._logger.error("Exception in sweep configuration: {0}.".format(err))
-            edb_sim_setup = self._edb.utility.utility.SIWaveSimulationSetup(simsetup_info)
-            for setup in self._cell.SimulationSetups:
-                self._cell.DeleteSimulationSetup(setup.GetName())
-                self._logger.warning("Setup {} has been deleted".format(setup.GetName()))
-            return self._cell.AddSimulationSetup(edb_sim_setup)
-        if simulation_setup.solver_type == SolverType.SiwaveDC:  # pragma: no cover
-            dcir_setup = self._pedb.simsetupdata.SimSetupInfo[
-                self._pedb.simsetupdata.SIwave.SIWDCIRSimulationSettings
-            ]()
-            dcir_setup.Name = simulation_setup.setup_name
-            dcir_setup.SimulationSettings.DCSettings.ComputeInductance = simulation_setup.dc_compute_inductance
-            dcir_setup.SimulationSettings.DCSettings.ContactRadius = simulation_setup.dc_contact_radius
-            dcir_setup.SimulationSettings.DCSettings.DCSliderPos = simulation_setup.dc_slide_position
-            dcir_setup.SimulationSettings.DCSettings.PlotJV = simulation_setup.dc_plot_jv
-            dcir_setup.SimulationSettings.DCSettings.UseDCCustomSettings = simulation_setup.dc_use_dc_custom_settings
-            dcir_setup.SimulationSettings.DCAdvancedSettings.DcMinPlaneAreaToMesh = (
-                simulation_setup.dc_min_plane_area_to_mesh
-            )
-            dcir_setup.SimulationSettings.DCAdvancedSettings.DcMinVoidAreaToMesh = (
-                simulation_setup.dc_min_void_area_to_mesh
-            )
-            dcir_setup.SimulationSettings.DCAdvancedSettings.EnergyError = simulation_setup.dc_error_energy
-            dcir_setup.SimulationSettings.DCAdvancedSettings.MaxInitMeshEdgeLength = (
-                simulation_setup.dc_max_init_mesh_edge_length
-            )
-            dcir_setup.SimulationSettings.DCAdvancedSettings.MaxNumPasses = simulation_setup.dc_max_num_pass
-            dcir_setup.SimulationSettings.DCAdvancedSettings.MeshBws = simulation_setup.dc_mesh_bondwires
-            dcir_setup.SimulationSettings.DCAdvancedSettings.MeshVias = simulation_setup.dc_mesh_vias
-            dcir_setup.SimulationSettings.DCAdvancedSettings.MinNumPasses = simulation_setup.dc_min_num_pass
-            dcir_setup.SimulationSettings.DCAdvancedSettings.NumBwSides = simulation_setup.dc_num_bondwire_sides
-            dcir_setup.SimulationSettings.DCAdvancedSettings.NumViaSides = simulation_setup.dc_num_via_sides
-            dcir_setup.SimulationSettings.DCAdvancedSettings.PercentLocalRefinement = (
-                simulation_setup.dc_percent_local_refinement
-            )
-            dcir_setup.SimulationSettings.DCAdvancedSettings.PerformAdaptiveRefinement = (
-                simulation_setup.dc_perform_adaptive_refinement
-            )
-            dcir_setup.SimulationSettings.DCAdvancedSettings.RefineBws = simulation_setup.dc_refine_bondwires
-            dcir_setup.SimulationSettings.DCAdvancedSettings.RefineVias = simulation_setup.dc_refine_vias
-
-            dcir_setup.SimulationSettings.DCIRSettings.DCReportConfigFile = simulation_setup.dc_report_config_file
-            dcir_setup.SimulationSettings.DCIRSettings.DCReportShowActiveDevices = (
-                simulation_setup.dc_report_show_Active_devices
-            )
-            dcir_setup.SimulationSettings.DCIRSettings.ExportDCThermalData = simulation_setup.dc_export_thermal_data
-            dcir_setup.SimulationSettings.DCIRSettings.FullDCReportPath = simulation_setup.dc_full_report_path
-            dcir_setup.SimulationSettings.DCIRSettings.IcepakTempFile = simulation_setup.dc_icepak_temp_file
-            dcir_setup.SimulationSettings.DCIRSettings.ImportThermalData = simulation_setup.dc_import_thermal_data
-            dcir_setup.SimulationSettings.DCIRSettings.PerPinResPath = simulation_setup.dc_per_pin_res_path
-            dcir_setup.SimulationSettings.DCIRSettings.PerPinUsePinFormat = simulation_setup.dc_per_pin_use_pin_format
-            dcir_setup.SimulationSettings.DCIRSettings.UseLoopResForPerPin = (
-                simulation_setup.dc_use_loop_res_for_per_pin
-            )
-            dcir_setup.SimulationSettings.DCIRSettings.ViaReportPath = simulation_setup.dc_via_report_path
-            dcir_setup.SimulationSettings.DCIRSettings.SourceTermsToGround = simulation_setup.dc_source_terms_to_ground
-            dcir_setup.Name = simulation_setup.setup_name
-            sim_setup = self._edb.utility.utility.SIWaveDCIRSimulationSetup(dcir_setup)
-            for setup in self._cell.SimulationSetups:
-                self._cell.DeleteSimulationSetup(setup.GetName())
-                self._logger.warning("Setup {} has been delete".format(setup.GetName()))
-            return self._cell.AddSimulationSetup(sim_setup)
-
-    def _setup_decade_count_sweep(self, sweep, start_freq, stop_freq, decade_count):
-        import math
-
-        start_f = GeometryOperators.parse_dim_arg(start_freq)
-        if start_f == 0.0:
-            start_f = 10
-            self._logger.warning(
-                "Decade count sweep does not support a DC value. Defaulting starting frequency to 10Hz."
-            )
-
-        stop_f = GeometryOperators.parse_dim_arg(stop_freq)
-        decade_cnt = GeometryOperators.parse_dim_arg(decade_count)
-        freq = start_f
-        sweep.Frequencies.Add(str(freq))
-        while freq < stop_f:
-            freq = freq * math.pow(10, 1.0 / decade_cnt)
-            sweep.Frequencies.Add(str(freq))
 
     def create_rlc_component(
         self,
@@ -1124,59 +943,56 @@ class Siwave(object):
             negative_layer,
         )
 
-    def create_vrm_module(
-        self,
-        name=None,
-        is_active=True,
-        voltage="3V",
-        positive_sensor_pin=None,
-        negative_sensor_pin=None,
-        load_regulation_current="1A",
-        load_regulation_percent=0.1,
-    ):
-        """Create a voltage regulator module.
-
-        Parameters
-        ----------
-        name : str
-            Name of the voltage regulator.
-        is_active : bool optional
-            Set the voltage regulator active or not. Default value is ``True``.
-        voltage ; str, float
-            Set the voltage value.
-        positive_sensor_pin : int, .class pyedb.dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance
-            defining the positive sensor pin.
-        negative_sensor_pin : int, .class pyedb.dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance
-            defining the negative sensor pin.
-        load_regulation_current : str or float
-            definition the load regulation current value.
-        load_regulation_percent : float
-            definition the load regulation percent value.
-        """
-        from pyedb.dotnet.edb_core.cell.voltage_regulator import VoltageRegulator
-
-        voltage = self._pedb.edb_value(voltage)
-        load_regulation_current = self._pedb.edb_value(load_regulation_current)
-        load_regulation_percent = self._pedb.edb_value(load_regulation_percent)
-        edb_vrm = self._edb_object = self._pedb._edb.Cell.VoltageRegulator.Create(
-            self._pedb.active_layout, name, is_active, voltage, load_regulation_current, load_regulation_percent
-        )
-        vrm = VoltageRegulator(self._pedb, edb_vrm)
-        if positive_sensor_pin:
-            vrm.positive_remote_sense_pin = positive_sensor_pin
-        if negative_sensor_pin:
-            vrm.negative_remote_sense_pin = negative_sensor_pin
-        return vrm
+    # def create_vrm_module(
+    #     self,
+    #     name=None,
+    #     is_active=True,
+    #     voltage="3V",
+    #     positive_sensor_pin=None,
+    #     negative_sensor_pin=None,
+    #     load_regulation_current="1A",
+    #     load_regulation_percent=0.1,
+    # ):
+    #     """Create a voltage regulator module.
+    #
+    #     Parameters
+    #     ----------
+    #     name : str
+    #         Name of the voltage regulator.
+    #     is_active : bool optional
+    #         Set the voltage regulator active or not. Default value is ``True``.
+    #     voltage ; str, float
+    #         Set the voltage value.
+    #     positive_sensor_pin : int, .class pyedb.dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance
+    #         defining the positive sensor pin.
+    #     negative_sensor_pin : int, .class pyedb.dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance
+    #         defining the negative sensor pin.
+    #     load_regulation_current : str or float
+    #         definition the load regulation current value.
+    #     load_regulation_percent : float
+    #         definition the load regulation percent value.
+    #     """
+    #     from pyedb.grpc.edb_core.voltage_regulator import VoltageRegulator
+    #
+    #     voltage = self._pedb.edb_value(voltage)
+    #     load_regulation_current = self._pedb.edb_value(load_regulation_current)
+    #     load_regulation_percent = self._pedb.edb_value(load_regulation_percent)
+    #     edb_vrm = self._edb_object = self._pedb._edb.Cell.VoltageRegulator.Create(
+    #         self._pedb.active_layout, name, is_active, voltage, load_regulation_current, load_regulation_percent
+    #     )
+    #     vrm = VoltageRegulator(self._pedb, edb_vrm)
+    #     if positive_sensor_pin:
+    #         vrm.positive_remote_sense_pin = positive_sensor_pin
+    #     if negative_sensor_pin:
+    #         vrm.negative_remote_sense_pin = negative_sensor_pin
+    #     return vrm
 
     @property
     def icepak_use_minimal_comp_defaults(self):
         """Icepak default setting. If "True", only resistor are active in Icepak simulation.
         The power dissipation of the resistors are calculated from DC results.
         """
-        siwave_id = self._pedb.edb_api.ProductId.SIWave
-        cell = self._pedb.active_cell._active_cell
-        _, value = cell.GetProductProperty(siwave_id, 422, "")
-        return bool(value)
+        return self._pedb.active_cell.get_product_property(GrpcProductIdType.SIWAVE, 422).value
 
     def create_impedance_crosstalk_scan(self, scan_type="impedance"):
         """Create Siwave crosstalk scan object
@@ -1194,20 +1010,14 @@ class Siwave(object):
     @icepak_use_minimal_comp_defaults.setter
     def icepak_use_minimal_comp_defaults(self, value):
         value = "True" if bool(value) else ""
-        siwave_id = self._pedb.edb_api.ProductId.SIWave
-        cell = self._pedb.active_cell._active_cell
-        cell.SetProductProperty(siwave_id, 422, value)
+        self._pedb.active_cell.set_product_property(GrpcProductIdType.SIWAVE, 422, value)
 
     @property
     def icepak_component_file(self):
         """Icepak component file path."""
-        siwave_id = self._pedb.edb_api.ProductId.SIWave
-        cell = self._pedb.active_cell._active_cell
-        _, value = cell.GetProductProperty(siwave_id, 420, "")
+        return self._pedb.active_cell.get_product_property(GrpcProductIdType.SIWAVE, 420).value
         return value
 
     @icepak_component_file.setter
     def icepak_component_file(self, value):
-        siwave_id = self._pedb.edb_api.ProductId.SIWave
-        cell = self._pedb.active_cell._active_cell
-        cell.SetProductProperty(siwave_id, 420, value)
+        self._pedb.active_cell.set_product_property(GrpcProductIdType.SIWAVE, 420, value)
