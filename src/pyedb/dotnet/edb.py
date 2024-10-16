@@ -3612,15 +3612,15 @@ class Edb(Database):
         setup_types = {}
         setups = {}
         for i in list(self.active_cell.SimulationSetups):
-            if i.GetType().endswith(".kHFSS"):
+            if i.GetType().ToString().endswith(".kHFSS"):
                 setups[i.GetName()] = HfssSimulationSetup(self, i)
-            elif i.GetType().endswith(".kSIWave"):
+            elif i.GetType().ToString().endswith(".kSIWave"):
                 setups[i.GetName()] = SiwaveSimulationSetup(self, i)
-            elif i.GetType().endswith(".kSIWaveDCIR"):
+            elif i.GetType().ToString().endswith(".kSIWaveDCIR"):
                 setups[i.GetName()] = SiwaveDCSimulationSetup(self, i)
             elif i.GetType().ToString().endswith(".kRaptorX"):
                 setups[i.GetName()] = RaptorXSimulationSetup(self, i)
-            elif i.GetType().endswith(".kHFSSPI"):
+            elif i.GetType().ToString().endswith(".kHFSSPI"):
                 setups[i.GetName()] = HFSSPISimulationSetup(self, i)
         return setups
 
