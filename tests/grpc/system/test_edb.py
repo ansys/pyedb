@@ -1457,32 +1457,30 @@ class TestClass:
         assert edbapp.siwave.icepak_component_file == edb_examples.get_local_file_folder("siwave/icepak_component.pwrd")
         edbapp.close()
 
-    @pytest.mark.skipif(
-        not desktop_version == "2024.2" or int(desktop_version.split(".")[0]) >= 2025,
-        reason="Only supported with 2024.2 and higher",
-    )
     def test_dcir_properties(self, edb_examples):
+        # Done
         edbapp = edb_examples.get_si_verse()
         setup = edbapp.create_siwave_dc_setup()
-        setup.dc_ir_settings.export_dc_thermal_data = True
-        assert setup.dc_ir_settings.export_dc_thermal_data == True
-        assert not setup.dc_ir_settings.import_thermal_data
-        setup.dc_ir_settings.dc_report_show_active_devices = True
-        assert setup.dc_ir_settings.dc_report_show_active_devices == True
-        assert not setup.dc_ir_settings.per_pin_use_pin_format
-        assert setup.dc_ir_settings.use_loop_res_for_per_pin
-        setup.dc_ir_settings.dc_report_config_file = edbapp.edbpath
-        assert setup.dc_ir_settings.dc_report_config_file
-        setup.dc_ir_settings.full_dc_report_path = edbapp.edbpath
-        assert setup.dc_ir_settings.full_dc_report_path
-        setup.dc_ir_settings.icepak_temp_file = edbapp.edbpath
-        assert setup.dc_ir_settings.icepak_temp_file
-        setup.dc_ir_settings.per_pin_res_path = edbapp.edbpath
-        assert setup.dc_ir_settings.per_pin_res_path
-        setup.dc_ir_settings.via_report_path = edbapp.edbpath
-        assert setup.dc_ir_settings.via_report_path
-        setup.dc_ir_settings.source_terms_to_ground = {"test": 1}
-        assert setup.dc_ir_settings.source_terms_to_ground
+        setup.settings.export_dc_thermal_data = True
+        assert setup.settings.export_dc_thermal_data
+        assert not setup.settings.import_thermal_data
+        setup.settings.dc_report_show_active_devices = True
+        assert setup.settings.dc_report_show_active_devices
+        assert not setup.settings.per_pin_use_pin_format
+        setup.settings.use_loop_res_for_per_pin = True
+        assert setup.settings.use_loop_res_for_per_pin
+        setup.settings.dc_report_config_file = edbapp.edbpath
+        assert setup.settings.dc_report_config_file
+        setup.settings.full_dc_report_path = edbapp.edbpath
+        assert setup.settings.full_dc_report_path
+        setup.settings.icepak_temp_file = edbapp.edbpath
+        assert setup.settings.icepak_temp_file
+        setup.settings.per_pin_res_path = edbapp.edbpath
+        assert setup.settings.per_pin_res_path
+        setup.settings.via_report_path = edbapp.edbpath
+        assert setup.settings.via_report_path
+        setup.settings.source_terms_to_ground = {"test": 1}
+        assert setup.settings.source_terms_to_ground
         edbapp.close()
 
     def test_arbitrary_wave_ports(self):
