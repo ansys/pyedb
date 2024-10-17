@@ -949,20 +949,28 @@ class EdbGrpc(EdbInit):
         -------
         list
         """
+        from ansys.edb.core.terminal.terminals import (
+            PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
+        )
+
         temp = []
         for i in self.layout_instance.get_connected_objects(layout_object_instance, True):
-            if isinstance(i, PadstackInstance):
-                temp.append(PadstackInstance(i, self))
-            elif isinstance(i, Path):
-                temp.append(Path(self, i))
-            elif isinstance(i, Rectangle):
-                temp.append(Rectangle(self, i))
-            elif isinstance(i, Circle):
-                temp.append(Circle(self, i))
-            elif isinstance(i, Polygon):
-                temp.append(Polygon(self, i))
+            if isinstance(i.layout_obj, GrpcPadstackInstanceTerminal):
+                temp.append(PadstackInstanceTerminal(self, i.layout_obj))
             else:
-                continue
+                layout_obj_type = i.layout_obj.primitive_type.name
+                if layout_obj_type == "PADSTACK_INSTANCE":
+                    temp.append(PadstackInstance(self, i.layout_obj))
+                elif layout_obj_type == "PATH":
+                    temp.append(Path(self, i.layout_obj))
+                elif layout_obj_type == "RECTANGLE":
+                    temp.append(Rectangle(self, i.layout_obj))
+                elif layout_obj_type == "CIRCLE":
+                    temp.append(Circle(self, i.layout_obj))
+                elif layout_obj_type == "POLYGON":
+                    temp.append(Polygon(self, i.layout_obj))
+                else:
+                    continue
         return temp
 
     def point_3d(self, x, y, z=0.0):

@@ -40,31 +40,35 @@ bom_example = "bom_example.csv"
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, legacy_edb_app, local_scratch, target_path, target_path2, target_path4):
-        self.edbapp = legacy_edb_app
+    def init(self, local_scratch, target_path, target_path2, target_path4):
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
-    def test_components_get_pin_from_component(self):
+    def test_components_get_pin_from_component(self, edb_examples):
         """Evaluate access to a pin from a component."""
-        comp = self.edbapp.components.get_component_by_name("J1")
+        # Done
+        edb = edb_examples.get_si_verse()
+        comp = edb.components.get_component_by_name("J1")
         assert comp is not None
-        pin = self.edbapp.components.get_pin_from_component("J1", pinName="1")
-        assert pin is not False
+        pin = edb.components.get_pin_from_component("J1", pin_name="1")
+        assert pin[0].name == "1"
+        edb.close()
 
-    def test_components_create_coax_port_on_component(self):
+    def test_components_create_coax_port_on_component(self, edb_examples):
         """Create a coaxial port on a component from its pin."""
-        coax_port = self.edbapp.components["U6"].pins["R3"].create_coax_port("coax_port")
+        # Done
+        edb = edb_examples.get_si_verse()
+        coax_port = edb.components["U6"].pins["R3"].create_coax_port("coax_port")
         coax_port.radial_extent_factor = 3
         assert coax_port.radial_extent_factor == 3
         assert coax_port.component
-        assert self.edbapp.components["U6"].pins["R3"].get_terminal()
-        assert self.edbapp.components["U6"].pins["R3"].id
-        assert self.edbapp.terminals
-        assert self.edbapp.ports
-        assert self.edbapp.components["U6"].pins["R3"].get_connected_objects()
+        assert edb.components["U6"].pins["R3"].get_terminal()
+        assert edb.components["U6"].pins["R3"].id
+        assert edb.terminals
+        assert edb.ports
+        assert len(edb.components["U6"].pins["R3"].get_connected_objects()) == 2
 
     def test_components_properties(self):
         """Access components properties."""

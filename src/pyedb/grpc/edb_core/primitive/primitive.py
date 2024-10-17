@@ -47,6 +47,7 @@ class Primitive(GrpcPrimitive):
         self._edb_object = edb_object
         self._core_stackup = pedb.stackup
         self._core_net = pedb.nets
+        self._object_instance = None
 
     @property
     def type(self):
@@ -59,6 +60,13 @@ class Primitive(GrpcPrimitive):
         str
         """
         return super().primitive_type
+
+    @property
+    def object_instance(self):
+        """Return Ansys.Ansoft.Edb.LayoutInstance.LayoutObjInstance object."""
+        if not self._object_instance:
+            self._object_instance = self.layout.layout_instance.get_layout_obj_instance_in_context(self, None)
+        return self._object_instance
 
     # @property
     # def primitive_type(self):
@@ -93,7 +101,7 @@ class Primitive(GrpcPrimitive):
         -------
         list
         """
-        return self._pedb.get_connected_objects(self._layout_obj_instance)
+        return self._pedb.get_connected_objects(self.object_instance)
 
     def area(self, include_voids=True):
         """Return the total area.

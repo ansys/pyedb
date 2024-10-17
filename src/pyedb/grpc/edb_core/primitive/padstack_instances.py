@@ -58,10 +58,10 @@ class PadstackInstance(GrpcPadstackInstance):
         super().__init__(edb_instance.msg)
         self._edb_object = edb_instance
         self._bounding_box = []
-        self._object_instance = None
         self._position = []
         self._pdef = None
         self._pedb = pedb
+        self._object_instance = None
 
     @property
     def terminal(self):
@@ -450,7 +450,7 @@ class PadstackInstance(GrpcPadstackInstance):
     @property
     def name(self):
         """Padstack Instance Name. If it is a pin, the syntax will be like in AEDT ComponentName-PinName."""
-        if self.is_pin:
+        if not super().name:
             return self.aedt_name
         else:
             return super().name
@@ -862,3 +862,12 @@ class PadstackInstance(GrpcPadstackInstance):
             max_limit=max_limit,
             component_only=component_only,
         )
+
+    def get_connected_objects(self):
+        """Get connected objects.
+
+        Returns
+        -------
+        list
+        """
+        return self._pedb.get_connected_objects(self.object_instance)
