@@ -43,9 +43,8 @@ jobs:
     steps:
       - name: Check documentation style
         uses: ansys/actions/doc-style@v8
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        vale-version: "3.4.1"
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   smoke-tests:
     name: Build and Smoke tests (${{ matrix.os }} | Python ${{ matrix.python-version }})
