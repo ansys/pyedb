@@ -246,7 +246,7 @@ else:
     config = {"run_examples": True}
 
 
-# Specify environment variable to build the doc without grpahical mode while
+# Specify environment variable to build the doc without graphical mode while
 # keeping examples graphical mode activated.
 os.environ["PYAEDT_NON_GRAPHICAL"] = "1"
 os.environ["PYAEDT_DOC_GENERATION"] = "1"
