@@ -20,33 +20,17 @@ except ImportError:
 
 if is_linux and cpython:  # pragma: no cover
     try:
-        if os.environ.get("DOTNET_ROOT") is None:
-            runtime = None
-            try:
-                import dotnet
-
-                runtime = os.path.join(os.path.dirname(dotnet.__path__))
-            except:
-                import dotnetcore2
-
-                runtime = os.path.join(os.path.dirname(dotnetcore2.__file__), "bin")
-            finally:
-                os.environ["DOTNET_ROOT"] = runtime
-
         from pythonnet import load
 
         if pyedb_path is not None:
-            json_file = os.path.abspath(os.path.join(pyedb_path, "misc", "pyedb.runtimeconfig.json"))
-            load("coreclr", runtime_config=json_file, dotnet_root=os.environ["DOTNET_ROOT"])
+            load("coreclr")
             print("DotNet Core correctly loaded.")
             if "mono" not in os.getenv("LD_LIBRARY_PATH", ""):
                 warnings.warn("LD_LIBRARY_PATH needs to be setup to use pyedb.")
-                warnings.warn("export ANSYSEM_ROOT232=/path/to/AnsysEM/v232/Linux64")
+                warnings.warn("export ANSYSEM_ROOT242=/path/to/AnsysEM/v242/Linux64")
                 msg = "export LD_LIBRARY_PATH="
-                msg += "$ANSYSEM_ROOT232/common/mono/Linux64/lib64:$LD_LIBRARY_PATH"
-                msg += (
-                    "If PyEDB will run on AEDT<2023.2 then $ANSYSEM_ROOT222/Delcross should be added to LD_LIBRARY_PATH"
-                )
+                msg += "$ANSYSEM_ROOT242/common/mono/Linux64/lib64:$LD_LIBRARY_PATH"
+                msg += "On AEDT<2023.2, $ANSYSEM_ROOT222/Delcross should also be added to the LD_LIBRARY_PATH."
                 warnings.warn(msg)
             is_clr = True
         else:
