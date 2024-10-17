@@ -117,10 +117,7 @@ class Component(GrpcComponentGroup):
     @property
     def model(self):
         """Component model."""
-        if self.model_type == "PinPairModel":
-            return PinPairModel(self._pedb, self)
-        elif self.model_type == "SPICEModel":
-            return SpiceModel(self._pedb, self)
+        return self.component_property.model
 
     @model.setter
     def model(self, value):

@@ -1686,8 +1686,8 @@ class Components(object):
         component = self.get_component_by_name(componentname)
         pin_number = len(component.pins)
         if pin_number == 2:
-            from_pin = component.pins[0]
-            to_pin = component.pins[1]
+            from_pin = list(component.pins.values())[0]
+            to_pin = list(component.pins.values())[1]
             rlc = GrpcRlc()
             rlc.is_parallel = isparallel
             if res_value is not None:
@@ -1706,7 +1706,11 @@ class Components(object):
             else:
                 rlc.CEnabled = False
             pin_pair = (from_pin.name, to_pin.name)
-            component.model.set_rlc(pin_pair, rlc)
+            component_property = component.component_property
+            model = component_property.model
+            model.set_rlc(pin_pair, rlc)
+            component_property.model = model
+            component.component_property = component_property
         else:
             self._logger.warning(
                 f"Component {componentname} has not been assigned because either it is not present in the layout "

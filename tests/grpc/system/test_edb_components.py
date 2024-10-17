@@ -82,10 +82,16 @@ class TestClass:
         assert len(edb.components.IOs) > 0
         assert len(edb.components.Others) > 0
 
-    def test_components_rlc_components_values(self):
+    def test_components_rlc_components_values(self, edb_examples):
         """Update values of an RLC component."""
-        assert self.edbapp.components.set_component_rlc("C1", res_value=1e-3, cap_value="10e-6", isparallel=False)
-        assert self.edbapp.components.set_component_rlc("L10", res_value=1e-3, ind_value="10e-6", isparallel=True)
+        # Done
+        edb = edb_examples.get_si_verse()
+        assert edb.components.set_component_rlc("C1", res_value=0.1, cap_value="5e-6", ind_value=1e-9, isparallel=False)
+        component = edb.components.instances["C1"]
+        assert component.rlc_values == [0.1, 1e-9, 5e-6]
+        assert edb.components.set_component_rlc("L10", res_value=1e-3, ind_value="10e-6", isparallel=True)
+        component = edb.components.instances["L10"]
+        assert component.rlc_values == [1e-3, 10e-6, 0.0]
 
     def test_components_R1_queries(self):
         """Evaluate queries over component R1."""
