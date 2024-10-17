@@ -70,15 +70,17 @@ class TestClass:
         assert edb.ports
         assert len(edb.components["U6"].pins["R3"].get_connected_objects()) == 2
 
-    def test_components_properties(self):
+    def test_components_properties(self, edb_examples):
         """Access components properties."""
-        assert len(self.edbapp.components.instances) > 2
-        assert len(self.edbapp.components.inductors) > 0
-        assert len(self.edbapp.components.resistors) > 0
-        assert len(self.edbapp.components.capacitors) > 0
-        assert len(self.edbapp.components.ICs) > 0
-        assert len(self.edbapp.components.IOs) > 0
-        assert len(self.edbapp.components.Others) > 0
+        # Done
+        edb = edb_examples.get_si_verse()
+        assert len(edb.components.instances) > 2
+        assert len(edb.components.inductors) > 0
+        assert len(edb.components.resistors) > 0
+        assert len(edb.components.capacitors) > 0
+        assert len(edb.components.ICs) > 0
+        assert len(edb.components.IOs) > 0
+        assert len(edb.components.Others) > 0
 
     def test_components_rlc_components_values(self):
         """Update values of an RLC component."""
