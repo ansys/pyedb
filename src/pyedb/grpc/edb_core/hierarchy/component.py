@@ -47,6 +47,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 from pyedb.grpc.edb_core.definition.package_def import PackageDef
 from pyedb.grpc.edb_core.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.edb_core.hierarchy.spice_model import SpiceModel
+from pyedb.grpc.edb_core.layers.stackup_layer import StackupLayer
 from pyedb.grpc.edb_core.primitive.padstack_instances import PadstackInstance
 from pyedb.grpc.edb_core.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
@@ -740,7 +741,7 @@ class Component(GrpcComponentGroup):
         str
            Name of the placement layer.
         """
-        return super().placement_layer.name
+        return StackupLayer(self._pedb, super().placement_layer)
 
     @property
     def is_top_mounted(self):
@@ -765,8 +766,7 @@ class Component(GrpcComponentGroup):
         float
             Lower elevation of the placement layer.
         """
-        layer = self.placement_layer
-        return layer.lower_elevation
+        return self.placement_layer.lower_elevation
 
     @property
     def upper_elevation(self):
@@ -778,8 +778,7 @@ class Component(GrpcComponentGroup):
             Upper elevation of the placement layer.
 
         """
-        layer = self.placement_layer()
-        return layer.upper_elevation
+        return self.placement_layer.upper_elevation
 
     @property
     def top_bottom_association(self):

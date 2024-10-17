@@ -77,7 +77,7 @@ class StackupLayer(GrpcStackupLayer):
         float
             Lower elevation.
         """
-        return super().lower_elevation.value
+        return round(super().lower_elevation.value, 9)
 
     @lower_elevation.setter
     def lower_elevation(self, value):
@@ -104,7 +104,7 @@ class StackupLayer(GrpcStackupLayer):
         float
             Upper elevation.
         """
-        return super().upper_elevation.value
+        return round(super().upper_elevation.value, 9)
 
     @property
     def is_negative(self):
@@ -194,7 +194,7 @@ class StackupLayer(GrpcStackupLayer):
         -------
         float
         """
-        return super().thickness.value
+        return round(super().thickness.value, 9)
 
     @thickness.setter
     def thickness(self, value):

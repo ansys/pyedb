@@ -69,6 +69,7 @@ class TestClass:
         assert edb.terminals
         assert edb.ports
         assert len(edb.components["U6"].pins["R3"].get_connected_objects()) == 2
+        edb.close()
 
     def test_components_properties(self, edb_examples):
         """Access components properties."""
@@ -81,6 +82,7 @@ class TestClass:
         assert len(edb.components.ICs) > 0
         assert len(edb.components.IOs) > 0
         assert len(edb.components.Others) > 0
+        edb.close()
 
     def test_components_rlc_components_values(self, edb_examples):
         """Update values of an RLC component."""
@@ -92,42 +94,42 @@ class TestClass:
         assert edb.components.set_component_rlc("L10", res_value=1e-3, ind_value="10e-6", isparallel=True)
         component = edb.components.instances["L10"]
         assert component.rlc_values == [1e-3, 10e-6, 0.0]
+        edb.close()
 
-    def test_components_R1_queries(self):
+    def test_components_R1_queries(self, edb_examples):
         """Evaluate queries over component R1."""
-        assert "R1" in list(self.edbapp.components.instances.keys())
-        assert not self.edbapp.components.instances["R1"].is_null
-        assert self.edbapp.components.instances["R1"].res_value
-        assert self.edbapp.components.instances["R1"].placement_layer
-        assert self.edbapp.components.instances["R1"].component_def
-        assert self.edbapp.components.instances["R1"].location
-        assert isinstance(self.edbapp.components.instances["R1"].lower_elevation, float)
-        assert isinstance(self.edbapp.components.instances["R1"].upper_elevation, float)
-        assert self.edbapp.components.instances["R1"].top_bottom_association == 2
-        assert self.edbapp.components.instances["R1"].pinlist
-        assert self.edbapp.components.instances["R1"].pins
-        assert self.edbapp.components.instances["R1"].pins["1"].pin_number
-        assert self.edbapp.components.instances["R1"].pins["1"].component_pin
+        # Done
+        edb = edb_examples.get_si_verse()
+        assert "R1" in list(edb.components.instances.keys())
+        assert not edb.components.instances["R1"].is_null
+        assert edb.components.instances["R1"].res_value == 6200
+        assert edb.components.instances["R1"].placement_layer.name == "16_Bottom"
+        assert not edb.components.instances["R1"].component_def.is_null
+        assert edb.components.instances["R1"].location == [0.11167500144, 0.04072499856]
+        assert edb.components.instances["R1"].lower_elevation == 0.0
+        assert edb.components.instances["R1"].upper_elevation == 35e-6
+        assert edb.components.instances["R1"].top_bottom_association == 2
+        assert len(edb.components.instances["R1"].pinlist) == 2
+        assert edb.components.instances["R1"].pins
+        assert edb.components.instances["R1"].pins["1"].name == "1"
+        assert edb.components.instances["R1"].pins["1"].component_pin == "1"
 
-        assert self.edbapp.components.instances["R1"].pins["1"].component
+        assert not edb.components.instances["R1"].pins["1"].component.is_null
         assert (
-            self.edbapp.components.instances["R1"].pins["1"].lower_elevation
-            == self.edbapp.components.instances["R1"].lower_elevation
+            edb.components.instances["R1"].pins["1"].placement_layer.name
+            == edb.components.instances["R1"].placement_layer.name
         )
         assert (
-            self.edbapp.components.instances["R1"].pins["1"].placement_layer
-            == self.edbapp.components.instances["R1"].placement_layer
+            edb.components.instances["R1"].pins["1"].placement_layer.upper_elevation
+            == edb.components.instances["R1"].placement_layer.upper_elevation
         )
         assert (
-            self.edbapp.components.instances["R1"].pins["1"].upper_elevation
-            == self.edbapp.components.instances["R1"].upper_elevation
+            edb.components.instances["R1"].pins["1"].placement_layer.top_bottom_association
+            == edb.components.instances["R1"].placement_layer.top_bottom_association
         )
-        assert (
-            self.edbapp.components.instances["R1"].pins["1"].top_bottom_association
-            == self.edbapp.components.instances["R1"].top_bottom_association
-        )
-        assert self.edbapp.components.instances["R1"].pins["1"].position
-        assert self.edbapp.components.instances["R1"].pins["1"].rotation
+        assert edb.components.instances["R1"].pins["1"].position == [0.111675, 0.039975]
+        assert edb.components.instances["R1"].pins["1"].rotation == -1.5707963267949
+        edb.close()
 
     def test_components_create_clearance_on_component(self):
         """Evaluate the creation of a clearance on soldermask."""
