@@ -25,9 +25,6 @@ This module contains these classes: `EdbLayout` and `Shape`.
 """
 import math
 
-from ansys.edb.core.definition.bondwire_def import (
-    BondwireDefType as GrpcBondwireDefType,
-)
 from ansys.edb.core.geometry.arc_data import ArcData as GrpcArcData
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import (
@@ -38,6 +35,7 @@ from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
 from ansys.edb.core.primitive.primitive import (
     RectangleRepresentationType as GrpcRectangleRepresentationType,
 )
+from ansys.edb.core.primitive.primitive import BondwireType as GrpcBondwireType
 from ansys.edb.core.primitive.primitive import PathCornerType as GrpcPathCornerType
 from ansys.edb.core.primitive.primitive import PathEndCapType as GrpcPathEndCapType
 from ansys.edb.core.utility.value import Value as GrpcValue
@@ -632,15 +630,16 @@ class Modeler(object):
         """
         net = self._pedb.nets.find_or_create_net(net_name)
         if isinstance(main_shape, list):
+            new_points = []
             for idx, i in enumerate(main_shape):
-                new_points = self._edb.Geometry.PointData(GrpcValue(i[0]), GrpcValue(i[1]))
-                polygon_data = GrpcPolygonData(points=new_points)
+                new_points.append(GrpcPointData([GrpcValue(i[0]), GrpcValue(i[1])]))
+            polygon_data = GrpcPolygonData(points=new_points)
 
-        elif isinstance(main_shape, Modeler.Shape):
-            polygon_data = self.shape_to_polygon_data(main_shape)
+        elif isinstance(main_shape, GrpcPolygonData):
+            polygon_data = main_shape
         else:
             polygon_data = main_shape
-        if polygon_data or polygon_data.points:
+        if not polygon_data.points:
             self._logger.error("Failed to create main shape polygon data")
             return False
         for void in voids:
@@ -660,7 +659,7 @@ class Modeler(object):
         if polygon.is_null or polygon_data is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
-        return polygon
+        return Polygon(self._pedb, polygon)
 
     def create_rectangle(
         self,
@@ -1279,6 +1278,8 @@ class Modeler(object):
         end_x,
         end_y,
         net,
+        start_cell_instance_name=None,
+        end_cell_instance_name=None,
         bondwire_type="jedec4",
     ):
         """Create a bondwire object.
@@ -1309,22 +1310,48 @@ class Modeler(object):
             Y value of end point.
         net : str or :class:`Net <ansys.edb.net.Net>` or None
             Net of the Bondwire.
+        start_cell_instance_name : str, optional
+            Cell instance name where the bondwire starts.
+        end_cell_instance_name : str, optional
+            Cell instance name where the bondwire ends.
 
         Returns
         -------
         :class:`pyedb.dotnet.edb_core.dotnet.primitive.BondwireDotNet`
             Bondwire object created.
         """
+        from ansys.edb.core.hierarchy.cell_instance import (
+            CellInstance as GrpcCellInstance,
+        )
+
+        start_cell_inst = None
+        end_cell_inst = None
+        cell_instances = {cell_inst.name: cell_inst for cell_inst in self._active_layout.cell_instances}
+        if start_cell_instance_name:
+            if start_cell_instance_name not in cell_instances:
+                start_cell_inst = GrpcCellInstance.create(
+                    self._pedb.active_layout, start_cell_instance_name, ref=self._pedb.active_layout
+                )
+            else:
+                start_cell_inst = cell_instances[start_cell_instance_name]
+                cell_instances = {cell_inst.name: cell_inst for cell_inst in self._active_layout.cell_instances}
+        if end_cell_instance_name:
+            if end_cell_instance_name not in cell_instances:
+                end_cell_inst = GrpcCellInstance.create(
+                    self._pedb.active_layout, end_cell_instance_name, ref=self._pedb.active_layout
+                )
+            else:
+                end_cell_inst = cell_instances[end_cell_instance_name]
 
         if bondwire_type == "jedec4":
-            bondwire_type = GrpcBondwireDefType.JEDEC4_BONDWIRE_DEF
+            bondwire_type = GrpcBondwireType.JEDEC4
         elif bondwire_type == "jedec5":
-            bondwire_type = GrpcBondwireDefType.JEDEC5_BONDWIRE_DEF
+            bondwire_type = GrpcBondwireType.JEDEC5
         elif bondwire_type == "apd":
-            bondwire_type = GrpcBondwireDefType.APD_BONDWIRE_DEF
+            bondwire_type = GrpcBondwireType.APD
         else:
-            bondwire_type = GrpcBondwireDefType.JEDEC4_BONDWIRE_DEF
-        return Bondwire.create(
+            bondwire_type = GrpcBondwireType.JEDEC4
+        bw = Bondwire.create(
             layout=self._active_layout,
             bondwire_type=bondwire_type,
             definition_name=definition_name,
@@ -1338,9 +1365,10 @@ class Modeler(object):
             end_x=GrpcValue(end_x),
             end_y=GrpcValue(end_y),
             net=net,
-            end_context=self._pedb.active_cell,
-            start_context=self._pedb.active_cell,
+            end_context=end_cell_inst,
+            start_context=start_cell_inst,
         )
+        return Bondwire(self._pedb, bw)
 
     def create_pin_group(
         self,
@@ -1367,7 +1395,9 @@ class Modeler(object):
             if isinstance(pins_by_id, int):
                 pins_by_id = [pins_by_id]
             for p in pins_by_id:
-                edb_pin = self._pedb.layout.find_object_by_id(p)
+                edb_pin = None
+                if p in self._pedb.padstacks.instances:
+                    edb_pin = self._pedb.padstacks.instances[p]
                 if edb_pin and not p in pins:
                     pins[p] = edb_pin
         if not pins_by_aedt_name:

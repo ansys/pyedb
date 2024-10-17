@@ -32,6 +32,7 @@ class StackupLayer(GrpcStackupLayer):
     def __init__(self, pedb, edb_object=None):
         super().__init__(edb_object.msg)
         self._pedb = pedb
+        self._edb_object = edb_object
 
     @property
     def _stackup_layer_mapping(self):

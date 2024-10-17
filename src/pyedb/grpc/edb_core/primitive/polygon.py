@@ -26,6 +26,7 @@ import math
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.primitive.primitive import Polygon as GrpcPolygon
+from ansys.edb.core.utility.value import Value as GrpcValue
 
 
 class Polygon(GrpcPolygon):
@@ -118,6 +119,39 @@ class Polygon(GrpcPolygon):
             polygon_data.move(_vector)
             self.polygon_data = polygon_data
             return True
+        return False
+
+    def scale(self, factor, center=None):
+        """Scales the polygon relative to a center point by a factor.
+
+        Parameters
+        ----------
+        factor : float
+            Scaling factor.
+        center : List of float or str [x,y], optional
+            If None scaling is done from polygon center.
+
+        Returns
+        -------
+        bool
+           ``True`` when successful, ``False`` when failed.
+        """
+        if not isinstance(factor, str):
+            factor = float(factor)
+            polygon_data = GrpcPolygonData(points=self.polygon_data.points)
+            if not center:
+                center = self.polygon_data.bounding_circle()
+                if center:
+                    polygon_data.scale(factor, center[0])
+                    self.polygon_data = polygon_data
+                    return True
+                else:
+                    self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
+            elif isinstance(center, list) and len(center) == 2:
+                center = GrpcPointData([GrpcValue(center[0]), GrpcValue(center[1])])
+                polygon_data.scale(factor, center)
+                self.polygon_data = polygon_data
+                return True
         return False
 
     def rotate(self, angle, center=None):

@@ -420,9 +420,9 @@ class PadstackInstance(GrpcPadstackInstance):
         position = self.get_position_and_rotation()
         if self.component:
             out2 = self.component.transform.transform_point(GrpcPointData(position[:2]))
-            self._position = out2
+            self._position = [round(out2[0].value, 6), round(out2[1].value, 6)]
         else:
-            self._position = position[:2]
+            self._position = [round(pt.value, 6) for pt in position[:2]]
         return self._position
 
     @position.setter

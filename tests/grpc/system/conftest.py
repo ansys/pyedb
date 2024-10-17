@@ -97,7 +97,7 @@ class EdbExamples:
 
     def get_no_ref_pins_component(self):
         aedb = self._copy_file_folder_into_local_folder("TEDB/component_no_ref_pins.aedb")
-        return Edb(aedb, edbversion=desktop_version)
+        return Edb(aedb, edbversion=desktop_version, restart_rpc_server=True)
 
 
 @pytest.fixture(scope="class")

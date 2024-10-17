@@ -34,31 +34,40 @@ class Bondwire(GrpcBondWire):
     def __init__(self, _pedb, edb_object):
         super().__init__(edb_object.msg)
         self._pedb = _pedb
+        self._edb_object = edb_object
 
-    def __create(self, **kwargs):
-        return Bondwire.create(
-            self._pedb.layout._edb_object,
-            kwargs.get("net"),
-            self._bondwire_type[kwargs.get("bondwire_type")],
-            kwargs.get("definition_name"),
-            kwargs.get("placement_layer"),
-            kwargs.get("width"),
-            kwargs.get("material"),
-            kwargs.get("start_context"),
-            kwargs.get("start_layer_name"),
-            kwargs.get("start_x"),
-            kwargs.get("start_y"),
-            kwargs.get("end_context"),
-            kwargs.get("end_layer_name"),
-            kwargs.get("end_x"),
-            kwargs.get("end_y"),
-        )
+    @property
+    def material(self):
+        return self.get_material().value
+
+    @material.setter
+    def material(self, value):
+        self.set_material(value)
+
+    # def __create(self, **kwargs):
+    #     return Bondwire.create(
+    #         self._pedb.layout,
+    #         kwargs.get("net"),
+    #         self._bondwire_type[kwargs.get("bondwire_type")],
+    #         kwargs.get("definition_name"),
+    #         kwargs.get("placement_layer"),
+    #         kwargs.get("width"),
+    #         kwargs.get("material"),
+    #         kwargs.get("start_context"),
+    #         kwargs.get("start_layer_name"),
+    #         kwargs.get("start_x"),
+    #         kwargs.get("start_y"),
+    #         kwargs.get("end_context"),
+    #         kwargs.get("end_layer_name"),
+    #         kwargs.get("end_x"),
+    #         kwargs.get("end_y"),
+    #     )
 
     @property
     def type(self):
         """str: Bondwire-type of a bondwire object. Supported values for setter: `"apd"`, `"jedec4"`, `"jedec5"`,
         `"num_of_type"`"""
-        return self.type.name.lower()
+        return super().type.name.lower()
 
     @type.setter
     def type(self, bondwire_type):
@@ -68,18 +77,18 @@ class Bondwire(GrpcBondWire):
             "jedec5": GrpcBondWireType.JEDEC5,
             "num_of_type": GrpcBondWireType.NUM_OF_TYPE,
         }
-        self.type = mapping[bondwire_type]
+        super(Bondwire, self.__class__).type.__set__(self, mapping[bondwire_type])
 
     @property
     def cross_section_type(self):
         """str: Bondwire-cross-section-type of a bondwire object. Supported values for setter: `"round",
         `"rectangle"`"""
-        return super().cross_section_type.name
+        return super().cross_section_type.name.lower()
 
     @cross_section_type.setter
-    def cross_section_type(self, bondwire_type):
+    def cross_section_type(self, cross_section_type):
         mapping = {"round": GrpcBondwireCrossSectionType.ROUND, "rectangle": GrpcBondwireCrossSectionType.RECTANGLE}
-        super().cross_section_type = mapping[bondwire_type]
+        super(Bondwire, self.__class__).cross_section_type.__set__(self, mapping[cross_section_type])
 
     @property
     def cross_section_height(self):
@@ -87,41 +96,30 @@ class Bondwire(GrpcBondWire):
         return super().cross_section_height.value
 
     @cross_section_height.setter
-    def cross_section_height(self, height):
-        super().cross_section_height = GrpcValue(height)
+    def cross_section_height(self, cross_section_height):
+        super(Bondwire, self.__class__).cross_section_height.__set__(self, GrpcValue(cross_section_height))
 
-    def get_trajectory(self):
-        """Get trajectory parameters of a bondwire object.
-
-        Returns
-        -------
-        tuple[float, float, float, float]
-
-        Returns a tuple of the following format:
-        **(x1, y1, x2, y2)**
-        **x1** : X value of the start point.
-        **y1** : Y value of the start point.
-        **x1** : X value of the end point.
-        **y1** : Y value of the end point.
-        """
-        return [i.value for i in self.get_trajectory()]
-
-    def set_trajectory(self, x1, y1, x2, y2):
-        """Set the parameters of the trajectory of a bondwire.
-
-        Parameters
-        ----------
-        x1 : float
-            X value of the start point.
-        y1 : float
-            Y value of the start point.
-        x2 : float
-            X value of the end point.
-        y2 : float
-            Y value of the end point.
-        """
-        values = [GrpcValue(i) for i in [x1, y1, x2, y2]]
-        self.set_trajectory(*values)
+    # @property
+    # def trajectory(self):
+    #     """Get trajectory parameters of a bondwire object.
+    #
+    #     Returns
+    #     -------
+    #     tuple[float, float, float, float]
+    #
+    #     Returns a tuple of the following format:
+    #     **(x1, y1, x2, y2)**
+    #     **x1** : X value of the start point.
+    #     **y1** : Y value of the start point.
+    #     **x1** : X value of the end point.
+    #     **y1** : Y value of the end point.
+    #     """
+    #     return [i.value for i in self.get_traj()]
+    #
+    # @trajectory.setter
+    # def trajectory(self, value):
+    #     values = [GrpcValue(i) for i in value]
+    #     self.set_traj(values[0], values[1], values[2], values[3])
 
     @property
     def width(self):
@@ -130,4 +128,28 @@ class Bondwire(GrpcBondWire):
 
     @width.setter
     def width(self, width):
-        super().width = GrpcValue(width)
+        super(Bondwire, self.__class__).width.__set__(self, GrpcValue(width))
+
+    # @property
+    # def start_elevation(self):
+    #     layer = self.get_start_elevation(self._pedb.active_cell)
+    #     return layer.name
+    #
+    # @start_elevation.setter
+    # def start_elevation(self, layer):
+    #     if not layer in self._pedb.stackup.layers:
+    #         return
+    #     layer = self._pedb.stackup.layers[layer]
+    #     self.set_start_elevation(self._pedb.active_cell, layer)
+    #
+    # @property
+    # def end_elevation(self):
+    #     layer = self.get_end_elevation(self._pedb.active_cell)
+    #     return layer.name
+    #
+    # @end_elevation.setter
+    # def end_elevation(self, layer):
+    #     if not layer in self._pedb.stackup.layers:
+    #         return
+    #     layer = self._pedb.stackup.layers[layer]
+    #     self.set_end_elevation(self._pedb.active_cell, layer)

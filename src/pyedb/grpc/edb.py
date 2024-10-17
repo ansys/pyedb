@@ -3938,15 +3938,17 @@ class EdbGrpc(EdbInit):
             if not reference_layer in [padstack_inst.start_layer, padstack_inst.stop_layer]:
                 padstack_inst.delete()
             else:
-                if padstack_inst.net_name in signal_nets:
+                if padstack_inst.net.name in signal_nets:
                     padstack_instances_index.insert(padstack_inst.id, padstack_inst.position)
-                    if not padstack_inst.padstack_definition in used_padstack_defs:
-                        used_padstack_defs.append(padstack_inst.padstack_definition)
+                    if not padstack_inst.padstack_def.name in used_padstack_defs:
+                        used_padstack_defs.append(padstack_inst.padstack_def.name)
 
         polys = [
             poly
             for poly in self.modeler.primitives
-            if poly.layer_name == reference_layer and poly.type == "Polygon" and poly.has_voids
+            if poly.layer.name == reference_layer
+            and self.modeler.primitives[0].primitive_type.name == "POLYGON"
+            and poly.has_voids
         ]
         if not polys:
             self.logger.error(
@@ -3958,10 +3960,10 @@ class EdbGrpc(EdbInit):
         for poly in polys:
             for void in poly.voids:
                 void_bbox = (
-                    void.polygon_data.bbox[0].x.value,
-                    void.polygon_data.bbox[0].y.value,
-                    void.polygon_data.bbox[1].x.value,
-                    void.polygon_data.bbox[1].y.value,
+                    void.polygon_data.bbox()[0].x.value,
+                    void.polygon_data.bbox()[0].y.value,
+                    void.polygon_data.bbox()[1].x.value,
+                    void.polygon_data.bbox()[1].y.value,
                 )
                 included_instances = list(padstack_instances_index.intersection(void_bbox))
                 if included_instances:

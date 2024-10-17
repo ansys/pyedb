@@ -220,7 +220,14 @@ class SourceExcitation:
             return False
         if isinstance(reference_pins, str):
             reference_pins = [reference_pins]
-        if isinstance(reference_pins, list):
+        elif isinstance(reference_pins, PadstackInstance):
+            if not reference_pins.name:
+                reference_pins = reference_pins.aedt_name
+                reference_pins.is_layout_pin = True
+            else:
+                reference_pins = reference_pins.name
+            reference_pins = [reference_pins]
+        elif isinstance(reference_pins, list):
             _temp = []
             for ref_pin in reference_pins:
                 if isinstance(ref_pin, int):
@@ -237,10 +244,14 @@ class SourceExcitation:
                     _temp.append(ref_pin.name)
             reference_pins = _temp
         elif isinstance(reference_pins, int):
-            if reference_pins in self._pedb.padstack.instances:
-                reference_pins = self._pedb.padstack.instances[reference_pins]
+            if reference_pins in self._pedb.padstacks.instances:
+                reference_pins = self._pedb.padstacks.instances[reference_pins]
+                if not reference_pins.name:
+                    reference_pins = [reference_pins.aedt_name]
+                else:
+                    reference_pins = [reference_pins.name]
         if isinstance(refdes, str):
-            refdes = self._pedb.padstack.instances[refdes]
+            refdes = self._pedb.padstacks.instances[refdes]
         elif isinstance(refdes, GrpcComponentGroup):
             refdes = Component(self._pedb, refdes)
         refdes_pins = refdes.pins
@@ -263,19 +274,26 @@ class SourceExcitation:
             self._logger.error("Pin list must contain only pins instances")
             return False
         if not port_name:
-            port_name = "Port_{}_{}".format(pins[0].net_name, pins[0].name)
-        if len([pin for pin in reference_pins if isinstance(pin, str)]) == len(reference_pins):
-            ref_cmp_pins = []
-            for ref_pin_name in reference_pins:
-                if ref_pin_name in refdes_pins:
-                    ref_cmp_pins.append(refdes_pins[ref_pin_name])
-                elif "-" in ref_pin_name:
-                    if ref_pin_name.split("-")[1] in refdes_pins:
-                        ref_cmp_pins.append(refdes_pins[ref_pin_name.split("-")[1]])
-            if not ref_cmp_pins:
-                self._logger.error("No reference pins found.")
-                return False
-            reference_pins = ref_cmp_pins
+            port_name = "Port_{}_{}".format(pins[0].net.name, pins[0].name)
+
+        ref_cmp_pins = []
+        for ref_pin_name in reference_pins:
+            if ref_pin_name in refdes_pins:
+                ref_cmp_pins.append(refdes_pins[ref_pin_name])
+            elif "-" in ref_pin_name:
+                if ref_pin_name.split("-")[1] in refdes_pins:
+                    ref_cmp_pins.append(refdes_pins[ref_pin_name.split("-")[1]])
+            elif "via" in ref_pin_name:
+                _ref_pin = [
+                    pin for pin in list(self._pedb.padstacks.instances.values()) if pin.aedt_name == ref_pin_name
+                ]
+                if _ref_pin:
+                    _ref_pin[0].is_layout_pin = True
+                    ref_cmp_pins.append(_ref_pin[0])
+        if not ref_cmp_pins:
+            self._logger.error("No reference pins found.")
+            return False
+        reference_pins = ref_cmp_pins
         if len(pins) > 1 or pingroup_on_single_pin:
             pec_boundary = False
             self._logger.info(
@@ -284,10 +302,10 @@ class SourceExcitation:
             )
             group_name = "group_{}".format(port_name)
             pin_group = self._pedb.components.create_pingroup_from_pins(pins, group_name)
-            term = self._pedb.components._create_pin_group_terminal(pingroup=pin_group, term_name=port_name)
+            term = self._create_pin_group_terminal(pingroup=pin_group, term_name=port_name)
 
         else:
-            term = self._pedb.components._create_terminal(pins[0], term_name=port_name)
+            term = self._create_terminal(pins[0], term_name=port_name)
         term.is_circuit_port = True
         if len(reference_pins) > 1 or pingroup_on_single_pin:
             pec_boundary = False
@@ -298,14 +316,10 @@ class SourceExcitation:
             ref_group_name = "group_{}_ref".format(port_name)
             ref_pin_group = self._pedb.components.create_pingroup_from_pins(reference_pins, ref_group_name)
             ref_pin_group = self._pedb.siwave.pin_groups[ref_pin_group.name]
-            ref_term = self._pedb.components._create_pin_group_terminal(
-                pingroup=ref_pin_group, term_name=port_name + "_ref"
-            )
+            ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
 
         else:
-            ref_term = self._pedb.components._create_terminal(
-                reference_pins[0].primitive_object, term_name=port_name + "_ref"
-            )
+            ref_term = self._create_terminal(reference_pins[0], term_name=port_name + "_ref")
         ref_term.is_circuit_port = True
         term.impedance = GrpcValue(impedance)
         term.reference_terminal = ref_term
@@ -343,9 +357,9 @@ class SourceExcitation:
         net_list : str or list of string.
             List of nets where ports must be created on the component.
             If the net is not part of the component, this parameter is skipped.
-        port_type : SourceType enumerator, CoaxPort or CircuitPort
-            Type of port to create. ``CoaxPort`` generates solder balls.
-            ``CircuitPort`` generates circuit ports on pins belonging to the net list.
+        port_type : str, optional
+            Type of port to create. ``coax_port`` generates solder balls.
+            ``circuit_port`` generates circuit ports on pins belonging to the net list.
         do_pingroup : bool
             True activate pingroup during port creation (only used with combination of CircPort),
             False will take the closest reference pin and generate one port per signal pin.
@@ -523,6 +537,8 @@ class SourceExcitation:
                                     search_radius=3e-3,
                                 )
                                 if ref_pin:
+                                    if not isinstance(ref_pin, list):
+                                        ref_pin = [ref_pin]
                                     self.create_port_on_pins(component, [pin.name], ref_pin[0].id)
                             else:
                                 self._logger.error("Skipping port creation no reference pin found.")

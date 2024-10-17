@@ -212,7 +212,7 @@ class Padstacks(object):
         pad_stack_inst = self._pedb.layout.padstack_instances
         if len(self._instances) == len(pad_stack_inst):
             return self._instances
-        self._instances = {i.id: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
+        self._instances = {i.edb_uid: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
         return self._instances
 
     @property
