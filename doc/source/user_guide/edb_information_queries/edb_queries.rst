@@ -40,7 +40,7 @@ Get statistics
    :width: 400
    :alt: Layout stats
 
-Get nets and plot them in Matplotlib
+Get nets and plot them in matplotlib
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
@@ -49,12 +49,12 @@ Get nets and plot them in Matplotlib
    edbapp.nets.netlist
    # power nets
    nets.power
-   # Plot nets in Matplotlib
+   # Plot nets in matplotlib
    edbapp.nets.plot(None)
 
 .. image:: ../../resources/layout_plot_all_nets.png
    :width: 800
-   :alt: Plot all nets in Matplotlib
+   :alt: Plot all nets in matplotlib
 
 Get all components and then pins from components connected to a net
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
