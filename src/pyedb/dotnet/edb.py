@@ -94,7 +94,7 @@ from pyedb.dotnet.edb_core.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
     SiwaveSimulationSetup,
 )
-from pyedb.generic.constants import AEDT_UNITS, SolverType
+from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import (
     generate_unique_name,
     get_string_version,
@@ -4502,3 +4502,47 @@ class Edb(Database):
     def workflow(self):
         """Workflow class."""
         return Workflow(self)
+
+    def export_gds_comp_xml(self,comps_to_export,gds_comps_unit="mm",control_path=None):
+        """Exports an XML file with selected components information for use in a GDS import.
+
+        Parameters
+        ----------
+        comps_to_export : list
+            List of components whose information will be exported to xml file.
+        gds_comps_unit : str, optional
+            GDS_COMPONENTS section units. Default is ``"mm"``.
+        control_path : str, optional
+            Path for outputting the XML file.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+
+        fo_txt = "<!-- To be copied inside of XML's <GDS_COMPONENTS> session -->\n"
+        fo_txt += '<GDS_COMPONENTS LengthUnit="{}">\n'.format(gds_comps_unit)
+
+        if comps_to_export == []:
+            comps_to_export = self.components.components
+
+        for comp in comps_to_export:
+            ocomp = self.components.components[comp]
+            fo_txt += "\t<GDS_COMPONENT>\n"
+            for pin in ocomp.pins:
+                pins_position_unit = unit_converter(ocomp.pins[pin].position, output_units=gds_comps_unit)
+                fo_txt += '\t\t<GDS_PIN Name="{}" x="{}" y="{}" Layer="{}"/>\n'.format(ocomp.pins[pin].component_pin,
+                                                                                       pins_position_unit[0],
+                                                                                       pins_position_unit[1],
+                                                                                       ocomp.pins[pin].placement_layer)
+            fo_txt += '\t\t<Component RefDes="{}" PartName="{}" PartType="{}">\n'.format(ocomp.refdes,ocomp.partname,ocomp.type)
+            fo_txt += '\t\t</Component>\n'
+            fo_txt += '\t</GDS_COMPONENT>\n'
+        fo_txt += "</GDS_COMPONENTS>\n"
+
+        with open(control_path, "w") as fo:
+            fo.write(fo_txt)
+
+        result = os.path.isfile(control_path)
+        return result
