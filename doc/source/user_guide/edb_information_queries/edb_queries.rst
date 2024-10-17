@@ -8,7 +8,7 @@ these tasks:
 
 - Load a layout.
 - Get statistics.
-- Get nets and plot them in Matplotlib.
+- Get nets and plot them in matplotlib.
 - Get all components and then get pins from components connected to a given net.
 
 .. autosummary::
