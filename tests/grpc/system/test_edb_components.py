@@ -139,9 +139,11 @@ class TestClass:
         assert comp.create_clearance_on_component()
         edb.close()
 
-    def test_components_get_components_from_nets(self):
+    def test_components_get_components_from_nets(self, edb_examples):
         """Access to components from nets."""
-        assert self.edbapp.components.get_components_from_nets("DDR4_DQS0_P")
+        # Done
+        edb = edb_examples.get_si_verse()
+        assert edb.components.get_components_from_nets("DDR4_DQS0_P")
 
     def test_components_resistors(self):
         """Evaluate the components resistors."""

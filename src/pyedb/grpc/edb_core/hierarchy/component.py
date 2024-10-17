@@ -629,10 +629,14 @@ class Component(GrpcComponentGroup):
 
         Returns
         -------
-        list
-            List of Nets of Component.
+        list[str]
+            List of net name from component.
         """
-        return list(set([pin.net.name for pin in self.pinlist]))
+        nets = []
+        for pin in list(self.pins.values()):
+            if not pin.net.is_null:
+                nets.append(pin.net.name)
+        return list(set(nets))
 
     @property
     def pins(self):
