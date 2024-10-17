@@ -974,7 +974,7 @@ class Component(GrpcComponentGroup):
 
         comp_layer = self.placement_layer
         layer_names = list(self._pedb.stackup.layers.keys())
-        layer_index = layer_names.index(comp_layer)
+        layer_index = layer_names.index(comp_layer.name)
         if comp_layer in [layer_names[0] + layer_names[-1]]:
             return False
         elif layer_index < len(layer_names) / 2:

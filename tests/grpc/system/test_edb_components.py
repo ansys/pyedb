@@ -96,7 +96,7 @@ class TestClass:
         assert component.rlc_values == [1e-3, 10e-6, 0.0]
         edb.close()
 
-    def test_components_R1_queries(self, edb_examples):
+    def test_components_r1_queries(self, edb_examples):
         """Evaluate queries over component R1."""
         # Done
         edb = edb_examples.get_si_verse()
@@ -131,10 +131,13 @@ class TestClass:
         assert edb.components.instances["R1"].pins["1"].rotation == -1.5707963267949
         edb.close()
 
-    def test_components_create_clearance_on_component(self):
+    def test_components_create_clearance_on_component(self, edb_examples):
         """Evaluate the creation of a clearance on soldermask."""
-        comp = self.edbapp.components.instances["U1"]
+        # Done
+        edb = edb_examples.get_si_verse()
+        comp = edb.components.instances["U1"]
         assert comp.create_clearance_on_component()
+        edb.close()
 
     def test_components_get_components_from_nets(self):
         """Access to components from nets."""
