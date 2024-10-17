@@ -42,11 +42,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check documentation style
-        uses: ansys/actions/doc-style@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          vale-config: "doc/.vale.ini"
-          vale-version: "2.29.6"
+        uses: ansys/actions/doc-style@v8
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        vale-version: "3.4.1"
 
   smoke-tests:
     name: Build and Smoke tests (${{ matrix.os }} | Python ${{ matrix.python-version }})

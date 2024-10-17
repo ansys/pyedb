@@ -38,11 +38,12 @@ repos:
     ]
 
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.2.6
+  rev: v2.3.0
   hooks:
   - id: codespell
-    args: ["--toml", "pyproject.toml"]
-    additional_dependencies: [tomli]
+    args: ["--ignore-words", "doc/styles/config/vocabularies/ANSYS/accept.txt", "--skip", "pyproject.toml"]
+    additional_dependencies:
+      - tomli
 
 - repo: https://github.com/PyCQA/docformatter
   rev: v1.7.5
