@@ -2189,23 +2189,22 @@ class Components(object):
         for pin in pins_list:
             placement_layer = pin.placement_layer
             positions_to_short.append(pin.position)
-            if placement_layer in self._pedb.padstacks.definitions[pin.padstack_de.name].pad_by_layer:
-                pad = self._pedb.padstacks.definitions[pin.padstack_def.name].pad_by_layer[placement_layer]
+            if placement_layer.name in self._pedb.padstacks.definitions[pin.padstack_def.name].pad_by_layer:
+                pad = self._pedb.padstacks.definitions[pin.padstack_def.name].pad_by_layer[placement_layer.name]
             else:
                 layer = list(self._pedb.padstacks.definitions[pin.padstack_def.name].pad_by_layer.keys())[0]
                 pad = self._pedb.padstacks.definitions[pin.padstack_def.name].pad_by_layer[layer]
-            pars = pad.parameters_values
-            geom = pad.geometry_type
-            if geom < 6 and pars:
+            pars = [p.value for p in pad[1]]
+            if pad[0].value < 6 and pars:
                 delta_pins.append(max(pars) + min(pars) / 2)
                 w = min(min(pars), w)
             elif pars:
                 delta_pins.append(1.5 * pars[0])
                 w = min(pars[0], w)
             elif pad.polygon_data.edb_api:  # pragma: no cover
-                bbox = pad.polygon_data.edb_api.GetBBox()
-                lower = [bbox.Item1.X.ToDouble(), bbox.Item1.Y.ToDouble()]
-                upper = [bbox.Item2.X.ToDouble(), bbox.Item2.Y.ToDouble()]
+                bbox = pad.polygon_data.bbox()
+                lower = [bbox[0].x.value, bbox[0].y.value]
+                upper = [bbox[1].x.value, bbox[1].y.value]
                 pars = [abs(lower[0] - upper[0]), abs(lower[1] - upper[1])]
                 delta_pins.append(max(pars) + min(pars) / 2)
                 w = min(min(pars), w)

@@ -303,10 +303,13 @@ class TestClass:
         )
         edb.close()
 
-    def test_components_short_component(self):
+    def test_components_short_component(self, edb_examples):
         """Short pins of component with a trace."""
-        assert self.edbapp.components.short_component_pins("U12", width=0.2e-3)
-        assert self.edbapp.components.short_component_pins("U10", ["2", "5"])
+        # Done
+        edb = edb_examples.get_si_verse()
+        assert edb.components.short_component_pins("U12", width=0.2e-3)
+        assert edb.components.short_component_pins("U10", ["2", "5"])
+        edb.close()
 
     def test_components_type(self):
         """Retrieve components type."""

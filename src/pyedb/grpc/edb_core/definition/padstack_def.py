@@ -168,9 +168,7 @@ class PadstackDef(GrpcPadstackDef):
         if not self._pad_by_layer:
             for layer in self.layers:
                 try:
-                    self._pad_by_layer[layer] = round(
-                        self.data.get_pad_parameters(layer, GrpcPadType.REGULAR_PAD)[1][0].value, 6
-                    )
+                    self._pad_by_layer[layer] = self.data.get_pad_parameters(layer, GrpcPadType.REGULAR_PAD)
                 except:
                     self._pad_by_layer[layer] = None
             return self._pad_by_layer
