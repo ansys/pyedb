@@ -1,0 +1,6 @@
+defeature\_settings
+===================
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.hfss_simulation_setup
+
+.. autoproperty:: HfssSimulationSetup.defeature_settings

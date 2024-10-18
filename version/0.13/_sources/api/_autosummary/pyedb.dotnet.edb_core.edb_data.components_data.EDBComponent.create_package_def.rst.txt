@@ -1,0 +1,6 @@
+create\_package\_def
+====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.components_data
+
+.. automethod:: EDBComponent.create_package_def
