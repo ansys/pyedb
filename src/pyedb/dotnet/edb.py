@@ -3609,7 +3609,6 @@ class Edb(Database):
         Dict[str, :class:`legacy.edb_core.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
 
         """
-        setup_types = {}
         setups = {}
         for i in list(self.active_cell.SimulationSetups):
             if i.GetType().ToString().endswith("kHFSS"):
