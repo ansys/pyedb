@@ -1216,8 +1216,8 @@ class Components(object):
             new_cmp_layer_name = pins[0].padstack_def.data.layer_names[0]
         else:
             new_cmp_layer_name = placement_layer
-        if new_cmp_layer_name in self._pedb.stackup.signal_layer:
-            new_cmp_placement_layer = self._pedb.stackup.signal_layer[new_cmp_layer_name]._edb_object
+        if new_cmp_layer_name in self._pedb.stackup.signal_layers:
+            new_cmp_placement_layer = self._pedb.stackup.signal_layers[new_cmp_layer_name]
             new_cmp.placement_layer = new_cmp_placement_layer
 
         if is_rlc and len(pins) == 2:
@@ -1251,8 +1251,7 @@ class Components(object):
             rlc_model = PinPairModel(self._pedb, new_cmp.model)
             rlc_model.set_rlc(pin_pair, rlc)
             new_cmp.component_property.set_model(rlc_model)
-
-        new_cmp.transform(hosting_component_location)
+        new_cmp.transform = hosting_component_location
         new_edb_comp = Component(self._pedb, new_cmp)
         self._cmp[new_cmp.name] = new_edb_comp
         return new_edb_comp
@@ -1594,15 +1593,13 @@ class Components(object):
         if isinstance(component, str):
             if component in self.instances:
                 cmp = self.instances[component]
-        else:  # pragma: no cover
+        else:
             cmp = self.instances[component.name]
-
-        # cmp_type = edb_cmp.GetComponentType()
         if not sball_diam:
-            pin1 = cmp.pins[0]
-            pin_layers = pin1.padstack_def.data.get_layer_names()
-            pad_params = self._padstack.get_pad_parameters(pin=pin1, layername=pin_layers[0], pad_type=0)
-            _sb_diam = min([abs(self._get_edb_value(val).ToDouble()) for val in pad_params[1]])
+            pin1 = list(cmp.pins.values())[0]
+            pin_layers = pin1.padstack_def.data.layer_names
+            pad_params = self._pedb.padstacks.get_pad_parameters(pin=pin1, layername=pin_layers[0], pad_type=0)
+            _sb_diam = min([abs(GrpcValue(val).value) for val in pad_params[1]])
             sball_diam = 0.8 * _sb_diam
         if sball_height:
             sball_height = round(GrpcValue(sball_height).value, 9)

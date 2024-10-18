@@ -244,56 +244,64 @@ class TestClass:
             if el.edb_uid == 5954:
                 selection_poly = el
         assert edb.modeler.parametrize_polygon(poly, selection_poly)
+        edb.close()
 
-    def test_components_update_from_bom(self):
+    def test_components_update_from_bom(self, edb_examples):
         """Update components with values coming from a BOM file."""
-        assert self.edbapp.components.update_rlc_from_bom(
+        # Done
+        edb = edb_examples.get_si_verse()
+        assert edb.components.update_rlc_from_bom(
             os.path.join(local_path, "example_models", test_subfolder, bom_example),
             delimiter=",",
             valuefield="Value",
             comptype="Prod name",
             refdes="RefDes",
         )
-        assert not self.edbapp.components.instances["R2"].is_enabled
-        self.edbapp.components.instances["R2"].is_enabled = True
-        assert self.edbapp.components.instances["R2"].is_enabled
+        assert not edb.components.instances["R2"].is_enabled
+        edb.components.instances["R2"].is_enabled = True
+        assert edb.components.instances["R2"].is_enabled
+        edb.close()
 
-    def test_components_export_bom(self):
+    def test_components_export_bom(self, edb_examples):
         """Export Bom file from layout."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_bom.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
-        edbapp.components.import_bom(os.path.join(local_path, "example_models", test_subfolder, "bom_example_2.csv"))
-        assert not edbapp.components.instances["R2"].is_enabled
-        assert edbapp.components.instances["U13"].partname == "SLAB-QFN-24-2550x2550TP_V"
+        # TODO check this method.
+        edb = edb_examples.get_si_verse()
+        edb.components.import_bom(os.path.join(local_path, "example_models", test_subfolder, "bom_example_2.csv"))
+        assert not edb.components.instances["R2"].is_enabled
+        assert edb.components.instances["U13"].partname == "SLAB-QFN-24-2550x2550TP_V"
 
         export_bom_path = os.path.join(self.local_scratch.path, "export_bom.csv")
-        assert edbapp.components.export_bom(export_bom_path)
-        edbapp.close()
+        assert edb.components.export_bom(export_bom_path)
+        edb.close()
 
-    def test_components_create_component_from_pins(self):
+    def test_components_create_component_from_pins(self, edb_examples):
         """Create a component from a pin."""
-        pins = self.edbapp.components.get_pin_from_component("R13")
-        pins = [self.edbapp.layout.find_object_by_id(i.GetId()) for i in pins]
-        component = self.edbapp.components.create(pins, "newcomp")
+        # TODO check bug 451 transform setter
+        edb = edb_examples.get_si_verse()
+        pins = edb.components.get_pin_from_component("R13")
+        component = edb.components.create(pins, "newcomp")
         assert component
         assert component.part_name == "newcomp"
         assert len(component.pins) == 2
+        edb.close()
 
     def test_convert_resistor_value(self):
         """Convert a resistor value."""
-        from pyedb.dotnet.edb_core.components import resistor_value_parser
+        # Done
+        from pyedb.grpc.edb_core.components import resistor_value_parser
 
         assert resistor_value_parser("100meg")
 
-    def test_components_create_solder_ball_on_component(self):
+    def test_components_create_solder_ball_on_component(self, edb_examples):
         """Set cylindrical solder balls on a given component"""
-        assert self.edbapp.components.set_solder_ball("U1", shape="Spheroid")
-        assert self.edbapp.components.set_solder_ball("U6", sball_height=None)
-        assert self.edbapp.components.set_solder_ball(
+        # Done
+        edb = edb_examples.get_si_verse()
+        assert edb.components.set_solder_ball("U1", shape="Spheroid")
+        assert edb.components.set_solder_ball("U6", sball_height=None)
+        assert edb.components.set_solder_ball(
             "U6", sball_height="100um", auto_reference_size=False, chip_orientation="chip_up"
         )
+        edb.close()
 
     def test_components_short_component(self):
         """Short pins of component with a trace."""

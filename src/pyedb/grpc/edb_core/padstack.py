@@ -1211,7 +1211,8 @@ class Padstacks(object):
         if pid:
             return instances_by_id[pid]
         elif name:
-            return self.instances_by_name[name]
+            if name in self.instances[name]:
+                return self.instances[name]
         else:
             instances = list(instances_by_id.values())
             if definition_name:
