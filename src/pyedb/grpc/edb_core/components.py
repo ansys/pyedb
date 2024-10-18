@@ -191,7 +191,7 @@ class Components(object):
         Returns
         -------
         dict of :class:`EDBComponentDef`"""
-        return {l.name: l for l in self._pedb.component_defs}
+        return {l.name: ComponentDef(self._pedb, l) for l in self._pedb.component_defs}
 
     @property
     def nport_comp_definition(self):

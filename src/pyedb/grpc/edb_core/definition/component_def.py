@@ -25,6 +25,7 @@ import os
 from ansys.edb.core.definition.component_def import ComponentDef as GrpcComponentDef
 
 from pyedb.grpc.edb_core.definition.component_pins import ComponentPin
+from pyedb.grpc.edb_core.hierarchy.component import Component
 
 
 class ComponentDef(GrpcComponentDef):
@@ -59,7 +60,33 @@ class ComponentDef(GrpcComponentDef):
         -------
         str
         """
-        return self.definition_type.name.lower()
+        if self.components:
+            return list(self.components.values())[0].type
+        else:
+            return ""
+
+    @type.setter
+    def type(self, value):
+        if value.lower() == "resistor":
+            for _, component in self.components.items():
+                component.type = "resistor"
+        elif value.lower() == "inductor":
+            for _, component in self.components.items():
+                component.type = "inductor"
+        elif value.lower() == "capacitor":
+            for _, component in self.components.items():
+                component.type = "capacitor"
+        elif value.lower() == "ic":
+            for _, component in self.components.items():
+                component.type = "ic"
+        elif value.lower() == "io":
+            for _, component in self.components.items():
+                component.type = "io"
+        elif value.lower() == "other":
+            for _, component in self.components.items():
+                component.type = "other"
+        else:
+            return
 
     @property
     def components(self):
@@ -69,21 +96,12 @@ class ComponentDef(GrpcComponentDef):
         -------
         dict of :class:`EDBComponent`
         """
-        from ansys.edb.core.hierarchy.component_group import (
-            ComponentGroup as GrpcComponentGroup,
-        )
-
-        from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
-
-        comp_list = [
-            EDBComponent(self._pedb, l)
-            for l in GrpcComponentGroup.find_by_def(self._pedb.active_layout, self.part_name)
-        ]
+        comp_list = [Component(self._pedb, l) for l in Component.find_by_def(self._pedb.active_layout, self.part_name)]
         return {comp.refdes: comp for comp in comp_list}
 
     @property
     def component_pins(self):
-        return [ComponentPin(self._pedb, pin) for pin in self.component_pins]
+        return [ComponentPin(self._pedb, pin) for pin in super().component_pins]
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
         """Assign RLC to all components under this part name.
@@ -146,7 +164,7 @@ class ComponentDef(GrpcComponentDef):
 
     @property
     def component_models(self):
-        return {model.name: model for model in self.component_models}
+        return {model.name: model for model in super().component_models}
 
     def add_n_port_model(self, fpath, name=None):
         from ansys.edb.core.definition.component_model import (
