@@ -47,12 +47,11 @@ class CfgPadstacks:
             instances_layout = self._pedb.padstacks.instances_by_name
             for inst in self.instances:
                 inst_layout = instances_layout[inst.name]
-                if inst.definition:
-                    # inst_layout.padstack_definition = inst.definition
-                    # Not supported by EDB API
-                    pass
-                if inst.backdrill_parameters:
-                    inst_layout.backdrill_parameters = inst.backdrill_parameters
+                data = dict()
+                data["backdrill_parameters"] = inst.backdrill_parameters
+                data["hole_override_enabled"] = inst.hole_override_enabled
+                data["hole_override_diameter"] = inst.hole_override_diameter
+                inst_layout.properties = data
 
     def get_data_from_db(self):
         self.definitions = []
@@ -83,6 +82,8 @@ class CfgPadstacks:
                     id=temp["id"],
                     position=temp["position"],
                     rotation=temp["rotation"],
+                    hole_override_enabled=temp["hole_override_enabled"],
+                    hole_override_diameter=temp["hole_override_diameter"],
                 )
             )
         instances = []
@@ -114,3 +115,5 @@ class Instance(CfgBase):
         self.id = kwargs.get("id", None)
         self.position = kwargs.get("position", [])
         self.rotation = kwargs.get("rotation", None)
+        self.hole_override_enabled = kwargs.get("hole_override_enabled", None)
+        self.hole_override_diameter = kwargs.get("hole_override_diameter", None)
