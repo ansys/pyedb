@@ -232,18 +232,18 @@ class TestClass:
         )
         edb.close()
 
-    def test_modeler_parametrize_layout(self):
+    def test_modeler_parametrize_layout(self, edb_examples):
         """Parametrize a polygon"""
-        assert len(self.edbapp.modeler.polygons) > 0
-        for el in self.edbapp.modeler.polygons:
-            el = el._edb_object
-            if el.GetId() == 5953:
+        # Done
+        edb = edb_examples.get_si_verse()
+        assert len(edb.modeler.polygons) > 0
+        for el in edb.modeler.polygons:
+            if el.edb_uid == 5953:
                 poly = el
-        for el in self.edbapp.modeler.polygons:
-            el = el._edb_object
-            if el.GetId() == 5954:
+        for el in edb.modeler.polygons:
+            if el.edb_uid == 5954:
                 selection_poly = el
-        assert self.edbapp.modeler.parametrize_polygon(poly, selection_poly)
+        assert edb.modeler.parametrize_polygon(poly, selection_poly)
 
     def test_components_update_from_bom(self):
         """Update components with values coming from a BOM file."""

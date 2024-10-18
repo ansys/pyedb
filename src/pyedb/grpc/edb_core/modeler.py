@@ -443,8 +443,8 @@ class Modeler(object):
 
         selection_polygon_data = selection_polygon.polygon_data
         polygon_data = polygon.polygon_data
-        bound_center = polygon_data.bounding_circle_center[0]
-        bound_center2 = selection_polygon_data.bounding_circle_center[0]
+        bound_center = polygon_data.bounding_circle()[0]
+        bound_center2 = selection_polygon_data.bounding_circle()[0]
         center = [bound_center.x.value, bound_center.y.value]
         center2 = [bound_center2.x.value, bound_center2.y.value]
         x1, y1 = calc_slope(center2, center)
@@ -459,7 +459,7 @@ class Modeler(object):
             try:
                 point = polygon_data.points[i]
                 if prev_point != point:
-                    check_inside = selection_polygon_data.point_in_polygon(point)
+                    check_inside = selection_polygon_data.is_inside(point)
                     if check_inside:
                         xcoeff, ycoeff = calc_slope([point.x.value, point.x.value], origin)
 
