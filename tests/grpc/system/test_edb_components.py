@@ -144,73 +144,59 @@ class TestClass:
         # Done
         edb = edb_examples.get_si_verse()
         assert edb.components.get_components_from_nets("DDR4_DQS0_P")
+        edb.close()
 
-    def test_components_resistors(self):
+    def test_components_resistors(self, edb_examples):
         """Evaluate the components resistors."""
-        assert "R1" in list(self.edbapp.components.resistors.keys())
-        assert "C1" not in list(self.edbapp.components.resistors.keys())
-
-    def test_components_capacitors(self):
-        """Evaluate the components capacitors."""
-        assert "C1" in list(self.edbapp.components.capacitors.keys())
-        assert "R1" not in list(self.edbapp.components.capacitors.keys())
-
-    def test_components_inductors(self):
-        """Evaluate the components inductors."""
-        assert "L10" in list(self.edbapp.components.inductors.keys())
-        assert "R1" not in list(self.edbapp.components.inductors.keys())
-
-    def test_components_integrated_circuits(self):
-        """Evaluate the components integrated circuits."""
-        assert "U1" in list(self.edbapp.components.ICs.keys())
-        assert "R1" not in list(self.edbapp.components.ICs.keys())
-
-    def test_components_inputs_outputs(self):
-        """Evaluate the components inputs and outputs."""
-        assert "X1" in list(self.edbapp.components.IOs.keys())
-        assert "R1" not in list(self.edbapp.components.IOs.keys())
-
-    def test_components_others(self):
-        """Evaluate the components other core components."""
-        assert "B1" in self.edbapp.components.Others
-        assert "R1" not in self.edbapp.components.Others
-
-    def test_components_components_by_partname(self):
-        """Evaluate the components by partname"""
-        comp = self.edbapp.components.components_by_partname
+        # Done
+        edb = edb_examples.get_si_verse()
+        assert "R1" in list(edb.components.resistors.keys())
+        assert "C1" not in list(edb.components.resistors.keys())
+        assert "C1" in list(edb.components.capacitors.keys())
+        assert "R1" not in list(edb.components.capacitors.keys())
+        assert "L10" in list(edb.components.inductors.keys())
+        assert "R1" not in list(edb.components.inductors.keys())
+        assert "U1" in list(edb.components.ICs.keys())
+        assert "R1" not in list(edb.components.ICs.keys())
+        assert "X1" in list(edb.components.IOs.keys())
+        assert "R1" not in list(edb.components.IOs.keys())
+        assert "B1" in edb.components.Others
+        assert "R1" not in edb.components.Others
+        comp = edb.components.components_by_partname
         assert "ALTR-FBGA24_A-130" in comp
         assert len(comp["ALTR-FBGA24_A-130"]) == 1
+        edb.components.get_through_resistor_list(10)
+        assert len(edb.components.get_rats()) > 0
+        assert len(edb.components.get_component_net_connection_info("U1")) > 0
+        edb.close()
 
-    def test_components_get_through_resistor_list(self):
-        """Evaluate the components retrieve through resistors."""
-        assert self.edbapp.components.get_through_resistor_list(10)
-
-    def test_components_get_rats(self):
-        """Retrieve a list of dictionaries of the reference designator, pin names, and net names."""
-        assert len(self.edbapp.components.get_rats()) > 0
-
-    def test_components_get_component_net_connections_info(self):
-        """Evaluate net connection information."""
-        assert len(self.edbapp.components.get_component_net_connection_info("U1")) > 0
-
-    def test_components_get_pin_name_and_position(self):
+    def test_components_get_pin_name_and_position(self, edb_examples):
         """Retrieve components name and position."""
-        cmp_pinlist = self.edbapp.padstacks.get_pinlist_from_component_and_net("U6", "GND")
-        pin_name = self.edbapp.components.get_aedt_pin_name(cmp_pinlist[0])
+        # Done
+        edb = edb_examples.get_si_verse()
+        cmp_pinlist = edb.padstacks.get_pinlist_from_component_and_net("U6", "GND")
+        pin_name = edb.components.get_aedt_pin_name(cmp_pinlist[0])
         assert type(pin_name) is str
         assert len(pin_name) > 0
         assert len(cmp_pinlist[0].position) == 2
-        assert len(self.edbapp.components.get_pin_position(cmp_pinlist[0])) == 2
+        assert len(edb.components.get_pin_position(cmp_pinlist[0])) == 2
+        edb.close()
 
-    def test_components_get_pins_name_from_net(self):
+    def test_components_get_pins_name_from_net(self, edb_examples):
         """Retrieve pins belonging to a net."""
-        cmp_pinlist = self.edbapp.components.get_pin_from_component("U6")
-        assert len(self.edbapp.components.get_pins_name_from_net("GND", cmp_pinlist)) > 0
-        assert len(self.edbapp.components.get_pins_name_from_net("5V", cmp_pinlist)) == 0
+        # Done
+        edb = edb_examples.get_si_verse()
+        cmp_pinlist = edb.components.get_pin_from_component("U6")
+        assert len(edb.components.get_pins_name_from_net("GND", cmp_pinlist)) > 0
+        assert len(edb.components.get_pins_name_from_net("5V", cmp_pinlist)) == 0
+        edb.close()
 
-    def test_components_delete_single_pin_rlc(self):
+    def test_components_delete_single_pin_rlc(self, edb_examples):
         """Delete all RLC components with a single pin."""
-        assert len(self.edbapp.components.delete_single_pin_rlc()) == 0
+        # Done
+        edb = edb_examples.get_si_verse()
+        assert len(edb.components.delete_single_pin_rlc()) == 0
+        edb.close()
 
     def test_components_set_component_rlc(self):
         """Update values for an RLC component."""

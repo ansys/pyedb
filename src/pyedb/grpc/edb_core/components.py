@@ -30,7 +30,6 @@ import os
 import re
 import warnings
 
-from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.definition.die_property import DieOrientation as GrpDieOrientation
 from ansys.edb.core.definition.die_property import DieType as GrpcDieType
 from ansys.edb.core.definition.solder_ball_property import (
@@ -1470,7 +1469,7 @@ class Components(object):
                     deleted_comps.append(comp)
         if not deactivate_only:
             self.refresh_components()
-        self._pedb._logger.info("Deleted {} components".format(len(deleted_comps)))
+        self._pedb.logger.info("Deleted {} components".format(len(deleted_comps)))
         return deleted_comps
 
     def delete(self, component_name):
@@ -1942,9 +1941,7 @@ class Components(object):
         >>> edbapp.components.get_aedt_pin_name(pin)
 
         """
-        name = pin.get_product_property(GrpcProductIdType.DESIGNER, 11, "")
-        name = str(name).strip("'")
-        return name
+        return pin.aedt_name
 
     def get_pins(self, reference_designator, net_name=None, pin_name=None):
         """Get component pins.
@@ -2032,8 +2029,9 @@ class Components(object):
                 for j in [*i.pins.values()]:
                     pin_list.append(j)
         for pin in pin_list:
-            if pin.net.name == net_name:
-                pin_names.append(self.get_aedt_pin_name(pin))
+            if not pin.net.is_null:
+                if pin.net.name == net_name:
+                    pin_names.append(self.get_aedt_pin_name(pin))
         return pin_names
 
     def get_nets_from_pin_list(self, pins):
@@ -2080,15 +2078,15 @@ class Components(object):
         >>> edbapp.components.get_component_net_connection_info(refdes)
 
         """
-        component_pins = self._pedb.padstacks.instances(refdes)
         data = {"refdes": [], "pin_name": [], "net_name": []}
-        for pin_obj in component_pins:
+        for _, pin_obj in self.instances[refdes].pins.items():
             pin_name = pin_obj.name
-            net_name = pin_obj.net.name
-            if pin_name is not None:
-                data["refdes"].append(refdes)
-                data["pin_name"].append(pin_name)
-                data["net_name"].append(net_name)
+            if not pin_obj.net.is_null:
+                net_name = pin_obj.net.name
+                if pin_name:
+                    data["refdes"].append(refdes)
+                    data["pin_name"].append(pin_name)
+                    data["net_name"].append(net_name)
         return data
 
     def get_rats(self):
