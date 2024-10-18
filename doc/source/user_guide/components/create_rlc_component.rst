@@ -37,4 +37,4 @@ This page shows how to create an RLC component between pins:
 
 .. image:: ../../resources/create_rlc_boundary_on_pin.png
   :width: 800
-  :alt: Create rlc boundary
+  :alt: Create RLC boundary

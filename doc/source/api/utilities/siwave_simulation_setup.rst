@@ -1,4 +1,4 @@
-Siwave simulation setup
+SIwave simulation setup
 =======================
 These classes are the containers of siwave simulation setup.
 
