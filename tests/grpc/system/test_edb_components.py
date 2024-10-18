@@ -330,20 +330,22 @@ class TestClass:
         assert comp.type == "other"
         edb.close()
 
-    def test_componenets_deactivate_rlc(self):
+    def test_componenets_deactivate_rlc(self, edb_examples):
         """Deactivate RLC component and convert to a circuit port."""
-        assert self.edbapp.components.deactivate_rlc_component(component="C1", create_circuit_port=False)
-        assert self.edbapp.ports["C1"]
-        assert self.edbapp.components["C1"].is_enabled is False
-        assert self.edbapp.components.deactivate_rlc_component(component="C2", create_circuit_port=True)
-        self.edbapp.components["C2"].is_enabled = False
-        assert self.edbapp.components["C2"].is_enabled is False
-        self.edbapp.components["C2"].is_enabled = True
-        assert self.edbapp.components["C2"].is_enabled is True
-        pins = [*self.edbapp.components.instances["L10"].pins.values()]
-        self.edbapp.components.create_port_on_pins("L10", pins[0], pins[1])
-        assert self.edbapp.components["L10"].is_enabled is False
-        assert "L10" in self.edbapp.ports.keys()
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.components.deactivate_rlc_component(component="C1", create_circuit_port=False)
+        assert edbapp.ports["C1"]
+        assert edbapp.components["C1"].is_enabled is False
+        assert edbapp.components.deactivate_rlc_component(component="C2", create_circuit_port=True)
+        edbapp.components["C2"].is_enabled = False
+        assert edbapp.components["C2"].is_enabled is False
+        edbapp.components["C2"].is_enabled = True
+        assert edbapp.components["C2"].is_enabled is True
+        pins = [*edbapp.components.instances["L10"].pins.values()]
+        edbapp.components.create_port_on_pins("L10", pins[0], pins[1])
+        assert edbapp.components["L10"].is_enabled is False
+        assert "L10" in edbapp.ports.keys()
 
     def test_components_definitions(self):
         """Evaluate components definition."""

@@ -251,7 +251,7 @@ class SourceExcitation:
                 else:
                     reference_pins = [reference_pins.name]
         if isinstance(refdes, str):
-            refdes = self._pedb.padstacks.instances[refdes]
+            refdes = self._pedb.components.instances[refdes]
         elif isinstance(refdes, GrpcComponentGroup):
             refdes = Component(self._pedb, refdes)
         refdes_pins = refdes.pins
@@ -595,31 +595,31 @@ class SourceExcitation:
         """
         from pyedb.grpc.edb_core.components import Component
 
-        if isinstance(component, str):  # pragma: no cover
+        if isinstance(component, str):
             component = self._pedb.components.instances[component]
         if not isinstance(component, Component):  # pragma: no cover
             return False
         self._pedb.components.set_component_rlc(component.refdes)
-        pins = self._pedb.padstacks.get_instances(component.refdes)
-        if len(pins) == 2:  # pragma: no cover
-            pin_layers = pins[0].get_pin_layer_range()
+        pins = list(self._pedb.components.instances[component.refdes].pins.values())
+        if len(pins) == 2:
+            pin_layers = pins[0].get_layer_range()
             pos_pin_term = PadstackInstanceTerminal.create(
-                self._pedb._active_layout,
-                pins[0].net,
-                "{}_{}".format(component.name, pins[0].name),
-                pins[0],
-                pin_layers[0],
-                False,
+                layout=self._pedb.active_layout,
+                name=f"{component.name}_{pins[0].name}",
+                padstack_instance=pins[0],
+                layer=pin_layers[0],
+                net=pins[0].net,
+                is_ref=False,
             )
             if not pos_pin_term:  # pragma: no cover
                 return False
             neg_pin_term = PadstackInstanceTerminal.create(
-                self._pedb._active_layout,
-                pins[1].net,
-                "{}_{}_ref".format(component.name, pins[1].name),
-                pins[1],
-                pin_layers[0],
-                False,
+                layout=self._pedb.active_layout,
+                name="{}_{}_ref".format(component.name, pins[1].name),
+                padstack_instance=pins[1],
+                layer=pin_layers[0],
+                net=pins[1].net,
+                is_ref=False,
             )
             if not neg_pin_term:  # pragma: no cover
                 return False
@@ -640,7 +640,7 @@ class SourceExcitation:
             else:
                 pos_pin_term.is_circuit_port = False
                 neg_pin_term.is_circuit_port = False
-            self._logger.info("Component {} has been replaced by port".format(component.refdes))
+            self._logger.info(f"Component {component.refdes} has been replaced by port")
             return True
         return False
 

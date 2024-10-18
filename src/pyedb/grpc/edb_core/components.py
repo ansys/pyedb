@@ -790,7 +790,7 @@ class Components(object):
             "`pyedb.grpc.core.excitations.create_port_on_pins` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.create_port_on_pins(
+        self._pedb.source_excitation.create_port_on_pins(
             refdes,
             pins,
             reference_pins,
@@ -1038,8 +1038,8 @@ class Components(object):
             "`pyedb.grpc.core.excitations.add_port_on_rlc_component` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.add_port_on_rlc_component(
-            self, component=component, circuit_ports=circuit_ports, pec_boundary=pec_boundary
+        return self._pedb.source_excitation.add_port_on_rlc_component(
+            component=component, circuit_ports=circuit_ports, pec_boundary=pec_boundary
         )
 
     def add_rlc_boundary(self, component=None, circuit_type=True):
