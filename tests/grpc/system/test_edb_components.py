@@ -311,21 +311,24 @@ class TestClass:
         assert edb.components.short_component_pins("U10", ["2", "5"])
         edb.close()
 
-    def test_components_type(self):
+    def test_components_type(self, edb_examples):
         """Retrieve components type."""
-        comp = self.edbapp.components["R4"]
-        comp.type = "Resistor"
-        assert comp.type == "Resistor"
-        comp.type = "Inductor"
-        assert comp.type == "Inductor"
-        comp.type = "Capacitor"
-        assert comp.type == "Capacitor"
-        comp.type = "IO"
-        assert comp.type == "IO"
-        comp.type = "IC"
-        assert comp.type == "IC"
-        comp.type = "Other"
-        assert comp.type == "Other"
+        # Done
+        edb = edb_examples.get_si_verse()
+        comp = edb.components["R4"]
+        comp.type = "resistor"
+        assert comp.type == "resistor"
+        comp.type = "inductor"
+        assert comp.type == "inductor"
+        comp.type = "capacitor"
+        assert comp.type == "capacitor"
+        comp.type = "io"
+        assert comp.type == "io"
+        comp.type = "ic"
+        assert comp.type == "ic"
+        comp.type = "other"
+        assert comp.type == "other"
+        edb.close()
 
     def test_componenets_deactivate_rlc(self):
         """Deactivate RLC component and convert to a circuit port."""
