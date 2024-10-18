@@ -198,21 +198,20 @@ class TestClass:
         assert len(edb.components.delete_single_pin_rlc()) == 0
         edb.close()
 
-    def test_components_set_component_rlc(self):
+    def test_components_set_component_rlc(self, edb_examples):
         """Update values for an RLC component."""
-        assert self.edbapp.components.set_component_rlc("R1", 30, 1e-9, 1e-12)
+        # Done
+        edb = edb_examples.get_si_verse()
+        assert edb.components.set_component_rlc("R1", 30, 1e-9, 1e-12)
+        assert edb.components.disable_rlc_component("R1")
+        assert edb.components.delete("R1")
+        edb.close()
 
-    def test_components_disable_rlc_component(self):
-        """Disable a RLC component."""
-        assert self.edbapp.components.disable_rlc_component("R1")
-
-    def test_components_delete(self):
-        """Delete a component."""
-        assert self.edbapp.components.delete("R1")
-
-    def test_components_set_model(self):
+    def test_components_set_model(self, edb_examples):
         """Assign component model."""
-        assert self.edbapp.components.set_component_model(
+        # Done
+        edb = edb_examples.get_si_verse()
+        assert edb.components.set_component_model(
             "C10",
             modelpath=os.path.join(
                 local_path,
@@ -222,7 +221,7 @@ class TestClass:
             ),
             modelname="GRM32ER72A225KA35_25C_0V",
         )
-        assert not self.edbapp.components.set_component_model(
+        assert not edb.components.set_component_model(
             "C100000",
             modelpath=os.path.join(
                 local_path,
@@ -231,6 +230,7 @@ class TestClass:
             ),
             modelname="GRM32ER72A225KA35_25C_0V",
         )
+        edb.close()
 
     def test_modeler_parametrize_layout(self):
         """Parametrize a polygon"""

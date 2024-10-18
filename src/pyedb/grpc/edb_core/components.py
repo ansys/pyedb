@@ -1331,10 +1331,11 @@ class Components(object):
         """
         if not modelname:
             modelname = get_filename_without_extension(modelpath)
-        component = self.get_component_by_name(componentname)
-        component_pins = self._pedb.pdsatcks.get_instancs(componentname)
-        component_nets = self.get_nets_from_pin_list(component_pins)
-        pin_number = len(component_pins)
+        if componentname not in self.instances:
+            self._pedb.logger.error(f"Component {componentname} not found.")
+            return False
+        component = self.instances[componentname]
+        pin_number = len(component.pins)
         if model_type == "Spice":
             with open(modelpath, "r") as f:
                 for line in f:
@@ -1524,14 +1525,16 @@ class Components(object):
         """
         cmp = self.get_component_by_name(component_name)
         if cmp is not None:
-            pin_pair_model = cmp.component_property.model
-            for pin_pair in pin_pair_model.pins_pairs:
+            component_property = cmp.component_property
+            pin_pair_model = component_property.model
+            for pin_pair in pin_pair_model.pin_pairs():
                 rlc = pin_pair_model.rlc(pin_pair)
                 rlc.c_enabled = False
                 rlc.l_enabled = False
                 rlc.r_enabled = False
                 pin_pair_model.set_rlc(pin_pair, rlc)
-            cmp.component_property.model = pin_pair_model
+            component_property.model = pin_pair_model
+            cmp.component_property = component_property
             return True
         return False
 
