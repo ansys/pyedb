@@ -296,7 +296,10 @@ class Configuration:
         if kwargs.get("operations", False):
             data["operations"] = self.cfg_data.operations.get_data_from_db()
         if kwargs.get("padstacks", False):
-            data["padstacks"] = self.cfg_data.padstacks.get_data_from_db()
+            self.cfg_data.padstacks.retrieve_parameters_from_edb()
+            data["padstacks"] = dict()
+            data["padstacks"]["definitions"] = self.cfg_data.padstacks.definitions
+            data["padstacks"]["instances"] = self.cfg_data.padstacks.instances
         if kwargs.get("s_parameters", False):
             data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db()
         if kwargs.get("boundaries", False):
@@ -305,21 +308,21 @@ class Configuration:
         return data
 
     def export(
-        self,
-        file_path,
-        stackup=True,
-        package_definitions=True,
-        setups=True,
-        sources=True,
-        ports=True,
-        nets=True,
-        pin_groups=True,
-        operations=True,
-        components=True,
-        boundaries=True,
-        s_parameters=True,
-        padstacks=True,
-        general=True,
+            self,
+            file_path,
+            stackup=True,
+            package_definitions=True,
+            setups=True,
+            sources=True,
+            ports=True,
+            nets=True,
+            pin_groups=True,
+            operations=True,
+            components=True,
+            boundaries=True,
+            s_parameters=True,
+            padstacks=True,
+            general=True,
     ):
         """Export the configuration data from layout to a file.
 
