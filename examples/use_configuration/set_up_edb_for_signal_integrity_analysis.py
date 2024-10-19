@@ -174,5 +174,5 @@ solutions.plot()
 
 h3d.close_desktop()
 
-# All project files are saved in the folder ``temp_file.dir``. If you've run this example as a Jupyter notbook you
+# All project files are saved in the folder ``temp_file.dir``. If you've run this example as a Jupyter notebook you
 # can retrieve those project files.

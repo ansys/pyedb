@@ -1,6 +1,6 @@
-Siwave IO
+SIwave IO
 =========
-This class is the container of Siwave IO.
+This class is the container of SIwave IO.
 
 
 .. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
