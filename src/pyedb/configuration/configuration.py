@@ -308,21 +308,21 @@ class Configuration:
         return data
 
     def export(
-            self,
-            file_path,
-            stackup=True,
-            package_definitions=True,
-            setups=True,
-            sources=True,
-            ports=True,
-            nets=True,
-            pin_groups=True,
-            operations=True,
-            components=True,
-            boundaries=True,
-            s_parameters=True,
-            padstacks=True,
-            general=True,
+        self,
+        file_path,
+        stackup=True,
+        package_definitions=True,
+        setups=True,
+        sources=True,
+        ports=True,
+        nets=True,
+        pin_groups=True,
+        operations=True,
+        components=True,
+        boundaries=True,
+        s_parameters=True,
+        padstacks=True,
+        general=True,
     ):
         """Export the configuration data from layout to a file.
 

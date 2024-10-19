@@ -36,7 +36,6 @@ class CfgPadstacks:
         self.definitions = []
         self.instances = []
 
-
         if padstack_dict:
             padstack_defs_layout = self._pedb.padstacks.definitions
             for pdef in padstack_dict.get("definitions", []):
@@ -76,6 +75,7 @@ class CfgPadstacks:
 
 class Definition:
     """Padstack definition data class."""
+
     PAD_SHAPE_PARAMETERS = {
         "circle": ["diameter"],
         "square": ["size"],
@@ -119,28 +119,28 @@ class Definition:
     def _get_pad_parameters_from_edb(self):
         """Pad parameters.
 
-                Returns
-                -------
-                dict
-                    params = {
-                    'regular_pad': [
-                        {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0.1mm', 'offset_y': '0', 'rotation': '0',
-                         'diameter': '0.5mm'}
-                    ],
-                    'anti_pad': [
-                        {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
-                        'diameter': '1mm'}
-                    ],
-                    'thermal_pad': [
-                        {'layer_name': '1_Top', 'shape': 'round90', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
-                        'inner': '1mm', 'channel_width': '0.2mm', 'isolation_gap': '0.3mm'},
-                    ],
-                    'hole': [
-                        {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
-                         'diameter': '0.1499997mm'},
-                    ]
-                }
-                """
+        Returns
+        -------
+        dict
+            params = {
+            'regular_pad': [
+                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0.1mm', 'offset_y': '0', 'rotation': '0',
+                 'diameter': '0.5mm'}
+            ],
+            'anti_pad': [
+                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+                'diameter': '1mm'}
+            ],
+            'thermal_pad': [
+                {'layer_name': '1_Top', 'shape': 'round90', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+                'inner': '1mm', 'channel_width': '0.2mm', 'isolation_gap': '0.3mm'},
+            ],
+            'hole': [
+                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+                 'diameter': '0.1499997mm'},
+            ]
+        }
+        """
         pdef_data = self._pyedb_obj._padstack_def_data
         pad_type_list = [
             self._pedb._edb.Definition.PadType.RegularPad,
