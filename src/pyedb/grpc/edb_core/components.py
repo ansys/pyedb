@@ -953,11 +953,11 @@ class Components(object):
             if not component:
                 self._logger.error("component %s not found.", component)
                 return False
-        if component.type in ["OTHER", "IC", "IO"]:
-            self._logger.info("Component %s passed to deactivate is not an RLC.", component.refdes)
+        if component.type in ["other", "ic", "io"]:
+            self._logger.info(f"Component {component.refdes} skipped to deactivate is not an RLC.")
             return False
         component.is_enabled = False
-        return self.add_rlc_boundary(component.refdes, False)
+        return self._pedb.source_excitation.add_rlc_boundary(component.refdes, False)
 
     def deactivate_rlc_component(self, component=None, create_circuit_port=False, pec_boundary=False):
         """Deactivate RLC component with a possibility to convert it to a circuit port.
@@ -1067,7 +1067,7 @@ class Components(object):
             "`pyedb.grpc.core.excitations.add_rlc_boundary` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.add_rlc_boundary(self, component=component, circuit_type=circuit_type)
+        return self._pedb.source_excitation.add_rlc_boundary(self, component=component, circuit_type=circuit_type)
 
     def _create_pin_group_terminal(self, pingroup, isref=False, term_name=None, term_type="circuit"):
         """Creates an EDB pin group terminal from a given EDB pin group.

@@ -665,26 +665,26 @@ class SourceExcitation:
         if not isinstance(component, Component):  # pragma: no cover
             return False
         self._pedb.components.set_component_rlc(component.name)
-        pins = component.pins
+        pins = list(component.pins.values())
         if len(pins) == 2:  # pragma: no cover
             pin_layer = pins[0].get_layer_range()[0]
             pos_pin_term = PadstackInstanceTerminal.create(
-                self._pedb._active_layout,
-                pins[0].net,
-                "{}_{}".format(component.name, pins[0].name),
-                pins[0],
-                pin_layer,
-                False,
+                layout=self._pedb.active_layout,
+                net=pins[0].net,
+                name=f"{component.name}_{pins[0].name}",
+                padstack_instance=pins[0],
+                layer=pin_layer,
+                is_ref=False,
             )
             if not pos_pin_term:  # pragma: no cover
                 return False
             neg_pin_term = PadstackInstanceTerminal.create(
-                self._pedb._active_layout,
-                pins[1].net,
-                "{}_{}_ref".format(component.name, pins[1].name),
-                pins[1],
-                pin_layer,
-                True,
+                layout=self._pedb.active_layout,
+                net=pins[1].net,
+                name="{}_{}_ref".format(component.name, pins[1].name),
+                padstack_instance=pins[1],
+                layer=pin_layer,
+                is_ref=True,
             )
             if not neg_pin_term:  # pragma: no cover
                 return False
