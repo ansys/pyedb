@@ -220,36 +220,28 @@ class SourceExcitation:
             return False
         if isinstance(reference_pins, str):
             reference_pins = [reference_pins]
+        elif isinstance(reference_pins, int):
+            reference_pins = [reference_pins]
         elif isinstance(reference_pins, PadstackInstance):
-            if not reference_pins.name:
-                reference_pins = reference_pins.aedt_name
-                reference_pins.is_layout_pin = True
-            else:
-                reference_pins = reference_pins.name
             reference_pins = [reference_pins]
         elif isinstance(reference_pins, list):
             _temp = []
             for ref_pin in reference_pins:
                 if isinstance(ref_pin, int):
-                    if ref_pin in self._pedb.padstack.instances:
-                        _temp.append(self._pedb.padstack.instances[ref_pin])
+                    pins = self._pedb.padstacks.instances
+                    if reference_pins in pins:
+                        reference_pins = pins[reference_pins]
                 elif isinstance(ref_pin, str):
-                    if ref_pin in self._pedb.padstack.instances[refdes].pins:
-                        _temp.append(self._pedb.padstack.instances[refdes].pins[ref_pin])
+                    component_pins = self._pedb.components.instances[refdes].pins
+                    if ref_pin in component_pins:
+                        _temp.append(component_pins[ref_pin])
                     else:
                         p = [pp for pp in list(self._pedb.padstack.instances.values()) if pp.name == ref_pin]
                         if p:
-                            _temp.append(p)
+                            _temp.extend(p)
                 elif isinstance(ref_pin, PadstackInstance):
-                    _temp.append(ref_pin.name)
+                    _temp.append(ref_pin)
             reference_pins = _temp
-        elif isinstance(reference_pins, int):
-            if reference_pins in self._pedb.padstacks.instances:
-                reference_pins = self._pedb.padstacks.instances[reference_pins]
-                if not reference_pins.name:
-                    reference_pins = [reference_pins.aedt_name]
-                else:
-                    reference_pins = [reference_pins.name]
         if isinstance(refdes, str):
             refdes = self._pedb.components.instances[refdes]
         elif isinstance(refdes, GrpcComponentGroup):
@@ -274,18 +266,23 @@ class SourceExcitation:
             self._logger.error("Pin list must contain only pins instances")
             return False
         if not port_name:
-            port_name = "Port_{}_{}".format(pins[0].net.name, pins[0].name)
+            pin = pins[0]
+            if pin.net.is_null:
+                pin_net_name = "no_net"
+            else:
+                pin_net_name = pin.net.name
+            port_name = f"Port_{refdes}_{pin_net_name}_{pins[0].name}"
 
         ref_cmp_pins = []
-        for ref_pin_name in reference_pins:
-            if ref_pin_name in refdes_pins:
-                ref_cmp_pins.append(refdes_pins[ref_pin_name])
-            elif "-" in ref_pin_name:
-                if ref_pin_name.split("-")[1] in refdes_pins:
-                    ref_cmp_pins.append(refdes_pins[ref_pin_name.split("-")[1]])
-            elif "via" in ref_pin_name:
+        for ref_pin in reference_pins:
+            if ref_pin.name in refdes_pins:
+                ref_cmp_pins.append(ref_pin)
+            elif "-" in ref_pin.name:
+                if ref_pin.name.split("-")[1] in refdes_pins:
+                    ref_cmp_pins.append(ref_pin)
+            elif "via" in ref_pin.name:
                 _ref_pin = [
-                    pin for pin in list(self._pedb.padstacks.instances.values()) if pin.aedt_name == ref_pin_name
+                    pin for pin in list(self._pedb.padstacks.instances.values()) if pin.aedt_name == ref_pin.name
                 ]
                 if _ref_pin:
                     _ref_pin[0].is_layout_pin = True
@@ -740,7 +737,7 @@ class SourceExcitation:
         """
         if pingroup.is_null:
             self._logger.error(f"{pingroup} is null")
-        pin = PadstackInstance(self._pedb, pingroup.pins[0])
+        pin = PadstackInstance(self._pedb, list(pingroup.pins.values())[0])
         if term_name is None:
             term_name = "{}.{}.{}".format(pin.component.name, pin.name, pin.net_name)
         for t in self._pedb.active_layout.terminals:

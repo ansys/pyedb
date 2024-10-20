@@ -398,12 +398,10 @@ class TestClass:
             assert res.res_value == 12.5 and res.ind_value == 5e-9 and res.cap_value == 8e-12
         edbapp.close()
 
-    def test_create_port_on_pin(self):
+    def test_create_port_on_pin(self, edb_examples):
         """Create port on pins."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_0134b.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        # Done
+        edbapp = edb_examples.get_si_verse()
         pin = "A24"
         ref_pins = [pin for pin in list(edbapp.components["U1"].pins.values()) if pin.net_name == "GND"]
         assert edbapp.components.create_port_on_pins(refdes="U1", pins=pin, reference_pins=ref_pins)
