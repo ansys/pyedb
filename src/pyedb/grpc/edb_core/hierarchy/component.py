@@ -756,7 +756,7 @@ class Component(GrpcComponentGroup):
             ``True`` component is mounted on top, ``False`` on down.
         """
         signal_layers = [lay.name for lay in list(self._pedb.stackup.signal_layers.values())]
-        if self.placement_layer in signal_layers[: int(len(signal_layers) / 2)]:
+        if self.placement_layer.name in signal_layers[: int(len(signal_layers) / 2)]:
             return True
         return False
 

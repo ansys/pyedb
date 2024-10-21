@@ -533,13 +533,12 @@ class TestClass:
         edbapp.components.add_port_on_rlc_component(component="C65", circuit_ports=False, pec_boundary=True)
         assert edbapp.terminals["C5"].boundary_type == "pec"
         assert edbapp.terminals["C65"].boundary_type == "pec"
+        edbapp.close()
 
-    def test_is_top_mounted(self):
+    def test_is_top_mounted(self, edb_examples):
         """Check is_top_mounted property."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_is_top_property", "test.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, desktop_version)
+        # Done
+        edbapp = edb_examples.get_si_verse()
         assert edbapp.components.instances["U1"].is_top_mounted
         assert not edbapp.components.instances["C347"].is_top_mounted
         assert not edbapp.components.instances["R67"].is_top_mounted
