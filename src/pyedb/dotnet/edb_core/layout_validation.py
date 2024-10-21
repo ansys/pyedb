@@ -332,9 +332,7 @@ class LayoutValidation:
                 counts += 1
                 if fix:
                     if not obj.component:
-                        obj._edb_object.SetProductProperty(
-                            self._pedb.edb_api.ProductId.Designer, 11, f"via_{via_count}"
-                        )
+                        obj._edb_object.SetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, f"Via{via_count}")
                         via_count = via_count + 1
                     else:
                         obj._edb_object.SetProductProperty(
