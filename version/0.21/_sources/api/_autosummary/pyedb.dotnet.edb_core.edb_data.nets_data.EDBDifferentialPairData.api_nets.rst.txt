@@ -1,0 +1,6 @@
+api\_nets
+=========
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.nets_data
+
+.. autoproperty:: EDBDifferentialPairData.api_nets

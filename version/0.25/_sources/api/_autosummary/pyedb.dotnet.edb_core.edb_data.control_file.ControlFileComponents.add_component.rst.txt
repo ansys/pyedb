@@ -1,0 +1,6 @@
+add\_component
+==============
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.control_file
+
+.. automethod:: ControlFileComponents.add_component

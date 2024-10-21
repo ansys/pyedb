@@ -1,0 +1,6 @@
+get\_attributes
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_setup
+
+.. automethod:: CfgSIwaveACSetup.get_attributes
