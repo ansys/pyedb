@@ -640,7 +640,7 @@ class TestClass:
     def test_ic_die_properties(self, edb_examples):
         # TODO check config file 2.0
         edbapp = edb_examples.get_si_verse()
-        component: EDBComponent = edbapp.components["U8"]
+        component: Component = edbapp.components["U8"]
         _assert_initial_ic_die_properties(component)
         component.ic_die_properties = {"type": "flip_chip", "orientation": "chip_down"}
         _assert_final_ic_die_properties(component)
