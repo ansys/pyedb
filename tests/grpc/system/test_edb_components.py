@@ -594,6 +594,7 @@ class TestClass:
         assert round(diam2, 6) == 100e-6
 
     def test_create_pingroup_from_pins_types(self, edb_examples):
+        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.components.create_pingroup_from_pins([*edbapp.components.instances["Q1"].pins.values()])
         assert edbapp.components._create_pin_group_terminal(edbapp.padstacks.pingroups[0], term_type="circuit")

@@ -1096,8 +1096,8 @@ class Components(object):
             "`pyedb.grpc.core.excitations._create_pin_group_terminal` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations._create_pin_group_terminal(
-            self, pingroup=pingroup, name=term_name, term_type=term_type, isref=isref
+        return self._pedb.source_excitation._create_pin_group_terminal(
+            pingroup=pingroup, term_name=term_name, term_type=term_type, isref=isref
         )
 
     def _is_top_component(self, cmp):
