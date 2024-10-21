@@ -43,7 +43,6 @@ from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as EDBValue
 from ansys.edb.core.utility.value import Value as GrpcValue
 
-from pyedb.grpc.edb_core.definition.package_def import PackageDef
 from pyedb.grpc.edb_core.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.edb_core.hierarchy.spice_model import SpiceModel
 from pyedb.grpc.edb_core.layers.stackup_layer import StackupLayer
@@ -80,6 +79,7 @@ class Component(GrpcComponentGroup):
         self._layout_instance = None
         self._comp_instance = None
         self._logger = pedb.logger
+        self._package_def = None
 
     @property
     def group_type(self):
@@ -131,16 +131,20 @@ class Component(GrpcComponentGroup):
     @property
     def package_def(self):
         """Package definition."""
-        package_def = PackageDef(pedb=self._pedb, edb_object=self.component_property.package_def)
-        if not package_def.is_null:
-            return package_def
+        return self._package_def
 
     @package_def.setter
     def package_def(self, value):
-        package_def = self._pedb.definitions.package[value]
-        comp_prop = self.component_property
-        comp_prop.package_def = package_def
-        self.component_property = comp_prop
+        if value not in self._pedb.package_defs:
+            from ansys.edb.core.definition.package_def import (
+                PackageDef as GrpcPackageDef,
+            )
+
+            self._package_def = GrpcPackageDef.create(self._pedb.db, name=value)
+            self._package_def.exterior_boundary = GrpcPolygonData(points=self.bounding_box)
+            comp_prop = self.component_property
+            comp_prop.package_def = self._package_def
+            self.component_property = comp_prop
 
     @property
     def is_mcad(self):
@@ -195,11 +199,8 @@ class Component(GrpcComponentGroup):
         """
         if not name:
             name = f"{self.refdes}_{self.part_name}"
-        if name not in self._pedb.definitions.package:
-            self._pedb.definitions.add_package_def(name, component_part_name=component_part_name)
+        if name not in [package.name for package in self._pedb.package_defs]:
             self.package_def = name
-            polygon = GrpcPolygonData(self.component_instance.GetBBox())
-            self.package_def.exterior_boundary = polygon
             return True
         else:
             logging.error(f"Package definition {name} already exists")
@@ -246,85 +247,81 @@ class Component(GrpcComponentGroup):
     @property
     def solder_ball_height(self):
         """Solder ball height if available."""
-        if "GetSolderBallProperty" in dir(self.component_property):
+        if not self.component_property.solder_ball_property.is_null:
             return self.component_property.solder_ball_property.height.value
         return None
 
     @solder_ball_height.setter
     def solder_ball_height(self, value):
-        if "solder_ball_property" in dir(self.component_property):
-            sball_height = round(EDBValue(value).value, 9)
+        if not self.component_property.solder_ball_property.is_null:
             cmp_property = self.component_property
             solder_ball_prop = cmp_property.solder_ball_property
-            solder_ball_prop.height = EDBValue(sball_height)
+            solder_ball_prop.height = round(GrpcValue(value).value, 9)
             cmp_property.solder_ball_property = solder_ball_prop
             self.component_property = cmp_property
 
     @property
     def solder_ball_shape(self):
         """Solder ball shape."""
-        if "GetSolderBallProperty" in dir(self.component_property):
+        if not self.component_property.solder_ball_property.is_null:
             shape = self.component_property.solder_ball_property.shape
             if shape == SolderballShape.NO_SOLDERBALL:
-                return "None"
+                return "none"
             elif shape == SolderballShape.SOLDERBALL_CYLINDER:
-                return "Cylinder"
+                return "cylinder"
             elif shape == SolderballShape.SOLDERBALL_SPHEROID:
-                return "Spheroid"
+                return "spheroid"
 
     @solder_ball_shape.setter
     def solder_ball_shape(self, value):
-        shape = None
-        if isinstance(value, str):
-            if value.lower() == "cylinder":
-                shape = SolderballShape.SOLDERBALL_CYLINDER
-            elif value.lower() == "none":
-                shape = SolderballShape.NO_SOLDERBALL
-            elif value.lower() == "spheroid":
-                shape = SolderballShape.SOLDERBALL_SPHEROID
-        if isinstance(value, int):
-            if value == 0:
-                shape = SolderballShape.NO_SOLDERBALL
-            elif value == 1:
-                shape = SolderballShape.SOLDERBALL_CYLINDER
-            elif value == 2:
-                shape = SolderballShape.SOLDERBALL_SPHEROID
-        if shape:
-            cmp_property = self.component_property
-            solder_ball_prop = cmp_property.solder_ball_property
-            solder_ball_prop.shape = shape
-            cmp_property.solder_ball_property = solder_ball_prop
-            self.component_property = cmp_property
+        if not self.component_property.solder_ball_property.is_null:
+            shape = None
+            if isinstance(value, str):
+                if value.lower() == "cylinder":
+                    shape = SolderballShape.SOLDERBALL_CYLINDER
+                elif value.lower() == "none":
+                    shape = SolderballShape.NO_SOLDERBALL
+                elif value.lower() == "spheroid":
+                    shape = SolderballShape.SOLDERBALL_SPHEROID
+            if shape:
+                cmp_property = self.component_property
+                solder_ball_prop = cmp_property.solder_ball_property
+                solder_ball_prop.shape = shape
+                cmp_property.solder_ball_property = solder_ball_prop
+                self.component_property = cmp_property
 
     @property
     def solder_ball_diameter(self):
         """Solder ball diameter."""
-        if "solder_ball_property" in dir(self.component_property):
+        if not self.component_property.solder_ball_property.is_null:
             diameter, mid_diameter = self.component_property.solder_ball_property.get_diameter()
             return diameter.value, mid_diameter.value
 
     @solder_ball_diameter.setter
     def solder_ball_diameter(self, value):
-        if isinstance(value, tuple) or isinstance(value, list):
-            if len(value) == 2:
-                diameter = GrpcValue(value[0])
-                mid_diameter = GrpcValue(value[1])
-            elif len(value) == 1:
-                diameter = GrpcValue(value[0])
-                mid_diameter = GrpcValue(value[0])
-        if isinstance(value, str) or isinstance(value, float):
-            diameter = GrpcValue(value)
-            mid_diameter = GrpcValue(value)
-        cmp_property = self.component_property
-        solder_ball_prop = cmp_property.solder_ball_property
-        solder_ball_prop.set_diameter(diameter, mid_diameter)
-        cmp_property.solder_ball_property = solder_ball_prop
-        self.component_property = cmp_property
+        if not self.component_property.solder_ball_property.is_null:
+            diameter = None
+            mid_diameter = diameter
+            if isinstance(value, tuple) or isinstance(value, list):
+                if len(value) == 2:
+                    diameter = GrpcValue(value[0])
+                    mid_diameter = GrpcValue(value[1])
+                elif len(value) == 1:
+                    diameter = GrpcValue(value[0])
+                    mid_diameter = GrpcValue(value[0])
+            if isinstance(value, str) or isinstance(value, float):
+                diameter = GrpcValue(value)
+                mid_diameter = GrpcValue(value)
+            cmp_property = self.component_property
+            solder_ball_prop = cmp_property.solder_ball_property
+            solder_ball_prop.set_diameter(diameter, mid_diameter)
+            cmp_property.solder_ball_property = solder_ball_prop
+            self.component_property = cmp_property
 
     @property
     def solder_ball_placement(self):
         """Solder ball placement if available.."""
-        if "solder_ball_property" in dir(self.component_property):
+        if not self.component_property.solder_ball_property.is_null:
             solder_placement = self.component_property.solder_ball_property.placement
             return solder_placement.value
 

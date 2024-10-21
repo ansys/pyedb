@@ -544,13 +544,10 @@ class TestClass:
         assert not edbapp.components.instances["R67"].is_top_mounted
         edbapp.close_edb()
 
-    def test_instances(self):
+    def test_instances(self, edb_examples):
         """Check instances access and values."""
-        example_folder = os.path.join(local_path, "example_models", test_subfolder)
-        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
-        target_path_edb = os.path.join(self.local_scratch.path, "test_component", "test.aedb")
-        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = Edb(target_path_edb, desktop_version)
+        # TODO check bug #439
+        edbapp = edb_examples.get_si_verse()
         comp_pins = edbapp.components.instances["U1"].pins
         pins = [comp_pins["AM38"], comp_pins["AL37"]]
         edbapp.components.create(
@@ -563,30 +560,29 @@ class TestClass:
         assert edbapp.components.instances["Test"].center == [0.06800000116, 0.01649999875]
         edbapp.close_edb()
 
-    def test_create_package_def(self):
+    def test_create_package_def(self, edb_examples):
         """Check the creation of package definition."""
-        assert self.edbapp.components["C200"].create_package_def(component_part_name="SMTC-MECT-110-01-M-D-RA1_V")
-        assert not self.edbapp.components["C200"].create_package_def()
-        assert self.edbapp.components["C200"].package_def.name == "C200_CAPC3216X180X55ML20T25"
+        # Done
+        edb = edb_examples.get_si_verse()
+        assert edb.components["C200"].create_package_def(component_part_name="SMTC-MECT-110-01-M-D-RA1_V")
+        assert not edb.components["C200"].create_package_def()
+        assert edb.components["C200"].package_def.name == "C200_CAPC3216X180X55ML20T25"
+        edb.close()
 
-    def test_solder_ball_getter_setter(self):
-        cmp = self.edbapp.components["X1"]
+    def test_solder_ball_getter_setter(self, edb_examples):
+        # Done'
+        edb = edb_examples.get_si_verse()
+        cmp = edb.components.instances["X1"]
         cmp.solder_ball_height = 0.0
         assert cmp.solder_ball_height == 0.0
         cmp.solder_ball_height = "100um"
         assert cmp.solder_ball_height == 100e-6
         assert cmp.solder_ball_shape
-        cmp.solder_ball_shape = "Cylinder"
-        assert cmp.solder_ball_shape == "Cylinder"
-        cmp.solder_ball_shape = 0
-        assert cmp.solder_ball_shape == "None"
-        cmp.solder_ball_shape = 1
-        assert cmp.solder_ball_shape == "Cylinder"
-        cmp.solder_ball_shape = "Spheroid"
-        assert cmp.solder_ball_shape == "Spheroid"
-        cmp.solder_ball_shape = "Cylinder"
-        cmp.solder_ball_shape = 2
-        assert cmp.solder_ball_shape == "Spheroid"
+        cmp.solder_ball_shape = "cylinder"
+        assert cmp.solder_ball_shape == "cylinder"
+        cmp.solder_ball_shape = "spheroid"
+        assert cmp.solder_ball_shape == "spheroid"
+        cmp.solder_ball_shape = "cylinder"
         assert cmp.solder_ball_diameter == (0.0, 0.0)
         cmp.solder_ball_diameter = "200um"
         diam1, diam2 = cmp.solder_ball_diameter
