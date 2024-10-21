@@ -296,7 +296,10 @@ class Configuration:
         if kwargs.get("operations", False):
             data["operations"] = self.cfg_data.operations.get_data_from_db()
         if kwargs.get("padstacks", False):
-            data["padstacks"] = self.cfg_data.padstacks.get_data_from_db()
+            self.cfg_data.padstacks.retrieve_parameters_from_edb()
+            data["padstacks"] = dict()
+            data["padstacks"]["definitions"] = self.cfg_data.padstacks.definitions
+            data["padstacks"]["instances"] = self.cfg_data.padstacks.instances
         if kwargs.get("s_parameters", False):
             data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db()
         if kwargs.get("boundaries", False):
