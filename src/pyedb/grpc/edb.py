@@ -474,11 +474,6 @@ class EdbGrpc(EdbInit):
         -------
         ``True`` when succeed ``False`` if failed : bool
         """
-        # self.logger.info("EDB Path is %s", self.edbpath)
-        # self.logger.info("EDB Version is %s", self.edbversion)
-        # if self.edbversion > "2023.1":
-        #     self.standalone = False
-
         self.standalone = self.standalone
         try:
             self._db = GrpcDatabase.open(self.edbpath, self.isreadonly)
@@ -494,7 +489,6 @@ class EdbGrpc(EdbInit):
             for cell in self.active_db.circuit_cells:
                 if cell.name == self.cellname:
                     self._active_cell = cell
-        # if self._active_cell is still None, set it to default cell
         if self._active_cell is None:
             self._active_cell = self._db.circuit_cells[0]
         self.logger.info("Cell %s Opened", self._active_cell.name)
@@ -715,6 +709,7 @@ class EdbGrpc(EdbInit):
         """
         # return EdbDesignOptions(self.active_cell)
         # TODO check is really needed
+        return None
 
     @property
     def stackup(self):
@@ -4042,12 +4037,12 @@ class EdbGrpc(EdbInit):
         cloned_edb.close()
         return True
 
-    # @property
-    # def definitions(self):
-    #     """Definitions class."""
-    #     from pyedb.grpc.edb_core.definition import Definitions
-    #
-    #     return Definitions(self)
+    @property
+    def definitions(self):
+        """Definitions class."""
+        from pyedb.grpc.edb_core.definitions import Definitions
+
+        return Definitions(self)
 
     @property
     def workflow(self):

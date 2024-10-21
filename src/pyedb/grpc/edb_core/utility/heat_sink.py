@@ -23,11 +23,10 @@
 from ansys.edb.core.utility.heat_sink import (
     HeatSinkFinOrientation as GrpcHeatSinkFinOrientation,
 )
-from ansys.edb.core.utility.heat_sink import HeatSink as GrpcHeatSink
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 
-class HeatSink(GrpcHeatSink):
+class HeatSink:
 
     """Heatsink model description.
 
@@ -38,61 +37,56 @@ class HeatSink(GrpcHeatSink):
     edb_object : :class:`Ansys.Ansoft.Edb.Utility.HeatSink`,
     """
 
-    def __init__(self, pedb, edb_object=None):
+    def __init__(self, pedb, edb_object):
         self._pedb = pedb
-        super().__init__(edb_object)
+        self._edb_object = edb_object
         self._fin_orientation_type = {
             "x_oriented": GrpcHeatSinkFinOrientation.X_ORIENTED,
             "y_oriented": GrpcHeatSinkFinOrientation.Y_ORIENTED,
             "other_oriented": GrpcHeatSinkFinOrientation.OTHER_ORIENTED,
         }
 
-        if edb_object:
-            self._edb_object = edb_object
-        else:
-            self._edb_object = GrpcHeatSink()
-
     @property
     def fin_base_height(self):
         """The base elevation of the fins."""
-        return self.fin_base_height.value
+        return self._edb_object.fin_base_height.value
 
     @fin_base_height.setter
     def fin_base_height(self, value):
-        self.fin_height = GrpcValue(value)
+        self._edb_object.fin_base_height = GrpcValue(value)
 
     @property
     def fin_height(self):
         """The fin height."""
-        return self.fin_base_height.value
+        return self._edb_object.fin_height.value
 
     @fin_height.setter
     def fin_height(self, value):
-        self.fin_base_height = GrpcValue(value)
+        self._edb_object.fin_height = GrpcValue(value)
 
     @property
     def fin_orientation(self):
         """The fin orientation."""
-        return self.fin_orientation.name.lower()
+        return self._edb_object.fin_orientation.name.lower()
 
     @fin_orientation.setter
     def fin_orientation(self, value):
-        self.fin_orientation = self._fin_orientation_type[value]
+        self._edb_object.fin_orientation = self._fin_orientation_type[value]
 
     @property
     def fin_spacing(self):
         """The fin spacing."""
-        return self.fin_spacing.value
+        return self._edb_object.fin_spacing.value
 
     @fin_spacing.setter
     def fin_spacing(self, value):
-        self.fin_spacing = GrpcValue(value)
+        self._edb_object.fin_spacing = GrpcValue(value)
 
     @property
     def fin_thickness(self):
         """The fin thickness."""
-        return self.fin_thickness.value
+        return self._edb_object.fin_thickness.value
 
     @fin_thickness.setter
     def fin_thickness(self, value):
-        self.fin_thickness = GrpcValue(value)
+        self._edb_object.fin_thickness = GrpcValue(value)

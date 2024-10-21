@@ -25,6 +25,7 @@ from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.edb_logger import pyedb_logger
+from pyedb.grpc.edb_core.utility.heat_sink import HeatSink
 
 
 class PackageDef(GrpcPackageDef):
@@ -47,6 +48,7 @@ class PackageDef(GrpcPackageDef):
         super(GrpcPackageDef, self).__init__(edb_object.msg)
         self._pedb = pedb
         self._edb_object = edb_object
+        self._heat_sink = None
         if self._edb_object is None and name is not None:
             self._edb_object = self.__create_from_name(name, component_part_name, extent_bounding_box)
 
@@ -138,26 +140,44 @@ class PackageDef(GrpcPackageDef):
     def height(self, value):
         super(PackageDef, self.__class__).height.__set__(self, GrpcValue(value))
 
+    @property
+    def heat_sink(self):
+        return HeatSink(self._pedb, super().heat_sink)
+
     def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness):
+        """Set Heat sink.
+        Parameters
+        ----------
+        fin_base_height : str, float
+            Fin base height.
+        fin_height : str, float
+            Fin height.
+        fin_orientation : str
+            Fin orientation. Supported values, `x_oriented`, `y_oriented`.
+        fin_spacing : str, float
+            Fin spacing.
+        fin_thickness : str, float
+            Fin thickness.
+        """
         from ansys.edb.core.utility.heat_sink import (
             HeatSinkFinOrientation as GrpcHeatSinkFinOrientation,
         )
+        from ansys.edb.core.utility.heat_sink import HeatSink as GrpcHeatSink
 
         if fin_orientation == "x_oriented":
-            orientation = GrpcHeatSinkFinOrientation.X_ORIENTED
+            fin_orientation = GrpcHeatSinkFinOrientation.X_ORIENTED
         elif fin_orientation == "y_oriented":
-            orientation = GrpcHeatSinkFinOrientation.Y_ORIENTED
+            fin_orientation = GrpcHeatSinkFinOrientation.Y_ORIENTED
         else:
-            orientation = GrpcHeatSinkFinOrientation.OTHER_ORIENTED
-        self.set_heatsink(
-            fin_base_height=GrpcValue(fin_base_height),
-            fin_height=GrpcValue(fin_height),
-            fin_orientation=orientation,
-            fin_spacing=GrpcValue(fin_spacing),
-            fin_thickness=GrpcValue(fin_thickness),
+            fin_orientation = GrpcHeatSinkFinOrientation.OTHER_ORIENTED
+        super(PackageDef, self.__class__).heat_sink.__set__(
+            self,
+            GrpcHeatSink(
+                GrpcValue(fin_thickness),
+                GrpcValue(fin_spacing),
+                GrpcValue(fin_base_height),
+                GrpcValue(fin_height),
+                fin_orientation,
+            ),
         )
-
-    @property
-    def heatsink(self):
-        """Component heatsink."""
         return self.heat_sink

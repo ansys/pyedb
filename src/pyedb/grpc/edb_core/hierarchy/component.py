@@ -131,11 +131,13 @@ class Component(GrpcComponentGroup):
     @property
     def package_def(self):
         """Package definition."""
-        return self._package_def
+        return self.component_property.package_def
 
     @package_def.setter
     def package_def(self, value):
-        if value not in self._pedb.package_defs:
+        from pyedb.grpc.edb_core.definition.package_def import PackageDef
+
+        if value not in [package.name for package in self._pedb.package_defs]:
             from ansys.edb.core.definition.package_def import (
                 PackageDef as GrpcPackageDef,
             )
@@ -144,6 +146,16 @@ class Component(GrpcComponentGroup):
             self._package_def.exterior_boundary = GrpcPolygonData(points=self.bounding_box)
             comp_prop = self.component_property
             comp_prop.package_def = self._package_def
+            self.component_property = comp_prop
+        elif isinstance(value, str):
+            package = next(package for package in self._pedb.package_defs if package.name == value)
+            comp_prop = self.component_property
+            comp_prop.package_def = package
+            self.component_property = comp_prop
+
+        elif isinstance(value, PackageDef):
+            comp_prop = self.component_property
+            comp_prop.package_def = value
             self.component_property = comp_prop
 
     @property
@@ -911,11 +923,16 @@ class Component(GrpcComponentGroup):
         >>>comp_def.add_n_port_model("c:GRM32_DC0V_25degC_series.s2p", "GRM32_DC0V_25degC_series")
         >>>edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
         """
-        model = GrpcSParameterModel()
-        model.component_model = name
-        if reference_net:
-            model.reference_net = reference_net
-        return self._set_model(model)
+        from ansys.edb.core.definition.component_model import (
+            ComponentModel as GrpcComponentModel,
+        )
+
+        model = GrpcComponentModel.find_by_name(self.component_def, name)
+        if not model.is_null:
+            if reference_net:
+                model.reference_net = reference_net
+            return self._set_model(model)
+        return False
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
         """Assign RLC to this component.

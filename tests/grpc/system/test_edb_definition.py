@@ -34,8 +34,7 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, legacy_edb_app, local_scratch, target_path, target_path2, target_path4):
-        self.edbapp = legacy_edb_app
+    def init(self, local_scratch, target_path, target_path2, target_path4):
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path2 = target_path2
@@ -46,35 +45,37 @@ class TestClass:
         assert isinstance(self.edbapp.definitions.package, dict)
 
     def test_component_s_parameter(self, edb_examples):
+        # TODO check bug 452
         edbapp = edb_examples.get_si_verse()
         sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
-
         edbapp.definitions.component["CAPC3216X180X55ML20T25"].add_n_port_model(sparam_path, "GRM32_DC0V_25degC_series")
         edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
         pp = {"pin_order": ["1", "2"]}
         edbapp.definitions.component["CAPC3216X180X55ML20T25"].set_properties(**pp)
         assert edbapp.definitions.component["CAPC3216X180X55ML20T25"].get_properties()["pin_order"] == ["1", "2"]
+        edbapp.close()
 
     def test_add_package_def(self, edb_examples):
+        # Done
         edbapp = edb_examples.get_si_verse()
         package = edbapp.definitions.add_package_def("package_1", "SMTC-MECT-110-01-M-D-RA1_V")
         assert package
         package.maximum_power = 1
         assert edbapp.definitions.package["package_1"].maximum_power == 1
-        package.therm_cond = 1
-        assert edbapp.definitions.package["package_1"].therm_cond == 1
+        package.thermal_conductivity = 1
+        assert edbapp.definitions.package["package_1"].thermal_conductivity == 1
         package.theta_jb = 1
         assert edbapp.definitions.package["package_1"].theta_jb == 1
         package.theta_jc = 1
         assert edbapp.definitions.package["package_1"].theta_jc == 1
         package.height = 1
         assert edbapp.definitions.package["package_1"].height == 1
-        package.set_heatsink("1mm", "2mm", "x_oriented", "3mm", "4mm")
-        assert package.heatsink.fin_base_height == 0.001
-        assert package.heatsink.fin_height == 0.002
-        assert package.heatsink.fin_orientation == "x_oriented"
-        assert package.heatsink.fin_spacing == 0.003
-        assert package.heatsink.fin_thickness == 0.004
+        assert package.set_heatsink("1mm", "2mm", "x_oriented", "3mm", "4mm")
+        assert package.heat_sink.fin_base_height == 0.001
+        assert package.heat_sink.fin_height == 0.002
+        assert package.heat_sink.fin_orientation == "x_oriented"
+        assert package.heat_sink.fin_spacing == 0.003
+        assert package.heat_sink.fin_thickness == 0.004
         package.name = "package_1b"
         assert edbapp.definitions.package["package_1b"]
 
