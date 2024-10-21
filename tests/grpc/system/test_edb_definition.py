@@ -40,9 +40,11 @@ class TestClass:
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
-    def test_definitions(self):
-        assert isinstance(self.edbapp.definitions.component, dict)
-        assert isinstance(self.edbapp.definitions.package, dict)
+    def test_definitions(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert isinstance(edbapp.definitions.component, dict)
+        assert isinstance(edbapp.definitions.package, dict)
+        edbapp.close()
 
     def test_component_s_parameter(self, edb_examples):
         # TODO check bug 452
