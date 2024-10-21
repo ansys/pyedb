@@ -39,7 +39,6 @@ from ansys.edb.core.primitive.primitive import PadstackInstance as GrpcPadstackI
 from ansys.edb.core.terminal.terminals import (
     PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
 )
-from ansys.edb.core.utility.rlc import PinPair as GrpcPinPair
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as EDBValue
 from ansys.edb.core.utility.value import Value as GrpcValue
@@ -873,22 +872,25 @@ class Component(GrpcComponentGroup):
 
         Returns
         -------
+        SParameterModel object.
 
         """
         if not name:
             name = get_filename_without_extension(file_path)
-
-        s_param_model = GrpcSParameterModel.find_by_name(self.component_def, name)
-        if s_param_model.is_null:
-            n_port_model = GrpcSParameterModel.create(name=name, ref_net=reference_net)
-            n_port_model.reference_file = file_path
-            self.component_def.add_component_model(n_port_model)
-
-        model = GrpcSParameterModel()
-        model.component_model = name
-        if reference_net:
-            model.reference_net = reference_net
-        return self._set_model(model)
+        for model in self.component_def.component_models:
+            if model.model_name == name:
+                self._pedb.logger.error(f"Model {name} already defined for component {self.refdes}")
+                return False
+        if not reference_net:
+            self._pedb.logger.warning(
+                f"No reference net provided for S parameter file {file_path}, net `GND` is " f"assigned by default"
+            )
+            reference_net = "GND"
+        n_port_model = GrpcSParameterModel.create(name=name, ref_net=reference_net)
+        n_port_model.reference_file = file_path
+        self.component_def.add_component_model(n_port_model)
+        self._set_model(n_port_model)
+        return n_port_model
 
     def use_s_parameter_model(self, name, reference_net=None):
         """Use S-parameter model on the component.
@@ -942,10 +944,10 @@ class Component(GrpcComponentGroup):
         ind = 0 if ind is None else ind
         cap = 0 if cap is None else cap
         res, ind, cap = EDBValue(res), EDBValue(ind), EDBValue(cap)
-        model = PinPairModel(self._edb_model)
+        model = PinPairModel(self._pedb, self._edb_model)
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
-            pin_pair = GrpcPinPair(pin_names[idx], pin_names[idx + 1])
+            # pin_pair = GrpcPinPair(pin_names[idx], pin_names[idx + 1])
             rlc = GrpcRlc(
                 r=res,
                 r_enabled=r_enabled,
@@ -955,7 +957,7 @@ class Component(GrpcComponentGroup):
                 c_enabled=c_enabled,
                 is_parallel=is_parallel,
             )
-            model.set_rlc(pin_pair, rlc)
+            model.set_rlc(("1", "2"), rlc)
         return self._set_model(model)
 
     def create_clearance_on_component(self, extra_soldermask_clearance=1e-4):

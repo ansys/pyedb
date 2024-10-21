@@ -29,7 +29,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 class PinPairModel(GrpcPinPairModel):  # pragma: no cover
     def __init__(self, pedb, edb_object):
         self._pedb_comp = pedb
-        super().__init__(edb_object)
+        super().__init__(edb_object.msg)
 
     @property
     def rlc_enable(self):

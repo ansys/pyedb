@@ -422,19 +422,21 @@ class TestClass:
         assert len(rlc_list) == 944
         edbapp.close()
 
-    def test_components_get_component_placement_vector(self):
+    def test_components_get_component_placement_vector(self, edb_examples):
         """Get the placement vector between 2 components."""
+        # TODO check issue failing loading edb2
+        edbapp = edb_examples.get_si_verse()
         edb2 = Edb(self.target_path4, edbversion=desktop_version)
         for _, cmp in edb2.components.instances.items():
             assert isinstance(cmp.solder_ball_placement, int)
-        mounted_cmp = edb2.components.get_component_by_name("BGA")._edb_object
-        hosting_cmp = self.edbapp.components.get_component_by_name("U1")._edb_object
+        mounted_cmp = edb2.components.get_component_by_name("BGA")
+        hosting_cmp = edbapp.components.get_component_by_name("U1")
         (
             result,
             vector,
             rotation,
             solder_ball_height,
-        ) = self.edbapp.components.get_component_placement_vector(
+        ) = edbapp.components.get_component_placement_vector(
             mounted_component=mounted_cmp,
             hosting_component=hosting_cmp,
             mounted_component_pin1="A10",
@@ -451,7 +453,7 @@ class TestClass:
             vector,
             rotation,
             solder_ball_height,
-        ) = self.edbapp.components.get_component_placement_vector(
+        ) = edbapp.components.get_component_placement_vector(
             mounted_component=mounted_cmp,
             hosting_component=hosting_cmp,
             mounted_component_pin1="A10",
@@ -468,6 +470,9 @@ class TestClass:
 
     def test_components_assign(self, edb_examples):
         """Assign RLC model, S-parameter model and spice model."""
+
+        # TODO wait ingo to add Sparameter model.
+
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_17.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
@@ -492,28 +497,26 @@ class TestClass:
             and float(comp.ind_value) == 2
             and float(comp.cap_value) == 3
         )
-        assert comp.value
+        assert comp.rlc_values
         assert not comp.spice_model and not comp.s_param_model and not comp.netlist_model
         assert comp.assign_s_param_model(sparam_path) and comp.value
         assert comp.s_param_model
         assert edbapp.components.nport_comp_definition
         assert comp.assign_spice_model(spice_path) and comp.value
         assert comp.spice_model
-        comp.type = "Inductor"
+        comp.type = "inductor"
         comp.value = 10  # This command set the model back to ideal RLC
-        assert comp.type == "Inductor" and comp.value == 10 and float(comp.ind_value) == 10
+        assert comp.type == "inductor" and comp.value == 10 and float(comp.ind_value) == 10
 
         edbapp.components["C164"].assign_spice_model(
             spice_path, sub_circuit_name="GRM32ER60J227ME05_DC0V_25degC", terminal_pairs=[["port1", 2], ["port2", 1]]
         )
         edbapp.close()
 
-    def test_components_bounding_box(self):
+    def test_components_bounding_box(self, edb_examples):
         """Get component's bounding box."""
-        target_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        out_edb = os.path.join(self.local_scratch.path, "get_comp_bbox.aedb")
-        self.local_scratch.copyfolder(target_path, out_edb)
-        edbapp = Edb(out_edb, edbversion=desktop_version)
+        # Done
+        edbapp = edb_examples.get_si_verse()
         component = edbapp.components.instances["U1"]
         assert component.bounding_box
         assert isinstance(component.rotation, float)
