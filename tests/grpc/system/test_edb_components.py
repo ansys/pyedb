@@ -522,19 +522,17 @@ class TestClass:
         assert isinstance(component.rotation, float)
         edbapp.close()
 
-    def test_pec_boundary_ports(self):
+    def test_pec_boundary_ports(self, edb_examples):
         """Check pec boundary ports."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_custom_sball_height", "ANSYS-HSD_V1.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        # Done
+        edbapp = edb_examples.get_si_verse()
         edbapp.components.create_port_on_pins(refdes="U1", pins="AU38", reference_pins="AU37", pec_boundary=True)
-        assert edbapp.terminals["Port_GND_U1-AU38"].boundary_type == "PecBoundary"
-        assert edbapp.terminals["Port_GND_U1-AU38_ref"].boundary_type == "PecBoundary"
+        assert edbapp.terminals["Port_GND_U1_AU38"].boundary_type == "pec"
+        assert edbapp.terminals["Port_GND_U1_AU38_ref"].boundary_type == "pec"
         edbapp.components.deactivate_rlc_component(component="C5", create_circuit_port=True, pec_boundary=True)
         edbapp.components.add_port_on_rlc_component(component="C65", circuit_ports=False, pec_boundary=True)
-        assert edbapp.terminals["C5"].boundary_type == "PecBoundary"
-        assert edbapp.terminals["C65"].boundary_type == "PecBoundary"
+        assert edbapp.terminals["C5"].boundary_type == "pec"
+        assert edbapp.terminals["C65"].boundary_type == "pec"
 
     def test_is_top_mounted(self):
         """Check is_top_mounted property."""

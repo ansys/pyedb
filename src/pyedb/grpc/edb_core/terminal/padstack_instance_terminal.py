@@ -23,6 +23,7 @@
 from ansys.edb.core.terminal.terminals import (
     PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
 )
+from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
 
 
 class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
@@ -109,3 +110,20 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
     @impedance.setter
     def impedance(self, value):
         super(PadstackInstanceTerminal, self.__class__).impedance.__set__(self, value)
+
+    @property
+    def boundary_type(self):
+        return super().boundary_type.name.lower()
+
+    @boundary_type.setter
+    def boundary_type(self, value):
+        mapping = {
+            "port": GrpcBoundaryType.PORT,
+            "dc_terminal": GrpcBoundaryType.DC_TERMINAL,
+            "voltage_probe": GrpcBoundaryType.VOLTAGE_PROBE,
+            "voltage_source": GrpcBoundaryType.VOLTAGE_SOURCE,
+            "current_source": GrpcBoundaryType.CURRENT_SOURCE,
+            "rlc": GrpcBoundaryType.RLC,
+            "pec": GrpcBoundaryType.PEC,
+        }
+        super(PadstackInstanceTerminal, self.__class__).boundary_type.__set__(self, mapping[value.lower()])

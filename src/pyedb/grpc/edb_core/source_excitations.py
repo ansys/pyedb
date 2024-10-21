@@ -224,7 +224,7 @@ class SourceExcitation:
             reference_pins = [reference_pins]
         elif isinstance(reference_pins, PadstackInstance):
             reference_pins = [reference_pins]
-        elif isinstance(reference_pins, list):
+        if isinstance(reference_pins, list):
             _temp = []
             for ref_pin in reference_pins:
                 if isinstance(ref_pin, int):
@@ -271,7 +271,7 @@ class SourceExcitation:
                 pin_net_name = "no_net"
             else:
                 pin_net_name = pin.net.name
-            port_name = f"Port_{refdes}_{pin_net_name}_{pins[0].name}"
+            port_name = f"Port_{pin_net_name}_{refdes.name}_{pins[0].name}"
 
         ref_cmp_pins = []
         for ref_pin in reference_pins:
