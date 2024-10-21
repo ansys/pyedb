@@ -131,8 +131,14 @@ sources_distributed = {
 # ## Add setups in configuration
 
 cfg["pin_groups"] = pin_groups
-cfg["sources"] = [voltage_source, current_source_1, current_source_2, current_source_3, current_source_4,
-                  sources_distributed]
+cfg["sources"] = [
+    voltage_source,
+    current_source_1,
+    current_source_2,
+    current_source_3,
+    current_source_4,
+    sources_distributed,
+]
 
 # ## Write configuration into as json file
 
