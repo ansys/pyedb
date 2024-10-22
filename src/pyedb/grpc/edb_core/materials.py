@@ -271,42 +271,43 @@ class Material(GrpcMaterialDef):
     def set_djordjecvic_sarkar_model(self):
         super(Material, self.__class__).dielectric_material_model.__set__(self, GrpcDjordjecvicSarkarModel.create())
 
-    # def to_dict(self):
-    #     """Convert material into dictionary."""
-    #     test = self.__dict__()
-    #
-    #     res = {"name": self.name}
-    #     res.update(self.model_dump())
-    #     return res
-    #
-    # def update(self, input_dict: dict):
-    #     if input_dict:
-    #         # Update attributes
-    #         for attribute in ATTRIBUTES:
-    #             if attribute in input_dict:
-    #                 setattr(self, attribute, input_dict[attribute])
-    #         if "loss_tangent" in input_dict:  # pragma: no cover
-    #             setattr(self, "loss_tangent", input_dict["loss_tangent"])
-    #
-    #         # Update DS model
-    #         # NOTE: Contrary to before we don't test 'dielectric_model_frequency' only
-    #         if any(map(lambda attribute: input_dict.get(attribute, None) is not None, DC_ATTRIBUTES)):
-    #             if not self.__dc_model:
-    #                 self.__dc_model = self.__edb_definition.DjordjecvicSarkarModel()
-    #             for attribute in DC_ATTRIBUTES:
-    #                 if attribute in input_dict:
-    #                     if attribute == "dc_permittivity" and input_dict[attribute] is not None:
-    #                         self.__dc_model.SetUseDCRelativePermitivity(True)
-    #                     setattr(self, attribute, input_dict[attribute])
-    #             self.__material_def.dielectric_material_model = self.__dc_model
-    #         # Unset DS model if it is already assigned to the material in the database
-    #         elif self.__dc_model:
-    #             self.__material_def.dielectric_material_model = GrpcValue(None)
-    #
-    # def __load_all_properties(self):
-    #     """Load all properties of the material."""
-    #     for property in self.__properties.model_dump().keys():
-    #         _ = getattr(self, property)
+    def to_dict(self):
+        """Convert material into dictionary."""
+        test = self.__dict__()
+
+        res = {"name": self.name}
+        res.update(self.model_dump())
+        return res
+
+    def update(self, input_dict: dict):
+        if input_dict:
+            # Update attributes
+            for attribute in ATTRIBUTES:
+                if attribute in input_dict:
+                    setattr(self, attribute, input_dict[attribute])
+            if "loss_tangent" in input_dict:  # pragma: no cover
+                setattr(self, "loss_tangent", input_dict["loss_tangent"])
+
+            # Update DS model
+            # NOTE: Contrary to before we don't test 'dielectric_model_frequency' only
+            if any(map(lambda attribute: input_dict.get(attribute, None) is not None, DC_ATTRIBUTES)):
+                # DC model does not exists anymore in Grpc
+                if not self.__dc_model:
+                    self.__dc_model = GrpcDjordjecvicSarkarModel.create()
+                for attribute in DC_ATTRIBUTES:
+                    if attribute in input_dict:
+                        if attribute == "dc_permittivity" and input_dict[attribute] is not None:
+                            self.__dc_model.SetUseDCRelativePermitivity(True)
+                        setattr(self, attribute, input_dict[attribute])
+                self.__material_def.dielectric_material_model = self.__dc_model
+            # Unset DS model if it is already assigned to the material in the database
+            elif self.__dc_model:
+                self.__material_def.dielectric_material_model = GrpcValue(None)
+
+    def __load_all_properties(self):
+        """Load all properties of the material."""
+        for property in self.__properties.model_dump().keys():
+            _ = getattr(self, property)
 
 
 class Materials(object):

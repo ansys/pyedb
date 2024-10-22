@@ -1135,15 +1135,15 @@ class TestClass:
     def test_stackup_properties(self):
         """Evaluate stackup properties."""
         # TODO check material init
-        # edb = Edb(edbversion=desktop_version, restart_rpc_server=True)
-        # edb.stackup.add_layer(layer_name="gnd", fillMaterial="air", thickness="10um")
-        # edb.stackup.add_layer(layer_name="diel1", fillMaterial="air", thickness="200um", base_layer="gnd")
-        # edb.stackup.add_layer(layer_name="sig1", fillMaterial="air", thickness="10um", base_layer="diel1")
-        # edb.stackup.add_layer(layer_name="diel2", fillMaterial="air", thickness="200um", base_layer="sig1")
-        # edb.stackup.add_layer(layer_name="sig3", fillMaterial="air", thickness="10um", base_layer="diel2")
-        # assert edb.stackup.thickness == 0.00043
-        # assert edb.stackup.num_layers == 5
-        # edb.close()
+        edb = Edb(edbversion=desktop_version, restart_rpc_server=True)
+        edb.stackup.add_layer(layer_name="gnd", fillMaterial="air", thickness="10um")
+        edb.stackup.add_layer(layer_name="diel1", fillMaterial="air", thickness="200um", base_layer="gnd")
+        edb.stackup.add_layer(layer_name="sig1", fillMaterial="air", thickness="10um", base_layer="diel1")
+        edb.stackup.add_layer(layer_name="diel2", fillMaterial="air", thickness="200um", base_layer="sig1")
+        edb.stackup.add_layer(layer_name="sig3", fillMaterial="air", thickness="10um", base_layer="diel2")
+        assert edb.stackup.thickness == 0.00043
+        assert edb.stackup.num_layers == 5
+        edb.close()
         pass
 
     def test_hfss_extent_info(self):

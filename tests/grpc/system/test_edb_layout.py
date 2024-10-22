@@ -32,6 +32,7 @@ class TestClass:
         pass
 
     def test_find(self, edb_examples):
+        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.layout.find_primitive(layer_name="Inner5(PWR2)")
         edbapp.close()

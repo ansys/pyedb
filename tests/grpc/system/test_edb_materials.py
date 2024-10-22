@@ -65,28 +65,40 @@ class TestClass:
         self.edbapp = legacy_edb_app_without_material
         self.definition = self.edbapp.edb_api.definition
 
-        # Remove dummy material if it exist
-        material_def = self.definition.MaterialDef.FindByName(self.edbapp.active_db, MATERIAL_NAME)
-        if not material_def.IsNull():
-            material_def.Delete()
+        # Remove dummy material if it exists.
+        from ansys.edb.core.definition.material_def import (
+            MaterialDef as GrpcMaterialDef,
+        )
+
+        material_def = GrpcMaterialDef.find_by_name(self.edbapp.active_db, MATERIAL_NAME)
+        if not material_def.is_null:
+            material_def.delete()
 
     def test_material_name(self):
         """Evaluate material properties."""
-        material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
+        from ansys.edb.core.definition.material_def import (
+            MaterialDef as GrpcMaterialDef,
+        )
+
+        material_def = GrpcMaterialDef.create(self.edbapp.active_db, MATERIAL_NAME)
         material = Material(self.edbapp, material_def)
 
         assert MATERIAL_NAME == material.name
 
     def test_material_properties(self):
         """Evaluate material properties."""
-        material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
+        from ansys.edb.core.definition.material_def import (
+            MaterialDef as GrpcMaterialDef,
+        )
+
+        material_def = GrpcMaterialDef.create(self.edbapp.active_db, MATERIAL_NAME)
         material = Material(self.edbapp, material_def)
 
         for property in PROPERTIES:
             for value in VALUES:
                 setattr(material, property, value)
                 assert float(value) == getattr(material, property)
-        assert 12 == material.loss_tangent
+        assert 12 == material.dielectric_loss_tangent
 
     def test_material_dc_properties(self):
         """Evaluate material DC properties."""
