@@ -1,4 +1,4 @@
-# # Import Ports
+# # Import Sources
 # This example shows how to import voltage and current sources. In this example, we are going to
 #
 # - Download an example board
