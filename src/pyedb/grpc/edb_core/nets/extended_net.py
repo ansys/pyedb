@@ -26,7 +26,7 @@ from pyedb.grpc.edb_core.nets.net import Net
 
 
 class ExtendedNets:
-    def __init(self, pedb):
+    def __init__(self, pedb):
         self._pedb = pedb
 
     @property
@@ -65,7 +65,7 @@ class ExtendedNets:
         if isinstance(net, str):
             net = [net]
         for i in net:
-            extended_net.add_net(i)
+            extended_net.add_net(self._pedb.nets.nets[i])
         return self.items[name]
 
     def auto_identify_signal(self, resistor_below=10, inductor_below=1, capacitor_above=1e-9, exception_list=None):
@@ -176,10 +176,18 @@ class ExtendedNets:
         if exception_list is None:
             exception_list = []
         _extended_nets = []
-        _nets = self.nets
+        _nets = self._pedb.nets.nets
         all_nets = list(_nets.keys())[:]
-        net_dicts = self._comps_by_nets_dict if self._comps_by_nets_dict else self.components_by_nets
-        comp_dict = self._nets_by_comp_dict if self._nets_by_comp_dict else self.nets_by_components
+        net_dicts = (
+            self._pedb.nets._comps_by_nets_dict
+            if self._pedb.nets._comps_by_nets_dict
+            else (self._pedb.nets.components_by_nets)
+        )
+        comp_dict = (
+            self._pedb.nets._nets_by_comp_dict
+            if self._pedb.nets._nets_by_comp_dict
+            else (self._pedb.nets.nets_by_components)
+        )
 
         def get_net_list(net_name, _net_list):
             comps = []
@@ -189,25 +197,21 @@ class ExtendedNets:
             for vals in comps:
                 refdes = vals
                 cmp = self._pedb.components.instances[refdes]
-                is_enabled = cmp.is_enabled
-                if not is_enabled:
+                if cmp.type not in ["inductor", "resistor", "capacitor"]:
                     continue
-                val_type = cmp.type
-                if val_type not in ["Inductor", "Resistor", "Capacitor"]:
+                if not cmp.enabled:
                     continue
-
                 val_value = cmp.rlc_values
                 if refdes in exception_list:
                     pass
-                elif val_type == "Inductor" and val_value[1] < inductor_below:
+                elif cmp.type == "inductor" and val_value[1] < inductor_below:
                     pass
-                elif val_type == "Resistor" and val_value[0] < resistor_below:
+                elif cmp.type == "resistor" and val_value[0] < resistor_below:
                     pass
-                elif val_type == "Capacitor" and val_value[2] > capacitor_above:
+                elif cmp.type == "capacitor" and val_value[2] > capacitor_above:
                     pass
                 else:
                     continue
-
                 for net in comp_dict[refdes]:
                     if net not in _net_list:
                         _net_list.append(net)
@@ -231,12 +235,18 @@ class ExtendedNets:
 
                 if is_power:
                     if include_power:
-                        self._pedb.extended_nets.create(i, new_ext)
+                        ext_net = ExtendedNet.create(self._pedb.layout, i)
+                        ext_net.add_net(self._pedb.nets.nets[i])
+                        for net in new_ext:
+                            ext_net.add_net(self._pedb.nets.nets[net])
                     else:  # pragma: no cover
                         pass
                 else:
                     if include_signal:
-                        self._pedb.extended_nets.create(i, new_ext)
+                        ext_net = ExtendedNet.create(self._pedb.layout, i)
+                        ext_net.add_net(self._pedb.nets.nets[i])
+                        for net in new_ext:
+                            ext_net.add_net(self._pedb.nets.nets[net])
                     else:  # pragma: no cover
                         pass
 
@@ -249,7 +259,7 @@ class ExtendedNet(GrpcExtendedNet):
     """
 
     def __init__(self, pedb, edb_object):
-        super().__init__(self, edb_object.msg)
+        super().__init__(edb_object.msg)
         self._pedb = pedb
 
     @property
@@ -280,7 +290,7 @@ class ExtendedNet(GrpcExtendedNet):
         for comp_name, comp_obj in self.components.items():
             if comp_obj.type not in ["resistor", "inductor", "capacitor"]:
                 continue
-            if set(comp_obj.nets).issubset(set(nets)):
+            if set(list(nets.keys())).issubset(comp_obj.nets):
                 res[comp_name] = comp_obj
         return res
 
@@ -292,6 +302,6 @@ class ExtendedNet(GrpcExtendedNet):
         for comp_name, comp_obj in self.components.items():
             if comp_obj.type not in ["resistor", "inductor", "capacitor"]:
                 continue
-            if not set(comp_obj.nets).issubset(set(nets)):
+            if not set(list(nets.keys())).issubset(comp_obj.nets):
                 res[comp_name] = comp_obj
         return res

@@ -44,7 +44,7 @@ from pyedb.grpc.edb_core.materials import Materials
 from pyedb.grpc.edb_core.modeler import Modeler
 from pyedb.grpc.edb_core.net import Nets
 from pyedb.grpc.edb_core.nets.differential_pair import DifferentialPairs
-from pyedb.grpc.edb_core.nets.extended_net import ExtendedNet
+from pyedb.grpc.edb_core.nets.extended_net import ExtendedNets
 from pyedb.grpc.edb_core.nets.net_class import NetClass
 from pyedb.grpc.edb_core.padstack import Padstacks
 from pyedb.grpc.edb_core.ports.ports import BundleWavePort, CoaxPort, GapPort, WavePort
@@ -336,6 +336,7 @@ class EdbGrpc(EdbInit):
         self._materials = Materials(self)
         self._source_excitation = SourceExcitation(self)
         self._differential_pairs = DifferentialPairs(self)
+        self._extended_nets = ExtendedNets(self)
 
     @property
     def cell_names(self):
@@ -875,8 +876,9 @@ class EdbGrpc(EdbInit):
         >>> edbapp.extended_nets
         """
 
-        if self.active_db:
-            return [ExtendedNet(self, net) for net in self.active_layout.extended_nets]
+        if not self._extended_nets:
+            self._extended_nets = ExtendedNets(self)
+        return self._extended_nets
 
     @property
     def differential_pairs(self):

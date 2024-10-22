@@ -38,15 +38,16 @@ class TestClass:
 
     def test_nets_queries(self, edb_examples):
         """Evaluate nets queries"""
+        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.extended_nets.auto_identify_signal()
         assert edbapp.extended_nets.auto_identify_power()
         extended_net_name, _ = next(iter(edbapp.extended_nets.items.items()))
-        assert edbapp.extended_nets[extended_net_name]
-        assert edbapp.extended_nets[extended_net_name].nets
-        assert edbapp.extended_nets[extended_net_name].components
-        assert edbapp.extended_nets[extended_net_name].rlc
-        assert edbapp.extended_nets[extended_net_name].serial_rlc
-        assert edbapp.extended_nets["1V0"].shunt_rlc
+        assert edbapp.extended_nets.items[extended_net_name]
+        assert edbapp.extended_nets.items[extended_net_name].nets
+        assert edbapp.extended_nets.items[extended_net_name].components
+        assert edbapp.extended_nets.items[extended_net_name].rlc
+        assert edbapp.extended_nets.items[extended_net_name].serial_rlc
+        assert edbapp.extended_nets.items["1V0"].serial_rlc
         assert edbapp.extended_nets.create("new_ex_net", "DDR4_A1")
         edbapp.close()

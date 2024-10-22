@@ -95,7 +95,7 @@ class Net(GrpcNet):
             component = padstack_instance.component
             if component:
                 try:
-                    component[component.name] = component
+                    components[component.name] = component
                 except:
                     pass
         return components
