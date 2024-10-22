@@ -228,6 +228,9 @@ class Nets(object):
         # type: (int | float, int | float, int |float, list, bool, bool) -> list
         """Get extended net and associated components.
 
+        . deprecated:: pyedb 0.30.0
+        Use :func:`pyedb.grpc.extended_nets.generate_extended_nets` instead.
+
         Parameters
         ----------
         resistor_below : int, float, optional
@@ -257,79 +260,15 @@ class Nets(object):
         >>> app = Edb()
         >>> app.nets.get_extended_nets()
         """
-        if exception_list is None:
-            exception_list = []
-        _extended_nets = []
-        _nets = self.nets
-        all_nets = list(_nets.keys())[:]
-        net_dicts = self._comps_by_nets_dict if self._comps_by_nets_dict else self.components_by_nets
-        comp_dict = self._nets_by_comp_dict if self._nets_by_comp_dict else self.nets_by_components
-
-        def get_net_list(net_name, _net_list):
-            comps = []
-            if net_name in net_dicts:
-                comps = net_dicts[net_name]
-
-            for vals in comps:
-                refdes = vals
-                cmp = self._pedb.components.instances[refdes]
-                is_enabled = cmp.is_enabled
-                if not is_enabled:
-                    continue
-                val_type = cmp.type
-                if val_type not in ["inductor", "resistor", "capacitor"]:
-                    continue
-
-                val_value = cmp.rlc_values
-                if refdes in exception_list:
-                    pass
-                elif val_type == "inductor" and val_value[1] < inductor_below:
-                    pass
-                elif val_type == "resistor" and val_value[0] < resistor_below:
-                    pass
-                elif val_type == "capacitor" and val_value[2] > capacitor_above:
-                    pass
-                else:
-                    continue
-
-                for net in comp_dict[refdes]:
-                    if net not in _net_list:
-                        _net_list.append(net)
-                        get_net_list(net, _net_list)
-
-        while len(all_nets) > 0:
-            new_ext = [all_nets[0]]
-            get_net_list(new_ext[0], new_ext)
-            all_nets = [i for i in all_nets if i not in new_ext]
-            _extended_nets.append(new_ext)
-
-            if len(new_ext) > 1:
-                i = new_ext[0]
-                for i in new_ext:
-                    if not i.lower().startswith("unnamed"):
-                        break
-
-                is_power = False
-                for i in new_ext:
-                    is_power = is_power or _nets[i].is_power_ground
-
-                if is_power:
-                    if include_power:
-                        self._pedb.extended_nets.create(i, new_ext)
-                    else:  # pragma: no cover
-                        pass
-                else:
-                    if include_signal:
-                        self._pedb.extended_nets.create(i, new_ext)
-                    else:  # pragma: no cover
-                        pass
-
-        return _extended_nets
+        warnings.warn("Use new method :func:`edb.extended_nets.generate_extended_nets` instead.", DeprecationWarning)
+        self._pedb.extended_nets.generate_extended_nets(
+            resistor_below, inductor_below, capacitor_above, exception_list, include_signal, include_power
+        )
 
     @staticmethod
     def _get_points_for_plot(self, my_net_points):
         """
-        Get the points to be plot
+        Get the points to be plotted.
         """
         # fmt: off
         x = []

@@ -43,7 +43,7 @@ from pyedb.grpc.edb_core.layout_validation import LayoutValidation
 from pyedb.grpc.edb_core.materials import Materials
 from pyedb.grpc.edb_core.modeler import Modeler
 from pyedb.grpc.edb_core.net import Nets
-from pyedb.grpc.edb_core.nets.differential_pair import DifferentialPair
+from pyedb.grpc.edb_core.nets.differential_pair import DifferentialPairs
 from pyedb.grpc.edb_core.nets.extended_net import ExtendedNet
 from pyedb.grpc.edb_core.nets.net_class import NetClass
 from pyedb.grpc.edb_core.padstack import Padstacks
@@ -335,6 +335,7 @@ class EdbGrpc(EdbInit):
         self._modeler = Modeler(self)
         self._materials = Materials(self)
         self._source_excitation = SourceExcitation(self)
+        self._differential_pairs = DifferentialPairs(self)
 
     @property
     def cell_names(self):
@@ -891,8 +892,9 @@ class EdbGrpc(EdbInit):
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.differential_pairs
         """
-        if self.active_layout:
-            return [DifferentialPair(self, pair) for pair in self.active_layout.differential_pairs]
+        if not self._differential_pairs and self.active_db:
+            self._differential_pairs = DifferentialPairs(self)
+        return self._differential_pairs
 
     @property
     def modeler(self):

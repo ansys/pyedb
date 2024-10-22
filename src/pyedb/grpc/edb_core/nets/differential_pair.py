@@ -21,11 +21,101 @@
 # SOFTWARE.
 
 
+import re
+
 from ansys.edb.core.net.differential_pair import (
     DifferentialPair as GrpcDifferentialPair,
 )
 
 from pyedb.grpc.edb_core.nets.net import Net
+
+
+class DifferentialPairs:
+    def __init__(self, pedb):
+        self._pedb = pedb
+
+    @property
+    def items(self):
+        """Extended nets.
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBDifferentialPairData`]
+            Dictionary of extended nets.
+        """
+        diff_pairs = {}
+        for diff_pair in self._pedb.layout.differential_pairs:
+            diff_pairs[diff_pair.name] = DifferentialPair(self._pedb, diff_pair)
+        return diff_pairs
+
+    def create(self, name, net_p, net_n):
+        # type: (str, str, str) -> DifferentialPair
+        """
+
+        Parameters
+        ----------
+        name : str
+            Name of the differential pair.
+        net_p : str
+            Name of the positive net.
+        net_n : str
+            Name of the negative net.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.nets_data.EDBDifferentialPairData`
+        """
+        if name in self.items:
+            self._pedb.logger.error("{} already exists.".format(name))
+            return False
+        GrpcDifferentialPair.create(layout=self._pedb.layout, name=name, pos_net=net_p, neg_net=net_n)
+        return self.items[name]
+
+    def auto_identify(self, positive_differentiator="_P", negative_differentiator="_N"):
+        """Auto identify differential pairs by naming conversion.
+
+        Parameters
+        ----------
+        positive_differentiator: str, optional
+            Differentiator of the positive net. The default is ``"_P"``.
+        negative_differentiator: str, optional
+            Differentiator of the negative net. The default is ``"_N"``.
+
+        Returns
+        -------
+        list
+            A list containing identified differential pair names.
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", edbversion="2023.1")
+        >>> edb_nets = edbapp.differential_pairs.auto_identify()
+        """
+        nets = self._pedb.nets.nets
+        pos_net = []
+        neg_net = []
+        for name, _ in nets.items():
+            if name.endswith(positive_differentiator):
+                pos_net.append(name)
+            elif name.endswith(negative_differentiator):
+                neg_net.append(name)
+            else:
+                pass
+
+        temp = []
+        for p in pos_net:
+            pattern_p = r"^(.+){}$".format(positive_differentiator)
+            match_p = re.findall(pattern_p, p)[0]
+
+            for n in neg_net:
+                pattern_n = r"^(.+){}$".format(negative_differentiator)
+                match_n = re.findall(pattern_n, n)[0]
+
+                if match_p == match_n:
+                    diff_name = "DIFF_{}".format(match_p)
+                    self.create(diff_name, p, n)
+                    temp.append(diff_name)
+        return temp
 
 
 class DifferentialPair(GrpcDifferentialPair):
