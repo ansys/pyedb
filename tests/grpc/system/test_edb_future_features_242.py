@@ -26,49 +26,49 @@
 import pytest
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
-VERSION = 2024.2
+VERSION = 2025.2
 
 
-@pytest.mark.skipif(True, reason="AEDT 2024.2 is not installed")
 class TestClass:
     @pytest.fixture(autouse=True)
     def init(self):
         pass
 
     def test_add_raptorx_setup(self, edb_examples):
+        # Done
         edbapp = edb_examples.get_si_verse(version=VERSION)
         setup = edbapp.create_raptorx_setup("test")
         assert "test" in edbapp.setups
-        setup.add_frequency_sweep(frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
+        setup.add_sweep(distribution="linear", start_freq="0.1GHz", stop_freq="10GHz", step="0.1GHz")
         setup.enabled = False
         assert not setup.enabled
         assert len(setup.frequency_sweeps) == 1
-        general_settings = setup.settings.general_settings
+        general_settings = setup.settings.general
         assert general_settings.global_temperature == 22.0
         general_settings.global_temperature = 35.0
-        assert edbapp.setups["test"].settings.general_settings.global_temperature == 35.0
+        assert edbapp.setups["test"].settings.general.global_temperature == 35.0
         assert general_settings.max_frequency == "10GHz"
-        general_settings.max_frequency = 20e9
+        general_settings.max_frequency = "20GHz"
         assert general_settings.max_frequency == "20GHz"
-        advanced_settings = setup.settings.advanced_settings
+        advanced_settings = setup.settings.advanced
         assert advanced_settings.auto_removal_sliver_poly == 0.001
         advanced_settings.auto_removal_sliver_poly = 0.002
         assert advanced_settings.auto_removal_sliver_poly == 0.002
-        assert advanced_settings.cell_per_wave_length == 80
-        advanced_settings.cell_per_wave_length = 60
-        assert advanced_settings.cell_per_wave_length == 60
+        assert advanced_settings.cells_per_wavelength == 80
+        advanced_settings.cells_per_wavelength = 60
+        assert advanced_settings.cells_per_wavelength == 60
         assert advanced_settings.edge_mesh == "0.8um"
         advanced_settings.edge_mesh = "1um"
         assert advanced_settings.edge_mesh == "1um"
-        assert advanced_settings.eliminate_slit_per_hole == 5.0
-        advanced_settings.eliminate_slit_per_hole = 4.0
-        assert advanced_settings.eliminate_slit_per_hole == 4.0
+        assert advanced_settings.eliminate_slit_per_holes == 5.0
+        advanced_settings.eliminate_slit_per_holes = 4.0
+        assert advanced_settings.eliminate_slit_per_holes == 4.0
         assert advanced_settings.mesh_frequency == "1GHz"
         advanced_settings.mesh_frequency = "5GHz"
         assert advanced_settings.mesh_frequency == "5GHz"
-        assert advanced_settings.override_shrink_fac == 1.0
-        advanced_settings.override_shrink_fac = 1.5
-        assert advanced_settings.override_shrink_fac == 1.5
+        assert advanced_settings.override_shrink_factor == 1.0
+        advanced_settings.override_shrink_factor = 1.5
+        assert advanced_settings.override_shrink_factor == 1.5
         assert advanced_settings.plane_projection_factor == 1.0
         advanced_settings.plane_projection_factor = 1.4
         assert advanced_settings.plane_projection_factor == 1.4
@@ -108,9 +108,9 @@ class TestClass:
         assert not advanced_settings.use_mesh_frequency
         advanced_settings.use_mesh_frequency = True
         assert advanced_settings.use_mesh_frequency
-        assert not advanced_settings.use_override_shrink_fac
-        advanced_settings.use_override_shrink_fac = True
-        assert advanced_settings.use_override_shrink_fac
+        assert not advanced_settings.use_override_shrink_factor
+        advanced_settings.use_override_shrink_factor = True
+        assert advanced_settings.use_override_shrink_factor
         assert advanced_settings.use_plane_projection_factor
         advanced_settings.use_plane_projection_factor = False
         assert not advanced_settings.use_plane_projection_factor

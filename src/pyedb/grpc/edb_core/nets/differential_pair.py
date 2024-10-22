@@ -124,7 +124,7 @@ class DifferentialPair(GrpcDifferentialPair):
     """
 
     def __init__(self, pedb, edb_object):
-        super().__init__(self, edb_object.msg)
+        super().__init__(edb_object.msg)
         self._pedb = pedb
 
     @property

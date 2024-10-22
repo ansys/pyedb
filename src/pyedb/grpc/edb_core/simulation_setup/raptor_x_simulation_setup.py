@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import warnings
+
 from ansys.edb.core.simulation_setup.raptor_x_simulation_setup import (
     RaptorXSimulationSetup as GrpcRaptorXSimulationSetup,
 )
@@ -33,6 +35,32 @@ class RaptorXSimulationSetup(GrpcRaptorXSimulationSetup):
     def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
         self._pedb = pedb
+
+    @property
+    def frequency_sweeps(self):
+        """Returns Frequency sweeps
+        . deprecated:: use sweep_data instead
+        """
+        warnings.warn(
+            "`frequency_sweeps` is deprecated use `sweep_data` instead.",
+            DeprecationWarning,
+        )
+        return self.sweep_data
+
+    def add_frequency_sweep(
+        self, name=None, distribution="linear", start_freq="0GHz", stop_freq="20GHz", step="10MHz", discrete=False
+    ):
+        """Add frequency sweep.
+
+        . deprecated:: pyedb 0.31.0
+        Use :func:`add sweep` instead.
+
+        """
+        warnings.warn(
+            "`add_frequency_sweep` is deprecated use `add_sweep` instead.",
+            DeprecationWarning,
+        )
+        return self.add_sweep(name, distribution, start_freq, stop_freq, step, discrete)
 
     def add_sweep(
         self, name=None, distribution="linear", start_freq="0GHz", stop_freq="20GHz", step="10MHz", discrete=False

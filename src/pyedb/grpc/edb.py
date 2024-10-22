@@ -3140,13 +3140,17 @@ class EdbGrpc(EdbInit):
         :class:`legacy.edb_core.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
 
         """
+        from ansys.edb.core.simulation_setup.raptor_x_simulation_setup import (
+            RaptorXSimulationSetup as GrpcRaptorXSimulationSetup,
+        )
+
         if name in self.setups:
             self.logger.error("Setup name already used in the layout")
             return False
         version = self.edbversion.split(".")
         if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
-            setup = RaptorXSimulationSetup.create(cell=self.active_cell, name=name)
-            return setup
+            setup = GrpcRaptorXSimulationSetup.create(cell=self.active_cell, name=name)
+            return RaptorXSimulationSetup(self, setup)
         else:
             self.logger.error("RaptorX simulation only supported with Ansys release 2024R2 and higher")
             return False
