@@ -120,6 +120,7 @@ class TestClass:
         edbapp.close()
 
     def test_create_hfss_pi_setup(self, edb_examples):
+        # TODO check HFSS PI later
         edbapp = edb_examples.get_si_verse(version=VERSION)
         setup = edbapp.create_hfsspi_setup("test")
         assert setup.get_simulation_settings()
@@ -150,6 +151,7 @@ class TestClass:
             assert settings[k] == settings_get[k]
 
     def test_create_hfss_pi_setup_add_sweep(self, edb_examples):
+        # TODO check HFSS PI later
         edbapp = edb_examples.get_si_verse(version=VERSION)
         setup = edbapp.create_hfsspi_setup("test")
         setup.add_sweep(name="sweep1", frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
