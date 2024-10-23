@@ -24,10 +24,13 @@
 from ansys.edb.core.primitive.primitive import Circle as GrpcCircle
 from ansys.edb.core.utility.value import Value as GrpcValue
 
+from pyedb.grpc.edb_core.primitive.primitive import Primitive
 
-class Circle(GrpcCircle):
+
+class Circle(GrpcCircle, Primitive):
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+        GrpcCircle.__init__(self, edb_object.msg)
+        Primitive.__init__(self, pedb, edb_object)
         self._pedb = pedb
 
     def get_parameters(self):

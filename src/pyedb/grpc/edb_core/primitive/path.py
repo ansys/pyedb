@@ -27,11 +27,13 @@ from ansys.edb.core.primitive.primitive import Path as GrpcPath
 from ansys.edb.core.primitive.primitive import PathCornerType as GrpcPatCornerType
 from ansys.edb.core.utility.value import Value as GrpcValue
 
+from pyedb.grpc.edb_core.primitive.primitive import Primitive
 
-class Path(GrpcPath):
+
+class Path(GrpcPath, Primitive):
     def __init__(self, pedb, edb_object):
-        self._edb_object = edb_object
-        super().__init__(edb_object.msg)
+        GrpcPath.__init__(self, edb_object.msg)
+        Primitive.__init__(self, pedb, edb_object)
         self._pedb = pedb
 
     @property

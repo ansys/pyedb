@@ -27,12 +27,15 @@ from ansys.edb.core.primitive.primitive import (
 from ansys.edb.core.primitive.primitive import Rectangle as GrpcRectangle
 from ansys.edb.core.utility.value import Value as GrpcValue
 
+from pyedb.grpc.edb_core.primitive.primitive import Primitive
 
-class Rectangle(GrpcRectangle):
+
+class Rectangle(GrpcRectangle, Primitive):
     """Class representing a rectangle object."""
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+        GrpcRectangle.__init__(self, edb_object.msg)
+        Primitive.__init__(self, pedb, edb_object)
         self._pedb = pedb
         self._mapping_representation_type = {
             "center_width_height": GrpcRectangleRepresentationType.CENTER_WIDTH_HEIGHT,

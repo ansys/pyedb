@@ -28,11 +28,18 @@ from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.primitive.primitive import Polygon as GrpcPolygon
 from ansys.edb.core.utility.value import Value as GrpcValue
 
+from pyedb.grpc.edb_core.primitive.primitive import Primitive
 
-class Polygon(GrpcPolygon):
+
+class Polygon(GrpcPolygon, Primitive):
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+        GrpcPolygon.__init__(self, edb_object.msg)
+        Primitive.__init__(self, pedb, edb_object)
         self._pedb = pedb
+
+    @property
+    def type(self):
+        return self.primitive_type.name.lower()
 
     @property
     def has_self_intersections(self):
@@ -43,6 +50,10 @@ class Polygon(GrpcPolygon):
         bool
         """
         return self.polygon_data.has_self_intersections()
+
+    @property
+    def voids(self):
+        return [Polygon(self._pedb, prim) for prim in super().voids]
 
     def fix_self_intersections(self):
         """Remove self intersections if they exist.
@@ -62,6 +73,13 @@ class Polygon(GrpcPolygon):
                 )
                 new_polys.append(cloned_poly)
         return new_polys
+
+    def clone(self):
+        """Duplicate polygon"""
+        duplicated_polygon = self.create(
+            layout=self._pedb.active_layout, layer=self.layer, net=self.net, polygon_data=self.polygon_data
+        )
+        return duplicated_polygon
 
     def duplicate_across_layers(self, layers):
         """Duplicate across layer a primitive object.
@@ -227,10 +245,11 @@ class Polygon(GrpcPolygon):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        if isinstance(point_data, list):
-            point_data = GrpcPointData(point_data)
-        int_val = self.polygon_data.point_in_polygon(point_data)
-
+        int_val = 1 if self.polygon_data.is_inside(GrpcPointData(point_data)) else 0
+        if int_val == 0:
+            return False
+        else:
+            int_val = self.polygon_data.intersection_type(GrpcPolygonData(point_data))
         # Intersection type:
         # 0 = objects do not intersect
         # 1 = this object fully inside other (no common contour points)

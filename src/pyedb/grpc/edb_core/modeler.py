@@ -137,11 +137,29 @@ class Modeler(object):
         """
         for p in self._layout.primitives:
             if p.id == primitive_id:
-                return p
+                return self.__mapping_primitive_type(p)
         for p in self._layout.primitives:
             for v in p.voids:
                 if v.id == primitive_id:
-                    return v
+                    return self.__mapping_primitive_type(v)
+
+    def __mapping_primitive_type(self, primitive):
+        from ansys.edb.core.primitive.primitive import (
+            PrimitiveType as GrpcPrimitiveType,
+        )
+
+        if primitive.primitive_type == GrpcPrimitiveType.POLYGON:
+            return Polygon(self._pedb, primitive)
+        elif primitive.primitive_type == GrpcPrimitiveType.PATH:
+            return Path(self._pedb, primitive)
+        elif primitive.primitive_type == GrpcPrimitiveType.RECTANGLE:
+            return Rectangle(self._pedb, primitive)
+        elif primitive.primitive_type == GrpcPrimitiveType.CIRCLE:
+            return Circle(self._pedb, primitive)
+        elif primitive.primitive_type == GrpcPrimitiveType.BONDWIRE:
+            return Bondwire(self._pedb, primitive)
+        else:
+            return False
 
     @property
     def primitives(self):

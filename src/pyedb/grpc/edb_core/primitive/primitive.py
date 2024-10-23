@@ -22,7 +22,6 @@
 
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.primitive.primitive import Primitive as GrpcPrimitive
-from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.misc.utilities import compute_arc_points
 from pyedb.modeler.geometry_operators import GeometryOperators
@@ -130,9 +129,9 @@ class Primitive(GrpcPrimitive):
         x = []
         y = []
         for i, point in enumerate(my_net_points):
-            if not self.is_arc(point):
-                x.append(point[0].value)
-                y.append(point[1].value)
+            if not point.is_arc:
+                x.append(point.x.value)
+                y.append(point.y.value)
             else:
                 arc_h = point.arc_height.value
                 p1 = [my_net_points[i - 1].x.value, my_net_points[i - 1].y.value]
@@ -193,8 +192,8 @@ class Primitive(GrpcPrimitive):
             Polygon when successful, ``False`` when failed.
 
         """
-        if self.type == "Path":
-            polygon = self._app.modeler.create_polygon(self.polygon_data, self.layer_name, [], self.net.name)
+        if self.type == "path":
+            polygon = self._pedb.modeler.create_polygon(self.polygon_data, self.layer_name, [], self.net.name)
             self.delete()
             return polygon
         else:
@@ -256,7 +255,7 @@ class Primitive(GrpcPrimitive):
     @property
     def arcs(self):
         """Get the Primitive Arc Data."""
-        return self.polygon_data.arcs
+        return self.polygon_data.arc_data
 
     @property
     def longest_arc(self):
@@ -305,9 +304,9 @@ class Primitive(GrpcPrimitive):
             for p in list_poly:
                 if p.is_null:
                     continue
-            new_polys.append(
-                self._app.modeler.create_polygon(p, self.layer_name, net_name=self.net.name, voids=[]),
-            )
+                new_polys.append(
+                    self._pedb.modeler.create_polygon(p, self.layer_name, net_name=self.net.name, voids=[]),
+                )
         self.delete()
         for prim in primitives:
             if isinstance(prim, Primitive):
@@ -362,19 +361,19 @@ class Primitive(GrpcPrimitive):
                             if not polys_clean.is_null:
                                 void_to_append = [v for v in list_void if polys_clean.intersection_type(v) == 2]
                         new_polys.append(
-                            self._app.modeler.create_polygon(
+                            self._pedb.modeler.create_polygon(
                                 polys_clean, self.layer_name, net_name=self.net.name, voids=void_to_append
                             )
                         )
                     else:
                         new_polys.append(
-                            self._app.modeler.create_polygon(
+                            self._pedb.modeler.create_polygon(
                                 p, self.layer_name, net_name=self.net.name, voids=list_void
                             )
                         )
                 else:
                     new_polys.append(
-                        self._app.modeler.create_polygon(p, self.layer_name, net_name=self.net.name, voids=list_void)
+                        self._pedb.modeler.create_polygon(p, self.layer_name, net_name=self.net.name, voids=list_void)
                     )
         self.delete()
         for prim in primitives:
@@ -446,10 +445,10 @@ class Primitive(GrpcPrimitive):
         dist = 1e12
         out = None
         for arc in self.arcs:
-            mid_point = arc.mid_point
+            mid_point = arc.midpoint
             mid_point = [mid_point.x.value, mid_point.y.value]
             if GeometryOperators.points_distance(mid_point, point) < dist:
-                out = arc.mid_point
+                out = arc.midpoint
                 dist = GeometryOperators.points_distance(mid_point, point)
         return [out.x.value, out.y.value]
 
@@ -475,22 +474,7 @@ class Primitive(GrpcPrimitive):
         """
         from ansys.edb.core.database import ProductIdType
 
-        _, name = self.get_product_property(ProductIdType.DESIGNER, 1)
-        name = str(name).strip("'")
-        if name == "":
-            if self.type == "path":
-                ptype = "line"
-            elif self.type == "rectangle":
-                ptype = "rect"
-            elif self.type == "polygon":
-                ptype = "poly"
-            elif self.type == "bondwire":
-                ptype = "bwr"
-            else:
-                ptype = self.type
-            name = "{}_{}".format(ptype, self.id)
-            # self.set_product_property(ProductIdType.DESIGNER, 1, name)
-        return name
+        return self.get_product_property(ProductIdType.DESIGNER, 1)
 
     @aedt_name.setter
     def aedt_name(self, value):
@@ -515,7 +499,7 @@ class Primitive(GrpcPrimitive):
             plane = self._pedb.modeler.Shape("polygon", points=point_list)
             _poly = self._pedb.modeler.shape_to_polygon_data(plane)
             if _poly is None or _poly.is_null or _poly is False:
-                self._logger.error("Failed to create void polygon data")
+                self._pedb.logger.error("Failed to create void polygon data")
                 return False
             void_poly = self._pedb.modeler.create_polygon(_poly, layer_name=self.layer_name, net_name=self.net.name)
         return self.add_void(void_poly)
@@ -539,6 +523,7 @@ class Primitive(GrpcPrimitive):
         x, y = GeometryOperators.orient_polygon(xt, yt, clockwise=True)
         return x, y
 
+    @property
     def points_raw(self):
         """Return a list of Edb points.
 
@@ -564,8 +549,14 @@ class Primitive(GrpcPrimitive):
             If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
         maximum_corner_extension : float, optional
             The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+
+        Return
+        ------
+        List of PolygonData.
         """
-        return self.polygon_data.expand(offset, tolerance, round_corners, maximum_corner_extension)
+        return self.polygon_data.expand(
+            offset=offset, round_corner=round_corners, max_corner_ext=maximum_corner_extension, tol=tolerance
+        )
 
     def scale(self, factor, center=None):
         """Scales the polygon relative to a center point by a factor.
@@ -594,7 +585,7 @@ class Primitive(GrpcPrimitive):
                 else:
                     self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
             elif isinstance(center, list) and len(center) == 2:
-                center = self._edb.Geometry.PointData(GrpcValue(center[0]), GrpcValue(center[1]))
+                center = GrpcPointData(center)
                 polygon_data.scale(factor, center)
                 self.polygon_data = polygon_data
                 return True

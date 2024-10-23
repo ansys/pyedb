@@ -609,7 +609,7 @@ class Materials(object):
         material_model : Any
             Dielectric material model.
         """
-        if self.__edb_definition.MaterialDef.FindByName(self.__edb.active_db, name).is_null:
+        if GrpcMaterialDef.find_by_name(self.__edb.active_db, name).is_null:
             if name.lower() in (material.lower() for material in self.materials):
                 raise ValueError(f"Material names are case-insensitive and {name.lower()} already exists.")
             GrpcMaterialDef.create(self.__edb.active_db, name)
@@ -704,20 +704,19 @@ class Materials(object):
         -------
         Any
         """
-        material_property_id = self.__edb_definition.MaterialPropertyId
         property_name_to_id = {
-            "Permittivity": material_property_id.Permittivity,
-            "Permeability": material_property_id.Permeability,
-            "Conductivity": material_property_id.Conductivity,
-            "DielectricLossTangent": material_property_id.DielectricLossTangent,
-            "MagneticLossTangent": material_property_id.MagneticLossTangent,
-            "ThermalConductivity": material_property_id.ThermalConductivity,
-            "MassDensity": material_property_id.MassDensity,
-            "SpecificHeat": material_property_id.SpecificHeat,
-            "YoungsModulus": material_property_id.YoungsModulus,
-            "PoissonsRatio": material_property_id.PoissonsRatio,
-            "ThermalExpansionCoefficient": material_property_id.ThermalExpansionCoefficient,
-            "InvalidProperty": material_property_id.InvalidProperty,
+            "Permittivity": GrpcMaterialProperty.PERMITTIVITY,
+            "Permeability": GrpcMaterialProperty.PERMEABILITY,
+            "Conductivity": GrpcMaterialProperty.CONDUCTIVITY,
+            "DielectricLossTangent": GrpcMaterialProperty.DIELECTRIC_LOSS_TANGENT,
+            "MagneticLossTangent": GrpcMaterialProperty.MAGNETIC_LOSS_TANGENT,
+            "ThermalConductivity": GrpcMaterialProperty.THERMAL_CONDUCTIVITY,
+            "MassDensity": GrpcMaterialProperty.MASS_DENSITY,
+            "SpecificHeat": GrpcMaterialProperty.SPECIFIC_HEAT,
+            "YoungsModulus": GrpcMaterialProperty.YOUNGS_MODULUS,
+            "PoissonsRatio": GrpcMaterialProperty.POISSONS_RATIO,
+            "ThermalExpansionCoefficient": GrpcMaterialProperty.THERMAL_EXPANSION_COEFFICIENT,
+            "InvalidProperty": GrpcMaterialProperty.INVALID_PROPERTY,
         }
 
         if property_name == "loss_tangent":
