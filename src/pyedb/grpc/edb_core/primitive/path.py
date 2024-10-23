@@ -34,6 +34,7 @@ class Path(GrpcPath, Primitive):
     def __init__(self, pedb, edb_object):
         GrpcPath.__init__(self, edb_object.msg)
         Primitive.__init__(self, pedb, edb_object)
+        self._edb_object = edb_object
         self._pedb = pedb
 
     @property
@@ -60,7 +61,7 @@ class Path(GrpcPath, Primitive):
         float
             Path length in meters.
         """
-        center_line_arcs = self._edb_object.center_line.arc_data
+        center_line_arcs = self._edb_object.cast().center_line.arc_data
         path_length = 0.0
         for arc in center_line_arcs:
             path_length += arc.length

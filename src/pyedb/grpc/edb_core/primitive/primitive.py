@@ -91,6 +91,17 @@ class Primitive(GrpcPrimitive):
     def layer_name(self, value):
         self.layer.name = value
 
+    @property
+    def polygon_data(self):
+        return self.cast().polygon_data
+
+    @polygon_data.setter
+    def polygon_data(self, value):
+        from pyedb.grpc.edb_core.primitive.polygon import GrpcPolygonData
+
+        if isinstance(value, GrpcPolygonData):
+            self.cast().polygon_data = value
+
     def get_connected_objects(self):
         """Get connected objects.
 
@@ -113,7 +124,7 @@ class Primitive(GrpcPrimitive):
         -------
         float
         """
-        area = self.polygon_data.area()
+        area = self.cast().polygon_data.area()
         if include_voids:
             for el in self.voids:
                 area -= el.polygon_data.area()
@@ -153,7 +164,7 @@ class Primitive(GrpcPrimitive):
             [x, y]
 
         """
-        center = self.polygon_data.bounding_circle()[0]
+        center = self.cast().polygon_data.bounding_circle()[0]
         return [center.x.value, center.y.value]
 
     def get_connected_object_id_set(self):
@@ -178,7 +189,7 @@ class Primitive(GrpcPrimitive):
             [lower_left x, lower_left y, upper right x, upper right y]
 
         """
-        bbox = self.polygon_data.bbox()
+        bbox = self.cast().polygon_data.bbox()
         return [bbox[0].x.value, bbox[0].y.value, bbox[1].x.value, bbox[1].y.value]
 
     def convert_to_polygon(self):
@@ -247,7 +258,7 @@ class Primitive(GrpcPrimitive):
         if isinstance(point, (list, tuple)):
             point = GrpcPointData(point)
 
-        p0 = self.polygon_data.closest_point(point)
+        p0 = self.cast().polygon_data.closest_point(point)
         return [p0.x.value, p0.y.value]
 
     @property
@@ -573,18 +584,22 @@ class Primitive(GrpcPrimitive):
         """
         if not isinstance(factor, str):
             factor = float(factor)
-            polygon_data = self.polygon_data.create_from_arcs(self.polygon_data.arc_data, True)
+            from ansys.edb.core.geometry.polygon_data import (
+                PolygonData as GrpcPolygonData,
+            )
+
+            polygon_data = GrpcPolygonData(points=self.cast().polygon_data.points)
             if not center:
-                center = self.polygon_data.bounding_circle_center()
+                center = polygon_data.bounding_circle()[0]
                 if center:
                     polygon_data.scale(factor, center)
-                    self.polygon_data = polygon_data
+                    self.cast().polygon_data = polygon_data
                     return True
                 else:
                     self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
             elif isinstance(center, list) and len(center) == 2:
                 center = GrpcPointData(center)
                 polygon_data.scale(factor, center)
-                self.polygon_data = polygon_data
+                self.cast().polygon_data = polygon_data
                 return True
         return False
