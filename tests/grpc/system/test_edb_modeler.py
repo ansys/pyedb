@@ -128,23 +128,29 @@ class TestClass:
         assert primmitive.can_be_zone_primitive
         edbapp.close()
 
-    def test_modeler_primitives(self):
+    def test_modeler_primitives(self, edb_examples):
         """Evaluate modeler primitives"""
-        assert len(self.edbapp.modeler.rectangles) > 0
-        assert len(self.edbapp.modeler.circles) > 0
-        assert len(self.edbapp.layout.bondwires) == 0
-        assert "1_Top" in self.edbapp.modeler.polygons_by_layer.keys()
-        assert len(self.edbapp.modeler.polygons_by_layer["1_Top"]) > 0
-        assert len(self.edbapp.modeler.polygons_by_layer["DE1"]) == 0
-        assert self.edbapp.modeler.rectangles[0].type == "Rectangle"
-        assert self.edbapp.modeler.circles[0].type == "Circle"
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        assert len(edbapp.modeler.rectangles) > 0
+        assert len(edbapp.modeler.circles) > 0
+        assert len(edbapp.layout.bondwires) == 0
+        assert "1_Top" in edbapp.modeler.polygons_by_layer.keys()
+        assert len(edbapp.modeler.polygons_by_layer["1_Top"]) > 0
+        assert len(edbapp.modeler.polygons_by_layer["DE1"]) == 0
+        assert edbapp.modeler.rectangles[0].type == "rectangle"
+        assert edbapp.modeler.circles[0].type == "circle"
+        edbapp.close()
 
-    def test_modeler_get_polygons_bounding(self):
+    def test_modeler_get_polygons_bounding(self, edb_examples):
         """Retrieve polygons bounding box."""
-        polys = self.edbapp.modeler.get_polygons_by_layer("GND")
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        polys = edbapp.modeler.get_polygons_by_layer("GND")
         for poly in polys:
-            bounding = self.edbapp.modeler.get_polygon_bounding_box(poly)
+            bounding = edbapp.modeler.get_polygon_bounding_box(poly)
             assert len(bounding) == 4
+        edbapp.close()
 
     def test_modeler_get_polygons_by_layer_and_nets(self):
         """Retrieve polygons by layer and nets."""
