@@ -67,17 +67,15 @@ class Primitive(GrpcPrimitive):
             self._object_instance = self.layout.layout_instance.get_layout_obj_instance_in_context(self, None)
         return self._object_instance
 
-    # @property
-    # def primitive_type(self):
-    #     """Return the type of the primitive.
-    #
-    #     Expected output is among ``"circle"``, ``"rectangle"``,``"polygon"``,``"path"`` or ``"bondwire"``.
-    #
-    #     Returns
-    #     -------
-    #     str
-    #     """
-    #     return super().primitive_type.name.lower()
+    @property
+    def net_name(self):
+        if not self.net.is_null:
+            return self.net.name
+
+    @net_name.setter
+    def net_name(self, value):
+        if value in self._pedb.nets.nets:
+            self.net = self._pedb.nets.nets[value]
 
     @property
     def layer_name(self):
@@ -155,8 +153,8 @@ class Primitive(GrpcPrimitive):
             [x, y]
 
         """
-        bbox = self.bbox
-        return [(bbox[0][0] + bbox[1][0]) / 2, (bbox[0][1] + bbox[1][1]) / 2]
+        center = self.polygon_data.bounding_circle()[0]
+        return [center.x.value, center.y.value]
 
     def get_connected_object_id_set(self):
         """Produce a list of all geometries physically connected to a given layout object.

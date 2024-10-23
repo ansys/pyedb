@@ -221,7 +221,7 @@ class Polygon(GrpcPolygon, Primitive):
            ``True`` when successful, ``False`` when failed.
         """
         if layer and isinstance(layer, str) and layer in self._pedb.stackup.signal_layers:
-            polygon_data = GrpcPolygonData(self.polygon_data)
+            polygon_data = GrpcPolygonData(points=self.polygon_data.points)
             Polygon.create(layout=self._pedb.active_layout, layer=layer, net=self.net.name, polygon_data=polygon_data)
             self.delete()
             return True

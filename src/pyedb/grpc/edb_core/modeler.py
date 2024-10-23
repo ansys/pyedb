@@ -286,10 +286,11 @@ class Modeler(object):
         objinst = []
         for el in self.polygons:
             if el.layer.name == layer_name:
-                if net_list and el.net.name in net_list:
-                    objinst.append(el)
-                else:
-                    objinst.append(el)
+                if not el.net.is_null:
+                    if net_list and el.net.name in net_list:
+                        objinst.append(el)
+                    else:
+                        objinst.append(el)
         return objinst
 
     def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):
@@ -625,14 +626,12 @@ class Modeler(object):
 
         return primitive
 
-    def create_polygon(self, main_shape, layer_name, voids=[], net_name=""):
+    def create_polygon(self, points, layer_name, voids=[], net_name=""):
         """Create a polygon based on a list of points and voids.
 
         Parameters
         ----------
-        main_shape : list of points or PolygonData or ``modeler.Shape``
-            Shape or point lists of the main object. Point list can be in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
-            Each point can be:
+        points : list of points or PolygonData.
             - [x, y] coordinate
             - [x, y, height] for an arc with specific height (between previous point and actual point)
             - [x, y, rotation, xc, yc] for an arc given a point, rotation and center.
@@ -649,29 +648,25 @@ class Modeler(object):
             Polygon when successful, ``False`` when failed.
         """
         net = self._pedb.nets.find_or_create_net(net_name)
-        if isinstance(main_shape, list):
+        if isinstance(points, list):
             new_points = []
-            for idx, i in enumerate(main_shape):
+            for idx, i in enumerate(points):
                 new_points.append(GrpcPointData([GrpcValue(i[0]), GrpcValue(i[1])]))
             polygon_data = GrpcPolygonData(points=new_points)
 
-        elif isinstance(main_shape, GrpcPolygonData):
-            polygon_data = main_shape
+        elif isinstance(points, GrpcPolygonData):
+            polygon_data = points
         else:
-            polygon_data = main_shape
+            polygon_data = points
         if not polygon_data.points:
             self._logger.error("Failed to create main shape polygon data")
             return False
         for void in voids:
             if isinstance(void, list):
-                void = self.Shape("polygon", points=void)
-                polygon_data = self.shape_to_polygon_data(void)
-            elif isinstance(void, Modeler.Shape):
-                polygon_data = self.shape_to_polygon_data(void)
+                void_polygon_data = GrpcPolygonData(points=void)
             else:
                 void_polygon_data = void.polygon_data
-
-            if void_polygon_data is False or void_polygon_data is None or void_polygon_data.is_null:
+            if not void_polygon_data.points:
                 self._logger.error("Failed to create void polygon data")
                 return False
             polygon_data.holes.append(void_polygon_data)
