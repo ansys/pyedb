@@ -219,7 +219,7 @@ class Modeler(object):
         for i in self._layout.primitives:
             lay = i.layer.name
             if lay in _primitives_by_layer:
-                _primitives_by_layer[lay].append(i)
+                _primitives_by_layer[lay].append(Primitive(self._pedb, i))
         return _primitives_by_layer
 
     @property
@@ -232,7 +232,7 @@ class Modeler(object):
             List of rectangles.
 
         """
-        return [Rectangle(self._pedb, i) for i in self.primitives if i.primitive_type.name == "RECTANGLE"]
+        return [Rectangle(self._pedb, i) for i in self.primitives if i.type == "rectangle"]
 
     @property
     def circles(self):
@@ -244,7 +244,7 @@ class Modeler(object):
             List of circles.
 
         """
-        return [Circle(self._pedb, i) for i in self.primitives if i.primitive_type.name == "CIRCLE"]
+        return [Circle(self._pedb, i) for i in self.primitives if i.type == "circle"]
 
     @property
     def paths(self):
@@ -255,7 +255,7 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of paths.
         """
-        return [Path(self._pedb, i) for i in self.primitives if i.primitive_type.name == "PATH"]
+        return [Path(self._pedb, i) for i in self.primitives if i.type == "path"]
 
     @property
     def polygons(self):
@@ -266,7 +266,7 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of polygons.
         """
-        return [Polygon(self._pedb, i) for i in self.primitives if i.primitive_type.name == "POLYGON"]
+        return [Polygon(self._pedb, i) for i in self.primitives if i.type == "polygon"]
 
     def get_polygons_by_layer(self, layer_name, net_list=None):
         """Retrieve polygons by a layer.

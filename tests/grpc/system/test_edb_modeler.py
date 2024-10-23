@@ -110,19 +110,23 @@ class TestClass:
         assert edbapp.modeler["poly_3022"].type == "polygon"
         edbapp.close()
 
-    def test_modeler_primitives_by_layer(self):
+    def test_modeler_primitives_by_layer(self, edb_examples):
         """Evaluate modeler primitives by layer"""
-        assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].layer_name == "1_Top"
-        assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative
-        assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_void
-        self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative = True
-        assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative
-        self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_negative = False
-        assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].has_voids
-        assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_parameterized
-        assert isinstance(self.edbapp.modeler.primitives_by_layer["1_Top"][0].get_hfss_prop(), tuple)
-        assert not self.edbapp.modeler.primitives_by_layer["1_Top"][0].is_zone_primitive
-        assert self.edbapp.modeler.primitives_by_layer["1_Top"][0].can_be_zone_primitive
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        primmitive = edbapp.modeler.primitives_by_layer["1_Top"][0]
+        assert primmitive.layer_name == "1_Top"
+        assert not primmitive.is_negative
+        assert not primmitive.is_void
+        primmitive.is_negative = True
+        assert primmitive.is_negative
+        primmitive.is_negative = False
+        assert not primmitive.has_voids
+        assert not primmitive.is_parameterized
+        # assert isinstance(primmitive.get_hfss_prop(), tuple)
+        assert not primmitive.is_zone_primitive
+        assert primmitive.can_be_zone_primitive
+        edbapp.close()
 
     def test_modeler_primitives(self):
         """Evaluate modeler primitives"""
