@@ -685,7 +685,7 @@ class Modeler(object):
         center_point="",
         width="",
         height="",
-        representation_type="LowerLeftUpperRight",
+        representation_type="lower_left_upper_right",
         corner_radius="0mm",
         rotation="0deg",
     ):
@@ -723,20 +723,32 @@ class Modeler(object):
         edb_net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "lower_left_upper_right":
             rep_type = GrpcRectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT
+            rect = Rectangle.create(
+                layout=self._active_layout,
+                layer=layer_name,
+                net=edb_net,
+                rep_type=rep_type,
+                param1=GrpcValue(lower_left_point[0]),
+                param2=GrpcValue(lower_left_point[1]),
+                param3=GrpcValue(upper_right_point[0]),
+                param4=GrpcValue(upper_right_point[1]),
+                corner_rad=GrpcValue(corner_radius),
+                rotation=GrpcValue(rotation),
+            )
         else:
             rep_type = GrpcRectangleRepresentationType.CENTER_WIDTH_HEIGHT
-        rect = Rectangle.create(
-            layout=self._active_layout,
-            layer=layer_name,
-            net=edb_net,
-            rep_type=rep_type,
-            param1=GrpcValue(lower_left_point[0]),
-            param2=GrpcValue(lower_left_point[1]),
-            param3=GrpcValue(upper_right_point[0]),
-            param4=GrpcValue(upper_right_point[1]),
-            corner_rad=GrpcValue(corner_radius),
-            rotation=GrpcValue(rotation),
-        )
+            rect = Rectangle.create(
+                layout=self._active_layout,
+                layer=layer_name,
+                net=edb_net,
+                rep_type=rep_type,
+                param1=GrpcValue(center_point[0]),
+                param2=GrpcValue(center_point[1]),
+                param3=GrpcValue(width),
+                param4=GrpcValue(height),
+                corner_rad=GrpcValue(corner_radius),
+                rotation=GrpcValue(rotation),
+            )
         if not rect.is_null:
             return rect
         return False

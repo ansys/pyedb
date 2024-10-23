@@ -292,22 +292,26 @@ class TestClass:
         assert edbapp.modeler.paths[0].length
         edbapp.close()
 
-    def test_modeler_create_rectangle(self):
+    def test_modeler_create_rectangle(self, edb_examples):
         """Create rectangle."""
-        rect = self.edbapp.modeler.create_rectangle("1_Top", "SIG1", ["0", "0"], ["2mm", "3mm"])
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        rect = edbapp.modeler.create_rectangle(
+            layer_name="1_Top", lower_left_point=["0", "0"], upper_right_point=["2mm", "3mm"]
+        )
         assert rect
         rect.is_negative = True
         assert rect.is_negative
         rect.is_negative = False
         assert not rect.is_negative
-        assert self.edbapp.modeler.create_rectangle(
-            "1_Top",
-            "SIG2",
+        assert edbapp.modeler.create_rectangle(
+            layer_name="1_Top",
             center_point=["0", "0"],
             width="4mm",
             height="5mm",
-            representation_type="CenterWidthHeight",
+            representation_type="center_width_height",
         )
+        edbapp.close()
 
     def test_modeler_create_circle(self):
         """Create circle."""
