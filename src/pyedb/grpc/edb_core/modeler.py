@@ -170,7 +170,9 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of primitives.
         """
-        return self._pedb.layout.primitives
+        from pyedb.grpc.edb_core.primitive.primitive import Primitive
+
+        return [Primitive(self._pedb, prim) for prim in self._pedb.layout.primitives]
 
     @property
     def polygons_by_layer(self):

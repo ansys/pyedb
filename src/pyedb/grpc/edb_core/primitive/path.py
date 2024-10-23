@@ -108,18 +108,24 @@ class Path(GrpcPath, Primitive):
         bool
             ``True`` when successful, ``False`` when failed.
         """
+        mapping = {
+            "round": GrpcPatCornerType.ROUND,
+            "mitter": GrpcPatCornerType.MITER,
+            "sharp": GrpcPatCornerType.SHARP,
+        }
+
         cloned_path = GrpcPath.create(
             layout=self._pedb.active_layout,
             layer=self.layer,
             net=self.net,
-            width=self.width,
+            width=GrpcValue(self.width),
             end_cap1=self.get_end_cap_style()[0],
             end_cap2=self.get_end_cap_style()[1],
-            corner_style=self.corner_style,
-            points=self.center_line,
+            corner_style=mapping[self.corner_style],
+            points=GrpcPolygonData(self.center_line),
         )
-        if cloned_path:
-            return cloned_path
+        if not cloned_path.is_null:
+            return Path(self._pedb, cloned_path)
 
     #
 

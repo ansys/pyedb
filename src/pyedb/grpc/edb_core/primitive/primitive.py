@@ -58,7 +58,7 @@ class Primitive(GrpcPrimitive):
         -------
         str
         """
-        return super().primitive_type
+        return super().primitive_type.name.lower()
 
     @property
     def object_instance(self):

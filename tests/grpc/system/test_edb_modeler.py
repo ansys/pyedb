@@ -92,20 +92,22 @@ class TestClass:
 
     def test_modeler_paths(self, edb_examples):
         """Evaluate modeler paths"""
+        # Done
         edbapp = edb_examples.get_si_verse()
         assert len(edbapp.modeler.paths) > 0
-        assert edbapp.modeler.paths[0].type == "Path"
-        assert edbapp.modeler.paths[0].clone()
-        assert isinstance(edbapp.modeler.paths[0].width, float)
-        edbapp.modeler.paths[0].width = "1mm"
-        assert edbapp.modeler.paths[0].width == 0.001
-        assert edbapp.modeler["line_167"].type == "Path"
-        assert edbapp.modeler["poly_3022"].type == "Polygon"
+        path = edbapp.modeler.paths[0]
+        assert path.type == "path"
+        assert path.clone()
+        assert isinstance(path.width, float)
+        path.width = "1mm"
+        assert path.width == 0.001
+        assert edbapp.modeler["line_167"].type == "path"
+        assert edbapp.modeler["poly_3022"].type == "polygon"
         line_number = len(edbapp.modeler.primitives)
-        assert edbapp.modeler["line_167"].delete()
+        edbapp.modeler["line_167"].delete()
         assert edbapp.modeler._primitives == []
         assert line_number == len(edbapp.modeler.primitives) + 1
-        assert edbapp.modeler["poly_3022"].type == "Polygon"
+        assert edbapp.modeler["poly_3022"].type == "polygon"
         edbapp.close()
 
     def test_modeler_primitives_by_layer(self):
