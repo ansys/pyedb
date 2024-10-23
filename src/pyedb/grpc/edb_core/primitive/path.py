@@ -72,7 +72,7 @@ class Path(GrpcPath, Primitive):
                 path_length += self.width / 2
         return round(path_length, 9)
 
-    def add_point(self, x, y, incremental=False):
+    def add_point(self, x, y, incremental=True):
         """Add a point at the end of the path.
 
         Parameters
@@ -83,21 +83,22 @@ class Path(GrpcPath, Primitive):
             Y coordinate.
         incremental: bool
             Add point incrementally. If True, coordinates of the added point is incremental to the last point.
-            The default value is ``False``.
+            The default value is ``True``.
 
         Returns
         -------
         bool
         """
         if incremental:
-            x = GrpcValue(x)
-            y = GrpcValue(y)
-            points = self.center_line.points
-            last_point = points[-1]
-            x = "({})+({})".format(x.value, last_point.x.value)
-            y = "({})+({})".format(y.value, last_point.y.value)
-            points.append(GrpcPointData([x, y]))
-        self.center_line.points = points
+            points = self.center_line
+            points.append([x, y])
+            points = GrpcPolygonData(points=points)
+        GrpcPath.create(
+            layout=self.layout,
+            layer=self.layer,
+            net=self.net,
+        )
+        self.center_line = points
         return True
 
     def clone(self):

@@ -263,3 +263,6 @@ class Polygon(GrpcPolygon, Primitive):
             return True
         else:
             return False
+
+    def add_void(self, polygon):
+        return self._edb_object.add_void(polygon._edb_object)

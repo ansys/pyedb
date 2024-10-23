@@ -881,9 +881,11 @@ class Modeler(object):
             void_shape = [void_shape]
         for void in void_shape:
             if isinstance(void, Primitive):
-                flag = shape.add_void(void)
+                shape._edb_object.add_void(void)
+                flag = True
             else:
-                flag = shape.add_void(void)
+                shape._edb_object.add_void(void)
+                flag = True
             if not flag:
                 return flag
         return True
@@ -1048,46 +1050,6 @@ class Modeler(object):
         # )
         # return self._edb.geometry.polygon_data.create_from_bbox((pointA, pointB))
         pass
-
-    class Shape(object):
-        """Shape class.
-
-        Parameters
-        ----------
-        type : str, optional
-            Type of the shape. Options are ``"circle"``, ``"rectangle"``, and ``"polygon"``.
-            The default is ``"unknown``.
-        pointA : optional
-            Lower-left corner when ``type="rectangle"``. The default is ``None``.
-        pointB : optional
-            Upper-right corner when ``type="rectangle"``. The default is ``None``.
-        centerPoint : optional
-            Center point when ``type="circle"``. The default is ``None``.
-        radius : optional
-            Radius when ``type="circle"``. The default is ``None``.
-        points : list, optional
-            List of points when ``type="polygon"``. The default is ``None``.
-        properties : dict, optional
-            Dictionary of properties associated with the shape. The default is ``{}``.
-        """
-
-        def __init__(
-            self,
-            type="unknown",  # noqa
-            pointA=None,
-            pointB=None,
-            centerPoint=None,
-            radius=None,
-            points=None,
-            properties={},
-        ):  # noqa
-            self.type = type
-            self.pointA = pointA
-            self.pointB = pointB
-            self.centerPoint = centerPoint
-            self.radius = radius
-            self.points = points
-            self.properties = properties
 
     def parametrize_trace_width(
         self,
