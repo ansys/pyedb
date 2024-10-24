@@ -1181,8 +1181,7 @@ class Modeler(object):
                     self._pedb.padstacks.remove_pads_from_padstack(pad)
         return True
 
-    @staticmethod
-    def defeature_polygon(poly, tolerance=0.001):
+    def defeature_polygon(self, poly, tolerance=0.001):
         """Defeature the polygon based on the maximum surface deviation criteria.
 
         Parameters
@@ -1198,7 +1197,12 @@ class Modeler(object):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        new_poly = poly.polygon_data.defeature(tolerance)
+        new_poly = poly.polygon_data.defeature(tol=tolerance)
+        if not new_poly.points:
+            self._pedb.logger.error(
+                f"Defeaturing on polygon {poly.id} returned empty polygon, tolerance threshold " f"might too large. "
+            )
+            return False
         poly.polygon_data = new_poly
         return True
 

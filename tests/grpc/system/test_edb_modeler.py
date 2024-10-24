@@ -331,9 +331,12 @@ class TestClass:
         assert circle2.unite(intersection)
         edbapp.close()
 
-    def test_modeler_defeature(self):
+    def test_modeler_defeature(self, edb_examples):
         """Defeature the polygon."""
-        assert self.edbapp.modeler.defeature_polygon(self.edbapp.modeler.primitives_by_net["GND"][-1], 0.01)
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.modeler.defeature_polygon(edbapp.modeler.primitives_by_net["GND"][-1], 0.0001)
+        edbapp.close()
 
     def test_modeler_primitives_boolean_operation(self):
         """Evaluate modeler primitives boolean operations."""
