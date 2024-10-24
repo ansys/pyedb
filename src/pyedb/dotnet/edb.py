@@ -2244,7 +2244,7 @@ class Edb(Database):
         pins_to_preserve = []
         nets_to_preserve = []
         if preserve_components_with_model:
-            for el in self.components.instances.values():
+            for el in self.layout.groups:
                 if el.model_type in [
                     "SPICEModel",
                     "SParameterModel",
@@ -2273,23 +2273,41 @@ class Edb(Database):
         reference_pinsts = []
         reference_prims = []
         reference_paths = []
-        for i in self.padstacks.instances.values():
-            net_name = i.net_name
-            id = i.id
+        pins_to_delete = []
+
+        def check_instances(item):
+            net_name = item.net_name
+            id = item.id
             if net_name not in all_list and id not in pins_to_preserve:
-                i.delete()
+                pins_to_delete.append(item)
             elif net_name in reference_list and id not in pins_to_preserve:
-                reference_pinsts.append(i)
-        for i in self.modeler.primitives:
-            if i:
-                net_name = i.net_name
+                reference_pinsts.append(item)
+
+        with ThreadPoolExecutor(number_of_threads) as pool:
+            pool.map(lambda item: check_instances(item), self.layout.padstack_instances)
+
+        for i in pins_to_delete:
+            i.delete()
+
+        prim_to_delete = []
+
+        def check_prims(item):
+            if item:
+                net_name = item.net_name
                 if net_name not in all_list:
-                    i.delete()
-                elif net_name in reference_list and not i.is_void:
-                    if keep_lines_as_path and i.type == "Path":
-                        reference_paths.append(i)
+                    prim_to_delete.append(item)
+                elif net_name in reference_list and not item.is_void:
+                    if keep_lines_as_path and item.type == "Path":
+                        reference_paths.append(item)
                     else:
-                        reference_prims.append(i)
+                        reference_prims.append(item)
+
+        with ThreadPoolExecutor(number_of_threads) as pool:
+            pool.map(lambda item: check_prims(item), self.modeler.primitives)
+
+        for i in prim_to_delete:
+            i.delete()
+
         self.logger.info_timer("Net clean up")
         self.logger.reset_timer()
 
@@ -2334,7 +2352,7 @@ class Edb(Database):
         if not _poly or _poly.IsNull():
             self._logger.error("Failed to create Extent.")
             return []
-        self.logger.info_timer("Expanded Net Polygon Creation")
+        self.logger.info_timer("Extent Creation")
         self.logger.reset_timer()
         _poly_list = convert_py_list_to_net_list([_poly])
         prims_to_delete = []
@@ -2417,20 +2435,17 @@ class Edb(Database):
         for pin in pins_to_delete:
             pin.delete()
 
-        self.logger.info_timer(
-            "Padstack Instances removal completed. {} instances removed.".format(len(pins_to_delete))
-        )
+        self.logger.info_timer("{} Padstack Instances deleted.".format(len(pins_to_delete)))
         self.logger.reset_timer()
 
-        # with ThreadPoolExecutor(number_of_threads) as pool:
-        #     pool.map(lambda item: clip_path(item), reference_paths)
-
-        for item in reference_paths:
-            clip_path(item)
-        for prim in reference_prims:  # removing multithreading as failing with new layer from primitive
-            clean_prim(prim)
-        # with ThreadPoolExecutor(number_of_threads) as pool:
-        #    pool.map(lambda item: clean_prim(item), reference_prims)
+        with ThreadPoolExecutor(number_of_threads) as pool:
+            pool.map(lambda item: clip_path(item), reference_paths)
+        with ThreadPoolExecutor(number_of_threads) as pool:
+            pool.map(lambda item: clean_prim(item), reference_prims)
+        # for item in reference_paths:
+        #     clip_path(item)
+        # for prim in reference_prims:  # removing multithreading as failing with new layer from primitive
+        #     clean_prim(prim)
 
         for el in poly_to_create:
             self.modeler.create_polygon(el[0], el[1], net_name=el[2], voids=el[3])
@@ -2438,7 +2453,7 @@ class Edb(Database):
         for prim in prims_to_delete:
             prim.delete()
 
-        self.logger.info_timer("Primitives cleanup completed. {} primitives deleted.".format(len(prims_to_delete)))
+        self.logger.info_timer("{} Primitives deleted.".format(len(prims_to_delete)))
         self.logger.reset_timer()
 
         i = 0
@@ -2447,7 +2462,7 @@ class Edb(Database):
                 val.edbcomponent.Delete()
                 i += 1
                 i += 1
-        self.logger.info("Deleted {} additional components".format(i))
+        self.logger.info("{} components deleted".format(i))
         if remove_single_pin_components:
             self.components.delete_single_pin_rlc()
             self.logger.info_timer("Single Pins components deleted")
@@ -3596,15 +3611,15 @@ class Edb(Database):
         """
         setups = {}
         for i in list(self.active_cell.SimulationSetups):
-            if i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kHFSS:
+            if i.GetType().ToString().endswith("kHFSS"):
                 setups[i.GetName()] = HfssSimulationSetup(self, i)
-            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWave:
+            elif i.GetType().ToString().endswith("kSIWave"):
                 setups[i.GetName()] = SiwaveSimulationSetup(self, i)
-            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWaveDCIR:
+            elif i.GetType().ToString().endswith("kSIWaveDCIR"):
                 setups[i.GetName()] = SiwaveDCSimulationSetup(self, i)
-            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kRaptorX:
+            elif i.GetType().ToString().endswith("kRaptorX"):
                 setups[i.GetName()] = RaptorXSimulationSetup(self, i)
-            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kHFSSPI:
+            elif i.GetType().ToString().endswith("kHFSSPI"):
                 setups[i.GetName()] = HFSSPISimulationSetup(self, i)
         return setups
 

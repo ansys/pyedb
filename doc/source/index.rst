@@ -4,6 +4,9 @@ PyEDB documentation |version|
 PyEDB is a Python library that interacts directly with the `PyEDB-Core <https://github.com/ansys/pyedb-core>`_
 API to make scripting simpler.
 
+.. note:: Future build breaking changes in Linux
+   If you want to know more about the build breaking change that is going to happen in a future version, see the :ref:`build_breaking_change`.
+
 .. grid:: 2
 
     .. grid-item-card:: Getting started :fa:`person-running`

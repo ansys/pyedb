@@ -499,7 +499,8 @@ class EDBPadstack(object):
             self._ppadstack._pedb._edb.Definition.PadType.RegularPad,
             self._ppadstack._pedb._edb.Definition.PadType.AntiPad,
             self._ppadstack._pedb._edb.Definition.PadType.ThermalPad,
-            self._ppadstack._pedb._edb.Definition.PadType.Hole,
+            # self._ppadstack._pedb._edb.Definition.PadType.Hole,
+            # This property doesn't appear in UI. It is unclear what it is used for. Suppressing this property for now.
         ]
         data = {}
         for pad_type in pad_type_list:
@@ -588,15 +589,14 @@ class EDBPadstack(object):
                     continue
 
                 # Set pad parameters for the current layer
-                default = original_params[pad_type_name]
                 pdef_data.SetPadParameters(
                     layer_data["layer_name"],
                     pad_type,
                     pad_shape,
                     convert_py_list_to_net_list([self._ppadstack._pedb.edb_value(i) for i in temp_param]),
-                    self._ppadstack._pedb.edb_value(layer_data.get("offset_x", default[idx].get("offset_x", 0))),
-                    self._ppadstack._pedb.edb_value(layer_data.get("offset_y", default[idx].get("offset_y", 0))),
-                    self._ppadstack._pedb.edb_value(layer_data.get("rotation", default[idx].get("rotation", 0))),
+                    self._ppadstack._pedb.edb_value(layer_data.get("offset_x", 0)),
+                    self._ppadstack._pedb.edb_value(layer_data.get("offset_y", 0)),
+                    self._ppadstack._pedb.edb_value(layer_data.get("rotation", 0)),
                 )
         self._padstack_def_data = pdef_data
 
@@ -2324,3 +2324,32 @@ class EDBPadstackInstance(Primitive):
             max_limit=max_limit,
             component_only=component_only,
         )
+
+    @property
+    def properties(self):
+        data = {}
+        data["name"] = self.aedt_name
+        data["definition"] = self.padstack_definition
+        data["backdrill_parameters"] = self.backdrill_parameters
+        _, position, rotation = self._edb_object.GetPositionAndRotationValue()
+        data["position"] = [position.X.ToString(), position.Y.ToString()]
+        data["rotation"] = [rotation.ToString()]
+        data["id"] = self.id
+        hole_override_enabled, hole_override_diam = self._edb_object.GetHoleOverrideValue()
+        data["hole_override_enabled"] = hole_override_enabled
+        data["hole_override_diameter"] = hole_override_diam.ToString()
+        return data
+
+    @properties.setter
+    def properties(self, params):
+        name = params.get("name", None)
+        if name:
+            self.aedt_name = name
+        backdrill_parameters = params.get("backdrill_parameters", None)
+        if backdrill_parameters:
+            self.backdrill_parameters = backdrill_parameters
+        h_o_enabled = params.get("hole_override_enabled", None)
+        h_o_enabled = h_o_enabled if h_o_enabled else self.properties["hole_override_enabled"]
+        h_o_diameter = params.get("hole_override_diameter")
+        h_o_diameter = h_o_diameter if h_o_diameter else self.properties["hole_override_diameter"]
+        self._edb_object.SetHoleOverride(h_o_enabled, self._pedb.edb_value(h_o_diameter))

@@ -555,13 +555,15 @@ class Siwave(object):  # pragma no cover
         self.import_edb(temp_edb)
         shutil.rmtree(Path(temp_edb), ignore_errors=True)
 
-    def export_configuration(self, file_path: str):
+    def export_configuration(self, file_path: str, fix_padstack_names: bool = False):
         """Export layout information into a configuration file.
 
         Parameters
         ----------
         file_path : str
             Path to the configuration file.
+        fix_padstack_names : bool
+            Name all the padstacks in edb.
         """
         file_path = parser_file_path(file_path)
 
@@ -570,5 +572,7 @@ class Siwave(object):  # pragma no cover
 
         self.export_edb(temp_edb)
         edbapp = Edb(temp_edb, edbversion=self.current_version)
+        if fix_padstack_names:
+            edbapp.layout_validation.padstacks_no_name(fix=True)
         edbapp.configuration.export(file_path)
         edbapp.close()

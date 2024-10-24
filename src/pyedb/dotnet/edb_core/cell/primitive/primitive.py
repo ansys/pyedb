@@ -43,8 +43,6 @@ class Primitive(Connectable):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
         self._app = self._pedb
-        self._core_stackup = pedb.stackup
-        self._core_net = pedb.nets
         self.primitive_object = self._edb_object
 
         bondwire_type = self._pedb._edb.Cell.Primitive.BondwireType
@@ -61,6 +59,14 @@ class Primitive(Connectable):
             "round": bondwire_cross_section_type.BondwireRound,
             "rectangle": bondwire_cross_section_type.BondwireRectangle,
         }
+
+    @property
+    def _core_stackup(self):
+        return self._app.stackup
+
+    @property
+    def _core_net(self):
+        return self._app.nets
 
     @property
     def type(self):

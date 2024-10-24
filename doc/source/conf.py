@@ -246,7 +246,7 @@ else:
     config = {"run_examples": True}
 
 
-# Specify environment variable to build the doc without grpahical mode while
+# Specify environment variable to build the doc without graphical mode while
 # keeping examples graphical mode activated.
 os.environ["PYAEDT_NON_GRAPHICAL"] = "1"
 os.environ["PYAEDT_DOC_GENERATION"] = "1"
@@ -367,6 +367,7 @@ nbsphinx_thumbnails = {
     "examples/use_configuration/import_setup_ac": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_padstack_definitions": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_components": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/import_sources": "_static/thumbnails/101_getting_started.png",
 }
 
 nbsphinx_custom_formats = {

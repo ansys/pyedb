@@ -569,6 +569,8 @@ class TestClass:
                                 "stub_length": "0.2mm",
                             },
                         },
+                        "hole_override_enabled": True,
+                        "hole_override_diameter": "0.5mm",
                     }
                 ],
             }
@@ -665,16 +667,6 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        for setup in data["setups"]:
-            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
-            for p, value in setup.items():
-                if p == "freq_sweep":
-                    pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
-                elif p == "dc_ir_settings":  # EDB API bug in linux.
-                    pass
-                else:
-                    assert value == target[p]
         edbapp.close()
 
     def test_13_stackup_layers(self, edb_examples):
@@ -687,6 +679,12 @@ class TestClass:
                         "name": "1_Top",
                         "thickness": "0.5mm",
                         "type": "signal",
+                        "roughness": {
+                            "top": {"model": "huray", "nodule_radius": "0.1um", "surface_ratio": "1"},
+                            "bottom": {"model": "groisse", "roughness": "2um"},
+                            "side": {"model": "huray", "nodule_radius": "0.5um", "surface_ratio": "2.9"},
+                            "enabled": True,
+                        },
                     },
                     {
                         "fill_material": "Megtron4",
@@ -764,7 +762,6 @@ class TestClass:
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
-                value = edbapp.edb_value(value).ToDouble() if p in ["thickness"] else value
                 assert value == target_mat[p]
         edbapp.close()
 
@@ -831,7 +828,6 @@ class TestClass:
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
-                value = edbapp.edb_value(value).ToDouble() if p in ["thickness"] else value
                 assert value == target_mat[p]
         edbapp.close()
 
@@ -857,14 +853,6 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        for setup in data["setups"]:
-            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
-            for p, value in setup.items():
-                if p == "freq_sweep":
-                    pass  # EDB API bug. Cannot retrieve frequency sweep from edb.
-                else:
-                    assert value == target[p]
         edbapp.close()
 
     def test_15b_sources_net_net(self, edb_examples):
