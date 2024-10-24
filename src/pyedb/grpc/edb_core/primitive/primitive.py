@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
+from ansys.edb.core.primitive.primitive import Circle as GrpcCircle
 from ansys.edb.core.primitive.primitive import Primitive as GrpcPrimitive
 
 from pyedb.misc.utilities import compute_arc_points
@@ -93,7 +94,10 @@ class Primitive(GrpcPrimitive):
 
     @property
     def polygon_data(self):
-        return self.cast().polygon_data
+        if isinstance(self.cast(), GrpcCircle):
+            return self.cast().get_polygon_data()
+        else:
+            return self.cast().polygon_data
 
     @polygon_data.setter
     def polygon_data(self, value):
@@ -305,13 +309,13 @@ class Primitive(GrpcPrimitive):
                     primi_polys.append(prim)
         for v in self.voids[:]:
             primi_polys.append(v.polygon_data)
-        primi_polys = poly.unit(primi_polys)
+        primi_polys = poly.unite(primi_polys)
         p_to_sub = poly.unite([poly] + voids_of_prims)
         list_poly = poly.subtract(p_to_sub, primi_polys)
         new_polys = []
         if list_poly:
             for p in list_poly:
-                if p.is_null:
+                if not p.points:
                     continue
                 new_polys.append(
                     self._pedb.modeler.create_polygon(p, self.layer_name, net_name=self.net.name, voids=[]),
@@ -338,21 +342,25 @@ class Primitive(GrpcPrimitive):
         -------
         List of :class:`dotnet.edb_core.edb_data.EDBPrimitives`
         """
-        poly = self.polygon_data
+        poly = self.cast().polygon_data
         if not isinstance(primitives, list):
             primitives = [primitives]
         primi_polys = []
         for prim in primitives:
+            prim = prim.cast()
             if isinstance(prim, Primitive):
                 primi_polys.append(prim.polygon_data)
             else:
-                primi_polys.append(prim.polygon_data)
+                if isinstance(prim, GrpcCircle):
+                    primi_polys.append(prim.get_polygon_data())
+                else:
+                    primi_polys.append(prim.polygon_data)
         list_poly = poly.intersect([poly], primi_polys)
         new_polys = []
         if list_poly:
             voids = self.voids
             for p in list_poly:
-                if p.is_null:
+                if not p.points:
                     continue
                 list_void = []
                 void_to_subtract = []
@@ -415,7 +423,7 @@ class Primitive(GrpcPrimitive):
         if list_poly:
             voids = self.voids
             for p in list_poly:
-                if p.is_null:
+                if not p.points:
                     continue
                 list_void = []
                 if voids:

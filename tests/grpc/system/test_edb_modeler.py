@@ -313,20 +313,23 @@ class TestClass:
         )
         edbapp.close()
 
-    def test_modeler_create_circle(self):
+    def test_modeler_create_circle(self, edb_examples):
         """Create circle."""
-        poly = self.edbapp.modeler.create_polygon([[0, 0], [100, 0], [100, 100], [0, 100]], "1_Top")
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        poly = edbapp.modeler.create_polygon(points=[[0, 0], [100, 0], [100, 100], [0, 100]], layer_name="1_Top")
         assert poly
         poly.add_void([[20, 20], [20, 30], [100, 30], [100, 20]])
-        poly2 = self.edbapp.modeler.create_polygon([[60, 60], [60, 150], [150, 150], [150, 60]], "1_Top")
+        poly2 = edbapp.modeler.create_polygon(points=[[60, 60], [60, 150], [150, 150], [150, 60]], layer_name="1_Top")
         new_polys = poly.subtract(poly2)
         assert len(new_polys) == 1
-        circle = self.edbapp.modeler.create_circle("1_Top", 40, 40, 15)
+        circle = edbapp.modeler.create_circle("1_Top", 40, 40, 15)
         assert circle
         intersection = new_polys[0].intersect(circle)
         assert len(intersection) == 1
-        circle2 = self.edbapp.modeler.create_circle("1_Top", 20, 20, 15)
+        circle2 = edbapp.modeler.create_circle("1_Top", 20, 20, 15)
         assert circle2.unite(intersection)
+        edbapp.close()
 
     def test_modeler_defeature(self):
         """Defeature the polygon."""

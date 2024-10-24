@@ -786,7 +786,7 @@ class Modeler(object):
             radius=GrpcValue(radius),
         )
         if not circle.is_null:
-            return circle
+            return Circle(self._pedb, circle)
         return False
 
     def delete_primitives(self, net_names):
