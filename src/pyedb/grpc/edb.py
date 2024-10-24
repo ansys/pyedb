@@ -3950,16 +3950,14 @@ class EdbGrpc(EdbInit):
                 padstack_inst.delete()
             else:
                 if padstack_inst.net.name in signal_nets:
-                    padstack_instances_index.insert(padstack_inst.id, padstack_inst.position)
+                    padstack_instances_index.insert(padstack_inst.edb_uid, padstack_inst.position)
                     if not padstack_inst.padstack_def.name in used_padstack_defs:
                         used_padstack_defs.append(padstack_inst.padstack_def.name)
 
         polys = [
             poly
             for poly in self.modeler.primitives
-            if poly.layer.name == reference_layer
-            and self.modeler.primitives[0].primitive_type.name == "POLYGON"
-            and poly.has_voids
+            if poly.layer.name == reference_layer and self.modeler.primitives[0].type == "polygon" and poly.has_voids
         ]
         if not polys:
             self.logger.error(
@@ -3978,7 +3976,7 @@ class EdbGrpc(EdbInit):
                 )
                 included_instances = list(padstack_instances_index.intersection(void_bbox))
                 if included_instances:
-                    void_padstacks.append((void, [self.padstacks.instances[edb_id] for edb_id in included_instances]))
+                    void_padstacks.append((void, [self.padstacks.instances[edb_uid] for edb_uid in included_instances]))
 
         if not void_padstacks:
             self.logger.error(
@@ -4013,10 +4011,10 @@ class EdbGrpc(EdbInit):
         )
         for void_info in void_padstacks:
             port_poly = cloned_edb.modeler.create_polygon(
-                main_shape=void_info[0].polygon_data, layer_name="ref", net_name="GND"
+                points=void_info[0].polygon_data, layer_name="ref", net_name="GND"
             )
             pec_poly = cloned_edb.modeler.create_polygon(
-                main_shape=port_poly.polygon_data, layer_name="port_pec", net_name="GND"
+                points=port_poly.polygon_data, layer_name="port_pec", net_name="GND"
             )
             pec_poly.scale(1.5)
 

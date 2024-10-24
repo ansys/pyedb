@@ -158,9 +158,9 @@ class Polygon(GrpcPolygon, Primitive):
             factor = float(factor)
             polygon_data = GrpcPolygonData(points=self.polygon_data.points)
             if not center:
-                center = self.polygon_data.bounding_circle()
+                center = self.polygon_data.bounding_circle()[0]
                 if center:
-                    polygon_data.scale(factor, center[0])
+                    polygon_data.scale(factor, center)
                     self.polygon_data = polygon_data
                     return True
                 else:

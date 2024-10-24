@@ -555,12 +555,13 @@ class TestClass:
         assert len(primitives) == 3
         edbapp.close()
 
-    def arbitrary_wave_ports(self):
+    def test_arbitrary_wave_ports(self):
+        # TODO check buh #462 polygon_data.scale failing
         example_folder = os.path.join(local_path, "example_models", test_subfolder)
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
         target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
         self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = Edb(target_path_edb, desktop_version)
+        edbapp = Edb(target_path_edb, desktop_version, restart_rpc_server=True)
         edbapp.create_model_for_arbitrary_wave_ports(
             temp_directory=self.local_scratch.path,
             output_edb="wave_ports.aedb",
@@ -576,6 +577,7 @@ class TestClass:
         test_edb.close()
 
     def test_path_center_line(self):
+        # TODO wait Material class done.
         edb = Edb()
         edb.stackup.add_layer("GND", "Gap")
         edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.2mm", material="Duroid (tm)")
@@ -596,9 +598,11 @@ class TestClass:
         edb.modeler.paths[0].center_line = [[0.0, 0.0], [0.0, 5e-3]]
         assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.0, 5e-3]]
 
-    def test_polygon_data_refaxtoring_bounding_box(self, edb_examples):
+    def test_polygon_data_refactoring_bounding_box(self, edb_examples):
+        # Done
         edbapp = edb_examples.get_si_verse()
         poly_with_voids = [pp for pp in edbapp.modeler.polygons if pp.has_voids]
         for poly in poly_with_voids:
             for void in poly.voids:
-                assert void.polygon_data.bounding_box
+                assert void.bbox
+        edbapp.close()
