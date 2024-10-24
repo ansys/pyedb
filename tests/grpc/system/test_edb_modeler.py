@@ -340,9 +340,10 @@ class TestClass:
 
     def test_modeler_primitives_boolean_operation(self):
         """Evaluate modeler primitives boolean operations."""
-        from pyedb.dotnet.edb import Edb
+        from pyedb.grpc.edb import EdbGrpc as Edb
 
-        edb = Edb()
+        # TODO wait material class is done.
+        edb = Edb(restart_rpc_server=True)
         edb.stackup.add_layer(layer_name="test")
         x = edb.modeler.create_polygon(
             layer_name="test", main_shape=[[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]]
@@ -386,8 +387,9 @@ class TestClass:
         edb.close()
 
     def test_modeler_path_convert_to_polygon(self):
+        # Done
         target_path = os.path.join(local_path, "example_models", "convert_and_merge_path.aedb")
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = Edb(target_path, edbversion=desktop_version, restart_rpc_server=True)
         for path in edbapp.modeler.paths:
             assert path.convert_to_polygon()
         # cannot merge one net only - see test: test_unite_polygon for reference
@@ -395,10 +397,11 @@ class TestClass:
 
     def test_156_check_path_length(self):
         """"""
+        # TODO check bug #461 status
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_path_length.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_path_length", "test.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, desktop_version)
+        edbapp = Edb(target_path, desktop_version, restart_rpc_server=True)
         net1 = [path for path in edbapp.modeler.paths if path.net_name == "loop1"]
         net1_length = 0
         for path in net1:
