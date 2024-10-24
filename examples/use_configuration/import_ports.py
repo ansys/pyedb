@@ -8,7 +8,7 @@
 #   - Add a circuit port between two pin groups
 #   - Add a circuit port between two coordinates
 #   - Add a coax port
-#   - Add a port reference to the neareast pin
+#   - Add a port reference to the nearest pin
 #   - Add distributed ports
 # - Import the configuration file
 
@@ -48,7 +48,7 @@ cfg = dict()
 # - **name**. Name of the port.
 # - **Reference_designator**. Reference designator of the component.
 # - **type**. Type of the port. Supported types are 'circuit', 'coax'
-# - **positve_terminal**. Positive terminal of the port. Supported types are 'net', 'pin', 'pin_group', 'coordinates'
+# - **positive_terminal**. Positive terminal of the port. Supported types are 'net', 'pin', 'pin_group', 'coordinates'
 # - **negative_terminal**. Negative terminal of the port. Supported types are 'net', 'pin', 'pin_group', 'coordinates',
 # 'nearest_pin'
 

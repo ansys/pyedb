@@ -313,8 +313,7 @@ class Components(object):
         # self._logger.info("Refreshing the Components dictionary.")
         self._cmp = {}
         for i in self._pedb.layout.groups:
-            if i.group_type == "component":
-                self._cmp[i.name] = i
+            self._cmp[i.name] = i
         return True
 
     @property
