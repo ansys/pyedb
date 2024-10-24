@@ -90,7 +90,8 @@ class Primitive(GrpcPrimitive):
 
     @layer_name.setter
     def layer_name(self, value):
-        self.layer.name = value
+        if value in self._pedb.stackup.layers:
+            self.layer = self._pedb.stackup.layers[value]
 
     @property
     def polygon_data(self):
