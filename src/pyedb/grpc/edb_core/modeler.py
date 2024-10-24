@@ -312,6 +312,11 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.Primitive`
             List of primitives, polygons, paths and rectangles.
         """
+        from ansys.edb.core.primitive.primitive import Circle as GrpcCircle
+        from ansys.edb.core.primitive.primitive import Path as GrpcPath
+        from ansys.edb.core.primitive.primitive import Polygon as GrpcPolygon
+        from ansys.edb.core.primitive.primitive import Rectangle as GrpcRectangle
+
         if isinstance(layer, str) and layer not in list(self._pedb.stackup.signal_layers.keys()):
             layer = None
         if not isinstance(point, list) and len(point) == 2:
@@ -331,14 +336,22 @@ class Modeler(object):
                     _nets.append(self._pedb.nets[net])
             if _nets:
                 nets = _nets
+        if not isinstance(layer, list) and layer:
+            layer = [layer]
         _obj_instances = self._pedb.layout_instance.query_layout_obj_instances(
             layer_filter=layer, net_filter=nets, spatial_filter=pt
         )
         returned_obj = []
         for inst in _obj_instances:
-            inst.layout_obj.cast()
-            if isinstance(inst, Path) or isinstance(inst, Polygon) or isinstance(inst, Rectangle):
-                returned_obj.append(inst.layout_obj)
+            primitive = inst.layout_obj.cast()
+            if isinstance(primitive, GrpcPath):
+                returned_obj.append(Path(self._pedb, primitive))
+            elif isinstance(primitive, GrpcPolygon):
+                returned_obj.append(Polygon(self._pedb, primitive))
+            elif isinstance(primitive, GrpcRectangle):
+                returned_obj.append(Rectangle(self._pedb, primitive))
+            elif isinstance(primitive, GrpcCircle):
+                returned_obj.append(Circle(self._pedb, primitive))
         return returned_obj
 
     @staticmethod

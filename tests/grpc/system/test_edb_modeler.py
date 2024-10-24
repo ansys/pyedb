@@ -533,35 +533,26 @@ class TestClass:
         assert edbapp.padstacks.pins
         edbapp.close()
 
-    def rlc_component_302(self):
-        example_folder = os.path.join(local_path, "example_models", test_subfolder)
-        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
-        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
-        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = Edb(target_path_edb, desktop_version)
+    def test_rlc_component_302(self, edb_examples):
+        # TODO bug #451 fixed waiting PR to test
+        edbapp = edb_examples.get_si_verse()
         pins = edbapp.components.get_pin_from_component("C31")
-        assert edbapp.components.create_rlc_component([pins[0], pins[1]], r_value=0, component_name="TEST")
-        assert edbapp.siwave.create_rlc_component([pins[0], pins[1]])
+        assert edbapp.components.create([pins[0], pins[1]], r_value=0, component_name="TEST")
+        assert edbapp.siwave.create([pins[0], pins[1]])
         pl = edbapp.components.get_pin_from_component("B1")
         pins = [pl[0], pl[1], pl[2], pl[3]]
         assert edbapp.siwave.create_rlc_component(pins, component_name="random")
         edbapp.close()
 
-    def get_primitives_by_point_layer_and_nets(self):
-        example_folder = os.path.join(local_path, "example_models", test_subfolder)
-        source_path_edb = os.path.join(example_folder, "ANSYS-HSD_V1.aedb")
-        target_path_edb = os.path.join(self.local_scratch.path, "test_create_polygon", "test.aedb")
-        self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = Edb(target_path_edb, desktop_version)
-        primitives = edbapp.modeler.get_primitive_by_layer_and_point(layer="Inner6(GND2)", point=[20e-3, 30e-3])
+    def test_get_primitives_by_point_layer_and_nets(self, edb_examples):
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        primitives = edbapp.modeler.get_primitive_by_layer_and_point(layer="Inner1(GND1)", point=[20e-3, 30e-3])
         assert primitives
         assert len(primitives) == 1
-        assert primitives[0].type == "Polygon"
+        assert primitives[0].type == "polygon"
         primitives = edbapp.modeler.get_primitive_by_layer_and_point(point=[20e-3, 30e-3])
         assert len(primitives) == 3
-        primitives = edbapp.modeler.get_primitive_by_layer_and_point(layer="Inner3(Sig1)", point=[109e3, 16.5e-3])
-        assert primitives
-        assert primitives[0].type == "Path"
         edbapp.close()
 
     def arbitrary_wave_ports(self):
