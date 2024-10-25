@@ -821,8 +821,8 @@ class Nets(object):
 
             comp_partname = self._pedb.components._cmp[refdes].partname
             el.append(comp_partname)
-            pins = self._pedb.components.get_pin_from_component(component=refdes, netName=el[2])
-            el.append("-".join([i.GetName() for i in pins]))
+            pins = self._pedb.components.get_pin_from_component(component=refdes, net_name=el[2])
+            el.append("-".join([i.name for i in pins]))
 
         component_list_columns = [
             "refdes",

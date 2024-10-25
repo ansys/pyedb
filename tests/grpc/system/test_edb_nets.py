@@ -73,18 +73,21 @@ class TestClass:
         assert edbapp.nets.nets["AVCC_1V3"].extended_net
         edbapp.close()
 
-    def test_nets_get_power_tree(self):
+    def test_nets_get_power_tree(self, edb_examples):
         """Evaluate nets get powertree."""
+        # Done
+        edbapp = edb_examples.get_si_verse()
         OUTPUT_NET = "5V"
         GROUND_NETS = ["GND", "PGND"]
         (
             component_list,
             component_list_columns,
             net_group,
-        ) = self.edbapp.nets.get_powertree(OUTPUT_NET, GROUND_NETS)
+        ) = edbapp.nets.get_powertree(OUTPUT_NET, GROUND_NETS)
         assert component_list
         assert component_list_columns
         assert net_group
+        edbapp.close()
 
     def test_nets_delete(self):
         """Delete a net."""
