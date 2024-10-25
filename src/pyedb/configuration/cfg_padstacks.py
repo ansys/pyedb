@@ -102,7 +102,7 @@ class Definition:
         if self.material:
             self._pyedb_obj.material = self.material
         if self.hole_range:
-            self._pyedb_obj = self.hole_range
+            self._pyedb_obj.hole_range = self.hole_range
         if self.pad_parameters:
             self._set_pad_parameters_to_edb(self.pad_parameters)
         if self.hole_parameters:

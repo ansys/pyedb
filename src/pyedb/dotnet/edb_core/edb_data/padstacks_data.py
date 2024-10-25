@@ -1142,18 +1142,6 @@ class EDBPadstack(object):
         self.edb_padstack.SetData(new_padstack_data)
         return True
 
-    def set_properties(self, **kwargs):
-        for k in ["hole_plating_thickness", "material", "hole_range", "pad_parameters", "hole_parameters"]:
-            value = kwargs.get(k, False)
-            if value:
-                setattr(self, k, value)
-
-    def get_properties(self):
-        kwargs = {}
-        for k in ["hole_plating_thickness", "material", "hole_range", "pad_parameters", "hole_parameters"]:
-            kwargs[k] = getattr(self, k)
-        return kwargs
-
 
 class EDBPadstackInstance(Primitive):
     """Manages EDB functionalities for a padstack.
