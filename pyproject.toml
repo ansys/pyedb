@@ -48,7 +48,7 @@ tests = [
 ]
 doc = [
     "ansys-sphinx-theme>=0.10.0,<1.1",
-    "imageio>=2.30.0,<2.36",
+    "imageio>=2.30.0,<2.37",
     "ipython>=8.13.0,<8.29",
     "jupyterlab>=4.0.0,<4.3",
     "jupytext>=1.16.0,<1.17",
@@ -56,14 +56,14 @@ doc = [
     "nbsphinx>=0.9.0,<0.10",
     "nbconvert < 7.17",
     "numpydoc>=1.5.0,<1.9",
-    "pypandoc>=1.10.0,<1.14",
+    "pypandoc>=1.10.0,<1.15",
     # NOTE: Remove recommonmark once examples are reworked.
     "recommonmark",
-    "Sphinx>=7.1.0,<8.1",
+    "Sphinx>=7.1.0,<8.2",
     "sphinx-autobuild==2021.3.14; python_version == '3.8'",
     "sphinx-autobuild==2024.10.3; python_version > '3.8'",
     "sphinx-copybutton>=0.5.0,<0.6",
-    "sphinx-gallery>=0.14.0,<0.18",
+    "sphinx-gallery>=0.14.0,<0.19",
     "sphinx_design>=0.4.0,<0.7",
 ]
 full = [
@@ -91,8 +91,8 @@ default_section = "THIRDPARTY"
 src_paths = ["doc", "src", "tests"]
 
 [tool.codespell]
-skip = '*.pyc,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,*.ipynb,*.a3dcomp,flycheck*,./.git/*,./.hypothesis/*,*.yml,./doc/build/*,./doc/images/*,./dist/*,*~,.hypothesis*,./doc/source/examples/*,*cover,*.dat,*.mac,*.cdb,*.CDB,build,./factory/*,PKG-INFO,*.mypy_cache/*,./_unused/*'
-ignore-words = "doc/styles/Vocab/ANSYS/accept.txt"
+skip = '*.pyc,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,*.ipynb,*.a3dcomp,flycheck*,./.git/*,./.hypothesis/*,*.yml,./doc/build/*,./doc/images/*,./dist/*,*~,.hypothesis*,./doc/source/examples/*,*cover,*.dat,*.mac,*.cdb,*.CDB,build,./factory/*,PKG-INFO,*.mypy_cache/*,./_unused/*,pyproject.toml'
+ignore-words = "doc/styles/config/vocabularies/ANSYS/accept.txt"
 ignore-words-list = "renabled, sie, mot"
 enable-colors = true
 

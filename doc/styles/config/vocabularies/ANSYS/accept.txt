@@ -42,7 +42,7 @@ Q3D
 RaptorX
 RLC
 SimulationConfiguration
-Siwave
+S[Ii]wave
 SYZ
 (?i)stackup(?:\s3D|s)?
 vias

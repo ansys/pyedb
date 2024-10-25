@@ -69,6 +69,7 @@ DC_ATTRIBUTES = [
     "dc_conductivity",
     "dc_permittivity",
 ]
+PERMEABILITY_DEFAULT_VALUE = 1
 
 
 def get_line_float_value(line):
@@ -507,6 +508,9 @@ class Materials(object):
 
         material_def = self.__edb_definition.MaterialDef.Create(self.__edb.active_db, name)
         material = Material(self.__edb, material_def)
+        # Apply default values to the material
+        if "permeability" not in kwargs:
+            kwargs["permeability"] = PERMEABILITY_DEFAULT_VALUE
         attributes_input_dict = {key: val for (key, val) in kwargs.items() if key in ATTRIBUTES + DC_ATTRIBUTES}
         if "loss_tangent" in kwargs:  # pragma: no cover
             warnings.warn(
