@@ -98,31 +98,37 @@ class TestClass:
         assert "JTAG_TCK" not in edbapp.nets.nets
         edbapp.close()
 
-    def test_nets_classify_nets(self):
+    def test_nets_classify_nets(self, edb_examples):
         """Reassign power based on list of nets."""
-        assert "SFPA_SDA" in self.edbapp.nets.signal
-        assert "SFPA_SCL" in self.edbapp.nets.signal
-        assert "SFPA_VCCR" in self.edbapp.nets.power
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        assert "SFPA_SDA" in edbapp.nets.signal
+        assert "SFPA_SCL" in edbapp.nets.signal
+        assert "SFPA_VCCR" in edbapp.nets.power
 
-        assert self.edbapp.nets.classify_nets(["SFPA_SDA", "SFPA_SCL"], ["SFPA_VCCR"])
-        assert "SFPA_SDA" in self.edbapp.nets.power
-        assert "SFPA_SDA" not in self.edbapp.nets.signal
-        assert "SFPA_SCL" in self.edbapp.nets.power
-        assert "SFPA_SCL" not in self.edbapp.nets.signal
-        assert "SFPA_VCCR" not in self.edbapp.nets.power
-        assert "SFPA_VCCR" in self.edbapp.nets.signal
+        assert edbapp.nets.classify_nets(["SFPA_SDA", "SFPA_SCL"], ["SFPA_VCCR"])
+        assert "SFPA_SDA" in edbapp.nets.power
+        assert "SFPA_SDA" not in edbapp.nets.signal
+        assert "SFPA_SCL" in edbapp.nets.power
+        assert "SFPA_SCL" not in edbapp.nets.signal
+        assert "SFPA_VCCR" not in edbapp.nets.power
+        assert "SFPA_VCCR" in edbapp.nets.signal
 
-        assert self.edbapp.nets.classify_nets(["SFPA_VCCR"], ["SFPA_SDA", "SFPA_SCL"])
-        assert "SFPA_SDA" in self.edbapp.nets.signal
-        assert "SFPA_SCL" in self.edbapp.nets.signal
-        assert "SFPA_VCCR" in self.edbapp.nets.power
+        assert edbapp.nets.classify_nets(["SFPA_VCCR"], ["SFPA_SDA", "SFPA_SCL"])
+        assert "SFPA_SDA" in edbapp.nets.signal
+        assert "SFPA_SCL" in edbapp.nets.signal
+        assert "SFPA_VCCR" in edbapp.nets.power
+        edbapp.close()
 
-    def test_nets_arc_data(self):
+    def test_nets_arc_data(self, edb_examples):
         """Evaluate primitive arc data."""
-        assert len(self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs) > 0
-        assert self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs[0].start
-        assert self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs[0].end
-        assert self.edbapp.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        assert len(edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs) > 0
+        assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].start
+        assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].end
+        assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
+        edbapp.close()
 
     @pytest.mark.slow
     def test_nets_dc_shorts(self, edb_examples):

@@ -953,23 +953,29 @@ class EdbGrpc(EdbInit):
         )
 
         temp = []
-        for i in self.layout_instance.get_connected_objects(layout_object_instance, True):
-            if isinstance(i.layout_obj, GrpcPadstackInstanceTerminal):
-                temp.append(PadstackInstanceTerminal(self, i.layout_obj))
-            else:
-                layout_obj_type = i.layout_obj.primitive_type.name
-                if layout_obj_type == "PADSTACK_INSTANCE":
-                    temp.append(PadstackInstance(self, i.layout_obj))
-                elif layout_obj_type == "PATH":
-                    temp.append(Path(self, i.layout_obj))
-                elif layout_obj_type == "RECTANGLE":
-                    temp.append(Rectangle(self, i.layout_obj))
-                elif layout_obj_type == "CIRCLE":
-                    temp.append(Circle(self, i.layout_obj))
-                elif layout_obj_type == "POLYGON":
-                    temp.append(Polygon(self, i.layout_obj))
+        try:
+            for i in self.layout_instance.get_connected_objects(layout_object_instance, True):
+                if isinstance(i.layout_obj, GrpcPadstackInstanceTerminal):
+                    temp.append(PadstackInstanceTerminal(self, i.layout_obj))
                 else:
-                    continue
+                    layout_obj_type = i.layout_obj.layout_obj_type.name
+                    if layout_obj_type == "PADSTACK_INSTANCE":
+                        temp.append(PadstackInstance(self, i.layout_obj))
+                    elif layout_obj_type == "PATH":
+                        temp.append(Path(self, i.layout_obj))
+                    elif layout_obj_type == "RECTANGLE":
+                        temp.append(Rectangle(self, i.layout_obj))
+                    elif layout_obj_type == "CIRCLE":
+                        temp.append(Circle(self, i.layout_obj))
+                    elif layout_obj_type == "POLYGON":
+                        temp.append(Polygon(self, i.layout_obj))
+                    else:
+                        continue
+        except:
+            self.logger.warning(
+                f"Failed to find connected objects on layout_obj " f"{layout_object_instance.layout_obj.id}, skipping."
+            )
+            pass
         return temp
 
     def point_3d(self, x, y, z=0.0):
