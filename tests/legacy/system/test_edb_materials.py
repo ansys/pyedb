@@ -27,7 +27,12 @@ import os
 
 import pytest
 
-from pyedb.dotnet.edb_core.materials import Material, MaterialProperties, Materials
+from pyedb.dotnet.edb_core.materials import (
+    PERMEABILITY_DEFAULT_VALUE,
+    Material,
+    MaterialProperties,
+    Materials,
+)
 from tests.conftest import local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -171,7 +176,9 @@ class TestClass:
 
         material = materials.add_material(MATERIAL_NAME, permittivity=12)
         assert material
-        material.name == materials[MATERIAL_NAME].name
+        assert material.name == materials[MATERIAL_NAME].name
+        # Check default values
+        assert material.permeability == PERMEABILITY_DEFAULT_VALUE
         with pytest.raises(ValueError):
             materials.add_material(MATERIAL_NAME, permittivity=12)
 
@@ -181,7 +188,9 @@ class TestClass:
 
         material = materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
         assert material
-        _ = materials[MATERIAL_NAME]
+        assert material.name == materials[MATERIAL_NAME].name
+        # Check default values
+        assert material.permeability == PERMEABILITY_DEFAULT_VALUE
         with pytest.raises(ValueError):
             materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
 
@@ -191,7 +200,9 @@ class TestClass:
 
         material = materials.add_dielectric_material(MATERIAL_NAME, 12, 12, conductivity=12)
         assert material
-        _ = materials[MATERIAL_NAME]
+        assert material.name == materials[MATERIAL_NAME].name
+        # Check default values
+        assert material.permeability == PERMEABILITY_DEFAULT_VALUE
         with pytest.raises(ValueError):
             materials.add_dielectric_material(MATERIAL_NAME, 12, 12, conductivity=12)
 
@@ -203,7 +214,9 @@ class TestClass:
             MATERIAL_NAME, 4.3, 0.02, 9, dc_conductivity=1e-12, dc_permittivity=5, conductivity=0
         )
         assert material
-        _ = materials[MATERIAL_NAME]
+        assert material.name == materials[MATERIAL_NAME].name
+        # Check default values
+        assert material.permeability == PERMEABILITY_DEFAULT_VALUE
         with pytest.raises(ValueError):
             materials.add_djordjevicsarkar_dielectric(
                 MATERIAL_NAME, 4.3, 0.02, 9, dc_conductivity=1e-12, dc_permittivity=5, conductivity=0
@@ -215,7 +228,9 @@ class TestClass:
 
         material = materials.add_debye_material(MATERIAL_NAME, 6, 4, 0.02, 0.05, 1e9, 10e9, conductivity=0)
         assert material
-        _ = materials[MATERIAL_NAME]
+        assert material.name == materials[MATERIAL_NAME].name
+        # Check default values
+        assert material.permeability == PERMEABILITY_DEFAULT_VALUE
         with pytest.raises(ValueError):
             materials.add_debye_material(MATERIAL_NAME, 6, 4, 0.02, 0.05, 1e9, 10e9, conductivity=0)
 
@@ -230,7 +245,9 @@ class TestClass:
             MATERIAL_NAME, frequencies, relative_permitivities, loss_tangents, conductivity=0
         )
         assert material
-        _ = materials[MATERIAL_NAME]
+        assert material.name == materials[MATERIAL_NAME].name
+        # Check default values
+        assert material.permeability == PERMEABILITY_DEFAULT_VALUE
         with pytest.raises(ValueError):
             materials.add_multipole_debye_material(
                 MATERIAL_NAME, frequencies, relative_permitivities, loss_tangents, conductivity=0
