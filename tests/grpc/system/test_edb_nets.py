@@ -44,6 +44,7 @@ class TestClass:
 
     def test_nets_queries(self, edb_examples):
         """Evaluate nets queries"""
+        # Done
         edbapp = edb_examples.get_si_verse()
         assert len(edbapp.nets.netlist) > 0
         signalnets = edbapp.nets.signal
@@ -67,7 +68,7 @@ class TestClass:
         assert edbapp.nets.find_or_create_net(start_with="g", end_with="d")
         assert edbapp.nets.find_or_create_net(end_with="d")
         assert edbapp.nets.find_or_create_net(contain="usb")
-        assert edbapp.nets.nets["AVCC_1V3"].extended_net is None
+        assert not edbapp.nets.nets["AVCC_1V3"].extended_net
         edbapp.extended_nets.auto_identify_power()
         assert edbapp.nets.nets["AVCC_1V3"].extended_net
         edbapp.close()

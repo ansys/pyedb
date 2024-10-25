@@ -185,4 +185,7 @@ class Net(GrpcNet):
         >>> app = Edb()
         >>> app.nets["BST_V3P3_S5"].extended_net
         """
-        return ExtendedNet(self._pedb, self.extended_net)
+        if self.name in self._pedb.extended_nets.items:
+            return self._pedb.extended_nets.items[self.name]
+        else:
+            return None
