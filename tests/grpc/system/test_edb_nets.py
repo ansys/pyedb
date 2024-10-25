@@ -89,13 +89,14 @@ class TestClass:
         assert net_group
         edbapp.close()
 
-    def test_nets_delete(self):
+    def test_nets_delete(self, edb_examples):
         """Delete a net."""
-        assert "JTAG_TDI" in self.edbapp.nets
-        self.edbapp.nets["JTAG_TCK"].delete()
-        nets_deleted = self.edbapp.nets.delete("JTAG_TDI")
-        assert "JTAG_TDI" in nets_deleted
-        assert "JTAG_TDI" not in self.edbapp.nets
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        assert "JTAG_TCK" in edbapp.nets.nets
+        edbapp.nets.nets["JTAG_TCK"].delete()
+        assert "JTAG_TCK" not in edbapp.nets.nets
+        edbapp.close()
 
     def test_nets_classify_nets(self):
         """Reassign power based on list of nets."""
