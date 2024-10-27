@@ -535,7 +535,9 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        pad_params = edbapp.padstacks.definitions["v35h15"]
+        data_from_layout = edbapp.configuration.get_data_from_db(padstacks=True)
+        pad_params = data_from_layout["padstacks"]["definitions"]
+
         assert pad_params["regular_pad"][0]["diameter"] == "0.5mm"
         assert pad_params["regular_pad"][0]["offset_x"] == "0.1mm"
         assert pad_params["anti_pad"][0]["diameter"] == "1mm"
