@@ -626,4 +626,3 @@ class TestClass:
         }
         edbapp.components["C378"].model_properties = pp
         assert edbapp.components["C378"].model_properties == pp
-

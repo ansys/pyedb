@@ -530,7 +530,7 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_layout = edbapp.configuration.get_data_from_db(padstacks=True)
-        pdef = [i for i in data_from_layout["padstacks"]["definitions"] if i["name"]=="v35h15"][0]
+        pdef = [i for i in data_from_layout["padstacks"]["definitions"] if i["name"] == "v35h15"][0]
 
         pad_params = pdef["pad_parameters"]
         assert pad_params["regular_pad"][0]["diameter"] == "0.5mm"
