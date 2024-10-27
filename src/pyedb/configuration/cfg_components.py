@@ -21,10 +21,7 @@
 # SOFTWARE.
 
 from pyedb.configuration.cfg_common import CfgBase
-from pyedb.dotnet.edb_core.general import (
-    pascal_to_snake,
-    snake_to_pascal,
-)
+from pyedb.dotnet.edb_core.general import pascal_to_snake, snake_to_pascal
 
 
 class CfgComponent(CfgBase):
