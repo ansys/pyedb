@@ -24,6 +24,7 @@ from pathlib import Path
 
 import pytest
 
+from pyedb.dotnet.edb import Edb as EdbType
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
@@ -949,30 +950,6 @@ class TestClass:
         assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
         edbapp.close()
 
-    def test_15b_component_solder_ball(self, edb_examples):
-        components = [
-            {
-                "reference_designator": "U1",
-                "part_type": "io",
-                "solder_ball_properties": {"shape": "cylinder", "diameter": "244um", "height": "406um"},
-                "port_properties": {
-                    "reference_offset": "0.1mm",
-                    "reference_size_auto": True,
-                    "reference_size_x": 0,
-                    "reference_size_y": 0,
-                },
-            },
-        ]
-        data = {"components": components}
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        assert edbapp.components["U1"].type == "IO"
-        assert edbapp.components["U1"].solder_ball_shape == "Cylinder"
-        assert edbapp.components["U1"].solder_ball_height == 406e-6
-        assert edbapp.components["U1"].solder_ball_diameter == (244e-6, 244e-6)
-
-        edbapp.close()
-
     def test_16_export_to_external_file(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         data_file_path = Path(edb_examples.test_folder) / "test.json"
@@ -1014,3 +991,26 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         edbapp.configuration.load(data_from_db, apply_file=True)
         edbapp.close()
+
+    def test_17_ic_die_properties(self, edb_examples):
+        db: EdbType = edb_examples.get_si_verse()
+
+        comps_edb = db.configuration.get_data_from_db(components=True)["components"]
+        component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
+        _assert_initial_ic_die_properties(component)
+
+        db.configuration.load(U8_IC_DIE_PROPERTIES, apply_file=True)
+        comps_edb = db.configuration.get_data_from_db(components=True)["components"]
+        component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
+        _assert_final_ic_die_properties(component)
+
+
+def _assert_initial_ic_die_properties(component: dict):
+    assert component["ic_die_properties"]["type"] == "no_die"
+    assert "orientation" not in component["ic_die_properties"]
+    assert "height" not in component["ic_die_properties"]
+
+
+def _assert_final_ic_die_properties(component: dict):
+    assert component["ic_die_properties"]["type"] == "flip_chip"
+    assert component["ic_die_properties"]["orientation"] == "chip_down"

@@ -110,43 +110,35 @@ class CfgComponent(CfgBase):
                 self.spice_model["terminal_pairs"],
             )
 
-    def retrieve_ic_die_properties_from_edb(self):
+    def _retrieve_ic_die_properties_from_edb(self):
         temp = dict()
         cp = self._pyedb_obj.component_property
-        c_type = self.type.lower()
-        if not c_type == "ic":
-            return
-        else:
-            ic_die_prop = cp.GetDieProperty().Clone()
-            die_type = pascal_to_snake(ic_die_prop.GetType().ToString())
-            self.type = die_type
-            if not die_type == "no_die":
-                temp["orientation"] = pascal_to_snake(ic_die_prop.GetOrientation().ToString())
-                if die_type == "wire_bond":
-                    temp["height"] = ic_die_prop.GetHeightValue().ToString()
-            self.ic_die_properties = temp
+        ic_die_prop = cp.GetDieProperty().Clone()
+        die_type = pascal_to_snake(ic_die_prop.GetType().ToString())
+        temp["type"] = die_type
+        if not die_type == "no_die":
+            temp["orientation"] = pascal_to_snake(ic_die_prop.GetOrientation().ToString())
+            if die_type == "wire_bond":
+                temp["height"] = ic_die_prop.GetHeightValue().ToString()
+        self.ic_die_properties = temp
 
     def _set_ic_die_properties_to_edb(self):
         cp = self._pyedb_obj.component_property
-        c_type = self._pyedb_obj.type.lower()
-        if not c_type == "ic":
-            return
-        else:
-            ic_die_prop = cp.GetDieProperty().Clone()
-            die_type = self.ic_die_properties.get("type")
-            ic_die_prop.SetType(getattr(self._edb.definition.DieType, snake_to_pascal(die_type)))
-            if not die_type == "no_die":
-                orientation = self.ic_die_properties.get("orientation")
-                if orientation:
-                    ic_die_prop.SetOrientation(
-                        getattr(self._edb.definition.DieOrientation, snake_to_pascal(orientation))
-                    )
-                if die_type == "wire_bond":
-                    height = self.ic_die_properties.get("height")
-                    if height:
-                        ic_die_prop.SetHeight(self._pedb.edb_value(height))
-            cp.SetDieProperty(ic_die_prop)
-            self._pyedb_obj.component_property = cp
+        ic_die_prop = cp.GetDieProperty().Clone()
+        die_type = self.ic_die_properties.get("type")
+        ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, snake_to_pascal(die_type)))
+        if not die_type == "no_die":
+            orientation = self.ic_die_properties.get("orientation")
+            if orientation:
+                ic_die_prop.SetOrientation(
+                    getattr(self._pedb._edb.Definition.DieOrientation, snake_to_pascal(orientation))
+                )
+            if die_type == "wire_bond":
+                height = self.ic_die_properties.get("height")
+                if height:
+                    ic_die_prop.SetHeight(self._pedb.edb_value(height))
+        cp.SetDieProperty(ic_die_prop)
+        self._pyedb_obj.component_property = cp
 
     def _retrieve_solder_ball_properties_from_edb(self):
         temp = dict()
@@ -234,8 +226,10 @@ class CfgComponent(CfgBase):
         self.definition = self._pyedb_obj.part_name
         self.reference_designator = self._pyedb_obj.name
         self.retrieve_model_properties_from_edb()
-        if self._pyedb_obj.type.lower() in ["ic", "io", "other"]:
-            self.retrieve_ic_die_properties_from_edb()
+        if self._pyedb_obj.type.lower() == "ic":
+            self._retrieve_ic_die_properties_from_edb()
+            self._retrieve_port_properties_from_edb()
+        elif self._pyedb_obj.type.lower() in ["io", "other"]:
             self._retrieve_solder_ball_properties_from_edb()
             self._retrieve_port_properties_from_edb()
 
