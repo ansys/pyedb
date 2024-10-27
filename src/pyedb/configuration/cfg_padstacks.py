@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb.configuration.cfg_common import CfgBase
 from pyedb.dotnet.edb_core.general import (
     convert_py_list_to_net_list,
     pascal_to_snake,
@@ -72,7 +73,7 @@ class CfgPadstacks:
             self.instances.append(inst)
 
 
-class Definition:
+class Definition(CfgBase):
     """Padstack definition data class."""
 
     PAD_SHAPE_PARAMETERS = {
@@ -86,9 +87,9 @@ class Definition:
         "no_geometry": [],
     }
 
-    def __init__(self, pedb, pyedb_obj, **kwargs):
+    def __init__(self, pedb, pedb_object, **kwargs):
         self._pedb = pedb
-        self._pyedb_obj = pyedb_obj
+        self._pyedb_obj = pedb_object
         self.name = kwargs.get("name", None)
         self.hole_plating_thickness = kwargs.get("hole_plating_thickness", None)
         self.material = kwargs.get("hole_material", None)
@@ -109,6 +110,7 @@ class Definition:
             self._set_hole_parameters_to_edb(self.hole_parameters)
 
     def retrieve_parameters_from_edb(self):
+        self.name = self._pyedb_obj.name
         self.hole_plating_thickness = self._pyedb_obj.hole_plating_thickness
         self.material = self._pyedb_obj.material
         self.hole_range = self._pyedb_obj.hole_range
@@ -280,7 +282,7 @@ class Definition:
         self._pyedb_obj._padstack_def_data = pdef_data
 
 
-class Instance:
+class Instance(CfgBase):
     """Instance data class."""
 
     def __init__(self, pedb, pyedb_obj, **kwargs):

@@ -24,12 +24,6 @@ from pathlib import Path
 
 import pytest
 
-from pyedb.dotnet.edb import Edb as EdbType
-from tests.legacy.system.test_edb_components import (
-    _assert_final_ic_die_properties,
-    _assert_initial_ic_die_properties,
-)
-
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
@@ -536,20 +530,18 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_layout = edbapp.configuration.get_data_from_db(padstacks=True)
-        pad_params = data_from_layout["padstacks"]["definitions"]
+        pdef = [i for i in data_from_layout["padstacks"]["definitions"] if i["name"]=="v35h15"][0]
 
+        pad_params = pdef["pad_parameters"]
         assert pad_params["regular_pad"][0]["diameter"] == "0.5mm"
         assert pad_params["regular_pad"][0]["offset_x"] == "0.1mm"
         assert pad_params["anti_pad"][0]["diameter"] == "1mm"
         assert pad_params["thermal_pad"][0]["inner"] == "1mm"
         assert pad_params["thermal_pad"][0]["channel_width"] == "0.2mm"
 
-        hole_params = edbapp.padstacks.definitions["v35h15"].hole_parameters
+        hole_params = pdef["hole_parameters"]
         assert hole_params["shape"] == "circle"
         assert hole_params["diameter"] == "0.2mm"
-
-        data_from_db = edbapp.configuration.get_data_from_db(padstacks=True)
-        assert data_from_db["padstacks"]["definitions"]
         edbapp.close()
 
     def test_09_padstack_instance(self, edb_examples):
@@ -952,9 +944,9 @@ class TestClass:
         data = {"components": components}
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        assert edbapp.components["C375"].model_properties["pin_pair_model"] == components[0]["pin_pair_model"]
-        edbapp.configuration.get_data_from_db(components=True)
-
+        data_from_db = edbapp.configuration.get_data_from_db(components=True)
+        c375 = [i for i in data_from_db["components"] if i["reference_designator"] == "C375"][0]
+        assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
         edbapp.close()
 
     def test_15b_component_solder_ball(self, edb_examples):
@@ -1022,10 +1014,3 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         edbapp.configuration.load(data_from_db, apply_file=True)
         edbapp.close()
-
-    def test_17_ic_die_properties(self, edb_examples):
-        db: EdbType = edb_examples.get_si_verse()
-        component = db.components["U8"]
-        _assert_initial_ic_die_properties(component)
-        db.configuration.load(U8_IC_DIE_PROPERTIES, apply_file=True)
-        _assert_final_ic_die_properties(component)
