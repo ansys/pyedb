@@ -834,15 +834,11 @@ class Padstacks(object):
             )
             padstack_data.plating_percentage = GrpcValue(20.0)
         else:
-            ptype = GrpcPadGeometryType.PADGEOMTYPE_NO_GEOMETRY
+            pass
 
         x_size = GrpcValue(x_size)
         y_size = GrpcValue(y_size)
         corner_radius = GrpcValue(corner_radius)
-        offset_x = GrpcValue(offset_x)
-        offset_y = GrpcValue(offset_y)
-        rotation = GrpcValue(rotation)
-
         pad_offset_x = GrpcValue(pad_offset_x)
         pad_offset_y = GrpcValue(pad_offset_y)
         pad_rotation = GrpcValue(pad_rotation)
@@ -865,30 +861,36 @@ class Padstacks(object):
             layers = layers[layers.index(start_layer) :]
         if stop_layer and stop_layer in layers:  # pragma no cover
             layers = layers[: layers.index(stop_layer) + 1]
-        pad_array = paddiam
+        if not isinstance(paddiam, list):
+            pad_array = [paddiam]
+        else:
+            pad_array = paddiam
         if pad_shape == "Circle":  # pragma no cover
             pad_shape = GrpcPadGeometryType.PADGEOMTYPE_CIRCLE
         elif pad_shape == "Rectangle":  # pragma no cover
-            pad_array = (x_size, y_size)
+            pad_array = [x_size, y_size]
             pad_shape = GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE
         elif pad_shape == "Polygon":
             if isinstance(pad_polygon, list):
-                pad_array = GrpcPolygonData(pad_polygon)
+                pad_array = [GrpcPolygonData(pad_polygon)]
             elif isinstance(pad_polygon, GrpcPolygonData):
                 pad_array = pad_polygon
         if antipad_shape == "Bullet":  # pragma no cover
-            antipad_array = (x_size, y_size, corner_radius)
+            antipad_array = [x_size, y_size, corner_radius]
             antipad_shape = GrpcPadGeometryType.PADGEOMTYPE_BULLET
         elif antipad_shape == "Rectangle":  # pragma no cover
-            antipad_array = (anti_pad_x_size, anti_pad_y_size)
+            antipad_array = [anti_pad_x_size, anti_pad_y_size]
             antipad_shape = GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE
         elif antipad_shape == "Polygon":
             if isinstance(antipad_polygon, list):
                 antipad_array = GrpcPolygonData(antipad_polygon)
             elif isinstance(antipad_polygon, GrpcPolygonData):
                 antipad_array = antipad_polygon
-        else:  # pragma no cover
-            antipad_array = antipaddiam
+        else:
+            if not isinstance(antipaddiam, list):
+                antipad_array = [antipaddiam]
+            else:
+                antipad_array = antipaddiam
             antipad_shape = GrpcPadGeometryType.PADGEOMTYPE_CIRCLE
         if add_default_layer:  # pragma no cover
             layers = layers + ["Default"]

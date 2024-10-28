@@ -59,30 +59,33 @@ class TestClass:
         assert not edbapp.padstacks.get_via_instance_from_net(["GND2"])
         edbapp.close()
 
-    def test_create_with_packstack_name(self):
+    def test_create_with_packstack_name(self, edb_examples):
         """Create a padstack"""
         # Create myVia
-        self.edbapp.padstacks.create(padstackname="myVia")
-        assert "myVia" in list(self.edbapp.padstacks.definitions.keys())
-        self.edbapp.padstacks.definitions["myVia"].hole_range = "begin_on_upper_pad"
-        assert self.edbapp.padstacks.definitions["myVia"].hole_range == "begin_on_upper_pad"
-        self.edbapp.padstacks.definitions["myVia"].hole_range = "through"
-        assert self.edbapp.padstacks.definitions["myVia"].hole_range == "through"
+        edbapp = edb_examples.get_si_verse()
+        edbapp.padstacks.create(padstackname="myVia")
+        assert "myVia" in list(edbapp.padstacks.definitions.keys())
+        edbapp.padstacks.definitions["myVia"].hole_range = "begin_on_upper_pad"
+        assert edbapp.padstacks.definitions["myVia"].hole_range == "begin_on_upper_pad"
+        edbapp.padstacks.definitions["myVia"].hole_range = "through"
+        assert edbapp.padstacks.definitions["myVia"].hole_range == "through"
         # Create myVia_bullet
-        self.edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
-        assert isinstance(self.edbapp.padstacks.definitions["myVia"].instances, list)
-        assert "myVia_bullet" in list(self.edbapp.padstacks.definitions.keys())
+        edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
+        assert isinstance(edbapp.padstacks.definitions["myVia"].instances, list)
+        assert "myVia_bullet" in list(edbapp.padstacks.definitions.keys())
+        edbapp.close()
 
-        self.edbapp.add_design_variable("via_x", 5e-3)
-        self.edbapp["via_y"] = "1mm"
-        assert self.edbapp["via_y"].value == 1e-3
-        assert self.edbapp["via_y"].value_string == "1mm"
-        assert self.edbapp.padstacks.place(["via_x", "via_x+via_y"], "myVia", via_name="via_test1")
-        assert self.edbapp.padstacks.place(["via_x", "via_x+via_y*2"], "myVia_bullet")
-        self.edbapp.padstacks["via_test1"].net_name = "GND"
-        assert self.edbapp.padstacks["via_test1"].net_name == "GND"
-        padstack = self.edbapp.padstacks.place(["via_x", "via_x+via_y*3"], "myVia", is_pin=True)
-        for test_prop in (self.edbapp.padstacks.instances, self.edbapp.padstacks.instances):
+        # TODO fix variables
+        edbapp.add_design_variable("via_x", 5e-3)
+        edbapp["via_y"] = "1mm"
+        assert edbapp["via_y"].value == 1e-3
+        assert edbapp["via_y"].value_string == "1mm"
+        assert edbapp.padstacks.place(["via_x", "via_x+via_y"], "myVia", via_name="via_test1")
+        assert edbapp.padstacks.place(["via_x", "via_x+via_y*2"], "myVia_bullet")
+        edbapp.padstacks["via_test1"].net_name = "GND"
+        assert edbapp.padstacks["via_test1"].net_name == "GND"
+        padstack = edbapp.padstacks.place(["via_x", "via_x+via_y*3"], "myVia", is_pin=True)
+        for test_prop in (edbapp.padstacks.instances, edbapp.padstacks.instances):
             padstack_instance = test_prop[padstack.id]
             assert padstack_instance.is_pin
             assert padstack_instance.position
@@ -92,18 +95,18 @@ class TestClass:
             assert padstack_instance.position == [0.001, 0.002]
             assert padstack_instance.parametrize_position()
             assert isinstance(padstack_instance.rotation, float)
-            self.edbapp.padstacks.create_circular_padstack(padstackname="mycircularvia")
-            assert "mycircularvia" in list(self.edbapp.padstacks.definitions.keys())
+            edbapp.padstacks.create_circular_padstack(padstackname="mycircularvia")
+            assert "mycircularvia" in list(edbapp.padstacks.definitions.keys())
             assert not padstack_instance.backdrill_top
             assert not padstack_instance.backdrill_bottom
             assert padstack_instance.delete()
-            via = self.edbapp.padstacks.place([0, 0], "myVia")
+            via = edbapp.padstacks.place([0, 0], "myVia")
             assert via.set_backdrill_top("Inner4(Sig2)", 0.5e-3)
             assert via.backdrill_top
             assert via.set_backdrill_bottom("16_Bottom", 0.5e-3)
             assert via.backdrill_bottom
 
-        via = self.edbapp.padstacks.instances_by_name["Via1266"]
+        via = edbapp.padstacks.instances_by_name["Via1266"]
         via.backdrill_parameters = {
             "from_bottom": {"drill_to_layer": "Inner5(PWR2)", "diameter": "0.4mm", "stub_length": "0.1mm"},
             "from_top": {"drill_to_layer": "Inner2(PWR1)", "diameter": "0.41mm", "stub_length": "0.11mm"},
@@ -112,11 +115,15 @@ class TestClass:
             "from_bottom": {"drill_to_layer": "Inner5(PWR2)", "diameter": "0.4mm", "stub_length": "0.1mm"},
             "from_top": {"drill_to_layer": "Inner2(PWR1)", "diameter": "0.41mm", "stub_length": "0.11mm"},
         }
+        edbapp.close()
 
-    def test_padstacks_get_nets_from_pin_list(self):
+    def test_padstacks_get_nets_from_pin_list(self, edb_examples):
         """Retrieve pin list from component and net."""
-        cmp_pinlist = self.edbapp.padstacks.get_pinlist_from_component_and_net("U1", "GND")
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        cmp_pinlist = edbapp.padstacks.get_pinlist_from_component_and_net("U1", "GND")
         assert cmp_pinlist[0].net.name
+        edbapp.close()
 
     def test_padstack_properties_getter(self):
         """Evaluate properties"""
