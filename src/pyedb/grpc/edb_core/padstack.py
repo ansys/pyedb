@@ -569,7 +569,7 @@ class Padstacks(object):
         )
         return self.get_pin_from_component_and_net(refdes=refdes, netname=netname)
 
-    def get_pad_parameters(self, pin, layername, pad_type=0):
+    def get_pad_parameters(self, pin, layername, pad_type="regular_pad"):
         """Get Padstack Parameters from Pin or Padstack Definition.
 
         Parameters
@@ -578,16 +578,23 @@ class Padstacks(object):
             Pin or PadstackDef on which get values.
         layername : str
             Layer on which get properties.
-        pad_type : int
-            Pad Type.
+        pad_type : str
+            Pad Type, `"pad"`, `"anti_pad"`, `"thermal_pad"`
 
         Returns
         -------
         tuple
             Tuple of (GeometryType, ParameterList, OffsetX, OffsetY, Rot).
         """
-
-        padparams = pin.padstack_def.data.get_pad_parameters(layername, self.int_to_pad_type(pad_type))
+        if pad_type == "regular_pad":
+            pad_type = GrpcPadType.REGULAR_PAD
+        elif pad_type == "anti_pad":
+            pad_type = GrpcPadType.ANTI_PAD
+        elif pad_type == "thermal_pad":
+            pad_type = GrpcPadType.THERMAL_PAD
+        else:
+            pad_type = pad_type = GrpcPadType.REGULAR_PAD
+        padparams = pin.padstack_def.data.get_pad_parameters(layername, pad_type)
         if len(padparams) == 5:  # non polygon via
             geometry_type = padparams[0]
             parameters = [i.value for i in padparams[1]]

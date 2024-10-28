@@ -26,7 +26,7 @@ import os
 
 import pytest
 
-from pyedb.dotnet.edb import Edb
+from pyedb.grpc.edb import EdbGrpc as Edb
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
@@ -35,21 +35,21 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, legacy_edb_app, local_scratch, target_path, target_path3, target_path4):
-        self.edbapp = legacy_edb_app
+    def init(self, local_scratch, target_path, target_path3, target_path4):
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path3 = target_path3
         self.target_path4 = target_path4
 
-    def test_get_pad_parameters(self):
+    def test_get_pad_parameters(self, edb_examples):
         """Access to pad parameters."""
-        pin = self.edbapp.components.get_pin_from_component("J1", pinName="1")
-        parameters = self.edbapp.padstacks.get_pad_parameters(
-            pin[0], "1_Top", self.edbapp.padstacks.pad_type.RegularPad
-        )
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        pin = edbapp.components.get_pin_from_component("J1", pin_name="1")
+        parameters = edbapp.padstacks.get_pad_parameters(pin=pin[0], layername="1_Top", pad_type="regular_pad")
         assert isinstance(parameters[1], list)
-        assert isinstance(parameters[0], int)
+        assert isinstance(parameters[0], str)
+        edbapp.close()
 
     def test_get_vias_from_nets(self):
         """Use padstacks' get_via_instance_from_net method."""
