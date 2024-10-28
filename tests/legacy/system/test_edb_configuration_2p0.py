@@ -25,6 +25,7 @@ from pathlib import Path
 import pytest
 
 from pyedb.dotnet.edb import Edb as EdbType
+
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
