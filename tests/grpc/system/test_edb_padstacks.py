@@ -51,10 +51,13 @@ class TestClass:
         assert isinstance(parameters[0], str)
         edbapp.close()
 
-    def test_get_vias_from_nets(self):
+    def test_get_vias_from_nets(self, edb_examples):
         """Use padstacks' get_via_instance_from_net method."""
-        assert self.edbapp.padstacks.get_via_instance_from_net("GND")
-        assert not self.edbapp.padstacks.get_via_instance_from_net(["GND2"])
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.padstacks.get_via_instance_from_net("GND")
+        assert not edbapp.padstacks.get_via_instance_from_net(["GND2"])
+        edbapp.close()
 
     def test_create_with_packstack_name(self):
         """Create a padstack"""

@@ -710,12 +710,13 @@ class Padstacks(object):
             net_list = [net_list]
         via_list = []
         for inst in self._layout.padstack_instances:
-            pad_layers_name = inst.padstack_ef.data.get_layer_names()
+            pad_layers_name = inst.padstack_def.data.layer_names
             if len(pad_layers_name) > 1:
                 if not net_list:
                     via_list.append(inst)
-                elif inst.net.name in net_list:
-                    via_list.append(inst)
+                elif not inst.net.is_null:
+                    if inst.net.name in net_list:
+                        via_list.append(inst)
         return via_list
 
     def create(
