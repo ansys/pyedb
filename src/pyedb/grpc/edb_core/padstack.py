@@ -1169,7 +1169,7 @@ class Padstacks(object):
         for layer in layer_name:
             new_padstack_def.set_pad_parameters(
                 layer=layer,
-                pad_type=self._edb.definition.PadType.RegularPad,
+                pad_type=GrpcPadType.REGULAR_PAD,
                 offset_x=pad_x_offset,
                 offset_y=pad_y_offset,
                 rotation=pad_rotation,
@@ -1178,7 +1178,7 @@ class Padstacks(object):
             )
             new_padstack_def.set_pad_parameters(
                 layer=layer,
-                pad_type=self._edb.definition.PadType.RegularPad,
+                pad_type=GrpcPadType.ANTI_PAD,
                 offset_x=antipad_x_offset,
                 offset_y=antipad_y_offset,
                 rotation=antipad_rotation,

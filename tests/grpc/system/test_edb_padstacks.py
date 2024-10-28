@@ -208,26 +208,33 @@ class TestClass:
                 break
         edbapp.close()
 
-    def test_padstack_duplicate_padstack(self):
+    def test_padstack_duplicate_padstack(self, edb_examples):
         """Duplicate a padstack."""
-        self.edbapp.padstacks.duplicate(
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        edbapp.padstacks.duplicate(
             target_padstack_name="c180h127",
             new_padstack_name="c180h127_NEW",
         )
-        assert self.edbapp.padstacks.definitions["c180h127_NEW"]
+        assert edbapp.padstacks.definitions["c180h127_NEW"]
+        edbapp.close()
 
-    def test_padstack_set_pad_property(self):
+    def test_padstack_set_pad_property(self, edb_examples):
         """Set pad and antipad properties of the padstack."""
-        self.edbapp.padstacks.set_pad_property(
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        edbapp.padstacks.set_pad_property(
             padstack_name="c180h127",
             layer_name="new",
             pad_shape="Circle",
             pad_params="800um",
         )
-        assert self.edbapp.padstacks.definitions["c180h127"].pad_by_layer["new"]
+        assert edbapp.padstacks.definitions["c180h127"].pad_by_layer["new"]
+        edbapp.close()
 
     def test_microvias(self):
         """Convert padstack to microvias 3D objects."""
+        # TODO later
         source_path = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_128_microvias.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
@@ -255,16 +262,17 @@ class TestClass:
         assert len(edbapp.padstacks.definitions["C4_POWER_1"].split_to_microvias()) > 0
         edbapp.close()
 
-    def test_padstack_plating_ratio_fixing(self):
+    def test_padstack_plating_ratio_fixing(self, edb_examples):
         """Fix hole plating ratio."""
-        assert self.edbapp.padstacks.check_and_fix_via_plating()
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.padstacks.check_and_fix_via_plating()
+        edbapp.close()
 
-    def test_padstack_search_reference_pins(self):
+    def test_padstack_search_reference_pins(self, edb_examples):
         """Search for reference pins using given criteria."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "ANSYS-HSD_V1_boundaries.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        # Done
+        edbapp = edb_examples.get_si_verse()
         pin = edbapp.components.instances["J5"].pins["19"]
         assert pin
         ref_pins = pin.get_reference_pins(reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True)
