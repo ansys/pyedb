@@ -132,6 +132,7 @@ class TestClass:
 
     @pytest.mark.slow
     def test_nets_dc_shorts(self, edb_examples):
+        # TODO check connected object does not return anything.
         edbapp = edb_examples.get_si_verse()
         dc_shorts = edbapp.layout_validation.dc_shorts()
         assert dc_shorts
@@ -147,9 +148,12 @@ class TestClass:
         assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) == 0
         edbapp.close()
 
-    def test_nets_eligible_power_nets(self):
+    def test_nets_eligible_power_nets(self, edb_examples):
         """Evaluate eligible power nets."""
-        assert "GND" in [i.name for i in self.edbapp.nets.eligible_power_nets()]
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        assert "GND" in [i.name for i in edbapp.nets.eligible_power_nets()]
+        edbapp.close()
 
     def test_nets_merge_polygon(self):
         """Convert paths from net into polygons."""

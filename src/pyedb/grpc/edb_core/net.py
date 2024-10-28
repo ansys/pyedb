@@ -26,13 +26,12 @@ import os
 import time
 import warnings
 
-from ansys.edb.core.primitive.primitive import Bondwire as GrpcBondwire
-from ansys.edb.core.primitive.primitive import Path as GrpcPath
-from ansys.edb.core.primitive.primitive import Polygon as GrpcPolygon
-
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.edb_core.nets.net import Net
+from pyedb.grpc.edb_core.primitive.bondwire import Bondwire
+from pyedb.grpc.edb_core.primitive.path import Path
+from pyedb.grpc.edb_core.primitive.polygon import Polygon
 from pyedb.misc.utilities import compute_arc_points
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -182,10 +181,10 @@ class Nets(object):
             total_trace_area = 0.0
             for primitive in net.primitives:
                 primitive = primitive
-                if isinstance(primitive, GrpcBondwire):
+                if isinstance(primitive, Bondwire):
                     continue
-                if isinstance(primitive, GrpcPath) or isinstance(primitive, GrpcPolygon):
-                    total_plane_area += primitive.polygon_data.area
+                if isinstance(primitive, Path) or isinstance(primitive, Polygon):
+                    total_plane_area += primitive.polygon_data.area()
             if total_plane_area == 0.0:
                 continue
             if total_trace_area == 0.0:
