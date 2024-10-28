@@ -213,8 +213,10 @@ class CfgComponent(CfgBase):
             self._pyedb_obj.type = self.type
 
         self._set_model_properties_to_edb()
-        if self._pyedb_obj.type.lower() in ["ic", "io", "other"]:
+        if self._pyedb_obj.type.lower() == "ic":
             self._set_ic_die_properties_to_edb()
+            self._set_port_properties_to_edb()
+        elif self._pyedb_obj.type.lower() in ["io", "other"]:
             self._set_solder_ball_properties_to_edb()
             self._set_port_properties_to_edb()
 
