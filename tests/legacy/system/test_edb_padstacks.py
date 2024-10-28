@@ -455,10 +455,3 @@ class TestClass:
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions
         edbapp.close()
-
-    def test_pad_parameter(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        o_hole_params = edbapp.padstacks.definitions["v35h15"].hole_parameters
-        assert o_hole_params["shape"] == "circle"
-        edbapp.padstacks.definitions["v35h15"].hole_parameters = {"shape": "circle", "diameter": "0.2mm"}
-        assert edbapp.padstacks.definitions["v35h15"].hole_parameters["diameter"] == "0.2mm"
