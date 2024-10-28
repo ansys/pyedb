@@ -457,7 +457,7 @@ class PadstackInstance(GrpcPadstackInstance):
 
     @name.setter
     def name(self, value):
-        self.name = value
+        super(PadstackInstance, self.__class__).name.__set__(self, value)
         self.set_product_property(GrpcProductIdType.DESIGNER, 11, value)
 
     @property

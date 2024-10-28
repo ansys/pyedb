@@ -1221,13 +1221,14 @@ class Padstacks(object):
         if pid:
             return instances_by_id[pid]
         elif name:
-            if name in self.instances[name]:
-                return self.instances[name]
+            instances = [inst for inst in list(self.instances.values()) if inst.name == name]
+            if instances:
+                return instances
         else:
             instances = list(instances_by_id.values())
             if definition_name:
                 definition_name = definition_name if isinstance(definition_name, list) else [definition_name]
-                instances = [inst for inst in instances if inst.padstack_definition in definition_name]
+                instances = [inst for inst in instances if inst.padstack_def.name in definition_name]
             if net_name:
                 net_name = net_name if isinstance(net_name, list) else [net_name]
                 instances = [inst for inst in instances if inst.net_name in net_name]
