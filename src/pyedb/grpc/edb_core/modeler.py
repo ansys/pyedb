@@ -1159,7 +1159,7 @@ class Modeler(object):
                             poly_by_nets[poly.net.name] = [poly]
                     else:
                         if poly.net.name:
-                            poly_by_nets[net.name].append(poly)
+                            poly_by_nets[poly.net.name].append(poly)
             for net in poly_by_nets:
                 if net in net_names_list or not net_names_list:
                     for i in poly_by_nets[net]:

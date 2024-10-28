@@ -27,7 +27,7 @@ import os
 
 import pytest
 
-from pyedb.dotnet.edb import Edb
+from pyedb.grpc.edb import EdbGrpc as Edb
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
@@ -157,14 +157,16 @@ class TestClass:
 
     def test_nets_merge_polygon(self):
         """Convert paths from net into polygons."""
+        # TODO check bug #464 status
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_merge_polygon.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_merge_polygon", "test.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, desktop_version)
+        edbapp = Edb(target_path, desktop_version, restart_rpc_server=True)
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_0(self):
+        # TODO fix parameters first
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_auto_parameters", "test.aedb")
         output_path = os.path.join(self.local_scratch.path, "test_auto_parameters", "test_absolute.aedb")
@@ -186,6 +188,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_1(self, edb_examples):
+        # TODO fix parameters first
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=True, materials=False, via_holes=False, pads=False, antipads=False, traces=False, via_offset=False
@@ -194,6 +197,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_2(self, edb_examples):
+        # TODO fix parameters first
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False,
@@ -212,6 +216,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_3(self, edb_examples):
+        # TODO fix parameters first
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=True, via_holes=False, pads=False, antipads=False, traces=False
@@ -220,6 +225,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_4(self, edb_examples):
+        # TODO fix parameters first
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=True, pads=False, antipads=False, traces=False
@@ -228,6 +234,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_5(self, edb_examples):
+        # TODO fix parameters first
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=True, antipads=False, traces=False
@@ -236,6 +243,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_6(self, edb_examples):
+        # TODO fix parameters first
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=False, antipads=True, traces=False
@@ -244,6 +252,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_7(self, edb_examples):
+        # TODO fix parameters first
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False,
