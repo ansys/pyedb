@@ -291,11 +291,14 @@ class TestClass:
         assert len(reference_pins) == 11
         edbapp.close()
 
-    def test_vias_metal_volume(self):
+    def test_vias_metal_volume(self, edb_examples):
         """Metal volume of the via hole instance."""
-        vias = [via for via in list(self.edbapp.padstacks.instances.values()) if not via.start_layer == via.stop_layer]
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        vias = [via for via in list(edbapp.padstacks.instances.values()) if not via.start_layer == via.stop_layer]
         assert vias[0].metal_volume
         assert vias[1].metal_volume
+        edbapp.close()
 
     def test_padstacks_create_rectangle_in_pad(self):
         """Create a rectangle inscribed inside a padstack instance pad."""

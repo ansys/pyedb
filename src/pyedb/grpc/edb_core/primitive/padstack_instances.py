@@ -274,26 +274,6 @@ class PadstackInstance(GrpcPadstackInstance):
         else:
             return False
 
-    def get_back_drill_by_depth(self, from_bottom=True):
-        """Get backdrill by depth.
-        Parameters
-        ----------
-        from_bottom : bool
-        Default value is ``True``.
-
-        Return
-        ------
-        tuple(bool, (drill_depth, diameter))
-
-        """
-        res = self.get_back_drill_by_depth(from_bottom)
-        if not res[0]:
-            return False
-        else:
-            return [p.value for p in res[1]]
-
-    # TODO all backdrill
-
     @property
     def start_layer(self):
         """Starting layer.
@@ -461,6 +441,10 @@ class PadstackInstance(GrpcPadstackInstance):
         self.set_product_property(GrpcProductIdType.DESIGNER, 11, value)
 
     @property
+    def backdrill_type(self):
+        return self.get_backdrill_type()
+
+    @property
     def metal_volume(self):
         """Metal volume of the via hole instance in cubic units (m3). Metal plating ratio is accounted.
 
@@ -470,28 +454,31 @@ class PadstackInstance(GrpcPadstackInstance):
             Metal volume of the via hole instance.
 
         """
-        # TODO fix when backdrills are done
         volume = 0
         if not self.start_layer == self.stop_layer:
             start_layer = self.start_layer
             stop_layer = self.stop_layer
-            if self.backdrill_top:  # pragma no cover
-                start_layer = self.backdrill_top[0]
-            if self.backdrill_bottom:  # pragma no cover
-                stop_layer = self.backdrill_bottom[0]
-            padstack_def = self._pedb.padstacks.definitions[self.padstack_definition]
-            hole_diam = 0
-            try:  # pragma no cover
-                hole_diam = padstack_def.hole_properties[0]
-            except:  # pragma no cover
-                pass
-            if hole_diam:  # pragma no cover
-                hole_finished_size = padstack_def.hole_finished_size
+            via_length = (
+                self._pedb.stackup.signal_layers[start_layer].upper_elevation
+                - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
+            )
+            if self.get_backdrill_type == "layer_drill":
+                layer, _, _ = self.get_back_drill_by_layer()
+                start_layer = self._pedb.stackup.signal_layers[0]
+                stop_layer = self._pedb.stackup.signal_layers[layer.name]
                 via_length = (
                     self._pedb.stackup.signal_layers[start_layer].upper_elevation
                     - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
                 )
-                volume = (math.pi * (hole_diam / 2) ** 2 - math.pi * (hole_finished_size / 2) ** 2) * via_length
+            elif self.get_backdrill_type == "depth_drill":
+                drill_depth, _ = self.get_back_drill_by_depth()
+                start_layer = self._pedb.stackup.signal_layers[0]
+                via_length = self._pedb.stackup.signal_layers[start_layer].upper_elevation - drill_depth
+            padstack_def = self._pedb.padstacks.definitions[self.padstack_def.name]
+            hole_diameter = padstack_def.hole_diameter
+            if hole_diameter:
+                hole_finished_size = padstack_def.hole_finished_size
+                volume = (math.pi * (hole_diameter / 2) ** 2 - math.pi * (hole_finished_size / 2) ** 2) * via_length
         return volume
 
     @property
@@ -522,6 +509,95 @@ class PadstackInstance(GrpcPadstackInstance):
 
         name = self.get_product_property(GrpcProductIdType.DESIGNER, 11)
         return str(name).strip("'")
+
+    def get_backdrill_type(self, from_bottom=True):
+        """Return backdrill type
+        Parameters
+        ----------
+        from_bottom : bool, optional
+            default value is `True.`
+
+        Return
+        ------
+        str
+            Back drill type, `"layer_drill"`,`"depth_drill"`, `"no_drill"`.
+
+        """
+        return super().get_back_drill_type(from_bottom).name.lower()
+
+    def get_back_drill_by_layer(self, from_bottom=True):
+        """Get backdrill by layer.
+
+        Parameters
+        ----------
+        from_bottom : bool, optional.
+         Default value is `True`.
+
+         Return
+         ------
+         tuple (layer, offset, diameter) (str, [float, float], float).
+
+        """
+        back_drill = super().get_back_drill_by_layer(from_bottom)
+        layer = back_drill[0].name
+        offset = [back_drill[1].x.value, back_drill[1].y.value]
+        diameter = back_drill[2].value
+        return layer, offset, diameter
+
+    def get_back_drill_by_depth(self, from_bottom=True):
+        """Get back drill by depth parameters
+        Parameters
+        ----------
+        from_bottom : bool, optional
+            Default value is `True`.
+
+        Return
+        ------
+        tuple (drill_depth, drill_diameter) (float, float)
+        """
+        back_drill = super().get_back_drill_by_depth(from_bottom)
+        drill_depth = back_drill[0].value
+        drill_diameter = back_drill[1].value
+        return drill_depth, drill_diameter
+
+    def set_back_drill_by_depth(self, drill_depth, diameter, from_bottom=True):
+        """Set back drill by depth.
+
+        Parameters
+        ----------
+        drill_depth : str, float
+            drill depth value
+        diameter : str, float
+            drill diameter
+        from_bottom : bool, optional
+            Default value is `True`.
+        """
+        super().set_back_drill_by_depth(
+            drill_depth=GrpcValue(drill_depth), diameter=GrpcValue(diameter), from_bottom=from_bottom
+        )
+
+    def set_back_drill_by_layer(self, drill_to_layer, offset, diameter, from_bottom=True):
+        """Set back drill layer.
+
+        Parameters
+        ----------
+        drill_to_layer : str, Layer
+            Layer to drill to.
+        offset : str, float
+            Offset value
+        diameter : str, float
+            Drill diameter
+        from_bottom : bool, optional
+            Default value is `True`
+        """
+        if isinstance(drill_to_layer, str):
+            drill_to_layer = self._pedb.satckup.layers[drill_to_layer]
+        super().set_back_drill_by_layer(
+            drill_to_layer=drill_to_layer,
+            offset=GrpcValue(offset),
+            diameter=GrpcValue(diameter),
+            from_bottom=from_bottom,
+        )
 
     def parametrize_position(self, prefix=None):
         """Parametrize the instance position.
