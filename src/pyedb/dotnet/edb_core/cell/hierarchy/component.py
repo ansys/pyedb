@@ -33,7 +33,6 @@ from pyedb.dotnet.edb_core.cell.hierarchy.s_parameter_model import SparamModel
 from pyedb.dotnet.edb_core.cell.hierarchy.spice_model import SpiceModel
 from pyedb.dotnet.edb_core.definition.package_def import PackageDef
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.dotnet.edb_core.general import pascal_to_snake, snake_to_pascal
 
 try:
     import numpy as np

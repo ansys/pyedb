@@ -29,7 +29,6 @@ import pytest
 
 # from pyedb import Edb
 from pyedb.dotnet.edb import Edb
-from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
