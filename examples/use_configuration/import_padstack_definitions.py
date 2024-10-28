@@ -71,12 +71,6 @@ with open(cfg_file_path, "w") as f:
 
 edbapp.configuration.load(cfg_file_path, apply_file=True)
 
-# Check layout
-
-pdef = edbapp.padstacks.definitions["v35h15"]
-display(pdef.hole_plating_thickness)
-display(pd.DataFrame([pdef.hole_parameters]))
-
 # ## Create a config file with pad information
 
 # Keywords
