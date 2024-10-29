@@ -234,28 +234,24 @@ class TestClass:
         bounding = edbapp.get_bounding_box()
         assert bounding
 
-        # check bug #434 status PolygonData.is_inside(pt) failing
-        # cutout_line_x = 41
-        # cutout_line_y = 30
-        # points = [[bounding[0][0], bounding[0][1]]]
-        # points.append([cutout_line_x, bounding[0][1]])
-        # points.append([cutout_line_x, cutout_line_y])
-        # points.append([bounding[0][0], cutout_line_y])
-        # points.append([bounding[0][0], bounding[0][1]])
+        cutout_line_x = 41
+        cutout_line_y = 30
+        points = [[bounding[0][0], bounding[0][1]]]
+        points.append([cutout_line_x, bounding[0][1]])
+        points.append([cutout_line_x, cutout_line_y])
+        points.append([bounding[0][0], cutout_line_y])
+        points.append([bounding[0][0], bounding[0][1]])
 
-        # output = os.path.join(self.local_scratch.path, "cutout2.aedb")
-        # check bug #434 status PolygonData.is_inside(pt) failing
-        # assert edbapp.cutout(
-        #     custom_extent=points,
-        #     signal_list=["GND", "1V0"],
-        #     output_aedb_path=output,
-        #     open_cutout_at_end=False,
-        #     include_partial_instances=True,
-        #     use_pyaedt_cutout=False,
-        # )
-        # assert os.path.exists(os.path.join(output, "edb.def"))
-        # output = os.path.join(self.local_scratch.path, "cutout3.aedb")
-        # edbapp.close()
+        output = os.path.join(self.local_scratch.path, "cutout2.aedb")
+        assert edbapp.cutout(
+            custom_extent=points,
+            signal_list=["GND", "1V0"],
+            output_aedb_path=output,
+            open_cutout_at_end=False,
+            include_partial_instances=True,
+            use_pyaedt_cutout=False,
+        )
+        assert os.path.exists(os.path.join(output, "edb.def"))
 
     def test_create_custom_cutout_1(self, edb_examples):
         """Create custom cutout 1."""

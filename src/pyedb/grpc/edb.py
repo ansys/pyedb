@@ -1740,7 +1740,7 @@ class EdbGrpc(EdbInit):
                 self.close_edb()
                 self.edbpath = legacy_path
                 self.open_edb()
-            return result
+        return result
 
     def _create_cutout_legacy(
         self,
@@ -1942,8 +1942,7 @@ class EdbGrpc(EdbInit):
                 ]
                 for i in custom_extent
             ]
-            plane = self.modeler.Shape("polygon", points=custom_extent)
-            _poly = self.modeler.shape_to_polygon_data(plane)
+            _poly = GrpcPolygonData(points=custom_extent)
         elif custom_extent:
             _poly = custom_extent
         else:
@@ -2207,7 +2206,7 @@ class EdbGrpc(EdbInit):
 
         _netsClip = _ref_nets
         # Create new cutout cell/design
-        _cutout = self.active_cell.cutOut(_netsClip, _netsClip, polygon_data)
+        _cutout = self.active_cell.cutout(_netsClip, _netsClip, polygon_data)
         layout = _cutout.layout
         cutout_obj_coll = layout.padstack_instances
         ids = []
@@ -2278,29 +2277,17 @@ class EdbGrpc(EdbInit):
         for layer in layers:
             layer_primitves = self.modeler.get_primitives(layer_name=layer)
             if len(layer_primitves) == 0:
-                self.modeler.create_polygon(plane, layer, net_name="DUMMY")
+                self.modeler.create_polygon(point_list, layer, net_name="DUMMY")
         self.logger.info(f"Cutout {_cutout.name} created correctly")
-        id = 1
-        for _setup in self.active_cell.SimulationSetups:
-            # Empty string '' if coming from setup copy and don't set explicitly.
-            _setup_name = _setup.name
-            # if "GetSimSetupInfo" in dir(_setup):
-            #     _hfssSimSetupInfo = _setup.GetSimSetupInfo()
-            #     _hfssSimSetupInfo.Name = "HFSS Setup " + str(id)  # Set name of analysis setup
-            #     _setup.SetSimSetupInfo(_hfssSimSetupInfo)
-            #     _cutout.AddSimulationSetup(_setup)  # Add simulation setup to the cutout design
-            #     id += 1
-            # else:
-            #     _cutout.AddSimulationSetup(_setup)  # Add simulation setup to the cutout design
-            # TODO add simulation setup with grpc
+        for _setup in self.active_cell.simulation_setups:
+            # Add the create Simulation setup to cutout cell
+            # might need to add a clone setup method.
             pass
 
         _dbCells = [_cutout]
         if output_aedb_path:
             db2 = self.create(output_aedb_path)
-            if not db2.save():
-                self.logger.error("Failed to create new Edb. Check if the path already exists and remove it.")
-                return []
+            db2.save()
             cell_copied = db2.copy_cells(_dbCells)  # Copies cutout cell/design to db2 project
             cell = cell_copied[0]
             cell.name = os.path.basename(output_aedb_path[:-5])
@@ -2326,7 +2313,7 @@ class EdbGrpc(EdbInit):
                         self.logger.warning("aedb def file manually created.")
                     except:
                         pass
-        return [[pt.x.value, pt.y.value] for pt in GrpcPolygonData.without_arcs().points]
+        return [[pt.x.value, pt.y.value] for pt in polygon_data.without_arcs().points]
 
     @staticmethod
     def write_export3d_option_config_file(path_to_output, config_dictionaries=None):
