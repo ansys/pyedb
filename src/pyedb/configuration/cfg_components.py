@@ -33,6 +33,9 @@ class CfgComponent(CfgBase):
         self.reference_designator = kwargs.get("reference_designator", None)
         self.definition = kwargs.get("definition", None)
         self.type = kwargs["part_type"].lower() if kwargs.get("part_type") else None
+        self.placement_layer = kwargs["placement_layer"]
+        self.pins = kwargs.get("pins", [])
+
         self.port_properties = kwargs.get("port_properties", {})
         self.solder_ball_properties = kwargs.get("solder_ball_properties", {})
         self.ic_die_properties = kwargs.get("ic_die_properties", {})

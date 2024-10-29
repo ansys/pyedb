@@ -135,10 +135,10 @@ class CfgPorts:
             if i.aedt_name:
                 edb_primitives[i.aedt_name] = i
         for p in self.ports:
-            if p.type not in ["wave_port", "diff_wave_port"]:
-                p.set_parameters_to_edb()
-            else:
+            if p.type in ["wave_port", "diff_wave_port"]:
                 p.set_parameters_to_edb(edb_primitives)
+            else:
+                p.set_parameters_to_edb()
 
     def get_data_from_db(self):
         self.ports = []

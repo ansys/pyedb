@@ -22,8 +22,10 @@
 
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import (
     EDBPadstack,
-    EDBPadstackInstance,
 )
+from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition
+from pyedb.configuration.cfg_padstacks import CfgPadstackInstance
+from pyedb.configuration.cfg_components import CfgComponent
 
 
 class CfgTrace:
@@ -57,10 +59,12 @@ class CfgModeler:
     def __init__(self, pedb, data):
         self._pedb = pedb
         self.traces = [CfgTrace(**i) for i in data.get("traces", [])]
-        self.padstack_defs = data.get("padstack_definitions", [])
-        self.padstack_instances = data.get("padstack_instances", [])
+        self.padstack_defs = [CfgPadstackDefinition(self._pedb, None, **i) for i in
+                              data.get("padstack_definitions", [])]
+        self.padstack_instances = [CfgPadstackInstance(self._pedb, None, **i) for i in
+                                   data.get("padstack_instances", [])]
         self.planes = [CfgPlane(**i) for i in data.get("planes", [])]
-        self.components = data.get("components", [])
+        self.components = [CfgComponent(self._pedb, None, **i) for i in data.get("components", [])]
 
     def apply(self):
         if self.traces:
@@ -79,19 +83,21 @@ class CfgModeler:
         if self.padstack_defs:
             for p in self.padstack_defs:
                 pdata = self._pedb._edb.Definition.PadstackDefData.Create()
-                pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p["name"])
+                pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
                 pdef.SetData(pdata)
                 pdef = EDBPadstack(pdef, self._pedb.padstacks)
-                pdef.properties = p
+                p._pyedb_obj = pdef
+                p.set_parameters_to_edb()
 
         if self.padstack_instances:
             for p in self.padstack_instances:
                 p_inst = self._pedb.padstacks.place(
-                    via_name=p["name"],
-                    position=p["position"],
-                    definition_name=p["definition"],
+                    via_name=p.name,
+                    position=p.position,
+                    definition_name=p.definition,
                 )
-                p_inst.properties = p
+                p._pyedb_obj = p_inst
+                p.set_parameters_to_edb()
 
         if self.planes:
             for p in self.planes:
@@ -114,10 +120,10 @@ class CfgModeler:
             pedb_p_inst = self._pedb.padstacks.instances_by_name
             for c in self.components:
                 obj = self._pedb.components.create(
-                    [pedb_p_inst[i] for i in c["pins"]],
-                    component_name=c["reference_designator"],
-                    placement_layer=c["placement_layer"],
-                    component_part_name=c["definition"],
+                    [pedb_p_inst[i] for i in c.pins],
+                    component_name=c.reference_designator,
+                    placement_layer=c.placement_layer,
+                    component_part_name=c.definition,
                 )
-                obj.solder_ball_properties = c["solder_ball_properties"]
-                obj.port_properties = c["port_properties"]
+                c._pyedb_obj = obj
+                c.set_parameters_to_edb()

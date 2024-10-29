@@ -40,6 +40,17 @@ U8_IC_DIE_PROPERTIES = {
 }
 
 
+def _assert_initial_ic_die_properties(component: dict):
+    assert component["ic_die_properties"]["type"] == "no_die"
+    assert "orientation" not in component["ic_die_properties"]
+    assert "height" not in component["ic_die_properties"]
+
+
+def _assert_final_ic_die_properties(component: dict):
+    assert component["ic_die_properties"]["type"] == "flip_chip"
+    assert component["ic_die_properties"]["orientation"] == "chip_down"
+
+
 class TestClass:
     @pytest.fixture(autouse=True)
     def init(self, local_scratch):
@@ -1058,17 +1069,6 @@ class TestClass:
         comps_edb = db.configuration.get_data_from_db(components=True)["components"]
         component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
         _assert_final_ic_die_properties(component)
-
-
-def _assert_initial_ic_die_properties(component: dict):
-    assert component["ic_die_properties"]["type"] == "no_die"
-    assert "orientation" not in component["ic_die_properties"]
-    assert "height" not in component["ic_die_properties"]
-
-
-def _assert_final_ic_die_properties(component: dict):
-    assert component["ic_die_properties"]["type"] == "flip_chip"
-    assert component["ic_die_properties"]["orientation"] == "chip_down"
 
     def test_18_modeler(self, edb_examples):
         data = {
