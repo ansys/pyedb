@@ -1206,7 +1206,7 @@ class Components(object):
             compdef = self._get_component_definition(component_name, pins)
         if not compdef:
             return False
-        new_cmp = GrpcComponentGroup.create_with_component(self._active_layout, compdef.name, component_name)
+        new_cmp = GrpcComponentGroup.create(self._active_layout, compdef.name, component_name)
         hosting_component_location = pins[0].component.transform
         for pin in pins:
             pin.is_layout_pin = True

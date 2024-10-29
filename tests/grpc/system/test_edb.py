@@ -498,7 +498,7 @@ class TestClass:
 
     def test_create_rlc_component(self, edb_examples):
         """Create rlc components from pin"""
-        # TODO check how to create component ref bug#439
+        # Done
         edb = edb_examples.get_si_verse()
         pins = edb.components.get_pin_from_component("U1", "1V0")
         ref_pins = edb.components.get_pin_from_component("U1", "GND")
