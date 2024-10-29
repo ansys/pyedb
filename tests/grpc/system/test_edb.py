@@ -219,7 +219,7 @@ class TestClass:
 
     def test_create_custom_cutout_0(self, edb_examples):
         """Create custom cutout 0."""
-        # TODO check bug #434 status PolygonData.is_insdie(pt) failing
+        # Done
         edbapp = edb_examples.get_si_verse()
         output = os.path.join(self.local_scratch.path, "cutout.aedb")
         assert edbapp.cutout(
