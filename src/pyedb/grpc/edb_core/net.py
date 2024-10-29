@@ -358,7 +358,7 @@ class Nets(object):
         if plot_components_on_top or plot_components_on_bottom:
             nc = 0
             for comp in self._pedb.components.instances.values():
-                if not comp.is_enabled:
+                if not comp.enabled:
                     continue
                 net_names = comp.nets
                 if nets and not any([i in nets for i in net_names]):
@@ -389,7 +389,7 @@ class Nets(object):
                 else:
                     objects_lists.append([vertices, codes, label_colors[label], None, 1.0, 2.0, "contour"])
                 nc += 1
-            self._logger.debug("Plotted {} component(s)".format(nc))
+            self._logger.debug(f"Plotted {nc} component(s)")
 
         for path in self._pedb.modeler.paths:
             if path.is_void:
@@ -455,7 +455,7 @@ class Nets(object):
             codes.append(79)
 
             for void in poly.voids:
-                xvt, yvt = void.points
+                xvt, yvt = void.points()
                 if xvt:
                     xv, yv = GeometryOperators.orient_polygon(xvt, yvt, clockwise=False)
                     tmpV = [(i, j) for i, j in zip(xv, yv)]
@@ -697,7 +697,7 @@ class Nets(object):
             show_legend=show_legend,
             xlabel="X (m)",
             ylabel="Y (m)",
-            title=self._pedb.active_cell.GetName(),
+            title=self._pedb.active_cell.name,
             save_plot=save_plot,
             axis_equal=True,
             show=show,

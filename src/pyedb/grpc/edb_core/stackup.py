@@ -2188,8 +2188,8 @@ class Stackup(LayerCollection):
             raise AttributeError("last_layer must be str or class `dotnet.edb_core.edb_data.layer_data.LayerEdbClass`")
 
         stackup_mode = self.mode
-        if stackup_mode not in ["Laminate", "Overlapping"]:
-            raise AttributeError("stackup plot supports only 'Laminate' and 'Overlapping' stackup types.")
+        if stackup_mode not in ["laminate", "overlapping"]:
+            raise AttributeError("stackup plot supports only 'laminate' and 'overlapping' stackup types.")
 
         # build the layers data
         layers_data = []
@@ -2205,7 +2205,7 @@ class Stackup(LayerCollection):
         layers_data.reverse()  # let's start from the bottom
 
         # separate dielectric and signal if overlapping stackup
-        if stackup_mode == "Overlapping":
+        if stackup_mode == "overlapping":
             dielectric_layers = [l for l in layers_data if l[0].type == "dielectric"]
             signal_layers = [l for l in layers_data if l[0].type == "signal"]
 
@@ -2224,7 +2224,7 @@ class Stackup(LayerCollection):
                 else:
                     return 0.0
 
-            if stackup_mode == "Laminate":
+            if stackup_mode == "laminate":
                 l0 = layers_data[0]
                 compressed_layers_data = [[l0[0], l0[1], _compress_t(l0[3]), _compress_t(l0[3])]]  # the first row
                 lp = compressed_layers_data[0]
@@ -2234,7 +2234,7 @@ class Stackup(LayerCollection):
                     lp = compressed_layers_data[-1]
                 layers_data = compressed_layers_data
 
-            elif stackup_mode == "Overlapping":
+            elif stackup_mode == "overlapping":
                 compressed_diels = []
                 first_diel = True
                 for li in dielectric_layers:
@@ -2282,7 +2282,7 @@ class Stackup(LayerCollection):
         annotation_x_margin = 0.01
         annotations = []
         plot_data = []
-        if stackup_mode == "Laminate":
+        if stackup_mode == "laminate":
             min_thickness = min([i[3] for i in layers_data if i[3] != 0])
             for ly in layers_data:
                 layer = ly[0]
@@ -2330,7 +2330,7 @@ class Stackup(LayerCollection):
                         legend_order.append(i)
                         break
 
-        elif stackup_mode == "Overlapping":
+        elif stackup_mode == "overlapping":
             min_thickness = min([i[3] for i in signal_layers if i[3] != 0])
             columns = []  # first column is x=[0,1], second column is x=[1,2] and so on...
             for ly in signal_layers:
@@ -2454,10 +2454,10 @@ class Stackup(LayerCollection):
         # calculate the extremities of the plot
         x_min = 0.0
         x_max = max([max(i[0]) for i in plot_data])
-        if stackup_mode == "Laminate":
+        if stackup_mode == "laminate":
             y_min = layers_data[0][1]
             y_max = layers_data[-1][2]
-        elif stackup_mode == "Overlapping":
+        elif stackup_mode == "overlapping":
             y_min = min(dielectric_layers[0][1], signal_layers[0][1])
             y_max = max(dielectric_layers[-1][2], signal_layers[-1][2])
 
@@ -2471,7 +2471,7 @@ class Stackup(LayerCollection):
         annotations = new_annotations
 
         if plot_definitions:
-            if stackup_mode == "Overlapping":
+            if stackup_mode == "overlapping":
                 self._logger.warning("Plot of padstacks are supported only for Laminate mode.")
 
             max_plots = 10
@@ -2484,22 +2484,18 @@ class Stackup(LayerCollection):
             x_start = delta
 
             # find the max padstack size to calculate the scaling factor
-            max_padstak_size = 0
+            max_padstak_size = 0.0
             for definition in plot_definitions:
                 if isinstance(definition, str):
                     definition = self._pedb.padstacks.definitions[definition]
                 for layer, defs in definition.pad_by_layer.items():
-                    pad_shape = defs.geometry_type
-                    params = defs.parameters_values
-                    if pad_shape in [1, 2, 6]:
-                        pad_size = params[0]
-                    elif pad_shape in [3, 4, 5]:
-                        pad_size = max(params[0], params[1])
-                    else:
-                        pad_size = 1e-4
-                    max_padstak_size = max(pad_size, max_padstak_size)
-                if definition.hole_properties:
-                    hole_d = definition.hole_properties[0]
+                    pad_shape = defs[0].value
+                    params = defs[1:]
+                    pad_size = max([p.value for p in params[0]])
+                    if pad_size > max_padstak_size:
+                        max_padstak_size = pad_size
+                if not definition.is_null:
+                    hole_d = definition.hole_diameter
                     max_padstak_size = max(hole_d, max_padstak_size)
             scaling_f_pad = (2 / ((max_plots + 1) * 3)) / max_padstak_size
 
@@ -2512,24 +2508,18 @@ class Stackup(LayerCollection):
                 padstack_name = definition.name
                 annotations.append([x_start, y_max, padstack_name, {"rotation": 45}])
 
-                via_start_layer = definition.via_start_layer
-                via_stop_layer = definition.via_stop_layer
+                via_start_layer = definition.start_layer
+                via_stop_layer = definition.stop_layer
 
-                if stackup_mode == "Overlapping":
+                if stackup_mode == "overlapping":
                     # here search the column using the first and last layer. Pick the column with max index.
                     pass
 
                 for layer, defs in definition.pad_by_layer.items():
-                    pad_shape = defs.geometry_type
-                    params = defs.parameters_values
-                    if pad_shape in [1, 2, 6]:
-                        pad_size = params[0]
-                    elif pad_shape in [3, 4, 5]:
-                        pad_size = max(params[0], params[1])
-                    else:
-                        pad_size = 1e-4
-
-                    if stackup_mode == "Laminate":
+                    pad_shape = defs[0]
+                    params = defs[1:]
+                    pad_size = max([p.value for p in params[0]])
+                    if stackup_mode == "laminate":
                         x = [
                             x_start - pad_size / 2 * scaling_f_pad,
                             x_start - pad_size / 2 * scaling_f_pad,
@@ -2541,15 +2531,15 @@ class Stackup(LayerCollection):
                         y = [lower_elevation, upper_elevation, upper_elevation, lower_elevation]
                         # create the patch for that signal layer
                         plot_data.append([x, y, color_keys[color_index], None, 1.0, "fill"])
-                    elif stackup_mode == "Overlapping":
+                    elif stackup_mode == "overlapping":
                         # here evaluate the x based on the column evaluated before and the pad size
                         pass
 
                     min_le = min(lower_elevation, min_le)
                     max_ue = max(upper_elevation, max_ue)
-                if definition.hole_properties:
+                if not definition.is_null:
                     # create patch for the hole
-                    hole_radius = definition.hole_properties[0] / 2 * scaling_f_pad
+                    hole_radius = definition.hole_diameter / 2 * scaling_f_pad
                     x = [x_start - hole_radius, x_start - hole_radius, x_start + hole_radius, x_start + hole_radius]
                     y = [min_le, max_ue, max_ue, min_le]
                     plot_data.append([x, y, color_keys[color_index], None, 0.7, "fill"])

@@ -311,6 +311,7 @@ class TestClass:
             edbpath=os.path.join(self.local_scratch.path, "padstacks2.aedb"),
             edbversion=desktop_version,
             isreadonly=True,
+            restart_rpc_server=True,
         )
         for test_prop in (edb.padstacks.instances, edb.padstacks.instances):
             padstack_instances = list(test_prop.values())
@@ -324,7 +325,8 @@ class TestClass:
 
     def test_padstaks_plot_on_matplotlib(self):
         """Plot a Net to Matplotlib 2D Chart."""
-        edb_plot = Edb(self.target_path3, edbversion=desktop_version)
+        # Done
+        edb_plot = Edb(self.target_path3, edbversion=desktop_version, restart_rpc_server=True)
 
         local_png1 = os.path.join(self.local_scratch.path, "test1.png")
         edb_plot.nets.plot(
