@@ -288,7 +288,11 @@ class Configuration:
         if kwargs.get("ports", False):
             data["ports"] = self.cfg_data.ports.get_data_from_db()
         if kwargs.get("components", False):
-            data["components"] = self.cfg_data.components.get_data_from_db()
+            self.cfg_data.components.retrieve_parameters_from_edb()
+            components = []
+            for i in self.cfg_data.components.components:
+                components.append(i.get_attributes())
+            data["components"] = components
         if kwargs.get("nets", False):
             data["nets"] = self.cfg_data.nets.get_data_from_db()
         if kwargs.get("pin_groups", False):
@@ -296,7 +300,16 @@ class Configuration:
         if kwargs.get("operations", False):
             data["operations"] = self.cfg_data.operations.get_data_from_db()
         if kwargs.get("padstacks", False):
-            data["padstacks"] = self.cfg_data.padstacks.get_data_from_db()
+            self.cfg_data.padstacks.retrieve_parameters_from_edb()
+            definitions = []
+            for i in self.cfg_data.padstacks.definitions:
+                definitions.append(i.get_attributes())
+            instances = []
+            for i in self.cfg_data.padstacks.instances:
+                instances.append(i.get_attributes())
+            data["padstacks"] = dict()
+            data["padstacks"]["definitions"] = definitions
+            data["padstacks"]["instances"] = instances
         if kwargs.get("s_parameters", False):
             data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db()
         if kwargs.get("boundaries", False):
