@@ -417,11 +417,9 @@ class TestClass:
         assert len(test) == 194
         edbapp.close()
 
-    def test_polygon_based_padsatck(self):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_padstack_rtree_index", "ANSYS-HSD_V1.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+    def test_polygon_based_padstack(self, edb_examples):
+        # Done
+        edbapp = edb_examples.get_si_verse()
         polygon_data = edbapp.modeler.paths[0].polygon_data
         edbapp.padstacks.create(
             padstackname="test",

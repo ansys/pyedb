@@ -872,7 +872,7 @@ class Padstacks(object):
             pad_shape = GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE
         elif pad_shape == "Polygon":
             if isinstance(pad_polygon, list):
-                pad_array = [GrpcPolygonData(pad_polygon)]
+                pad_array = GrpcPolygonData(points=pad_polygon)
             elif isinstance(pad_polygon, GrpcPolygonData):
                 pad_array = pad_polygon
         if antipad_shape == "Bullet":  # pragma no cover
@@ -883,7 +883,7 @@ class Padstacks(object):
             antipad_shape = GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE
         elif antipad_shape == "Polygon":
             if isinstance(antipad_polygon, list):
-                antipad_array = GrpcPolygonData(antipad_polygon)
+                antipad_array = GrpcPolygonData(points=antipad_polygon)
             elif isinstance(antipad_polygon, GrpcPolygonData):
                 antipad_array = antipad_polygon
         else:
