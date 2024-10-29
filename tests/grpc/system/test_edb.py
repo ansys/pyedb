@@ -336,56 +336,23 @@ class TestClass:
 
     def test_create_custom_cutout_4(self, edb_examples):
         """Create custom cutout 4."""
-        pass
-        # edbapp = edb_examples.get_si_verse()
-        # edbapp.components.create_pingroup_from_pins(
-        #     [i for i in list(edbapp.components.instances["U1"].pins.values()) if i.net_name == "GND"]
-        # )
-        #
-        # assert edbapp.cutout(
-        #     signal_list=["DDR4_DQS0_P", "DDR4_DQS0_N"],
-        #     reference_list=["GND"],
-        #     number_of_threads=4,
-        #     extent_type="ConvexHull",
-        #     use_pyaedt_extent_computing=True,
-        #     include_pingroups=True,
-        #     check_terminals=True,
-        #     expansion_factor=4,
-        # )
-        # edbapp.close()
-        # source_path = os.path.join(local_path, "example_models", test_subfolder, "MicrostripSpliGnd.aedb")
-        # target_path = os.path.join(self.local_scratch.path, "MicrostripSpliGnd.aedb")
-        # self.local_scratch.copyfolder(source_path, target_path)
-        #
-        # edbapp = Edb(target_path, edbversion=desktop_version, restart_rpc_server=True)
-        #
-        # assert edbapp.cutout(
-        #     signal_list=["trace_n"],
-        #     reference_list=["ground"],
-        #     number_of_threads=4,
-        #     extent_type="Conformal",
-        #     use_pyaedt_extent_computing=True,
-        #     check_terminals=True,
-        #     expansion_factor=2,
-        #     include_voids_in_extents=True,
-        # )
-        # edbapp.close()
-        # source_path = os.path.join(local_path, "example_models", test_subfolder, "Multizone_GroundVoids.aedb")
-        # target_path = os.path.join(self.local_scratch.path, "Multizone_GroundVoids.aedb")
-        # self.local_scratch.copyfolder(source_path, target_path)
-        #
-        # edbapp = Edb(target_path, edbversion=desktop_version)
-        #
-        # assert edbapp.cutout(
-        #     signal_list=["DIFF_N", "DIFF_P"],
-        #     reference_list=["GND"],
-        #     number_of_threads=4,
-        #     extent_type="Conformal",
-        #     use_pyaedt_extent_computing=True,
-        #     check_terminals=True,
-        #     expansion_factor=3,
-        # )
-        # edbapp.close()
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        edbapp.components.create_pingroup_from_pins(
+            [i for i in list(edbapp.components.instances["U1"].pins.values()) if i.net_name == "GND"]
+        )
+
+        assert edbapp.cutout(
+            signal_list=["DDR4_DQS0_P", "DDR4_DQS0_N"],
+            reference_list=["GND"],
+            number_of_threads=4,
+            extent_type="ConvexHull",
+            use_pyaedt_extent_computing=True,
+            include_pingroups=True,
+            check_terminals=True,
+            expansion_factor=4,
+        )
+        edbapp.close()
 
     def test_export_to_hfss(self):
         """Export EDB to HFSS."""

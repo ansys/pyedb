@@ -1476,8 +1476,9 @@ class EdbGrpc(EdbInit):
                 p = insts[i].position
                 pos_1 = [i - 1e-12 for i in p]
                 pos_2 = [i + 1e-12 for i in p]
-                plane = self.modeler.Shape("rectangle", pointA=pos_1, pointB=pos_2)
-                rectangle_data = self.modeler.shape_to_polygon_data(plane)
+                pos_3 = [pos_2[0], pos_1[1]]
+                pos_4 = pos_1[0], pos_2[1]
+                rectangle_data = GrpcPolygonData(points=[pos_1, pos_3, pos_2, pos_4])
                 _polys.append(rectangle_data)
         for prim in self.modeler.primitives:
             if not prim.is_null and not prim.net.is_null:
@@ -1890,13 +1891,13 @@ class EdbGrpc(EdbInit):
                     "SParameterModel",
                     "NetlistModel",
                 ] and list(set(el.nets[:]) & set(signal_list[:])):
-                    pins_to_preserve.extend([i.id for i in el.pins.values()])
+                    pins_to_preserve.extend([i.edb_uid for i in el.pins.values()])
                     nets_to_preserve.extend(el.nets)
         if include_pingroups:
             for pingroup in self.layout.pin_groups:
                 for pin in pingroup.pins.values():
                     if pin.net_name in reference_list:
-                        pins_to_preserve.append(pin.id)
+                        pins_to_preserve.append(pin.edb_uid)
         if check_terminals:
             terms = [
                 term for term in self.layout.terminals if term.boundary_type in get_terminal_supported_boundary_types()
@@ -1904,7 +1905,7 @@ class EdbGrpc(EdbInit):
             for term in terms:
                 if isinstance(term, PadstackInstanceTerminal):
                     if term.net.name in reference_list:
-                        pins_to_preserve.append(term.id)
+                        pins_to_preserve.append(term.edb_uid)
 
         for i in self.nets.nets.values():
             name = i.name
