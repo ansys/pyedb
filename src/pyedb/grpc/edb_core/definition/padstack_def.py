@@ -184,7 +184,7 @@ class PadstackDef(GrpcPadstackDef):
                     self._pad_by_layer[layer] = self.data.get_pad_parameters(layer, GrpcPadType.REGULAR_PAD)
                 except:
                     self._pad_by_layer[layer] = None
-            return self._pad_by_layer
+        return self._pad_by_layer
 
     @property
     def antipad_by_layer(self):
@@ -196,7 +196,7 @@ class PadstackDef(GrpcPadstackDef):
                     )
                 except:
                     self._antipad_by_layer[layer] = None
-            return self._antipad_by_layer
+        return self._antipad_by_layer
 
     @property
     def thermalpad_by_layer(self):
@@ -208,7 +208,7 @@ class PadstackDef(GrpcPadstackDef):
                     )
                 except:
                     self._thermalpad_by_layer[layer] = None
-            return self._thermalpad_by_layer
+        return self._thermalpad_by_layer
 
     @property
     def hole_plating_ratio(self):

@@ -823,14 +823,14 @@ class Padstacks(object):
             padstack_data.plating_percentage = GrpcValue(20.0)
         elif polygon_hole:
             if isinstance(polygon_hole, list):
-                polygon_hole = GrpcPolygonData(polygon_hole)
+                polygon_hole = GrpcPolygonData(points=polygon_hole)
 
             padstack_data.set_hole_parameters(
                 offset_x=value0,
                 offset_y=value0,
                 rotation=value0,
                 type_geom=GrpcPadGeometryType.PADGEOMTYPE_POLYGON,
-                sizes=[polygon_hole],
+                sizes=polygon_hole,
             )
             padstack_data.plating_percentage = GrpcValue(20.0)
         else:
@@ -1383,9 +1383,7 @@ class Padstacks(object):
             ``True`` when succeeded ``False`` when failed. <
 
         """
-        _def = list(
-            set([inst.padstack_definition for inst in list(self.instances.values()) if inst.net_name == net_name])
-        )
+        _def = list(set([inst.padstack_def for inst in list(self.instances.values()) if inst.net_name == net_name]))
         if not _def:
             self._logger.error(f"No padstack definition found for net {net_name}")
             return False
@@ -1393,7 +1391,7 @@ class Padstacks(object):
         padstack_instances = []
         for pdstk_def in _def:
             padstack_instances.append(
-                [inst for inst in self.definitions[pdstk_def].instances if inst.net_name == net_name]
+                [inst for inst in self.definitions[pdstk_def.name].instances if inst.net_name == net_name]
             )
         for pdstk_series in padstack_instances:
             instances_location = [inst.position for inst in pdstk_series]
@@ -1407,8 +1405,8 @@ class Padstacks(object):
                 [_instances_to_delete.append(pdstk_series[ind]) for ind in line]
                 start_point = pdstk_series[line[0]]
                 stop_point = pdstk_series[line[-1]]
-                padstack_def = start_point.padstack_definition
-                trace_width = self.definitions[padstack_def].pad_by_layer[stop_point.start_layer].parameters_values[0]
+                padstack_def = start_point.padstack_def
+                trace_width = self.definitions[padstack_def.name].pad_by_layer[stop_point.start_layer][1][0].value
                 trace = self._pedb.modeler.create_trace(
                     path_list=[start_point.position, stop_point.position],
                     layer_name=start_point.start_layer,
@@ -1416,7 +1414,7 @@ class Padstacks(object):
                 )
                 polygon_data = trace.polygon_data
                 trace.delete()
-                new_padstack_def = generate_unique_name(padstack_def)
+                new_padstack_def = generate_unique_name(padstack_def.name)
                 if not self.create(
                     padstackname=new_padstack_def,
                     pad_shape="Polygon",
@@ -1425,9 +1423,9 @@ class Padstacks(object):
                     antipad_polygon=polygon_data,
                     polygon_hole=polygon_data,
                 ):
-                    self._logger.error(f"Failed to create padstack definition {new_padstack_def}")
+                    self._logger.error(f"Failed to create padstack definition {new_padstack_def.name}")
                 if not self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net_name):
-                    self._logger.error(f"Failed to place padstack instance {new_padstack_def}")
+                    self._logger.error(f"Failed to place padstack instance {new_padstack_def.name}")
             for inst in _instances_to_delete:
                 inst.delete()
         return True
