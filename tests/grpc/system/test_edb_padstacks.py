@@ -399,13 +399,11 @@ class TestClass:
         assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
         edbapp.close()
 
-    def test_padstack_instances_rtree_index(self):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_padstack_rtree_index", "ANSYS-HSD_V1.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+    def test_padstack_instances_rtree_index(self, edb_examples):
+        # Done
+        edbapp = edb_examples.get_si_verse()
         index = edbapp.padstacks.get_padstack_instances_rtree_index()
-        assert index.bounds == [-0.0137849991, -0.00225000058, 0.14800000118, 0.07799999894]
+        assert index.bounds == [-0.013785, -0.00225, 0.148, 0.078]
         stats = edbapp.get_statistics()
         bbox = (0.0, 0.0, stats.layout_size[0], stats.layout_size[1])
         test = list(index.intersection(bbox))
