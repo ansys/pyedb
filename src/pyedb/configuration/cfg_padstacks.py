@@ -40,12 +40,12 @@ class CfgPadstacks:
             padstack_defs_layout = self._pedb.padstacks.definitions
             for pdef in padstack_dict.get("definitions", []):
                 obj = padstack_defs_layout[pdef["name"]]
-                self.definitions.append(Definition(self._pedb, obj, **pdef))
+                self.definitions.append(CfgPadstackDefinition(self._pedb, obj, **pdef))
 
             inst_from_layout = self._pedb.padstacks.instances_by_name
             for inst in padstack_dict.get("instances", []):
                 obj = inst_from_layout[inst["name"]]
-                self.instances.append(Instance(self._pedb, obj, **inst))
+                self.instances.append(CfgPadstackInstance(self._pedb, obj, **inst))
 
     def clean(self):
         self.definitions = []
@@ -63,17 +63,17 @@ class CfgPadstacks:
     def retrieve_parameters_from_edb(self):
         self.clean()
         for _, obj in self._pedb.padstacks.definitions.items():
-            pdef = Definition(self._pedb, obj)
+            pdef = CfgPadstackDefinition(self._pedb, obj)
             pdef.retrieve_parameters_from_edb()
             self.definitions.append(pdef)
 
         for obj in self._pedb.layout.padstack_instances:
-            inst = Instance(self._pedb, obj)
+            inst = CfgPadstackInstance(self._pedb, obj)
             inst.retrieve_parameters_from_edb()
             self.instances.append(inst)
 
 
-class Definition(CfgBase):
+class CfgPadstackDefinition(CfgBase):
     """Padstack definition data class."""
 
     PAD_SHAPE_PARAMETERS = {
@@ -98,16 +98,16 @@ class Definition(CfgBase):
         self.hole_parameters = kwargs.get("hole_parameters", None)
 
     def set_parameters_to_edb(self):
+        if self.hole_parameters:
+            self._set_hole_parameters_to_edb(self.hole_parameters)
+        if self.hole_range:
+            self._pyedb_obj.hole_range = self.hole_range
         if self.hole_plating_thickness:
             self._pyedb_obj.hole_plating_thickness = self.hole_plating_thickness
         if self.material:
             self._pyedb_obj.material = self.material
-        if self.hole_range:
-            self._pyedb_obj.hole_range = self.hole_range
         if self.pad_parameters:
             self._set_pad_parameters_to_edb(self.pad_parameters)
-        if self.hole_parameters:
-            self._set_hole_parameters_to_edb(self.hole_parameters)
 
     def retrieve_parameters_from_edb(self):
         self.name = self._pyedb_obj.name
@@ -282,13 +282,15 @@ class Definition(CfgBase):
         self._pyedb_obj._padstack_def_data = pdef_data
 
 
-class Instance(CfgBase):
+class CfgPadstackInstance(CfgBase):
     """Instance data class."""
 
     def __init__(self, pedb, pyedb_obj, **kwargs):
         self._pedb = pedb
         self._pyedb_obj = pyedb_obj
         self.name = kwargs.get("name", None)
+        self.net_name = kwargs.get("net_name", "")
+        self.layer_range = kwargs.get("layer_range", [None, None])
         self.definition = kwargs.get("definition", None)
         self.backdrill_parameters = kwargs.get("backdrill_parameters", None)
         self._id = kwargs.get("id", None)
@@ -300,6 +302,12 @@ class Instance(CfgBase):
     def set_parameters_to_edb(self):
         if self.name is not None:
             self._pyedb_obj.aedt_name = self.name
+        if self.net_name is not None:
+            self._pyedb_obj.net_name = self._pedb.nets.find_or_create_net(self.net_name).name
+        if self.layer_range[0] is not None:
+            self._pyedb_obj.start_layer = self.layer_range[0]
+        if self.layer_range[1] is not None:
+            self._pyedb_obj.stop_layer = self.layer_range[1]
         if self.backdrill_parameters:
             self._pyedb_obj.backdrill_parameters = self.backdrill_parameters
 

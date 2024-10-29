@@ -106,6 +106,9 @@ class Configuration:
     def run(self, **kwargs):
         """Apply configuration settings to the current design"""
 
+        if self.cfg_data.variables:
+            self.cfg_data.variables.apply()
+
         if self.cfg_data.general:
             self.cfg_data.general.apply()
 
@@ -122,9 +125,6 @@ class Configuration:
 
         # Configure pin groups
         self.cfg_data.pin_groups.apply()
-
-        # Configure ports
-        self.cfg_data.ports.apply()
 
         # Configure sources
         self.cfg_data.sources.apply()
@@ -160,6 +160,12 @@ class Configuration:
 
         # Configure operations
         self.cfg_data.operations.apply()
+
+        # Modeler
+        self.cfg_data.modeler.apply()
+
+        # Configure ports
+        self.cfg_data.ports.apply()
 
         return True
 
