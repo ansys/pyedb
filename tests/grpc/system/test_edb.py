@@ -371,9 +371,7 @@ class TestClass:
 
     def test_export_to_q3d(self):
         """Export EDB to Q3D."""
-
         # Done
-
         edb = Edb(
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
             edbversion=desktop_version,
@@ -405,9 +403,7 @@ class TestClass:
 
     def test_create_edge_port_on_polygon(self):
         """Create lumped and vertical port."""
-
         # Done
-
         edb = Edb(
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "edge_ports.aedb"),
             edbversion=desktop_version,
@@ -461,10 +457,7 @@ class TestClass:
 
     def test_edb_statistics(self, edb_examples):
         """Get statistics."""
-        import time
-
-        start = time.time()
-        print("Export layout stat gRPC")
+        # Done
         edb = edb_examples.get_si_verse()
         edb_stats = edb.get_statistics(compute_area=True)
         assert edb_stats
@@ -484,8 +477,6 @@ class TestClass:
         assert edb_stats.occupying_ratio["1_Top"] == 0.30168200230804587
         assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.9374673366306919
         assert edb_stats.occupying_ratio["16_Bottom"] == 0.20492545425825437
-        end = time.time()
-        print(f" Export layout stat gRPC time: {end - start}")
         edb.close()
 
     def test_hfss_set_bounding_box_extent(self, edb_examples):
