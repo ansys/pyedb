@@ -385,6 +385,7 @@ class TestClass:
             "ports": [
                 {
                     "name": "x_y_port",
+                    "type": "circuit",
                     "positive_terminal": {
                         "coordinates": {"layer": "1_Top", "point": ["104mm", "37mm"], "net": "AVCC_1V3"}
                     },
@@ -399,6 +400,60 @@ class TestClass:
         data_from_db = edbapp.configuration.get_data_from_db(ports=True)
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["layer"] == "1_Top"
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
+        edbapp.close()
+
+    def test_05g_wave_port(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp.modeler.create_rectangle(layer_name="BOT", net_name="GND", lower_left_point=["-2mm", "-2mm"],
+                                        upper_right_point=["2mm", "2mm"])
+        prim_1 = edbapp.modeler.create_trace(path_list=([0, 0], [0, "1mm"]), layer_name="TOP", net_name="SIG",
+                                             width="0.1mm",
+                                             start_cap_style="Flat", end_cap_style="Flat")
+        prim_1.aedt_name = "path_1"
+        data = {"ports": [
+            {
+                "name": "wport_1",
+                "type": "wave_port",
+                "primitive_name": prim_1.aedt_name,
+                "point_on_edge": [0, "1mm"],
+                "horizontal_extent_factor": 6,
+                "vertical_extent_factor": 4,
+                "pec_launch_width": "0,2mm"
+            }
+        ]}
+        edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.ports["wport_1"].horizontal_extent_factor == 6
+        edbapp.close()
+
+    def test_05h_diff_wave_port(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp.modeler.create_rectangle(layer_name="BOT", net_name="GND", lower_left_point=["-2mm", "-2mm"],
+                                        upper_right_point=["2mm", "2mm"])
+        prim_1 = edbapp.modeler.create_trace(path_list=([0, 0], [0, "1mm"]), layer_name="TOP", net_name="SIG",
+                                             width="0.1mm",
+                                             start_cap_style="Flat", end_cap_style="Flat")
+        prim_1.aedt_name = "path_1"
+        prim_2 = edbapp.modeler.create_trace(path_list=(["1mm", 0], ["1mm", "1mm"]), layer_name="TOP", net_name="SIG",
+                                             width="0.1mm",
+                                             start_cap_style="Flat", end_cap_style="Flat")
+        prim_2.aedt_name = "path_2"
+        data = {"ports": [
+            {
+                "name": "diff_wave_1",
+                "type": "diff_wave_port",
+                "positive_terminal": {"primitive_name": prim_1.aedt_name,
+                                      "point_on_edge": [0, "1mm"]},
+                "negative_terminal": {"primitive_name": prim_2.aedt_name,
+                                      "point_on_edge": ["1mm", "1mm"]},
+                "horizontal_extent_factor": 6,
+                "vertical_extent_factor": 4,
+                "pec_launch_width": "0,2mm"
+            }
+        ]}
+        edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.ports["diff_wave_1"].horizontal_extent_factor ==  6
         edbapp.close()
 
     def test_06_s_parameters(self, edb_examples):
