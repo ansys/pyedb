@@ -1107,20 +1107,21 @@ class Modeler(object):
             layers_name = [layers_name]
         for net_name in nets_name:
             for p in self.paths:
+                _parameter_name = f"{parameter_name}_{p.id}"
                 if not p.net.is_null:
                     if p.net.name == net_name:
                         if not layers_name:
                             if not variable_value:
                                 variable_value = p.width
                             self._pedb.active_cell.add_variable(
-                                name=parameter_name, value=variable_value, is_param=True
+                                name=_parameter_name, value=GrpcValue(variable_value), is_param=True
                             )
-                            p.width = parameter_name
+                            p.width = GrpcValue(_parameter_name, self._pedb.active_cell)
                         elif p.layer.name in layers_name:
                             if not variable_value:
                                 variable_value = p.width
                             self._pedb.add_design_variable(parameter_name, variable_value, True)
-                            p.width = GrpcValue(parameter_name)
+                            p.width = GrpcValue(_parameter_name, self._pedb.active_cell)
         return True
 
     def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_names_list=[]):

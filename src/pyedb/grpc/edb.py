@@ -2662,10 +2662,11 @@ class EdbGrpc(EdbInit):
         """
         if not variable_name.startswith("$"):
             variable_name = f"${variable_name}"
-            if not self.variable_exists(variable_name):
-                return self.active_db.add_variable(variable_name, variable_value)
-            else:
-                self.logger.error(f"Variable {variable_name} already exists.")
+        if not self.variable_exists(variable_name):
+            return self.active_db.add_variable(variable_name, variable_value)
+        else:
+            self.logger.error(f"Variable {variable_name} already exists.")
+            return False
 
     def add_design_variable(self, variable_name, variable_value, is_parameter=False):
         """Add a variable to edb. The variable can be a design one or a project variable (using ``$`` prefix).
@@ -2708,6 +2709,7 @@ class EdbGrpc(EdbInit):
             return self.active_cell.add_variable(variable_name, variable_value)
         else:
             self.logger.error(f"Variable {variable_name} already exists.")
+            return False
 
     def change_design_variable_value(self, variable_name, variable_value):
         """Change a variable value.

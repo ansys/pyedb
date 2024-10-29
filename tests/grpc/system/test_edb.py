@@ -38,7 +38,6 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 class TestClass:
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, target_path, target_path2, target_path4):
-        # self.edbapp = grpc_edb_app
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path2 = target_path2
@@ -194,22 +193,20 @@ class TestClass:
 
     def test_add_variables(self, edb_examples):
         """Add design and project variables."""
-        # TODO check status of buf #432 assigning parameter on
+        # Done
         edbapp = edb_examples.get_si_verse()
         edbapp.add_design_variable("my_variable", "1mm")
         assert "my_variable" in edbapp.active_cell.get_all_variable_names()
         assert edbapp.modeler.parametrize_trace_width("DDR4_DQ25")
         assert edbapp.modeler.parametrize_trace_width("DDR4_A2")
-        result, var_server = edbapp.add_design_variable("my_parameter", "2mm", True)
-        assert result
-        assert var_server.IsVariableParameter("my_parameter")
-        result, var_server = edbapp.add_design_variable("my_parameter", "2mm", True)
-        assert not result
-        result, var_server = edbapp.add_project_variable("$my_project_variable", "3mm")
-        assert result
-        assert var_server
-        result, var_server = edbapp.add_project_variable("$my_project_variable", "3mm")
-        assert not result
+        edbapp.add_design_variable("my_parameter", "2mm", True)
+        assert "my_parameter" in edbapp.active_cell.get_all_variable_names()
+        variable_value = edbapp.active_cell.get_variable_value("my_parameter").value
+        assert variable_value == 2e-3
+        assert not edbapp.add_design_variable("my_parameter", "2mm", True)
+        edbapp.add_project_variable("$my_project_variable", "3mm")
+        assert edbapp.db.get_variable_value("$my_project_variable") == 3e-3
+        assert not edbapp.add_project_variable("$my_project_variable", "3mm")
         edbapp.close()
 
     def test_save_edb_as(self, edb_examples):
