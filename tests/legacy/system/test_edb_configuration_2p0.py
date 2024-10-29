@@ -412,23 +412,31 @@ class TestClass:
     def test_05g_wave_port(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
-        edbapp.modeler.create_rectangle(layer_name="BOT", net_name="GND", lower_left_point=["-2mm", "-2mm"],
-                                        upper_right_point=["2mm", "2mm"])
-        prim_1 = edbapp.modeler.create_trace(path_list=([0, 0], [0, "1mm"]), layer_name="TOP", net_name="SIG",
-                                             width="0.1mm",
-                                             start_cap_style="Flat", end_cap_style="Flat")
+        edbapp.modeler.create_rectangle(
+            layer_name="BOT", net_name="GND", lower_left_point=["-2mm", "-2mm"], upper_right_point=["2mm", "2mm"]
+        )
+        prim_1 = edbapp.modeler.create_trace(
+            path_list=([0, 0], [0, "1mm"]),
+            layer_name="TOP",
+            net_name="SIG",
+            width="0.1mm",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
         prim_1.aedt_name = "path_1"
-        data = {"ports": [
-            {
-                "name": "wport_1",
-                "type": "wave_port",
-                "primitive_name": prim_1.aedt_name,
-                "point_on_edge": [0, "1mm"],
-                "horizontal_extent_factor": 6,
-                "vertical_extent_factor": 4,
-                "pec_launch_width": "0,2mm"
-            }
-        ]}
+        data = {
+            "ports": [
+                {
+                    "name": "wport_1",
+                    "type": "wave_port",
+                    "primitive_name": prim_1.aedt_name,
+                    "point_on_edge": [0, "1mm"],
+                    "horizontal_extent_factor": 6,
+                    "vertical_extent_factor": 4,
+                    "pec_launch_width": "0,2mm",
+                }
+            ]
+        }
         edbapp.configuration.load(data, apply_file=True)
         assert edbapp.ports["wport_1"].horizontal_extent_factor == 6
         edbapp.close()
@@ -436,31 +444,42 @@ class TestClass:
     def test_05h_diff_wave_port(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
-        edbapp.modeler.create_rectangle(layer_name="BOT", net_name="GND", lower_left_point=["-2mm", "-2mm"],
-                                        upper_right_point=["2mm", "2mm"])
-        prim_1 = edbapp.modeler.create_trace(path_list=([0, 0], [0, "1mm"]), layer_name="TOP", net_name="SIG",
-                                             width="0.1mm",
-                                             start_cap_style="Flat", end_cap_style="Flat")
+        edbapp.modeler.create_rectangle(
+            layer_name="BOT", net_name="GND", lower_left_point=["-2mm", "-2mm"], upper_right_point=["2mm", "2mm"]
+        )
+        prim_1 = edbapp.modeler.create_trace(
+            path_list=([0, 0], [0, "1mm"]),
+            layer_name="TOP",
+            net_name="SIG",
+            width="0.1mm",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
         prim_1.aedt_name = "path_1"
-        prim_2 = edbapp.modeler.create_trace(path_list=(["1mm", 0], ["1mm", "1mm"]), layer_name="TOP", net_name="SIG",
-                                             width="0.1mm",
-                                             start_cap_style="Flat", end_cap_style="Flat")
+        prim_2 = edbapp.modeler.create_trace(
+            path_list=(["1mm", 0], ["1mm", "1mm"]),
+            layer_name="TOP",
+            net_name="SIG",
+            width="0.1mm",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
         prim_2.aedt_name = "path_2"
-        data = {"ports": [
-            {
-                "name": "diff_wave_1",
-                "type": "diff_wave_port",
-                "positive_terminal": {"primitive_name": prim_1.aedt_name,
-                                      "point_on_edge": [0, "1mm"]},
-                "negative_terminal": {"primitive_name": prim_2.aedt_name,
-                                      "point_on_edge": ["1mm", "1mm"]},
-                "horizontal_extent_factor": 6,
-                "vertical_extent_factor": 4,
-                "pec_launch_width": "0,2mm"
-            }
-        ]}
+        data = {
+            "ports": [
+                {
+                    "name": "diff_wave_1",
+                    "type": "diff_wave_port",
+                    "positive_terminal": {"primitive_name": prim_1.aedt_name, "point_on_edge": [0, "1mm"]},
+                    "negative_terminal": {"primitive_name": prim_2.aedt_name, "point_on_edge": ["1mm", "1mm"]},
+                    "horizontal_extent_factor": 6,
+                    "vertical_extent_factor": 4,
+                    "pec_launch_width": "0,2mm",
+                }
+            ]
+        }
         edbapp.configuration.load(data, apply_file=True)
-        assert edbapp.ports["diff_wave_1"].horizontal_extent_factor ==  6
+        assert edbapp.ports["diff_wave_1"].horizontal_extent_factor == 6
         edbapp.close()
 
     def test_06_s_parameters(self, edb_examples):
@@ -1074,10 +1093,17 @@ class TestClass:
         data = {
             "modeler": {
                 "traces": [
-                    {"name": "trace_1", "layer": "TOP", "width": "0.1mm", "path": [[0, 0], [0, "10mm"]],
-                     "net_name": "SIG",
-                     "start_cap_style": "flat", "end_cap_style": "flat", "corner_style": "round"},
-                    {"name": "trace_1_void", "layer": "TOP", "width": "0.3mm", "path": [[0, 0], [0, "10mm"]]}
+                    {
+                        "name": "trace_1",
+                        "layer": "TOP",
+                        "width": "0.1mm",
+                        "path": [[0, 0], [0, "10mm"]],
+                        "net_name": "SIG",
+                        "start_cap_style": "flat",
+                        "end_cap_style": "flat",
+                        "corner_style": "round",
+                    },
+                    {"name": "trace_1_void", "layer": "TOP", "width": "0.3mm", "path": [[0, 0], [0, "10mm"]]},
                 ],
                 "padstack_definitions": [
                     {
@@ -1085,48 +1111,76 @@ class TestClass:
                         "hole_plating_thickness": "0.025mm",
                         "material": "copper",
                         "pad_parameters": {
-                            'regular_pad': [
-                                {'layer_name': 'TOP', 'shape': 'circle', 'offset_x': '0mm', 'offset_y': '0',
-                                 'rotation': '0',
-                                 'diameter': '0.5mm'},
-                                {'layer_name': 'BOT', 'shape': 'circle', 'offset_x': '0mm', 'offset_y': '0',
-                                 'rotation': '0',
-                                 'diameter': '0.5mm'}
+                            "regular_pad": [
+                                {
+                                    "layer_name": "TOP",
+                                    "shape": "circle",
+                                    "offset_x": "0mm",
+                                    "offset_y": "0",
+                                    "rotation": "0",
+                                    "diameter": "0.5mm",
+                                },
+                                {
+                                    "layer_name": "BOT",
+                                    "shape": "circle",
+                                    "offset_x": "0mm",
+                                    "offset_y": "0",
+                                    "rotation": "0",
+                                    "diameter": "0.5mm",
+                                },
                             ],
-                            'anti_pad': [
-                                {'layer_name': 'TOP', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0',
-                                 'rotation': '0',
-                                 'diameter': '1mm'},
-                                {'layer_name': 'BOT', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0',
-                                 'rotation': '0',
-                                 'diameter': '1mm'}
+                            "anti_pad": [
+                                {
+                                    "layer_name": "TOP",
+                                    "shape": "circle",
+                                    "offset_x": "0",
+                                    "offset_y": "0",
+                                    "rotation": "0",
+                                    "diameter": "1mm",
+                                },
+                                {
+                                    "layer_name": "BOT",
+                                    "shape": "circle",
+                                    "offset_x": "0",
+                                    "offset_y": "0",
+                                    "rotation": "0",
+                                    "diameter": "1mm",
+                                },
                             ],
                         },
                         "hole_range": "through",
                         "hole_parameters": {
                             "shape": "circle",
                             "diameter": "0.25mm",
-                        }
+                        },
                     }
                 ],
                 "padstack_instances": [
-                    {"name": "via_1",
-                     "definition": "via",
-                     "layer_range": ["TOP", "BOT"],
-                     "position": [0, 0],
-                     "net_name": "SIG"
-                     },
-                    {"name": "pin_1",
-                     "definition": "via",
-                     "layer_range": ["TOP", "TOP"],
-                     "position": [0, "1mm"],
-                     "net_name": "SIG",
-                     "is_pin": True
-                     }
+                    {
+                        "name": "via_1",
+                        "definition": "via",
+                        "layer_range": ["TOP", "BOT"],
+                        "position": [0, 0],
+                        "net_name": "SIG",
+                    },
+                    {
+                        "name": "pin_1",
+                        "definition": "via",
+                        "layer_range": ["TOP", "TOP"],
+                        "position": [0, "1mm"],
+                        "net_name": "SIG",
+                        "is_pin": True,
+                    },
                 ],
                 "planes": [
-                    {"name": "GND_TOP", "layer": "TOP", "net_name": "GND", "lower_left_point": [0, 0],
-                     "upper_right_point": [0, "12mm"], "voids": ["trace_1_void"]},
+                    {
+                        "name": "GND_TOP",
+                        "layer": "TOP",
+                        "net_name": "GND",
+                        "lower_left_point": [0, 0],
+                        "upper_right_point": [0, "12mm"],
+                        "voids": ["trace_1_void"],
+                    },
                 ],
                 "components": [
                     {
@@ -1143,7 +1197,7 @@ class TestClass:
                             "reference_size_y": 0,
                         },
                     },
-                ]
+                ],
             }
         }
         edbapp = edb_examples.create_empty_edb()
@@ -1159,7 +1213,7 @@ class TestClass:
         data = {
             "variables": [
                 {"name": "var_1", "value": "1mm", "description": "No description"},
-                {"name": "$var_2", "value": "1mm", "description": "No description"}
+                {"name": "$var_2", "value": "1mm", "description": "No description"},
             ]
         }
         edbapp = edb_examples.create_empty_edb()
