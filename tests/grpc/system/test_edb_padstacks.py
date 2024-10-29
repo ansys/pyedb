@@ -392,14 +392,12 @@ class TestClass:
             assert padsatck_layers not in old_layers
         edbapp.close_edb()
 
-    def test_hole(self):
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_padstack_def_update", "ANSYS-HSD_V1.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-
-        edbapp = Edb(target_path, edbversion=desktop_version)
+    def test_hole(self, edb_examples):
+        # Done
+        edbapp = edb_examples.get_si_verse()
         edbapp.padstacks.definitions["v35h15"].hole_diameter = "0.16mm"
         assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
+        edbapp.close()
 
     def test_padstack_instances_rtree_index(self):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")

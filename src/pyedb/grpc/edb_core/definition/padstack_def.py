@@ -108,9 +108,22 @@ class PadstackDef(GrpcPadstackDef):
     @hole_diameter.setter
     def hole_diameter(self, value):
         hole_parameter = self.data.get_hole_parameters()
-        if hole_parameter[0].name.lower() == "padgeomtype_circle":
-            hole_parameter[1] = GrpcValue(value)
-            self.data.set_hole_parameters(hole_parameter)
+        if not isinstance(value, list):
+            value = [GrpcValue(value)]
+        else:
+            value = [GrpcValue(p) for p in value]
+        hole_size = value
+        geometry_type = hole_parameter[0]
+        hole_offset_x = hole_parameter[2]
+        hole_offset_y = hole_parameter[3]
+        hole_rotation = hole_parameter[4]
+        self.data.set_hole_parameters(
+            offset_x=hole_offset_x,
+            offset_y=hole_offset_y,
+            rotation=hole_rotation,
+            type_geom=geometry_type,
+            sizes=hole_size,
+        )
 
     @property
     def hole_offset_x(self):
