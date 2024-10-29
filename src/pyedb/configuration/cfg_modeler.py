@@ -20,12 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.edb_data.padstacks_data import (
-    EDBPadstack,
-)
-from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition
-from pyedb.configuration.cfg_padstacks import CfgPadstackInstance
 from pyedb.configuration.cfg_components import CfgComponent
+from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition, CfgPadstackInstance
+from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstack
 
 
 class CfgTrace:
@@ -59,10 +56,12 @@ class CfgModeler:
     def __init__(self, pedb, data):
         self._pedb = pedb
         self.traces = [CfgTrace(**i) for i in data.get("traces", [])]
-        self.padstack_defs = [CfgPadstackDefinition(self._pedb, None, **i) for i in
-                              data.get("padstack_definitions", [])]
-        self.padstack_instances = [CfgPadstackInstance(self._pedb, None, **i) for i in
-                                   data.get("padstack_instances", [])]
+        self.padstack_defs = [
+            CfgPadstackDefinition(self._pedb, None, **i) for i in data.get("padstack_definitions", [])
+        ]
+        self.padstack_instances = [
+            CfgPadstackInstance(self._pedb, None, **i) for i in data.get("padstack_instances", [])
+        ]
         self.planes = [CfgPlane(**i) for i in data.get("planes", [])]
         self.components = [CfgComponent(self._pedb, None, **i) for i in data.get("components", [])]
 

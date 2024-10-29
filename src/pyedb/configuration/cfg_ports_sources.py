@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.configuration.cfg_common import CfgBase
 from pyedb.dotnet.edb_core.edb_data.ports import WavePort
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.geometry.point_data import PointData
 
 
@@ -421,8 +421,9 @@ class CfgWavePort:
     def set_parameters_to_edb(self, edb_primitives):
         point_on_edge = PointData(self._pedb, x=self.point_on_edge[0], y=self.point_on_edge[1])
         primitive = edb_primitives[self.primitive_name]
-        pos_edge = self._pedb.edb_api.cell.terminal.PrimitiveEdge.Create(primitive._edb_object,
-                                                                         point_on_edge._edb_object)
+        pos_edge = self._pedb.edb_api.cell.terminal.PrimitiveEdge.Create(
+            primitive._edb_object, point_on_edge._edb_object
+        )
         pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb.edb_api.cell.terminal.Edge)
         edge_term = self._pedb.edb_api.cell.terminal.EdgeTerminal.Create(
             primitive._edb_object.GetLayout(), primitive._edb_object.GetNet(), self.name, pos_edge, isRef=False
@@ -448,18 +449,22 @@ class CfgDiffWavePort:
 
         kwargs["positive_terminal"]["type"] = "wave_port"
         kwargs["positive_terminal"]["name"] = self.name + ":T1"
-        self.positive_port = CfgWavePort(self._pedb,
-                                         horizontal_extent_factor=self.horizontal_extent_factor,
-                                         vertical_extent_factor=self.vertical_extent_factor,
-                                         pec_launch_width=self.pec_launch_width,
-                                         **kwargs["positive_terminal"])
+        self.positive_port = CfgWavePort(
+            self._pedb,
+            horizontal_extent_factor=self.horizontal_extent_factor,
+            vertical_extent_factor=self.vertical_extent_factor,
+            pec_launch_width=self.pec_launch_width,
+            **kwargs["positive_terminal"],
+        )
         kwargs["negative_terminal"]["type"] = "wave_port"
         kwargs["negative_terminal"]["name"] = self.name + ":T2"
-        self.negative_port = CfgWavePort(self._pedb,
-                                         horizontal_extent_factor=self.horizontal_extent_factor,
-                                         vertical_extent_factor=self.vertical_extent_factor,
-                                         pec_launch_width=self.pec_launch_width,
-                                         **kwargs["negative_terminal"])
+        self.negative_port = CfgWavePort(
+            self._pedb,
+            horizontal_extent_factor=self.horizontal_extent_factor,
+            vertical_extent_factor=self.vertical_extent_factor,
+            pec_launch_width=self.pec_launch_width,
+            **kwargs["negative_terminal"],
+        )
 
     def set_parameters_to_edb(self, edb_primitives):
         pos_term = self.positive_port.set_parameters_to_edb(edb_primitives)
