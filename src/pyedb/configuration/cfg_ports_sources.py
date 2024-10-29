@@ -68,7 +68,7 @@ class CfgSources:
 
     def apply(self):
         for src in self.sources:
-            src.create()
+            src.set_parameters_to_edb()
 
     def get_data_from_db(self):
         self.sources = []
