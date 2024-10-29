@@ -445,16 +445,17 @@ class CfgDiffWavePort:
         self.horizontal_extent_factor = kwargs.get("horizontal_extent_factor", 5)
         self.vertical_extent_factor = kwargs.get("vertical_extent_factor", 3)
         self.pec_launch_width = kwargs.get("pec_launch_width", "0.01mm")
+
+        kwargs["positive_terminal"]["type"] = "wave_port"
+        kwargs["positive_terminal"]["name"] = self.name + ":T1"
         self.positive_port = CfgWavePort(self._pedb,
-                                         name=self.name + ":T1",
-                                         type=self.type,
                                          horizontal_extent_factor=self.horizontal_extent_factor,
                                          vertical_extent_factor=self.vertical_extent_factor,
                                          pec_launch_width=self.pec_launch_width,
                                          **kwargs["positive_terminal"])
+        kwargs["negative_terminal"]["type"] = "wave_port"
+        kwargs["negative_terminal"]["name"] = self.name + ":T2"
         self.negative_port = CfgWavePort(self._pedb,
-                                         name=self.name + ":T2",
-                                         type=self.type,
                                          horizontal_extent_factor=self.horizontal_extent_factor,
                                          vertical_extent_factor=self.vertical_extent_factor,
                                          pec_launch_width=self.pec_launch_width,

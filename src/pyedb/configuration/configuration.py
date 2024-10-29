@@ -126,9 +126,6 @@ class Configuration:
         # Configure pin groups
         self.cfg_data.pin_groups.apply()
 
-        # Configure ports
-        self.cfg_data.ports.apply()
-
         # Configure sources
         self.cfg_data.sources.apply()
 
@@ -166,6 +163,9 @@ class Configuration:
 
         # Modeler
         self.cfg_data.modeler.apply()
+
+        # Configure ports
+        self.cfg_data.ports.apply()
 
         return True
 
