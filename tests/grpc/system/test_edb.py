@@ -255,6 +255,7 @@ class TestClass:
 
     def test_create_custom_cutout_1(self, edb_examples):
         """Create custom cutout 1."""
+        # DOne
         edbapp = edb_examples.get_si_verse()
         spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
         assert edbapp.components.instances["R8"].assign_spice_model(spice_path)
@@ -285,6 +286,7 @@ class TestClass:
 
     def test_create_custom_cutout_2(self, edb_examples):
         """Create custom cutout 2."""
+        # Done
         edbapp = edb_examples.get_si_verse()
         bounding = edbapp.get_bounding_box()
         assert bounding
@@ -296,20 +298,19 @@ class TestClass:
         points.append([bounding[0][0], cutout_line_y])
         points.append([bounding[0][0], bounding[0][1]])
 
-        # Remove shape that make all too complex before refactoring cutout
-
-        # assert edbapp.cutout(
-        #     signal_list=["1V0"],
-        #     reference_list=["GND"],
-        #     number_of_threads=4,
-        #     extent_type="ConvexHull",
-        #     custom_extent=points,
-        #     simple_pad_check=False,
-        # )
+        assert edbapp.cutout(
+            signal_list=["1V0"],
+            reference_list=["GND"],
+            number_of_threads=4,
+            extent_type="ConvexHull",
+            custom_extent=points,
+            simple_pad_check=False,
+        )
         edbapp.close()
 
     def test_create_custom_cutout_3(self, edb_examples):
         """Create custom cutout 3."""
+        # Done
         edbapp = edb_examples.get_si_verse()
         edbapp.components.create_port_on_component(
             "U1",
@@ -328,7 +329,7 @@ class TestClass:
             use_pyaedt_extent_computing=True,
             check_terminals=True,
         )
-        # assert edbapp.edbpath == legacy_name
+        assert edbapp.edbpath == legacy_name
         # assert edbapp.are_port_reference_terminals_connected(common_reference="GND")
 
         edbapp.close()
