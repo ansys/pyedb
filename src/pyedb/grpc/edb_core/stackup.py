@@ -82,18 +82,6 @@ class LayerCollection(GrpcLayerCollection):
         super().__init__(edb_object.msg)
         self._pedb = pedb
 
-        self._layer_type_set_mapping = {
-            "stackup_layer_set": GrpcLayerTypeSet.STACKUP_LAYER_SET,
-            "signal_layer_set": GrpcLayerTypeSet.SIGNAL_LAYER_SET,
-            "non_stackup_layer_set": GrpcLayerTypeSet.NON_STACKUP_LAYER_SET,
-            "all_layer_set": GrpcLayerTypeSet.ALL_LAYER_SET,
-        }
-        self._lc_mode_mapping = {
-            "laminate": GrpcLayerCollectionMode.LAMINATE,
-            "overlapping": GrpcLayerCollectionMode.OVERLAPPING,
-            "multizone": GrpcLayerCollectionMode.MULTIZONE,
-        }
-
     def update_layout(self):
         """Set layer collection into edb.
 
@@ -102,46 +90,6 @@ class LayerCollection(GrpcLayerCollection):
         stackup
         """
         self._pedb.layout.layer_collection = self
-
-    # def _add_layer(self, add_method, base_layer_name="", **kwargs):
-    #     """Add a layer to edb.
-    #
-    #     Parameters
-    #     ----------
-    #     add_method
-    #     base_layer_name
-    #     """
-    #     layer_clone = kwargs.get("layer_clone", None)
-    #     if layer_clone:
-    #         obj = layer_clone
-    #     else:
-    #         layer_type = kwargs.get("layer_type", None)
-    #         if not layer_type:
-    #             layer_type = kwargs["type"]
-    #         if layer_type in ["signal", "dielectric"]:
-    #             obj = StackupLayer(self._pedb, edb_object=None, **kwargs)
-    #         else:
-    #             obj = Layer(self._pedb, edb_object=None, **kwargs)
-    #     method_top_bottom = None
-    #     method_above_below = None
-    #     if add_method == "add_layer_top":
-    #         method_top_bottom = self.add_layer_top
-    #     elif add_method == "add_layer_bottom":
-    #         method_top_bottom = self.add_layer_bottom
-    #     elif add_method == "add_layer_above":
-    #         method_above_below = self.add_layer_above
-    #     elif add_method == "add_layer_below":
-    #         method_above_below = self.add_layer_below
-    #     else:  # pragma: no cover
-    #         logger.error("The way of defining layer addition is not correct")
-    #         return False
-    #
-    #     if add_method == "add_layer_top":
-    #         layer = layer if self.add_layer_top() method_top_bottom(obj) else False
-    #     elif method_above_below:
-    #         obj = obj if method_above_below(obj._edb_object, base_layer_name) else False
-    #     self.update_layout()
-    #     return obj
 
     def add_layer_top(self, name, layer_type="signal", **kwargs):
         """Add a layer on top of the stackup.
@@ -263,20 +211,26 @@ class LayerCollection(GrpcLayerCollection):
     @property
     def non_stackup_layers(self):
         """Retrieve the dictionary of signal layers."""
-        return {name: Layer(self._pedb, obj) for name, obj in self.all_layers.items() if not obj.is_stackup_layer}
+        return {
+            layer.name: Layer(self._pedb, layer) for layer in self.get_layers(GrpcLayerTypeSet.NON_STACKUP_LAYER_SET)
+        }
 
     @property
     def all_layers(self):
-        layer_list = self.get_layers()
-        return {lay.name: Layer(self._pedb, lay) for lay in layer_list}
+        return {layer.name: Layer(self._pedb, layer) for layer in self.get_layers(GrpcLayerTypeSet.ALL_LAYER_SET)}
 
     @property
     def signal_layers(self):
-        return {name: layer for name, layer in self.layers.items() if layer.type == "signal_layer"}
+        return {
+            layer.name: StackupLayer(self._pedb, layer) for layer in self.get_layers(GrpcLayerTypeSet.SIGNAL_LAYER_SET)
+        }
 
     @property
     def dielectric_layers(self):
-        return {name: layer for name, layer in self.layers.items() if layer.type == "dielectric_layer"}
+        return {
+            layer.name: StackupLayer(self._pedb, layer)
+            for layer in self.get_layers(GrpcLayerTypeSet.DIELECTRIC_LAYER_SET)
+        }
 
     @property
     def layers_by_id(self):
@@ -289,9 +243,9 @@ class LayerCollection(GrpcLayerCollection):
 
         Returns
         -------
-        Dict[str, :class:`pyedb.dotnet.edb_core.edb_data.layer_data.LayerEdbClass`]
+        Dict[str, :class:`pyedb.grpc.edb_core.edb_data.layer_data.LayerEdbClass`]
         """
-        return {name: StackupLayer(self._pedb, obj) for name, obj in self.all_layers.items() if obj.is_stackup_layer}
+        return {obj.name: StackupLayer(self._pedb, obj) for obj in self.get_layers(GrpcLayerTypeSet.STACKUP_LAYER_SET)}
 
     def find_layer_by_name(self, name: str):
         """Finds a layer with the given name.
@@ -509,26 +463,27 @@ class Stackup(LayerCollection):
         -------
 
         """
-        lc = GrpcLayerCollection.create()
+        lc = self._pedb.layout.layer_collection
         if operation in ["change_position", "change_attribute", "change_name"]:
-            layers = self.layer_collection.get_layers(GrpcLayerTypeSet.STACKUP_LAYER_SET)
-            non_stackup = self.layer_collection.get_layers(GrpcLayerTypeSet.NON_STACKUP_LAYER_SET)
-            mode = self._pedb.layout.layer_collection.mode
-            if mode.name.lower() == "overlapping":
+            _lc = GrpcLayerCollection.create()
+
+            layers = [i for i in lc.get_layers(GrpcLayerTypeSet.STACKUP_LAYER_SET)]
+            non_stackup = [i for i in lc.get_layers(GrpcLayerTypeSet.NON_STACKUP_LAYER_SET)]
+            _lc.mode = lc.mode
+            if lc.mode.name.lower() == "overlapping":
                 for layer in layers:
                     if layer.name == layer_clone.name or layer.name == base_layer:
-                        lc.add_stackup_layer_at_elevation(layer_clone)
+                        _lc.add_stackup_layer_at_elevation(layer_clone)
                     else:
-                        lc.add_stackup_layer_at_elevation(layer)
+                        _lc.add_stackup_layer_at_elevation(layer)
             else:
                 for layer in layers:
                     if layer.name == layer_clone.name or layer.name == base_layer:
-                        lc.add_layer_bottom(layer_clone)
+                        _lc.add_layer_bottom(layer_clone)
                     else:
-                        lc.add_layer_bottom(layer)
+                        _lc.add_layer_bottom(layer)
             for layer in non_stackup:
-                lc.add_layer_bottom(layer)
-            lc.mode = self._pedb.layout.layer_collection.mode
+                _lc.add_layer_bottom(layer)
         elif operation == "insert_below":
             lc.add_layer_below(layer_clone, base_layer)
         elif operation == "insert_above":
@@ -545,14 +500,19 @@ class Stackup(LayerCollection):
         return True
 
     @staticmethod
-    def _create_stackup_layer(layer_name, thickness, layer_type="signal"):
+    def _create_stackup_layer(layer_name, thickness, layer_type="signal", material="copper"):
         if layer_type == "signal":
             _layer_type = GrpcLayerType.SIGNAL_LAYER
         else:
             _layer_type = GrpcLayerType.DIELECTRIC_LAYER
+            material = "FR4_epoxy"
 
         layer = StackupLayer.create(
-            name=layer_name, layer_type=_layer_type, thickness=GrpcValue(thickness), elevation=GrpcValue(0), material=""
+            name=layer_name,
+            layer_type=_layer_type,
+            thickness=GrpcValue(thickness),
+            elevation=GrpcValue(0),
+            material=material,
         )
         return layer
 
@@ -687,15 +647,13 @@ class Stackup(LayerCollection):
             l1 = len(self.layers)
             if method == "add_at_elevation" and elevation:
                 new_layer.lower_elevation = GrpcValue(elevation)
+            if etch_factor:
+                new_layer.etch_factor = etch_factor
+            if enable_roughness:
+                new_layer.roughness_enabled = True
             self._set_layout_stackup(new_layer, method, base_layer)
             if len(self.layers) == l1:
                 self._set_layout_stackup(new_layer, method, base_layer, method=2)
-            if etch_factor:
-                new_layer = self.layers[layer_name]
-                new_layer.etch_factor = etch_factor
-            if enable_roughness:
-                new_layer = self.layers[layer_name]
-                new_layer.roughness_enabled = True
         else:
             new_layer = self._create_nonstackup_layer(layer_name, layer_type)
             self._set_layout_stackup(new_layer, "non_stackup")
