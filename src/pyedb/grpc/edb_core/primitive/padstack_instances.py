@@ -181,7 +181,7 @@ class PadstackInstance(GrpcPadstackInstance):
             r"$end 'EM properties'\n"
         )
 
-        _, p = self.get_product_property(ProductIdType.DESIGNER, 18, "")
+        p = self.get_product_property(ProductIdType.DESIGNER, 18)
         if p:
             return p
         else:

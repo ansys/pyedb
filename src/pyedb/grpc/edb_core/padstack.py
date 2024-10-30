@@ -1008,10 +1008,10 @@ class Padstacks(object):
         -------
         :class:`dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`
         """
-        padstack = None
+        padstack_def = None
         for pad in list(self.definitions.keys()):
             if pad == definition_name:
-                padstack = self.definitions[pad]
+                padstack_def = self.definitions[pad]
         position = GrpcPointData(position)
         net = self._pedb.nets.find_or_create_net(net_name)
         rotation = GrpcValue(rotation * math.pi / 180)
@@ -1034,21 +1034,24 @@ class Padstacks(object):
             tolayer = sign_layers_values[tolayer]
         if solderlayer:
             solderlayer = sign_layers_values[solderlayer]
-        if padstack:
+        if not via_name:
+            via_name = generate_unique_name(padstack_def.name)
+        if padstack_def:
             padstack_instance = PadstackInstance.create(
-                self._active_layout,
-                net,
-                via_name,
-                padstack,
-                position,
-                rotation,
-                fromlayer,
-                tolayer,
-                solderlayer,
-                None,
+                layout=self._active_layout,
+                net=net,
+                name=via_name,
+                padstack_def=padstack_def,
+                position_x=position.x,
+                position_y=position.y,
+                rotation=rotation,
+                top_layer=fromlayer,
+                bottom_layer=tolayer,
+                solder_ball_layer=solderlayer,
+                layer_map=None,
             )
             padstack_instance.is_layout_pin = is_pin
-            return PadstackInstance(self._pedb, padstack_instance._edb_object)
+            return PadstackInstance(self._pedb, padstack_instance)
         else:
             return False
 
