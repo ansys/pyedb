@@ -518,14 +518,22 @@ class TestClass:
 
     def test_configure_hfss_analysis_setup_enforce_causality(self, edb_examples):
         """Configure HFSS analysis setup."""
-        # TODO check bug #441 status. failed to add SweepData
+        # Done
         edb = edb_examples.get_si_verse()
         assert len(edb.active_cell.simulation_setups) == 0
-        assert len(list(edb.active_cell.simulation_setups)) == 1
-        setup = list(edb.active_cell.simulation_setups)[0]
-        # assert len(list(ssi.SweepDataList)) == 1
-        # sweep = list(ssi.SweepDataList)[0]
-        # assert not sweep.EnforceCausality
+        edb.hfss.add_setup()
+        assert edb.hfss_setups
+        assert len(edb.active_cell.simulation_setups) == 1
+        assert list(edb.active_cell.simulation_setups)[0]
+        setup = list(edb.hfss_setups.values())[0]
+        setup.add_sweep()
+        assert len(setup.sweep_data) == 1
+        assert not setup.sweep_data[0].interpolation_data.enforce_causality
+        sweeps = setup.sweep_data
+        for sweep in sweeps:
+            sweep.interpolation_data.enforce_causality = True
+        setup.sweep_data = sweeps
+        assert setup.sweep_data[0].interpolation_data.enforce_causality
         edb.close()
 
     def test_configure_hfss_analysis_setup(self, edb_examples):
