@@ -1026,58 +1026,59 @@ class TestClass:
 
     def test_create_padstack_instance(self, edb_examples):
         """Create padstack instances."""
-        # TODO Check material init
-        # edb = Edb(edbversion=desktop_version, restart_rpc_server=True)
-        # edb.stackup.add_layer(layer_name="1_Top", fillMaterial="air", thickness="30um")
-        # edb.stackup.add_layer(layer_name="contact", fillMaterial="air", thickness="100um", base_layer="1_Top")
-        #
-        # assert edb.padstacks.create(
-        #     pad_shape="Rectangle",
-        #     padstackname="pad",
-        #     x_size="350um",
-        #     y_size="500um",
-        #     holediam=0,
-        # )
-        # pad_instance1 = edb.padstacks.place(position=["-0.65mm", "-0.665mm"], definition_name="pad")
-        # assert pad_instance1
-        # pad_instance1.start_layer = "1_Top"
-        # pad_instance1.stop_layer = "1_Top"
-        # assert pad_instance1.start_layer == "1_Top"
-        # assert pad_instance1.stop_layer == "1_Top"
-        #
-        # assert edb.padstacks.create(pad_shape="Circle", padstackname="pad2", paddiam="350um", holediam="15um")
-        # pad_instance2 = edb.padstacks.place(position=["-0.65mm", "-0.665mm"], definition_name="pad2")
-        # assert pad_instance2
-        # pad_instance2.start_layer = "1_Top"
-        # pad_instance2.stop_layer = "1_Top"
-        # assert pad_instance2.start_layer == "1_Top"
-        # assert pad_instance2.stop_layer == "1_Top"
-        #
-        # assert edb.padstacks.create(
-        #     pad_shape="Circle",
-        #     padstackname="test2",
-        #     paddiam="400um",
-        #     holediam="200um",
-        #     antipad_shape="Rectangle",
-        #     anti_pad_x_size="700um",
-        #     anti_pad_y_size="800um",
-        #     start_layer="1_Top",
-        #     stop_layer="1_Top",
-        # )
-        #
-        # pad_instance3 = edb.padstacks.place(position=["-1.65mm", "-1.665mm"], definition_name="test2")
-        # assert pad_instance3.start_layer == "1_Top"
-        # assert pad_instance3.stop_layer == "1_Top"
+        # Done
+        edb = Edb(edbversion=desktop_version, restart_rpc_server=True)
+        edb.stackup.add_layer(layer_name="1_Top", fillMaterial="air", thickness="30um")
+        edb.stackup.add_layer(layer_name="contact", fillMaterial="air", thickness="100um", base_layer="1_Top")
+
+        assert edb.padstacks.create(
+            pad_shape="Rectangle",
+            padstackname="pad",
+            x_size="350um",
+            y_size="500um",
+            holediam=0,
+        )
+        pad_instance1 = edb.padstacks.place(position=["-0.65mm", "-0.665mm"], definition_name="pad")
+        assert pad_instance1
+        pad_instance1.start_layer = "1_Top"
+        pad_instance1.stop_layer = "1_Top"
+        assert pad_instance1.start_layer == "1_Top"
+        assert pad_instance1.stop_layer == "1_Top"
+
+        assert edb.padstacks.create(pad_shape="Circle", padstackname="pad2", paddiam="350um", holediam="15um")
+        pad_instance2 = edb.padstacks.place(position=["-0.65mm", "-0.665mm"], definition_name="pad2")
+        assert pad_instance2
+        pad_instance2.start_layer = "1_Top"
+        pad_instance2.stop_layer = "1_Top"
+        assert pad_instance2.start_layer == "1_Top"
+        assert pad_instance2.stop_layer == "1_Top"
+
+        assert edb.padstacks.create(
+            pad_shape="Circle",
+            padstackname="test2",
+            paddiam="400um",
+            holediam="200um",
+            antipad_shape="Rectangle",
+            anti_pad_x_size="700um",
+            anti_pad_y_size="800um",
+            start_layer="1_Top",
+            stop_layer="1_Top",
+        )
+
+        pad_instance3 = edb.padstacks.place(position=["-1.65mm", "-1.665mm"], definition_name="test2")
+        assert pad_instance3.start_layer == "1_Top"
+        assert pad_instance3.stop_layer == "1_Top"
+        # TODO check with dev the Property ID
         # pad_instance3.dcir_equipotential_region = True
         # assert pad_instance3.dcir_equipotential_region
         # pad_instance3.dcir_equipotential_region = False
         # assert not pad_instance3.dcir_equipotential_region
-        #
-        # trace = edb.modeler.create_trace([[0, 0], [0, 10e-3]], "1_Top", "0.1mm", "trace_with_via_fence")
-        # edb.padstacks.create("via_0")
-        # trace.create_via_fence("1mm", "1mm", "via_0")
-        #
-        # edb.close()
+
+        trace = edb.modeler.create_trace([[0, 0], [0, 10e-3]], "1_Top", "0.1mm", "trace_with_via_fence")
+        edb.padstacks.create("via_0")
+        trace.create_via_fence("1mm", "1mm", "via_0")
+
+        edb.close()
         pass
 
     def test_stackup_properties(self):
