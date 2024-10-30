@@ -132,10 +132,8 @@ class Polygon(GrpcPolygon, Primitive):
         >>>     polygon.move(vector=["2mm", "100um"])
         """
         if vector and isinstance(vector, list) and len(vector) == 2:
-            _vector = GrpcPointData(vector)
-            polygon_data = GrpcPolygonData(self.polygon_data)
-            polygon_data.move(_vector)
-            self.polygon_data = polygon_data
+            _vector = [GrpcValue(pt).value for pt in vector]
+            self.polygon_data = self.polygon_data.move(_vector)
             return True
         return False
 
@@ -156,19 +154,16 @@ class Polygon(GrpcPolygon, Primitive):
         """
         if not isinstance(factor, str):
             factor = float(factor)
-            polygon_data = GrpcPolygonData(points=self.polygon_data.points)
             if not center:
                 center = self.polygon_data.bounding_circle()[0]
                 if center:
-                    polygon_data.scale(factor, center)
-                    self.polygon_data = polygon_data
+                    self.polygon_data = self.polygon_data.scale(factor, center)
                     return True
                 else:
                     self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
             elif isinstance(center, list) and len(center) == 2:
                 center = GrpcPointData([GrpcValue(center[0]), GrpcValue(center[1])])
-                polygon_data.scale(factor, center)
-                self.polygon_data = polygon_data
+                self.polygon_data = self.polygon_data.scale(factor, center)
                 return True
         return False
 
@@ -195,15 +190,13 @@ class Polygon(GrpcPolygon, Primitive):
         >>>     polygon.rotate(angle=45)
         """
         if angle:
-            polygon_data = GrpcPolygonData(self.polygon_data)
             if not center:
-                center = polygon_data.bounding_circle[0]
+                center = self.polygon_data.bounding_circle()[0]
                 if center:
-                    polygon_data.rotate(angle * math.pi / 180, center)
-                    self.polygon_data = polygon_data
+                    self.polygon_data = self.polygon_data.rotate(angle * math.pi / 180, center)
+                    return True
             elif isinstance(center, list) and len(center) == 2:
-                polygon_data.rotate(angle * math.pi / 180, center)
-                self.polygon_data = polygon_data
+                self.polygon_data = self.polygon_data.rotate(angle * math.pi / 180, center)
                 return True
         return False
 
@@ -221,9 +214,7 @@ class Polygon(GrpcPolygon, Primitive):
            ``True`` when successful, ``False`` when failed.
         """
         if layer and isinstance(layer, str) and layer in self._pedb.stackup.signal_layers:
-            polygon_data = GrpcPolygonData(points=self.polygon_data.points)
-            Polygon.create(layout=self._pedb.active_layout, layer=layer, net=self.net.name, polygon_data=polygon_data)
-            self.delete()
+            self.layer = self._pedb.stackup.layers[layer]
             return True
         return False
 

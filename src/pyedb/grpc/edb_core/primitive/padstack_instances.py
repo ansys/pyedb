@@ -540,8 +540,8 @@ class PadstackInstance(GrpcPadstackInstance):
         """
         back_drill = super().get_back_drill_by_layer(from_bottom)
         layer = back_drill[0].name
-        offset = [back_drill[1].x.value, back_drill[1].y.value]
-        diameter = back_drill[2].value
+        offset = round(back_drill[1].value, 9)
+        diameter = round(back_drill[2].value, 9)
         return layer, offset, diameter
 
     def get_back_drill_by_depth(self, from_bottom=True):
@@ -591,7 +591,7 @@ class PadstackInstance(GrpcPadstackInstance):
             Default value is `True`
         """
         if isinstance(drill_to_layer, str):
-            drill_to_layer = self._pedb.satckup.layers[drill_to_layer]
+            drill_to_layer = self._pedb.stackup.layers[drill_to_layer]
         super().set_back_drill_by_layer(
             drill_to_layer=drill_to_layer,
             offset=GrpcValue(offset),

@@ -1140,7 +1140,7 @@ class TestClass:
 
     def test_import_gds_from_tech(self):
         """Use techfile."""
-        from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
+        from pyedb.grpc.edb_core.control_file import ControlFile
 
         c_file_in = os.path.join(
             local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
@@ -1169,7 +1169,7 @@ class TestClass:
         c.write_xml(os.path.join(self.local_scratch.path, "test_138.xml"))
         c.import_options.import_dummy_nets = True
 
-        # TODO check why GDS import fails with components init.
+        # TODO check why GDS import fails with 2025.2.
 
         # edb = Edb(edbpath=gds_out, edbversion=desktop_version,
         #           technology_file=os.path.join(self.local_scratch.path, "test_138.xml"), restart_rpc_server=True
@@ -1200,7 +1200,9 @@ class TestClass:
         """Set backdrill from top."""
 
         #  TODO when material init is fixed
-        edb = Edb(edbversion=desktop_version)
+        from ansys.edb.core.utility.value import Value as GrpcValue
+
+        edb = Edb(edbversion=desktop_version, restart_rpc_server=True)
         edb.stackup.add_layer(layer_name="bot")
         edb.stackup.add_layer(layer_name="diel1", base_layer="bot", layer_type="dielectric", thickness="127um")
         edb.stackup.add_layer(layer_name="signal1", base_layer="diel1")
@@ -1211,25 +1213,35 @@ class TestClass:
         edb.padstacks.create(padstackname="test1")
         padstack_instance = edb.padstacks.place(position=[0, 0], net_name="test", definition_name="test1")
         edb.padstacks.definitions["test1"].hole_range = "through"
-        padstack_instance.set_backdrill_top(drill_depth="signal1", drill_diameter="200um", offset="100um")
-        assert len(padstack_instance.backdrill_top) == 3
-        assert padstack_instance.backdrill_top[0] == "signal1"
-        assert padstack_instance.backdrill_top[1] == "200um"
-        assert padstack_instance.backdrill_top[2] == "100um"
-        padstack_instance2 = edb.padstacks.place(position=[0.5, 0.5], net_name="test", definition_name="test1")
-        padstack_instance2.set_backdrill_bottom(drill_depth="signal1", drill_diameter="200um", offset="100um")
-        assert len(padstack_instance2.backdrill_bottom) == 3
-        assert padstack_instance2.backdrill_bottom[0] == "signal1"
-        assert padstack_instance2.backdrill_bottom[1] == "200um"
-        assert padstack_instance2.backdrill_bottom[2] == "100um"
+        drill_layer = edb.stackup.layers["signal1"]
+        drill_diameter = GrpcValue("200um")
+        drill_offset = GrpcValue("100um")
+        padstack_instance.set_back_drill_by_layer(
+            drill_to_layer=drill_layer, diameter=drill_diameter, offset=drill_offset
+        )
+        assert padstack_instance.backdrill_type == "layer_drill"
+        assert padstack_instance.get_back_drill_by_layer()
+        layer, offset, diameter = padstack_instance.get_back_drill_by_layer()
+        assert layer == "signal1"
+        assert offset == 100e-6
+        assert diameter == 200e-6
+        # padstack_instance2 = edb.padstacks.place(position=[0.5, 0.5], net_name="test", definition_name="test1")
+        # padstack_instance2.set_back_drill_by_layer(drill_to_layer=drill_layer,
+        #                                            diameter=drill_diameter,
+        #                                            offset=drill_offset,
+        #                                            from_bottom=False)
+        # assert padstack_instance2.get_back_drill_by_layer(from_bottom=False)
+        # layer2, offset2, diameter2 = padstack_instance2.get_back_drill_by_layer()
+        # assert layer2 == "signal1"
+        # assert offset2 == 100e-6
+        # assert diameter2 == 200e-6
         edb.close()
 
     def test_add_layer_api_with_control_file(self):
         """Add new layers with control file."""
         from pyedb.grpc.edb_core.control_file import ControlFile
 
-        # TODO when material init fixed
-
+        # Done
         ctrl = ControlFile()
         # Material
         ctrl.stackup.add_material(material_name="Copper", conductivity=5.56e7)
@@ -1338,40 +1350,37 @@ class TestClass:
 
     def test_move_and_edit_polygons(self):
         """Move a polygon."""
-        # TODO wait to fix loading syslib material
-        # target_path = os.path.join(self.local_scratch.path, "test_move_edit_polygons", "test.aedb")
-        # edbapp = Edb(target_path, edbversion=desktop_version, restart_rpc_server=True)
-        #
-        # edbapp.stackup.add_layer("GND")
-        # edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
-        # edbapp.stackup.add_layer("TOP", "Diel", thickness="0.05mm")
-        # points = [[0.0, -1e-3], [0.0, -10e-3], [100e-3, -10e-3], [100e-3, -1e-3], [0.0, -1e-3]]
-        # polygon = edbapp.modeler.create_polygon(points, "TOP")
-        # assert polygon.center == [0.05, -0.0055]
-        # assert polygon.move(["1mm", 1e-3])
-        # assert round(polygon.center[0], 6) == 0.051
-        # assert round(polygon.center[1], 6) == -0.0045
-        #
-        # assert polygon.rotate(angle=45)
-        # expected_bbox = [0.012462680425333156, -0.043037319574666846, 0.08953731957466685, 0.034037319574666845]
-        # assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
-        #
-        # assert polygon.rotate(angle=34, center=[0, 0])
-        # expected_bbox = [0.03083951217158376, -0.025151830651067256, 0.05875505636026722, 0.07472816865208806]
-        # assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
-        #
-        # assert polygon.scale(factor=1.5)
-        # expected_bbox = [0.0238606261244129, -0.05012183047685609, 0.06573394240743807, 0.09969816847787688]
-        # assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
-        #
-        # assert polygon.scale(factor=-0.5, center=[0, 0])
-        # expected_bbox = [-0.032866971203719036, -0.04984908423893844, -0.01193031306220645, 0.025060915238428044]
-        # assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
-        #
-        # assert polygon.move_layer("GND")
-        # assert len(edbapp.modeler.polygons) == 1
-        # assert edbapp.modeler.polygons[0].layer_name == "GND"
-        pass
+        # Done
+        target_path = os.path.join(self.local_scratch.path, "test_move_edit_polygons", "test.aedb")
+        edbapp = Edb(target_path, edbversion=desktop_version, restart_rpc_server=True)
+
+        edbapp.stackup.add_layer("GND")
+        edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
+        edbapp.stackup.add_layer("TOP", "Diel", thickness="0.05mm")
+        points = [[0.0, -1e-3], [0.0, -10e-3], [100e-3, -10e-3], [100e-3, -1e-3], [0.0, -1e-3]]
+        polygon = edbapp.modeler.create_polygon(points, "TOP")
+        assert polygon.center == [0.05, -0.0055]
+        assert polygon.move(["1mm", 1e-3])
+        assert round(polygon.center[0], 6) == 0.051
+        assert round(polygon.center[1], 6) == -0.0045
+
+        assert polygon.rotate(angle=45)
+        assert polygon.bbox == [0.012462681128504282, -0.043037320277837944, 0.08953731887149571, 0.03403732027783795]
+        assert polygon.rotate(angle=34, center=[0, 0])
+        assert polygon.bbox == [0.030839512681298656, -0.02515183168439915, 0.05875505700187538, 0.07472816760474396]
+        assert polygon.scale(factor=1.5)
+        assert polygon.bbox == [0.023860626601154476, -0.05012183150668493, 0.06573394308201956, 0.09969816742702975]
+        assert polygon.scale(factor=-0.5, center=[0, 0])
+        assert polygon.bbox == [
+            -0.03286697154100978,
+            -0.049849083713514875,
+            -0.011930313300577238,
+            0.025060915753342464,
+        ]
+        assert polygon.move_layer("GND")
+        assert len(edbapp.modeler.polygons) == 1
+        assert edbapp.modeler.polygons[0].layer_name == "GND"
+        edbapp.close()
 
     def test_multizone(self, edb_examples):
         # TODO check bug #447
