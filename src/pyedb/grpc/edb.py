@@ -4022,9 +4022,7 @@ class EdbGrpc(EdbInit):
             for inst in void_info[1]:
                 if not terminal_diameter:
                     pad_diameter = (
-                        self.padstacks.definitions[inst.padstack_definition]
-                        .pad_by_layer[reference_layer]
-                        .parameters_values[0]
+                        self.padstacks.definitions[inst.padstack_def.name].pad_by_layer[reference_layer][1][0].value
                     )
                 else:
                     pad_diameter = GrpcValue(terminal_diameter).value

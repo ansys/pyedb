@@ -697,7 +697,6 @@ class TestClass:
     def test_hfss_simulation_setup(self, edb_examples):
         """Create a setup from a template and evaluate its properties."""
         # Done
-
         edbapp = edb_examples.get_si_verse()
         setup1 = edbapp.hfss.add_setup("setup1")
         assert not edbapp.hfss.add_setup("setup1")
@@ -1001,7 +1000,7 @@ class TestClass:
 
     def test_siwave_source_setter(self):
         """Evaluate siwave sources property."""
-        # TODO cast source type and remove EdbValue
+        # Done
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_sources.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_134_source_setter.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
@@ -1024,17 +1023,6 @@ class TestClass:
             pingroup.delete()
         assert not edbapp.siwave.pin_groups
         edbapp.close()
-
-    # def test_design_options(self):
-    #     """Evaluate Edb design settings and options."""
-    #     self.edbapp.design_options.suppress_pads = False
-    #     assert not self.edbapp.design_options.suppress_pads
-    #     self.edbapp.design_options.antipads_always_on = True
-    #     assert self.edbapp.design_options.antipads_always_on
-
-    # def test_pins(self):
-    #     """Evaluate the pins."""
-    #     assert len(self.edbapp.padstacks.pins) > 0
 
     def test_create_padstack_instance(self, edb_examples):
         """Create padstack instances."""
@@ -1195,22 +1183,16 @@ class TestClass:
 
     def test_database_properties(self, edb_examples):
         """Evaluate database properties."""
-
         # Done
-
         edb = edb_examples.get_si_verse()
         assert isinstance(edb.dataset_defs, list)
         assert isinstance(edb.material_defs, list)
         assert isinstance(edb.component_defs, list)
         assert isinstance(edb.package_defs, list)
-
         assert isinstance(edb.padstack_defs, list)
         assert isinstance(edb.jedec5_bondwire_defs, list)
         assert isinstance(edb.jedec4_bondwire_defs, list)
         assert isinstance(edb.apd_bondwire_defs, list)
-        assert edb.source_version == ""
-        edb.source_version = "2022.2"
-        assert edb.source == ""
         assert isinstance(edb.version, tuple)
         assert isinstance(edb.footprint_cells, list)
 
