@@ -3073,7 +3073,11 @@ class EdbGrpc(EdbInit):
         Dict[str, :class:`legacy.edb_core.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`]
 
         """
-        return {name: i for name, i in self.setups.items() if i.setup_type == "HFSS"}
+        setups = {}
+        for setup in self.active_cell.simulation_setups:
+            if setup.type.name == "HFSS":
+                setups[setup.name] = HfssSimulationSetup(self, setup)
+        return setups
 
     @property
     def siwave_dc_setups(self):
