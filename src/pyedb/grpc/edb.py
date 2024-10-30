@@ -3983,7 +3983,7 @@ class EdbGrpc(EdbInit):
                 "No padstack instances found inside evaluated voids during model creation for arbitrary" "waveports"
             )
             return False
-        cloned_edb = EdbGrpc(edbpath=output_edb, edbversion=self.edbversion)
+        cloned_edb = EdbGrpc(edbpath=output_edb, edbversion=self.edbversion, restart_rpc_server=True)
 
         cloned_edb.stackup.add_layer(
             layer_name="ports",

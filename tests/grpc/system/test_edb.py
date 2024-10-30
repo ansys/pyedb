@@ -1383,17 +1383,17 @@ class TestClass:
         edbapp.close()
 
     def test_multizone(self, edb_examples):
-        # TODO check bug #447
+        # TODO check bug #467 failing to retrieve zone primitives.
 
-        # edbapp = edb_examples.get_multizone_pcb()
-        # common_reference_net = "gnd"
-        # edb_zones = edbapp.copy_zones()
-        # assert edb_zones
-        # defined_ports, project_connexions = edbapp.cutout_multizone_layout(edb_zones, common_reference_net)
-        #
-        # assert defined_ports
-        # assert project_connexions
-        # edbapp.close_edb()
+        edbapp = edb_examples.get_multizone_pcb()
+        common_reference_net = "gnd"
+        edb_zones = edbapp.copy_zones()
+        assert edb_zones
+        defined_ports, project_connexions = edbapp.cutout_multizone_layout(edb_zones, common_reference_net)
+
+        assert defined_ports
+        assert project_connexions
+        edbapp.close_edb()
         pass
 
     def test_icepak(self, edb_examples):
@@ -1434,7 +1434,7 @@ class TestClass:
         edbapp.close()
 
     def test_arbitrary_wave_ports(self):
-        # TODO check bug #448 PolygonData.scale failing
+        # TODO check later when sever instances is improved.
         example_folder = os.path.join(local_path, "example_models", test_subfolder)
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
         target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
@@ -1450,7 +1450,8 @@ class TestClass:
         edbapp.close()
 
     def test_bondwire(self, edb_examples):
-        # TODO check bug #449  and # 450 change trajectory and start end elevation.
+        # TODO check bug #450 change trajectory and start end elevation.
+        # Done
         edbapp = edb_examples.get_si_verse()
         bondwire_1 = edbapp.modeler.create_bondwire(
             definition_name="Default",
@@ -1477,11 +1478,11 @@ class TestClass:
         assert bondwire_1.cross_section_height == 0.0001
         bondwire_1.set_definition_name("J4_LH10")
         assert bondwire_1.get_definition_name() == "J4_LH10"
-        # bondwire_1.trajectory = [1, 0.1, 0.2, 0.3]
-        # assert bondwire_1.trajectory == [1, 0.1, 0.2, 0.3]
+        bondwire_1.trajectory = [1, 0.1, 0.2, 0.3]
+        assert bondwire_1.trajectory == [1, 0.1, 0.2, 0.3]
         bondwire_1.width = "0.2mm"
         assert bondwire_1.width == 0.0002
-        bondwire_1.start_elevation = "16_Bottom"
+        # bondwire_1.start_elevation = "16_Bottom"
         # bondwire_1.end_elevation = "16_Bottom"
         # assert len(edbapp.layout.bondwires) == 1
         edbapp.close()
