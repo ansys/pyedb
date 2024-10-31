@@ -773,7 +773,9 @@ class Primitive(Connectable):
         maximum_corner_extension : float, optional
             The maximum corner extension (when round corners are not used) at which point the corner is clipped.
         """
-        return self.polygon_data.expand(offset, tolerance, round_corners, maximum_corner_extension)
+        pd = self.polygon_data
+        pd.expand(offset, tolerance, round_corners, maximum_corner_extension)
+        self.polygon_data = pd
 
     def scale(self, factor, center=None):
         """Scales the polygon relative to a center point by a factor.
