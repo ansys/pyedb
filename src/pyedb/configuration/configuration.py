@@ -327,7 +327,7 @@ class Configuration:
         self,
         file_path,
         stackup=True,
-        package_definitions=True,
+        package_definitions=False,
         setups=True,
         sources=True,
         ports=True,
