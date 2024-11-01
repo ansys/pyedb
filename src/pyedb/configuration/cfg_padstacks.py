@@ -62,7 +62,9 @@ class CfgPadstacks:
 
     def retrieve_parameters_from_edb(self):
         self.clean()
-        for _, obj in self._pedb.padstacks.definitions.items():
+        for name, obj in self._pedb.padstacks.definitions.items():
+            if name.lower() == "symbol":
+                continue
             pdef = CfgPadstackDefinition(self._pedb, obj)
             pdef.retrieve_parameters_from_edb()
             self.definitions.append(pdef)
