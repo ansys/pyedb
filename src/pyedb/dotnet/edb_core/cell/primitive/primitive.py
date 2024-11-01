@@ -753,27 +753,6 @@ class Primitive(Connectable):
             points.append(point)
         return points
 
-    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
-        """Expand the polygon shape by an absolute value in all direction.
-        Offset can be negative for negative expansion.
-
-        Parameters
-        ----------
-        offset : float, optional
-            Offset value in meters.
-        tolerance : float, optional
-            Tolerance in meters.
-        round_corners : bool, optional
-            Whether to round corners or not.
-            If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
-        maximum_corner_extension : float, optional
-            The maximum corner extension (when round corners are not used) at which point the corner is clipped.
-        """
-        pd = self.polygon_data
-        pd.expand(offset, tolerance, round_corners, maximum_corner_extension)
-        self.polygon_data = pd
-        return pd
-
     def scale(self, factor, center=None):
         """Scales the polygon relative to a center point by a factor.
 
