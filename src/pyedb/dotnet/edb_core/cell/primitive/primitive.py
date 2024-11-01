@@ -603,10 +603,6 @@ class Primitive(Connectable):
         """:class:`pyedb.dotnet.edb_core.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
         return PolygonData(self._pedb, self._edb_object.GetPolygonData())
 
-    @polygon_data.setter
-    def polygon_data(self, poly):
-        self._edb_object.SetPolygonData(poly._edb_object)
-
     def add_void(self, point_list):
         """Add a void to current primitive.
 
@@ -776,6 +772,7 @@ class Primitive(Connectable):
         pd = self.polygon_data
         pd.expand(offset, tolerance, round_corners, maximum_corner_extension)
         self.polygon_data = pd
+        return pd
 
     def scale(self, factor, center=None):
         """Scales the polygon relative to a center point by a factor.
