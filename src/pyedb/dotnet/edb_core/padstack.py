@@ -189,6 +189,8 @@ class EdbPadstacks(object):
             return self._definitions
         self._definitions = {}
         for padstackdef in self._pedb.padstack_defs:
+            if padstackdef.GetName().lower() == "symbol":
+                continue
             PadStackData = padstackdef.GetData()
             if len(PadStackData.GetLayerNames()) >= 1:
                 self._definitions[padstackdef.GetName()] = EDBPadstack(padstackdef, self)
