@@ -4503,7 +4503,7 @@ class Edb(Database):
         """Workflow class."""
         return Workflow(self)
 
-    def export_gds_comp_xml(self,comps_to_export,gds_comps_unit="mm",control_path=None):
+    def export_gds_comp_xml(self,comps_to_export, gds_comps_unit="mm", control_path=None):
         """Exports an XML file with selected components information for use in a GDS import.
 
         Parameters
@@ -4524,7 +4524,7 @@ class Edb(Database):
         fo_txt = "<!-- To be copied inside of XML's <GDS_COMPONENTS> session -->\n"
         fo_txt += '<GDS_COMPONENTS LengthUnit="{}">\n'.format(gds_comps_unit)
 
-        if comps_to_export == []:
+        if not comps_to_export:
             comps_to_export = self.components.components
 
         for comp in comps_to_export:
