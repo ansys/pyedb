@@ -30,13 +30,14 @@ import ansys.edb.core.database as database
 from pyedb import __version__
 from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import env_path, env_value, is_linux
+from pyedb.grpc.rpc_session import RpcSession
 from pyedb.misc.misc import list_installed_ansysem
 
 
 class EdbInit(object):
     """Edb Dot Net Class."""
 
-    def __init__(self, edbversion, port, restart_server):
+    def __init__(self, edbversion):
         self._global_logger = pyedb_logger
         self.logger = pyedb_logger
         if not edbversion:  # pragma: no cover
@@ -103,6 +104,12 @@ class EdbInit(object):
         Database or None
             The opened Database object, or None if not found.
         """
+        if not RpcSession.pid:
+            port = RpcSession.get_random_free_port()
+            RpcSession.start(edb_version=self.edbversion, port=port, restart_server=False)
+            if not RpcSession.pid:
+                self.logger.error("Failed to start RPC server.")
+                return False
         self._db = database.Database.open(db_path, read_only)
         return self._db
 
@@ -132,6 +139,8 @@ class EdbInit(object):
             Unsaved changes will be lost.
         """
         self._db.close()
+        if terminate_rpc_session:
+            RpcSession.rpc_session.disconnect()
         return True
 
     @property

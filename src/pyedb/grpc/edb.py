@@ -38,7 +38,6 @@ import traceback
 import warnings
 from zipfile import ZipFile as zpf
 
-from ansys.edb.core.database import Database as GrpcDatabase
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
@@ -184,7 +183,7 @@ class EdbGrpc(EdbInit):
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
-        EdbInit.__init__(self, edbversion=edbversion, port=port, restart_server=restart_rpc_server)
+        EdbInit.__init__(self, edbversion=edbversion)
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
@@ -500,7 +499,7 @@ class EdbGrpc(EdbInit):
         """
         self.standalone = self.standalone
         try:
-            self._db = GrpcDatabase.open(self.edbpath, self.isreadonly)
+            self._db = self.open(self.edbpath, self.isreadonly)
         except Exception as e:
             self.logger.error(e.args[0])
         if self._db.is_null:

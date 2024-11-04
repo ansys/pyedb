@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import os
+from random import randint
 import sys
 
 from ansys.edb.core.session import launch_session
@@ -35,7 +36,7 @@ from pyedb.misc.misc import list_installed_ansysem
 class RpcSession:
     """Static Class managing RPC server."""
 
-    server_pid = 0
+    pid = 0
     rpc_session = None
     base_path = None
     port = 10000
@@ -85,10 +86,10 @@ class RpcSession:
         os.environ["ANSYS_OADIR"] = oa_directory
         os.environ["PATH"] = "{};{}".format(os.environ["PATH"], RpcSession.base_path)
 
-        if RpcSession.server_pid:
+        if RpcSession.pid:
             if restart_server:
                 pyedb_logger.logger.info("Restarting RPC server")
-                RpcSession.kill()
+                RpcSession.__kill()
                 RpcSession.__start_rpc_server()
             else:
                 pyedb_logger.info(f"Server already running on port {RpcSession.port}")
@@ -104,20 +105,20 @@ class RpcSession:
     def __get_process_id():
         proc = [p for p in list(psutil.process_iter()) if "edb_rpc" in p.name().lower()]
         if proc:
-            RpcSession.server_pid = proc[0].pid
+            RpcSession.pid = proc[0].pid
         else:
-            RpcSession.server_pid = 0
+            RpcSession.pid = 0
 
     @staticmethod
     def __start_rpc_server():
         RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
         if RpcSession.rpc_session:
-            RpcSession.server_pid = RpcSession.rpc_session.local_server_proc.pid
+            RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
             pyedb_logger.logger.info("Grpc session started")
 
     @staticmethod
     def __kill():
-        p = psutil.Process(RpcSession.server_pid)
+        p = psutil.Process(RpcSession.pid)
         p.terminate()
 
     @staticmethod
@@ -127,3 +128,17 @@ class RpcSession:
         """
         if RpcSession.rpc_session:
             RpcSession.rpc_session.disconnect()
+
+    @staticmethod
+    def get_random_free_port():
+        port = randint(49152, 65535)
+        ports = []
+        while True:
+            conns = psutil.net_connections()
+            for conn in conns:
+                ports.append(conn.laddr[1])
+            if port in ports:
+                port = randint(49152, 65535)
+            else:
+                break
+        return port
