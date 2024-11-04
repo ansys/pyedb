@@ -4599,7 +4599,7 @@ class Edb(Database):
         """Workflow class."""
         return Workflow(self)
 
-    def export_gds_comp_xml(self,comps_to_export, gds_comps_unit="mm", control_path=None):
+    def export_gds_comp_xml(self, comps_to_export, gds_comps_unit="mm", control_path=None):
         """Exports an XML file with selected components information for use in a GDS import.
 
         Parameters
@@ -4628,13 +4628,17 @@ class Edb(Database):
             fo_txt += "\t<GDS_COMPONENT>\n"
             for pin in ocomp.pins:
                 pins_position_unit = unit_converter(ocomp.pins[pin].position, output_units=gds_comps_unit)
-                fo_txt += '\t\t<GDS_PIN Name="{}" x="{}" y="{}" Layer="{}"/>\n'.format(ocomp.pins[pin].component_pin,
-                                                                                       pins_position_unit[0],
-                                                                                       pins_position_unit[1],
-                                                                                       ocomp.pins[pin].placement_layer)
-            fo_txt += '\t\t<Component RefDes="{}" PartName="{}" PartType="{}">\n'.format(ocomp.refdes,ocomp.partname,ocomp.type)
-            fo_txt += '\t\t</Component>\n'
-            fo_txt += '\t</GDS_COMPONENT>\n'
+                fo_txt += '\t\t<GDS_PIN Name="{}" x="{}" y="{}" Layer="{}"/>\n'.format(
+                    ocomp.pins[pin].component_pin,
+                    pins_position_unit[0],
+                    pins_position_unit[1],
+                    ocomp.pins[pin].placement_layer,
+                )
+            fo_txt += '\t\t<Component RefDes="{}" PartName="{}" PartType="{}">\n'.format(
+                ocomp.refdes, ocomp.partname, ocomp.type
+            )
+            fo_txt += "\t\t</Component>\n"
+            fo_txt += "\t</GDS_COMPONENT>\n"
         fo_txt += "</GDS_COMPONENTS>\n"
 
         with open(control_path, "w") as output_file:
