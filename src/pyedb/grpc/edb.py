@@ -481,7 +481,7 @@ class EdbGrpc(EdbInit):
             self._db = GrpcDatabase.open(self.edbpath, self.isreadonly)
         except Exception as e:
             self.logger.error(e.args[0])
-        if not self.active_db:
+        if self._db.is_null:
             self.logger.warning("Error Opening db")
             self._active_cell = None
             return None

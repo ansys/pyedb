@@ -56,7 +56,8 @@ class EdbInit(object):
                 self.logger.info("Restarting RPC server")
                 self.kill_rpc_server()
                 self.start_rpc_server(port)
-            self.logger.info("Server already running")
+            else:
+                self.logger.info("Server already running")
         else:
             self.start_rpc_server(port)
             if self.session:
@@ -68,13 +69,18 @@ class EdbInit(object):
     @property
     def db(self):
         """Active database object."""
-        return self._db
+        return self.db
 
     def start_rpc_server(self, port):
         self.session = launch_session(self.base_path, port_num=port)
         if self.session:
             self.server_pid = self.session.local_server_proc.pid
             self.logger.info("Grpc session started")
+
+    def connect_session(self, port):
+        from ansys.edb.core.session import session
+
+        self.session = session(self.base_path, port)
 
     def kill_rpc_server(self):
         p = psutil.Process(self.server_pid)
@@ -134,13 +140,28 @@ class EdbInit(object):
         """Save any changes into a file."""
         return self._db.save()
 
-    def close(self):
+    def close(self, terminate_rpc_session=True):
         """Close the database.
+
+        Parameters
+        ----------
+        terminate_rpc_session : bool, optional
+
 
         .. note::
             Unsaved changes will be lost.
         """
-        return self._db.close()
+        self._db.close()
+        if terminate_rpc_session:
+            self.session.disconnect()
+            if not self.server_pid:
+                self.logger.info(
+                    "EDB closed, RPC session was closed, if you have other opened EDB you won't be "
+                    "able to access them. To prevent any issues if your code is managing several EDB "
+                    "and want to keep RPC session open set flag `terminate_rpc_session=True`"
+                )
+            return True
+        return False
 
     @property
     def top_circuit_cells(self):
