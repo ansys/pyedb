@@ -108,7 +108,7 @@ class Terminal(Connectable):
         point_data = self._pedb.point_data(0, 0)
         layer = list(self._pedb.stackup.layers.values())[0]._edb_layer
         if self._edb_object.GetParameters(point_data, layer):
-            return layer
+            return self._pedb.stackup.all_layers[layer.GetName()]
         else:
             self._pedb.logger.warning(f"No pad parameters found for terminal {self.name}")
 
@@ -128,7 +128,7 @@ class Terminal(Connectable):
     @location.setter
     def location(self, value):
         layer = self.layer
-        self._edb_object.SetParameters(self._pedb.point_data(*value), layer)
+        self._edb_object.SetParameters(self._pedb.point_data(*value), layer._edb_object)
 
     @property
     def is_circuit_port(self):
@@ -158,16 +158,6 @@ class Terminal(Connectable):
         ppp = self._port_post_processing_prop
         ppp.DoRenormalize = value
         self._port_post_processing_prop = ppp
-
-    @property
-    def net_name(self):
-        """Net name.
-
-        Returns
-        -------
-        str
-        """
-        return self.net.name
 
     @property
     def terminal_type(self):
@@ -233,9 +223,10 @@ class Terminal(Connectable):
         """Get reference terminal."""
 
         edb_terminal = self._edb_object.GetReferenceTerminal()
-        terminal = self._pedb.terminals[edb_terminal.GetName()]
-        if not terminal.is_null:
-            return terminal
+        if not edb_terminal.IsNull():
+            return self._pedb.terminals[edb_terminal.GetName()]
+        else:
+            return None
 
     @ref_terminal.setter
     def ref_terminal(self, value):
@@ -418,7 +409,7 @@ class Terminal(Connectable):
         if gnd_net is not None:
             power_ground_net_names = [gnd_net]
         else:
-            power_ground_net_names = [net for net in self._pedb.nets.power_nets.keys()]
+            power_ground_net_names = [net for net in self._pedb.nets.power.keys()]
         comp_ref_pins = [i for i in pin_list if i.GetNet().GetName() in power_ground_net_names]
         if len(comp_ref_pins) == 0:  # pragma: no cover
             self._pedb.logger.error(

@@ -13,7 +13,7 @@
 
 import tempfile
 
-import pyaedt
+import ansys.aedt.core
 
 import pyedb
 from pyedb.misc.downloads import download_file
@@ -25,8 +25,8 @@ temp_dir = tempfile.TemporaryDirectory(suffix=".ansys")
 target_aedb = download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_dir.name)
 print("Project is located in ", target_aedb)
 
-# Select EDB version (change it manually if needed, e.g. "2024.1")
-edb_version = "2024.1"
+# Select EDB version (change it manually if needed, e.g. "2024.2")
+edb_version = "2024.2"
 print(f"EDB version: {edb_version}")
 
 edb = pyedb.Edb(edbpath=target_aedb, edbversion=edb_version)
@@ -76,7 +76,7 @@ edb.close_edb()
 #
 # Note that there may be some delay while AEDT is being launched.
 
-hfss = pyaedt.Hfss3dLayout(
+hfss = ansys.aedt.core.Hfss3dLayout(
     projectname=target_aedb,
     specified_version=edb_version,
     non_graphical=False,

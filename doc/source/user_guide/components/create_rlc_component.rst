@@ -19,7 +19,7 @@ This page shows how to create an RLC component between pins:
     # download and open EDB project
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-    edbapp = Edb(edbpath=targetfile, edbversion="2024.1")
+    edbapp = Edb(edbpath=targetfile, edbversion="2024.2")
 
     # retrieving pins from component U1 and net 1V0
     pins = edbapp.components.get_pin_from_component("U1", "1V0")
@@ -37,4 +37,4 @@ This page shows how to create an RLC component between pins:
 
 .. image:: ../../resources/create_rlc_boundary_on_pin.png
   :width: 800
-  :alt: Create rlc boundary
+  :alt: Create RLC boundary

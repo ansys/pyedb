@@ -9,12 +9,12 @@ from pathlib import Path
 import tempfile
 
 from IPython.display import display
+from ansys.aedt.core.downloads import download_file
 import pandas as pd
-from pyaedt.downloads import download_file
 
 from pyedb import Edb
 
-AEDT_VERSION = "2024.1"
+AEDT_VERSION = "2024.2"
 NG_MODE = False
 
 # -
@@ -73,6 +73,9 @@ edbapp.materials.materials
 
 edbapp.materials["fr4_epoxy"].loss_tangent
 
-# ## Close EDB
+# ## Save and close Edb
+# The temporary folder will be deleted once the execution of this script is finished. Replace **edbapp.save()** with
+# **edbapp.save_as("C:/example.aedb")** to keep the example project.
 
+edbapp.save()
 edbapp.close()

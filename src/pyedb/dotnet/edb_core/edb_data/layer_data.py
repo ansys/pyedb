@@ -23,6 +23,13 @@
 from __future__ import absolute_import
 
 
+def layer_cast(pedb, edb_object):
+    if edb_object.IsStackupLayer():
+        return StackupLayerEdbClass(pedb, edb_object.Clone(), name=edb_object.GetName())
+    else:
+        return LayerEdbClass(pedb, edb_object.Clone(), name=edb_object.GetName())
+
+
 class LayerEdbClass(object):
     """Manages Edb Layers. Replaces EDBLayer."""
 
@@ -51,6 +58,8 @@ class LayerEdbClass(object):
         for k, v in kwargs.items():
             if k in dir(self):
                 self.__setattr__(k, v)
+            elif k == "roughness":
+                self.properties = {"roughness": v}
             else:
                 self._pedb.logger.error(f"{k} is not a valid layer attribute")
 
@@ -171,7 +180,7 @@ class LayerEdbClass(object):
             RGB.
         """
         layer_color = self._edb_layer.GetColor()
-        return layer_color.Item1, layer_color.Item2, layer_color.Item3
+        return [layer_color.Item1, layer_color.Item2, layer_color.Item3]
 
     @color.setter
     def color(self, rgb):
@@ -230,6 +239,26 @@ class LayerEdbClass(object):
         layer_clone.SetLayerType(self._layer_type_mapping[value])
         self._type = value
         self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
+
+    @property
+    def properties(self):
+        data = {}
+        data["name"] = self.name
+        data["type"] = self.type
+        data["color"] = self.color
+        return data
+
+    @properties.setter
+    def properties(self, params):
+        name = params.get("name", "")
+        if name:
+            self.name = name
+        type = params.get("type", "")
+        if type:
+            self.type = type
+        color = params.get("color", "")
+        if color:
+            self.color = color
 
 
 class StackupLayerEdbClass(LayerEdbClass):
@@ -698,3 +727,75 @@ class StackupLayerEdbClass(LayerEdbClass):
                     layer["side_hallhuray_surface_ratio"],
                     apply_on_surface="side",
                 )
+
+    @property
+    def properties(self):
+        data = {}
+        data["name"] = self.name
+        data["type"] = self.type
+        data["material"] = self.material
+        data["fill_material"] = self.fill_material
+        data["thickness"] = self._edb_object.GetThicknessValue().ToString()
+        data["color"] = self.color
+
+        roughness = {}
+        for region in ["top", "bottom", "side"]:
+            temp = {}
+            r_model = self._edb_object.GetRoughnessModel(
+                getattr(self._pedb._edb.Cell.RoughnessModel.Region, region.capitalize())
+            )
+            if r_model.ToString().split(".")[-1] == "HurrayRoughnessModel":
+                temp["model"] = "huray"
+                temp["nodule_radius"] = r_model.NoduleRadius.ToString()
+                temp["surface_ratio"] = r_model.SurfaceRatio.ToString()
+            else:
+                temp["model"] = "groisse"
+                temp["roughness"] = r_model.Roughness.ToString()
+            roughness[region] = temp
+        roughness["enabled"] = self._edb_object.IsRoughnessEnabled()
+        data["roughness"] = roughness
+        return data
+
+    @properties.setter
+    def properties(self, params):
+        name = params.get("name")
+        if name:
+            self.name = name
+        type = params.get("type")
+        if type:
+            self.type = type
+        material = params.get("material")
+        if material:
+            self.material = material
+        fill_material = params.get("fill_material")
+        if fill_material:
+            self.fill_material = fill_material
+        thickness = params.get("thickness")
+        if thickness:
+            self.thickness = self._pedb.edb_value(thickness)
+        color = params.get("color")
+        if color:
+            self.color = color
+        roughness = params.get("roughness")
+        if roughness:
+            layer_clone = self._edb_layer
+            layer_clone.SetRoughnessEnabled(roughness["enabled"])
+            for region in ["top", "bottom", "side"]:
+                r_data = roughness.get(region)
+                if r_data:
+                    if r_data["model"] == "huray":
+                        r_model = self._pedb._edb.Cell.HurrayRoughnessModel(
+                            self._pedb.edb_value(r_data["nodule_radius"]), self._pedb.edb_value(r_data["surface_ratio"])
+                        )
+                    else:
+                        r_model = self._pedb._edb.Cell.GroisseRoughnessModel(self._pedb.edb_value(r_data["roughness"]))
+                else:
+                    r_model = self._pedb._edb.Cell.HurrayRoughnessModel(
+                        self._pedb.edb_value("0"), self._pedb.edb_value("0")
+                    )
+                layer_clone.SetRoughnessModel(
+                    getattr(self._pedb._edb.Cell.RoughnessModel.Region, region.capitalize()), r_model
+                )
+            self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
+
+        layer_clone.SetRoughnessEnabled(True)

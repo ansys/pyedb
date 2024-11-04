@@ -89,7 +89,7 @@ class Step(object):
         net_name = net.name
         logical_net = LogicalNet()
         logical_net.name = net_name
-        net_pins = list(net.PadstackInstances)
+        net_pins = list(net._edb_object.PadstackInstances)
         for pin in net_pins:
             new_pin_ref = logical_net.get_pin_ref_def()
             new_pin_ref.pin = pin.GetName()
@@ -250,9 +250,9 @@ class Step(object):
                 )
                 if pdef_name in padstack_defs:
                     padstack_def = padstack_defs[pdef_name]
-                    comp_name = padstack_instance.GetComponent().GetName()
+                    comp_name = padstack_instance._edb_object.GetComponent().GetName()
                     if padstack_instance.is_pin and comp_name:
-                        component_inst = self._pedb.components.components[comp_name]
+                        component_inst = self._pedb.components.instances[comp_name]
                         layers[layer_name].add_component_padstack_instance_feature(
                             component_inst, padstack_instance, top_bottom_layers, padstack_def
                         )

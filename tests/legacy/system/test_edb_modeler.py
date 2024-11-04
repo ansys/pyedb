@@ -47,7 +47,7 @@ class TestClass:
     def test_modeler_polygons(self):
         """Evaluate modeler polygons"""
         assert len(self.edbapp.modeler.polygons) > 0
-        assert self.edbapp.modeler.polygons[0].is_void == self.edbapp.modeler.polygons[0].IsVoid()
+        assert not self.edbapp.modeler.polygons[0].is_void
 
         poly0 = self.edbapp.modeler.polygons[0]
         assert self.edbapp.modeler.polygons[0].clone()
@@ -282,10 +282,10 @@ class TestClass:
 
     def test_modeler_create_circle(self):
         """Create circle."""
-        poly = self.edbapp.modeler.create_polygon_from_points([[0, 0], [100, 0], [100, 100], [0, 100]], "1_Top")
+        poly = self.edbapp.modeler.create_polygon([[0, 0], [100, 0], [100, 100], [0, 100]], "1_Top")
         assert poly
         poly.add_void([[20, 20], [20, 30], [100, 30], [100, 20]])
-        poly2 = self.edbapp.modeler.create_polygon_from_points([[60, 60], [60, 150], [150, 150], [150, 60]], "1_Top")
+        poly2 = self.edbapp.modeler.create_polygon([[60, 60], [60, 150], [150, 150], [150, 60]], "1_Top")
         new_polys = poly.subtract(poly2)
         assert len(new_polys) == 1
         circle = self.edbapp.modeler.create_circle("1_Top", 40, 40, 15)
@@ -490,7 +490,7 @@ class TestClass:
         self.local_scratch.copyfolder(source_path_edb, target_path_edb)
         edbapp = Edb(target_path_edb, desktop_version)
         cap = edbapp.components.capacitors["C1"]
-        edbapp.siwave.create_circuit_port_on_pin(pos_pin=cap.pins["1"], neg_pin=cap.pins["2"])
+        edbapp.siwave.create_circuit_port_on_pin(pos_pin=cap.pins["1"]._edb_object, neg_pin=cap.pins["2"]._edb_object)
         edbapp.save_edb_as(r"C:\Users\gkorompi\Downloads\AFT")
         edbapp.components.capacitors["C3"].pins
         edbapp.padstacks.pins
@@ -567,3 +567,10 @@ class TestClass:
         assert centerline == [[-0.0005, 0.0], [-0.0005, 0.01]]
         edb.modeler.paths[0].center_line = [[0.0, 0.0], [0.0, 5e-3]]
         assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.0, 5e-3]]
+
+    def test_polygon_data_refaxtoring_bounding_box(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        poly_with_voids = [pp for pp in edbapp.modeler.polygons if pp.has_voids]
+        for poly in poly_with_voids:
+            for void in poly.voids:
+                assert void.polygon_data.bounding_box

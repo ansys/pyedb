@@ -47,16 +47,22 @@ class PinGroupTerminal(Terminal):
         -------
         :class:`pyedb.dotnet.edb_core.edb_data.terminals.PinGroupTerminal`
         """
-        net_obj = self._pedb.edb_api.cell.net.find_by_name(self._pedb.active_layout, net_name)
+        net_obj = self._pedb.layout.find_net_by_name(net_name)
         term = self._pedb.edb_api.cell.terminal.PinGroupTerminal.Create(
             self._pedb.active_layout,
-            net_obj.api_object,
+            net_obj._edb_object,
             name,
             self._pedb.siwave.pin_groups[pin_group_name]._edb_object,
             is_ref,
         )
         term = PinGroupTerminal(self._pedb, term)
-        return term if not term.is_null else False
+        if term.is_null:
+            msg = f"Failed to create terminal. "
+            if name in self._pedb.terminals:
+                msg += f"Terminal {name} already exists."
+            raise ValueError(msg)
+        else:
+            return term
 
     def pin_group(self):
         """Gets the pin group the terminal refers to."""

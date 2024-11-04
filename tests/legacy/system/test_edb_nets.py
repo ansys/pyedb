@@ -148,7 +148,7 @@ class TestClass:
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
         edbapp.close_edb()
 
-    def test_layout_auto_parametrization(self):
+    def test_layout_auto_parametrization_0(self):
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_auto_parameters", "test.aedb")
         output_path = os.path.join(self.local_scratch.path, "test_auto_parameters", "test_absolute.aedb")
@@ -167,10 +167,18 @@ class TestClass:
             open_aedb_at_end=False,
         )
         assert "$1_Top_value" in parameters
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization_1(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
-            layers=True, materials=False, via_holes=False, pads=False, antipads=False, traces=False
+            layers=True, materials=False, via_holes=False, pads=False, antipads=False, traces=False, via_offset=False
         )
-        assert len(list(edbapp.variables.keys())) == len(list(edbapp.stackup.stackup_layers.keys()))
+        assert len(list(edbapp.variables.keys())) == len(list(edbapp.stackup.layers.keys()))
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization_2(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False,
             materials=True,
@@ -181,24 +189,46 @@ class TestClass:
             material_filter=["copper"],
             expand_voids_size=0.0001,
             expand_polygons_size=0.0001,
+            via_offset=True,
         )
+        assert "via_offset_x" in edbapp.variables
         assert "$sigma_copper_delta" in edbapp.variables
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization_3(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=True, via_holes=False, pads=False, antipads=False, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 26
+        assert len(list(edbapp.variables.values())) == 13
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization_4(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=True, pads=False, antipads=False, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 27
+        assert len(list(edbapp.variables.values())) == 3
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization_5(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=True, antipads=False, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 30
+        assert len(list(edbapp.variables.values())) == 5
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization_6(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=False, antipads=True, traces=False
         )
-        assert len(list(edbapp.variables.values())) == 30
+        assert len(list(edbapp.variables.values())) == 2
+        edbapp.close_edb()
+
+    def test_layout_auto_parametrization_7(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False,
             materials=False,
@@ -208,5 +238,5 @@ class TestClass:
             traces=True,
             trace_net_filter=["SFPA_Tx_Fault", "SFPA_Tx_Disable", "SFPA_SDA", "SFPA_SCL", "SFPA_Rx_LOS"],
         )
-        assert len(list(edbapp.variables.keys())) == 31
+        assert len(list(edbapp.variables.keys())) == 3
         edbapp.close_edb()

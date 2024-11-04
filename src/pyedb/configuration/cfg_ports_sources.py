@@ -21,6 +21,9 @@
 # SOFTWARE.
 
 from pyedb.configuration.cfg_common import CfgBase
+from pyedb.dotnet.edb_core.edb_data.ports import WavePort
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.dotnet.edb_core.geometry.point_data import PointData
 
 
 class CfgTerminalInfo(CfgBase):
@@ -45,7 +48,7 @@ class CfgCoordianteTerminalInfo(CfgTerminalInfo):
         self.net = self.value["net"]
 
     def export_properties(self):
-        return {"layer": self.layer, "point_x": self.point_x, "point_y": self.point_y, "net": self.net}
+        return {"coordinates": {"layer": self.layer, "point": [self.point_x, self.point_y], "net": self.net}}
 
 
 class CfgNearestPinTerminalInfo(CfgTerminalInfo):
@@ -65,7 +68,7 @@ class CfgSources:
 
     def apply(self):
         for src in self.sources:
-            src.create()
+            src.set_parameters_to_edb()
 
     def get_data_from_db(self):
         self.sources = []
@@ -114,11 +117,28 @@ class CfgSources:
 class CfgPorts:
     def __init__(self, pedb, ports_data):
         self._pedb = pedb
-        self.ports = [CfgPort(self._pedb, **p) for p in ports_data]
+
+        self.ports = []
+        for p in ports_data:
+            if p["type"] == "wave_port":
+                self.ports.append(CfgWavePort(self._pedb, **p))
+            elif p["type"] == "diff_wave_port":
+                self.ports.append(CfgDiffWavePort(self._pedb, **p))
+            elif p["type"] in ["coax", "circuit"]:
+                self.ports.append(CfgPort(self._pedb, **p))
+            else:
+                raise ValueError("Unknown port type")
 
     def apply(self):
+        edb_primitives = {}
+        for i in self._pedb.layout.primitives:
+            if i.aedt_name:
+                edb_primitives[i.aedt_name] = i
         for p in self.ports:
-            p.create()
+            if p.type in ["wave_port", "diff_wave_port"]:
+                p.set_parameters_to_edb(edb_primitives)
+            else:
+                p.set_parameters_to_edb()
 
     def get_data_from_db(self):
         self.ports = []
@@ -126,7 +146,10 @@ class CfgPorts:
         ports = {name: t for name, t in ports.items() if t.is_port}
 
         for _, p in ports.items():
-            port_type = "circuit" if p.is_circuit_port else "coax"
+            if not p.ref_terminal:
+                port_type = "coax"
+            else:
+                port_type = "circuit"
 
             if p.terminal_type == "PinGroupTerminal":
                 refdes = ""
@@ -135,6 +158,9 @@ class CfgPorts:
             elif p.terminal_type == "PadstackInstanceTerminal":
                 refdes = p.component.refdes if p.component else ""
                 pos_term_info = {"pin": p.padstack_instance.component_pin}
+            elif p.terminal_type == "PointTerminal":
+                refdes = ""
+                pos_term_info = {"coordinates": {"layer": p.layer.name, "point": p.location, "net": p.net.name}}
 
             if port_type == "circuit":
                 neg_term = self._pedb.terminals[p.ref_terminal.name]
@@ -143,6 +169,14 @@ class CfgPorts:
                     neg_term_info = {"pin_group": pg.name}
                 elif neg_term.terminal_type == "PadstackInstanceTerminal":
                     neg_term_info = {"pin": neg_term.padstack_instance.component_pin}
+                elif neg_term.terminal_type == "PointTerminal":
+                    neg_term_info = {
+                        "coordinates": {
+                            "layer": neg_term.layer.name,
+                            "point": neg_term.location,
+                            "net": neg_term.net.name,
+                        }
+                    }
 
                 cfg_port = CfgPort(
                     self._pedb,
@@ -174,8 +208,8 @@ class CfgPorts:
 class CfgCircuitElement(CfgBase):
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
-        self.name = kwargs.get("name", None)
-        self.type = kwargs.get("type", None)
+        self.name = kwargs["name"]
+        self.type = kwargs["type"]
         self.reference_designator = kwargs.get("reference_designator", None)
         self.distributed = kwargs.get("distributed", False)
 
@@ -228,7 +262,7 @@ class CfgCircuitElement(CfgBase):
                 neg_obj = self._create_pin_group(pins)
                 pos_objs.update(neg_obj)
         elif pos_type == "pin":
-            pins = {pos_value: self._pedb.components.components[self.reference_designator].pins[pos_value]}
+            pins = {pos_value: self._pedb.components.instances[self.reference_designator].pins[pos_value]}
             pos_objs.update(pins)
         else:
             raise f"Wrong positive terminal type {pos_type}"
@@ -263,7 +297,7 @@ class CfgCircuitElement(CfgBase):
                     # create pin group
                     neg_obj = self._create_pin_group(pins, True)
                 elif neg_type == "pin":
-                    neg_obj = {neg_value: self._pedb.components.components[self.reference_designator].pins[neg_value]}
+                    neg_obj = {neg_value: self._pedb.components.instances[self.reference_designator].pins[neg_value]}
                 else:
                     raise f"Wrong negative terminal type {neg_type}"
                 self.neg_terminal = [
@@ -274,7 +308,7 @@ class CfgCircuitElement(CfgBase):
         terminal_value = terminal_value if isinstance(terminal_value, list) else [terminal_value]
 
         def get_pin_obj(pin_name):
-            return {pin_name: self._pedb.components.components[self.reference_designator].pins[pin_name]}
+            return {pin_name: self._pedb.components.instances[self.reference_designator].pins[pin_name]}
 
         pins = dict()
         if terminal_type == "pin":
@@ -307,7 +341,7 @@ class CfgPort(CfgCircuitElement):
     def __init__(self, pedb, **kwargs):
         super().__init__(pedb, **kwargs)
 
-    def create(self):
+    def set_parameters_to_edb(self):
         """Create port."""
         self._create_terminals()
         is_circuit_port = True if self.type == "circuit" else False
@@ -323,13 +357,15 @@ class CfgPort(CfgCircuitElement):
         return circuit_elements
 
     def export_properties(self):
-        return {
+        data = {
             "name": self.name,
             "type": self.type,
             "reference_designator": self.reference_designator,
             "positive_terminal": self.positive_terminal_info.export_properties(),
-            "negative_terminal": self.negative_terminal_info.export_properties(),
         }
+        if self.negative_terminal_info:
+            data.update({"negative_terminal": self.negative_terminal_info.export_properties()})
+        return data
 
 
 class CfgSource(CfgCircuitElement):
@@ -340,7 +376,7 @@ class CfgSource(CfgCircuitElement):
 
         self.magnitude = kwargs.get("magnitude", 0.001)
 
-    def create(self):
+    def set_parameters_to_edb(self):
         """Create sources."""
         self._create_terminals()
         # is_circuit_port = True if self.type == "circuit" else False
@@ -369,3 +405,75 @@ class CfgSource(CfgCircuitElement):
             "positive_terminal": self.positive_terminal_info.export_properties(),
             "negative_terminal": self.negative_terminal_info.export_properties(),
         }
+
+
+class CfgWavePort:
+    def __init__(self, pedb, **kwargs):
+        self._pedb = pedb
+        self.name = kwargs["name"]
+        self.type = kwargs["type"]
+        self.primitive_name = kwargs["primitive_name"]
+        self.point_on_edge = kwargs["point_on_edge"]
+        self.horizontal_extent_factor = kwargs.get("horizontal_extent_factor", 5)
+        self.vertical_extent_factor = kwargs.get("vertical_extent_factor", 3)
+        self.pec_launch_width = kwargs.get("pec_launch_width", "0.01mm")
+
+    def set_parameters_to_edb(self, edb_primitives):
+        point_on_edge = PointData(self._pedb, x=self.point_on_edge[0], y=self.point_on_edge[1])
+        primitive = edb_primitives[self.primitive_name]
+        pos_edge = self._pedb.edb_api.cell.terminal.PrimitiveEdge.Create(
+            primitive._edb_object, point_on_edge._edb_object
+        )
+        pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb.edb_api.cell.terminal.Edge)
+        edge_term = self._pedb.edb_api.cell.terminal.EdgeTerminal.Create(
+            primitive._edb_object.GetLayout(), primitive._edb_object.GetNet(), self.name, pos_edge, isRef=False
+        )
+        edge_term.SetImpedance(self._pedb.edb_value(50))
+        wave_port = WavePort(self._pedb, edge_term)
+        wave_port.horizontal_extent_factor = self.horizontal_extent_factor
+        wave_port.vertical_extent_factor = self.vertical_extent_factor
+        wave_port.pec_launch_width = self.pec_launch_width
+        wave_port.hfss_type = "Wave"
+        wave_port.do_renormalize = True
+        return wave_port
+
+
+class CfgDiffWavePort:
+    def __init__(self, pedb, **kwargs):
+        self._pedb = pedb
+        self.name = kwargs["name"]
+        self.type = kwargs["type"]
+        self.horizontal_extent_factor = kwargs.get("horizontal_extent_factor", 5)
+        self.vertical_extent_factor = kwargs.get("vertical_extent_factor", 3)
+        self.pec_launch_width = kwargs.get("pec_launch_width", "0.01mm")
+
+        kwargs["positive_terminal"]["type"] = "wave_port"
+        kwargs["positive_terminal"]["name"] = self.name + ":T1"
+        self.positive_port = CfgWavePort(
+            self._pedb,
+            horizontal_extent_factor=self.horizontal_extent_factor,
+            vertical_extent_factor=self.vertical_extent_factor,
+            pec_launch_width=self.pec_launch_width,
+            **kwargs["positive_terminal"],
+        )
+        kwargs["negative_terminal"]["type"] = "wave_port"
+        kwargs["negative_terminal"]["name"] = self.name + ":T2"
+        self.negative_port = CfgWavePort(
+            self._pedb,
+            horizontal_extent_factor=self.horizontal_extent_factor,
+            vertical_extent_factor=self.vertical_extent_factor,
+            pec_launch_width=self.pec_launch_width,
+            **kwargs["negative_terminal"],
+        )
+
+    def set_parameters_to_edb(self, edb_primitives):
+        pos_term = self.positive_port.set_parameters_to_edb(edb_primitives)
+        neg_term = self.negative_port.set_parameters_to_edb(edb_primitives)
+        edb_list = convert_py_list_to_net_list(
+            [pos_term._edb_object, neg_term._edb_object], self._pedb.edb_api.cell.terminal.Terminal
+        )
+        _edb_boundle_terminal = self._pedb.edb_api.cell.terminal.BundleTerminal.Create(edb_list)
+        _edb_boundle_terminal.SetName(self.name)
+        pos, neg = list(_edb_boundle_terminal.GetTerminals())
+        pos.SetName(self.name + ":T1")
+        neg.SetName(self.name + ":T2")

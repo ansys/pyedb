@@ -10,12 +10,12 @@ import json
 import os
 import tempfile
 
-from pyaedt import Hfss3dLayout
-from pyaedt.downloads import download_file
+from ansys.aedt.core import Hfss3dLayout
+from ansys.aedt.core.downloads import download_file
 
 from pyedb import Edb
 
-AEDT_VERSION = "2024.1"
+AEDT_VERSION = "2024.2"
 NG_MODE = False
 
 # -
@@ -174,5 +174,5 @@ solutions.plot()
 
 h3d.close_desktop()
 
-# All project files are saved in the folder ``temp_file.dir``. If you've run this example as a Jupyter notbook you
+# All project files are saved in the folder ``temp_file.dir``. If you've run this example as a Jupyter notebook you
 # can retrieve those project files.

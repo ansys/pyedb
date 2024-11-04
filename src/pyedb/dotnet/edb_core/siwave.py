@@ -912,7 +912,7 @@ class EdbSiwave(object):
             Name of the source.
 
         """
-        if source.name in [i.GetName() for i in self._layout.terminals]:
+        if source.name in [i.name for i in self._layout.terminals]:
             source.name = generate_unique_name(source.name, n=3)
             self._logger.warning("Port already exists with same name. Renaming to {}".format(source.name))
         pos_pin_group = self._pedb.components.create_pingroup_from_pins(source.positive_node.node_pins)
@@ -1235,7 +1235,7 @@ class EdbSiwave(object):
         pin_numbers = [str(p) for p in pin_numbers]
         if group_name is None:
             group_name = self._edb.cell.hierarchy.pin_group.GetUniqueName(self._active_layout)
-        comp = self._pedb.components.components[reference_designator]
+        comp = self._pedb.components.instances[reference_designator]
         pins = [pin.pin for name, pin in comp.pins.items() if name in pin_numbers]
         edb_pingroup = self._edb.cell.hierarchy.pin_group.Create(
             self._active_layout, group_name, convert_py_list_to_net_list(pins)

@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 from pyedb.dotnet.edb_core.dotnet.database import (
     DifferentialPairDotNet,
     ExtendedNetDotNet,
@@ -27,7 +26,6 @@ from pyedb.dotnet.edb_core.dotnet.database import (
     NetDotNet,
 )
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.dotnet.edb_core.edb_data.primitives_data import cast
 
 
 class EDBNetsData(NetDotNet):
@@ -42,15 +40,6 @@ class EDBNetsData(NetDotNet):
     >>> edb_net.name # Class Property
     >>> edb_net.name # EDB Object Property
     """
-
-    def __getattr__(self, key):
-        try:
-            return self[key]
-        except:
-            try:
-                return getattr(self.net_object, key)
-            except AttributeError:
-                raise AttributeError("Attribute not present")
 
     def __init__(self, raw_net, core_app):
         self._app = core_app
@@ -68,7 +57,10 @@ class EDBNetsData(NetDotNet):
         -------
         list of :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives`
         """
-        return [cast(i, self._app) for i in self.net_object.Primitives]
+        from pyedb.dotnet.edb_core.cell.layout import primitive_cast
+
+        return [primitive_cast(self._app, i) for i in self.net_object.Primitives]
+        # return [self._app.layout.find_object_by_id(i.GetId()) for i in self.net_object.Primitives]
 
     @property
     def padstack_instances(self):
@@ -77,10 +69,11 @@ class EDBNetsData(NetDotNet):
         Returns
         -------
         list of :class:`pyedb.dotnet.edb_core.edb_data.padstacks_data.EDBPadstackInstance`"""
-        name = self.name
-        return [
-            EDBPadstackInstance(i, self._app) for i in self.net_object.PadstackInstances if i.GetNet().GetName() == name
-        ]
+        # name = self.name
+        # return [
+        # EDBPadstackInstance(i, self._app) for i in self.net_object.PadstackInstances if i.GetNet().GetName() == name
+        # ]
+        return [EDBPadstackInstance(i, self._app) for i in self.net_object.PadstackInstances]
 
     @property
     def components(self):
@@ -143,7 +136,7 @@ class EDBNetsData(NetDotNet):
             Whether to show the plot or not. Default is `True`.
         """
 
-        self._app.nets.plot(
+        return self._app.nets.plot(
             self.name,
             layers=layers,
             show_legend=show_legend,

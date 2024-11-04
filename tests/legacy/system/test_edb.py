@@ -34,7 +34,7 @@ from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
 from pyedb.generic.constants import RadiationBoxType, SourceType
-from pyedb.generic.general_methods import is_linux
+from pyedb.generic.general_methods import is_linux, isclose
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
@@ -279,9 +279,9 @@ class TestClass:
             keep_lines_as_path=True,
         )
         assert "A0_N" not in edbapp.nets.nets
-        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", order_by_area=True), list)
-        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True), list)
-        assert isinstance(edbapp.nets.find_and_fix_disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
+        assert isinstance(edbapp.layout_validation.disjoint_nets("GND", order_by_area=True), list)
+        assert isinstance(edbapp.layout_validation.disjoint_nets("GND", keep_only_main_net=True), list)
+        assert isinstance(edbapp.layout_validation.disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
         assert edbapp.layout_validation.fix_self_intersections("PGND")
 
         edbapp.close()
@@ -347,6 +347,9 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
 
         edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp.components.create_pingroup_from_pins(
+            [i for i in list(edbapp.components.instances["U1"].pins.values()) if i.net_name == "GND"]
+        )
 
         assert edbapp.cutout(
             signal_list=["DDR4_DQS0_P", "DDR4_DQS0_N"],
@@ -354,6 +357,7 @@ class TestClass:
             number_of_threads=4,
             extent_type="ConvexHull",
             use_pyaedt_extent_computing=True,
+            include_pingroups=True,
             check_terminals=True,
             expansion_factor=4,
         )
@@ -507,9 +511,9 @@ class TestClass:
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "edge_ports.aedb"),
             edbversion=desktop_version,
         )
-        poly_list = [poly for poly in edb.layout.primitives if int(poly.GetPrimitiveType()) == 2]
-        port_poly = [poly for poly in poly_list if poly.GetId() == 17][0]
-        ref_poly = [poly for poly in poly_list if poly.GetId() == 19][0]
+        poly_list = [poly for poly in edb.layout.primitives if int(poly._edb_object.GetPrimitiveType()) == 2]
+        port_poly = [poly for poly in poly_list if poly.id == 17][0]
+        ref_poly = [poly for poly in poly_list if poly.id == 19][0]
         port_location = [-65e-3, -13e-3]
         ref_location = [-63e-3, -13e-3]
         assert edb.hfss.create_edge_port_on_polygon(
@@ -518,8 +522,8 @@ class TestClass:
             terminal_point=port_location,
             reference_point=ref_location,
         )
-        port_poly = [poly for poly in poly_list if poly.GetId() == 23][0]
-        ref_poly = [poly for poly in poly_list if poly.GetId() == 22][0]
+        port_poly = [poly for poly in poly_list if poly.id == 23][0]
+        ref_poly = [poly for poly in poly_list if poly.id == 22][0]
         port_location = [-65e-3, -10e-3]
         ref_location = [-65e-3, -10e-3]
         assert edb.hfss.create_edge_port_on_polygon(
@@ -528,7 +532,7 @@ class TestClass:
             terminal_point=port_location,
             reference_point=ref_location,
         )
-        port_poly = [poly for poly in poly_list if poly.GetId() == 25][0]
+        port_poly = [poly for poly in poly_list if poly.id == 25][0]
         port_location = [-65e-3, -7e-3]
         assert edb.hfss.create_edge_port_on_polygon(
             polygon=port_poly, terminal_point=port_location, reference_layer="gnd"
@@ -597,7 +601,9 @@ class TestClass:
         self.local_scratch.copyfolder(example_project, target_path)
         edb = Edb(target_path, edbversion=desktop_version)
         pins = edb.components.get_pin_from_component("U1", "1V0")
+        pins = [edb.layout.find_object_by_id(i.GetId()) for i in pins]
         ref_pins = edb.components.get_pin_from_component("U1", "GND")
+        ref_pins = [edb.layout.find_object_by_id(i.GetId()) for i in ref_pins]
         assert edb.components.create([pins[0], ref_pins[0]], "test_0rlc", r_value=1.67, l_value=1e-13, c_value=1e-11)
         assert edb.components.create([pins[0], ref_pins[0]], "test_1rlc", r_value=None, l_value=1e-13, c_value=1e-11)
         assert edb.components.create([pins[0], ref_pins[0]], "test_2rlc", r_value=None, c_value=1e-13)
@@ -682,7 +688,7 @@ class TestClass:
         assert port_hori.ref_terminal
 
         kwargs = {
-            "layer_name": "1_Top",
+            "layer_name": "Top",
             "net_name": "SIGP",
             "width": "0.1mm",
             "start_cap_style": "Flat",
@@ -713,15 +719,17 @@ class TestClass:
         wave_port.do_renormalize = False
         assert not wave_port.do_renormalize
         assert edb.hfss.create_differential_wave_port(
-            traces[0].id,
-            trace_paths[0][0],
             traces[1].id,
+            trace_paths[0][0],
+            traces[2].id,
             trace_paths[1][0],
             horizontal_extent_factor=8,
             port_name="df_port",
         )
         assert edb.ports["df_port"]
         p, n = edb.ports["df_port"].terminals
+        assert p.name == "df_port:T1"
+        assert n.name == "df_port:T2"
         assert edb.ports["df_port"].decouple()
         p.couple_ports(n)
 
@@ -1006,6 +1014,7 @@ class TestClass:
         )
         edbapp.close()
 
+    @pytest.mark.skipif(is_linux, reason="It seems that there is a strange behavior with use_dc_custom_settings.")
     def test_siwave_dc_simulation_setup(self):
         """Create a dc simulation setup and evaluate its properties."""
         setup1 = self.edbapp.create_siwave_dc_setup("DC1")
@@ -1014,24 +1023,22 @@ class TestClass:
 
         settings = self.edbapp.setups["DC1"].get_configurations()
         for k, v in setup1.dc_settings.defaults.items():
-            if k in ["compute_inductance", "plot_jv"]:
+            # NOTE: On Linux it seems that there is a strange behavior with use_dc_custom_settings
+            # See https://github.com/ansys/pyedb/pull/791#issuecomment-2358036067
+            if k in ["compute_inductance", "plot_jv", "use_dc_custom_settings"]:
                 continue
-            print(k)
             assert settings["dc_settings"][k] == v
 
         for k, v in setup1.dc_advanced_settings.defaults.items():
-            print(k)
             assert settings["dc_advanced_settings"][k] == v
 
         for p in [0, 1, 2]:
             setup1.set_dc_slider(p)
             settings = self.edbapp.setups["DC1"].get_configurations()
             for k, v in setup1.dc_settings.dc_defaults.items():
-                print(k)
                 assert settings["dc_settings"][k] == v[p]
 
             for k, v in setup1.dc_advanced_settings.dc_defaults.items():
-                print(k)
                 assert settings["dc_advanced_settings"][k] == v[p]
 
     def test_siwave_ac_simulation_setup(self):
@@ -1054,7 +1061,7 @@ class TestClass:
                 assert settings["advanced_settings"][k] == v[p]
 
         for p in [0, 1, 2]:
-            setup1.set_pi_slider(p)
+            setup1.pi_slider_position = p
             settings = self.edbapp.setups["AC1"].get_configurations()
             for k, v in setup1.advanced_settings.pi_defaults.items():
                 assert settings["advanced_settings"][k] == v[p]
@@ -1195,7 +1202,7 @@ class TestClass:
 
     def test_pins(self):
         """Evaluate the pins."""
-        assert len(self.edbapp.pins) > 0
+        assert len(self.edbapp.padstacks.pins) > 0
 
     def test_create_padstack_instance(self):
         """Create padstack instances."""
@@ -1246,7 +1253,7 @@ class TestClass:
         assert not pad_instance3.dcir_equipotential_region
 
         trace = edb.modeler.create_trace([[0, 0], [0, 10e-3]], "1_Top", "0.1mm", "trace_with_via_fence")
-        edb.padstacks.create_padstack("via_0")
+        edb.padstacks.create("via_0")
         trace.create_via_fence("1mm", "1mm", "via_0")
 
         edb.close()
@@ -1265,9 +1272,7 @@ class TestClass:
 
     def test_hfss_extent_info(self):
         """HFSS extent information."""
-        from pyedb.dotnet.edb_core.edb_data.primitives_data import (
-            EDBPrimitives as EDBPrimitives,
-        )
+        from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
 
         config = {
             "air_box_horizontal_extent_enabled": False,
@@ -1298,7 +1303,7 @@ class TestClass:
         for i, j in exported_config.items():
             if not i in config:
                 continue
-            if isinstance(j, EDBPrimitives):
+            if isinstance(j, Primitive):
                 assert j.id == config[i].id
             elif isinstance(j, EdbValue):
                 assert j.tofloat == hfss_extent_info._get_edb_value(config[i]).ToDouble()
@@ -1508,14 +1513,23 @@ class TestClass:
         assert polygon.move(["1mm", 1e-3])
         assert round(polygon.center[0], 6) == 0.051
         assert round(polygon.center[1], 6) == -0.0045
+
         assert polygon.rotate(angle=45)
-        assert polygon.bbox == [0.012462680425333156, -0.043037319574666846, 0.08953731957466685, 0.034037319574666845]
+        expected_bbox = [0.012462680425333156, -0.043037319574666846, 0.08953731957466685, 0.034037319574666845]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.rotate(angle=34, center=[0, 0])
-        assert polygon.bbox == [0.03083951217158376, -0.025151830651067256, 0.05875505636026722, 0.07472816865208806]
+        expected_bbox = [0.03083951217158376, -0.025151830651067256, 0.05875505636026722, 0.07472816865208806]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.scale(factor=1.5)
-        assert polygon.bbox == [0.0238606261244129, -0.05012183047685609, 0.06573394240743807, 0.09969816847787688]
+        expected_bbox = [0.0238606261244129, -0.05012183047685609, 0.06573394240743807, 0.09969816847787688]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.scale(factor=-0.5, center=[0, 0])
-        assert polygon.bbox == [-0.032866971203719036, -0.04984908423893844, -0.01193031306220645, 0.025060915238428044]
+        expected_bbox = [-0.032866971203719036, -0.04984908423893844, -0.01193031306220645, 0.025060915238428044]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
@@ -1701,3 +1715,12 @@ class TestClass:
             pins_by_name=["A11", "A12", "A15", "A16"],
         )
         edbapp.close()
+
+    def test_create_edb_with_zip(self):
+        """Create EDB from zip file."""
+        src = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1_0.zip")
+        zip_path = self.local_scratch.copyfile(src)
+        edb = Edb(zip_path, edbversion=desktop_version)
+        assert edb.nets
+        assert edb.components
+        edb.close()

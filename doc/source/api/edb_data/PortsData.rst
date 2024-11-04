@@ -1,6 +1,6 @@
 Ports
 =====
-These classes are the containers of ports methods of the EDB for both HFSS and Siwave.
+These classes are the containers of ports methods of the EDB for both HFSS and SIwave.
 
 .. autosummary::
    :toctree: _autosummary

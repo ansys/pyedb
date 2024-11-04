@@ -30,7 +30,7 @@ class CfgBase:
             exclude = exclude if isinstance(exclude, list) else [exclude]
             attrs = {i: j for i, j in attrs.items() if i not in exclude}
         attrs = {i: j for i, j in attrs.items() if not i.startswith("_")}
-        attrs = {i: j for i, j in attrs.items() if j is not None}
+        attrs = {i: j for i, j in attrs.items() if j not in [None, [], {}]}
         return attrs
 
     def set_attributes(self, pedb_object):
@@ -39,3 +39,23 @@ class CfgBase:
             if attr not in dir(pedb_object):
                 raise AttributeError(f"Invalid attribute '{attr}' in '{pedb_object}'")
             setattr(pedb_object, attr, value)
+
+
+class CfgVar:
+    def __init__(self, **kwargs):
+        self.name = kwargs["name"]
+        self.value = kwargs["value"]
+        self.description = kwargs.get("description", "")
+
+
+class CfgVariables:
+    def __init__(self, pedb, data):
+        self._pedb = pedb
+        self.variables = [CfgVar(**i) for i in data]
+
+    def apply(self):
+        for i in self.variables:
+            if i.name.startswith("$"):
+                self._pedb.add_project_variable(i.name, i.value)
+            else:
+                self._pedb.add_design_variable(i.name, i.value)

@@ -19,7 +19,7 @@ start manipulating objects.
 
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-    edbapp = Edb(edbpath=targetfile, edbversion="2024.1")
+    edbapp = Edb(edbpath=targetfile, edbversion="2024.2")
 
 .. image:: ../../resources/starting_load_edb.png
   :width: 600
