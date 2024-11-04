@@ -4637,8 +4637,8 @@ class Edb(Database):
             fo_txt += '\t</GDS_COMPONENT>\n'
         fo_txt += "</GDS_COMPONENTS>\n"
 
-        with open(control_path, "w") as fo:
-            fo.write(fo_txt)
+        with open(control_path, "w") as output_file:
+            output_file.write(fo_txt)
 
         result = os.path.isfile(control_path)
         return result
