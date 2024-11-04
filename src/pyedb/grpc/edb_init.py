@@ -1,17 +1,36 @@
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
 """Database."""
 import os
 import sys
 
 import ansys.edb.core.database as database
-from ansys.edb.core.session import launch_session
-import psutil
 
 from pyedb import __version__
 from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import env_path, env_value, is_linux
 from pyedb.misc.misc import list_installed_ansysem
-
-# from signal import SIGHUP
 
 
 class EdbInit(object):
@@ -31,12 +50,11 @@ class EdbInit(object):
         self.logger.info("legacy v%s", __version__)
         self.logger.info("Python version %s", sys.version)
         self.session = None
-        if is_linux:  # pragma: no cover
+        if is_linux:
             if env_value(self.edbversion) in os.environ:
                 self.base_path = env_path(self.edbversion)
                 sys.path.append(self.base_path)
             else:
-                main = sys.modules["__main__"]
                 edb_path = os.getenv("PYAEDT_SERVER_AEDT_PATH")
                 if edb_path:
                     self.base_path = edb_path
@@ -46,52 +64,14 @@ class EdbInit(object):
             self.base_path = env_path(self.edbversion)
             sys.path.append(self.base_path)
         os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = self.base_path
-        oaDirectory = os.path.join(self.base_path, "common", "oa")
-        os.environ["ANSYS_OADIR"] = oaDirectory
+        oa_directory = os.path.join(self.base_path, "common", "oa")
+        os.environ["ANSYS_OADIR"] = oa_directory
         os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
-        "Starting grpc server"
-        self.get_grpc_serveur_process()
-        if self.server_pid:
-            if restart_server:
-                self.logger.info("Restarting RPC server")
-                self.kill_rpc_server()
-                self.start_rpc_server(port)
-            else:
-                self.logger.info("Server already running")
-        else:
-            self.start_rpc_server(port)
-            if self.session:
-                self.server_pid = self.session.local_server_proc.pid
-                self.logger.info(f"Grpc session started: pid={self.server_pid}")
-            else:
-                self.logger.error("Failed to start EDB_RPC_server process")
 
     @property
     def db(self):
         """Active database object."""
         return self.db
-
-    def start_rpc_server(self, port):
-        self.session = launch_session(self.base_path, port_num=port)
-        if self.session:
-            self.server_pid = self.session.local_server_proc.pid
-            self.logger.info("Grpc session started")
-
-    def connect_session(self, port):
-        from ansys.edb.core.session import session
-
-        self.session = session(self.base_path, port)
-
-    def kill_rpc_server(self):
-        p = psutil.Process(self.server_pid)
-        p.terminate()  # or p.kill()
-
-    def get_grpc_serveur_process(self):
-        proc = [p for p in list(psutil.process_iter()) if "edb_rpc" in p.name().lower()]
-        if proc:
-            self.server_pid = proc[0].pid
-        else:
-            self.server_pid = 0
 
     def create(self, db_path):
         """Create a Database at the specified file location.
@@ -148,20 +128,11 @@ class EdbInit(object):
         terminate_rpc_session : bool, optional
 
 
-        .. note::
+        . note::
             Unsaved changes will be lost.
         """
         self._db.close()
-        if terminate_rpc_session:
-            self.session.disconnect()
-            if not self.server_pid:
-                self.logger.info(
-                    "EDB closed, RPC session was closed, if you have other opened EDB you won't be "
-                    "able to access them. To prevent any issues if your code is managing several EDB "
-                    "and want to keep RPC session open set flag `terminate_rpc_session=True`"
-                )
-            return True
-        return False
+        return True
 
     @property
     def top_circuit_cells(self):
