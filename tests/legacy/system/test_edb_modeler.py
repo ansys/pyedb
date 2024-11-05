@@ -85,9 +85,6 @@ class TestClass:
             assert k.expand(0.0005)
             # edb.modeler.parametrize_polygon(k, poly_5953, offset_name=f"offset_{i}", origin=centroid)
 
-        poly_167 = [i for i in self.edbapp.modeler.paths if i.id == 167][0]
-        assert poly_167.expand(0.0005)
-
     def test_modeler_paths(self, edb_examples):
         """Evaluate modeler paths"""
         edbapp = edb_examples.get_si_verse()

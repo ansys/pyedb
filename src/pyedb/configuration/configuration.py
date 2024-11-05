@@ -106,6 +106,9 @@ class Configuration:
     def run(self, **kwargs):
         """Apply configuration settings to the current design"""
 
+        if self.cfg_data.variables:
+            self.cfg_data.variables.apply()
+
         if self.cfg_data.general:
             self.cfg_data.general.apply()
 
@@ -122,9 +125,6 @@ class Configuration:
 
         # Configure pin groups
         self.cfg_data.pin_groups.apply()
-
-        # Configure ports
-        self.cfg_data.ports.apply()
 
         # Configure sources
         self.cfg_data.sources.apply()
@@ -160,6 +160,12 @@ class Configuration:
 
         # Configure operations
         self.cfg_data.operations.apply()
+
+        # Modeler
+        self.cfg_data.modeler.apply()
+
+        # Configure ports
+        self.cfg_data.ports.apply()
 
         return True
 
@@ -288,7 +294,11 @@ class Configuration:
         if kwargs.get("ports", False):
             data["ports"] = self.cfg_data.ports.get_data_from_db()
         if kwargs.get("components", False):
-            data["components"] = self.cfg_data.components.get_data_from_db()
+            self.cfg_data.components.retrieve_parameters_from_edb()
+            components = []
+            for i in self.cfg_data.components.components:
+                components.append(i.get_attributes())
+            data["components"] = components
         if kwargs.get("nets", False):
             data["nets"] = self.cfg_data.nets.get_data_from_db()
         if kwargs.get("pin_groups", False):
@@ -296,7 +306,16 @@ class Configuration:
         if kwargs.get("operations", False):
             data["operations"] = self.cfg_data.operations.get_data_from_db()
         if kwargs.get("padstacks", False):
-            data["padstacks"] = self.cfg_data.padstacks.get_data_from_db()
+            self.cfg_data.padstacks.retrieve_parameters_from_edb()
+            definitions = []
+            for i in self.cfg_data.padstacks.definitions:
+                definitions.append(i.get_attributes())
+            instances = []
+            for i in self.cfg_data.padstacks.instances:
+                instances.append(i.get_attributes())
+            data["padstacks"] = dict()
+            data["padstacks"]["definitions"] = definitions
+            data["padstacks"]["instances"] = instances
         if kwargs.get("s_parameters", False):
             data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db()
         if kwargs.get("boundaries", False):
@@ -308,7 +327,7 @@ class Configuration:
         self,
         file_path,
         stackup=True,
-        package_definitions=True,
+        package_definitions=False,
         setups=True,
         sources=True,
         ports=True,

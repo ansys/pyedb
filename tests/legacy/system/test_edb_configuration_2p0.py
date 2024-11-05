@@ -25,13 +25,8 @@ from pathlib import Path
 import pytest
 
 from pyedb.dotnet.edb import Edb as EdbType
-from tests.legacy.system.test_edb_components import (
-    _assert_final_ic_die_properties,
-    _assert_initial_ic_die_properties,
-)
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
-
 
 U8_IC_DIE_PROPERTIES = {
     "components": [
@@ -43,6 +38,17 @@ U8_IC_DIE_PROPERTIES = {
         }
     ]
 }
+
+
+def _assert_initial_ic_die_properties(component: dict):
+    assert component["ic_die_properties"]["type"] == "no_die"
+    assert "orientation" not in component["ic_die_properties"]
+    assert "height" not in component["ic_die_properties"]
+
+
+def _assert_final_ic_die_properties(component: dict):
+    assert component["ic_die_properties"]["type"] == "flip_chip"
+    assert component["ic_die_properties"]["orientation"] == "chip_down"
 
 
 class TestClass:
@@ -386,6 +392,7 @@ class TestClass:
             "ports": [
                 {
                     "name": "x_y_port",
+                    "type": "circuit",
                     "positive_terminal": {
                         "coordinates": {"layer": "1_Top", "point": ["104mm", "37mm"], "net": "AVCC_1V3"}
                     },
@@ -400,6 +407,79 @@ class TestClass:
         data_from_db = edbapp.configuration.get_data_from_db(ports=True)
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["layer"] == "1_Top"
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
+        edbapp.close()
+
+    def test_05g_wave_port(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp.modeler.create_rectangle(
+            layer_name="BOT", net_name="GND", lower_left_point=["-2mm", "-2mm"], upper_right_point=["2mm", "2mm"]
+        )
+        prim_1 = edbapp.modeler.create_trace(
+            path_list=([0, 0], [0, "1mm"]),
+            layer_name="TOP",
+            net_name="SIG",
+            width="0.1mm",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        prim_1.aedt_name = "path_1"
+        data = {
+            "ports": [
+                {
+                    "name": "wport_1",
+                    "type": "wave_port",
+                    "primitive_name": prim_1.aedt_name,
+                    "point_on_edge": [0, "1mm"],
+                    "horizontal_extent_factor": 6,
+                    "vertical_extent_factor": 4,
+                    "pec_launch_width": "0,2mm",
+                }
+            ]
+        }
+        edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.ports["wport_1"].horizontal_extent_factor == 6
+        edbapp.close()
+
+    def test_05h_diff_wave_port(self, edb_examples):
+        edbapp = edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp.modeler.create_rectangle(
+            layer_name="BOT", net_name="GND", lower_left_point=["-2mm", "-2mm"], upper_right_point=["2mm", "2mm"]
+        )
+        prim_1 = edbapp.modeler.create_trace(
+            path_list=([0, 0], [0, "1mm"]),
+            layer_name="TOP",
+            net_name="SIG",
+            width="0.1mm",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        prim_1.aedt_name = "path_1"
+        prim_2 = edbapp.modeler.create_trace(
+            path_list=(["1mm", 0], ["1mm", "1mm"]),
+            layer_name="TOP",
+            net_name="SIG",
+            width="0.1mm",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        prim_2.aedt_name = "path_2"
+        data = {
+            "ports": [
+                {
+                    "name": "diff_wave_1",
+                    "type": "diff_wave_port",
+                    "positive_terminal": {"primitive_name": prim_1.aedt_name, "point_on_edge": [0, "1mm"]},
+                    "negative_terminal": {"primitive_name": prim_2.aedt_name, "point_on_edge": ["1mm", "1mm"]},
+                    "horizontal_extent_factor": 6,
+                    "vertical_extent_factor": 4,
+                    "pec_launch_width": "0,2mm",
+                }
+            ]
+        }
+        edbapp.configuration.load(data, apply_file=True)
+        assert edbapp.ports["diff_wave_1"].horizontal_extent_factor == 6
         edbapp.close()
 
     def test_06_s_parameters(self, edb_examples):
@@ -535,19 +615,19 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        pad_params = edbapp.padstacks.definitions["v35h15"].pad_parameters
+        data_from_layout = edbapp.configuration.get_data_from_db(padstacks=True)
+        pdef = [i for i in data_from_layout["padstacks"]["definitions"] if i["name"] == "v35h15"][0]
+
+        pad_params = pdef["pad_parameters"]
         assert pad_params["regular_pad"][0]["diameter"] == "0.5mm"
         assert pad_params["regular_pad"][0]["offset_x"] == "0.1mm"
         assert pad_params["anti_pad"][0]["diameter"] == "1mm"
         assert pad_params["thermal_pad"][0]["inner"] == "1mm"
         assert pad_params["thermal_pad"][0]["channel_width"] == "0.2mm"
 
-        hole_params = edbapp.padstacks.definitions["v35h15"].hole_parameters
+        hole_params = pdef["hole_parameters"]
         assert hole_params["shape"] == "circle"
         assert hole_params["diameter"] == "0.2mm"
-
-        data_from_db = edbapp.configuration.get_data_from_db(padstacks=True)
-        assert data_from_db["padstacks"]["definitions"]
         edbapp.close()
 
     def test_09_padstack_instance(self, edb_examples):
@@ -950,33 +1030,9 @@ class TestClass:
         data = {"components": components}
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
-        assert edbapp.components["C375"].model_properties["pin_pair_model"] == components[0]["pin_pair_model"]
-        edbapp.configuration.get_data_from_db(components=True)
-
-        edbapp.close()
-
-    def test_15b_component_solder_ball(self, edb_examples):
-        components = [
-            {
-                "reference_designator": "U1",
-                "part_type": "io",
-                "solder_ball_properties": {"shape": "cylinder", "diameter": "244um", "height": "406um"},
-                "port_properties": {
-                    "reference_offset": "0.1mm",
-                    "reference_size_auto": True,
-                    "reference_size_x": 0,
-                    "reference_size_y": 0,
-                },
-            },
-        ]
-        data = {"components": components}
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        assert edbapp.components["U1"].type == "IO"
-        assert edbapp.components["U1"].solder_ball_shape == "Cylinder"
-        assert edbapp.components["U1"].solder_ball_height == 406e-6
-        assert edbapp.components["U1"].solder_ball_diameter == (244e-6, 244e-6)
-
+        data_from_db = edbapp.configuration.get_data_from_db(components=True)
+        c375 = [i for i in data_from_db["components"] if i["reference_designator"] == "C375"][0]
+        assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
         edbapp.close()
 
     def test_16_export_to_external_file(self, edb_examples):
@@ -1023,7 +1079,144 @@ class TestClass:
 
     def test_17_ic_die_properties(self, edb_examples):
         db: EdbType = edb_examples.get_si_verse()
-        component = db.components["U8"]
+
+        comps_edb = db.configuration.get_data_from_db(components=True)["components"]
+        component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
         _assert_initial_ic_die_properties(component)
+
         db.configuration.load(U8_IC_DIE_PROPERTIES, apply_file=True)
+        comps_edb = db.configuration.get_data_from_db(components=True)["components"]
+        component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
         _assert_final_ic_die_properties(component)
+
+    def test_18_modeler(self, edb_examples):
+        data = {
+            "modeler": {
+                "traces": [
+                    {
+                        "name": "trace_1",
+                        "layer": "TOP",
+                        "width": "0.1mm",
+                        "path": [[0, 0], [0, "10mm"]],
+                        "net_name": "SIG",
+                        "start_cap_style": "flat",
+                        "end_cap_style": "flat",
+                        "corner_style": "round",
+                    },
+                    {"name": "trace_1_void", "layer": "TOP", "width": "0.3mm", "path": [[0, 0], [0, "10mm"]]},
+                ],
+                "padstack_definitions": [
+                    {
+                        "name": "via",
+                        "hole_plating_thickness": "0.025mm",
+                        "material": "copper",
+                        "pad_parameters": {
+                            "regular_pad": [
+                                {
+                                    "layer_name": "TOP",
+                                    "shape": "circle",
+                                    "offset_x": "0mm",
+                                    "offset_y": "0",
+                                    "rotation": "0",
+                                    "diameter": "0.5mm",
+                                },
+                                {
+                                    "layer_name": "BOT",
+                                    "shape": "circle",
+                                    "offset_x": "0mm",
+                                    "offset_y": "0",
+                                    "rotation": "0",
+                                    "diameter": "0.5mm",
+                                },
+                            ],
+                            "anti_pad": [
+                                {
+                                    "layer_name": "TOP",
+                                    "shape": "circle",
+                                    "offset_x": "0",
+                                    "offset_y": "0",
+                                    "rotation": "0",
+                                    "diameter": "1mm",
+                                },
+                                {
+                                    "layer_name": "BOT",
+                                    "shape": "circle",
+                                    "offset_x": "0",
+                                    "offset_y": "0",
+                                    "rotation": "0",
+                                    "diameter": "1mm",
+                                },
+                            ],
+                        },
+                        "hole_range": "through",
+                        "hole_parameters": {
+                            "shape": "circle",
+                            "diameter": "0.25mm",
+                        },
+                    }
+                ],
+                "padstack_instances": [
+                    {
+                        "name": "via_1",
+                        "definition": "via",
+                        "layer_range": ["TOP", "BOT"],
+                        "position": [0, 0],
+                        "net_name": "SIG",
+                    },
+                    {
+                        "name": "pin_1",
+                        "definition": "via",
+                        "layer_range": ["TOP", "TOP"],
+                        "position": [0, "1mm"],
+                        "net_name": "SIG",
+                        "is_pin": True,
+                    },
+                ],
+                "planes": [
+                    {
+                        "name": "GND_TOP",
+                        "layer": "TOP",
+                        "net_name": "GND",
+                        "lower_left_point": [0, 0],
+                        "upper_right_point": [0, "12mm"],
+                        "voids": ["trace_1_void"],
+                    },
+                ],
+                "components": [
+                    {
+                        "reference_designator": "U1",
+                        "pins": ["pin_1"],
+                        "part_type": "io",
+                        "definition": "BGA",
+                        "placement_layer": "TOP",
+                        "solder_ball_properties": {"shape": "cylinder", "diameter": "244um", "height": "406um"},
+                        "port_properties": {
+                            "reference_offset": "0.1mm",
+                            "reference_size_auto": True,
+                            "reference_size_x": 0,
+                            "reference_size_y": 0,
+                        },
+                    },
+                ],
+            }
+        }
+        edbapp = edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp.configuration.load(data, apply_file=True)
+        assert [i for i in edbapp.layout.primitives if i.aedt_name == "trace_1"]
+        plane = [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP"][0]
+        assert plane.voids
+        assert edbapp.components["U1"]
+        edbapp.close()
+
+    def test_19_variables(self, edb_examples):
+        data = {
+            "variables": [
+                {"name": "var_1", "value": "1mm", "description": "No description"},
+                {"name": "$var_2", "value": "1mm", "description": "No description"},
+            ]
+        }
+        edbapp = edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()

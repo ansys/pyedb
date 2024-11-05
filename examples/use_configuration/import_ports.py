@@ -94,6 +94,7 @@ port_3 = {
 
 port_4 = {
     "name": "port_4",
+    "type": "circuit",
     "positive_terminal": {"coordinates": {"layer": "1_Top", "point": ["104mm", "37mm"], "net": "AVCC_1V3"}},
     "negative_terminal": {"coordinates": {"layer": "Inner6(GND2)", "point": ["104mm", "37mm"], "net": "GND"}},
 }
