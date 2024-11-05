@@ -4616,33 +4616,28 @@ class Edb(Database):
         bool
             ``True`` when successful, ``False`` when failed.
         """
+        from pyedb.generic.general_methods import ET
 
-        fo_txt = "<!-- To be copied inside of XML's <GDS_COMPONENTS> session -->\n"
-        fo_txt += '<GDS_COMPONENTS LengthUnit="{}">\n'.format(gds_comps_unit)
-
+        root = ET.Element("Component Section")
+        root.set("revision", "-- To be copied inside of XML's <GDS_COMPONENTS> session --")
+        components = ET.SubElement(root, "GDS_COMPONENTS")
+        components.set("LengthUnit", gds_comps_unit)
         if not comps_to_export:
             comps_to_export = self.components.components
-
         for comp in comps_to_export:
             ocomp = self.components.components[comp]
-            fo_txt += "\t<GDS_COMPONENT>\n"
+            gds_component = ET.SubElement(components, "GDS_COMPONENT")
             for pin in ocomp.pins:
                 pins_position_unit = unit_converter(ocomp.pins[pin].position, output_units=gds_comps_unit)
-                fo_txt += '\t\t<GDS_PIN Name="{}" x="{}" y="{}" Layer="{}"/>\n'.format(
-                    ocomp.pins[pin].component_pin,
-                    pins_position_unit[0],
-                    pins_position_unit[1],
-                    ocomp.pins[pin].placement_layer,
-                )
-            fo_txt += '\t\t<Component RefDes="{}" PartName="{}" PartType="{}">\n'.format(
-                ocomp.refdes, ocomp.partname, ocomp.type
-            )
-            fo_txt += "\t\t</Component>\n"
-            fo_txt += "\t</GDS_COMPONENT>\n"
-        fo_txt += "</GDS_COMPONENTS>\n"
-
-        with open(control_path, "w") as output_file:
-            output_file.write(fo_txt)
-
-        result = os.path.isfile(control_path)
-        return result
+                pin = ET.SubElement(gds_component, "GDS_PIN")
+                pin.set("Name", ocomp.pins[pin].component_pin)
+                pin.set("x", pins_position_unit[0])
+                pin.set("y", pins_position_unit[1])
+                pin.set("Layer", ocomp.pins[pin].placement_layer)
+            component = ET.SubElement(gds_component, "Component")
+            component.set("RefDes", ocomp.refdes)
+            component.set("PartName", ocomp.partname)
+            component.set("PartType", ocomp.type)
+        tree = ET.ElementTree(root)
+        tree.write(control_path)
+        return True if os.path.exists(control_path) else False
