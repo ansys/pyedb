@@ -82,7 +82,7 @@ class EdbExamples:
                     self.local_scratch.copyfolder(src, file_folder_name)
         if edbapp:
             version = desktop_version if version is None else version
-            return Edb(aedb, edbversion=version, restart_rpc_server=False)
+            return Edb(aedb, edbversion=version, restart_rpc_server=True)
         else:
             return aedb
 

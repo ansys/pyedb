@@ -72,7 +72,7 @@ class EdbInit(object):
     @property
     def db(self):
         """Active database object."""
-        return self.db
+        return self._db
 
     def create(self, db_path):
         """Create a Database at the specified file location.
@@ -141,6 +141,7 @@ class EdbInit(object):
         self._db.close()
         if terminate_rpc_session:
             RpcSession.rpc_session.disconnect()
+            RpcSession.pid = 0
         return True
 
     @property
