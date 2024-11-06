@@ -86,6 +86,12 @@ class EdbInit(object):
         -------
         Database
         """
+        if not RpcSession.pid:
+            port = RpcSession.get_random_free_port()
+            RpcSession.start(edb_version=self.edbversion, port=port, restart_server=False)
+            if not RpcSession.pid:
+                self.logger.error("Failed to start RPC server.")
+                return False
         self._db = database.Database.create(db_path)
         return self._db
 

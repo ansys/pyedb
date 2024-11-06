@@ -3322,26 +3322,28 @@ class EdbGrpc(EdbInit):
                 os.mkdir(working_directory)
         else:
             working_directory = os.path.dirname(self.edbpath)
+        self.layout.synchronize_bend_manager()
         zone_primitives = self.layout.zone_primitives
-        zone_ids = self.stackup.layer_collection.zone_ids
+        zone_ids = self.stackup.zone_ids
         edb_zones = {}
         if not self.setups:
             self.siwave.add_siwave_syz_analysis()
             self.save_edb()
         for zone_primitive in zone_primitives:
-            edb_zone_path = os.path.join(working_directory, f"{zone_primitive.id}_{os.path.basename(self.edbpath)}")
-            shutil.copytree(self.edbpath, edb_zone_path)
-            poly_data = zone_primitive.polygon_data
-            if self.version[0] >= 10:
-                edb_zones[edb_zone_path] = (zone_primitive.id, poly_data)
-            elif len(zone_primitives) == len(zone_ids):
-                edb_zones[edb_zone_path] = (zone_ids[0], poly_data)
-            else:
-                self.logger.info(
-                    "Number of zone primitives is not equal to zone number. Zone information will be lost."
-                    "Use Ansys 2024 R1 or later."
-                )
-                edb_zones[edb_zone_path] = (-1, poly_data)
+            if zone_primitive:
+                edb_zone_path = os.path.join(working_directory, f"{zone_primitive.id}_{os.path.basename(self.edbpath)}")
+                shutil.copytree(self.edbpath, edb_zone_path)
+                poly_data = zone_primitive.polygon_data
+                if self.version[0] >= 10:
+                    edb_zones[edb_zone_path] = (zone_primitive.id, poly_data)
+                elif len(zone_primitives) == len(zone_ids):
+                    edb_zones[edb_zone_path] = (zone_ids[0], poly_data)
+                else:
+                    self.logger.info(
+                        "Number of zone primitives is not equal to zone number. Zone information will be lost."
+                        "Use Ansys 2024 R1 or later."
+                    )
+                    edb_zones[edb_zone_path] = (-1, poly_data)
         return edb_zones
 
     def cutout_multizone_layout(self, zone_dict, common_reference_net=None):

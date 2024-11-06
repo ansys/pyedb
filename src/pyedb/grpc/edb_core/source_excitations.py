@@ -229,8 +229,9 @@ class SourceExcitation:
             for ref_pin in reference_pins:
                 if isinstance(ref_pin, int):
                     pins = self._pedb.padstacks.instances
-                    if reference_pins in pins:
-                        reference_pins = pins[reference_pins]
+                    reference_pins = [pins[ref_pin] for ref_pin in reference_pins if ref_pin in pins]
+                    # if reference_pins in pins:
+                    #     reference_pins = pins[reference_pins]
                 elif isinstance(ref_pin, str):
                     component_pins = self._pedb.components.instances[refdes].pins
                     if ref_pin in component_pins:
@@ -536,7 +537,7 @@ class SourceExcitation:
                                 if ref_pin:
                                     if not isinstance(ref_pin, list):
                                         ref_pin = [ref_pin]
-                                    self.create_port_on_pins(component, [pin.name], ref_pin[0].id)
+                                    self.create_port_on_pins(component, [pin.name], ref_pin[0])
                             else:
                                 self._logger.error("Skipping port creation no reference pin found.")
         return True

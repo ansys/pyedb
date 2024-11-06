@@ -126,4 +126,4 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
             "rlc": GrpcBoundaryType.RLC,
             "pec": GrpcBoundaryType.PEC,
         }
-        super(PadstackInstanceTerminal, self.__class__).boundary_type.__set__(self, mapping[value.lower()])
+        super(PadstackInstanceTerminal, self.__class__).boundary_type.__set__(self, mapping[value.name.lower()])
