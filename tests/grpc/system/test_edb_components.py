@@ -27,8 +27,8 @@ import os
 
 import pytest
 
+from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.edb import EdbGrpc as Edb
-from pyedb.grpc.edb_core.hierarchy.component import Component
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
@@ -287,7 +287,7 @@ class TestClass:
     def test_convert_resistor_value(self):
         """Convert a resistor value."""
         # Done
-        from pyedb.grpc.edb_core.components import resistor_value_parser
+        from pyedb.grpc.database.components import resistor_value_parser
 
         assert resistor_value_parser("100meg")
 

@@ -436,7 +436,7 @@ class TestClass:
             polygon=port_poly, terminal_point=port_location, reference_layer="gnd"
         )
         sig = edb.modeler.create_trace([[0, 0], ["9mm", 0]], "sig2", "1mm", "SIG", "Flat", "Flat")
-        from pyedb.grpc.edb_core.primitive.path import Path as PyEDBPath
+        from pyedb.grpc.database.primitive.path import Path as PyEDBPath
 
         sig = PyEDBPath(edb, sig)
         # TODO check bug #435 can't get product properties skipping wave port for now
@@ -1099,7 +1099,7 @@ class TestClass:
 
         # TODO check config file 2.0
 
-        # from pyedb.grpc.edb_core.primitive.primitive import Primitive
+        # from pyedb.grpc.database.primitive.primitive import Primitive
         #
         # config = {
         #     "air_box_horizontal_extent_enabled": False,
@@ -1140,7 +1140,7 @@ class TestClass:
 
     def test_import_gds_from_tech(self):
         """Use techfile."""
-        from pyedb.grpc.edb_core.control_file import ControlFile
+        from pyedb.grpc.database.control_file import ControlFile
 
         c_file_in = os.path.join(
             local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
@@ -1239,7 +1239,7 @@ class TestClass:
 
     def test_add_layer_api_with_control_file(self):
         """Add new layers with control file."""
-        from pyedb.grpc.edb_core.control_file import ControlFile
+        from pyedb.grpc.database.control_file import ControlFile
 
         # Done
         ctrl = ControlFile()

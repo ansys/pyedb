@@ -174,7 +174,7 @@ class TestClass:
     @patch("os.path.isfile")
     @patch("os.unlink")
     @patch(
-        "pyedb.dotnet.edb_core.dotnet.database.EdbDotNet.logger",
+        "pyedb.dotnet.database.dotnet.database.EdbDotNet.logger",
         new_callable=PropertyMock,
     )
     def test_conflict_files_removal_success(self, mock_logger, mock_unlink, mock_isfile):
@@ -194,7 +194,7 @@ class TestClass:
     @patch("os.path.isfile")
     @patch("os.unlink")
     @patch(
-        "pyedb.dotnet.edb_core.dotnet.database.EdbDotNet.logger",
+        "pyedb.dotnet.database.dotnet.database.EdbDotNet.logger",
         new_callable=PropertyMock,
     )
     def test_conflict_files_removal_failure(self, mock_logger, mock_unlink, mock_isfile):
@@ -215,7 +215,7 @@ class TestClass:
     @patch("os.path.isfile")
     @patch("os.unlink")
     @patch(
-        "pyedb.dotnet.edb_core.dotnet.database.EdbDotNet.logger",
+        "pyedb.dotnet.database.dotnet.database.EdbDotNet.logger",
         new_callable=PropertyMock,
     )
     def test_conflict_files_leave_in_place(self, mock_logger, mock_unlink, mock_isfile):
