@@ -262,6 +262,7 @@ class EdbGrpc(EdbInit):
             self.logger.info("EDB initialized.")
         else:
             self.logger.info("Failed to initialize EDB.")
+        self._layout_instance = None
 
     def __enter__(self):
         return self

@@ -188,9 +188,12 @@ class Modeler(object):
         for lay in self._pedb.stackup.non_stackup_layers:
             _primitives_by_layer[lay] = []
         for i in self._layout.primitives:
-            lay = i.layer.name
-            if lay in _primitives_by_layer:
-                _primitives_by_layer[lay].append(i)
+            try:
+                lay = i.layer.name
+                if lay in _primitives_by_layer:
+                    _primitives_by_layer[lay].append(i)
+            except AttributeError:
+                pass
         return _primitives_by_layer
 
     @property

@@ -278,6 +278,7 @@ class Edb(Database):
             self.logger.info("EDB initialized.")
         else:
             self.logger.info("Failed to initialize DLLs.")
+        self._layout_instance = None
 
     def __enter__(self):
         return self
@@ -1145,7 +1146,9 @@ class Edb(Database):
     @property
     def layout_instance(self):
         """Edb Layout Instance."""
-        return self.layout._edb_object.GetLayoutInstance()
+        if not self._layout_instance:
+            self._layout_instance = self.layout._edb_object.GetLayoutInstance()
+        return self._layout_instance
 
     def get_connected_objects(self, layout_object_instance):
         """Get connected objects.
