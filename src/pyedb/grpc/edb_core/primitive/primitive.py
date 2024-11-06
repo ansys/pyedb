@@ -94,6 +94,10 @@ class Primitive(GrpcPrimitive):
             self.layer = self._pedb.stackup.layers[value]
 
     @property
+    def voids(self):
+        return [Primitive(self._pedb, prim) for prim in super().voids]
+
+    @property
     def polygon_data(self):
         if isinstance(self.cast(), GrpcCircle):
             return self.cast().get_polygon_data()
@@ -150,7 +154,7 @@ class Primitive(GrpcPrimitive):
                 arc_h = point.arc_height.value
                 p1 = [my_net_points[i - 1].x.value, my_net_points[i - 1].y.value]
                 if i + 1 < len(my_net_points):
-                    p2 = [my_net_points[i + 1].y.value, my_net_points[i + 1].y.value]
+                    p2 = [my_net_points[i + 1].x.value, my_net_points[i + 1].y.value]
                 else:
                     p2 = [my_net_points[0].x.value, my_net_points[0].y.value]
                 x_arc, y_arc = compute_arc_points(p1, p2, arc_h, num)

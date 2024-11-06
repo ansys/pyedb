@@ -51,10 +51,6 @@ class Polygon(GrpcPolygon, Primitive):
         """
         return self.polygon_data.has_self_intersections()
 
-    @property
-    def voids(self):
-        return [Polygon(self._pedb, prim) for prim in super().voids]
-
     def fix_self_intersections(self):
         """Remove self intersections if they exist.
 

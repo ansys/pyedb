@@ -961,7 +961,9 @@ class EdbGrpc(EdbInit):
     @property
     def layout_instance(self):
         """Edb Layout Instance."""
-        return self.layout.layout_instance
+        if not self._layout_instance:
+            self._layout_instance = self.layout.layout_instance
+        return self._layout_instance
 
     def get_connected_objects(self, layout_object_instance):
         """Get connected objects.
