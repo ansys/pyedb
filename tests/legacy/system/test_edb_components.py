@@ -27,9 +27,10 @@ import os
 
 import pytest
 
+from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
+
 # from pyedb import Edb
 from pyedb.dotnet.edb import Edb
-from pyedb.dotnet.edb_core.cell.hierarchy.component import EDBComponent
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
@@ -278,7 +279,7 @@ class TestClass:
 
     def test_convert_resistor_value(self):
         """Convert a resistor value."""
-        from pyedb.dotnet.edb_core.components import resistor_value_parser
+        from pyedb.dotnet.database.components import resistor_value_parser
 
         assert resistor_value_parser("100meg")
 

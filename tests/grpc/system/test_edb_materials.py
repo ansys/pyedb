@@ -27,7 +27,7 @@ import os
 
 import pytest
 
-from pyedb.dotnet.edb_core.materials import Material, MaterialProperties, Materials
+from pyedb.dotnet.database.materials import Material, MaterialProperties, Materials
 from tests.conftest import local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
