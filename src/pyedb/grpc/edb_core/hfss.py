@@ -913,7 +913,7 @@ class Hfss(object):
             "`pyedb.grpc.core.excitations.create_source_on_component` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_vertical_circuit_port_on_clipped_traces(
+        return self._pedb.source_excitation.create_vertical_circuit_port_on_clipped_traces(
             nets, reference_net, user_defined_extent
         )
 
