@@ -859,4 +859,4 @@ class Primitive(Connectable):
             plt.savefig(save_plot)
         elif show:
             plt.show()
-        return
+        return ax, fig

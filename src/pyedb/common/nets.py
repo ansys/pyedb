@@ -103,14 +103,11 @@ class CommonNets:
             layers = list(self._pedb.stackup.signal_layers.keys())
         if isinstance(layers, str):
             layers = [layers]
-        layers_elevation = {}
-        for k in layers:
-            layers_elevation[k] = self._pedb.stackup.signal_layers[k].lower_elevation
         color_index = 0
         label_colors = {}
         if outline:
             poly = Polygon(outline)
-            plot_polygon(poly.boundary, add_points=False, color=(1, 0, 0))
+            plot_line(poly.boundary, add_points=False, color=(0.7, 0, 0), linewidth=4)
         else:
             bbox = self._pedb.hfss.get_layout_bounding_box()
             x1 = bbox[0]
