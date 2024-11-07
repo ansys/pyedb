@@ -3397,7 +3397,7 @@ class EdbGrpc(EdbInit):
             if common_reference_net:
                 signal_nets = list(self.nets.signal.keys())
                 defined_ports[os.path.splitext(os.path.basename(edb_path))[0]] = list(edb.excitations.keys())
-                edb_terminals_info = edb.hfss.create_vertical_circuit_port_on_clipped_traces(
+                edb_terminals_info = edb.source_excitation.create_vertical_circuit_port_on_clipped_traces(
                     nets=signal_nets,
                     reference_net=common_reference_net,
                     user_defined_extent=zone_info[1],
@@ -3994,12 +3994,7 @@ class EdbGrpc(EdbInit):
         void_padstacks = []
         for poly in polys:
             for void in poly.voids:
-                void_bbox = (
-                    void.polygon_data.bbox()[0].x.value,
-                    void.polygon_data.bbox()[0].y.value,
-                    void.polygon_data.bbox()[1].x.value,
-                    void.polygon_data.bbox()[1].y.value,
-                )
+                void_bbox = void.bbox
                 included_instances = list(padstack_instances_index.intersection(void_bbox))
                 if included_instances:
                     void_padstacks.append((void, [self.padstacks.instances[edb_uid] for edb_uid in included_instances]))

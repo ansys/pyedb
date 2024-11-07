@@ -26,7 +26,6 @@ from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.component_group import (
     ComponentGroup as GrpcComponentGroup,
 )
-from ansys.edb.core.primitive.primitive import PrimitiveType as GrpcPrimitiveType
 from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.terminal.terminals import EdgeTerminal as GrpcEdgeTerminal
 from ansys.edb.core.terminal.terminals import PrimitiveEdge as GrpcPrimitiveEdge
@@ -1939,7 +1938,7 @@ class SourceExcitation:
             nets = [self._pedb.nets.signal[net] for net in nets]
         if nets:
             if isinstance(reference_net, str):
-                reference_net = self._pedb.nets[reference_net]
+                reference_net = self._pedb.nets.nets[reference_net]
             if not reference_net:
                 self._logger.error("No reference net provided for creating port")
                 return False
@@ -1955,17 +1954,17 @@ class SourceExcitation:
                     user_defined_extent = [_x, _y]
             terminal_info = []
             for net in nets:
-                net_polygons = [pp for pp in net.primitives if pp.type == GrpcPrimitiveType.POLYGON]
+                net_polygons = [prim for prim in self._pedb.modeler.primitives if prim.type in ["polygon", "rectangle"]]
                 for poly in net_polygons:
-                    mid_points = [[arc.mid_point.x.value, arc.mid_point.y.value] for arc in poly.arcs]
+                    mid_points = [[arc.midpoint.x.value, arc.midpoint.y.value] for arc in poly.arcs]
                     for mid_point in mid_points:
                         if GeometryOperators.point_in_polygon(mid_point, user_defined_extent) == 0:
-                            port_name = generate_unique_name(f"{poly.net.name}_{poly.id}")
+                            port_name = generate_unique_name(f"{poly.net_name}_{poly.id}")
                             term = self._create_edge_terminal(poly.id, mid_point, port_name)  # pragma no cover
                             if not term.is_null:
                                 self._logger.info(f"Terminal {term.name} created")
                                 term.is_circuit_port = True
-                                terminal_info.append([poly.net.name, mid_point[0], mid_point[1], term.name])
+                                terminal_info.append([poly.net_name, mid_point[0], mid_point[1], term.name])
                                 mid_pt_data = GrpcPointData(mid_point)
                                 ref_prim = [
                                     prim

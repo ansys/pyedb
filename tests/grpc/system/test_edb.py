@@ -1383,18 +1383,14 @@ class TestClass:
         edbapp.close()
 
     def test_multizone(self, edb_examples):
-        # TODO check bug #467 failing to retrieve zone primitives.
-
+        # Done
         edbapp = edb_examples.get_multizone_pcb()
         common_reference_net = "gnd"
         edb_zones = edbapp.copy_zones()
         assert edb_zones
         defined_ports, project_connexions = edbapp.cutout_multizone_layout(edb_zones, common_reference_net)
-
         assert defined_ports
         assert project_connexions
-        edbapp.close_edb()
-        pass
 
     def test_icepak(self, edb_examples):
         # Done
