@@ -1,6 +1,8 @@
 import math
 import time
 
+from pyedb.generic.constants import CSS4_COLORS
+
 
 class CommonNets:
     def __init__(self, _pedb):
@@ -57,6 +59,11 @@ class CommonNets:
             Default is ``False``.
         show : bool, optional
             Whether to show the plot or not. Default is `True`.
+
+        Returns
+        -------
+        (ax, fig)
+            Matplotlib ax and figures.
         """
 
         if "plot_components_on_top" in kwargs and top_view:
@@ -395,3 +402,4 @@ class CommonNets:
             plt.show()
         end_time = time.time() - start_time
         self._logger.info(f"Plot Generation time {round(end_time, 3)}")
+        return fig, ax

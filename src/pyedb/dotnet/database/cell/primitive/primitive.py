@@ -809,3 +809,54 @@ class Primitive(Connectable):
                 self.polygon_data = polygon_data
                 return True
         return False
+
+    def plot(self, plot_net=False, show=True, save_plot=None):
+        """Plot the current polygon on matplotlib.
+
+        Parameters
+        ----------
+        plot_net : bool, optional
+            Whether if plot the entire net or only the selected polygon. Default is ``False``.
+        show : bool, optional
+            Whether if show the plot or not. Default is ``True``.
+        save_plot : str, optional
+            Save the plot path.
+
+        Returns
+        -------
+        (ax, fig)
+            Matplotlib ax and figures.
+        """
+        import matplotlib.pyplot as plt
+        from shapely.geometry import Polygon
+        from shapely.plotting import plot_polygon
+
+        dpi = 100.0
+        figsize = (2000 / dpi, 1000 / dpi)
+        if plot_net and self.net_name:
+            fig, ax = self._pedb.nets.plot([self.net_name], color_by_net=True, show=False, show_legend=False)
+        else:
+            fig = plt.figure(figsize=figsize)
+            ax = fig.add_subplot(1, 1, 1)
+        xt, yt = self.points()
+        p1 = [(i, j) for i, j in zip(xt[::-1], yt[::-1])]
+
+        holes = []
+        for void in self.voids:
+            xvt, yvt = void.points(arc_segments=3)
+            h1 = [(i, j) for i, j in zip(xvt, yvt)]
+            holes.append(h1)
+        poly = Polygon(p1, holes)
+        plot_polygon(poly, add_points=False, color=(1, 0, 0))
+        ax.grid(False)
+        ax.set_axis_off()
+        # Hide axes ticks
+        ax.set_xticks([])
+        ax.set_yticks([])
+        message = f"Polygon {self.id} on net {self.net_name}"
+        plt.title(message, size=20)
+        if save_plot:
+            plt.savefig(save_plot)
+        elif show:
+            plt.show()
+        return
