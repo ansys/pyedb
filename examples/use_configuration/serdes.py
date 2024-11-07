@@ -258,8 +258,8 @@ h3d.analyze(setup="siwave_setup")
 
 # Plot insertion loss.
 
-solutions = h3d.post.get_solution_data(expressions="dB(S(DIFF_CONN,DIFF_BGA))", context="Differential Pairs")
-solutions.plot()
+solutions = h3d.post.get_solution_data(expressions="mag(S(DIFF_CONN,DIFF_BGA))", context="Differential Pairs")
+solutions.plot(formula="dB20")
 
 # Shut Down Electronics Desktop
 
