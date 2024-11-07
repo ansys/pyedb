@@ -3960,6 +3960,8 @@ class EdbGrpc(EdbInit):
             )
         if not output_edb:
             output_edb = os.path.join(temp_directory, "waveport_model.aedb")
+        else:
+            output_edb = os.path.join(temp_directory, output_edb)
         if os.path.isdir(temp_directory):
             shutil.rmtree(temp_directory)
         os.mkdir(temp_directory)
@@ -4043,7 +4045,9 @@ class EdbGrpc(EdbInit):
             for inst in void_info[1]:
                 if not terminal_diameter:
                     pad_diameter = (
-                        self.padstacks.definitions[inst.padstack_def.name].pad_by_layer[reference_layer][1][0].value
+                        self.padstacks.definitions[inst.padstack_def.name]
+                        .pad_by_layer[reference_layer]
+                        .parameters_values
                     )
                 else:
                     pad_diameter = GrpcValue(terminal_diameter).value
@@ -4051,7 +4055,7 @@ class EdbGrpc(EdbInit):
                     layer_name="ports",
                     x=inst.position[0],
                     y=inst.position[1],
-                    radius=pad_diameter / 2,
+                    radius=pad_diameter[0] / 2,
                     net_name=inst.net_name,
                 )
                 if not _temp_circle:
@@ -4059,7 +4063,7 @@ class EdbGrpc(EdbInit):
                         f"Failed to create circle for terminal during create_model_for_arbitrary_wave_ports"
                     )
         cloned_edb.save_as(output_edb)
-        cloned_edb.close()
+        cloned_edb.close(terminate_rpc_session=False)
         return True
 
     @property

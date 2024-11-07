@@ -841,12 +841,12 @@ class TestClass:
     def test_siwave_dc_simulation_setup(self, edb_examples):
         """Create a dc simulation setup and evaluate its properties."""
         # TODO check with config file 2.0
-        edb = edb_examples.get_si_verse()
-        setup1 = edb.create_siwave_dc_setup("DC1")
+        edbapp = edb_examples.get_si_verse()
+        setup1 = edbapp.create_siwave_dc_setup("DC1")
         setup1.dc_settings.restore_default()
-        setup1.dc_advanced_settings.restore_default()
+        # setup1.dc_advanced_settings.restore_default()
 
-        settings = self.edbapp.setups["DC1"].get_configurations()
+        settings = edbapp.setups["DC1"].settings
         for k, v in setup1.dc_settings.defaults.items():
             # NOTE: On Linux it seems that there is a strange behavior with use_dc_custom_settings
             # See https://github.com/ansys/pyedb/pull/791#issuecomment-2358036067
