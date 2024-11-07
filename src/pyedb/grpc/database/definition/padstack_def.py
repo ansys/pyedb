@@ -24,15 +24,219 @@ import math
 
 from ansys.edb.core.definition.padstack_def import PadstackDef as GrpcPadstackDef
 from ansys.edb.core.definition.padstack_def_data import (
+    PadGeometryType as GrpcPadGeometryType,
+)
+from ansys.edb.core.definition.padstack_def_data import (
     PadstackHoleRange as GrpcPadstackHoleRange,
 )
 from ansys.edb.core.definition.padstack_def_data import PadType as GrpcPadType
+import ansys.edb.core.geometry.polygon_data
 from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure
 from ansys.edb.core.hierarchy.structure3d import Structure3D as GrpcStructure3D
 from ansys.edb.core.primitive.primitive import Circle as GrpcCircle
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.generic.general_methods import generate_unique_name
+
+
+class EDBPadProperties:
+    """Manages EDB functionalities for pad properties.
+
+    Parameters
+    ----------
+    edb_padstack :
+
+    layer_name : str
+        Name of the layer.
+    pad_type :
+        Type of the pad.
+    pedbpadstack : str
+        Inherited AEDT object.
+
+    Examples
+    --------
+    >>> from pyedb import Edb
+    >>> edb = Edb(myedb, edbversion="2021.2")
+    >>> edb_pad_properties = edb.padstacks.definitions["MyPad"].pad_by_layer["TOP"]
+    """
+
+    def __init__(self, edb_padstack, layer_name, pad_type, p_edb_padstack):
+        self._edb_object = edb_padstack
+        self._pedbpadstack = p_edb_padstack
+        self.layer_name = layer_name
+        self.pad_type = pad_type
+        self._edb_padstack = self._edb_object
+
+    @property
+    def _padstack_methods(self):
+        return self._pedbpadstack._padstack_methods
+
+    @property
+    def _stackup_layers(self):
+        return self._pedbpadstack._stackup_layers
+
+    @property
+    def _edb(self):
+        return self._pedbpadstack._edb
+
+    @property
+    def _pad_parameter_value(self):
+        p_val = self._edb_padstack.get_pad_parameters(self.layer_name, GrpcPadType.REGULAR_PAD)
+        if isinstance(p_val[0], ansys.edb.core.geometry.polygon_data.PolygonData):
+            p_val = [GrpcPadGeometryType.PADGEOMTYPE_POLYGON] + [i for i in p_val]
+        return p_val
+
+    @property
+    def geometry_type(self):
+        """Geometry type.
+
+        Returns
+        -------
+        int
+            Type of the geometry.
+        """
+        return self._pad_parameter_value[0].value
+
+    @property
+    def shape(self):
+        """Get the shape of the pad."""
+        return self._pad_parameter_value[0].name.split("_")[-1].lower()
+
+    @property
+    def parameters_values(self):
+        """Parameters.
+
+        Returns
+        -------
+        list
+            List of parameters.
+        """
+        try:
+            return [i.value for i in self._pad_parameter_value[1]]
+        except TypeError:
+            return []
+
+    @property
+    def parameters_values_string(self):
+        """Parameters value in string format."""
+        try:
+            return [str(i) for i in self._pad_parameter_value[1]]
+        except TypeError:
+            return []
+
+    @property
+    def polygon_data(self):
+        """Parameters.
+
+        Returns
+        -------
+        list
+            List of parameters.
+        """
+        p = self._pad_parameter_value[1]
+        return p if isinstance(p, ansys.edb.core.geometry.polygon_data.PolygonData) else None
+
+    @property
+    def offset_x(self):
+        """Offset for the X axis.
+
+        Returns
+        -------
+        str
+            Offset for the X axis.
+        """
+        return self._pad_parameter_value[2].value
+
+    @property
+    def offset_y(self):
+        """Offset for the Y axis.
+
+        Returns
+        -------
+        str
+            Offset for the Y axis.
+        """
+
+        return self._pad_parameter_value[3].value
+
+    @property
+    def rotation(self):
+        """Rotation.
+
+        Returns
+        -------
+        str
+            Value for the rotation.
+        """
+
+        return self._pad_parameter_value[4].value
+
+    @rotation.setter
+    def rotation(self, value):
+        self._update_pad_parameters_parameters(rotation=value)
+
+    @rotation.setter
+    def rotation(self, value):
+        self._update_pad_parameters_parameters(rotation=value)
+
+    @offset_x.setter
+    def offset_x(self, value):
+        self._update_pad_parameters_parameters(offsetx=value)
+
+    @offset_y.setter
+    def offset_y(self, value):
+        self._update_pad_parameters_parameters(offsety=value)
+
+    @parameters_values.setter
+    def parameters_values(self, value):
+        if isinstance(value, (float, str)):
+            value = [value]
+        self._update_pad_parameters_parameters(params=value)
+
+    def _update_pad_parameters_parameters(
+        self,
+        layer_name=None,
+        pad_type=None,
+        geom_type=None,
+        params=None,
+        offsetx=None,
+        offsety=None,
+        rotation=None,
+    ):
+        if layer_name is None:
+            layer_name = self.layer_name
+        if pad_type is None:
+            pad_type = GrpcPadType.REGULAR_PAD
+        if geom_type is None:
+            geom_type = self.geometry_type
+        for k in GrpcPadGeometryType:
+            if k.value == geom_type:
+                geom_type = k
+        if params is None:
+            params = self._pad_parameter_value[1]
+        elif isinstance(params, list):
+            offsetx = [GrpcValue(i, self._pedbpadstack._pedb.db) for i in params]
+        if rotation is None:
+            rotation = self._pad_parameter_value[4]
+        elif isinstance(rotation, (str, float, int)):
+            rotation = GrpcValue(rotation, self._pedbpadstack._pedb.db)
+        if offsetx is None:
+            offsetx = self._pad_parameter_value[2]
+        elif isinstance(offsetx, (str, float, int)):
+            offsetx = GrpcValue(offsetx, self._pedbpadstack._pedb.db)
+        if offsety is None:
+            offsety = self._pad_parameter_value[3]
+        elif isinstance(offsety, (str, float, int)):
+            offsetx = GrpcValue(offsety, self._pedbpadstack._pedb.db)
+        self._edb_padstack.set_pad_parameters(
+            layer=layer_name,
+            pad_type=pad_type,
+            type_geom=geom_type,
+            offset_x=GrpcValue(offsetx, self._pedbpadstack._pedb.db),
+            offset_y=GrpcValue(offsety, self._pedbpadstack._pedb.db),
+            rotation=GrpcValue(rotation, self._pedbpadstack._pedb.db),
+            sizes=[GrpcValue(i, self._pedbpadstack._pedb.db) for i in params],
+        )
 
 
 class PadstackDef(GrpcPadstackDef):
@@ -181,7 +385,8 @@ class PadstackDef(GrpcPadstackDef):
         if not self._pad_by_layer:
             for layer in self.layers:
                 try:
-                    self._pad_by_layer[layer] = self.data.get_pad_parameters(layer, GrpcPadType.REGULAR_PAD)
+                    self._pad_by_layer[layer] = EDBPadProperties(self.data, layer, GrpcPadType.REGULAR_PAD, self)
+                    # self._pad_by_layer[layer] = self.data.get_pad_parameters(layer, GrpcPadType.REGULAR_PAD)
                 except:
                     self._pad_by_layer[layer] = None
         return self._pad_by_layer

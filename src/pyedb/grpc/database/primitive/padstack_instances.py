@@ -31,6 +31,7 @@ from ansys.edb.core.primitive.primitive import PadstackInstance as GrpcPadstackI
 from ansys.edb.core.terminal.terminals import PinGroupTerminal as GrpcPinGroupTerminal
 from ansys.edb.core.utility.value import Value as GrpcValue
 
+from pyedb.grpc.database.definition.padstack_def import PadstackDef
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
@@ -62,6 +63,14 @@ class PadstackInstance(GrpcPadstackInstance):
         self._pdef = None
         self._pedb = pedb
         self._object_instance = None
+
+    @property
+    def definition(self):
+        return PadstackDef(self._pedb, self.padstack_def)
+
+    @property
+    def padstack_definition(self):
+        return self.padstack_def.name
 
     @property
     def terminal(self):

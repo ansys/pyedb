@@ -98,6 +98,10 @@ class Component(GrpcComponentGroup):
         return self._comp_instance
 
     @property
+    def is_enabled(self):
+        return self.enabled
+
+    @property
     def _active_layout(self):  # pragma: no cover
         return self._pedb.active_layout
 
@@ -746,18 +750,30 @@ class Component(GrpcComponentGroup):
 
     @property
     def placement_layer(self):
-        """Placement layer.
+        """Placement layern name.
 
         Returns
         -------
         str
            Name of the placement layer.
         """
+        return super().placement_layer.name
+
+    @property
+    def layer(self):
+        """Placement layern object.
+
+        Returns
+        -------
+        :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
+           Placement layer.
+        """
         return StackupLayer(self._pedb, super().placement_layer)
 
     @property
     def is_top_mounted(self):
-        """Check if a component is mounted on top or bottom of the layout.
+        """Check i
+        f a component is mounted on top or bottom of the layout.
 
         Returns
         -------
@@ -765,7 +781,7 @@ class Component(GrpcComponentGroup):
             ``True`` component is mounted on top, ``False`` on down.
         """
         signal_layers = [lay.name for lay in list(self._pedb.stackup.signal_layers.values())]
-        if self.placement_layer.name in signal_layers[: int(len(signal_layers) / 2)]:
+        if self.placement_layer in signal_layers[: int(len(signal_layers) / 2)]:
             return True
         return False
 
@@ -778,7 +794,7 @@ class Component(GrpcComponentGroup):
         float
             Lower elevation of the placement layer.
         """
-        return self.placement_layer.lower_elevation
+        return self.layer.lower_elevation
 
     @property
     def upper_elevation(self):
@@ -790,7 +806,7 @@ class Component(GrpcComponentGroup):
             Upper elevation of the placement layer.
 
         """
-        return self.placement_layer.upper_elevation
+        return self.layer.upper_elevation
 
     @property
     def top_bottom_association(self):
@@ -807,7 +823,7 @@ class Component(GrpcComponentGroup):
             * 4 - Number of top/bottom associations.
             * -1 - Undefined
         """
-        return self.placement_layer.top_bottom_association.value
+        return self.layer.top_bottom_association.value
 
     def _set_model(self, model):  # pragma: no cover
         comp_prop = self.component_property
@@ -992,7 +1008,7 @@ class Component(GrpcComponentGroup):
         opening.append(bounding_box[2] + extra_soldermask_clearance)
         opening.append(bounding_box[3] + extra_soldermask_clearance)
 
-        comp_layer = self.placement_layer
+        comp_layer = self.layer
         layer_names = list(self._pedb.stackup.layers.keys())
         layer_index = layer_names.index(comp_layer.name)
         if comp_layer in [layer_names[0] + layer_names[-1]]:

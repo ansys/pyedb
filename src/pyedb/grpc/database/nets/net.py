@@ -153,6 +153,8 @@ class Net(GrpcNet):
             outline=outline,
             size=size,
             show=show,
+            plot_components=True,
+            plot_vias=True,
         )
 
     def get_smallest_trace_width(self):

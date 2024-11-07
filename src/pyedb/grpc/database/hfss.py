@@ -933,8 +933,8 @@ class Hfss(object):
         list
             [lower left corner X, lower left corner, upper right corner X, upper right corner Y].
         """
-        if layout == None:
-            return False
+        if not layout:
+            layout = self._active_layout
         layout_obj_instances = layout.layout_instance.query_layout_obj_instances()
         tuple_list = []
         for lobj in layout_obj_instances:

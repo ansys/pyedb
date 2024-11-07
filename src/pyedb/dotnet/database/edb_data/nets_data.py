@@ -144,6 +144,8 @@ class EDBNetsData(NetDotNet):
             outline=outline,
             size=size,
             show=show,
+            plot_vias=True,
+            plot_components=True,
         )
 
     def get_smallest_trace_width(self):

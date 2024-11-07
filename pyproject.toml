@@ -27,7 +27,7 @@ classifiers = [
 dependencies = [
     "cffi>=1.16.0,<1.18; platform_system=='Linux'",
     "pywin32 >= 303;platform_system=='Windows'",
-    "ansys-pythonnet >= 3.1.0rc3",
+    "ansys-pythonnet >= 3.1.0rc4",
     "dotnetcore2 ==3.1.23;platform_system=='Linux'",
     "numpy>=1.20.0,<2",
     "pandas>=1.1.0,<2.3",
@@ -36,7 +36,7 @@ dependencies = [
     "toml == 0.10.2",
     "scikit-rf",
     "ansys-edb-core",
-    "ansys-api-edb"
+    "ansys-api-edb",
     ]
 
 [project.optional-dependencies]
@@ -46,7 +46,8 @@ tests = [
     "pytest>=7.4.0,<8.4",
     "pytest-cov>=4.0.0,<5.1",
     "pytest-xdist>=3.5.0,<3.7",
-    "scikit-rf"
+    "scikit-rf",
+    "shapely",
 ]
 doc = [
     "ansys-sphinx-theme>=0.10.0,<1.1",
@@ -67,9 +68,11 @@ doc = [
     "sphinx-copybutton>=0.5.0,<0.6",
     "sphinx-gallery>=0.14.0,<0.19",
     "sphinx_design>=0.4.0,<0.7",
+    "shapely"
 ]
 full = [
     "matplotlib>=3.5.0,<3.10",
+    "shapely",
 ]
 
 

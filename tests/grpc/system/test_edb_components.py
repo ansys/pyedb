@@ -102,7 +102,7 @@ class TestClass:
         assert "R1" in list(edb.components.instances.keys())
         assert not edb.components.instances["R1"].is_null
         assert edb.components.instances["R1"].res_value == 6200
-        assert edb.components.instances["R1"].placement_layer.name == "16_Bottom"
+        assert edb.components.instances["R1"].placement_layer == "16_Bottom"
         assert not edb.components.instances["R1"].component_def.is_null
         assert edb.components.instances["R1"].location == [0.11167500144, 0.04072499856]
         assert edb.components.instances["R1"].lower_elevation == 0.0
@@ -114,17 +114,14 @@ class TestClass:
         assert edb.components.instances["R1"].pins["1"].component_pin == "1"
 
         assert not edb.components.instances["R1"].pins["1"].component.is_null
-        assert (
-            edb.components.instances["R1"].pins["1"].placement_layer.name
-            == edb.components.instances["R1"].placement_layer.name
-        )
+        assert edb.components.instances["R1"].pins["1"].placement_layer == edb.components.instances["R1"].layer.name
         assert (
             edb.components.instances["R1"].pins["1"].placement_layer.upper_elevation
-            == edb.components.instances["R1"].placement_layer.upper_elevation
+            == edb.components.instances["R1"].layer.upper_elevation
         )
         assert (
             edb.components.instances["R1"].pins["1"].placement_layer.top_bottom_association
-            == edb.components.instances["R1"].placement_layer.top_bottom_association
+            == edb.components.instances["R1"].layer.top_bottom_association
         )
         assert edb.components.instances["R1"].pins["1"].position == [0.111675, 0.039975]
         assert edb.components.instances["R1"].pins["1"].rotation == -1.5707963267949
