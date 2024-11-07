@@ -2447,9 +2447,9 @@ class Stackup(LayerCollection):
                 if isinstance(definition, str):
                     definition = self._pedb.padstacks.definitions[definition]
                 for layer, defs in definition.pad_by_layer.items():
-                    pad_shape = defs[0].value
-                    params = defs[1:]
-                    pad_size = max([p.value for p in params[0]])
+                    pad_shape = defs.shape
+                    params = defs.parameters_values
+                    pad_size = max([p for p in params])
                     if pad_size > max_padstak_size:
                         max_padstak_size = pad_size
                 if not definition.is_null:
@@ -2474,9 +2474,9 @@ class Stackup(LayerCollection):
                     pass
 
                 for layer, defs in definition.pad_by_layer.items():
-                    pad_shape = defs[0]
-                    params = defs[1:]
-                    pad_size = max([p.value for p in params[0]])
+                    pad_shape = defs.shape
+                    params = defs.parameters_values
+                    pad_size = max([p for p in params])
                     if stackup_mode == "laminate":
                         x = [
                             x_start - pad_size / 2 * scaling_f_pad,
