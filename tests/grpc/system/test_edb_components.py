@@ -116,11 +116,11 @@ class TestClass:
         assert not edb.components.instances["R1"].pins["1"].component.is_null
         assert edb.components.instances["R1"].pins["1"].placement_layer == edb.components.instances["R1"].layer.name
         assert (
-            edb.components.instances["R1"].pins["1"].placement_layer.upper_elevation
+            edb.components.instances["R1"].pins["1"].layer.upper_elevation
             == edb.components.instances["R1"].layer.upper_elevation
         )
         assert (
-            edb.components.instances["R1"].pins["1"].placement_layer.top_bottom_association
+            edb.components.instances["R1"].pins["1"].layer.top_bottom_association
             == edb.components.instances["R1"].layer.top_bottom_association
         )
         assert edb.components.instances["R1"].pins["1"].position == [0.111675, 0.039975]

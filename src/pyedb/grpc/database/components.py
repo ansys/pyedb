@@ -1116,7 +1116,7 @@ class Components(object):
 
         """
         top_layer = self._pedb.stackup.signal[0].name
-        if cmp.placement_layer.name == top_layer:
+        if cmp.placement_layer == top_layer:
             return True
         else:
             return False
@@ -2189,8 +2189,8 @@ class Components(object):
         for pin in pins_list:
             placement_layer = pin.placement_layer
             positions_to_short.append(pin.position)
-            if placement_layer.name in self._pedb.padstacks.definitions[pin.padstack_def.name].pad_by_layer:
-                pad = self._pedb.padstacks.definitions[pin.padstack_def.name].pad_by_layer[placement_layer.name]
+            if placement_layer in self._pedb.padstacks.definitions[pin.padstack_def.name].pad_by_layer:
+                pad = self._pedb.padstacks.definitions[pin.padstack_def.name].pad_by_layer[placement_layer]
             else:
                 layer = list(self._pedb.padstacks.definitions[pin.padstack_def.name].pad_by_layer.keys())[0]
                 pad = self._pedb.padstacks.definitions[pin.padstack_def.name].pad_by_layer[layer]

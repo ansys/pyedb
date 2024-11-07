@@ -670,7 +670,7 @@ class PadstackInstance(GrpcPadstackInstance):
 
     @property
     def placement_layer(self):
-        """Placement layer.
+        """Placement layer name.
 
         Returns
         -------
@@ -678,6 +678,17 @@ class PadstackInstance(GrpcPadstackInstance):
             Name of the placement layer.
         """
         return self.component.placement_layer
+
+    @property
+    def layer(self):
+        """Placement layer object.
+
+        Returns
+        -------
+        :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
+           Placement layer.
+        """
+        return self.component.layer
 
     @property
     def lower_elevation(self):
