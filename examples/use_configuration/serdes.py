@@ -231,6 +231,8 @@ with open(file_json, "w") as f:
 edbapp.configuration.load(config_file=file_json)
 edbapp.configuration.run()
 
+edbapp.nets.plot(nets=[])
+
 # Save and close EDB.
 
 edbapp.save()
@@ -265,7 +267,7 @@ h3d.analyze(setup="siwave_setup")
 # Plot insertion loss.
 
 solutions = h3d.post.get_solution_data(expressions="mag(S(DIFF_CONN,DIFF_BGA))", context="Differential Pairs")
-solutions.plot(formula="dB20")
+solutions.plot(formula="db20")
 
 # Shut Down Electronics Desktop
 
