@@ -193,6 +193,19 @@ class ControlFileLayer:
             content.set("Thickness", self.properties.get("Thickness", "0.001"))
         if self.properties.get("Type"):
             content.set("Type", self.properties.get("Type", "conductor"))
+        if self.properties.get("ConvertPolygonToCircle"):
+            content.set("ConvertPolygonToCircle", self.properties["ConvertPolygonToCircle"])
+        if self.properties.get("ConvertPolygonToCircleRatio"):
+            content.set("ConvertPolygonToCircleRatio", self.properties["ConvertPolygonToCircleRatio"])
+        if self.properties.get("ReconstructArcs"):
+            content.set("ReconstructArcs", self.properties["ReconstructArcs"])
+        if self.properties.get("ArcTolerance"):
+            content.set("ArcTolerance", self.properties["ArcTolerance"])
+        if self.properties.get("UnionPrimitives"):
+            content.set("UnionPrimitives", self.properties["UnionPrimitives"])
+        # To confirm syntax with development
+        if self.properties.get("DefeatureMinTraceWidth"):
+            content.set("DefeatureMinTraceWidth", self.properties["DefeatureMinTraceWidth"])
 
 
 class ControlFileVia(ControlFileLayer):
@@ -226,6 +239,14 @@ class ControlFileVia(ControlFileLayer):
             content.set("Thickness", self.properties.get("Thickness", "0.001"))
         if self.properties.get("Type"):
             content.set("Type", self.properties.get("Type", "conductor"))
+        if self.properties.get("ConvertPolygonToCircle"):
+            content.set("ConvertPolygonToCircle", self.properties["ConvertPolygonToCircle"])
+        if self.properties.get("ConvertPolygonToCircleRatio"):
+            content.set("ConvertPolygonToCircleRatio", self.properties["ConvertPolygonToCircleRatio"])
+        if self.properties.get("ReconstructArcs"):
+            content.set("ReconstructArcs", self.properties["ReconstructArcs"])
+        if self.properties.get("ArcTolerance"):
+            content.set("ArcTolerance", self.properties["ArcTolerance"])
         if self.create_via_group:
             viagroup = ET.SubElement(content, "CreateViaGroups")
             viagroup.set("CheckContainment", "true" if self.check_containment else "false")
