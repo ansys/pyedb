@@ -547,13 +547,12 @@ class Components(object):
         return cmp_list
 
     def _get_edb_pin_from_pin_name(self, cmp, pin):
-        if not isinstance(cmp, self._pedb.edb_api.cell.hierarchy.component):
+        if not isinstance(cmp, Component):
             return False
         if not isinstance(pin, str):
-            pin = pin.GetName()
-        pins = self._pedb.padstacks.get_instances(component=cmp, pinName=pin)
-        if pins:
-            return pins[0]
+            return False
+        if pin in cmp.pins:
+            return cmp.pins[pin]
         return False
 
     def get_component_placement_vector(
@@ -607,9 +606,9 @@ class Components(object):
         m_pin2_pos = [0.0, 0.0]
         h_pin1_pos = [0.0, 0.0]
         h_pin2_pos = [0.0, 0.0]
-        if not isinstance(mounted_component, self._pedb.edb_api.cell.hierarchy.component):
+        if not isinstance(mounted_component, Component):
             return False
-        if not isinstance(hosting_component, self._pedb.edb_api.cell.hierarchy.component):
+        if not isinstance(hosting_component, Component):
             return False
 
         if mounted_component_pin1:
@@ -637,14 +636,14 @@ class Components(object):
 
         rotation = GeometryOperators.v_angle_sign_2D(vector1, vector2, False)
         if rotation != 0.0:
-            layinst = mounted_component.GetLayout().GetLayoutInstance()
+            layinst = mounted_component.layout_instance
             cmpinst = layinst.GetLayoutObjInstance(mounted_component, None)
-            center = cmpinst.GetCenter()
-            center_double = [center.X.ToDouble(), center.Y.ToDouble()]
-            vector_center = GeometryOperators.v_points(center_double, m_pin1_pos)
+            center = cmpinst.center
+            # center_double = [center.X.ToDouble(), center.Y.ToDouble()]
+            vector_center = GeometryOperators.v_points(center, m_pin1_pos)
             x_v2 = vector_center[0] * math.cos(rotation) + multiplier * vector_center[1] * math.sin(rotation)
             y_v2 = -1 * vector_center[0] * math.sin(rotation) + multiplier * vector_center[1] * math.cos(rotation)
-            new_vector = [x_v2 + center_double[0], y_v2 + center_double[1]]
+            new_vector = [x_v2 + center[0], y_v2 + center[1]]
             vector = [h_pin1_pos[0] - new_vector[0], h_pin1_pos[1] - new_vector[1]]
 
         if vector:
@@ -956,7 +955,7 @@ class Components(object):
         if component.type in ["other", "ic", "io"]:
             self._logger.info(f"Component {component.refdes} skipped to deactivate is not an RLC.")
             return False
-        component.is_enabled = False
+        component.enabled = False
         return self._pedb.source_excitation.add_rlc_boundary(component.refdes, False)
 
     def deactivate_rlc_component(self, component=None, create_circuit_port=False, pec_boundary=False):
@@ -1679,7 +1678,7 @@ class Components(object):
 
         """
         if res_value is None and ind_value is None and cap_value is None:
-            self.instances[componentname].is_enabled = False
+            self.instances[componentname].enabled = False
             self._logger.info(f"No parameters passed, component {componentname} is disabled.")
             return True
         component = self.get_component_by_name(componentname)
@@ -1785,7 +1784,7 @@ class Components(object):
                         self.set_component_rlc(new_refdes, ind_value=new_value)
                         unmount_comp_list.remove(new_refdes)
             for comp in unmount_comp_list:
-                self.instances[comp].is_enabled = False
+                self.instances[comp].enabled = False
         return found
 
     def import_bom(
@@ -2194,14 +2193,14 @@ class Components(object):
             else:
                 layer = list(self._pedb.padstacks.definitions[pin.padstack_def.name].pad_by_layer.keys())[0]
                 pad = self._pedb.padstacks.definitions[pin.padstack_def.name].pad_by_layer[layer]
-            pars = [p.value for p in pad[1]]
-            if pad[0].value < 6 and pars:
+            pars = pad.parameters_values
+            if pad.geometry_type < 6 and pars:
                 delta_pins.append(max(pars) + min(pars) / 2)
                 w = min(min(pars), w)
             elif pars:
                 delta_pins.append(1.5 * pars[0])
                 w = min(pars[0], w)
-            elif pad.polygon_data.edb_api:  # pragma: no cover
+            elif pad.polygon_data:  # pragma: no cover
                 bbox = pad.polygon_data.bbox()
                 lower = [bbox[0].x.value, bbox[0].y.value]
                 upper = [bbox[1].x.value, bbox[1].y.value]

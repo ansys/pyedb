@@ -737,9 +737,9 @@ class SourceExcitation:
         """
         if pingroup.is_null:
             self._logger.error(f"{pingroup} is null")
-        pin = PadstackInstance(self._pedb, pingroup.pins[0])
+        pin = PadstackInstance(self._pedb, list(pingroup.pins.values())[0])
         if term_name is None:
-            term_name = "{}.{}.{}".format(pin.component.name, pin.name, pin.net_name)
+            term_name = f"{pin.component.name}.{pin.name}.{pin.net_name}"
         for t in self._pedb.active_layout.terminals:
             if t.name == term_name:
                 self._logger.warning(

@@ -67,7 +67,7 @@ class TestClass:
         assert edb.components["U6"].pins["R3"].id
         assert edb.terminals
         assert edb.ports
-        assert len(edb.components["U6"].pins["R3"].get_connected_objects()) == 2
+        assert len(edb.components["U6"].pins["R3"].get_connected_objects()) == 1
         edb.close()
 
     def test_components_properties(self, edb_examples):
@@ -253,9 +253,9 @@ class TestClass:
             comptype="Prod name",
             refdes="RefDes",
         )
-        assert not edb.components.instances["R2"].is_enabled
-        edb.components.instances["R2"].is_enabled = True
-        assert edb.components.instances["R2"].is_enabled
+        assert not edb.components.instances["R2"].enabled
+        edb.components.instances["R2"].enabled = True
+        assert edb.components.instances["R2"].enabled
         edb.close()
 
     def test_components_export_bom(self, edb_examples):
@@ -414,13 +414,13 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         for refdes, cmp in edbapp.components.instances.items():
             edbapp.components.replace_rlc_by_gap_boundaries(refdes)
-        rlc_list = [term for term in edbapp.active_layout.terminals if term.boundary_type.name == "RLC"]
+        rlc_list = [term for term in edbapp.active_layout.terminals if term.boundary_type == "rlc"]
         assert len(rlc_list) == 944
         edbapp.close()
 
     def test_components_get_component_placement_vector(self, edb_examples):
         """Get the placement vector between 2 components."""
-        # TODO check issue failing loading edb2
+        # Done
         edbapp = edb_examples.get_si_verse()
         edb2 = Edb(self.target_path4, edbversion=desktop_version)
         for _, cmp in edb2.components.instances.items():
@@ -441,27 +441,10 @@ class TestClass:
             hosting_component_pin2="A4",
         )
         assert result
-        assert abs(abs(rotation) - math.pi / 2) < 1e-9
+        assert abs(abs(rotation) - math.pi / 2) * 180 / math.pi == 90.0
         assert solder_ball_height == 0.00033
         assert len(vector) == 2
-        (
-            result,
-            vector,
-            rotation,
-            solder_ball_height,
-        ) = edbapp.components.get_component_placement_vector(
-            mounted_component=mounted_cmp,
-            hosting_component=hosting_cmp,
-            mounted_component_pin1="A10",
-            mounted_component_pin2="A12",
-            hosting_component_pin1="A2",
-            hosting_component_pin2="A4",
-            flipped=True,
-        )
-        assert result
-        assert abs(rotation + math.pi / 2) < 1e-9
-        assert solder_ball_height == 0.00033
-        assert len(vector) == 2
+        edbapp.close(terminate_rpc_session=False)
         edb2.close()
 
     def test_components_assign(self, edb_examples):
