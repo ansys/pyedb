@@ -1400,21 +1400,35 @@ class TestClass:
         from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
 
         ctrl = ControlFile()
-        ctrl.stackup.add_layer('m2',
-                               properties={'Elevation': '0.0', 'Material': 'copper', 'Type': 'conductor',
-                                           'Thickness': '1.0',
-                                           'UnionPrimitives': "true"})
+        ctrl.stackup.add_layer(
+            "m2",
+            properties={
+                "Elevation": "0.0",
+                "Material": "copper",
+                "Type": "conductor",
+                "Thickness": "1.0",
+                "UnionPrimitives": "true",
+            },
+        )
         assert [layer for layer in ctrl.stackup.layers if layer.name == "m2"]
 
-        ctrl.stackup.add_layer('m1',
-                               properties={'Elevation': '1.0', 'Material': 'copper', 'Type': 'conductor',
-                                           'Thickness': '1.5',
-                                           'UnionPrimitives': "false", 'ConvertPolygonToCircle': "true"})
-        assert [layer for layer in ctrl.stackup.layers if layer.properties['Elevation'] == "1.0"]
+        ctrl.stackup.add_layer(
+            "m1",
+            properties={
+                "Elevation": "1.0",
+                "Material": "copper",
+                "Type": "conductor",
+                "Thickness": "1.5",
+                "UnionPrimitives": "false",
+                "ConvertPolygonToCircle": "true",
+            },
+        )
+        assert [layer for layer in ctrl.stackup.layers if layer.properties["Elevation"] == "1.0"]
 
-        ctrl.stackup.add_via('via12',
-                             properties={'StartLayer': 'm2', 'StopLayer': 'm1', 'ConvertPolygonToCircle': "true"})
-        assert [via for via in ctrl.stackup.vias if via.properties['ConvertPolygonToCircle'] == "true"]
+        ctrl.stackup.add_via(
+            "via12", properties={"StartLayer": "m2", "StopLayer": "m1", "ConvertPolygonToCircle": "true"}
+        )
+        assert [via for via in ctrl.stackup.vias if via.properties["ConvertPolygonToCircle"] == "true"]
 
     def test_add_layer_api_with_control_file(self):
         """Add new layers with control file."""
