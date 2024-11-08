@@ -4625,13 +4625,13 @@ class Edb(Database):
         for comp in comps_to_export:
             ocomp = self.components.components[comp]
             gds_component = ET.SubElement(components, "GDS_COMPONENT")
-            for pin in ocomp.pins:
-                pins_position_unit = unit_converter(ocomp.pins[pin].position, output_units=gds_comps_unit)
-                __pin = ET.SubElement(gds_component, "GDS_PIN")
-                __pin.set("Name", ocomp.pins[pin].component_pin)
-                __pin.set("x", str(pins_position_unit[0]))
-                __pin.set("y", str(pins_position_unit[1]))
-                __pin.set("Layer", ocomp.pins[pin].placement_layer)
+            for pin_name, pin in ocomp.pins.items():
+                pins_position_unit = unit_converter(pin.position, output_units=gds_comps_unit)
+                gds_pin = ET.SubElement(gds_component, "GDS_PIN")
+                gds_pin.set("Name", pin_name)
+                gds_pin.set("x", str(pins_position_unit[0]))
+                gds_pin.set("y", str(pins_position_unit[1]))
+                gds_pin.set("Layer", pin.placement_layer)
             component = ET.SubElement(gds_component, "Component")
             component.set("RefDes", ocomp.refdes)
             component.set("PartName", ocomp.partname)
