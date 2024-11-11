@@ -615,23 +615,14 @@ class TestClass:
         edbapp.close()
 
     def test_ic_die_properties(self, edb_examples):
-        # TODO check config file 2.0
+        # Done
         edbapp = edb_examples.get_si_verse()
         component: Component = edbapp.components["U8"]
-        _assert_initial_ic_die_properties(component)
-        component.ic_die_properties = {"type": "flip_chip", "orientation": "chip_down"}
-        _assert_final_ic_die_properties(component)
+        assert component.ic_die_properties.die_orientation == "chip_up"
+        component.ic_die_properties.die_orientation = "chip_down"
+        assert component.ic_die_properties.die_orientation == "chip_down"
+        assert component.ic_die_properties.die_type == "none"
+        assert component.ic_die_properties.height == 0.0
+        component.ic_die_properties.height = 1e-3
+        assert component.ic_die_properties.height == 1e-3
         edbapp.close()
-
-
-def _assert_initial_ic_die_properties(component: Component):
-    # TODO check confile 2.0
-    assert component.ic_die_properties["type"] == "no_die"
-    assert "orientation" not in component.ic_die_properties
-    assert "height" not in component.ic_die_properties
-
-
-def _assert_final_ic_die_properties(component: Component):
-    # TODO check confile 2.0
-    assert component.ic_die_properties["type"] == "flip_chip"
-    assert component.ic_die_properties["orientation"] == "chip_down"

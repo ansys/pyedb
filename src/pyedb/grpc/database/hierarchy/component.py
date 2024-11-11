@@ -25,6 +25,8 @@ import re
 from typing import Optional
 import warnings
 
+from ansys.edb.core.definition.die_property import DieOrientation as GrpcDieOrientation
+from ansys.edb.core.definition.die_property import DieType as GrpcDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.component_group import (
@@ -40,7 +42,6 @@ from ansys.edb.core.terminal.terminals import (
     PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
 )
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
-from ansys.edb.core.utility.value import Value as EDBValue
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
@@ -104,6 +105,13 @@ class Component(GrpcComponentGroup):
     @is_enabled.setter
     def is_enabled(self, value):
         self.enabled = value
+
+    @property
+    def ic_die_properties(self):
+        if self.type == "ic":
+            return ICDieProperty(self)
+        else:
+            return None
 
     @property
     def _active_layout(self):  # pragma: no cover
@@ -976,7 +984,7 @@ class Component(GrpcComponentGroup):
         res = 0 if res is None else res
         ind = 0 if ind is None else ind
         cap = 0 if cap is None else cap
-        res, ind, cap = EDBValue(res), EDBValue(ind), EDBValue(cap)
+        res, ind, cap = GrpcValue(res), GrpcValue(ind), GrpcValue(cap)
         model = PinPairModel(self._pedb, self._edb_model)
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
@@ -1034,3 +1042,61 @@ class Component(GrpcComponentGroup):
         )
         void.is_negative = True
         return True
+
+
+class ICDieProperty:
+    def __init__(self, component):
+        self._component = component
+        self._die_property = self._component.component_property.die_property
+
+    @property
+    def die_orientation(self):
+        return self._die_property.die_orientation.name.lower()
+
+    @die_orientation.setter
+    def die_orientation(self, value):
+        component_property = self._component.component_property
+        die_property = component_property.die_property
+        if value.lower() == "chip_up":
+            die_property.die_orientation = GrpcDieOrientation.CHIP_UP
+        elif value.lower() == "chip_down":
+            die_property.die_orientation = GrpcDieOrientation.CHIP_DOWN
+        else:
+            return
+        component_property.die_property = die_property
+        self._component.component_property = component_property
+
+    @property
+    def die_type(self):
+        return self._die_property.die_type.name.lower()
+
+    @die_type.setter
+    def die_type(self, value):
+        component_property = self._component.component_property
+        die_property = component_property.die_property
+        if value.lower() == "none":
+            die_property.die_type = GrpcDieType.NONE
+        elif value.lower() == "flipchip":
+            die_property.die_type = GrpcDieType.FLIPCHIP
+        elif value.lower() == "wirebond":
+            die_property.die_type = GrpcDieType.WIREBOND
+        else:
+            return
+        component_property.die_property = die_property
+        self._component.component_property = component_property
+
+    @property
+    def height(self):
+        return self._die_property.height.value
+
+    @height.setter
+    def height(self, value):
+        component_property = self._component.component_property
+        die_property = component_property.die_property
+        die_property.height = GrpcValue(value)
+        component_property.die_property = die_property
+        self._component.component_property = component_property
+
+    @property
+    def is_null(self):
+        return self._die_property.is_null
