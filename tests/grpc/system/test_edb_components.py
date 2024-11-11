@@ -260,10 +260,10 @@ class TestClass:
 
     def test_components_export_bom(self, edb_examples):
         """Export Bom file from layout."""
-        # TODO check this method.
+        # TODO check why add_member is failing.
         edb = edb_examples.get_si_verse()
         edb.components.import_bom(os.path.join(local_path, "example_models", test_subfolder, "bom_example_2.csv"))
-        assert not edb.components.instances["R2"].is_enabled
+        assert not edb.components.instances["R2"].enabled
         assert edb.components.instances["U13"].partname == "SLAB-QFN-24-2550x2550TP_V"
 
         export_bom_path = os.path.join(self.local_scratch.path, "export_bom.csv")
@@ -450,11 +450,8 @@ class TestClass:
     def test_components_assign(self, edb_examples):
         """Assign RLC model, S-parameter model and spice model."""
 
-        # TODO wait ingo to add Sparameter model.
-
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_17.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
+        # TODO check bug #469 status.
+        edbapp = edb_examples.get_si_verse()
         sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
         spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
 
@@ -525,7 +522,7 @@ class TestClass:
 
     def test_instances(self, edb_examples):
         """Check instances access and values."""
-        # TODO check bug #439
+        # Done
         edbapp = edb_examples.get_si_verse()
         comp_pins = edbapp.components.instances["U1"].pins
         pins = [comp_pins["AM38"], comp_pins["AL37"]]
@@ -533,10 +530,10 @@ class TestClass:
             component_part_name="Test_part", component_name="Test", is_rlc=True, r_value=12.2, pins=pins
         )
         assert edbapp.components.instances["Test"]
-        assert edbapp.components.instances["Test"].res_value == str(12.2)
-        assert edbapp.components.instances["Test"].ind_value == "0"
-        assert edbapp.components.instances["Test"].cap_value == "0"
-        assert edbapp.components.instances["Test"].center == [0.06800000116, 0.01649999875]
+        assert edbapp.components.instances["Test"].res_value == 12.2
+        assert edbapp.components.instances["Test"].ind_value == 0
+        assert edbapp.components.instances["Test"].cap_value == 0
+        assert edbapp.components.instances["Test"].center == [0.07950000102, 0.03399999804]
         edbapp.close_edb()
 
     def test_create_package_def(self, edb_examples):

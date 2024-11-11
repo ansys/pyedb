@@ -101,6 +101,10 @@ class Component(GrpcComponentGroup):
     def is_enabled(self):
         return self.enabled
 
+    @is_enabled.setter
+    def is_enabled(self, value):
+        self.enabled = value
+
     @property
     def _active_layout(self):  # pragma: no cover
         return self._pedb.active_layout
@@ -690,20 +694,19 @@ class Component(GrpcComponentGroup):
         """
         new_type = new_type.lower()
         if new_type == "resistor":
-            type_id = GrpcComponentType.RESISTOR
+            self.component_type = GrpcComponentType.RESISTOR
         elif new_type == "inductor":
-            type_id = GrpcComponentType.INDUCTOR
+            self.component_type = GrpcComponentType.INDUCTOR
         elif new_type == "capacitor":
-            type_id = GrpcComponentType.CAPACITOR
+            self.component_type = GrpcComponentType.CAPACITOR
         elif new_type == "ic":
-            type_id = GrpcComponentType.IC
+            self.component_type = GrpcComponentType.IC
         elif new_type == "io":
-            type_id = GrpcComponentType.IO
+            self.component_type = GrpcComponentType.IO
         elif new_type == "other":
-            type_id = GrpcComponentType.OTHER
+            self.component_type = GrpcComponentType.OTHER
         else:
             return
-        self.component_type = type_id
 
     @property
     def numpins(self):
