@@ -38,11 +38,11 @@ class TestClass:
 
     def test_differential_pairs_queries(self, edb_examples):
         """Evaluate differential pairs queries"""
-        # TODO check bug #454
+        # Done
         edbapp = edb_examples.get_si_verse()
         edbapp.differential_pairs.auto_identify()
         diff_pair = edbapp.differential_pairs.create("new_pair1", "PCIe_Gen4_RX1_P", "PCIe_Gen4_RX1_N")
         assert diff_pair.positive_net.name == "PCIe_Gen4_RX1_P"
         assert diff_pair.negative_net.name == "PCIe_Gen4_RX1_N"
-        assert edbapp.differential_pairs["new_pair1"]
+        assert edbapp.differential_pairs.items["new_pair1"]
         edbapp.close()
