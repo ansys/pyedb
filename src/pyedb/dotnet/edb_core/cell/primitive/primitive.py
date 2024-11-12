@@ -580,17 +580,17 @@ class Primitive(Connectable):
         _, name = self._edb_object.GetProductProperty(self._pedb._edb.ProductId.Designer, 1, val)
         name = str(name).strip("'")
         if name == "":
-            if str(self.primitive_type) == "Path":
+            if str(self.primitive_type).lower() == "path":
                 ptype = "line"
-            elif str(self.primitive_type) == "Rectangle":
+            elif str(self.primitive_type).lower() == "rectangle":
                 ptype = "rect"
-            elif str(self.primitive_type) == "Polygon":
+            elif str(self.primitive_type).lower() == "polygon":
                 ptype = "poly"
-            elif str(self.primitive_type) == "Bondwire":
+            elif str(self.primitive_type).lower() == "bondwire":
                 ptype = "bwr"
             else:
                 ptype = str(self.primitive_type).lower()
-            name = "{}_{}".format(ptype, self.id)
+            name = "{}__{}".format(ptype, self.id)
             self._edb_object.SetProductProperty(self._pedb._edb.ProductId.Designer, 1, name)
         return name
 

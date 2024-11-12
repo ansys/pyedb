@@ -1,4 +1,4 @@
-# # Set up EDB for Power Integrity Analysis
+# # Set up EDB for Power Distribution Network Analysis
 # This example shows how to set up the electronics database (EDB) for power integrity analysis from a single
 # configuration file.
 
