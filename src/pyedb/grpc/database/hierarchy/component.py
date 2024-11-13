@@ -428,45 +428,20 @@ class Component(GrpcComponentGroup):
         str
             Value. ``None`` if not an RLC Type.
         """
-        # if self.model_type == "RLC":
-        #     if not self._pin_pairs:
-        #         return
-        #     else:
-        #         pin_pair = self._pin_pairs[0]
-        #     if len([i for i in pin_pair.rlc_enable if i]) == 1:
-        #         return [pin_pair.rlc_values[idx] for idx, val in enumerate(pin_pair.rlc_enable) if val][0]
-        #     else:
-        #         return pin_pair.rlc_values
-        # elif self.model_type == "SPICEModel":
-        #     return self.spice_model.file_path
-        # elif self.model_type == "SParameterModel":
-        #     return self.s_param_model.name
-        # else:
-        #     return self.netlist_model.netlist
-        pass
+        _values = {"resistor": self.rlc_values[0], "inductor": self.rlc_values[1], "capacitor": self.rlc_values[2]}
+        if self.type in _values:
+            return _values[self.type]
+        else:
+            return 0.0
 
     @value.setter
     def value(self, value):
-        # rlc_enabled = [True if i == self.type else False for i in ["Resistor", "Inductor", "Capacitor"]]
-        # rlc_values = [value if i == self.type else 0 for i in ["Resistor", "Inductor", "Capacitor"]]
-        # rlc_values = [EDBValue(i) for i in rlc_values]
-        #
-        # model = PinPairModel(self._pedb)
-        # pin_names = list(self.pins.keys())
-        # for idx, i in enumerate(np.arange(len(pin_names) // 2)):
-        #     pin_pair = (pin_names[idx], pin_names[idx + 1])
-        #     rlc = model.get_rlc(pin_pair)
-        #     rlc = model.get_rlc(pin_pair)
-        #     rlc.r = EDBValue(rlc_values[0])
-        #     rlc.r_enabled = rlc_enabled[0]
-        #     rlc.l = EDBValue(rlc_values[1])
-        #     rlc.l_enabled = rlc_enabled[1]
-        #     rlc.c = EDBValue(rlc_values[2])
-        #     rlc.c_enabled = rlc_enabled[2]
-        #     rlc.is_parallel = False
-        #     model.set_rlc(pin_pair, rlc)
-        # self._set_model(model)
-        pass
+        if self.type == "resistor":
+            self.res_value = value
+        elif self.type == "inductor":
+            self.ind_value = value
+        elif self.type == "capacitor":
+            self.cap_value = value
 
     @property
     def res_value(self):

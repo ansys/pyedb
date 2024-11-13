@@ -33,15 +33,16 @@ from pyedb.ipc2581.ecad.cad_data.polygon import PolyStep
 class Package(object):
     """Class describing an IPC2581 package definition."""
 
-    def __init__(self, ipc):
+    def __init__(self, ipc, pedb):
         self._ipc = ipc
+        self._pedb = pedb
         self.name = ""
         self.type = "OTHER"
         self.pin_one = "1"
         self.pin_orientation = "OTHER"
         self.height = 0.1
-        self.assembly_drawing = AssemblyDrawing(self._ipc)
-        self.outline = Outline(self._ipc)
+        self.assembly_drawing = AssemblyDrawing(self._ipc, pedb)
+        self.outline = Outline(self._ipc, pedb)
         self._pins = []
         self.pickup_point = [0.0, 0.0]
 
