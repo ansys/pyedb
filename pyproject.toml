@@ -37,6 +37,7 @@ dependencies = [
     "scikit-rf",
     "ansys-edb-core",
     "ansys-api-edb",
+    "psutil",
     ]
 
 [project.optional-dependencies]
