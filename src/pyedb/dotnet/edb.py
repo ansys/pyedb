@@ -3180,7 +3180,7 @@ class Edb(Database):
         self.logger.info("Variable %s doesn't exists.", variable_name)
         return None
 
-    def add_project_variable(self, variable_name, variable_value):
+    def add_project_variable(self, variable_name, variable_value, description=""):
         """Add a variable to edb database (project). The variable will have the prefix `$`.
 
         ..note::
@@ -3192,6 +3192,8 @@ class Edb(Database):
             Name of the variable. Name can be provided without ``$`` prefix.
         variable_value : str, float
             Value of the variable with units.
+        description : str, optional
+            Description of the variable.
 
         Returns
         -------
@@ -3210,9 +3212,9 @@ class Edb(Database):
         """
         if not variable_name.startswith("$"):
             variable_name = "${}".format(variable_name)
-        return self.add_design_variable(variable_name=variable_name, variable_value=variable_value)
+        return self.add_design_variable(variable_name=variable_name, variable_value=variable_value, description=description)
 
-    def add_design_variable(self, variable_name, variable_value, is_parameter=False):
+    def add_design_variable(self, variable_name, variable_value, is_parameter=False, description=""):
         """Add a variable to edb. The variable can be a design one or a project variable (using ``$`` prefix).
 
         ..note::
@@ -3228,7 +3230,8 @@ class Edb(Database):
         is_parameter : bool, optional
             Whether to add the variable as a local variable. The default is ``False``.
             When ``True``, the variable is added as a parameter default.
-
+        description : str, optional
+            Description of the variable.
         Returns
         -------
         tuple
@@ -3250,6 +3253,7 @@ class Edb(Database):
         var_server = self.variable_exists(variable_name)
         if not var_server[0]:
             var_server[1].AddVariable(variable_name, self.edb_value(variable_value), is_parameter)
+            var_server[1].SetVariableDescription(variable_name, description)
             return True, var_server[1]
         self.logger.error("Variable %s already exists.", variable_name)
         return False, var_server[1]

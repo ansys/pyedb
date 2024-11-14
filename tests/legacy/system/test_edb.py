@@ -173,9 +173,10 @@ class TestClass:
 
     def test_add_variables(self):
         """Add design and project variables."""
-        result, var_server = self.edbapp.add_design_variable("my_variable", "1mm")
+        result, var_server = self.edbapp.add_design_variable("my_variable", "1mm", description="var_1")
         assert result
         assert var_server
+        assert self.edbapp.variables["my_variable"].description == "var_1"
         result, var_server = self.edbapp.add_design_variable("my_variable", "1mm")
         assert not result
         assert self.edbapp.modeler.parametrize_trace_width("A0_N")
@@ -185,7 +186,8 @@ class TestClass:
         assert var_server.IsVariableParameter("my_parameter")
         result, var_server = self.edbapp.add_design_variable("my_parameter", "2mm", True)
         assert not result
-        result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
+        result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm", description="var_2")
+        assert self.edbapp.variables["$my_project_variable"].description == "var_2"
         assert result
         assert var_server
         result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
