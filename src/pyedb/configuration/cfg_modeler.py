@@ -43,11 +43,16 @@ class CfgPlane:
         self.layer = kwargs["layer"]
         self.net_name = kwargs.get("net_name", "")
         self.type = kwargs.get("type", "rectangle")
-        self.lower_left_point = kwargs["lower_left_point"]
-        self.upper_right_point = kwargs["upper_right_point"]
+
+        # rectangle
+        self.lower_left_point = kwargs.get("lower_left_point", [])
+        self.upper_right_point = kwargs.get("upper_right_point", [])
         self.corner_radius = kwargs.get("corner_radius", 0)
         self.rotation = kwargs.get("rotation", 0)
         self.voids = kwargs.get("voids", [])
+
+        # polygon
+        self.points = kwargs.get("points", [])
 
 
 class CfgModeler:
@@ -110,6 +115,14 @@ class CfgModeler:
                         rotation=p.rotation,
                     )
                     obj.aedt_name = p.name
+                elif p.type == "polygon":
+                    obj = self._pedb.modeler.create_polygon(
+                        main_shape=p.points,
+                        layer_name=p.layer,
+                        net_name=p.net_name
+                    )
+                    obj.aedt_name = p.name
+
                 for v in p.voids:
                     for i in self._pedb.layout.primitives:
                         if i.aedt_name == v:

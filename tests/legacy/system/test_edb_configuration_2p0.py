@@ -1173,14 +1173,20 @@ class TestClass:
                     },
                 ],
                 "planes": [
-                    {
-                        "name": "GND_TOP",
-                        "layer": "TOP",
-                        "net_name": "GND",
-                        "lower_left_point": [0, 0],
-                        "upper_right_point": [0, "12mm"],
-                        "voids": ["trace_1_void"],
-                    },
+                    {"type": "rectangle",
+                     "name": "GND_TOP",
+                     "layer": "TOP",
+                     "net_name": "GND",
+                     "lower_left_point": [0, 0],
+                     "upper_right_point": ["12mm", "12mm"],
+                     "voids": ["trace_1_void"],
+                     },
+                    {"type": "polygon",
+                     "name": "GND_TOP_POLY",
+                     "layer": "TOP",
+                     "net_name": "GND",
+                     "points": [["12mm", 0],["13mm", 0],["12mm", "12mm"]],
+                     },
                 ],
                 "components": [
                     {
@@ -1204,8 +1210,9 @@ class TestClass:
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.configuration.load(data, apply_file=True)
         assert [i for i in edbapp.layout.primitives if i.aedt_name == "trace_1"]
-        plane = [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP"][0]
-        assert plane.voids
+        rect = [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP"][0]
+        assert rect.voids
+        assert [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP_POLY"][0]
         assert edbapp.components["U1"]
         edbapp.close()
 
