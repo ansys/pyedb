@@ -357,7 +357,7 @@ class Primitive(GrpcPrimitive):
                 primi_polys.append(prim.polygon_data)
             else:
                 if isinstance(prim, GrpcCircle):
-                    primi_polys.append(prim.get_polygon_data())
+                    primi_polys.append(prim.polygon_data)
                 else:
                     primi_polys.append(prim.polygon_data)
         list_poly = poly.intersect([poly], primi_polys)

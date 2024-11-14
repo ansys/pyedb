@@ -25,9 +25,13 @@
 
 import os
 
+from ansys.edb.core.definition.djordjecvic_sarkar_model import (
+    DjordjecvicSarkarModel as GrpcDjordjecvicSarkarModel,
+)
+from ansys.edb.core.definition.material_def import MaterialDef as GrpcMaterialDef
 import pytest
 
-from pyedb.dotnet.database.materials import Material, MaterialProperties, Materials
+from pyedb.grpc.database.materials import Material, MaterialProperties, Materials
 from tests.conftest import local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -61,15 +65,8 @@ MATERIAL_NAME = "DummyMaterial"
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, legacy_edb_app_without_material):
-        self.edbapp = legacy_edb_app_without_material
-        self.definition = self.edbapp.edb_api.definition
-
-        # Remove dummy material if it exists.
-        from ansys.edb.core.definition.material_def import (
-            MaterialDef as GrpcMaterialDef,
-        )
-
+    def init(self, edb_examples):
+        self.edbapp = edb_examples.get_si_verse()
         material_def = GrpcMaterialDef.find_by_name(self.edbapp.active_db, MATERIAL_NAME)
         if not material_def.is_null:
             material_def.delete()
@@ -87,9 +84,6 @@ class TestClass:
 
     def test_material_properties(self):
         """Evaluate material properties."""
-        from ansys.edb.core.definition.material_def import (
-            MaterialDef as GrpcMaterialDef,
-        )
 
         material_def = GrpcMaterialDef.create(self.edbapp.active_db, MATERIAL_NAME)
         material = Material(self.edbapp, material_def)
@@ -102,9 +96,9 @@ class TestClass:
 
     def test_material_dc_properties(self):
         """Evaluate material DC properties."""
-        material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
-        material_model = self.definition.DjordjecvicSarkarModel()
-        material_def.SetDielectricMaterialModel(material_model)
+        material_def = GrpcMaterialDef.create(self.edbapp.active_db, MATERIAL_NAME)
+        material_model = GrpcDjordjecvicSarkarModel.create()
+        material_def.set_dielectric_material_model(material_model)
         material = Material(self.edbapp, material_def)
 
         for property in DC_PROPERTIES:
@@ -135,9 +129,9 @@ class TestClass:
 
     def test_material_with_dc_model_to_dict(self):
         """Evaluate material conversion into a dictionary."""
-        material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
-        material_model = self.definition.DjordjecvicSarkarModel()
-        material_def.SetDielectricMaterialModel(material_model)
+        material_def = GrpcMaterialDef.create(self.edbapp.active_db, MATERIAL_NAME)
+        material_model = GrpcDjordjecvicSarkarModel.create()
+        material_def.dielectric_material_model = material_model
         material = Material(self.edbapp, material_def)
         for property in DC_PROPERTIES:
             setattr(material, property, FLOAT_VALUE)
