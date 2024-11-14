@@ -25,6 +25,8 @@ import re
 from typing import Optional
 import warnings
 
+from ansys.edb.core.definition.die_property import DieOrientation as GrpcDieOrientation
+from ansys.edb.core.definition.die_property import DieType as GrpcDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.component_group import (
@@ -40,7 +42,6 @@ from ansys.edb.core.terminal.terminals import (
     PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
 )
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
-from ansys.edb.core.utility.value import Value as EDBValue
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
@@ -100,6 +101,17 @@ class Component(GrpcComponentGroup):
     @property
     def is_enabled(self):
         return self.enabled
+
+    @is_enabled.setter
+    def is_enabled(self, value):
+        self.enabled = value
+
+    @property
+    def ic_die_properties(self):
+        if self.type == "ic":
+            return ICDieProperty(self)
+        else:
+            return None
 
     @property
     def _active_layout(self):  # pragma: no cover
@@ -416,45 +428,20 @@ class Component(GrpcComponentGroup):
         str
             Value. ``None`` if not an RLC Type.
         """
-        # if self.model_type == "RLC":
-        #     if not self._pin_pairs:
-        #         return
-        #     else:
-        #         pin_pair = self._pin_pairs[0]
-        #     if len([i for i in pin_pair.rlc_enable if i]) == 1:
-        #         return [pin_pair.rlc_values[idx] for idx, val in enumerate(pin_pair.rlc_enable) if val][0]
-        #     else:
-        #         return pin_pair.rlc_values
-        # elif self.model_type == "SPICEModel":
-        #     return self.spice_model.file_path
-        # elif self.model_type == "SParameterModel":
-        #     return self.s_param_model.name
-        # else:
-        #     return self.netlist_model.netlist
-        pass
+        _values = {"resistor": self.rlc_values[0], "inductor": self.rlc_values[1], "capacitor": self.rlc_values[2]}
+        if self.type in _values:
+            return _values[self.type]
+        else:
+            return 0.0
 
     @value.setter
     def value(self, value):
-        # rlc_enabled = [True if i == self.type else False for i in ["Resistor", "Inductor", "Capacitor"]]
-        # rlc_values = [value if i == self.type else 0 for i in ["Resistor", "Inductor", "Capacitor"]]
-        # rlc_values = [EDBValue(i) for i in rlc_values]
-        #
-        # model = PinPairModel(self._pedb)
-        # pin_names = list(self.pins.keys())
-        # for idx, i in enumerate(np.arange(len(pin_names) // 2)):
-        #     pin_pair = (pin_names[idx], pin_names[idx + 1])
-        #     rlc = model.get_rlc(pin_pair)
-        #     rlc = model.get_rlc(pin_pair)
-        #     rlc.r = EDBValue(rlc_values[0])
-        #     rlc.r_enabled = rlc_enabled[0]
-        #     rlc.l = EDBValue(rlc_values[1])
-        #     rlc.l_enabled = rlc_enabled[1]
-        #     rlc.c = EDBValue(rlc_values[2])
-        #     rlc.c_enabled = rlc_enabled[2]
-        #     rlc.is_parallel = False
-        #     model.set_rlc(pin_pair, rlc)
-        # self._set_model(model)
-        pass
+        if self.type == "resistor":
+            self.res_value = value
+        elif self.type == "inductor":
+            self.ind_value = value
+        elif self.type == "capacitor":
+            self.cap_value = value
 
     @property
     def res_value(self):
@@ -690,20 +677,19 @@ class Component(GrpcComponentGroup):
         """
         new_type = new_type.lower()
         if new_type == "resistor":
-            type_id = GrpcComponentType.RESISTOR
+            self.component_type = GrpcComponentType.RESISTOR
         elif new_type == "inductor":
-            type_id = GrpcComponentType.INDUCTOR
+            self.component_type = GrpcComponentType.INDUCTOR
         elif new_type == "capacitor":
-            type_id = GrpcComponentType.CAPACITOR
+            self.component_type = GrpcComponentType.CAPACITOR
         elif new_type == "ic":
-            type_id = GrpcComponentType.IC
+            self.component_type = GrpcComponentType.IC
         elif new_type == "io":
-            type_id = GrpcComponentType.IO
+            self.component_type = GrpcComponentType.IO
         elif new_type == "other":
-            type_id = GrpcComponentType.OTHER
+            self.component_type = GrpcComponentType.OTHER
         else:
             return
-        self.component_type = type_id
 
     @property
     def numpins(self):
@@ -973,7 +959,7 @@ class Component(GrpcComponentGroup):
         res = 0 if res is None else res
         ind = 0 if ind is None else ind
         cap = 0 if cap is None else cap
-        res, ind, cap = EDBValue(res), EDBValue(ind), EDBValue(cap)
+        res, ind, cap = GrpcValue(res), GrpcValue(ind), GrpcValue(cap)
         model = PinPairModel(self._pedb, self._edb_model)
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
@@ -1031,3 +1017,61 @@ class Component(GrpcComponentGroup):
         )
         void.is_negative = True
         return True
+
+
+class ICDieProperty:
+    def __init__(self, component):
+        self._component = component
+        self._die_property = self._component.component_property.die_property
+
+    @property
+    def die_orientation(self):
+        return self._die_property.die_orientation.name.lower()
+
+    @die_orientation.setter
+    def die_orientation(self, value):
+        component_property = self._component.component_property
+        die_property = component_property.die_property
+        if value.lower() == "chip_up":
+            die_property.die_orientation = GrpcDieOrientation.CHIP_UP
+        elif value.lower() == "chip_down":
+            die_property.die_orientation = GrpcDieOrientation.CHIP_DOWN
+        else:
+            return
+        component_property.die_property = die_property
+        self._component.component_property = component_property
+
+    @property
+    def die_type(self):
+        return self._die_property.die_type.name.lower()
+
+    @die_type.setter
+    def die_type(self, value):
+        component_property = self._component.component_property
+        die_property = component_property.die_property
+        if value.lower() == "none":
+            die_property.die_type = GrpcDieType.NONE
+        elif value.lower() == "flipchip":
+            die_property.die_type = GrpcDieType.FLIPCHIP
+        elif value.lower() == "wirebond":
+            die_property.die_type = GrpcDieType.WIREBOND
+        else:
+            return
+        component_property.die_property = die_property
+        self._component.component_property = component_property
+
+    @property
+    def height(self):
+        return self._die_property.height.value
+
+    @height.setter
+    def height(self, value):
+        component_property = self._component.component_property
+        die_property = component_property.die_property
+        die_property.height = GrpcValue(value)
+        component_property.die_property = die_property
+        self._component.component_property = component_property
+
+    @property
+    def is_null(self):
+        return self._die_property.is_null

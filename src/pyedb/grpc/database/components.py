@@ -997,11 +997,11 @@ class Components(object):
             if not component:
                 self._logger.error("component %s not found.", component)
                 return False
-        if component.type in ["OTHER", "IC", "IO"]:
+        if component.type in ["other", "ic", "io"]:
             self._logger.info(f"Component {component.refdes} passed to deactivate is not an RLC.")
             return False
         component.is_enabled = False
-        return self.add_port_on_rlc_component(
+        return self._pedb.source_excitation.add_port_on_rlc_component(
             component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
         )
 
@@ -1205,12 +1205,11 @@ class Components(object):
             compdef = self._get_component_definition(component_name, pins)
         if not compdef:
             return False
-        new_cmp = GrpcComponentGroup.create(self._active_layout, compdef.name, component_name)
+        new_cmp = GrpcComponentGroup.create(self._active_layout, component_name, compdef.name)
         hosting_component_location = pins[0].component.transform
         for pin in pins:
             pin.is_layout_pin = True
             new_cmp.add_member(pin)
-        new_cmp.component_type = GrpcComponentType.OTHER
         if not placement_layer:
             new_cmp_layer_name = pins[0].padstack_def.data.layer_names[0]
         else:
@@ -1218,11 +1217,11 @@ class Components(object):
         if new_cmp_layer_name in self._pedb.stackup.signal_layers:
             new_cmp_placement_layer = self._pedb.stackup.signal_layers[new_cmp_layer_name]
             new_cmp.placement_layer = new_cmp_placement_layer
-
+        new_cmp.component_type = GrpcComponentType.OTHER
         if is_rlc and len(pins) == 2:
             rlc = GrpcRlc()
             rlc.is_parallel = is_parallel
-            if r_value is None:
+            if not r_value:
                 rlc.r_enabled = False
             else:
                 rlc.r_enabled = True
@@ -1238,18 +1237,19 @@ class Components(object):
                 rlc.c_enabled = True
                 rlc.C = GrpcValue(c_value)
             if rlc.r_enabled and not rlc.c_enabled and not rlc.l_enabled:
-                new_cmp.type = GrpcComponentType.RESISTOR
+                new_cmp.component_type = GrpcComponentType.RESISTOR
             elif rlc.c_enabled and not rlc.r_enabled and not rlc.l_enabled:
-                new_cmp.type = GrpcComponentType.CAPACITOR
+                new_cmp.component_type = GrpcComponentType.CAPACITOR
             elif rlc.l_enabled and not rlc.r_enabled and not rlc.c_enabled:
-                new_cmp.type = GrpcComponentType.INDUCTOR
+                new_cmp.component_type = GrpcComponentType.INDUCTOR
             else:
-                new_cmp.type = GrpcComponentType.RESISTOR
-
+                new_cmp.component_type = GrpcComponentType.RESISTOR
             pin_pair = (pins[0].name, pins[1].name)
-            rlc_model = PinPairModel(self._pedb, new_cmp.model)
+            rlc_model = PinPairModel(self._pedb, new_cmp.component_property.model)
             rlc_model.set_rlc(pin_pair, rlc)
-            new_cmp.component_property.set_model(rlc_model)
+            component_property = new_cmp.component_property
+            component_property.model = rlc_model
+            new_cmp.component_property = component_property
         new_cmp.transform = hosting_component_location
         new_edb_comp = Component(self._pedb, new_cmp)
         self._cmp[new_cmp.name] = new_edb_comp
@@ -1837,17 +1837,16 @@ class Components(object):
                     else:
                         pinlist = self._pedb.padstacks.get_instances(refdes)
                         if not part_name in self.definitions:
-                            footprint_cell = self.definitions[comp.partname].footprint
-                            comp_def = ComponentDef.create(self._db, part_name, footprint_cell)
-                            for pin in pinlist:
-                                ComponentPin.create(comp_def, pin.name)
+                            comp_def = ComponentDef.create(self._db, part_name, None)
+                            for pin in range(len(pinlist)):
+                                ComponentPin.create(comp_def, str(pin))
 
                         p_layer = comp.placement_layer
                         refdes_temp = comp.refdes + "_temp"
                         comp.refdes = refdes_temp
 
                         unmount_comp_list.remove(refdes)
-                        comp.edbcomponent.Ungroup(True)
+                        comp.ungroup(True)
                         self.create(pinlist, refdes, p_layer, part_name)
                         self.refresh_components()
                         comp = self.instances[refdes]
@@ -1873,7 +1872,7 @@ class Components(object):
                         elif comp_type == "Inductor":
                             self.set_component_rlc(refdes, ind_value=value)
             for comp in unmount_comp_list:
-                self.instances[comp].is_enabled = False
+                self.instances[comp].enabled = False
         return True
 
     def export_bom(self, bom_file, delimiter=","):

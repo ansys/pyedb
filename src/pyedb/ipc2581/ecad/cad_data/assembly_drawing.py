@@ -27,9 +27,10 @@ from pyedb.ipc2581.ecad.cad_data.polygon import Polygon
 class AssemblyDrawing(object):
     """Class describing an IPC2581 assembly drawing."""
 
-    def __init__(self, ipc):
+    def __init__(self, ipc, pedb):
         self._ipc = ipc
-        self.polygon = Polygon(self._ipc)
+        self._pedb = pedb
+        self.polygon = Polygon(self._ipc, pedb)
         self.line_ref = ""
 
     def write_xml(self, package):  # pragma no cover

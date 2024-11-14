@@ -305,9 +305,12 @@ class PadstackDef(GrpcPadstackDef):
     @property
     def hole_diameter(self):
         """Hole diameter."""
-        hole_parameter = self.data.get_hole_parameters()
-        if hole_parameter[0].name.lower() == "padgeomtype_circle":
-            return round(hole_parameter[1][0].value, 6)
+        try:
+            hole_parameter = self.data.get_hole_parameters()
+            if hole_parameter[0].name.lower() == "padgeomtype_circle":
+                return round(hole_parameter[1][0].value, 6)
+        except:
+            return 0.0
 
     @hole_diameter.setter
     def hole_diameter(self, value):
