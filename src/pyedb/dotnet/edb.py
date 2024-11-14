@@ -3212,7 +3212,9 @@ class Edb(Database):
         """
         if not variable_name.startswith("$"):
             variable_name = "${}".format(variable_name)
-        return self.add_design_variable(variable_name=variable_name, variable_value=variable_value, description=description)
+        return self.add_design_variable(
+            variable_name=variable_name, variable_value=variable_value, description=description
+        )
 
     def add_design_variable(self, variable_name, variable_value, is_parameter=False, description=""):
         """Add a variable to edb. The variable can be a design one or a project variable (using ``$`` prefix).
