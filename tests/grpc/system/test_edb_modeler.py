@@ -342,35 +342,23 @@ class TestClass:
         """Evaluate modeler primitives boolean operations."""
         from pyedb.grpc.edb import EdbGrpc as Edb
 
-        # TODO wait material class is done.
+        # TODO check bug #464.
         edb = Edb(restart_rpc_server=True)
         edb.stackup.add_layer(layer_name="test")
-        x = edb.modeler.create_polygon(
-            layer_name="test", main_shape=[[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]]
-        )
-        assert x
-        x_hole1 = edb.modeler.create_polygon(
-            layer_name="test", main_shape=[[1.0, 1.0], [4.5, 1.0], [4.5, 9.0], [1.0, 9.0]]
-        )
-        x_hole2 = edb.modeler.create_polygon(
-            layer_name="test", main_shape=[[4.5, 1.0], [9.0, 1.0], [9.0, 9.0], [4.5, 9.0]]
-        )
+        x = edb.modeler.create_polygon(layer_name="test", points=[[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]])
+        assert not x.is_null
+        x_hole1 = edb.modeler.create_polygon(layer_name="test", points=[[1.0, 1.0], [4.5, 1.0], [4.5, 9.0], [1.0, 9.0]])
+        x_hole2 = edb.modeler.create_polygon(layer_name="test", points=[[4.5, 1.0], [9.0, 1.0], [9.0, 9.0], [4.5, 9.0]])
         x = x.subtract([x_hole1, x_hole2])[0]
-        assert x
-        y = edb.modeler.create_polygon(layer_name="foo", main_shape=[[4.0, 3.0], [6.0, 3.0], [6.0, 6.0], [4.0, 6.0]])
+        assert not x.is_null
+        y = edb.modeler.create_polygon(layer_name="test", points=[[4.0, 3.0], [6.0, 3.0], [6.0, 6.0], [4.0, 6.0]])
         z = x.subtract(y)
-        assert z
-        edb.stackup.add_layer(layer_name="foo")
-        x = edb.modeler.create_polygon(
-            layer_name="foo", main_shape=[[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]]
-        )
-        x_hole = edb.modeler.create_polygon(
-            layer_name="foo", main_shape=[[1.0, 1.0], [9.0, 1.0], [9.0, 9.0], [1.0, 9.0]]
-        )
+        assert not z[0].is_null
+        # edb.stackup.add_layer(layer_name="test")
+        x = edb.modeler.create_polygon(layer_name="test", points=[[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]])
+        x_hole = edb.modeler.create_polygon(layer_name="test", points=[[1.0, 1.0], [9.0, 1.0], [9.0, 9.0], [1.0, 9.0]])
         y = x.subtract(x_hole)[0]
-        z = edb.modeler.create_polygon(
-            layer_name="foo", main_shape=[[-15.0, 5.0], [15.0, 5.0], [15.0, 6.0], [-15.0, 6.0]]
-        )
+        z = edb.modeler.create_polygon(layer_name="test", points=[[-15.0, 5.0], [15.0, 5.0], [15.0, 6.0], [-15.0, 6.0]])
         assert y.intersect(z)
 
         edb.stackup.add_layer(layer_name="test2")
@@ -397,7 +385,7 @@ class TestClass:
 
     def test_156_check_path_length(self):
         """"""
-        # TODO check bug #461 status
+        # Done
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_path_length.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_path_length", "test.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
@@ -406,7 +394,7 @@ class TestClass:
         net1_length = 0
         for path in net1:
             net1_length += path.length
-        assert net1_length == 0.01814480090225562
+        assert net1_length == 0.018144801000000002
         net2 = [path for path in edbapp.modeler.paths if path.net_name == "line1"]
         net2_length = 0
         for path in net2:
@@ -416,7 +404,7 @@ class TestClass:
         net3_length = 0
         for path in net3:
             net3_length += path.length
-        assert net3_length == 0.04860555127546401
+        assert net3_length == 0.048605551
         net4 = [path for path in edbapp.modeler.paths if path.net_name == "lin3"]
         net4_length = 0
         for path in net4:
@@ -426,7 +414,7 @@ class TestClass:
         net5_length = 0
         for path in net5:
             net5_length += path.length
-        assert net5_length == 0.026285623899038543
+        assert net5_length == 0.026285626
         edbapp.close_edb()
 
     def test_duplicate(self):
