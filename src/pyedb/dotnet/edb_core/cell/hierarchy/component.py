@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from charset_normalizer import detect
 import logging
 import re
 from typing import Optional
@@ -845,7 +846,11 @@ class EDBComponent(Group):
         if not name:
             name = get_filename_without_extension(file_path)
 
-        with open(file_path, "r") as f:
+        with open(file_path, 'rb') as file:
+            raw_data = file.read()
+            detected_encoding = detect(raw_data)['encoding']
+
+        with open(file_path, "r", encoding=detected_encoding) as f:
             for line in f:
                 if "subckt" in line.lower():
                     pin_names_sp = [i.strip() for i in re.split(" |\t", line) if i]
