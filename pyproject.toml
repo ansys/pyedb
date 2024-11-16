@@ -34,7 +34,8 @@ dependencies = [
     "pydantic>=2.6.4,<2.10",
     "Rtree >= 1.2.0",
     "toml == 0.10.2",
-    "scikit-rf"
+    "scikit-rf",
+    "charset_normalizer"
     ]
 
 [project.optional-dependencies]
