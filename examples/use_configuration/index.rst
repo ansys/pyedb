@@ -7,7 +7,8 @@ End-to-end workflow
 
 .. nbgallery::
 
-        set_up_edb_for_signal_integrity_analysis.py
+        pdn_analysis.py
+        serdes.py
 
 Step explanation
 -------------------------

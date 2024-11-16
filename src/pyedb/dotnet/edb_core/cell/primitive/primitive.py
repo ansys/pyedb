@@ -580,17 +580,17 @@ class Primitive(Connectable):
         _, name = self._edb_object.GetProductProperty(self._pedb._edb.ProductId.Designer, 1, val)
         name = str(name).strip("'")
         if name == "":
-            if str(self.primitive_type) == "Path":
+            if str(self.primitive_type).lower() == "path":
                 ptype = "line"
-            elif str(self.primitive_type) == "Rectangle":
+            elif str(self.primitive_type).lower() == "rectangle":
                 ptype = "rect"
-            elif str(self.primitive_type) == "Polygon":
+            elif str(self.primitive_type).lower() == "polygon":
                 ptype = "poly"
-            elif str(self.primitive_type) == "Bondwire":
+            elif str(self.primitive_type).lower() == "bondwire":
                 ptype = "bwr"
             else:
                 ptype = str(self.primitive_type).lower()
-            name = "{}_{}".format(ptype, self.id)
+            name = "{}__{}".format(ptype, self.id)
             self._edb_object.SetProductProperty(self._pedb._edb.ProductId.Designer, 1, name)
         return name
 
@@ -602,10 +602,6 @@ class Primitive(Connectable):
     def polygon_data(self):
         """:class:`pyedb.dotnet.edb_core.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
         return PolygonData(self._pedb, self._edb_object.GetPolygonData())
-
-    @polygon_data.setter
-    def polygon_data(self, poly):
-        self._edb_object.SetPolygonData(poly._edb_object)
 
     def add_void(self, point_list):
         """Add a void to current primitive.
@@ -756,24 +752,6 @@ class Primitive(Connectable):
         for point in my_net_points:
             points.append(point)
         return points
-
-    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
-        """Expand the polygon shape by an absolute value in all direction.
-        Offset can be negative for negative expansion.
-
-        Parameters
-        ----------
-        offset : float, optional
-            Offset value in meters.
-        tolerance : float, optional
-            Tolerance in meters.
-        round_corners : bool, optional
-            Whether to round corners or not.
-            If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
-        maximum_corner_extension : float, optional
-            The maximum corner extension (when round corners are not used) at which point the corner is clipped.
-        """
-        return self.polygon_data.expand(offset, tolerance, round_corners, maximum_corner_extension)
 
     def scale(self, factor, center=None):
         """Scales the polygon relative to a center point by a factor.
