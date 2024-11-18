@@ -316,7 +316,7 @@ class CommonNets:
                     continue
                 h1 = mirror_poly([(i, j) for i, j in zip(xvt, yvt)])
                 holes.append(h1)
-            if len(holes)>1:
+            if len(holes) > 1:
                 holes = shapely.union_all([Polygon(i) for i in holes])
                 if isinstance(holes, MultiPolygon):
                     holes = [i.boundary for i in list(holes.geoms)]
@@ -351,7 +351,13 @@ class CommonNets:
                 if polys:
                     ob = MultiPolygon(polys)
                     plot_polygon(
-                        ob, ax=ax, color=label_colors[label], add_points=False, alpha=0.7, label=label, edgecolor="none" if not plot_edges else edge_colors[label]
+                        ob,
+                        ax=ax,
+                        color=label_colors[label],
+                        add_points=False,
+                        alpha=0.7,
+                        label=label,
+                        edgecolor="none" if not plot_edges else edge_colors[label],
                     )
                 if lines:
                     ob = MultiLineString(p)
@@ -386,7 +392,7 @@ class CommonNets:
                             color_index = 0
                     label_colors[label] = c
                     try:
-                        edge_colors[label] = [i*0.5 for i in c]
+                        edge_colors[label] = [i * 0.5 for i in c]
                     except TypeError:
                         edge_colors[label] =label_colors[label]
                 for prim in prims:
