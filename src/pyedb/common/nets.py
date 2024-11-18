@@ -342,7 +342,7 @@ class CommonNets:
                 try:
                     edge_colors[label] = [i * 0.5 for i in label_colors[label]]
                 except TypeError:
-                    edge_colors[label] =label_colors[label]
+                    edge_colors[label] = label_colors[label]
                 color_index += 1
                 if color_index >= len(CSS4_COLORS):
                     color_index = 0
@@ -394,7 +394,7 @@ class CommonNets:
                     try:
                         edge_colors[label] = [i * 0.5 for i in c]
                     except TypeError:
-                        edge_colors[label] =label_colors[label]
+                        edge_colors[label] = label_colors[label]
                 for prim in prims:
                     create_poly(prim, polys, lines)
                 if polys:
