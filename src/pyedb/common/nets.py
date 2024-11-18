@@ -2,6 +2,8 @@ import math
 import os
 import time
 
+import shapely
+
 from pyedb.generic.constants import CSS4_COLORS
 
 
@@ -58,6 +60,7 @@ class CommonNets:
         annotate_component_names=True,
         plot_vias=False,
         include_outline=True,
+        plot_edges=True,
         **kwargs,
     ):
         """Plot a Net to Matplotlib 2D Chart.
@@ -97,6 +100,8 @@ class CommonNets:
             Whether to show the plot or not. Default is `True`.
         include_outline : bool, optional
             Whether to include the internal layout outline or not. Default is `True`.
+        plot_edges : bool, optional
+            Whether to plot polygon edges or not. Default is `True`.
 
         Returns
         -------
@@ -143,6 +148,7 @@ class CommonNets:
             layers = [layers]
         color_index = 0
         label_colors = {}
+        edge_colors = {}
         if outline:
             poly = Polygon(outline)
             plot_line(poly.boundary, add_points=False, color=(0.7, 0, 0), linewidth=4)
@@ -310,6 +316,12 @@ class CommonNets:
                     continue
                 h1 = mirror_poly([(i, j) for i, j in zip(xvt, yvt)])
                 holes.append(h1)
+            if len(holes)>1:
+                holes = shapely.union_all([Polygon(i) for i in holes])
+                if isinstance(holes, MultiPolygon):
+                    holes = [i.boundary for i in list(holes.geoms)]
+                else:
+                    holes = [holes.boundary]
             poly = Polygon(p1, holes)
             if layer_name == "Outline":
                 if label_colors[label] in lines:
@@ -327,6 +339,7 @@ class CommonNets:
                     continue
                 label = "Net " + net
                 label_colors[label] = list(CSS4_COLORS.keys())[color_index]
+                edge_colors[label] = [i * 0.5 for i in label_colors[label]]
                 color_index += 1
                 if color_index >= len(CSS4_COLORS):
                     color_index = 0
@@ -335,7 +348,7 @@ class CommonNets:
                 if polys:
                     ob = MultiPolygon(polys)
                     plot_polygon(
-                        ob, ax=ax, color=label_colors[label], add_points=False, alpha=0.7, label=label, edgecolor="none"
+                        ob, ax=ax, color=label_colors[label], add_points=False, alpha=0.7, label=label, edgecolor="none" if not plot_edges else edge_colors[label]
                     )
                 if lines:
                     ob = MultiLineString(p)
@@ -369,6 +382,8 @@ class CommonNets:
                         if color_index >= len(CSS4_COLORS):
                             color_index = 0
                     label_colors[label] = c
+                    edge_colors[label] = [i*0.5 for i in c]
+
                 for prim in prims:
                     create_poly(prim, polys, lines)
                 if polys:
@@ -380,7 +395,7 @@ class CommonNets:
                         add_points=False,
                         alpha=alpha,
                         label=label,
-                        edgecolor="none",
+                        edgecolor="none" if not plot_edges else edge_colors[label],
                     )
                 if lines:
                     ob = MultiLineString(p)
