@@ -324,7 +324,9 @@ class TestClass:
             plot_components_on_bottom=True,
         )
         assert os.path.exists(local_png2)
-        edb_plot.modeler.create_polygon([[-10e-3, -10e-3], [110e-3, -10e-3], [110e-3, 70e-3], [-10e-3, 70e-3]],layer_name="Outline")
+        edb_plot.modeler.create_polygon(
+            [[-10e-3, -10e-3], [110e-3, -10e-3], [110e-3, 70e-3], [-10e-3, 70e-3]], layer_name="Outline"
+        )
         local_png3 = os.path.join(self.local_scratch.path, "test3.png")
         edb_plot.nets.plot(
             nets=["DDR4_DQ57", "DDR4_DQ56"],

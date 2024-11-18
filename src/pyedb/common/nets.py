@@ -304,7 +304,7 @@ class CommonNets:
             #     poly = LineString(line).buffer(prim.width / 2)
             # else:
             xt, yt = prim.points()
-            if len(xt)<3:
+            if len(xt) < 3:
                 return
             p1 = [(i, j) for i, j in zip(xt[::-1], yt[::-1])]
             p1 = mirror_poly(p1)
@@ -312,7 +312,7 @@ class CommonNets:
             holes = []
             for void in prim.voids:
                 xvt, yvt = void.points(arc_segments=3)
-                if len(xvt)<3:
+                if len(xvt) < 3:
                     continue
                 h1 = mirror_poly([(i, j) for i, j in zip(xvt, yvt)])
                 holes.append(h1)
