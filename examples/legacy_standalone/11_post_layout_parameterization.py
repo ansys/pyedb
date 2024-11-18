@@ -79,7 +79,7 @@ for p in trace_segments:
 
 # Visualize the layout.
 
-edb.nets.plot(layers=layers[0], size=2000)
+edb.nets.plot(layers=layers[0])
 
 # Save the AEDB file and close EDB.
 
