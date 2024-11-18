@@ -43,7 +43,7 @@ to AEDB files.
    materials.Materials
    modeler.Modeler
    nets.EdbNets
-   padstack.EDBPadstacks
+   edb_data.padstacks_data.EDBPadstack
    siwave.EdbSiwave
    stackup.Stackup
 
