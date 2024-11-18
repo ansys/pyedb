@@ -42,6 +42,7 @@ from ansys.edb.core.definition.multipole_debye_model import (
 )
 from ansys.edb.core.utility.value import Value as GrpcValue
 from pydantic import BaseModel, confloat
+from scipy.constants import value
 
 from pyedb import Edb
 from pyedb.exceptions import MaterialModelException
@@ -164,6 +165,69 @@ class Material(GrpcMaterialDef):
     def conductivity(self, value):
         """Set material conductivity."""
         self.set_property(GrpcMaterialProperty.CONDUCTIVITY, GrpcValue(value))
+
+    @property
+    def dc_conductivity(self):
+        try:
+            return self.dielectric_material_model.dc_conductivity
+        except:
+            return
+
+    @dc_conductivity.setter
+    def dc_conductivity(self, value):
+        if self.dielectric_material_model:
+            self.dielectric_material_model.dc_conductivity = float(value)
+
+    @property
+    def dc_permittivity(self):
+        try:
+            return self.dielectric_material_model.dc_relative_permitivity
+        except:
+            return
+
+    @dc_permittivity.setter
+    def dc_permittivity(self, value):
+        if self.dielectric_material_model:
+            self.dielectric_material_model.dc_relative_permitivity = float(value)
+
+    @property
+    def loss_tangent_at_frequency(self):
+        try:
+            return self.dielectric_material_model.loss_tangent_at_frequency
+        except:
+            return
+
+    @loss_tangent_at_frequency.setter
+    def loss_tangent_at_frequency(self, value):
+        if self.dielectric_material_model:
+            self.dielectric_material_model.loss_tangent_at_frequency = float(value)
+
+
+    @property
+    def dielectric_model_frequency(self):
+        try:
+            return self.dielectric_material_model.frequency
+        except:
+            return
+
+    @dielectric_model_frequency.setter
+    def dielectric_model_frequency(self, value):
+        if self.dielectric_material_model:
+            self.dielectric_material_model.frequency = float(value)
+
+
+    @property
+    def permittivity_at_frequency(self):
+        try:
+            return self.dielectric_material_model.relative_permitivity_at_frequency
+        except:
+            return
+
+    @permittivity_at_frequency.setter
+    def permittivity_at_frequency(self, value):
+        if self.dielectric_material_model:
+            self.dielectric_material_model.relative_permitivity_at_frequency = float(value)
+
 
     @property
     def permittivity(self):

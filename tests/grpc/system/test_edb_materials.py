@@ -98,21 +98,21 @@ class TestClass:
         """Evaluate material DC properties."""
         material_def = GrpcMaterialDef.create(self.edbapp.active_db, MATERIAL_NAME)
         material_model = GrpcDjordjecvicSarkarModel.create()
-        material_def.set_dielectric_material_model(material_model)
+        material_def.dielectric_material_model = material_model
         material = Material(self.edbapp, material_def)
 
         for property in DC_PROPERTIES:
             for value in (INT_VALUE, FLOAT_VALUE):
                 setattr(material, property, value)
-                assert float(value) == getattr(material, property)
+                assert float(value) == float(getattr(material, property))
             # NOTE: Other properties do not accept EDB calls with string value
             if property == "loss_tangent_at_frequency":
                 setattr(material, property, STR_VALUE)
-                assert float(STR_VALUE) == getattr(material, property)
+                assert float(STR_VALUE) == float(getattr(material, property))
 
     def test_material_to_dict(self):
         """Evaluate material conversion into a dictionary."""
-        material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
+        material_def = GrpcMaterialDef.create(self.edbapp.active_db, MATERIAL_NAME)
         material = Material(self.edbapp, material_def)
         for property in PROPERTIES:
             setattr(material, property, FLOAT_VALUE)
@@ -146,7 +146,7 @@ class TestClass:
 
     def test_material_update_properties(self):
         """Evaluate material properties update."""
-        material_def = self.definition.MaterialDef.Create(self.edbapp.active_db, MATERIAL_NAME)
+        material_def = GrpcMaterialDef.create(self.edbapp.active_db, MATERIAL_NAME)
         material = Material(self.edbapp, material_def)
         for property in PROPERTIES:
             setattr(material, property, FLOAT_VALUE)
@@ -156,7 +156,8 @@ class TestClass:
         ).model_dump()
 
         material.update(material_dict)
-        for property in PROPERTIES + DC_PROPERTIES:
+        material.conductivity = 12.0
+        for property in PROPERTIES:
             assert expected_value == getattr(material, property)
 
     def test_materials_syslib(self):

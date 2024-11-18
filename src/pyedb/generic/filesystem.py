@@ -116,13 +116,11 @@ class Scratch:
         -------
 
         """
-        from distutils.dir_util import copy_tree
 
-        if destfolder:
-            copy_tree(src_folder, destfolder)
-        else:
+        if not destfolder:
             destfolder = os.path.join(self.path, os.path.split(src_folder)[-1])
-            copy_tree(src_folder, destfolder)
+        shutil.copytree(src_folder, destfolder, dirs_exist_ok=True)
+
         return destfolder
 
     def __enter__(self):
