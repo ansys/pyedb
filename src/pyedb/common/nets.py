@@ -339,7 +339,10 @@ class CommonNets:
                     continue
                 label = "Net " + net
                 label_colors[label] = list(CSS4_COLORS.keys())[color_index]
-                edge_colors[label] = [i * 0.5 for i in label_colors[label]]
+                try:
+                    edge_colors[label] = [i * 0.5 for i in label_colors[label]]
+                except TypeError:
+                    edge_colors[label] =label_colors[label]
                 color_index += 1
                 if color_index >= len(CSS4_COLORS):
                     color_index = 0
@@ -382,8 +385,10 @@ class CommonNets:
                         if color_index >= len(CSS4_COLORS):
                             color_index = 0
                     label_colors[label] = c
-                    edge_colors[label] = [i*0.5 for i in c]
-
+                    try:
+                        edge_colors[label] = [i*0.5 for i in c]
+                    except TypeError:
+                        edge_colors[label] =label_colors[label]
                 for prim in prims:
                     create_poly(prim, polys, lines)
                 if polys:
