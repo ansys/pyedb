@@ -57,6 +57,7 @@ class CommonNets:
         show=True,
         annotate_component_names=True,
         plot_vias=False,
+        include_outline=True,
         **kwargs,
     ):
         """Plot a Net to Matplotlib 2D Chart.
@@ -77,7 +78,7 @@ class CommonNets:
             If a path is specified the plot will be saved in this location.
             If ``save_plot`` is provided, the ``show`` parameter is ignored.
         outline : list, optional
-            List of points of the outline to plot.
+            Add a customer outline from a list of points of the outline to plot.
         size : tuple, int, optional
             Image size in pixel (width, height). Default value is ``(6000, 3000)``
         top_view : bool, optional
@@ -94,6 +95,8 @@ class CommonNets:
             Default is ``False``.
         show : bool, optional
             Whether to show the plot or not. Default is `True`.
+        include_outline : bool, optional
+            Whether to include the internal layout outline or not. Default is `True`.
 
         Returns
         -------
@@ -143,18 +146,29 @@ class CommonNets:
         if outline:
             poly = Polygon(outline)
             plot_line(poly.boundary, add_points=False, color=(0.7, 0, 0), linewidth=4)
-        else:
-            bbox = self._pedb.hfss.get_layout_bounding_box()
-            if not bbox:
-                return False, False
-            x1 = bbox[0]
-            x2 = bbox[2]
-            y1 = bbox[1]
-            y2 = bbox[3]
-            p = [(x1, y1), (x1, y2), (x2, y2), (x2, y1), (x1, y1)]
-            p = mirror_poly(p)
-            poly = LinearRing(p)
-            plot_line(poly, add_points=False, color=(0.7, 0, 0), linewidth=4)
+        elif include_outline:
+            prims = self._pedb.modeler.primitives_by_layer.get("Outline", [])
+            if prims:
+                for prim in prims:
+                    if prim.is_void:
+                        continue
+                    xt, yt = prim.points()
+                    p1 = [(i, j) for i, j in zip(xt[::-1], yt[::-1])]
+                    p1 = mirror_poly(p1)
+                    poly = LinearRing(p1)
+                    plot_line(poly, add_points=False, color=(0.7, 0, 0), linewidth=4)
+            else:
+                bbox = self._pedb.hfss.get_layout_bounding_box()
+                if not bbox:
+                    return False, False
+                x1 = bbox[0]
+                x2 = bbox[2]
+                y1 = bbox[1]
+                y2 = bbox[3]
+                p = [(x1, y1), (x1, y2), (x2, y2), (x2, y1), (x1, y1)]
+                p = mirror_poly(p)
+                poly = LinearRing(p)
+                plot_line(poly, add_points=False, color=(0.7, 0, 0), linewidth=4)
         layer_colors = {i: k.color for i, k in self._pedb.stackup.layers.items()}
         top_layer = list(self._pedb.stackup.signal_layers.keys())[0]
         bottom_layer = list(self._pedb.stackup.signal_layers.keys())[-1]
@@ -284,12 +298,16 @@ class CommonNets:
             #     poly = LineString(line).buffer(prim.width / 2)
             # else:
             xt, yt = prim.points()
+            if len(xt)<3:
+                return
             p1 = [(i, j) for i, j in zip(xt[::-1], yt[::-1])]
             p1 = mirror_poly(p1)
 
             holes = []
             for void in prim.voids:
                 xvt, yvt = void.points(arc_segments=3)
+                if len(xvt)<3:
+                    continue
                 h1 = mirror_poly([(i, j) for i, j in zip(xvt, yvt)])
                 holes.append(h1)
             poly = Polygon(p1, holes)
