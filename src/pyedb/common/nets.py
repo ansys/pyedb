@@ -1,7 +1,9 @@
 import math
-import time
 import os
+import time
+
 from pyedb.generic.constants import CSS4_COLORS
+
 
 def is_notebook():
     """Check if pyaedt is running in Jupyter or not.
@@ -36,11 +38,10 @@ def is_ipython():
     except NameError:
         return False  # Probably standard Python interpreter
 
+
 class CommonNets:
     def __init__(self, _pedb):
         self._pedb = _pedb
-
-
 
     def plot(
         self,
