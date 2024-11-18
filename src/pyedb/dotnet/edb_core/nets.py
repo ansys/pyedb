@@ -382,7 +382,6 @@ class EdbNets(CommonNets):
         # fmt: on
         return x, y
 
-
     def classify_nets(self, power_nets=None, signal_nets=None):
         """Reassign power/ground or signal nets based on list of nets.
 
@@ -413,7 +412,6 @@ class EdbNets(CommonNets):
             if net in self.nets:
                 self.nets[net].net_object.SetIsPowerGround(False)
         return True
-
 
     def is_power_gound_net(self, netname_list):
         """Determine if one of the  nets in a list is power or ground.
