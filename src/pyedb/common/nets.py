@@ -1,6 +1,6 @@
 import math
 import time
-
+import os
 from pyedb.generic.constants import CSS4_COLORS
 
 def is_notebook():
@@ -144,6 +144,8 @@ class CommonNets:
             plot_line(poly.boundary, add_points=False, color=(0.7, 0, 0), linewidth=4)
         else:
             bbox = self._pedb.hfss.get_layout_bounding_box()
+            if not bbox:
+                return False, False
             x1 = bbox[0]
             x2 = bbox[2]
             y1 = bbox[1]
