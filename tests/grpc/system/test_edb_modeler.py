@@ -460,7 +460,7 @@ class TestClass:
         edbapp.close()
 
     def test_unite_polygon(self):
-        # TODO fix variables before
+        # Done
         edbapp = Edb()
         edbapp["$H"] = "0.65mil"
         edbapp["Via_S"] = "40mil"
@@ -556,7 +556,7 @@ class TestClass:
             mounting_side="top",
         )
         edbapp.close()
-        edb_model = os.path.join(self.local_scratch, "wave_ports.aedb")
+        edb_model = os.path.join(self.local_scratch.path, "wave_ports.aedb")
         test_edb = Edb(edbpath=edb_model, edbversion=desktop_version)
         assert len(list(test_edb.nets.signal.keys())) == 13
         assert len(list(test_edb.stackup.layers.keys())) == 3
