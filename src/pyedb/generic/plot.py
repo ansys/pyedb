@@ -14,11 +14,11 @@ try:
     from matplotlib.patches import PathPatch
     from matplotlib.path import Path
 
-    # Use matplotlib TkAgg backend (interactive) when the CI is running.
+    # Use matplotlib agg backend (non-interactive) when the CI is running.
     if bool(int(os.getenv("PYEDB_CI_NO_DISPLAY", "0"))):  # pragma: no cover
         import matplotlib
 
-        matplotlib.use("TkAgg")
+        matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
 except ImportError:
