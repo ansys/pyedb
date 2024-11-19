@@ -544,7 +544,7 @@ class TestClass:
         edbapp.close()
 
     def test_arbitrary_wave_ports(self):
-        # TODO check buh #462 polygon_data.scale failing
+        # Done
         example_folder = os.path.join(local_path, "example_models", test_subfolder)
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
         target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
