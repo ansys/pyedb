@@ -42,7 +42,6 @@ from ansys.edb.core.definition.multipole_debye_model import (
 )
 from ansys.edb.core.utility.value import Value as GrpcValue
 from pydantic import BaseModel, confloat
-from scipy.constants import value
 
 from pyedb import Edb
 from pyedb.exceptions import MaterialModelException
@@ -126,7 +125,6 @@ class Material(GrpcMaterialDef):
         self.__edb: Edb = edb
         self.__name: str = edb_material_def.name
         self.__material_def = edb_material_def
-        self.__properties: MaterialProperties = MaterialProperties()
         self.__dielectric_model = None
 
     @property
@@ -202,7 +200,6 @@ class Material(GrpcMaterialDef):
         if self.dielectric_material_model:
             self.dielectric_material_model.loss_tangent_at_frequency = float(value)
 
-
     @property
     def dielectric_model_frequency(self):
         try:
@@ -215,7 +212,6 @@ class Material(GrpcMaterialDef):
         if self.dielectric_material_model:
             self.dielectric_material_model.frequency = float(value)
 
-
     @property
     def permittivity_at_frequency(self):
         try:
@@ -227,7 +223,6 @@ class Material(GrpcMaterialDef):
     def permittivity_at_frequency(self, value):
         if self.dielectric_material_model:
             self.dielectric_material_model.relative_permitivity_at_frequency = float(value)
-
 
     @property
     def permittivity(self):
@@ -478,10 +473,10 @@ class Material(GrpcMaterialDef):
 
     def to_dict(self):
         """Convert material into dictionary."""
-        self.__load_all_properties()
+        properties = self.__load_all_properties()
 
         res = {"name": self.name}
-        res.update(self.__properties.model_dump())
+        res.update(properties.model_dump())
         return res
 
     def update(self, input_dict: dict):
@@ -512,16 +507,11 @@ class Material(GrpcMaterialDef):
 
     def __load_all_properties(self):
         """Load all properties of the material."""
-        for property in self.__properties.model_dump().keys():
-            _ = getattr(self, property)
-
-    def __property_value(self, material_property_id):
-        """Get property value from a material property id."""
-        _, property_box = self.__material_def.GetProperty(material_property_id)
-        if isinstance(property_box, float):
-            return property_box
-        else:
-            return property_box.ToDouble()
+        res = MaterialProperties()
+        for property in res.model_dump().keys():
+            value = getattr(self, property)
+            setattr(res, property, value)
+        return res
 
 
 class Materials(object):
