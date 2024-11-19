@@ -530,25 +530,25 @@ class Modeler(object):
 
         Parameters
         ----------
-        points : :class:`dotnet.database.layout.Shape`
+        points: .:class:`dotnet.database.layout.Shape`
             List of points.
         layer_name : str
             Name of the layer on which to create the path.
         width : float, optional
             Width of the path. The default is ``1``.
-        net_name : str, optional
+        net_name: str, optional
             Name of the net. The default is ``""``.
         start_cap_style : str, optional
             Style of the cap at its start. Options are ``"Round"``,
-            ``"Extended",`` and ``"Flat"``. The default is
-            ``"Round"``.
+            ``"Extended", `` and ``"Flat"``. The default is
+            ``"Round".
         end_cap_style : str, optional
             Style of the cap at its end. Options are ``"Round"``,
-            ``"Extended",`` and ``"Flat"``. The default is
-            ``"Round"``.
+            ``"Extended", `` and ``"Flat"``. The default is
+            ``"Round".
         corner_style : str, optional
             Style of the corner. Options are ``"Round"``,
-            ``"Sharp"`` and ``"Mitered"``. The default is ``"Round"``.
+            ``"Sharp"`` and ``"Mitered"``. The default is ``"Round".
 
         Returns
         -------
@@ -574,12 +574,23 @@ class Modeler(object):
             corner_style = GrpcPathCornerType.SHARP
         else:
             corner_style = GrpcPathCornerType.MITER
+        _points = []
+        for pt in points:
+            _pt = []
+            for coord in pt:
+                coord = GrpcValue(coord, self._pedb.active_cell)
+                _pt.append(coord)
+            _points.append(_pt)
+        points = _points
+
+        width = GrpcValue(width, self._pedb.active_cell)
+
         polygon_data = GrpcPolygonData(points=[GrpcPointData(i) for i in points])
         path = Path.create(
             layout=self._active_layout,
             layer=layer_name,
             net=net,
-            width=GrpcValue(width),
+            width=width,
             end_cap1=start_cap_style,
             end_cap2=end_cap_style,
             corner_style=corner_style,
@@ -629,6 +640,7 @@ class Modeler(object):
         -------
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
         """
+
         primitive = self._create_path(
             points=path_list,
             layer_name=layer_name,

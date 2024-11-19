@@ -505,18 +505,7 @@ class Stackup(LayerCollection):
         else:
             _layer_type = GrpcLayerType.DIELECTRIC_LAYER
             material = "FR4_epoxy"
-        if isinstance(thickness, str):
-            if thickness in self._pedb.variables:
-                thickness = GrpcValue(thickness, self._pedb.active_db)
-            else:
-                import re
-
-                _thickness = re.split("[-+#]", thickness)
-                _variables = [val for val in _thickness if val in self._pedb.variables]
-                if len(_variables) == len(_thickness):
-                    thickness = GrpcValue(thickness, self._pedb.active_db)
-                else:
-                    thickness = GrpcValue(thickness)
+        thickness = GrpcValue(thickness, self._pedb.active_db)
         layer = StackupLayer.create(
             name=layer_name,
             layer_type=_layer_type,

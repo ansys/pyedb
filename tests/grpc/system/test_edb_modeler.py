@@ -488,7 +488,7 @@ class TestClass:
         t3_1 = edbapp.modeler.create_trace(
             width="MS_W",
             layer_name="trace1",
-            path_list=[("-Via_S/2", "0"), ("-SL_S/2-SL_W/2", "16 mil"), ("+SL_S/2+MS_W/2", "100 mil")],
+            path_list=[("-Via_S/2", "0"), ("-SL_S/2-SL_W/2", "16 mil"), ("SL_S/2+MS_W/2", "100 mil")],
             start_cap_style="FLat",
             end_cap_style="FLat",
             net_name="t3_1",
