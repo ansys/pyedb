@@ -3255,7 +3255,8 @@ class Edb(Database):
         var_server = self.variable_exists(variable_name)
         if not var_server[0]:
             var_server[1].AddVariable(variable_name, self.edb_value(variable_value), is_parameter)
-            var_server[1].SetVariableDescription(variable_name, description)
+            if description:
+                var_server[1].SetVariableDescription(variable_name, description)
             return True, var_server[1]
         self.logger.error("Variable %s already exists.", variable_name)
         return False, var_server[1]
