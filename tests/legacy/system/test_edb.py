@@ -173,6 +173,10 @@ class TestClass:
 
     def test_add_variables(self):
         """Add design and project variables."""
+        result, var_server = self.edbapp.add_design_variable("variable_no_description", "1mm")
+        assert result
+        assert var_server
+        assert self.edbapp.variables["variable_no_description"].description == ""
         result, var_server = self.edbapp.add_design_variable("my_variable", "1mm", description="var_1")
         assert result
         assert var_server
