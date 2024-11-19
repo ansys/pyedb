@@ -499,18 +499,28 @@ class Stackup(LayerCollection):
         self._pedb.layout.layer_collection = lc
         return True
 
-    @staticmethod
-    def _create_stackup_layer(layer_name, thickness, layer_type="signal", material="copper"):
+    def _create_stackup_layer(self, layer_name, thickness, layer_type="signal", material="copper"):
         if layer_type == "signal":
             _layer_type = GrpcLayerType.SIGNAL_LAYER
         else:
             _layer_type = GrpcLayerType.DIELECTRIC_LAYER
             material = "FR4_epoxy"
+        if isinstance(thickness, str):
+            if thickness in self._pedb.variables:
+                thickness = GrpcValue(thickness, self._pedb.active_db)
+            else:
+                import re
 
+                _thickness = re.split("[-+#]", thickness)
+                _variables = [val for val in _thickness if val in self._pedb.variables]
+                if len(_variables) == len(_thickness):
+                    thickness = GrpcValue(thickness, self._pedb.active_db)
+                else:
+                    thickness = GrpcValue(thickness)
         layer = StackupLayer.create(
             name=layer_name,
             layer_type=_layer_type,
-            thickness=GrpcValue(thickness),
+            thickness=thickness,
             elevation=GrpcValue(0),
             material=material,
         )

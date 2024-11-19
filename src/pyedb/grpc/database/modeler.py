@@ -171,9 +171,7 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of primitives.
         """
-        from pyedb.grpc.database.primitive.primitive import Primitive
-
-        return [Primitive(self._pedb, prim) for prim in self._pedb.layout.primitives]
+        return [self.__mapping_primitive_type(prim) for prim in self._pedb.layout.primitives]
 
     @property
     def polygons_by_layer(self):
@@ -754,6 +752,20 @@ class Modeler(object):
             )
         else:
             rep_type = GrpcRectangleRepresentationType.CENTER_WIDTH_HEIGHT
+            if isinstance(width, str):
+                if width in self._pedb.variables:
+                    width = GrpcValue(width, self._pedb.active_cell)
+                else:
+                    width = GrpcValue(width)
+            else:
+                width = GrpcValue(width)
+            if isinstance(height, str):
+                if height in self._pedb.variables:
+                    height = GrpcValue(height, self._pedb.active_cell)
+                else:
+                    height = GrpcValue(width)
+            else:
+                height = GrpcValue(width)
             rect = Rectangle.create(
                 layout=self._active_layout,
                 layer=layer_name,
@@ -767,7 +779,7 @@ class Modeler(object):
                 rotation=GrpcValue(rotation),
             )
         if not rect.is_null:
-            return rect
+            return Rectangle(self._pedb, rect)
         return False
 
     def create_circle(self, layer_name, x, y, radius, net_name=""):

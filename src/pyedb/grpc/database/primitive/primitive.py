@@ -97,19 +97,16 @@ class Primitive(GrpcPrimitive):
     def voids(self):
         return [Primitive(self._pedb, prim) for prim in super().voids]
 
-    @property
-    def polygon_data(self):
-        if isinstance(self.cast(), GrpcCircle):
-            return self.cast().get_polygon_data()
-        else:
-            return self.cast().polygon_data
-
-    @polygon_data.setter
-    def polygon_data(self, value):
-        from pyedb.grpc.database.primitive.polygon import GrpcPolygonData
-
-        if isinstance(value, GrpcPolygonData):
-            self.cast().polygon_data = value
+    # @property
+    # def polygon_data(self):
+    #     return self.cast().polygon_data
+    #
+    # @polygon_data.setter
+    # def polygon_data(self, value):
+    #     from pyedb.grpc.database.primitive.polygon import GrpcPolygonData
+    #
+    #     if isinstance(value, GrpcPolygonData):
+    #         self.cast().polygon_data = value
 
     def get_connected_objects(self):
         """Get connected objects.
@@ -297,23 +294,23 @@ class Primitive(GrpcPrimitive):
         -------
         List of :class:`dotnet.database.edb_data.EDBPrimitives`
         """
-        poly = self.polygon_data
+        poly = self.cast().polygon_data
         if not isinstance(primitives, list):
             primitives = [primitives]
         primi_polys = []
         voids_of_prims = []
         for prim in primitives:
             if isinstance(prim, Primitive):
-                primi_polys.append(prim.polygon_data)
+                primi_polys.append(prim.cast().polygon_data)
                 for void in prim.voids:
-                    voids_of_prims.append(void.polygon_data)
+                    voids_of_prims.append(void.cast().polygon_data)
             else:
                 try:
-                    primi_polys.append(prim.polygon_data)
+                    primi_polys.append(prim.cast().polygon_data)
                 except:
                     primi_polys.append(prim)
         for v in self.voids[:]:
-            primi_polys.append(v.polygon_data)
+            primi_polys.append(v.cast().polygon_data)
         primi_polys = poly.unite(primi_polys)
         p_to_sub = poly.unite([poly] + voids_of_prims)
         list_poly = poly.subtract(p_to_sub, primi_polys)

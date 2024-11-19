@@ -44,14 +44,14 @@ class Rectangle(GrpcRectangle, Primitive):
 
     @property
     def representation_type(self):
-        return self.representation_type.name.lower()
+        return super().representation_type.name.lower()
 
     @representation_type.setter
     def representation_type(self, value):
         if not value in self._mapping_representation_type:
-            self.representation_type = GrpcRectangleRepresentationType.INVALID_RECT_TYPE
+            super().representation_type = GrpcRectangleRepresentationType.INVALID_RECT_TYPE
         else:
-            self.representation_type = self._mapping_representation_type[value]
+            super().representation_type = self._mapping_representation_type[value]
 
     def get_parameters(self):
         """Get coordinates parameters.

@@ -55,13 +55,12 @@ from pyedb.generic.general_methods import (
 )
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
-from pyedb.grpc.database.Variables import Variable, decompose_variable_value
 from pyedb.grpc.database.components import Components
 from pyedb.grpc.database.control_file import ControlFile, convert_technology_file
+from pyedb.grpc.database.definition.materials import Materials
 from pyedb.grpc.database.hfss import Hfss
 from pyedb.grpc.database.layout.layout import Layout
 from pyedb.grpc.database.layout_validation import LayoutValidation
-from pyedb.grpc.database.materials import Materials
 from pyedb.grpc.database.modeler import Modeler
 from pyedb.grpc.database.net import Nets
 from pyedb.grpc.database.nets.differential_pair import DifferentialPairs
@@ -284,7 +283,7 @@ class EdbGrpc(EdbInit):
         variable object : :class:`pyedb.dotnet.database.edb_data.variables.Variable`
 
         """
-        if self.variable_exists(variable_name)[0]:
+        if self.variable_exists(variable_name):
             return self.variables[variable_name]
         return
 
@@ -299,17 +298,20 @@ class EdbGrpc(EdbInit):
                     description = variable_value[1] if len(variable_value[1]) > 0 else None
                 else:
                     description = None
-                    self.logger.warning("Invalid type for Edb variable desciprtion is ignored.")
+                    self.logger.warning("Invalid type for Edb variable description is ignored.")
                 val = variable_value[0]
             else:
                 raise TypeError(type_error_message)
         else:
             description = None
             val = variable_value
-        if self.variable_exists(variable_name)[0]:
+        if self.variable_exists(variable_name):
             self.change_design_variable_value(variable_name, val)
         else:
-            self.add_design_variable(variable_name, val)
+            if variable_name.startswith("$"):
+                self.add_project_variable(variable_name, val)
+            else:
+                self.add_design_variable(variable_name, val)
         if description:  # Add the variable description if a two-item list is passed for variable_value.
             self.__getitem__(variable_name).description = description
 
@@ -379,7 +381,7 @@ class EdbGrpc(EdbInit):
         -------
         variable dictionary : Dict[str, :class:`pyedb.dotnet.database.edb_data.variables.Variable`]
         """
-        return {i: Variable(self, i) for i in self.active_cell.get_all_variable_names()}
+        return {i: self.active_cell.get_variable_value(i).value for i in self.active_cell.get_all_variable_names()}
 
     @property
     def project_variables(self):
@@ -390,7 +392,7 @@ class EdbGrpc(EdbInit):
         variables dictionary : Dict[str, :class:`pyedb.dotnet.database.edb_data.variables.Variable`]
 
         """
-        return {i: Variable(self, i) for i in self.active_db.get_all_variable_names()}
+        return {i: self.active_db.get_variable_value(i).value for i in self.active_db.get_all_variable_names()}
 
     @property
     def layout_validation(self):

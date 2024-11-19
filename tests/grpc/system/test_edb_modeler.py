@@ -418,10 +418,10 @@ class TestClass:
         edbapp.close_edb()
 
     def test_duplicate(self):
-        # TODO fix variables before
+        # Done
         edbapp = Edb()
         edbapp["$H"] = "0.65mil"
-        assert edbapp["$H"].value_string == "0.65mil"
+        assert edbapp["$H"] == 1.651e-5
         edbapp["$S_D"] = "10.65mil"
         edbapp["$T"] = "21.3mil"
         edbapp["$Antipad_R"] = "24mil"
@@ -436,7 +436,7 @@ class TestClass:
         edbapp.stackup.add_layer("d4", layer_type="dielectric", thickness="13mil", material="FR4_epoxy")
         edbapp.stackup.add_layer("trace1", thickness="$H")
         r1 = edbapp.modeler.create_rectangle(
-            center_point=("0,0"),
+            center_point=([0, 0]),
             width="200mil",
             height="200mil",
             layer_name="top_gnd",
@@ -444,7 +444,7 @@ class TestClass:
             net_name="r1",
         )
         r2 = edbapp.modeler.create_rectangle(
-            center_point=("0,0"),
+            center_point=([0, 0]),
             width="40mil",
             height="$Antipad_R*2",
             layer_name="top_gnd",

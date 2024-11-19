@@ -143,7 +143,7 @@ class TestClass:
         edb.close()
 
     def test_components_resistors(self, edb_examples):
-        """Evaluate the components resistors."""
+        """Evaluate component resistors."""
         # Done
         edb = edb_examples.get_si_verse()
         assert "R1" in list(edb.components.resistors.keys())
@@ -167,7 +167,7 @@ class TestClass:
         edb.close()
 
     def test_components_get_pin_name_and_position(self, edb_examples):
-        """Retrieve components name and position."""
+        """Retrieve component name and position."""
         # Done
         edb = edb_examples.get_si_verse()
         cmp_pinlist = edb.padstacks.get_pinlist_from_component_and_net("U6", "GND")
@@ -260,7 +260,7 @@ class TestClass:
 
     def test_components_export_bom(self, edb_examples):
         """Export Bom file from layout."""
-        # TODO check why add_member is failing.
+        # TODO check why add_member is failing
         edb = edb_examples.get_si_verse()
         edb.components.import_bom(os.path.join(local_path, "example_models", test_subfolder, "bom_example_2.csv"))
         assert not edb.components.instances["R2"].enabled
