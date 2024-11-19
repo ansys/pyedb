@@ -6,6 +6,8 @@
    :maxdepth: 2
 
 
+   legacy_pyaedt_integration/index
+   legacy_standalone/index
    use_configuration/index
 
 
