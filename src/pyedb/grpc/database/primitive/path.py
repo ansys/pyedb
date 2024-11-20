@@ -21,7 +21,6 @@
 # SOFTWARE.
 import math
 
-from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.primitive.primitive import Path as GrpcPath
 from ansys.edb.core.primitive.primitive import PathCornerType as GrpcPatCornerType
@@ -307,11 +306,11 @@ class Path(GrpcPath, Primitive):
         """Retrieve center line points list."""
         return [[pt.x.value, pt.y.value] for pt in super().center_line.points]
 
-    def set_center_line(self, value):
-        if isinstance(value, list):
-            points = [GrpcPointData(i) for i in value]
-            polygon_data = GrpcPolygonData(points, False)
-            super(Path, self.__class__).polygon_data.__set__(self, polygon_data)
+    # def set_center_line(self, value):
+    #     if isinstance(value, list):
+    #         points = [GrpcPointData(i) for i in value]
+    #         polygon_data = GrpcPolygonData(points, False)
+    #         super(Path, self.__class__).polygon_data.__set__(self, polygon_data)
 
     @property
     def corner_style(self):
