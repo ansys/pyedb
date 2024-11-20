@@ -160,9 +160,13 @@ class TestClass:
         ).model_dump()
 
         material.update(material_dict)
-        material.conductivity = 12.0
-        for property in PROPERTIES:
-            assert expected_value == getattr(material, property)
+        # Dielectric model defined changing conductivity is not allowed
+        assert material.conductivity == 0.0044504017896274855
+        assert material.dc_conductivity == 1e-12
+        assert material.dielectric_material_model.dc_relative_permitivity == 5.0
+        assert material.dielectric_material_model.loss_tangent_at_frequency == 0.02
+        assert material.loss_tangent_at_frequency == 0.02
+        assert material.mass_density == 13.0
 
     def test_materials_syslib(self):
         """Evaluate system library."""
@@ -173,8 +177,7 @@ class TestClass:
     def test_materials_materials(self):
         """Evaluate materials."""
         materials = Materials(self.edbapp)
-
-        assert not materials.materials
+        assert materials.materials
 
     def test_materials_add_material(self):
         """Evalue add material."""
@@ -265,10 +268,10 @@ class TestClass:
         materials = Materials(self.edbapp)
 
         _ = materials.add_material(MATERIAL_NAME)
-        materials.delete_material(MATERIAL_NAME)
+        materials.delete(MATERIAL_NAME)
         assert MATERIAL_NAME not in materials
         with pytest.raises(ValueError):
-            materials.delete_material(MATERIAL_NAME)
+            materials.delete(MATERIAL_NAME)
 
     def test_materials_material_property_to_id(self):
         """Evaluate materials map between material property and id."""

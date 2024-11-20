@@ -162,7 +162,13 @@ class Material(GrpcMaterialDef):
     @conductivity.setter
     def conductivity(self, value):
         """Set material conductivity."""
-        self.set_property(GrpcMaterialProperty.CONDUCTIVITY, GrpcValue(value))
+        if self.dielectric_material_model:
+            self.__edb.logger.error(
+                f"Dielectric model defined on material {self.name}. Conductivity can not be changed"
+                f"Changing conductivity is only allowed when no dielectric model is assigned."
+            )
+        else:
+            self.set_property(GrpcMaterialProperty.CONDUCTIVITY, GrpcValue(value))
 
     @property
     def dc_conductivity(self):
@@ -769,9 +775,26 @@ class Materials(object):
         return new_material
 
     def delete_material(self, material_name):
+        """
+
+        .deprecated: pyedb 0.32.0 use `delete` instead.
+
+        Parameters
+        ----------
+        material_name : str
+            Name of the material to delete.
+
+        """
+        warnings.warn(
+            "`delete_material` is deprecated use `delete` instead.",
+            DeprecationWarning,
+        )
+        self.delete(material_name)
+
+    def delete(self, material_name):
         """Remove a material from the database."""
         material_def = GrpcMaterialDef.find_by_name(self.__edb.active_db, material_name)
-        if material_def.is_null():
+        if material_def.is_null:
             raise ValueError(f"Cannot find material {material_name}.")
         material_def.delete()
 

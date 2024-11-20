@@ -299,7 +299,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+        dict[str, .:class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
             Dictionary of resistors.
 
         Examples
@@ -325,7 +325,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+        dict[str, .:class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
             Dictionary of capacitors.
 
         Examples
@@ -351,7 +351,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+        dict[str, .:class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
             Dictionary of inductors.
 
         Examples
@@ -378,7 +378,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+        dict[str, .:class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
             Dictionary of integrated circuits.
 
         Examples
@@ -405,7 +405,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+        dict[str, .:class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
             Dictionary of circuit inputs and outputs.
 
         Examples
@@ -432,7 +432,7 @@ class Components(object):
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+        dict[str, .:class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
             Dictionary of other core components.
 
         Examples
@@ -498,7 +498,7 @@ class Components(object):
         """Return component pins.
         Parameters
         ----------
-        component : :class: `Component` or str.
+        component: .:class: `Component` or str.
             Component object or component name.
         net_name : str, List[str], optional
             Apply filter on net name.
@@ -657,7 +657,7 @@ class Components(object):
 
         Parameters
         ----------
-        cmp : str or  self._pedb.component
+        cmp : str or `Component` object.
             EDB component or str component name.
 
         Returns
@@ -718,7 +718,7 @@ class Components(object):
         """Create voltage, current source, or resistor on component.
 
         . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.create_source_on_component` instead.
+        Use .:func:`pyedb.grpc.core.excitations.create_source_on_component` instead.
 
         Parameters
         ----------

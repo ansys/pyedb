@@ -546,7 +546,9 @@ class Component(GrpcComponentGroup):
         Returns
         -------
         bool
-            ``True`` if it is a parallel rlc model. ``False`` for series RLC. ``None`` if not an RLC Type.
+            `True´ if it is a parallel rlc model.
+            `False` for series RLC.
+            `None` if not an RLC Type.
         """
         cmp_type = self.component_type
         if 0 < cmp_type.value < 4:
@@ -758,8 +760,7 @@ class Component(GrpcComponentGroup):
 
     @property
     def is_top_mounted(self):
-        """Check i
-        f a component is mounted on top or bottom of the layout.
+        """Check if a component is mounted on top or bottom of the layout.
 
         Returns
         -------
