@@ -44,7 +44,8 @@ tests = [
     "pytest>=7.4.0,<8.4",
     "pytest-cov>=4.0.0,<6.1",
     "pytest-xdist>=3.5.0,<3.7",
-    "scikit-rf"
+    "scikit-rf",
+    "shapely"
 ]
 doc = [
     "ansys-sphinx-theme>=0.10.0,<1.1",
@@ -65,9 +66,12 @@ doc = [
     "sphinx-copybutton>=0.5.0,<0.6",
     "sphinx-gallery>=0.14.0,<0.19",
     "sphinx_design>=0.4.0,<0.7",
+    "shapely",
+
 ]
 full = [
     "matplotlib>=3.5.0,<3.10",
+    "shapely",
 ]
 
 

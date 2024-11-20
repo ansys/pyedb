@@ -1391,6 +1391,17 @@ class EDBPadstackInstance(Primitive):
 
     @property
     def padstack_definition(self):
+        """Padstack definition Name.
+
+        Returns
+        -------
+        str
+            Name of the padstack definition.
+        """
+        return self.definition.name
+
+    @property
+    def definition(self):
         """Padstack definition.
 
         Returns
@@ -1398,7 +1409,7 @@ class EDBPadstackInstance(Primitive):
         str
             Name of the padstack definition.
         """
-        self._pdef = self._edb_padstackinstance.GetPadstackDef().GetName()
+        self._pdef = EDBPadstack(self._edb_padstackinstance.GetPadstackDef(), self._pedb.padstacks)
         return self._pdef
 
     @property
