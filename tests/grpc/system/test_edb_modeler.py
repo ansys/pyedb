@@ -360,12 +360,8 @@ class TestClass:
         assert y.intersect(z)
 
         edb.stackup.add_layer(layer_name="test2")
-        x = edb.modeler.create_polygon(
-            layer_name="test2", main_shape=[[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]]
-        )
-        x_hole = edb.modeler.create_polygon(
-            layer_name="test2", main_shape=[[1.0, 1.0], [9.0, 1.0], [9.0, 9.0], [1.0, 9.0]]
-        )
+        x = edb.modeler.create_polygon(layer_name="test2", points=[[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]])
+        x_hole = edb.modeler.create_polygon(layer_name="test2", points=[[1.0, 1.0], [9.0, 1.0], [9.0, 9.0], [1.0, 9.0]])
         y = x.subtract(x_hole)[0]
         assert y.voids
         y_clone = y.clone()

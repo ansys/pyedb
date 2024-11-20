@@ -72,9 +72,12 @@ class Polygon(GrpcPolygon, Primitive):
 
     def clone(self):
         """Duplicate polygon"""
+        polygon_data = self.polygon_data
         duplicated_polygon = self.create(
-            layout=self._pedb.active_layout, layer=self.layer, net=self.net, polygon_data=self.polygon_data
+            layout=self._pedb.active_layout, layer=self.layer, net=self.net, polygon_data=polygon_data
         )
+        for void in self.voids:
+            duplicated_polygon.add_void(void)
         return duplicated_polygon
 
     def duplicate_across_layers(self, layers):

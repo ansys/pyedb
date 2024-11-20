@@ -373,7 +373,7 @@ class Primitive(GrpcPrimitive):
                 if voids:
                     for void in voids:
                         void_pdata = void.polygon_data
-                        int_data2 = p.intersection_type(void_pdata)
+                        int_data2 = p.intersection_type(void_pdata).value
                         if int_data2 > 2 or int_data2 == 1:
                             void_to_subtract.append(void_pdata)
                         elif int_data2 == 2:
@@ -381,7 +381,7 @@ class Primitive(GrpcPrimitive):
                     if void_to_subtract:
                         polys_cleans = p.subtract(p, void_to_subtract)
                         for polys_clean in polys_cleans:
-                            if not polys_clean.is_null:
+                            if polys_clean.points:
                                 void_to_append = [v for v in list_void if polys_clean.intersection_type(v) == 2]
                         new_polys.append(
                             self._pedb.modeler.create_polygon(
