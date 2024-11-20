@@ -9,6 +9,7 @@ import json
 # +
 import os
 import tempfile
+from IPython.display import Image, display
 
 from ansys.aedt.core import Hfss3dLayout
 from ansys.aedt.core.downloads import download_file
@@ -23,8 +24,10 @@ NG_MODE = False
 # Download the example PCB data.
 
 temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
-download_file(source="touchstone", name="GRM32_DC0V_25degC_series.s2p", destination=temp_folder.name)
 file_edb = download_file(source="edb/ANSYS-HSD_V1.aedb", destination=temp_folder.name)
+
+import shutil
+from pathlib import Path
 
 # ## Load example layout
 
@@ -111,9 +114,56 @@ h3d = Hfss3dLayout(edbapp.edbpath, version=AEDT_VERSION, non_graphical=NG_MODE, 
 
 h3d.analyze()
 
-# ## Plot impedance
+# ## Plot DC voltage
 
-# todo
+voltage = h3d.post.create_fieldplot_layers_nets(
+    layers_nets=[
+        ["1_Top", "1V0"],
+    ],
+    quantity="Voltage",
+    setup="siwave_1"
+)
+file_path_image = os.path.join(temp_folder.name , "voltage.jpg")
+voltage.export_image(
+    full_path=file_path_image,
+    width=1920,
+    height=1080,
+    orientation="isometric",
+    display_wireframe=True,
+    selections=None,
+    show_region=True,
+    show_axis=True,
+    show_grid=True,
+    show_ruler=True,
+)
+
+display(Image(filename=file_path_image))
+
+# ## Plot power density
+
+power_density = h3d.post.create_fieldplot_layers_nets(
+    layers_nets=[
+        ["1_Top", "1V0"],
+    ],
+    quantity="Power Density",
+    setup="siwave_1"
+)
+
+file_path_image = os.path.join(temp_folder.name, "power_density.jpg")
+power_density.export_image(
+    full_path=file_path_image,
+    width=1920,
+    height=1080,
+    orientation="isometric",
+    display_wireframe=True,
+    selections=None,
+    show_region=True,
+    show_axis=True,
+    show_grid=True,
+    show_ruler=True,
+)
+
+display(Image(filename=file_path_image))
 
 # ## Shut Down Electronics Desktop
 
