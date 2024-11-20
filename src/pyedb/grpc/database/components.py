@@ -30,7 +30,6 @@ import os
 import re
 import warnings
 
-from ansys.edb.core.definition.component_pin import ComponentPin as GrpcComponentPin
 from ansys.edb.core.definition.die_property import DieOrientation as GrpDieOrientation
 from ansys.edb.core.definition.die_property import DieType as GrpcDieType
 from ansys.edb.core.definition.solder_ball_property import (
@@ -1208,10 +1207,16 @@ class Components(object):
             return False
         new_cmp = GrpcComponentGroup.create(self._active_layout, component_name, compdef.name)
         hosting_component_location = pins[0].component.transform
-        for pin in pins:
-            pin.is_layout_pin = True
-            GrpcComponentPin.create(compdef, pin.name)
-            new_cmp.add_member(pin)
+        if not len(pins) == len(compdef.component_pins):
+            self._pedb.logger.error(
+                f"Number on pins {len(pins)} does not match component definition number "
+                f"of pins {len(compdef.component_pins)}"
+            )
+            return False
+        for padstack_instance, component_pin in zip(pins, compdef.component_pins):
+            padstack_instance.is_layout_pin = True
+            padstack_instance.name = component_pin.name
+            new_cmp.add_member(padstack_instance)
         if not placement_layer:
             new_cmp_layer_name = pins[0].padstack_def.data.layer_names[0]
         else:

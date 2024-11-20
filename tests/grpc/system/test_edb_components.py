@@ -626,3 +626,14 @@ class TestClass:
         component.ic_die_properties.height = 1e-3
         assert component.ic_die_properties.height == 1e-3
         edbapp.close()
+
+    def test_rlc_component_302(self, edb_examples):
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        pins = edbapp.components.get_pin_from_component("C31")
+        component = edbapp.components.create([pins[0], pins[1]], r_value=1.2, component_name="TEST", is_rlc=True)
+        assert component
+        assert component.name == "TEST"
+        assert component.location == [0.13275000120000002, 0.07350000032]
+        assert component.res_value == 1.2
+        edbapp.close()

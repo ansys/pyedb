@@ -515,17 +515,6 @@ class TestClass:
         assert edbapp.padstacks.pins
         edbapp.close()
 
-    def test_rlc_component_302(self, edb_examples):
-        # TODO bug #451 fixed waiting PR to test
-        edbapp = edb_examples.get_si_verse()
-        pins = edbapp.components.get_pin_from_component("C31")
-        assert edbapp.components.create([pins[0], pins[1]], r_value=0, component_name="TEST")
-        assert edbapp.siwave.create([pins[0], pins[1]])
-        pl = edbapp.components.get_pin_from_component("B1")
-        pins = [pl[0], pl[1], pl[2], pl[3]]
-        assert edbapp.siwave.create_rlc_component(pins, component_name="random")
-        edbapp.close()
-
     def test_get_primitives_by_point_layer_and_nets(self, edb_examples):
         # Done
         edbapp = edb_examples.get_si_verse()
