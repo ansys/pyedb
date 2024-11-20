@@ -22,3 +22,10 @@ Step explanation
         import_padstack_definitions.py
         import_components.py
         import_sources.py
+
+Configure Layout Extension
+--------------------------
+
+PyAEDT offers a GUI which utilizes config file. Please refer to `Configure Layout extension`_ for details.
+
+.. _Configure Layout extension : https://aedt.docs.pyansys.com/version/stable/User_guide/pyaedt_extensions_doc/project/configure_edb.html
