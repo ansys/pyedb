@@ -22,16 +22,12 @@
 
 from __future__ import absolute_import  # noreorder
 
-import os
-import time
 import warnings
 
 from pyedb.common.nets import CommonNets
 from pyedb.dotnet.edb_core.edb_data.nets_data import EDBNetsData
-from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.utilities import compute_arc_points
-from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 class EdbNets(CommonNets):
