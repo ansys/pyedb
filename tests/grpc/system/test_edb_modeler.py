@@ -196,24 +196,22 @@ class TestClass:
             lower_left_point=[-0.002, 0.0], upper_right_point=[-0.015, 0.0005], layer_name="1_Top"
         )
         assert edbapp.modeler.create_polygon(points=plane.polygon_data, layer_name="1_Top", voids=[void1, void2])
-        # TODO check parameters definition
-        # edbapp["polygon_pts_x"] = -1.025
-        # edbapp["polygon_pts_y"] = -1.02
-        # points = [
-        #    ["polygon_pts_x", "polygon_pts_y"],
-        #    [1.025, -1.02],
-        #    [1.025, 1.02],
-        #    [-1.025, 1.02],
-        #    [-1.025, -1.02],
-        # ]
+        edbapp["polygon_pts_x"] = -1.025
+        edbapp["polygon_pts_y"] = -1.02
+        points = [
+            ["polygon_pts_x", "polygon_pts_y"],
+            [1.025, -1.02],
+            [1.025, 1.02],
+            [-1.025, 1.02],
+            [-1.025, -1.02],
+        ]
         assert edbapp.modeler.create_polygon(points, "1_Top")
         settings.enable_error_handler = False
         points = [[-0.025, -0.02], [0.025, -0.02], [-0.025, -0.02], [0.025, 0.02], [-0.025, 0.02], [-0.025, -0.02]]
         poly = edbapp.modeler.create_polygon(points=points, layer_name="1_Top")
         assert poly.has_self_intersections
-        # TODO check bug #456 status
-        # assert poly.fix_self_intersections() == []
-        # assert not poly.has_self_intersections
+        assert poly.fix_self_intersections() == []
+        assert not poly.has_self_intersections
         edbapp.close()
 
     def test_modeler_create_polygon_from_shape(self, edb_examples):

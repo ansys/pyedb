@@ -678,7 +678,9 @@ class Modeler(object):
         if isinstance(points, list):
             new_points = []
             for idx, i in enumerate(points):
-                new_points.append(GrpcPointData([GrpcValue(i[0]), GrpcValue(i[1])]))
+                new_points.append(
+                    GrpcPointData([GrpcValue(i[0], self._pedb.active_cell), GrpcValue(i[1], self._pedb.active_cell)])
+                )
             polygon_data = GrpcPolygonData(points=new_points)
 
         elif isinstance(points, GrpcPolygonData):

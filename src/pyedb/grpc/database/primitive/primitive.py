@@ -62,6 +62,10 @@ class Primitive(GrpcPrimitive):
         return super().primitive_type.name.lower()
 
     @property
+    def polygon_data(self):
+        return self.cast().polygon_data
+
+    @property
     def object_instance(self):
         """Return Ansys.Ansoft.Edb.LayoutInstance.LayoutObjInstance object."""
         if not self._object_instance:
@@ -573,7 +577,7 @@ class Primitive(GrpcPrimitive):
         ------
         List of PolygonData.
         """
-        return self.polygon_data.expand(
+        return self.cast().polygon_data.expand(
             offset=offset, round_corner=round_corners, max_corner_ext=maximum_corner_extension, tol=tolerance
         )
 

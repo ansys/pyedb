@@ -34,13 +34,17 @@ class Rectangle(GrpcRectangle, Primitive):
     """Class representing a rectangle object."""
 
     def __init__(self, pedb, edb_object):
-        GrpcRectangle.__init__(self, edb_object.msg)
         Primitive.__init__(self, pedb, edb_object)
+        GrpcRectangle.__init__(self, edb_object.msg)
         self._pedb = pedb
         self._mapping_representation_type = {
             "center_width_height": GrpcRectangleRepresentationType.CENTER_WIDTH_HEIGHT,
             "lower_left_upper_right": GrpcRectangleRepresentationType.LOWER_LEFT_UPPER_RIGHT,
         }
+
+    @property
+    def polygon_data(self):
+        return self.cast().polygon_data
 
     @property
     def representation_type(self):
