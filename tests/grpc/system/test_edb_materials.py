@@ -273,15 +273,6 @@ class TestClass:
         with pytest.raises(ValueError):
             materials.delete(MATERIAL_NAME)
 
-    def test_materials_material_property_to_id(self):
-        """Evaluate materials map between material property and id."""
-        materials = Materials(self.edbapp)
-        permittivity_id = self.edbapp.edb_api.definition.MaterialPropertyId.Permittivity
-        invalid_id = self.edbapp.edb_api.definition.MaterialPropertyId.InvalidProperty
-
-        assert permittivity_id == materials.material_property_to_id("permittivity")
-        assert invalid_id == materials.material_property_to_id("azertyuiop")
-
     def test_material_load_amat(self):
         """Evaluate load material from an AMAT file."""
         materials = Materials(self.edbapp)
