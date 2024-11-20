@@ -9,8 +9,8 @@ import json
 # +
 import os
 import tempfile
-from IPython.display import Image, display
 
+from IPython.display import Image, display
 from ansys.aedt.core import Hfss3dLayout
 from ansys.aedt.core.downloads import download_file
 
@@ -26,8 +26,8 @@ NG_MODE = False
 temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
 file_edb = download_file(source="edb/ANSYS-HSD_V1.aedb", destination=temp_folder.name)
 
-import shutil
 from pathlib import Path
+import shutil
 
 # ## Load example layout
 
@@ -121,9 +121,9 @@ voltage = h3d.post.create_fieldplot_layers_nets(
         ["1_Top", "1V0"],
     ],
     quantity="Voltage",
-    setup="siwave_1"
+    setup="siwave_1",
 )
-file_path_image = os.path.join(temp_folder.name , "voltage.jpg")
+file_path_image = os.path.join(temp_folder.name, "voltage.jpg")
 voltage.export_image(
     full_path=file_path_image,
     width=1920,
@@ -146,7 +146,7 @@ power_density = h3d.post.create_fieldplot_layers_nets(
         ["1_Top", "1V0"],
     ],
     quantity="Power Density",
-    setup="siwave_1"
+    setup="siwave_1",
 )
 
 file_path_image = os.path.join(temp_folder.name, "power_density.jpg")
