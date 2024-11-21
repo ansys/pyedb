@@ -576,9 +576,14 @@ class TestClass:
         edbapp.close()
 
     def test_09_padstack_definition(self, edb_examples):
-        data = {
-            "padstacks": {
-                "definitions": [
+        solder_ball_parameters = {
+                            "shape": "spheroid",
+                            "diameter": "0.4mm",
+                            "mid_diameter": "0.5mm",
+                            "placement": "above_padstack",
+                            "material": "solder"
+                        }
+        definition = [
                     {
                         "name": "v35h15",
                         "hole_plating_thickness": "25um",
@@ -609,8 +614,12 @@ class TestClass:
                             "shape": "circle",
                             "diameter": "0.2mm",
                         },
+                        "solder_ball_parameters": solder_ball_parameters
                     }
-                ],
+                ]
+        data = {
+            "padstacks": {
+                "definitions": definition
             }
         }
         edbapp = edb_examples.get_si_verse()
@@ -628,6 +637,7 @@ class TestClass:
         hole_params = pdef["hole_parameters"]
         assert hole_params["shape"] == "circle"
         assert hole_params["diameter"] == "0.2mm"
+        assert pdef["solder_ball_parameters"] == solder_ball_parameters
         edbapp.close()
 
     def test_09_padstack_instance(self, edb_examples):
