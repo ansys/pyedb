@@ -879,7 +879,7 @@ class Component(GrpcComponentGroup):
         if not len(pin_names_sp) == self.numpins:  # pragma: no cover
             raise ValueError(f"Pin counts doesn't match component {self.name}.")
 
-        model = SpiceModel(self._pedb, file_path=file_path, name=name, sub_circuit=name)
+        model = SpiceModel(file_path=file_path, name=name, sub_circuit=name)
         if sub_circuit_name:
             model.sub_circuit = sub_circuit_name
 
