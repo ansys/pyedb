@@ -113,8 +113,9 @@ class EDBNetsData(NetDotNet):
         show_legend=True,
         save_plot=None,
         outline=None,
-        size=(2000, 1000),
+        size=(6000, 3000),
         show=True,
+        plot_vias=True,
     ):
         """Plot a net to Matplotlib 2D chart.
 
@@ -134,6 +135,9 @@ class EDBNetsData(NetDotNet):
             Image size in pixel (width, height).
         show : bool, optional
             Whether to show the plot or not. Default is `True`.
+        plot_vias : bool, optional
+            Whether to plot vias or not. It may impact on performances.
+            Default is `True`.
         """
 
         return self._app.nets.plot(
@@ -144,6 +148,7 @@ class EDBNetsData(NetDotNet):
             outline=outline,
             size=size,
             show=show,
+            plot_vias=plot_vias,
         )
 
     def get_smallest_trace_width(self):

@@ -315,23 +315,26 @@ class TestClass:
         assert os.path.exists(local_png1)
 
         local_png2 = os.path.join(self.local_scratch.path, "test2.png")
+
         edb_plot.nets.plot(
-            nets="V3P3_S5",
+            nets="DDR4_DQS7_N",
             layers=None,
             save_plot=local_png2,
             plot_components_on_top=True,
             plot_components_on_bottom=True,
         )
         assert os.path.exists(local_png2)
-
+        edb_plot.modeler.create_polygon(
+            [[-10e-3, -10e-3], [110e-3, -10e-3], [110e-3, 70e-3], [-10e-3, 70e-3]], layer_name="Outline"
+        )
         local_png3 = os.path.join(self.local_scratch.path, "test3.png")
         edb_plot.nets.plot(
-            nets=["LVL_I2C_SCL", "V3P3_S5", "GATE_V5_USB"],
-            layers="TOP",
+            nets=["DDR4_DQ57", "DDR4_DQ56"],
+            layers="1_Top",
             color_by_net=True,
             save_plot=local_png3,
-            plot_components_on_top=True,
-            plot_components_on_bottom=True,
+            plot_components=True,
+            plot_vias=True,
         )
         assert os.path.exists(local_png3)
 
