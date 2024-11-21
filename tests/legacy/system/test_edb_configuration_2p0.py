@@ -583,8 +583,14 @@ class TestClass:
                             "placement": "above_padstack",
                             "material": "solder"
                         }
-        definition = [
-                    {
+        INSTANCE = {
+                "name": "Via998",
+                "definition": "v35h15",
+                "layer_range": ["Inner1(GND1)", "16_Bottom"],
+                "solder_ball_layer": "1_Top"
+            }
+
+        DEFINITION =                     {
                         "name": "v35h15",
                         "hole_plating_thickness": "25um",
                         "material": "copper",
@@ -616,10 +622,11 @@ class TestClass:
                         },
                         "solder_ball_parameters": solder_ball_parameters
                     }
-                ]
+
         data = {
             "padstacks": {
-                "definitions": definition
+                "definitions": [DEFINITION],
+                "instances": [INSTANCE]
             }
         }
         edbapp = edb_examples.get_si_verse()
@@ -638,6 +645,10 @@ class TestClass:
         assert hole_params["shape"] == "circle"
         assert hole_params["diameter"] == "0.2mm"
         assert pdef["solder_ball_parameters"] == solder_ball_parameters
+
+        instance = [i for i in data_from_layout["padstacks"]["instances"] if i["name"] == "Via998"][0]
+        for k, v in INSTANCE.items():
+            assert v == instance[k]
         edbapp.close()
 
     def test_09_padstack_instance(self, edb_examples):
