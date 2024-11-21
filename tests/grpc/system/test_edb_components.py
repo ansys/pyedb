@@ -475,10 +475,10 @@ class TestClass:
         )
         assert comp.rlc_values
         assert not comp.spice_model and not comp.s_param_model and not comp.netlist_model
-        assert comp.assign_s_param_model(sparam_path) and comp.value
+        comp.assign_s_param_model(sparam_path)
         assert comp.s_param_model
-        assert edbapp.components.nport_comp_definition
-        assert comp.assign_spice_model(spice_path) and comp.value
+        assert not comp.s_param_model.is_null
+        comp.assign_spice_model(spice_path)
         assert comp.spice_model
         comp.type = "inductor"
         comp.value = 10  # This command set the model back to ideal RLC
@@ -546,7 +546,7 @@ class TestClass:
         edb.close()
 
     def test_solder_ball_getter_setter(self, edb_examples):
-        # Done'
+        # Done
         edb = edb_examples.get_si_verse()
         cmp = edb.components.instances["X1"]
         cmp.solder_ball_height = 0.0

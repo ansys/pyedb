@@ -25,6 +25,9 @@ import re
 from typing import Optional
 import warnings
 
+from ansys.edb.core.definition.component_model import (
+    NPortComponentModel as GrpcNPortComponentModel,
+)
 from ansys.edb.core.definition.die_property import DieOrientation as GrpcDieOrientation
 from ansys.edb.core.definition.die_property import DieType as GrpcDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape
@@ -374,6 +377,10 @@ class Component(GrpcComponentGroup):
         _model_type = str(self._edb_model).split(".")[-1]
         if _model_type == "PinPairModel":
             return "RLC"
+        elif "SParameterModel" in _model_type:
+            return "SParameterModel"
+        elif "SPICEModel" in _model_type:
+            return "SPICEModel"
         else:
             return _model_type
 
@@ -816,6 +823,7 @@ class Component(GrpcComponentGroup):
         comp_prop = self.component_property
         comp_prop.model = model
         self.component_property = comp_prop
+        return model
 
     def assign_spice_model(
         self,
@@ -837,6 +845,27 @@ class Component(GrpcComponentGroup):
         -------
 
         """
+
+        #
+        # model = self._edb.cell.hierarchy._hierarchy.SPICEModel()
+        # model.SetModelPath(file_path)
+        # model.SetModelName(name)
+        # if sub_circuit_name:
+        #     model.SetSubCkt(sub_circuit_name)
+        #
+        # if terminal_pairs:
+        #     terminal_pairs = terminal_pairs if isinstance(terminal_pairs[0], list) else [terminal_pairs]
+        #     for pair in terminal_pairs:
+        #         pname, pnumber = pair
+        #         if pname not in pin_names_sp:  # pragma: no cover
+        #             raise ValueError(f"Pin name {pname} doesn't exist in {file_path}.")
+        #         model.AddTerminalPinPair(pname, str(pnumber))
+        # else:
+        #     for idx, pname in enumerate(pin_names_sp):
+        #         model.AddTerminalPinPair(pname, str(idx + 1))
+        #
+        # return self._set_model(model)
+
         if not name:
             name = get_filename_without_extension(file_path)
 
@@ -850,9 +879,7 @@ class Component(GrpcComponentGroup):
         if not len(pin_names_sp) == self.numpins:  # pragma: no cover
             raise ValueError(f"Pin counts doesn't match component {self.name}.")
 
-        model = SpiceModel(self._pedb, file_path=file_path, name=name)
-        model.model_path = file_path
-        model.model_name = name
+        model = SpiceModel(self._pedb, file_path=file_path, name=name, sub_circuit=name)
         if sub_circuit_name:
             model.sub_circuit = sub_circuit_name
 
@@ -865,7 +892,7 @@ class Component(GrpcComponentGroup):
                 model.add_terminal(str(pnumber), pname)
         else:
             for idx, pname in enumerate(pin_names_sp):
-                model.add_terminal(str(idx + 1), pname)
+                model.add_terminal(pname, str(idx + 1))
         self._set_model(model)
         if not model.is_null:
             return model
@@ -887,6 +914,7 @@ class Component(GrpcComponentGroup):
         SParameterModel object.
 
         """
+
         if not name:
             name = get_filename_without_extension(file_path)
         for model in self.component_def.component_models:
@@ -898,11 +926,14 @@ class Component(GrpcComponentGroup):
                 f"No reference net provided for S parameter file {file_path}, net `GND` is " f"assigned by default"
             )
             reference_net = "GND"
-        n_port_model = GrpcSParameterModel.create(name=name, ref_net=reference_net)
-        n_port_model.reference_file = file_path
-        self.component_def.add_component_model(n_port_model)
-        self._set_model(n_port_model)
-        return n_port_model
+        n_port_model = GrpcNPortComponentModel.find_by_name(self.component_def, name)
+        if n_port_model.is_null:
+            n_port_model = GrpcNPortComponentModel.create(name=name)
+            n_port_model.reference_file = file_path
+            self.component_def.add_component_model(n_port_model)
+
+        model = GrpcSParameterModel.create(name=name, ref_net=reference_net)
+        return self._set_model(model)
 
     def use_s_parameter_model(self, name, reference_net=None):
         """Use S-parameter model on the component.

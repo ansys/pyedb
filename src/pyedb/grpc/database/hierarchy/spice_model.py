@@ -24,15 +24,15 @@ from ansys.edb.core.hierarchy.spice_model import SPICEModel as GrpcSpiceModel
 
 
 class SpiceModel(GrpcSpiceModel):  # pragma: no cover
-    def __init__(self, pedb, edb_object=None, name=None, file_path=None, sub_circuit=None):
+    def __init__(self, edb_object=None, name=None, file_path=None, sub_circuit=None):
         if edb_object:
-            super().__init__(edb_object)
+            super().__init__(edb_object.msg)
+            pass
         elif name and file_path:
             if not sub_circuit:
                 sub_circuit = name
             edb_object = GrpcSpiceModel.create(name=name, path=file_path, sub_circuit=sub_circuit)
             super().__init__(edb_object.msg)
-        self._pedb = pedb
 
     @property
     def name(self):
