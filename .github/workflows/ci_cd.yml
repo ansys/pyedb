@@ -274,7 +274,7 @@ jobs:
           timeout_minutes: 40
           command: |
             .venv\Scripts\Activate.ps1
-            pytest --durations=50 -v external/external/pyaedt/tests/system/solvers
+            pytest --durations=50 -v external/pyaedt/tests/system/solvers
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -350,7 +350,7 @@ jobs:
           command: |
             export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/_unittest
+            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/tests/system/general/
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@v3
@@ -363,7 +363,7 @@ jobs:
           command: |
             export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            pytest --durations=50 -v external/pyaedt/_unittest_solvers
+            pytest --durations=50 -v external/pyaedt/tests/system/solvers
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
