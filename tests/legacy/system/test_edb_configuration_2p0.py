@@ -594,7 +594,7 @@ class TestClass:
                         "name": "v35h15",
                         "hole_plating_thickness": "25um",
                         "material": "copper",
-                        "hole_range": "through",
+                        "hole_range": "upper_pad_to_lower_pad",
                         "pad_parameters": {
                             "regular_pad": [
                                 {
