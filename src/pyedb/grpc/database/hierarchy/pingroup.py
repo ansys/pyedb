@@ -57,7 +57,7 @@ class PinGroup(GrpcPinGroup):
     @property
     def pins(self):
         """Gets the pins belong to this pin group."""
-        return {i.name: PadstackInstance(self._pedb, i) for i in super().pins}
+        return [PadstackInstance(self._pedb, i) for i in super().pins]
 
     @property
     def net(self):

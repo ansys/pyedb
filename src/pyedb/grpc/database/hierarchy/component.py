@@ -37,6 +37,7 @@ from ansys.edb.core.hierarchy.component_group import (
 )
 from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
 from ansys.edb.core.hierarchy.netlist_model import NetlistModel as GrpcNetlistModel
+from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as GrpcPinPairModel
 from ansys.edb.core.hierarchy.sparameter_model import (
     SParameterModel as GrpcSParameterModel,
 )
@@ -122,7 +123,8 @@ class Component(GrpcComponentGroup):
 
     @property
     def _edb_model(self):  # pragma: no cover
-        return self.component_property.model
+        comp_prop = self.component_property
+        return comp_prop.model
 
     @property  # pragma: no cover
     def _pin_pairs(self):
@@ -131,6 +133,17 @@ class Component(GrpcComponentGroup):
 
     @property
     def _rlc(self):
+        if self.model_type == "SPICEModel":
+            if len(self.pins) == 2:
+                self._pedb.logger.warning(f"Spice model defined on component {self.name}, replacing model by ")
+                rlc = GrpcRlc()
+                pins = list(self.pins.keys())
+                pin_pair = (pins[0], pins[1])
+                rlc_model = PinPairModel(self._pedb, GrpcPinPairModel.create())
+                rlc_model.set_rlc(pin_pair, rlc)
+                component_property = self.component_property
+                component_property.model = rlc_model
+                self.component_property = component_property
         return [self._edb_model.rlc(pin_pair) for pin_pair in self._edb_model.pin_pairs()]
 
     @property
@@ -470,17 +483,17 @@ class Component(GrpcComponentGroup):
 
     @res_value.setter
     def res_value(self, value):  # pragma no cover
-        if value:
-            _rlc = []
-            for rlc in self._rlc:
-                rlc.r_enabled = True
-                rlc.r = GrpcValue(value)
-                _rlc.append(rlc)
-            for ind in range(len(self._pin_pairs)):
-                self._edb_model.set_rlc(self._pin_pairs[ind], _rlc[ind])
-            comp_prop = self.component_property
-            comp_prop.model = self._edb_model
-            self.component_property = comp_prop
+        _rlc = []
+        model = PinPairModel(self._pedb, GrpcPinPairModel.create())
+        for rlc in self._rlc:
+            rlc.r_enabled = True
+            rlc.r = GrpcValue(value)
+            _rlc.append(rlc)
+        for ind in range(len(self._pin_pairs)):
+            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+        comp_prop = self.component_property
+        comp_prop.model = model
+        self.component_property = comp_prop
 
     @property
     def cap_value(self):
@@ -504,14 +517,15 @@ class Component(GrpcComponentGroup):
     def cap_value(self, value):  # pragma no cover
         if value:
             _rlc = []
+            model = PinPairModel(self._pedb, GrpcPinPairModel.create())
             for rlc in self._rlc:
                 rlc.c_enabled = True
                 rlc.c = GrpcValue(value)
                 _rlc.append(rlc)
             for ind in range(len(self._pin_pairs)):
-                self._edb_model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+                model.set_rlc(self._pin_pairs[ind], _rlc[ind])
             comp_prop = self.component_property
-            comp_prop.model = self._edb_model
+            comp_prop.model = model
             self.component_property = comp_prop
 
     @property
@@ -536,14 +550,15 @@ class Component(GrpcComponentGroup):
     def ind_value(self, value):  # pragma no cover
         if value:
             _rlc = []
+            model = PinPairModel(self._pedb, GrpcPinPairModel.create())
             for rlc in self._rlc:
                 rlc.l_enabled = True
                 rlc.l = GrpcValue(value)
                 _rlc.append(rlc)
             for ind in range(len(self._pin_pairs)):
-                self._edb_model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+                model.set_rlc(self._pin_pairs[ind], _rlc[ind])
             comp_prop = self.component_property
-            comp_prop.model = self._edb_model
+            comp_prop.model = model
             self.component_property = comp_prop
 
     @property

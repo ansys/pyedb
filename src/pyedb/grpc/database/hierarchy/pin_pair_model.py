@@ -32,6 +32,10 @@ class PinPairModel(GrpcPinPairModel):  # pragma: no cover
         super().__init__(edb_object.msg)
 
     @property
+    def rlc(self):
+        return super().rlc(self.pin_pairs()[0])
+
+    @property
     def rlc_enable(self):
         return [self.rlc.r_enabled, self.rlc.l_enabled, self.rlc.c_enabled]
 
@@ -51,7 +55,7 @@ class PinPairModel(GrpcPinPairModel):  # pragma: no cover
 
     @property
     def inductance(self):
-        return self.rlc().l.value  # pragma: no cover
+        return self.rlc.l.value  # pragma: no cover
 
     @inductance.setter
     def inductance(self, value):
