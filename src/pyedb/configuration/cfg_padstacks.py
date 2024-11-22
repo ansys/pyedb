@@ -107,7 +107,7 @@ class CfgPadstackDefinition(CfgBase):
         }
         self._solder_placement = {
             "above_padstack": self._pedb._edb.Definition.SolderballPlacement.AbovePadstack,
-            "below_padstack": self._pedb._edb.Definition.SolderballPlacement.BelowPadstack
+            "below_padstack": self._pedb._edb.Definition.SolderballPlacement.BelowPadstack,
         }
 
     def set_parameters_to_edb(self):
@@ -154,7 +154,7 @@ class CfgPadstackDefinition(CfgBase):
             "diameter": self._pedb.edb_value(diameter).ToString(),
             "mid_diameter": self._pedb.edb_value(mid_diameter).ToString(),
             "placement": [i for i, j in self._solder_placement.items() if j == placement][0],
-            "material": material
+            "material": material,
         }
         return parameters
 
