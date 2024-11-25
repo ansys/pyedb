@@ -89,6 +89,7 @@ class TestClass:
             assert k.expand(0.0005)
         poly_167 = [i for i in edbapp.modeler.paths if i.edb_uid == 167][0]
         assert poly_167.expand(0.0005)
+        edbapp.close()
 
     def test_modeler_paths(self, edb_examples):
         """Evaluate modeler paths"""

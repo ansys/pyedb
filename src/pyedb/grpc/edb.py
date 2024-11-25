@@ -884,7 +884,7 @@ class EdbGrpc(EdbInit):
         """
 
         if self.active_db:
-            return [NetClass(self, net) for net in self.active_db.net_classes]
+            return {net.name: NetClass(self, net) for net in self.active_layout.net_classes}
 
     @property
     def extended_nets(self):

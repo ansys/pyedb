@@ -859,13 +859,13 @@ class TestClass:
 
         for p in [0, 1, 2]:
             setup1.set_dc_slider(p)
-            settings = edb.setups["DC1"].get_configurations()
+            settings = edbapp.setups["DC1"].get_configurations()
             for k, v in setup1.dc_settings.dc_defaults.items():
                 assert settings["dc_settings"][k] == v[p]
 
             for k, v in setup1.dc_advanced_settings.dc_defaults.items():
                 assert settings["dc_advanced_settings"][k] == v[p]
-        edb.close()
+        edbapp.close()
 
     def test_siwave_ac_simulation_setup(self, edb_examples):
         """Create an ac simulation setup and evaluate its properties."""
