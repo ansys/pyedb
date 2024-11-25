@@ -46,7 +46,6 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
 from pyedb.configuration.configuration import Configuration
-from pyedb.generic.constants import AEDT_UNITS
 from pyedb.generic.general_methods import (
     generate_unique_name,
     get_string_version,
@@ -2172,14 +2171,6 @@ class EdbGrpc(EdbInit):
             return value
         else:
             return f"{value}{units}"
-
-    @staticmethod
-    def _decompose_variable_value(value, unit_system=None):
-        val, units = decompose_variable_value(value)
-        if units and unit_system and units in AEDT_UNITS[unit_system]:
-            return AEDT_UNITS[unit_system][units] * val
-        else:
-            return val
 
     def _create_cutout_on_point_list(
         self,

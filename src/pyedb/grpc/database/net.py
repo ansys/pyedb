@@ -368,7 +368,7 @@ class Nets(CommonNets):
         for _, comp_obj in self._pedb.components.resistors.items():
             numpins = comp_obj.numpins
 
-            if numpins == 2 and self._pedb._decompose_variable_value(comp_obj.res_value) <= res_value:
+            if numpins == 2 and comp_obj.res_value <= res_value:
                 nets = comp_obj.nets
                 if not set(nets).intersection(set(ground_nets)):
                     temp_list.append(set(nets))
