@@ -43,6 +43,7 @@ class TestClass:
 
     def test_export_to_ipc2581_0(self, edb_examples):
         """Export of a loaded aedb file to an XML IPC2581 file"""
+        # Done
         edbapp = edb_examples.get_si_verse()
         xml_file = os.path.join(edbapp.directory, "test.xml")
         edbapp.export_to_ipc2581(xml_file)

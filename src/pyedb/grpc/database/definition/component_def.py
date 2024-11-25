@@ -162,10 +162,6 @@ class ComponentDef(GrpcComponentDef):
     def reference_file(self):
         return [model.reference_file for model in self.component_models]
 
-    @property
-    def component_models(self):
-        return {model.name: model for model in super().component_models}
-
     def add_n_port_model(self, fpath, name=None):
         from ansys.edb.core.definition.component_model import (
             NPortComponentModel as GrpcNPortComponentModel,
@@ -173,6 +169,12 @@ class ComponentDef(GrpcComponentDef):
 
         if not name:
             name = os.path.splitext(os.path.basename(fpath)[0])
-        n_port_comp_model = GrpcNPortComponentModel.create(name)
-        n_port_comp_model.reference_file = fpath
-        self.add_component_model(n_port_comp_model)
+        for model in self.component_models:
+            if model.model_name == name:
+                self._pedb.logger.error(f"Model {name} already defined for component definition {self.name}")
+                return False
+        model = [model for model in self.component_models if model.name == name]
+        if not model:
+            n_port_model = GrpcNPortComponentModel.create(name=name)
+            n_port_model.reference_file = fpath
+            self.add_component_model(n_port_model)

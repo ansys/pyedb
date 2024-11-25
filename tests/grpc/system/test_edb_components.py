@@ -449,8 +449,7 @@ class TestClass:
 
     def test_components_assign(self, edb_examples):
         """Assign RLC model, S-parameter model and spice model."""
-
-        # TODO check bug #469 status.
+        # Done
         edbapp = edb_examples.get_si_verse()
         sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
         spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")

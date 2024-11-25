@@ -1922,7 +1922,7 @@ class EdbGrpc(EdbInit):
                     nets_to_preserve.extend(el.nets)
         if include_pingroups:
             for pingroup in self.layout.pin_groups:
-                for pin in pingroup.pins.values():
+                for pin in pingroup.pins:
                     if pin.net_name in reference_list:
                         pins_to_preserve.append(pin.edb_uid)
         if check_terminals:

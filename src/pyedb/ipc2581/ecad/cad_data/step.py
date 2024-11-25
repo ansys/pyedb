@@ -254,7 +254,7 @@ class Step(object):
     def add_padstack_instances(self, padstack_instances, padstack_defs):  # pragma no cover
         top_bottom_layers = self._ipc.top_bottom_layers
         layers = {j.layer_name: j for j in self._ipc.ecad.cad_data.cad_data_step.layer_features}
-        layer_colors = {i:j.color for i,j in self._ipc._pedb.stackup.items()}
+        layer_colors = {i: j.color for i, j in self._ipc._pedb.stackup.layers.items()}
         for padstack_instance in padstack_instances:
             if not self._pedb.grpc:
                 _, start_layer, stop_layer = padstack_instance._edb_padstackinstance.GetLayerRange()

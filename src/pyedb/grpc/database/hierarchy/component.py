@@ -978,9 +978,10 @@ class Component(GrpcComponentGroup):
 
         model = GrpcComponentModel.find_by_name(self.component_def, name)
         if not model.is_null:
+            s_param_model = GrpcSParameterModel.create(name=name, ref_net="GND")
             if reference_net:
-                model.reference_net = reference_net
-            return self._set_model(model)
+                s_param_model.reference_net = reference_net
+            return self._set_model(s_param_model)
         return False
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
