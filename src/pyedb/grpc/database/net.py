@@ -44,7 +44,7 @@ class Nets(CommonNets):
     """
 
     def __getitem__(self, name):
-        """Get  a net from the Edb project.
+        """Get nets from the Edb project.
 
         Parameters
         ----------
@@ -52,10 +52,10 @@ class Nets(CommonNets):
 
         Returns
         -------
-        :class:` :class:`pyedb.dotnet.database.edb_data.nets_data.EDBNetsData`
+        :class:` .:class:`pyedb.grpc.database.nets_data.EDBNets`
 
         """
-        return self._pedb.layout.find_net_by_name(name)
+        return Net(self._pedb, Net.find_by_name(self._active_layout, name))
 
     def __contains__(self, name):
         """Determine if a net is named ``name`` or not.

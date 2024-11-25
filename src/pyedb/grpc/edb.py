@@ -3736,7 +3736,7 @@ class EdbGrpc(EdbInit):
             else:
                 _materials = {k: v for k, v in self.materials.materials.items() if k in material_filter}
             for mat_name, material in _materials.items():
-                if material.conductivity < 1e4:
+                if not material.conductivity or material.conductivity < 1e4:
                     var, val = _apply_variable(f"$epsr_{mat_name}", material.permittivity)
                     material.permittivity = GrpcValue(var, self.active_db)
                     parameters.append(val)
@@ -3786,9 +3786,10 @@ class EdbGrpc(EdbInit):
                         hole_variable = "$hole_diameter"
                     else:
                         hole_variable = f"${def_name}_hole_diameter"
-                    var, val = _apply_variable(hole_variable, padstack_def.hole_diameter_string)
-                    padstack_def.hole_properties = var
-                    parameters.append(val)
+                    if padstack_def.hole_diameter:
+                        var, val = _apply_variable(hole_variable, padstack_def.hole_diameter)
+                        padstack_def.hole_properties = GrpcValue(var, self.active_db)
+                        parameters.append(val)
             if pads:
                 for layer, pad in padstack_def.pad_by_layer.items():
                     if use_relative_variables:
@@ -3823,36 +3824,37 @@ class EdbGrpc(EdbInit):
                         parameters.append(val2)
             if antipads:
                 for layer, antipad in padstack_def.antipad_by_layer.items():
-                    if use_relative_variables:
-                        pad_name = "$antipad"
-                    elif use_single_variable_for_padstack_definitions:
-                        pad_name = f"${def_name}_antipad"
-                    else:
-                        pad_name = f"${def_name}_{layer}_antipad"
-
-                    if antipad.geometry_type in [1, 2]:
-                        var, val = _apply_variable(pad_name, antipad.parameters_values_string[0])
-                        if antipad.geometry_type == 1:  # pragma no cover
-                            antipad.parameters = {"Diameter": var}
-                        else:
-                            antipad.parameters = {"Size": var}
-                        parameters.append(val)
-                    elif antipad.geometry_type == 3:  # pragma no cover
+                    if antipad:
                         if use_relative_variables:
-                            pad_name_x = "$antipad_x"
-                            pad_name_y = "$antipad_y"
+                            pad_name = "$antipad"
                         elif use_single_variable_for_padstack_definitions:
-                            pad_name_x = f"${def_name}_antipad_x"
-                            pad_name_y = f"${def_name}_antipad_y"
+                            pad_name = f"${def_name}_antipad"
                         else:
-                            pad_name_x = f"${def_name}_{layer}_antipad_x"
-                            pad_name_y = f"${def_name}_antipad_y"
+                            pad_name = f"${def_name}_{layer}_antipad"
 
-                        var, val = _apply_variable(pad_name_x, antipad.parameters_values_string[0])
-                        var2, val2 = _apply_variable(pad_name_y, antipad.parameters_values_string[1])
-                        antipad.parameters = {"XSize": var, "YSize": var2}
-                        parameters.append(val)
-                        parameters.append(val2)
+                        if antipad.geometry_type in [1, 2]:
+                            var, val = _apply_variable(pad_name, antipad.parameters_values_string[0])
+                            if antipad.geometry_type == 1:  # pragma no cover
+                                antipad.parameters = {"Diameter": var}
+                            else:
+                                antipad.parameters = {"Size": var}
+                            parameters.append(val)
+                        elif antipad.geometry_type == 3:  # pragma no cover
+                            if use_relative_variables:
+                                pad_name_x = "$antipad_x"
+                                pad_name_y = "$antipad_y"
+                            elif use_single_variable_for_padstack_definitions:
+                                pad_name_x = f"${def_name}_antipad_x"
+                                pad_name_y = f"${def_name}_antipad_y"
+                            else:
+                                pad_name_x = f"${def_name}_{layer}_antipad_x"
+                                pad_name_y = f"${def_name}_antipad_y"
+
+                            var, val = _apply_variable(pad_name_x, antipad.parameters_values_string[0])
+                            var2, val2 = _apply_variable(pad_name_y, antipad.parameters_values_string[1])
+                            antipad.parameters = {"XSize": var, "YSize": var2}
+                            parameters.append(val)
+                            parameters.append(val2)
 
         if via_offset:
             var_x = "via_offset_x"

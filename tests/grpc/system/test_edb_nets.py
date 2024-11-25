@@ -166,7 +166,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_0(self, edb_examples):
-        # TODO fix parameters first
+        # Done
         edbapp = edb_examples.get_si_verse()
         parameters = edbapp.auto_parametrize_design(
             layers=True,
@@ -183,7 +183,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_1(self, edb_examples):
-        # TODO fix parameters first
+        # Done
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=True, materials=False, via_holes=False, pads=False, antipads=False, traces=False, via_offset=False
@@ -192,7 +192,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_2(self, edb_examples):
-        # TODO fix parameters first
+        # Done
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False,
@@ -211,7 +211,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_3(self, edb_examples):
-        # TODO fix parameters first
+        # Done
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=True, via_holes=False, pads=False, antipads=False, traces=False
@@ -220,7 +220,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_4(self, edb_examples):
-        # TODO fix parameters first
+        # Done
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=True, pads=False, antipads=False, traces=False
@@ -229,7 +229,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_5(self, edb_examples):
-        # TODO fix parameters first
+        # Done
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=True, antipads=False, traces=False
@@ -238,7 +238,7 @@ class TestClass:
         edbapp.close_edb()
 
     def test_layout_auto_parametrization_6(self, edb_examples):
-        # TODO fix parameters first
+        # Done
         edbapp = edb_examples.get_si_verse()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=False, antipads=True, traces=False
