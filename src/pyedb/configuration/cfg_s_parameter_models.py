@@ -75,17 +75,16 @@ class CfgSParameters:
                 continue
             else:
                 pin_order = compdef_obj.get_properties()["pin_order"]
-                temp_comps = compdef_obj.components
-                temp_comps = [i for i in cfg_components if i]
+                temp_comps = [i for i in cfg_components if i["definition"] == name]
                 for model_name, model_obj in nport_models.items():
                     temp_comp_list = []
                     reference_net_per_component = {}
-                    for i in temp_comps.values():
-                        s_param_model = i.model_properties.get("s_parameter_model")
+                    for i in temp_comps:
+                        s_param_model = i.get("s_parameter_model")
                         if s_param_model:
                             if s_param_model["model_name"] == model_name:
-                                temp_comp_list.append(i.refdes)
-                                reference_net_per_component[i.refdes] = s_param_model["reference_net"]
+                                temp_comp_list.append(i["reference_designator"])
+                                reference_net_per_component[i["reference_designator"]] = s_param_model["reference_net"]
                         else:
                             continue
 
