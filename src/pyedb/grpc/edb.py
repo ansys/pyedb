@@ -3705,9 +3705,15 @@ class EdbGrpc(EdbInit):
             var = self._clean_string_for_variable_name(var)
             if var not in self.variables:
                 if use_relative_variables:
-                    self.add_design_variable(var, 0.0)
+                    if var.startswith("$"):
+                        self.add_project_variable(var, 0.0)
+                    else:
+                        self.add_design_variable(var, 0.0)
                 else:
-                    self.add_design_variable(var, orig_value)
+                    if var.startswith("$"):
+                        self.add_project_variable(var, orig_value)
+                    else:
+                        self.add_design_variable(var, orig_value)
             if use_relative_variables:
                 return f"{orig_value}+{var}", var
             else:
@@ -3722,7 +3728,7 @@ class EdbGrpc(EdbInit):
                 _layers = {k: v for k, v in self.stackup.layers.items() if k in layer_filter}
             for layer_name, layer in _layers.items():
                 var, val = _apply_variable(f"${layer_name}", layer.thickness)
-                layer.thickness = var
+                layer.thickness = GrpcValue(var, self.active_db)
                 parameters.append(val)
         if materials:
             if not material_filter:
@@ -3732,14 +3738,14 @@ class EdbGrpc(EdbInit):
             for mat_name, material in _materials.items():
                 if material.conductivity < 1e4:
                     var, val = _apply_variable(f"$epsr_{mat_name}", material.permittivity)
-                    material.permittivity = var
+                    material.permittivity = GrpcValue(var, self.active_db)
                     parameters.append(val)
                     var, val = _apply_variable(f"$loss_tangent_{mat_name}", material.dielectric_loss_tangent)
-                    material.dielectric_loss_tangent = var
+                    material.dielectric_loss_tangent = GrpcValue(var, self.active_db)
                     parameters.append(val)
                 else:
                     var, val = _apply_variable(f"$sigma_{mat_name}", material.conductivity)
-                    material.conductivity = var
+                    material.conductivity = GrpcValue(var, self.active_db)
                     parameters.append(val)
         if traces:
             if not trace_net_filter:
@@ -3755,7 +3761,7 @@ class EdbGrpc(EdbInit):
                 else:
                     trace_width_variable = f"{path.aedt_name}"
                 var, val = _apply_variable(trace_width_variable, path.width)
-                path.width = var
+                path.width = GrpcValue(var, self.active_cell)
                 parameters.append(val)
         if not padstack_definition_filter:
             if trace_net_filter:
@@ -3774,7 +3780,7 @@ class EdbGrpc(EdbInit):
             padstack_defs = {k: v for k, v in self.padstacks.definitions.items() if k in padstack_definition_filter}
 
         for def_name, padstack_def in padstack_defs.items():
-            if not padstack_def.via_start_layer == padstack_def.via_stop_layer:
+            if not padstack_def.start_layer == padstack_def.stop_layer:
                 if via_holes:  # pragma no cover
                     if use_relative_variables:
                         hole_variable = "$hole_diameter"

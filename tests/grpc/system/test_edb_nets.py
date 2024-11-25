@@ -132,7 +132,7 @@ class TestClass:
 
     @pytest.mark.slow
     def test_nets_dc_shorts(self, edb_examples):
-        # TODO check connected object does not return anything.
+        # TODO get_connected_object return empty list.
         edbapp = edb_examples.get_si_verse()
         dc_shorts = edbapp.layout_validation.dc_shorts()
         assert dc_shorts
@@ -157,7 +157,7 @@ class TestClass:
 
     def test_nets_merge_polygon(self):
         """Convert paths from net into polygons."""
-        # TODO check bug #464 status
+        # Done
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_merge_polygon.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_merge_polygon", "test.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
@@ -165,13 +165,9 @@ class TestClass:
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
         edbapp.close_edb()
 
-    def test_layout_auto_parametrization_0(self):
+    def test_layout_auto_parametrization_0(self, edb_examples):
         # TODO fix parameters first
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_auto_parameters", "test.aedb")
-        output_path = os.path.join(self.local_scratch.path, "test_auto_parameters", "test_absolute.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, desktop_version)
+        edbapp = edb_examples.get_si_verse()
         parameters = edbapp.auto_parametrize_design(
             layers=True,
             layer_filter="1_Top",
@@ -181,7 +177,6 @@ class TestClass:
             antipads=False,
             traces=False,
             use_relative_variables=False,
-            output_aedb_path=output_path,
             open_aedb_at_end=False,
         )
         assert "$1_Top_value" in parameters

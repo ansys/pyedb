@@ -419,11 +419,13 @@ class PadstackInstance(GrpcPadstackInstance):
         pos = []
         for v in value:
             if isinstance(v, (float, int, str)):
-                pos.append(GrpcValue(v))
+                pos.append(GrpcValue(v, self._pedb.active_cell))
             else:
                 pos.append(v)
         point_data = GrpcPointData(pos[0], pos[1])
-        self.set_position_and_rotation(point_data, GrpcValue(self.rotation))
+        self.set_position_and_rotation(
+            x=point_data.x, y=point_data.y, rotation=GrpcValue(self.rotation, self._pedb.active_cell)
+        )
 
     @property
     def rotation(self):
