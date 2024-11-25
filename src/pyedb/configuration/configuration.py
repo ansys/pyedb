@@ -298,10 +298,11 @@ class Configuration:
             components = []
             for i in self.cfg_data.components.components:
                 components.append(i.get_attributes())
-            data["components"] = components
 
-            data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db(components)
-
+            if kwargs.get("components", False):
+                data["components"] = components
+            elif kwargs.get("s_parameters", False):
+                data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db(components)
         if kwargs.get("nets", False):
             data["nets"] = self.cfg_data.nets.get_data_from_db()
         if kwargs.get("pin_groups", False):
