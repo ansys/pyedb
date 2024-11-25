@@ -40,8 +40,8 @@ class CfgComponent(CfgBase):
         self.solder_ball_properties = kwargs.get("solder_ball_properties", {})
         self.ic_die_properties = kwargs.get("ic_die_properties", {})
         self.pin_pair_model = kwargs.get("pin_pair_model", [])
-        self.spice_model = kwargs.get("spice_model", None)
-        self.s_parameter_model = kwargs.get("s_parameter_model", None)
+        self.spice_model = kwargs.get("spice_model", {})
+        self.s_parameter_model = kwargs.get("s_parameter_model", {})
         self.netlist_model = kwargs.get("netlist_model", {})
 
     def retrieve_model_properties_from_edb(self):

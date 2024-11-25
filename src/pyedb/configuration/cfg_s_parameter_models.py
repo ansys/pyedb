@@ -67,7 +67,7 @@ class CfgSParameters:
                     ref_net = s_param.reference_net
                 comp.use_s_parameter_model(s_param.name, reference_net=ref_net)
 
-    def get_data_from_db(self):
+    def get_data_from_db(self, cfg_components):
         db_comp_def = self._pedb.definitions.component
         for name, compdef_obj in db_comp_def.items():
             nport_models = compdef_obj.component_models
@@ -76,6 +76,7 @@ class CfgSParameters:
             else:
                 pin_order = compdef_obj.get_properties()["pin_order"]
                 temp_comps = compdef_obj.components
+                temp_comps = [i for i in cfg_components if i]
                 for model_name, model_obj in nport_models.items():
                     temp_comp_list = []
                     reference_net_per_component = {}
