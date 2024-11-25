@@ -576,43 +576,54 @@ class TestClass:
         edbapp.close()
 
     def test_09_padstack_definition(self, edb_examples):
-        data = {
-            "padstacks": {
-                "definitions": [
+        solder_ball_parameters = {
+            "shape": "spheroid",
+            "diameter": "0.4mm",
+            "mid_diameter": "0.5mm",
+            "placement": "above_padstack",
+            "material": "solder",
+        }
+        INSTANCE = {
+            "name": "Via998",
+            "definition": "v35h15",
+            "layer_range": ["Inner1(GND1)", "16_Bottom"],
+            "solder_ball_layer": "1_Top",
+        }
+
+        DEFINITION = {
+            "name": "v35h15",
+            "hole_plating_thickness": "25um",
+            "material": "copper",
+            "hole_range": "upper_pad_to_lower_pad",
+            "pad_parameters": {
+                "regular_pad": [
                     {
-                        "name": "v35h15",
-                        "hole_plating_thickness": "25um",
-                        "material": "copper",
-                        "hole_range": "through",
-                        "pad_parameters": {
-                            "regular_pad": [
-                                {
-                                    "layer_name": "1_Top",
-                                    "shape": "circle",
-                                    "offset_x": "0.1mm",
-                                    "rotation": "0",
-                                    "diameter": "0.5mm",
-                                }
-                            ],
-                            "anti_pad": [{"layer_name": "1_Top", "shape": "circle", "diameter": "1mm"}],
-                            "thermal_pad": [
-                                {
-                                    "layer_name": "1_Top",
-                                    "shape": "round90",
-                                    "inner": "1mm",
-                                    "channel_width": "0.2mm",
-                                    "isolation_gap": "0.3mm",
-                                }
-                            ],
-                        },
-                        "hole_parameters": {
-                            "shape": "circle",
-                            "diameter": "0.2mm",
-                        },
+                        "layer_name": "1_Top",
+                        "shape": "circle",
+                        "offset_x": "0.1mm",
+                        "rotation": "0",
+                        "diameter": "0.5mm",
                     }
                 ],
-            }
+                "anti_pad": [{"layer_name": "1_Top", "shape": "circle", "diameter": "1mm"}],
+                "thermal_pad": [
+                    {
+                        "layer_name": "1_Top",
+                        "shape": "round90",
+                        "inner": "1mm",
+                        "channel_width": "0.2mm",
+                        "isolation_gap": "0.3mm",
+                    }
+                ],
+            },
+            "hole_parameters": {
+                "shape": "circle",
+                "diameter": "0.2mm",
+            },
+            "solder_ball_parameters": solder_ball_parameters,
         }
+
+        data = {"padstacks": {"definitions": [DEFINITION], "instances": [INSTANCE]}}
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_layout = edbapp.configuration.get_data_from_db(padstacks=True)
@@ -628,6 +639,11 @@ class TestClass:
         hole_params = pdef["hole_parameters"]
         assert hole_params["shape"] == "circle"
         assert hole_params["diameter"] == "0.2mm"
+        assert pdef["solder_ball_parameters"] == solder_ball_parameters
+
+        instance = [i for i in data_from_layout["padstacks"]["instances"] if i["name"] == "Via998"][0]
+        for k, v in INSTANCE.items():
+            assert v == instance[k]
         edbapp.close()
 
     def test_09_padstack_instance(self, edb_examples):
@@ -1174,12 +1190,20 @@ class TestClass:
                 ],
                 "planes": [
                     {
+                        "type": "rectangle",
                         "name": "GND_TOP",
                         "layer": "TOP",
                         "net_name": "GND",
                         "lower_left_point": [0, 0],
-                        "upper_right_point": [0, "12mm"],
+                        "upper_right_point": ["12mm", "12mm"],
                         "voids": ["trace_1_void"],
+                    },
+                    {
+                        "type": "polygon",
+                        "name": "GND_TOP_POLY",
+                        "layer": "TOP",
+                        "net_name": "GND",
+                        "points": [["12mm", 0], ["13mm", 0], ["12mm", "12mm"]],
                     },
                 ],
                 "components": [
@@ -1204,8 +1228,9 @@ class TestClass:
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.configuration.load(data, apply_file=True)
         assert [i for i in edbapp.layout.primitives if i.aedt_name == "trace_1"]
-        plane = [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP"][0]
-        assert plane.voids
+        rect = [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP"][0]
+        assert rect.voids
+        assert [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP_POLY"][0]
         assert edbapp.components["U1"]
         edbapp.close()
 
