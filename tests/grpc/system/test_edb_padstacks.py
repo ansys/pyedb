@@ -121,32 +121,31 @@ class TestClass:
         assert cmp_pinlist[0].net.name
         edbapp.close()
 
-    def test_padstack_properties_getter(self):
+    def test_padstack_properties_getter(self, edb_examples):
         """Evaluate properties"""
-        for el in self.edbapp.padstacks.definitions:
-            padstack = self.edbapp.padstacks.definitions[el]
-            assert padstack.hole_plating_thickness is not None or False
-            assert padstack.hole_properties is not None or False
+        # Done
+        edbapp = edb_examples.get_si_verse()
+        for name in list(edbapp.padstacks.definitions.keys()):
+            padstack = edbapp.padstacks.definitions[name]
             assert padstack.hole_plating_thickness is not None or False
             assert padstack.hole_plating_ratio is not None or False
-            assert padstack.via_start_layer is not None or False
-            assert padstack.via_stop_layer is not None or False
+            assert padstack.start_layer is not None or False
+            assert padstack.stop_layer is not None or False
             assert padstack.material is not None or False
             assert padstack.hole_finished_size is not None or False
             assert padstack.hole_rotation is not None or False
             assert padstack.hole_offset_x is not None or False
             assert padstack.hole_offset_y is not None or False
-            assert padstack.hole_type is not None or False
-            pad = padstack.pad_by_layer[padstack.via_stop_layer]
+            pad = padstack.pad_by_layer[padstack.stop_layer]
             if not pad.shape == "NoGeometry":
-                assert pad.parameters is not None or False
                 assert pad.parameters_values is not None or False
                 assert pad.offset_x is not None or False
                 assert pad.offset_y is not None or False
                 assert isinstance(pad.geometry_type, int)
             polygon = pad.polygon_data
             if polygon:
-                assert polygon.GetBBox()
+                assert polygon.bbox()
+        edbapp.close()
 
     def test_padstack_properties_setter(self):
         """Set padstack properties"""

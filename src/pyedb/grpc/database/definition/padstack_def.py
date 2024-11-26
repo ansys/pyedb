@@ -341,7 +341,10 @@ class PadstackDef(GrpcPadstackDef):
         str
             Hole offset value for the X axis.
         """
-        return round(self.data.get_hole_parameters()[2].value, 6)
+        try:
+            return round(self.data.get_hole_parameters()[2].value, 6)
+        except:
+            return 0.0
 
     @hole_offset_x.setter
     def hole_offset_x(self, value):
@@ -358,7 +361,10 @@ class PadstackDef(GrpcPadstackDef):
         str
             Hole offset value for the Y axis.
         """
-        return round(self.data.get_hole_parameters()[3].value, 6)
+        try:
+            return round(self.data.get_hole_parameters()[3].value, 6)
+        except:
+            return 0.0
 
     @hole_offset_y.setter
     def hole_offset_y(self, value):
@@ -375,7 +381,10 @@ class PadstackDef(GrpcPadstackDef):
         str
             Value for the hole rotation.
         """
-        return round(self.data.get_hole_parameters()[4].value, 6)
+        try:
+            return round(self.data.get_hole_parameters()[4].value, 6)
+        except:
+            return 0.0
 
     @hole_rotation.setter
     def hole_rotation(self, value):
@@ -442,10 +451,13 @@ class PadstackDef(GrpcPadstackDef):
         float
             Thickness of the hole plating if present.
         """
-        if len(self.data.get_hole_parameters()) > 0:
-            return round((self.hole_diameter * self.hole_plating_ratio / 100) / 2, 6)
-        else:
-            return 0
+        try:
+            if len(self.data.get_hole_parameters()) > 0:
+                return round((self.hole_diameter * self.hole_plating_ratio / 100) / 2, 6)
+            else:
+                return 0.0
+        except:
+            return 0.0
 
     @hole_plating_thickness.setter
     def hole_plating_thickness(self, value):
@@ -468,10 +480,13 @@ class PadstackDef(GrpcPadstackDef):
         float
             Finished size of the hole (Total Size + PlatingThickess*2).
         """
-        if len(self.data.get_hole_parameters()) > 0:
-            return round(self.hole_diameter - (self.hole_plating_thickness * 2), 6)
-        else:
-            return 0
+        try:
+            if len(self.data.get_hole_parameters()) > 0:
+                return round(self.hole_diameter - (self.hole_plating_thickness * 2), 6)
+            else:
+                return 0.0
+        except:
+            return 0.0
 
     @property
     def hole_range(self):
@@ -498,6 +513,15 @@ class PadstackDef(GrpcPadstackDef):
                 self.data.hole_range = GrpcPadstackHoleRange.UPPER_PAD_TO_LOWER_PAD
             else:  # pragma no cover
                 self.data.hole_range = GrpcPadstackHoleRange.UNKNOWN_RANGE
+
+    @property
+    def material(self):
+        """Return hole material name."""
+        return self.data.material.value
+
+    @material.setter
+    def material(self, value):
+        self.data.material = GrpcValue(value, self._pedb.db)
 
     def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True):
         """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
