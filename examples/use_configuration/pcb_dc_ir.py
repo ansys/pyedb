@@ -10,7 +10,7 @@ import json
 import os
 import tempfile
 
-from IPython.display import Image, display
+from IPython.display import display
 from ansys.aedt.core import Hfss3dLayout
 from ansys.aedt.core.downloads import download_file
 
@@ -25,9 +25,6 @@ NG_MODE = False
 
 temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
 file_edb = download_file(source="edb/ANSYS-HSD_V1.aedb", destination=temp_folder.name)
-
-from pathlib import Path
-import shutil
 
 # ## Load example layout
 
