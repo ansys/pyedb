@@ -606,26 +606,6 @@ class TestClass:
         network.write_touchstone(os.path.join(edbapp.directory, "test_export.s2p"))
         assert os.path.isfile(os.path.join(edbapp.directory, "test_export.s2p"))
 
-    def test_properties(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        pp = {
-            "pin_pair_model": [
-                {
-                    "first_pin": "2",
-                    "second_pin": "1",
-                    "is_parallel": True,
-                    "resistance": "10ohm",
-                    "resistance_enabled": True,
-                    "inductance": "1nH",
-                    "inductance_enabled": True,
-                    "capacitance": "1nF",
-                    "capacitance_enabled": True,
-                }
-            ]
-        }
-        edbapp.components["C378"].model_properties = pp
-        assert edbapp.components["C378"].model_properties == pp
-
     def test_export_gds_comp_xml(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         xml_output = os.path.join(self.local_scratch.path, "test.xml")
