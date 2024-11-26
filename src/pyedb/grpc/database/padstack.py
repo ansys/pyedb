@@ -336,7 +336,7 @@ class Padstacks(object):
             Name of the padstack if the operation is successful.
         """
 
-        padstack_def = PadstackDef.create(self._layout.db, padstackname)
+        padstack_def = PadstackDef.create(self._pedb.db, padstackname)
 
         padstack_data = GrpcPadstackDefData.create()
         list_values = [GrpcValue(holediam), GrpcValue(paddiam), GrpcValue(antipaddiam)]
@@ -1012,7 +1012,9 @@ class Padstacks(object):
         for pad in list(self.definitions.keys()):
             if pad == definition_name:
                 padstack_def = self.definitions[pad]
-        position = GrpcPointData(position)
+        position = GrpcPointData(
+            [GrpcValue(position[0], self._pedb.active_cell), GrpcValue(position[1], self._pedb.active_cell)]
+        )
         net = self._pedb.nets.find_or_create_net(net_name)
         rotation = GrpcValue(rotation * math.pi / 180)
         sign_layers_values = {i: v for i, v in self._pedb.stackup.signal_layers.items()}

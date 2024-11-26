@@ -360,8 +360,8 @@ class PadstackInstance(GrpcPadstackInstance):
 
     @net_name.setter
     def net_name(self, val):
-        if not self.is_null and self.net.is_null:
-            self.net.name = val
+        if not self.is_null and not self.net.is_null:
+            self.net = self._pedb.nets.nets[val]
 
     @property
     def layout_object_instance(self):
@@ -454,6 +454,28 @@ class PadstackInstance(GrpcPadstackInstance):
     @property
     def backdrill_type(self):
         return self.get_backdrill_type()
+
+    @property
+    def backdrill_top(self):
+        if self.get_back_drill_type(False).value == 0:
+            return False
+        else:
+            try:
+                if self.get_back_drill_by_layer(from_bottom=False):
+                    return True
+            except:
+                return False
+
+    @property
+    def backdrill_bottom(self):
+        if self.get_back_drill_type(True).value == 0:
+            return False
+        else:
+            try:
+                if self.get_back_drill_by_layer(True):
+                    return True
+            except:
+                return False
 
     @property
     def metal_volume(self):

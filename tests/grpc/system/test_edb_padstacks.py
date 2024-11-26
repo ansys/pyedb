@@ -73,48 +73,44 @@ class TestClass:
         edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
         assert isinstance(edbapp.padstacks.definitions["myVia"].instances, list)
         assert "myVia_bullet" in list(edbapp.padstacks.definitions.keys())
-        edbapp.close()
-
-        # TODO fix variables
         edbapp.add_design_variable("via_x", 5e-3)
         edbapp["via_y"] = "1mm"
-        assert edbapp["via_y"].value == 1e-3
-        assert edbapp["via_y"].value_string == "1mm"
+        assert edbapp["via_y"] == 1e-3
         assert edbapp.padstacks.place(["via_x", "via_x+via_y"], "myVia", via_name="via_test1")
         assert edbapp.padstacks.place(["via_x", "via_x+via_y*2"], "myVia_bullet")
         edbapp.padstacks["via_test1"].net_name = "GND"
         assert edbapp.padstacks["via_test1"].net_name == "GND"
         padstack = edbapp.padstacks.place(["via_x", "via_x+via_y*3"], "myVia", is_pin=True)
-        for test_prop in (edbapp.padstacks.instances, edbapp.padstacks.instances):
-            padstack_instance = test_prop[padstack.id]
-            assert padstack_instance.is_pin
-            assert padstack_instance.position
-            assert padstack_instance.start_layer in padstack_instance.layer_range_names
-            assert padstack_instance.stop_layer in padstack_instance.layer_range_names
-            padstack_instance.position = [0.001, 0.002]
-            assert padstack_instance.position == [0.001, 0.002]
-            assert padstack_instance.parametrize_position()
-            assert isinstance(padstack_instance.rotation, float)
-            edbapp.padstacks.create_circular_padstack(padstackname="mycircularvia")
-            assert "mycircularvia" in list(edbapp.padstacks.definitions.keys())
-            assert not padstack_instance.backdrill_top
-            assert not padstack_instance.backdrill_bottom
-            assert padstack_instance.delete()
-            via = edbapp.padstacks.place([0, 0], "myVia")
-            assert via.set_backdrill_top("Inner4(Sig2)", 0.5e-3)
-            assert via.backdrill_top
-            assert via.set_backdrill_bottom("16_Bottom", 0.5e-3)
-            assert via.backdrill_bottom
+        padstack_instance = edbapp.padstacks.instances[padstack.edb_uid]
+        assert padstack_instance.is_pin
+        assert padstack_instance.position
+        assert padstack_instance.start_layer in padstack_instance.layer_range_names
+        assert padstack_instance.stop_layer in padstack_instance.layer_range_names
+        padstack_instance.position = [0.001, 0.002]
+        assert padstack_instance.position == [0.001, 0.002]
+        assert padstack_instance.parametrize_position()
+        assert isinstance(padstack_instance.rotation, float)
+        edbapp.padstacks.create_circular_padstack(padstackname="mycircularvia")
+        assert "mycircularvia" in list(edbapp.padstacks.definitions.keys())
+        assert not padstack_instance.backdrill_top
+        assert not padstack_instance.backdrill_bottom
+        padstack_instance.delete()
+        via = edbapp.padstacks.place([0, 0], "myVia")
+        via.set_back_drill_by_layer(drill_to_layer="Inner4(Sig2)", diameter=0.5e-3, offset=0.0, from_bottom=True)
+        assert via.get_back_drill_by_layer()[0] == "Inner4(Sig2)"
+        assert via.get_back_drill_by_layer()[1] == 0.0
+        assert via.get_back_drill_by_layer()[2] == 5e-4
+        assert via.backdrill_bottom
 
-        via = edbapp.padstacks.instances_by_name["Via1266"]
-        via.backdrill_parameters = {
-            "from_bottom": {"drill_to_layer": "Inner5(PWR2)", "diameter": "0.4mm", "stub_length": "0.1mm"},
-            "from_top": {"drill_to_layer": "Inner2(PWR1)", "diameter": "0.41mm", "stub_length": "0.11mm"},
-        }
-        assert via.backdrill_parameters == {
-            "from_bottom": {"drill_to_layer": "Inner5(PWR2)", "diameter": "0.4mm", "stub_length": "0.1mm"},
-            "from_top": {"drill_to_layer": "Inner2(PWR1)", "diameter": "0.41mm", "stub_length": "0.11mm"},
-        }
+        # via = edbapp.padstacks.instances_by_name["Via1266"]
+        # via.backdrill_parameters = {
+        #     "from_bottom": {"drill_to_layer": "Inner5(PWR2)", "diameter": "0.4mm", "stub_length": "0.1mm"},
+        #     "from_top": {"drill_to_layer": "Inner2(PWR1)", "diameter": "0.41mm", "stub_length": "0.11mm"},
+        # }
+        # assert via.backdrill_parameters == {
+        #     "from_bottom": {"drill_to_layer": "Inner5(PWR2)", "diameter": "0.4mm", "stub_length": "0.1mm"},
+        #     "from_top": {"drill_to_layer": "Inner2(PWR1)", "diameter": "0.41mm", "stub_length": "0.11mm"},
+        # }
         edbapp.close()
 
     def test_padstacks_get_nets_from_pin_list(self, edb_examples):

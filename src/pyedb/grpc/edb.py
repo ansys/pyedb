@@ -2606,13 +2606,10 @@ class EdbGrpc(EdbInit):
         if "$" in variable_name:
             if variable_name.index("$") == 0:
                 variables = self.active_db.get_all_variable_names()
-
             else:
                 variables = self.active_cell.get_all_variable_names()
-
         else:
             variables = self.active_cell.get_all_variable_names()
-
         if variable_name in variables:
             return True
         return False
