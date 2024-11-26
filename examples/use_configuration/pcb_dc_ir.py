@@ -137,8 +137,6 @@ voltage.export_image(
     show_ruler=True,
 )
 
-display(Image(filename=file_path_image))
-
 # ## Plot power density
 
 power_density = h3d.post.create_fieldplot_layers_nets(
@@ -163,7 +161,13 @@ power_density.export_image(
     show_ruler=True,
 )
 
-display(Image(filename=file_path_image))
+# ## Compute power loss
+
+p_layers = h3d.post.compute_power_by_layer(layers=["1_Top"])
+display(p_layers)
+
+p_nets = h3d.post.compute_power_by_nets(nets=["1V0"])
+display(p_nets)
 
 # ## Shut Down Electronics Desktop
 
