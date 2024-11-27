@@ -19,7 +19,9 @@ A temporary workaround was considered, which involved manually installing an old
 long-term solution for the following reasons:
 
 - **Security risks**: Installing an older version of `libssl` introduces vulnerabilities, as it may lack the latest security updates provided in the newer versions.
+
 - **System instability**: Manually forcing an older version of `libssl` can lead to dependency conflicts with other software packages that rely on newer versions of this library, potentially causing further compatibility issues in the system.
+
 - **Maintenance overhead**: Relying on deprecated or unsupported libraries increases the complexity of future upgrades and system maintenance, making the environment harder to manage in the long term.
 
 Impact
