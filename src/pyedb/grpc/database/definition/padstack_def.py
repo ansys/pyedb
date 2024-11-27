@@ -159,6 +159,14 @@ class EDBPadProperties:
 
         return self._pad_parameter_value[3].value
 
+    @offset_x.setter
+    def offset_x(self, value):
+        self._update_pad_parameters_parameters(offsetx=value)
+
+    @offset_y.setter
+    def offset_y(self, value):
+        self._update_pad_parameters_parameters(offsety=value)
+
     @property
     def rotation(self):
         """Rotation.
@@ -178,14 +186,6 @@ class EDBPadProperties:
     @rotation.setter
     def rotation(self, value):
         self._update_pad_parameters_parameters(rotation=value)
-
-    @offset_x.setter
-    def offset_x(self, value):
-        self._update_pad_parameters_parameters(offsetx=value)
-
-    @offset_y.setter
-    def offset_y(self, value):
-        self._update_pad_parameters_parameters(offsety=value)
 
     @parameters_values.setter
     def parameters_values(self, value):
@@ -227,7 +227,7 @@ class EDBPadProperties:
         if offsety is None:
             offsety = self._pad_parameter_value[3]
         elif isinstance(offsety, (str, float, int)):
-            offsetx = GrpcValue(offsety, self._pedbpadstack._pedb.db)
+            offsety = GrpcValue(offsety, self._pedbpadstack._pedb.db)
         self._edb_padstack.set_pad_parameters(
             layer=layer_name,
             pad_type=pad_type,
@@ -348,9 +348,15 @@ class PadstackDef(GrpcPadstackDef):
 
     @hole_offset_x.setter
     def hole_offset_x(self, value):
-        hole_parameter = self.data.get_hole_parameters()
-        hole_parameter[2] = GrpcValue(value)
-        self.data.set_hole_parameters(hole_parameter)
+        hole_parameter = list(self.data.get_hole_parameters())
+        hole_parameter[2] = GrpcValue(value, self._pedb.db)
+        self.data.set_hole_parameters(
+            offset_x=hole_parameter[2],
+            offset_y=hole_parameter[3],
+            rotation=hole_parameter[4],
+            type_geom=hole_parameter[0],
+            sizes=hole_parameter[1],
+        )
 
     @property
     def hole_offset_y(self):
@@ -368,9 +374,15 @@ class PadstackDef(GrpcPadstackDef):
 
     @hole_offset_y.setter
     def hole_offset_y(self, value):
-        hole_parameter = self.data.get_hole_parameters()
-        hole_parameter[3] = GrpcValue(value)
-        self.data.set_hole_parameters(hole_parameter)
+        hole_parameter = list(self.data.get_hole_parameters())
+        hole_parameter[3] = GrpcValue(value, self._pedb.db)
+        self.data.set_hole_parameters(
+            offset_x=hole_parameter[2],
+            offset_y=hole_parameter[3],
+            rotation=hole_parameter[4],
+            type_geom=hole_parameter[0],
+            sizes=hole_parameter[1],
+        )
 
     @property
     def hole_rotation(self):
@@ -388,9 +400,15 @@ class PadstackDef(GrpcPadstackDef):
 
     @hole_rotation.setter
     def hole_rotation(self, value):
-        hole_parameter = self.data.get_hole_parameters()
-        hole_parameter[4] = GrpcValue(value)
-        self.data.set_hole_parameters(hole_parameter)
+        hole_parameter = list(self.data.get_hole_parameters())
+        hole_parameter[4] = GrpcValue(value, self._pedb.db)
+        self.data.set_hole_parameters(
+            offset_x=hole_parameter[2],
+            offset_y=hole_parameter[3],
+            rotation=hole_parameter[4],
+            type_geom=hole_parameter[0],
+            sizes=hole_parameter[1],
+        )
 
     @property
     def pad_by_layer(self):
@@ -521,7 +539,7 @@ class PadstackDef(GrpcPadstackDef):
 
     @material.setter
     def material(self, value):
-        self.data.material = GrpcValue(value, self._pedb.db)
+        self.data.material.value = value
 
     def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True):
         """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
