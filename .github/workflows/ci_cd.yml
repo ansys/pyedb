@@ -282,7 +282,7 @@ jobs:
   test-pyaedt-main-linux:
     name: Testing PyAEDT main branch (Linux)
     needs: [smoke-tests]
-    runs-on: [ self-hosted, Linux, pyaedt ]
+    runs-on: [ self-hosted, Linux, pyaedt, testing_dotnet ]
     env:
       ANSYSEM_ROOT242: '/opt/AnsysEM/v242/Linux64'
       ANS_NODEPCHECK: '1'
