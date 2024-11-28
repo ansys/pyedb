@@ -14,7 +14,6 @@ from ansys.aedt.core.downloads import download_file
 
 from pyedb import Edb
 
-
 AEDT_VERSION = "2024.2"
 NG_MODE = False
 
@@ -38,31 +37,71 @@ cfg["sources"] = []
 
 cfg["stackup"] = {
     "layers": [
-        {"name": "Top", "type": "signal", "material": "copper", "fill_material": "FR4_epoxy",
-         "thickness": "0.035mm"},
+        {"name": "Top", "type": "signal", "material": "copper", "fill_material": "FR4_epoxy", "thickness": "0.035mm"},
         {"name": "DE1", "type": "dielectric", "material": "FR4_epoxy", "fill_material": "", "thickness": "0.1mm"},
-        {"name": "Inner1", "type": "signal", "material": "copper", "fill_material": "FR4_epoxy",
-         "thickness": "0.017mm"},
+        {
+            "name": "Inner1",
+            "type": "signal",
+            "material": "copper",
+            "fill_material": "FR4_epoxy",
+            "thickness": "0.017mm",
+        },
         {"name": "DE2", "type": "dielectric", "material": "FR4_epoxy", "fill_material": "", "thickness": "0.088mm"},
-        {"name": "Inner2", "type": "signal", "material": "copper", "fill_material": "FR4_epoxy",
-         "thickness": "0.017mm"},
+        {
+            "name": "Inner2",
+            "type": "signal",
+            "material": "copper",
+            "fill_material": "FR4_epoxy",
+            "thickness": "0.017mm",
+        },
         {"name": "DE3", "type": "dielectric", "material": "FR4_epoxy", "fill_material": "", "thickness": "0.1mm"},
-        {"name": "Inner3", "type": "signal", "material": "copper", "fill_material": "FR4_epoxy",
-         "thickness": "0.017mm"},
-        {"name": "FR4_epoxy-1mm", "type": "dielectric", "material": "FR4_epoxy", "fill_material": "",
-         "thickness": "1mm"},
-        {"name": "Inner4", "type": "signal", "material": "copper", "fill_material": "FR4_epoxy",
-         "thickness": "0.017mm"},
+        {
+            "name": "Inner3",
+            "type": "signal",
+            "material": "copper",
+            "fill_material": "FR4_epoxy",
+            "thickness": "0.017mm",
+        },
+        {
+            "name": "FR4_epoxy-1mm",
+            "type": "dielectric",
+            "material": "FR4_epoxy",
+            "fill_material": "",
+            "thickness": "1mm",
+        },
+        {
+            "name": "Inner4",
+            "type": "signal",
+            "material": "copper",
+            "fill_material": "FR4_epoxy",
+            "thickness": "0.017mm",
+        },
         {"name": "DE5", "type": "dielectric", "material": "FR4_epoxy", "fill_material": "", "thickness": "0.1mm"},
-        {"name": "Inner5", "type": "signal", "material": "copper", "fill_material": "FR4_epoxy",
-         "thickness": "0.017mm"},
+        {
+            "name": "Inner5",
+            "type": "signal",
+            "material": "copper",
+            "fill_material": "FR4_epoxy",
+            "thickness": "0.017mm",
+        },
         {"name": "DE6", "type": "dielectric", "material": "FR4_epoxy", "fill_material": "", "thickness": "0.088mm"},
-        {"name": "Inner6", "type": "signal", "material": "copper", "fill_material": "FR4_epoxy",
-         "thickness": "0.017mm"},
+        {
+            "name": "Inner6",
+            "type": "signal",
+            "material": "copper",
+            "fill_material": "FR4_epoxy",
+            "thickness": "0.017mm",
+        },
         {"name": "DE7", "type": "dielectric", "material": "FR4_epoxy", "fill_material": "", "thickness": "0.1mm"},
-        {"name": "Bottom", "type": "signal", "material": "copper", "fill_material": "FR4_epoxy",
-         "thickness": "0.035mm"}
-    ]}
+        {
+            "name": "Bottom",
+            "type": "signal",
+            "material": "copper",
+            "fill_material": "FR4_epoxy",
+            "thickness": "0.035mm",
+        },
+    ]
+}
 
 # ## Define voltage source
 
@@ -104,12 +143,7 @@ cfg["setups"] = [
 # ## Define Cutout
 
 cfg["operations"] = {
-    "cutout": {
-        "signal_list": ["1V0"],
-        "reference_list": ["GND"],
-        "extent_type": "ConvexHull",
-        "expansion_size": "20mm"
-    }
+    "cutout": {"signal_list": ["1V0"], "reference_list": ["GND"], "extent_type": "ConvexHull", "expansion_size": "20mm"}
 }
 
 # ## Define package for thermal analysis (optional)
@@ -157,11 +191,7 @@ h3d = Hfss3dLayout(edbapp.edbpath, version=AEDT_VERSION, non_graphical=NG_MODE, 
 
 # ## Prepare for electro-thermal analysis in Icepak (Optional)
 
-h3d.modeler.set_temperature_dependence(
-    include_temperature_dependence=True,
-    enable_feedback=True,
-    ambient_temp=22
-)
+h3d.modeler.set_temperature_dependence(include_temperature_dependence=True, enable_feedback=True, ambient_temp=22)
 
 # ## Analyze
 
@@ -229,26 +259,17 @@ h3d.save_project()
 
 # ## Create an Icepak design
 
-ipk = Icepak(
-    version=AEDT_VERSION,
-    non_graphical=NG_MODE,
-    new_desktop=False
-)
+ipk = Icepak(version=AEDT_VERSION, non_graphical=NG_MODE, new_desktop=False)
 
 # ## Create PCB
 
 pcb = ipk.create_ipk_3dcomponent_pcb(
     compName="PCB_pyAEDT",
-    setupLinkInfo=[h3d.project_file,
-                   h3d.design_name,
-                   "siwave_1",
-                   True,
-                   True],
-
+    setupLinkInfo=[h3d.project_file, h3d.design_name, "siwave_1", True, True],
     solutionFreq=None,
     resolution=0,
     extent_type="Bounding Box",
-    powerin="0"
+    powerin="0",
 )
 
 # ## Include pckage definition from Edb
@@ -272,11 +293,11 @@ glob_msh.global_region.negative_z_padding = "80 mm"
 glob_msh = ipk.mesh.global_mesh_region
 glob_msh.manual_settings = True
 glob_msh.settings["EnableMLM"] = True
-glob_msh.settings["EnforeMLMType"] = '2D'
-glob_msh.settings["2DMLMType"] = 'Auto'
-glob_msh.settings["MaxElementSizeY"] = '2mm'
-glob_msh.settings["MaxElementSizeX"] = '2mm'
-glob_msh.settings["MaxElementSizeZ"] = '3mm'
+glob_msh.settings["EnforeMLMType"] = "2D"
+glob_msh.settings["2DMLMType"] = "Auto"
+glob_msh.settings["MaxElementSizeY"] = "2mm"
+glob_msh.settings["MaxElementSizeX"] = "2mm"
+glob_msh.settings["MaxElementSizeZ"] = "3mm"
 glob_msh.settings["MaxLevels"] = "2"
 
 glob_msh.update()
