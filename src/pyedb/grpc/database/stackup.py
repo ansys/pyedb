@@ -874,7 +874,7 @@ class Stackup(LayerCollection):
         else:
             input_layers = GrpcLayerTypeSet.STACKUP_LAYER_SET
 
-        res = self.layer_collection.get_top_bottom_stackup_layers(input_layers)
+        res = self.get_top_bottom_stackup_layers(input_layers)
         upper_layer = res[0]
         upper_layer_top_elevationm = res[1]
         lower_layer = res[2]

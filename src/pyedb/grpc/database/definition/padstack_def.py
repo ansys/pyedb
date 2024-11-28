@@ -31,6 +31,7 @@ from ansys.edb.core.definition.padstack_def_data import (
 )
 from ansys.edb.core.definition.padstack_def_data import PadType as GrpcPadType
 import ansys.edb.core.geometry.polygon_data
+from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure
 from ansys.edb.core.hierarchy.structure3d import Structure3D as GrpcStructure3D
 from ansys.edb.core.primitive.primitive import Circle as GrpcCircle
@@ -327,14 +328,15 @@ class PadstackDef(GrpcPadstackDef):
         geometry_type = hole_parameter[0]
         hole_offset_x = hole_parameter[2]
         hole_offset_y = hole_parameter[3]
-        hole_rotation = hole_parameter[4]
-        self.data.set_hole_parameters(
-            offset_x=hole_offset_x,
-            offset_y=hole_offset_y,
-            rotation=hole_rotation,
-            type_geom=geometry_type,
-            sizes=hole_size,
-        )
+        if not isinstance(geometry_type, GrpcPolygonData):
+            hole_rotation = hole_parameter[4]
+            self.data.set_hole_parameters(
+                offset_x=hole_offset_x,
+                offset_y=hole_offset_y,
+                rotation=hole_rotation,
+                type_geom=geometry_type,
+                sizes=hole_size,
+            )
 
     @property
     def hole_type(self):
@@ -569,7 +571,7 @@ class PadstackDef(GrpcPadstackDef):
             ``True`` when successful, ``False`` when failed.
         """
 
-        if len(self.data.get_hole_parameters()) == 0:
+        if isinstance(self.data.get_hole_parameters()[0], GrpcPolygonData):
             self._pedb.logger.error("Microvias cannot be applied on vias using hole shape polygon")
             return False
 
@@ -591,21 +593,25 @@ class PadstackDef(GrpcPadstackDef):
             stop_elevation = layers[self.instances[0].stop_layer].upper_elevation
 
         diel_thick = abs(start_elevation - stop_elevation)
-        rad1 = self.hole_diameter / 2 - math.tan(hole_wall_angle * diel_thick * math.pi / 180)
-        rad2 = self.hole_diameter / 2
+        if self.hole_diameter:
+            rad1 = self.hole_diameter / 2 - math.tan(hole_wall_angle * diel_thick * math.pi / 180)
+            rad2 = self.hole_diameter / 2
+        else:
+            rad1 = 0.0
+            rad2 = 0.0
 
         if start_elevation < (topz + bottomz) / 2:
             rad1, rad2 = rad2, rad1
         i = 0
-        for via in list(self.padstack_instances.values()):
+        for via in self.instances:
             if convert_only_signal_vias and via.net_name in signal_nets or not convert_only_signal_vias:
                 pos = via.position
                 started = False
-                if len(self.pad_by_layer[self.start_layer].parameters) == 0:
+                if len(self.pad_by_layer[self.start_layer].parameters_values) == 0:
                     self._pedb.modeler.create_polygon(
                         self.pad_by_layer[self.start_layer].polygon_data,
                         layer_name=self.start_layer,
-                        net_name=via.net.name,
+                        net_name=via.net_name,
                     )
                 else:
                     GrpcCircle.create(
@@ -616,11 +622,11 @@ class PadstackDef(GrpcPadstackDef):
                         GrpcValue(pos[1]),
                         GrpcValue(self.pad_by_layer[self.start_layer].parameters_values[0] / 2),
                     )
-                if len(self.pad_by_layer[self.stop_layer].parameters) == 0:
+                if len(self.pad_by_layer[self.stop_layer].parameters_values) == 0:
                     self._pedb.modeler.create_polygon(
                         self.pad_by_layer[self.stop_layer].polygon_data,
                         layer_name=self.stop_layer,
-                        net_name=via.net.name,
+                        net_name=via.net_name,
                     )
                 else:
                     GrpcCircle.create(
@@ -657,6 +663,11 @@ class PadstackDef(GrpcPadstackDef):
                         )
                         s3d.add_member(cloned_circle)
                         s3d.add_member(cloned_circle2)
+                        if not self.data.material.value:
+                            self._pedb.logger.warning(
+                                f"Padstack definution {self.name} has no material defined." f"Defaulting to copper"
+                            )
+                            self.data.material = "copper"
                         s3d.set_material(self.data.material.value)
                         s3d.mesh_closure = GrpcMeshClosure.ENDS_CLOSED
                         started = True
@@ -666,8 +677,7 @@ class PadstackDef(GrpcPadstackDef):
                 if delete_padstack_def:  # pragma no cover
                     via.delete()
                 else:  # pragma no cover
-                    padstack_def = self._pedb.definitions[via.padstack_definition]
-                    padstack_def.hole_properties = 0
+                    self.hole_diameter = 0.0
                     self._pedb.logger.info("Padstack definition kept, hole size set to 0.")
 
         self._pedb.logger.info(f"{i} Converted successfully to 3D Objects.")
