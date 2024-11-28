@@ -98,6 +98,10 @@ class EDBPadProperties:
         return self._pad_parameter_value[0].value
 
     @property
+    def _edb_geometry_type(self):
+        return self._pad_parameter_value[0]
+
+    @property
     def shape(self):
         """Get the shape of the pad."""
         return self._pad_parameter_value[0].name.split("_")[-1].lower()
@@ -333,6 +337,14 @@ class PadstackDef(GrpcPadstackDef):
         )
 
     @property
+    def hole_type(self):
+        return self.data.get_hole_parameters()[0].value
+
+    @property
+    def edb_hole_type(self):
+        return self.data.get_hole_parameters()[0]
+
+    @property
     def hole_offset_x(self):
         """Hole offset for the X axis.
 
@@ -416,7 +428,6 @@ class PadstackDef(GrpcPadstackDef):
             for layer in self.layers:
                 try:
                     self._pad_by_layer[layer] = EDBPadProperties(self.data, layer, GrpcPadType.REGULAR_PAD, self)
-                    # self._pad_by_layer[layer] = self.data.get_pad_parameters(layer, GrpcPadType.REGULAR_PAD)
                 except:
                     self._pad_by_layer[layer] = None
         return self._pad_by_layer
@@ -426,9 +437,7 @@ class PadstackDef(GrpcPadstackDef):
         if not self._antipad_by_layer:
             for layer in self.layers:
                 try:
-                    self._antipad_by_layer[layer] = round(
-                        self.data.get_pad_parameters(layer, GrpcPadType.ANTI_PAD)[1][0].value, 6
-                    )
+                    self._pad_by_layer[layer] = EDBPadProperties(self.data, layer, GrpcPadType.ANTI_PAD, self)
                 except:
                     self._antipad_by_layer[layer] = None
         return self._antipad_by_layer
@@ -438,9 +447,7 @@ class PadstackDef(GrpcPadstackDef):
         if not self._thermalpad_by_layer:
             for layer in self.layers:
                 try:
-                    self._thermalpad_by_layer[layer] = round(
-                        self.data.get_pad_parameters(layer, GrpcPadType.THERMAL_PAD)[1][0].value, 6
-                    )
+                    self._pad_by_layer[layer] = EDBPadProperties(self.data, layer, GrpcPadType.THERMAL_PAD, self)
                 except:
                     self._thermalpad_by_layer[layer] = None
         return self._thermalpad_by_layer
@@ -573,7 +580,7 @@ class PadstackDef(GrpcPadstackDef):
         layer_names = [i for i in list(layers.keys())]
         if convert_only_signal_vias:
             signal_nets = [i for i in list(self._pedb._pedb.nets.signal_nets.keys())]
-        topl, topz, bottoml, bottomz = self._pedb._pedb.stackup.limits(True)
+        topl, topz, bottoml, bottomz = self._pedb.stackup.limits(True)
         if self.start_layer in layers:
             start_elevation = layers[self.start_layer].lower_elevation
         else:
@@ -671,138 +678,103 @@ class PadstackDef(GrpcPadstackDef):
 
         Returns
         -------
-        List of :class:`pyedb.dotnet.database.padstackEDBPadstack`
+        List of .:class:`pyedb.dotnet.database.padstackEDBPadstack`
         """
-        if self.via_start_layer == self.via_stop_layer:
-            self._pedb._pedb.logger.error("Microvias cannot be applied when Start and Stop Layers are the same.")
-        layout = self._pedb._pedb.active_layout
-        layers = self._pedb._pedb.stackup.signal_layers
+        from pyedb.grpc.database.primitive.padstack_instances import PadstackInstance
+
+        if self.start_layer == self.stop_layer:
+            self._pedb.logger.error("Microvias cannot be applied when Start and Stop Layers are the same.")
+        layout = self._pedb.active_layout
+        layers = self._pedb.stackup.signal_layers
         layer_names = [i for i in list(layers.keys())]
-        if abs(layer_names.index(self.via_start_layer) - layer_names.index(self.via_stop_layer)) < 2:
-            self._pedb._pedb.logger.error(
-                "Conversion can be applied only if Padstack definition is composed by more than 2 layers."
+        if abs(layer_names.index(self.start_layer) - layer_names.index(self.stop_layer)) < 2:
+            self._pedb.logger.error(
+                "Conversion can be applied only if padstack definition is composed by more than 2 layers."
             )
             return False
         started = False
-        p1 = self.edb_padstack.GetData()
         new_instances = []
         for layer_name in layer_names:
             stop = ""
-            if layer_name == self.via_start_layer or started:
+            if layer_name == self.start_layer or started:
                 start = layer_name
                 stop = layer_names[layer_names.index(layer_name) + 1]
-                new_padstack_name = "MV_{}_{}_{}".format(self.name, start, stop)
+                new_padstack_name = f"MV_{self.name}_{start}_{stop}"
                 included = [start, stop]
-                new_padstack_definition_data = self._pedb._pedb.edb_api.definition.PadstackDefData.Create()
-                new_padstack_definition_data.AddLayers(convert_py_list_to_net_list(included))
+                new_padstack_definition = GrpcPadstackDef.create(self._pedb.db, new_padstack_name)
+                new_padstack_definition.data.add_layers(included)
                 for layer in included:
                     pl = self.pad_by_layer[layer]
-                    new_padstack_definition_data.SetPadParameters(
-                        layer,
-                        self._pedb._pedb.edb_api.definition.PadType.RegularPad,
-                        pl.int_to_geometry_type(pl.geometry_type),
-                        list(
-                            pl._edb_padstack.GetData().GetPadParametersValue(
-                                pl.layer_name, pl.int_to_pad_type(pl.pad_type)
-                            )
-                        )[2],
-                        pl._edb_padstack.GetData().GetPadParametersValue(
-                            pl.layer_name, pl.int_to_pad_type(pl.pad_type)
-                        )[3],
-                        pl._edb_padstack.GetData().GetPadParametersValue(
-                            pl.layer_name, pl.int_to_pad_type(pl.pad_type)
-                        )[4],
-                        pl._edb_padstack.GetData().GetPadParametersValue(
-                            pl.layer_name, pl.int_to_pad_type(pl.pad_type)
-                        )[5],
+                    new_padstack_definition.data.set_pad_parameters(
+                        layer=layer,
+                        pad_type=GrpcPadType.REGULAR_PAD,
+                        offset_x=GrpcValue(pl.offset_x, self._pedb.db),
+                        offset_y=GrpcValue(pl.offset_y, self._pedb.db),
+                        rotation=GrpcValue(pl.rotation, self._pedb.db),
+                        type_geom=pl._edb_geometry_type,
+                        sizes=pl.parameters_values,
                     )
-                    pl = self.antipad_by_layer[layer]
-                    new_padstack_definition_data.SetPadParameters(
-                        layer,
-                        self._pedb._pedb.edb_api.definition.PadType.AntiPad,
-                        pl.int_to_geometry_type(pl.geometry_type),
-                        list(
-                            pl._edb_padstack.GetData().GetPadParametersValue(
-                                pl.layer_name, pl.int_to_pad_type(pl.pad_type)
-                            )
-                        )[2],
-                        pl._edb_padstack.GetData().GetPadParametersValue(
-                            pl.layer_name, pl.int_to_pad_type(pl.pad_type)
-                        )[3],
-                        pl._edb_padstack.GetData().GetPadParametersValue(
-                            pl.layer_name, pl.int_to_pad_type(pl.pad_type)
-                        )[4],
-                        pl._edb_padstack.GetData().GetPadParametersValue(
-                            pl.layer_name, pl.int_to_pad_type(pl.pad_type)
-                        )[5],
-                    )
-                    pl = self.thermalpad_by_layer[layer]
-                    new_padstack_definition_data.SetPadParameters(
-                        layer,
-                        self._pedb._pedb.edb_api.definition.PadType.ThermalPad,
-                        pl.int_to_geometry_type(pl.geometry_type),
-                        list(
-                            pl._edb_padstack.GetData().GetPadParametersValue(
-                                pl.layer_name, pl.int_to_pad_type(pl.pad_type)
-                            )
-                        )[2],
-                        pl._edb_padstack.GetData().GetPadParametersValue(
-                            pl.layer_name, pl.int_to_pad_type(pl.pad_type)
-                        )[3],
-                        pl._edb_padstack.GetData().GetPadParametersValue(
-                            pl.layer_name, pl.int_to_pad_type(pl.pad_type)
-                        )[4],
-                        pl._edb_padstack.GetData().GetPadParametersValue(
-                            pl.layer_name, pl.int_to_pad_type(pl.pad_type)
-                        )[5],
-                    )
-                new_padstack_definition_data.SetHoleParameters(
-                    self.hole_type,
-                    self.hole_parameters,
-                    self._get_edb_value(self.hole_offset_x),
-                    self._get_edb_value(self.hole_offset_y),
-                    self._get_edb_value(self.hole_rotation),
+                    antipads = self.antipad_by_layer
+                    if layer in antipads:
+                        pl = antipads[layer]
+                        new_padstack_definition.data.set_pad_parameters(
+                            layer=layer,
+                            pad_type=GrpcPadType.ANTI_PAD,
+                            offset_x=GrpcValue(pl.offset_x, self._pedb.db),
+                            offset_y=GrpcValue(pl.offset_y, self._pedb.db),
+                            rotation=GrpcValue(pl.rotation, self._pedb.db),
+                            type_geom=pl._edb_geometry_type,
+                            sizes=pl.parameters_values,
+                        )
+                    thermal_pads = self.thermalpad_by_layer
+                    if layer in thermal_pads:
+                        pl = thermal_pads[layer]
+                        new_padstack_definition.data.set_pad_parameters(
+                            layer=layer,
+                            pad_type=GrpcPadType.THERMAL_PAD,
+                            offset_x=GrpcValue(pl.offset_x, self._pedb.db),
+                            offset_y=GrpcValue(pl.offset_y, self._pedb.db),
+                            rotation=GrpcValue(pl.rotation, self._pedb.db),
+                            type_geom=pl._edb_geometry_type,
+                            sizes=pl.parameters_values,
+                        )
+                new_padstack_definition.data.set_hole_parameters(
+                    offset_x=GrpcValue(self.hole_offset_x, self._pedb.db),
+                    offset_y=GrpcValue(self.hole_offset_y, self._pedb.db),
+                    rotation=GrpcValue(self.hole_rotation, self._pedb.db),
+                    type_geom=self.edb_hole_type,
+                    sizes=[self.hole_diameter],
                 )
-                new_padstack_definition_data.SetMaterial(self.material)
-                new_padstack_definition_data.SetHolePlatingPercentage(self._get_edb_value(self.hole_plating_ratio))
-                padstack_definition = self._edb.definition.PadstackDef.Create(
-                    self._pedb._pedb.active_db, new_padstack_name
-                )
-                padstack_definition.SetData(new_padstack_definition_data)
-                new_instances.append(EDBPadstack(padstack_definition, self._pedb))
+                new_padstack_definition.data.material = self.material
+                new_padstack_definition.data.plating_percentage = GrpcValue(self.hole_plating_ratio, self._pedb.db)
+                new_instances.append(PadstackDef(self._pedb, new_padstack_definition))
                 started = True
-            if self.via_stop_layer == stop:
+            if self.stop_layer == stop:
                 break
         i = 0
-        for via in list(self.padstack_instances.values()):
-            for inst in new_instances:
-                instance = inst.edb_padstack
-                from_layer = [
-                    l
-                    for l in self._pedb._pedb.stackup._edb_layer_list
-                    if l.GetName() == list(instance.GetData().GetLayerNames())[0]
-                ][0]
-                to_layer = [
-                    l
-                    for l in self._pedb._pedb.stackup._edb_layer_list
-                    if l.GetName() == list(instance.GetData().GetLayerNames())[-1]
-                ][0]
-                padstack_instance = self._edb.cell.primitive.padstack_instance.create(
-                    layout,
-                    via._edb_padstackinstance.GetNet(),
-                    generate_unique_name(instance.GetName()),
-                    instance,
-                    via._edb_padstackinstance.GetPositionAndRotationValue()[1],
-                    via._edb_padstackinstance.GetPositionAndRotationValue()[2],
-                    from_layer,
-                    to_layer,
-                    None,
-                    None,
+        for via in self.instances:
+            for instance in new_instances:
+                from_layer = self.data.layer_names[0]
+                to_layer = self.data.layer_names[-1]
+                from_layer = next(l for layer_name, l in self._pedb.stackup.layers.items() if l.name == from_layer)
+                to_layer = next(l for layer_name, l in self._pedb.stackup.layers.items() if l.name == to_layer)
+                padstack_instance = PadstackInstance.create(
+                    layout=layout,
+                    net=via.net,
+                    name=generate_unique_name(instance.name),
+                    padstack_def=instance,
+                    position_x=via.position[0],
+                    position_y=via.position[1],
+                    rotation=0.0,
+                    top_layer=from_layer,
+                    bottom_layer=to_layer,
+                    solder_ball_layer=None,
+                    layer_map=None,
                 )
-                padstack_instance._edb_object.SetIsLayoutPin(via.is_pin)
+                padstack_instance.is_layout_pin = via.is_pin
                 i += 1
             via.delete()
-        self._pedb._pedb.logger.info("Created {} new microvias.".format(i))
+        self._pedb.logger.info("Created {} new microvias.".format(i))
         return new_instances
 
     # TODO check if update layer name is needed.
