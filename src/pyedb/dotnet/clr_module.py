@@ -98,7 +98,6 @@ if is_linux:  # pragma: no cover
                 )
         try:
             load("coreclr", runtime_config=str(runtime_config), dotnet_root=str(dotnet_root))
-            print("DotNet Core correctly loaded.")
             if "mono" not in os.getenv("LD_LIBRARY_PATH", ""):
                 warnings.warn("LD_LIBRARY_PATH needs to be setup to use pyedb.")
                 warnings.warn("export ANSYSEM_ROOT242=/path/to/AnsysEM/v242/Linux64")
