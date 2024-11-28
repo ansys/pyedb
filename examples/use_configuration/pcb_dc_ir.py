@@ -162,7 +162,7 @@ cfg["package_definitions"] = [
     },
 ]
 
-# ## Write configuration into as json file
+# ## Write configuration into a JSON file
 
 file_json = os.path.join(temp_folder.name, "edb_configuration.json")
 with open(file_json, "w") as f:
