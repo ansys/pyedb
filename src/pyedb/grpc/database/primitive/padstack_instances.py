@@ -787,12 +787,12 @@ class PadstackInstance(GrpcPadstackInstance):
         # TODO check if still used anf fix if yes.
         padstack_center = self.position
         rotation = self.rotation  # in radians
-        padstack = self._pedb.padstacks.definitions[self.padstack_def]
+        # padstack = self._pedb.padstacks.definitions[self.padstack_def.name]
         try:
-            padstack_pad = padstack.pad_by_layer[layer_name]
+            padstack_pad = PadstackDef(self._pedb, self.padstack_def).pad_by_layer[layer_name]
         except KeyError:  # pragma: no cover
             try:
-                padstack_pad = padstack.pad_by_layer[padstack.via_start_layer]
+                padstack_pad = self.padstack_def.pad_by_layer[self.padstack_def.start_layer]
             except KeyError:  # pragma: no cover
                 return False
 
