@@ -512,6 +512,7 @@ class TestClass:
         assert edbapp.components.nport_comp_definition["CAPC3216X180X55ML20T25"].reference_file
         assert len(edbapp.components.nport_comp_definition["CAPC3216X180X55ML20T25"].components) == 9
         assert len(edbapp.components.nport_comp_definition["CAPC3216X190X55ML30T25"].components) == 12
+        edbapp.configuration.get_data_from_db(s_parameters=True)
         edbapp.close()
 
     def test_07_boundaries(self, edb_examples):
@@ -576,43 +577,54 @@ class TestClass:
         edbapp.close()
 
     def test_09_padstack_definition(self, edb_examples):
-        data = {
-            "padstacks": {
-                "definitions": [
+        solder_ball_parameters = {
+            "shape": "spheroid",
+            "diameter": "0.4mm",
+            "mid_diameter": "0.5mm",
+            "placement": "above_padstack",
+            "material": "solder",
+        }
+        INSTANCE = {
+            "name": "Via998",
+            "definition": "v35h15",
+            "layer_range": ["Inner1(GND1)", "16_Bottom"],
+            "solder_ball_layer": "1_Top",
+        }
+
+        DEFINITION = {
+            "name": "v35h15",
+            "hole_plating_thickness": "25um",
+            "material": "copper",
+            "hole_range": "upper_pad_to_lower_pad",
+            "pad_parameters": {
+                "regular_pad": [
                     {
-                        "name": "v35h15",
-                        "hole_plating_thickness": "25um",
-                        "material": "copper",
-                        "hole_range": "through",
-                        "pad_parameters": {
-                            "regular_pad": [
-                                {
-                                    "layer_name": "1_Top",
-                                    "shape": "circle",
-                                    "offset_x": "0.1mm",
-                                    "rotation": "0",
-                                    "diameter": "0.5mm",
-                                }
-                            ],
-                            "anti_pad": [{"layer_name": "1_Top", "shape": "circle", "diameter": "1mm"}],
-                            "thermal_pad": [
-                                {
-                                    "layer_name": "1_Top",
-                                    "shape": "round90",
-                                    "inner": "1mm",
-                                    "channel_width": "0.2mm",
-                                    "isolation_gap": "0.3mm",
-                                }
-                            ],
-                        },
-                        "hole_parameters": {
-                            "shape": "circle",
-                            "diameter": "0.2mm",
-                        },
+                        "layer_name": "1_Top",
+                        "shape": "circle",
+                        "offset_x": "0.1mm",
+                        "rotation": "0",
+                        "diameter": "0.5mm",
                     }
                 ],
-            }
+                "anti_pad": [{"layer_name": "1_Top", "shape": "circle", "diameter": "1mm"}],
+                "thermal_pad": [
+                    {
+                        "layer_name": "1_Top",
+                        "shape": "round90",
+                        "inner": "1mm",
+                        "channel_width": "0.2mm",
+                        "isolation_gap": "0.3mm",
+                    }
+                ],
+            },
+            "hole_parameters": {
+                "shape": "circle",
+                "diameter": "0.2mm",
+            },
+            "solder_ball_parameters": solder_ball_parameters,
         }
+
+        data = {"padstacks": {"definitions": [DEFINITION], "instances": [INSTANCE]}}
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_layout = edbapp.configuration.get_data_from_db(padstacks=True)
@@ -628,6 +640,11 @@ class TestClass:
         hole_params = pdef["hole_parameters"]
         assert hole_params["shape"] == "circle"
         assert hole_params["diameter"] == "0.2mm"
+        assert pdef["solder_ball_parameters"] == solder_ball_parameters
+
+        instance = [i for i in data_from_layout["padstacks"]["instances"] if i["name"] == "Via998"][0]
+        for k, v in INSTANCE.items():
+            assert v == instance[k]
         edbapp.close()
 
     def test_09_padstack_instance(self, edb_examples):

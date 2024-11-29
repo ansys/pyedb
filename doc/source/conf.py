@@ -362,6 +362,7 @@ nbsphinx_allow_errors = False
 nbsphinx_thumbnails = {
     "examples/use_configuration/pdn_analysis": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/serdes": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/pcb_dc_ir": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_stackup": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_material": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_ports": "_static/thumbnails/101_getting_started.png",
