@@ -512,6 +512,7 @@ class TestClass:
         assert edbapp.components.nport_comp_definition["CAPC3216X180X55ML20T25"].reference_file
         assert len(edbapp.components.nport_comp_definition["CAPC3216X180X55ML20T25"].components) == 9
         assert len(edbapp.components.nport_comp_definition["CAPC3216X190X55ML30T25"].components) == 12
+        edbapp.configuration.get_data_from_db(s_parameters=True)
         edbapp.close()
 
     def test_07_boundaries(self, edb_examples):
