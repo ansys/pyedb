@@ -20,17 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import os
 import sys
 from unittest.mock import patch
 import warnings
 
-from pyedb import (
-    LATEST_DEPRECATED_PYTHON_VERSION,
-    LINUX_WARNING,
-    deprecation_warning,
-    linux_warning,
-)
+from pyedb import LATEST_DEPRECATED_PYTHON_VERSION, deprecation_warning
 
 
 @patch.object(warnings, "warn")
@@ -46,16 +40,5 @@ def test_deprecation_warning(mock_warn):
             "and security updates.".format(str_current_version)
         )
         mock_warn.assert_called_once_with(expected, PendingDeprecationWarning)
-    else:
-        mock_warn.assert_not_called()
-
-
-@patch.object(warnings, "warn")
-def test_linux_warning(mock_warn):
-    linux_warning()
-
-    is_linux = os.name == "posix"
-    if is_linux:
-        mock_warn.assert_called_once_with(LINUX_WARNING, PendingDeprecationWarning)
     else:
         mock_warn.assert_not_called()
