@@ -18,14 +18,11 @@ A temporary workaround was considered, which involved manually installing an old
 `libssl1.1` library. While this allowed the use of `dotnetcore2`, it is **not recommended** as a
 long-term solution for the following reasons:
 
-- **Security risks**: Installing an older version of `libssl` introduces vulnerabilities, as it may
-lack the latest security updates provided in the newer versions.
-- **System instability**: Manually forcing an older version of `libssl` can lead to dependency
-conflicts with other software packages that rely on newer versions of this library, potentially
-causing further compatibility issues in the system.
-- **Maintenance overhead**: Relying on deprecated or unsupported libraries increases the
-complexity of future upgrades and system maintenance, making the environment harder to manage in the
-long term.
+- **Security risks**: Installing an older version of `libssl` introduces vulnerabilities, as it may lack the latest security updates provided in the newer versions.
+
+- **System instability**: Manually forcing an older version of `libssl` can lead to dependency conflicts with other software packages that rely on newer versions of this library, potentially causing further compatibility issues in the system.
+
+- **Maintenance overhead**: Relying on deprecated or unsupported libraries increases the complexity of future upgrades and system maintenance, making the environment harder to manage in the long term.
 
 Impact
 ------
@@ -35,7 +32,7 @@ Microsoft documentation for `.NET` on Linux to ensure proper setup and compatibi
 `Register Microsoft package repository <https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu#register-the-microsoft-package-repository>`_
 and `Install .NET <https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu#install-net>`_.
 
-.. note:: Ubuntu 22.04 and later versions
+.. note::
     Starting with Ubuntu 22.04, `.NET` is available in the official Ubuntu repository.
     If you want to use the Microsoft package to install `.NET`, you can use the following
     approach to *"demote"* the Ubuntu packages so that the Microsoft packages take precedence.

@@ -274,7 +274,7 @@ jobs:
           timeout_minutes: 40
           command: |
             .venv\Scripts\Activate.ps1
-            pytest --durations=50 -v external/external/pyaedt/tests/system/solvers
+            pytest --durations=50 -v external/pyaedt/tests/system/solvers
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -286,7 +286,7 @@ jobs:
     needs: [smoke-tests]
     runs-on: [ self-hosted, Linux, pyaedt ]
     env:
-      ANSYSEM_ROOT242: '/ansys_inc/AnsysEM/v242/Linux64'
+      ANSYSEM_ROOT242: '/opt/AnsysEM/v242/Linux64'
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
@@ -304,12 +304,10 @@ jobs:
 
       - name: Create Python venv
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
           python -m venv .venv
 
       - name: Update pip
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
           . .venv/bin/activate
           python -m pip install -U pip
 
@@ -322,18 +320,19 @@ jobs:
 
       - name: Install PyAEDT main branch version with its test dependencies
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           pip install --no-cache-dir external/pyaedt[tests]
 
       - name: Install PyEDB
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           python -m pip install .
 
       - name: Install CI dependencies (e.g. vtk-osmesa)
         run: |
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
@@ -348,9 +347,9 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/_unittest
+            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/tests/system/general/
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@v3
@@ -361,9 +360,9 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:${{ env.ANSYSEM_ROOT242 }}/Delcross:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            pytest --durations=50 -v external/pyaedt/_unittest_solvers
+            pytest --durations=50 -v external/pyaedt/tests/system/solvers
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
