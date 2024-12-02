@@ -1138,3 +1138,22 @@ class TestClass:
         layer_data = edbapp.stackup.layers["1_Top"].properties
         assert layer_data == data
         edbapp.close()
+
+    def test_roughness(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        for layer_name, layer in edbapp.stackup.signal_layers.items():
+            layer.roughness_enabled = True
+            layer.etch_factor = 0.1
+            layer.top_hallhuray_nodule_radius = 4e-7
+            layer.top_hallhuray_surface_ratio = 2.7
+            layer.bottom_hallhuray_nodule_radius = 4e-7
+            layer.bottom_hallhuray_surface_ratio = 2.7
+            layer.side_hallhuray_nodule_radius = 4e-7
+            layer.side_hallhuray_surface_ratio = 2.7
+            assert layer.top_hallhuray_nodule_radius == 4e-7
+            assert layer.top_hallhuray_surface_ratio == 2.7
+            assert layer.bottom_hallhuray_nodule_radius == 4e-7
+            assert layer.bottom_hallhuray_surface_ratio == 2.7
+            assert layer.side_hallhuray_nodule_radius == 4e-7
+            assert layer.side_hallhuray_surface_ratio == 2.7
+        edbapp.close()
