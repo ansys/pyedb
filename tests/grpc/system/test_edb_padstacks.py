@@ -306,10 +306,11 @@ class TestClass:
             padstack_instances = list(test_prop.values())
             for padstack_instance in padstack_instances:
                 result = padstack_instance.create_rectangle_in_pad("s", partition_max_order=8)
-                if padstack_instance.padstack_definition != "Padstack_None":
-                    assert result
-                else:
-                    assert not result
+                if result:
+                    if padstack_instance.padstack_definition != "Padstack_None":
+                        assert result.points()
+                    else:
+                        assert not result.points()
         edb.close()
 
     def test_padstaks_plot_on_matplotlib(self):

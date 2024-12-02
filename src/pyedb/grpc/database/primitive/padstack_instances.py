@@ -25,7 +25,7 @@ import re
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-from ansys.edb.core.geometry.point_data import PointData as GrpcPolygonData
+from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
 from ansys.edb.core.primitive.primitive import PadstackInstance as GrpcPadstackInstance
 from ansys.edb.core.terminal.terminals import PinGroupTerminal as GrpcPinGroupTerminal
@@ -792,13 +792,19 @@ class PadstackInstance(GrpcPadstackInstance):
             padstack_pad = PadstackDef(self._pedb, self.padstack_def).pad_by_layer[layer_name]
         except KeyError:  # pragma: no cover
             try:
-                padstack_pad = self.padstack_def.pad_by_layer[self.padstack_def.start_layer]
+                padstack_pad = PadstackDef(self._pedb, self.padstack_def).pad_by_layer[
+                    PadstackDef(self._pedb, self.padstack_def).start_layer
+                ]
             except KeyError:  # pragma: no cover
                 return False
 
-        pad_shape = padstack_pad.geometry_type
-        params = padstack_pad.parameters_values
-        polygon_data = padstack_pad.polygon_data
+        try:
+            pad_shape = padstack_pad.geometry_type
+            params = padstack_pad.parameters_values
+            polygon_data = padstack_pad.polygon_data
+        except:
+            self._pedb.logger.warning(f"No pad defined on padstack definition {self.padstack_def.name}")
+            return False
 
         def _rotate(p):
             x = p[0] * math.cos(rotation) - p[1] * math.sin(rotation)
@@ -911,17 +917,17 @@ class PadstackInstance(GrpcPadstackInstance):
                 _translate(_rotate(p3)),
                 _translate(_rotate(p4)),
             ]
-        elif pad_shape == 0 and polygon_data is not None:
+        elif pad_shape == 7 and polygon_data is not None:
             # Polygon
             points = []
             i = 0
-            while i < polygon_data.edb_api.Count:
-                point = polygon_data.edb_api.GetPoint(i)
+            while i < len(polygon_data.points):
+                point = polygon_data.points[i]
                 i += 1
-                if point.IsArc():
+                if point.is_arc:
                     continue
                 else:
-                    points.append([point.X.ToDouble(), point.Y.ToDouble()])
+                    points.append([point.x.value, point.y.value])
             xpoly, ypoly = zip(*points)
             polygon = [list(xpoly), list(ypoly)]
             rectangles = GeometryOperators.find_largest_rectangle_inside_polygon(
@@ -931,18 +937,18 @@ class PadstackInstance(GrpcPadstackInstance):
             for i in range(4):
                 rect[i] = _translate(_rotate(rect[i]))
 
-        if rect is None or len(rect) != 4:
-            return False
-        path = self._pedb.modeler.Shape("polygon", points=rect)
-        pdata = self._pedb.modeler.shape_to_polygon_data(path)
+        # if rect is None or len(rect) != 4:
+        #     return False
+        rect = [GrpcPointData(pt) for pt in rect]
+        path = GrpcPolygonData(rect)
         new_rect = []
-        for point in pdata.Points:
-            p_transf = self.component.transform.transform_point(point)
-            new_rect.append([p_transf.X.ToDouble(), p_transf.Y.ToDouble()])
+        for point in path.points:
+            if self.component:
+                p_transf = self.component.transform.transform_point(point)
+                new_rect.append([p_transf.x.value, p_transf.y.value])
         if return_points:
             return new_rect
         else:
-            path = self._pedb.modeler.Shape("polygon", points=new_rect)
             created_polygon = self._pedb.modeler.create_polygon(path, layer_name)
             return created_polygon
 
