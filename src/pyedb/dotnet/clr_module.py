@@ -48,6 +48,8 @@ def find_runtime_config(dotnet_root: Path) -> Path:
 
 
 if is_linux:  # pragma: no cover
+    from pythonnet import load
+
     dotnet_root = None
     runtime_config = None
     # Use system .NET core runtime or fall back to dotnetcore2
