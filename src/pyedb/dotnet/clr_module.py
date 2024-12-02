@@ -35,20 +35,6 @@ pyedb_path = Path(pyedb.__file__).parent
 sys.path.append(str(pyedb_path / "dlls" / "PDFReport"))
 
 
-def find_runtime_config(dotnet_root: Path) -> Path:
-    """Find dotnet runtime configuration file path."""
-    sdk_path = dotnet_root / "sdk"
-    if not sdk_path.is_dir():
-        raise EnvironmentError(f"The 'sdk' directory could not be found in: {dotnet_root}")
-    sdk_versions = sorted(sdk_path.iterdir(), key=lambda x: x.name, reverse=True)
-    if not sdk_versions:
-        raise FileNotFoundError("No SDK versions were found.")
-    runtime_config = sdk_versions[0] / "dotnet.runtimeconfig.json"
-    if not runtime_config.is_file():
-        raise FileNotFoundError(f"The configuration file '{runtime_config}' does not exist.")
-    return runtime_config
-
-
 if is_linux:  # pragma: no cover
     from pythonnet import load
 
