@@ -2,9 +2,8 @@
 
 # ## Import the required packages
 
-import json
-
 # +
+import json
 import os
 import tempfile
 
