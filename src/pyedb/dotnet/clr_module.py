@@ -4,6 +4,8 @@ import pkgutil
 import sys
 import warnings
 
+from clr_loader import find_runtimes
+
 import pyedb
 
 LINUX_WARNING = (
@@ -81,14 +83,15 @@ if is_linux:  # pragma: no cover
         if dotnet_root.parent.name == "dotnetcore2":
             runtime_config = pyedb_path / "misc" / "pyedb.runtimeconfig.json"
         else:
-            try:
-                runtime_config = find_runtime_config(dotnet_root)
-            except Exception as e:
+            candidates = [rt for rt in find_runtimes() if rt.name == "Microsoft.NETCore.App"]
+            candidates.sort(key=lambda spec: spec.version, reverse=True)
+            if not candidates:
                 raise RuntimeError(
                     "Configuration file could not be found from DOTNET_ROOT. "
                     "Please ensure that .NET SDK is correctly installed or "
                     "that DOTNET_ROOT is correctly set."
                 )
+            runtime_config = candidates[0]
     # Use specific .NET core runtime
     if dotnet_root is not None and runtime_config is not None:
         try:
