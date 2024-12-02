@@ -1411,7 +1411,9 @@ class Padstacks(object):
                 start_point = pdstk_series[line[0]]
                 stop_point = pdstk_series[line[-1]]
                 padstack_def = start_point.padstack_def
-                trace_width = self.definitions[padstack_def.name].pad_by_layer[stop_point.start_layer][1][0].value
+                trace_width = (
+                    self.definitions[padstack_def.name].pad_by_layer[stop_point.start_layer].parameters_values[0]
+                )
                 trace = self._pedb.modeler.create_trace(
                     path_list=[start_point.position, stop_point.position],
                     layer_name=start_point.start_layer,
