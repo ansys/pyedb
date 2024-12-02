@@ -48,6 +48,7 @@ if is_linux:  # pragma: no cover
             runtime = get_coreclr()
             load(runtime)
             print(runtime)
+            print(runtime.dotnet_root)
             # os.environ["DOTNET_ROOT"] = runtime.dotnet_root
             is_clr = True
         # TODO: Fall backing to dotnetcore2 should be removed in a near future.
