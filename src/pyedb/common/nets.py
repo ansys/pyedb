@@ -120,7 +120,7 @@ class CommonNets:
 
         try:
             import matplotlib.pyplot as plt
-        except ImportError:
+        except ImportError:  # pragma: no cover
             self._pedb.logger.error("Matplotlib is needed. Please, install it first.")
             return False
 
@@ -139,7 +139,7 @@ class CommonNets:
                 Polygon,
             )
             from shapely.plotting import plot_line, plot_polygon
-        except ImportError:
+        except ImportError:  # pragma: no cover
             self._pedb.logger.error("Shapely is needed. Please, install it first.")
             return False
 
