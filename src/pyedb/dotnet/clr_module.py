@@ -4,8 +4,6 @@ import pkgutil
 import sys
 import warnings
 
-from clr_loader import find_runtimes
-
 import pyedb
 
 LINUX_WARNING = (
@@ -70,6 +68,8 @@ if is_linux:  # pragma: no cover
         if dotnet_root.parent.name == "dotnetcore2":
             runtime_config = pyedb_path / "misc" / "pyedb.runtimeconfig.json"
         else:
+            from clr_loader import find_runtimes
+
             candidates = [rt for rt in find_runtimes() if rt.name == "Microsoft.NETCore.App"]
             candidates.sort(key=lambda spec: spec.version, reverse=True)
             if not candidates:
