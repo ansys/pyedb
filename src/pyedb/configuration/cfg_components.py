@@ -201,7 +201,7 @@ class CfgComponent(CfgBase):
         if height:
             port_prop.SetReferenceHeight(self._pedb.edb_value(height))
         reference_size_auto = self.port_properties.get("reference_size_auto")
-        if reference_size_auto:
+        if reference_size_auto is not None:
             port_prop.SetReferenceSizeAuto(reference_size_auto)
         reference_size_x = self.port_properties.get("reference_size_x", 0)
         reference_size_y = self.port_properties.get("reference_size_y", 0)
