@@ -10,6 +10,7 @@ End-to-end workflow
         pdn_analysis.py
         serdes.py
         pcb_dc_ir.py
+        dcir.py
 
 Step explanation
 -------------------------
