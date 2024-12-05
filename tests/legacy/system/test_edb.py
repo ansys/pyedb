@@ -289,6 +289,7 @@ class TestClass:
         assert isinstance(edbapp.layout_validation.disjoint_nets("GND", keep_only_main_net=True), list)
         assert isinstance(edbapp.layout_validation.disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
         assert edbapp.layout_validation.fix_self_intersections("PGND")
+        assert edbapp.layout_validation.fix_self_intersections()
 
         edbapp.close()
 
