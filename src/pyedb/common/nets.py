@@ -2,8 +2,6 @@ import math
 import os
 import time
 
-import shapely
-
 from pyedb.generic.constants import CSS4_COLORS
 
 
@@ -120,22 +118,30 @@ class CommonNets:
                 sign = -1
             return [[sign * i[0], i[1]] for i in poly]
 
-        import matplotlib.pyplot as plt
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:  # pragma: no cover
+            self._pedb.logger.error("Matplotlib is needed. Please, install it first.")
+            return False
 
         dpi = 100.0
         figsize = (size[0] / dpi, size[1] / dpi)
 
         fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(1, 1, 1)
-        from shapely import affinity
-        from shapely.geometry import (
-            LinearRing,
-            MultiLineString,
-            MultiPolygon,
-            Point,
-            Polygon,
-        )
-        from shapely.plotting import plot_line, plot_polygon
+        try:
+            from shapely import affinity, union_all
+            from shapely.geometry import (
+                LinearRing,
+                MultiLineString,
+                MultiPolygon,
+                Point,
+                Polygon,
+            )
+            from shapely.plotting import plot_line, plot_polygon
+        except ImportError:  # pragma: no cover
+            self._pedb.logger.error("Shapely is needed. Please, install it first.")
+            return False
 
         start_time = time.time()
         if not nets:
@@ -317,7 +323,7 @@ class CommonNets:
                 h1 = mirror_poly([(i, j) for i, j in zip(xvt, yvt)])
                 holes.append(h1)
             if len(holes) > 1:
-                holes = shapely.union_all([Polygon(i) for i in holes])
+                holes = union_all([Polygon(i) for i in holes])
                 if isinstance(holes, MultiPolygon):
                     holes = [i.boundary for i in list(holes.geoms)]
                 else:
