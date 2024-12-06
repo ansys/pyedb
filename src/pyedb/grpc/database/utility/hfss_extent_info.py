@@ -53,7 +53,7 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def _hfss_extent_info(self):
-        return self._pedb.active_cell.get_hfss_extent_info()
+        return self._pedb.active_cell.hfss_extent_info
 
     @property
     def air_box_horizontal_extent_enabled(self):
@@ -192,8 +192,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @extent_type.setter
     def extent_type(self, value):
-        self._hfss_extent_info.extent_type = self.extent_type_mapping[value]
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.extent_type = value
+        self._pedb.active_cell.set_hfss_extent_info(hfss_extent)
 
     @property
     def honor_user_dielectric(self):
@@ -202,8 +203,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @honor_user_dielectric.setter
     def honor_user_dielectric(self, value):
-        self._hfss_extent_info.honor_user_dielectric = value
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.honor_user_dielectric = value
+        self._pedb.active_cell.set_hfss_extent_info(hfss_extent)
 
     @property
     def is_pml_visible(self):

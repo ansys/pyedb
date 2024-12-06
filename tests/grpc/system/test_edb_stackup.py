@@ -37,20 +37,23 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, legacy_edb_app, local_scratch, target_path, target_path2, target_path4):
-        self.edbapp = legacy_edb_app
+    def init(self, local_scratch, target_path, target_path2, target_path4):
         self.local_scratch = local_scratch
         self.target_path = target_path
         self.target_path2 = target_path2
         self.target_path4 = target_path4
 
-    def test_stackup_get_signal_layers(self):
+    def test_stackup_get_signal_layers(self, edb_examples):
         """Report residual copper area per layer."""
-        assert self.edbapp.stackup.residual_copper_area_per_layer()
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.stackup.residual_copper_area_per_layer()
+        edbapp.close()
 
-    def test_stackup_limits(self):
+    def test_stackup_limits(self, edb_examples):
         """Retrieve stackup limits."""
-        assert self.edbapp.stackup.limits()
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.stackup.limits()
+        edbapp.close()
 
     def test_stackup_add_outline(self):
         """Add an outline layer named ``"Outline1"`` if it is not present."""
@@ -242,7 +245,7 @@ class TestClass:
 
         assert edbapp.stackup["1_Top"].color
         edbapp.stackup["1_Top"].color = [0, 120, 0]
-        assert edbapp.stackup["1_Top"].color == (0, 120, 0)
+        assert edbapp.stackup["1_Top"].color == [0, 120, 0]
         edbapp.stackup["1_Top"].transparency = 10
         assert edbapp.stackup["1_Top"].transparency == 10
         assert edbapp.stackup.mode == "Laminate"
@@ -284,12 +287,9 @@ class TestClass:
         assert os.path.exists(export_stackup_path)
         edbapp.close()
 
-    def test_stackup_layer_properties(self):
+    def test_stackup_layer_properties(self, edb_examples):
         """Evaluate various layer properties."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_0126.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.get_si_verse()
         edbapp.stackup.load(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml"))
         layer = edbapp.stackup["1_Top"]
         layer.name = "TOP"
