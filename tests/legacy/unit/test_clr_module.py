@@ -14,10 +14,20 @@ PYEDB_FILE = "dummy/pyedb/file"
 
 @pytest.fixture
 def clean_environment():
+    initial_sys_modules = sys.modules.copy()
+    initial_os_environ = os.environ.copy()
+
     if "pyedb.dotnet.clr_module" in sys.modules:
         del sys.modules["pyedb.dotnet.clr_module"]
     if "DOTNET_ROOT" in os.environ:
         del os.environ["DOTNET_ROOT"]
+
+    yield
+
+    sys.modules.clear()
+    sys.modules.update(initial_sys_modules)
+    os.environ.clear()
+    os.environ.update(initial_os_environ)
 
 
 @pytest.mark.skipif(os.name != "posix", reason="test for linux behavior")
