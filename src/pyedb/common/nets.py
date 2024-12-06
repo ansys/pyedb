@@ -265,26 +265,33 @@ class CommonNets:
 
         if color_by_net:
             for net in nets:
-                prims = self._pedb.nets.nets[net].primitives
-                polys = []
-                lines = []
-                if net not in nets:
-                    continue
-                label = "Net " + net
-                label_colors[label] = list(CSS4_COLORS.keys())[color_index]
-                color_index += 1
-                if color_index >= len(CSS4_COLORS):
-                    color_index = 0
-                for prim in prims:
-                    create_poly(prim, polys, lines)
-                if polys:
-                    ob = MultiPolygon(polys)
-                    plot_polygon(
-                        ob, ax=ax, color=label_colors[label], add_points=False, alpha=0.7, label=label, edgecolor="none"
-                    )
-                if lines:
-                    ob = MultiLineString(p)
-                    plot_line(ob, ax=ax, add_points=False, color=label_colors[label], linewidth=1, label=label)
+                if net in self._pedb.nets.nets:
+                    prims = self._pedb.nets.nets[net].primitives
+                    polys = []
+                    lines = []
+                    if net not in nets:
+                        continue
+                    label = "Net " + net
+                    label_colors[label] = list(CSS4_COLORS.keys())[color_index]
+                    color_index += 1
+                    if color_index >= len(CSS4_COLORS):
+                        color_index = 0
+                    for prim in prims:
+                        create_poly(prim, polys, lines)
+                    if polys:
+                        ob = MultiPolygon(polys)
+                        plot_polygon(
+                            ob,
+                            ax=ax,
+                            color=label_colors[label],
+                            add_points=False,
+                            alpha=0.7,
+                            label=label,
+                            edgecolor="none",
+                        )
+                    if lines:
+                        ob = MultiLineString(p)
+                        plot_line(ob, ax=ax, add_points=False, color=label_colors[label], linewidth=1, label=label)
         else:
             prims_by_layers_dict = {i: j for i, j in self._pedb.modeler.primitives_by_layer.items()}
             if not top_view:

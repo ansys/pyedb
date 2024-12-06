@@ -326,7 +326,7 @@ class TestClass:
 
         local_png3 = os.path.join(self.local_scratch.path, "test3.png")
         edb_plot.nets.plot(
-            nets=["LVL_I2C_SCL", "V3P3_S5", "GATE_V5_USB"],
+            nets=["DDR4_DQS7_N", "DDR4_DQ47"],
             layers="TOP",
             color_by_net=True,
             save_plot=local_png3,
