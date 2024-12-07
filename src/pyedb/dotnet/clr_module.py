@@ -45,7 +45,7 @@ if is_linux:  # pragma: no cover
 
             runtime = get_coreclr()
             load(runtime)
-            os.environ["DOTNET_ROOT"] = str(runtime.dotnet_root)
+            os.environ["DOTNET_ROOT"] = runtime.dotnet_root.as_posix()
             is_clr = True
         # TODO: Fall backing to dotnetcore2 should be removed in a near future.
         except Exception:
@@ -83,7 +83,7 @@ if is_linux:  # pragma: no cover
     if dotnet_root is not None and runtime_config is not None:
         try:
             load("coreclr", runtime_config=str(runtime_config), dotnet_root=str(dotnet_root))
-            os.environ["DOTNET_ROOT"] = dotnet_root
+            os.environ["DOTNET_ROOT"] = dotnet_root.as_posix()
             if "mono" not in os.getenv("LD_LIBRARY_PATH", ""):
                 warnings.warn("LD_LIBRARY_PATH needs to be setup to use pyedb.")
                 warnings.warn("export ANSYSEM_ROOT242=/path/to/AnsysEM/v242/Linux64")
