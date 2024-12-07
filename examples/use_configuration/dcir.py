@@ -14,7 +14,6 @@ from pyedb import Edb
 
 AEDT_VERSION = "2024.2"
 NG_MODE = False
-
 # -
 
 # Download the example BGA Package design.
