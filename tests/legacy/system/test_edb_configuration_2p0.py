@@ -1217,7 +1217,7 @@ class TestClass:
                         "solder_ball_properties": {"shape": "cylinder", "diameter": "244um", "height": "406um"},
                         "port_properties": {
                             "reference_offset": "0.1mm",
-                            "reference_size_auto": True,
+                            "reference_size_auto": False,
                             "reference_size_x": 0,
                             "reference_size_y": 0,
                         },
