@@ -1,0 +1,27 @@
+﻿CfgPackageDefinitions
+=====================
+
+.. currentmodule:: pyedb.configuration.cfg_package_definition
+
+.. autoclass:: CfgPackageDefinitions
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgPackageDefinitions.apply
+      
+      
+      CfgPackageDefinitions.get_data_from_db
+      
+   
+   
+
+   
+   
+   

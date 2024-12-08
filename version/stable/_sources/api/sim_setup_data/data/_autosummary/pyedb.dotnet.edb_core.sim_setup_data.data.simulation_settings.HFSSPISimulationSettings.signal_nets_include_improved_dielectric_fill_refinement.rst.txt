@@ -1,0 +1,6 @@
+signal\_nets\_include\_improved\_dielectric\_fill\_refinement
+=============================================================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.signal_nets_include_improved_dielectric_fill_refinement

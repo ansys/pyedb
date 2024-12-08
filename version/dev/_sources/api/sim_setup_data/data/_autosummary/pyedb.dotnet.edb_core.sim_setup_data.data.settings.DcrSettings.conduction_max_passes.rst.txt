@@ -1,0 +1,6 @@
+conduction\_max\_passes
+=======================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: DcrSettings.conduction_max_passes
