@@ -98,6 +98,17 @@ class CfgPadstackDefinition(CfgBase):
         self.hole_range = kwargs.get("hole_range", None)
         self.pad_parameters = kwargs.get("pad_parameters", None)
         self.hole_parameters = kwargs.get("hole_parameters", None)
+        self.solder_ball_parameters = kwargs.get("solder_ball_parameters", None)
+
+        self._solder_shape_type = {
+            "no_solder_ball": self._pedb._edb.Definition.SolderballShape.NoSolderball,
+            "cylinder": self._pedb._edb.Definition.SolderballShape.Cylinder,
+            "spheroid": self._pedb._edb.Definition.SolderballShape.Spheroid,
+        }
+        self._solder_placement = {
+            "above_padstack": self._pedb._edb.Definition.SolderballPlacement.AbovePadstack,
+            "below_padstack": self._pedb._edb.Definition.SolderballPlacement.BelowPadstack,
+        }
 
     def set_parameters_to_edb(self):
         if self.hole_parameters:
@@ -110,6 +121,42 @@ class CfgPadstackDefinition(CfgBase):
             self._pyedb_obj.material = self.material
         if self.pad_parameters:
             self._set_pad_parameters_to_edb(self.pad_parameters)
+        if self.solder_ball_parameters:
+            self._set_solder_parameters_to_edb(self.solder_ball_parameters)
+
+    def _set_solder_parameters_to_edb(self, parameters):
+        pdef_data = self._pyedb_obj._padstack_def_data
+
+        shape = parameters.get("shape", "no_solder_ball")
+        diameter = parameters.get("diameter", "0.4mm")
+        mid_diameter = parameters.get("mid_diameter", diameter)
+        placement = parameters.get("placement", "above_padstack")
+        material = parameters.get("material", None)
+
+        pdef_data.SetSolderBallShape(self._solder_shape_type[shape])
+        if not shape == "no_solder_ball":
+            pdef_data.SetSolderBallParameter(self._pedb.edb_value(diameter), self._pedb.edb_value(mid_diameter))
+            pdef_data.SetSolderBallPlacement(self._solder_placement[placement])
+
+        if material:
+            pdef_data.SetSolderBallMaterial(material)
+        self._pyedb_obj._padstack_def_data = pdef_data
+
+    def _get_solder_parameters_from_edb(self):
+        pdef_data = self._pyedb_obj._padstack_def_data
+        shape = pdef_data.GetSolderBallShape()
+        _, diameter, mid_diameter = pdef_data.GetSolderBallParameterValue()
+        placement = pdef_data.GetSolderBallPlacement()
+        material = pdef_data.GetSolderBallMaterial()
+
+        parameters = {
+            "shape": [i for i, j in self._solder_shape_type.items() if j == shape][0],
+            "diameter": self._pedb.edb_value(diameter).ToString(),
+            "mid_diameter": self._pedb.edb_value(mid_diameter).ToString(),
+            "placement": [i for i, j in self._solder_placement.items() if j == placement][0],
+            "material": material,
+        }
+        return parameters
 
     def retrieve_parameters_from_edb(self):
         self.name = self._pyedb_obj.name
@@ -118,6 +165,7 @@ class CfgPadstackDefinition(CfgBase):
         self.hole_range = self._pyedb_obj.hole_range
         self.pad_parameters = self._get_pad_parameters_from_edb()
         self.hole_parameters = self._get_hole_parameters_from_edb()
+        self.solder_ball_parameters = self._get_solder_parameters_from_edb()
 
     def _get_pad_parameters_from_edb(self):
         """Pad parameters.
@@ -300,6 +348,7 @@ class CfgPadstackInstance(CfgBase):
         self.rotation = kwargs.get("rotation", None)
         self.hole_override_enabled = kwargs.get("hole_override_enabled", None)
         self.hole_override_diameter = kwargs.get("hole_override_diameter", None)
+        self.solder_ball_layer = kwargs.get("solder_ball_layer", None)
 
     def set_parameters_to_edb(self):
         if self.name is not None:
@@ -312,6 +361,8 @@ class CfgPadstackInstance(CfgBase):
             self._pyedb_obj.stop_layer = self.layer_range[1]
         if self.backdrill_parameters:
             self._pyedb_obj.backdrill_parameters = self.backdrill_parameters
+        if self.solder_ball_layer:
+            self._pyedb_obj._edb_object.SetSolderBallLayer(self._pedb.stackup[self.solder_ball_layer]._edb_object)
 
         hole_override_enabled, hole_override_diam = self._pyedb_obj._edb_object.GetHoleOverrideValue()
         hole_override_enabled = self.hole_override_enabled if self.hole_override_enabled else hole_override_enabled
@@ -328,3 +379,5 @@ class CfgPadstackInstance(CfgBase):
         self._id = self._pyedb_obj.id
         self.hole_override_enabled, hole_override_diameter = self._pyedb_obj._edb_object.GetHoleOverrideValue()
         self.hole_override_diameter = hole_override_diameter.ToString()
+        self.solder_ball_layer = self._pyedb_obj._edb_object.GetSolderBallLayer().GetName()
+        self.layer_range = [self._pyedb_obj.start_layer, self._pyedb_obj.stop_layer]

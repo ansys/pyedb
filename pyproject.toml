@@ -27,7 +27,7 @@ classifiers = [
 dependencies = [
     "cffi>=1.16.0,<1.18; platform_system=='Linux'",
     "pywin32 >= 303;platform_system=='Windows'",
-    "ansys-pythonnet >= 3.1.0rc3",
+    "ansys-pythonnet >= 3.1.0rc4",
     "dotnetcore2 ==3.1.23;platform_system=='Linux'",
     "numpy>=1.20.0,<3",
     "pandas>=1.1.0,<2.3",
@@ -50,7 +50,7 @@ tests = [
 doc = [
     "ansys-sphinx-theme>=0.10.0,<1.1",
     "imageio>=2.30.0,<2.37",
-    "ipython>=8.13.0,<8.30",
+    "ipython>=8.13.0,<8.31",
     "jupyterlab>=4.0.0,<4.4",
     "jupytext>=1.16.0,<1.17",
     "matplotlib>=3.5.0,<3.10",
