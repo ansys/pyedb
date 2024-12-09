@@ -46,10 +46,10 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
             "radiation": GrpcHfssExtentInfo.OpenRegionType.RADIATION,
             "pml": GrpcHfssExtentInfo.OpenRegionType.PML,
         }
-        self.hfss_extent_type = self.HFSSExtentInfoType.value
+        self.hfss_extent_type = self._hfss_extent_info.extent_type
 
-    def _update_hfss_extent_info(self):
-        return self._pedb.active_cell.set_hfss_extent_info(self._hfss_extent_info)
+    def _update_hfss_extent_info(self, hfss_extent):
+        return self._pedb.active_cell.set_hfss_extent_info(hfss_extent)
 
     @property
     def _hfss_extent_info(self):
@@ -62,8 +62,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @air_box_horizontal_extent_enabled.setter
     def air_box_horizontal_extent_enabled(self, value):
-        self._hfss_extent_info.air_box_horizontal_extent = (self.air_box_horizontal_extent, value)
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.air_box_horizontal_extent = value
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def air_box_horizontal_extent(self):
@@ -76,8 +77,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @air_box_horizontal_extent.setter
     def air_box_horizontal_extent(self, value):
-        self._hfss_extent_info.air_box_horizontal_extent = (float(value), self.air_box_horizontal_extent_enabled)
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.air_box_horizontal_extent = float(value)
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def air_box_positive_vertical_extent_enabled(self):
@@ -86,8 +88,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @air_box_positive_vertical_extent_enabled.setter
     def air_box_positive_vertical_extent_enabled(self, value):
-        self._hfss_extent_info.air_box_positive_vertical_extent = (self.air_box_positive_vertical_extent, value)
-        self._update_hfss_extent_info()
+        hfss_exent = self._hfss_extent_info
+        hfss_exent.air_box_positive_vertical_extent = value
+        self._update_hfss_extent_info(hfss_exent)
 
     @property
     def air_box_positive_vertical_extent(self):
@@ -96,11 +99,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @air_box_positive_vertical_extent.setter
     def air_box_positive_vertical_extent(self, value):
-        self._hfss_extent_info.air_box_positive_vertical_extent = (
-            float(value),
-            self.air_box_positive_vertical_extent_enabled,
-        )
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.air_box_positive_vertical_extent = float(value)
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def air_box_negative_vertical_extent_enabled(self):
@@ -109,8 +110,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @air_box_negative_vertical_extent_enabled.setter
     def air_box_negative_vertical_extent_enabled(self, value):
-        self._hfss_extent_info.air_box_negative_vertical_extent = (self.air_box_negative_vertical_extent, value)
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.air_box_negative_vertical_extent = value
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def air_box_negative_vertical_extent(self):
@@ -119,11 +121,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @air_box_negative_vertical_extent.setter
     def air_box_negative_vertical_extent(self, value):
-        self._hfss_extent_info.air_box_negative_vertical_extent = (
-            float(value),
-            self.air_box_negative_vertical_extent_enabled,
-        )
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.air_box_negative_vertical_extent = float(value)
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def base_polygon(self):
@@ -137,8 +137,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @base_polygon.setter
     def base_polygon(self, value):
-        self._hfss_extent_info.base_polygon = value
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.base_polygon = value
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def dielectric_base_polygon(self):
@@ -152,8 +153,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @dielectric_base_polygon.setter
     def dielectric_base_polygon(self, value):
-        self._hfss_extent_info.dielectric_base_polygon = value
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.dielectric_base_polygon = value
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def dielectric_extent_size_enabled(self):
@@ -162,8 +164,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @dielectric_extent_size_enabled.setter
     def dielectric_extent_size_enabled(self, value):
-        self._hfss_extent_info.dielectric_extent_size = (self.dielectric_extent_size, value)
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.dielectric_extent_size = value
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def dielectric_extent_size(self):
@@ -172,8 +175,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @dielectric_extent_size.setter
     def dielectric_extent_size(self, value):
-        self._hfss_extent_info.dielectric_extent_size = (value, self.dielectric_extent_size_enabled)
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.dielectric_extent_size = value
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def dielectric_extent_type(self):
@@ -182,8 +186,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @dielectric_extent_type.setter
     def dielectric_extent_type(self, value):
-        self._hfss_extent_info.dielectric_extent_type = self.extent_type_mapping[value.lower()]
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.dielectric_extent_type = value
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def extent_type(self):
@@ -194,7 +199,7 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
     def extent_type(self, value):
         hfss_extent = self._hfss_extent_info
         hfss_extent.extent_type = value
-        self._pedb.active_cell.set_hfss_extent_info(hfss_extent)
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def honor_user_dielectric(self):
@@ -205,7 +210,7 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
     def honor_user_dielectric(self, value):
         hfss_extent = self._hfss_extent_info
         hfss_extent.honor_user_dielectric = value
-        self._pedb.active_cell.set_hfss_extent_info(hfss_extent)
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def is_pml_visible(self):
@@ -214,8 +219,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @is_pml_visible.setter
     def is_pml_visible(self, value):
-        self._hfss_extent_info.is_pml_visible = value
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.is_pml_visible = value
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def open_region_type(self):
@@ -224,8 +230,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @open_region_type.setter
     def open_region_type(self, value):
-        self._hfss_extent_info.open_region_type = self._open_region_type[value.lower()]
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.open_region_type = value
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def operating_freq(self):
@@ -239,8 +246,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @operating_freq.setter
     def operating_freq(self, value):
-        self._hfss_extent_info.operating_frequency = GrpcValue(value)
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.operating_frequency = GrpcValue(value)
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def radiation_level(self):
@@ -249,8 +257,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @radiation_level.setter
     def radiation_level(self, value):
-        self._hfss_extent_info.RadiationLevel = GrpcValue(value)
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.RadiationLevel = GrpcValue(value)
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def sync_air_box_vertical_extent(self):
@@ -259,8 +268,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @sync_air_box_vertical_extent.setter
     def sync_air_box_vertical_extent(self, value):
-        self._hfss_extent_info.sync_air_box_vertical_extent = value
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.sync_air_box_vertical_extent = value
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def truncate_air_box_at_ground(self):
@@ -269,8 +279,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @truncate_air_box_at_ground.setter
     def truncate_air_box_at_ground(self, value):
-        self._hfss_extent_info.truncate_air_box_at_ground = value
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.truncate_air_box_at_ground = value
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def use_open_region(self):
@@ -279,8 +290,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @use_open_region.setter
     def use_open_region(self, value):
-        self._hfss_extent_info.use_open_region = value
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.use_open_region = value
+        self._update_hfss_extent_info(hfss_extent)
 
     @property
     def use_xy_data_extent_for_vertical_expansion(self):
@@ -289,8 +301,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @use_xy_data_extent_for_vertical_expansion.setter
     def use_xy_data_extent_for_vertical_expansion(self, value):
-        self._hfss_extent_info.use_xy_data_extent_for_vertical_expansion = value
-        self._update_hfss_extent_info()
+        hfss_extent = self._hfss_extent_info
+        hfss_extent.use_xy_data_extent_for_vertical_expansion = value
+        self._update_hfss_extent_info(hfss_extent)
 
     def load_config(self, config):
         """Load HFSS extent configuration.
