@@ -47,6 +47,7 @@ from ansys.edb.core.layer.layer_collection import (
 )
 from ansys.edb.core.layer.layer_collection import LayerCollection as GrpcLayerCollection
 from ansys.edb.core.layer.layer_collection import LayerTypeSet as GrpcLayerTypeSet
+from ansys.edb.core.layer.stackup_layer import StackupLayer as GrpcStackupLayer
 from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
 from ansys.edb.core.utility.transform3d import Transform3D as GrpcTransform3D
 from ansys.edb.core.utility.value import Value as GrpcValue
@@ -80,6 +81,7 @@ logger = logging.getLogger(__name__)
 class LayerCollection(GrpcLayerCollection):
     def __init__(self, pedb, edb_object):
         super().__init__(edb_object.msg)
+        self._layer_collection = edb_object
         self._pedb = pedb
 
     def update_layout(self):
@@ -106,12 +108,17 @@ class LayerCollection(GrpcLayerCollection):
         -------
 
         """
-        added_layer = self.add_layer_top(name)
-        added_layer.type = GrpcLayerType.SIGNAL_LAYER
+        thickness = GrpcValue(0.0)
+        if "thickness" in kwargs:
+            thickness = GrpcValue(kwargs["thickness"])
+        elevation = GrpcValue(0.0)
+        _layer_type = GrpcLayerType.SIGNAL_LAYER
         if layer_type.lower() == "dielectric":
-            added_layer.type = GrpcLayerType.DIELECTRIC_LAYER
-        added_layer.name = name
-        return added_layer
+            _layer_type = GrpcLayerType.DIELECTRIC_LAYER
+        layer = GrpcStackupLayer.create(
+            name=name, layer_type=_layer_type, thickness=thickness, material="copper", elevation=elevation
+        )
+        return self._layer_collection.add_layer_top(layer)
 
     def add_layer_bottom(self, name, layer_type="signal", **kwargs):
         """Add a layer on bottom of the stackup.
@@ -128,12 +135,17 @@ class LayerCollection(GrpcLayerCollection):
         -------
 
         """
-        added_layer = self.add_layer_bottom(name)
-        added_layer.type = GrpcLayerType.SIGNAL_LAYER
+        thickness = GrpcValue(0.0)
+        if "thickness" in kwargs:
+            thickness = GrpcValue(kwargs["thickness"])
+        elevation = GrpcValue(0.0)
+        _layer_type = GrpcLayerType.SIGNAL_LAYER
         if layer_type.lower() == "dielectric":
-            added_layer.type = GrpcLayerType.DIELECTRIC_LAYER
-        added_layer.name = name
-        return added_layer
+            _layer_type = GrpcLayerType.DIELECTRIC_LAYER
+        layer = GrpcStackupLayer.create(
+            name=name, layer_type=_layer_type, thickness=thickness, material="copper", elevation=elevation
+        )
+        return self._layer_collection.add_layer_bottom(layer)
 
     def add_layer_below(self, name, base_layer_name, layer_type="signal", **kwargs):
         """Add a layer below a layer.
@@ -152,12 +164,17 @@ class LayerCollection(GrpcLayerCollection):
         -------
 
         """
-        added_layer = self.add_layer_below(name, base_layer_name)
-        added_layer.type = GrpcLayerType.SIGNAL_LAYER
+        thickness = GrpcValue(0.0)
+        if "thickness" in kwargs:
+            thickness = GrpcValue(kwargs["thickness"])
+        elevation = GrpcValue(0.0)
+        _layer_type = GrpcLayerType.SIGNAL_LAYER
         if layer_type.lower() == "dielectric":
-            added_layer.type = GrpcLayerType.DIELECTRIC_LAYER
-        added_layer.name = name
-        return added_layer
+            _layer_type = GrpcLayerType.DIELECTRIC_LAYER
+        layer = GrpcStackupLayer.create(
+            name=name, layer_type=_layer_type, thickness=thickness, material="copper", elevation=elevation
+        )
+        return self._layer_collection.add_layer_below(layer, base_layer_name)
 
     def add_layer_above(self, name, base_layer_name, layer_type="signal", **kwargs):
         """Add a layer above a layer.
@@ -176,12 +193,17 @@ class LayerCollection(GrpcLayerCollection):
         -------
 
         """
-        added_layer = self.add_layer_above(name, base_layer_name)
-        added_layer.type = GrpcLayerType.SIGNAL_LAYER
+        thickness = GrpcValue(0.0)
+        if "thickness" in kwargs:
+            thickness = GrpcValue(kwargs["thickness"])
+        elevation = GrpcValue(0.0)
+        _layer_type = GrpcLayerType.SIGNAL_LAYER
         if layer_type.lower() == "dielectric":
-            added_layer.type = GrpcLayerType.DIELECTRIC_LAYER
-        added_layer.name = name
-        return added_layer
+            _layer_type = GrpcLayerType.DIELECTRIC_LAYER
+        layer = GrpcStackupLayer.create(
+            name=name, layer_type=_layer_type, thickness=thickness, material="copper", elevation=elevation
+        )
+        return self._layer_collection.add_layer_above(layer, base_layer_name)
 
     def add_document_layer(self, name, layer_type="user", **kwargs):
         """Add a document layer.

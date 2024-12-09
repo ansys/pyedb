@@ -1117,3 +1117,4 @@ class TestClass:
         base_layer = edbapp.stackup.layers["1_Top"]
         l_id = edbapp.stackup.layers_by_id.index([base_layer.id, base_layer.name])
         assert edbapp.stackup.layers_by_id[l_id - 1][1] == "add_layer_above"
+        edbapp.close()
