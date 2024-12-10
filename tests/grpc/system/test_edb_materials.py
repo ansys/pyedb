@@ -334,3 +334,4 @@ class TestClass:
         assert 0.00045 == material.loss_tangent
         assert 0.00045 == material.dielectric_loss_tangent
         assert 12 == material.permittivity
+        self.edbapp.close()
