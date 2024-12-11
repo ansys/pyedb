@@ -125,7 +125,7 @@ class EdbGrpc(EdbInit):
     oproject : optional
         Reference to the AEDT project object.
     technology_file : str, optional
-        Full path to technology file to be converted to xml before importing or xml. Supported by GDS format only.
+        Technology file full path to be converted to XML before importing or XML. Supported by GDS format only.
     restart_rpc_server : bool, optional
         ``True`` RPC server is terminated and restarted. This will close all open EDB. RPC server is running on single
         instance loading all EDB, enabling this option should be used with caution but can be a solution to release
@@ -133,36 +133,54 @@ class EdbGrpc(EdbInit):
 
     Examples
     --------
-    Create an ``Edb`` object and a new EDB cell.
+    Create an .::Edb object and a new EDB cell.
 
-    >>> from pyedb.grpc.edb import EdbGrpc
+    >>> from pyedb.grpc.edb import EdbGrpc as Edb
     >>> app = Edb()
 
     Add a new variable named "s1" to the ``Edb`` instance.
 
     >>> app['s1'] = "0.25 mm"
-    >>> app['s1'].tofloat
+    >>> app['s1']
     >>> 0.00025
-    >>> app['s1'].tostring
-    >>> "0.25mm"
-
-    or add a new parameter with description:
-
-    >>> app['s2'] = ["20um", "Spacing between traces"]
-    >>> app['s2'].value
-    >>> 2e-05
-    >>> app['s2'].description
-    >>> 'Spacing between traces'
-
 
     Create an ``Edb`` object and open the specified project.
 
-    >>> app = Edb("myfile.aedb")
+    >>> app = Edb(edbpath="myfile.aedb")
 
     Create an ``Edb`` object from GDS and control files.
     The XML control file resides in the same directory as the GDS file: (myfile.xml).
 
     >>> app = Edb("/path/to/file/myfile.gds")
+
+    Loading Ansys layout
+
+    >>> from ansys.aedt.core.generic.general_methods import generate_unique_folder_name
+    >>> import pyedb.misc.downloads as downloads
+    >>> temp_folder = generate_unique_folder_name()
+    >>> targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
+    >>> from pyedb.grpc.edb import EdbGrpc as Edb
+    >>> edbapp = Edb(edbpath=targetfile)
+
+    Retrieving signal nets dictionary
+
+    >>> edbapp.nets.signal
+
+    Retrieving layers
+
+    >>> edbapp.stackup.layers
+
+    Retrieving all component instances
+
+    >>> edbapp.components.instances
+
+    Retrieving all padstacks definitions
+
+    >>> edbapp.padstacks.definitions
+
+    Retrieving component pins
+
+    >>> edbapp.components["U1"].pins
 
     """
 
@@ -279,7 +297,7 @@ class EdbGrpc(EdbInit):
 
         Returns
         -------
-        variable object : :class:`pyedb.dotnet.database.edb_data.variables.Variable`
+        variable object.
 
         """
         if self.variable_exists(variable_name):
@@ -378,7 +396,7 @@ class EdbGrpc(EdbInit):
 
         Returns
         -------
-        variable dictionary : Dict[str, :class:`pyedb.dotnet.database.edb_data.variables.Variable`]
+        variable dictionary : Dict{str[variable name]: float[variable value]}
         """
         return {i: self.active_cell.get_variable_value(i).value for i in self.active_cell.get_all_variable_names()}
 
@@ -388,18 +406,18 @@ class EdbGrpc(EdbInit):
 
         Returns
         -------
-        variables dictionary : Dict[str, :class:`pyedb.dotnet.database.edb_data.variables.Variable`]
+        variables dictionary : Dict{str[variable name]: float[variable value]}
 
         """
         return {i: self.active_db.get_variable_value(i).value for i in self.active_db.get_all_variable_names()}
 
     @property
     def layout_validation(self):
-        """:class:`pyedb.dotnet.database.edb_data.layout_validation.LayoutValidation`.
+        """Return LayoutValidation object.
 
         Returns
         -------
-        layout validation object : :class: 'pyedb.dotnet.database.layout_validation.LayoutValidation'
+        layout validation object: .:class:`pyedb.grpc.database.layout_validation.LayoutValidation`
         """
         return LayoutValidation(self)
 
