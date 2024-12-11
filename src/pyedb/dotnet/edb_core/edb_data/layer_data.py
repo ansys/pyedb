@@ -793,9 +793,13 @@ class StackupLayerEdbClass(LayerEdbClass):
         data["fill_material"] = self.fill_material
         data["thickness"] = self._edb_object.GetThicknessValue().ToString()
         data["color"] = self.color
+
+        etch_power_ground_nets = int(self._edb_layer.GetEtchNetClass())
+        etch_power_ground_nets = False if etch_power_ground_nets else True
         data["etching"] = {
             "factor": self._edb_layer.GetEtchFactor().ToString(),
             "enabled": self._edb_layer.IsEtchFactorEnabled(),
+            "etch_power_ground_nets": etch_power_ground_nets
         }
 
         roughness = {}
@@ -862,4 +866,8 @@ class StackupLayerEdbClass(LayerEdbClass):
             layer_clone = self._edb_layer
             layer_clone.SetEtchFactorEnabled(etching["enabled"])
             layer_clone.SetEtchFactor(self._pedb.stackup._edb_value(float(etching["factor"])))
+            if etching["etch_power_ground_nets"]:
+                layer_clone.SetEtchNetClass(self._pedb._edb.Cell.EtchNetClass.NoEtchPowerGroundNets)
+            else:
+                layer_clone.SetEtchNetClass(self._pedb._edb.Cell.EtchNetClass.EtchAllNets)
             self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
