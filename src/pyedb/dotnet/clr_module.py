@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 import pkgutil
-import shutil
 import sys
 import warnings
 
@@ -34,79 +33,62 @@ pyedb_path = Path(pyedb.__file__).parent
 sys.path.append(str(pyedb_path / "dlls" / "PDFReport"))
 
 
-def find_dotnet_root() -> Path:
-    """Find dotnet root path."""
-    dotnet_path = shutil.which("dotnet")
-    if not dotnet_path:
-        raise FileNotFoundError("The 'dotnet' executable was not found in the PATH.")
-
-    dotnet_path = Path(dotnet_path).resolve()
-    dotnet_root = dotnet_path.parent
-    return dotnet_root
-
-
-def find_runtime_config(dotnet_root: Path) -> Path:
-    """Find dotnet runtime configuration file path."""
-    sdk_path = dotnet_root / "sdk"
-    if not sdk_path.is_dir():
-        raise EnvironmentError(f"The 'sdk' directory could not be found in: {dotnet_root}")
-    sdk_versions = sorted(sdk_path.iterdir(), key=lambda x: x.name, reverse=True)
-    if not sdk_versions:
-        raise FileNotFoundError("No SDK versions were found.")
-    runtime_config = sdk_versions[0] / "dotnet.runtimeconfig.json"
-    if not runtime_config.is_file():
-        raise FileNotFoundError(f"The configuration file '{runtime_config}' does not exist.")
-    return runtime_config
-
-
 if is_linux:  # pragma: no cover
     from pythonnet import load
 
-    # Use system DOTNET core runtime
-    try:
-        from clr_loader import get_coreclr
+    dotnet_root = None
+    runtime_config = None
+    # Use system .NET core runtime or fall back to dotnetcore2
+    if os.environ.get("DOTNET_ROOT") is None:
+        try:
+            from clr_loader import get_coreclr
 
-        runtime = get_coreclr()
-        load(runtime)
-        is_clr = True
-    # Define DOTNET root and runtime config file to load DOTNET core runtime
-    except Exception:
-        if os.environ.get("DOTNET_ROOT") is None:
-            try:
-                dotnet_root = find_dotnet_root()
-                runtime_config = find_runtime_config(dotnet_root)
-            except Exception:
-                warnings.warn(
-                    "Unable to set DOTNET root and locate the runtime configuration file. "
-                    "Falling back to using dotnetcore2."
-                )
-                warnings.warn(LINUX_WARNING)
+            runtime = get_coreclr()
+            load(runtime)
+            os.environ["DOTNET_ROOT"] = runtime.dotnet_root.as_posix()
+            is_clr = True
+        # TODO: Fall backing to dotnetcore2 should be removed in a near future.
+        except Exception:
+            warnings.warn(
+                "Unable to set .NET root and locate the runtime configuration file. "
+                "Falling back to using dotnetcore2."
+            )
+            warnings.warn(LINUX_WARNING)
 
-                import dotnetcore2
+            import dotnetcore2
 
-                dotnet_root = Path(dotnetcore2.__file__).parent / "bin"
-                runtime_config = pyedb_path / "misc" / "pyedb.runtimeconfig.json"
+            dotnet_root = Path(dotnetcore2.__file__).parent / "bin"
+            runtime_config = pyedb_path / "misc" / "pyedb.runtimeconfig.json"
+    # Use specified .NET root folder
+    else:
+        dotnet_root = Path(os.environ["DOTNET_ROOT"])
+        # Patch the case where DOTNET_ROOT leads to dotnetcore2 for more information
+        # see https://github.com/ansys/pyedb/issues/922
+        # TODO: Remove once dotnetcore2 is deprecated
+        if dotnet_root.parent.name == "dotnetcore2":
+            runtime_config = pyedb_path / "misc" / "pyedb.runtimeconfig.json"
         else:
-            dotnet_root = Path(os.environ["DOTNET_ROOT"])
-            try:
-                runtime_config = find_runtime_config(dotnet_root)
-            except Exception as e:
+            from clr_loader import find_runtimes
+
+            candidates = [rt for rt in find_runtimes() if rt.name == "Microsoft.NETCore.App"]
+            candidates.sort(key=lambda spec: spec.version, reverse=True)
+            if not candidates:
                 raise RuntimeError(
                     "Configuration file could not be found from DOTNET_ROOT. "
                     "Please ensure that .NET SDK is correctly installed or "
                     "that DOTNET_ROOT is correctly set."
                 )
+            runtime_config = candidates[0]
+    # Use specific .NET core runtime
+    if dotnet_root is not None and runtime_config is not None:
         try:
             load("coreclr", runtime_config=str(runtime_config), dotnet_root=str(dotnet_root))
+            os.environ["DOTNET_ROOT"] = dotnet_root.as_posix()
             if "mono" not in os.getenv("LD_LIBRARY_PATH", ""):
                 warnings.warn("LD_LIBRARY_PATH needs to be setup to use pyedb.")
                 warnings.warn("export ANSYSEM_ROOT242=/path/to/AnsysEM/v242/Linux64")
                 msg = "export LD_LIBRARY_PATH="
                 msg += "$ANSYSEM_ROOT242/common/mono/Linux64/lib64:$LD_LIBRARY_PATH"
-                msg += (
-                    "If PyEDB is used with AEDT<2023.2 then /path/to/AnsysEM/v2XY/Linux64/Delcross "
-                    "should be added to LD_LIBRARY_PATH."
-                )
                 warnings.warn(msg)
             is_clr = True
         except ImportError:
