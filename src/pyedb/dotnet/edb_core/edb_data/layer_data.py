@@ -795,7 +795,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         data["color"] = self.color
         data["etching"] = {
             "factor": self._edb_layer.GetEtchFactor().ToString(),
-            "enabled": self._edb_layer.IsEtchFactorEnabled()
+            "enabled": self._edb_layer.IsEtchFactorEnabled(),
         }
 
         roughness = {}
