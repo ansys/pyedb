@@ -60,6 +60,8 @@ class LayerEdbClass(object):
                 self.__setattr__(k, v)
             elif k == "roughness":
                 self.properties = {"roughness": v}
+            elif k == "etching":
+                self.properties = {"etching": v}
             else:
                 self._pedb.logger.error(f"{k} is not a valid layer attribute")
 
@@ -791,6 +793,10 @@ class StackupLayerEdbClass(LayerEdbClass):
         data["fill_material"] = self.fill_material
         data["thickness"] = self._edb_object.GetThicknessValue().ToString()
         data["color"] = self.color
+        data["etching"] = {
+            "factor": self._edb_layer.GetEtchFactor().ToString(),
+            "enabled": self._edb_layer.IsEtchFactorEnabled()
+        }
 
         roughness = {}
         for region in ["top", "bottom", "side"]:
@@ -851,5 +857,9 @@ class StackupLayerEdbClass(LayerEdbClass):
                     getattr(self._pedb._edb.Cell.RoughnessModel.Region, region.capitalize()), r_model
                 )
             self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
-
-        layer_clone.SetRoughnessEnabled(True)
+        etching = params.get("etching")
+        if etching:
+            layer_clone = self._edb_layer
+            layer_clone.SetEtchFactorEnabled(etching["enabled"])
+            layer_clone.SetEtchFactor(self._pedb.stackup._edb_value(float(etching["factor"])))
+            self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
