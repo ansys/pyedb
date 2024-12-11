@@ -1133,6 +1133,7 @@ class TestClass:
                 "side": {"model": "huray", "nodule_radius": "0.5um", "surface_ratio": "2.9"},
                 "enabled": True,
             },
+            'etching': {'enabled': True, 'etch_power_ground_nets': True, 'factor': '1'}
         }
         edbapp.stackup.layers["1_Top"].properties = data
         layer_data = edbapp.stackup.layers["1_Top"].properties
