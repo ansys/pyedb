@@ -298,7 +298,9 @@ class CfgCircuitElement(CfgBase):
                     neg_obj = self._create_pin_group(pins, True)
                 elif neg_type == "pin":
                     terminal_name = f"{self.reference_designator}_{neg_value}"
-                    neg_obj = {terminal_name: self._pedb.components.instances[self.reference_designator].pins[neg_value]}
+                    neg_obj = {
+                        terminal_name: self._pedb.components.instances[self.reference_designator].pins[neg_value]
+                    }
                 else:
                     raise f"Wrong negative terminal type {neg_type}"
                 self.neg_terminal = [
