@@ -799,7 +799,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         data["etching"] = {
             "factor": self._edb_layer.GetEtchFactor().ToString(),
             "enabled": self._edb_layer.IsEtchFactorEnabled(),
-            "etch_power_ground_nets": etch_power_ground_nets
+            "etch_power_ground_nets": etch_power_ground_nets,
         }
 
         roughness = {}
