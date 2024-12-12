@@ -458,3 +458,10 @@ class TestClass:
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions
         edbapp.close()
+
+    def test_via_merge(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        polygon = [[[118e-3, 60e-3], [125e-3, 60e-3], [124e-3, 56e-3], [118e-3, 56e-3]]]
+        result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
+        assert len(result) == 1
+        edbapp.close()
