@@ -1436,3 +1436,65 @@ class Padstacks(object):
             for inst in _instances_to_delete:
                 inst.delete()
         return True
+
+    def merge_via(self, contour_boxes, net_filter=None, start_layer=None, stop_layer=None):
+        """Evaluate padstack instances included on the provided point list and replace all by single instance.
+
+        Parameters
+        ----------
+        contour_boxes : List[List[List[float, float]]]
+            Nested list of polygon with points [x,y].
+        net_filter : optional
+            List[str: net_name] apply a net filter,
+            nets included in the filter are excluded from the via merge.
+        start_layer : optional, str
+            Padstack instance start layer, if `None` the top layer is selected.
+        stop_layer : optional, str
+            Padstack instance stop layer, if `None` the bottom layer is selected.
+
+        Return
+        ------
+        List[str], list of created padstack instances ID.
+
+        """
+        merged_via_ids = []
+        if not contour_boxes:
+            self._pedb.logger.error("No contour box provided, you need to pass a nested list as argument.")
+            return False
+        if not start_layer:
+            start_layer = list(self._pedb.stackup.layers.values())[0].name
+        if not stop_layer:
+            stop_layer = list(self._pedb.stackup.layers.values())[-1].name
+        instances_index = {}
+        for id, inst in self.instances.items():
+            instances_index[id] = inst.position
+        for contour_box in contour_boxes:
+            instances = self.get_padstack_instances_id_intersecting_polygon(
+                points=contour_box, padstack_instances_index=instances_index
+            )
+            if net_filter:
+                instances = [self.instances[id] for id in instances if not self.instances[id].net.name in net_filter]
+            net = self.instances[instances[0]].net.name
+            instances_pts = np.array([self.instances[id].position for id in instances])
+            convex_hull_contour = ConvexHull(instances_pts)
+            contour_points = list(instances_pts[convex_hull_contour.vertices])
+            layer = list(self._pedb.stackup.layers.values())[0].name
+            polygon = self._pedb.modeler.create_polygon(main_shape=contour_points, layer_name=layer)
+            polygon_data = polygon.polygon_data
+            polygon.delete()
+            new_padstack_def = generate_unique_name("test")
+            if not self.create(
+                padstackname=new_padstack_def,
+                pad_shape="Polygon",
+                antipad_shape="Polygon",
+                pad_polygon=polygon_data,
+                antipad_polygon=polygon_data,
+                polygon_hole=polygon_data,
+                start_layer=start_layer,
+                stop_layer=stop_layer,
+            ):
+                self._logger.error(f"Failed to create padstack definition {new_padstack_def}")
+            merged_instance = self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net)
+            merged_via_ids.append(merged_instance.id)
+            [self.instances[id].delete() for id in instances]
+        return merged_via_ids
