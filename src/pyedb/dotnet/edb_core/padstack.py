@@ -1658,7 +1658,7 @@ class EdbPadstacks(object):
             polygon = self._pedb.modeler.create_polygon(main_shape=contour_points, layer_name=layer)
             polygon_data = polygon.polygon_data
             polygon.delete()
-            new_padstack_def = generate_unique_name("test")
+            new_padstack_def = generate_unique_name(self.instances[instances[0]].definition.name)
             if not self.create(
                 padstackname=new_padstack_def,
                 pad_shape="Polygon",
