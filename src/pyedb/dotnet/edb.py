@@ -95,7 +95,7 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
     SiwaveSimulationSetup,
 )
-from pyedb.generic.constants import AEDT_UNITS, SolverType
+from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import (
     generate_unique_name,
     get_string_version,
@@ -3184,7 +3184,7 @@ class Edb(Database):
         self.logger.info("Variable %s doesn't exists.", variable_name)
         return None
 
-    def add_project_variable(self, variable_name, variable_value):
+    def add_project_variable(self, variable_name, variable_value, description=""):
         """Add a variable to edb database (project). The variable will have the prefix `$`.
 
         ..note::
@@ -3196,6 +3196,8 @@ class Edb(Database):
             Name of the variable. Name can be provided without ``$`` prefix.
         variable_value : str, float
             Value of the variable with units.
+        description : str, optional
+            Description of the variable.
 
         Returns
         -------
@@ -3214,9 +3216,11 @@ class Edb(Database):
         """
         if not variable_name.startswith("$"):
             variable_name = "${}".format(variable_name)
-        return self.add_design_variable(variable_name=variable_name, variable_value=variable_value)
+        return self.add_design_variable(
+            variable_name=variable_name, variable_value=variable_value, description=description
+        )
 
-    def add_design_variable(self, variable_name, variable_value, is_parameter=False):
+    def add_design_variable(self, variable_name, variable_value, is_parameter=False, description=""):
         """Add a variable to edb. The variable can be a design one or a project variable (using ``$`` prefix).
 
         ..note::
@@ -3232,7 +3236,8 @@ class Edb(Database):
         is_parameter : bool, optional
             Whether to add the variable as a local variable. The default is ``False``.
             When ``True``, the variable is added as a parameter default.
-
+        description : str, optional
+            Description of the variable.
         Returns
         -------
         tuple
@@ -3254,6 +3259,8 @@ class Edb(Database):
         var_server = self.variable_exists(variable_name)
         if not var_server[0]:
             var_server[1].AddVariable(variable_name, self.edb_value(variable_value), is_parameter)
+            if description:
+                var_server[1].SetVariableDescription(variable_name, description)
             return True, var_server[1]
         self.logger.error("Variable %s already exists.", variable_name)
         return False, var_server[1]
@@ -4602,3 +4609,45 @@ class Edb(Database):
     def workflow(self):
         """Workflow class."""
         return Workflow(self)
+
+    def export_gds_comp_xml(self, comps_to_export, gds_comps_unit="mm", control_path=None):
+        """Exports an XML file with selected components information for use in a GDS import.
+
+        Parameters
+        ----------
+        comps_to_export : list
+            List of components whose information will be exported to xml file.
+        gds_comps_unit : str, optional
+            GDS_COMPONENTS section units. Default is ``"mm"``.
+        control_path : str, optional
+            Path for outputting the XML file.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        from pyedb.generic.general_methods import ET
+
+        components = ET.Element("GDS_COMPONENTS")
+        components.set("LengthUnit", gds_comps_unit)
+        if not comps_to_export:
+            comps_to_export = self.components.components
+        for comp in comps_to_export:
+            ocomp = self.components.components[comp]
+            gds_component = ET.SubElement(components, "GDS_COMPONENT")
+            for pin_name, pin in ocomp.pins.items():
+                pins_position_unit = unit_converter(pin.position, output_units=gds_comps_unit)
+                gds_pin = ET.SubElement(gds_component, "GDS_PIN")
+                gds_pin.set("Name", pin_name)
+                gds_pin.set("x", str(pins_position_unit[0]))
+                gds_pin.set("y", str(pins_position_unit[1]))
+                gds_pin.set("Layer", pin.placement_layer)
+            component = ET.SubElement(gds_component, "Component")
+            component.set("RefDes", ocomp.refdes)
+            component.set("PartName", ocomp.partname)
+            component.set("PartType", ocomp.type)
+        tree = ET.ElementTree(components)
+        ET.indent(tree, space="\t", level=0)
+        tree.write(control_path)
+        return True if os.path.exists(control_path) else False

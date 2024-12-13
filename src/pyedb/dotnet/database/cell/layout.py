@@ -313,7 +313,7 @@ class Layout(ObjBase):
         """
         obj = self._pedb._edb.Cell.Net.FindByName(self._edb_object, value)
         if obj.IsNull():
-            raise ValueError(f"Net {value} doesn't exist")
+            return None
         else:
             return EDBNetsData(obj, self._pedb)
 

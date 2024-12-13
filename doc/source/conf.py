@@ -360,7 +360,10 @@ nbsphinx_allow_errors = False
 
 # Sphinx gallery customization
 nbsphinx_thumbnails = {
-    "examples/use_configuration/set_up_edb_for_signal_integrity_analysis": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/pdn_analysis": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/serdes": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/pcb_dc_ir": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/dcir": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_stackup": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_material": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_ports": "_static/thumbnails/101_getting_started.png",

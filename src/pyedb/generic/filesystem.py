@@ -120,7 +120,6 @@ class Scratch:
         if not destfolder:
             destfolder = os.path.join(self.path, os.path.split(src_folder)[-1])
         shutil.copytree(src_folder, destfolder, dirs_exist_ok=True)
-
         return destfolder
 
     def __enter__(self):

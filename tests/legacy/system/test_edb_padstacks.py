@@ -315,23 +315,26 @@ class TestClass:
         assert os.path.exists(local_png1)
 
         local_png2 = os.path.join(self.local_scratch.path, "test2.png")
+
         edb_plot.nets.plot(
-            nets="V3P3_S5",
+            nets="DDR4_DQS7_N",
             layers=None,
             save_plot=local_png2,
             plot_components_on_top=True,
             plot_components_on_bottom=True,
         )
         assert os.path.exists(local_png2)
-
+        edb_plot.modeler.create_polygon(
+            [[-10e-3, -10e-3], [110e-3, -10e-3], [110e-3, 70e-3], [-10e-3, 70e-3]], layer_name="Outline"
+        )
         local_png3 = os.path.join(self.local_scratch.path, "test3.png")
         edb_plot.nets.plot(
-            nets=["DDR4_DQS7_N", "DDR4_DQ47"],
-            layers="TOP",
+            nets=["DDR4_DQ57", "DDR4_DQ56"],
+            layers="1_Top",
             color_by_net=True,
             save_plot=local_png3,
-            plot_components_on_top=True,
-            plot_components_on_bottom=True,
+            plot_components=True,
+            plot_vias=True,
         )
         assert os.path.exists(local_png3)
 
@@ -455,37 +458,3 @@ class TestClass:
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions
         edbapp.close()
-
-    def test_pad_parameter(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        o_pad_params = edbapp.padstacks.definitions["v35h15"].pad_parameters
-        assert o_pad_params["regular_pad"][0]["shape"] == "circle"
-
-        i_pad_params = {}
-        i_pad_params["regular_pad"] = [
-            {"layer_name": "1_Top", "shape": "circle", "offset_x": "0.1mm", "rotation": "0", "diameter": "0.5mm"}
-        ]
-        i_pad_params["anti_pad"] = [{"layer_name": "1_Top", "shape": "circle", "diameter": "1mm"}]
-        i_pad_params["thermal_pad"] = [
-            {
-                "layer_name": "1_Top",
-                "shape": "round90",
-                "inner": "1mm",
-                "channel_width": "0.2mm",
-                "isolation_gap": "0.3mm",
-            }
-        ]
-        edbapp.padstacks.definitions["v35h15"].pad_parameters = i_pad_params
-        o2_pad_params = edbapp.padstacks.definitions["v35h15"].pad_parameters
-        assert o2_pad_params["regular_pad"][0]["diameter"] == "0.5mm"
-        assert o2_pad_params["regular_pad"][0]["offset_x"] == "0.1mm"
-        assert o2_pad_params["anti_pad"][0]["diameter"] == "1mm"
-        assert o2_pad_params["thermal_pad"][0]["inner"] == "1mm"
-        assert o2_pad_params["thermal_pad"][0]["channel_width"] == "0.2mm"
-
-    def test_pad_parameter(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        o_hole_params = edbapp.padstacks.definitions["v35h15"].hole_parameters
-        assert o_hole_params["shape"] == "circle"
-        edbapp.padstacks.definitions["v35h15"].hole_parameters = {"shape": "circle", "diameter": "0.2mm"}
-        assert edbapp.padstacks.definitions["v35h15"].hole_parameters["diameter"] == "0.2mm"

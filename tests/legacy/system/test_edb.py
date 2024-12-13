@@ -173,9 +173,14 @@ class TestClass:
 
     def test_add_variables(self):
         """Add design and project variables."""
-        result, var_server = self.edbapp.add_design_variable("my_variable", "1mm")
+        result, var_server = self.edbapp.add_design_variable("variable_no_description", "1mm")
         assert result
         assert var_server
+        assert self.edbapp.variables["variable_no_description"].description == ""
+        result, var_server = self.edbapp.add_design_variable("my_variable", "1mm", description="var_1")
+        assert result
+        assert var_server
+        assert self.edbapp.variables["my_variable"].description == "var_1"
         result, var_server = self.edbapp.add_design_variable("my_variable", "1mm")
         assert not result
         assert self.edbapp.modeler.parametrize_trace_width("A0_N")
@@ -185,7 +190,8 @@ class TestClass:
         assert var_server.IsVariableParameter("my_parameter")
         result, var_server = self.edbapp.add_design_variable("my_parameter", "2mm", True)
         assert not result
-        result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
+        result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm", description="var_2")
+        assert self.edbapp.variables["$my_project_variable"].description == "var_2"
         assert result
         assert var_server
         result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
@@ -283,6 +289,7 @@ class TestClass:
         assert isinstance(edbapp.layout_validation.disjoint_nets("GND", keep_only_main_net=True), list)
         assert isinstance(edbapp.layout_validation.disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
         assert edbapp.layout_validation.fix_self_intersections("PGND")
+        assert edbapp.layout_validation.fix_self_intersections()
 
         edbapp.close()
 
@@ -1394,6 +1401,41 @@ class TestClass:
         assert padstack_instance2.backdrill_bottom[1] == "200um"
         assert padstack_instance2.backdrill_bottom[2] == "100um"
         edb.close()
+
+    def test_add_via_with_options_control_file(self):
+        """Add new via layer with option in control file."""
+        from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
+
+        ctrl = ControlFile()
+        ctrl.stackup.add_layer(
+            "m2",
+            properties={
+                "Elevation": "0.0",
+                "Material": "copper",
+                "Type": "conductor",
+                "Thickness": "1.0",
+                "UnionPrimitives": "true",
+            },
+        )
+        assert [layer for layer in ctrl.stackup.layers if layer.name == "m2"]
+
+        ctrl.stackup.add_layer(
+            "m1",
+            properties={
+                "Elevation": "1.0",
+                "Material": "copper",
+                "Type": "conductor",
+                "Thickness": "1.5",
+                "UnionPrimitives": "false",
+                "ConvertPolygonToCircle": "true",
+            },
+        )
+        assert [layer for layer in ctrl.stackup.layers if layer.properties["Elevation"] == "1.0"]
+
+        ctrl.stackup.add_via(
+            "via12", properties={"StartLayer": "m2", "StopLayer": "m1", "ConvertPolygonToCircle": "true"}
+        )
+        assert [via for via in ctrl.stackup.vias if via.properties["ConvertPolygonToCircle"] == "true"]
 
     def test_add_layer_api_with_control_file(self):
         """Add new layers with control file."""

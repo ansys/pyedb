@@ -14,9 +14,9 @@ These classes are the containers of HFSS simulation setup settings.
    DefeatureSettings
    AdvancedMeshSettings
    ViaSettings
-   CurveApproximationSettings
+   CurveApproxSettings
    DcrSettings
    HfssPortSettings
-   HfssSolveSettings
+   HfssSolverSettings
 
 

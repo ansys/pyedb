@@ -11,13 +11,6 @@ if "PYEDB_USE_DOTNET" not in os.environ:
     os.environ["PYEDB_USE_DOTNET"] = "0"
 
 LATEST_DEPRECATED_PYTHON_VERSION = (3, 7)
-LINUX_WARNING = (
-    "Due to compatibility issues between .NET Core and libssl on some Linux versions, "
-    "for example Ubuntu 22.04, we are going to stop depending on `dotnetcore2`."
-    "Instead of using this package which embeds .NET Core 3, users will be required to "
-    "install .NET themselves. For more information, see "
-    "https://edb.docs.pyansys.com/version/stable/build_breaking_change.html"
-)
 
 
 def deprecation_warning():
@@ -46,31 +39,12 @@ def deprecation_warning():
     warnings.showwarning = existing_showwarning
 
 
-def linux_warning():
-    """Warning message informing Linux users a future breaking change is coming."""
-    # Store warnings showwarning
-    existing_showwarning = warnings.showwarning
-
-    # Define and use custom showwarning
-    def custom_show_warning(message, category, filename, lineno, file=None, line=None):
-        """Custom warning used to remove <stdin>:loc: pattern."""
-        print("{}: {}".format(category.__name__, message))
-
-    warnings.showwarning = custom_show_warning
-
-    if os.name == "posix":
-        warnings.warn(LINUX_WARNING, FutureWarning)
-
-    # Restore warnings showwarning
-    warnings.showwarning = existing_showwarning
-
-
 deprecation_warning()
 
 #
 
 pyedb_path = os.path.dirname(__file__)
-__version__ = "0.32.dev0"
+__version__ = "0.35.dev0"
 version = __version__
 
 #

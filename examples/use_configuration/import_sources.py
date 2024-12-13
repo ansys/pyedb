@@ -54,7 +54,8 @@ cfg = dict()
 voltage_source = {
     "name": "V_SOURCE_5V",
     "reference_designator": "U4",
-    "type": "circuit",
+    "type": "voltage",
+    "magnitude": 1,
     "positive_terminal": {"net": "5V"},
     "negative_terminal": {"net": "GND"},
 }
@@ -65,6 +66,7 @@ current_source_1 = {
     "name": "I_CURRENT_1A",
     "reference_designator": "J5",
     "type": "current",
+    "magnitude": 10,
     "positive_terminal": {"pin": "15"},
     "negative_terminal": {"pin": "14"},
 }

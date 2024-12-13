@@ -11,7 +11,7 @@ This class is the container of simulation setup.
 
 
    SimulationSetupType
-   AdaptivveType
+   AdaptiveType
    SimulationSetup
 
 

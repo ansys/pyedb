@@ -25,9 +25,6 @@ These classes are the containers of simulation configuration constructors V2.0 f
    :toctree: _autosummary
    :nosignatures:
 
-   CfgPortProperties
-   CfgSolderBallsProperties
-   CfgRlcModel
    CfgComponent
    CfgComponents
 
@@ -81,8 +78,6 @@ These classes are the containers of simulation configuration constructors V2.0 f
    :nosignatures:
 
    CfgPadstacks
-   Definition
-   Instance
 
 .. currentmodule:: pyedb.configuration.cfg_pin_groups
 
@@ -126,7 +121,7 @@ These classes are the containers of simulation configuration constructors V2.0 f
    CfgSweepData
    CfgSetup
    CfgSIwaveACSetup
-   CfgSiwaveDCSetup
+   CfgSIwaveDCSetup
    CfgHFSSSetup
    CfgDcIrSettings
    CfgMeshOperation

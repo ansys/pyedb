@@ -1168,7 +1168,7 @@ class EdbHfss(object):
         list
             [lower left corner X, lower left corner, upper right corner X, upper right corner Y].
         """
-        if not layout:
+        if layout is None:
             layout = self._active_layout
         layout_obj_instances = layout.GetLayoutInstance().GetAllLayoutObjInstances()
         tuple_list = []
