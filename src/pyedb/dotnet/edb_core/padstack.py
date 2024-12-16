@@ -1681,11 +1681,11 @@ class EdbPadstacks(object):
 
         padstacks_inbox = self.get_padstack_instances_intersecting_bounding_box(bounding_box, nets)
         if not padstacks_inbox:
-            self._logger.info("no padstack in boudnign box")
+            self._logger.info("no padstack in bounding box")
             return False
         else:
             if len(padstacks_inbox) <= (x_samples * y_samples):
-                self._logger.info(f"more samples {x_samples* y_samples} than existing {len(padstacks_inbox)}")
+                self._logger.info(f"more samples {x_samples * y_samples} than existing {len(padstacks_inbox)}")
                 return True
             else:
                 # extract ids and positions
