@@ -26,6 +26,7 @@ This module contains the `EdbPadstacks` class.
 import math
 import warnings
 
+import numpy as np
 import rtree
 
 from pyedb.dotnet.clr_module import Array
@@ -555,7 +556,7 @@ class EdbPadstacks(object):
             port_name = name
         if self._port_exist(port_name):
             port_name = generate_unique_name(port_name, n=2)
-            self._logger.info("An existing port already has this same name. Renaming to {}.".format(port_name))
+        self._logger.info("An existing port already has this same name. Renaming to {}.".format(port_name))
         self._edb.cell.terminal.PadstackInstanceTerminal.Create(
             self._active_layout,
             padstackinstance.GetNet(),
@@ -1553,30 +1554,6 @@ class EdbPadstacks(object):
             padstack_instances_index.insert(inst.id, inst.position)
         return padstack_instances_index
 
-    def get_padstack_instances_intersecting_bounding_box(self, bounding_box, nets=None):
-        """Returns the list of padstack instances ID intersecting a given bounding box and nets.
-
-        Parameters
-        ----------
-        bounding_box : tuple or list.
-            bounding box, [x1, y1, x2, y2]
-        nets : str or list, optional
-            net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
-            all instances are included in the index. Default value is ``None``.
-
-        Returns
-        -------
-        List of padstack instances ID intersecting the bounding box.
-        """
-        if not bounding_box:
-            raise Exception("No bounding box was provided")
-        index = self.get_padstack_instances_rtree_index(nets=nets)
-        if not len(bounding_box) == 4:
-            raise Exception("The bounding box length must be equal to 4")
-        if isinstance(bounding_box, list):
-            bounding_box = tuple(bounding_box)
-        return list(index.intersection(bounding_box))
-
     def merge_via_along_lines(
         self, net_name="GND", distance_threshold=5e-3, minimum_via_number=6, selected_angles=None
     ):
@@ -1657,3 +1634,63 @@ class EdbPadstacks(object):
             for inst in _instances_to_delete:
                 inst.delete()
         return True
+
+    def get_padstack_instances_intersecting_bounding_box(self, bounding_box, nets=None):
+        """Returns the list of padstack instances ID intersecting a given bounding box and nets.
+
+        Parameters
+        ----------
+        bounding_box : tuple or list.
+            bounding box, [x1, y1, x2, y2]
+        nets : str or list, optional
+            net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+            all instances are included in the index. Default value is ``None``.
+
+        Returns
+        -------
+        List of padstack instances ID intersecting the bounding box.
+        """
+        if not bounding_box:
+            raise Exception("No bounding box was provided")
+        index = self.get_padstack_instances_rtree_index(nets=nets)
+        if not len(bounding_box) == 4:
+            raise Exception("The bounding box length must be equal to 4")
+        if isinstance(bounding_box, list):
+            bounding_box = tuple(bounding_box)
+        return list(index.intersection(bounding_box))
+
+    def reduce_via_in_bounding_box(self, bounding_box, x_samples, y_samples, nets=None):
+        """ """
+        padstacks_inbox = self.get_padstack_instances_intersecting_bounding_box(bounding_box, nets)
+        if not padstacks_inbox:
+            self._logger.info("no padstack in boudnign box")
+            return False
+        else:
+            if len(padstacks_inbox) <= (x_samples * y_samples):
+                self._logger.info(f"more samples {x_samples* y_samples} than existing {len(padstacks_inbox)}")
+                return True
+            else:
+                # extract ids and positions
+                vias = {item: self.instances[item].position for item in padstacks_inbox}
+                ids, positions = zip(*vias.items())
+                pt_x, pt_y = zip(*positions)
+
+                # meshgrid
+                _x_min, _x_max = min(pt_x), max(pt_x)
+                _y_min, _y_max = min(pt_y), max(pt_y)
+
+                x_grid, y_grid = np.meshgrid(
+                    np.linspace(_x_min, _x_max, x_samples), np.linspace(_y_min, _y_max, y_samples)
+                )
+
+                # mapping to meshgrid
+                to_keep = {
+                    ids[np.argmin(np.square(_x - pt_x) + np.square(_y - pt_y))]
+                    for _x, _y in zip(x_grid.ravel(), y_grid.ravel())
+                }
+
+                for item in padstacks_inbox:
+                    if item not in to_keep:
+                        self.instances[item].delete()
+
+                return True
