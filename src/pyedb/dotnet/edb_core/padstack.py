@@ -1660,7 +1660,25 @@ class EdbPadstacks(object):
         return list(index.intersection(bounding_box))
 
     def reduce_via_in_bounding_box(self, bounding_box, x_samples, y_samples, nets=None):
-        """ """
+        """
+        reduce the number of vias intersecting bounding box and nets by x and y samples.
+
+        Parameters
+        ----------
+        bounding_box : tuple or list.
+            bounding box, [x1, y1, x2, y2]
+        x_samples : int
+        y_samples : int
+        nets : str or list, optional
+            net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+            all instances are included in the index. Default value is ``None``.
+
+        Returns
+        -------
+        bool
+            ``True`` when succeeded ``False`` when failed. <
+        """
+
         padstacks_inbox = self.get_padstack_instances_intersecting_bounding_box(bounding_box, nets)
         if not padstacks_inbox:
             self._logger.info("no padstack in boudnign box")
