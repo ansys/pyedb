@@ -45,6 +45,7 @@ class CfgLayer(CfgBase):
         self.fill_material = kwargs.get("fill_material", None)
         self.thickness = kwargs.get("thickness", None)
         self.roughness = kwargs.get("roughness", None)
+        self.etching = kwargs.get("etching", None)
 
 
 class CfgStackup:
