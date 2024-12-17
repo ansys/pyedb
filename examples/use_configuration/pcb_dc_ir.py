@@ -245,14 +245,6 @@ power_density.export_image(
     show_ruler=True,
 )
 
-# ## Compute power loss
-
-p_layers = h3d.post.compute_power_by_layer(layers=["Top"])
-print(p_layers)
-
-p_nets = h3d.post.compute_power_by_net(nets=["1V0"])
-print(p_nets)
-
 # ## Save HFSS 3D Layout project
 
 h3d.save_project()
