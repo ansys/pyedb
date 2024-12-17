@@ -1686,7 +1686,7 @@ class EdbPadstacks(object):
         else:
             if len(padstacks_inbox) <= (x_samples * y_samples):
                 self._logger.info(f"more samples {x_samples * y_samples} than existing {len(padstacks_inbox)}")
-                return True
+                return False
             else:
                 # extract ids and positions
                 vias = {item: self.instances[item].position for item in padstacks_inbox}
