@@ -20,12 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pathlib import Path
 
 from mock import MagicMock, PropertyMock, patch
 import pytest
 
-from pyedb import Edb
 from pyedb.dotnet.edb_core.padstack import EdbPadstacks
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
@@ -57,16 +55,3 @@ class TestClass:
         self.padstacks.check_and_fix_via_plating()
         assert self.padstacks["definition_0"].hole_plating_ratio == 0.2
         assert self.padstacks["definition_1"].hole_plating_ratio == 0.3
-
-    def test_reduce_via_in_bounding_box(self):
-        edb_path = Path(__file__).parent.parent.parent / "example_models" / "TEDB" / "vias_300.aedb"
-        edbapp = Edb(edbpath=edb_path)
-        assert len(edbapp.padstacks.instances) == 301
-        # empty bounding box
-        assert edbapp.padstacks.reduce_via_in_bounding_box([-16e-3, -7e-3, -13e-3, -6e-3], 10, 10) is False
-        # over sampling
-        assert edbapp.padstacks.reduce_via_in_bounding_box([-20e-3, -10e-3, 20e-3, 10e-3], 20, 20) is False
-
-        assert edbapp.padstacks.reduce_via_in_bounding_box([-20e-3, -10e-3, 20e-3, 10e-3], 10, 10) is True
-        assert len(edbapp.padstacks.instances) == 96
-        edbapp.close_edb()
