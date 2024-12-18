@@ -277,7 +277,7 @@ class TestClass:
 
     def test_convert_resistor_value(self):
         """Convert a resistor value."""
-        from pyedb.dotnet.edb_core.components import resistor_value_parser
+        from pyedb.dotnet.database.components import resistor_value_parser
 
         assert resistor_value_parser("100meg")
 

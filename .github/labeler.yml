@@ -20,4 +20,4 @@ testing:
 
 grpc-transition:
 - changed-files:
-  - any-glob-to-any-file: ['src/pyedb/dotnet/edb_core/*',]
+  - any-glob-to-any-file: ['src/pyedb/dotnet/database/*',]

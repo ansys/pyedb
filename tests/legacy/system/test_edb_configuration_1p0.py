@@ -24,10 +24,10 @@ import os
 
 import pytest
 
-from pyedb.dotnet.edb import Edb
-from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
+from pyedb.dotnet.database.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
+from pyedb.dotnet.edb import Edb
 from pyedb.generic.constants import SolverType
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
