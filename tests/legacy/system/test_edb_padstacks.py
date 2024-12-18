@@ -465,3 +465,10 @@ class TestClass:
         result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
         assert len(result) == 1
         edbapp.close()
+
+    def test_via_merge2(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        polygon = [[[123.37e-3, 69.5e-3], [124.83e-3, 69.25e-3], [124.573e-3, 60.23e-3], [123e-3, 60.5e-3]]]
+        result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
+        assert len(result) == 1
+        edbapp.close()
