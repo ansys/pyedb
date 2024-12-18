@@ -472,3 +472,10 @@ class TestClass:
         assert edbapp.padstacks.reduce_via_in_bounding_box([-20e-3, -10e-3, 20e-3, 10e-3], 10, 10) is True
         assert len(edbapp.padstacks.instances) == 96
         edbapp.close_edb()
+
+    def test_via_merge(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        polygon = [[[118e-3, 60e-3], [125e-3, 60e-3], [124e-3, 56e-3], [118e-3, 56e-3]]]
+        result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
+        assert len(result) == 1
+        edbapp.close()

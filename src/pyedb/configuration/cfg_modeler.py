@@ -97,6 +97,7 @@ class CfgModeler:
             for p in self.padstack_instances:
                 p_inst = self._pedb.padstacks.place(
                     via_name=p.name,
+                    net_name=p.net_name,
                     position=p.position,
                     definition_name=p.definition,
                 )
