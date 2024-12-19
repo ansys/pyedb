@@ -1655,7 +1655,7 @@ class EdbPadstacks(object):
                     ]
 
                 net = self.instances[instances[0]].net.name
-                instances_location = [self.instances[inst].position for inst in instances]
+                instances_location = list(instances_index.values())
                 lines, line_indexes = GeometryOperators.find_points_along_lines(
                     points=instances_location, minimum_number_of_points=2
                 )
@@ -1666,7 +1666,7 @@ class EdbPadstacks(object):
                         )
                         merged_via_ids.extend(create_instances)
                 else:
-                    instances_pts = np.array([self.instances[id].position for id in instances])
+                    instances_pts = np.array([instances_index[id] for id in instances])
                     convex_hull_contour = ConvexHull(instances_pts)
                     contour_points = list(instances_pts[convex_hull_contour.vertices])
                     layer = list(self._pedb.stackup.layers.values())[0].name
