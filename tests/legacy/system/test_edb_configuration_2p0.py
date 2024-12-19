@@ -782,6 +782,7 @@ class TestClass:
                             "side": {"model": "huray", "nodule_radius": "0.5um", "surface_ratio": "2.9"},
                             "enabled": True,
                         },
+                        "etching": {"factor": "0.5", "etch_power_ground_nets": False, "enabled": True},
                     },
                     {
                         "fill_material": "Megtron4",
@@ -1217,7 +1218,7 @@ class TestClass:
                         "solder_ball_properties": {"shape": "cylinder", "diameter": "244um", "height": "406um"},
                         "port_properties": {
                             "reference_offset": "0.1mm",
-                            "reference_size_auto": True,
+                            "reference_size_auto": False,
                             "reference_size_x": 0,
                             "reference_size_y": 0,
                         },

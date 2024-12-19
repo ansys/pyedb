@@ -201,7 +201,7 @@ class CfgComponent(CfgBase):
         if height:
             port_prop.SetReferenceHeight(self._pedb.edb_value(height))
         reference_size_auto = self.port_properties.get("reference_size_auto")
-        if reference_size_auto:
+        if reference_size_auto is not None:
             port_prop.SetReferenceSizeAuto(reference_size_auto)
         reference_size_x = self.port_properties.get("reference_size_x", 0)
         reference_size_y = self.port_properties.get("reference_size_y", 0)
@@ -210,10 +210,10 @@ class CfgComponent(CfgBase):
         self._pyedb_obj.component_property = cp
 
     def set_parameters_to_edb(self):
-        if self.enabled:
-            self._pyedb_obj.enabled = self.enabled
         if self.type:
             self._pyedb_obj.type = self.type
+        if self.enabled:
+            self._pyedb_obj.enabled = self.enabled
 
         self._set_model_properties_to_edb()
         if self._pyedb_obj.type.lower() == "ic":
