@@ -1,0 +1,6 @@
+delete\_primitives
+==================
+
+.. currentmodule:: pyedb.dotnet.edb_core.modeler
+
+.. automethod:: Modeler.delete_primitives

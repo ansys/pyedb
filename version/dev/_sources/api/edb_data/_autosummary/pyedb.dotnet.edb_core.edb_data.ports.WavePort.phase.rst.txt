@@ -1,0 +1,6 @@
+phase
+=====
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.ports
+
+.. autoproperty:: WavePort.phase
