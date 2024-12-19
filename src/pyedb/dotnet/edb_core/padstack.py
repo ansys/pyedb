@@ -1655,16 +1655,19 @@ class EdbPadstacks(object):
                     ]
 
                 net = self.instances[instances[0]].net.name
-                instances_location = list(instances_index.values())
-                lines, line_indexes = GeometryOperators.find_points_along_lines(
-                    points=instances_location, minimum_number_of_points=2
-                )
-                if len(lines) == 1:
-                    if len(lines[0]) == len(instances):
-                        create_instances = self.merge_via_along_lines(
-                            net_name=net, padstack_instances_id=instances, minimum_via_number=2
-                        )
-                        merged_via_ids.extend(create_instances)
+                x_values = []
+                y_values = []
+                for inst in instances:
+                    pos = instances_index[inst]
+                    x_values.append(pos[0])
+                    y_values.append(pos[1])
+                x_values = list(set(x_values))
+                y_values = list(set(y_values))
+                if len(x_values) == 1 or len(y_values) == 1:
+                    create_instances = self.merge_via_along_lines(
+                        net_name=net, padstack_instances_id=instances, minimum_via_number=2
+                    )
+                    merged_via_ids.extend(create_instances)
                 else:
                     instances_pts = np.array([instances_index[id] for id in instances])
                     convex_hull_contour = ConvexHull(instances_pts)
