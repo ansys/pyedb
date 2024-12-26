@@ -321,7 +321,7 @@ class EDBComponent(Group):
 
     @property
     def solder_ball_placement(self):
-        """Solder ball placement if available.."""
+        """Solder ball placement if available."""
         if "GetSolderBallProperty" in dir(self.component_property):
             return int(self.component_property.GetSolderBallProperty().GetPlacement())
         return 2
@@ -345,28 +345,6 @@ class EDBComponent(Group):
     def is_null(self):
         """Flag indicating if the current object exists."""
         return self.edbcomponent.IsNull()
-
-    @property
-    def is_enabled(self):
-        """Flag indicating if the current object is enabled.
-
-        Returns
-        -------
-        bool
-            ``True`` if current object is enabled, ``False`` otherwise.
-        """
-        if self.type in ["Resistor", "Capacitor", "Inductor"]:
-            return self.component_property.IsEnabled()
-        else:  # pragma: no cover
-            return True
-
-    @is_enabled.setter
-    def is_enabled(self, enabled):
-        """Enables the current object."""
-        if self.type in ["Resistor", "Capacitor", "Inductor"]:
-            component_property = self.component_property
-            component_property.SetEnabled(enabled)
-            self.edbcomponent.SetComponentProperty(component_property)
 
     @property
     def model_type(self):
@@ -674,7 +652,7 @@ class EDBComponent(Group):
 
     @type.setter
     def type(self, new_type):
-        """Set component type
+        """Set component type.
 
         Parameters
         ----------
@@ -910,9 +888,9 @@ class EDBComponent(Group):
 
         Parameters
         ----------
-        name: str
+        name : str
             Name of the S-parameter model.
-        reference_net: str, optional
+        reference_net : str, optional
             Reference net of the model.
 
         Returns
