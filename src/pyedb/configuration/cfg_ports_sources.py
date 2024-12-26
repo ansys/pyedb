@@ -302,7 +302,7 @@ class CfgCircuitElement(CfgBase):
                         terminal_name: self._pedb.components.instances[self.reference_designator].pins[neg_value]
                     }
                 else:
-                    raise f"Wrong negative terminal type {neg_type}"
+                    raise Exception(f"Wrong negative terminal type {neg_type}")
                 self.neg_terminal = [
                     j.create_terminal(i) if not j.terminal else j.terminal for i, j in neg_obj.items()
                 ][0]
