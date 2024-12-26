@@ -206,9 +206,10 @@ class EDBComponent(Group):
 
     @enabled.setter
     def enabled(self, value):
-        cmp_prop = self.component_property.Clone()
-        cmp_prop.SetEnabled(value)
-        self.edbcomponent.SetComponentProperty(cmp_prop)
+        if self.type in ["Resistor", "Capacitor", "Inductor"]:
+            cmp_prop = self.component_property.Clone()
+            cmp_prop.SetEnabled(value)
+            self.edbcomponent.SetComponentProperty(cmp_prop)
 
     @property
     def spice_model(self):
