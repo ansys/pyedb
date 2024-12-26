@@ -66,7 +66,7 @@ class PinPair(object):  # pragma: no cover
     @resistance.setter
     def resistance(self, value):
         self._pin_pair_rlc.R = value
-        self._set_comp_prop(self._pin_pair_rlc)  # pragma: no cover
+        self._set_comp_prop()  # pragma: no cover
 
     @property
     def inductance(self):
@@ -75,7 +75,7 @@ class PinPair(object):  # pragma: no cover
     @inductance.setter
     def inductance(self, value):
         self._pin_pair_rlc.L = value
-        self._set_comp_prop(self._pin_pair_rlc)  # pragma: no cover
+        self._set_comp_prop()  # pragma: no cover
 
     @property
     def capacitance(self):
@@ -84,7 +84,7 @@ class PinPair(object):  # pragma: no cover
     @capacitance.setter
     def capacitance(self, value):
         self._pin_pair_rlc.C = value
-        self._set_comp_prop(self._pin_pair_rlc)  # pragma: no cover
+        self._set_comp_prop()  # pragma: no cover
 
     @property
     def rlc_values(self):  # pragma: no cover
