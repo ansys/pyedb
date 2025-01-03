@@ -265,7 +265,7 @@ class CfgCircuitElement(CfgBase):
             pins = {pos_value: self._pedb.components.instances[self.reference_designator].pins[pos_value]}
             pos_objs.update(pins)
         else:
-            raise f"Wrong positive terminal type {pos_type}"
+            raise Exception(f"Wrong positive terminal type {pos_type}.")
 
         self.pos_terminals = {i: j.create_terminal(i) for i, j in pos_objs.items()}
         self.pos_terminals.update(pos_coor_terminal)
@@ -302,7 +302,7 @@ class CfgCircuitElement(CfgBase):
                         terminal_name: self._pedb.components.instances[self.reference_designator].pins[neg_value]
                     }
                 else:
-                    raise f"Wrong negative terminal type {neg_type}"
+                    raise Exception(f"Wrong negative terminal type {neg_type}.")
                 self.neg_terminal = [
                     j.create_terminal(i) if not j.terminal else j.terminal for i, j in neg_obj.items()
                 ][0]
