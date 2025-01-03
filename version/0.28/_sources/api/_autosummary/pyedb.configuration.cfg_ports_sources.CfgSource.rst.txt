@@ -1,0 +1,41 @@
+﻿CfgSource
+=========
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. autoclass:: CfgSource
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgSource.create
+      
+      
+      CfgSource.export_properties
+      
+      
+      CfgSource.get_attributes
+      
+      
+      CfgSource.set_attributes
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CfgSource.CFG_SOURCE_TYPE
+      CfgSource.protected_attributes
+   
+   

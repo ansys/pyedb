@@ -1,0 +1,34 @@
+﻿CfgFrequencies
+==============
+
+.. currentmodule:: pyedb.configuration.cfg_setup
+
+.. autoclass:: CfgFrequencies
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgFrequencies.get_attributes
+      
+      
+      CfgFrequencies.set_attributes
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CfgFrequencies.protected_attributes
+   
+   
