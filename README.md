@@ -13,7 +13,7 @@
 
 ## What is PyEDB?
 
-PyEDB is Python client library for processing complex and large layout designs in the
+PyEDB is a Python client library for processing complex and large layout designs in the
 Ansys Electronics Database (EDB) format, which stores information describing designs for
 [Ansys Electronics Desktop](https://www.ansys.com/products/electronics) (AEDT).
 
@@ -39,7 +39,7 @@ HFSS 3D Layout, Icepak, Maxwell, Q3D, and SIwave.
 
 EDB provides a proprietary database file format (AEDB) for efficient and fast layout design
 handling and processing for building ready-to-solve projects. EDB addresses signal integrity
-(SI), power integrity (PI-DC), and electro-thermal work flows. You can import an AEDB file
+(SI), power integrity (PI-DC), and electro-thermal workflows. You can import an AEDB file
 into AEDT to modify the layout, assign materials, and define ports, simulations, and constraints.
 You can then launch any of the Ansys electromagnetic simulators.
 
@@ -49,7 +49,7 @@ memory, it provides the fastest and most efficient way to handle a large and com
 
 You can also parse an AEDB file from a command line in batch in an Ansys electromagnetic simulator
 like HFSS or SIwave. Thus, you can deploy completely non-graphical flows, from layout
-translation through simulatiom results.
+translation through simulation results.
 
 Additionally, you can use PyAEDT to import an AEDB file into AEDT to view a project,
 combine 3D designs, or perform simulation postprocessing. EDB also supports 3D component models.
