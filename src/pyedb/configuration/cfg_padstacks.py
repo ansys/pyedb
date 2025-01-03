@@ -125,7 +125,6 @@ class CfgPadstackDefinition(CfgBase):
             self._set_solder_parameters_to_edb(self.solder_ball_parameters)
 
     def retrieve_parameters_from_edb(self):
-
         self.name = self._pyedb_obj.name
         self.hole_plating_thickness = self._pyedb_obj.hole_plating_thickness
         self.material = self._pyedb_obj.material
@@ -167,8 +166,6 @@ class CfgPadstackDefinition(CfgBase):
             "material": material,
         }
         return parameters
-
-
 
     def _get_pad_parameters_from_edb(self):
         """Pad parameters.
