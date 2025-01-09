@@ -1242,8 +1242,7 @@ class EdbSiwave(object):
         )
 
         if edb_pingroup.IsNull():  # pragma: no cover
-            self._logger.error(f"Failed to create pin group {group_name}.")
-            return False
+            raise ValueError(f"Failed to create pin group {group_name}.")
         else:
             names = [i for i in pins if i.GetNet().GetName()]
             edb_pingroup.SetNet(names[0].GetNet())
