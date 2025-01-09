@@ -134,13 +134,17 @@ class Configuration:
 
         # Configure stackup
         if kwargs.get("fix_padstack_def"):
+            from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition
+
             pedb_defs = self._pedb.padstacks.definitions
-            temp = {}
-            for name, pdef in pedb_defs.items():
-                temp[name] = pdef.get_properties()
+            temp = []
+            for _, pdef in pedb_defs.items():
+                cfg_def = CfgPadstackDefinition(self._pedb, pdef)
+                cfg_def.retrieve_parameters_from_edb()
+                temp.append(cfg_def)
             self.cfg_data.stackup.apply()
-            for name, pdef_p in temp.items():
-                pedb_defs[name].set_properties(**pdef_p)
+            for cfg_pdef in temp:
+                cfg_pdef.set_parameters_to_edb()
         else:
             self.cfg_data.stackup.apply()
 
