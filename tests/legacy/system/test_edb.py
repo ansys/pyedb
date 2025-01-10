@@ -419,7 +419,7 @@ class TestClass:
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
         out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
         assert os.path.exists(out)
-        out = edb.export_hfss(self.local_scratch.path)
+        out = edb.export_hfss(self.local_scratch.path, hidden=True)
         assert os.path.exists(out)
         edb.close()
 
