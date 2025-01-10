@@ -176,6 +176,7 @@ jobs:
           retry_on: error
           timeout_minutes: 20
           command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             xvfb-run pytest -m "legacy" -n auto --dist loadfile -v --cov
 
