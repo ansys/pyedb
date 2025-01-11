@@ -153,7 +153,7 @@ jobs:
       - name: "Install os packages"
         run: |
           sudo apt update
-          sudo apt install libgl1-mesa-glx xvfb
+          sudo apt install libgl1-mesa-glx xvfb -y
 
       - name: Create Python venv
         run: |
