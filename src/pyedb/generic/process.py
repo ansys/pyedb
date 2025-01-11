@@ -150,7 +150,7 @@ class SiwaveSolve(object):
         command = [_exe]
         if hidden:
             command.append("-embedding")
-        command += ["--RunScriptAndExit", scriptname]
+        command += ["-RunScriptAndExit", scriptname]
         print(command)
         try:
             result = subprocess.run(command, check=True, capture_output=True)
