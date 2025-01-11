@@ -40,6 +40,8 @@ from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
+ON_CI = os.environ.get("CI", "false").lower() == "true"
+
 
 class TestClass:
     @pytest.fixture(autouse=True)
@@ -410,6 +412,9 @@ class TestClass:
     #     assert edb.active_layout
     #     edb.close()
 
+    @pytest.mark.skipif(
+        is_linux and ON_CI, reason="Test is slow due to software rendering fallback and lack of GPU acceleration."
+    )
     def test_export_to_hfss(self):
         """Export EDB to HFSS."""
         edb = Edb(
@@ -423,6 +428,9 @@ class TestClass:
         assert os.path.exists(out)
         edb.close()
 
+    @pytest.mark.skipif(
+        is_linux and ON_CI, reason="Test is slow due to software rendering fallback and lack of GPU acceleration."
+    )
     def test_export_to_q3d(self):
         """Export EDB to Q3D."""
         edb = Edb(
@@ -436,7 +444,10 @@ class TestClass:
         assert os.path.exists(out)
         edb.close()
 
-    def test_074_export_to_maxwell(self):
+    @pytest.mark.skipif(
+        is_linux and ON_CI, reason="Test is slow due to software rendering fallback and lack of GPU acceleration."
+    )
+    def test_export_to_maxwell(self):
         """Export EDB to Maxwell 3D."""
         edb = Edb(
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
