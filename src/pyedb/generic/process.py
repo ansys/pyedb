@@ -1,7 +1,7 @@
 import os.path
 import subprocess
 
-from pyedb.generic.general_methods import env_path, is_linux
+from pyedb.generic.general_methods import env_path, is_linux, is_windows
 
 
 class SiwaveSolve(object):
@@ -144,19 +144,19 @@ class SiwaveSolve(object):
             f.write("oDoc.ScrExport3DModel('{}', q3d_filename)\n".format(format_3d))
             f.write("oDoc.ScrCloseProject()\n")
             f.write("oApp.Quit()\n")
-        if is_linux:
-            _exe = '"' + os.path.join(self.installer_path, "siwave") + '"'
-        else:
-            _exe = '"' + os.path.join(self.installer_path, "siwave.exe") + '"'
+        _exe = os.path.join(self.installer_path, "siwave")
+        if is_windows:
+            _exe += ".exe"
         command = [_exe]
         if hidden:
             command.append("-embedding")
-        command.append("-RunScriptAndExit")
-        command.append(scriptname)
+        command += ["--RunScriptAndExit", scriptname]
         print(command)
-        os.system(" ".join(command))
-        # p1 = subprocess.call(" ".join(command))
-        # p1.wait()
+        try:
+            result = subprocess.run(command, check=True, capture_output=True)
+            print(result.stdout.decode())
+        except subprocess.CalledProcessError as e:
+            print(f"Error occurred: {e.stderr.decode()}")
         return os.path.join(output_folder, aedt_file_name)
 
     def export_dc_report(
