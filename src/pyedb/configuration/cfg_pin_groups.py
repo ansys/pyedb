@@ -74,7 +74,7 @@ class CfgPinGroup(CfgBase):
             comp = self._pedb.components.instances[self.reference_designator]
             pins = [p for p, obj in comp.pins.items() if obj.net_name in nets]
             if not self._pedb.siwave.create_pin_group(self.reference_designator, pins, self.name):
-                raise ValueError(f"Failed to create pin group {self.name}")
+                raise RuntimeError(f"Failed to create pin group {self.name}")
         else:
             raise ValueError(f"No net and pins defined for defining pin group {self.name}")
 
