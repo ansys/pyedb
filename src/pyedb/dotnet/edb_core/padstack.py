@@ -1651,10 +1651,10 @@ class EdbPadstacks(object):
             if instances:
                 if net_filter:
                     instances = [
-                        self.instances[id] for id in instances if not self.instances[id].net.name in net_filter
+                        self.instances[id] for id in instances if not self.instances[id].net_name in net_filter
                     ]
 
-                net = self.instances[instances[0]].net.name
+                net = self.instances[instances[0]].net_name
                 x_values = []
                 y_values = []
                 for inst in instances:
