@@ -1635,8 +1635,7 @@ class EdbPadstacks(object):
         """
         merged_via_ids = []
         if not contour_boxes:
-            self._pedb.logger.error("No contour box provided, you need to pass a nested list as argument.")
-            return False
+            raise Exception("No contour box provided, you need to pass a nested list as argument.")
         if not start_layer:
             start_layer = list(self._pedb.stackup.layers.values())[0].name
         if not stop_layer:
@@ -1648,35 +1647,60 @@ class EdbPadstacks(object):
             instances = self.get_padstack_instances_id_intersecting_polygon(
                 points=contour_box, padstack_instances_index=instances_index
             )
-            if net_filter:
-                instances = [self.instances[id] for id in instances if not self.instances[id].net.name in net_filter]
-            net = self.instances[instances[0]].net.name
-            instances_pts = np.array([self.instances[id].position for id in instances])
-            convex_hull_contour = ConvexHull(instances_pts)
-            contour_points = list(instances_pts[convex_hull_contour.vertices])
-            layer = list(self._pedb.stackup.layers.values())[0].name
-            polygon = self._pedb.modeler.create_polygon(main_shape=contour_points, layer_name=layer)
-            polygon_data = polygon.polygon_data
-            polygon.delete()
-            new_padstack_def = generate_unique_name(self.instances[instances[0]].definition.name)
-            if not self.create(
-                padstackname=new_padstack_def,
-                pad_shape="Polygon",
-                antipad_shape="Polygon",
-                pad_polygon=polygon_data,
-                antipad_polygon=polygon_data,
-                polygon_hole=polygon_data,
-                start_layer=start_layer,
-                stop_layer=stop_layer,
-            ):
-                self._logger.error(f"Failed to create padstack definition {new_padstack_def}")
-            merged_instance = self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net)
-            merged_via_ids.append(merged_instance.id)
-            [self.instances[id].delete() for id in instances]
+            if not instances:
+                raise Exception(f"No padstack instances found inside {contour_box}")
+            else:
+                if net_filter:
+                    instances = [
+                        self.instances[id] for id in instances if not self.instances[id].net_name in net_filter
+                    ]
+
+                net = self.instances[instances[0]].net_name
+                x_values = []
+                y_values = []
+                for inst in instances:
+                    pos = instances_index[inst]
+                    x_values.append(pos[0])
+                    y_values.append(pos[1])
+                x_values = list(set(x_values))
+                y_values = list(set(y_values))
+                if len(x_values) == 1 or len(y_values) == 1:
+                    create_instances = self.merge_via_along_lines(
+                        net_name=net, padstack_instances_id=instances, minimum_via_number=2
+                    )
+                    merged_via_ids.extend(create_instances)
+                else:
+                    instances_pts = np.array([instances_index[id] for id in instances])
+                    convex_hull_contour = ConvexHull(instances_pts)
+                    contour_points = list(instances_pts[convex_hull_contour.vertices])
+                    layer = list(self._pedb.stackup.layers.values())[0].name
+                    polygon = self._pedb.modeler.create_polygon(main_shape=contour_points, layer_name=layer)
+                    polygon_data = polygon.polygon_data
+                    polygon.delete()
+                    new_padstack_def = generate_unique_name(self.instances[instances[0]].definition.name)
+                    if not self.create(
+                        padstackname=new_padstack_def,
+                        pad_shape="Polygon",
+                        antipad_shape="Polygon",
+                        pad_polygon=polygon_data,
+                        antipad_polygon=polygon_data,
+                        polygon_hole=polygon_data,
+                        start_layer=start_layer,
+                        stop_layer=stop_layer,
+                    ):
+                        raise Exception(f"Failed to create padstack definition {new_padstack_def}")
+                    merged_instance = self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net)
+                    merged_via_ids.append(merged_instance.id)
+                    [self.instances[id].delete() for id in instances]
         return merged_via_ids
 
     def merge_via_along_lines(
-        self, net_name="GND", distance_threshold=5e-3, minimum_via_number=6, selected_angles=None
+        self,
+        net_name="GND",
+        distance_threshold=5e-3,
+        minimum_via_number=6,
+        selected_angles=None,
+        padstack_instances_id=None,
     ):
         """Replace padstack instances along lines into a single polygon.
 
@@ -1700,11 +1724,15 @@ class EdbPadstacks(object):
             Specify angle in degrees to detected, for instance [0, 180] is only detecting horizontal and vertical lines.
             Other values can be assigned like 45 degrees. When `None` is provided all lines are detected. Default value
             is `None`.
+        padstack_instances_id : List[int]
+         List of padstack instances ID's to include. If `None`, the algorithm will scan all padstack instances belonging
+         to the specified net. Default value is `None`.
+
 
         Returns
         -------
         bool
-            ``True`` when succeeded ``False`` when failed. <
+            List[int], list of created padstack instances id.
 
         """
         _def = list(
@@ -1713,12 +1741,16 @@ class EdbPadstacks(object):
         if not _def:
             self._logger.error(f"No padstack definition found for net {net_name}")
             return False
+        instances_created = []
         _instances_to_delete = []
         padstack_instances = []
-        for pdstk_def in _def:
-            padstack_instances.append(
-                [inst for inst in self.definitions[pdstk_def].instances if inst.net_name == net_name]
-            )
+        if padstack_instances_id:
+            padstack_instances = [[self.instances[id] for id in padstack_instances_id]]
+        else:
+            for pdstk_def in _def:
+                padstack_instances.append(
+                    [inst for inst in self.definitions[pdstk_def].instances if inst.net_name == net_name]
+                )
         for pdstk_series in padstack_instances:
             instances_location = [inst.position for inst in pdstk_series]
             lines, line_indexes = GeometryOperators.find_points_along_lines(
@@ -1750,11 +1782,14 @@ class EdbPadstacks(object):
                     polygon_hole=polygon_data,
                 ):
                     self._logger.error(f"Failed to create padstack definition {new_padstack_def}")
-                if not self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net_name):
+                new_instance = self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net_name)
+                if not new_instance:
                     self._logger.error(f"Failed to place padstack instance {new_padstack_def}")
+                else:
+                    instances_created.append(new_instance.id)
             for inst in _instances_to_delete:
                 inst.delete()
-        return True
+        return instances_created
 
     def reduce_via_in_bounding_box(self, bounding_box, x_samples, y_samples, nets=None):
         """
