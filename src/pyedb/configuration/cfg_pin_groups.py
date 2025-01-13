@@ -76,7 +76,7 @@ class CfgPinGroup(CfgBase):
             if not self._pedb.siwave.create_pin_group(self.reference_designator, pins, self.name):
                 raise RuntimeError(f"Failed to create pin group {self.name}")
         else:
-            raise ValueError(f"No net and pins defined for defining pin group {self.name}")
+            raise RuntimeError(f"No net and pins defined for defining pin group {self.name}")
 
     def export_properties(self):
         if self.pins:
