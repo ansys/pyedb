@@ -1689,7 +1689,7 @@ class EdbPadstacks(object):
                         start_layer=start_layer,
                         stop_layer=stop_layer,
                     ):
-                        self._logger.error(f"Failed to create padstack definition {new_padstack_def}")
+                        raise Exception(f"Failed to create padstack definition {new_padstack_def}")
                     merged_instance = self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net)
                     merged_via_ids.append(merged_instance.id)
                     [self.instances[id].delete() for id in instances]
