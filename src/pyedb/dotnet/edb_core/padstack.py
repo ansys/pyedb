@@ -1635,8 +1635,7 @@ class EdbPadstacks(object):
         """
         merged_via_ids = []
         if not contour_boxes:
-            self._pedb.logger.error("No contour box provided, you need to pass a nested list as argument.")
-            return False
+            raise Exception("No contour box provided, you need to pass a nested list as argument.")
         if not start_layer:
             start_layer = list(self._pedb.stackup.layers.values())[0].name
         if not stop_layer:
