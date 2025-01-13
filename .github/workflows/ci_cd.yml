@@ -139,7 +139,7 @@ jobs:
     name: Test dotnet (linux)
     runs-on: [ Linux, self-hosted, toolkits ]
     env:
-      ANSYSEM_ROOT242: '/ansys_inc/AnsysEM/v242/Linux64'
+      ANSYSEM_ROOT242: '/opt/AnsysEM/v242/Linux64'
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
@@ -153,7 +153,7 @@ jobs:
       - name: "Install os packages"
         run: |
           sudo apt update
-          sudo apt install libgl1-mesa-glx xvfb
+          sudo apt install libgl1-mesa-glx xvfb -y
 
       - name: Create Python venv
         run: |
@@ -174,8 +174,9 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 20
+          timeout_minutes: 40
           command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             xvfb-run pytest -m "legacy" -n auto --dist loadfile -v --cov
 
