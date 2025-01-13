@@ -1648,7 +1648,9 @@ class EdbPadstacks(object):
             instances = self.get_padstack_instances_id_intersecting_polygon(
                 points=contour_box, padstack_instances_index=instances_index
             )
-            if instances:
+            if not instances:
+                raise Exception(f"No padstack instances found inside {contour_box}")
+            else:
                 if net_filter:
                     instances = [
                         self.instances[id] for id in instances if not self.instances[id].net_name in net_filter
@@ -1691,8 +1693,6 @@ class EdbPadstacks(object):
                     merged_instance = self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net)
                     merged_via_ids.append(merged_instance.id)
                     [self.instances[id].delete() for id in instances]
-            else:
-                self._pedb.logger.error(f"No padstack instances found inside {contour_box}")
         return merged_via_ids
 
     def merge_via_along_lines(
