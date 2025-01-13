@@ -39,7 +39,7 @@ dependencies = [
 
 [project.optional-dependencies]
 tests = [
-    "matplotlib>=3.5.0,<3.10",
+    "matplotlib>=3.5.0,<3.11",
     "mock>=5.1.0,<5.2",
     "pytest>=7.4.0,<8.4",
     "pytest-cov>=4.0.0,<6.1",
@@ -53,7 +53,7 @@ doc = [
     "ipython>=8.13.0,<8.32",
     "jupyterlab>=4.0.0,<4.4",
     "jupytext>=1.16.0,<1.17",
-    "matplotlib>=3.5.0,<3.10",
+    "matplotlib>=3.5.0,<3.11",
     "nbsphinx>=0.9.0,<0.10",
     "nbconvert < 7.17",
     "numpydoc>=1.5.0,<1.9",
@@ -70,7 +70,7 @@ doc = [
 
 ]
 full = [
-    "matplotlib>=3.5.0,<3.10",
+    "matplotlib>=3.5.0,<3.11",
     "shapely",
 ]
 
