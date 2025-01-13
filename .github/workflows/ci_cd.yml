@@ -26,13 +26,13 @@ concurrency:
 
 jobs:
 
-  check_title:
+  pr-title:
     if: github.event_name == 'pull_request'
     name: Check the title of the pull request
     runs-on: ubuntu-latest
     steps:
-      - name: Check commit name
-        uses: ansys/actions/commit-style@v6
+      - name: Check the title of the pull request
+        uses: ansys/actions/check-pr-title@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           use-upper-case: true
