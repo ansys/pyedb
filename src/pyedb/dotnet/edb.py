@@ -269,7 +269,7 @@ class Edb(Database):
             if settings.enable_local_log_file and self.log_name:
                 self._logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s created correctly.", self.edbpath)
-        elif ".aedb" in edbpath:
+        elif ".aedb" in edbpath or ".edb" in edbpath:
             self.edbpath = edbpath
             if settings.enable_local_log_file and self.log_name:
                 self._logger.add_file_logger(self.log_name, "Edb")
