@@ -296,7 +296,7 @@ jobs:
       - name: Install OS packages
         run: |
           sudo apt update
-          sudo apt-get install tk
+          sudo apt-get install tk -y
 
       - name: Setup Python
         uses: actions/setup-python@v5
