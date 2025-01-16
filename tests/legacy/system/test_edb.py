@@ -1723,7 +1723,7 @@ class TestClass:
         assert path_bom.exists()
         edbapp.close()
 
-    def test_create_port_ob_component_no_ref_pins_in_component(self, edb_examples):
+    def test_create_port_on_component_no_ref_pins_in_component(self, edb_examples):
         from pyedb.generic.constants import SourceType
 
         edbapp = edb_examples.get_no_ref_pins_component()

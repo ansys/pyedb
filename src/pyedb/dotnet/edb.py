@@ -4564,6 +4564,7 @@ class Edb(Database):
             port_poly = cloned_edb.modeler.create_polygon(
                 main_shape=void_info[0].polygon_data._edb_object, layer_name="ref", net_name="GND"
             )
+            port_poly.scale(1.1)
             pec_poly = cloned_edb.modeler.create_polygon(
                 main_shape=port_poly.polygon_data._edb_object, layer_name="port_pec", net_name="GND"
             )
