@@ -1415,7 +1415,7 @@ class TestClass:
 
     def test_add_via_with_options_control_file(self):
         """Add new via layer with option in control file."""
-        from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
+        from pyedb.dotnet.database.edb_data.control_file import ControlFile
 
         ctrl = ControlFile()
         ctrl.stackup.add_layer(
