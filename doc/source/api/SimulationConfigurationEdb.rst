@@ -3,7 +3,7 @@ Simulation configuration
 These classes are the containers of simulation configuration constructors for the EDB.
 
 
-.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
 
 .. autosummary::
    :toctree: _autosummary

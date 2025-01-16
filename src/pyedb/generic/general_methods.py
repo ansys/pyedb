@@ -250,7 +250,7 @@ def _log_method(func, new_args, new_kwargs):  # pragma: no cover
     if (
         not settings.enable_debug_edb_logger
         and "Edb" in str(func) + str(new_args)
-        or "edb_core" in str(func) + str(new_args)
+        or "database" in str(func) + str(new_args)
     ):
         return
     line_begin = "ARGUMENTS: "

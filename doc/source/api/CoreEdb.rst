@@ -31,7 +31,7 @@ This section lists the core EDB modules for reading and writing information
 to AEDB files.
 
 
-.. currentmodule:: pyedb.dotnet.edb_core
+.. currentmodule:: pyedb.dotnet.database
 
 .. autosummary::
    :toctree: _autosummary

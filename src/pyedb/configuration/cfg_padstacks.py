@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 from pyedb.configuration.cfg_common import CfgBase
-from pyedb.dotnet.edb_core.general import (
+from pyedb.dotnet.database.general import (
     convert_py_list_to_net_list,
     pascal_to_snake,
     snake_to_pascal,
