@@ -210,10 +210,10 @@ class CfgComponent(CfgBase):
         self._pyedb_obj.component_property = cp
 
     def set_parameters_to_edb(self):
-        if self.enabled:
-            self._pyedb_obj.enabled = self.enabled
         if self.type:
             self._pyedb_obj.type = self.type
+        if self.enabled:
+            self._pyedb_obj.enabled = self.enabled
 
         self._set_model_properties_to_edb()
         if self._pyedb_obj.type.lower() == "ic":

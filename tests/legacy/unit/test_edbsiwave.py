@@ -32,9 +32,9 @@ pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self):
+    def init(self, tmpdir):
         self.edb = Mock()
-        self.edb.edbpath = os.path.join(os.path.expanduser("~"), "fake_edb.aedb")
+        self.edb.edbpath = os.path.join(tmpdir, "fake_edb.aedb")
         self.siwave = EdbSiwave(self.edb)
 
     def test_siwave_add_syz_analsyis(self):

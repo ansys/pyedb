@@ -66,3 +66,15 @@ class PointTerminal(Terminal):
             raise Exception(msg)
         else:
             return terminal
+
+    @property
+    def layer(self):
+        """Get layer of the terminal."""
+        _, _, layer = self._edb_object.GetParameters()
+        return self._pedb.stackup.all_layers[layer.GetName()]
+
+    @layer.setter
+    def layer(self, value):
+        layer = self._pedb.stackup.layers[value]._edb_layer
+        point_data = self._pedb.point_data(*self.location)
+        self._edb_object.SetParameters(point_data, layer)
