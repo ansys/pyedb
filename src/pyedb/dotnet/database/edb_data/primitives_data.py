@@ -29,7 +29,7 @@ from pyedb.dotnet.database.dotnet.primitive import (
     RectangleDotNet,
     TextDotNet,
 )
-from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
+from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
@@ -308,7 +308,7 @@ class EdbPolygon(Primitive):
 
     @property
     def polygon_data(self):
-        """:class:`pyedb.dotnet.edb_core.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
+        """:class:`pyedb.dotnet.database.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
         return PolygonData(self._pedb, self._edb_object.GetPolygonData())
 
     @polygon_data.setter
