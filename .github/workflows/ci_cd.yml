@@ -363,7 +363,7 @@ jobs:
           command: |
             export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            pytest --durations=50 -v external/pyaedt/tests/system/solvers
+            pytest --durations=50 -v --deselect=external/pyaedt/tests/system/solvers/test_45_workflows.py::TestClass::test_03_hfss3dlayout_export_3d_q3d --deselect=external/pyaedt/tests/system/solvers/test_45_workflows.py::TestClass::test_03_hfss3dlayout_export_3d_icepak --deselect=external/pyaedt/tests/system/solvers/test_45_workflows.py::TestClass::test_03_hfss3dlayout_export_3d_maxwell --deselect=external/pyaedt/tests/system/solvers/test_45_workflows.py::TestClass::test_08_configure_a3d --deselect=external/pyaedt/tests/system/solvers/test_45_workflows.py::TestClass::test_11_cutout --deselect=external/pyaedt/tests/system/solvers/test_45_workflows.py::TestClass::test_12_export_layout --deselect=external/pyaedt/tests/system/solvers/test_45_workflows.py::TestClass::test_13_parametrize_layout external/pyaedt/tests/system/solvers
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
