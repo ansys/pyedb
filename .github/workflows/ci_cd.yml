@@ -366,7 +366,7 @@ jobs:
             export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest --durations=50 -v external/pyaedt/tests/system/solvers/test_45_workflows.py
-            pytest --durations=50 -v external/pyaedt/tests/system/solvers --deselect=external/pyaedt/tests/system/solvers/test_45_workflows.py
+            pytest --durations=50 -v external/pyaedt/tests/system/solvers --deselect=tests/system/solvers/test_45_workflows.py
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
