@@ -296,7 +296,7 @@ jobs:
       - name: Install OS packages
         run: |
           sudo apt update
-          sudo apt-get install tk
+          sudo apt-get install tk -y
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -352,6 +352,8 @@ jobs:
             . .venv/bin/activate
             pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/tests/system/general/
 
+      # FIXME: The need to run test_45_workflows first should be removed
+      # This is due to a strange behavior when using numpy2 and AEDT, see #987 and #989 for more information
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@v3
         env:
@@ -363,7 +365,8 @@ jobs:
           command: |
             export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            pytest --durations=50 -v external/pyaedt/tests/system/solvers
+            pytest --durations=50 -v external/pyaedt/tests/system/solvers/test_45_workflows.py
+            pytest --durations=50 -v external/pyaedt/tests/system/solvers --deselect=tests/system/solvers/test_45_workflows.py
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
