@@ -1664,7 +1664,7 @@ class EdbPadstacks(object):
                         instances = [id for id in instances if all_instances_dict[id].stop_layer == stop_layer]
                 if not instances:
                     raise Exception(
-                        f"No padstack instances found inside {contour_box} between {start_layer} and" f"{stop_layer}"
+                        f"No padstack instances found inside {contour_box} between {start_layer} and {stop_layer}"
                     )
 
                 if not start_layer:
