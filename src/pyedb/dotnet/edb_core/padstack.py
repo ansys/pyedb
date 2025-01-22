@@ -1651,9 +1651,7 @@ class EdbPadstacks(object):
                 raise Exception(f"No padstack instances found inside {contour_box}")
             else:
                 if net_filter:
-                    instances = [
-                        self.instances[id] for id in instances if not self.instances[id].net_name in net_filter
-                    ]
+                    instances = [id for id in instances if not self.instances[id].net_name in net_filter]
 
                 net = self.instances[instances[0]].net_name
                 x_values = []
@@ -1690,6 +1688,9 @@ class EdbPadstacks(object):
                     ):
                         raise Exception(f"Failed to create padstack definition {new_padstack_def}")
                     merged_instance = self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net)
+                    merged_instance.start_layer = start_layer
+                    merged_instance.stop_layer = stop_layer
+
                     merged_via_ids.append(merged_instance.id)
                     [self.instances[id].delete() for id in instances]
         return merged_via_ids
