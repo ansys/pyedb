@@ -1,0 +1,6 @@
+protected\_attributes
+=====================
+
+.. currentmodule:: pyedb.configuration.cfg_padstacks
+
+.. autoattribute:: Instance.protected_attributes
