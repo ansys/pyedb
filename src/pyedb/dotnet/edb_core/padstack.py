@@ -1711,7 +1711,7 @@ class EdbPadstacks(object):
                     merged_instance.stop_layer = stop_layer
 
                     merged_via_ids.append(merged_instance.id)
-                    [all_instances[id].delete() for id in instances]
+                    _ = [all_instances[id].delete() for id in instances]
         return merged_via_ids
 
     def merge_via_along_lines(
