@@ -1100,24 +1100,6 @@ class ControlFileSetups:
         self.setups.append(setup)
         return setup
 
-    def output_variables(self, name, adapt_freq, maxdelta, maxpasses):
-        """Add a output variable
-
-        Parameters
-        ----------
-        name : str
-            Setup name.
-        frequency : str
-            Setup Frequency.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.edb_core.edb_data.control_file.ControlFileSetup`
-        """
-        setup = ControlFileSetup(name, adapt_freq, maxdelta, maxpasses)
-        self.setups.append(setup)
-        return setup
-
     def _write_xml(self, root):
         content = ET.SubElement(root, "SimulationSetups")
         for setup in self.setups:

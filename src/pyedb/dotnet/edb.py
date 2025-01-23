@@ -1536,10 +1536,10 @@ class Edb(Database):
                     else:
                         self.logger.error("Unable to define control file.")
 
-                command = [anstranslator_full_path, inputGDS, f'-g="{map_file}"', f'-c="{control_file}"']
+                command = [path, inputGDS, f'-g="{map_file}"', f'-c="{control_file}"']
             else:
                 command = [
-                    anstranslator_full_path,
+                    path,
                     inputGDS,
                     f'-o="{control_file_temp}"' f'-t="{tech_file}"',
                     f'-g="{map_file}"',
