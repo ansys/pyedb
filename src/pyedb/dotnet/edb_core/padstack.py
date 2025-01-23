@@ -1651,7 +1651,7 @@ class EdbPadstacks(object):
                 if net_filter:
                     # instances = [id for id in instances if not self.instances[id].net_name in net_filter]
                     instances = [id for id in instances if all_instances[id].net_name not in net_filter]
-
+                # filter instances by start and stop layer
                 if start_layer:
                     if start_layer not in self._pedb.stackup.layers.keys():
                         raise Exception(f"{start_layer} not exist")
