@@ -964,14 +964,14 @@ class ControlFileMeshOp:
 class ControlFileSetup:
     """Setup Class."""
 
-    def __init__(self, name):
+    def __init__(self, name, adapt_freq="1GHz", maxdelta=0.02, maxpasses=10):
         self.name = name
         self.enabled = True
         self.save_fields = False
         self.save_rad_fields = False
-        self.frequency = "1GHz"
-        self.maxpasses = 10
-        self.max_delta = 0.02
+        self.frequency = adapt_freq
+        self.maxpasses = maxpasses
+        self.max_delta = maxdelta
         self.union_polygons = True
         self.small_voids_area = 0
         self.mode_type = "IC"
@@ -1082,7 +1082,7 @@ class ControlFileSetups:
     def __init__(self):
         self.setups = []
 
-    def add_setup(self, name, frequency):
+    def add_setup(self, name, adapt_freq, maxdelta, maxpasses):
         """Add a new setup
 
         Parameters
@@ -1096,8 +1096,25 @@ class ControlFileSetups:
         -------
         :class:`pyedb.dotnet.edb_core.edb_data.control_file.ControlFileSetup`
         """
-        setup = ControlFileSetup(name)
-        setup.frequency = frequency
+        setup = ControlFileSetup(name, adapt_freq, maxdelta, maxpasses)
+        self.setups.append(setup)
+        return setup
+
+    def output_variables(self, name, adapt_freq, maxdelta, maxpasses):
+        """Add a output variable
+
+        Parameters
+        ----------
+        name : str
+            Setup name.
+        frequency : str
+            Setup Frequency.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.edb_core.edb_data.control_file.ControlFileSetup`
+        """
+        setup = ControlFileSetup(name, adapt_freq, maxdelta, maxpasses)
         self.setups.append(setup)
         return setup
 
@@ -1112,17 +1129,17 @@ class ControlFile:
 
     def __init__(self, xml_input=None, tecnhology=None, layer_map=None):
         self.stackup = ControlFileStackup()
+        self.boundaries = ControlFileBoundaries()
+        self.setups = ControlFileSetups()
         if xml_input:
             self.parse_xml(xml_input)
         if tecnhology:
             self.parse_technology(tecnhology)
         if layer_map:
             self.parse_layer_map(layer_map)
-        self.boundaries = ControlFileBoundaries()
         self.remove_holes = False
         self.remove_holes_area_minimum = 30
         self.remove_holes_units = "um"
-        self.setups = ControlFileSetups()
         self.components = ControlFileComponents()
         self.import_options = ControlFileImportOptions()
         pass
@@ -1262,6 +1279,42 @@ class ControlFile:
                                                 via.remove_unconnected = (
                                                     True if i.attrib["RemoveUnconnected"] == "true" else False
                                                 )
+            if el.tag == "Boundaries":
+                for port_el in el:
+                    if port_el.tag == "CircuitPortPt":
+                        self.boundaries.add_port(
+                            name=port_el.attrib["Name"],
+                            x1=port_el.attrib["x1"],
+                            y1=port_el.attrib["y1"],
+                            layer1=port_el.attrib["Layer1"],
+                            x2=port_el.attrib["x2"],
+                            y2=port_el.attrib["y2"],
+                            layer2=port_el.attrib["Layer2"],
+                            z0=port_el.attrib["Z0"],
+                        )
+            if el.tag == "SimulationSetups":
+                for setup_el in el:
+                    if setup_el.tag == "HFSSSetup":
+                        if "Name" in setup_el.attrib:
+                            name = setup_el.attrib["Name"]
+                        for hfsssettings_el in setup_el:
+                            if hfsssettings_el.tag == "HFSSSimulationSettings":
+                                for hfssadaptsettings_el in hfsssettings_el:
+                                    if hfssadaptsettings_el.tag == "HFSSAdaptiveSettings":
+                                        for adaptsettings_el in hfssadaptsettings_el:
+                                            if adaptsettings_el.tag == "AdaptiveSettings":
+                                                for singlefreqdatalist in adaptsettings_el:
+                                                    if singlefreqdatalist.tag == "SingleFrequencyDataList":
+                                                        for adaptfreqdata in singlefreqdatalist:
+                                                            if adaptfreqdata.tag == "AdaptiveFrequencyData":
+                                                                for adaptfreqdata_el in adaptfreqdata:
+                                                                    if adaptfreqdata_el.tag == "AdaptiveFrequency":
+                                                                        adapt_freq = adaptfreqdata_el.text
+                                                                    elif adaptfreqdata_el.tag == "MaxDelta":
+                                                                        maxdelta = adaptfreqdata_el.text
+                                                                    elif adaptfreqdata_el.tag == "MaxPasses":
+                                                                        maxpasses = adaptfreqdata_el.text
+                    self.setups.add_setup(name, adapt_freq, maxdelta, maxpasses)
         return True
 
     def write_xml(self, xml_output):
@@ -1278,8 +1331,7 @@ class ControlFile:
         """
         control = ET.Element("{http://www.ansys.com/control}Control", attrib={"schemaVersion": "1.0"})
         self.stackup._write_xml(control)
-        if self.boundaries.ports or self.boundaries.extents:
-            self.boundaries._write_xml(control)
+        self.boundaries._write_xml(control)
         if self.remove_holes:
             hole = ET.SubElement(control, "RemoveHoles")
             hole.set("HoleAreaMinimum", str(self.remove_holes_area_minimum))
