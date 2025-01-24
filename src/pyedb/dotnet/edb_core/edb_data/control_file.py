@@ -25,6 +25,7 @@ import os
 import re
 import subprocess
 import sys
+import xml
 
 from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import ET, env_path, env_value, is_linux
@@ -1089,11 +1090,11 @@ class ControlFileSetups:
         ----------
         name : str
             Setup Name.
-        adapt_freq : str
+        adapt_freq : str, optional
             Setup Frequency.
-        maxdelta : float
+        maxdelta : float, optional
             Maximum Delta.
-        maxpasses : int
+        maxpasses : int, optional
             Maximum Number of Passes.
 
         Returns
@@ -1278,29 +1279,37 @@ class ControlFile:
                             layer2=port_el.attrib["Layer2"],
                             z0=port_el.attrib["Z0"],
                         )
-            if el.tag == "SimulationSetups":
-                for setup_el in el:
-                    if setup_el.tag == "HFSSSetup":
-                        if "Name" in setup_el.attrib:
-                            name = setup_el.attrib["Name"]
-                        for hfsssettings_el in setup_el:
-                            if hfsssettings_el.tag == "HFSSSimulationSettings":
-                                for hfssadaptsettings_el in hfsssettings_el:
-                                    if hfssadaptsettings_el.tag == "HFSSAdaptiveSettings":
-                                        for adaptsettings_el in hfssadaptsettings_el:
-                                            if adaptsettings_el.tag == "AdaptiveSettings":
-                                                for singlefreqdatalist in adaptsettings_el:
-                                                    if singlefreqdatalist.tag == "SingleFrequencyDataList":
-                                                        for adaptfreqdata in singlefreqdatalist:
-                                                            if adaptfreqdata.tag == "AdaptiveFrequencyData":
-                                                                for adaptfreqdata_el in adaptfreqdata:
-                                                                    if adaptfreqdata_el.tag == "AdaptiveFrequency":
-                                                                        adapt_freq = adaptfreqdata_el.text
-                                                                    elif adaptfreqdata_el.tag == "MaxDelta":
-                                                                        maxdelta = adaptfreqdata_el.text
-                                                                    elif adaptfreqdata_el.tag == "MaxPasses":
-                                                                        maxpasses = adaptfreqdata_el.text
-                    self.setups.add_setup(name, adapt_freq, maxdelta, maxpasses)
+            setups = root.find("SimulationSetups")
+            if setups:
+                hfsssetup = setups.find("HFSSSetup")
+                if hfsssetup:
+                    if "Name" in hfsssetup.attrib:
+                        name = hfsssetup.attrib["Name"]
+                    hfsssimset = hfsssetup.find("HFSSSimulationSettings")
+                    if hfsssimset:
+                        hfssadaptset = hfsssimset.find("HFSSAdaptiveSettings")
+                        if hfssadaptset:
+                            adaptset = hfssadaptset.find("AdaptiveSettings")
+                            if adaptset:
+                                singlefreqdatalist = adaptset.find("SingleFrequencyDataList")
+                                if singlefreqdatalist:
+                                    adaptfreqdata = singlefreqdatalist.find("AdaptiveFrequencyData")
+                                    if adaptfreqdata:
+                                        if isinstance(
+                                            adaptfreqdata.find("AdaptiveFrequency"), xml.etree.ElementTree.Element
+                                        ):
+                                            adapt_freq = adaptfreqdata.find("AdaptiveFrequency").text
+                                        else:
+                                            adapt_freq = "1GHz"
+                                        if isinstance(adaptfreqdata.find("MaxDelta"), xml.etree.ElementTree.Element):
+                                            maxdelta = adaptfreqdata.find("MaxDelta").text
+                                        else:
+                                            maxdelta = 0.02
+                                        if isinstance(adaptfreqdata.find("MaxPasses"), xml.etree.ElementTree.Element):
+                                            maxpasses = adaptfreqdata.find("MaxPasses").text
+                                        else:
+                                            maxpasses = 10
+                self.setups.add_setup(name, adapt_freq, maxdelta, maxpasses)
         return True
 
     def write_xml(self, xml_output):
