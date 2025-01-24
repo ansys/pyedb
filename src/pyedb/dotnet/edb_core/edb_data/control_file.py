@@ -1088,9 +1088,13 @@ class ControlFileSetups:
         Parameters
         ----------
         name : str
-            Setup name.
-        frequency : str
+            Setup Name.
+        adapt_freq : str
             Setup Frequency.
+        maxdelta : float
+            Maximum Delta.
+        maxdelta : int
+            Maximum Number of Passes.
 
         Returns
         -------
