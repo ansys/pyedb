@@ -1093,7 +1093,7 @@ class ControlFileSetups:
             Setup Frequency.
         maxdelta : float
             Maximum Delta.
-        maxdelta : int
+        maxpasses : int
             Maximum Number of Passes.
 
         Returns
