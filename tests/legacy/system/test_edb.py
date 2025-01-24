@@ -1341,7 +1341,7 @@ class TestClass:
         self.local_scratch.copyfile(gds_in, gds_out)
 
         c = ControlFile(c_file_in, layer_map=c_map)
-        setup = c.setups.add_setup("Setup1", "1GHz", 0.02)
+        setup = c.setups.add_setup("Setup1", "1GHz", 0.02, 10)
         setup.add_sweep("Sweep1", "0.01GHz", "5GHz", "0.1GHz")
         c.boundaries.units = "um"
         c.stackup.units = "um"
