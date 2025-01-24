@@ -1364,8 +1364,8 @@ class TestClass:
         )
 
         assert edb
-        assert "P1" in edb.excitations
-        assert "Setup1" in edb.setups
+        assert "P1" and "P2" in edb.excitations
+        assert "Setup1" and "Setup Test" in edb.setups
         assert "B1" in edb.components.instances
         edb.close()
 
