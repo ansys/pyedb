@@ -54,7 +54,7 @@ c = ControlFile(c_file_in, layer_map=c_map)
 #
 # This code sets up a simulation with HFSS and adds a frequency sweep.
 
-setup = c.setups.add_setup("Setup1", "1GHz")
+setup = c.setups.add_setup("Setup1", "1GHz", 0.02, 10)
 setup.add_sweep("Sweep1", "0.01GHz", "5GHz", "0.1GHz")
 
 # ## Provide additional stackup settings

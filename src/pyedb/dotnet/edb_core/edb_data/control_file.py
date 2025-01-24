@@ -25,6 +25,7 @@ import os
 import re
 import subprocess
 import sys
+import xml
 
 from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import ET, env_path, env_value, is_linux
@@ -964,14 +965,14 @@ class ControlFileMeshOp:
 class ControlFileSetup:
     """Setup Class."""
 
-    def __init__(self, name):
+    def __init__(self, name, adapt_freq="1GHz", maxdelta=0.02, maxpasses=10):
         self.name = name
         self.enabled = True
         self.save_fields = False
         self.save_rad_fields = False
-        self.frequency = "1GHz"
-        self.maxpasses = 10
-        self.max_delta = 0.02
+        self.frequency = adapt_freq
+        self.maxpasses = maxpasses
+        self.max_delta = maxdelta
         self.union_polygons = True
         self.small_voids_area = 0
         self.mode_type = "IC"
@@ -1082,22 +1083,25 @@ class ControlFileSetups:
     def __init__(self):
         self.setups = []
 
-    def add_setup(self, name, frequency):
+    def add_setup(self, name, adapt_freq, maxdelta, maxpasses):
         """Add a new setup
 
         Parameters
         ----------
         name : str
-            Setup name.
-        frequency : str
+            Setup Name.
+        adapt_freq : str, optional
             Setup Frequency.
+        maxdelta : float, optional
+            Maximum Delta.
+        maxpasses : int, optional
+            Maximum Number of Passes.
 
         Returns
         -------
         :class:`pyedb.dotnet.edb_core.edb_data.control_file.ControlFileSetup`
         """
-        setup = ControlFileSetup(name)
-        setup.frequency = frequency
+        setup = ControlFileSetup(name, adapt_freq, maxdelta, maxpasses)
         self.setups.append(setup)
         return setup
 
@@ -1112,17 +1116,17 @@ class ControlFile:
 
     def __init__(self, xml_input=None, tecnhology=None, layer_map=None):
         self.stackup = ControlFileStackup()
+        self.boundaries = ControlFileBoundaries()
+        self.setups = ControlFileSetups()
         if xml_input:
             self.parse_xml(xml_input)
         if tecnhology:
             self.parse_technology(tecnhology)
         if layer_map:
             self.parse_layer_map(layer_map)
-        self.boundaries = ControlFileBoundaries()
         self.remove_holes = False
         self.remove_holes_area_minimum = 30
         self.remove_holes_units = "um"
-        self.setups = ControlFileSetups()
         self.components = ControlFileComponents()
         self.import_options = ControlFileImportOptions()
         pass
@@ -1262,6 +1266,50 @@ class ControlFile:
                                                 via.remove_unconnected = (
                                                     True if i.attrib["RemoveUnconnected"] == "true" else False
                                                 )
+            if el.tag == "Boundaries":
+                for port_el in el:
+                    if port_el.tag == "CircuitPortPt":
+                        self.boundaries.add_port(
+                            name=port_el.attrib["Name"],
+                            x1=port_el.attrib["x1"],
+                            y1=port_el.attrib["y1"],
+                            layer1=port_el.attrib["Layer1"],
+                            x2=port_el.attrib["x2"],
+                            y2=port_el.attrib["y2"],
+                            layer2=port_el.attrib["Layer2"],
+                            z0=port_el.attrib["Z0"],
+                        )
+            setups = root.find("SimulationSetups")
+            if setups:
+                hfsssetup = setups.find("HFSSSetup")
+                if hfsssetup:
+                    if "Name" in hfsssetup.attrib:
+                        name = hfsssetup.attrib["Name"]
+                    hfsssimset = hfsssetup.find("HFSSSimulationSettings")
+                    if hfsssimset:
+                        hfssadaptset = hfsssimset.find("HFSSAdaptiveSettings")
+                        if hfssadaptset:
+                            adaptset = hfssadaptset.find("AdaptiveSettings")
+                            if adaptset:
+                                singlefreqdatalist = adaptset.find("SingleFrequencyDataList")
+                                if singlefreqdatalist:
+                                    adaptfreqdata = singlefreqdatalist.find("AdaptiveFrequencyData")
+                                    if adaptfreqdata:
+                                        if isinstance(
+                                            adaptfreqdata.find("AdaptiveFrequency"), xml.etree.ElementTree.Element
+                                        ):
+                                            adapt_freq = adaptfreqdata.find("AdaptiveFrequency").text
+                                        else:
+                                            adapt_freq = "1GHz"
+                                        if isinstance(adaptfreqdata.find("MaxDelta"), xml.etree.ElementTree.Element):
+                                            maxdelta = adaptfreqdata.find("MaxDelta").text
+                                        else:
+                                            maxdelta = 0.02
+                                        if isinstance(adaptfreqdata.find("MaxPasses"), xml.etree.ElementTree.Element):
+                                            maxpasses = adaptfreqdata.find("MaxPasses").text
+                                        else:
+                                            maxpasses = 10
+                self.setups.add_setup(name, adapt_freq, maxdelta, maxpasses)
         return True
 
     def write_xml(self, xml_output):
@@ -1278,8 +1326,7 @@ class ControlFile:
         """
         control = ET.Element("{http://www.ansys.com/control}Control", attrib={"schemaVersion": "1.0"})
         self.stackup._write_xml(control)
-        if self.boundaries.ports or self.boundaries.extents:
-            self.boundaries._write_xml(control)
+        self.boundaries._write_xml(control)
         if self.remove_holes:
             hole = ET.SubElement(control, "RemoveHoles")
             hole.set("HoleAreaMinimum", str(self.remove_holes_area_minimum))

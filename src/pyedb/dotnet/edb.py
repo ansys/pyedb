@@ -603,7 +603,7 @@ class Edb(Database):
     def import_layout_pcb(
         self,
         input_file,
-        working_dir,
+        working_dir="",
         anstranslator_full_path="",
         use_ppe=False,
         control_file=None,
@@ -616,7 +616,7 @@ class Edb(Database):
         ----------
         input_file : str
             Full path to the board file.
-        working_dir : str
+        working_dir : str, optional
             Directory in which to create the ``aedb`` folder. The name given to the AEDB file
             is the same as the name of the board file.
         anstranslator_full_path : str, optional
@@ -1510,6 +1510,13 @@ class Edb(Database):
             else:
                 return False
         else:
+            if anstranslator_full_path and os.path.exists(anstranslator_full_path):
+                path = anstranslator_full_path
+            else:
+                path = os.path.join(self.base_path, "anstranslator")
+                if is_windows:
+                    path += ".exe"
+
             temp_map_file = os.path.splitext(inputGDS)[0] + ".map"
             temp_layermap_file = os.path.splitext(inputGDS)[0] + ".layermap"
 
@@ -1529,10 +1536,10 @@ class Edb(Database):
                     else:
                         self.logger.error("Unable to define control file.")
 
-                command = [anstranslator_full_path, inputGDS, f'-g="{map_file}"', f'-c="{control_file}"']
+                command = [path, inputGDS, f'-g="{map_file}"', f'-c="{control_file}"']
             else:
                 command = [
-                    anstranslator_full_path,
+                    path,
                     inputGDS,
                     f'-o="{control_file_temp}"' f'-t="{tech_file}"',
                     f'-g="{map_file}"',

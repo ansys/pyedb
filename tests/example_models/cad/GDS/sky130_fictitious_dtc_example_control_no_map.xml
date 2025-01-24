@@ -106,4 +106,25 @@
             </Vias>
         </ELayers>
     </Stackup>
+    <Boundaries LengthUnit="um">
+	<CircuitPortPt Name="P2" x1="-1770" y1="1800" Layer1="met4" x2="-1770" y2="1800" Layer2="met5" Z0="50"/>
+  </Boundaries>
+
+  <SimulationSetups>
+	<HFSSSetup schemaVersion="1.0" Name="Setup Test">
+		<HFSSSimulationSettings>
+			<HFSSAdaptiveSettings>
+				<AdaptiveSettings>
+					<SingleFrequencyDataList>
+						<AdaptiveFrequencyData>
+							<AdaptiveFrequency>0.5GHz</AdaptiveFrequency>
+							<MaxDelta>0.01</MaxDelta>
+							<MaxPasses>10</MaxPasses>
+						</AdaptiveFrequencyData>
+					</SingleFrequencyDataList>
+				</AdaptiveSettings>
+			</HFSSAdaptiveSettings>
+		</HFSSSimulationSettings>
+	</HFSSSetup>
+  </SimulationSetups>
 </c:Control>
