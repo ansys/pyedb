@@ -89,7 +89,7 @@ class EdbExamples:
     def create_empty_edb(self):
         local_folder = self._create_test_folder()
         aedb = os.path.join(local_folder, "new_layout.aedb")
-        return Edb(aedb, edbversion=desktop_version)
+        return Edb(aedb, edbversion=desktop_version, restart_rpc_server=True)
 
     def get_multizone_pcb(self):
         aedb = self._copy_file_folder_into_local_folder("multi_zone_project.aedb")
