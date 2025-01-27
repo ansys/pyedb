@@ -1341,7 +1341,7 @@ class TestClass:
         self.local_scratch.copyfile(gds_in, gds_out)
 
         c = ControlFile(c_file_in, layer_map=c_map)
-        setup = c.setups.add_setup("Setup1", "1GHz")
+        setup = c.setups.add_setup("Setup1", "1GHz", 0.02, 10)
         setup.add_sweep("Sweep1", "0.01GHz", "5GHz", "0.1GHz")
         c.boundaries.units = "um"
         c.stackup.units = "um"
@@ -1364,8 +1364,8 @@ class TestClass:
         )
 
         assert edb
-        assert "P1" in edb.excitations
-        assert "Setup1" in edb.setups
+        assert "P1" and "P2" in edb.excitations
+        assert "Setup1" and "Setup Test" in edb.setups
         assert "B1" in edb.components.instances
         edb.close()
 
@@ -1495,7 +1495,7 @@ class TestClass:
         )
         assert ctrl.boundaries.ports
         # setup using q3D for DC point
-        setup = ctrl.setups.add_setup("test_setup", "10GHz")
+        setup = ctrl.setups.add_setup("test_setup", "10GHz", 0.02, 10)
         assert setup
         setup.add_sweep(
             name="test_sweep",
