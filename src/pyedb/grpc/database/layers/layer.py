@@ -14,7 +14,7 @@ class Layer(GrpcLayer):
     """Manages Edb Layers. Replaces EDBLayer."""
 
     def __init__(self, pedb, edb_object=None, name="", layer_type="undefined", **kwargs):
-        super().__init__(edb_object)
+        super().__init__(edb_object.msg)
         self._pedb = pedb
         self._name = name
         self._color = ()
