@@ -252,10 +252,11 @@ class TestClass:
             use_pyaedt_cutout=False,
         )
         assert os.path.exists(os.path.join(output, "edb.def"))
+        # edbapp.close()
 
     def test_create_custom_cutout_1(self, edb_examples):
         """Create custom cutout 1."""
-        # DOne
+        # Done
         edbapp = edb_examples.get_si_verse()
         spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
         assert edbapp.components.instances["R8"].assign_spice_model(spice_path)
@@ -1077,9 +1078,7 @@ class TestClass:
         trace = edb.modeler.create_trace([[0, 0], [0, 10e-3]], "1_Top", "0.1mm", "trace_with_via_fence")
         edb.padstacks.create("via_0")
         trace.create_via_fence("1mm", "1mm", "via_0")
-
         edb.close()
-        pass
 
     def test_stackup_properties(self):
         """Evaluate stackup properties."""
@@ -1195,6 +1194,7 @@ class TestClass:
         assert isinstance(edb.apd_bondwire_defs, list)
         assert isinstance(edb.version, tuple)
         assert isinstance(edb.footprint_cells, list)
+        edb.close()
 
     def test_backdrill_via_with_offset(self):
         """Set backdrill from top."""
@@ -1313,7 +1313,6 @@ class TestClass:
             (-0.0008, 0.0),
         ]
         edb3.close()
-        del edb3
 
     @pytest.mark.skipif(is_linux, reason="Not supported in IPY")
     def test_solve_siwave(self):
@@ -1329,6 +1328,7 @@ class TestClass:
         res = edbapp.export_siwave_dc_results(out, "SIwaveDCIR1")
         for i in res:
             assert os.path.exists(i)
+        edbapp.close()
 
     def test_cutout_return_clipping_extent(self, edb_examples):
         """"""
@@ -1391,6 +1391,7 @@ class TestClass:
         defined_ports, project_connexions = edbapp.cutout_multizone_layout(edb_zones, common_reference_net)
         assert defined_ports
         assert project_connexions
+        edbapp.close()
 
     def test_icepak(self, edb_examples):
         # Done
@@ -1548,6 +1549,7 @@ class TestClass:
             extend_reference_pins_outside_component=True,
         )
         assert len(edbapp.ports) == 15
+        edbapp.close()
 
     def test_create_ping_group(self, edb_examples):
         # Done
