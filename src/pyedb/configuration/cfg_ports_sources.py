@@ -403,7 +403,6 @@ class CfgSource(CfgCircuitElement):
                 elem.magnitude = self.magnitude / self._elem_num
             circuit_elements.append(elem)
         for terminal in circuit_elements:
-
             if self.equipotential:
                 terms = [terminal, terminal.ref_terminal] if terminal.ref_terminal else [terminal]
                 for t in terms:
@@ -423,7 +422,8 @@ class CfgSource(CfgCircuitElement):
                             radius = self.negative_terminal_info.contact_radius
                         if radius is not None:
                             prim = self._pedb.modeler.create_circle(
-                                temp.layer.name, temp.location[0], temp.location[1], radius, temp.net_name)
+                                temp.layer.name, temp.location[0], temp.location[1], radius, temp.net_name
+                            )
                             prim.dcir_equipotential_region = True
 
                     for i in pads:

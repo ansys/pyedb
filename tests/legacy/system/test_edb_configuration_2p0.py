@@ -1044,14 +1044,22 @@ class TestClass:
                 "magnitude": 2,
                 "equipotential": True,
                 "positive_terminal": {
-                    "coordinates": {"layer": "1_Top", "point": ["104mm", "37mm"], "net": "AVCC_1V3",
-                                    "contact_radius": "1mm"}
+                    "coordinates": {
+                        "layer": "1_Top",
+                        "point": ["104mm", "37mm"],
+                        "net": "AVCC_1V3",
+                        "contact_radius": "1mm",
+                    }
                 },
                 "negative_terminal": {
-                    "coordinates": {"layer": "Inner6(GND2)", "point": ["104mm", "45mm"], "net": "GND",
-                                    "contact_radius": "1.2mm"}
+                    "coordinates": {
+                        "layer": "Inner6(GND2)",
+                        "point": ["104mm", "45mm"],
+                        "net": "GND",
+                        "contact_radius": "1.2mm",
+                    }
                 },
-            }
+            },
         ]
         data = {"sources": sources_i}
         assert edbapp.configuration.load(data, apply_file=True)
