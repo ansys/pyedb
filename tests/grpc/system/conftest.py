@@ -82,22 +82,22 @@ class EdbExamples:
                     self.local_scratch.copyfolder(src, file_folder_name)
         if edbapp:
             version = desktop_version if version is None else version
-            return Edb(aedb, edbversion=version, restart_rpc_server=True)
+            return Edb(aedb, edbversion=version, restart_rpc_server=True, kill_all_instances=True)
         else:
             return aedb
 
     def create_empty_edb(self):
         local_folder = self._create_test_folder()
         aedb = os.path.join(local_folder, "new_layout.aedb")
-        return Edb(aedb, edbversion=desktop_version, restart_rpc_server=True)
+        return Edb(aedb, edbversion=desktop_version, restart_rpc_server=True, kill_all_instances=True)
 
     def get_multizone_pcb(self):
         aedb = self._copy_file_folder_into_local_folder("multi_zone_project.aedb")
-        return Edb(aedb, edbversion=desktop_version, restart_rpc_server=True)
+        return Edb(aedb, edbversion=desktop_version, restart_rpc_server=True, kill_all_instances=True)
 
     def get_no_ref_pins_component(self):
         aedb = self._copy_file_folder_into_local_folder("TEDB/component_no_ref_pins.aedb")
-        return Edb(aedb, edbversion=desktop_version, restart_rpc_server=True)
+        return Edb(aedb, edbversion=desktop_version, restart_rpc_server=True, kill_all_instances=True)
 
 
 @pytest.fixture(scope="class")

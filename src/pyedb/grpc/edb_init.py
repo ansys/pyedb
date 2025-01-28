@@ -38,8 +38,8 @@ class EdbInit(object):
     """Edb Dot Net Class."""
 
     def __init__(self, edbversion):
-        self._global_logger = pyedb_logger
         self.logger = pyedb_logger
+        self._db = None
         if not edbversion:  # pragma: no cover
             try:
                 edbversion = "20{}.{}".format(list_installed_ansysem()[0][-3:-1], list_installed_ansysem()[0][-1:])
@@ -74,7 +74,7 @@ class EdbInit(object):
         """Active database object."""
         return self._db
 
-    def create(self, db_path):
+    def create(self, db_path, port=0, restart_rpc_server=False, kill_all_instances=False):
         """Create a Database at the specified file location.
 
         Parameters
@@ -82,20 +82,30 @@ class EdbInit(object):
         db_path : str
             Path to top-level database folder
 
+        restart_rpc_server : optional, bool
+            Force restarting RPC server when `True`.Default value is `False`
+
+        kill_all_instances : optional, bool.
+            Force killing all RPC server instances, must be used with caution. Default value is `False`.
+
         Returns
         -------
         Database
         """
         if not RpcSession.pid:
-            port = RpcSession.get_random_free_port()
-            RpcSession.start(edb_version=self.edbversion, port=port, restart_server=False)
+            RpcSession.start(
+                edb_version=self.edbversion,
+                port=port,
+                restart_server=restart_rpc_server,
+                kill_all_instances=kill_all_instances,
+            )
             if not RpcSession.pid:
                 self.logger.error("Failed to start RPC server.")
                 return False
         self._db = database.Database.create(db_path)
         return self._db
 
-    def open(self, db_path, read_only):
+    def open(self, db_path, read_only, port=0, restart_rpc_server=False, kill_all_instances=False):
         """Open an existing Database at the specified file location.
 
         Parameters
@@ -104,20 +114,31 @@ class EdbInit(object):
             Path to top-level Database folder.
         read_only : bool
             Obtain read-only access.
+        port : optional, int.
+            Specify the port number.If not provided a randon free one is selected. Default value is `0`.
+        restart_rpc_server : optional, bool
+            Force restarting RPC server when `True`. Default value is `False`.
+        kill_all_instances : optional, bool.
+            Force killing all RPC server instances, must be used with caution. Default value is `False`.
 
         Returns
         -------
         Database or None
             The opened Database object, or None if not found.
         """
+        if restart_rpc_server:
+            RpcSession.pid = 0
         if not RpcSession.pid:
-            port = RpcSession.get_random_free_port()
-            RpcSession.start(edb_version=self.edbversion, port=port, restart_server=False)
+            RpcSession.start(
+                edb_version=self.edbversion,
+                port=port,
+                restart_server=restart_rpc_server,
+                kill_all_instances=kill_all_instances,
+            )
             if not RpcSession.pid:
                 self.logger.error("Failed to start RPC server.")
                 return False
         self._db = database.Database.open(db_path, read_only)
-        return self._db
 
     def delete(self, db_path):
         """Delete a database at the specified file location.
@@ -145,6 +166,7 @@ class EdbInit(object):
             Unsaved changes will be lost.
         """
         self._db.close()
+        self._db = None
         if terminate_rpc_session:
             RpcSession.rpc_session.disconnect()
             RpcSession.pid = 0

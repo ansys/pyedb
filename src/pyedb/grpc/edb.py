@@ -192,10 +192,10 @@ class EdbGrpc(EdbInit):
         edbversion=None,
         isaedtowned=False,
         oproject=None,
-        port=50051,
         use_ppe=False,
         technology_file=None,
         restart_rpc_server=False,
+        kill_all_instances=False,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
@@ -267,13 +267,13 @@ class EdbGrpc(EdbInit):
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath[-2:])
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
-            self.open_edb()
+            self.open_edb(restart_rpc_server=restart_rpc_server)
         elif not os.path.exists(os.path.join(self.edbpath, "edb.def")):
-            self.create_edb()
+            self.create_edb(restart_rpc_server=restart_rpc_server)
             self.logger.info("EDB %s created correctly.", self.edbpath)
         elif ".aedb" in edbpath:
             self.edbpath = edbpath
-            self.open_edb()
+            self.open_edb(restart_rpc_server=restart_rpc_server)
         if self.active_cell:
             self.logger.info("EDB initialized.")
         else:
@@ -511,7 +511,7 @@ class EdbGrpc(EdbInit):
         terms = [term for term in self.layout.terminals if term.boundary_type.value == 8]
         return {ter.name: ter for ter in terms}
 
-    def open_edb(self):
+    def open_edb(self, restart_rpc_server=False, kill_all_instances=False):
         """Open EDB.
 
         Returns
@@ -519,32 +519,41 @@ class EdbGrpc(EdbInit):
         ``True`` when succeed ``False`` if failed : bool
         """
         self.standalone = self.standalone
-        try:
-            self._db = self.open(self.edbpath, self.isreadonly)
-        except Exception as e:
-            self.logger.error(e.args[0])
-        if self._db.is_null:
-            self.logger.warning("Error Opening db")
-            self._active_cell = None
-            return None
-        self.logger.info(f"Database {os.path.split(self.edbpath)[-1]} Opened in {self.edbversion}")
-        self._active_cell = None
-        if self.cellname:
-            for cell in self.active_db.circuit_cells:
-                if cell.name == self.cellname:
-                    self._active_cell = cell
-        if self._active_cell is None:
-            self._active_cell = self._db.circuit_cells[0]
-        self.logger.info("Cell %s Opened", self._active_cell.name)
-        if self._active_cell:
-            self._init_objects()
-            self.logger.info("Builder was initialized.")
+        n_try = 10
+        while not self.db and n_try:
+            try:
+                self.open(
+                    self.edbpath,
+                    self.isreadonly,
+                    restart_rpc_server=restart_rpc_server,
+                    kill_all_instances=kill_all_instances,
+                )
+                n_try -= 1
+            except Exception as e:
+                self.logger.error(e.args[0])
+        if not self.db:
+            raise ValueError("Failed during EDB loading.")
         else:
-            self.logger.error("Builder was not initialized.")
+            if self.db.is_null:
+                self.logger.warning("Error Opening db")
+                self._active_cell = None
+            self.logger.info(f"Database {os.path.split(self.edbpath)[-1]} Opened in {self.edbversion}")
+            self._active_cell = None
+            if self.cellname:
+                for cell in self.active_db.circuit_cells:
+                    if cell.name == self.cellname:
+                        self._active_cell = cell
+            if self._active_cell is None:
+                self._active_cell = self._db.circuit_cells[0]
+            self.logger.info("Cell %s Opened", self._active_cell.name)
+            if self._active_cell:
+                self._init_objects()
+                self.logger.info("Builder was initialized.")
+            else:
+                self.logger.error("Builder was not initialized.")
+            return True
 
-        return True
-
-    def create_edb(self):
+    def create_edb(self, restart_rpc_server=False, kill_all_instances=False):
         """Create EDB.
 
         Returns
@@ -554,16 +563,23 @@ class EdbGrpc(EdbInit):
         from ansys.edb.core.layout.cell import Cell as GrpcCell
         from ansys.edb.core.layout.cell import CellType as GrpcCellType
 
-        self.create(self.edbpath)
-        if not self.active_db:
-            self.logger.warning("Error creating the database.")
+        self.standalone = self.standalone
+        n_try = 10
+        while not self.db and n_try:
+            try:
+                self.create(self.edbpath, restart_rpc_server=restart_rpc_server, kill_all_instances=kill_all_instances)
+                n_try -= 1
+            except Exception as e:
+                self.logger.error(e.args[0])
+        if not self.db:
+            raise ValueError("Failed creating EDB.")
             self._active_cell = None
-            return None
-        if not self.cellname:
-            self.cellname = generate_unique_name("Cell")
-        self._active_cell = GrpcCell.create(
-            db=self.active_db, cell_type=GrpcCellType.CIRCUIT_CELL, cell_name=self.cellname
-        )
+        else:
+            if not self.cellname:
+                self.cellname = generate_unique_name("Cell")
+            self._active_cell = GrpcCell.create(
+                db=self.active_db, cell_type=GrpcCellType.CIRCUIT_CELL, cell_name=self.cellname
+            )
         if self._active_cell:
             self._init_objects()
             return True
@@ -1169,10 +1185,6 @@ class EdbGrpc(EdbInit):
         elapsed_time = time.time() - start_time
         self.logger.info("EDB file save time: {0:.2f}ms".format(elapsed_time * 1000.0))
         self.edbpath = self.directory
-        if self.log_name:
-            self._global_logger.remove_file_logger(os.path.splitext(os.path.split(self.log_name)[-1])[0])
-            self._logger = self._global_logger
-
         self.log_name = os.path.join(
             os.path.dirname(fname), "pyedb_" + os.path.splitext(os.path.split(fname)[-1])[0] + ".log"
         )

@@ -23,6 +23,7 @@
 import os
 from random import randint
 import sys
+import time
 
 from ansys.edb.core.session import launch_session
 import psutil
@@ -31,6 +32,8 @@ from pyedb import __version__
 from pyedb.edb_logger import pyedb_logger
 from pyedb.generic.general_methods import env_path, env_value, is_linux
 from pyedb.misc.misc import list_installed_ansysem
+
+latency_delay = 0.1
 
 
 class RpcSession:
@@ -42,7 +45,7 @@ class RpcSession:
     port = 10000
 
     @staticmethod
-    def start(edb_version, port, restart_server=False):
+    def start(edb_version, port=0, restart_server=False, kill_all_instances=False):
         """Start RPC-server, the server must be started before opening EDB.
 
         Parameters
@@ -57,8 +60,14 @@ class RpcSession:
             Force restarting the RPC server by killing the process in case EDB_RPC is already started. All open EDB
             connection will be lost. This option must be used at the beginning of an application only to ensure the
             server is properly started.
+        kill_all_instances : bool, optional.
+            Force killing all RPC sever instances, including zombie process. To be used with caution, default value is
+            `False`.
         """
-        RpcSession.port = port
+        if not port:
+            RpcSession.port = RpcSession.get_random_free_port()
+        else:
+            RpcSession.port = port
         if not edb_version:  # pragma: no cover
             try:
                 edb_version = "20{}.{}".format(list_installed_ansysem()[0][-3:-1], list_installed_ansysem()[0][-1:])
@@ -89,7 +98,10 @@ class RpcSession:
         if RpcSession.pid:
             if restart_server:
                 pyedb_logger.logger.info("Restarting RPC server")
-                RpcSession.__kill()
+                if kill_all_instances:
+                    RpcSession.__kill_all_instances()
+                else:
+                    RpcSession.__kill()
                 RpcSession.__start_rpc_server()
             else:
                 pyedb_logger.info(f"Server already running on port {RpcSession.port}")
@@ -104,14 +116,16 @@ class RpcSession:
     @staticmethod
     def __get_process_id():
         proc = [p for p in list(psutil.process_iter()) if "edb_rpc" in p.name().lower()]
+        time.sleep(latency_delay)
         if proc:
-            RpcSession.pid = proc[0].pid
+            RpcSession.pid = proc[-1].pid
         else:
             RpcSession.pid = 0
 
     @staticmethod
     def __start_rpc_server():
         RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
+        time.sleep(latency_delay)
         if RpcSession.rpc_session:
             RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
             pyedb_logger.logger.info("Grpc session started")
@@ -119,7 +133,16 @@ class RpcSession:
     @staticmethod
     def __kill():
         p = psutil.Process(RpcSession.pid)
+        time.sleep(latency_delay)
         p.terminate()
+
+    @staticmethod
+    def __kill_all_instances():
+        proc = [p.pid for p in list(psutil.process_iter()) if "edb_rpc" in p.name().lower()]
+        time.sleep(latency_delay)
+        for pid in proc:
+            p = psutil.Process(pid)
+            p.terminate()
 
     @staticmethod
     def close():
@@ -128,16 +151,14 @@ class RpcSession:
         """
         if RpcSession.rpc_session:
             RpcSession.rpc_session.disconnect()
+            time.sleep(latency_delay)
 
     @staticmethod
     def get_random_free_port():
         port = randint(49152, 65535)
-        ports = []
         while True:
-            conns = psutil.net_connections()
-            for conn in conns:
-                ports.append(conn.laddr[1])
-            if port in ports:
+            used_ports = [conn.laddr[1] for conn in psutil.net_connections()]
+            if port in used_ports:
                 port = randint(49152, 65535)
             else:
                 break
