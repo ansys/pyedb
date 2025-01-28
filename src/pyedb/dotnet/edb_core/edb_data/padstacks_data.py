@@ -330,14 +330,14 @@ class EDBPadProperties(object):
         return self._pedbpadstack._ppadstack.int_to_geometry_type(val)
 
     def _update_pad_parameters_parameters(
-        self,
-        layer_name=None,
-        pad_type=None,
-        geom_type=None,
-        params=None,
-        offsetx=None,
-        offsety=None,
-        rotation=None,
+            self,
+            layer_name=None,
+            pad_type=None,
+            geom_type=None,
+            params=None,
+            offsetx=None,
+            offsety=None,
+            rotation=None,
     ):
         """Update padstack parameters.
 
@@ -1248,30 +1248,26 @@ class EDBPadstackInstance(Primitive):
 
         return self._pedb.create_port(terminal, ref_terminal, is_circuit_port)
 
-    @property
-    def dcir_equipotential_region(self):
-        """Check whether dcir equipotential region is enabled.
+    def _set_equipotential(self):
+        """Workaround solution. Remove when EDBAPI bug is fixed for dcir_equipotential_region."""
+        pad = self.definition.pad_by_layer[self.start_layer]
+        if pad.shape.lower() == "circle":
+            ra = self._pedb.edb_value(pad.parameters_values[0] / 2)
+            pos = self.position
+            prim = self._pedb.modeler.create_circle(pad.layer_name, pos[0], pos[1], ra, self.net_name)
+        elif pad.shape.lower() == "rectangle":
+            width, height = pad.parameters_values
+            prim = self._pedb.modeler.create_rectangle(
+                pad.layer_name, self.net_name, width=width, height=height,
+                representation_type="CenterWidthHeight", center_point=self.position, rotation=self.component.rotation
+            )
 
-        Returns
-        -------
-        bool
-        """
-        pattern = r"'DCIR Equipotential Region'='([^']+)'"
-        em_pp = self._em_properties
-        result = re.search(pattern, em_pp).group(1)
-        if result == "true":
-            return True
+        elif pad.polygon_data:
+            prim = self._pedb.modeler.create_polygon(pad.polygon_data, self.start_layer,
+                                                     net_name=self.net_name)
         else:
-            return False
-
-    @dcir_equipotential_region.setter
-    def dcir_equipotential_region(self, value):
-        """Set dcir equipotential region."""
-        pp = r"'DCIR Equipotential Region'='true'" if value else r"'DCIR Equipotential Region'='false'"
-        em_pp = self._em_properties
-        pattern = r"'DCIR Equipotential Region'='([^']+)'"
-        new_em_pp = re.sub(pattern, pp, em_pp)
-        self._em_properties = new_em_pp
+            return
+        prim.dcir_equipotential_region = True
 
     @property
     def object_instance(self):
@@ -1665,7 +1661,6 @@ class EDBPadstackInstance(Primitive):
         float
             Rotatation value for the padstack instance.
         """
-        point_data = self._pedb.edb_api.geometry.point_data(self._pedb.edb_value(0.0), self._pedb.edb_value(0.0))
         out = self._edb_padstackinstance.GetPositionAndRotationValue()
 
         if out[0]:
@@ -1711,8 +1706,8 @@ class EDBPadstackInstance(Primitive):
             if hole_diam:  # pragma no cover
                 hole_finished_size = padstack_def.hole_finished_size
                 via_length = (
-                    self._pedb.stackup.signal_layers[start_layer].upper_elevation
-                    - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
+                        self._pedb.stackup.signal_layers[start_layer].upper_elevation
+                        - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
                 )
                 volume = (math.pi * (hole_diam / 2) ** 2 - math.pi * (hole_finished_size / 2) ** 2) * via_length
         return volume

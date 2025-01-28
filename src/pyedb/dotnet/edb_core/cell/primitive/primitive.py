@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import re
 
 from pyedb.dotnet.edb_core.cell.connectable import Connectable
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
@@ -814,7 +815,7 @@ class Primitive(Connectable):
         )
 
         pid = self._pedb.edb_api.ProductId.Designer
-        _, p = self._edb_padstackinstance.GetProductProperty(pid, 18, "")
+        _, p = self._edb_object.GetProductProperty(pid, 18, "")
         if p:
             return p
         else:
@@ -824,4 +825,29 @@ class Primitive(Connectable):
     def _em_properties(self, em_prop):
         """Set EM properties"""
         pid = self._pedb.edb_api.ProductId.Designer
-        self._edb_padstackinstance.SetProductProperty(pid, 18, em_prop)
+        self._edb_object.SetProductProperty(pid, 18, em_prop)
+
+    @property
+    def dcir_equipotential_region(self):
+        """Check whether dcir equipotential region is enabled.
+
+        Returns
+        -------
+        bool
+        """
+        pattern = r"'DCIR Equipotential Region'='([^']+)'"
+        em_pp = self._em_properties
+        result = re.search(pattern, em_pp).group(1)
+        if result == "true":
+            return True
+        else:
+            return False
+
+    @dcir_equipotential_region.setter
+    def dcir_equipotential_region(self, value):
+        """Set dcir equipotential region."""
+        pp = r"'DCIR Equipotential Region'='true'" if value else r"'DCIR Equipotential Region'='false'"
+        em_pp = self._em_properties
+        pattern = r"'DCIR Equipotential Region'='([^']+)'"
+        new_em_pp = re.sub(pattern, pp, em_pp)
+        self._em_properties = new_em_pp

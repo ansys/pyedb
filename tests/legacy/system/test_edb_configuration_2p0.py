@@ -1026,6 +1026,37 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
+    def test_15d_sources_equipotential(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        sources_i = [
+            {
+                "name": "ISOURCE_J5",
+                "reference_designator": "J5",
+                "type": "current",
+                "magnitude": 17,
+                "positive_terminal": {"net": "SFPA_VCCR"},
+                "negative_terminal": {"net": "GND"},
+                "equipotential": True,
+            },
+            {
+                "name": "x_y_port",
+                "type": "current",
+                "magnitude": 2,
+                "equipotential": True,
+                "positive_terminal": {
+                    "coordinates": {"layer": "1_Top", "point": ["104mm", "37mm"], "net": "AVCC_1V3",
+                                    "contact_radius": "1mm"}
+                },
+                "negative_terminal": {
+                    "coordinates": {"layer": "Inner6(GND2)", "point": ["104mm", "45mm"], "net": "GND",
+                                    "contact_radius": "1.2mm"}
+                },
+            }
+        ]
+        data = {"sources": sources_i}
+        assert edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
     def test_16_components_rlc(self, edb_examples):
         components = [
             {
