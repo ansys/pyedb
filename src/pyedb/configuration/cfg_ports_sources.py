@@ -409,7 +409,6 @@ class CfgSource(CfgCircuitElement):
                     pads = []
                     if t.terminal_type == "PadstackInstanceTerminal":
                         pads.append(t.reference_object)
-                        t._edb_object.dcir_equipotential_region = True
                     elif t.terminal_type == "PinGroupTerminal":
                         name = t._edb_object.GetPinGroup().GetName()
                         pg = self._pedb.siwave.pin_groups[name]
