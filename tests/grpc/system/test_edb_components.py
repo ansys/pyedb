@@ -540,7 +540,7 @@ class TestClass:
         assert edb.components["C200"].create_package_def(component_part_name="SMTC-MECT-110-01-M-D-RA1_V")
         assert not edb.components["C200"].create_package_def()
         assert edb.components["C200"].package_def.name == "C200_CAPC3216X180X55ML20T25"
-        edb.close()
+        edb.close_edb()
 
     def test_solder_ball_getter_setter(self, edb_examples):
         # Done

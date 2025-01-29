@@ -1139,9 +1139,6 @@ class EdbGrpc(EdbInit):
 
         """
         self.close()
-
-        if self.log_name and settings.enable_local_log_file:
-            self._logger.remove_all_file_loggers()
         start_time = time.time()
         self._wait_for_file_release()
         elapsed_time = time.time() - start_time
