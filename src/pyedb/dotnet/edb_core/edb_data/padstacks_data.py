@@ -329,14 +329,14 @@ class EDBPadProperties(object):
         return self._pedbpadstack._ppadstack.int_to_geometry_type(val)
 
     def _update_pad_parameters_parameters(
-            self,
-            layer_name=None,
-            pad_type=None,
-            geom_type=None,
-            params=None,
-            offsetx=None,
-            offsety=None,
-            rotation=None,
+        self,
+        layer_name=None,
+        pad_type=None,
+        geom_type=None,
+        params=None,
+        offsetx=None,
+        offsety=None,
+        rotation=None,
     ):
         """Update padstack parameters.
 
@@ -1267,10 +1267,13 @@ class EDBPadstackInstance(Primitive):
             )
         elif pad.shape.lower() == "oval":
             width, height, _ = pad.parameters_values
-            prim = self._pedb.modeler.create_circle(pad.layer_name, self.position[0], self.position[1], height/2, self.net_name)
+            prim = self._pedb.modeler.create_circle(
+                pad.layer_name, self.position[0], self.position[1], height / 2, self.net_name
+            )
         elif pad.polygon_data:
-            prim = self._pedb.modeler.create_polygon(pad.polygon_data._edb_object, self.start_layer,
-                                                     net_name=self.net_name)
+            prim = self._pedb.modeler.create_polygon(
+                pad.polygon_data._edb_object, self.start_layer, net_name=self.net_name
+            )
             prim.move(self.position)
         else:
             return
@@ -1713,8 +1716,8 @@ class EDBPadstackInstance(Primitive):
             if hole_diam:  # pragma no cover
                 hole_finished_size = padstack_def.hole_finished_size
                 via_length = (
-                        self._pedb.stackup.signal_layers[start_layer].upper_elevation
-                        - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
+                    self._pedb.stackup.signal_layers[start_layer].upper_elevation
+                    - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
                 )
                 volume = (math.pi * (hole_diam / 2) ** 2 - math.pi * (hole_finished_size / 2) ** 2) * via_length
         return volume
