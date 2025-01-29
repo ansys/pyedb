@@ -1267,7 +1267,8 @@ class EDBPadstackInstance(Primitive):
             )
 
         elif pad.polygon_data:
-            prim = self._pedb.modeler.create_polygon(pad.polygon_data, self.start_layer, net_name=self.net_name)
+            prim = self._pedb.modeler.create_polygon(pad.polygon_data._edb_object, self.start_layer, net_name=self.net_name)
+            prim.move(self.position)
         else:
             return
         prim.dcir_equipotential_region = True
