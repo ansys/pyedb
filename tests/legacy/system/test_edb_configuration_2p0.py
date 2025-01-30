@@ -1034,7 +1034,7 @@ class TestClass:
                 "reference_designator": "J5",
                 "type": "current",
                 "magnitude": 17,
-                "positive_terminal": {"net": "SFPA_VCCR"},
+                "positive_terminal": {"net": "SFPA_VCCR","contact_radius": "0.21mm",},
                 "negative_terminal": {"net": "GND"},
                 "equipotential": True,
             },
@@ -1048,16 +1048,16 @@ class TestClass:
                         "layer": "1_Top",
                         "point": ["104mm", "37mm"],
                         "net": "AVCC_1V3",
-                        "contact_radius": "1mm",
-                    }
+                    },
+                    "contact_radius": "1mm",
                 },
                 "negative_terminal": {
                     "coordinates": {
                         "layer": "Inner6(GND2)",
                         "point": ["104mm", "45mm"],
                         "net": "GND",
-                        "contact_radius": "1.2mm",
-                    }
+                    },
+                    "contact_radius": "1.2mm",
                 },
             },
         ]

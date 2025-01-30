@@ -1247,10 +1247,16 @@ class EDBPadstackInstance(Primitive):
 
         return self._pedb.create_port(terminal, ref_terminal, is_circuit_port)
 
-    def _set_equipotential(self):
+    def _set_equipotential(self, contact_radius=None):
         """Workaround solution. Remove when EDBAPI bug is fixed for dcir_equipotential_region."""
         pad = self.definition.pad_by_layer[self.start_layer]
-        if pad.shape.lower() == "circle":
+        if contact_radius is not None:
+            prim = self._pedb.modeler.create_circle(
+                pad.layer_name, self.position[0], self.position[1], contact_radius, self.net_name
+            )
+            prim.dcir_equipotential_region = True
+            return
+        elif pad.shape.lower() == "circle":
             ra = self._pedb.edb_value(pad.parameters_values[0] / 2)
             pos = self.position
             prim = self._pedb.modeler.create_circle(pad.layer_name, pos[0], pos[1], ra, self.net_name)
