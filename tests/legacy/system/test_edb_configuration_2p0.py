@@ -1034,7 +1034,10 @@ class TestClass:
                 "reference_designator": "J5",
                 "type": "current",
                 "magnitude": 17,
-                "positive_terminal": {"net": "SFPA_VCCR","contact_radius": "0.21mm",},
+                "positive_terminal": {
+                    "net": "SFPA_VCCR",
+                    "contact_radius": "0.21mm",
+                },
                 "negative_terminal": {"net": "GND"},
                 "equipotential": True,
             },

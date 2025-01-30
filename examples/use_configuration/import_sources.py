@@ -99,12 +99,8 @@ current_source_3 = {
     "name": "CURRENT_SOURCE_3",
     "type": "current",
     "equipotential": True,
-    "positive_terminal": {
-        "coordinates": {"layer": "1_Top", "point": ["116mm", "41mm"], "net": "5V"}
-    },
-    "negative_terminal": {
-        "coordinates": {"layer": "Inner1(GND1)", "point": ["116mm", "41mm"], "net": "GND"}
-    },
+    "positive_terminal": {"coordinates": {"layer": "1_Top", "point": ["116mm", "41mm"], "net": "5V"}},
+    "negative_terminal": {"coordinates": {"layer": "Inner1(GND1)", "point": ["116mm", "41mm"], "net": "GND"}},
 }
 
 # ## Add a current source reference to the nearest pin
