@@ -220,7 +220,7 @@ class Layout(ObjBase):
         -------
         """
 
-        return [EDBNetsData(net, self._pedb) for net in self._edb_object.Nets]
+        return [EDBNetsData(net, self._pedb) for net in self._edb_object.Nets if net]
 
     @property
     def primitives(self):
@@ -230,7 +230,7 @@ class Layout(ObjBase):
         -------
         list of :class:`dotnet.edb_core.dotnet.primitive.PrimitiveDotNet` cast objects.
         """
-        return [primitive_cast(self._pedb, p) for p in self._edb_object.Primitives]
+        return [primitive_cast(self._pedb, p) for p in self._edb_object.Primitives if p]
 
     @property
     def bondwires(self):
