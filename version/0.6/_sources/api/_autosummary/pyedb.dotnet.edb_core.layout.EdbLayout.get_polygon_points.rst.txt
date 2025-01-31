@@ -1,0 +1,6 @@
+get\_polygon\_points
+====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.layout
+
+.. automethod:: EdbLayout.get_polygon_points
