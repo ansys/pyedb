@@ -49,6 +49,8 @@ cfg = dict()
 # - **type**. Type of the source. Supported types are 'voltage', 'current'
 # - **positive_terminal**. Supported types are 'net', 'pin', 'pin_group', 'coordinates'
 #   - **contact_radius**. Optional. Set circular equipotential region.
+#   - **inline**. Optional. When True, contact points are place in a row.
+#   - **num_of_contact**. Optional. Number of contact points. Default is 1. Applicable only when inline is True.
 # - **negative_terminal**. Supported types are 'net', 'pin', 'pin_group', 'coordinates'
 # - **equipotential**. Set equipotential region on pins when True.
 
