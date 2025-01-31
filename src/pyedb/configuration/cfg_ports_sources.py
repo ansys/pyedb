@@ -33,6 +33,9 @@ class CfgTerminalInfo(CfgBase):
         self._pedb = pedb
         self.type = list(kwargs.keys())[0]
         self.value = kwargs[self.type]
+        self.contact_radius = kwargs.get("contact_radius", None)
+        self.num_of_contact = kwargs.get("num_of_contact", 1)
+        self.inline = kwargs.get("inline", False)
 
     def export_properties(self):
         return {self.type: self.value}
@@ -46,7 +49,6 @@ class CfgCoordianteTerminalInfo(CfgTerminalInfo):
         self.point_x = self.value["point"][0]
         self.point_y = self.value["point"][1]
         self.net = self.value["net"]
-        self.contact_radius = self.value.get("contact_radius", None)
 
     def export_properties(self):
         return {"coordinates": {"layer": self.layer, "point": [self.point_x, self.point_y], "net": self.net}}
@@ -245,8 +247,6 @@ class CfgCircuitElement(CfgBase):
             point = [self.positive_terminal_info.point_x, self.positive_terminal_info.point_y]
             net_name = self.positive_terminal_info.net
             pos_coor_terminal[self.name] = self._pedb.get_point_terminal(self.name, net_name, point, layer)
-            if self.positive_terminal_info.contact_radius:
-                pos_coor_terminal[self.name].contact_radius = self.positive_terminal_info.contact_radius
 
         elif pos_type == "pin_group":
             if self.distributed:
@@ -406,20 +406,24 @@ class CfgSource(CfgCircuitElement):
             if self.equipotential:
                 terms = [terminal, terminal.ref_terminal] if terminal.ref_terminal else [terminal]
                 for t in terms:
+                    if not t.is_reference_terminal:
+                        radius = self.positive_terminal_info.contact_radius
+                        num_of_contact = self.positive_terminal_info.num_of_contact
+                        inline = self.positive_terminal_info.inline
+                    else:
+                        radius = self.negative_terminal_info.contact_radius
+                        num_of_contact = self.negative_terminal_info.num_of_contact
+                        inline = self.negative_terminal_info.inline
+
                     pads = []
                     if t.terminal_type == "PadstackInstanceTerminal":
                         pads.append(t.reference_object)
-                        t._edb_object.dcir_equipotential_region = True
                     elif t.terminal_type == "PinGroupTerminal":
                         name = t._edb_object.GetPinGroup().GetName()
                         pg = self._pedb.siwave.pin_groups[name]
                         pads.extend([i for _, i in pg.pins.items()])
-                    elif t.terminal_type == "PointTerminal":
+                    elif t.terminal_type == "PointTerminal" and radius:
                         temp = [i for i in self._pedb.layout.terminals if i.name == t.name][0]
-                        if not temp.is_reference_terminal:
-                            radius = self.positive_terminal_info.contact_radius
-                        else:
-                            radius = self.negative_terminal_info.contact_radius
                         if radius is not None:
                             prim = self._pedb.modeler.create_circle(
                                 temp.layer.name, temp.location[0], temp.location[1], radius, temp.net_name
@@ -427,7 +431,7 @@ class CfgSource(CfgCircuitElement):
                             prim.dcir_equipotential_region = True
 
                     for i in pads:
-                        i._set_equipotential()
+                        i._set_equipotential(contact_radius=radius, inline=inline, num_of_contact=num_of_contact)
 
         return circuit_elements
 
