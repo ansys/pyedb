@@ -24,6 +24,8 @@ from collections import OrderedDict
 import math
 import warnings
 
+import numpy as np
+
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
@@ -329,14 +331,14 @@ class EDBPadProperties(object):
         return self._pedbpadstack._ppadstack.int_to_geometry_type(val)
 
     def _update_pad_parameters_parameters(
-        self,
-        layer_name=None,
-        pad_type=None,
-        geom_type=None,
-        params=None,
-        offsetx=None,
-        offsety=None,
-        rotation=None,
+            self,
+            layer_name=None,
+            pad_type=None,
+            geom_type=None,
+            params=None,
+            offsetx=None,
+            offsety=None,
+            rotation=None,
     ):
         """Update padstack parameters.
 
@@ -1247,15 +1249,53 @@ class EDBPadstackInstance(Primitive):
 
         return self._pedb.create_port(terminal, ref_terminal, is_circuit_port)
 
-    def _set_equipotential(self, contact_radius=None):
+    def _set_equipotential(self, contact_radius=None, inline=False, num_of_contact=1):
         """Workaround solution. Remove when EDBAPI bug is fixed for dcir_equipotential_region."""
         pad = self.definition.pad_by_layer[self.start_layer]
+
+        pos_x, pos_y = self.position
+        comp_rotation = self._pedb.edb_value(self.component.rotation).ToDouble() % 3.141592653589793
+
         if contact_radius is not None:
-            prim = self._pedb.modeler.create_circle(
-                pad.layer_name, self.position[0], self.position[1], contact_radius, self.net_name
-            )
-            prim.dcir_equipotential_region = True
+            if num_of_contact == 1:
+                prim = self._pedb.modeler.create_circle(
+                    pad.layer_name, pos_x, pos_y, contact_radius, self.net_name
+                )
+                prim.dcir_equipotential_region = True
+            else:
+                if pad.shape.lower() in ["rectangle", "oval"]:
+                    width, height = pad.parameters_values[0:2]
+                    radius = self._pedb.edb_value(contact_radius).ToDouble()
+                else:
+                    return
+
+                if inline is False:
+                    x_offset = width / 2 - radius if comp_rotation == 0 else height / 2 - radius
+                    y_offset = height / 2 - radius if comp_rotation == 0 else width / 2 - radius
+                    positions = []
+                    for x, y in [[1, 1], [-1, 1], [1, -1], [-1, -1]]:
+                        positions.append([x_offset * x, y_offset * y])
+                else:
+                    if width > height:
+                        offset = (width - radius * 2) / (num_of_contact - 1)
+                    else:
+                        offset = (height - radius * 2) / (num_of_contact - 1)
+
+                    start_pos = (num_of_contact - 1) / 2
+                    offset = [offset * i for i in np.arange(start_pos*-1, start_pos + 1)]
+
+                    if (width > height and comp_rotation == 0) or (width < height and comp_rotation != 0):
+                        positions = list(zip(offset, [0]*num_of_contact))
+                    else:
+                        positions = list(zip([0]*num_of_contact, offset))
+
+                for x, y in positions:
+                    prim = self._pedb.modeler.create_circle(
+                        pad.layer_name, pos_x + x, pos_y + y, radius, self.net_name
+                    )
+                    prim.dcir_equipotential_region = True
             return
+
         elif pad.shape.lower() == "circle":
             ra = self._pedb.edb_value(pad.parameters_values[0] / 2)
             pos = self.position
@@ -1722,8 +1762,8 @@ class EDBPadstackInstance(Primitive):
             if hole_diam:  # pragma no cover
                 hole_finished_size = padstack_def.hole_finished_size
                 via_length = (
-                    self._pedb.stackup.signal_layers[start_layer].upper_elevation
-                    - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
+                        self._pedb.stackup.signal_layers[start_layer].upper_elevation
+                        - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
                 )
                 volume = (math.pi * (hole_diam / 2) ** 2 - math.pi * (hole_finished_size / 2) ** 2) * via_length
         return volume

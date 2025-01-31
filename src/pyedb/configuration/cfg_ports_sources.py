@@ -34,6 +34,8 @@ class CfgTerminalInfo(CfgBase):
         self.type = list(kwargs.keys())[0]
         self.value = kwargs[self.type]
         self.contact_radius = kwargs.get("contact_radius", None)
+        self.num_of_contact = kwargs.get("num_of_contact", 1)
+        self.inline = kwargs.get("inline", False)
 
     def export_properties(self):
         return {self.type: self.value}
@@ -406,8 +408,12 @@ class CfgSource(CfgCircuitElement):
                 for t in terms:
                     if not t.is_reference_terminal:
                         radius = self.positive_terminal_info.contact_radius
+                        num_of_contact = self.positive_terminal_info.num_of_contact
+                        inline = self.positive_terminal_info.inline
                     else:
                         radius = self.negative_terminal_info.contact_radius
+                        num_of_contact = self.negative_terminal_info.num_of_contact
+                        inline = self.negative_terminal_info.inline
 
                     pads = []
                     if t.terminal_type == "PadstackInstanceTerminal":
@@ -425,7 +431,7 @@ class CfgSource(CfgCircuitElement):
                             prim.dcir_equipotential_region = True
 
                     for i in pads:
-                        i._set_equipotential(radius)
+                        i._set_equipotential(contact_radius=radius, inline=inline, num_of_contact=num_of_contact)
 
         return circuit_elements
 
