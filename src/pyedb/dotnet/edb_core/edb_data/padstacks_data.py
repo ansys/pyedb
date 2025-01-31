@@ -331,14 +331,14 @@ class EDBPadProperties(object):
         return self._pedbpadstack._ppadstack.int_to_geometry_type(val)
 
     def _update_pad_parameters_parameters(
-            self,
-            layer_name=None,
-            pad_type=None,
-            geom_type=None,
-            params=None,
-            offsetx=None,
-            offsety=None,
-            rotation=None,
+        self,
+        layer_name=None,
+        pad_type=None,
+        geom_type=None,
+        params=None,
+        offsetx=None,
+        offsety=None,
+        rotation=None,
     ):
         """Update padstack parameters.
 
@@ -1258,9 +1258,7 @@ class EDBPadstackInstance(Primitive):
 
         if contact_radius is not None:
             if num_of_contact == 1:
-                prim = self._pedb.modeler.create_circle(
-                    pad.layer_name, pos_x, pos_y, contact_radius, self.net_name
-                )
+                prim = self._pedb.modeler.create_circle(pad.layer_name, pos_x, pos_y, contact_radius, self.net_name)
                 prim.dcir_equipotential_region = True
             else:
                 if pad.shape.lower() in ["rectangle", "oval"]:
@@ -1282,17 +1280,15 @@ class EDBPadstackInstance(Primitive):
                         offset = (height - radius * 2) / (num_of_contact - 1)
 
                     start_pos = (num_of_contact - 1) / 2
-                    offset = [offset * i for i in np.arange(start_pos*-1, start_pos + 1)]
+                    offset = [offset * i for i in np.arange(start_pos * -1, start_pos + 1)]
 
                     if (width > height and comp_rotation == 0) or (width < height and comp_rotation != 0):
-                        positions = list(zip(offset, [0]*num_of_contact))
+                        positions = list(zip(offset, [0] * num_of_contact))
                     else:
-                        positions = list(zip([0]*num_of_contact, offset))
+                        positions = list(zip([0] * num_of_contact, offset))
 
                 for x, y in positions:
-                    prim = self._pedb.modeler.create_circle(
-                        pad.layer_name, pos_x + x, pos_y + y, radius, self.net_name
-                    )
+                    prim = self._pedb.modeler.create_circle(pad.layer_name, pos_x + x, pos_y + y, radius, self.net_name)
                     prim.dcir_equipotential_region = True
             return
 
@@ -1762,8 +1758,8 @@ class EDBPadstackInstance(Primitive):
             if hole_diam:  # pragma no cover
                 hole_finished_size = padstack_def.hole_finished_size
                 via_length = (
-                        self._pedb.stackup.signal_layers[start_layer].upper_elevation
-                        - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
+                    self._pedb.stackup.signal_layers[start_layer].upper_elevation
+                    - self._pedb.stackup.signal_layers[stop_layer].lower_elevation
                 )
                 volume = (math.pi * (hole_diam / 2) ** 2 - math.pi * (hole_finished_size / 2) ** 2) * via_length
         return volume
