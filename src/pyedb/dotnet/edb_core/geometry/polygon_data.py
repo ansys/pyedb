@@ -30,14 +30,14 @@ class PolygonData:
     """Polygon Data."""
 
     def __init__(
-            self,
-            pedb,
-            edb_object=None,
-            create_from_points=None,
-            create_from_circle=None,
-            create_from_rectangle=None,
-            create_from_bounding_box=None,
-            **kwargs,
+        self,
+        pedb,
+        edb_object=None,
+        create_from_points=None,
+        create_from_circle=None,
+        create_from_rectangle=None,
+        create_from_bounding_box=None,
+        **kwargs,
     ):
         self._pedb = pedb
 
