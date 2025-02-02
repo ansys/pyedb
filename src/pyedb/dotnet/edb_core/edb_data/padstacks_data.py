@@ -1628,7 +1628,7 @@ class EDBPadstackInstance(Primitive):
         layer_list = []
         start_layer_name = start_layer.GetName()
         stop_layer_name = stop_layer.GetName()
-        for layer_name in list(self._pedb.stackup.layers.keys()):
+        for layer_name in list(self._pedb.stackup.signal_layers.keys()):
             if started:
                 layer_list.append(layer_name)
                 if layer_name == stop_layer_name or layer_name == start_layer_name:
