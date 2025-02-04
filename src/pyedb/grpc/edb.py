@@ -42,6 +42,7 @@ from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
 )
+from ansys.edb.core.utility.cache import enable_caching
 from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
@@ -368,17 +369,18 @@ class EdbGrpc(EdbInit):
         self._configuration = None
 
     def _init_objects(self):
-        self._components = Components(self)
-        self._stackup = Stackup(self, self.layout.layer_collection)
-        self._padstack = Padstacks(self)
-        self._siwave = Siwave(self)
-        self._hfss = Hfss(self)
-        self._nets = Nets(self)
-        self._modeler = Modeler(self)
-        self._materials = Materials(self)
-        self._source_excitation = SourceExcitation(self)
-        self._differential_pairs = DifferentialPairs(self)
-        self._extended_nets = ExtendedNets(self)
+        with enable_caching():
+            self._components = Components(self)
+            self._stackup = Stackup(self, self.layout.layer_collection)
+            self._padstack = Padstacks(self)
+            self._siwave = Siwave(self)
+            self._hfss = Hfss(self)
+            self._nets = Nets(self)
+            self._modeler = Modeler(self)
+            self._materials = Materials(self)
+            self._source_excitation = SourceExcitation(self)
+            self._differential_pairs = DifferentialPairs(self)
+            self._extended_nets = ExtendedNets(self)
 
     @property
     def cell_names(self):
@@ -388,7 +390,8 @@ class EdbGrpc(EdbInit):
         -------
         list of cell names : List[str]
         """
-        return [cell.name for cell in self.active_db.top_circuit_cells]
+        with enable_caching():
+            return [cell.name for cell in self.active_db.top_circuit_cells]
 
     @property
     def design_variables(self):
@@ -398,7 +401,8 @@ class EdbGrpc(EdbInit):
         -------
         variable dictionary : Dict{str[variable name]: float[variable value]}
         """
-        return {i: self.active_cell.get_variable_value(i).value for i in self.active_cell.get_all_variable_names()}
+        with enable_caching():
+            return {i: self.active_cell.get_variable_value(i).value for i in self.active_cell.get_all_variable_names()}
 
     @property
     def project_variables(self):
@@ -409,7 +413,8 @@ class EdbGrpc(EdbInit):
         variables dictionary : Dict{str[variable name]: float[variable value]}
 
         """
-        return {i: self.active_db.get_variable_value(i).value for i in self.active_db.get_all_variable_names()}
+        with enable_caching():
+            return {i: self.active_db.get_variable_value(i).value for i in self.active_db.get_all_variable_names()}
 
     @property
     def layout_validation(self):
@@ -419,7 +424,8 @@ class EdbGrpc(EdbInit):
         -------
         layout validation object: .:class:`pyedb.grpc.database.layout_validation.LayoutValidation`
         """
-        return LayoutValidation(self)
+        with enable_caching():
+            return LayoutValidation(self)
 
     @property
     def variables(self):
@@ -430,12 +436,13 @@ class EdbGrpc(EdbInit):
         variables dictionary : Dict[str, :class:`pyedb.dotnet.database.edb_data.variables.Variable`]
 
         """
-        all_vars = dict()
-        for i, j in self.project_variables.items():
-            all_vars[i] = j
-        for i, j in self.design_variables.items():
-            all_vars[i] = j
-        return all_vars
+        with enable_caching():
+            all_vars = dict()
+            for i, j in self.project_variables.items():
+                all_vars[i] = j
+            for i, j in self.design_variables.items():
+                all_vars[i] = j
+            return all_vars
 
     @property
     def terminals(self):
@@ -445,19 +452,21 @@ class EdbGrpc(EdbInit):
         -------
         Dict
         """
-        return {i.name: i for i in self.layout.terminals}
+        with enable_caching():
+            return {i.name: i for i in self.layout.terminals}
 
     @property
     def excitations(self):
         """Get all layout excitations."""
-        terms = [term for term in self.layout.terminals if term.boundary_type == "port"]
-        temp = {}
-        for term in terms:
-            if not term.bundle_terminal.is_null:
-                temp[term.name] = BundleWavePort(self, term)
-            else:
-                temp[term.name] = GapPort(self, term)
-        return temp
+        with enable_caching():
+            terms = [term for term in self.layout.terminals if term.boundary_type == "port"]
+            temp = {}
+            for term in terms:
+                if not term.bundle_terminal.is_null:
+                    temp[term.name] = BundleWavePort(self, term)
+                else:
+                    temp[term.name] = GapPort(self, term)
+            return temp
 
     @property
     def ports(self):
@@ -469,47 +478,52 @@ class EdbGrpc(EdbInit):
                    :class:`pyedb.dotnet.database.edb_data.ports.WavePort`,]]
 
         """
-        terminals = [term for term in self.layout.terminals if not term.is_reference_terminal]
-        ports = {}
-        from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
-        from pyedb.grpc.database.terminal.padstack_instance_terminal import (
-            PadstackInstanceTerminal,
-        )
+        with enable_caching():
+            terminals = [term for term in self.layout.terminals if not term.is_reference_terminal]
+            ports = {}
+            from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
+            from pyedb.grpc.database.terminal.padstack_instance_terminal import (
+                PadstackInstanceTerminal,
+            )
 
-        for t in terminals:
-            if isinstance(t, BundleTerminal):
-                bundle_ter = WavePort(self, t)
-                ports[bundle_ter.name] = bundle_ter
-            elif isinstance(t, PadstackInstanceTerminal):
-                ports[t.name] = CoaxPort(self, t)
-            else:
-                ports[t.name] = GapPort(self, t)
-        return ports
+            for t in terminals:
+                if isinstance(t, BundleTerminal):
+                    bundle_ter = WavePort(self, t)
+                    ports[bundle_ter.name] = bundle_ter
+                elif isinstance(t, PadstackInstanceTerminal):
+                    ports[t.name] = CoaxPort(self, t)
+                else:
+                    ports[t.name] = GapPort(self, t)
+            return ports
 
     @property
     def excitations_nets(self):
         """Get all excitations net names."""
-        return list(set([i.net.name for i in self.layout.terminals if not i.is_reference_terminal]))
+        with enable_caching():
+            return list(set([i.net.name for i in self.layout.terminals if not i.is_reference_terminal]))
 
     @property
     def sources(self):
         """Get all layout sources."""
-        return self.terminals
+        with enable_caching():
+            return self.terminals
 
     @property
     def voltage_regulator_modules(self):
         """Get all voltage regulator modules"""
-        vrms = self.layout.voltage_regulators
-        _vrms = {}
-        for vrm in vrms:
-            _vrms[vrm.name] = vrm
-        return _vrms
+        with enable_caching():
+            vrms = self.layout.voltage_regulators
+            _vrms = {}
+            for vrm in vrms:
+                _vrms[vrm.name] = vrm
+            return _vrms
 
     @property
     def probes(self):
         """Get all layout probes."""
-        terms = [term for term in self.layout.terminals if term.boundary_type.value == 8]
-        return {ter.name: ter for ter in terms}
+        with enable_caching():
+            terms = [term for term in self.layout.terminals if term.boundary_type.value == 8]
+            return {ter.name: ter for ter in terms}
 
     def open_edb(self, restart_rpc_server=False, kill_all_instances=False):
         """Open EDB.
@@ -545,7 +559,7 @@ class EdbGrpc(EdbInit):
                         self._active_cell = cell
             if self._active_cell is None:
                 self._active_cell = self._db.circuit_cells[0]
-            self.logger.info("Cell %s Opened", self._active_cell.name)
+            self.logger.info(f"Cell {self._active_cell.name} Opened")
             if self._active_cell:
                 self._init_objects()
                 self.logger.info("Builder was initialized.")
@@ -683,25 +697,26 @@ class EdbGrpc(EdbInit):
         ``True`` if successful, ``False`` if failed : bool
 
         """
-        if units.lower() not in ["millimeter", "inch", "micron"]:  # pragma no cover
-            self.logger.warning("The wrong unit is entered. Setting to the default, millimeter.")
-            units = "millimeter"
+        with enable_caching():
+            if units.lower() not in ["millimeter", "inch", "micron"]:  # pragma no cover
+                self.logger.warning("The wrong unit is entered. Setting to the default, millimeter.")
+                units = "millimeter"
 
-        if not ipc_path:
-            ipc_path = self.edbpath[:-4] + "xml"
-        self.logger.info("Export IPC 2581 is starting. This operation can take a while.")
-        start = time.time()
-        ipc = Ipc2581(self, units)
-        ipc.load_ipc_model()
-        ipc.file_path = ipc_path
-        result = ipc.write_xml()
+            if not ipc_path:
+                ipc_path = self.edbpath[:-4] + "xml"
+            self.logger.info("Export IPC 2581 is starting. This operation can take a while.")
+            start = time.time()
+            ipc = Ipc2581(self, units)
+            ipc.load_ipc_model()
+            ipc.file_path = ipc_path
+            result = ipc.write_xml()
 
-        if result:  # pragma no cover
-            self.logger.info_timer("Export IPC 2581 completed.", start)
-            self.logger.info("File saved as %s", ipc_path)
-            return ipc_path
-        self.logger.info("Error exporting IPC 2581.")
-        return False
+            if result:  # pragma no cover
+                self.logger.info_timer("Export IPC 2581 completed.", start)
+                self.logger.info("File saved as %s", ipc_path)
+                return ipc_path
+            self.logger.info("Error exporting IPC 2581.")
+            return False
 
     @property
     def configuration(self):
@@ -734,12 +749,14 @@ class EdbGrpc(EdbInit):
     @property
     def active_db(self):
         """Database object."""
-        return self.db
+        with enable_caching():
+            return self.db
 
     @property
     def active_cell(self):
         """Active cell."""
-        return self._active_cell
+        with enable_caching():
+            return self._active_cell
 
     @property
     def components(self):
@@ -755,9 +772,10 @@ class EdbGrpc(EdbInit):
         >>> edbapp = Edb("myproject.aedb")
         >>> comp = edbapp.components.get_component_by_name("J1")
         """
-        if not self._components and self.active_db:
-            self._components = Components(self)
-        return self._components
+        with enable_caching():
+            if not self._components and self.active_db:
+                self._components = Components(self)
+            return self._components
 
     @property
     def design_options(self):
@@ -787,14 +805,16 @@ class EdbGrpc(EdbInit):
         >>> edbapp.stackup.layers["TOP"].thickness == 4e-05
         >>> edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
         """
-        if self.active_db:
-            self._stackup = Stackup(self, self.active_cell.layout.layer_collection)
-        return self._stackup
+        with enable_caching():
+            if self.active_db:
+                self._stackup = Stackup(self, self.active_cell.layout.layer_collection)
+            return self._stackup
 
     @property
     def source_excitation(self):
-        if self.active_db:
-            return self._source_excitation
+        with enable_caching():
+            if self.active_db:
+                return self._source_excitation
 
     @property
     def materials(self):
@@ -812,9 +832,10 @@ class EdbGrpc(EdbInit):
         >>> edbapp.materials.add_debye_material("debye_mat", 5, 3, 0.02, 0.05, 1e5, 1e9)
         >>> edbapp.materials.add_djordjevicsarkar_material("djord_mat", 3.3, 0.02, 3.3)
         """
-        if self.active_db:
-            self._materials = Materials(self)
-        return self._materials
+        with enable_caching():
+            if self.active_db:
+                self._materials = Materials(self)
+            return self._materials
 
     @property
     def padstacks(self):
@@ -834,10 +855,10 @@ class EdbGrpc(EdbInit):
         >>> ... p, "TOP", edbapp.padstacks.pad_type.RegularPad
         >>> ... )
         """
-
-        if not self._padstack and self.active_db:
-            self._padstack = Padstacks(self)
-        return self._padstack
+        with enable_caching():
+            if not self._padstack and self.active_db:
+                self._padstack = Padstacks(self)
+            return self._padstack
 
     @property
     def siwave(self):
@@ -877,9 +898,10 @@ class EdbGrpc(EdbInit):
         >>> sim_config.mesh_freq = "10Ghz"
         >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
         """
-        if not self._hfss and self.active_db:
-            self._hfss = Hfss(self)
-        return self._hfss
+        with enable_caching():
+            if not self._hfss and self.active_db:
+                self._hfss = Hfss(self)
+            return self._hfss
 
     @property
     def nets(self):
@@ -896,10 +918,10 @@ class EdbGrpc(EdbInit):
         >>> edbapp.nets.find_or_create_net("GND")
         >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
         """
-
-        if not self._nets and self.active_db:
-            self._nets = Nets(self)
-        return self._nets
+        with enable_caching():
+            if not self._nets and self.active_db:
+                self._nets = Nets(self)
+            return self._nets
 
     @property
     def net_classes(self):
@@ -915,9 +937,9 @@ class EdbGrpc(EdbInit):
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.net_classes
         """
-
-        if self.active_db:
-            return {net.name: NetClass(self, net) for net in self.active_layout.net_classes}
+        with enable_caching():
+            if self.active_db:
+                return {net.name: NetClass(self, net) for net in self.active_layout.net_classes}
 
     @property
     def extended_nets(self):
@@ -933,10 +955,10 @@ class EdbGrpc(EdbInit):
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.extended_nets
         """
-
-        if not self._extended_nets:
-            self._extended_nets = ExtendedNets(self)
-        return self._extended_nets
+        with enable_caching():
+            if not self._extended_nets:
+                self._extended_nets = ExtendedNets(self)
+            return self._extended_nets
 
     @property
     def differential_pairs(self):
@@ -952,9 +974,10 @@ class EdbGrpc(EdbInit):
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.differential_pairs
         """
-        if not self._differential_pairs and self.active_db:
-            self._differential_pairs = DifferentialPairs(self)
-        return self._differential_pairs
+        with enable_caching():
+            if not self._differential_pairs and self.active_db:
+                self._differential_pairs = DifferentialPairs(self)
+            return self._differential_pairs
 
     @property
     def modeler(self):
@@ -970,9 +993,10 @@ class EdbGrpc(EdbInit):
         >>> edbapp = Edb("myproject.aedb")
         >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
         """
-        if not self._modeler and self.active_db:
-            self._modeler = Modeler(self)
-        return self._modeler
+        with enable_caching():
+            if not self._modeler and self.active_db:
+                self._modeler = Modeler(self)
+            return self._modeler
 
     @property
     def layout(self):
@@ -982,7 +1006,8 @@ class EdbGrpc(EdbInit):
         -------
         :class:`legacy.database.dotnet.layout.Layout`
         """
-        return Layout(self)
+        with enable_caching():
+            return Layout(self)
 
     @property
     def active_layout(self):
@@ -992,14 +1017,16 @@ class EdbGrpc(EdbInit):
         -------
         Instance of EDB API Layout Class.
         """
-        return self.layout
+        with enable_caching():
+            return self.layout
 
     @property
     def layout_instance(self):
         """Edb Layout Instance."""
-        if not self._layout_instance:
-            self._layout_instance = self.layout.layout_instance
-        return self._layout_instance
+        with enable_caching():
+            if not self._layout_instance:
+                self._layout_instance = self.layout.layout_instance
+            return self._layout_instance
 
     def get_connected_objects(self, layout_object_instance):
         """Get connected objects.
@@ -1008,35 +1035,37 @@ class EdbGrpc(EdbInit):
         -------
         list
         """
-        from ansys.edb.core.terminal.terminals import (
-            PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
-        )
-
-        temp = []
-        try:
-            for i in self.layout_instance.get_connected_objects(layout_object_instance, True):
-                if isinstance(i.layout_obj, GrpcPadstackInstanceTerminal):
-                    temp.append(PadstackInstanceTerminal(self, i.layout_obj))
-                else:
-                    layout_obj_type = i.layout_obj.layout_obj_type.name
-                    if layout_obj_type == "PADSTACK_INSTANCE":
-                        temp.append(PadstackInstance(self, i.layout_obj))
-                    elif layout_obj_type == "PATH":
-                        temp.append(Path(self, i.layout_obj))
-                    elif layout_obj_type == "RECTANGLE":
-                        temp.append(Rectangle(self, i.layout_obj))
-                    elif layout_obj_type == "CIRCLE":
-                        temp.append(Circle(self, i.layout_obj))
-                    elif layout_obj_type == "POLYGON":
-                        temp.append(Polygon(self, i.layout_obj))
-                    else:
-                        continue
-        except:
-            self.logger.warning(
-                f"Failed to find connected objects on layout_obj " f"{layout_object_instance.layout_obj.id}, skipping."
+        with enable_caching():
+            from ansys.edb.core.terminal.terminals import (
+                PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
             )
-            pass
-        return temp
+
+            temp = []
+            try:
+                for i in self.layout_instance.get_connected_objects(layout_object_instance, True):
+                    if isinstance(i.layout_obj, GrpcPadstackInstanceTerminal):
+                        temp.append(PadstackInstanceTerminal(self, i.layout_obj))
+                    else:
+                        layout_obj_type = i.layout_obj.layout_obj_type.name
+                        if layout_obj_type == "PADSTACK_INSTANCE":
+                            temp.append(PadstackInstance(self, i.layout_obj))
+                        elif layout_obj_type == "PATH":
+                            temp.append(Path(self, i.layout_obj))
+                        elif layout_obj_type == "RECTANGLE":
+                            temp.append(Rectangle(self, i.layout_obj))
+                        elif layout_obj_type == "CIRCLE":
+                            temp.append(Circle(self, i.layout_obj))
+                        elif layout_obj_type == "POLYGON":
+                            temp.append(Polygon(self, i.layout_obj))
+                        else:
+                            continue
+            except:
+                self.logger.warning(
+                    f"Failed to find connected objects on layout_obj "
+                    f"{layout_object_instance.layout_obj.id}, skipping."
+                )
+                pass
+            return temp
 
     def point_3d(self, x, y, z=0.0):
         """Compute the Edb 3d Point Data.
@@ -2159,22 +2188,23 @@ class EdbGrpc(EdbInit):
         """
         from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType
 
-        temp_edb_path = self.edbpath[:-5] + "_temp_aedb.aedb"
-        shutil.copytree(self.edbpath, temp_edb_path)
-        temp_edb = EdbGrpc(temp_edb_path)
-        for via in list(temp_edb.padstacks.instances.values()):
-            via.pin.delete()
-        if netlist:
-            nets = [net for net in temp_edb.layout.nets if net.name in netlist]
-            _poly = temp_edb.layout.expanded_extent(nets, GrpcExtentType.CONFORMING, 0.0, True, True, 1)
-        else:
-            nets = [net for net in temp_edb.layout.nets if "gnd" in net.name.lower()]
-            _poly = temp_edb.layout.expanded_extent(nets, GrpcExtentType.CONFORMING, 0.0, True, True, 1)
-            temp_edb.close()
-        if _poly:
-            return _poly
-        else:
-            return False
+        with enable_caching():
+            temp_edb_path = self.edbpath[:-5] + "_temp_aedb.aedb"
+            shutil.copytree(self.edbpath, temp_edb_path)
+            temp_edb = EdbGrpc(temp_edb_path)
+            for via in list(temp_edb.padstacks.instances.values()):
+                via.pin.delete()
+            if netlist:
+                nets = [net for net in temp_edb.layout.nets if net.name in netlist]
+                _poly = temp_edb.layout.expanded_extent(nets, GrpcExtentType.CONFORMING, 0.0, True, True, 1)
+            else:
+                nets = [net for net in temp_edb.layout.nets if "gnd" in net.name.lower()]
+                _poly = temp_edb.layout.expanded_extent(nets, GrpcExtentType.CONFORMING, 0.0, True, True, 1)
+                temp_edb.close()
+            if _poly:
+                return _poly
+            else:
+                return False
 
     def number_with_units(self, value, units=None):
         """Convert a number to a string with units. If value is a string, it's returned as is.
@@ -2630,16 +2660,17 @@ class EdbGrpc(EdbInit):
             It returns a booleand to check if the variable exists and the variable
             server that should contain the variable.
         """
-        if "$" in variable_name:
-            if variable_name.index("$") == 0:
-                variables = self.active_db.get_all_variable_names()
+        with enable_caching():
+            if "$" in variable_name:
+                if variable_name.index("$") == 0:
+                    variables = self.active_db.get_all_variable_names()
+                else:
+                    variables = self.active_cell.get_all_variable_names()
             else:
                 variables = self.active_cell.get_all_variable_names()
-        else:
-            variables = self.active_cell.get_all_variable_names()
-        if variable_name in variables:
-            return True
-        return False
+            if variable_name in variables:
+                return True
+            return False
 
     def get_variable(self, variable_name):
         """Return Variable Value if variable exists.
@@ -2652,15 +2683,16 @@ class EdbGrpc(EdbInit):
         -------
         :class:`pyedb.dotnet.database.edb_data.edbvalue.EdbValue`
         """
-        if self.variable_exists(variable_name):
-            if "$" in variable_name:
-                if variable_name.index("$") == 0:
-                    variable = next(var for var in self.active_db.get_all_variable_names())
-                else:
-                    variable = next(var for var in self.active_cell.get_all_variable_names())
-                return self.db.get_variable_value(variable)
-        self.logger.info(f"Variable {variable_name} doesn't exists.")
-        return False
+        with enable_caching():
+            if self.variable_exists(variable_name):
+                if "$" in variable_name:
+                    if variable_name.index("$") == 0:
+                        variable = next(var for var in self.active_db.get_all_variable_names())
+                    else:
+                        variable = next(var for var in self.active_cell.get_all_variable_names())
+                    return self.db.get_variable_value(variable)
+            self.logger.info(f"Variable {variable_name} doesn't exists.")
+            return False
 
     def add_project_variable(self, variable_name, variable_value):
         """Add a variable to edb database (project). The variable will have the prefix `$`.
@@ -2782,9 +2814,12 @@ class EdbGrpc(EdbInit):
         list[float]
             Bounding box as a [lower-left X, lower-left Y, upper-right X, upper-right Y] in meters.
         """
-        lay_inst_polygon_data = [obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()]
-        layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
-        return [[layout_bbox[0].x.value, layout_bbox[0].y.value], [layout_bbox[1].x.value, layout_bbox[1].y.value]]
+        with enable_caching():
+            lay_inst_polygon_data = [
+                obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()
+            ]
+            layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
+            return [[layout_bbox[0].x.value, layout_bbox[0].y.value], [layout_bbox[1].x.value, layout_bbox[1].y.value]]
 
     # def build_simulation_project(self, simulation_setup):
     #     # type: (SimulationConfiguration) -> bool
@@ -2976,7 +3011,8 @@ class EdbGrpc(EdbInit):
         -------
         EDBStatistics object from the loaded layout.
         """
-        return self.modeler.get_layout_statistics(evaluate_area=compute_area, net_list=None)
+        with enable_caching():
+            return self.modeler.get_layout_statistics(evaluate_area=compute_area, net_list=None)
 
     def are_port_reference_terminals_connected(self, common_reference=None):
         """Check if all terminal references in design are connected.
@@ -3007,63 +3043,66 @@ class EdbGrpc(EdbInit):
         >>> edb.cutout(["Net1"])
         >>> assert edb.are_port_reference_terminals_connected()
         """
-        all_sources = [i for i in self.excitations.values() if not isinstance(i, (WavePort, GapPort, BundleWavePort))]
-        all_sources.extend([i for i in self.sources.values()])
-        if not all_sources:
-            return True
-        self.logger.reset_timer()
-        if not common_reference:
-            common_reference = list(set([i.reference_net.name for i in all_sources if i.reference_net.name]))
-            if len(common_reference) > 1:
-                self.logger.error("More than 1 reference found.")
-                return False
+        with enable_caching():
+            all_sources = [
+                i for i in self.excitations.values() if not isinstance(i, (WavePort, GapPort, BundleWavePort))
+            ]
+            all_sources.extend([i for i in self.sources.values()])
+            if not all_sources:
+                return True
+            self.logger.reset_timer()
             if not common_reference:
+                common_reference = list(set([i.reference_net.name for i in all_sources if i.reference_net.name]))
+                if len(common_reference) > 1:
+                    self.logger.error("More than 1 reference found.")
+                    return False
+                if not common_reference:
+                    self.logger.error("No Reference found.")
+                    return False
+
+                common_reference = common_reference[0]
+            all_sources = [i for i in all_sources if i.net.name != common_reference]
+
+            setList = [
+                set(i.reference_object.get_connected_object_id_set())
+                for i in all_sources
+                if i.reference_object and i.reference_net.name == common_reference
+            ]
+            if len(setList) != len(all_sources):
                 self.logger.error("No Reference found.")
                 return False
+            cmps = [
+                i
+                for i in list(self.components.resistors.values())
+                if i.numpins == 2 and common_reference in i.nets and self._decompose_variable_value(i.res_value) <= 1
+            ]
+            cmps.extend(
+                [i for i in list(self.components.inductors.values()) if i.numpins == 2 and common_reference in i.nets]
+            )
 
-            common_reference = common_reference[0]
-        all_sources = [i for i in all_sources if i.net.name != common_reference]
+            for cmp in cmps:
+                found = False
+                ids = [i.id for i in cmp.pinlist]
+                for list_obj in setList:
+                    if len(set(ids).intersection(list_obj)) == 1:
+                        for list_obj2 in setList:
+                            if list_obj2 != list_obj and len(set(ids).intersection(list_obj)) == 1:
+                                if (ids[0] in list_obj and ids[1] in list_obj2) or (
+                                    ids[1] in list_obj and ids[0] in list_obj2
+                                ):
+                                    setList[setList.index(list_obj)] = list_obj.union(list_obj2)
+                                    setList[setList.index(list_obj2)] = list_obj.union(list_obj2)
+                                    found = True
+                                    break
+                        if found:
+                            break
 
-        setList = [
-            set(i.reference_object.get_connected_object_id_set())
-            for i in all_sources
-            if i.reference_object and i.reference_net.name == common_reference
-        ]
-        if len(setList) != len(all_sources):
-            self.logger.error("No Reference found.")
-            return False
-        cmps = [
-            i
-            for i in list(self.components.resistors.values())
-            if i.numpins == 2 and common_reference in i.nets and self._decompose_variable_value(i.res_value) <= 1
-        ]
-        cmps.extend(
-            [i for i in list(self.components.inductors.values()) if i.numpins == 2 and common_reference in i.nets]
-        )
+            # Get the set intersections for all the ID sets.
+            iDintersection = set.intersection(*setList)
+            self.logger.info_timer(f"Terminal reference primitive IDs total intersections = {len(iDintersection)}\n\n")
 
-        for cmp in cmps:
-            found = False
-            ids = [i.id for i in cmp.pinlist]
-            for list_obj in setList:
-                if len(set(ids).intersection(list_obj)) == 1:
-                    for list_obj2 in setList:
-                        if list_obj2 != list_obj and len(set(ids).intersection(list_obj)) == 1:
-                            if (ids[0] in list_obj and ids[1] in list_obj2) or (
-                                ids[1] in list_obj and ids[0] in list_obj2
-                            ):
-                                setList[setList.index(list_obj)] = list_obj.union(list_obj2)
-                                setList[setList.index(list_obj2)] = list_obj.union(list_obj2)
-                                found = True
-                                break
-                    if found:
-                        break
-
-        # Get the set intersections for all the ID sets.
-        iDintersection = set.intersection(*setList)
-        self.logger.info_timer(f"Terminal reference primitive IDs total intersections = {len(iDintersection)}\n\n")
-
-        # If the intersections are non-zero, the terminal references are connected.
-        return True if len(iDintersection) > 0 else False
+            # If the intersections are non-zero, the terminal references are connected.
+            return True if len(iDintersection) > 0 else False
 
     # def new_simulation_configuration(self, filename=None):
     #     # type: (str) -> SimulationConfiguration
@@ -3092,19 +3131,20 @@ class EdbGrpc(EdbInit):
         Dict[str, :class:`RaptorXSimulationSetup`]
 
         """
-        self._setups = {}
-        for setup in self.active_cell.simulation_setups:
-            setup = setup.cast()
-            setup_type = setup.type.name
-            if setup_type == "HFSS":
-                self._setups[setup.name] = HfssSimulationSetup(self, setup)
-            elif setup_type == "SI_WAVE":
-                self._setups[setup.name] = SiwaveSimulationSetup(self, setup)
-            elif setup_type == "SI_WAVE_DCIR":
-                self._setups[setup.name] = SIWaveDCIRSimulationSetup(self, setup)
-            elif setup_type == "RAPTOR_X":
-                self._setups[setup.name] = RaptorXSimulationSetup(self, setup)
-        return self._setups
+        with enable_caching():
+            self._setups = {}
+            for setup in self.active_cell.simulation_setups:
+                setup = setup.cast()
+                setup_type = setup.type.name
+                if setup_type == "HFSS":
+                    self._setups[setup.name] = HfssSimulationSetup(self, setup)
+                elif setup_type == "SI_WAVE":
+                    self._setups[setup.name] = SiwaveSimulationSetup(self, setup)
+                elif setup_type == "SI_WAVE_DCIR":
+                    self._setups[setup.name] = SIWaveDCIRSimulationSetup(self, setup)
+                elif setup_type == "RAPTOR_X":
+                    self._setups[setup.name] = RaptorXSimulationSetup(self, setup)
+            return self._setups
 
     @property
     def hfss_setups(self):
@@ -3115,11 +3155,12 @@ class EdbGrpc(EdbInit):
         Dict[str, :class:`legacy.database.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`]
 
         """
-        setups = {}
-        for setup in self.active_cell.simulation_setups:
-            if setup.type.name == "HFSS":
-                setups[setup.name] = HfssSimulationSetup(self, setup)
-        return setups
+        with enable_caching():
+            setups = {}
+            for setup in self.active_cell.simulation_setups:
+                if setup.type.name == "HFSS":
+                    setups[setup.name] = HfssSimulationSetup(self, setup)
+            return setups
 
     @property
     def siwave_dc_setups(self):
@@ -3129,7 +3170,8 @@ class EdbGrpc(EdbInit):
         -------
         Dict[str, :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveDCSimulationSetup`]
         """
-        return {name: i for name, i in self.setups.items() if isinstance(i, SIWaveDCIRSimulationSetup)}
+        with enable_caching():
+            return {name: i for name, i in self.setups.items() if isinstance(i, SIWaveDCIRSimulationSetup)}
 
     @property
     def siwave_ac_setups(self):
@@ -3139,7 +3181,8 @@ class EdbGrpc(EdbInit):
         -------
         Dict[str, :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
         """
-        return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSimulationSetup)}
+        with enable_caching():
+            return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSimulationSetup)}
 
     def create_hfss_setup(self, name=None, start_frequency="0GHz", stop_frequency="20GHz", step_frequency="10MHz"):
         """Create an HFSS simulation setup from a template.
@@ -3301,24 +3344,25 @@ class EdbGrpc(EdbInit):
         -------
         float
         """
-        nets = []
-        for port in self.excitations.values():
-            nets.append(port.net.name)
-        for port in self.sources.values():
-            nets.append(port.net_name)
-        nets = list(set(nets))
-        max_width = 0
-        for net in nets:
-            for primitive in self.nets[net].primitives:
-                if primitive.type == "Path":
-                    max_width = max(max_width, primitive.width)
+        with enable_caching():
+            nets = []
+            for port in self.excitations.values():
+                nets.append(port.net.name)
+            for port in self.sources.values():
+                nets.append(port.net_name)
+            nets = list(set(nets))
+            max_width = 0
+            for net in nets:
+                for primitive in self.nets[net].primitives:
+                    if primitive.type == "Path":
+                        max_width = max(max_width, primitive.width)
 
-        for layer in list(self.stackup.dielectric_layers.values()):
-            max_width = max(max_width, layer.thickness)
+            for layer in list(self.stackup.dielectric_layers.values()):
+                max_width = max(max_width, layer.thickness)
 
-        max_width = max_width * expansion_factor
-        self.logger.info(f"The W factor is {expansion_factor}, The initial extent = {max_width}")
-        return max_width
+            max_width = max_width * expansion_factor
+            self.logger.info(f"The W factor is {expansion_factor}, The initial extent = {max_width}")
+            return max_width
 
     def copy_zones(self, working_directory=None):
         """Copy multizone EDB project to one new edb per zone.
@@ -3445,61 +3489,62 @@ class EdbGrpc(EdbInit):
         list[str]
             list of connected ports.
         """
-        if terminal_info_dict:
-            tolerance = 1e-8
-            connected_ports_list = []
-            project_list = list(terminal_info_dict.keys())
-            project_combinations = list(combinations(range(0, len(project_list)), 2))
-            for comb in project_combinations:
-                terminal_set1 = terminal_info_dict[project_list[comb[0]]]
-                terminal_set2 = terminal_info_dict[project_list[comb[1]]]
-                project1_nets = [t[0] for t in terminal_set1]
-                project2_nets = [t[0] for t in terminal_set2]
-                net_with_connected_ports = list(set(project1_nets).intersection(project2_nets))
-                if net_with_connected_ports:
-                    for net_name in net_with_connected_ports:
-                        project1_port_info = [term_info for term_info in terminal_set1 if term_info[0] == net_name]
-                        project2_port_info = [term_info for term_info in terminal_set2 if term_info[0] == net_name]
-                        port_list = [p[3] for p in project1_port_info] + [p[3] for p in project2_port_info]
-                        port_combinations = list(combinations(port_list, 2))
-                        for port_combination in port_combinations:
-                            if not port_combination[0] == port_combination[1]:
-                                port1 = [port for port in terminal_set1 if port[3] == port_combination[0]]
-                                if not port1:
-                                    port1 = [port for port in terminal_set2 if port[3] == port_combination[0]]
-                                port2 = [port for port in terminal_set2 if port[3] == port_combination[1]]
-                                if not port2:
-                                    port2 = [port for port in terminal_set1 if port[3] == port_combination[1]]
-                                port1 = port1[0]
-                                port2 = port2[0]
-                                if not port1[3] == port2[3]:
-                                    port_distance = GeometryOperators.points_distance(port1[1:3], port2[1:3])
-                                    if port_distance < tolerance:
-                                        port1_connexion = None
-                                        port2_connexion = None
-                                        for (
-                                            project_path,
-                                            port_info,
-                                        ) in terminal_info_dict.items():
-                                            port1_map = [port for port in port_info if port[3] == port1[3]]
-                                            if port1_map:
-                                                port1_connexion = (
-                                                    project_path,
-                                                    port1[3],
-                                                )
-                                            port2_map = [port for port in port_info if port[3] == port2[3]]
-                                            if port2_map:
-                                                port2_connexion = (
-                                                    project_path,
-                                                    port2[3],
-                                                )
-                                        if port1_connexion and port2_connexion:
-                                            if (
-                                                not port1_connexion[0] == port2_connexion[0]
-                                                or not port1_connexion[1] == port2_connexion[1]
-                                            ):
-                                                connected_ports_list.append((port1_connexion, port2_connexion))
-            return connected_ports_list
+        with enable_caching():
+            if terminal_info_dict:
+                tolerance = 1e-8
+                connected_ports_list = []
+                project_list = list(terminal_info_dict.keys())
+                project_combinations = list(combinations(range(0, len(project_list)), 2))
+                for comb in project_combinations:
+                    terminal_set1 = terminal_info_dict[project_list[comb[0]]]
+                    terminal_set2 = terminal_info_dict[project_list[comb[1]]]
+                    project1_nets = [t[0] for t in terminal_set1]
+                    project2_nets = [t[0] for t in terminal_set2]
+                    net_with_connected_ports = list(set(project1_nets).intersection(project2_nets))
+                    if net_with_connected_ports:
+                        for net_name in net_with_connected_ports:
+                            project1_port_info = [term_info for term_info in terminal_set1 if term_info[0] == net_name]
+                            project2_port_info = [term_info for term_info in terminal_set2 if term_info[0] == net_name]
+                            port_list = [p[3] for p in project1_port_info] + [p[3] for p in project2_port_info]
+                            port_combinations = list(combinations(port_list, 2))
+                            for port_combination in port_combinations:
+                                if not port_combination[0] == port_combination[1]:
+                                    port1 = [port for port in terminal_set1 if port[3] == port_combination[0]]
+                                    if not port1:
+                                        port1 = [port for port in terminal_set2 if port[3] == port_combination[0]]
+                                    port2 = [port for port in terminal_set2 if port[3] == port_combination[1]]
+                                    if not port2:
+                                        port2 = [port for port in terminal_set1 if port[3] == port_combination[1]]
+                                    port1 = port1[0]
+                                    port2 = port2[0]
+                                    if not port1[3] == port2[3]:
+                                        port_distance = GeometryOperators.points_distance(port1[1:3], port2[1:3])
+                                        if port_distance < tolerance:
+                                            port1_connexion = None
+                                            port2_connexion = None
+                                            for (
+                                                project_path,
+                                                port_info,
+                                            ) in terminal_info_dict.items():
+                                                port1_map = [port for port in port_info if port[3] == port1[3]]
+                                                if port1_map:
+                                                    port1_connexion = (
+                                                        project_path,
+                                                        port1[3],
+                                                    )
+                                                port2_map = [port for port in port_info if port[3] == port2[3]]
+                                                if port2_map:
+                                                    port2_connexion = (
+                                                        project_path,
+                                                        port2[3],
+                                                    )
+                                            if port1_connexion and port2_connexion:
+                                                if (
+                                                    not port1_connexion[0] == port2_connexion[0]
+                                                    or not port1_connexion[1] == port2_connexion[1]
+                                                ):
+                                                    connected_ports_list.append((port1_connexion, port2_connexion))
+                return connected_ports_list
 
     def create_port(self, terminal, ref_terminal=None, is_circuit_port=False, name=None):
         """Create a port.
@@ -4097,7 +4142,8 @@ class EdbGrpc(EdbInit):
         """Definitions class."""
         from pyedb.grpc.database.definitions import Definitions
 
-        return Definitions(self)
+        with enable_caching():
+            return Definitions(self)
 
     @property
     def workflow(self):
