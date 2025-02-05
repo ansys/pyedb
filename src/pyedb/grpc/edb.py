@@ -2784,9 +2784,12 @@ class EdbGrpc(EdbInit):
         list[float]
             Bounding box as a [lower-left X, lower-left Y, upper-right X, upper-right Y] in meters.
         """
-        lay_inst_polygon_data = [obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()]
-        layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
-        return [[layout_bbox[0].x.value, layout_bbox[0].y.value], [layout_bbox[1].x.value, layout_bbox[1].y.value]]
+        with enable_caching():
+            lay_inst_polygon_data = [
+                obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()
+            ]
+            layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
+            return [[layout_bbox[0].x.value, layout_bbox[0].y.value], [layout_bbox[1].x.value, layout_bbox[1].y.value]]
 
     # def build_simulation_project(self, simulation_setup):
     #     # type: (SimulationConfiguration) -> bool
@@ -2978,7 +2981,8 @@ class EdbGrpc(EdbInit):
         -------
         EDBStatistics object from the loaded layout.
         """
-        return self.modeler.get_layout_statistics(evaluate_area=compute_area, net_list=None)
+        with enable_caching():
+            return self.modeler.get_layout_statistics(evaluate_area=compute_area, net_list=None)
 
     def are_port_reference_terminals_connected(self, common_reference=None):
         """Check if all terminal references in design are connected.
