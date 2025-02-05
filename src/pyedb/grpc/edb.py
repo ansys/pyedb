@@ -42,6 +42,7 @@ from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
 )
+from ansys.edb.core.utility.cache import enable_caching
 from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
@@ -683,25 +684,26 @@ class EdbGrpc(EdbInit):
         ``True`` if successful, ``False`` if failed : bool
 
         """
-        if units.lower() not in ["millimeter", "inch", "micron"]:  # pragma no cover
-            self.logger.warning("The wrong unit is entered. Setting to the default, millimeter.")
-            units = "millimeter"
+        with enable_caching():
+            if units.lower() not in ["millimeter", "inch", "micron"]:  # pragma no cover
+                self.logger.warning("The wrong unit is entered. Setting to the default, millimeter.")
+                units = "millimeter"
 
-        if not ipc_path:
-            ipc_path = self.edbpath[:-4] + "xml"
-        self.logger.info("Export IPC 2581 is starting. This operation can take a while.")
-        start = time.time()
-        ipc = Ipc2581(self, units)
-        ipc.load_ipc_model()
-        ipc.file_path = ipc_path
-        result = ipc.write_xml()
+            if not ipc_path:
+                ipc_path = self.edbpath[:-4] + "xml"
+            self.logger.info("Export IPC 2581 is starting. This operation can take a while.")
+            start = time.time()
+            ipc = Ipc2581(self, units)
+            ipc.load_ipc_model()
+            ipc.file_path = ipc_path
+            result = ipc.write_xml()
 
-        if result:  # pragma no cover
-            self.logger.info_timer("Export IPC 2581 completed.", start)
-            self.logger.info("File saved as %s", ipc_path)
-            return ipc_path
-        self.logger.info("Error exporting IPC 2581.")
-        return False
+            if result:  # pragma no cover
+                self.logger.info_timer("Export IPC 2581 completed.", start)
+                self.logger.info("File saved as %s", ipc_path)
+                return ipc_path
+            self.logger.info("Error exporting IPC 2581.")
+            return False
 
     @property
     def configuration(self):
