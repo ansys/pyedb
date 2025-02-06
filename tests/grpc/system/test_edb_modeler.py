@@ -242,10 +242,11 @@ class TestClass:
             [0.025, 0.02],
         ]
         trace = edbapp.modeler.create_trace(points, "1_Top")
+        trace.aedt_name
         assert trace
         assert isinstance(trace.get_center_line(), list)
         assert isinstance(trace.get_center_line(), list)
-        # TODO fixing parameters first
+        # TODO
         # edbapp["delta_x"] = "1mm"
         # assert trace.add_point("delta_x", "1mm", True)
         # assert trace.get_center_line(True)[-1][0] == "(delta_x)+(0.025)"
