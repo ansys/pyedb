@@ -302,7 +302,11 @@ class TestClass:
             example_model,
             os.path.join(self.local_scratch.path, "padstacks2.aedb"),
         )
-        edb = Edb(edbpath=os.path.join(self.local_scratch.path, "padstacks2.aedb"), edbversion=desktop_version)
+        edb = Edb(
+            edbpath=os.path.join(self.local_scratch.path, "padstacks2.aedb"),
+            edbversion=desktop_version,
+            restart_rpc_server=True,
+        )
         for test_prop in (edb.padstacks.instances, edb.padstacks.instances):
             padstack_instances = list(test_prop.values())
             for padstack_instance in padstack_instances:

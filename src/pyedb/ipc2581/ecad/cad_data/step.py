@@ -268,10 +268,7 @@ class Step(object):
                     layer_feature.color = layer_colors[layer_name]
                     self._ipc.ecad.cad_data.cad_data_step.layer_features.append(layer_feature)
                     layers[layer_name] = self._ipc.ecad.cad_data.cad_data_step.layer_features[-1]
-                if self._pedb.grpc:
-                    pdef_name = padstack_instance.padstack_definition
-                else:
-                    pdef_name = padstack_instance.padstack_definition.name
+                pdef_name = padstack_instance.padstack_definition
                 if pdef_name in padstack_defs:
                     padstack_def = padstack_defs[pdef_name]
                     if not self._pedb.grpc:
