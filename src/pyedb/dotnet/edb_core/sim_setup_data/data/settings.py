@@ -150,6 +150,21 @@ class AdaptiveSettings(object):
         self._parent._update_setup()
 
     @property
+    def min_converged_passes(self):
+        """Minimum number of converged passes.
+
+        Returns
+        -------
+            int
+        """
+        return self.adaptive_settings.MinConvergedPasses
+
+    @min_converged_passes.setter
+    def min_converged_passes(self, value):
+        self.adaptive_settings.MinConvergedPasses = value
+        self._parent._update_setup()
+
+    @property
     def save_fields(self):
         """Whether to turn on save fields.
 
