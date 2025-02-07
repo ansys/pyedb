@@ -48,16 +48,20 @@ cfg = dict()
 # - **Reference_designator**. Reference designator of the component.
 # - **type**. Type of the source. Supported types are 'voltage', 'current'
 # - **positive_terminal**. Supported types are 'net', 'pin', 'pin_group', 'coordinates'
-# - **negative_terminal**. Supported types are 'net', 'pin', 'pin_group', 'coordinates',
-# 'nearest_pin'
+#   - **contact_radius**. Optional. Set circular equipotential region.
+#   - **inline**. Optional. When True, contact points are place in a row.
+#   - **num_of_contact**. Optional. Number of contact points. Default is 1. Applicable only when inline is True.
+# - **negative_terminal**. Supported types are 'net', 'pin', 'pin_group', 'coordinates'
+# - **equipotential**. Set equipotential region on pins when True.
 
 voltage_source = {
     "name": "V_SOURCE_5V",
     "reference_designator": "U4",
     "type": "voltage",
     "magnitude": 1,
-    "positive_terminal": {"net": "5V"},
-    "negative_terminal": {"net": "GND"},
+    "positive_terminal": {"net": "5V", "contact_radius": "1mm"},
+    "negative_terminal": {"net": "GND", "contact_radius": "1mm"},
+    "equipotential": True,
 }
 
 # ## Add a current source between two pins
@@ -96,6 +100,7 @@ current_source_2 = {
 current_source_3 = {
     "name": "CURRENT_SOURCE_3",
     "type": "current",
+    "equipotential": True,
     "positive_terminal": {"coordinates": {"layer": "1_Top", "point": ["116mm", "41mm"], "net": "5V"}},
     "negative_terminal": {"coordinates": {"layer": "Inner1(GND1)", "point": ["116mm", "41mm"], "net": "GND"}},
 }

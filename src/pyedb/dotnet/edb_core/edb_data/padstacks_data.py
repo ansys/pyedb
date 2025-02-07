@@ -22,8 +22,9 @@
 
 from collections import OrderedDict
 import math
-import re
 import warnings
+
+import numpy as np
 
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
@@ -1248,68 +1249,77 @@ class EDBPadstackInstance(Primitive):
 
         return self._pedb.create_port(terminal, ref_terminal, is_circuit_port)
 
-    @property
-    def _em_properties(self):
-        """Get EM properties."""
-        default = (
-            r"$begin 'EM properties'\n"
-            r"\tType('Mesh')\n"
-            r"\tDataId='EM properties1'\n"
-            r"\t$begin 'Properties'\n"
-            r"\t\tGeneral=''\n"
-            r"\t\tModeled='true'\n"
-            r"\t\tUnion='true'\n"
-            r"\t\t'Use Precedence'='false'\n"
-            r"\t\t'Precedence Value'='1'\n"
-            r"\t\tPlanarEM=''\n"
-            r"\t\tRefined='true'\n"
-            r"\t\tRefineFactor='1'\n"
-            r"\t\tNoEdgeMesh='false'\n"
-            r"\t\tHFSS=''\n"
-            r"\t\t'Solve Inside'='false'\n"
-            r"\t\tSIwave=''\n"
-            r"\t\t'DCIR Equipotential Region'='false'\n"
-            r"\t$end 'Properties'\n"
-            r"$end 'EM properties'\n"
-        )
+    def _set_equipotential(self, contact_radius=None, inline=False, num_of_contact=1):
+        """Workaround solution. Remove when EDBAPI bug is fixed for dcir_equipotential_region."""
+        pad = self.definition.pad_by_layer[self.start_layer]
 
-        pid = self._pedb.edb_api.ProductId.Designer
-        _, p = self._edb_padstackinstance.GetProductProperty(pid, 18, "")
-        if p:
-            return p
+        pos_x, pos_y = self.position
+        comp_rotation = self._pedb.edb_value(self.component.rotation).ToDouble() % 3.141592653589793
+
+        if contact_radius is not None:
+            if num_of_contact == 1:
+                prim = self._pedb.modeler.create_circle(pad.layer_name, pos_x, pos_y, contact_radius, self.net_name)
+                prim.dcir_equipotential_region = True
+            else:
+                if pad.shape.lower() in ["rectangle", "oval"]:
+                    width, height = pad.parameters_values[0:2]
+                    radius = self._pedb.edb_value(contact_radius).ToDouble()
+                else:
+                    return
+
+                if inline is False:
+                    x_offset = width / 2 - radius if comp_rotation == 0 else height / 2 - radius
+                    y_offset = height / 2 - radius if comp_rotation == 0 else width / 2 - radius
+                    positions = []
+                    for x, y in [[1, 1], [-1, 1], [1, -1], [-1, -1]]:
+                        positions.append([x_offset * x, y_offset * y])
+                else:
+                    if width > height:
+                        offset = (width - radius * 2) / (num_of_contact - 1)
+                    else:
+                        offset = (height - radius * 2) / (num_of_contact - 1)
+
+                    start_pos = (num_of_contact - 1) / 2
+                    offset = [offset * i for i in np.arange(start_pos * -1, start_pos + 1)]
+
+                    if (width > height and comp_rotation == 0) or (width < height and comp_rotation != 0):
+                        positions = list(zip(offset, [0] * num_of_contact))
+                    else:
+                        positions = list(zip([0] * num_of_contact, offset))
+
+                for x, y in positions:
+                    prim = self._pedb.modeler.create_circle(pad.layer_name, pos_x + x, pos_y + y, radius, self.net_name)
+                    prim.dcir_equipotential_region = True
+            return
+
+        elif pad.shape.lower() == "circle":
+            ra = self._pedb.edb_value(pad.parameters_values[0] / 2)
+            pos = self.position
+            prim = self._pedb.modeler.create_circle(pad.layer_name, pos[0], pos[1], ra, self.net_name)
+        elif pad.shape.lower() == "rectangle":
+            width, height = pad.parameters_values
+            prim = self._pedb.modeler.create_rectangle(
+                pad.layer_name,
+                self.net_name,
+                width=width,
+                height=height,
+                representation_type="CenterWidthHeight",
+                center_point=self.position,
+                rotation=self.component.rotation,
+            )
+        elif pad.shape.lower() == "oval":
+            width, height, _ = pad.parameters_values
+            prim = self._pedb.modeler.create_circle(
+                pad.layer_name, self.position[0], self.position[1], height / 2, self.net_name
+            )
+        elif pad.polygon_data:
+            prim = self._pedb.modeler.create_polygon(
+                pad.polygon_data._edb_object, self.start_layer, net_name=self.net_name
+            )
+            prim.move(self.position)
         else:
-            return default
-
-    @_em_properties.setter
-    def _em_properties(self, em_prop):
-        """Set EM properties"""
-        pid = self._pedb.edb_api.ProductId.Designer
-        self._edb_padstackinstance.SetProductProperty(pid, 18, em_prop)
-
-    @property
-    def dcir_equipotential_region(self):
-        """Check whether dcir equipotential region is enabled.
-
-        Returns
-        -------
-        bool
-        """
-        pattern = r"'DCIR Equipotential Region'='([^']+)'"
-        em_pp = self._em_properties
-        result = re.search(pattern, em_pp).group(1)
-        if result == "true":
-            return True
-        else:
-            return False
-
-    @dcir_equipotential_region.setter
-    def dcir_equipotential_region(self, value):
-        """Set dcir equipotential region."""
-        pp = r"'DCIR Equipotential Region'='true'" if value else r"'DCIR Equipotential Region'='false'"
-        em_pp = self._em_properties
-        pattern = r"'DCIR Equipotential Region'='([^']+)'"
-        new_em_pp = re.sub(pattern, pp, em_pp)
-        self._em_properties = new_em_pp
+            return
+        prim.dcir_equipotential_region = True
 
     @property
     def object_instance(self):
@@ -1577,7 +1587,6 @@ class EDBPadstackInstance(Primitive):
         str
             Name of the starting layer.
         """
-        layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
         _, start_layer, stop_layer = self._edb_object.GetLayerRange()
 
         if start_layer:
@@ -1599,7 +1608,6 @@ class EDBPadstackInstance(Primitive):
         str
             Name of the stopping layer.
         """
-        layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
         _, start_layer, stop_layer = self._edb_padstackinstance.GetLayerRange()
 
         if stop_layer:
@@ -1620,7 +1628,7 @@ class EDBPadstackInstance(Primitive):
         layer_list = []
         start_layer_name = start_layer.GetName()
         stop_layer_name = stop_layer.GetName()
-        for layer_name in list(self._pedb.stackup.layers.keys()):
+        for layer_name in list(self._pedb.stackup.signal_layers.keys()):
             if started:
                 layer_list.append(layer_name)
                 if layer_name == stop_layer_name or layer_name == start_layer_name:
@@ -1705,7 +1713,6 @@ class EDBPadstackInstance(Primitive):
         float
             Rotatation value for the padstack instance.
         """
-        point_data = self._pedb.edb_api.geometry.point_data(self._pedb.edb_value(0.0), self._pedb.edb_value(0.0))
         out = self._edb_padstackinstance.GetPositionAndRotationValue()
 
         if out[0]:
