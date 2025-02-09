@@ -1255,8 +1255,12 @@ class TestClass:
                         "part_type": "io",
                         "definition": "BGA",
                         "placement_layer": "TOP",
-                        "solder_ball_properties": {"shape": "cylinder", "diameter": "244um", "height": "406um",
-                                                   "material":"air"},
+                        "solder_ball_properties": {
+                            "shape": "cylinder",
+                            "diameter": "244um",
+                            "height": "406um",
+                            "material": "air",
+                        },
                         "port_properties": {
                             "reference_offset": "0.1mm",
                             "reference_size_auto": False,

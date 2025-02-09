@@ -25,9 +25,7 @@ from pyedb.dotnet.edb_core.general import pascal_to_snake, snake_to_pascal
 
 
 class CfgComponent(CfgBase):
-    
     class Common:
-
         @property
         def pyedb_obj(self):
             return self.parent.pyedb_obj
@@ -63,7 +61,9 @@ class CfgComponent(CfgBase):
                 self.parent.spice_model["model_name"] = model.GetModelName()
                 self.parent.spice_model["model_path"] = model.GetModelPath()
                 self.parent.spice_model["sub_circuit"] = model.GetSubCkt()
-                self.parent.spice_model["terminal_pairs"] = [[i, j] for i, j in dict(model.GetTerminalPinPairs()).items()]
+                self.parent.spice_model["terminal_pairs"] = [
+                    [i, j] for i, j in dict(model.GetTerminalPinPairs()).items()
+                ]
 
         def _set_model_properties_to_edb(self):
             c_p = self.pyedb_obj.component_property
@@ -238,7 +238,7 @@ class CfgComponent(CfgBase):
     class DotNet(Grpc):
         def __init__(self, parent):
             super().__init__(parent)
-            
+
     def __init__(self, pedb, pedb_object, **kwargs):
         self.pedb = pedb
         self.pyedb_obj = pedb_object
