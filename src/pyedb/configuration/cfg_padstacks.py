@@ -197,7 +197,8 @@ class CfgPadstackDefinition(CfgBase):
                 self.pedb._edb.Definition.PadType.AntiPad,
                 self.pedb._edb.Definition.PadType.ThermalPad,
                 # self._ppadstack._pedb._edb.Definition.PadType.Hole,
-                # This property doesn't appear in UI. It is unclear what it is used for. Suppressing this property for now.
+                # This property doesn't appear in UI. It is unclear what it is used for.
+                # Suppressing this property for now.
             ]
             data = {}
             for pad_type in pad_type_list:
