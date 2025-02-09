@@ -67,17 +67,16 @@ class CfgPinGroup(CfgBase):
     def create(self):
         """Apply pin group on layout."""
         if self.pins:
-            self._pedb.siwave.create_pin_group(self.reference_designator, list(self.pins), self.name)
+            pins = self.pins if isinstance(self.pins, list) else [self.pins]
+            self._pedb.siwave.create_pin_group(self.reference_designator, pins, self.name)
         elif self.net:
-            if self.reference_designator in self._pedb.components.instances:
-                comp = self._pedb.components.instances[self.reference_designator]
-            else:
-                raise Exception(f"Component not found for creating pin group {self.name}.")
-            pins = [p for p, obj in comp.pins.items() if obj.net_name in self.net]
+            nets = self.net if isinstance(self.net, list) else [self.net]
+            comp = self._pedb.components.instances[self.reference_designator]
+            pins = [p for p, obj in comp.pins.items() if obj.net_name in nets]
             if not self._pedb.siwave.create_pin_group(self.reference_designator, pins, self.name):
-                self._pedb.logger.error(f"Failed to create pin group {self.name}")
+                raise RuntimeError(f"Failed to create pin group {self.name}")
         else:
-            self._pedb.logger.error(f"No net and pins defined for defining pin group {self.name}")
+            raise RuntimeError(f"No net and pins defined for defining pin group {self.name}")
 
     def export_properties(self):
         if self.pins:

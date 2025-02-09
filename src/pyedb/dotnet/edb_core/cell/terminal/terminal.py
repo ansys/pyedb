@@ -105,25 +105,16 @@ class Terminal(Connectable):
     @property
     def layer(self):
         """Get layer of the terminal."""
-        point_data = self._pedb.point_data(0, 0)
-        layer = list(self._pedb.stackup.layers.values())[0]._edb_layer
-        if self._edb_object.GetParameters(point_data, layer):
-            return self._pedb.stackup.all_layers[layer.GetName()]
-        else:
-            self._pedb.logger.warning(f"No pad parameters found for terminal {self.name}")
-
-    @layer.setter
-    def layer(self, value):
-        layer = self._pedb.stackup.layers[value]._edb_layer
-        point_data = self._pedb.point_data(*self.location)
-        self._edb_object.SetParameters(point_data, layer)
+        return self._pedb.logger.error("Cannot determine terminal layer")
 
     @property
     def location(self):
         """Location of the terminal."""
-        layer = list(self._pedb.stackup.layers.values())[0]._edb_layer
-        _, point_data, _ = self._edb_object.GetParameters(None, layer)
-        return [point_data.X.ToDouble(), point_data.Y.ToDouble()]
+        try:
+            _, point_data, _ = self._edb_object.GetParameters()
+            return [point_data.X.ToDouble(), point_data.Y.ToDouble()]
+        except:
+            self._pedb.logger.error("Cannot determine terminal location")
 
     @location.setter
     def location(self, value):
