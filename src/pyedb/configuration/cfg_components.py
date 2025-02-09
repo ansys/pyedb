@@ -139,12 +139,15 @@ class CfgComponent(CfgBase):
             _, diam, mid_diam = solder_ball_prop.GetDiameterValue()
             height = solder_ball_prop.GetHeightValue().ToString()
             shape = solder_ball_prop.GetShape().ToString()
+            material = solder_ball_prop.GetMaterialName()
             uses_solder_ball = solder_ball_prop.UsesSolderball()
+
             temp["uses_solder_ball"] = uses_solder_ball
             temp["shape"] = pascal_to_snake(shape)
             temp["diameter"] = diam.ToString()
             temp["mid_diameter"] = mid_diam.ToString()
             temp["height"] = height
+            temp["material"] = material
             self.parent.solder_ball_properties = temp
 
         def _set_solder_ball_properties_to_edb(self):
@@ -166,6 +169,7 @@ class CfgComponent(CfgBase):
             else:
                 raise ValueError("Solderball shape must be either cylinder or spheroid")
             solder_ball_prop.SetHeight(self.pedb.edb_value(self.parent.solder_ball_properties["height"]))
+            solder_ball_prop.SetMaterialName(self.parent.solder_ball_properties["material"])
             cp.SetSolderBallProperty(solder_ball_prop)
             self.pyedb_obj.component_property = cp
 
