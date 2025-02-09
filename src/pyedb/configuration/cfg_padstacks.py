@@ -357,8 +357,8 @@ class CfgPadstackDefinition(CfgBase):
 
 class CfgPadstackInstance(CfgBase):
     """Instance data class."""
-    class Common:
 
+    class Common:
         @property
         def pyedb_obj(self):
             return self.parent.pyedb_obj
@@ -379,11 +379,17 @@ class CfgPadstackInstance(CfgBase):
             if self.parent.backdrill_parameters:
                 self.pyedb_obj.backdrill_parameters = self.parent.backdrill_parameters
             if self.parent.solder_ball_layer:
-                self.pyedb_obj._edb_object.SetSolderBallLayer(self.pedb.stackup[self.parent.solder_ball_layer]._edb_object)
+                self.pyedb_obj._edb_object.SetSolderBallLayer(
+                    self.pedb.stackup[self.parent.solder_ball_layer]._edb_object
+                )
 
             hole_override_enabled, hole_override_diam = self.pyedb_obj._edb_object.GetHoleOverrideValue()
-            hole_override_enabled = self.parent.hole_override_enabled if self.parent.hole_override_enabled else hole_override_enabled
-            hole_override_diam = self.parent.hole_override_diameter if self.parent.hole_override_diameter else hole_override_diam
+            hole_override_enabled = (
+                self.parent.hole_override_enabled if self.parent.hole_override_enabled else hole_override_enabled
+            )
+            hole_override_diam = (
+                self.parent.hole_override_diameter if self.parent.hole_override_diameter else hole_override_diam
+            )
             self.pyedb_obj._edb_object.SetHoleOverride(hole_override_enabled, self.pedb.edb_value(hole_override_diam))
 
         def retrieve_parameters_from_edb(self):
@@ -394,7 +400,10 @@ class CfgPadstackInstance(CfgBase):
             self.parent.position = [position.X.ToString(), position.Y.ToString()]
             self.parent.rotation = rotation.ToString()
             self.parent._id = self.pyedb_obj.id
-            self.parent.hole_override_enabled, hole_override_diameter = self.pyedb_obj._edb_object.GetHoleOverrideValue()
+            (
+                self.parent.hole_override_enabled,
+                hole_override_diameter,
+            ) = self.pyedb_obj._edb_object.GetHoleOverrideValue()
             self.parent.hole_override_diameter = hole_override_diameter.ToString()
             self.parent.solder_ball_layer = self.pyedb_obj._edb_object.GetSolderBallLayer().GetName()
             self.parent.layer_range = [self.pyedb_obj.start_layer, self.pyedb_obj.stop_layer]
