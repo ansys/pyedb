@@ -71,7 +71,7 @@ cfg["components"] = [
             "diameter": "244um",
             "mid_diameter": "400um",
             "height": "300um",
-            "material": "air"
+            "material": "air",
         },
         "port_properties": {
             "reference_offset": "0.1mm",
