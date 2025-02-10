@@ -51,21 +51,25 @@ class RpcSession:
         Parameters
         ----------
         edb_version : str, optional.
-            Specify the Ansys version. If None, the latest installation will be detected on the local machine.
+            Specify ANSYS version.
+            If None, the latest installation will be detected on the local machine.
 
-        port : int
+        port : int, optional
             Port number used for the RPC session.
+            If not provided, a random free port is automatically selected.
 
         restart_server : bool, optional.
-            Force restarting the RPC server by killing the process in case EDB_RPC is already started. All open EDB
-            connection will be lost. This option must be used at the beginning of an application only to ensure the
+            Force restarting the RPC server by killing the process in case EDB_RPC is already started.
+            All open EDB
+            connection will be lost.
+            This option must be used at the beginning of an application only to ensure the
             server is properly started.
         kill_all_instances : bool, optional.
-            Force killing all RPC sever instances, including zombie process. To be used with caution, default value is
-            `False`.
+            Force killing all RPC sever instances, including a zombie process.
+            To be used with caution, default value is `False`.
         """
         if not port:
-            RpcSession.port = RpcSession.get_random_free_port()
+            RpcSession.port = RpcSession.__get_random_free_port()
         else:
             RpcSession.port = port
         if not edb_version:  # pragma: no cover
@@ -137,7 +141,7 @@ class RpcSession:
         p.terminate()
 
     @staticmethod
-    def __kill_all_instances():
+    def _kill_all_instances():
         proc = [p.pid for p in list(psutil.process_iter()) if "edb_rpc" in p.name().lower()]
         time.sleep(latency_delay)
         for pid in proc:
@@ -154,7 +158,8 @@ class RpcSession:
             time.sleep(latency_delay)
 
     @staticmethod
-    def get_random_free_port():
+    def __get_random_free_port():
+        """"""
         port = randint(49152, 65535)
         while True:
             used_ports = [conn.laddr[1] for conn in psutil.net_connections()]

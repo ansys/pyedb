@@ -154,7 +154,7 @@ class EdbInit(object):
         """Save any changes into a file."""
         return self._db.save()
 
-    def close(self, terminate_rpc_session=True):
+    def close(self, terminate_rpc_session=True, kill_all_instances=False):
         """Close the database.
 
         Parameters
@@ -167,7 +167,10 @@ class EdbInit(object):
         """
         self._db.close()
         self._db = None
-        if terminate_rpc_session:
+        if kill_all_instances:
+            RpcSession._kill_all_instances()
+            RpcSession.pid = 0
+        elif terminate_rpc_session:
             RpcSession.rpc_session.disconnect()
             RpcSession.pid = 0
         return True
