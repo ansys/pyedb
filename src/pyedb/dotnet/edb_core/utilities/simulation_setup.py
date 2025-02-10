@@ -265,7 +265,7 @@ class SimulationSetup(object):
         for k, v in kwargs.items():
             if k in dir(sweep_data):
                 setattr(sweep_data, k, v)
-        sweep_data.freq_sweep_type = kwargs.get("type") if kwargs.get("type") else "interpolation"
+        sweep_data.freq_sweep_type = kwargs.get("sweep_type") if kwargs.get("sweep_type") else "interpolation"
 
         if frequency_set is None:
             sweep_type = "linear_scale"
