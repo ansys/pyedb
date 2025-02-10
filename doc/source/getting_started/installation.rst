@@ -34,6 +34,9 @@ After downloading the wheelhouse for your Python release and operating system,
 run the script from the Python terminal, providing the full path to the ZIP file
 as an argument.
 
+Starting ANSYS release 2025R2, pyedb is introducing the new EDB api pyedb-core based on gRPC.
+`PyEDB-core <https://github.com/ansys/pyedb-core>`_
+
 Install on CPython from PyPI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -43,6 +46,7 @@ with this command:
 .. code:: shell
 
     pip install pyedb
+    pip install ansys-edb-core
 
 Linux support
 ~~~~~~~~~~~~~
@@ -52,8 +56,8 @@ However, you must set up the following environment variables:
 
 .. code::
 
-    export ANSYSEM_ROOT222=/path/to/AedtRoot/AnsysEM/v222/Linux64
-    export LD_LIBRARY_PATH=$ANSYSEM_ROOT222/common/mono/Linux64/lib64:$ANSYSEM_ROOT222/Delcross:$LD_LIBRARY_PATH
+    export ANSYSEM_ROOT252=/path/to/AedtRoot/AnsysEM/v252/Linux64
+    export LD_LIBRARY_PATH=$ANSYSEM_ROOT252/common/mono/Linux64/lib64:$ANSYSEM_ROOT252/Delcross:$LD_LIBRARY_PATH
 
 .. _install_pyedb_from_wheelhouse:
 
@@ -91,3 +95,4 @@ After installing PyEDB, upgrade it to the latest version with this command:
 .. code:: bash
 
     pip install -U pyedb
+    pip install -U ansys-edb-core

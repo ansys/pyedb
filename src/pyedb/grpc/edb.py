@@ -134,7 +134,7 @@ class EdbGrpc(EdbInit):
 
     Examples
     --------
-    Create an .::Edb object and a new EDB cell.
+    Create .::Edb object and a new EDB cell.
 
     >>> from pyedb.grpc.edb import EdbGrpc as Edb
     >>> app = Edb()
@@ -289,7 +289,7 @@ class EdbGrpc(EdbInit):
             self.edb_exception(ex_value, ex_traceback)
 
     def __getitem__(self, variable_name):
-        """Get or Set a variable to the Edb project. The variable can be project using ``$`` prefix or
+        """Get a variable to the Edb project. The variable can be project using ``$`` prefix or
         it can be a design variable, in which case the ``$`` is omitted.
 
         Parameters
@@ -306,6 +306,16 @@ class EdbGrpc(EdbInit):
         return
 
     def __setitem__(self, variable_name, variable_value):
+        """Set a variable to the Edb project. The variable can be project using ``$`` prefix or
+        it can be a design variable, in which case the ``$`` is omitted.
+
+        Parameters
+        ----------
+        variable_name : str
+            variable name.
+        variable_value : str, float, int.
+            variable value.
+        """
         type_error_message = "Allowed values are str, numeric or two-item list with variable description."
         if type(variable_value) in [
             list,

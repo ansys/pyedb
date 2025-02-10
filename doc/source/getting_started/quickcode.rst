@@ -16,7 +16,7 @@ This code shows how to use PyEDB to load an existing AEDB file into memory:
 
 .. code:: python
 
-    from pyedb import Edb
+    from pyedb.grpc import EdbGrpc as Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
