@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import os
 
 from pyedb.configuration.cfg_common import CfgBase
 from pyedb.dotnet.edb_core.general import pascal_to_snake, snake_to_pascal
@@ -242,7 +243,7 @@ class CfgComponent(CfgBase):
     def __init__(self, pedb, pedb_object, **kwargs):
         self.pedb = pedb
         self.pyedb_obj = pedb_object
-        if getattr(self.pedb, "grpc", False):
+        if os.environ["PYEDB_USE_DOTNET"] == "0":
             self.api = self.Grpc(self)
         else:
             self.api = self.DotNet(self)
