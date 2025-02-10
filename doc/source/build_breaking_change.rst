@@ -3,8 +3,8 @@
 Build breaking changes in Linux
 ===============================
 
-Key change
-----------
+Key change ANSYS release 2025R1 and lower
+-----------------------------------------
 
 Due to compatibility issues detected with Ubuntu 22.04, the use of `dotnetcore2` has been removed.
 The embedded version of .NET associated to `dotnetcore2` is old and has **incompatibilities** with the
@@ -14,7 +14,9 @@ critical dependencies in the environment.
 Workaround considered
 ---------------------
 
-A temporary workaround was considered, which involved manually installing an older version of the
+To prevent this issue use gRPC with ANSYS 2025R2 and higher.
+
+If previous release must be used, a temporary workaround was considered, which involved manually installing an older version of the
 `libssl1.1` library. While this allowed the use of `dotnetcore2`, it is **not recommended** as a
 long-term solution for the following reasons:
 
