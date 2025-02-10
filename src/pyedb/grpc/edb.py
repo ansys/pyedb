@@ -62,11 +62,11 @@ from pyedb.grpc.database.hfss import Hfss
 from pyedb.grpc.database.layout.layout import Layout
 from pyedb.grpc.database.layout_validation import LayoutValidation
 from pyedb.grpc.database.modeler import Modeler
-from pyedb.grpc.database.net import Nets
+from pyedb.grpc.database.nets import Nets
 from pyedb.grpc.database.nets.differential_pair import DifferentialPairs
 from pyedb.grpc.database.nets.extended_net import ExtendedNets
 from pyedb.grpc.database.nets.net_class import NetClass
-from pyedb.grpc.database.padstack import Padstacks
+from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.ports.ports import BundleWavePort, CoaxPort, GapPort, WavePort
 from pyedb.grpc.database.primitive.circle import Circle
 from pyedb.grpc.database.primitive.padstack_instances import PadstackInstance
