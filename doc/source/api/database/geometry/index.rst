@@ -1,8 +1,8 @@
-================
-EDB data classes
-================
+====================
+EDB geometry classes
+====================
 
-This section describes EDB data classes.
+This section describes EDB geometry classes.
 
 
 .. toctree::

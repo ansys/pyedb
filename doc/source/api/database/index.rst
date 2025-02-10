@@ -11,6 +11,8 @@ This section describes EDB data classes.
    definition/index
    geometry/index
    hierarchy/index
+   layers/index
+   layout/index
    components
    control_file
    definitions
