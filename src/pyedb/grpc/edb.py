@@ -99,7 +99,7 @@ from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.workflow import Workflow
 
 
-class EdbGrpc(EdbInit):
+class Edb(EdbInit):
     """Provides the EDB application interface.
 
     This module inherits all objects that belong to EDB.
@@ -136,7 +136,7 @@ class EdbGrpc(EdbInit):
     --------
     Create .::Edb object and a new EDB cell.
 
-    >>> from pyedb.grpc.edb import EdbGrpc as Edb
+    >>> from pyedb.grpc.edb import Edb as Edb
     >>> app = Edb()
 
     Add a new variable named "s1" to the ``Edb`` instance.
@@ -160,7 +160,7 @@ class EdbGrpc(EdbInit):
     >>> import pyedb.misc.downloads as downloads
     >>> temp_folder = generate_unique_folder_name()
     >>> targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-    >>> from pyedb.grpc.edb import EdbGrpc as Edb
+    >>> from pyedb.grpc.edb import Edb as Edb
     >>> edbapp = Edb(edbpath=targetfile)
 
     Retrieving signal nets dictionary
@@ -2173,7 +2173,7 @@ class EdbGrpc(EdbInit):
 
         temp_edb_path = self.edbpath[:-5] + "_temp_aedb.aedb"
         shutil.copytree(self.edbpath, temp_edb_path)
-        temp_edb = EdbGrpc(temp_edb_path)
+        temp_edb = Edb(temp_edb_path)
         for via in list(temp_edb.padstacks.instances.values()):
             via.pin.delete()
         if netlist:
@@ -3409,7 +3409,7 @@ class EdbGrpc(EdbInit):
         defined_ports = {}
         project_connexions = None
         for edb_path, zone_info in zone_dict.items():
-            edb = EdbGrpc(edbversion=self.edbversion, edbpath=edb_path)
+            edb = Edb(edbversion=self.edbversion, edbpath=edb_path)
             edb.cutout(
                 use_pyaedt_cutout=True,
                 custom_extent=zone_info[1],
@@ -4048,7 +4048,7 @@ class EdbGrpc(EdbInit):
                 "No padstack instances found inside evaluated voids during model creation for arbitrary" "waveports"
             )
             return False
-        cloned_edb = EdbGrpc(edbpath=output_edb, edbversion=self.edbversion, restart_rpc_server=True)
+        cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion, restart_rpc_server=True)
 
         cloned_edb.stackup.add_layer(
             layer_name="ports",

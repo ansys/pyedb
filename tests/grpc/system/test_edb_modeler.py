@@ -28,7 +28,7 @@ import os
 import pytest
 
 from pyedb.generic.settings import settings
-from pyedb.grpc.edb import EdbGrpc as Edb
+from pyedb.grpc.edb import Edb as Edb
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
@@ -340,7 +340,7 @@ class TestClass:
 
     def test_modeler_primitives_boolean_operation(self):
         """Evaluate modeler primitives boolean operations."""
-        from pyedb.grpc.edb import EdbGrpc as Edb
+        from pyedb.grpc.edb import Edb as Edb
 
         # TODO check bug #464.
         edb = Edb(restart_rpc_server=True)

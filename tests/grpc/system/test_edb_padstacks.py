@@ -26,7 +26,7 @@ import os
 
 import pytest
 
-from pyedb.grpc.edb import EdbGrpc as Edb
+from pyedb.grpc.edb import Edb as Edb
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 

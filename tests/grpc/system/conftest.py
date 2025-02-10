@@ -28,7 +28,7 @@ from os.path import dirname
 
 import pytest
 
-from pyedb.grpc.edb import EdbGrpc as Edb
+from pyedb.grpc.edb import Edb as Edb
 from pyedb.misc.misc import list_installed_ansysem
 from tests.conftest import generate_random_string
 
