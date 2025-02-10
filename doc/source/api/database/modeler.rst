@@ -8,22 +8,21 @@ Primitives properties
 ---------------------
 These classes are the containers of data management for primitives and arcs.
 
-.. currentmodule:: pyedb.dotnet.edb_core.edb_data.primitives_data
+.. currentmodule:: pyedb.grpc.database.modeler
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
 
-   EDBArcs
-   EdbPolygon
+   Modeler
 
 
 .. code:: python
 
-    from pyedb import Edb
+    from pyedb.grpc.edb import Edb
 
-    edb = Edb(myedb, edbversion="2023.1")
+    edb = Edb(myedb, edbversion="2025.2")
 
     polygon = edbapp.modeler.polygons[0]
     polygon.is_void
