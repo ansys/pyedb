@@ -169,7 +169,7 @@ class CfgComponent(CfgBase):
             else:
                 raise ValueError("Solderball shape must be either cylinder or spheroid")
             solder_ball_prop.SetHeight(self.pedb.edb_value(self.parent.solder_ball_properties["height"]))
-            solder_ball_prop.SetMaterialName(self.parent.solder_ball_properties["material"])
+            solder_ball_prop.SetMaterialName(self.parent.solder_ball_properties.get("material", "solder"))
             cp.SetSolderBallProperty(solder_ball_prop)
             self.pyedb_obj.component_property = cp
 
