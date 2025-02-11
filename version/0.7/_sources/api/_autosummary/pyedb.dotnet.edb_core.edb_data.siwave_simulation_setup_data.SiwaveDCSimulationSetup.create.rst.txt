@@ -1,0 +1,6 @@
+create
+======
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.siwave_simulation_setup_data
+
+.. automethod:: SiwaveDCSimulationSetup.create

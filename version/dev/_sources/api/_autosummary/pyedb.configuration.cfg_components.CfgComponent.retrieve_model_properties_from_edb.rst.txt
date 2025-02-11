@@ -1,0 +1,6 @@
+retrieve\_model\_properties\_from\_edb
+======================================
+
+.. currentmodule:: pyedb.configuration.cfg_components
+
+.. automethod:: CfgComponent.retrieve_model_properties_from_edb
