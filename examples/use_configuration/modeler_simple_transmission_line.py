@@ -8,8 +8,6 @@ import os
 import tempfile
 
 from ansys.aedt.core import Hfss3dLayout
-from ansys.aedt.core.downloads import download_file
-from pathlib import Path
 from pyedb import Edb
 
 # -
