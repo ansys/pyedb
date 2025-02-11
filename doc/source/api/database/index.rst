@@ -17,6 +17,8 @@ This section describes EDB data classes.
    ports/index
    primitive/index
    simulation_setup/index
+   utility/index
+   terminal/index
    components
    control_file
    definitions
