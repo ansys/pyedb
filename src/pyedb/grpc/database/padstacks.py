@@ -49,7 +49,7 @@ import rtree
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
-from pyedb.grpc.database.primitive.padstack_instances import PadstackInstance
+from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 

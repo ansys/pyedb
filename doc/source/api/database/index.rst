@@ -13,6 +13,8 @@ This section describes EDB data classes.
    hierarchy/index
    layers/index
    layout/index
+   nets/index
+   ports/index
    components
    control_file
    definitions

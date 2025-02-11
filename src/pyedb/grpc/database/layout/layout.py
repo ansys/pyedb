@@ -34,7 +34,7 @@ from pyedb.grpc.database.nets.differential_pair import DifferentialPair
 from pyedb.grpc.database.nets.extended_net import ExtendedNet
 from pyedb.grpc.database.nets.net import Net
 from pyedb.grpc.database.nets.net_class import NetClass
-from pyedb.grpc.database.primitive.padstack_instances import PadstackInstance
+from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (

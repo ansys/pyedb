@@ -690,7 +690,7 @@ class PadstackDef(GrpcPadstackDef):
         -------
         List of .:class:`pyedb.dotnet.database.padstackEDBPadstack`
         """
-        from pyedb.grpc.database.primitive.padstack_instances import PadstackInstance
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
         if self.start_layer == self.stop_layer:
             self._pedb.logger.error("Microvias cannot be applied when Start and Stop Layers are the same.")

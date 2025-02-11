@@ -25,7 +25,7 @@ from ansys.edb.core.primitive.primitive import PrimitiveType as GrpcPrimitiveTyp
 
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.circle import Circle
-from pyedb.grpc.database.primitive.padstack_instances import PadstackInstance
+from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.path import Path
 from pyedb.grpc.database.primitive.polygon import Polygon
 from pyedb.grpc.database.primitive.rectangle import Rectangle

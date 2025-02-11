@@ -51,7 +51,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.database.hierarchy.spice_model import SpiceModel
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
-from pyedb.grpc.database.primitive.padstack_instances import PadstackInstance
+from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
