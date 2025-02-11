@@ -8,7 +8,7 @@ It can be opened and edited using the ``Edb`` class.
   :alt: HFSS 3D Layout is the tool used to visualize EDB content.
 
 
-.. currentmodule:: pyedb.dotnet
+.. currentmodule:: pyedb.grpc
 .. autosummary::
    :toctree: _autosummary
 
@@ -17,10 +17,10 @@ It can be opened and edited using the ``Edb`` class.
 
 .. code:: python
 
-    from pyedb import Edb
+    from pyedb.grpc.edb import Edb
 
     # this call returns the Edb class initialized on 2024R2
-    edb = Edb(myedb, edbversion="2024.2")
+    edb = Edb(myedb, edbversion="2025.2")
 
     ...
 
@@ -31,29 +31,21 @@ This section lists the core EDB modules for reading and writing information
 to AEDB files.
 
 
-.. currentmodule:: pyedb.dotnet.database
+.. currentmodule:: pyedb.grpc.edb
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
-   components.Components
-   hfss.EdbHfss
-   layout_validation.LayoutValidation
-   materials.Materials
-   modeler.Modeler
-   nets.EdbNets
-   edb_data.padstacks_data.EDBPadstack
-   siwave.EdbSiwave
-   stackup.Stackup
+   Edb
 
 
 
 .. code:: python
 
-    from pyedb import Edb
+    from pyedb.grpc.edb import Edb
 
-    edb = Edb(myedb, edbversion="2023.1")
+    edb = Edb(myedb, edbversion="2025.2")
 
     # this call returns the EdbHfss Class
     comp = edb.hfss

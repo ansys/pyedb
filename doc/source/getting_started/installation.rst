@@ -46,7 +46,6 @@ with this command:
 .. code:: shell
 
     pip install pyedb
-    pip install ansys-edb-core
 
 Linux support
 ~~~~~~~~~~~~~

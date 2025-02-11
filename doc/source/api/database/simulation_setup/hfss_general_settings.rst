@@ -3,7 +3,7 @@ HFSS general settings
 This class is managing EDB HFSS general settings.
 
 
-.. currentmodule:: pyedb.grp.database.simulation_setup.hfss_general_settings
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_general_settings
 
 .. autosummary::
    :toctree: _autosummary
