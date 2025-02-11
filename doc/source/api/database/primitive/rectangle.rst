@@ -3,7 +3,7 @@ Rectangle
 This class is managing EDB rectangle.
 
 
-.. currentmodule:: pyedb.grp.database.primitive.rectangle
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
 
 .. autosummary::
    :toctree: _autosummary

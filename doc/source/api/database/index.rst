@@ -15,6 +15,8 @@ This section describes EDB data classes.
    layout/index
    nets/index
    ports/index
+   primitive/index
+   simulation_setup/index
    components
    control_file
    definitions

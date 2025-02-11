@@ -3,7 +3,7 @@ Circle
 This class is managing EDB circle.
 
 
-.. currentmodule:: pyedb.grp.database.primitive.circle
+.. currentmodule:: pyedb.grpc.database.primitive.circle
 
 .. autosummary::
    :toctree: _autosummary

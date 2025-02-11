@@ -3,7 +3,7 @@ Component
 This class is managing EDB component.
 
 
-.. currentmodule:: pyedb.grp.database.hierarchy.component
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
 
 .. autosummary::
    :toctree: _autosummary

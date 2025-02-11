@@ -3,7 +3,7 @@ Ports
 This class is managing EDB ports.
 
 
-.. currentmodule:: pyedb.grp.database.ports.ports
+.. currentmodule:: pyedb.grpc.database.ports.ports
 
 .. autosummary::
    :toctree: _autosummary

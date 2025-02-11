@@ -3,7 +3,7 @@ Arc Data
 This class manages arc data.
 
 
-.. currentmodule:: pyedb.grp.database.geometry
+.. currentmodule:: pyedb.grpc.database.geometry
 
 .. autosummary::
    :toctree: _autosummary

@@ -3,7 +3,7 @@ Path
 This class is managing EDB path.
 
 
-.. currentmodule:: pyedb.grp.database.primitive.path
+.. currentmodule:: pyedb.grpc.database.primitive.path
 
 .. autosummary::
    :toctree: _autosummary

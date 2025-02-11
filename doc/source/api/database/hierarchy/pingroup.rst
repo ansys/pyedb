@@ -3,7 +3,7 @@ Pingroup
 This class is managing EDB pingroup.
 
 
-.. currentmodule:: pyedb.grp.database.hierarchy.pingroup
+.. currentmodule:: pyedb.grpc.database.hierarchy.pingroup
 
 .. autosummary::
    :toctree: _autosummary

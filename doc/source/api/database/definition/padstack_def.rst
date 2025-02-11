@@ -3,7 +3,7 @@ Padstack Definition
 These class is the containers of padstack definition.
 
 
-.. currentmodule:: pyedb.grp.database.definition.padstack_def
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
 
 .. autosummary::
    :toctree: _autosummary

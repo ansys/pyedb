@@ -3,7 +3,7 @@ Primitive
 This class is managing EDB primitive.
 
 
-.. currentmodule:: pyedb.grp.database.primitive.primitive
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
 
 .. autosummary::
    :toctree: _autosummary

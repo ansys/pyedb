@@ -3,7 +3,7 @@ Stackup Layer
 This class is managing EDB stackup layer.
 
 
-.. currentmodule:: pyedb.grp.database.layers.stackup_layer
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
 
 .. autosummary::
    :toctree: _autosummary

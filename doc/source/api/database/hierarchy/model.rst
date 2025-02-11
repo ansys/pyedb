@@ -3,7 +3,7 @@ Model
 This class is managing EDB model.
 
 
-.. currentmodule:: pyedb.grp.database.hierarchy.model
+.. currentmodule:: pyedb.grpc.database.hierarchy.model
 
 .. autosummary::
    :toctree: _autosummary

@@ -3,7 +3,7 @@ Polygon
 This class is managing EDB polygon.
 
 
-.. currentmodule:: pyedb.grp.database.primitive.polygon
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
 
 .. autosummary::
    :toctree: _autosummary

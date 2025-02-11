@@ -3,7 +3,7 @@ Polygon Data
 This class manages polygon data.
 
 
-.. currentmodule:: pyedb.grp.database.geometry
+.. currentmodule:: pyedb.grpc.database.geometry
 
 .. autosummary::
    :toctree: _autosummary
