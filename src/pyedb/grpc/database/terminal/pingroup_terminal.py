@@ -23,7 +23,7 @@
 from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.terminal.terminals import PinGroupTerminal as GrpcPinGroupTerminal
 
-from pyedb.grpc.database.nets.net import Net
+from pyedb.grpc.database.net.net import Net
 
 
 class PinGroupTerminal(GrpcPinGroupTerminal):

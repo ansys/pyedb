@@ -34,7 +34,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
-from pyedb.grpc.database.nets.net import Net
+from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.ports.ports import BundleWavePort, WavePort
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.primitive import Primitive

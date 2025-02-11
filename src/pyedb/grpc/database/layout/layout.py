@@ -30,10 +30,10 @@ from ansys.edb.core.layout.layout import Layout as GrpcLayout
 from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
-from pyedb.grpc.database.nets.differential_pair import DifferentialPair
-from pyedb.grpc.database.nets.extended_net import ExtendedNet
-from pyedb.grpc.database.nets.net import Net
-from pyedb.grpc.database.nets.net_class import NetClass
+from pyedb.grpc.database.net.differential_pair import DifferentialPair
+from pyedb.grpc.database.net.extended_net import ExtendedNet
+from pyedb.grpc.database.net.net import Net
+from pyedb.grpc.database.net.net_class import NetClass
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal

@@ -22,7 +22,7 @@
 
 from ansys.edb.core.net.net_class import NetClass as GrpcNetClass
 
-from pyedb.grpc.database.nets.net import Net
+from pyedb.grpc.database.net.net import Net
 
 
 class NetClass(GrpcNetClass):

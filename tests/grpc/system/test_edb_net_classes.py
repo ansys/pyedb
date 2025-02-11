@@ -38,7 +38,7 @@ class TestClass:
 
     def test_net_classes_queries(self, edb_examples):
         """Evaluate net classes queries"""
-        from pyedb.grpc.database.nets.net_class import NetClass
+        from pyedb.grpc.database.net.net_class import NetClass
 
         edbapp = edb_examples.get_si_verse()
         assert edbapp.net_classes

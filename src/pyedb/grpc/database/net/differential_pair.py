@@ -27,7 +27,7 @@ from ansys.edb.core.net.differential_pair import (
     DifferentialPair as GrpcDifferentialPair,
 )
 
-from pyedb.grpc.database.nets.net import Net
+from pyedb.grpc.database.net.net import Net
 
 
 class DifferentialPairs:

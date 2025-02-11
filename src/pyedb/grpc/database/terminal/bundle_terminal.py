@@ -29,7 +29,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.layers.layer import Layer
-from pyedb.grpc.database.nets.net import Net
+from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.rlc import Rlc
 

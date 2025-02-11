@@ -26,7 +26,7 @@ import warnings
 
 from pyedb.common.nets import CommonNets
 from pyedb.generic.general_methods import generate_unique_name
-from pyedb.grpc.database.nets.net import Net
+from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.path import Path
 from pyedb.grpc.database.primitive.polygon import Polygon
