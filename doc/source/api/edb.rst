@@ -31,13 +31,13 @@ This section lists the core EDB modules for reading and writing information
 to AEDB files.
 
 
-.. currentmodule:: pyedb.grpc.edb
+.. currentmodule:: pyedb.grpc
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
-   Edb
+   edb.Edb
 
 
 

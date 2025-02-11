@@ -24,7 +24,7 @@ This section describes EDB data classes.
    hierarchy/index
    layers/index
    layout/index
-   nets/index
+   net/index
    ports/index
    primitive/index
    simulation_setup/index

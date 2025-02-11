@@ -3,7 +3,7 @@ Net
 This class is managing EDB net.
 
 
-.. currentmodule:: pyedb.grpc.database.nets.net
+.. currentmodule:: pyedb.grpc.database.net.net
 
 .. autosummary::
    :toctree: _autosummary
