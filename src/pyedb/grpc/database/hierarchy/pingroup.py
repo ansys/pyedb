@@ -28,7 +28,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.nets.net import Net
-from pyedb.grpc.database.primitive.padstack_instances import PadstackInstance
+from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.terminal.pingroup_terminal import PinGroupTerminal
 
 
