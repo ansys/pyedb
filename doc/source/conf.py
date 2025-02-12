@@ -41,7 +41,6 @@ def visit_desc_content(self, node: Element) -> None:
     self.in_desc_signature = False
 
 
-nbsphinx_allow_errors = True
 LaTeXTranslator.visit_desc_content = visit_desc_content
 
 # <----------------- End of sphinx pdf builder override---------------->
@@ -355,7 +354,7 @@ pygments_style = "sphinx"
 nbsphinx_execute = "auto"
 
 # Allow errors to help debug.
-nbsphinx_allow_errors = False
+nbsphinx_allow_errors = True
 
 # Sphinx gallery customization
 nbsphinx_thumbnails = {

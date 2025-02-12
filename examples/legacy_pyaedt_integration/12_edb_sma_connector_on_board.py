@@ -31,7 +31,7 @@ temp_dir = tempfile.TemporaryDirectory(suffix=".ansys")
 working_folder = temp_dir.name
 
 # Select EDB version (change it manually if needed, e.g. "2024.2")
-edb_version = "2024.2"
+edb_version = "2025.2"
 print(f"EDB version: {edb_version}")
 
 aedb_path = os.path.join(working_folder, "pcb.aedb")

@@ -29,7 +29,7 @@ if os.path.exists(aedt_file):
     os.remove(aedt_file)
 
 # Select EDB version (change it manually if needed, e.g. "2024.2")
-edb_version = "2024.2"
+edb_version = "2025.2"
 print(f"EDB version: {edb_version}")
 
 edb = pyedb.Edb(edbpath=targetfile, edbversion=edb_version)

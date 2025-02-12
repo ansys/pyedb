@@ -87,8 +87,8 @@ class LinearArray:
 temp_dir = tempfile.TemporaryDirectory(suffix=".ansys")
 aedb_path = os.path.join(temp_dir.name, "linear_array.aedb")
 
-# Select EDB version (change it manually if needed, e.g. "2024.2")
-edb_version = "2024.2"
+# Select EDB version (change it manually if needed, e.g. "2025.2")
+edb_version = "2025.2"
 print(f"EDB version: {edb_version}")
 
 # Create an instance of the Edb class.

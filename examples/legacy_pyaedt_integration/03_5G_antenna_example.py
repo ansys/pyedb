@@ -94,7 +94,7 @@ class LinearArray:
 tmpfold = tempfile.gettempdir()
 aedb_path = os.path.join(tmpfold, generate_unique_name("pcb") + ".aedb")
 print(aedb_path)
-edb = pyedb.Edb(edbpath=aedb_path, edbversion="2024.2")
+edb = pyedb.Edb(edbpath=aedb_path, edbversion="2025.2")
 
 # ## Add stackup layers
 #

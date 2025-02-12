@@ -37,7 +37,7 @@ print(edb_full_path)
 
 # +
 # Select EDB version (change it manually if needed, e.g. "2024.2")
-edb_version = "2024.2"
+edb_version = "2025.2"
 print(f"EDB version: {edb_version}")
 
 edbapp = pyedb.Edb(edbpath=edb_full_path, edbversion=edb_version)

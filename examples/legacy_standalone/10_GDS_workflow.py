@@ -95,7 +95,7 @@ c.write_xml(os.path.join(temp_dir.name, "output.xml"))
 
 # +
 # Select EDB version (change it manually if needed, e.g. "2024.2")
-edb_version = "2024.2"
+edb_version = "2025.2"
 print(f"EDB version: {edb_version}")
 
 edb = pyedb.Edb(gds_out, edbversion=edb_version, technology_file=os.path.join(temp_dir.name, "output.xml"))
