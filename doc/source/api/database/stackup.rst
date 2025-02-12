@@ -10,4 +10,4 @@ Class managing Stackup and layers.
    :nosignatures:
 
    stackup.LayerCollection
-   stackup.stackup
+   stackup.Stackup

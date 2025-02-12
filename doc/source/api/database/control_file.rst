@@ -11,7 +11,7 @@ These classes are the containers of the GDS control file.
 
 
    control_file.ControlFile
-   control_file.ControlFileProperty
+   control_file.ControlProperty
    control_file.ControlFileMaterial
    control_file.ControlFileDielectric
    control_file.ControlFileLayer

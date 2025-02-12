@@ -16,8 +16,8 @@ This class is managing EDB xml control file.
    ControlFileVia
    ControlFileStackup
    ControlFileImportOptions
-   ControlFileExtent
-   ControlFileCircuitPt
+   ControlExtent
+   ControlCircuitPt
    ControlFileComponent
    ControlFileComponents
    ControlFileBoundaries
