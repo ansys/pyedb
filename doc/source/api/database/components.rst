@@ -3,10 +3,10 @@ Components
 These class is the containers of Components.
 
 
-.. currentmodule:: pyedb.grpc.database.components
+.. currentmodule:: pyedb.grpc.database
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
-   Components
+   components.Components

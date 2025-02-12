@@ -3,10 +3,10 @@ Siwave
 Class managing Siwave.
 
 
-.. currentmodule:: pyedb.grpc.database.siwave
+.. currentmodule:: pyedb.grpc.database
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
-   Siwave
+   siwave.Siwave

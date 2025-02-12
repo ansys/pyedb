@@ -6,10 +6,10 @@ Class managing HFSS container
 These classes are the containers of HFSS class.
 
 
-.. currentmodule:: pyedb.grpc.database.hfss
+.. currentmodule:: pyedb.grpc.database
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
-   Hfss
+   hfss.Hfss

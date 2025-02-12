@@ -3,10 +3,10 @@ Sources excitations
 Class managing source excitations.
 
 
-.. currentmodule:: pyedb.grpc.database.source_excitations
+.. currentmodule:: pyedb.grpc.database
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
-   SourceExcitations
+   source_excitations.SourceExcitations

@@ -9,5 +9,5 @@ This class is managing EDB HFSS simulation setup.
    :toctree: _autosummary
    :nosignatures:
 
-   HFSSSimulationSetup
+   HfssSimulationSetup
 

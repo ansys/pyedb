@@ -3,11 +3,11 @@ Stackup
 Class managing Stackup and layers.
 
 
-.. currentmodule:: pyedb.grpc.database.stackup
+.. currentmodule:: pyedb.grpc.database
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
-   LayerCollection
-   Stackup
+   stackup.LayerCollection
+   stackup.tackup

@@ -3,10 +3,10 @@ Padstacks
 Class managing Padstacks.
 
 
-.. currentmodule:: pyedb.grpc.database.padstacks
+.. currentmodule:: pyedb.grpc.database
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
-   Padstacks
+   padstacks.Padstacks

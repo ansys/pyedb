@@ -5,10 +5,10 @@ These classes are the containers of Layout Validation.
 .. autosummary::
    :toctree: _autosummary
 
-.. currentmodule:: pyedb.grpc.database.layout_validation
+.. currentmodule:: pyedb.grpc.database
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
-   LayoutValidation
+   layout_validation.LayoutValidation

@@ -14,10 +14,10 @@ These classes are the containers of sources methods of the EDB for both HFSS and
     ...
 
 
-.. currentmodule:: pyedb.grpc.database.nets
+.. currentmodule:: pyedb.grpc.database
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
-   Nets
+   nets.Nets

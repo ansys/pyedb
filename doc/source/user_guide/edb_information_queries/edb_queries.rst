@@ -21,13 +21,13 @@ Load a layout
 
 
     # import EDB and load a layout
-    from pyedb import Edb
+    from pyedb.grpc.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-    edbapp = Edb(edbpath=targetfile, edbversion="2024.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2025.2")
 
 Get statistics
 ~~~~~~~~~~~~~~
@@ -67,3 +67,4 @@ Get all components and then pins from components connected to a net
    u9_gnd_pins = [
        pin for pin in list(edbapp.components["U9"].pins.values()) if pin.net_name == "GND"
    ]
+   edbapp.close()

@@ -8,14 +8,14 @@ Primitives properties
 ---------------------
 These classes are the containers of data management for primitives and arcs.
 
-.. currentmodule:: pyedb.grpc.database.modeler
+.. currentmodule:: pyedb.grpc.database
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
 
-   Modeler
+   modeler.Modeler
 
 
 .. code:: python

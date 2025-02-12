@@ -956,7 +956,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`legacy.database.nets.EdbDifferentialPairs`
+        .:class:`grpc.database.net.EdbDifferentialPairs`
 
         Examples
         --------
