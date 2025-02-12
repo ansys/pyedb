@@ -1255,7 +1255,12 @@ class TestClass:
                         "part_type": "io",
                         "definition": "BGA",
                         "placement_layer": "TOP",
-                        "solder_ball_properties": {"shape": "cylinder", "diameter": "244um", "height": "406um"},
+                        "solder_ball_properties": {
+                            "shape": "cylinder",
+                            "diameter": "244um",
+                            "height": "406um",
+                            "material": "air",
+                        },
                         "port_properties": {
                             "reference_offset": "0.1mm",
                             "reference_size_auto": False,
@@ -1274,6 +1279,7 @@ class TestClass:
         assert rect.voids
         assert [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP_POLY"][0]
         assert edbapp.components["U1"]
+        assert edbapp.components["U1"].component_property.GetSolderBallProperty().Clone().GetMaterialName() == "air"
         edbapp.close()
 
     def test_19_variables(self, edb_examples):

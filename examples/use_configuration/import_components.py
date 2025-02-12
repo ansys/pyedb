@@ -44,6 +44,7 @@ edbapp = Edb(file_edb, edbversion=AEDT_VERSION)
 #   - **diameter**.
 #   - **mid_diameter**.
 #   - **height**.
+#   - **material**.
 # - **port_properties**.
 #   - **reference_offset**.
 #   - **reference_size_auto**.
@@ -70,6 +71,7 @@ cfg["components"] = [
             "diameter": "244um",
             "mid_diameter": "400um",
             "height": "300um",
+            "material": "air",
         },
         "port_properties": {
             "reference_offset": "0.1mm",
