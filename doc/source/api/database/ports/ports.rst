@@ -12,6 +12,6 @@ This class is managing EDB ports.
    GapPort
    CircuitPort
    WavePort
-   ExcitationSource
+   ExcitationSources
    BundleWavePort
    CoaxPort

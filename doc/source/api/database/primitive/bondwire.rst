@@ -9,5 +9,5 @@ This class is managing EDB bondwire.
    :toctree: _autosummary
    :nosignatures:
 
-   BondWire
+   Bondwire
 

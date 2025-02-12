@@ -9,4 +9,4 @@ Class managing source excitations.
    :toctree: _autosummary
    :nosignatures:
 
-   source_excitations.SourceExcitations
+   source_excitations.SourceExcitation

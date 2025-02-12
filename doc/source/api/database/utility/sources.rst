@@ -11,7 +11,7 @@ This class is managing EDB sources.
 
    Node
    Source
-   Circuit
+   CircuitPort
    VoltageSource
    CurrentSource
    DCTerminal
