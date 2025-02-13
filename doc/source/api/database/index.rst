@@ -1,8 +1,8 @@
-================
-EDB data classes
-================
+========
+Database
+========
 
-This section describes EDB data classes.
+This section describes EDB database classes.
 
 
 .. toctree::
@@ -19,16 +19,5 @@ This section describes EDB data classes.
    siwave
    source_excitations
    stackup
-   definition/index
-   geometry/index
-   hierarchy/index
-   layers/index
-   layout/index
-   net/index
-   ports/index
-   primitive/index
-   simulation_setup/index
-   utility/index
-   terminal/index
-   utility/index
+   pyedb_lib/index
 

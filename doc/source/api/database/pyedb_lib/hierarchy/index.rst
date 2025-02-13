@@ -1,6 +1,6 @@
-=====================
-EDB hierarchy classes
-=====================
+=================
+Hierarchy classes
+=================
 
 This section describes EDB hierarchy classes.
 

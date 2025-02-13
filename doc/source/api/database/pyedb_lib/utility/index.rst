@@ -1,6 +1,6 @@
-===================
-EDB utility classes
-===================
+===============
+Utility classes
+===============
 
 This section describes EDB utility classes.
 

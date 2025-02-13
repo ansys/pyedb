@@ -1,6 +1,6 @@
-==================
-EDB layout classes
-==================
+==============
+Layout classes
+==============
 
 This section describes EDB layout classes.
 

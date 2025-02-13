@@ -1,6 +1,6 @@
-==================
-EDB layers classes
-==================
+==============
+Layers classes
+==============
 
 This section describes EDB layers classes.
 

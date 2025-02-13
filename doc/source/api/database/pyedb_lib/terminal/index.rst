@@ -1,6 +1,6 @@
-====================
-EDB terminal classes
-====================
+================
+Terminal classes
+================
 
 This section describes EDB terminal classes.
 

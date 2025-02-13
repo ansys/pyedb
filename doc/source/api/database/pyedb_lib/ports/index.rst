@@ -1,6 +1,6 @@
-================
-EDB port classes
-================
+============
+Port classes
+============
 
 This section describes EDB port classes.
 

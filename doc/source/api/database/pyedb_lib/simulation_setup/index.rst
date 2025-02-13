@@ -1,6 +1,6 @@
-============================
-EDB simulation setup classes
-============================
+========================
+Simulation setup classes
+========================
 
 This section describes EDB simulation setup classes.
 

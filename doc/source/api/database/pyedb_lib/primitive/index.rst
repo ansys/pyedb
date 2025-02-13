@@ -1,6 +1,6 @@
-=====================
-EDB primitive classes
-=====================
+=================
+Primitive classes
+=================
 
 This section describes EDB primitive classes.
 

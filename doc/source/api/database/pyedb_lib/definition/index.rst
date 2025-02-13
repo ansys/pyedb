@@ -1,6 +1,6 @@
-======================
-EDB definition classes
-======================
+==================
+Definition classes
+==================
 
 This section describes Definition classes.
 

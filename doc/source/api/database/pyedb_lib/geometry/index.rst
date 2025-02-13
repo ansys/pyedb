@@ -1,6 +1,6 @@
-====================
-EDB geometry classes
-====================
+================
+Geometry classes
+================
 
 This section describes EDB geometry classes.
 

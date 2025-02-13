@@ -27,12 +27,7 @@ from ansys.edb.core.simulation_setup.adaptive_solutions import (
 
 
 class AdaptiveFrequency(GrpcAdaptiveFrequency):
-    """EDB-core `AdaptiveFrequency`_.
-
-    .. _AdaptiveFrequency: https://edb.core.docs.pyansys.com/version/stable/api/
-    _autosummary/ansys.edb.core.simulation_setup.adaptive_solutions.AdaptiveFrequency.html
-
-    """
+    """EDB-core Adaptive Frequency class."""
 
     def __init__(self, adaptive_frequency):
         super().__init__(adaptive_frequency)
