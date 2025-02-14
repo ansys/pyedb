@@ -34,6 +34,13 @@ class PointTerminal(GrpcPointTerminal):
 
     @property
     def location(self):
+        """Terminal position.
+
+        Returns
+        -------
+        [float, float] : [x,y]
+
+        """
         return [self.point.x.value, self.point.y.value]
 
     @location.setter
@@ -45,6 +52,13 @@ class PointTerminal(GrpcPointTerminal):
 
     @property
     def layer(self):
+        """Terminal layer.
+
+        Returns
+        -------
+        :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`
+
+        """
         from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 
         return StackupLayer(self._pedb, super().layer)
@@ -56,6 +70,13 @@ class PointTerminal(GrpcPointTerminal):
 
     @property
     def ref_terminal(self):
+        """Reference terminal.
+
+        Returns
+        -------
+        :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
+
+        """
         return PointTerminal(self._pedb, self.reference_terminal)
 
     @ref_terminal.setter
@@ -64,6 +85,13 @@ class PointTerminal(GrpcPointTerminal):
 
     @property
     def reference_terminal(self):
+        """Reference terminal.
+
+        Returns
+        -------
+        :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
+
+        """
         return PointTerminal(self._pedb, super().reference_terminal)
 
     @reference_terminal.setter

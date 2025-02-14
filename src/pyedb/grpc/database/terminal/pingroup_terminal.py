@@ -36,6 +36,12 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
 
     @property
     def boundary_type(self):
+        """Boundary type.
+
+        Returns
+        -------
+        str : boundary type.
+        """
         return super().boundary_type.name.lower()
 
     @boundary_type.setter
@@ -52,6 +58,13 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
 
     @property
     def magnitude(self):
+        """Source magnitude.
+
+        Returns
+        -------
+        float : magnitude value.
+
+        """
         return self.source_amplitude
 
     @magnitude.setter
@@ -60,6 +73,13 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
 
     @property
     def phase(self):
+        """Source phase.
+
+        Returns
+        -------
+        float : phase value.
+
+        """
         return self.source_phase
 
     @phase.setter
@@ -68,6 +88,13 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
 
     @property
     def source_amplitude(self):
+        """Source amplitude.
+
+        Returns
+        -------
+        float : source magnitude.
+
+        """
         return super().source_amplitude
 
     @source_amplitude.setter
@@ -76,6 +103,13 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
 
     @property
     def source_phase(self):
+        """Source phase.
+
+        Returns
+        -------
+        foat : source phase.
+
+        """
         return super().source_amplitude.value
 
     @source_phase.setter
@@ -84,6 +118,13 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
 
     @property
     def impedance(self):
+        """Terminal impedance.
+
+        Returns
+        -------
+        float : terminal impedance.
+
+        """
         return super().impedance.value
 
     @impedance.setter
@@ -92,6 +133,14 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
 
     @property
     def net(self):
+        """Terminal net.
+
+        Returns
+        -------
+        :class:`Net <pyedb.grpc.database.net.net.Net>`
+            Terminal Net object.
+
+        """
         return Net(self._pedb, super().net)
 
     @net.setter
@@ -100,6 +149,14 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
 
     @property
     def pin_group(self):
+        """Pingroup.
+
+        Returns
+        -------
+        :class:`PinGroup <pyedb.grpc.database.hierarchy.pingroup.PinGroup>`
+            Terminal pingroup.
+
+        """
         from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 
         return PinGroup(self._pedb, super().pin_group)

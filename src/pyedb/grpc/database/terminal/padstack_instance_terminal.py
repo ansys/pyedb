@@ -36,7 +36,8 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
 
     @property
     def position(self):
-        """Return terminal position.
+        """Terminal position.
+
         Returns
         -------
         Position [x,y] : [float, float]
@@ -46,6 +47,12 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
 
     @property
     def location(self):
+        """Terminal position.
+
+        Returns
+        -------
+        Position [x,y] : [float, float]
+        """
         p_inst, _ = self.params
         pos_x, pos_y, _ = p_inst.get_position_and_rotation()
         return [pos_x.value, pos_y.value]
@@ -56,8 +63,7 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
 
         Returns
         -------
-        str
-            Name of the net.
+        str : name of the net.
         """
         if self.is_null:
             return ""
@@ -73,6 +79,12 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
 
     @property
     def magnitude(self):
+        """Source amplitude.
+
+        Returns
+        -------
+        float : amplitude value.
+        """
         return self.source_amplitude
 
     @magnitude.setter
@@ -81,6 +93,12 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
 
     @property
     def phase(self):
+        """Source phase.
+
+        Returns
+        -------
+        float : phase value.
+        """
         return self.source_phase
 
     @phase.setter
@@ -89,6 +107,12 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
 
     @property
     def source_amplitude(self):
+        """Source amplitude.
+
+        Returns
+        -------
+        float : amplitude value.
+        """
         return super().source_amplitude
 
     @source_amplitude.setter
@@ -97,6 +121,12 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
 
     @property
     def source_phase(self):
+        """Source phase.
+
+        Returns
+        -------
+        float : phase value.
+        """
         return super().source_phase.value
 
     @source_phase.setter
@@ -105,6 +135,12 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
 
     @property
     def impedance(self):
+        """Impdeance value.
+
+        Returns
+        -------
+        float : impedance value.
+        """
         return super().impedance.value
 
     @impedance.setter
@@ -113,6 +149,12 @@ class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):
 
     @property
     def boundary_type(self):
+        """Boundary type.
+
+        Returns
+        -------
+        str : Boundary type.
+        """
         return super().boundary_type.name.lower()
 
     @boundary_type.setter

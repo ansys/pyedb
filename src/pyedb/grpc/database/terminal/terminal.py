@@ -90,6 +90,13 @@ class Terminal(GrpcTerminal):
 
     @property
     def ref_terminal(self):
+        """Reference terminal.
+
+        Returns
+        -------
+        :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
+
+        """
         return self.reference_terminal
 
     @ref_terminal.setter
@@ -117,7 +124,12 @@ class Terminal(GrpcTerminal):
 
     @property
     def layer(self):
-        """Get layer of the terminal."""
+        """Get layer of the terminal.
+
+        Returns
+        -------
+        str : layer name.
+        """
         return self.reference_layer.name
 
     @layer.setter
@@ -131,7 +143,13 @@ class Terminal(GrpcTerminal):
 
     @property
     def do_renormalize(self):
-        """Determine whether port renormalization is enabled."""
+        """Determine whether port renormalization is enabled.
+
+        Returns
+        -------
+        bool
+
+        """
         return self.port_post_processing_prop.do_renormalize
 
     @do_renormalize.setter
@@ -145,17 +163,18 @@ class Terminal(GrpcTerminal):
         Returns
         -------
         str
+            Net name.
         """
         return self.net.name
 
     @property
     def terminal_type(self):
-        """Terminal Type. Accepted values for setter: `"eEdge"`, `"point"`, `"terminal_instance"`,
+        """Terminal Type. Accepted values for setter: `"edge"`, `"point"`, `"terminal_instance"`,
         `"padstack_instance"`, `"bundle_terminal"`, `"pin_group"`.
 
         Returns
         -------
-        int
+        str
         """
         return self.type.name.lower()
 
@@ -180,22 +199,46 @@ class Terminal(GrpcTerminal):
 
     @property
     def is_port(self):
-        """Whether it is a port."""
+        """Whether it is a port.
+
+        Returns
+        -------
+        bool
+
+        """
         return True if self.boundary_type == "port" else False
 
     @property
     def is_current_source(self):
-        """Whether it is a current source."""
+        """Whether it is a current source.
+
+        Returns
+        -------
+        bool
+
+        """
         return True if self.boundary_type == "current_source" else False
 
     @property
     def is_voltage_source(self):
-        """Whether it is a voltage source."""
+        """Whether it is a voltage source.
+
+        Returns
+        -------
+        bool
+
+        """
         return True if self.boundary_type == "voltage_source" else False
 
     @property
     def impedance(self):
-        """Impedance of the port."""
+        """Impedance of the port.
+
+        Returns
+        -------
+        float : impedance value.
+
+        """
         return self.impedance.value
 
     @impedance.setter
@@ -209,8 +252,8 @@ class Terminal(GrpcTerminal):
 
         Returns
         -------
-        :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance` or
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`
+        :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>` or
+        :class:`Primitive <pyedb.grpc.database.primitive.primitives.Primitive>`
         """
         if not self._reference_object:
             if self.terminal_type == "edge":
@@ -234,7 +277,13 @@ class Terminal(GrpcTerminal):
 
     @property
     def reference_net_name(self):
-        """Net name to which reference_object belongs."""
+        """Net name to which reference_object belongs.
+
+        Returns
+        -------
+        str : net name.
+
+        """
         if self.reference_object:
             return self.reference_object.net_name
 
@@ -251,7 +300,7 @@ class Terminal(GrpcTerminal):
 
         Returns
         -------
-        :class:`dotnet.database.edb_data.padstack_data.EDBPadstackInstance`
+        :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
         """
 
         if self.is_circuit_port:
@@ -272,7 +321,7 @@ class Terminal(GrpcTerminal):
 
         Returns
         -------
-        :class:`dotnet.database.edb_data.padstack_data.EDBPadstackInstance`
+        :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
         """
 
         refTerm = self.reference_terminal
@@ -296,12 +345,12 @@ class Terminal(GrpcTerminal):
         return False
 
     def get_edge_terminal_reference_primitive(self):  # pragma : no cover
-        """Check and  return a primitive instance that serves Edge ports,
-        wave ports and coupled edge ports that are directly connedted to primitives.
+        """Check and return a primitive instance that serves Edge ports,
+        wave-ports and coupled-edge ports that are directly connected to primitives.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`
+        :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`
         """
 
         ref_layer = self.reference_layer
@@ -320,8 +369,8 @@ class Terminal(GrpcTerminal):
 
         Returns
         -------
-        :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance` or
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`
+        :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>` or
+        :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`
         """
 
         ref_term = self.reference_terminal  # return value is type terminal
@@ -353,7 +402,7 @@ class Terminal(GrpcTerminal):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`
+        :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
         """
         comp_inst = self.component
         pins = self._pedb.components.get_pin_from_component(comp_inst.name)
@@ -393,7 +442,12 @@ class Terminal(GrpcTerminal):
 
     @property
     def magnitude(self):
-        """Get the magnitude of the source."""
+        """Get the magnitude of the source.
+
+        Returns
+        -------
+        float : source magnitude.
+        """
         return self.source_amplitude.value
 
     @magnitude.setter
@@ -402,7 +456,13 @@ class Terminal(GrpcTerminal):
 
     @property
     def phase(self):
-        """Get the phase of the source."""
+        """Get the phase of the source.
+
+        Returns
+        -------
+        float : source phase.
+
+        """
         return self.source_phase.value
 
     @phase.setter
