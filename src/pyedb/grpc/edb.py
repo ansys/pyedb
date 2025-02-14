@@ -3362,7 +3362,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-           dict[str, Tuple(int,: class:`ansys.edb.core.geometry.polygon_data.PolygonData`)]
+           dict[str, [int,: class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`]]
            Return a dictionary with edb path as key and tuple Zone Id as first item and EDB polygon Data defining
            the region as second item.
 
@@ -3415,7 +3415,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        dict[str][str] , list of str
+        Dict[str: str] or List[str]
         first dictionary defined_ports with edb name as key and existing port name list as value. Those ports are the
         ones defined before processing the multizone clipping.
         second is the list of connected port.
