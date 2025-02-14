@@ -35,13 +35,13 @@ class EdgeTerminal(GrpcEdgeTerminal):
 
         Parameters
         ----------
-        port : :class:`dotnet.database.ports.WavePort`, :class:`dotnet.database.ports.GapPort`, list, optional
+        port : :class:`Waveport <pyedb.grpc.database.ports.ports.WavePort>`,
+        :class:`GapPOrt <pyedb.grpc.database.ports.ports.GapPort>`, list, optional
             Ports to be added.
 
         Returns
         -------
-        :class:`dotnet.database.ports.BundleWavePort`
-
+        :class:`BundleWavePort <pyedb.grpc.database.ports.ports.BundleWavePort>`
         """
         if not isinstance(port, (list, tuple)):
             port = [port]
