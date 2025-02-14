@@ -12,6 +12,12 @@ End-to-end workflow
         pcb_dc_ir.py
         dcir.py
 
+Create design from config file
+------------------------------
+
+.. nbgallery::
+        modeler_simple_transmission_line.py
+
 Step explanation
 -------------------------
 
