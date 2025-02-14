@@ -8,6 +8,7 @@ import os
 import tempfile
 
 from ansys.aedt.core import Hfss3dLayout
+
 from pyedb import Edb
 
 # -
@@ -42,7 +43,13 @@ cfg["stackup"]["materials"] = [
 cfg["stackup"]["layers"] = [
     {"name": "TOP", "type": "signal", "material": "copper", "fill_material": "solder_resist", "thickness": "0.035mm"},
     {"name": "DE", "type": "dielectric", "material": "fr4", "fill_material": "", "thickness": "0.5mm"},
-    {"name": "BOTTOM", "type": "signal", "material": "copper", "fill_material": "solder_resist", "thickness": "0.035mm"}
+    {
+        "name": "BOTTOM",
+        "type": "signal",
+        "material": "copper",
+        "fill_material": "solder_resist",
+        "thickness": "0.035mm",
+    },
 ]
 
 cfg["modeler"]["traces"] = [
@@ -55,8 +62,13 @@ cfg["modeler"]["traces"] = [
         "start_cap_style": "flat",
         "end_cap_style": "flat",
     },
-    {"name": "trace_1_void", "layer": "TOP", "width": "trace_width+0.3mm", "path": [[0, 0], [0, "3mm"]],
-     "net_name": "GND"}
+    {
+        "name": "trace_1_void",
+        "layer": "TOP",
+        "width": "trace_width+0.3mm",
+        "path": [[0, 0], [0, "3mm"]],
+        "net_name": "GND",
+    },
 ]
 cfg["modeler"]["planes"] = [
     {
@@ -168,7 +180,7 @@ cfg["ports"] = [
         "horizontal_extent_factor": 10,
         "vertical_extent_factor": 2,
         "pec_launch_width": "0,2mm",
-    }
+    },
 ]
 # -
 
