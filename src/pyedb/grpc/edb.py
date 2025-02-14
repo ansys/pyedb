@@ -134,7 +134,7 @@ class Edb(EdbInit):
 
     Examples
     --------
-    Create :class:`pyedb.grpc.edb.Edb` object.
+    Create :class:`Edb <pyedb.grpc.edb.Edb>` object.
 
     >>> from pyedb.grpc.edb import Edb as Edb
     >>> app = Edb()
@@ -407,7 +407,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        variable dictionary : Dict{str[variable name]: float[variable value]}
+        variable dictionary : Dict[str, variable_name: float, variable_value]
         """
         return {i: self.active_cell.get_variable_value(i).value for i in self.active_cell.get_all_variable_names()}
 
@@ -417,7 +417,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        variables dictionary : Dict{str[variable name]: float[variable value]}
+        variables dictionary : Dict[str, variable_name: float, variable_value]
 
         """
         return {i: self.active_db.get_variable_value(i).value for i in self.active_db.get_all_variable_names()}
@@ -428,7 +428,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        layout validation object: :class:`pyedb.grpc.database.layout_validation.LayoutValidation`
+        :class:`LayoutValidation <pyedb.grpc.database.layout_validation.LayoutValidation>`
         """
         return LayoutValidation(self)
 
@@ -438,7 +438,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        variables dictionary : Dict[str, float]
+        variables dictionary : Dict[str: float]
 
         """
         all_vars = dict()
@@ -454,7 +454,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        Dict : Dic[str,: class:`pyedb.grpc.database.terminal.terminal.Terminal`]
+        Dict : Dict[str: :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`],
         """
         return {i.name: i for i in self.layout.terminals}
 
@@ -464,7 +464,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        Dict: Dict[str,: class:`pyedb.grpc.database.port.GapPort`]
+        Dict: Dict[str: :class:`<pyedb.grpc.database.port.GapPort>`]
         """
 
         terms = [term for term in self.layout.terminals if term.boundary_type == "port"]
@@ -482,8 +482,8 @@ class Edb(EdbInit):
 
         Returns
         -------
-        port dictionary : Dict[str, [: class:`pyedb.grpc.database.ports.GapPort`,:
-        class:`pyedb.grpc.database.ports.WavePort`]]
+        port dictionary : Dict[str: :class:`GapPort <pyedb.grpc.database.ports.GapPort>` or
+        :class:`WavePort <pyedb.grpc.database.ports.WavePort>`]
 
         """
         terminals = [term for term in self.layout.terminals if not term.is_reference_terminal]
@@ -520,7 +520,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        Dict: Dic[str,: class: `pyedb.grpc.database.terminal.terminal.Terminal`]
+        Dict: Dic[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
         """
         return self.terminals
 
@@ -531,7 +531,7 @@ class Edb(EdbInit):
         Returns
         -------
         List of voltage regulator modules.
-         List[:clas:`pyedb.grpc.database.layout.voltage_regulator.VoltageRegulator`]
+         List[:class:`VoltageRegulator <pyedb.grpc.database.layout.voltage_regulator.VoltageRegulator>`]
 
         """
         vrms = self.layout.voltage_regulators
@@ -547,7 +547,7 @@ class Edb(EdbInit):
         Returns
         -------
         Dictionary of probes.
-            Dict[str,: class:`pyedb.grpc.database.terminal.terminal.Terminal`
+            Dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`
         """
         terms = [term for term in self.layout.terminals if term.boundary_type.value == 8]
         return {ter.name: ter for ter in terms}
@@ -557,7 +557,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        bool:  `True` when succeed `False` if failed.
+        bool: `True` when succeed `False` if failed.
         """
         self.standalone = self.standalone
         n_try = 10
@@ -751,7 +751,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        : class:`pyedb.configuration.configuration.Configuration`.
+        :class:`Configuration <pyedb.configuration.configuration.Configuration>`.
         """
         if not self._configuration:
             self._configuration = Configuration(self)
@@ -784,7 +784,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`ansys.edb.core.database.Database`.
+        :class:`Database <ansys.edb.core.database.Database>`.
         """
         return self.db
 
@@ -794,7 +794,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`ansys.edb.core.layout.cell.Cell`.
+        :class:`Cell <ansys.edb.core.layout.cell.Cell>`.
         """
         return self._active_cell
 
@@ -804,7 +804,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.grpc.database.components.Components`.
+        :class:`Components <pyedb.grpc.database.components.Components>`.
 
         Examples
         --------
@@ -822,7 +822,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        pyedb.grpc.database.stackup.Stackup
+        :class:`Stackup <pyedb.grpc.database.stackup.Stackup>`
 
         Examples
         --------
@@ -842,7 +842,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.grpc.database.source_excitations.SourceExcitation`.
+        :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`.
         """
         if self.active_db:
             return self._source_excitation
@@ -853,7 +853,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class: `pyedb.grpc.database.definition.materials.Materials`.
+        :class:`Materials <pyedb.grpc.database.definition.materials.Materials>`.
 
         Examples
         --------
@@ -874,7 +874,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class: `pyedb.grpc.database.padstack.Padstacks`.
+        :class:`Padstacks <pyedb.grpc.database.padstack.Padstacks>`.
 
         Examples
         --------
@@ -896,7 +896,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class: `pyedb.grpc.database.siwave.Siwave`.
+        :class:`Siwave <pyedb.grpc.database.siwave.Siwave>`.
 
         Examples
         --------
@@ -914,7 +914,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.grpc.database.hfss.Hfss`.
+        :class:`Hfss <pyedb.grpc.database.hfss.Hfss>`.
 
         Examples
         --------
@@ -934,7 +934,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.grpc.database.nets.Nets`.
+        :class:`Nets <pyedb.grpc.database.nets.Nets>`.
 
         Examples
         --------
@@ -954,7 +954,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.grpc.database.net.net_class.NetClass`.
+        :class:`NetClass <pyedb.grpc.database.net.net_class.NetClass>`.
 
         Examples
         --------
@@ -972,7 +972,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.grpc.database.net.extended_net.ExtendedNets`.
+        :class:`ExtendedNets <pyedb.grpc.database.net.extended_net.ExtendedNets>`.
 
         Examples
         --------
@@ -991,7 +991,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.grpc.database.net.differential_par.DifferentialPairs`.
+        :class:`DifferentialPairs <pyedb.grpc.database.net.differential_par.DifferentialPairs>`.
 
         Examples
         --------
@@ -1009,7 +1009,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class: `pyedb.grpc.database.modeler.Modeler`.
+        :class:`Modeler <pyedb.grpc.database.modeler.Modeler>`.
 
         Examples
         --------
@@ -1027,7 +1027,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.grpc.database.layout.layout.Layout`.
+        :class:`Layout <pyedb.grpc.database.layout.layout.Layout>`.
         """
         return Layout(self)
 
@@ -1037,7 +1037,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.grpc.database.layout.layout.Layout`.
+        :class:`Layout <pyedb.grpc.database.layout.layout.Layout>`.
         """
         return self.layout
 
@@ -1047,7 +1047,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`ansys.edb.core.layout_instance.layout_instance.LayoutInstance`
+        :class:`LayoutInstance <ansys.edb.core.layout_instance.layout_instance.LayoutInstance>`
         """
         if not self._layout_instance:
             self._layout_instance = self.layout.layout_instance
@@ -1058,9 +1058,11 @@ class Edb(EdbInit):
 
         Returns
         -------
-        list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`,
-        :class:`pyedb.grpc.database.primitive.path.Path`, :class:`pyedb.grpc.database.primitive.rectangle.Rectangle`,
-        :class:`pyedb.grpc.database.primitive.circle.Circle`, :class:`pyedb.grpc.database.primitive.polygon.Polygon`]
+        list[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`,
+        :class:`Path <pyedb.grpc.database.primitive.path.Path>`,
+        :class:`Rectangle <pyedb.grpc.database.primitive.rectangle.Rectangle>`,
+        :class:`Circle <pyedb.grpc.database.primitive.circle.Circle>`,
+        :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`]
         """
         from ansys.edb.core.terminal.terminals import (
             PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
@@ -1106,7 +1108,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.grpc.database.geometry.point_3d_data.Point3DData`
+        :class:`Point3DData <pyedb.grpc.database.geometry.point_3d_data.Point3DData>`
         """
         from pyedb.grpc.database.geometry.point_3d_data import Point3DData
 
@@ -1125,7 +1127,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class: `pyedb.grpc.database.geometry.point_data`.PointData`
+        :class:`PointData <pyedb.grpc.database.geometry.point_data.PointData>`
         """
         from pyedb.grpc.database.geometry.point_data import PointData
 
@@ -1701,7 +1703,7 @@ class Edb(EdbInit):
         Returns
         -------
         List
-            List of coordinate points defining the extent used for clipping the design. If failed return an empty
+            List of coordinate points defining the extent used for clipping the design. If failed, return an empty
             list.
 
         Examples
@@ -2196,7 +2198,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`ansys.edb.core.geometry.polygon_data.PolygonData`
+        :class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
         """
         from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType
 
@@ -3004,7 +3006,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.grpc.database.utility.layout_statistics.LayoutStatistics`
+        :class:`LayoutStatistics <pyedb.grpc.database.utility.layout_statistics.LayoutStatistics>`
         """
         with enable_caching():
             return self.modeler.get_layout_statistics(evaluate_area=compute_area, net_list=None)
@@ -3143,7 +3145,8 @@ class Edb(EdbInit):
 
         Returns
         -------
-        Dict[str, :class:`pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup`]
+        Dict[str,
+        :class:`HfssSimulationSetup <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup>`]
 
         """
         setups = {}
@@ -3158,8 +3161,9 @@ class Edb(EdbInit):
 
         Returns
         -------
-        Dict[str,:
-        class:`pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup`]
+        Dict[str,
+        :class:`SIWaveDCIRSimulationSetup
+        <pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup>`]
         """
         return {name: i for name, i in self.setups.items() if isinstance(i, SIWaveDCIRSimulationSetup)}
 
@@ -3169,7 +3173,8 @@ class Edb(EdbInit):
 
         Returns
         -------
-        Dict[str,: class:`pyedb.grpc.database.simulation_setup.siwave_simulation_setup.SiwaveSimulationSetup`]
+        Dict[str,:class:`SiwaveSimulationSetup
+        <pyedb.grpc.database.simulation_setup.siwave_simulation_setup.SiwaveSimulationSetup>`]
         """
         return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSimulationSetup)}
 
@@ -3186,7 +3191,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`legacy.database.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`
+        :class:`HfssSimulationSetup <legacy.database.edb_data.hfss_simulation_setup_data.HfssSimulationSetup>`
 
         """
         warnings.warn(
@@ -3211,7 +3216,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`legacy.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
+        :class:`RaptorXSimulationSetup <legacy.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup>`
 
         """
         from ansys.edb.core.simulation_setup.raptor_x_simulation_setup import (
@@ -3265,7 +3270,8 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.grpc.database.simulation_setup.siwave_simulation_setup.SiwaveSimulationSetup`
+        :class:`SiwaveSimulationSetup
+        <pyedb.grpc.database.simulation_setup.siwave_simulation_setup.SiwaveSimulationSetup>`
 
         Examples
         --------
@@ -3301,7 +3307,8 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup`
+        :class:`SIWaveDCIRSimulationSetup
+        <pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup>`
 
         Examples
         --------
@@ -3555,8 +3562,8 @@ class Edb(EdbInit):
             Name of the created port. The default is None, a random name is generated.
         Returns
         -------
-        list: [:class:`pyedb.grpc.database.ports.ports.GapPort`,
-            :class:`pyedb.grpc.database.ports.ports.WavePort`,].
+        list: [:class:`GapPort <pyedb.grpc.database.ports.ports.GapPort`>,
+            :class:`WavePort <pyedb.grpc.database.ports.ports.WavePort>`].
         """
         from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
 
@@ -3576,20 +3583,20 @@ class Edb(EdbInit):
 
         Parameters
         ----------
-        terminal : :class:`pyedb.grpc.database.terminals.EdgeTerminal`,
-            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
-            :class:`pyedb.grpc.database.terminals.PointTerminal`,
-            :class:`pyedb.grpc.database.terminals.PinGroupTerminal`,
+        terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
+            :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
             Positive terminal of the port.
-        ref_terminal : :class:`pyedb.grpc.database.terminals.EdgeTerminal`,
+        ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
             :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
-            :class:`pyedb.grpc.database.terminals.PointTerminal`,
-            :class:`pyedb.grpc.database.terminals.PinGroupTerminal`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
             Negative terminal of the probe.
 
         Returns
         -------
-        pyedb.dotnet.database.edb_data.terminals.Terminal
+        :class:`Terminal <pyedb.dotnet.database.edb_data.terminals.Terminal>`
         """
         term = Terminal(self, terminal)
         term.boundary_type = "voltage_probe"
@@ -3605,20 +3612,20 @@ class Edb(EdbInit):
 
         Parameters
         ----------
-        terminal : :class:`pyedb.grpc.database.terminals.EdgeTerminal`, \
-            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`, \
-            :class:`pyedb.grpc.database.terminals.PointTerminal`, \
-            :class:`pyedb.grpc.database.terminals.PinGroupTerminal`
-            Positive terminal of the port.
-        ref_terminal : class:`pyedb.grpc.database.terminals.EdgeTerminal`, \
-            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`, \
-            :class:`pyedb.grpc.database.terminals.PointTerminal`, \
-            :class:`pyedb.grpc.database.terminals.PinGroupTerminal`
+        terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
+            :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            Positive terminal of the source.
+        ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
             Negative terminal of the source.
 
         Returns
         -------
-        class:`legacy.database.edb_data.ports.ExcitationSources`
+        class:`ExcitationSources <legacy.database.edb_data.ports.ExcitationSources>`
         """
         term = Terminal(self, terminal)
         term.boundary_type = "voltage_source"
@@ -3634,20 +3641,20 @@ class Edb(EdbInit):
 
         Parameters
         ----------
-        terminal : :class:`legacy.database.edb_data.terminals.EdgeTerminal`,
-            :class:`legacy.database.edb_data.terminals.PadstackInstanceTerminal`,
-            :class:`legacy.database.edb_data.terminals.PointTerminal`,
-            :class:`legacy.database.edb_data.terminals.PinGroupTerminal`,
-            Positive terminal of the port.
-        ref_terminal : class:`legacy.database.edb_data.terminals.EdgeTerminal`,
-            :class:`legacy.database.edb_data.terminals.PadstackInstanceTerminal`,
-            :class:`legacy.database.edb_data.terminals.PointTerminal`,
-            :class:`legacy.database.edb_data.terminals.PinGroupTerminal`,
+        terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PadstackInstanceTerminal>`,
+            :class:`PointTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
+            Positive terminal of the source.
+        ref_terminal : :class:`EdgeTerminal <pyedb.grpc.database.terminals.EdgeTerminal>`,
+            :class:`pyedb.grpc.database.terminals.PadstackInstanceTerminal`,
+            :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminals.PointTerminal>`,
+            :class:`PinGroupTerminal <pyedb.grpc.database.terminals.PinGroupTerminal>`,
             Negative terminal of the source.
 
         Returns
         -------
-        :class:`legacy.database.edb_data.ports.ExcitationSources`
+        :class:`ExcitationSources <legacy.database.edb_data.ports.ExcitationSources>`
         """
         term = Terminal(self, terminal)
         term.boundary_type = "current_source"
@@ -3674,7 +3681,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`legacy.database.edb_data.terminals.PointTerminal`
+        :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
         """
         from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 
@@ -4130,7 +4137,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`pyedb.grpc.database.definitions.Definitions`
+        :class:`Definitions <pyedb.grpc.database.definitions.Definitions>`
         """
         from pyedb.grpc.database.definitions import Definitions
 
@@ -4142,6 +4149,6 @@ class Edb(EdbInit):
 
         Returns
         ------
-        :class:`pyedb.workflow.Workflow`
+        :class:`Workflow <pyedb.workflow.Workflow>`
         """
         return Workflow(self)
