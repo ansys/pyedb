@@ -39,9 +39,9 @@ class BundleTerminal(GrpcBundleTerminal):
 
     Parameters
     ----------
-    pedb : pyedb.edb.Edb
-        EDB object from the ``Edblib`` library.
-    edb_object : Ansys.Ansoft.Edb.Cell.Terminal.BundleTerminal
+    pedb : :class:`Edb <pyedb.grpc.edb.Edb>`
+        EDB object.
+    edb_object : :class:`BundleTerminal <ansys.edb.core.terminal.terminals.BundleTerminal>`
         BundleTerminal instance from EDB.
     """
 
@@ -51,15 +51,33 @@ class BundleTerminal(GrpcBundleTerminal):
         self._edb_object = edb_object
 
     def decouple(self):
-        """Ungroup a bundle of terminals."""
+        """Ungroup a bundle of terminals.
+
+        Returns
+        -------
+        bool
+        """
         return self.ungroup()
 
     @property
     def component(self):
+        """ReturnsComponent.
+
+        Returns
+        -------
+        :class:`Component <pyedb.grpc.database.hierarchy.component.Component`
+        """
         return Component(self._pedb, self.component)
 
     @property
     def impedance(self):
+        """Returns impedance value.
+
+        Returns
+        -------
+        float
+            Impedance value.
+        """
         return self.impedance.value
 
     @impedance.setter
@@ -68,10 +86,22 @@ class BundleTerminal(GrpcBundleTerminal):
 
     @property
     def net(self):
+        """Returns Net object.
+
+        Returns
+        -------
+        :class:`Net <pyedb.grpc.database.net.net.Net>`
+        """
         return Net(self._pedb, self.net)
 
     @property
     def hfss_pi_type(self):
+        """Returns HFSS PI type.
+
+        Returns
+        -------
+        str
+        """
         return self.hfss_pi_type.name
 
     @hfss_pi_type.setter
@@ -89,6 +119,12 @@ class BundleTerminal(GrpcBundleTerminal):
 
     @property
     def reference_layer(self):
+        """Returns reference layer.
+
+        Returns
+        -------
+        :class:`Layer <pyedb.grpc.database.layer.layer.Layer>`
+        """
         return Layer(self._pedb, self.reference_layer)
 
     @reference_layer.setter
@@ -100,6 +136,12 @@ class BundleTerminal(GrpcBundleTerminal):
 
     @property
     def reference_terminal(self):
+        """Returns reference terminal.
+
+        Returns
+        -------
+        :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`
+        """
         return Terminal(self._pedb, self.reference_terminal)
 
     @reference_terminal.setter
@@ -109,10 +151,22 @@ class BundleTerminal(GrpcBundleTerminal):
 
     @property
     def rlc_boundary_parameters(self):
+        """Returns Rlc parameters
+
+        Returns
+        -------
+        :class:`Rlc <pyedb.grpc.database.utility.rlc.Rlc>`
+        """
         return Rlc(self._pedb, self.rlc)
 
     @property
     def source_amplitude(self):
+        """Returns source amplitude.
+
+        Returns
+        -------
+        float
+        """
         return self.source_amplitude.value
 
     @source_amplitude.setter
@@ -121,6 +175,12 @@ class BundleTerminal(GrpcBundleTerminal):
 
     @property
     def source_phase(self):
+        """Returns source phase.
+
+        Returns
+        -------
+        float
+        """
         return self.source_phase.value
 
     @source_phase.setter
@@ -129,6 +189,13 @@ class BundleTerminal(GrpcBundleTerminal):
 
     @property
     def term_to_ground(self):
+        """Returns terminal to ground.
+
+        Returns
+        -------
+        str
+            Terminal name.
+        """
         return self.term_to_ground.name
 
     @term_to_ground.setter
@@ -142,4 +209,10 @@ class BundleTerminal(GrpcBundleTerminal):
 
     @property
     def terminals(self):
+        """Returns terminals list.
+
+        Returns
+        -------
+        List[:class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
+        """
         return [Terminal(self._pedb, terminal) for terminal in self.terminals]
