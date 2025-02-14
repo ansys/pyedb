@@ -35,7 +35,10 @@ class TestClass:
         pass
 
     def test_01_pre_layout_design_toolkit_pcb_diff_via(self, local_scratch):
-        from pyedb.extensions.pre_layout_design_toolkit.via_design import ViaDesignConfig
+        from pyedb.extensions.pre_layout_design_toolkit.via_design import (
+            ViaDesignConfig,
+        )
+
         main = {
             "version": desktop_version,
             "working_directory": None,
