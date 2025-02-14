@@ -389,13 +389,12 @@ class EdbInit(object):
 
         Parameters
         ----------
-        cells_to_copy : list[:class:`Cell <ansys.edb.layout.Cell>`]
+        cells_to_copy : list[:class:`Cell <ansys.edb.core.layout.cell.Cell>`]
             Cells to copy.
 
         Returns
         -------
-        list[:class:`Cell <ansys.edb.layout.Cell>`]
-            New Cells created in this Database.
+        list[:class:`Cell <ansys.edb.core.layout.cell.Cell>`]
         """
         if not isinstance(cells_to_copy, list):
             cells_to_copy = [cells_to_copy]

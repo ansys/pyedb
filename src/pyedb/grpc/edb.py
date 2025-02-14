@@ -822,11 +822,11 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class: `pyedb.grpc.database.stackup.Stackup`.
+        pyedb.grpc.database.stackup.Stackup
 
         Examples
         --------
-        >>> from pyedb import Edb
+        >>> from pyedb.grpc.edb import Edb
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.stackup.layers["TOP"].thickness = 4e-5
         >>> edbapp.stackup.layers["TOP"].thickness == 4e-05
@@ -3362,7 +3362,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-           dict[str](int,: class:`ansys.edb.core.geometry.polygon_data.PolygonData`)
+           dict[str, Tuple(int,: class:`ansys.edb.core.geometry.polygon_data.PolygonData`)]
            Return a dictionary with edb path as key and tuple Zone Id as first item and EDB polygon Data defining
            the region as second item.
 

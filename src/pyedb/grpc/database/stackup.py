@@ -79,6 +79,8 @@ logger = logging.getLogger(__name__)
 
 
 class LayerCollection(GrpcLayerCollection):
+    """Layer collection."""
+
     def __init__(self, pedb, edb_object):
         super().__init__(edb_object.msg)
         self._layer_collection = edb_object
@@ -288,7 +290,7 @@ class LayerCollection(GrpcLayerCollection):
 
 
 class Stackup(LayerCollection):
-    """Manages EDB methods for stackup accessible from `Edb.stackup` property."""
+    """Manages EDB methods for stackup."""
 
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
