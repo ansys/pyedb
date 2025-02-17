@@ -29,38 +29,49 @@ from tests.conftest import desktop_version
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
-class TestClass:
-    @pytest.fixture(autouse=True)
-    def init(self):
-        pass
-
-    def test_01_pre_layout_design_toolkit_pcb_diff_via(self, local_scratch):
-        from pyedb.extensions.pre_layout_design_toolkit.via_design import (
-            ViaDesignConfig,
-        )
-
-        main = {
-            "version": desktop_version,
-            "working_directory": None,
-            "design_type": "pcb",
-            "materials": "materials.json",
-            "pcb_stackup": "pcb_stackup.json",
-            "padstacks": "padstacks.json",
-            "pin_map": "pin_map.json",
-            "technology": "technology.json",
-            "setup": "setup.json",
-        }
-        working_dir = Path(local_scratch.path)
-        with open(working_dir / "main.json", "w") as f:
-            json.dump(main, f, indent=4, ensure_ascii=False)
-
-        materials = [
-            {"name": "copper", "conductivity": 58000000.0},
-            {"name": "fr4", "permittivity": 4.4, "dielectric_loss_tangent": 0.02},
+pcb_stackup = [
+            {"name": "PCB_TOP", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "50um"},
+            {"name": "PCB_DE0", "type": "dielectric", "material": "fr4", "thickness": "100um"},
+            {"name": "PCB_L2", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
+            {"name": "PCB_DE1", "type": "dielectric", "material": "fr4", "thickness": "125um"},
+            {"name": "PCB_L3", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
+            {"name": "PCB_DE2", "type": "dielectric", "material": "fr4", "thickness": "100um"},
+            {"name": "PCB_L4", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
+            {"name": "PCB_DE3", "type": "dielectric", "material": "fr4", "thickness": "125um"},
+            {"name": "PCB_L5", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
+            {"name": "PCB_DE4", "type": "dielectric", "material": "fr4", "thickness": "100um"},
+            {"name": "PCB_L6", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
+            {"name": "PCB_DE5", "type": "dielectric", "material": "fr4", "thickness": "125um"},
+            {"name": "PCB_L7", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
+            {"name": "PCB_DE6", "type": "dielectric", "material": "fr4", "thickness": "100um"},
+            {"name": "PCB_L8", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
+            {"name": "PCB_DE7", "type": "dielectric", "material": "fr4", "thickness": "125um"},
+            {"name": "PCB_L9", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
+            {"name": "PCB_DE8", "type": "dielectric", "material": "fr4", "thickness": "100um"},
+            {"name": "PCB_BOT", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "50um"},
         ]
-        with open(working_dir / "materials.json", "w") as f:
-            json.dump(materials, f, indent=4, ensure_ascii=False)
-        padstacks = [
+pkg_stackup = [
+            {"name": "PKG_TOP", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "22um"},
+            {"name": "PKG_DE0", "type": "dielectric", "material": "fr4", "thickness": "30um"},
+            {"name": "PKG_L2", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
+            {"name": "PKG_DE1", "type": "dielectric", "material": "fr4", "thickness": "30um"},
+            {"name": "PKG_L3", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
+            {"name": "PKG_DE2", "type": "dielectric", "material": "fr4", "thickness": "30um"},
+            {"name": "PKG_L4", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
+            {"name": "PKG_DE3", "type": "dielectric", "material": "fr4", "thickness": "30um"},
+            {"name": "PKG_L5", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
+            {"name": "PKG_DE4", "type": "dielectric", "material": "fr4", "thickness": "1200um"},
+            {"name": "PKG_L6", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
+            {"name": "PKG_DE5", "type": "dielectric", "material": "fr4", "thickness": "30um"},
+            {"name": "PKG_L7", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
+            {"name": "PKG_DE6", "type": "dielectric", "material": "fr4", "thickness": "30um"},
+            {"name": "PKG_L8", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
+            {"name": "PKG_DE7", "type": "dielectric", "material": "fr4", "thickness": "30um"},
+            {"name": "PKG_L9", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
+            {"name": "PKG_DE8", "type": "dielectric", "material": "fr4", "thickness": "30um"},
+            {"name": "PKG_BOT", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "22um"},
+        ]
+padstacks = [
             {
                 "name": "pcb_via",
                 "shape": "circle",
@@ -97,57 +108,69 @@ class TestClass:
                 "is_core": True,
             },
         ]
+materials = [
+            {"name": "copper", "conductivity": 58000000.0},
+            {"name": "fr4", "permittivity": 4.4, "dielectric_loss_tangent": 0.02},
+        ]
+technology = {
+    "plane_extend": "1mm",
+    "pitch": "1mm",
+    "bga_component": {
+        "enabled": False,
+        "solder_ball_shape": "spheroid",
+        "solder_ball_diameter": "300um",
+        "solder_ball_mid_diameter": "400um",
+        "solder_ball_height": "200um",
+        "fanout_dx": "0.4mm",
+        "fanout_dy": "0.4mm",
+        "fanout_width": "0.3mm",
+        "fanout_clearance": "0.15mm",
+    },
+    "pkg_ground_via": {"distance": "0.2mm", "core_via_start_layer": "PKG_L2", "core_via_stop_layer": "PKG_L3"},
+}
+
+
+class TestClass:
+    @pytest.fixture(autouse=True)
+    def init(self, local_scratch):
+        working_dir = Path(local_scratch.path)
+        self.working_dir = working_dir
+
+        with open(working_dir / "materials.json", "w") as f:
+            json.dump(materials, f, indent=4, ensure_ascii=False)
+
         with open(working_dir / "padstacks.json", "w") as f:
             json.dump(padstacks, f, indent=4, ensure_ascii=False)
-        pcb_stackup = [
-            {"name": "PCB_TOP", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "50um"},
-            {"name": "PCB_DE0", "type": "dielectric", "material": "fr4", "thickness": "100um"},
-            {"name": "PCB_L2", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
-            {"name": "PCB_DE1", "type": "dielectric", "material": "fr4", "thickness": "125um"},
-            {"name": "PCB_L3", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
-            {"name": "PCB_DE2", "type": "dielectric", "material": "fr4", "thickness": "100um"},
-            {"name": "PCB_L4", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
-            {"name": "PCB_DE3", "type": "dielectric", "material": "fr4", "thickness": "125um"},
-            {"name": "PCB_L5", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
-            {"name": "PCB_DE4", "type": "dielectric", "material": "fr4", "thickness": "100um"},
-            {"name": "PCB_L6", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
-            {"name": "PCB_DE5", "type": "dielectric", "material": "fr4", "thickness": "125um"},
-            {"name": "PCB_L7", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
-            {"name": "PCB_DE6", "type": "dielectric", "material": "fr4", "thickness": "100um"},
-            {"name": "PCB_L8", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
-            {"name": "PCB_DE7", "type": "dielectric", "material": "fr4", "thickness": "125um"},
-            {"name": "PCB_L9", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "17um"},
-            {"name": "PCB_DE8", "type": "dielectric", "material": "fr4", "thickness": "100um"},
-            {"name": "PCB_BOT", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "50um"},
-        ]
+
         with open(working_dir / "pcb_stackup.json", "w") as f:
             json.dump(pcb_stackup, f, indent=4, ensure_ascii=False)
-        pin_map = {"signal_pairs": {"S0": ["S0_P", "S0_N"]}, "locations": [["GND", "S0_P", "S0_N", "GND", "GND"]]}
-        with open(working_dir / "pin_map.json", "w") as f:
-            json.dump(pin_map, f, indent=4, ensure_ascii=False)
-        pkg_stackup = [
-            {"name": "PKG_TOP", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "22um"},
-            {"name": "PKG_DE0", "type": "dielectric", "material": "fr4", "thickness": "30um"},
-            {"name": "PKG_L2", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
-            {"name": "PKG_DE1", "type": "dielectric", "material": "fr4", "thickness": "30um"},
-            {"name": "PKG_L3", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
-            {"name": "PKG_DE2", "type": "dielectric", "material": "fr4", "thickness": "30um"},
-            {"name": "PKG_L4", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
-            {"name": "PKG_DE3", "type": "dielectric", "material": "fr4", "thickness": "30um"},
-            {"name": "PKG_L5", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
-            {"name": "PKG_DE4", "type": "dielectric", "material": "fr4", "thickness": "1200um"},
-            {"name": "PKG_L6", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
-            {"name": "PKG_DE5", "type": "dielectric", "material": "fr4", "thickness": "30um"},
-            {"name": "PKG_L7", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
-            {"name": "PKG_DE6", "type": "dielectric", "material": "fr4", "thickness": "30um"},
-            {"name": "PKG_L8", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
-            {"name": "PKG_DE7", "type": "dielectric", "material": "fr4", "thickness": "30um"},
-            {"name": "PKG_L9", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "15um"},
-            {"name": "PKG_DE8", "type": "dielectric", "material": "fr4", "thickness": "30um"},
-            {"name": "PKG_BOT", "type": "signal", "material": "copper", "fill_material": "fr4", "thickness": "22um"},
-        ]
+
         with open(working_dir / "pkg_stackup.json", "w") as f:
             json.dump(pkg_stackup, f, indent=4, ensure_ascii=False)
+
+    def test_01_pre_layout_design_toolkit_pcb_diff_via(self):
+        from pyedb.extensions.pre_layout_design_toolkit.via_design import (
+            ViaDesignConfig,
+        )
+
+        main = {
+            "version": desktop_version,
+            "working_directory": None,
+            "design_type": "pcb",
+            "materials": "materials.json",
+            "pcb_stackup": "pcb_stackup.json",
+            "padstacks": "padstacks.json",
+            "pin_map": "pin_map.json",
+            "technology": "technology.json",
+            "setup": "setup.json",
+        }
+        with open(self.working_dir / "main.json", "w") as f:
+            json.dump(main, f, indent=4, ensure_ascii=False)
+
+        pin_map = {"signal_pairs": {"S0": ["S0_P", "S0_N"]}, "locations": [["GND", "S0_P", "S0_N", "GND", "GND"]]}
+        with open(self.working_dir / "pin_map.json", "w") as f:
+            json.dump(pin_map, f, indent=4, ensure_ascii=False)
+
         setup = {
             "name": "hfss_1",
             "type": "hfss",
@@ -164,23 +187,10 @@ class TestClass:
                 }
             ],
         }
-        with open(working_dir / "setup.json", "w") as f:
+        with open(self.working_dir / "setup.json", "w") as f:
             json.dump(setup, f, indent=4, ensure_ascii=False)
-        technology = {
-            "plane_extend": "1mm",
-            "pitch": "1mm",
-            "bga_component": {
-                "enabled": False,
-                "solder_ball_shape": "spheroid",
-                "solder_ball_diameter": "300um",
-                "solder_ball_mid_diameter": "400um",
-                "solder_ball_height": "200um",
-                "fanout_dx": "0.4mm",
-                "fanout_dy": "0.4mm",
-                "fanout_width": "0.3mm",
-                "fanout_clearance": "0.15mm",
-            },
-            "signal_pair": {
+
+        signal_pair = {
                 "S0": {
                     "pcb_trace": [
                         {
@@ -222,18 +232,19 @@ class TestClass:
                         }
                     ],
                 }
-            },
-            "pkg_ground_via": {"distance": "0.2mm", "core_via_start_layer": "PKG_L2", "core_via_stop_layer": "PKG_L3"},
-            "pcb_ground_via": {
+            }
+        pcb_ground_via = {
                 "distance": "0.2mm",
                 "core_via_start_layer": "PCB_TOP",
                 "core_via_stop_layer": "PCB_BOT",
-            },
-        }
-        with open(working_dir / "technology.json", "w") as f:
-            json.dump(technology, f, indent=4, ensure_ascii=False)
+            }
+        local_tech = technology.copy()
+        local_tech["signal_pair"] = signal_pair
+        local_tech["pcb_ground_via"] = pcb_ground_via
+        with open(self.working_dir / "technology.json", "w") as f:
+            json.dump(local_tech, f, indent=4, ensure_ascii=False)
 
-        config_file_path = working_dir / "main.json"
+        config_file_path = self.working_dir / "main.json"
         app = ViaDesignConfig(config_file_path, desktop_version)
         data = app.create_design()
         app.save_cfg_to_file(data)
