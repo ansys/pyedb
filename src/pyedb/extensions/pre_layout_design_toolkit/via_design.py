@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from pyedb import Edb
+from pyedb.generic.general_methods import generate_unique_name
 
 
 class Pair:
@@ -267,9 +268,9 @@ class ViaDesignConfig:
     @property
     def stackup(self):
         temp = []
-        for l in self.pkg_stackup:
-            l = l.copy()
-            temp.append(l)
+        for layer in self.pkg_stackup:
+            l2 = layer.copy()
+            temp.append(l2)
 
         if self.pcb_stackup:
             temp.append(
@@ -280,9 +281,9 @@ class ViaDesignConfig:
                     "thickness": self.technology["bga_component"]["solder_ball_height"],
                 }
             )
-        for l in self.pcb_stackup:
-            l = l.copy()
-            temp.append(l)
+        for layer in self.pcb_stackup:
+            l2 = layer.copy()
+            temp.append(l2)
         return temp
 
     @property
@@ -300,8 +301,7 @@ class ViaDesignConfig:
     @property
     def design_name(self):
         if not self._design_name:
-            random_str = "".join(random.choices(string.ascii_lowercase, k=3))
-            self._design_name = Path(self.config_file_path.stem + "_" + random_str)
+            self._design_name = Path(generate_unique_name(self.config_file_path.stem))
         return self._design_name
 
     @property
@@ -342,7 +342,7 @@ class ViaDesignConfig:
         elif self.include_pcb or self.design_type == "pcb":
             self._variables.extend(
                 [
-                    {"name": f"pcb_stitching_via_distance", "value": "1mm", "description": "general"},
+                    {"name": "pcb_stitching_via_distance", "value": "1mm", "description": "general"},
                 ]
             )
 
@@ -502,15 +502,15 @@ class ViaDesignConfig:
             shape = pd["shape"]
             if shape == "circle":
                 regular_pad = []
-                for l in self.signal_layers:
+                for layer in self.signal_layers:
                     regular_pad.append(
                         {
-                            "layer_name": l,
+                            "layer_name": layer,
                             "shape": shape,
                             "diameter": var_pad_diameter,
                         }
                     )
-            elif shape == "rectangle":
+            else:  # shape == "rectangle":
                 x_size = pd["x_size"]
                 y_size = pd["y_size"]
                 var_pad_x_size = f"${name}_pad_x_size"
@@ -519,22 +519,20 @@ class ViaDesignConfig:
                 new_variables.append({"name": var_pad_y_size, "value": y_size, "description": "padstack"})
 
                 regular_pad = []
-                for l in self.signal_layers:
+                for layer in self.signal_layers:
                     regular_pad.append(
                         {
-                            "layer_name": l,
+                            "layer_name": layer,
                             "shape": shape,
                             "x_size": var_pad_x_size,
                             "y_size": var_pad_y_size,
                         }
                     )
-            else:
-                raise
 
             anti_pad_diameter = pd["anti_pad_diameter"]
 
             # anti_pad = []
-            for l in self.signal_layers:
+            for layer in self.signal_layers:
                 if name in ["bga", "blind_via"]:
                     var_anti_pad_diameter = f"${name}_anti_pad_diameter"
                     new_variables.append(
@@ -542,15 +540,10 @@ class ViaDesignConfig:
                     )
                     break
                 else:
-                    var_anti_pad_diameter = f"${name}_anti_pad_diameter_{l}"
+                    var_anti_pad_diameter = f"${name}_anti_pad_diameter_{layer}"
                     new_variables.append(
-                        {"name": var_anti_pad_diameter, "value": anti_pad_diameter, "description": f"layer={l}"}
+                        {"name": var_anti_pad_diameter, "value": anti_pad_diameter, "description": f"layer={layer}"}
                     )
-                """anti_pad.append({
-                    "layer_name": l,
-                    "shape": "circle",
-                    "diameter": var_anti_pad_diameter,
-                })"""
 
             pad_parameters = {
                 "regular_pad": regular_pad,
@@ -578,42 +571,42 @@ class ViaDesignConfig:
                 pdef, p1, p2 = j
                 pdef_name, start_layer, stop_layer = pdef
                 flag = False
-                for l in self.signal_layers:
-                    if l == start_layer:
+                for layer in self.signal_layers:
+                    if layer == start_layer:
                         flag = True
-                    if l in ["PCB_TOP", "PKG_BOT"]:
-                        if l == stop_layer:
+                    if layer in ["PCB_TOP", "PKG_BOT"]:
+                        if layer == stop_layer:
                             flag = False
                         continue
                     if flag:
                         width = (
                             f"${pdef_name}_anti_pad_diameter"
                             if pdef_name == "blind_via"
-                            else f"${pdef_name}_anti_pad_diameter_{l}"
+                            else f"${pdef_name}_anti_pad_diameter_{layer}"
                         )
                         trace = {
                             "path": [p1, p2],
                             "width": width,
-                            "layer": l,
-                            "name": f"{pdef_name}_{l}_race_track",
+                            "layer": layer,
+                            "name": f"{pdef_name}_{layer}_race_track",
                             "net_name": "GND",
                         }
                         void = trace.copy()
                         void["void_type"] = "trace"
                         voids.append(void)
 
-                    if l == stop_layer:
+                    if layer == stop_layer:
                         flag = False
 
         if design_type == "pkg":
-            for l in self.signal_layers_pkg:
-                if l in ["PCB_TOP", "PKG_BOT"]:
+            for layer in self.signal_layers_pkg:
+                if layer in ["PCB_TOP", "PKG_BOT"]:
                     continue
                 trace = {
                     "path": diff_pair.bga_pin_location,
-                    "width": f"$bga_anti_pad_diameter",
-                    "layer": l,
-                    "name": f"bga_{l}_race_track",
+                    "width": "$bga_anti_pad_diameter",
+                    "layer": layer,
+                    "name": f"bga_{layer}_race_track",
                     "net_name": "GND",
                     "void_type": "trace",
                 }
@@ -625,10 +618,10 @@ class ViaDesignConfig:
     def _create_return_via_pkg(self, diff_pair: Pair):
         pd_instances = []
         for pin_idx, pin_loc in enumerate(diff_pair.bga_pin_location):
-            for idx, l in enumerate(self.signal_layers_pkg):
-                if l == self.signal_layers_pkg[-1]:
+            for idx, layer in enumerate(self.signal_layers_pkg):
+                if layer == self.signal_layers_pkg[-1]:
                     break
-                pdef = "blind_via" if l == diff_pair.core_via_start_layer else "micro_via"
+                pdef = "blind_via" if layer == diff_pair.core_via_start_layer else "micro_via"
                 if not pin_idx % 2:
                     init_angle = "pi*5/8" if idx % 2 else "pi*1/2"
                 else:
@@ -643,7 +636,7 @@ class ViaDesignConfig:
                         {
                             # "name": f"{diff_pair.name}_p_return_",
                             "definition": pdef,
-                            "layer_range": [l, self.signal_layers_pkg[idx + 1]],
+                            "layer_range": [layer, self.signal_layers_pkg[idx + 1]],
                             "net_name": "GND",
                             "position": [x_loc, y_loc],
                             "is_pin": False,
@@ -833,15 +826,15 @@ class ViaDesignConfig:
 
             if design_type == "pkg":
                 flag = True
-                for idx, l in enumerate(self.signal_layers_pkg):
-                    if l == ground_vias.pattern_1_params["core_via_start_layer"]:
+                for idx, layer in enumerate(self.signal_layers_pkg):
+                    if layer == ground_vias.pattern_1_params["core_via_start_layer"]:
                         flag = False
-                    elif l == ground_vias.pattern_1_params["core_via_stop_layer"]:
+                    elif layer == ground_vias.pattern_1_params["core_via_stop_layer"]:
                         flag = True
 
                     if idx < len(self.signal_layers_pkg) - 1:
                         if flag:
-                            start_layer = l
+                            start_layer = layer
                             end_layer = self.signal_layers_pkg[idx + 1]
                         else:
                             start_layer = ground_vias.pattern_1_params["core_via_start_layer"]
@@ -1104,8 +1097,6 @@ class ViaDesignConfig:
                 td_dx = f"$micro_via_pad_diameter/2*cos({td_angle2})"
                 td_dy = f"$micro_via_pad_diameter/2*sin({td_angle2})"
 
-                """p1 = [f"{td_length}*cos({td_angle1})*{pn_polarity}*-1",
-                      f"{td_length}*sin({td_angle1})*{trace_out_direction}"]"""
                 p0 = [f"{trace_p1_x}- {width}/2*{pn_polarity}", trace_p1_y]
                 p1 = [f"{trace_p1_x}+ {width}/2*{pn_polarity}", trace_p1_y]
                 p2 = [f"{td_dx}*{pn_polarity}", f"{td_dy}*{trace_out_direction}"]
