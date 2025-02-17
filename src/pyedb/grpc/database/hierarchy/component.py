@@ -71,7 +71,7 @@ class Component(GrpcComponentGroup):
 
     Parameters
     ----------
-    parent : :class:`pyedb.dotnet.database.components.Components`
+    parent : :class:`pyedb.grpc.database.components.Components`
         Components object.
     component : object
         Edb Component Object
@@ -92,18 +92,35 @@ class Component(GrpcComponentGroup):
 
     @property
     def layout_instance(self):
-        """EDB layout instance object."""
+        """Layout instance object.
+
+        Returns
+        -------
+        :class:`LayoutInstance <ansys.edb.core.layout_instance.layout_instance.LayoutInstance>`
+        """
         return self._pedb.layout_instance
 
     @property
     def component_instance(self):
-        """Edb component instance."""
+        """Component instance.
+
+        Returns
+        -------
+        :class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`
+        """
         if self._comp_instance is None:
             self._comp_instance = self.layout_instance.get_layout_obj_instance_in_context(self, None)
         return self._comp_instance
 
     @property
     def is_enabled(self):
+        """Component enable.
+
+        Returns
+        -------
+        bool
+
+        """
         return self.enabled
 
     @is_enabled.setter
@@ -112,6 +129,12 @@ class Component(GrpcComponentGroup):
 
     @property
     def ic_die_properties(self):
+        """IC Die property.
+
+        returns
+        -------
+        :class:`ICDieProperty <pyedb.grpc.database.hierarchy.component.ICDieProperty>`
+        """
         if self.type == "ic":
             return ICDieProperty(self)
         else:
@@ -119,20 +142,46 @@ class Component(GrpcComponentGroup):
 
     @property
     def _active_layout(self):  # pragma: no cover
+        """Active layout.
+
+        Returns
+        -------
+        :class:`Layout <ansys.edb.core.layout.layout.Layout>
+        """
         return self._pedb.active_layout
 
     @property
     def _edb_model(self):  # pragma: no cover
+        """Component model.
+
+        Returns
+        -------
+        :class:`Model <ansys.edb.core.hierarchy.model.Model>`
+
+        """
         comp_prop = self.component_property
         return comp_prop.model
 
     @property  # pragma: no cover
     def _pin_pairs(self):
+        """Pins pairs.
+
+        Returns
+        -------
+        :class:`PinPairModel <ansys.edb.core.hierarchy.pin_pair_model.PinPairModel>`
+        """
         edb_model = self._edb_model
         return edb_model.pin_pairs()
 
     @property
     def _rlc(self):
+        """Rlc class.
+
+        Returns
+        -------
+        :class:`Rlc <ansys.edb.core.utility.rlc.Rlc>`
+
+        """
         if self.model_type == "SPICEModel":
             if len(self.pins) == 2:
                 self._pedb.logger.warning(f"Spice model defined on component {self.name}, replacing model by ")
@@ -148,7 +197,13 @@ class Component(GrpcComponentGroup):
 
     @property
     def model(self):
-        """Component model."""
+        """Component model.
+
+        Returns
+        -------
+        :class:`Model <ansys.edb.core.hierarchy.model.Model>`
+
+        """
         return self.component_property.model
 
     @model.setter
@@ -162,7 +217,12 @@ class Component(GrpcComponentGroup):
 
     @property
     def package_def(self):
-        """Package definition."""
+        """Package definition.
+
+        Returns
+        -------
+        :class:`PackageDef <ansys.edb.core.definition.package_def.PackageDef>`
+        """
         return self.component_property.package_def
 
     @package_def.setter
@@ -192,6 +252,13 @@ class Component(GrpcComponentGroup):
 
     @property
     def is_mcad(self):
+        """MCad component.
+
+        Returns
+        -------
+        bool
+
+        """
         return super().is_mcad.value
 
     @is_mcad.setter
@@ -201,6 +268,13 @@ class Component(GrpcComponentGroup):
 
     @property
     def is_mcad_3d_comp(self):
+        """Mcad 3D component.
+
+        Returns
+        -------
+        bool
+
+        """
         return super().is_mcad_3d_comp.value
 
     @is_mcad_3d_comp.setter
@@ -210,6 +284,13 @@ class Component(GrpcComponentGroup):
 
     @property
     def is_mcad_hfss(self):
+        """MCad HFSS.
+
+        Returns
+        -------
+        bool
+
+        """
         return super().is_mcad_hfss.value
 
     @is_mcad_hfss.setter
@@ -219,6 +300,13 @@ class Component(GrpcComponentGroup):
 
     @property
     def is_mcad_stride(self):
+        """MCar stride.
+
+        Returns
+        -------
+        bool
+
+        """
         return super().is_mcad_stride.value
 
     @is_mcad_stride.setter
@@ -252,7 +340,13 @@ class Component(GrpcComponentGroup):
 
     @property
     def enabled(self):
-        """Get or Set the component to active mode."""
+        """Component active mode.
+
+        Returns
+        -------
+        bool
+
+        """
         if self.type.lower() in ["resistor", "capacitor", "inductor"]:
             return self.component_property.enabled
         else:
@@ -266,7 +360,12 @@ class Component(GrpcComponentGroup):
 
     @property
     def spice_model(self):
-        """Get assigned Spice model properties."""
+        """Assigned Spice model.
+
+        Returns
+        -------
+        :class:`SpiceModel <pyedb.grpc.database.hierarchy.spice_model.SpiceModel>`
+        """
         if not self.model_type == "SPICEModel":
             return None
         else:
@@ -274,7 +373,12 @@ class Component(GrpcComponentGroup):
 
     @property
     def s_param_model(self):
-        """Get assigned S-parameter model properties."""
+        """Assigned S-parameter model.
+
+        Returns
+        -------
+        :class:`SParameterModel <ansys.edb.core.hierarchy.sparameter_model.SParameterModel>`
+        """
         if not self.model_type == "SParameterModel":
             return None
         else:
@@ -282,7 +386,12 @@ class Component(GrpcComponentGroup):
 
     @property
     def netlist_model(self):
-        """Get assigned netlist model properties."""
+        """Assigned netlist model.
+
+        Returns
+        -------
+        :class:`NetlistModel <ansys.edb.core.hierarchy.netlist_mode.NetlistModel>`
+        """
         if not self.model_type == "NetlistModel":
             return None
         else:
@@ -290,7 +399,13 @@ class Component(GrpcComponentGroup):
 
     @property
     def solder_ball_height(self):
-        """Solder ball height if available."""
+        """Solder ball height if available.
+
+        Returns
+        -------
+        float
+            Balls height value.
+        """
         if not self.component_property.solder_ball_property.is_null:
             return self.component_property.solder_ball_property.height.value
         return None
@@ -306,7 +421,13 @@ class Component(GrpcComponentGroup):
 
     @property
     def solder_ball_shape(self):
-        """Solder ball shape."""
+        """Solder ball shape.
+
+        Returns
+        -------
+        str
+            Solder balls shapes, ``none``, ``cylinder`` or ``spheroid``.
+        """
         if not self.component_property.solder_ball_property.is_null:
             shape = self.component_property.solder_ball_property.shape
             if shape == SolderballShape.NO_SOLDERBALL:
@@ -336,7 +457,13 @@ class Component(GrpcComponentGroup):
 
     @property
     def solder_ball_diameter(self):
-        """Solder ball diameter."""
+        """Solder ball diameter.
+
+        Returns
+        -------
+        float
+            diameter value.
+        """
         if not self.component_property.solder_ball_property.is_null:
             diameter, mid_diameter = self.component_property.solder_ball_property.get_diameter()
             return diameter.value, mid_diameter.value
@@ -386,7 +513,13 @@ class Component(GrpcComponentGroup):
 
     @property
     def model_type(self):
-        """Retrieve assigned model type."""
+        """Retrieve assigned model type.
+
+        Returns
+        -------
+        str
+            Model type, ``RLC``, `` SParameterModel`` or ``SPICEModel``.
+        """
         _model_type = str(self._edb_model).split(".")[-1]
         if _model_type == "PinPairModel":
             return "RLC"
@@ -399,7 +532,12 @@ class Component(GrpcComponentGroup):
 
     @property
     def rlc_values(self):
-        """Get component rlc values."""
+        """Get component rlc values.
+
+        Returns
+        -------
+        List[Rvalue(float), Lvalue(float), Cvalue(float)].
+        """
         if not len(self._rlc):
             return [None, None, None]
         elif len(self._rlc) == 1:
@@ -445,7 +583,7 @@ class Component(GrpcComponentGroup):
 
         Returns
         -------
-        str
+        float
             Value. ``None`` if not an RLC Type.
         """
         _values = {"resistor": self.rlc_values[0], "inductor": self.rlc_values[1], "capacitor": self.rlc_values[2]}
@@ -469,7 +607,7 @@ class Component(GrpcComponentGroup):
 
         Returns
         -------
-        str
+        float
             Resistance value or ``None`` if not an RLC type.
         """
         cmp_type = self.component_type
@@ -501,7 +639,7 @@ class Component(GrpcComponentGroup):
 
         Returns
         -------
-        str
+        float
             Capacitance Value. ``None`` if not an RLC Type.
         """
         cmp_type = self.component_type
@@ -534,7 +672,7 @@ class Component(GrpcComponentGroup):
 
         Returns
         -------
-        str
+        float
             Inductance Value. ``None`` if not an RLC Type.
         """
         cmp_type = self.component_type
@@ -568,9 +706,9 @@ class Component(GrpcComponentGroup):
         Returns
         -------
         bool
-            `True´ if it is a parallel rlc model.
-            `False` for series RLC.
-            `None` if not an RLC Type.
+            `True´ if parallel rlc model.
+            `False` series RLC.
+            `None` if not RLC Type.
         """
         cmp_type = self.component_type
         if 0 < cmp_type.value < 4:
@@ -596,11 +734,20 @@ class Component(GrpcComponentGroup):
         Returns
         -------
         list
+            [x value, y value].
         """
         return self.location
 
     @property
     def location(self):
+        """Component center.
+
+        Returns
+        -------
+        List[float, float]
+            [x, y].
+
+        """
         return [pt.value for pt in super().location]
 
     @location.setter
@@ -632,6 +779,7 @@ class Component(GrpcComponentGroup):
         Returns
         -------
         float
+            Rotation value.
         """
         return self.transform.rotation.value
 
@@ -653,7 +801,7 @@ class Component(GrpcComponentGroup):
         Returns
         -------
         list[str]
-            List of net name from component.
+            Component nets names.
         """
         nets = []
         for pin in list(self.pins.values()):
@@ -663,12 +811,12 @@ class Component(GrpcComponentGroup):
 
     @property
     def pins(self):
-        """EDBPadstackInstance of Component.
+        """Component pins.
 
         Returns
         -------
-        dic[str, :class:`dotnet.database.edb_data.definitions.EDBPadstackInstance`]
-            Dictionary of EDBPadstackInstance Components.
+        Dic[str,:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
+            Component dictionary pins.
         """
         _pins = {}
         for connectable in self.members:
@@ -685,7 +833,8 @@ class Component(GrpcComponentGroup):
         Returns
         -------
         str
-            Component type.
+            Type of the component. Options are ``"resistor"``, ``"inductor"``, ``"capacitor"``,
+            ``"ic"``, ``"io"`` and ``"other"``.
         """
         return self.component_type.name.lower()
 
@@ -696,8 +845,8 @@ class Component(GrpcComponentGroup):
         Parameters
         ----------
         new_type : str
-            Type of the component. Options are ``"Resistor"``,  ``"Inductor"``, ``"Capacitor"``,
-            ``"IC"``, ``"IO"`` and ``"Other"``.
+            Type of the component. Options are ``"resistor"``,  ``"inductor"``, ``"capacitor"``,
+            ``"ic"``, ``"io"`` and ``"other"``.
         """
         new_type = new_type.lower()
         if new_type == "resistor":
@@ -722,7 +871,7 @@ class Component(GrpcComponentGroup):
         Returns
         -------
         int
-            Number of Pins of Component.
+            Component pins number.
         """
         return self.num_pins
 
@@ -733,7 +882,7 @@ class Component(GrpcComponentGroup):
         Returns
         -------
         str
-            Component Part Name.
+            Component part name.
         """
         return self.part_name
 
@@ -765,7 +914,7 @@ class Component(GrpcComponentGroup):
         Returns
         -------
         str
-           Name of the placement layer.
+           Placement layer name.
         """
         return super().placement_layer.name
 
@@ -801,7 +950,7 @@ class Component(GrpcComponentGroup):
         Returns
         -------
         float
-            Lower elevation of the placement layer.
+            Placement layer lower elevation.
         """
         return self.layer.lower_elevation
 
@@ -812,7 +961,7 @@ class Component(GrpcComponentGroup):
         Returns
         -------
         float
-            Upper elevation of the placement layer.
+            Placement layer upper elevation.
 
         """
         return self.layer.upper_elevation
@@ -835,6 +984,15 @@ class Component(GrpcComponentGroup):
         return self.layer.top_bottom_association.value
 
     def _set_model(self, model):  # pragma: no cover
+        """Set component model
+
+
+        Returns
+        -------
+        :class:`Model <ansys.edb.core.hierarchy.model.Model>`
+            Component Model.
+
+        """
         comp_prop = self.component_property
         comp_prop.model = model
         self.component_property = comp_prop
@@ -858,29 +1016,10 @@ class Component(GrpcComponentGroup):
 
         Returns
         -------
+        :class:`SpiceModel <pyedb.grpc.database.hierarchy.spice_model.SpiceModel>`
+            Spice model.
 
         """
-
-        #
-        # model = self._edb.cell.hierarchy._hierarchy.SPICEModel()
-        # model.SetModelPath(file_path)
-        # model.SetModelName(name)
-        # if sub_circuit_name:
-        #     model.SetSubCkt(sub_circuit_name)
-        #
-        # if terminal_pairs:
-        #     terminal_pairs = terminal_pairs if isinstance(terminal_pairs[0], list) else [terminal_pairs]
-        #     for pair in terminal_pairs:
-        #         pname, pnumber = pair
-        #         if pname not in pin_names_sp:  # pragma: no cover
-        #             raise ValueError(f"Pin name {pname} doesn't exist in {file_path}.")
-        #         model.AddTerminalPinPair(pname, str(pnumber))
-        # else:
-        #     for idx, pname in enumerate(pin_names_sp):
-        #         model.AddTerminalPinPair(pname, str(idx + 1))
-        #
-        # return self._set_model(model)
-
         if not name:
             name = get_filename_without_extension(file_path)
 
@@ -926,10 +1065,10 @@ class Component(GrpcComponentGroup):
 
         Returns
         -------
-        SParameterModel object.
+        :class:`NPortComponentModel <ansys.edb.core.definition.component_model.ComponentModel>`
+            ComponentModel.
 
         """
-
         if not name:
             name = get_filename_without_extension(file_path)
         for model in self.component_def.component_models:
@@ -997,6 +1136,12 @@ class Component(GrpcComponentGroup):
             Capacitance. Default is ``None``.
         is_parallel : bool, optional
             Whether it is a parallel or series RLC component. The default is ``False``.
+
+        Returns
+        -------
+        :class:`Model <ansys.edb.core.hierarchy.model.Model>`
+            Component Model.
+
         """
         if res is None and ind is None and cap is None:
             self._pedb.logger.error("At least one value has to be provided.")
@@ -1074,6 +1219,14 @@ class ICDieProperty:
 
     @property
     def die_orientation(self):
+        """Die orientation.
+
+        Returns
+        -------
+        str
+            Die orientation, ``chip_up`` or ``chip_down``.
+
+        """
         return self._die_property.die_orientation.name.lower()
 
     @die_orientation.setter
@@ -1091,6 +1244,14 @@ class ICDieProperty:
 
     @property
     def die_type(self):
+        """Die type.
+
+        Returns
+        -------
+        str
+            Die type, ``noine``, ``flipchip``, ``wirebond``.
+
+        """
         return self._die_property.die_type.name.lower()
 
     @die_type.setter
@@ -1110,6 +1271,14 @@ class ICDieProperty:
 
     @property
     def height(self):
+        """Die height.
+
+        Returns
+        -------
+        float
+            Die height.
+
+        """
         return self._die_property.height.value
 
     @height.setter
@@ -1122,4 +1291,11 @@ class ICDieProperty:
 
     @property
     def is_null(self):
+        """Test is die is null.
+
+        Returns
+        -------
+        bool
+
+        """
         return self._die_property.is_null
