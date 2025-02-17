@@ -26,14 +26,14 @@ from ansys.edb.core.definition.component_model import (
 
 
 class ComponentModel(GrpcComponentModel):
-    """Manages component model class."""
+    """Class managing :class:`ComponentModel <ansys.edb.core.definition.component_model.ComponentModel>`."""
 
     def __init__(self):
         super().__init__(self.msg)
 
 
 class NPortComponentModel(GrpcComponentModel):
-    """Class for n-port component models."""
+    """Class managing :class:`NPortComponentModel <ansys.edb.core.definition.component_model.ComponentModel>`"""
 
     def __init__(self):
         super().__init__(self.msg)

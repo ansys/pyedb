@@ -129,16 +129,37 @@ class Material(GrpcMaterialDef):
 
     @property
     def name(self):
-        """Material name."""
+        """Material name.
+
+        Returns
+        -------
+        str
+            Material name.
+        """
         return self.__name
 
     @property
     def dc_model(self):
+        """Dielectric material model.
+
+        Returns
+        -------
+        :class:``
+
+        """
         return self.dielectric_material_model
 
     @property
     def dielectric_material_model(self):
-        """Material dielectric model."""
+        """Material dielectric model.
+
+        Returns
+        -------
+        :class:`DebyeModel <ansys.edb.core.definition.debye_model.DebyeModel>` or
+        :class:`DjordjecvicSarkarModel <ansys.edb.core.definition.djordjecvic_sarkar_model.DjordjecvicSarkarModel>` or
+        :class:`MultipoleDebyeModel <ansys.edb.core.definition.multipole_debye_model.MultipoleDebyeModel>`.
+            EDB dielectric model.
+        """
         try:
             if super().dielectric_material_model.type.name.lower() == "debye":
                 self.__dielectric_model = GrpcDebyeModel(super().dielectric_material_model)
@@ -152,7 +173,13 @@ class Material(GrpcMaterialDef):
 
     @property
     def conductivity(self):
-        """Get material conductivity."""
+        """Get material conductivity.
+
+        Returns
+        -------
+        float
+         Conductivity value.
+        """
         try:
             value = self.get_property(GrpcMaterialProperty.CONDUCTIVITY).value
             return value
@@ -172,6 +199,14 @@ class Material(GrpcMaterialDef):
 
     @property
     def dc_conductivity(self):
+        """Material DC conductivity.
+
+        Returns
+        -------
+        float
+            DC conductivity value.
+
+        """
         try:
             return self.dielectric_material_model.dc_conductivity
         except:
@@ -184,6 +219,14 @@ class Material(GrpcMaterialDef):
 
     @property
     def dc_permittivity(self):
+        """Material DC permittivity.
+
+        Returns
+        -------
+        float
+            DC permittivity value.
+
+        """
         try:
             return self.dielectric_material_model.dc_relative_permitivity
         except:
@@ -196,6 +239,14 @@ class Material(GrpcMaterialDef):
 
     @property
     def loss_tangent_at_frequency(self):
+        """Material loss tangent at frequency if dielectric model is defined.
+
+        Returns
+        -------
+        float
+            Loss tangent value.
+
+        """
         try:
             return self.dielectric_material_model.loss_tangent_at_frequency
         except:
@@ -208,6 +259,14 @@ class Material(GrpcMaterialDef):
 
     @property
     def dielectric_model_frequency(self):
+        """Dielectric model frequency if model is defined.
+
+        Returns
+        -------
+        float
+            Frequency value.
+
+        """
         try:
             return self.dielectric_material_model.frequency
         except:
@@ -220,6 +279,15 @@ class Material(GrpcMaterialDef):
 
     @property
     def permittivity_at_frequency(self):
+        """Material permittivity at frequency if model is defined.
+
+
+        Returns
+        -------
+        float
+            Permittivity value.
+
+        """
         try:
             return self.dielectric_material_model.relative_permitivity_at_frequency
         except:
@@ -232,7 +300,15 @@ class Material(GrpcMaterialDef):
 
     @property
     def permittivity(self):
-        """Get material permittivity."""
+        """Material permittivity.
+
+
+        Returns
+        -------
+        float
+            Permittivity value.
+
+        """
         try:
             value = self.get_property(GrpcMaterialProperty.PERMITTIVITY).value
             return value
@@ -246,7 +322,14 @@ class Material(GrpcMaterialDef):
 
     @property
     def permeability(self):
-        """Get material permeability."""
+        """Material permeability.
+
+        Returns
+        -------
+        float
+            Permeability value.
+
+        """
         try:
             value = self.get_property(GrpcMaterialProperty.PERMEABILITY).value
             return value
@@ -260,7 +343,14 @@ class Material(GrpcMaterialDef):
 
     @property
     def loss_tangent(self):
-        """Get material loss tangent."""
+        """Material loss tangent.
+
+        Returns
+        -------
+        float
+            Loss tangent value.
+
+        """
         warnings.warn(
             "This method is deprecated in versions >0.7.0 and will soon be removed. "
             "Use property dielectric_loss_tangent instead.",
@@ -270,7 +360,14 @@ class Material(GrpcMaterialDef):
 
     @property
     def dielectric_loss_tangent(self):
-        """Get material loss tangent."""
+        """Material loss tangent.
+
+        Returns
+        -------
+        float
+            Loss tangent value.
+
+        """
         try:
             return self.get_property(GrpcMaterialProperty.DIELECTRIC_LOSS_TANGENT).value
         except:

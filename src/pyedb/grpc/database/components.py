@@ -50,7 +50,7 @@ from pyedb.generic.general_methods import (
     get_filename_without_extension,
 )
 from pyedb.grpc.database.definition.component_def import ComponentDef
-from pyedb.grpc.database.definition.component_pins import ComponentPin
+from pyedb.grpc.database.definition.component_pin import ComponentPin
 from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup

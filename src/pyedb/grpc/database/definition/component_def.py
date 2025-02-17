@@ -24,7 +24,7 @@ import os
 
 from ansys.edb.core.definition.component_def import ComponentDef as GrpcComponentDef
 
-from pyedb.grpc.database.definition.component_pins import ComponentPin
+from pyedb.grpc.database.definition.component_pin import ComponentPin
 from pyedb.grpc.database.hierarchy.component import Component
 
 
@@ -33,7 +33,7 @@ class ComponentDef(GrpcComponentDef):
 
     Parameters
     ----------
-    pedb : :class:`pyedb.edb`
+    pedb : :class:`Edb <pyedb.grpc.edb.Edb>`
         Inherited AEDT object.
     edb_object : object
         Edb ComponentDef Object
@@ -45,7 +45,14 @@ class ComponentDef(GrpcComponentDef):
 
     @property
     def part_name(self):
-        """Retrieve component definition name."""
+        """Component definition name.
+
+        Returns
+        -------
+        str
+            Component part name.
+
+        """
         return self.name
 
     @part_name.setter
@@ -54,11 +61,12 @@ class ComponentDef(GrpcComponentDef):
 
     @property
     def type(self):
-        """Retrieve the component definition type.
+        """Component definition type.
 
         Returns
         -------
         str
+            Component definition type.
         """
         if self.components:
             return list(self.components.values())[0].type
@@ -90,17 +98,24 @@ class ComponentDef(GrpcComponentDef):
 
     @property
     def components(self):
-        """Get the list of components belonging to this component definition.
+        """Component instances belonging to the definition.
 
         Returns
         -------
-        dict of :class:`EDBComponent`
+        Dict : [str, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`]
         """
         comp_list = [Component(self._pedb, l) for l in Component.find_by_def(self._pedb.active_layout, self.part_name)]
         return {comp.refdes: comp for comp in comp_list}
 
     @property
     def component_pins(self):
+        """Component pins.
+
+        Returns
+        -------
+        List[:class:`ComponentPin <pyedb.grpc.database.definition.component_pin.ComponentPin>`]
+
+        """
         return [ComponentPin(self._pedb, pin) for pin in super().component_pins]
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
@@ -116,6 +131,11 @@ class ComponentDef(GrpcComponentDef):
             Capacitance. Default is ``None``.
         is_parallel : bool, optional
             Whether it is parallel or series RLC component.
+
+        Returns
+        -------
+        bool
+
         """
         for comp in list(self.components.values()):
             res, ind, cap = res, ind, cap
@@ -134,6 +154,7 @@ class ComponentDef(GrpcComponentDef):
 
         Returns
         -------
+        bool
 
         """
         for comp in list(self.components.values()):
@@ -160,9 +181,25 @@ class ComponentDef(GrpcComponentDef):
 
     @property
     def reference_file(self):
+        """Model reference file.
+
+        Returns
+        -------
+        List[str]
+            List of reference files.
+
+        """
         return [model.reference_file for model in self.component_models]
 
     def add_n_port_model(self, fpath, name=None):
+        """Add N-port model.
+
+        Returns
+        -------
+        Nport model : :class:`NPortComponentModel <ansys.edb.core.definition.component_model.NPortComponentModel>`
+
+        """
+
         from ansys.edb.core.definition.component_model import (
             NPortComponentModel as GrpcNPortComponentModel,
         )
@@ -172,9 +209,10 @@ class ComponentDef(GrpcComponentDef):
         for model in self.component_models:
             if model.model_name == name:
                 self._pedb.logger.error(f"Model {name} already defined for component definition {self.name}")
-                return False
+                return None
         model = [model for model in self.component_models if model.name == name]
         if not model:
             n_port_model = GrpcNPortComponentModel.create(name=name)
             n_port_model.reference_file = fpath
             self.add_component_model(n_port_model)
+            return n_port_model
