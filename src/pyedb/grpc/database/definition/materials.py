@@ -390,7 +390,13 @@ class Material(GrpcMaterialDef):
 
     @property
     def magnetic_loss_tangent(self):
-        """Get material magnetic loss tangent."""
+        """Material magnetic loss tangent.
+
+        Returns
+        -------
+        float
+            Magnetic loss tangent value.
+        """
         try:
             value = self.get_property(GrpcMaterialProperty.MAGNETIC_LOSS_TANGENT).value
             return value
@@ -404,7 +410,14 @@ class Material(GrpcMaterialDef):
 
     @property
     def thermal_conductivity(self):
-        """Get material thermal conductivity."""
+        """Material thermal conductivity.
+
+        Returns
+        -------
+        float
+            Thermal conductivity value.
+
+        """
         try:
             value = self.get_property(GrpcMaterialProperty.THERMAL_CONDUCTIVITY).value
             return value
@@ -418,7 +431,14 @@ class Material(GrpcMaterialDef):
 
     @property
     def mass_density(self):
-        """Get material mass density."""
+        """Material mass density.
+
+        Returns
+        -------
+        float
+            Mass density value.
+
+        """
         try:
             value = self.get_property(GrpcMaterialProperty.MASS_DENSITY).value
             return value
@@ -432,7 +452,14 @@ class Material(GrpcMaterialDef):
 
     @property
     def youngs_modulus(self):
-        """Get material youngs modulus."""
+        """Material young modulus.
+
+        Returns
+        -------
+        float
+            Material young modulus value.
+
+        """
         try:
             value = self.get_property(GrpcMaterialProperty.YOUNGS_MODULUS).value
             return value
@@ -441,12 +468,18 @@ class Material(GrpcMaterialDef):
 
     @youngs_modulus.setter
     def youngs_modulus(self, value):
-        """Set material youngs modulus."""
+        """Set material young modulus."""
         self.set_property(GrpcMaterialProperty.YOUNGS_MODULUS, GrpcValue(value))
 
     @property
     def specific_heat(self):
-        """Get material specific heat."""
+        """Material specific heat.
+
+        Returns
+        -------
+        float
+            Material specific heat value.
+        """
         try:
             return self.get_property(GrpcMaterialProperty.SPECIFIC_HEAT).value
         except:
@@ -459,7 +492,13 @@ class Material(GrpcMaterialDef):
 
     @property
     def poisson_ratio(self):
-        """Get material poisson ratio."""
+        """Material poisson ratio.
+
+        Returns
+        -------
+        float
+            Material poisson ratio value.
+        """
         try:
             return self.get_property(GrpcMaterialProperty.POISSONS_RATIO).value
         except:
@@ -472,7 +511,14 @@ class Material(GrpcMaterialDef):
 
     @property
     def thermal_expansion_coefficient(self):
-        """Get material thermal coefficient."""
+        """Material thermal coefficient.
+
+        Returns
+        -------
+        float
+            Material thermal coefficient value.
+
+        """
         try:
             return self.get_property(GrpcMaterialProperty.THERMAL_EXPANSION_COEFFICIENT).value
         except:
@@ -484,12 +530,15 @@ class Material(GrpcMaterialDef):
         self.set_property(GrpcMaterialProperty.THERMAL_EXPANSION_COEFFICIENT, GrpcValue(value))
 
     def set_debye_model(self):
+        """Set Debye model on current material."""
         super(Material, self.__class__).dielectric_material_model.__set__(self, GrpcDebyeModel.create())
 
     def set_multipole_debye_model(self):
+        """Set multi-pole debeye model on current material."""
         super(Material, self.__class__).dielectric_material_model.__set__(self, GrpcMultipoleDebyeModel.create())
 
     def set_djordjecvic_sarkar_model(self):
+        """Set Djordjecvic-Sarkar model on current material."""
         super(Material, self.__class__).dielectric_material_model.__set__(self, GrpcDjordjecvicSarkarModel.create())
 
     def to_dict(self):
@@ -553,12 +602,24 @@ class Materials(object):
 
     @property
     def syslib(self):
-        """Get the project sys library."""
+        """Get the project sys library.
+
+        Returns
+        -------
+        str
+            Syslib path.
+        """
         return self.__syslib
 
     @property
     def materials(self):
-        """Get materials."""
+        """Get materials.
+
+        Returns
+        -------
+        Dict[str, :class:`Material <pyedb.grpc.database.definition.materials.Material>`]
+            Materials dictionary.
+        """
         materials = {
             material_def.name: Material(self.__edb, material_def) for material_def in self.__edb.active_db.material_defs
         }
@@ -574,7 +635,8 @@ class Materials(object):
 
         Returns
         -------
-        :class:`pyedb.grpc.edb_core.materials.Material`
+        :class:`Material <pyedb.grpc.database.definition.materials.Material>`
+            Material object.
         """
         curr_materials = self.materials
         if name in curr_materials:
@@ -613,7 +675,8 @@ class Materials(object):
 
         Returns
         -------
-        :class:`pyedb.grpc.edb_core.materials.Material`
+        :class:`Material <pyedb.grpc.database.definition.materials.Material>`
+            Material object.
 
         """
         extended_kwargs = {key: value for (key, value) in kwargs.items()}
@@ -636,7 +699,8 @@ class Materials(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.materials.Material`
+        :class:`Material <pyedb.grpc.database.definition.materials.Material>`
+            Material object.
         """
         extended_kwargs = {key: value for (key, value) in kwargs.items()}
         extended_kwargs["permittivity"] = permittivity
@@ -670,7 +734,8 @@ class Materials(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.materials.Material`
+        :class:`Material <pyedb.grpc.database.definition.materials.Material>`
+            Material object.
         """
         curr_materials = self.materials
         if name in curr_materials:
@@ -738,7 +803,8 @@ class Materials(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.materials.Material`
+        :class:`Material <pyedb.grpc.database.definition.materials.Material>`
+            Material object.
         """
         curr_materials = self.materials
         if name in curr_materials:
@@ -787,7 +853,8 @@ class Materials(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.materials.Material`
+        :class:`Material <pyedb.grpc.database.definition.materials.Material>`
+            Material object.
 
         Examples
         --------
@@ -856,7 +923,8 @@ class Materials(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.materials.Material`
+        :class:`Material <pyedb.grpc.database.definition.materials.Material>`
+            Material object.
         """
         curr_materials = self.materials
         if new_material_name in curr_materials:
@@ -889,11 +957,19 @@ class Materials(object):
         self.delete(material_name)
 
     def delete(self, material_name):
-        """Remove a material from the database."""
+        """Remove a material from the database.
+
+        Returns
+        -------
+        bool
+
+        """
         material_def = GrpcMaterialDef.find_by_name(self.__edb.active_db, material_name)
         if material_def.is_null:
             raise ValueError(f"Cannot find material {material_name}.")
+            return False
         material_def.delete()
+        return True
 
     def update_material(self, material_name, input_dict):
         """Update material attributes."""
