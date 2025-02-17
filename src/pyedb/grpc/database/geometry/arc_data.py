@@ -25,6 +25,8 @@ from ansys.edb.core.geometry.arc_data import ArcData as GrpcArcData
 
 
 class ArcData(GrpcArcData):
+    """Class managing ArcData."""
+
     def __init__(self, pedb, edb_object):
         self._pedb = pedb
         optional = {"height": edb_object.height, "direction": edb_object.direction}
@@ -32,20 +34,60 @@ class ArcData(GrpcArcData):
 
     @property
     def center(self):
+        """Arc data center.
+
+        Returns
+        -------
+        [float, float]
+            [x value, y value]
+
+        """
         return [self.center.x.value, self.center.y.value]
 
     @property
     def start(self):
+        """Arc data start point.
+
+        Returns
+        -------
+        [float, float]
+            [x value, y value]
+
+        """
         return [self.start.x.value, self.start.y.value]
 
     @property
     def end(self):
+        """Arc data end point.
+
+        Returns
+        -------
+        [float, float]
+            [x value, y value]
+
+        """
         return [self.end.x.value, self.end.y.value]
 
     @property
     def mid_point(self):
+        """Arc data mid point.
+
+        Returns
+        -------
+        [float, float]
+            [x value, y value]
+
+        """
         return [self.midpoint.x.value, self.midpoint.y.value]
 
     @property
     def points(self):
+        """Arc data points.
+
+        Returns
+        -------
+        [[float, float]]
+            [[x value, y value]]
+
+        """
         return [[pt.x.value, pt.y.value] for pt in self.points]

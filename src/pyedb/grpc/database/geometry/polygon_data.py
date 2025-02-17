@@ -28,7 +28,7 @@ from pyedb.grpc.database.geometry.arc_data import ArcData
 
 
 class PolygonData(GrpcPolygonData):
-    """Polygon Data."""
+    """Class managing Polygon Data."""
 
     def __init__(
         self,
@@ -69,7 +69,12 @@ class PolygonData(GrpcPolygonData):
 
     @property
     def arcs(self):
-        """Get the Primitive Arc Data."""
+        """Get the Primitive Arc Data.
+
+        Returns
+        -------
+        List[:class:`ArcData <pyedb.grpc.database.geometry.arc_data.ArcData>`]
+        """
         arcs = [ArcData(self._pedb, i) for i in self.arc_data]
         return arcs
 
@@ -91,6 +96,13 @@ class PolygonData(GrpcPolygonData):
 
     @staticmethod
     def create_from_bounding_box(points):
+        """Create PolygonData from point list.
+
+        Returns
+        -------
+        :class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`
+
+        """
         return PolygonData.create_from_bounding_box(points=points)
 
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
@@ -108,7 +120,14 @@ class PolygonData(GrpcPolygonData):
             If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
         maximum_corner_extension : float, optional
             The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+
+        Returns
+        -------
+        bool
+
         """
         new_poly = self.expand(offset, tolerance, round_corners, maximum_corner_extension)
+        if not new_poly[0].points:
+            return False
         self._edb_object = new_poly[0]
         return True
