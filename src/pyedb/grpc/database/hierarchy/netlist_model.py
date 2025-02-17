@@ -23,6 +23,8 @@
 from ansys.edb.core.hierarchy.netlist_model import NetlistModel as GrpcNetlistModel
 
 
-class NetlistModel(GrpcNetlistModel):  # pragma: no cover
+class NetlistModel(GrpcNetlistModel):
+    """Manage :class:`NetlistModel <ansys.edb.core.hierarchy.netlist_model.NetlistModel>`."""
+
     def __init__(self):
         super().__init__(self.msg)

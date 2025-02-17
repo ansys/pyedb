@@ -26,17 +26,33 @@ from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as GrpcPinPairM
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 
-class PinPairModel(GrpcPinPairModel):  # pragma: no cover
+class PinPairModel(GrpcPinPairModel):
+    """Manage pin pair model."""
+
     def __init__(self, pedb, edb_object):
         self._pedb_comp = pedb
         super().__init__(edb_object.msg)
 
     @property
     def rlc(self):
+        """Rlc mdodel.
+
+        Returns
+        -------
+        Tuple
+
+        """
         return super().rlc(self.pin_pairs()[0])
 
     @property
     def rlc_enable(self):
+        """Enable model.
+
+        Returns
+        -------
+        List[Renabled(bool), Lenabled(bool), Cenabled(bool)].
+
+        """
         return [self.rlc.r_enabled, self.rlc.l_enabled, self.rlc.c_enabled]
 
     @rlc_enable.setter
@@ -47,7 +63,15 @@ class PinPairModel(GrpcPinPairModel):  # pragma: no cover
 
     @property
     def resistance(self):
-        return self.rlc.r.value  # pragma: no cover
+        """Resistance.
+
+        Returns
+        -------
+        float
+            Resistance value.
+
+        """
+        return self.rlc.r.value
 
     @resistance.setter
     def resistance(self, value):
@@ -55,7 +79,15 @@ class PinPairModel(GrpcPinPairModel):  # pragma: no cover
 
     @property
     def inductance(self):
-        return self.rlc.l.value  # pragma: no cover
+        """Inductance.
+
+        Returns
+        -------
+        float
+            Inductance value.
+
+        """
+        return self.rlc.l.value
 
     @inductance.setter
     def inductance(self, value):
@@ -63,7 +95,15 @@ class PinPairModel(GrpcPinPairModel):  # pragma: no cover
 
     @property
     def capacitance(self):
-        return self.rlc.c.value  # pragma: no cover
+        """Capacitance.
+
+        Returns
+        -------
+        float
+            Capacitance value.
+
+        """
+        return self.rlc.c.value
 
     @capacitance.setter
     def capacitance(self, value):
@@ -71,6 +111,14 @@ class PinPairModel(GrpcPinPairModel):  # pragma: no cover
 
     @property
     def rlc_values(self):  # pragma: no cover
+        """Rlc value.
+
+        Returns
+        -------
+        List[float, float, float]
+            [R value, L value, C value].
+
+        """
         return [self.rlc.r.value, self.rlc.l.value, self.rlc.c.value]
 
     @rlc_values.setter

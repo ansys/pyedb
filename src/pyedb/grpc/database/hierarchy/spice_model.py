@@ -24,6 +24,8 @@ from ansys.edb.core.hierarchy.spice_model import SPICEModel as GrpcSpiceModel
 
 
 class SpiceModel(GrpcSpiceModel):  # pragma: no cover
+    """Manage :class:`SpiceModel <ansys.edb.core.hierarchy.spice_model.SpiceModel>`"""
+
     def __init__(self, edb_object=None, name=None, file_path=None, sub_circuit=None):
         if edb_object:
             super().__init__(edb_object)
@@ -35,4 +37,12 @@ class SpiceModel(GrpcSpiceModel):  # pragma: no cover
 
     @property
     def name(self):
+        """Model name.
+
+        Returns
+        -------
+        str
+            Model name.
+
+        """
         return self.model_name

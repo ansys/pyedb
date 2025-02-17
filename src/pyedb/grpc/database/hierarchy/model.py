@@ -24,7 +24,7 @@ from ansys.edb.core.hierarchy.model import Model as GrpcModel
 
 
 class Model(GrpcModel):
-    """Manages model class."""
+    """Manages model :class:`Model <ansys.edb.core.hierarchy.model.Model>`."""
 
     def __init__(self, pedb):
         super().__init__(self.msg)

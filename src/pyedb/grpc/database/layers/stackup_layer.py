@@ -49,7 +49,13 @@ class StackupLayer(GrpcStackupLayer):
 
     @property
     def type(self):
-        """Retrieve type of the layer."""
+        """Layer type.
+
+        Returns
+        -------
+        str
+            Layer name.
+        """
         return super().type.name.lower()
 
     @type.setter
@@ -86,7 +92,13 @@ class StackupLayer(GrpcStackupLayer):
 
     @property
     def fill_material(self):
-        """The layer's fill material."""
+        """The layer's fill material.
+
+        Returns
+        -------
+        str
+            Material name.
+        """
         if self.is_stackup_layer:
             return self.get_fill_material()
 
@@ -119,15 +131,23 @@ class StackupLayer(GrpcStackupLayer):
 
     @is_negative.setter
     def is_negative(self, value):
+        """Layer negative.
+
+        Returns
+        -------
+        bool
+
+        """
         self.negative = value
 
     @property
     def material(self):
-        """Get/Set the material loss_tangent.
+        """Material.
 
         Returns
         -------
-        float
+        str
+            Material name.
         """
         return self.get_material()
 
@@ -137,11 +157,12 @@ class StackupLayer(GrpcStackupLayer):
 
     @property
     def conductivity(self):
-        """Get the material conductivity.
+        """Material conductivity.
 
         Returns
         -------
         float
+            Material conductivity value.
         """
         if self.material in self._pedb.materials.materials:
             return self._pedb.materials[self.material].conductivity
@@ -149,11 +170,12 @@ class StackupLayer(GrpcStackupLayer):
 
     @property
     def permittivity(self):
-        """Get the material permittivity.
+        """Material permittivity.
 
         Returns
         -------
         float
+            Material permittivity value.
         """
         if self.material in self._pedb.materials.materials:
             return self._pedb.materials[self.material].permittivity
@@ -161,11 +183,12 @@ class StackupLayer(GrpcStackupLayer):
 
     @property
     def loss_tangent(self):
-        """Get the material loss_tangent.
+        """Material loss_tangent.
 
         Returns
         -------
         float
+            Material loss tangent value.
         """
         if self.material in self._pedb.materials.materials:
             return self._pedb.materials[self.material].loss_tangent
@@ -173,7 +196,13 @@ class StackupLayer(GrpcStackupLayer):
 
     @property
     def dielectric_fill(self):
-        """Retrieve material name of the layer dielectric fill."""
+        """Material name of the layer dielectric fill.
+
+        Returns
+        -------
+        str
+            Material name.
+        """
         if self.type == "signal":
             return self.get_fill_material()
         else:
@@ -188,11 +217,12 @@ class StackupLayer(GrpcStackupLayer):
 
     @property
     def thickness(self):
-        """Retrieve thickness of the layer.
+        """Layer thickness.
 
         Returns
         -------
         float
+            Layer thickness.
         """
         return round(super().thickness.value, 9)
 
@@ -202,11 +232,12 @@ class StackupLayer(GrpcStackupLayer):
 
     @property
     def etch_factor(self):
-        """Retrieve etch factor of this layer.
+        """Layer etching factor.
 
         Returns
         -------
         float
+            Etching factor value.
         """
         return super().etch_factor.value
 
@@ -220,7 +251,13 @@ class StackupLayer(GrpcStackupLayer):
 
     @property
     def top_hallhuray_nodule_radius(self):
-        """Retrieve huray model nodule radius on top of the conductor."""
+        """Huray model nodule radius on layer top.
+
+        Returns
+        -------
+        float
+            Nodule radius value.
+        """
         top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
         if top_roughness_model:
             return top_roughness_model.nodule_radius.value
@@ -234,7 +271,13 @@ class StackupLayer(GrpcStackupLayer):
 
     @property
     def top_hallhuray_surface_ratio(self):
-        """Retrieve huray model surface ratio on top of the conductor."""
+        """Huray model surface ratio on layer top.
+
+        Returns
+        -------
+        float
+            Surface ratio.
+        """
         top_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.TOP)
         if top_roughness_model:
             return top_roughness_model.surface_ratio.value
@@ -248,7 +291,13 @@ class StackupLayer(GrpcStackupLayer):
 
     @property
     def bottom_hallhuray_nodule_radius(self):
-        """Retrieve huray model nodule radius on bottom of the conductor."""
+        """Huray model nodule radius on layer bottom.
+
+        Returns
+        -------
+        float
+            Nodule radius.
+        """
         bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
         if bottom_roughness_model:
             return bottom_roughness_model.nodule_radius.value
@@ -261,7 +310,13 @@ class StackupLayer(GrpcStackupLayer):
 
     @property
     def bottom_hallhuray_surface_ratio(self):
-        """Retrieve huray model surface ratio on bottom of the conductor."""
+        """Huray model surface ratio on layer bottom.
+
+        Returns
+        -------
+        float
+            Surface ratio value.
+        """
         bottom_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.BOTTOM)
         if bottom_roughness_model:
             return bottom_roughness_model.surface_ratio.value
@@ -274,7 +329,14 @@ class StackupLayer(GrpcStackupLayer):
 
     @property
     def side_hallhuray_nodule_radius(self):
-        """Retrieve huray model nodule radius on sides of the conductor."""
+        """Huray model nodule radius on layer sides.
+
+        Returns
+        -------
+        float
+            Nodule radius value.
+
+        """
         side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
         if side_roughness_model:
             return side_roughness_model.nodule_radius.value
@@ -287,7 +349,13 @@ class StackupLayer(GrpcStackupLayer):
 
     @property
     def side_hallhuray_surface_ratio(self):
-        """Retrieve huray model surface ratio on sides of the conductor."""
+        """Huray model surface ratio on layer sides.
+
+        Returns
+        -------
+        float
+            surface ratio.
+        """
         side_roughness_model = self.get_roughness_model(GrpcRoughnessRegion.SIDE)
         if side_roughness_model:
             return side_roughness_model.surface_ratio.value
@@ -322,9 +390,6 @@ class StackupLayer(GrpcStackupLayer):
         apply_on_surface : str, optional.
             Where to assign roughness model. The default is ``"all"``. Options are ``"top"``, ``"bottom"``,
              ``"side"``.
-
-        Returns
-        -------
 
         """
         regions = []

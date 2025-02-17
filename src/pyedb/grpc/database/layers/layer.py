@@ -11,7 +11,7 @@ from ansys.edb.core.layer.layer import LayerType as GrpcLayerType
 
 
 class Layer(GrpcLayer):
-    """Manages Edb Layers. Replaces EDBLayer."""
+    """Manages Layer."""
 
     def __init__(self, pedb, edb_object=None, name="", layer_type="undefined", **kwargs):
         super().__init__(edb_object.msg)

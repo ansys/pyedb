@@ -42,11 +42,25 @@ class PinGroup(GrpcPinGroup):
 
     @property
     def _active_layout(self):
+        """Active layout.
+
+        Returns
+        -------
+        :class:`Layout <ansys.edb.core.layout.layout.Layout>`
+            Active layout.
+
+        """
         return self._pedb.active_layout
 
     @property
     def component(self):
-        """Component."""
+        """Component.
+
+        Return
+        ------
+        :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`
+            Pin group component.
+        """
         return Component(self._pedb, super().component)
 
     @component.setter
@@ -56,12 +70,22 @@ class PinGroup(GrpcPinGroup):
 
     @property
     def pins(self):
-        """Gets the pins belong to this pin group."""
+        """Pin group pins.
+
+        Returns
+        -------
+        List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`].
+        """
         return [PadstackInstance(self._pedb, i) for i in super().pins]
 
     @property
     def net(self):
-        """Net."""
+        """Net.
+
+        Returns
+        -------
+        :class:`Net <ansys.edb.core.net.net.Net>`.
+        """
         return Net(self._pedb, super().net)
 
     @net.setter
@@ -71,6 +95,14 @@ class PinGroup(GrpcPinGroup):
 
     @property
     def net_name(self):
+        """Net name.
+
+        Returns
+        -------
+        str
+            Net name.
+
+        """
         return self.net.name
 
     # @property
@@ -86,6 +118,12 @@ class PinGroup(GrpcPinGroup):
         ----------
         name : str, optional
             Name of the terminal.
+
+        Returns
+        -------
+        :class:`PinGroupTerminal <pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal>`.
+            Pin group terminal.
+
         """
         if not name:
             name = generate_unique_name(self.name)
@@ -95,10 +133,33 @@ class PinGroup(GrpcPinGroup):
         return PinGroupTerminal(self._pedb, term)
 
     def _json_format(self):
+        """Format json.
+
+        Returns
+        -------
+        Dict
+        """
         dict_out = {"component": self.component, "name": self.name, "net": self.net, "node_type": self.node_type}
         return dict_out
 
-    def create_current_source_terminal(self, magnitude=1, phase=0, impedance=1e6):
+    def create_current_source_terminal(self, magnitude=1.0, phase=0, impedance=1e6):
+        """Create current source terminal.
+
+        Parameters
+        ----------
+        magnitude : float or int, optional
+            Source magnitude, default value ``1.0``.
+        phase : float or int, optional
+            Source phase, default value ``0.0``.
+        impedance : float, optional
+            Source impedance, default value ``1e6``.
+
+        Returns
+        -------
+        :class:`PinGroupTerminal <pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal>`.
+            Pin group terminal.
+
+        """
         terminal = self.create_terminal()
         terminal.boundary_type = GrpcBoundaryType.CURRENT_SOURCE
         terminal.source_amplitude = GrpcValue(magnitude)
@@ -107,6 +168,23 @@ class PinGroup(GrpcPinGroup):
         return terminal
 
     def create_voltage_source_terminal(self, magnitude=1, phase=0, impedance=0.001):
+        """Create voltage source terminal.
+
+        Parameters
+        ----------
+        magnitude : float or int, optional
+            Source magnitude, default value ``1.0``.
+        phase : float or int, optional
+            Source phase, default value ``0.0``.
+        impedance : float, optional
+            Source impedance, default value ``1e-3``.
+
+        Returns
+        -------
+        :class:`PinGroupTerminal <pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal>`.
+            Pin group terminal.
+
+        """
         terminal = self.create_terminal()
         terminal.boundary_type = GrpcBoundaryType.VOLTAGE_SOURCE
         terminal.source_amplitude = GrpcValue(magnitude)
@@ -114,13 +192,39 @@ class PinGroup(GrpcPinGroup):
         terminal.impedance = GrpcValue(impedance)
         return terminal
 
-    def create_voltage_probe_terminal(self, impedance=1000000):
+    def create_voltage_probe_terminal(self, impedance=1e6):
+        """Create voltage probe terminal.
+
+        Parameters
+        ----------
+        impedance : float, optional
+            Probe impedance, default value ``1e6``.
+
+        Returns
+        -------
+        :class:`PinGroupTerminal <pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal>`.
+            Pin group terminal.
+
+        """
         terminal = self.create_terminal()
         terminal.boundary_type = GrpcBoundaryType.VOLTAGE_PROBE
         terminal.impedance = GrpcValue(impedance)
         return terminal
 
     def create_port_terminal(self, impedance=50):
+        """Create port terminal.
+
+        Parameters
+        ----------
+        impedance : float, optional
+            Port impedance, default value ``50``.
+
+        Returns
+        -------
+        :class:`PinGroupTerminal <pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal>`.
+            Pin group terminal.
+
+        """
         terminal = self.create_terminal()
         terminal.boundary_type = GrpcBoundaryType.PORT
         terminal.impedance = GrpcValue(impedance)
