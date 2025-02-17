@@ -29,11 +29,11 @@ from pyedb.grpc.database.utility.heat_sink import HeatSink
 
 
 class PackageDef(GrpcPackageDef):
-    """Manages EDB functionalities for package definitions.
+    """Manages EDB package definitions.
 
     Parameters
     ----------
-    pedb : :class:`pyedb.edb`
+    pedb : :class:`Edb <pyedb.grpc.edb.Edb>`
         Edb object.
     edb_object : object
     Edb PackageDef Object
@@ -87,7 +87,13 @@ class PackageDef(GrpcPackageDef):
 
     @property
     def exterior_boundary(self):
-        """Get the exterior boundary of a package definition."""
+        """Get the exterior boundary of a package definition.
+
+        Returns
+        -------
+        :class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
+
+        """
         return GrpcPolygonData(super().exterior_boundary.points)
 
     @exterior_boundary.setter
@@ -96,7 +102,13 @@ class PackageDef(GrpcPackageDef):
 
     @property
     def maximum_power(self):
-        """Maximum power of the package."""
+        """Maximum power of the package.
+
+        Returns
+        -------
+        float
+            maximum power value.
+        """
         return super().maximum_power.value
 
     @maximum_power.setter
@@ -105,7 +117,14 @@ class PackageDef(GrpcPackageDef):
 
     @property
     def therm_cond(self):
-        """Thermal conductivity of the package."""
+        """Thermal conductivity of the package.
+
+        Returns
+        -------
+        float
+            Thermal conductivity value.
+
+        """
         return super().thermal_conductivity.value
 
     @therm_cond.setter
@@ -115,7 +134,13 @@ class PackageDef(GrpcPackageDef):
 
     @property
     def theta_jb(self):
-        """Theta Junction-to-Board of the package."""
+        """Theta Junction-to-Board of the package.
+
+        Returns
+        -------
+        float
+            Theta jb value.
+        """
         return super().theta_jb.value
 
     @theta_jb.setter
@@ -124,7 +149,13 @@ class PackageDef(GrpcPackageDef):
 
     @property
     def theta_jc(self):
-        """Theta Junction-to-Case of the package."""
+        """Theta Junction-to-Case of the package.
+
+        Returns
+        -------
+        float
+            Theta jc value.
+        """
         return super().theta_jc.value
 
     @theta_jc.setter
@@ -133,7 +164,13 @@ class PackageDef(GrpcPackageDef):
 
     @property
     def height(self):
-        """Height of the package."""
+        """Height of the package.
+
+        Returns
+        -------
+        float
+            Height value.
+        """
         return super().height.value
 
     @height.setter
@@ -142,6 +179,13 @@ class PackageDef(GrpcPackageDef):
 
     @property
     def heat_sink(self):
+        """Package heat sink.
+
+        Returns
+        -------
+        :class:`HeatSink <pyedb.grpc.database.utility.heat_sink.HeatSink>`
+            HeatSink object.
+        """
         return HeatSink(self._pedb, super().heat_sink)
 
     def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness):

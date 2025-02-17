@@ -40,7 +40,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 from pyedb.generic.general_methods import generate_unique_name
 
 
-class EDBPadProperties:
+class PadProperties:
     """Manages EDB functionalities for pad properties.
 
     Parameters
@@ -67,10 +67,6 @@ class EDBPadProperties:
         self.layer_name = layer_name
         self.pad_type = pad_type
         self._edb_padstack = self._edb_object
-
-    @property
-    def _padstack_methods(self):
-        return self._pedbpadstack._padstack_methods
 
     @property
     def _stackup_layers(self):
@@ -104,7 +100,13 @@ class EDBPadProperties:
 
     @property
     def shape(self):
-        """Get the shape of the pad."""
+        """Pad shape.
+
+        Returns
+        -------
+        str
+            pad shape.
+        """
         return self._pad_parameter_value[0].name.split("_")[-1].lower()
 
     @property
@@ -271,7 +273,13 @@ class PadstackDef(GrpcPadstackDef):
 
     @property
     def instances(self):
-        """Definitions Instances."""
+        """Definitions Instances.
+
+        Returns
+        -------
+        List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
+            List of PadstackInstance objects.
+        """
         return [i for i in list(self._pedb.padstacks.instances.values()) if i.padstack_def.name == self.name]
 
     @property
@@ -280,8 +288,8 @@ class PadstackDef(GrpcPadstackDef):
 
         Returns
         -------
-        list
-            List of layers.
+        list[str]
+            List of layer names.
         """
         return self.data.layer_names
 
@@ -309,7 +317,14 @@ class PadstackDef(GrpcPadstackDef):
 
     @property
     def hole_diameter(self):
-        """Hole diameter."""
+        """Hole diameter.
+
+        Returns
+        -------
+        float
+            Diameter value.
+
+        """
         try:
             hole_parameter = self.data.get_hole_parameters()
             if hole_parameter[0].name.lower() == "padgeomtype_circle":
@@ -340,10 +355,26 @@ class PadstackDef(GrpcPadstackDef):
 
     @property
     def hole_type(self):
+        """Holy type.
+
+        Returns
+        -------
+        float
+            hole type.
+
+        """
         return self.data.get_hole_parameters()[0].value
 
     @property
     def edb_hole_type(self):
+        """EDB hole type.
+
+        Returns
+        -------
+        str
+            Hole type.
+
+        """
         return self.data.get_hole_parameters()[0]
 
     @property
@@ -352,7 +383,7 @@ class PadstackDef(GrpcPadstackDef):
 
         Returns
         -------
-        str
+        float
             Hole offset value for the X axis.
         """
         try:
@@ -378,7 +409,7 @@ class PadstackDef(GrpcPadstackDef):
 
         Returns
         -------
-        str
+        float
             Hole offset value for the Y axis.
         """
         try:
@@ -404,7 +435,7 @@ class PadstackDef(GrpcPadstackDef):
 
         Returns
         -------
-        str
+        float
             Value for the hole rotation.
         """
         try:
@@ -426,30 +457,51 @@ class PadstackDef(GrpcPadstackDef):
 
     @property
     def pad_by_layer(self):
+        """Pad by layer.
+
+        Returns
+        -------
+        Dict[str, :class:`PadProperties <pyedb.grpc.database.definition.padstack_def.PadProperties>`]
+            Dictionary with layer as key and PadProperties as value.
+        """
         if not self._pad_by_layer:
             for layer in self.layers:
                 try:
-                    self._pad_by_layer[layer] = EDBPadProperties(self.data, layer, GrpcPadType.REGULAR_PAD, self)
+                    self._pad_by_layer[layer] = PadProperties(self.data, layer, GrpcPadType.REGULAR_PAD, self)
                 except:
                     self._pad_by_layer[layer] = None
         return self._pad_by_layer
 
     @property
     def antipad_by_layer(self):
+        """Antipad by layer.
+
+        Returns
+        -------
+        Dict[str, :class:`PadProperties <pyedb.grpc.database.definition.padstack_def.PadProperties>`]
+            Dictionary with layer as key and PadProperties as value.
+        """
         if not self._antipad_by_layer:
             for layer in self.layers:
                 try:
-                    self._pad_by_layer[layer] = EDBPadProperties(self.data, layer, GrpcPadType.ANTI_PAD, self)
+                    self._pad_by_layer[layer] = PadProperties(self.data, layer, GrpcPadType.ANTI_PAD, self)
                 except:
                     self._antipad_by_layer[layer] = None
         return self._antipad_by_layer
 
     @property
     def thermalpad_by_layer(self):
+        """Thermal by layer.
+
+        Returns
+        -------
+        Dict[str, :class:`PadProperties <pyedb.grpc.database.definition.padstack_def.PadProperties>`]
+            Dictionary with layer as key and PadProperties as value.
+        """
         if not self._thermalpad_by_layer:
             for layer in self.layers:
                 try:
-                    self._pad_by_layer[layer] = EDBPadProperties(self.data, layer, GrpcPadType.THERMAL_PAD, self)
+                    self._pad_by_layer[layer] = PadProperties(self.data, layer, GrpcPadType.THERMAL_PAD, self)
                 except:
                     self._thermalpad_by_layer[layer] = None
         return self._thermalpad_by_layer
@@ -475,7 +527,7 @@ class PadstackDef(GrpcPadstackDef):
 
         Returns
         -------
-        float
+         float
             Thickness of the hole plating if present.
         """
         try:
@@ -688,7 +740,7 @@ class PadstackDef(GrpcPadstackDef):
 
         Returns
         -------
-        List of .:class:`pyedb.dotnet.database.padstackEDBPadstack`
+        List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
         """
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
