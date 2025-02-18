@@ -483,10 +483,10 @@ class ViaDesignConfig:
     def _create_padstack_defs(self):
         new_variables = []
         cfg_padstacks = []
-        for pd in self.padstacks:
-            name = pd["name"]
+        for pad in self.padstacks:
+            name = pad["name"]
 
-            hole_diameter = pd.get("hole_diameter")
+            hole_diameter = pad.get("hole_diameter")
             if hole_diameter:
                 var_hole_diameter = f"${name}_hole_diameter"
                 new_variables.append({"name": var_hole_diameter, "value": hole_diameter, "description": "padstack"})
@@ -494,10 +494,10 @@ class ViaDesignConfig:
             else:
                 hole_parameters = None
 
-            pad_diameter = pd["pad_diameter"]
+            pad_diameter = pad["pad_diameter"]
             var_pad_diameter = f"${name}_pad_diameter"
             new_variables.append({"name": var_pad_diameter, "value": pad_diameter, "description": "padstack"})
-            shape = pd["shape"]
+            shape = pad["shape"]
             if shape == "circle":
                 regular_pad = []
                 for layer in self.signal_layers:
@@ -509,8 +509,8 @@ class ViaDesignConfig:
                         }
                     )
             else:  # shape == "rectangle":
-                x_size = pd["x_size"]
-                y_size = pd["y_size"]
+                x_size = pad["x_size"]
+                y_size = pad["y_size"]
                 var_pad_x_size = f"${name}_pad_x_size"
                 var_pad_y_size = f"${name}_pad_y_size"
                 new_variables.append({"name": var_pad_x_size, "value": x_size, "description": "padstack"})
@@ -527,7 +527,7 @@ class ViaDesignConfig:
                         }
                     )
 
-            anti_pad_diameter = pd["anti_pad_diameter"]
+            anti_pad_diameter = pad["anti_pad_diameter"]
 
             # anti_pad = []
             for layer in self.signal_layers:
@@ -553,12 +553,12 @@ class ViaDesignConfig:
                 new_p_def.update(
                     {
                         "hole_parameters": hole_parameters,
-                        "hole_range": pd["hole_range"],
+                        "hole_range": pad["hole_range"],
                     }
                 )
 
-            if pd.get("solder_ball_parameters"):
-                new_p_def["solder_ball_parameters"] = pd["solder_ball_parameters"]
+            if pad.get("solder_ball_parameters"):
+                new_p_def["solder_ball_parameters"] = pad["solder_ball_parameters"]
             cfg_padstacks.append(new_p_def)
         return new_variables, cfg_padstacks
 
@@ -670,7 +670,7 @@ class ViaDesignConfig:
                 init_angle = "pi*4/8"
             else:
                 init_angle = "pi*3/2"
-            distance = f"pcb_stitching_via_distance"
+            distance = "pcb_stitching_via_distance"
             via_list = np.arange(4)
             for i in via_list:
                 angle = f"{init_angle}+{i}*1/3*pi"
@@ -987,18 +987,18 @@ class ViaDesignConfig:
     def _create_planes(self):
         planes = []
 
-        for l in self.signal_layers:
-            if l in ["PCB_TOP", "PKG_BOT"]:
+        for layer in self.signal_layers:
+            if layer in ["PCB_TOP", "PKG_BOT"]:
                 continue
             p = dict()
-            p["name"] = f"GND_{l}"
-            p["layer"] = l
+            p["name"] = f"GND_{layer}"
+            p["layer"] = layer
             p["net_name"] = "GND"
             p["lower_left_point"] = self.lower_left_point
             p["upper_right_point"] = self.upper_right_point
             temp = []
             for v in self._voids:
-                if v["layer"] == l:
+                if v["layer"] == layer:
                     temp.append(v["name"])
                     if v["void_type"] == "trace":
                         self._traces.append(v)
