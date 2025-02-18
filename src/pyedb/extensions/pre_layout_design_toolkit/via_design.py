@@ -123,7 +123,6 @@ class GroundVia:
 
 
 class ViaDesignConfig:
-
     @property
     def plane_size(self):
         y_size = len(self.pin_map["locations"])
@@ -1138,7 +1137,7 @@ class ViaDesignConfig:
         self._planes.extend(planes)
         return die_side_port_location
 
-    def create_edb(self, data)-> str:
+    def create_edb(self, data) -> str:
         edb_path = str(self.working_dir / self.design_name.with_suffix(".aedb"))
         print(edb_path)
         edbapp = Edb(edbpath=edb_path, edbversion=self.version)

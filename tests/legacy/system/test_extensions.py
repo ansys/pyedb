@@ -19,16 +19,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from copy import deepcopy as copy
 import json
 from pathlib import Path
 
 import pytest
 
-from copy import deepcopy as copy
+from pyedb.extensions.pre_layout_design_toolkit.via_design import ViaDesignConfig
 from tests.conftest import desktop_version
-from pyedb.extensions.pre_layout_design_toolkit.via_design import (
-    ViaDesignConfig,
-)
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
@@ -141,19 +139,17 @@ setup = {
         {
             "name": "Sweep1",
             "type": "interpolation",
-            "frequencies": [
-                {"distribution": "log_scale", "start": 1000000.0, "stop": 1000000000.0, "increment": 20}
-            ],
+            "frequencies": [{"distribution": "log_scale", "start": 1000000.0, "stop": 1000000000.0, "increment": 20}],
         }
     ],
 }
-pin_map = {"signal_pairs": {"S0": ["S0_P", "S0_N"],
-                            "S1": ["S1_P", "S1_N"]},
-           "locations": [
-               ["GND", "S0_P", "S0_N", "GND", "GND"],
-               ["GND", "GND", "S1_P", "S1_N", "GND"],
-           ]
-           }
+pin_map = {
+    "signal_pairs": {"S0": ["S0_P", "S0_N"], "S1": ["S1_P", "S1_N"]},
+    "locations": [
+        ["GND", "S0_P", "S0_N", "GND", "GND"],
+        ["GND", "GND", "S1_P", "S1_N", "GND"],
+    ],
+}
 main = {
     "version": desktop_version,
     "working_directory": None,
@@ -201,18 +197,20 @@ S0 = {
                 }
             },
         }
-    ]
+    ],
 }
 S0_pcb = copy(S0)
-S0_pcb["pcb_trace"].append({
-    "width": "0.075mm",
-    "gap": "0.1mm",
-    "length": "0.5mm",
-    "clearance": "0.1mm",
-    "shift": "0.5mm",
-    "layer": "PCB_TOP",
-    "trace_out_direction": "forward",
-})
+S0_pcb["pcb_trace"].append(
+    {
+        "width": "0.075mm",
+        "gap": "0.1mm",
+        "length": "0.5mm",
+        "clearance": "0.1mm",
+        "shift": "0.5mm",
+        "layer": "PCB_TOP",
+        "trace_out_direction": "forward",
+    }
+)
 S0_pkg_w_pcb = copy(S0)
 S0_pkg_w_pcb["pkg_signal_via"] = [
     {
@@ -223,7 +221,7 @@ S0_pkg_w_pcb["pkg_signal_via"] = [
         "trace_width": "0.05mm",
         "trace_clearance": "0.05mm",
         "dx": "0.05mm",
-        "dy": "0mm"
+        "dy": "0mm",
     },
     {
         "padstack_definition": "micro_via",
@@ -233,7 +231,7 @@ S0_pkg_w_pcb["pkg_signal_via"] = [
         "trace_width": "0.05mm",
         "trace_clearance": "0.05mm",
         "dx": "0.05mm",
-        "dy": "0mm"
+        "dy": "0mm",
     },
     {
         "padstack_definition": "blind_via",
@@ -243,7 +241,7 @@ S0_pkg_w_pcb["pkg_signal_via"] = [
         "trace_width": "0.05mm",
         "trace_clearance": "0.05mm",
         "dx": "0.05mm",
-        "dy": "0mm"
+        "dy": "0mm",
     },
     {
         "padstack_definition": "micro_via",
@@ -253,7 +251,7 @@ S0_pkg_w_pcb["pkg_signal_via"] = [
         "trace_width": "0.05mm",
         "trace_clearance": "0.05mm",
         "dx": "0.1mm",
-        "dy": "0mm"
+        "dy": "0mm",
     },
     {
         "padstack_definition": "micro_via",
@@ -263,19 +261,21 @@ S0_pkg_w_pcb["pkg_signal_via"] = [
         "trace_width": "0.05mm",
         "trace_clearance": "0.05mm",
         "dx": "0.05mm",
-        "dy": "0.05mm"
+        "dy": "0.05mm",
+    },
+]
+S0_pkg_w_pcb["pkg_trace"] = [
+    {
+        "width": "0.05mm",
+        "gap": "0.05mm",
+        "length": "0.2mm",
+        "clearance": "0.05mm",
+        "stitching_via_dy": "0.4mm",
+        "shift": "0.2mm",
+        "layer": "PKG_TOP",
+        "trace_out_direction": "forward",
     }
 ]
-S0_pkg_w_pcb["pkg_trace"] = [{
-    "width": "0.05mm",
-    "gap": "0.05mm",
-    "length": "0.2mm",
-    "clearance": "0.05mm",
-    "stitching_via_dy": "0.4mm",
-    "shift": "0.2mm",
-    "layer": "PKG_TOP",
-    "trace_out_direction": "forward"
-}]
 
 
 class TestClass:
