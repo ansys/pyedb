@@ -123,14 +123,6 @@ class GroundVia:
 
 
 class ViaDesignConfig:
-    _variables = []
-    _padstack_instances = []
-    _padstack_definition = []
-    _traces = []
-    _planes = []
-    _voids = []
-    _components = []
-    _ports = []
 
     @property
     def plane_size(self):
@@ -152,6 +144,15 @@ class ViaDesignConfig:
         self._working_dir = ""
         self.pkg_stackup = []
         self.pcb_stackup = []
+
+        self._variables = []
+        self._padstack_instances = []
+        self._padstack_definition = []
+        self._traces = []
+        self._planes = []
+        self._voids = []
+        self._components = []
+        self._ports = []
 
         if isinstance(config_file, str):
             config_file = Path(config_file)
@@ -1137,7 +1138,7 @@ class ViaDesignConfig:
         self._planes.extend(planes)
         return die_side_port_location
 
-    def create_edb(self, data):
+    def create_edb(self, data)-> str:
         edb_path = str(self.working_dir / self.design_name.with_suffix(".aedb"))
         print(edb_path)
         edbapp = Edb(edbpath=edb_path, edbversion=self.version)
