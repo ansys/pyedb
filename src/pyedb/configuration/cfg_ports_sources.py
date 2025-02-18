@@ -491,6 +491,7 @@ class CfgProbe(CfgCircuitElement):
         else:
             self.api = self.DotNet(self)
 
+
 class CfgWavePort:
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
