@@ -171,6 +171,9 @@ class Configuration:
         # Configure ports
         self.cfg_data.ports.apply()
 
+        # Configure probes
+        self.cfg_data.probes.apply()
+
         return True
 
     def _load_stackup(self):
