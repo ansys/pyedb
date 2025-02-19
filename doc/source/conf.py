@@ -97,31 +97,6 @@ def remove_doctree(app, exception):
         logger.info(f"Doctree removed.")
 
 
-def copy_examples(app):
-    """Copy directory examples (root directory) files into the doc/source/examples directory."""
-    destination_dir = pathlib.Path(app.srcdir, "examples").resolve()
-    logger.info(f"Copying examples from {EXAMPLES_DIRECTORY} to {destination_dir}.")
-
-    if os.path.exists(destination_dir):
-        size = directory_size(destination_dir)
-        logger.info(f"Directory {destination_dir} ({size} MB) already exist, removing it.")
-        shutil.rmtree(destination_dir, ignore_errors=True)
-        logger.info(f"Directory removed.")
-
-    shutil.copytree(EXAMPLES_DIRECTORY, destination_dir)
-    logger.info(f"Copy performed")
-
-
-def remove_examples(app, exception):
-    """Remove the doc/source/examples directory created during the documentation build."""
-    destination_dir = pathlib.Path(app.srcdir) / "examples"
-
-    size = directory_size(destination_dir)
-    logger.info(f"Removing directory {destination_dir} ({size} MB).")
-    shutil.rmtree(destination_dir, ignore_errors=True)
-    logger.info(f"Directory removed.")
-
-
 def adjust_image_path(app, docname, source):
     """Adjust the HTML label used to insert images in the examples.
 
