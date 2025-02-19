@@ -45,13 +45,15 @@ from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 
 
 class Layout(GrpcLayout):
+    """Manage Layout class."""
+
     def __init__(self, pedb):
         super().__init__(pedb.active_cell._Cell__stub.GetLayout(pedb.active_cell.msg))
         self._pedb = pedb
 
     @property
     def cell(self):
-        """:class:`Cell <ansys.edb.layout.Cell>`: Owning cell for this layout.
+        """:class:`Cell <ansys.edb.core.layout.cel.Cell>`: Owning cell for this layout.
 
         Read-Only.
         """
@@ -63,7 +65,7 @@ class Layout(GrpcLayout):
 
         Returns
         -------
-        Terminal dictionary : Dict[str, pyedb.dotnet.database.edb_data.terminals.Terminal]
+        Terminal dictionary : Dict[str, :class:`Terminal <pyedb.grpc.database.terminal.Terminal>`]
         """
         temp = []
         for i in self._pedb.active_cell.layout.terminals:
@@ -85,6 +87,7 @@ class Layout(GrpcLayout):
 
         Returns
         -------
+        List[:class:`Net <pyedb.grpc.database.net.net.Net>`]
         """
         return [Net(self._pedb, net) for net in super().nets]
 
@@ -94,21 +97,42 @@ class Layout(GrpcLayout):
 
         Returns
         -------
-        list :
+        list [:class:`pyedb.grpc.database.primitive.primitive.Primitive`]:
             List of bondwires.
         """
         return [i for i in self.primitives if i.primitive_type == "bondwire"]
 
     @property
     def groups(self):
+        """Groups
+
+        Returns
+        -------
+        List[:class:`Group <pyedb.grpc.database.hierarch.component.Component>`].
+
+        """
         return [Component(self._pedb, g) for g in self._pedb.active_cell.layout.groups]
 
     @property
     def pin_groups(self):
+        """Pin groups.
+
+        Returns
+        -------
+        :class:`PinGroup <pyedb.grpc.database.hierarchy.pingroup.PinGroup>`
+
+        """
         return [PinGroup(self._pedb, i) for i in self._pedb.active_cell.layout.pin_groups]
 
     @property
     def net_classes(self):
+        """Net classes.
+
+        Returns
+        -------
+        :class:`NetClass <pyedb.grpc.database.net.net_class.NetClass>`
+
+        """
         return [NetClass(self._pedb, i) for i in self._pedb.active_cell.layout.net_classes]
 
     @property
