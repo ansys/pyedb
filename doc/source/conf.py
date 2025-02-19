@@ -177,11 +177,9 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
 def setup(app):
     app.add_directive("pprint", PrettyPrintDirective)
     app.connect("autodoc-skip-member", autodoc_skip_member)
-    app.connect("builder-inited", copy_examples)
     app.connect("builder-inited", check_pandoc_installed)
     app.connect("source-read", adjust_image_path)
     app.connect("html-page-context", check_example_error)
-    app.connect("build-finished", remove_examples)
     app.connect("build-finished", remove_doctree)
     app.connect("build-finished", check_build_finished_without_error)
 
