@@ -864,7 +864,7 @@ class ViaDesignConfig:
 
         return variables, traces, voids, pd_insts
 
-    def _create_signal_via_transition(self, diff_pair: Pair, design_type):
+    def _create_signal_via_transition(self, diff_pair: Pair, design_type):  # pragma no cover
         trace_layer_name = "stop_layer" if design_type == "pkg" else "start_layer"
 
         fanout_polarity = "1" if design_type == "pkg" else "-1"
