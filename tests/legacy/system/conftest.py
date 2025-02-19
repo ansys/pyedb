@@ -67,7 +67,9 @@ class EdbExamples:
         dst = self.local_scratch.copyfolder(src, file_folder_name)
         return dst
 
-    def get_si_verse(self, edbapp=True, additional_files_folders="", version=None, source_file_path="TEDB/ANSYS-HSD_V1.aedb"):
+    def get_si_verse(
+        self, edbapp=True, additional_files_folders="", version=None, source_file_path="TEDB/ANSYS-HSD_V1.aedb"
+    ):
         """Copy si_verse board file into local folder. A new temporary folder will be created."""
         aedb = self._copy_file_folder_into_local_folder(source_file_path)
         if additional_files_folders:
@@ -88,8 +90,10 @@ class EdbExamples:
             return aedb
 
     def get_package(self, edbapp=True, additional_files_folders="", version=None):
-        """"Copy package board file into local folder. A new temporary folder will be created."""
-        return self.get_si_verse(edbapp, additional_files_folders, version, source_file_path="TEDB/example_package.aedb")
+        """ "Copy package board file into local folder. A new temporary folder will be created."""
+        return self.get_si_verse(
+            edbapp, additional_files_folders, version, source_file_path="TEDB/example_package.aedb"
+        )
 
     def create_empty_edb(self):
         local_folder = self._create_test_folder()
