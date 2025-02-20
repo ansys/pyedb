@@ -66,6 +66,7 @@ class Layout(GrpcLayout):
         Returns
         -------
         Terminal dictionary : Dict[str, :class:`Terminal <pyedb.grpc.database.terminal.Terminal>`]
+            Dictionary of terminals.
         """
         temp = []
         for i in self._pedb.active_cell.layout.terminals:
@@ -88,6 +89,7 @@ class Layout(GrpcLayout):
         Returns
         -------
         List[:class:`Net <pyedb.grpc.database.net.net.Net>`]
+            List of Net.
         """
         return [Net(self._pedb, net) for net in super().nets]
 
@@ -109,6 +111,7 @@ class Layout(GrpcLayout):
         Returns
         -------
         List[:class:`Group <pyedb.grpc.database.hierarch.component.Component>`].
+            List of Component.
 
         """
         return [Component(self._pedb, g) for g in self._pedb.active_cell.layout.groups]
@@ -119,7 +122,8 @@ class Layout(GrpcLayout):
 
         Returns
         -------
-        :class:`PinGroup <pyedb.grpc.database.hierarchy.pingroup.PinGroup>`
+        List[:class:`PinGroup <pyedb.grpc.database.hierarchy.pingroup.PinGroup>`]
+            List of PinGroup.
 
         """
         return [PinGroup(self._pedb, i) for i in self._pedb.active_cell.layout.pin_groups]
@@ -130,17 +134,34 @@ class Layout(GrpcLayout):
 
         Returns
         -------
-        :class:`NetClass <pyedb.grpc.database.net.net_class.NetClass>`
+        List[:class:`NetClass <pyedb.grpc.database.net.net_class.NetClass>`]
+            List of NetClass.
 
         """
         return [NetClass(self._pedb, i) for i in self._pedb.active_cell.layout.net_classes]
 
     @property
     def extended_nets(self):
+        """Extended nets.
+
+        Returns
+        -------
+        List[:class:`ExtendedNet <pyedb.grpc.database.net.extended_net.ExtendedNet>`]
+            List of extended nets.
+        """
+
         return [ExtendedNet(self._pedb, i) for i in self._pedb.active_cell.layout.extended_nets]
 
     @property
     def differential_pairs(self):
+        """Differential pairs.
+
+        Returns
+        -------
+        List[:class:`DifferentialPair <pyedb.grpc.database.net.differential_pair.DifferentialPair>`
+            List of DifferentialPair.
+
+        """
         return [DifferentialPair(self._pedb, i) for i in self._pedb.active_cell.layout.differential_pairs]
 
     @property
@@ -151,6 +172,12 @@ class Layout(GrpcLayout):
     #
     @property
     def voltage_regulators(self):
+        """Voltage regulators.
+
+        List[:class:`VoltageRegulator <pyedb.grpc.database.layout.voltage_regulator.VoltageRegulator>`.
+            List of VoltageRegulator.
+
+        """
         return [VoltageRegulator(self._pedb, i) for i in self._pedb.active_cell.layout.voltage_regulators]
 
     def find_primitive(self, layer_name: Union[str, list]) -> list:
@@ -162,7 +189,8 @@ class Layout(GrpcLayout):
             Name of the layer.
         Returns
         -------
-        list
+        List[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive`].
+            List of Primitive.
         """
         layer_name = layer_name if isinstance(layer_name, list) else [layer_name]
         return [i for i in self.primitives if i.layer.name in layer_name]
