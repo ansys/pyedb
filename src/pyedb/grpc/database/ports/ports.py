@@ -53,27 +53,56 @@ class GapPort(EdgeTerminal):
 
     @property
     def magnitude(self):
-        """Magnitude."""
+        """Magnitude.
+
+        Returns
+        -------
+        float
+            Magnitude value.
+        """
         return self._edb_object.source_amplitude.value
 
     @property
     def phase(self):
-        """Phase."""
+        """Phase.
+
+        Returns
+        -------
+        float
+            Phase value.
+        """
         return self._edb_object.source_phase.value
 
     @property
     def renormalize(self):
-        """Whether renormalize is active."""
+        """Whether renormalize is active.
+
+        Returns
+        -------
+        bool
+        """
         return self._edb_object.port_post_processing_prop.do_renormalize
 
     @property
     def deembed(self):
-        """Inductance value of the deembed gap port."""
+        """Deembed gap port.
+
+        Returns
+        -------
+        bool
+
+        """
         return self._edb_object.port_post_processing_prop.do_deembed
 
     @property
     def renormalize_z0(self):
-        """Renormalize Z0 value (real, imag)."""
+        """Renormalize Z0 value (real, imag).
+
+        Returns
+        -------
+        Tuple(float, float)
+            (Real value, Imaginary value).
+        """
         return (
             self._edb_object.port_post_processing_prop.renormalizion_z0[0],
             self._edb_object.port_post_processing_prop.renormalizion_z0[1],
@@ -121,7 +150,13 @@ class WavePort(EdgeTerminal):
 
     @property
     def horizontal_extent_factor(self):
-        """Horizontal extent factor."""
+        """Horizontal extent factor.
+
+        Returns
+        -------
+        float
+            Extent value.
+        """
         return self._hfss_port_property["Horizontal Extent Factor"]
 
     @horizontal_extent_factor.setter
@@ -132,7 +167,14 @@ class WavePort(EdgeTerminal):
 
     @property
     def vertical_extent_factor(self):
-        """Vertical extent factor."""
+        """Vertical extent factor.
+
+        Returns
+        -------
+        float
+            Vertical extent value.
+
+        """
         return self._hfss_port_property["Vertical Extent Factor"]
 
     @vertical_extent_factor.setter
@@ -143,7 +185,13 @@ class WavePort(EdgeTerminal):
 
     @property
     def pec_launch_width(self):
-        """Launch width for the printed electronic component (PEC)."""
+        """Launch width for the printed electronic component (PEC).
+
+        Returns
+        -------
+        float
+            Pec launch width value.
+        """
         return self._hfss_port_property["PEC Launch Width"]
 
     @pec_launch_width.setter
@@ -154,7 +202,13 @@ class WavePort(EdgeTerminal):
 
     @property
     def deembed(self):
-        """Whether deembed is active."""
+        """Whether deembed is active.
+
+        Returns
+        -------
+        bool
+
+        """
         return self._edb_object.port_post_processing_prop.do_deembed
 
     @deembed.setter
@@ -165,7 +219,13 @@ class WavePort(EdgeTerminal):
 
     @property
     def deembed_length(self):
-        """Deembed Length."""
+        """Deembed Length.
+
+        Returns
+        -------
+        float
+            deembed value.
+        """
         return self._edb_object.port_post_processing_prop.deembed_length.value
 
     @deembed_length.setter
@@ -218,11 +278,25 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def _wave_port(self):
+        """ "Wave port.
+
+
+        Returns
+        -------
+        :class:`WavePort <pyedb.grpc.ports.ports.WavePort>`
+
+        """
         return WavePort(self._pedb, self.terminals[0]._edb_object)
 
     @property
     def horizontal_extent_factor(self):
-        """Horizontal extent factor."""
+        """Horizontal extent factor.
+
+        Returns
+        -------
+        float
+            Horizontal extent value.
+        """
         return self._wave_port.horizontal_extent_factor
 
     @horizontal_extent_factor.setter
@@ -231,7 +305,13 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def vertical_extent_factor(self):
-        """Vertical extent factor."""
+        """Vertical extent factor.
+
+        Returns
+        -------
+        float
+            Vertical extent value.
+        """
         return self._wave_port.vertical_extent_factor
 
     @vertical_extent_factor.setter
@@ -240,7 +320,13 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def pec_launch_width(self):
-        """Launch width for the printed electronic component (PEC)."""
+        """Launch width for the printed electronic component (PEC).
+
+        Returns
+        -------
+        float
+            Width value.
+        """
         return self._wave_port.pec_launch_width
 
     @pec_launch_width.setter
@@ -249,7 +335,12 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def deembed(self):
-        """Whether deembed is active."""
+        """Whether deembed is active.
+
+        Returns
+        -------
+        bool
+        """
         return self._wave_port.deembed
 
     @deembed.setter
@@ -258,7 +349,13 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def deembed_length(self):
-        """Deembed Length."""
+        """Deembed Length.
+
+        Returns
+        -------
+        float
+            Length value.
+        """
         return self._wave_port.deembed_length
 
     @deembed_length.setter
@@ -283,7 +380,13 @@ class CoaxPort(PadstackInstanceTerminal):
 
     @property
     def radial_extent_factor(self):
-        """Radial extent factor."""
+        """Radial extent factor.
+
+        Returns
+        -------
+        float
+            Radial extent value.
+        """
         return self._hfss_port_property["Radial Extent Factor"]
 
     @radial_extent_factor.setter
