@@ -25,8 +25,8 @@ from pathlib import Path
 
 import pytest
 
-from pyedb.generic.general_methods import is_linux
 from pyedb.extensions.pre_layout_design_toolkit.via_design import ViaDesignConfig
+from pyedb.generic.general_methods import is_linux
 from tests.conftest import desktop_version
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
