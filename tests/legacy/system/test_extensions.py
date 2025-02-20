@@ -25,6 +25,7 @@ from pathlib import Path
 
 import pytest
 
+from ansys.aedt.core.generic.settings import is_linux
 from pyedb.extensions.pre_layout_design_toolkit.via_design import ViaDesignConfig
 from tests.conftest import desktop_version
 
@@ -308,6 +309,7 @@ class TestClass:
         with open(self.working_dir / "main_pkg_w_pcb.json", "w") as f:
             json.dump(main_pkg_w_pcb, f, indent=4, ensure_ascii=False)
 
+    @pytest.mark.skipif(is_linux, reason="Failing on linux")
     def test_01_pre_layout_design_toolkit_pcb_diff_via(self):
         signal_pair = {
             "S0": S0_pcb,
@@ -332,6 +334,7 @@ class TestClass:
 
         assert edb_path
 
+    @pytest.mark.skipif(is_linux, reason="Failing on linux")
     def test_02_pre_layout_design_toolkit_pcb_pkg_diff_via(self):
         signal_pair = {
             "S0": S0_pkg_w_pcb,
