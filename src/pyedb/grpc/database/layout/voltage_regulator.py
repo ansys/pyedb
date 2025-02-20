@@ -29,7 +29,7 @@ from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 
 
 class VoltageRegulator(GrpcVoltageRegulator):
-    """Class managing EDB voltage regulator."""
+    """Class managing voltage regulator."""
 
     def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
@@ -37,7 +37,13 @@ class VoltageRegulator(GrpcVoltageRegulator):
 
     @property
     def component(self):
-        """Retrieve voltage regulator component"""
+        """Voltage regulator component
+
+        Returns
+        -------
+        :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`
+            Component.
+        """
         if not self.component.is_null:
             ref_des = self.component.name
             if not ref_des:
@@ -57,7 +63,13 @@ class VoltageRegulator(GrpcVoltageRegulator):
 
     @property
     def load_regulator_current(self):
-        """Retrieve load regulator current value"""
+        """Load regulator current value
+
+        Returns
+        -------
+        float
+            Current value.
+        """
         return self.load_regulator_current.value
 
     @load_regulator_current.setter
@@ -66,7 +78,13 @@ class VoltageRegulator(GrpcVoltageRegulator):
 
     @property
     def load_regulation_percent(self):
-        """Retrieve load regulation percent value."""
+        """Retrieve load regulation percent value.
+
+        Returns
+        -------
+        float
+            Percent value.
+        """
         return self.load_regulation_percent.value
 
     @load_regulation_percent.setter
@@ -75,7 +93,13 @@ class VoltageRegulator(GrpcVoltageRegulator):
 
     @property
     def negative_remote_sense_pin(self):
-        """Retrieve negative remote sense pin."""
+        """Retrieve negative remote sense pin.
+
+        Returns
+        -------
+        :class:`PadstackInstance pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`
+            PadstackInstance.
+        """
         return self._pedb.padstacks.instances[self.negative_remote_sense_pin.id]
 
     @negative_remote_sense_pin.setter
@@ -88,7 +112,13 @@ class VoltageRegulator(GrpcVoltageRegulator):
 
     @property
     def positive_remote_sense_pin(self):
-        """Retrieve positive remote sense pin."""
+        """Retrieve positive remote sense pin.
+
+        Returns
+        -------
+        :class:`PadstackInstance pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`
+            PadstackInstance.
+        """
         return self._pedb.padstacks.instances[self.pos_remote_sense_pin.id]
 
     @positive_remote_sense_pin.setter
@@ -105,7 +135,13 @@ class VoltageRegulator(GrpcVoltageRegulator):
 
     @property
     def voltage(self):
-        """Retrieve voltage value."""
+        """Retrieve voltage value.
+
+        Returns
+        -------
+        float
+            Voltage value.
+        """
         return self.voltage.value
 
     @voltage.setter
