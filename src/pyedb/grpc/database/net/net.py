@@ -53,11 +53,13 @@ class Net(GrpcNet):
 
     @property
     def primitives(self):
-        """Return the list of primitives that belongs to the net.
+        """Primitives that belongs to the net.
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`
+        List[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`].
+            List of Primitive object.
+
         """
         primitives = []
         for primitive in super().primitives:
@@ -75,20 +77,23 @@ class Net(GrpcNet):
 
     @property
     def padstack_instances(self):
-        """Return the list of primitives that belongs to the net.
+        """Padstack instance which belong to net.
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`"""
+        List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
+            LIst of PadstackInstance object.
+
+        """
         return [PadstackInstance(self._pedb, i) for i in super().padstack_instances]
 
     @property
     def components(self):
-        """Return the list of components that touch the net.
+        """Components connected to net.
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+        Dict[str, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`]
         """
         components = {}
         for padstack_instance in self.padstack_instances:
@@ -179,7 +184,7 @@ class Net(GrpcNet):
 
         Returns
         -------
-        :class:` :class:`pyedb.dotnet.database.edb_data.nets_data.EDBExtendedNetData`
+        :class:`ExtendedNet <pyedb.grpc.database.net.extended_net.ExtendedNet>`
 
         Examples
         --------

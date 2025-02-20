@@ -42,11 +42,22 @@ class NetClass(GrpcNetClass):
 
     @property
     def nets(self):
-        """list of :class: `.Net` in the net class."""
+        """Net list.
+
+        Returns
+        -------
+        List[:class:`Net <pyedb.grpc.database.net.net.Net>`].
+            List of Net object.
+        """
         return [Net(self._pedb, i) for i in super().nets]
 
     def add_net(self, net):
-        """Add a net to the net class."""
+        """Add a net to the net class.
+
+        Returns
+        -------
+        bool
+        """
         if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         if isinstance(net, Net) and not net.is_null:
@@ -55,13 +66,25 @@ class NetClass(GrpcNetClass):
         return False
 
     def contains_net(self, net):
-        """Determine if a net exists in the net class."""
+        """Determine if a net exists in the net class.
+
+        returns
+        -------
+        List[:class:`Net <pyedb.grpc.database.net.net.Net>`].
+            List of Net object.
+
+        """
         if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         return super().contains_net(net)
 
     def remove_net(self, net):
-        """Remove net."""
+        """Remove net.
+
+        Returns
+        -------
+        bool
+        """
         if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         if isinstance(net, Net) and not net.is_null:

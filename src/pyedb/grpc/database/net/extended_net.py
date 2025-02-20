@@ -35,7 +35,7 @@ class ExtendedNets:
 
         Returns
         -------
-        dict[str, :class:`pyedb.dotnet.database.edb_data.nets_data.EDBExtendedNetsData`]
+        Dict[str, :class:`ExtendedNet <pyedb.grpc.database.net.extended_net.ExtendedNet>`]
             Dictionary of extended nets.
         """
         nets = {}
@@ -56,7 +56,8 @@ class ExtendedNets:
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.nets_data.EDBExtendedNetsData`
+        :class:`ExtendedNet <pyedb.grpc.database.net.extended_net.ExtendedNet>`
+            Created ExtendedNet object.
         """
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
@@ -89,7 +90,7 @@ class ExtendedNets:
 
         Returns
         -------
-        list
+        List[:class:`ExtendedNet <pyedb.grpc.database.net.extended_net.ExtendedNet>`]
             List of all extended nets.
 
         Examples
@@ -121,7 +122,7 @@ class ExtendedNets:
 
         Returns
         -------
-        list
+        List[:class:`ExtendedNet <pyedb.grpc.database.net.extended_net.ExtendedNet>`]
             List of all extended nets and their associated components.
 
         Examples
@@ -164,7 +165,7 @@ class ExtendedNets:
 
         Returns
         -------
-        list
+        List[:class:`ExtendedNet <pyedb.grpc.database.net.extended_net.ExtendedNet>`]
             List of all extended nets.
 
         Examples
@@ -264,12 +265,24 @@ class ExtendedNet(GrpcExtendedNet):
 
     @property
     def nets(self):
-        """Nets dictionary."""
+        """Nets dictionary.
+
+        Returns
+        -------
+        Dict[str, :class:`Net <pyedb.grpc.database.net.net.Net>`]
+            Dict[net name, Net object].
+        """
         return {net.name: Net(self._pedb, net) for net in super().nets}
 
     @property
     def components(self):
-        """Dictionary of components."""
+        """Dictionary of components.
+
+        Returns
+        -------
+        Dict[str, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`].
+            Dict[net name, Component object].
+        """
         comps = {}
         for _, obj in self.nets.items():
             comps.update(obj.components)
@@ -277,14 +290,27 @@ class ExtendedNet(GrpcExtendedNet):
 
     @property
     def rlc(self):
-        """Dictionary of RLC components."""
+        """Dictionary of RLC components.
+
+        Returns
+        -------
+        Dict[str, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`].
+            Dict[net name, Component object].
+        """
         return {
             name: comp for name, comp in self.components.items() if comp.type in ["inductor", "resistor", "capacitor"]
         }
 
     @property
     def serial_rlc(self):
-        """Dictionary of serial RLC components."""
+        """Dictionary of serial RLC components.
+
+        Returns
+        -------
+        Dict[str, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`].
+            Dict[net name, Component object].
+
+        """
         res = {}
         nets = self.nets
         for comp_name, comp_obj in self.components.items():
@@ -296,7 +322,14 @@ class ExtendedNet(GrpcExtendedNet):
 
     @property
     def shunt_rlc(self):
-        """Dictionary of shunt RLC components."""
+        """Dictionary of shunt RLC components.
+
+        Returns
+        -------
+        Dict[str, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`].
+            Dict[net name, Component object].
+
+        """
         res = {}
         nets = self.nets
         for comp_name, comp_obj in self.components.items():
