@@ -1293,3 +1293,18 @@ class TestClass:
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
+
+    def test_probes(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        probe = [
+            {
+                "name": "probe1",
+                "reference_designator": "J5",
+                "positive_terminal": {"pin": "15"},
+                "negative_terminal": {"pin": "16"},
+            },
+        ]
+        data = {"probes": probe}
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert "probe1" in edbapp.probes
+        edbapp.close()
