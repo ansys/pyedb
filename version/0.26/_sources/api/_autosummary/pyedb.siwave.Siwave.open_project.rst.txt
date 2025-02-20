@@ -1,0 +1,6 @@
+open\_project
+=============
+
+.. currentmodule:: pyedb.siwave
+
+.. automethod:: Siwave.open_project

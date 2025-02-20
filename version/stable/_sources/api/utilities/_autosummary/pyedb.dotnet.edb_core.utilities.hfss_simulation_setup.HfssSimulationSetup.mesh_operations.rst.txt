@@ -1,0 +1,6 @@
+mesh\_operations
+================
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.hfss_simulation_setup
+
+.. autoproperty:: HfssSimulationSetup.mesh_operations

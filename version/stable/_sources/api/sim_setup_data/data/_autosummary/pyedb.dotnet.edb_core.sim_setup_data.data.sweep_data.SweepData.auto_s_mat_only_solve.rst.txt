@@ -1,0 +1,6 @@
+auto\_s\_mat\_only\_solve
+=========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data
+
+.. autoproperty:: SweepData.auto_s_mat_only_solve
