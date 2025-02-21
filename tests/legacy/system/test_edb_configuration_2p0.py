@@ -1042,7 +1042,12 @@ class TestClass:
                 "reference_designator": "J5",
                 "type": "current",
                 "magnitude": 17,
-                "positive_terminal": {"net": "SFPA_TX_P", "contact_type": "inline", "contact_radius": "0.15mm", "num_of_contact":5},
+                "positive_terminal": {
+                    "net": "SFPA_TX_P",
+                    "contact_type": "inline",
+                    "contact_radius": "0.15mm",
+                    "num_of_contact": 5,
+                },
                 "negative_terminal": {"net": "GND"},
             },
             {

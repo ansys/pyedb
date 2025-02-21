@@ -401,7 +401,9 @@ class CfgSource(CfgCircuitElement):
         self.create_terminals()
         # is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
-        create_xxx_source = self._pedb.create_current_source if self.type == "current" else self._pedb.create_voltage_source
+        create_xxx_source = (
+            self._pedb.create_current_source if self.type == "current" else self._pedb.create_voltage_source
+        )
         for name, j in self.pos_terminals.items():
             if isinstance(self.neg_terminal, dict):
                 elem = create_xxx_source(j, self.neg_terminal[name])
@@ -490,10 +492,13 @@ class CfgSource(CfgCircuitElement):
                             t.boundary_type = "InvalidBoundary"
                             for idx, xy in enumerate(positions):
                                 x, y = xy
-                                prim = self._pedb.modeler.create_circle(pad.layer_name, pos_x + x, pos_y + y, radius,
-                                                                        i.net_name)
+                                prim = self._pedb.modeler.create_circle(
+                                    pad.layer_name, pos_x + x, pos_y + y, radius, i.net_name
+                                )
                                 prim.dcir_equipotential_region = True
-                                pt_terminal = self._pedb.get_point_terminal(f"{t.name}_{idx}", i.net_name, [pos_x + x, pos_y + y], pad.layer_name)
+                                pt_terminal = self._pedb.get_point_terminal(
+                                    f"{t.name}_{idx}", i.net_name, [pos_x + x, pos_y + y], pad.layer_name
+                                )
                                 elem = create_xxx_source(pt_terminal, self.neg_terminal)
                                 elem.name = f"{self.name}_{idx}"
                                 elem.magnitude = self.magnitude / num_of_contact
