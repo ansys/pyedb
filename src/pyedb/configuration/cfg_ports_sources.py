@@ -21,6 +21,8 @@
 # SOFTWARE.
 import os
 
+import numpy as np
+
 from pyedb.configuration.cfg_common import CfgBase
 from pyedb.dotnet.edb_core.edb_data.ports import WavePort
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
@@ -34,9 +36,9 @@ class CfgTerminalInfo(CfgBase):
         self._pedb = pedb
         self.type = list(kwargs.keys())[0]
         self.value = kwargs[self.type]
-        self.contact_radius = kwargs.get("contact_radius", None)
-        self.num_of_contact = kwargs.get("num_of_contact", 1)
-        self.inline = kwargs.get("inline", False)
+        self.contact_type = kwargs.get("contact_type", "default")  # options are full, center, quad, inline
+        self.contact_radius = kwargs.get("contact_radius", "0.1mm")
+        self.num_of_contact = kwargs.get("num_of_contact", 4)
 
     def export_properties(self):
         return {self.type: self.value}
@@ -393,19 +395,18 @@ class CfgSource(CfgCircuitElement):
         super().__init__(pedb, **kwargs)
 
         self.magnitude = kwargs.get("magnitude", 0.001)
-        self.equipotential = kwargs.get("equipotential", False)
 
     def set_parameters_to_edb(self):
         """Create sources."""
         self.create_terminals()
         # is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
-        method = self._pedb.create_current_source if self.type == "current" else self._pedb.create_voltage_source
+        create_xxx_source = self._pedb.create_current_source if self.type == "current" else self._pedb.create_voltage_source
         for name, j in self.pos_terminals.items():
             if isinstance(self.neg_terminal, dict):
-                elem = method(j, self.neg_terminal[name])
+                elem = create_xxx_source(j, self.neg_terminal[name])
             else:
-                elem = method(j, self.neg_terminal)
+                elem = create_xxx_source(j, self.neg_terminal)
             if not self.distributed:
                 elem.name = self.name
                 elem.magnitude = self.magnitude
@@ -413,19 +414,31 @@ class CfgSource(CfgCircuitElement):
                 elem.name = f"{self.name}_{elem.name}"
                 elem.magnitude = self.magnitude / self._elem_num
             circuit_elements.append(elem)
-        for terminal in circuit_elements:
-            if self.equipotential:
-                terms = [terminal, terminal.ref_terminal] if terminal.ref_terminal else [terminal]
-                for t in terms:
-                    if not t.is_reference_terminal:
-                        radius = self.positive_terminal_info.contact_radius
-                        num_of_contact = self.positive_terminal_info.num_of_contact
-                        inline = self.positive_terminal_info.inline
-                    else:
-                        radius = self.negative_terminal_info.contact_radius
-                        num_of_contact = self.negative_terminal_info.num_of_contact
-                        inline = self.negative_terminal_info.inline
 
+        for terminal in circuit_elements:
+            # Get reference terminal
+            terms = [terminal, terminal.ref_terminal] if terminal.ref_terminal else [terminal]
+            for t in terms:
+                if not t.is_reference_terminal:
+                    radius = self.positive_terminal_info.contact_radius
+                    num_of_contact = self.positive_terminal_info.num_of_contact
+                    contact_type = self.positive_terminal_info.contact_type
+                else:
+                    radius = self.negative_terminal_info.contact_radius
+                    num_of_contact = self.negative_terminal_info.num_of_contact
+                    contact_type = self.negative_terminal_info.contact_type
+                # Get all pads from terminals
+
+                if t.terminal_type == "PointTerminal":
+                    temp = [i for i in self._pedb.layout.terminals if i.name == t.name][0]
+                    prim = self._pedb.modeler.create_circle(
+                        temp.layer.name, temp.location[0], temp.location[1], radius, temp.net_name
+                    )
+                    prim.dcir_equipotential_region = True
+                    continue
+                elif contact_type.lower() == "default":
+                    continue
+                else:
                     pads = []
                     if t.terminal_type == "PadstackInstanceTerminal":
                         pads.append(t.reference_object)
@@ -433,17 +446,58 @@ class CfgSource(CfgCircuitElement):
                         name = t._edb_object.GetPinGroup().GetName()
                         pg = self._pedb.siwave.pin_groups[name]
                         pads.extend([i for _, i in pg.pins.items()])
-                    elif t.terminal_type == "PointTerminal" and radius:
-                        temp = [i for i in self._pedb.layout.terminals if i.name == t.name][0]
-                        if radius is not None:
-                            prim = self._pedb.modeler.create_circle(
-                                temp.layer.name, temp.location[0], temp.location[1], radius, temp.net_name
-                            )
-                            prim.dcir_equipotential_region = True
+                    else:
+                        raise AttributeError("Unsupported terminal type.")
 
                     for i in pads:
-                        i._set_equipotential(contact_radius=radius, inline=inline, num_of_contact=num_of_contact)
+                        if contact_type.lower() == "center":
+                            i._set_equipotential(contact_radius=radius)
+                        elif contact_type.lower() == "full":
+                            i._set_equipotential()
+                        elif t.is_reference_terminal:
+                            continue  # quad and inline are not supported by ground pad
+                        else:  # quad and inline
+                            pad = i.definition.pad_by_layer[i.start_layer]
+                            comp_rotation = self._pedb.edb_value(i.component.rotation).ToDouble() % 3.141592653589793
+                            pos_x, pos_y = i.position
+                            if pad.shape.lower() in ["rectangle", "oval"]:
+                                width, height = pad.parameters_values[0:2]
+                                radius = self._pedb.edb_value(radius).ToDouble()
+                            else:  # pragma no cover
+                                raise AttributeError("Unsupported pad shape {pad.shape.lower().}")
 
+                            positions = []
+                            if contact_type.lower() == "inline":
+                                if width > height:
+                                    offset = (width - radius * 2) / (num_of_contact - 1)
+                                else:
+                                    offset = (height - radius * 2) / (num_of_contact - 1)
+
+                                start_pos = (num_of_contact - 1) / 2
+                                offset = [offset * i for i in np.arange(start_pos * -1, start_pos + 1)]
+
+                                if (width > height and comp_rotation == 0) or (width < height and comp_rotation != 0):
+                                    positions.extend(list(zip(offset, [0] * num_of_contact)))
+                                else:
+                                    positions.extend(list(zip([0] * num_of_contact, offset)))
+                            else:  # quad
+                                x_offset = width / 2 - radius if comp_rotation == 0 else height / 2 - radius
+                                y_offset = height / 2 - radius if comp_rotation == 0 else width / 2 - radius
+
+                                for x, y in [[1, 1], [-1, 1], [1, -1], [-1, -1]]:
+                                    positions.append([x_offset * x, y_offset * y])
+
+                            t.boundary_type = "InvalidBoundary"
+                            for idx, xy in enumerate(positions):
+                                x, y = xy
+                                prim = self._pedb.modeler.create_circle(pad.layer_name, pos_x + x, pos_y + y, radius,
+                                                                        i.net_name)
+                                prim.dcir_equipotential_region = True
+                                pt_terminal = self._pedb.get_point_terminal(f"{t.name}_{idx}", i.net_name, [pos_x + x, pos_y + y], pad.layer_name)
+                                elem = create_xxx_source(pt_terminal, self.neg_terminal)
+                                elem.name = f"{self.name}_{idx}"
+                                elem.magnitude = self.magnitude / num_of_contact
+                                circuit_elements.append(elem)
         return circuit_elements
 
     def export_properties(self):
