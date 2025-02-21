@@ -24,8 +24,6 @@ from collections import OrderedDict
 import math
 import warnings
 
-import numpy as np
-
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
