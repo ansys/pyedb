@@ -44,10 +44,24 @@ class Rectangle(GrpcRectangle, Primitive):
 
     @property
     def polygon_data(self):
+        """PolygonData.
+
+        Returns
+        -------
+        :class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
+
+        """
         return self.cast().polygon_data
 
     @property
     def representation_type(self):
+        """Representation type.
+
+        Returns
+        -------
+        str.
+            ``"center_width_height"`` or ``"lower_left_upper_right"``.
+        """
         return super().representation_type.name.lower()
 
     @representation_type.setter

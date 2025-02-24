@@ -38,6 +38,14 @@ class Bondwire(GrpcBondWire):
 
     @property
     def material(self):
+        """Bondwire material
+
+        Returns
+        -------
+        str
+            Material name.
+
+        """
         return self.get_material().value
 
     @material.setter
@@ -82,7 +90,13 @@ class Bondwire(GrpcBondWire):
     @property
     def cross_section_type(self):
         """str: Bondwire-cross-section-type of a bondwire object. Supported values for setter: `"round",
-        `"rectangle"`"""
+        `"rectangle"`
+
+        Returns
+        -------
+        str
+            cross section type.
+        """
         return super().cross_section_type.name.lower()
 
     @cross_section_type.setter
@@ -92,7 +106,13 @@ class Bondwire(GrpcBondWire):
 
     @property
     def cross_section_height(self):
-        """float: Bondwire-cross-section height of a bondwire object."""
+        """float: Bondwire-cross-section height of a bondwire object.
+
+        Returns
+        -------
+        float
+            Cross section height.
+        """
         return super().cross_section_height.value
 
     @cross_section_height.setter
@@ -123,7 +143,13 @@ class Bondwire(GrpcBondWire):
 
     @property
     def width(self):
-        """:class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object."""
+        """:class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object.
+
+        Returns
+        -------
+        float
+            Width value.
+        """
         return super().width.value
 
     @width.setter

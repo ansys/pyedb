@@ -39,6 +39,14 @@ class Polygon(GrpcPolygon, Primitive):
 
     @property
     def type(self):
+        """Primitive type.
+
+        Return
+        ------
+        str
+            Polygon type.
+
+        """
         return self.primitive_type.name.lower()
 
     @property
@@ -56,8 +64,9 @@ class Polygon(GrpcPolygon, Primitive):
 
         Returns
         -------
-        list
+        List[:class:`Polygon <ansys.edb.core.primitive.primitive.Polygon>`]
             All new polygons created from the removal operation.
+
         """
         new_polys = []
         if self.has_self_intersections:
@@ -71,7 +80,14 @@ class Polygon(GrpcPolygon, Primitive):
         return new_polys
 
     def clone(self):
-        """Duplicate polygon"""
+        """Duplicate polygon.
+
+        Returns
+        -------
+        :class:`Polygon <ansys.edb.core.primitive.primitive.Polygon>`
+            Cloned polygon.
+
+        """
         polygon_data = self.polygon_data
         duplicated_polygon = self.create(
             layout=self._pedb.active_layout, layer=self.layer, net=self.net, polygon_data=polygon_data

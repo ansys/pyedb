@@ -34,8 +34,42 @@ class Circle(GrpcCircle, Primitive):
         self._pedb = pedb
 
     def get_parameters(self):
+        """Returns parameters.
+
+        Returns
+        -------
+        tuple[
+            :class:`.Value`,
+            :class:`.Value`,
+            :class:`.Value`
+        ]
+
+            Returns a tuple in this format:
+
+            **(center_x, center_y, radius)**
+
+            **center_x** : X value of center point.
+
+            **center_y** : Y value of center point.
+
+            **radius** : Radius value of the circle.
+
+
+        """
         params = super().get_parameters()
         return params[0].value, params[1].value, params[2].value
 
     def set_parameters(self, center_x, center_y, radius):
+        """Set parameters.
+
+        Parameters
+        ----------
+        center_x : float
+            Center x value.
+        center_y : float
+            Center y value
+        radius : float
+            Circle radius.
+
+        """
         super().set_parameters(GrpcValue(center_x), GrpcValue(center_y), GrpcValue(radius))

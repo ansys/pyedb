@@ -51,7 +51,7 @@ class Primitive(GrpcPrimitive):
 
     @property
     def type(self):
-        """Return the type of the primitive.
+        """Type of the primitive.
 
         Expected output is among ``"Circle"``, ``"Rectangle"``,``"Polygon"``,``"Path"`` or ``"Bondwire"``.
 
@@ -63,17 +63,38 @@ class Primitive(GrpcPrimitive):
 
     @property
     def polygon_data(self):
+        """Polygon data.
+
+        Returns
+        -------
+        :class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
+
+        """
         return self.cast().polygon_data
 
     @property
     def object_instance(self):
-        """Return Ansys.Ansoft.Edb.LayoutInstance.LayoutObjInstance object."""
+        """Layout object instance.
+
+        Returns
+        -------
+        :class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`
+
+        """
         if not self._object_instance:
             self._object_instance = self.layout.layout_instance.get_layout_obj_instance_in_context(self, None)
         return self._object_instance
 
     @property
     def net_name(self):
+        """Net name.
+
+        Returns
+        -------
+        str
+            Net name.
+
+        """
         if not self.net.is_null:
             return self.net.name
 
@@ -84,11 +105,12 @@ class Primitive(GrpcPrimitive):
 
     @property
     def layer_name(self):
-        """Get the primitive layer name.
+        """Layer name.
 
         Returns
         -------
         str
+            Layer name.
         """
         return self.layer.name
 
@@ -99,6 +121,13 @@ class Primitive(GrpcPrimitive):
 
     @property
     def voids(self):
+        """Primitive voids.
+
+        Returns
+        -------
+        List[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`
+
+        """
         return [Primitive(self._pedb, prim) for prim in super().voids]
 
     # @property
@@ -117,7 +146,8 @@ class Primitive(GrpcPrimitive):
 
         Returns
         -------
-        list
+        List[:class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`]
+
         """
         return self._pedb.get_connected_objects(self.object_instance)
 
@@ -170,7 +200,7 @@ class Primitive(GrpcPrimitive):
 
         Returns
         -------
-        list
+        List[float, float]
             [x, y]
 
         """
@@ -182,7 +212,7 @@ class Primitive(GrpcPrimitive):
 
         Returns
         -------
-        list
+        List[int]
             Found connected objects IDs with Layout object.
         """
         layout_inst = self.layout.layout_instance
@@ -195,7 +225,7 @@ class Primitive(GrpcPrimitive):
 
         Returns
         -------
-        list
+        List[float, float, float, float]
             [lower_left x, lower_left y, upper right x, upper right y]
 
         """
@@ -207,7 +237,7 @@ class Primitive(GrpcPrimitive):
 
         Returns
         -------
-        bool, :class:`dotnet.database.edb_data.primitives.EDBPrimitives`
+        :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
             Polygon when successful, ``False`` when failed.
 
         """
@@ -223,7 +253,7 @@ class Primitive(GrpcPrimitive):
 
         Parameters
         ----------
-        primitive : :class:`pyaeedt.database.edb_data.primitives_data.EDBPrimitives` or `PolygonData`
+        primitive : :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>>` or `PolygonData`
 
         Returns
         -------
@@ -246,7 +276,7 @@ class Primitive(GrpcPrimitive):
 
         Parameters
         ----------
-        primitive : :class:`pyaeedt.database.edb_data.primitives_data.EDBPrimitives` or `PolygonData`
+        primitive : :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>>` or `PolygonData`
 
         Returns
         -------
@@ -263,7 +293,9 @@ class Primitive(GrpcPrimitive):
 
         Returns
         -------
-        list of float
+        List[float, float]
+            [x, y].
+
         """
         if isinstance(point, (list, tuple)):
             point = GrpcPointData(point)
@@ -273,12 +305,23 @@ class Primitive(GrpcPrimitive):
 
     @property
     def arcs(self):
-        """Get the Primitive Arc Data."""
+        """Get the Primitive Arc Data.
+
+        Returns
+        -------
+        :class:`ArcData <ansys.edb.core.geometry.arc_data.ArcData>`
+        """
         return self.polygon_data.arc_data
 
     @property
     def longest_arc(self):
-        """Get the longest arc."""
+        """Longest arc.
+
+        Returns
+        -------
+        float
+            Arc length.
+        """
         len = 0
         arc = None
         for i in self.arcs:
@@ -292,11 +335,15 @@ class Primitive(GrpcPrimitive):
 
         Parameters
         ----------
-        primitives : :class:`dotnet.database.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
+        primitives : :class:`Primitives <pyedb.grpc.database.primitive.primitive.Primitive>`
+         or: List[:class:`Primitives <pyedb.grpc.database.primitive.primitive.Primitive>`]
+         or: class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
 
         Returns
         -------
-        List of :class:`dotnet.database.edb_data.EDBPrimitives`
+        List[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`]
+            List of Primitive objects.
+
         """
         poly = self.cast().polygon_data
         if not isinstance(primitives, list):
@@ -342,11 +389,15 @@ class Primitive(GrpcPrimitive):
 
         Parameters
         ----------
-        primitives : :class:`dotnet.database.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
+         primitives :class:`Primitives <pyedb.grpc.database.primitive.primitive.Primitive>`
+         or: List[:class:`Primitives <pyedb.grpc.database.primitive.primitive.Primitive>`]
+         or: class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
 
         Returns
         -------
-        List of :class:`dotnet.database.edb_data.EDBPrimitives`
+        List[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`]
+            List of Primitive objects.
+
         """
         poly = self.cast().polygon_data
         if not isinstance(primitives, list):
@@ -408,11 +459,15 @@ class Primitive(GrpcPrimitive):
 
         Parameters
         ----------
-        primitives : :class:`dotnet.database.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
+         primitives : :class:`Primitives <pyedb.grpc.database.primitive.primitive.Primitive>`
+         or: List[:class:`Primitives <pyedb.grpc.database.primitive.primitive.Primitive>`]
+         or: class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
 
         Returns
         -------
-        List of :class:`dotnet.database.edb_data.EDBPrimitives`
+        List[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`]
+            List of Primitive objects.
+
         """
         poly = self.polygon_data
         if not isinstance(primitives, list):
@@ -457,12 +512,14 @@ class Primitive(GrpcPrimitive):
 
         Parameters
         ----------
-        point : list of float or PointData
+        point : List[float] or List[:class:`PointData <ansys.edb.core.geometry.point_data.PointData>`]
 
         Returns
         -------
-        list of float
+        LIst[float, float]
+            [x, y].
         """
+
         if isinstance(point, GrpcPointData):
             point = [point.x.value, point.y.value]
         dist = 1e12
@@ -477,7 +534,13 @@ class Primitive(GrpcPrimitive):
 
     @property
     def shortest_arc(self):
-        """Get the longest arc."""
+        """Longest arc.
+
+        Returns
+        -------
+        float
+            Arc length.
+        """
         len = 1e12
         arc = None
         for i in self.arcs:
@@ -510,8 +573,8 @@ class Primitive(GrpcPrimitive):
 
         Parameters
         ----------
-        point_list : list or :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives` \
-            or EDB Primitive Object. Point list in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
+        point_list : list or :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>` \
+            or point list in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
 
         Returns
         -------
@@ -537,8 +600,8 @@ class Primitive(GrpcPrimitive):
 
         Returns
         -------
-        tuple
-            The tuple contains 2 lists made of X and Y points coordinates.
+        tuple(float, float)
+            (X, Y).
         """
         xt, yt = self._get_points_for_plot(self.polygon_data.points, arc_segments)
         if not xt:
@@ -552,9 +615,10 @@ class Primitive(GrpcPrimitive):
 
         Returns
         -------
-        list
-            Edb Points.
+        List[:class:`PointData <ansys.edb.core.geometry.point_data.PointData>`]
+
         """
+
         return self.polygon_data.points
 
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
@@ -575,7 +639,8 @@ class Primitive(GrpcPrimitive):
 
         Return
         ------
-        List of PolygonData.
+        List:[:class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`]
+
         """
         return self.cast().polygon_data.expand(
             offset=offset, round_corner=round_corners, max_corner_ext=maximum_corner_extension, tol=tolerance

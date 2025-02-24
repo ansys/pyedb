@@ -43,10 +43,8 @@ class PadstackInstance(GrpcPadstackInstance):
 
     Parameters
     ----------
-    edb_padstackinstance :
-
-    _pedb :
-        Inherited AEDT object.
+    :class:`PadstackInstance <pyedb.grpc.dataybase.primitive.PadstackInstance>`
+        PadstackInstance object.
 
     Examples
     --------
@@ -66,15 +64,36 @@ class PadstackInstance(GrpcPadstackInstance):
 
     @property
     def definition(self):
+        """Padstack definition.
+
+        Returns
+        -------
+        :class:`PadstackDef`<pyedb.grpc.database.definition.padstack_def.PadstackDef>`
+        """
         return PadstackDef(self._pedb, self.padstack_def)
 
     @property
     def padstack_definition(self):
+        """Padstack definition name.
+
+        Returns
+        -------
+        str
+            Padstack definition name.
+
+        """
         return self.padstack_def.name
 
     @property
     def terminal(self):
-        """Terminal."""
+        """PadstackInstanceTerminal.
+
+        Returns
+        -------
+        :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminal.padstack_instance_terminal.
+        PadstackInstanceTerminal>`
+            PadstackInstanceTerminal object.
+        """
         from pyedb.grpc.database.terminal.padstack_instance_terminal import (
             PadstackInstanceTerminal,
         )
@@ -83,7 +102,15 @@ class PadstackInstance(GrpcPadstackInstance):
         return term if not term.is_null else None
 
     def create_terminal(self, name=None):
-        """Create a padstack instance terminal"""
+        """Create a padstack instance terminal.
+
+        Returns
+        -------
+        :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminal.padstack_instance_terminal.
+        PadstackInstanceTerminal>`
+            PadstackInstanceTerminal object.
+
+        """
         if not name:
             name = self.name
         term = PadstackInstanceTerminal.create(
@@ -97,13 +124,41 @@ class PadstackInstance(GrpcPadstackInstance):
         return PadstackInstanceTerminal(self._pedb, term)
 
     def get_terminal(self, create_new_terminal=True):
+        """Returns padstack instance terminal.
+
+        Parameters
+        ----------
+        create_new_terminal : bool, optional
+            If terminal instance is not created,
+            and value is ``True``, a new PadstackInstanceTerminal is created.
+
+        Returns
+        -------
+        :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminal.padstack_instance_terminal.
+        PadstackInstanceTerminal>`
+            PadstackInstanceTerminal object.
+
+        """
         inst_term = self.get_padstack_instance_terminal()
         if inst_term.is_null and create_new_terminal:
             inst_term = self.create_terminal()
         return PadstackInstanceTerminal(self._pedb, inst_term)
 
     def create_coax_port(self, name=None, radial_extent_factor=0):
-        """Create a coax port."""
+        """Create a coax port.
+
+        Parameters
+        ----------
+        name : str, optional.
+            Port name, the default is ``None``, in which case a name is automatically assigned.
+        radial_extent_factor : int, float, optional
+            Radial extent of coaxial port.
+
+        Returns
+        -------
+        :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`
+            Port terminal.
+        """
         port = self.create_port(name)
         port.radial_extent_factor = radial_extent_factor
         return port
@@ -119,6 +174,11 @@ class PadstackInstance(GrpcPadstackInstance):
             Negative terminal of the port.
         is_circuit_port : bool, optional
             Whether it is a circuit port.
+
+        Returns
+        -------
+        :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`
+            Port terminal.
         """
         if not reference:
             return self.create_terminal(name)
@@ -209,6 +269,7 @@ class PadstackInstance(GrpcPadstackInstance):
         Returns
         -------
         bool
+
         """
         pattern = r"'DCIR Equipotential Region'='([^']+)'"
         em_pp = self._em_properties
@@ -229,14 +290,20 @@ class PadstackInstance(GrpcPadstackInstance):
 
     @property
     def object_instance(self):
-        """Return Ansys.Ansoft.Edb.LayoutInstance.LayoutObjInstance object."""
+        """Layout object instance.
+
+        Returns
+        -------
+        :class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance import.LayoutObjInstance>`
+
+        """
         if not self._object_instance:
             self._object_instance = self.layout.layout_instance.get_layout_obj_instance_in_context(self, None)
         return self._object_instance
 
     @property
     def bounding_box(self):
-        """Get bounding box of the padstack instance.
+        """Padstack instance bounding box.
         Because this method is slow, the bounding box is stored in a variable and reused.
 
         Returns
@@ -319,7 +386,14 @@ class PadstackInstance(GrpcPadstackInstance):
 
     @property
     def layer_range_names(self):
-        """List of all layers to which the padstack instance belongs."""
+        """List of all layers to which the padstack instance belongs.
+
+        Returns
+        -------
+        List[str]
+            List of layer names.
+
+        """
         start_layer, stop_layer = self.get_layer_range()
         started = False
         layer_list = []
@@ -365,6 +439,13 @@ class PadstackInstance(GrpcPadstackInstance):
 
     @property
     def layout_object_instance(self):
+        """Layout object instance.
+
+        Returns
+        -------
+        :class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`
+
+        """
         obj_inst = [
             obj
             for obj in self._pedb.layout_instance.query_layout_obj_instances(
@@ -391,7 +472,13 @@ class PadstackInstance(GrpcPadstackInstance):
 
     @property
     def component(self):
-        """Component."""
+        """Component.
+
+        Returns
+        -------
+        :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`
+
+        """
         from pyedb.grpc.database.hierarchy.component import Component
 
         comp = Component(self._pedb, super().component)
@@ -440,7 +527,14 @@ class PadstackInstance(GrpcPadstackInstance):
 
     @property
     def name(self):
-        """Padstack Instance Name. If it is a pin, the syntax will be like in AEDT ComponentName-PinName."""
+        """Padstack Instance Name.
+
+        Returns
+        -------
+        str
+            If it is a pin, the syntax will be like in AEDT ComponentName-PinName.
+
+        """
         if not super().name:
             return self.aedt_name
         else:
@@ -453,6 +547,15 @@ class PadstackInstance(GrpcPadstackInstance):
 
     @property
     def backdrill_type(self):
+        """Backdrill type.
+
+
+        Returns
+        -------
+        str
+            Backdrill type.
+
+        """
         return self.get_backdrill_type()
 
     @property
@@ -468,6 +571,14 @@ class PadstackInstance(GrpcPadstackInstance):
 
     @property
     def backdrill_bottom(self):
+        """Check is backdrill is starting at bottom.
+
+
+        Returns
+        -------
+        bool
+
+        """
         if self.get_back_drill_type(True).value == 0:
             return False
         else:
@@ -516,7 +627,14 @@ class PadstackInstance(GrpcPadstackInstance):
 
     @property
     def component_pin(self):
-        """Get component pin."""
+        """Component pin.
+
+        Returns
+        -------
+        str
+            Component pin name.
+
+        """
         return self.name
 
     @property
@@ -524,7 +642,7 @@ class PadstackInstance(GrpcPadstackInstance):
         """Retrieve the pin name that is shown in AEDT.
 
         .. note::
-           To obtain the EDB core pin name, use `pin.GetName()`.
+           To obtain the EDB core pin name, use `pin.name`.
 
         Returns
         -------
@@ -668,7 +786,7 @@ class PadstackInstance(GrpcPadstackInstance):
 
         Returns
         -------
-        list
+        List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             List of the voids that include this padstack instance.
         """
         x_pos = GrpcValue(self.position[0])
@@ -687,7 +805,7 @@ class PadstackInstance(GrpcPadstackInstance):
 
         Returns
         -------
-        list
+        List[:class:`PinGroup <ansys.edb.core.hierarchy.pin_group>`]
             List of pin groups that the pin belongs to.
         """
         return self.pin_groups
@@ -772,7 +890,7 @@ class PadstackInstance(GrpcPadstackInstance):
 
         Returns
         -------
-        bool, List,  :class:`pyedb.dotnet.database.edb_data.primitives.EDBPrimitives`
+        bool, List, :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`
             Polygon when successful, ``False`` when failed, list of list if `return_points=True`.
 
         Examples
@@ -971,8 +1089,7 @@ class PadstackInstance(GrpcPadstackInstance):
 
         Returns
         -------
-        list
-            List of :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`.
+        List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
 
         Examples
         --------
@@ -994,6 +1111,6 @@ class PadstackInstance(GrpcPadstackInstance):
 
         Returns
         -------
-        list
+        List[:class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`]
         """
         return self._pedb.get_connected_objects(self.object_instance)

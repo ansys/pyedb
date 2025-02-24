@@ -163,7 +163,7 @@ class Path(GrpcPath, Primitive):
 
         Returns
         -------
-            :class:`dotnet.database.edb_data.sources.ExcitationPorts`
+            :class:`GapPort <pyedb.grpc.database.ports.port.GapPort>`
 
         Examples
         --------
@@ -206,8 +206,6 @@ class Path(GrpcPath, Primitive):
         net_name: str, optional
             Name of the net.
 
-        Returns
-        -------
         """
 
         def getAngle(v1, v2):  # pragma: no cover
@@ -300,10 +298,23 @@ class Path(GrpcPath, Primitive):
 
     @property
     def center_line(self):
+        """Path center line
+
+        Returns
+        -------
+        List[float]
+
+        """
         return self.get_center_line()
 
     def get_center_line(self):
-        """Retrieve center line points list."""
+        """Retrieve center line points list.
+
+        Returns
+        -------
+        List[List[float, float]].
+
+        """
         return [[pt.x.value, pt.y.value] for pt in super().center_line.points]
 
     # def set_center_line(self, value):
@@ -314,7 +325,14 @@ class Path(GrpcPath, Primitive):
 
     @property
     def corner_style(self):
-        """Return Path's corner style as string. Values supported for the setter `"round"``, `"mitter"``, `"sharpt"`"""
+        """Path's corner style as string.
+
+        Returns
+        -------
+        str
+            Values supported for the setter `"round"`, `"mitter"`, `"sharp"`
+
+        """
         return super().corner_style.name.lower()
 
     @corner_style.setter
