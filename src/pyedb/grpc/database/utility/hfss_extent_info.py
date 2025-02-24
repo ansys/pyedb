@@ -29,7 +29,7 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     Parameters
     ----------
-    pedb : :class:`pyedb.edb.Edb`
+    pedb : :class:`pyedb.grpc.edb.Edb`
         Inherited EDB object.
     """
 
@@ -57,7 +57,13 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def air_box_horizontal_extent_enabled(self):
-        """Whether horizontal extent is enabled for the airbox."""
+        """Whether horizontal extent is enabled for the airbox.
+
+        Returns
+        -------
+        bool.
+
+        """
         return self._hfss_extent_info.air_box_horizontal_extent[1]
 
     @air_box_horizontal_extent_enabled.setter
@@ -70,8 +76,10 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
     def air_box_horizontal_extent(self):
         """Size of horizontal extent for the air box.
 
-        Returns:
-        dotnet.database.edb_data.edbvalue.EdbValue
+        Returns
+        -------
+        float
+            Air box horizontal extent value.
         """
         return self._hfss_extent_info.air_box_horizontal_extent[0]
 
@@ -83,7 +91,13 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def air_box_positive_vertical_extent_enabled(self):
-        """Whether positive vertical extent is enabled for the air box."""
+        """Whether positive vertical extent is enabled for the air box.
+
+        Returns
+        -------
+        bool.
+
+        """
         return self._hfss_extent_info.air_box_positive_vertical_extent[1]
 
     @air_box_positive_vertical_extent_enabled.setter
@@ -94,7 +108,14 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def air_box_positive_vertical_extent(self):
-        """Negative vertical extent for the air box."""
+        """Negative vertical extent for the air box.
+
+        Returns
+        -------
+        float
+            Air box positive vertical extent value.
+
+        """
         return self._hfss_extent_info.air_box_positive_vertical_extent[0]
 
     @air_box_positive_vertical_extent.setter
@@ -105,7 +126,13 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def air_box_negative_vertical_extent_enabled(self):
-        """Whether negative vertical extent is enabled for the air box."""
+        """Whether negative vertical extent is enabled for the air box.
+
+        Returns
+        -------
+        bool.
+
+        """
         return self._hfss_extent_info.air_box_negative_vertical_extent[1]
 
     @air_box_negative_vertical_extent_enabled.setter
@@ -116,7 +143,14 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def air_box_negative_vertical_extent(self):
-        """Negative vertical extent for the airbox."""
+        """Negative vertical extent for the airbox.
+
+        Returns
+        -------
+        float
+            Air box negative vertical extent value.
+
+        """
         return self._hfss_extent_info.air_box_negative_vertical_extent[0]
 
     @air_box_negative_vertical_extent.setter
@@ -131,7 +165,7 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
         Returns
         -------
-        :class:`dotnet.database.edb_data.primitives_data.EDBPrimitive`
+        :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
         """
         return self._hfss_extent_info.base_polygon
 
@@ -147,7 +181,7 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
         Returns
         -------
-        :class:`dotnet.database.edb_data.primitives_data.EDBPrimitive`
+        :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
         """
         return self._hfss_extent_info.dielectric_base_polygon
 
@@ -159,7 +193,12 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def dielectric_extent_size_enabled(self):
-        """Whether dielectric extent size is enabled."""
+        """Whether dielectric extent size is enabled.
+
+        Returns
+        -------
+        bool.
+        """
         return self._hfss_extent_info.dielectric_extent_size[1]
 
     @dielectric_extent_size_enabled.setter
@@ -170,7 +209,13 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def dielectric_extent_size(self):
-        """Dielectric extent size."""
+        """Dielectric extent size.
+
+        Returns
+        -------
+        float
+            Dielectric extent size value.
+        """
         return self._hfss_extent_info.dielectric_extent_size[0]
 
     @dielectric_extent_size.setter
@@ -181,7 +226,14 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def dielectric_extent_type(self):
-        """Dielectric extent type."""
+        """Dielectric extent type.
+
+        Returns
+        -------
+        str
+            Dielectric extent type.
+
+        """
         return self._hfss_extent_info.dielectric_extent_type.name.lower()
 
     @dielectric_extent_type.setter
@@ -192,7 +244,13 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def extent_type(self):
-        """Extent type."""
+        """Extent type.
+
+        Returns
+        -------
+        str
+            Extent type.
+        """
         return self._hfss_extent_info.extent_type.name.lower()
 
     @extent_type.setter
@@ -203,7 +261,12 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def honor_user_dielectric(self):
-        """Honor user dielectric."""
+        """Honor user dielectric.
+
+        Returns
+        -------
+        bool
+        """
         return self._hfss_extent_info.honor_user_dielectric
 
     @honor_user_dielectric.setter
@@ -214,7 +277,13 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def is_pml_visible(self):
-        """Whether visibility of the PML is enabled."""
+        """Whether visibility of the PML is enabled.
+
+        Returns
+        -------
+        bool
+
+        """
         return self._hfss_extent_info.is_pml_visible
 
     @is_pml_visible.setter
@@ -225,7 +294,13 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def open_region_type(self):
-        """Open region type."""
+        """Open region type.
+
+        Returns
+        -------
+        str
+            Open region type.
+        """
         return self._hfss_extent_info.open_region_type.name.lower()
 
     @open_region_type.setter
@@ -240,7 +315,9 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
         Returns
         -------
-        pyedb.dotnet.database.edb_data.edbvalue.EdbValue
+        float
+            Operating frequency value.
+
         """
         return GrpcValue(self._hfss_extent_info.operating_frequency).value
 
@@ -252,7 +329,14 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def radiation_level(self):
-        """PML Radiation level to calculate the thickness of boundary."""
+        """PML Radiation level to calculate the thickness of boundary.
+
+        Returns
+        -------
+        float
+            Boundary thickness value.
+
+        """
         return GrpcValue(self._hfss_extent_info.radiation_level).value
 
     @radiation_level.setter
@@ -263,7 +347,14 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def sync_air_box_vertical_extent(self):
-        """Vertical extent of the sync air box."""
+        """Vertical extent of the sync air box.
+
+        Returns
+        -------
+        bool
+            Synchronise vertical extent.
+
+        """
         return self._hfss_extent_info.sync_air_box_vertical_extent
 
     @sync_air_box_vertical_extent.setter
@@ -274,7 +365,14 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def truncate_air_box_at_ground(self):
-        """Truncate air box at ground."""
+        """Truncate air box at ground.
+
+        Returns
+        -------
+        bool
+            Truncate air box at ground.
+
+        """
         return self._hfss_extent_info.truncate_air_box_at_ground
 
     @truncate_air_box_at_ground.setter
@@ -285,7 +383,14 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def use_open_region(self):
-        """Whether using an open region is enabled."""
+        """Whether using an open region is enabled.
+
+        Returns
+        -------
+        bool
+            Use open region.
+
+        """
         return self._hfss_extent_info.use_open_region
 
     @use_open_region.setter
@@ -296,7 +401,14 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
 
     @property
     def use_xy_data_extent_for_vertical_expansion(self):
-        """Whether using the xy data extent for vertical expansion is enabled."""
+        """Whether using the xy data extent for vertical expansion is enabled.
+
+        Returns
+        -------
+        bool
+            USe x y data extent for vertical expansion.
+
+        """
         return self._hfss_extent_info.use_xy_data_extent_for_vertical_expansion
 
     @use_xy_data_extent_for_vertical_expansion.setter
@@ -320,7 +432,8 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
     def export_config(self):
         """Export HFSS extent information.
 
-        Returns:
+        Returns
+        -------
         dict
             Parameters of the HFSS extent information.
         """

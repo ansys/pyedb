@@ -61,7 +61,7 @@ class BundleTerminal(GrpcBundleTerminal):
 
     @property
     def component(self):
-        """ReturnsComponent.
+        """Component.
 
         Returns
         -------
@@ -71,7 +71,7 @@ class BundleTerminal(GrpcBundleTerminal):
 
     @property
     def impedance(self):
-        """Returns impedance value.
+        """Impedance value.
 
         Returns
         -------

@@ -60,6 +60,14 @@ class LayoutStatistics(object):
 
     @property
     def num_layers(self):
+        """Layer number.
+
+        Returns
+        -------
+        int
+            Number of layers.
+
+        """
         return self._nb_layer
 
     @num_layers.setter
@@ -69,6 +77,15 @@ class LayoutStatistics(object):
 
     @property
     def stackup_thickness(self):
+        """Stackup total thickness.
+
+        Returns
+        -------
+        float
+            Stack up total thickness value.
+
+        """
+
         return self._stackup_thickness
 
     @stackup_thickness.setter
@@ -78,6 +95,14 @@ class LayoutStatistics(object):
 
     @property
     def num_vias(self):
+        """Via number.
+
+        Returns
+        -------
+        int
+            Total number of vias.
+
+        """
         return self._nb_vias
 
     @num_vias.setter
@@ -87,6 +112,15 @@ class LayoutStatistics(object):
 
     @property
     def occupying_ratio(self):
+        """Occupying ratio.
+
+        Returns
+        -------
+        float
+            Occupying ration value.
+            Value representing metal coverage versus total layout surface.
+
+        """
         return self._occupying_ratio
 
     @occupying_ratio.setter
@@ -96,6 +130,14 @@ class LayoutStatistics(object):
 
     @property
     def occupying_surface(self):
+        """Occupying surface.
+
+        Returns
+        -------
+        float
+            Occupying surface value.
+
+        """
         return self._occupying_surface
 
     @occupying_surface.setter
@@ -105,10 +147,26 @@ class LayoutStatistics(object):
 
     @property
     def layout_size(self):
+        """Layout size.
+
+        Returns
+        -------
+        List[(float, float), (float, float)]
+            Layout bounding box, lower left corner (x, y) upper right corner (x, y).
+
+        """
         return self._layout_size
 
     @property
     def num_polygons(self):
+        """Polygon number.
+
+        Returns
+        -------
+        int
+            Total number of polygons.
+
+        """
         return self._nb_polygons
 
     @num_polygons.setter
@@ -118,6 +176,14 @@ class LayoutStatistics(object):
 
     @property
     def num_traces(self):
+        """Trace number.
+
+        Returns
+        -------
+        int
+            Total number of traces.
+
+        """
         return self._nb_traces
 
     @num_traces.setter
@@ -127,6 +193,14 @@ class LayoutStatistics(object):
 
     @property
     def num_nets(self):
+        """Net number.
+
+        Returns
+        -------
+        int
+            Total number og nets.
+
+        """
         return self._nb_nets
 
     @num_nets.setter
@@ -136,6 +210,14 @@ class LayoutStatistics(object):
 
     @property
     def num_discrete_components(self):
+        """Discrete component number.
+
+        Returns
+        -------
+        int
+            Total number of discrete components.
+
+        """
         return self._nb_discrete_components
 
     @num_discrete_components.setter
@@ -145,6 +227,14 @@ class LayoutStatistics(object):
 
     @property
     def num_inductors(self):
+        """Inductor number.
+
+        Returns
+        -------
+        int
+            Total number of inductors.
+
+        """
         return self._nb_inductors
 
     @num_inductors.setter
@@ -154,6 +244,14 @@ class LayoutStatistics(object):
 
     @property
     def num_capacitors(self):
+        """Capacitor number.
+
+        Returns
+        -------
+        int
+            Total number of capacitors.
+
+        """
         return self._nb_capacitors
 
     @num_capacitors.setter
@@ -163,6 +261,14 @@ class LayoutStatistics(object):
 
     @property
     def num_resistors(self):
+        """Resistor number.
+
+        Returns
+        -------
+        int
+            Total number of resistors.
+
+        """
         return self._nb_resistors
 
     @num_resistors.setter

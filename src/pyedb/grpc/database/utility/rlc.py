@@ -33,6 +33,14 @@ class Rlc(GrpcRlc):
 
     @property
     def r(self):
+        """R value.
+
+        Returns
+        -------
+        float
+            Resistor value.
+
+        """
         return self.r.value
 
     @r.setter
@@ -41,6 +49,14 @@ class Rlc(GrpcRlc):
 
     @property
     def l(self):
+        """L value.
+
+        Returns
+        -------
+        float
+            Inductor value.
+
+        """
         return self.l.value
 
     @l.setter
@@ -49,6 +65,14 @@ class Rlc(GrpcRlc):
 
     @property
     def c(self):
+        """C value.
+
+        Returns
+        -------
+        float
+            Capacitor value.
+
+        """
         return self.c.value
 
     @c.setter

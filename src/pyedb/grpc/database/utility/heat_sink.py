@@ -32,9 +32,8 @@ class HeatSink:
 
     Parameters
     ----------
-    pedb : :class:`pyedb.dotnet.edb.Edb`
+    pedb : :class:`Edb < pyedb.grpc.edb.Edb>`
         Inherited object.
-    edb_object : :class:`Ansys.Ansoft.Edb.Utility.HeatSink`,
     """
 
     def __init__(self, pedb, edb_object):
@@ -48,7 +47,13 @@ class HeatSink:
 
     @property
     def fin_base_height(self):
-        """The base elevation of the fins."""
+        """The base elevation of the fins.
+
+        Returns
+        -------
+        float
+            Height value.
+        """
         return self._edb_object.fin_base_height.value
 
     @fin_base_height.setter
@@ -57,7 +62,14 @@ class HeatSink:
 
     @property
     def fin_height(self):
-        """The fin height."""
+        """Fin height.
+
+        Returns
+        -------
+        float
+            Fin height value.
+
+        """
         return self._edb_object.fin_height.value
 
     @fin_height.setter
@@ -66,7 +78,13 @@ class HeatSink:
 
     @property
     def fin_orientation(self):
-        """The fin orientation."""
+        """Fin orientation.
+
+        Returns
+        -------
+        str
+            Fin orientation.
+        """
         return self._edb_object.fin_orientation.name.lower()
 
     @fin_orientation.setter
@@ -75,7 +93,14 @@ class HeatSink:
 
     @property
     def fin_spacing(self):
-        """The fin spacing."""
+        """Fin spacing.
+
+        Returns
+        -------
+        float
+            Fin spacing value.
+
+        """
         return self._edb_object.fin_spacing.value
 
     @fin_spacing.setter
@@ -84,7 +109,14 @@ class HeatSink:
 
     @property
     def fin_thickness(self):
-        """The fin thickness."""
+        """Fin thickness.
+
+        Returns
+        -------
+        float
+            Fin thickness value.
+
+        """
         return self._edb_object.fin_thickness.value
 
     @fin_thickness.setter
