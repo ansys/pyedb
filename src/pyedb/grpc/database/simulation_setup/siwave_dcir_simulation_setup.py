@@ -27,6 +27,8 @@ from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
 
 
 class SIWaveDCIRSimulationSetup(Grpcsiwave_dcir_simulation_setup):
+    """Siwave Dcir simulation setup class."""
+
     def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
         self._pedb = pedb

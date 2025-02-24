@@ -30,12 +30,22 @@ from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
 
 
 class HFSSGeneralSettings(GrpcHFSSGeneralSettings):
+    """PyEDB-core HFSS general settings class."""
+
     def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
         self._pedb = pedb
 
     @property
     def adaptive_solution_type(self):
+        """Adaptive solution type.
+
+        Returns
+        -------
+        str
+            Adaptive solution type name.
+
+        """
         return self.adaptive_solution_type.name
 
     @adaptive_solution_type.setter

@@ -31,7 +31,7 @@ from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
 
 class SiwaveSimulationSetup(GrpcSIWaveSimulationSetup):
-    """Manages EDB methods for SIwave simulation setup."""
+    """SIwave simulation setup class."""
 
     def __init__(self, pedb, edb_object=None):
         super().__init__(edb_object.msg)
@@ -39,6 +39,14 @@ class SiwaveSimulationSetup(GrpcSIWaveSimulationSetup):
 
     @property
     def type(self):
+        """Simulatiom setup type.
+
+        Returns
+        -------
+        str
+            Simulation type.
+
+        """
         return super().type.name
 
     @type.setter

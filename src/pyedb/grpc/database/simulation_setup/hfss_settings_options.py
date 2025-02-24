@@ -33,12 +33,22 @@ from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
 
 
 class HFSSSettingsOptions(GrpcHFSSSettingsOptions):
+    """PyEDB-core HFSS settings options class."""
+
     def __init__(self, _pedb, edb_object):
         super().__init__(edb_object)
         self._pedb = _pedb
 
     @property
     def order_basis(self):
+        """Order basis name.
+
+        Returns
+        -------
+        str
+            Order basis name.
+
+        """
         return self.order_basis.name
 
     @order_basis.setter

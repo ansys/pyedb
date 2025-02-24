@@ -24,16 +24,7 @@ from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSw
 
 
 class SweepData(GrpcSweepData):
-    """Manages EDB methods for a frequency sweep.
-
-    Parameters
-    ----------
-    sim_setup : :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
-    name : str, optional
-        Name of the frequency sweep.
-    edb_object : :class:`Ansys.Ansoft.Edb.Utility.SIWDCIRSimulationSettings`, optional
-        EDB object. The default is ``None``.
-    """
+    """Frequency sweep data class."""
 
     def __init__(self, pedb, name, distribution, start_f, end_f, step, edb_object=None):
         super().__init__(name=name, distribution=distribution, start_f=start_f, end_f=end_f, step=step)

@@ -34,6 +34,14 @@ class HFSSAdvancedSettings(GrpcHFSSAdvancedSettings):
 
     @property
     def via_model_type(self):
+        """Via model.
+
+        Returns
+        -------
+        str
+            Model type name.
+
+        """
         return self.via_model_type.name
 
     @via_model_type.setter

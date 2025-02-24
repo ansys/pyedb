@@ -27,5 +27,6 @@ from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
 
 class HFSSAdvancedMeshingSettings(GrpcHFSSAdvancedMeshingSettings):
     def __init__(self, pedb, edb_object):
+        """EDB-core HFSS advanced meshing settings class."""
         super().__init__(edb_object)
         self._pedb = pedb

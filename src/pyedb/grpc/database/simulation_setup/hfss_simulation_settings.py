@@ -42,6 +42,8 @@ from pyedb.grpc.database.simulation_setup.hfss_solver_settings import HFSSSolver
 
 
 class HFSSSimulationSettings(GrpcHFSSSimulationSettings):
+    """PyEDB-core HFSS simulation settings class."""
+
     def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
         self._edb_object = edb_object
@@ -49,24 +51,68 @@ class HFSSSimulationSettings(GrpcHFSSSimulationSettings):
 
     @property
     def advanced(self):
+        """HFSS Advanced settings class.
+
+
+        Returns
+        -------
+        :class:`HFSSAdvancedSettings <pyedb.grpc.database.simulation_setup.hfss_advanced_settings.HFSSAdvancedSettings>`
+
+        """
         return HFSSAdvancedSettings(self._pedb, self.advanced)
 
     @property
     def advanced_meshing(self):
+        """Advanced meshing class.
+
+        Returns
+        -------
+        :class:`HFSSAdvancedMeshingSettings <pyedb.grpc.database.simulation_setup.
+        hfss_advanced_meshing_settings.HFSSAdvancedMeshingSettings>`
+
+        """
         return HFSSAdvancedMeshingSettings(self._pedb, self.advanced_meshing)
 
     @property
     def dcr(self):
+        """Dcr.
+
+        Returns
+        -------
+        :class:`HFSSDCRSettings <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings>`
+
+        """
         return HFSSDCRSettings(self._pedb, self.dcr)
 
     @property
     def general(self):
+        """General settings class.
+
+        Returns
+        -------
+        :class:`HFSSGeneralSettings <pyedb.grpc.database.simulation_setup.hfss_general_settings.HFSSGeneralSettings>`
+
+        """
         return HFSSGeneralSettings(self._pedb, self.general)
 
     @property
     def options(self):
+        """HFSS option class.
+
+        Returns
+        -------
+        :class:`HFSSSettingsOptions <pyedb.grpc.database.simulation_setup.hfss_settings_options.HFSSSettingsOptions>`
+
+        """
         return HFSSSettingsOptions(self._pedb, self.options)
 
     @property
     def solver(self):
+        """HFSS solver settings class.
+
+        Returns
+        -------
+        :class:`HFSSSolverSettings <pyedb.grpc.database.simulation_setup.hfss_solver_settings.HFSSSolverSettings>`
+
+        """
         return HFSSSolverSettings(self._pedb, self.solver)

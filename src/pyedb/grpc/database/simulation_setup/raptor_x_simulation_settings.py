@@ -33,14 +33,32 @@ from pyedb.grpc.database.simulation_setup.raptor_x_general_settings import (
 
 
 class RaptorXSimulationSettings(GrpcRaptorXSimulationSettings):
+    """Raptor X simulation settings class."""
+
     def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
         self._pedb = pedb
 
     @property
     def advanced(self):
+        """Advanced class.
+
+        Returns
+        -------
+        :class:`RaptorXAdvancedSettings <pyedb.grpc.database.simulation_setup.
+        raptor_x_advanced_settings.RaptorXAdvancedSettings>`
+
+        """
         return RaptorXAdvancedSettings(self._pedb, self.advanced)
 
     @property
     def general(self):
+        """General settings class.
+
+        Returns
+        -------
+        :class:`RaptorXGeneralSettings <pyedb.grpc.database.simulation_setup.
+        raptor_x_general_settings.RaptorXGeneralSettings>`
+
+        """
         RaptorXGeneralSettings(self._pedb, self.general)

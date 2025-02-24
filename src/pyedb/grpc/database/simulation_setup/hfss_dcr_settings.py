@@ -27,6 +27,8 @@ from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
 
 
 class HFSSDCRSettings(GrpcHFSSDCRSettings):
+    """PyEDB-core HFSS DC settings class."""
+
     def __init__(self, pedb, edb_object):
         super().__init__(edb_object)
         self._edb_object = edb_object

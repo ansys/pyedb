@@ -36,7 +36,7 @@ from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
 
 class HfssSimulationSetup(GrpcHfssSimulationSetup):
-    """Manages EDB methods for HFSS simulation setup."""
+    """HFSS simulation setup class."""
 
     def __init__(self, pedb, edb_object, name: str = None):
         super().__init__(edb_object.msg)
@@ -56,7 +56,8 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
 
         Returns
         -------
-         bool
+        bool.
+
         """
         try:
             self.settings.general.adaptive_solution_type = GrpcAdaptType.SINGLE
@@ -81,7 +82,8 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
 
         Returns
         -------
-            bool.
+        bool.
+
         """
         try:
             self.settings.general.adaptive_solution_type = GrpcAdaptType.MULTI_FREQUENCIES
@@ -101,6 +103,24 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
             return False
 
     def set_solution_broadband(self, low_frequency="1GHz", high_frequency="10GHz", max_delta_s=0.02, max_num_passes=10):
+        """Set solution to broadband.
+
+        Parameters
+        ----------
+        low_frequency : str
+            Low frequency value.
+        high_frequency : str
+            High frequency value.
+        max_delta_s : float
+            Max delta S value.
+        max_num_passes : int
+            Maximum number of passes.
+
+        Returns
+        -------
+        bool.
+
+        """
         try:
             self.settings.general.adaptive_solution_type = GrpcAdaptType.BROADBAND
             bfs = self.settings.general.broadband_adaptive_solution
@@ -114,6 +134,21 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
             return False
 
     def add_adaptive_frequency_data(self, frequency="5GHz", max_delta_s="0.01"):
+        """Add adaptive frequency data to simulation setup.
+
+        Parameters
+        ----------
+        frequency : str
+            Adaptive frequency value.
+
+        max_delta_s : str
+            Maximum delta S value.
+
+        Returns
+        -------
+        bool.
+
+        """
         try:
             adapt_frequencies = self.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies
             adapt_frequencies.append(GrpcAdaptiveFrequency(frequency, str(max_delta_s)))
@@ -156,7 +191,8 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
 
         Returns
         -------
-        :class:`dotnet.database.edb_data.hfss_simulation_setup_data.LengthMeshOperation`
+        :class:`LengthMeshOperation <ansys.edb.core.simulation_setup.mesh_operation.LengthMeshOperation>`
+
         """
         from ansys.edb.core.simulation_setup.mesh_operation import (
             LengthMeshOperation as GrpcLengthMeshOperation,
@@ -224,7 +260,8 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
 
         Returns
         -------
-        :class:`dotnet.database.edb_data.hfss_simulation_setup_data.LengthMeshOperation`
+        :class:`LengthMeshOperation <ansys.edb.core.simulation_setup.mesh_operation.LengthMeshOperation>`
+
         """
         if not name:
             name = generate_unique_name("length")
