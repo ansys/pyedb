@@ -34,8 +34,8 @@ API to make scripting simpler.
 
     .. grid-item-card:: Examples :fa:`scroll`
         :padding: 2 2 2 2
-        :link: examples/index
-        :link-type: doc
+        :link: https://examples.aedt.docs.pyansys.com/version/dev/examples/high_frequency/layout/index.html
+        :link-type: url
 
         Explore examples that show how to use PyEDB to
         perform many different types of simulations.
