@@ -1034,15 +1034,26 @@ class TestClass:
                 "reference_designator": "J5",
                 "type": "current",
                 "magnitude": 17,
-                "positive_terminal": {"net": "SFPA_VCCR", "contact_radius": "0.1mm", "multi_contact": True},
-                "negative_terminal": {"net": "GND", "contact_radius": "0.21mm", "multi_contact": True, "inline": True},
-                "equipotential": True,
+                "positive_terminal": {"net": "SFPA_VCCR", "contact_type": "quad"},
+                "negative_terminal": {"net": "GND"},
+            },
+            {
+                "name": "ISOURCE_J5_SFPA_TX_P",
+                "reference_designator": "J5",
+                "type": "current",
+                "magnitude": 17,
+                "positive_terminal": {
+                    "net": "SFPA_TX_P",
+                    "contact_type": "inline",
+                    "contact_radius": "0.15mm",
+                    "num_of_contact": 5,
+                },
+                "negative_terminal": {"net": "GND"},
             },
             {
                 "name": "x_y_port",
                 "type": "current",
                 "magnitude": 2,
-                "equipotential": True,
                 "positive_terminal": {
                     "coordinates": {
                         "layer": "1_Top",
