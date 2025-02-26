@@ -371,10 +371,10 @@ jobs:
 
 
   docs-build:
-    name: Documentation build
+    name: Build documentation
     runs-on: ubuntu-latest
     steps:
-      - name: Documentation build
+      - name: Build documentation
         uses: ansys/actions/doc-build@v8
         with:
           dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
