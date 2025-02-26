@@ -856,6 +856,7 @@ class TestClass:
         setup1.adaptive_settings.max_refinement = 1000001
         setup1.adaptive_settings.max_refine_per_pass = 20
         setup1.adaptive_settings.min_passes = 2
+        setup1.adaptive_settings.min_converged_passes = 2
         setup1.adaptive_settings.save_fields = True
         setup1.adaptive_settings.save_rad_field_only = True
         setup1.adaptive_settings.use_convergence_matrix = True
@@ -866,6 +867,7 @@ class TestClass:
         assert edbapp.setups["setup1"].adaptive_settings.max_refinement == 1000001
         assert edbapp.setups["setup1"].adaptive_settings.max_refine_per_pass == 20
         assert edbapp.setups["setup1"].adaptive_settings.min_passes == 2
+        assert edbapp.setups["setup1"].adaptive_settings.min_converged_passes == 2
         assert edbapp.setups["setup1"].adaptive_settings.save_fields
         assert edbapp.setups["setup1"].adaptive_settings.save_rad_field_only
         # assert adaptive_settings.use_convergence_matrix

@@ -22,7 +22,7 @@
 
 
 class CfgBase:
-    protected_attributes = []
+    protected_attributes = ["pedb", "pyedb_obj", "api"]
 
     def get_attributes(self, exclude=None):
         attrs = {i: j for i, j in self.__dict__.items() if i not in self.protected_attributes}

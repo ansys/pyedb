@@ -160,11 +160,11 @@ class SweepData(object):
     @freq_sweep_type.setter
     def freq_sweep_type(self, value):
         edb_freq_sweep_type = self._edb_object.TFreqSweepType
-        if value in [0, "kInterpolatingSweep"]:
+        if value in [0, "kInterpolatingSweep", "interpolation"]:
             self._edb_object.FreqSweepType = edb_freq_sweep_type.kInterpolatingSweep
-        elif value in [1, "kDiscreteSweep"]:
+        elif value in [1, "kDiscreteSweep", "discrete"]:
             self._edb_object.FreqSweepType = edb_freq_sweep_type.kDiscreteSweep
-        elif value in [2, "kBroadbandFastSweep"]:
+        elif value in [2, "kBroadbandFastSweep", "broadband"]:
             self._edb_object.FreqSweepType = edb_freq_sweep_type.kBroadbandFastSweep
         elif value in [3, "kNumSweepTypes"]:
             self._edb_object.FreqSweepType = edb_freq_sweep_type.kNumSweepTypes

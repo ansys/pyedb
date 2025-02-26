@@ -140,11 +140,11 @@ class Configuration:
             temp = []
             for _, pdef in pedb_defs.items():
                 cfg_def = CfgPadstackDefinition(self._pedb, pdef)
-                cfg_def.retrieve_parameters_from_edb()
+                cfg_def.api.retrieve_parameters_from_edb()
                 temp.append(cfg_def)
             self.cfg_data.stackup.apply()
             for cfg_pdef in temp:
-                cfg_pdef.set_parameters_to_edb()
+                cfg_pdef.api.set_parameters_to_edb()
         else:
             self.cfg_data.stackup.apply()
 
@@ -170,6 +170,9 @@ class Configuration:
 
         # Configure ports
         self.cfg_data.ports.apply()
+
+        # Configure probes
+        self.cfg_data.probes.apply()
 
         return True
 
