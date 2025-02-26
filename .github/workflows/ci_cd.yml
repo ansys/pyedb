@@ -139,7 +139,7 @@ jobs:
     name: Test dotnet (linux)
     runs-on: [ Linux, self-hosted, toolkits ]
     env:
-      ANSYSEM_ROOT242: '/opt/AnsysEM/v242/Linux64'
+      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
@@ -176,7 +176,7 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             xvfb-run pytest -m "legacy" -n auto --dist loadfile -v --cov
 
@@ -287,7 +287,7 @@ jobs:
     needs: [smoke-tests]
     runs-on: [ self-hosted, Linux, pyaedt ]
     env:
-      ANSYSEM_ROOT242: '/opt/AnsysEM/v242/Linux64'
+      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
@@ -321,19 +321,19 @@ jobs:
 
       - name: Install PyAEDT main branch version with its test dependencies
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           pip install --no-cache-dir external/pyaedt[tests]
 
       - name: Install PyEDB
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           python -m pip install .
 
       - name: Install CI dependencies (e.g. vtk-osmesa)
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
@@ -348,7 +348,7 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/tests/system/general/
 
@@ -363,7 +363,7 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest --durations=50 -v external/pyaedt/tests/system/solvers/test_45_workflows.py
             pytest --durations=50 -v external/pyaedt/tests/system/solvers --deselect=tests/system/solvers/test_45_workflows.py
