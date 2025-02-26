@@ -26,60 +26,15 @@ concurrency:
 
 jobs:
 
-  test-pyaedt-main-windows:
-    name: Testing PyAEDT main branch (Windows)
-    runs-on: [ self-hosted, Windows, pyaedt ]
+  doc-build:
+    name: Documentation build
+    runs-on: ubuntu-latest
     steps:
-      - name: Install Git and checkout project
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Documentation build
+        uses: ansys/actions/doc-build@v8
         with:
+          dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-          . .venv\Scripts\Activate.ps1
-
-      - name: Update pip
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install -U pip
-
-      - name: Clone PyAEDT on main branch
-        uses: actions/checkout@v4
-        with:
-          repository: ansys/pyaedt
-          path: "external/pyaedt"
-          ref: "main"
-
-      - name: Install PyAEDT main branch version with its test dependencies
-        run: |
-          . .venv\Scripts\Activate.ps1
-          pip install --no-cache-dir external/pyaedt[tests]
-
-      - name: Install PyEDB
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install .
-
-      - name: Install CI dependencies (e.g. vtk-osmesa)
-        run: |
-          .venv\Scripts\Activate.ps1
-          # Uninstall conflicting dependencies
-          pip uninstall --yes vtk
-          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa
-
-      - name: Run PyAEDT tests
-        uses: nick-fields/retry@v3
-        env:
-          PYTHONMALLOC: malloc
-        with:
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 40
-          command: |
-            .venv\Scripts\Activate.ps1
-            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/tests/system/general/
+          sphinxopts: '-j auto --color -w build_errors.txt'
+          check-links: false
+          needs-quarto: true
