@@ -370,7 +370,7 @@ jobs:
 
 
 
-  doc-build:
+  docs-build:
     name: Documentation build
     runs-on: ubuntu-latest
     steps:
