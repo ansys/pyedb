@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import os
 
 from pyedb.configuration.cfg_common import CfgBase
 from pyedb.dotnet.edb_core.edb_data.ports import WavePort
@@ -208,6 +209,16 @@ class CfgPorts:
         return ports
 
 
+class CfgProbes:
+    def __init__(self, pedb, data):
+        self._pedb = pedb
+        self.probes = [CfgProbe(self._pedb, **probe) for probe in data]
+
+    def apply(self):
+        for probe in self.probes:
+            probe.api.set_parameters_to_edb()
+
+
 class CfgCircuitElement(CfgBase):
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
@@ -232,7 +243,7 @@ class CfgCircuitElement(CfgBase):
         else:
             self.negative_terminal_info = CfgTerminalInfo(self._pedb, **neg)
 
-    def _create_terminals(self):
+    def create_terminals(self):
         """Create step 1. Collect positive and negative terminals."""
 
         pos_type, pos_value = self.positive_terminal_info.type, self.positive_terminal_info.value
@@ -350,7 +361,7 @@ class CfgPort(CfgCircuitElement):
 
     def set_parameters_to_edb(self):
         """Create port."""
-        self._create_terminals()
+        self.create_terminals()
         is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
         for name, j in self.pos_terminals.items():
@@ -386,7 +397,7 @@ class CfgSource(CfgCircuitElement):
 
     def set_parameters_to_edb(self):
         """Create sources."""
-        self._create_terminals()
+        self.create_terminals()
         # is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
         method = self._pedb.create_current_source if self.type == "current" else self._pedb.create_voltage_source
@@ -444,6 +455,41 @@ class CfgSource(CfgCircuitElement):
             "positive_terminal": self.positive_terminal_info.export_properties(),
             "negative_terminal": self.negative_terminal_info.export_properties(),
         }
+
+
+class CfgProbe(CfgCircuitElement):
+    class Common:
+        def __init__(self, parent):
+            self.parent = parent
+            self.pedb = parent._pedb
+
+        def set_parameters_to_edb(self):
+            self.parent.create_terminals()
+            circuit_elements = []
+            for name, j in self.parent.pos_terminals.items():
+                if isinstance(self.parent.neg_terminal, dict):
+                    elem = self.pedb.create_voltage_probe(j, self.parent.neg_terminal[name])
+                else:
+                    elem = self.pedb.create_voltage_probe(j, self.parent.neg_terminal)
+                elem.name = self.parent.name
+                circuit_elements.append(elem)
+            return circuit_elements
+
+    class Grpc(Common):
+        def __init__(self, parent):
+            super().__init__(parent)
+
+    class DotNet(Grpc):
+        def __init__(self, parent):
+            super().__init__(parent)
+
+    def __init__(self, pedb, **kwargs):
+        kwargs["type"] = "probe"
+        super().__init__(pedb, **kwargs)
+        if os.environ["PYEDB_USE_DOTNET"] == "0":
+            self.api = self.Grpc(self)
+        else:
+            self.api = self.DotNet(self)
 
 
 class CfgWavePort:

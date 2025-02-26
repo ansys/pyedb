@@ -4106,7 +4106,7 @@ class Edb(Database):
         term.boundary_type = "kVoltageSource"
 
         ref_term = Terminal(self, ref_terminal._edb_object)
-        ref_term.boundary_type = "kVoltageProbe"
+        ref_term.boundary_type = "kVoltageSource"
 
         term.ref_terminal = ref_terminal
         return self.sources[term.name]

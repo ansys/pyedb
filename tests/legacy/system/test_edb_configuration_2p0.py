@@ -1255,7 +1255,12 @@ class TestClass:
                         "part_type": "io",
                         "definition": "BGA",
                         "placement_layer": "TOP",
-                        "solder_ball_properties": {"shape": "cylinder", "diameter": "244um", "height": "406um"},
+                        "solder_ball_properties": {
+                            "shape": "cylinder",
+                            "diameter": "244um",
+                            "height": "406um",
+                            "material": "air",
+                        },
                         "port_properties": {
                             "reference_offset": "0.1mm",
                             "reference_size_auto": False,
@@ -1274,6 +1279,7 @@ class TestClass:
         assert rect.voids
         assert [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP_POLY"][0]
         assert edbapp.components["U1"]
+        assert edbapp.components["U1"].component_property.GetSolderBallProperty().Clone().GetMaterialName() == "air"
         edbapp.close()
 
     def test_19_variables(self, edb_examples):
@@ -1286,4 +1292,19 @@ class TestClass:
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
+    def test_probes(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        probe = [
+            {
+                "name": "probe1",
+                "reference_designator": "J5",
+                "positive_terminal": {"pin": "15"},
+                "negative_terminal": {"pin": "16"},
+            },
+        ]
+        data = {"probes": probe}
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert "probe1" in edbapp.probes
         edbapp.close()
