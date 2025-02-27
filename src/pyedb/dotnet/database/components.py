@@ -1053,7 +1053,7 @@ class Components(object):
             for pin in cmp_pins:
                 self._padstack.create_coax_port(padstackinstance=pin, name=port_name)
 
-        elif port_type == SourceType.CircPort:  # pragma no cover
+        elif port_type == SourceType.CircPort:
             ref_pins = [
                 p
                 for p in list(component.LayoutObjs)
