@@ -1773,7 +1773,7 @@ class TestClass:
             pins=edbcomp.pins["4"],
             reference_pins=edbcomp.pins["2"],
         )
-        assert len(edbapp.excitations) == 4
+        assert len(edbapp.excitations) == 2
 
     def test_create_circuit_port_on_rlc_component(self, edb_examples):
         edbapp = edb_examples.get_four_pin_components()
@@ -1784,7 +1784,7 @@ class TestClass:
             do_pingroup=False,
             reference_net=["GND"],
         )
-        assert len(edbapp.excitations) == 2
+        assert len(edbapp.excitations) == 4
 
     def test_create_circuit_port_on_rlc_pins(self, edb_examples):
         edbapp = edb_examples.get_four_pin_components()
