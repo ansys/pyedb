@@ -224,7 +224,6 @@ jobs:
         run: |
           python -m venv .venv
           . .venv\Scripts\Activate.ps1
-          pytest ${{ env.PYTEST_ARGUMENTS }} -m solvers --deselect=tests/system/solvers/test_45_FilterSolutions
 
       - name: Update pip
         run: |
@@ -278,6 +277,7 @@ jobs:
           command: |
             .venv\Scripts\Activate.ps1
             pytest --durations=50 -v external/pyaedt/tests/system/solvers
+            pytest --durations=50 -v external/pyaedt/tests/system/solvers --deselect=tests/system/solvers/test_45_workflows.py
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
