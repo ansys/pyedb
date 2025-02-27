@@ -1755,7 +1755,28 @@ class TestClass:
         assert len(edbapp.ports) == 15
 
     def test_create_circuit_port_on_component(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+        edbapp = edb_examples.get_four_pin_components()
+        assert edbapp.components.create_port_on_component(
+            component="U11",
+            net_list=["2V5", "NetR105_2"],
+            port_type=SourceType.CircPort,
+            do_pingroup=False,
+            reference_net=["GND"],
+        )
+        assert len(edbapp.excitations) == 4
+
+    def test_create_circuit_port_on_pins(self, edb_examples):
+        edbapp = edb_examples.get_four_pin_components()
+        edbcomp = edbapp.components["U11"]
+        assert edbapp.components.create_port_on_pins(
+            refdes="U11",
+            pins=edbcomp.pins["4"],
+            reference_pins=edbcomp.pins["2"],
+        )
+        assert len(edbapp.excitations) == 4
+
+    def test_create_circuit_port_on_rlc_component(self, edb_examples):
+        edbapp = edb_examples.get_four_pin_components()
         assert edbapp.components.create_port_on_component(
             component="U10",
             net_list=["2V5", "NetR105_2"],
@@ -1763,38 +1784,17 @@ class TestClass:
             do_pingroup=False,
             reference_net=["GND"],
         )
-        assert len(edbapp.excitations) == 1
+        assert len(edbapp.excitations) == 2
 
-    def test_create_circuit_port_on_pins(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_create_circuit_port_on_rlc_pins(self, edb_examples):
+        edbapp = edb_examples.get_four_pin_components()
         edbcomp = edbapp.components["U10"]
         assert edbapp.components.create_port_on_pins(
             refdes="U10",
             pins=edbcomp.pins["4"],
             reference_pins=edbcomp.pins["2"],
         )
-        assert len(edbapp.excitations) == 1
-
-    def test_create_circuit_port_on_rlc_component(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.components.create_port_on_component(
-            component="C184",
-            net_list=["1.2V_AVDLL_PLL"],
-            port_type=SourceType.CircPort,
-            do_pingroup=False,
-            reference_net=["GND"],
-        )
-        assert len(edbapp.excitations) == 1
-
-    def test_create_circuit_port_on_rlc_pins(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
-        edbcomp = edbapp.components["C184"]
-        assert edbapp.components.create_port_on_pins(
-            refdes="C184",
-            pins=edbcomp.pins["2"],
-            reference_pins=edbcomp.pins["1"],
-        )
-        assert len(edbapp.excitations) == 1
+        assert len(edbapp.excitations) == 2
 
     def test_create_ping_group(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
