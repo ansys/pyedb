@@ -276,8 +276,7 @@ jobs:
           timeout_minutes: 40
           command: |
             .venv\Scripts\Activate.ps1
-            pytest --durations=50 -v external/pyaedt/tests/system/solvers
-            pytest --durations=50 -v external/pyaedt/tests/system/solvers --deselect=tests/system/solvers/test_45_workflows.py
+            pytest --durations=50 -v external/pyaedt/tests/system/solvers --deselect=tests/system/solvers/test_45_FilterSolutions
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -325,7 +324,6 @@ jobs:
         run: |
           export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
-          pytest ${{ env.PYTEST_ARGUMENTS }} -m solvers --deselect=tests/system/solvers/test_45_FilterSolutions
           pip install --no-cache-dir external/pyaedt[tests]
 
       - name: Install PyEDB
