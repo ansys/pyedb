@@ -780,7 +780,7 @@ class EDBPadstack(object):
         pdef_data.SetHoleRange(getattr(self._edb.definition.PadstackHoleRange, snake_to_pascal(value)))
         self._padstack_def_data = pdef_data
 
-    def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True):
+    def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=85, delete_padstack_def=True):
         """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
 
         Parameters
@@ -826,8 +826,8 @@ class EDBPadstack(object):
         rad1 = self.hole_properties[0] / 2 - math.tan(hole_wall_angle * diel_thick * math.pi / 180)
         rad2 = self.hole_properties[0] / 2
 
-        if start_elevation < (topz + bottomz) / 2:
-            rad1, rad2 = rad2, rad1
+        layer_count = len(self._ppadstack._pedb.stackup.signal_layers)
+
         i = 0
         for via in list(self.padstack_instances.values()):
             if convert_only_signal_vias and via.net_name in signal_nets or not convert_only_signal_vias:
@@ -863,7 +863,12 @@ class EDBPadstack(object):
                         self._get_edb_value(pos[1]),
                         self._get_edb_value(self.pad_by_layer[self.via_stop_layer].parameters_values[0] / 2),
                     )
-                for layer_name in layer_names:
+                for layer_idx, layer_name in enumerate(layer_names):
+                    if layer_idx + 1 <= layer_count / 2:
+                        rad_u, rad_l = rad1, rad2
+                    else:
+                        rad_u, rad_l = rad2, rad1
+
                     stop = ""
                     if layer_name == via.start_layer or started:
                         start = layer_name
@@ -874,7 +879,7 @@ class EDBPadstack(object):
                             via._edb_padstackinstance.GetNet(),
                             self._get_edb_value(pos[0]),
                             self._get_edb_value(pos[1]),
-                            self._get_edb_value(rad1),
+                            self._get_edb_value(rad_u),
                         )
                         cloned_circle2 = self._edb.cell.primitive.circle.create(
                             layout,
@@ -882,7 +887,7 @@ class EDBPadstack(object):
                             via._edb_padstackinstance.GetNet(),
                             self._get_edb_value(pos[0]),
                             self._get_edb_value(pos[1]),
-                            self._get_edb_value(rad2),
+                            self._get_edb_value(rad_l),
                         )
                         s3d = self._edb.cell.hierarchy._hierarchy.Structure3D.Create(
                             layout, generate_unique_name("via3d_" + via.aedt_name.replace("via_", ""), n=3)
