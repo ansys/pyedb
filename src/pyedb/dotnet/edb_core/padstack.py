@@ -1859,8 +1859,9 @@ class EdbPadstacks(object):
                     for _x, _y in zip(x_grid.ravel(), y_grid.ravel())
                 }
 
+                all_instances = self.instances
                 for item in padstacks_inbox:
                     if item not in to_keep:
-                        self.instances[item].delete()
+                        all_instances[item].delete()
 
                 return True

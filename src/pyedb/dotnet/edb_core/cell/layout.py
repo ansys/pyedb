@@ -152,7 +152,7 @@ class Layout(ObjBase):
         is_pins : bool, optional
             True for pins, false for vias (default).
         """
-        self._edb_object.ConvertPrimitivesToVias(convert_py_list_to_net_list(primitives), is_pins)
+        self._edb_object.ConvertPrimitivestoVias(convert_py_list_to_net_list(primitives), is_pins)
 
     @property
     def zone_primitives(self):

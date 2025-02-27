@@ -139,7 +139,7 @@ jobs:
     name: Test dotnet (linux)
     runs-on: [ Linux, self-hosted, toolkits ]
     env:
-      ANSYSEM_ROOT242: '/opt/AnsysEM/v242/Linux64'
+      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
@@ -176,7 +176,7 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             xvfb-run pytest -m "legacy" -n auto --dist loadfile -v --cov
 
@@ -287,7 +287,7 @@ jobs:
     needs: [smoke-tests]
     runs-on: [ self-hosted, Linux, pyaedt ]
     env:
-      ANSYSEM_ROOT242: '/opt/AnsysEM/v242/Linux64'
+      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
@@ -321,19 +321,19 @@ jobs:
 
       - name: Install PyAEDT main branch version with its test dependencies
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           pip install --no-cache-dir external/pyaedt[tests]
 
       - name: Install PyEDB
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           python -m pip install .
 
       - name: Install CI dependencies (e.g. vtk-osmesa)
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
@@ -348,7 +348,7 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/tests/system/general/
 
@@ -363,102 +363,25 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
             pytest --durations=50 -v external/pyaedt/tests/system/solvers/test_45_workflows.py
             pytest --durations=50 -v external/pyaedt/tests/system/solvers --deselect=tests/system/solvers/test_45_workflows.py
 
-# =================================================================================================
-# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-# =================================================================================================
+
 
   docs-build:
     name: Build documentation
-    runs-on: [ Windows, self-hosted, pyedb ]
-    timeout-minutes: 480
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      # Revert to previous verison due too setup-python#819
-      - name: "Set up Python"
-        uses: actions/setup-python@v4
+      - name: Build documentation
+        uses: ansys/actions/doc-build@v8
         with:
+          dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-
-      - name: 'Create virtual env'
-        run: |
-          python -m venv .venv
-
-      - name: "Update pip"
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install pip -U
-          python -m pip install wheel setuptools -U
-          python -c "import sys; print(sys.executable)"
-
-      - name: Install pyedb with doc dependencies
-        run: |
-          . .venv\Scripts\Activate.ps1
-          pip install .[doc]
-
-      - name: Verify that pyedb can be imported
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -c "import pyedb"
-
-      - name: Retrieve pyedb version
-        run: |
-          . .venv\Scripts\Activate.ps1
-          echo "PyEDB version is: $(python -c "from pyedb import __version__; print(); print(__version__)")"
-
-      - name: Clone PyAEDT on main branch
-        uses: actions/checkout@v4
-        with:
-          repository: ansys/pyaedt
-          path: "external/pyaedt"
-          ref: "main"
-
-      - name: Install PyAEDT main branch version with its test dependencies
-        run: |
-          . .venv\Scripts\Activate.ps1
-          pip install --no-cache-dir external/pyaedt[tests]
-
-      # Use environment variable to keep the doctree and avoid redundant build for PDF pages
-      - name: Create HTML documentation
-        env:
-          SPHINXBUILD_KEEP_DOCTREEDIR: "1"
-        run: |
-          .venv\Scripts\Activate.ps1
-          . .\doc\make.bat html
-
-      - name: Upload HTML documentation artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: documentation-html
-          path: doc/_build/html
-          retention-days: 7
-
-      # Use environment variable to remove the doctree after the build of PDF pages
-      # Keeping doctree could cause an issue, see https://github.com/ansys/pyaedt/pull/3844/files
-      - name: Create PDF documentation
-        env:
-          SPHINXBUILD_KEEP_DOCTREEDIR: "0"
-        run: |
-          .venv\Scripts\Activate.ps1
-          . .\doc\make.bat pdf
-
-      - name: Upload PDF Documentation artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: documentation-pdf
-          path: doc/_build/latex/pyedb.pdf
-          retention-days: 7
-
-      - name: Add assets to HTML docs
-        run: |
-          zip -r documentation-html.zip .\doc\_build\html
-          mv documentation-html.zip .\doc\_build\html\_static\assets\download\
-          cp doc/_build/latex/pyedb.pdf .\doc\_build\html\_static\assets\download\
+          sphinxopts: '-j auto --color -w build_errors.txt'
+          check-links: false
+          needs-quarto: true
 
   package:
     name: Package library
