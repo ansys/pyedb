@@ -465,8 +465,10 @@ class CfgSource(CfgCircuitElement):
                             if pad.shape.lower() in ["rectangle", "oval"]:
                                 width, height = pad.parameters_values[0:2]
                                 radius = self._pedb.edb_value(radius).ToDouble()
+                            elif pad.shape.lower() == "nogeometry":
+                                pass
                             else:  # pragma no cover
-                                raise AttributeError("Unsupported pad shape {pad.shape.lower().}")
+                                raise AttributeError(f"Unsupported pad shape {pad.shape.lower()}")
 
                             positions = []
                             if contact_type.lower() == "inline":
