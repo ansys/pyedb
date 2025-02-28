@@ -108,10 +108,6 @@ class EdbExamples:
         aedb = self._copy_file_folder_into_local_folder("TEDB/component_no_ref_pins.aedb")
         return Edb(aedb, edbversion=desktop_version)
 
-    def get_four_pin_components(self):
-        aedb = self._copy_file_folder_into_local_folder("TEDB/four_pin_components.aedb")
-        return Edb(aedb, edbversion=desktop_version)
-
 
 @pytest.fixture(scope="module")
 def add_legacy_edb(local_scratch):
