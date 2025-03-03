@@ -26,7 +26,7 @@ import warnings
 
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
-from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
+from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.edb_core.general import (
     PadGeometryTpe,
@@ -160,16 +160,14 @@ class EDBPadProperties(object):
         list
             List of parameters.
         """
-        try:
-            pad_values = self._edb_padstack.GetData().GetPolygonalPadParameters(
-                self.layer_name, self.int_to_pad_type(self.pad_type)
-            )
-            if pad_values[1]:
-                return PolygonDataDotNet(self._edb._app, pad_values[1])
-            else:
-                return
-        except:
-            return
+
+        flag, edb_object, _ , _ ,_ = self._edb_padstack.GetData().GetPolygonalPadParameters(
+            self.layer_name, self.int_to_pad_type(self.pad_type)
+        )
+        if flag:
+            return PolygonData(self._edb._app, edb_object)
+        else:
+            return False
 
     @property
     def parameters(self):
