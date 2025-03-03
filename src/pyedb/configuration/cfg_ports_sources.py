@@ -362,7 +362,6 @@ class CfgCircuitElement(CfgBase):
         pad = pin.definition.pad_by_layer[placement_layer]
         if pad.shape.lower() in ["rectangle", "oval"]:
             width, height = pad.parameters_values[0:2]
-            # radius = self._pedb.edb_value(radius).ToDouble()
         elif pad.shape.lower() == "nogeometry":
             polygon_data = pad.polygon_data
             if polygon_data:
@@ -396,12 +395,7 @@ class CfgCircuitElement(CfgBase):
                 positions.append([x_offset * x, y_offset * y])
 
         pdef_name = f"{self.name}_{pin.pin_number}"
-        self._pedb.padstacks.create(
-            padstackname=pdef_name,
-            has_hole=False,
-            paddiam=radius * 2,
-            antipaddiam=0
-        )
+        self._pedb.padstacks.create(padstackname=pdef_name, has_hole=False, paddiam=radius * 2, antipaddiam=0)
         instances = {}
         for idx, xy in enumerate(positions):
             x = xy[0] + pos_x
@@ -414,7 +408,7 @@ class CfgCircuitElement(CfgBase):
                 via_name=pin_name,
                 fromlayer=placement_layer,
                 tolayer=placement_layer,
-                is_pin=True
+                is_pin=True,
             )
             instances[pin_name] = p_inst
         return instances
@@ -498,7 +492,6 @@ class CfgSource(CfgCircuitElement):
             # Get reference terminal
             terms = [terminal, terminal.ref_terminal] if terminal.ref_terminal else [terminal]
             for t in terms:
-
                 if not t.is_reference_terminal:
                     radius = self.positive_terminal_info.contact_radius
                     contact_type = self.positive_terminal_info.contact_type
