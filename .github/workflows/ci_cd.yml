@@ -145,6 +145,7 @@ jobs:
             .venv\Scripts\Activate.ps1
             pytest --durations=50 -v external/pyaedt/tests/system/solvers/test_45_workflows.py
             pytest --durations=50 -v external/pyaedt/tests/system/solvers --deselect=tests/system/solvers/test_45_workflows.py
+            pytest --durations=50 -v external/pyaedt/tests/system/solvers --deselect=tests/system/solvers/test_45_FilterSolutions.py
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
