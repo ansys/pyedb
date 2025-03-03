@@ -362,7 +362,7 @@ class CfgCircuitElement(CfgBase):
         pad = pin.definition.pad_by_layer[placement_layer]
         if pad.shape.lower() in ["rectangle", "oval"]:
             width, height = pad.parameters_values[0:2]
-            #radius = self._pedb.edb_value(radius).ToDouble()
+            # radius = self._pedb.edb_value(radius).ToDouble()
         elif pad.shape.lower() == "nogeometry":
             polygon_data = pad.polygon_data
             if polygon_data:
@@ -399,7 +399,7 @@ class CfgCircuitElement(CfgBase):
         self._pedb.padstacks.create(
             padstackname=pdef_name,
             has_hole=False,
-            paddiam=radius*2,
+            paddiam=radius * 2,
             antipaddiam=0
         )
         instances = {}
@@ -485,8 +485,8 @@ class CfgSource(CfgCircuitElement):
                 elem = create_xxx_source(j, self.neg_terminal[name])
             else:
                 elem = create_xxx_source(j, self.neg_terminal)
-            if self._elem_num==1:
-                elem.name = name
+            if self._elem_num == 1:
+                elem.name = self.name
                 elem.magnitude = self.magnitude
             else:
                 elem.name = name
