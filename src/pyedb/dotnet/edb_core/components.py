@@ -804,12 +804,14 @@ class Components(object):
             pins = [pins]
         elif isinstance(pins, EDBPadstackInstance):
             pins = [pins.name]
-        if not reference_pins:
+        elif isinstance(pins, self._edb.Cell.Primitive.PadstackInstance):
+            pins = [pins.GetName()]
+        if not reference_pins:  # pragma: no cover
             self._logger.error("No reference pin provided.")
             return False
         if isinstance(reference_pins, str):
             reference_pins = [reference_pins]
-        if isinstance(reference_pins, list):
+        elif isinstance(reference_pins, list):
             _temp = []
             for ref_pin in reference_pins:
                 if isinstance(ref_pin, int):
@@ -824,10 +826,16 @@ class Components(object):
                             _temp.append(p)
                 elif isinstance(ref_pin, EDBPadstackInstance):
                     _temp.append(ref_pin.name)
+                elif isinstance(ref_pin, self._edb.Cell.Primitive.PadstackInstance):
+                    _temp.append(ref_pin.GetName())
             reference_pins = _temp
         elif isinstance(reference_pins, int):
-            if reference_pins in self._padstack.instances:
+            if reference_pins in self._padstack.instances:  # pragma: no cover
                 reference_pins = self._padstack.instances[reference_pins]
+        elif isinstance(reference_pins, EDBPadstackInstance):
+            reference_pins = [reference_pins.name]
+        elif isinstance(reference_pins, self._edb.Cell.Primitive.PadstackInstance):  # pragma: no cover
+            reference_pins = [reference_pins.GetName()]
         if isinstance(refdes, str):
             refdes = self.instances[refdes]
         elif isinstance(refdes, self._pedb._edb.Cell.Hierarchy.Component):
@@ -1053,7 +1061,7 @@ class Components(object):
             for pin in cmp_pins:
                 self._padstack.create_coax_port(padstackinstance=pin, name=port_name)
 
-        elif port_type == SourceType.CircPort:  # pragma no cover
+        elif port_type == SourceType.CircPort:
             ref_pins = [
                 p
                 for p in list(component.LayoutObjs)

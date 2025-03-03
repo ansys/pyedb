@@ -1754,6 +1754,27 @@ class TestClass:
         )
         assert len(edbapp.ports) == 15
 
+    def test_create_circuit_port_on_component(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.components.create_port_on_component(
+            component="U10",
+            net_list=["2V5", "NetR105_2"],
+            port_type=SourceType.CircPort,
+            do_pingroup=False,
+            reference_net=["GND"],
+        )
+        assert len(edbapp.excitations) == 4
+
+    def test_create_circuit_port_on_component_pins(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbcomp = edbapp.components["U10"]
+        assert edbapp.components.create_port_on_pins(
+            refdes="U10",
+            pins=edbcomp.pins["4"],
+            reference_pins=edbcomp.pins["2"],
+        )
+        assert len(edbapp.excitations) == 2
+
     def test_create_ping_group(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.modeler.create_pin_group(
