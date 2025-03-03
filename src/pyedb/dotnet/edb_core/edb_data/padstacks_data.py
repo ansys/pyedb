@@ -34,6 +34,7 @@ from pyedb.dotnet.edb_core.general import (
     snake_to_pascal,
 )
 from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
+from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -167,7 +168,27 @@ class EDBPadProperties(object):
         if flag:
             return PolygonData(self._edb._app, edb_object)
         else:
-            return False
+            raise AttributeError(f"No polygon data.")
+
+    @property
+    def _polygon_data_dotnet(self):
+        """Parameters.
+
+        Returns
+        -------
+        list
+            List of parameters.
+        """
+        try:
+            pad_values = self._edb_padstack.GetData().GetPolygonalPadParameters(
+                self.layer_name, self.int_to_pad_type(self.pad_type)
+            )
+            if pad_values[1]:
+                return PolygonDataDotNet(self._edb._app, pad_values[1])
+            else:
+                return
+        except:
+            return
 
     @property
     def parameters(self):
@@ -1936,7 +1957,7 @@ class EDBPadstackInstance(Primitive):
 
         pad_shape = padstack_pad.geometry_type
         params = padstack_pad.parameters_values
-        polygon_data = padstack_pad.polygon_data
+        polygon_data = padstack_pad._polygon_data_dotnet
 
         def _rotate(p):
             x = p[0] * math.cos(rotation) - p[1] * math.sin(rotation)
@@ -2053,8 +2074,8 @@ class EDBPadstackInstance(Primitive):
             # Polygon
             points = []
             i = 0
-            while i < polygon_data.edb_api.Count:
-                point = polygon_data.edb_api.GetPoint(i)
+            while i < polygon_data._edb_object.Count:
+                point = polygon_data._edb_object.GetPoint(i)
                 i += 1
                 if point.IsArc():
                     continue
