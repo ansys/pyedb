@@ -20,19 +20,20 @@ env:
   MEILISEARCH_PUBLIC_API_KEY: ${{ secrets.MEILISEARCH_PUBLIC_API_KEY }}
   ON_CI: True
 
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
 
-  check_title:
+  pr-title:
     if: github.event_name == 'pull_request'
     name: Check the title of the pull request
     runs-on: ubuntu-latest
     steps:
-      - name: Check commit name
-        uses: ansys/actions/commit-style@v7
+      - name: Check the title of the pull request
+        uses: ansys/actions/check-pr-title@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           use-upper-case: true
@@ -42,11 +43,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check documentation style
-        uses: ansys/actions/doc-style@v7
+        uses: ansys/actions/doc-style@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          vale-config: "doc/.vale.ini"
-          vale-version: "2.29.6"
 
   smoke-tests:
     name: Build and Smoke tests (${{ matrix.os }} | Python ${{ matrix.python-version }})
@@ -74,8 +73,8 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  legacy-tests:
-    name: Test dotnet
+  legacy-tests-windows:
+    name: Test dotnet (windows)
     runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: "Install Git and clone project"
@@ -137,8 +136,78 @@ jobs:
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  test-pyaedt-main:
-    name: Testing PyAEDT main branch
+  legacy-tests-linux:
+    name: Test dotnet (linux)
+    runs-on: [ Linux, self-hosted, toolkits ]
+    env:
+      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANS_NODEPCHECK: '1'
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: "Install os packages"
+        run: |
+          sudo apt update
+          sudo apt install libgl1-mesa-glx xvfb -y
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+
+      - name: "Update pip"
+        run: |
+          . .venv/bin/activate
+          python -m pip install -U pip
+
+      - name: "Install Python library and tests dependencies"
+        run: |
+          . .venv/bin/activate
+          python -m pip install .[tests]
+
+      - name: "Executing legacy tests"
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            . .venv/bin/activate
+            xvfb-run pytest -m "legacy" -n auto --dist loadfile -v --cov
+
+      - name: "Create coverage files"
+        run: |
+          . .venv/bin/activate
+          python -m coverage html -d .cov\legacy-html
+          python -m coverage xml -o .cov\legacy.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          path: .cov\legacy-html
+          name: html-legacy-linux-coverage
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/legacy.xml
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  test-pyaedt-main-windows:
+    name: Testing PyAEDT main branch (Windows)
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [smoke-tests]
     runs-on: [ self-hosted, Windows, pyaedt ]
@@ -146,9 +215,8 @@ jobs:
       - name: Install Git and checkout project
         uses: actions/checkout@v4
 
-      # Revert to previous verison due too setup-python#819
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -184,7 +252,7 @@ jobs:
           .venv\Scripts\Activate.ps1
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
-          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa==9.2.20230527.dev0
+          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa
 
       - name: Run PyAEDT tests
         uses: nick-fields/retry@v3
@@ -196,7 +264,7 @@ jobs:
           timeout_minutes: 40
           command: |
             .venv\Scripts\Activate.ps1
-            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/_unittest
+            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/tests/system/general/
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@v3
@@ -208,50 +276,42 @@ jobs:
           timeout_minutes: 40
           command: |
             .venv\Scripts\Activate.ps1
-            pytest --durations=50 -v external/pyaedt/_unittest_solvers
+            pytest --durations=50 -v external/pyaedt/tests/system/solvers --deselect=external/pyaedt/tests/system/solvers/test_45_FilterSolutions
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # =================================================================================================
 
-  docs-build:
-    name: Build documentation
-    runs-on: [ Windows, self-hosted, pyedb ]
-    timeout-minutes: 480
+  test-pyaedt-main-linux:
+    name: Testing PyAEDT main branch (Linux)
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    needs: [smoke-tests]
+    runs-on: [ self-hosted, Linux, pyaedt ]
+    env:
+      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
+      ANS_NODEPCHECK: '1'
     steps:
-      - uses: actions/checkout@v4
+      - name: Install Git and checkout project
+        uses: actions/checkout@v4
 
-      # Revert to previous verison due too setup-python#819
-      - name: "Set up Python"
-        uses: actions/setup-python@v4
+      - name: Install OS packages
+        run: |
+          sudo apt update
+          sudo apt-get install tk -y
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: 'Create virtual env'
+      - name: Create Python venv
         run: |
           python -m venv .venv
 
-      - name: "Update pip"
+      - name: Update pip
         run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install pip -U
-          python -m pip install wheel setuptools -U
-          python -c "import sys; print(sys.executable)"
-
-      - name: Install pyedb with doc dependencies
-        run: |
-          . .venv\Scripts\Activate.ps1
-          pip install .[doc]
-
-      - name: Verify that pyedb can be imported
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -c "import pyedb"
-
-      - name: Retrieve pyedb version
-        run: |
-          . .venv\Scripts\Activate.ps1
-          echo "PyEDB version is: $(python -c "from pyedb import __version__; print(); print(__version__)")"
+          . .venv/bin/activate
+          python -m pip install -U pip
 
       - name: Clone PyAEDT on main branch
         uses: actions/checkout@v4
@@ -262,49 +322,71 @@ jobs:
 
       - name: Install PyAEDT main branch version with its test dependencies
         run: |
-          . .venv\Scripts\Activate.ps1
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          . .venv/bin/activate
           pip install --no-cache-dir external/pyaedt[tests]
 
-      # Use environment variable to keep the doctree and avoid redundant build for PDF pages
-      - name: Create HTML documentation
+      - name: Install PyEDB
+        run: |
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          . .venv/bin/activate
+          python -m pip install .
+
+      - name: Install CI dependencies (e.g. vtk-osmesa)
+        run: |
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          . .venv/bin/activate
+          # Uninstall conflicting dependencies
+          pip uninstall --yes vtk
+          pip install --extra-index-url https://wheels.vtk.org vtk-osmesa
+
+      - name: Run PyAEDT tests
+        uses: nick-fields/retry@v3
         env:
-          SPHINXBUILD_KEEP_DOCTREEDIR: "1"
-        run: |
-          .venv\Scripts\Activate.ps1
-          . .\doc\make.bat html
-
-      - name: Upload HTML documentation artifact
-        uses: actions/upload-artifact@v4
+          PYTHONMALLOC: malloc
         with:
-          name: documentation-html
-          path: doc/_build/html
-          retention-days: 7
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 50
+          command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            . .venv/bin/activate
+            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/tests/system/general/
 
-      # Use environment variable to remove the doctree after the build of PDF pages
-      # Keeping doctree could cause an issue, see https://github.com/ansys/pyaedt/pull/3844/files
-      - name: Create PDF documentation
+      # FIXME: The need to run test_45_workflows first should be removed
+      # This is due to a strange behavior when using numpy2 and AEDT, see #987 and #989 for more information
+      - name: Run PyAEDT solvers tests
+        uses: nick-fields/retry@v3
         env:
-          SPHINXBUILD_KEEP_DOCTREEDIR: "0"
-        run: |
-          .venv\Scripts\Activate.ps1
-          . .\doc\make.bat pdf
-
-      - name: Upload PDF Documentation artifact
-        uses: actions/upload-artifact@v4
+          PYTHONMALLOC: malloc
         with:
-          name: documentation-pdf
-          path: doc/_build/latex/pyedb.pdf
-          retention-days: 7
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 50
+          command: |
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            . .venv/bin/activate
+            pytest --durations=50 -v external/pyaedt/tests/system/solvers/test_45_workflows.py
+            pytest --durations=50 -v external/pyaedt/tests/system/solvers --deselect=tests/system/solvers/test_45_workflows.py
 
-      - name: Add assets to HTML docs
-        run: |
-          zip -r documentation-html.zip .\doc\_build\html
-          mv documentation-html.zip .\doc\_build\html\_static\assets\download\
-          cp doc/_build/latex/pyedb.pdf .\doc\_build\html\_static\assets\download\
+
+
+  docs-build:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build documentation
+        uses: ansys/actions/doc-build@v8
+        with:
+          dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          sphinxopts: '-j auto --color -w build_errors.txt'
+          check-links: false
+          needs-quarto: true
 
   package:
     name: Package library
-    needs: [legacy-tests, docs-build]
+    needs: [legacy-tests-windows, legacy-tests-linux, docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
@@ -316,7 +398,7 @@ jobs:
   release:
     name: Release project
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
-    needs: [package]
+    needs: [package, test-pyaedt-main-windows, test-pyaedt-main-linux]
     runs-on: ubuntu-latest
     # Specifying a GitHub environment is optional, but strongly encouraged
     environment: release

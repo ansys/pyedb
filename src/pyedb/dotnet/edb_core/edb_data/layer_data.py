@@ -58,6 +58,10 @@ class LayerEdbClass(object):
         for k, v in kwargs.items():
             if k in dir(self):
                 self.__setattr__(k, v)
+            elif k == "roughness":
+                self.properties = {"roughness": v}
+            elif k == "etching":
+                self.properties = {"etching": v}
             else:
                 self._pedb.logger.error(f"{k} is not a valid layer attribute")
 
@@ -178,7 +182,7 @@ class LayerEdbClass(object):
             RGB.
         """
         layer_color = self._edb_layer.GetColor()
-        return layer_color.Item1, layer_color.Item2, layer_color.Item3
+        return [layer_color.Item1, layer_color.Item2, layer_color.Item3]
 
     @color.setter
     def color(self, rgb):
@@ -237,6 +241,26 @@ class LayerEdbClass(object):
         layer_clone.SetLayerType(self._layer_type_mapping[value])
         self._type = value
         self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
+
+    @property
+    def properties(self):
+        data = {}
+        data["name"] = self.name
+        data["type"] = self.type
+        data["color"] = self.color
+        return data
+
+    @properties.setter
+    def properties(self, params):
+        name = params.get("name", "")
+        if name:
+            self.name = name
+        type = params.get("type", "")
+        if type:
+            self.type = type
+        color = params.get("color", "")
+        if color:
+            self.color = color
 
 
 class StackupLayerEdbClass(LayerEdbClass):
@@ -481,7 +505,16 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @top_hallhuray_nodule_radius.setter
     def top_hallhuray_nodule_radius(self, value):
-        self._top_hallhuray_nodule_radius = value
+        top_roughness_model = self.get_roughness_model("top")
+        if top_roughness_model:
+            if str(top_roughness_model).split(".")[-1] == "HurrayRoughnessModel":
+                layer_clone = self._edb_layer
+                layer_clone.SetTopRoughnessEnabled(True)
+                self._top_hallhuray_nodule_radius = value
+                top_roughness_model.NoduleRadius = self._pedb.edb_value(value)
+                region = top_roughness_model.Region.Top
+                layer_clone.SetRoughnessModel(region, top_roughness_model)
+                self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
 
     @property
     def top_hallhuray_surface_ratio(self):
@@ -493,7 +526,16 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @top_hallhuray_surface_ratio.setter
     def top_hallhuray_surface_ratio(self, value):
-        self._top_hallhuray_surface_ratio = value
+        top_roughness_model = self.get_roughness_model("top")
+        if top_roughness_model:
+            if str(top_roughness_model).split(".")[-1] == "HurrayRoughnessModel":
+                layer_clone = self._edb_layer
+                layer_clone.SetTopRoughnessEnabled(True)
+                self._top_hallhuray_surface_ratio = value
+                top_roughness_model.SurfaceRatio = self._pedb.edb_value(value)
+                region = top_roughness_model.Region.Top
+                layer_clone.SetRoughnessModel(region, top_roughness_model)
+                self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
 
     @property
     def bottom_hallhuray_nodule_radius(self):
@@ -505,7 +547,16 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @bottom_hallhuray_nodule_radius.setter
     def bottom_hallhuray_nodule_radius(self, value):
-        self._bottom_hallhuray_nodule_radius = value
+        bottom_roughness_model = self.get_roughness_model("bottom")
+        if bottom_roughness_model:
+            if str(bottom_roughness_model).split(".")[-1] == "HurrayRoughnessModel":
+                layer_clone = self._edb_layer
+                layer_clone.SetBottomRoughnessEnabled(True)
+                self._bottom_hallhuray_nodule_radius = value
+                bottom_roughness_model.NoduleRadius = self._pedb.edb_value(value)
+                region = bottom_roughness_model.Region.Bottom
+                layer_clone.SetRoughnessModel(region, bottom_roughness_model)
+                self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
 
     @property
     def bottom_hallhuray_surface_ratio(self):
@@ -517,7 +568,16 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @bottom_hallhuray_surface_ratio.setter
     def bottom_hallhuray_surface_ratio(self, value):
-        self._bottom_hallhuray_surface_ratio = value
+        bottom_roughness_model = self.get_roughness_model("bottom")
+        if bottom_roughness_model:
+            if str(bottom_roughness_model).split(".")[-1] == "HurrayRoughnessModel":
+                layer_clone = self._edb_layer
+                layer_clone.SetBottomRoughnessEnabled(True)
+                self._bottom_hallhuray_surface_ratio = value
+                bottom_roughness_model.SurfaceRatio = self._pedb.edb_value(value)
+                region = bottom_roughness_model.Region.Bottom
+                layer_clone.SetRoughnessModel(region, bottom_roughness_model)
+                self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
 
     @property
     def side_hallhuray_nodule_radius(self):
@@ -529,7 +589,16 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @side_hallhuray_nodule_radius.setter
     def side_hallhuray_nodule_radius(self, value):
-        self._side_hallhuray_nodule_radius = value
+        side_roughness_model = self.get_roughness_model("side")
+        if side_roughness_model:
+            if str(side_roughness_model).split(".")[-1] == "HurrayRoughnessModel":
+                layer_clone = self._edb_layer
+                layer_clone.SetRoughnessEnabled(True)
+                self._side_hallhuray_nodule_radius = value
+                side_roughness_model.NoduleRadius = self._pedb.edb_value(value)
+                region = side_roughness_model.Region.Side
+                layer_clone.SetRoughnessModel(region, side_roughness_model)
+                self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
 
     @property
     def side_hallhuray_surface_ratio(self):
@@ -541,7 +610,16 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @side_hallhuray_surface_ratio.setter
     def side_hallhuray_surface_ratio(self, value):
-        self._side_hallhuray_surface_ratio = value
+        side_roughness_model = self.get_roughness_model("side")
+        if side_roughness_model:
+            if str(side_roughness_model).split(".")[-1] == "HurrayRoughnessModel":
+                layer_clone = self._edb_layer
+                layer_clone.SetRoughnessEnabled(True)
+                self._side_hallhuray_surface_ratio = value
+                side_roughness_model.SurfaceRatio = self._pedb.edb_value(value)
+                region = side_roughness_model.Region.Side
+                layer_clone.SetRoughnessModel(region, side_roughness_model)
+                self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
 
     def get_roughness_model(self, surface="top"):
         """Get roughness model of the layer.
@@ -705,3 +783,93 @@ class StackupLayerEdbClass(LayerEdbClass):
                     layer["side_hallhuray_surface_ratio"],
                     apply_on_surface="side",
                 )
+
+    @property
+    def properties(self):
+        data = {}
+        data["name"] = self.name
+        data["type"] = self.type
+        data["material"] = self.material
+        data["fill_material"] = self.fill_material
+        data["thickness"] = self._edb_object.GetThicknessValue().ToString()
+        data["color"] = self.color
+
+        data["etching"] = {
+            "factor": self._edb_layer.GetEtchFactor().ToString(),
+            "enabled": self._edb_layer.IsEtchFactorEnabled(),
+        }
+        if self._pedb.edbversion >= "2024.2":
+            etch_power_ground_nets = int(self._edb_layer.GetEtchNetClass())
+            etch_power_ground_nets = False if etch_power_ground_nets else True
+            data["etching"]["etch_power_ground_nets"] = etch_power_ground_nets
+
+        roughness = {}
+        for region in ["top", "bottom", "side"]:
+            temp = {}
+            r_model = self._edb_object.GetRoughnessModel(
+                getattr(self._pedb._edb.Cell.RoughnessModel.Region, region.capitalize())
+            )
+            if r_model.ToString().split(".")[-1] == "HurrayRoughnessModel":
+                temp["model"] = "huray"
+                temp["nodule_radius"] = r_model.NoduleRadius.ToString()
+                temp["surface_ratio"] = r_model.SurfaceRatio.ToString()
+            else:
+                temp["model"] = "groisse"
+                temp["roughness"] = r_model.Roughness.ToString()
+            roughness[region] = temp
+        roughness["enabled"] = self._edb_object.IsRoughnessEnabled()
+        data["roughness"] = roughness
+        return data
+
+    @properties.setter
+    def properties(self, params):
+        name = params.get("name")
+        if name:
+            self.name = name
+        type = params.get("type")
+        if type:
+            self.type = type
+        material = params.get("material")
+        if material:
+            self.material = material
+        fill_material = params.get("fill_material")
+        if fill_material:
+            self.fill_material = fill_material
+        thickness = params.get("thickness")
+        if thickness:
+            self.thickness = self._pedb.edb_value(thickness)
+        color = params.get("color")
+        if color:
+            self.color = color
+        roughness = params.get("roughness")
+        if roughness:
+            layer_clone = self._edb_layer
+            layer_clone.SetRoughnessEnabled(roughness["enabled"])
+            for region in ["top", "bottom", "side"]:
+                r_data = roughness.get(region)
+                if r_data:
+                    if r_data["model"] == "huray":
+                        r_model = self._pedb._edb.Cell.HurrayRoughnessModel(
+                            self._pedb.edb_value(r_data["nodule_radius"]), self._pedb.edb_value(r_data["surface_ratio"])
+                        )
+                    else:
+                        r_model = self._pedb._edb.Cell.GroisseRoughnessModel(self._pedb.edb_value(r_data["roughness"]))
+                else:
+                    r_model = self._pedb._edb.Cell.HurrayRoughnessModel(
+                        self._pedb.edb_value("0"), self._pedb.edb_value("0")
+                    )
+                layer_clone.SetRoughnessModel(
+                    getattr(self._pedb._edb.Cell.RoughnessModel.Region, region.capitalize()), r_model
+                )
+            self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
+        etching = params.get("etching")
+        if etching:
+            layer_clone = self._edb_layer
+            layer_clone.SetEtchFactorEnabled(etching["enabled"])
+            layer_clone.SetEtchFactor(self._pedb.stackup._edb_value(float(etching["factor"])))
+            if self._pedb.edbversion >= "2024.2":
+                if etching["etch_power_ground_nets"]:
+                    layer_clone.SetEtchNetClass(self._pedb._edb.Cell.EtchNetClass.NoEtchPowerGroundNets)
+                else:
+                    layer_clone.SetEtchNetClass(self._pedb._edb.Cell.EtchNetClass.EtchAllNets)
+            self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")

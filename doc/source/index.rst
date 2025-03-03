@@ -4,6 +4,9 @@ PyEDB documentation |version|
 PyEDB is a Python library that interacts directly with the `PyEDB-Core <https://github.com/ansys/pyedb-core>`_
 API to make scripting simpler.
 
+.. note:: Future build breaking changes in Linux
+   If you want to know more about the build breaking change that is going to happen in a future version, see the :ref:`build_breaking_change`.
+
 .. grid:: 2
 
     .. grid-item-card:: Getting started :fa:`person-running`
@@ -31,8 +34,8 @@ API to make scripting simpler.
 
     .. grid-item-card:: Examples :fa:`scroll`
         :padding: 2 2 2 2
-        :link: examples/index
-        :link-type: doc
+        :link: https://examples.aedt.docs.pyansys.com/version/dev/examples/high_frequency/layout/index.html
+        :link-type: url
 
         Explore examples that show how to use PyEDB to
         perform many different types of simulations.
@@ -51,7 +54,6 @@ API to make scripting simpler.
    getting_started/index
    user_guide/index
    api/index
-   examples/index
    contributing
 
 Indices and tables

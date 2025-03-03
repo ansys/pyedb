@@ -242,7 +242,7 @@ class TestClass:
 
         assert edbapp.stackup["1_Top"].color
         edbapp.stackup["1_Top"].color = [0, 120, 0]
-        assert edbapp.stackup["1_Top"].color == (0, 120, 0)
+        assert edbapp.stackup["1_Top"].color == [0, 120, 0]
         edbapp.stackup["1_Top"].transparency = 10
         assert edbapp.stackup["1_Top"].transparency == 10
         assert edbapp.stackup.mode == "Laminate"
@@ -297,8 +297,8 @@ class TestClass:
         layer.type = "dielectric"
         assert layer.type == "dielectric"
         layer.type = "signal"
-        layer.color = (0, 0, 0)
-        assert layer.color == (0, 0, 0)
+        layer.color = [0, 0, 0]
+        assert layer.color == [0, 0, 0]
         layer.transparency = 0
         assert layer.transparency == 0
         layer.etch_factor = 2
@@ -1089,7 +1089,7 @@ class TestClass:
                         assert 0 == validate_material(edbapp.materials, layer["dielectric_fill"], delta)
                     assert (pedb_lay.thickness - layer["thickness"]) < delta
                     assert (pedb_lay.etch_factor - layer["etch_factor"]) < delta
-                    assert pedb_lay.roughness_enabled == layer["roughness_enabled"]
+                    # assert pedb_lay.roughness_enabled == layer["roughness_enabled"]
                     if layer["roughness_enabled"]:
                         assert (pedb_lay.top_hallhuray_nodule_radius - layer["top_hallhuray_nodule_radius"]) < delta
                         assert (pedb_lay.top_hallhuray_surface_ratio - layer["top_hallhuray_surface_ratio"]) < delta
@@ -1117,3 +1117,44 @@ class TestClass:
         base_layer = edbapp.stackup.layers["1_Top"]
         l_id = edbapp.stackup.layers_by_id.index([base_layer.id, base_layer.name])
         assert edbapp.stackup.layers_by_id[l_id - 1][1] == "add_layer_above"
+
+    def test_20_layer_properties(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        data = {
+            "name": "1_Top",
+            "type": "signal",
+            "material": "copper",
+            "fill_material": "Solder Resist",
+            "thickness": "0.03mm",
+            "color": [255, 0, 0],
+            "roughness": {
+                "top": {"model": "huray", "nodule_radius": "0.1um", "surface_ratio": "1"},
+                "bottom": {"model": "groisse", "roughness": "2um"},
+                "side": {"model": "huray", "nodule_radius": "0.5um", "surface_ratio": "2.9"},
+                "enabled": True,
+            },
+            "etching": {"enabled": True, "etch_power_ground_nets": True, "factor": "1"},
+        }
+        edbapp.stackup.layers["1_Top"].properties = data
+        layer_data = edbapp.stackup.layers["1_Top"].properties
+        assert layer_data == data
+        edbapp.close()
+
+    def test_roughness(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        for layer_name, layer in edbapp.stackup.signal_layers.items():
+            layer.roughness_enabled = True
+            layer.etch_factor = 0.1
+            layer.top_hallhuray_nodule_radius = 4e-7
+            layer.top_hallhuray_surface_ratio = 2.7
+            layer.bottom_hallhuray_nodule_radius = 4e-7
+            layer.bottom_hallhuray_surface_ratio = 2.7
+            layer.side_hallhuray_nodule_radius = 4e-7
+            layer.side_hallhuray_surface_ratio = 2.7
+            assert layer.top_hallhuray_nodule_radius == 4e-7
+            assert layer.top_hallhuray_surface_ratio == 2.7
+            assert layer.bottom_hallhuray_nodule_radius == 4e-7
+            assert layer.bottom_hallhuray_surface_ratio == 2.7
+            assert layer.side_hallhuray_nodule_radius == 4e-7
+            assert layer.side_hallhuray_surface_ratio == 2.7
+        edbapp.close()

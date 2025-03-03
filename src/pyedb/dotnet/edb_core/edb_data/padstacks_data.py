@@ -22,14 +22,18 @@
 
 from collections import OrderedDict
 import math
-import re
 import warnings
 
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
 from pyedb.dotnet.edb_core.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.edb_core.general import PadGeometryTpe, convert_py_list_to_net_list
+from pyedb.dotnet.edb_core.general import (
+    PadGeometryTpe,
+    convert_py_list_to_net_list,
+    pascal_to_snake,
+    snake_to_pascal,
+)
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -407,18 +411,50 @@ class EDBPadstack(object):
     """
 
     def __init__(self, edb_padstack, ppadstack):
+        self._edb_object = edb_padstack
         self.edb_padstack = edb_padstack
         self._ppadstack = ppadstack
-        self.pad_by_layer = {}
-        self.antipad_by_layer = {}
-        self.thermalpad_by_layer = {}
         self._bounding_box = []
         self._hole_params = None
+
+    @property
+    def pad_by_layer(self):
+        """Regular pad property."""
+        temp = {}
         for layer in self.via_layers:
-            self.pad_by_layer[layer] = EDBPadProperties(edb_padstack, layer, 0, self)
-            self.antipad_by_layer[layer] = EDBPadProperties(edb_padstack, layer, 1, self)
-            self.thermalpad_by_layer[layer] = EDBPadProperties(edb_padstack, layer, 2, self)
-        pass
+            temp[layer] = EDBPadProperties(self._edb_object, layer, 0, self)
+        return temp
+
+    @property
+    def antipad_by_layer(self):
+        """Anti pad property."""
+        temp = {}
+        for layer in self.via_layers:
+            temp[layer] = EDBPadProperties(self._edb_object, layer, 1, self)
+        return temp
+
+    @property
+    def thermalpad_by_layer(self):
+        """Thermal pad property."""
+        temp = {}
+        for layer in self.via_layers:
+            temp[layer] = EDBPadProperties(self._edb_object, layer, 2, self)
+        return temp
+
+    @property
+    def _padstack_def_data(self):
+        """Get padstack definition data.
+
+        Returns
+        -------
+
+        """
+        pstack_data = self._edb_object.GetData()
+        return self._edb.definition.PadstackDefData(pstack_data)
+
+    @_padstack_def_data.setter
+    def _padstack_def_data(self, value):
+        self._edb_object.SetData(value)
 
     @property
     def instances(self):
@@ -455,7 +491,7 @@ class EDBPadstack(object):
         list
             List of layers.
         """
-        return self.edb_padstack.GetData().GetLayerNames()
+        return self._padstack_def_data.GetLayerNames()
 
     @property
     def via_start_layer(self):
@@ -488,7 +524,7 @@ class EDBPadstack(object):
         return self._hole_params
 
     @property
-    def hole_parameters(self):
+    def _hole_parameters(self):
         """Hole parameters.
 
         Returns
@@ -496,8 +532,7 @@ class EDBPadstack(object):
         list
             List of the hole parameters.
         """
-        self._hole_parameters = self.hole_params[2]
-        return self._hole_parameters
+        return self.hole_params[2]
 
     @property
     def hole_diameter(self):
@@ -540,7 +575,7 @@ class EDBPadstack(object):
         if not hole_type:
             hole_type = self.hole_type
         if not params:
-            params = self.hole_parameters
+            params = self._hole_parameters
         if isinstance(params, list):
             params = convert_py_list_to_net_list(params)
         if not offsetx:
@@ -709,14 +744,13 @@ class EDBPadstack(object):
         str
             Material of the hole.
         """
-        return self.edb_padstack.GetData().GetMaterial()
+        return self._padstack_def_data.GetMaterial()
 
     @material.setter
     def material(self, materialname):
-        originalPadstackDefinitionData = self.edb_padstack.GetData()
-        newPadstackDefinitionData = self._edb.definition.PadstackDefData(originalPadstackDefinitionData)
-        newPadstackDefinitionData.SetMaterial(materialname)
-        self.edb_padstack.SetData(newPadstackDefinitionData)
+        pdef_data = self._padstack_def_data
+        pdef_data.SetMaterial(materialname)
+        self._padstack_def_data = pdef_data
 
     @property
     def padstack_instances(self):
@@ -736,38 +770,17 @@ class EDBPadstack(object):
         -------
         str
             Possible returned values are ``"through"``, ``"begin_on_upper_pad"``,
-            ``"end_on_lower_pad"``, ``"upper_pad_to_lower_pad"``, and ``"undefined"``.
+            ``"end_on_lower_pad"``, ``"upper_pad_to_lower_pad"``, and ``"unknown_range"``.
         """
-        cloned_padstackdef_data = self._edb.definition.PadstackDefData(self.edb_padstack.GetData())
-        hole_ange_type = int(cloned_padstackdef_data.GetHoleRange())
-        if hole_ange_type == 0:  # pragma no cover
-            return "through"
-        elif hole_ange_type == 1:  # pragma no cover
-            return "begin_on_upper_pad"
-        elif hole_ange_type == 2:  # pragma no cover
-            return "end_on_lower_pad"
-        elif hole_ange_type == 3:  # pragma no cover
-            return "upper_pad_to_lower_pad"
-        else:  # pragma no cover
-            return "undefined"
+        return pascal_to_snake(self._padstack_def_data.GetHoleRange().ToString())
 
     @hole_range.setter
     def hole_range(self, value):
-        if isinstance(value, str):  # pragma no cover
-            cloned_padstackdef_data = self._edb.definition.PadstackDefData(self.edb_padstack.GetData())
-            if value == "through":  # pragma no cover
-                cloned_padstackdef_data.SetHoleRange(self._edb.definition.PadstackHoleRange.Through)
-            elif value == "begin_on_upper_pad":  # pragma no cover
-                cloned_padstackdef_data.SetHoleRange(self._edb.definition.PadstackHoleRange.BeginOnUpperPad)
-            elif value == "end_on_lower_pad":  # pragma no cover
-                cloned_padstackdef_data.SetHoleRange(self._edb.definition.PadstackHoleRange.EndOnLowerPad)
-            elif value == "upper_pad_to_lower_pad":  # pragma no cover
-                cloned_padstackdef_data.SetHoleRange(self._edb.definition.PadstackHoleRange.UpperPadToLowerPad)
-            else:  # pragma no cover
-                return
-            self.edb_padstack.SetData(cloned_padstackdef_data)
+        pdef_data = self._padstack_def_data
+        pdef_data.SetHoleRange(getattr(self._edb.definition.PadstackHoleRange, snake_to_pascal(value)))
+        self._padstack_def_data = pdef_data
 
-    def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True):
+    def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=75, delete_padstack_def=True):
         """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
 
         Parameters
@@ -799,22 +812,9 @@ class EDBPadstack(object):
         layer_names = [i for i in list(layers.keys())]
         if convert_only_signal_vias:
             signal_nets = [i for i in list(self._ppadstack._pedb.nets.signal_nets.keys())]
-        topl, topz, bottoml, bottomz = self._ppadstack._pedb.stackup.limits(True)
-        if self.via_start_layer in layers:
-            start_elevation = layers[self.via_start_layer].lower_elevation
-        else:
-            start_elevation = layers[self.instances[0].start_layer].lower_elevation
-        if self.via_stop_layer in layers:
-            stop_elevation = layers[self.via_stop_layer].upper_elevation
-        else:
-            stop_elevation = layers[self.instances[0].stop_layer].upper_elevation
 
-        diel_thick = abs(start_elevation - stop_elevation)
-        rad1 = self.hole_properties[0] / 2 - math.tan(hole_wall_angle * diel_thick * math.pi / 180)
-        rad2 = self.hole_properties[0] / 2
+        layer_count = len(self._ppadstack._pedb.stackup.signal_layers)
 
-        if start_elevation < (topz + bottomz) / 2:
-            rad1, rad2 = rad2, rad1
         i = 0
         for via in list(self.padstack_instances.values()):
             if convert_only_signal_vias and via.net_name in signal_nets or not convert_only_signal_vias:
@@ -850,18 +850,33 @@ class EDBPadstack(object):
                         self._get_edb_value(pos[1]),
                         self._get_edb_value(self.pad_by_layer[self.via_stop_layer].parameters_values[0] / 2),
                     )
-                for layer_name in layer_names:
+                for layer_idx, layer_name in enumerate(layer_names):
                     stop = ""
                     if layer_name == via.start_layer or started:
                         start = layer_name
                         stop = layer_names[layer_names.index(layer_name) + 1]
+
+                        start_elevation = layers[start].lower_elevation
+                        stop_elevation = layers[stop].upper_elevation
+                        diel_thick = abs(start_elevation - stop_elevation)
+
+                        rad_large = self.hole_diameter / 2
+                        rad_small = rad_large - diel_thick * 1 / math.tan(math.radians(hole_wall_angle))
+
+                        if layer_idx + 1 < layer_count / 2:  # upper half of stack
+                            rad_u = rad_large
+                            rad_l = rad_small
+                        else:
+                            rad_u = rad_small
+                            rad_l = rad_large
+
                         cloned_circle = self._edb.cell.primitive.circle.create(
                             layout,
                             start,
                             via._edb_padstackinstance.GetNet(),
                             self._get_edb_value(pos[0]),
                             self._get_edb_value(pos[1]),
-                            self._get_edb_value(rad1),
+                            self._get_edb_value(rad_u),
                         )
                         cloned_circle2 = self._edb.cell.primitive.circle.create(
                             layout,
@@ -869,7 +884,7 @@ class EDBPadstack(object):
                             via._edb_padstackinstance.GetNet(),
                             self._get_edb_value(pos[0]),
                             self._get_edb_value(pos[1]),
-                            self._get_edb_value(rad2),
+                            self._get_edb_value(rad_l),
                         )
                         s3d = self._edb.cell.hierarchy._hierarchy.Structure3D.Create(
                             layout, generate_unique_name("via3d_" + via.aedt_name.replace("via_", ""), n=3)
@@ -984,7 +999,7 @@ class EDBPadstack(object):
                     )
                 new_padstack_definition_data.SetHoleParameters(
                     self.hole_type,
-                    self.hole_parameters,
+                    self._hole_parameters,
                     self._get_edb_value(self.hole_offset_x),
                     self._get_edb_value(self.hole_offset_y),
                     self._get_edb_value(self.hole_rotation),
@@ -1234,68 +1249,45 @@ class EDBPadstackInstance(Primitive):
 
         return self._pedb.create_port(terminal, ref_terminal, is_circuit_port)
 
-    @property
-    def _em_properties(self):
-        """Get EM properties."""
-        default = (
-            r"$begin 'EM properties'\n"
-            r"\tType('Mesh')\n"
-            r"\tDataId='EM properties1'\n"
-            r"\t$begin 'Properties'\n"
-            r"\t\tGeneral=''\n"
-            r"\t\tModeled='true'\n"
-            r"\t\tUnion='true'\n"
-            r"\t\t'Use Precedence'='false'\n"
-            r"\t\t'Precedence Value'='1'\n"
-            r"\t\tPlanarEM=''\n"
-            r"\t\tRefined='true'\n"
-            r"\t\tRefineFactor='1'\n"
-            r"\t\tNoEdgeMesh='false'\n"
-            r"\t\tHFSS=''\n"
-            r"\t\t'Solve Inside'='false'\n"
-            r"\t\tSIwave=''\n"
-            r"\t\t'DCIR Equipotential Region'='false'\n"
-            r"\t$end 'Properties'\n"
-            r"$end 'EM properties'\n"
-        )
+    def _set_equipotential(self, contact_radius=None):
+        """Workaround solution. Remove when EDBAPI bug is fixed for dcir_equipotential_region."""
+        pad = self.definition.pad_by_layer[self.start_layer]
 
-        pid = self._pedb.edb_api.ProductId.Designer
-        _, p = self._edb_padstackinstance.GetProductProperty(pid, 18, "")
-        if p:
-            return p
+        pos_x, pos_y = self.position
+
+        if contact_radius is not None:
+            prim = self._pedb.modeler.create_circle(pad.layer_name, pos_x, pos_y, contact_radius, self.net_name)
+            prim.dcir_equipotential_region = True
+            return
+
+        elif pad.shape.lower() == "circle":
+            ra = self._pedb.edb_value(pad.parameters_values[0] / 2)
+            pos = self.position
+            prim = self._pedb.modeler.create_circle(pad.layer_name, pos[0], pos[1], ra, self.net_name)
+        elif pad.shape.lower() == "rectangle":
+            width, height = pad.parameters_values
+            prim = self._pedb.modeler.create_rectangle(
+                pad.layer_name,
+                self.net_name,
+                width=width,
+                height=height,
+                representation_type="CenterWidthHeight",
+                center_point=self.position,
+                rotation=self.component.rotation,
+            )
+        elif pad.shape.lower() == "oval":
+            width, height, _ = pad.parameters_values
+            prim = self._pedb.modeler.create_circle(
+                pad.layer_name, self.position[0], self.position[1], height / 2, self.net_name
+            )
+        elif pad.polygon_data:
+            prim = self._pedb.modeler.create_polygon(
+                pad.polygon_data._edb_object, self.start_layer, net_name=self.net_name
+            )
+            prim.move(self.position)
         else:
-            return default
-
-    @_em_properties.setter
-    def _em_properties(self, em_prop):
-        """Set EM properties"""
-        pid = self._pedb.edb_api.ProductId.Designer
-        self._edb_padstackinstance.SetProductProperty(pid, 18, em_prop)
-
-    @property
-    def dcir_equipotential_region(self):
-        """Check whether dcir equipotential region is enabled.
-
-        Returns
-        -------
-        bool
-        """
-        pattern = r"'DCIR Equipotential Region'='([^']+)'"
-        em_pp = self._em_properties
-        result = re.search(pattern, em_pp).group(1)
-        if result == "true":
-            return True
-        else:
-            return False
-
-    @dcir_equipotential_region.setter
-    def dcir_equipotential_region(self, value):
-        """Set dcir equipotential region."""
-        pp = r"'DCIR Equipotential Region'='true'" if value else r"'DCIR Equipotential Region'='false'"
-        em_pp = self._em_properties
-        pattern = r"'DCIR Equipotential Region'='([^']+)'"
-        new_em_pp = re.sub(pattern, pp, em_pp)
-        self._em_properties = new_em_pp
+            return
+        prim.dcir_equipotential_region = True
 
     @property
     def object_instance(self):
@@ -1377,6 +1369,17 @@ class EDBPadstackInstance(Primitive):
 
     @property
     def padstack_definition(self):
+        """Padstack definition Name.
+
+        Returns
+        -------
+        str
+            Name of the padstack definition.
+        """
+        return self.definition.name
+
+    @property
+    def definition(self):
         """Padstack definition.
 
         Returns
@@ -1384,7 +1387,7 @@ class EDBPadstackInstance(Primitive):
         str
             Name of the padstack definition.
         """
-        self._pdef = self._edb_padstackinstance.GetPadstackDef().GetName()
+        self._pdef = EDBPadstack(self._edb_padstackinstance.GetPadstackDef(), self._pedb.padstacks)
         return self._pdef
 
     @property
@@ -1466,6 +1469,56 @@ class EDBPadstackInstance(Primitive):
         else:
             return
 
+    @property
+    def backdrill_parameters(self):
+        data = {}
+        flag, drill_to_layer, offset, diameter = self._edb_object.GetBackDrillParametersLayerValue(
+            self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer),
+            self._pedb.edb_value(0),
+            self._pedb.edb_value(0.0),
+            True,
+        )
+        if flag:
+            if drill_to_layer.GetName():
+                data["from_bottom"] = {
+                    "drill_to_layer": drill_to_layer.GetName(),
+                    "diameter": diameter.ToString(),
+                    "stub_length": offset.ToString(),
+                }
+        flag, drill_to_layer, offset, diameter = self._edb_object.GetBackDrillParametersLayerValue(
+            self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer),
+            self._pedb.edb_value(0),
+            self._pedb.edb_value(0.0),
+            False,
+        )
+        if flag:
+            if drill_to_layer.GetName():
+                data["from_top"] = {
+                    "drill_to_layer": drill_to_layer.GetName(),
+                    "diameter": diameter.ToString(),
+                    "stub_length": offset.ToString(),
+                }
+        return data
+
+    @backdrill_parameters.setter
+    def backdrill_parameters(self, params):
+        from_bottom = params.get("from_bottom")
+        if from_bottom:
+            self._edb_object.SetBackDrillParameters(
+                self._pedb.stackup.layers[from_bottom.get("drill_to_layer")]._edb_object,
+                self._pedb.edb_value(from_bottom.get("stub_length")),
+                self._pedb.edb_value(from_bottom.get("diameter")),
+                True,
+            )
+        from_top = params.get("from_top")
+        if from_top:
+            self._edb_object.SetBackDrillParameters(
+                self._pedb.stackup.layers[from_top.get("drill_to_layer")]._edb_object,
+                self._pedb.edb_value(from_top.get("stub_length")),
+                self._pedb.edb_value(from_top.get("diameter")),
+                False,
+            )
+
     def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from bottom.
 
@@ -1502,7 +1555,6 @@ class EDBPadstackInstance(Primitive):
         str
             Name of the starting layer.
         """
-        layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
         _, start_layer, stop_layer = self._edb_object.GetLayerRange()
 
         if start_layer:
@@ -1524,7 +1576,6 @@ class EDBPadstackInstance(Primitive):
         str
             Name of the stopping layer.
         """
-        layer = self._pedb.edb_api.cell.layer("", self._pedb.edb_api.cell.layer_type.SignalLayer)
         _, start_layer, stop_layer = self._edb_padstackinstance.GetLayerRange()
 
         if stop_layer:
@@ -1545,7 +1596,7 @@ class EDBPadstackInstance(Primitive):
         layer_list = []
         start_layer_name = start_layer.GetName()
         stop_layer_name = stop_layer.GetName()
-        for layer_name in list(self._pedb.stackup.layers.keys()):
+        for layer_name in list(self._pedb.stackup.signal_layers.keys()):
             if started:
                 layer_list.append(layer_name)
                 if layer_name == stop_layer_name or layer_name == start_layer_name:
@@ -1561,30 +1612,6 @@ class EDBPadstackInstance(Primitive):
                 if layer_name == start_layer_name:
                     break
         return layer_list
-
-    @property
-    def net_name(self):
-        """Net name.
-
-        Returns
-        -------
-        str
-            Name of the net.
-        """
-        return self._edb_padstackinstance.GetNet().GetName()
-
-    @net_name.setter
-    def net_name(self, val):
-        if not isinstance(val, str):
-            try:
-                self._edb_padstackinstance.SetNet(val.net_obj)
-            except:
-                raise AttributeError("Value inserted not found. Input has to be net name or net object.")
-        elif val in self._pedb.nets.netlist:
-            net = self._pedb.nets.nets[val].net_object
-            self._edb_padstackinstance.SetNet(net)
-        else:
-            raise AttributeError("Value inserted not found. Input has to be net name or net object.")
 
     @property
     def is_pin(self):
@@ -1654,7 +1681,6 @@ class EDBPadstackInstance(Primitive):
         float
             Rotatation value for the padstack instance.
         """
-        point_data = self._pedb.edb_api.geometry.point_data(self._pedb.edb_value(0.0), self._pedb.edb_value(0.0))
         out = self._edb_padstackinstance.GetPositionAndRotationValue()
 
         if out[0]:
@@ -1742,6 +1768,10 @@ class EDBPadstackInstance(Primitive):
         _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
         name = str(name).strip("'")
         return name
+
+    @aedt_name.setter
+    def aedt_name(self, value):
+        self._edb_object.SetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, value)
 
     def parametrize_position(self, prefix=None):
         """Parametrize the instance position.

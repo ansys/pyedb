@@ -74,7 +74,7 @@ class Configuration:
                     elif config_file.endswith(".toml"):
                         data = toml.load(f)
             else:  # pragma: no cover
-                return False
+                raise RuntimeError(f"File {config_file} does not exist.")
 
         if not append:  # pragma: no cover
             self.data = {}
@@ -103,8 +103,14 @@ class Configuration:
                 self._pedb.open_edb()
         return self.cfg_data
 
-    def run(self):
+    def run(self, **kwargs):
         """Apply configuration settings to the current design"""
+
+        if self.cfg_data.variables:
+            self.cfg_data.variables.apply()
+
+        if self.cfg_data.general:
+            self.cfg_data.general.apply()
 
         # Configure boundary settings
         if self.cfg_data.boundaries:
@@ -117,15 +123,8 @@ class Configuration:
         # Configure components
         self.cfg_data.components.apply()
 
-        # Configure padstacks
-        if self.cfg_data.padstacks:
-            self.cfg_data.padstacks.apply()
-
         # Configure pin groups
         self.cfg_data.pin_groups.apply()
-
-        # Configure ports
-        self.cfg_data.ports.apply()
 
         # Configure sources
         self.cfg_data.sources.apply()
@@ -134,11 +133,27 @@ class Configuration:
         self.cfg_data.setups.apply()
 
         # Configure stackup
-        self.cfg_data.stackup.apply()
+        if kwargs.get("fix_padstack_def"):
+            from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition
+
+            pedb_defs = self._pedb.padstacks.definitions
+            temp = []
+            for _, pdef in pedb_defs.items():
+                cfg_def = CfgPadstackDefinition(self._pedb, pdef)
+                cfg_def.api.retrieve_parameters_from_edb()
+                temp.append(cfg_def)
+            self.cfg_data.stackup.apply()
+            for cfg_pdef in temp:
+                cfg_pdef.api.set_parameters_to_edb()
+        else:
+            self.cfg_data.stackup.apply()
+
+        # Configure padstacks
+        if self.cfg_data.padstacks:
+            self.cfg_data.padstacks.apply()
 
         # Configure S-parameter
-        for s_parameter_model in self.cfg_data.s_parameters:
-            s_parameter_model.apply()
+        self.cfg_data.s_parameters.apply()
 
         # Configure SPICE models
         for spice_model in self.cfg_data.spice_models:
@@ -149,6 +164,15 @@ class Configuration:
 
         # Configure operations
         self.cfg_data.operations.apply()
+
+        # Modeler
+        self.cfg_data.modeler.apply()
+
+        # Configure ports
+        self.cfg_data.ports.apply()
+
+        # Configure probes
+        self.cfg_data.probes.apply()
 
         return True
 
@@ -264,6 +288,8 @@ class Configuration:
         """
         self._pedb.logger.info("Getting data from layout database.")
         data = {}
+        if kwargs.get("general", False):
+            data["general"] = self.cfg_data.general.get_data_from_db()
         if kwargs.get("stackup", False):
             data["stackup"] = self.cfg_data.stackup.get_data_from_db()
         if kwargs.get("package_definitions", False):
@@ -274,14 +300,36 @@ class Configuration:
             data["sources"] = self.cfg_data.sources.get_data_from_db()
         if kwargs.get("ports", False):
             data["ports"] = self.cfg_data.ports.get_data_from_db()
-        if kwargs.get("components", False):
-            data["components"] = self.cfg_data.components.get_data_from_db()
+        if kwargs.get("components", False) or kwargs.get("s_parameters", False):
+            self.cfg_data.components.retrieve_parameters_from_edb()
+            components = []
+            for i in self.cfg_data.components.components:
+                components.append(i.get_attributes())
+
+            if kwargs.get("components", False):
+                data["components"] = components
+            elif kwargs.get("s_parameters", False):
+                data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db(components)
         if kwargs.get("nets", False):
             data["nets"] = self.cfg_data.nets.get_data_from_db()
         if kwargs.get("pin_groups", False):
             data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
         if kwargs.get("operations", False):
             data["operations"] = self.cfg_data.operations.get_data_from_db()
+        if kwargs.get("padstacks", False):
+            self.cfg_data.padstacks.retrieve_parameters_from_edb()
+            definitions = []
+            for i in self.cfg_data.padstacks.definitions:
+                definitions.append(i.get_attributes())
+            instances = []
+            for i in self.cfg_data.padstacks.instances:
+                instances.append(i.get_attributes())
+            data["padstacks"] = dict()
+            data["padstacks"]["definitions"] = definitions
+            data["padstacks"]["instances"] = instances
+
+        if kwargs.get("boundaries", False):
+            data["boundaries"] = self.cfg_data.boundaries.get_data_from_db()
 
         return data
 
@@ -289,13 +337,18 @@ class Configuration:
         self,
         file_path,
         stackup=True,
-        package_definitions=True,
+        package_definitions=False,
         setups=True,
         sources=True,
         ports=True,
         nets=True,
         pin_groups=True,
         operations=True,
+        components=True,
+        boundaries=True,
+        s_parameters=True,
+        padstacks=True,
+        general=True,
     ):
         """Export the configuration data from layout to a file.
 
@@ -319,12 +372,20 @@ class Configuration:
             Whether to export pin groups.
         operations : bool
             Whether to export operations.
+        components : bool
+            Whether to export component.
+        boundaries : bool
+            Whether to export boundaries.
+        s_parameters : bool
+            Whether to export s_parameters.
+        padstacks : bool
+            Whether to export padstacks.
+        general : bool
+            Whether to export general information.
         Returns
         -------
         bool
         """
-        file_path = file_path if isinstance(file_path, Path) else Path(file_path)
-        file_path = file_path if file_path.suffix == ".json" else file_path.with_suffix(".json")
         data = self.get_data_from_db(
             stackup=stackup,
             package_definitions=package_definitions,
@@ -334,7 +395,19 @@ class Configuration:
             nets=nets,
             pin_groups=pin_groups,
             operations=operations,
+            components=components,
+            boundaries=boundaries,
+            s_parameters=s_parameters,
+            padstacks=padstacks,
+            general=general,
         )
+
+        file_path = file_path if isinstance(file_path, Path) else Path(file_path)
+        file_path = file_path.with_suffix(".json") if file_path.suffix == "" else file_path
+
         with open(file_path, "w") as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+            if file_path.suffix == ".json":
+                json.dump(data, f, ensure_ascii=False, indent=4)
+            else:
+                toml.dump(data, f)
         return True if os.path.isfile(file_path) else False

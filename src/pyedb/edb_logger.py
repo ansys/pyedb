@@ -417,7 +417,7 @@ class EdbLogger(object):
 
 logger = logging.getLogger("Global")
 if any("aedt_logger" in str(i) for i in logger.filters):
-    from pyaedt.generic.settings import settings as pyaedt_settings
+    from ansys.aedt.core.generic.settings import settings as pyaedt_settings
 
     from pyedb.generic.settings import settings as pyaedb_settings
 

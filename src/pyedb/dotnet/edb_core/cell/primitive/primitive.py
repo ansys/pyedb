@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import re
 
 from pyedb.dotnet.edb_core.cell.connectable import Connectable
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
@@ -43,8 +44,6 @@ class Primitive(Connectable):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
         self._app = self._pedb
-        self._core_stackup = pedb.stackup
-        self._core_net = pedb.nets
         self.primitive_object = self._edb_object
 
         bondwire_type = self._pedb._edb.Cell.Primitive.BondwireType
@@ -61,6 +60,14 @@ class Primitive(Connectable):
             "round": bondwire_cross_section_type.BondwireRound,
             "rectangle": bondwire_cross_section_type.BondwireRectangle,
         }
+
+    @property
+    def _core_stackup(self):
+        return self._app.stackup
+
+    @property
+    def _core_net(self):
+        return self._app.nets
 
     @property
     def type(self):
@@ -90,27 +97,6 @@ class Primitive(Connectable):
         return self._edb_object.GetPrimitiveType().ToString().lower()
 
     @property
-    def net_name(self):
-        """Get the primitive net name.
-
-        Returns
-        -------
-        str
-        """
-        return self.net.name
-
-    @net_name.setter
-    def net_name(self, name):
-        if isinstance(name, str):
-            net = self._app.nets.nets[name].net_object
-            self.primitive_object.SetNet(net)
-        else:
-            try:
-                self.net = name.name
-            except:  # pragma: no cover
-                self._app.logger.error("Failed to set net name.")
-
-    @property
     def layer(self):
         """Get the primitive edb layer object."""
         obj = self._edb_object.GetLayer()
@@ -128,7 +114,7 @@ class Primitive(Connectable):
         str
         """
         try:
-            return self.layer.name
+            return self._edb_object.GetLayer().GetName()
         except (KeyError, AttributeError):  # pragma: no cover
             return None
 
@@ -181,6 +167,8 @@ class Primitive(Connectable):
         -------
         float
         """
+        if "GetPolygonData" not in dir(self._edb_object):
+            return 0
         area = self._edb_object.GetPolygonData().Area()
         if include_voids:
             for el in self._edb_object.Voids:
@@ -593,17 +581,17 @@ class Primitive(Connectable):
         _, name = self._edb_object.GetProductProperty(self._pedb._edb.ProductId.Designer, 1, val)
         name = str(name).strip("'")
         if name == "":
-            if str(self.primitive_type) == "Path":
+            if str(self.primitive_type).lower() == "path":
                 ptype = "line"
-            elif str(self.primitive_type) == "Rectangle":
+            elif str(self.primitive_type).lower() == "rectangle":
                 ptype = "rect"
-            elif str(self.primitive_type) == "Polygon":
+            elif str(self.primitive_type).lower() == "polygon":
                 ptype = "poly"
-            elif str(self.primitive_type) == "Bondwire":
+            elif str(self.primitive_type).lower() == "bondwire":
                 ptype = "bwr"
             else:
                 ptype = str(self.primitive_type).lower()
-            name = "{}_{}".format(ptype, self.id)
+            name = "{}__{}".format(ptype, self.id)
             self._edb_object.SetProductProperty(self._pedb._edb.ProductId.Designer, 1, name)
         return name
 
@@ -615,10 +603,6 @@ class Primitive(Connectable):
     def polygon_data(self):
         """:class:`pyedb.dotnet.edb_core.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
         return PolygonData(self._pedb, self._edb_object.GetPolygonData())
-
-    @polygon_data.setter
-    def polygon_data(self, poly):
-        self._edb_object.SetPolygonData(poly._edb_object)
 
     def add_void(self, point_list):
         """Add a void to current primitive.
@@ -770,24 +754,6 @@ class Primitive(Connectable):
             points.append(point)
         return points
 
-    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
-        """Expand the polygon shape by an absolute value in all direction.
-        Offset can be negative for negative expansion.
-
-        Parameters
-        ----------
-        offset : float, optional
-            Offset value in meters.
-        tolerance : float, optional
-            Tolerance in meters.
-        round_corners : bool, optional
-            Whether to round corners or not.
-            If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
-        maximum_corner_extension : float, optional
-            The maximum corner extension (when round corners are not used) at which point the corner is clipped.
-        """
-        return self.polygon_data.expand(offset, tolerance, round_corners, maximum_corner_extension)
-
     def scale(self, factor, center=None):
         """Scales the polygon relative to a center point by a factor.
 
@@ -822,3 +788,66 @@ class Primitive(Connectable):
                 self.polygon_data = polygon_data
                 return True
         return False
+
+    @property
+    def _em_properties(self):
+        """Get EM properties."""
+        default = (
+            r"$begin 'EM properties'\n"
+            r"\tType('Mesh')\n"
+            r"\tDataId='EM properties1'\n"
+            r"\t$begin 'Properties'\n"
+            r"\t\tGeneral=''\n"
+            r"\t\tModeled='true'\n"
+            r"\t\tUnion='true'\n"
+            r"\t\t'Use Precedence'='false'\n"
+            r"\t\t'Precedence Value'='1'\n"
+            r"\t\tPlanarEM=''\n"
+            r"\t\tRefined='true'\n"
+            r"\t\tRefineFactor='1'\n"
+            r"\t\tNoEdgeMesh='false'\n"
+            r"\t\tHFSS=''\n"
+            r"\t\t'Solve Inside'='false'\n"
+            r"\t\tSIwave=''\n"
+            r"\t\t'DCIR Equipotential Region'='false'\n"
+            r"\t$end 'Properties'\n"
+            r"$end 'EM properties'\n"
+        )
+
+        pid = self._pedb.edb_api.ProductId.Designer
+        _, p = self._edb_object.GetProductProperty(pid, 18, "")
+        if p:
+            return p
+        else:
+            return default
+
+    @_em_properties.setter
+    def _em_properties(self, em_prop):
+        """Set EM properties"""
+        pid = self._pedb.edb_api.ProductId.Designer
+        self._edb_object.SetProductProperty(pid, 18, em_prop)
+
+    @property
+    def dcir_equipotential_region(self):
+        """Check whether dcir equipotential region is enabled.
+
+        Returns
+        -------
+        bool
+        """
+        pattern = r"'DCIR Equipotential Region'='([^']+)'"
+        em_pp = self._em_properties
+        result = re.search(pattern, em_pp).group(1)
+        if result == "true":
+            return True
+        else:
+            return False
+
+    @dcir_equipotential_region.setter
+    def dcir_equipotential_region(self, value):
+        """Set dcir equipotential region."""
+        pp = r"'DCIR Equipotential Region'='true'" if value else r"'DCIR Equipotential Region'='false'"
+        em_pp = self._em_properties
+        pattern = r"'DCIR Equipotential Region'='([^']+)'"
+        new_em_pp = re.sub(pattern, pp, em_pp)
+        self._em_properties = new_em_pp

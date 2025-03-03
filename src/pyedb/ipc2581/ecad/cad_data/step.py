@@ -246,7 +246,7 @@ class Step(object):
                     self._ipc.ecad.cad_data.cad_data_step.layer_features.append(layer_feature)
                     layers[layer_name] = self._ipc.ecad.cad_data.cad_data_step.layer_features[-1]
                 pdef_name = (
-                    padstack_instance._pdef if padstack_instance._pdef else padstack_instance.padstack_definition
+                    padstack_instance._pdef.name if padstack_instance._pdef else padstack_instance.padstack_definition
                 )
                 if pdef_name in padstack_defs:
                     padstack_def = padstack_defs[pdef_name]

@@ -24,10 +24,12 @@ Icepak
 IO
 IR
 IronPython
+libssl
 [Ll]ayout
 matplotlib
 Maxwell(?:\s(?:2D|3D|Circuit))?
 netlist
+openssl
 padstack(?:s)?
 postprocessing
 (?i)Pyedb
@@ -40,7 +42,7 @@ Q3D
 RaptorX
 RLC
 SimulationConfiguration
-Siwave
+S[Ii]wave
 SYZ
 (?i)stackup(?:\s3D|s)?
 vias

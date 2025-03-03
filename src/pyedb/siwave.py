@@ -11,15 +11,17 @@ from __future__ import absolute_import  # noreorder
 import os
 from pathlib import Path
 import pkgutil
+import shutil
 import sys
 import tempfile
 import time
+from typing import Optional, Union
 import warnings
 
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
 from pyedb.edb_logger import pyedb_logger
-from pyedb.generic.general_methods import _pythonver, is_windows
+from pyedb.generic.general_methods import _pythonver, generate_unique_name, is_windows
 from pyedb.misc.misc import list_installed_ansysem
 from pyedb.siwave_core.icepak import Icepak
 
@@ -52,6 +54,15 @@ def wait_export_folder(flag, folder_path, time_sleep=0.5):
         time.sleep(time_sleep)
 
 
+def parser_file_path(file_path):
+    if isinstance(file_path, Path):
+        file_path = str(file_path)
+
+    if not Path(file_path).root:
+        file_path = str(Path().cwd() / file_path)
+    return file_path
+
+
 class Siwave(object):  # pragma no cover
     """Initializes SIwave based on the inputs provided and manages SIwave release and closing.
 
@@ -62,6 +73,11 @@ class Siwave(object):  # pragma no cover
         the active setup is used or the latest installed version is used.
 
     """
+
+    @property
+    def version(self):
+        ver = self.oSiwave.GetVersion()
+        return ".".join(ver.split(".")[:-1])
 
     @property
     def version_keys(self):
@@ -258,9 +274,9 @@ class Siwave(object):  # pragma no cover
             ``True`` when successful, ``False`` when failed.
 
         """
-
-        if os.path.exists(proj_path):
-            open_result = self.oSiwave.OpenProject(proj_path)
+        file_path = parser_file_path(proj_path)
+        if os.path.exists(file_path):
+            open_result = self.oSiwave.OpenProject(file_path)
             self._oproject = self.oSiwave.GetActiveProject()
             return open_result
         else:
@@ -300,6 +316,22 @@ class Siwave(object):  # pragma no cover
             self.oproject.Save()
         return True
 
+    def save(self, file_path: Optional[Union[str, Path]]):
+        """Save the project.
+
+        Parameters
+        ----------
+        file_path : str, optional
+            Full path to the project. The default is ``None``.
+        """
+
+        if file_path:
+            file_path = parser_file_path(file_path)
+            file_path = str(Path(file_path).with_suffix(".siw"))
+            self.oproject.ScrSaveProjectAs(file_path)
+        else:
+            self.oproject.Save()
+
     def close_project(self, save_project=False):
         """Close the project.
 
@@ -330,6 +362,7 @@ class Siwave(object):  # pragma no cover
 
         """
         self._main.oSiwave.Quit()
+        self._main.oSiwave = None
         return True
 
     def export_element_data(self, simulation_name, file_path, data_type="Vias"):
@@ -487,6 +520,8 @@ class Siwave(object):  # pragma no cover
         """
         if isinstance(file_path, Path):
             file_path = str(file_path)
+        if not Path(file_path).root:
+            file_path = str(Path().cwd() / file_path)
         flag = self.oproject.ScrImportEDB(file_path)
         # self.save_project(self.di)
         if flag == 0:
@@ -503,38 +538,41 @@ class Siwave(object):  # pragma no cover
         file_path : str
             Path to the configuration file.
         """
-        if isinstance(file_path, Path):
-            file_path = str(file_path)
+        file_path = parser_file_path(file_path)
 
         # temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
         # temp_edb = os.path.join(temp_folder.name, "temp.aedb")
 
-        temp_edb = os.path.join(self.file_dir, "temp.aedb")
+        temp_edb = os.path.join(tempfile.gettempdir(), generate_unique_name("temp") + ".aedb")
 
         self.export_edb(temp_edb)
         self.oproject.ScrCloseProject()
-        edbapp = Edb(temp_edb, edbversion=self.current_version)
+        edbapp = Edb(temp_edb, edbversion=self.version)
         edbapp.configuration.load(file_path)
         edbapp.configuration.run()
         edbapp.save()
         edbapp.close()
         self.import_edb(temp_edb)
+        shutil.rmtree(Path(temp_edb), ignore_errors=True)
 
-    def export_configuration(self, file_path: str):
+    def export_configuration(self, file_path: str, fix_padstack_names: bool = False):
         """Export layout information into a configuration file.
 
         Parameters
         ----------
         file_path : str
             Path to the configuration file.
+        fix_padstack_names : bool
+            Name all the padstacks in edb.
         """
-        if isinstance(file_path, Path):
-            file_path = str(file_path)
+        file_path = parser_file_path(file_path)
 
         temp_folder = tempfile.TemporaryDirectory(suffix=".ansys")
         temp_edb = os.path.join(temp_folder.name, "temp.aedb")
 
         self.export_edb(temp_edb)
         edbapp = Edb(temp_edb, edbversion=self.current_version)
+        if fix_padstack_names:
+            edbapp.layout_validation.padstacks_no_name(fix=True)
         edbapp.configuration.export(file_path)
         edbapp.close()

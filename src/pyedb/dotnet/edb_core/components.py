@@ -111,16 +111,9 @@ class Components(object):
 
     def __init__(self, p_edb):
         self._pedb = p_edb
-        self._cmp = {}
-        self._res = {}
-        self._cap = {}
-        self._ind = {}
-        self._ios = {}
-        self._ics = {}
-        self._others = {}
+        self.refresh_components()
         self._pins = {}
         self._comps_by_part = {}
-        self._init_parts()
         self._padstack = EdbPadstacks(self._pedb)
 
     @property
@@ -131,16 +124,6 @@ class Components(object):
     @property
     def _edb(self):
         return self._pedb.edb_api
-
-    def _init_parts(self):
-        a = self.instances
-        a = self.resistors
-        a = self.ICs
-        a = self.Others
-        a = self.inductors
-        a = self.IOs
-        a = self.components_by_partname
-        return True
 
     def _get_edb_value(self, value):
         return self._pedb.edb_value(value)
@@ -205,8 +188,6 @@ class Components(object):
         >>> edbapp.components.instances
 
         """
-        if not self._cmp:
-            self.refresh_components()
         return self._cmp
 
     @property
@@ -310,11 +291,29 @@ class Components(object):
 
     def refresh_components(self):
         """Refresh the component dictionary."""
-        # self._logger.info("Refreshing the Components dictionary.")
         self._cmp = {}
+        self._res = {}
+        self._ind = {}
+        self._cap = {}
+        self._ics = {}
+        self._ios = {}
+        self._others = {}
         for i in self._pedb.layout.groups:
-            if i.group_type == "component":
-                self._cmp[i.name] = i
+            self._cmp[i.name] = i
+            if i.type == "Resistor":
+                self._res[i.name] = i
+            elif i.type == "Capacitor":
+                self._cap[i.name] = i
+            elif i.type == "Inductor":
+                self._ind[i.name] = i
+            elif i.type == "IC":
+                self._ics[i.name] = i
+            elif i.type == "IO":
+                self._ios[i.name] = i
+            elif i.type == "Other":
+                self._others[i.name] = i
+            else:
+                self._logger.warning(f"Unknown component type {i.name} found while refreshing components, will ignore")
         return True
 
     @property
@@ -333,10 +332,6 @@ class Components(object):
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.resistors
         """
-        self._res = {}
-        for el, val in self.instances.items():
-            if val.type == "Resistor":
-                self._res[el] = val
         return self._res
 
     @property
@@ -355,10 +350,6 @@ class Components(object):
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.capacitors
         """
-        self._cap = {}
-        for el, val in self.instances.items():
-            if val.type == "Capacitor":
-                self._cap[el] = val
         return self._cap
 
     @property
@@ -378,10 +369,6 @@ class Components(object):
         >>> edbapp.components.inductors
 
         """
-        self._ind = {}
-        for el, val in self.instances.items():
-            if val.type == "Inductor":
-                self._ind[el] = val
         return self._ind
 
     @property
@@ -401,10 +388,6 @@ class Components(object):
         >>> edbapp.components.ICs
 
         """
-        self._ics = {}
-        for el, val in self.instances.items():
-            if val.type == "IC":
-                self._ics[el] = val
         return self._ics
 
     @property
@@ -424,10 +407,6 @@ class Components(object):
         >>> edbapp.components.IOs
 
         """
-        self._ios = {}
-        for el, val in self.instances.items():
-            if val.type == "IO":
-                self._ios[el] = val
         return self._ios
 
     @property
@@ -447,10 +426,6 @@ class Components(object):
         >>> edbapp.components.others
 
         """
-        self._others = {}
-        for el, val in self.instances.items():
-            if val.type == "Other":
-                self._others[el] = val
         return self._others
 
     @property
@@ -1807,8 +1782,8 @@ class Components(object):
 
             sParameterMod = self._edb.cell.hierarchy._hierarchy.SParameterModel()
             sParameterMod.SetComponentModelName(nPortModelName)
-            gndnets = filter(lambda x: "gnd" in x.lower(), componentNets)
-            if len(list(gndnets)) > 0:  # pragma: no cover
+            gndnets = list(filter(lambda x: "gnd" in x.lower(), componentNets))
+            if len(gndnets) > 0:  # pragma: no cover
                 net = gndnets[0]
             else:  # pragma: no cover
                 net = componentNets[len(componentNets) - 1]

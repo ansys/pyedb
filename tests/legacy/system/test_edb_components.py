@@ -454,7 +454,7 @@ class TestClass:
         assert len(vector) == 2
         edb2.close()
 
-    def test_components_assign(self):
+    def test_components_assign(self, edb_examples):
         """Assign RLC model, S-parameter model and spice model."""
         source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_17.aedb")
@@ -462,7 +462,7 @@ class TestClass:
         sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
         spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
 
-        edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp = edb_examples.get_si_verse()
         comp = edbapp.components.instances["R2"]
         assert not comp.assign_rlc_model()
         comp.assign_rlc_model(1, None, 3, False)
@@ -490,6 +490,10 @@ class TestClass:
         comp.type = "Inductor"
         comp.value = 10  # This command set the model back to ideal RLC
         assert comp.type == "Inductor" and comp.value == 10 and float(comp.ind_value) == 10
+
+        edbapp.components["C164"].assign_spice_model(
+            spice_path, sub_circuit_name="GRM32ER60J227ME05_DC0V_25degC", terminal_pairs=[["port1", 2], ["port2", 1]]
+        )
         edbapp.close()
 
     def test_components_bounding_box(self):
@@ -601,3 +605,10 @@ class TestClass:
         assert network.frequency.npoints == 400
         network.write_touchstone(os.path.join(edbapp.directory, "test_export.s2p"))
         assert os.path.isfile(os.path.join(edbapp.directory, "test_export.s2p"))
+
+    def test_export_gds_comp_xml(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        xml_output = os.path.join(self.local_scratch.path, "test.xml")
+        assert edbapp.export_gds_comp_xml(["U1", "U2", "C2", "R1"], control_path=xml_output)
+        assert os.path.isfile(xml_output)
+        edbapp.close()

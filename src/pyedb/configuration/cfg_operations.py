@@ -53,19 +53,22 @@ class CfgCutout(CfgBase):
 
     def get_data_from_db(self):
         if "pyedb_cutout" in self._pedb.stackup.all_layers:
-            poly = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")[0]
-            self.custom_extent = poly.polygon_data.points
+            polygons = self._pedb.layout.find_primitive(layer_name="pyedb_cutout")
+            if polygons:
+                poly = polygons[0]
+                self.custom_extent = poly.polygon_data.points
 
-            net_names = []
-            for name, obj in self._pedb.nets.nets.items():
-                if obj.primitives[0].layer.name == "pyedb_cutout":
-                    continue
-                if len(obj.primitives) > 0:
-                    net_names.append(name)
+                net_names = []
+                for name, obj in self._pedb.nets.nets.items():
+                    if obj.primitives:
+                        if obj.primitives[0].layer.name == "pyedb_cutout":
+                            continue
+                        else:
+                            net_names.append(name)
 
-            self.reference_list = []
-            self.signal_list = net_names
-        return self.export_properties()
+                self.reference_list = []
+                self.signal_list = net_names
+            return self.export_properties()
 
     def export_properties(self):
         return {
@@ -84,7 +87,7 @@ class CfgOperations(CfgBase):
         """Imports operation information from JSON."""
         if self.op_cutout:
             polygon_points = self._pedb.cutout(**self.op_cutout.get_attributes())
-            if not "pyedb_cutout" in self._pedb.stackup.all_layers:
+            if "pyedb_cutout" not in self._pedb.stackup.all_layers:
                 self._pedb.stackup.add_document_layer(name="pyedb_cutout")
                 self._pedb.modeler.create_polygon(polygon_points, layer_name="pyedb_cutout", net_name="pyedb_cutout")
 
@@ -92,4 +95,8 @@ class CfgOperations(CfgBase):
 
     def get_data_from_db(self):
         self.op_cutout = CfgCutout(self._pedb)
-        return {"cutout": self.op_cutout.get_data_from_db()}
+        data_from_db = self.op_cutout.get_data_from_db()
+        if data_from_db:
+            return {"cutout": data_from_db}
+        else:
+            return {}

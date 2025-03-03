@@ -54,6 +54,29 @@ from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.utilities.obj_base import ObjBase
 
 
+def primitive_cast(pedb, edb_object):
+    if edb_object.GetPrimitiveType().ToString() == "Rectangle":
+        return EdbRectangle(edb_object, pedb)
+    elif edb_object.GetPrimitiveType().ToString() == "Circle":
+        return EdbCircle(edb_object, pedb)
+    elif edb_object.GetPrimitiveType().ToString() == "Polygon":
+        return EdbPolygon(edb_object, pedb)
+    elif edb_object.GetPrimitiveType().ToString() == "Path":
+        return Path(pedb, edb_object)
+    elif edb_object.GetPrimitiveType().ToString() == "Bondwire":
+        return Bondwire(pedb, edb_object)
+    elif edb_object.GetPrimitiveType().ToString() == "Text":
+        return EdbText(edb_object, pedb)
+    elif edb_object.GetPrimitiveType().ToString() == "PrimitivePlugin":
+        return
+    elif edb_object.GetPrimitiveType().ToString() == "Path3D":
+        return
+    elif edb_object.GetPrimitiveType().ToString() == "BoardBendDef":
+        return
+    else:
+        return
+
+
 class Layout(ObjBase):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
@@ -129,7 +152,7 @@ class Layout(ObjBase):
         is_pins : bool, optional
             True for pins, false for vias (default).
         """
-        self._edb_object.ConvertPrimitivesToVias(convert_py_list_to_net_list(primitives), is_pins)
+        self._edb_object.ConvertPrimitivestoVias(convert_py_list_to_net_list(primitives), is_pins)
 
     @property
     def zone_primitives(self):
@@ -197,7 +220,7 @@ class Layout(ObjBase):
         -------
         """
 
-        return [EDBNetsData(net, self._pedb) for net in self._edb_object.Nets]
+        return [EDBNetsData(net, self._pedb) for net in self._edb_object.Nets if net]
 
     @property
     def primitives(self):
@@ -207,11 +230,7 @@ class Layout(ObjBase):
         -------
         list of :class:`dotnet.edb_core.dotnet.primitive.PrimitiveDotNet` cast objects.
         """
-        prims = []
-        for p in self._edb_object.Primitives:
-            obj = self.find_object_by_id(p.GetId())
-            prims.append(obj)
-        return prims
+        return [primitive_cast(self._pedb, p) for p in self._edb_object.Primitives if p]
 
     @property
     def bondwires(self):
@@ -226,14 +245,7 @@ class Layout(ObjBase):
 
     @property
     def groups(self):
-        temp = []
-        for i in list(self._edb_object.Groups):
-            group_type = i.ToString().split(".")[-1].lower()
-            if group_type == "component":
-                temp.append(EDBComponent(self._pedb, i))
-            else:
-                pass
-        return temp
+        return [EDBComponent(self._pedb, i) for i in self._edb_object.Groups if i.ToString().endswith(".Component")]
 
     @property
     def pin_groups(self):
@@ -285,26 +297,7 @@ class Layout(ObjBase):
             return EDBPadstackInstance(obj, self._pedb)
 
         if obj.GetObjType().ToString() == "Primitive":
-            if obj.GetPrimitiveType().ToString() == "Rectangle":
-                return EdbRectangle(obj, self._pedb)
-            elif obj.GetPrimitiveType().ToString() == "Circle":
-                return EdbCircle(obj, self._pedb)
-            elif obj.GetPrimitiveType().ToString() == "Polygon":
-                return EdbPolygon(obj, self._pedb)
-            elif obj.GetPrimitiveType().ToString() == "Path":
-                return Path(self._pedb, obj)
-            elif obj.GetPrimitiveType().ToString() == "Bondwire":
-                return Bondwire(self._pedb, obj)
-            elif obj.GetPrimitiveType().ToString() == "Text":
-                return EdbText(obj, self._pedb)
-            elif obj.GetPrimitiveType().ToString() == "PrimitivePlugin":
-                pass
-            elif obj.GetPrimitiveType().ToString() == "Path3D":
-                pass
-            elif obj.GetPrimitiveType().ToString() == "BoardBendDef":
-                pass
-            else:
-                pass
+            return primitive_cast(self._pedb, obj)
 
     def find_net_by_name(self, value: str):
         """Find a net object by name
@@ -319,7 +312,10 @@ class Layout(ObjBase):
 
         """
         obj = self._pedb._edb.Cell.Net.FindByName(self._edb_object, value)
-        return EDBNetsData(obj, self._pedb) if obj is not None else None
+        if obj.IsNull():
+            return None
+        else:
+            return EDBNetsData(obj, self._pedb)
 
     def find_component_by_name(self, value: str):
         """Find a component object by name. Component name is the reference designator in layout.
@@ -335,16 +331,32 @@ class Layout(ObjBase):
         obj = self._pedb._edb.Cell.Hierarchy.Component.FindByName(self._edb_object, value)
         return EDBComponent(self._pedb, obj) if obj is not None else None
 
-    def find_primitive(self, layer_name: Union[str, list]) -> list:
+    def find_primitive(
+        self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
+    ) -> list:
         """Find a primitive objects by layer name.
 
         Parameters
         ----------
-        layer_name : str, list
+        layer_name : str, list, optional
             Name of the layer.
+        name : str, list, optional
+            Name of the primitive
+        net_name : str, list, optional
+            Name of the primitive
         Returns
         -------
         list
         """
-        layer_name = layer_name if isinstance(layer_name, list) else [layer_name]
-        return [i for i in self.primitives if i.layer_name in layer_name]
+        if layer_name is not None:
+            layer_name = layer_name if isinstance(layer_name, list) else [layer_name]
+        if name is not None:
+            name = name if isinstance(name, list) else [name]
+        if net_name is not None:
+            net_name = net_name if isinstance(net_name, list) else [net_name]
+
+        prims = self.primitives
+        prims = [i for i in prims if i.aedt_name in name] if name is not None else prims
+        prims = [i for i in prims if i.layer_name in layer_name] if layer_name is not None else prims
+        prims = [i for i in prims if i.net_name in net_name] if net_name is not None else prims
+        return prims

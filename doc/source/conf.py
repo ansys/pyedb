@@ -97,31 +97,6 @@ def remove_doctree(app, exception):
         logger.info(f"Doctree removed.")
 
 
-def copy_examples(app):
-    """Copy directory examples (root directory) files into the doc/source/examples directory."""
-    destination_dir = pathlib.Path(app.srcdir, "examples").resolve()
-    logger.info(f"Copying examples from {EXAMPLES_DIRECTORY} to {destination_dir}.")
-
-    if os.path.exists(destination_dir):
-        size = directory_size(destination_dir)
-        logger.info(f"Directory {destination_dir} ({size} MB) already exist, removing it.")
-        shutil.rmtree(destination_dir, ignore_errors=True)
-        logger.info(f"Directory removed.")
-
-    shutil.copytree(EXAMPLES_DIRECTORY, destination_dir)
-    logger.info(f"Copy performed")
-
-
-def remove_examples(app, exception):
-    """Remove the doc/source/examples directory created during the documentation build."""
-    destination_dir = pathlib.Path(app.srcdir) / "examples"
-
-    size = directory_size(destination_dir)
-    logger.info(f"Removing directory {destination_dir} ({size} MB).")
-    shutil.rmtree(destination_dir, ignore_errors=True)
-    logger.info(f"Directory removed.")
-
-
 def adjust_image_path(app, docname, source):
     """Adjust the HTML label used to insert images in the examples.
 
@@ -202,11 +177,9 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
 def setup(app):
     app.add_directive("pprint", PrettyPrintDirective)
     app.connect("autodoc-skip-member", autodoc_skip_member)
-    app.connect("builder-inited", copy_examples)
     app.connect("builder-inited", check_pandoc_installed)
     app.connect("source-read", adjust_image_path)
     app.connect("html-page-context", check_example_error)
-    app.connect("build-finished", remove_examples)
     app.connect("build-finished", remove_doctree)
     app.connect("build-finished", check_build_finished_without_error)
 
@@ -246,7 +219,7 @@ else:
     config = {"run_examples": True}
 
 
-# Specify environment variable to build the doc without grpahical mode while
+# Specify environment variable to build the doc without graphical mode while
 # keeping examples graphical mode activated.
 os.environ["PYAEDT_NON_GRAPHICAL"] = "1"
 os.environ["PYAEDT_DOC_GENERATION"] = "1"
@@ -360,11 +333,17 @@ nbsphinx_allow_errors = False
 
 # Sphinx gallery customization
 nbsphinx_thumbnails = {
-    "examples/use_configuration/set_up_edb_for_signal_integrity_analysis": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/pdn_analysis": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/serdes": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/pcb_dc_ir": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/dcir": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_stackup": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_material": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_ports": "_static/thumbnails/101_getting_started.png",
     "examples/use_configuration/import_setup_ac": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/import_padstack_definitions": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/import_components": "_static/thumbnails/101_getting_started.png",
+    "examples/use_configuration/import_sources": "_static/thumbnails/101_getting_started.png",
 }
 
 nbsphinx_custom_formats = {

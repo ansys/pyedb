@@ -105,25 +105,16 @@ class Terminal(Connectable):
     @property
     def layer(self):
         """Get layer of the terminal."""
-        point_data = self._pedb.point_data(0, 0)
-        layer = list(self._pedb.stackup.layers.values())[0]._edb_layer
-        if self._edb_object.GetParameters(point_data, layer):
-            return self._pedb.stackup.all_layers[layer.GetName()]
-        else:
-            self._pedb.logger.warning(f"No pad parameters found for terminal {self.name}")
-
-    @layer.setter
-    def layer(self, value):
-        layer = self._pedb.stackup.layers[value]._edb_layer
-        point_data = self._pedb.point_data(*self.location)
-        self._edb_object.SetParameters(point_data, layer)
+        return self._pedb.logger.error("Cannot determine terminal layer")
 
     @property
     def location(self):
         """Location of the terminal."""
-        layer = list(self._pedb.stackup.layers.values())[0]._edb_layer
-        _, point_data, _ = self._edb_object.GetParameters(None, layer)
-        return [point_data.X.ToDouble(), point_data.Y.ToDouble()]
+        try:
+            _, point_data, _ = self._edb_object.GetParameters()
+            return [point_data.X.ToDouble(), point_data.Y.ToDouble()]
+        except:
+            self._pedb.logger.error("Cannot determine terminal location")
 
     @location.setter
     def location(self, value):
@@ -158,16 +149,6 @@ class Terminal(Connectable):
         ppp = self._port_post_processing_prop
         ppp.DoRenormalize = value
         self._port_post_processing_prop = ppp
-
-    @property
-    def net_name(self):
-        """Net name.
-
-        Returns
-        -------
-        str
-        """
-        return self.net.name
 
     @property
     def terminal_type(self):
@@ -233,9 +214,10 @@ class Terminal(Connectable):
         """Get reference terminal."""
 
         edb_terminal = self._edb_object.GetReferenceTerminal()
-        terminal = self._pedb.terminals[edb_terminal.GetName()]
-        if not terminal.is_null:
-            return terminal
+        if not edb_terminal.IsNull():
+            return self._pedb.terminals[edb_terminal.GetName()]
+        else:
+            return None
 
     @ref_terminal.setter
     def ref_terminal(self, value):

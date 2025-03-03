@@ -188,7 +188,10 @@ class Modeler(object):
         for lay in self._pedb.stackup.non_stackup_layers:
             _primitives_by_layer[lay] = []
         for i in self._layout.primitives:
-            lay = i.layer.name
+            layer = i.layer
+            if not layer:
+                continue
+            lay = layer.name
             if lay in _primitives_by_layer:
                 _primitives_by_layer[lay].append(i)
         return _primitives_by_layer
@@ -658,8 +661,7 @@ class Modeler(object):
         else:
             polygonData = main_shape
         if not polygonData or polygonData.IsNull():
-            self._logger.error("Failed to create main shape polygon data")
-            return False
+            raise RuntimeError("Failed to create main shape polygon data")
         for void in voids:
             if isinstance(void, list):
                 void = self.Shape("polygon", points=void)
@@ -1460,6 +1462,9 @@ class Modeler(object):
             self._pedb.active_layout, name, convert_py_list_to_net_list(pins)
         )
         if obj.IsNull():
-            self._logger.debug("Pin group creation returned Null obj.")
-            return False
+            raise RuntimeError(f"Failed to create pin group {name}.")
+        else:
+            net_obj = [i.GetNet() for i in pins if not i.GetNet().IsNull()]
+            if net_obj:
+                obj.SetNet(net_obj[0])
         return self._pedb.siwave.pin_groups[name]

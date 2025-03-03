@@ -22,6 +22,7 @@
 
 import re
 
+from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.edb_core.edb_data.primitives_data import Primitive
 from pyedb.generic.general_methods import generate_unique_name
@@ -168,7 +169,7 @@ class LayoutValidation:
                 _objects_list[n_name].append(prim)
             else:
                 _objects_list[n_name] = [prim]
-        for pad in list(self._pedb.padstacks.instances.values()):
+        for pad in list(self._pedb.layout.padstack_instances):
             n_name = pad.net_name
             if n_name in _padstacks_list:
                 _padstacks_list[n_name].append(pad)
@@ -190,9 +191,9 @@ class LayoutValidation:
                 l1 = objs[0].get_connected_object_id_set()
                 l1.append(objs[0].id)
                 repetition = False
-                for net_list in net_groups:
-                    if set(l1).intersection(net_list):
-                        net_groups.append([i for i in l1 if i not in net_list])
+                for id_by_net in net_groups:
+                    if set(l1).intersection(id_by_net):
+                        net_groups.append([i for i in l1 if i not in id_by_net])
                         repetition = True
                 if not repetition:
                     net_groups.append(l1)
@@ -249,7 +250,7 @@ class LayoutValidation:
                             new_nets.append(net_obj.name)
                             for geo in disjoints:
                                 try:
-                                    obj_dict[geo].net_name = net_obj
+                                    obj_dict[geo].net_name = net_obj.name
                                 except KeyError:
                                     pass
                             disjoints_objects.extend(disjoints)
@@ -271,7 +272,7 @@ class LayoutValidation:
         bool
         """
         if not net_list:
-            net_list = list(self._pedb.nets.keys())
+            net_list = list(self._pedb.nets.nets.keys())
         elif isinstance(net_list, str):
             net_list = [net_list]
         new_prims = []
@@ -318,3 +319,23 @@ class LayoutValidation:
 
         self._pedb._logger.info("Found {} inductors have no value.".format(len(temp)))
         return
+
+    def padstacks_no_name(self, fix=False):
+        pds = self._pedb.layout.padstack_instances
+        counts = 0
+        via_count = 1
+        for obj in pds:
+            val = String("")
+            _, name = obj._edb_object.GetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, val)
+            name = str(name).strip("'")
+            if name == "":
+                counts += 1
+                if fix:
+                    if not obj.component:
+                        obj._edb_object.SetProductProperty(self._pedb.edb_api.ProductId.Designer, 11, f"Via{via_count}")
+                        via_count = via_count + 1
+                    else:
+                        obj._edb_object.SetProductProperty(
+                            self._pedb.edb_api.ProductId.Designer, 11, f"{obj.component.name}-{obj.component_pin}"
+                        )
+        self._pedb._logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")

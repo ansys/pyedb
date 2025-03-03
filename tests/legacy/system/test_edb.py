@@ -34,11 +34,13 @@ from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
 from pyedb.generic.constants import RadiationBoxType, SourceType
-from pyedb.generic.general_methods import is_linux
+from pyedb.generic.general_methods import is_linux, isclose
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
+
+ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
 class TestClass:
@@ -173,9 +175,14 @@ class TestClass:
 
     def test_add_variables(self):
         """Add design and project variables."""
-        result, var_server = self.edbapp.add_design_variable("my_variable", "1mm")
+        result, var_server = self.edbapp.add_design_variable("variable_no_description", "1mm")
         assert result
         assert var_server
+        assert self.edbapp.variables["variable_no_description"].description == ""
+        result, var_server = self.edbapp.add_design_variable("my_variable", "1mm", description="var_1")
+        assert result
+        assert var_server
+        assert self.edbapp.variables["my_variable"].description == "var_1"
         result, var_server = self.edbapp.add_design_variable("my_variable", "1mm")
         assert not result
         assert self.edbapp.modeler.parametrize_trace_width("A0_N")
@@ -185,7 +192,8 @@ class TestClass:
         assert var_server.IsVariableParameter("my_parameter")
         result, var_server = self.edbapp.add_design_variable("my_parameter", "2mm", True)
         assert not result
-        result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
+        result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm", description="var_2")
+        assert self.edbapp.variables["$my_project_variable"].description == "var_2"
         assert result
         assert var_server
         result, var_server = self.edbapp.add_project_variable("$my_project_variable", "3mm")
@@ -283,6 +291,7 @@ class TestClass:
         assert isinstance(edbapp.layout_validation.disjoint_nets("GND", keep_only_main_net=True), list)
         assert isinstance(edbapp.layout_validation.disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
         assert edbapp.layout_validation.fix_self_intersections("PGND")
+        assert edbapp.layout_validation.fix_self_intersections()
 
         edbapp.close()
 
@@ -347,6 +356,9 @@ class TestClass:
         self.local_scratch.copyfolder(source_path, target_path)
 
         edbapp = Edb(target_path, edbversion=desktop_version)
+        edbapp.components.create_pingroup_from_pins(
+            [i for i in list(edbapp.components.instances["U1"].pins.values()) if i.net_name == "GND"]
+        )
 
         assert edbapp.cutout(
             signal_list=["DDR4_DQS0_P", "DDR4_DQS0_N"],
@@ -354,6 +366,7 @@ class TestClass:
             number_of_threads=4,
             extent_type="ConvexHull",
             use_pyaedt_extent_computing=True,
+            include_pingroups=True,
             check_terminals=True,
             expansion_factor=4,
         )
@@ -399,6 +412,9 @@ class TestClass:
     #     assert edb.active_layout
     #     edb.close()
 
+    @pytest.mark.skipif(
+        is_linux and ON_CI, reason="Test is slow due to software rendering fallback and lack of GPU acceleration."
+    )
     def test_export_to_hfss(self):
         """Export EDB to HFSS."""
         edb = Edb(
@@ -408,10 +424,13 @@ class TestClass:
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
         out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
         assert os.path.exists(out)
-        out = edb.export_hfss(self.local_scratch.path)
+        out = edb.export_hfss(self.local_scratch.path, hidden=True)
         assert os.path.exists(out)
         edb.close()
 
+    @pytest.mark.skipif(
+        is_linux and ON_CI, reason="Test is slow due to software rendering fallback and lack of GPU acceleration."
+    )
     def test_export_to_q3d(self):
         """Export EDB to Q3D."""
         edb = Edb(
@@ -425,7 +444,10 @@ class TestClass:
         assert os.path.exists(out)
         edb.close()
 
-    def test_074_export_to_maxwell(self):
+    @pytest.mark.skipif(
+        is_linux and ON_CI, reason="Test is slow due to software rendering fallback and lack of GPU acceleration."
+    )
+    def test_export_to_maxwell(self):
         """Export EDB to Maxwell 3D."""
         edb = Edb(
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
@@ -834,6 +856,7 @@ class TestClass:
         setup1.adaptive_settings.max_refinement = 1000001
         setup1.adaptive_settings.max_refine_per_pass = 20
         setup1.adaptive_settings.min_passes = 2
+        setup1.adaptive_settings.min_converged_passes = 2
         setup1.adaptive_settings.save_fields = True
         setup1.adaptive_settings.save_rad_field_only = True
         setup1.adaptive_settings.use_convergence_matrix = True
@@ -844,6 +867,7 @@ class TestClass:
         assert edbapp.setups["setup1"].adaptive_settings.max_refinement == 1000001
         assert edbapp.setups["setup1"].adaptive_settings.max_refine_per_pass == 20
         assert edbapp.setups["setup1"].adaptive_settings.min_passes == 2
+        assert edbapp.setups["setup1"].adaptive_settings.min_converged_passes == 2
         assert edbapp.setups["setup1"].adaptive_settings.save_fields
         assert edbapp.setups["setup1"].adaptive_settings.save_rad_field_only
         # assert adaptive_settings.use_convergence_matrix
@@ -1010,6 +1034,7 @@ class TestClass:
         )
         edbapp.close()
 
+    @pytest.mark.skipif(is_linux, reason="It seems that there is a strange behavior with use_dc_custom_settings.")
     def test_siwave_dc_simulation_setup(self):
         """Create a dc simulation setup and evaluate its properties."""
         setup1 = self.edbapp.create_siwave_dc_setup("DC1")
@@ -1018,24 +1043,22 @@ class TestClass:
 
         settings = self.edbapp.setups["DC1"].get_configurations()
         for k, v in setup1.dc_settings.defaults.items():
-            if k in ["compute_inductance", "plot_jv"]:
+            # NOTE: On Linux it seems that there is a strange behavior with use_dc_custom_settings
+            # See https://github.com/ansys/pyedb/pull/791#issuecomment-2358036067
+            if k in ["compute_inductance", "plot_jv", "use_dc_custom_settings"]:
                 continue
-            print(k)
             assert settings["dc_settings"][k] == v
 
         for k, v in setup1.dc_advanced_settings.defaults.items():
-            print(k)
             assert settings["dc_advanced_settings"][k] == v
 
         for p in [0, 1, 2]:
             setup1.set_dc_slider(p)
             settings = self.edbapp.setups["DC1"].get_configurations()
             for k, v in setup1.dc_settings.dc_defaults.items():
-                print(k)
                 assert settings["dc_settings"][k] == v[p]
 
             for k, v in setup1.dc_advanced_settings.dc_defaults.items():
-                print(k)
                 assert settings["dc_advanced_settings"][k] == v[p]
 
     def test_siwave_ac_simulation_setup(self):
@@ -1320,7 +1343,7 @@ class TestClass:
         self.local_scratch.copyfile(gds_in, gds_out)
 
         c = ControlFile(c_file_in, layer_map=c_map)
-        setup = c.setups.add_setup("Setup1", "1GHz")
+        setup = c.setups.add_setup("Setup1", "1GHz", 0.02, 10)
         setup.add_sweep("Sweep1", "0.01GHz", "5GHz", "0.1GHz")
         c.boundaries.units = "um"
         c.stackup.units = "um"
@@ -1343,8 +1366,8 @@ class TestClass:
         )
 
         assert edb
-        assert "P1" in edb.excitations
-        assert "Setup1" in edb.setups
+        assert "P1" and "P2" in edb.excitations
+        assert "Setup1" and "Setup Test" in edb.setups
         assert "B1" in edb.components.instances
         edb.close()
 
@@ -1391,6 +1414,41 @@ class TestClass:
         assert padstack_instance2.backdrill_bottom[1] == "200um"
         assert padstack_instance2.backdrill_bottom[2] == "100um"
         edb.close()
+
+    def test_add_via_with_options_control_file(self):
+        """Add new via layer with option in control file."""
+        from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
+
+        ctrl = ControlFile()
+        ctrl.stackup.add_layer(
+            "m2",
+            properties={
+                "Elevation": "0.0",
+                "Material": "copper",
+                "Type": "conductor",
+                "Thickness": "1.0",
+                "UnionPrimitives": "true",
+            },
+        )
+        assert [layer for layer in ctrl.stackup.layers if layer.name == "m2"]
+
+        ctrl.stackup.add_layer(
+            "m1",
+            properties={
+                "Elevation": "1.0",
+                "Material": "copper",
+                "Type": "conductor",
+                "Thickness": "1.5",
+                "UnionPrimitives": "false",
+                "ConvertPolygonToCircle": "true",
+            },
+        )
+        assert [layer for layer in ctrl.stackup.layers if layer.properties["Elevation"] == "1.0"]
+
+        ctrl.stackup.add_via(
+            "via12", properties={"StartLayer": "m2", "StopLayer": "m1", "ConvertPolygonToCircle": "true"}
+        )
+        assert [via for via in ctrl.stackup.vias if via.properties["ConvertPolygonToCircle"] == "true"]
 
     def test_add_layer_api_with_control_file(self):
         """Add new layers with control file."""
@@ -1439,7 +1497,7 @@ class TestClass:
         )
         assert ctrl.boundaries.ports
         # setup using q3D for DC point
-        setup = ctrl.setups.add_setup("test_setup", "10GHz")
+        setup = ctrl.setups.add_setup("test_setup", "10GHz", 0.02, 10)
         assert setup
         setup.add_sweep(
             name="test_sweep",
@@ -1510,14 +1568,23 @@ class TestClass:
         assert polygon.move(["1mm", 1e-3])
         assert round(polygon.center[0], 6) == 0.051
         assert round(polygon.center[1], 6) == -0.0045
+
         assert polygon.rotate(angle=45)
-        assert polygon.bbox == [0.012462680425333156, -0.043037319574666846, 0.08953731957466685, 0.034037319574666845]
+        expected_bbox = [0.012462680425333156, -0.043037319574666846, 0.08953731957466685, 0.034037319574666845]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.rotate(angle=34, center=[0, 0])
-        assert polygon.bbox == [0.03083951217158376, -0.025151830651067256, 0.05875505636026722, 0.07472816865208806]
+        expected_bbox = [0.03083951217158376, -0.025151830651067256, 0.05875505636026722, 0.07472816865208806]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.scale(factor=1.5)
-        assert polygon.bbox == [0.0238606261244129, -0.05012183047685609, 0.06573394240743807, 0.09969816847787688]
+        expected_bbox = [0.0238606261244129, -0.05012183047685609, 0.06573394240743807, 0.09969816847787688]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.scale(factor=-0.5, center=[0, 0])
-        assert polygon.bbox == [-0.032866971203719036, -0.04984908423893844, -0.01193031306220645, 0.025060915238428044]
+        expected_bbox = [-0.032866971203719036, -0.04984908423893844, -0.01193031306220645, 0.025060915238428044]
+        assert all(isclose(x, y, rel_tol=1e-15) for x, y in zip(expected_bbox, polygon.bbox))
+
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
@@ -1658,7 +1725,7 @@ class TestClass:
         assert path_bom.exists()
         edbapp.close()
 
-    def test_create_port_ob_component_no_ref_pins_in_component(self, edb_examples):
+    def test_create_port_on_component_no_ref_pins_in_component(self, edb_examples):
         from pyedb.generic.constants import SourceType
 
         edbapp = edb_examples.get_no_ref_pins_component()

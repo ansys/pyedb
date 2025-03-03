@@ -95,7 +95,7 @@ from pyedb.dotnet.edb_core.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
     SiwaveSimulationSetup,
 )
-from pyedb.generic.constants import AEDT_UNITS, SolverType
+from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import (
     generate_unique_name,
     get_string_version,
@@ -558,6 +558,10 @@ class Edb(Database):
             for cell in list(self.top_circuit_cells):
                 if cell.GetName() == self.cellname:
                     self._active_cell = cell
+        if self._active_cell is None:
+            for cell in list(self.circuit_cells):
+                if cell.GetName() == self.cellname:
+                    self._active_cell = cell
         # if self._active_cell is still None, set it to default cell
         if self._active_cell is None:
             self._active_cell = list(self.top_circuit_cells)[0]
@@ -599,7 +603,7 @@ class Edb(Database):
     def import_layout_pcb(
         self,
         input_file,
-        working_dir,
+        working_dir="",
         anstranslator_full_path="",
         use_ppe=False,
         control_file=None,
@@ -612,7 +616,7 @@ class Edb(Database):
         ----------
         input_file : str
             Full path to the board file.
-        working_dir : str
+        working_dir : str, optional
             Directory in which to create the ``aedb`` folder. The name given to the AEDB file
             is the same as the name of the board file.
         anstranslator_full_path : str, optional
@@ -1455,12 +1459,12 @@ class Edb(Database):
     def import_gds_file(
         self,
         inputGDS,
-        WorkDir=None,
         anstranslator_full_path="",
         use_ppe=False,
         control_file=None,
         tech_file=None,
         map_file=None,
+        layer_filter=None,
     ):
         """Import a GDS file and generate an ``edb.def`` file in the working directory.
 
@@ -1471,10 +1475,6 @@ class Edb(Database):
         ----------
         inputGDS : str
             Full path to the GDS file.
-        WorkDir : str, optional
-            Directory in which to create the ``aedb`` folder. The default value is ``None``,
-            in which case the AEDB file is given the same name as the GDS file. Only the extension
-            differs.
         anstranslator_full_path : str, optional
             Full path to the Ansys translator.
         use_ppe : bool, optional
@@ -1484,31 +1484,74 @@ class Edb(Database):
             the XML file in the same directory as the GDS file. To succeed, the XML file and GDS file must
             have the same name. Only the extension differs.
         tech_file : str, optional
-            Technology file. It uses Helic to convert tech file to xml and then imports the gds. Works on Linux only.
+            Technology file. For versions<2024.1 it uses Helic to convert tech file to xml and then imports
+            the gds. Works on Linux only.
+            For versions>=2024.1 it can directly parse through supported foundry tech files.
         map_file : str, optional
             Layer map file.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
+        layer_filter:str,optional
+            Layer filter file.
 
         """
-        if not is_linux and tech_file:
-            self.logger.error("Technology files are supported only in Linux. Use control file instead.")
-            return False
         control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(inputGDS)[-1][:-3] + "xml")
-        ControlFile(xml_input=control_file, tecnhology=tech_file, layer_map=map_file).write_xml(control_file_temp)
-        if self.import_layout_pcb(
-            inputGDS,
-            working_dir=WorkDir,
-            anstranslator_full_path=anstranslator_full_path,
-            use_ppe=use_ppe,
-            control_file=control_file_temp,
-        ):
-            return True
+        if float(self.edbversion) < 2024.1:
+            if not is_linux and tech_file:
+                self.logger.error("Technology files are supported only in Linux. Use control file instead.")
+                return False
+
+            ControlFile(xml_input=control_file, tecnhology=tech_file, layer_map=map_file).write_xml(control_file_temp)
+            if self.import_layout_pcb(
+                inputGDS,
+                anstranslator_full_path=anstranslator_full_path,
+                use_ppe=use_ppe,
+                control_file=control_file_temp,
+            ):
+                return True
+            else:
+                return False
         else:
-            return False
+            if anstranslator_full_path and os.path.exists(anstranslator_full_path):
+                path = anstranslator_full_path
+            else:
+                path = os.path.join(self.base_path, "anstranslator")
+                if is_windows:
+                    path += ".exe"
+
+            temp_map_file = os.path.splitext(inputGDS)[0] + ".map"
+            temp_layermap_file = os.path.splitext(inputGDS)[0] + ".layermap"
+
+            if map_file is None:
+                if os.path.isfile(temp_map_file):
+                    map_file = temp_map_file
+                elif os.path.isfile(temp_layermap_file):
+                    map_file = temp_layermap_file
+                else:
+                    self.logger.error("Unable to define map file.")
+
+            if tech_file is None:
+                if control_file is None:
+                    temp_control_file = os.path.splitext(inputGDS)[0] + ".xml"
+                    if os.path.isfile(temp_control_file):
+                        control_file = temp_control_file
+                    else:
+                        self.logger.error("Unable to define control file.")
+
+                command = [path, inputGDS, f'-g="{map_file}"', f'-c="{control_file}"']
+            else:
+                command = [
+                    path,
+                    inputGDS,
+                    f'-o="{control_file_temp}"' f'-t="{tech_file}"',
+                    f'-g="{map_file}"',
+                    f'-f="{layer_filter}"',
+                ]
+
+            result = subprocess.run(command, capture_output=True, text=True, shell=True)
+            print(result.stdout)
+            print(command)
+            temp_inputGDS = inputGDS.split(".gds")[0]
+            self.edbpath = temp_inputGDS + ".aedb"
+            return self.open_edb()
 
     def _create_extent(
         self,
@@ -1630,6 +1673,14 @@ class Edb(Database):
                     )
                 else:
                     obj_data = i.Expand(expansion_size, tolerance, round_corner, round_extension)
+                if inlcude_voids_in_extents and "PolygonData" not in str(i) and i.has_voids and obj_data:
+                    for void in i.voids:
+                        void_data = void.primitive_object.GetPolygonData().Expand(
+                            -1 * expansion_size, tolerance, round_corner, round_extension
+                        )
+                        if void_data:
+                            for v in list(void_data):
+                                obj_data[0].AddHole(v)
                 if obj_data:
                     if not inlcude_voids_in_extents:
                         unite_polys.extend(list(obj_data))
@@ -2200,7 +2251,7 @@ class Edb(Database):
         pins_to_preserve = []
         nets_to_preserve = []
         if preserve_components_with_model:
-            for el in self.components.instances.values():
+            for el in self.layout.groups:
                 if el.model_type in [
                     "SPICEModel",
                     "SParameterModel",
@@ -2209,9 +2260,9 @@ class Edb(Database):
                     pins_to_preserve.extend([i.id for i in el.pins.values()])
                     nets_to_preserve.extend(el.nets)
         if include_pingroups:
-            for reference in reference_list:
-                for pin in self.nets.nets[reference].padstack_instances:
-                    if pin.pingroups:
+            for pingroup in self.padstacks.pingroups:
+                for pin in pingroup.pins.values():
+                    if pin.net_name in reference_list:
                         pins_to_preserve.append(pin.id)
         if check_terminals:
             terms = [
@@ -2229,23 +2280,41 @@ class Edb(Database):
         reference_pinsts = []
         reference_prims = []
         reference_paths = []
-        for i in self.padstacks.instances.values():
-            net_name = i.net_name
-            id = i.id
+        pins_to_delete = []
+
+        def check_instances(item):
+            net_name = item.net_name
+            id = item.id
             if net_name not in all_list and id not in pins_to_preserve:
-                i.delete()
+                pins_to_delete.append(item)
             elif net_name in reference_list and id not in pins_to_preserve:
-                reference_pinsts.append(i)
-        for i in self.modeler.primitives:
-            if i:
-                net_name = i.net_name
+                reference_pinsts.append(item)
+
+        with ThreadPoolExecutor(number_of_threads) as pool:
+            pool.map(lambda item: check_instances(item), self.layout.padstack_instances)
+
+        for i in pins_to_delete:
+            i.delete()
+
+        prim_to_delete = []
+
+        def check_prims(item):
+            if item:
+                net_name = item.net_name
                 if net_name not in all_list:
-                    i.delete()
-                elif net_name in reference_list and not i.is_void:
-                    if keep_lines_as_path and i.type == "Path":
-                        reference_paths.append(i)
+                    prim_to_delete.append(item)
+                elif net_name in reference_list and not item.is_void:
+                    if keep_lines_as_path and item.type == "Path":
+                        reference_paths.append(item)
                     else:
-                        reference_prims.append(i)
+                        reference_prims.append(item)
+
+        with ThreadPoolExecutor(number_of_threads) as pool:
+            pool.map(lambda item: check_prims(item), self.modeler.primitives)
+
+        for i in prim_to_delete:
+            i.delete()
+
         self.logger.info_timer("Net clean up")
         self.logger.reset_timer()
 
@@ -2280,17 +2349,17 @@ class Edb(Database):
             if extent_type in ["Conforming", self.edb_api.geometry.extent_type.Conforming, 1]:
                 if extent_defeature > 0:
                     _poly = _poly.Defeature(extent_defeature)
-
                 _poly1 = _poly.CreateFromArcs(_poly.GetArcData(), True)
                 if inlcude_voids_in_extents:
                     for hole in list(_poly.Holes):
                         if hole.Area() >= 0.05 * _poly1.Area():
                             _poly1.AddHole(hole)
+                    self.logger.info(f"Number of voids included:{len(list(_poly1.Holes))}")
                 _poly = _poly1
         if not _poly or _poly.IsNull():
             self._logger.error("Failed to create Extent.")
             return []
-        self.logger.info_timer("Expanded Net Polygon Creation")
+        self.logger.info_timer("Extent Creation")
         self.logger.reset_timer()
         _poly_list = convert_py_list_to_net_list([_poly])
         prims_to_delete = []
@@ -2373,20 +2442,17 @@ class Edb(Database):
         for pin in pins_to_delete:
             pin.delete()
 
-        self.logger.info_timer(
-            "Padstack Instances removal completed. {} instances removed.".format(len(pins_to_delete))
-        )
+        self.logger.info_timer("{} Padstack Instances deleted.".format(len(pins_to_delete)))
         self.logger.reset_timer()
 
-        # with ThreadPoolExecutor(number_of_threads) as pool:
-        #     pool.map(lambda item: clip_path(item), reference_paths)
-
-        for item in reference_paths:
-            clip_path(item)
-        for prim in reference_prims:  # removing multithreading as failing with new layer from primitive
-            clean_prim(prim)
-        # with ThreadPoolExecutor(number_of_threads) as pool:
-        #    pool.map(lambda item: clean_prim(item), reference_prims)
+        with ThreadPoolExecutor(number_of_threads) as pool:
+            pool.map(lambda item: clip_path(item), reference_paths)
+        with ThreadPoolExecutor(number_of_threads) as pool:
+            pool.map(lambda item: clean_prim(item), reference_prims)
+        # for item in reference_paths:
+        #     clip_path(item)
+        # for prim in reference_prims:  # removing multithreading as failing with new layer from primitive
+        #     clean_prim(prim)
 
         for el in poly_to_create:
             self.modeler.create_polygon(el[0], el[1], net_name=el[2], voids=el[3])
@@ -2394,7 +2460,7 @@ class Edb(Database):
         for prim in prims_to_delete:
             prim.delete()
 
-        self.logger.info_timer("Primitives cleanup completed. {} primitives deleted.".format(len(prims_to_delete)))
+        self.logger.info_timer("{} Primitives deleted.".format(len(prims_to_delete)))
         self.logger.reset_timer()
 
         i = 0
@@ -2403,7 +2469,7 @@ class Edb(Database):
                 val.edbcomponent.Delete()
                 i += 1
                 i += 1
-        self.logger.info("Deleted {} additional components".format(i))
+        self.logger.info("{} components deleted".format(i))
         if remove_single_pin_components:
             self.components.delete_single_pin_rlc()
             self.logger.info_timer("Single Pins components deleted")
@@ -3121,7 +3187,7 @@ class Edb(Database):
         self.logger.info("Variable %s doesn't exists.", variable_name)
         return None
 
-    def add_project_variable(self, variable_name, variable_value):
+    def add_project_variable(self, variable_name, variable_value, description=""):
         """Add a variable to edb database (project). The variable will have the prefix `$`.
 
         ..note::
@@ -3133,6 +3199,8 @@ class Edb(Database):
             Name of the variable. Name can be provided without ``$`` prefix.
         variable_value : str, float
             Value of the variable with units.
+        description : str, optional
+            Description of the variable.
 
         Returns
         -------
@@ -3151,9 +3219,11 @@ class Edb(Database):
         """
         if not variable_name.startswith("$"):
             variable_name = "${}".format(variable_name)
-        return self.add_design_variable(variable_name=variable_name, variable_value=variable_value)
+        return self.add_design_variable(
+            variable_name=variable_name, variable_value=variable_value, description=description
+        )
 
-    def add_design_variable(self, variable_name, variable_value, is_parameter=False):
+    def add_design_variable(self, variable_name, variable_value, is_parameter=False, description=""):
         """Add a variable to edb. The variable can be a design one or a project variable (using ``$`` prefix).
 
         ..note::
@@ -3169,7 +3239,8 @@ class Edb(Database):
         is_parameter : bool, optional
             Whether to add the variable as a local variable. The default is ``False``.
             When ``True``, the variable is added as a parameter default.
-
+        description : str, optional
+            Description of the variable.
         Returns
         -------
         tuple
@@ -3191,6 +3262,8 @@ class Edb(Database):
         var_server = self.variable_exists(variable_name)
         if not var_server[0]:
             var_server[1].AddVariable(variable_name, self.edb_value(variable_value), is_parameter)
+            if description:
+                var_server[1].SetVariableDescription(variable_name, description)
             return True, var_server[1]
         self.logger.error("Variable %s already exists.", variable_name)
         return False, var_server[1]
@@ -3552,15 +3625,15 @@ class Edb(Database):
         """
         setups = {}
         for i in list(self.active_cell.SimulationSetups):
-            if i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kHFSS:
+            if i.GetType().ToString().endswith("kHFSS"):
                 setups[i.GetName()] = HfssSimulationSetup(self, i)
-            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWave:
+            elif i.GetType().ToString().endswith("kSIWave"):
                 setups[i.GetName()] = SiwaveSimulationSetup(self, i)
-            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kSIWaveDCIR:
+            elif i.GetType().ToString().endswith("kSIWaveDCIR"):
                 setups[i.GetName()] = SiwaveDCSimulationSetup(self, i)
-            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kRaptorX:
+            elif i.GetType().ToString().endswith("kRaptorX"):
                 setups[i.GetName()] = RaptorXSimulationSetup(self, i)
-            elif i.GetType() == self.edb_api.utility.utility.SimulationSetupType.kHFSSPI:
+            elif i.GetType().ToString().endswith("kHFSSPI"):
                 setups[i.GetName()] = HFSSPISimulationSetup(self, i)
         return setups
 
@@ -4033,7 +4106,7 @@ class Edb(Database):
         term.boundary_type = "kVoltageSource"
 
         ref_term = Terminal(self, ref_terminal._edb_object)
-        ref_term.boundary_type = "kVoltageProbe"
+        ref_term.boundary_type = "kVoltageSource"
 
         term.ref_terminal = ref_terminal
         return self.sources[term.name]
@@ -4411,12 +4484,19 @@ class Edb(Database):
         if not temp_directory:
             self.logger.error("Temp directory must be provided when creating model foe arbitrary wave port")
             return False
+        if mounting_side not in ["top", "bottom"]:
+            self.logger.error(
+                "Mounting side must be provided and only `top` or `bottom` are supported. Setting to "
+                "`top` will take the top layer from the current design as reference. Setting to `bottom` "
+                "will take the bottom one."
+            )
         if not output_edb:
             output_edb = os.path.join(temp_directory, "waveport_model.aedb")
         if os.path.isdir(temp_directory):
             shutil.rmtree(temp_directory)
+        os.mkdir(temp_directory)
         reference_layer = list(self.stackup.signal_layers.keys())[0]
-        if mounting_side.lower == "bottom":
+        if mounting_side.lower() == "bottom":
             reference_layer = list(self.stackup.signal_layers.keys())[-1]
         if not signal_nets:
             signal_nets = list(self.nets.signal.keys())
@@ -4462,29 +4542,36 @@ class Edb(Database):
             )
             return False
         cloned_edb = Edb(edbpath=output_edb, edbversion=self.edbversion)
-        cloned_edb.stackup.add_layer(layer_name="ref", layer_type="signal", thickness=0.0, material="pec")
+
         cloned_edb.stackup.add_layer(
             layer_name="ports",
             layer_type="signal",
             thickness=self.stackup.signal_layers[reference_layer].thickness,
             material="pec",
         )
-        box_thick = "100um"
         if launching_box_thickness:
-            box_thick = self.edb_value(launching_box_thickness).ToString()
-        if mounting_side == "top":
-            cloned_edb.stackup.add_layer(
-                layer_name="port_pec", layer_type="signal", thickness=box_thick, method="add_on_bottom", material="pec"
-            )
-        else:
-            cloned_edb.stackup.add_layer(
-                layer_name="port_pec", layer_type="signal", thickness=box_thick, method="add_on_top", material="pec"
-            )
-
+            launching_box_thickness = self.edb_value(launching_box_thickness).ToString()
+        cloned_edb.stackup.add_layer(
+            layer_name="ref",
+            layer_type="signal",
+            thickness=0.0,
+            material="pec",
+            method=f"add_on_{mounting_side}",
+            base_layer="ports",
+        )
+        cloned_edb.stackup.add_layer(
+            layer_name="port_pec",
+            layer_type="signal",
+            thickness=launching_box_thickness,
+            method=f"add_on_{mounting_side}",
+            material="pec",
+            base_layer="ports",
+        )
         for void_info in void_padstacks:
             port_poly = cloned_edb.modeler.create_polygon(
                 main_shape=void_info[0].polygon_data._edb_object, layer_name="ref", net_name="GND"
             )
+            port_poly.scale(1.1)
             pec_poly = cloned_edb.modeler.create_polygon(
                 main_shape=port_poly.polygon_data._edb_object, layer_name="port_pec", net_name="GND"
             )
@@ -4526,3 +4613,45 @@ class Edb(Database):
     def workflow(self):
         """Workflow class."""
         return Workflow(self)
+
+    def export_gds_comp_xml(self, comps_to_export, gds_comps_unit="mm", control_path=None):
+        """Exports an XML file with selected components information for use in a GDS import.
+
+        Parameters
+        ----------
+        comps_to_export : list
+            List of components whose information will be exported to xml file.
+        gds_comps_unit : str, optional
+            GDS_COMPONENTS section units. Default is ``"mm"``.
+        control_path : str, optional
+            Path for outputting the XML file.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        from pyedb.generic.general_methods import ET
+
+        components = ET.Element("GDS_COMPONENTS")
+        components.set("LengthUnit", gds_comps_unit)
+        if not comps_to_export:
+            comps_to_export = self.components.components
+        for comp in comps_to_export:
+            ocomp = self.components.components[comp]
+            gds_component = ET.SubElement(components, "GDS_COMPONENT")
+            for pin_name, pin in ocomp.pins.items():
+                pins_position_unit = unit_converter(pin.position, output_units=gds_comps_unit)
+                gds_pin = ET.SubElement(gds_component, "GDS_PIN")
+                gds_pin.set("Name", pin_name)
+                gds_pin.set("x", str(pins_position_unit[0]))
+                gds_pin.set("y", str(pins_position_unit[1]))
+                gds_pin.set("Layer", pin.placement_layer)
+            component = ET.SubElement(gds_component, "Component")
+            component.set("RefDes", ocomp.refdes)
+            component.set("PartName", ocomp.partname)
+            component.set("PartType", ocomp.type)
+        tree = ET.ElementTree(components)
+        ET.indent(tree, space="\t", level=0)
+        tree.write(control_path)
+        return True if os.path.exists(control_path) else False

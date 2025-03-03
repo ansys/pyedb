@@ -22,15 +22,17 @@
 
 
 from pyedb.configuration.cfg_boundaries import CfgBoundaries
+from pyedb.configuration.cfg_common import CfgVariables
 from pyedb.configuration.cfg_components import CfgComponents
 from pyedb.configuration.cfg_general import CfgGeneral
+from pyedb.configuration.cfg_modeler import CfgModeler
 from pyedb.configuration.cfg_nets import CfgNets
 from pyedb.configuration.cfg_operations import CfgOperations
 from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
 from pyedb.configuration.cfg_padstacks import CfgPadstacks
 from pyedb.configuration.cfg_pin_groups import CfgPinGroups
-from pyedb.configuration.cfg_ports_sources import CfgPorts, CfgSources
-from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel
+from pyedb.configuration.cfg_ports_sources import CfgPorts, CfgProbes, CfgSources
+from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
 from pyedb.configuration.cfg_setup import CfgSetups
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
 from pyedb.configuration.cfg_stackup import CfgStackup
@@ -41,11 +43,9 @@ class CfgData(object):
 
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
-        self.general = CfgGeneral(self, kwargs.get("general", None))
+        self.general = CfgGeneral(self._pedb, kwargs.get("general", {}))
 
-        self.boundaries = {}
-        if kwargs.get("boundaries", None):
-            self.boundaries = CfgBoundaries(self, kwargs.get("boundaries", None))
+        self.boundaries = CfgBoundaries(self._pedb, kwargs.get("boundaries", {}))
 
         self.nets = CfgNets(
             self, kwargs.get("nets", {}).get("signal_nets", []), kwargs.get("nets", {}).get("power_ground_nets", [])
@@ -53,7 +53,7 @@ class CfgData(object):
 
         self.components = CfgComponents(self._pedb, components_data=kwargs.get("components", []))
 
-        self.padstacks = CfgPadstacks(self, kwargs.get("padstacks", None))
+        self.padstacks = CfgPadstacks(self._pedb, kwargs.get("padstacks", None))
 
         self.pin_groups = CfgPinGroups(self._pedb, pingroup_data=kwargs.get("pin_groups", []))
 
@@ -65,10 +65,7 @@ class CfgData(object):
 
         self.stackup = CfgStackup(self._pedb, data=kwargs.get("stackup", {}))
 
-        self.s_parameters = [
-            CfgSParameterModel(self, self.general.s_parameter_library, sparam_model)
-            for sparam_model in kwargs.get("s_parameters", [])
-        ]
+        self.s_parameters = CfgSParameters(self._pedb, kwargs.get("s_parameters", []), self.general.s_parameter_library)
 
         self.spice_models = [
             CfgSpiceModel(self, self.general.spice_model_library, spice_model)
@@ -77,3 +74,9 @@ class CfgData(object):
 
         self.package_definitions = CfgPackageDefinitions(self._pedb, data=kwargs.get("package_definitions", []))
         self.operations = CfgOperations(self._pedb, data=kwargs.get("operations", []))
+
+        self.modeler = CfgModeler(self._pedb, data=kwargs.get("modeler", {}))
+
+        self.variables = CfgVariables(self._pedb, data=kwargs.get("variables", []))
+
+        self.probes = CfgProbes(self._pedb, data=kwargs.get("probes", []))

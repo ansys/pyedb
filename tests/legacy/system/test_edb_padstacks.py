@@ -23,6 +23,7 @@
 """Tests related to Edb padstacks
 """
 import os
+from pathlib import Path
 
 import pytest
 
@@ -99,6 +100,16 @@ class TestClass:
             assert via.backdrill_top
             assert via.set_backdrill_bottom("16_Bottom", 0.5e-3)
             assert via.backdrill_bottom
+
+        via = self.edbapp.padstacks.instances_by_name["Via1266"]
+        via.backdrill_parameters = {
+            "from_bottom": {"drill_to_layer": "Inner5(PWR2)", "diameter": "0.4mm", "stub_length": "0.1mm"},
+            "from_top": {"drill_to_layer": "Inner2(PWR1)", "diameter": "0.41mm", "stub_length": "0.11mm"},
+        }
+        assert via.backdrill_parameters == {
+            "from_bottom": {"drill_to_layer": "Inner5(PWR2)", "diameter": "0.4mm", "stub_length": "0.1mm"},
+            "from_top": {"drill_to_layer": "Inner2(PWR1)", "diameter": "0.41mm", "stub_length": "0.11mm"},
+        }
 
     def test_padstacks_get_nets_from_pin_list(self):
         """Retrieve pin list from component and net."""
@@ -305,23 +316,26 @@ class TestClass:
         assert os.path.exists(local_png1)
 
         local_png2 = os.path.join(self.local_scratch.path, "test2.png")
+
         edb_plot.nets.plot(
-            nets="V3P3_S5",
+            nets="DDR4_DQS7_N",
             layers=None,
             save_plot=local_png2,
             plot_components_on_top=True,
             plot_components_on_bottom=True,
         )
         assert os.path.exists(local_png2)
-
+        edb_plot.modeler.create_polygon(
+            [[-10e-3, -10e-3], [110e-3, -10e-3], [110e-3, 70e-3], [-10e-3, 70e-3]], layer_name="Outline"
+        )
         local_png3 = os.path.join(self.local_scratch.path, "test3.png")
         edb_plot.nets.plot(
-            nets=["LVL_I2C_SCL", "V3P3_S5", "GATE_V5_USB"],
-            layers="TOP",
+            nets=["DDR4_DQ57", "DDR4_DQ56"],
+            layers="1_Top",
             color_by_net=True,
             save_plot=local_png3,
-            plot_components_on_top=True,
-            plot_components_on_bottom=True,
+            plot_components=True,
+            plot_vias=True,
         )
         assert os.path.exists(local_png3)
 
@@ -439,9 +453,50 @@ class TestClass:
         assert "via_central" in edbapp.padstacks.definitions
         edbapp.close()
         edbapp = Edb(target_path2, edbversion=desktop_version)
-        assert edbapp.padstacks.merge_via_along_lines(
-            net_name="GND", distance_threshold=2e-3, minimum_via_number=6, selected_angles=[0, 180]
-        )
+        assert edbapp.padstacks.merge_via_along_lines(net_name="GND", distance_threshold=2e-3, minimum_via_number=6)
         assert "main_via" in edbapp.padstacks.definitions
         assert "via_central" in edbapp.padstacks.definitions
+        edbapp.close()
+
+    def test_reduce_via_in_bounding_box(self):
+        source_path = Path(__file__).parent.parent.parent / "example_models" / "TEDB" / "vias_300.aedb"
+        edbapp = Edb(edbpath=source_path)
+        assert len(edbapp.padstacks.instances) == 301
+        # empty bounding box
+        assert edbapp.padstacks.reduce_via_in_bounding_box([-16e-3, -7e-3, -13e-3, -6e-3], 10, 10) is False
+        # over sampling
+        assert edbapp.padstacks.reduce_via_in_bounding_box([-20e-3, -10e-3, 20e-3, 10e-3], 20, 20) is False
+
+        assert edbapp.padstacks.reduce_via_in_bounding_box([-20e-3, -10e-3, 20e-3, 10e-3], 10, 10) is True
+        assert len(edbapp.padstacks.instances) == 96
+        edbapp.close_edb()
+
+    def test_via_merge(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        polygon = [[[118e-3, 60e-3], [125e-3, 60e-3], [124e-3, 56e-3], [118e-3, 56e-3]]]
+        result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
+        assert len(result) == 1
+        edbapp.close()
+
+    def test_via_merge2(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        polygon = [[[123.37e-3, 69.5e-3], [124.83e-3, 69.25e-3], [124.573e-3, 60.23e-3], [123e-3, 60.5e-3]]]
+        result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
+        assert len(result) == 1
+        edbapp.close()
+
+    def test_via_merge3(self):
+        source_path = Path(__file__).parent.parent.parent / "example_models" / "TEDB" / "merge_via_4layers.aedb"
+        edbapp = Edb(edbpath=source_path)
+
+        merged_via = edbapp.padstacks.merge_via(
+            contour_boxes=[[[11e-3, -5e-3], [17e-3, -5e-3], [17e-3, 1e-3], [11e-3, 1e-3], [11e-3, -5e-3]]],
+            net_filter=["NET_3"],
+            start_layer="layer1",
+            stop_layer="layer2",
+        )
+
+        assert edbapp.padstacks.instances[merged_via[0]].net_name == "NET_1"
+        assert edbapp.padstacks.instances[merged_via[0]].start_layer == "layer1"
+        assert edbapp.padstacks.instances[merged_via[0]].stop_layer == "layer2"
         edbapp.close()

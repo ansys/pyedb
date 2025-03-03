@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from typing import Union
 
 from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
 from pyedb.dotnet.edb_core.geometry.point_data import PointData
@@ -50,6 +51,19 @@ class PolygonData:
             self._edb_object = self.create_from_bounding_box(**kwargs)
         else:  # pragma: no cover
             self._edb_object = edb_object
+
+    @property
+    def bounding_box(self):
+        """Bounding box.
+
+        Returns
+        -------
+        List[float]
+            List of coordinates for the component's bounding box, with the list of
+            coordinates in this order: [X lower left corner, Y lower left corner,
+            X upper right corner, Y upper right corner].
+        """
+        return BBox(self._pedb, self._edb_object.GetBBox()).corner_points
 
     @property
     def arcs(self):
@@ -115,3 +129,7 @@ class PolygonData:
             arcs = convert_py_list_to_net_list(arcs)
         poly = self._edb_object.CreateFromArcs(arcs, flag)
         return PolygonData(self._pedb, poly)
+
+    def point_in_polygon(self, x: Union[str, float], y: Union[str, float]) -> bool:
+        """Determines whether a point is inside the polygon."""
+        return self._edb_object.PointInPolygon(self._pedb.point_data(x, y))

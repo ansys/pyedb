@@ -36,12 +36,14 @@ class CfgPinGroups:
 
     def get_data_from_db(self):
         self.pin_groups = []
-        for name, pg in self._pedb.siwave.pin_groups.items():
-            pins = [p.aedt_name for p in pg.pins.values()]
+        layout_pin_groups = self._pedb.siwave.pin_groups
+        for pg_name, pg_obj in layout_pin_groups.items():
+            pins = list(pg_obj.pins.keys())
+            refdes = list(pg_obj.pins.values())[0].component.name
             cfg_pg = CfgPinGroup(
                 self._pedb,
-                name=name,
-                reference_designator=None,
+                name=pg_name,
+                reference_designator=refdes,
                 pins=pins,
             )
             self.pin_groups.append(cfg_pg)
@@ -65,20 +67,16 @@ class CfgPinGroup(CfgBase):
     def create(self):
         """Apply pin group on layout."""
         if self.pins:
-            if self.reference_designator is None:
-                self._pedb.modeler.create_pin_group(self.name, pins_by_aedt_name=self.pins)
-            else:
-                self._pedb.siwave.create_pin_group(self.reference_designator, list(self.pins), self.name)
+            pins = self.pins if isinstance(self.pins, list) else [self.pins]
+            self._pedb.siwave.create_pin_group(self.reference_designator, pins, self.name)
         elif self.net:
-            if self.reference_designator in self._pedb.components.instances:
-                comp = self._pedb.components.instances[self.reference_designator]
-            else:
-                raise f"Component not found for creating pin group {self.name}."
-            pins = [p for p, obj in comp.pins.items() if obj.net_name in self.net]
+            nets = self.net if isinstance(self.net, list) else [self.net]
+            comp = self._pedb.components.instances[self.reference_designator]
+            pins = [p for p, obj in comp.pins.items() if obj.net_name in nets]
             if not self._pedb.siwave.create_pin_group(self.reference_designator, pins, self.name):
-                self._pedb.logger.error(f"Failed to create pin group {self.name}")
+                raise RuntimeError(f"Failed to create pin group {self.name}")
         else:
-            self._pedb.logger.error(f"No net and pins defined for defining pin group {self.name}")
+            raise RuntimeError(f"No net and pins defined for defining pin group {self.name}")
 
     def export_properties(self):
         if self.pins:
