@@ -263,11 +263,31 @@ class CfgCircuitElement(CfgBase):
             net_name = self.positive_terminal_info.net
             pos_coor_terminal[self.name] = self._pedb.get_point_terminal(self.name, net_name, point, layer)
 
+        elif pos_type == "pin":
+            pins = {pos_value: self._pedb.components.instances[self.reference_designator].pins[pos_value]}
+            if self.positive_terminal_info.contact_type in ["quad", "inline"]:
+                for _, pin in pins.items():
+                    contact_type = self.positive_terminal_info.contact_type
+                    radius = self.positive_terminal_info.contact_radius
+                    num_of_contact = self.positive_terminal_info.num_of_contact
+                    virtual_pins = self._create_virtual_pins_on_pin(pin, contact_type, radius, num_of_contact)
+                    pos_objs.update(virtual_pins)
+                    self._elem_num = len(pos_objs)
+            else:
+                pos_objs.update(pins)
         elif pos_type == "pin_group":
+            pins = self._get_pins(pos_type, pos_value)
             if self.distributed:
-                pins = self._get_pins(pos_type, pos_value)
                 pos_objs.update(pins)
                 self._elem_num = len(pos_objs)
+            elif self.positive_terminal_info.contact_type in ["quad", "inline"]:
+                for _, pin in pins.items():
+                    contact_type = self.positive_terminal_info.contact_type
+                    radius = self.positive_terminal_info.contact_radius
+                    num_of_contact = self.positive_terminal_info.num_of_contact
+                    virtual_pins = self._create_virtual_pins_on_pin(pin, contact_type, radius, num_of_contact)
+                    pos_objs.update(virtual_pins)
+                    self._elem_num = len(pos_objs)
             else:
                 pos_objs[pos_value] = self._pedb.siwave.pin_groups[pos_value]
         elif pos_type == "net":
@@ -287,9 +307,6 @@ class CfgCircuitElement(CfgBase):
                 # create pin group
                 neg_obj = self._create_pin_group(pins)
                 pos_objs.update(neg_obj)
-        elif pos_type == "pin":
-            pins = {pos_value: self._pedb.components.instances[self.reference_designator].pins[pos_value]}
-            pos_objs.update(pins)
         else:
             raise Exception(f"Wrong positive terminal type {pos_type}.")
 
