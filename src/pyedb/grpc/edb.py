@@ -42,7 +42,6 @@ from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
 )
-from ansys.edb.core.utility.cache import enable_caching
 from ansys.edb.core.utility.value import Value as GrpcValue
 import rtree
 
@@ -724,26 +723,25 @@ class Edb(EdbInit):
         bool: `True` if successful, `False` if failed.
 
         """
-        with enable_caching():
-            if units.lower() not in ["millimeter", "inch", "micron"]:  # pragma no cover
-                self.logger.warning("The wrong unit is entered. Setting to the default, millimeter.")
-                units = "millimeter"
+        if units.lower() not in ["millimeter", "inch", "micron"]:  # pragma no cover
+            self.logger.warning("The wrong unit is entered. Setting to the default, millimeter.")
+            units = "millimeter"
 
-            if not ipc_path:
-                ipc_path = self.edbpath[:-4] + "xml"
-            self.logger.info("Export IPC 2581 is starting. This operation can take a while.")
-            start = time.time()
-            ipc = Ipc2581(self, units)
-            ipc.load_ipc_model()
-            ipc.file_path = ipc_path
-            result = ipc.write_xml()
+        if not ipc_path:
+            ipc_path = self.edbpath[:-4] + "xml"
+        self.logger.info("Export IPC 2581 is starting. This operation can take a while.")
+        start = time.time()
+        ipc = Ipc2581(self, units)
+        ipc.load_ipc_model()
+        ipc.file_path = ipc_path
+        result = ipc.write_xml()
 
-            if result:  # pragma no cover
-                self.logger.info_timer("Export IPC 2581 completed.", start)
-                self.logger.info("File saved as %s", ipc_path)
-                return ipc_path
-            self.logger.info("Error exporting IPC 2581.")
-            return False
+        if result:  # pragma no cover
+            self.logger.info_timer("Export IPC 2581 completed.", start)
+            self.logger.info("File saved as %s", ipc_path)
+            return ipc_path
+        self.logger.info("Error exporting IPC 2581.")
+        return False
 
     @property
     def configuration(self):
@@ -2811,12 +2809,9 @@ class Edb(EdbInit):
         list[float]
             Bounding box as a [lower-left X, lower-left Y, upper-right X, upper-right Y] in meters.
         """
-        with enable_caching():
-            lay_inst_polygon_data = [
-                obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()
-            ]
-            layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
-            return [[layout_bbox[0].x.value, layout_bbox[0].y.value], [layout_bbox[1].x.value, layout_bbox[1].y.value]]
+        lay_inst_polygon_data = [obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()]
+        layout_bbox = GrpcPolygonData.bbox_of_polygons(lay_inst_polygon_data)
+        return [[layout_bbox[0].x.value, layout_bbox[0].y.value], [layout_bbox[1].x.value, layout_bbox[1].y.value]]
 
     # def build_simulation_project(self, simulation_setup):
     #     # type: (SimulationConfiguration) -> bool
@@ -3008,8 +3003,7 @@ class Edb(EdbInit):
         -------
         :class:`LayoutStatistics <pyedb.grpc.database.utility.layout_statistics.LayoutStatistics>`
         """
-        with enable_caching():
-            return self.modeler.get_layout_statistics(evaluate_area=compute_area, net_list=None)
+        return self.modeler.get_layout_statistics(evaluate_area=compute_area, net_list=None)
 
     def are_port_reference_terminals_connected(self, common_reference=None):
         """Check if all terminal references in design are connected.
