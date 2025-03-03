@@ -778,7 +778,7 @@ class EDBPadstack(object):
         pdef_data.SetHoleRange(getattr(self._edb.definition.PadstackHoleRange, snake_to_pascal(value)))
         self._padstack_def_data = pdef_data
 
-    def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True):
+    def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=75, delete_padstack_def=True):
         """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
 
         Parameters
@@ -810,22 +810,9 @@ class EDBPadstack(object):
         layer_names = [i for i in list(layers.keys())]
         if convert_only_signal_vias:
             signal_nets = [i for i in list(self._ppadstack._pedb.nets.signal_nets.keys())]
-        topl, topz, bottoml, bottomz = self._ppadstack._pedb.stackup.limits(True)
-        if self.via_start_layer in layers:
-            start_elevation = layers[self.via_start_layer].lower_elevation
-        else:
-            start_elevation = layers[self.instances[0].start_layer].lower_elevation
-        if self.via_stop_layer in layers:
-            stop_elevation = layers[self.via_stop_layer].upper_elevation
-        else:
-            stop_elevation = layers[self.instances[0].stop_layer].upper_elevation
 
-        diel_thick = abs(start_elevation - stop_elevation)
-        rad1 = self.hole_properties[0] / 2 - math.tan(hole_wall_angle * diel_thick * math.pi / 180)
-        rad2 = self.hole_properties[0] / 2
+        layer_count = len(self._ppadstack._pedb.stackup.signal_layers)
 
-        if start_elevation < (topz + bottomz) / 2:
-            rad1, rad2 = rad2, rad1
         i = 0
         for via in list(self.padstack_instances.values()):
             if convert_only_signal_vias and via.net_name in signal_nets or not convert_only_signal_vias:
@@ -861,18 +848,33 @@ class EDBPadstack(object):
                         self._get_edb_value(pos[1]),
                         self._get_edb_value(self.pad_by_layer[self.via_stop_layer].parameters_values[0] / 2),
                     )
-                for layer_name in layer_names:
+                for layer_idx, layer_name in enumerate(layer_names):
                     stop = ""
                     if layer_name == via.start_layer or started:
                         start = layer_name
                         stop = layer_names[layer_names.index(layer_name) + 1]
+
+                        start_elevation = layers[start].lower_elevation
+                        stop_elevation = layers[stop].upper_elevation
+                        diel_thick = abs(start_elevation - stop_elevation)
+
+                        rad_large = self.hole_diameter / 2
+                        rad_small = rad_large - diel_thick * 1 / math.tan(math.radians(hole_wall_angle))
+
+                        if layer_idx + 1 < layer_count / 2:  # upper half of stack
+                            rad_u = rad_large
+                            rad_l = rad_small
+                        else:
+                            rad_u = rad_small
+                            rad_l = rad_large
+
                         cloned_circle = self._edb.cell.primitive.circle.create(
                             layout,
                             start,
                             via._edb_padstackinstance.GetNet(),
                             self._get_edb_value(pos[0]),
                             self._get_edb_value(pos[1]),
-                            self._get_edb_value(rad1),
+                            self._get_edb_value(rad_u),
                         )
                         cloned_circle2 = self._edb.cell.primitive.circle.create(
                             layout,
@@ -880,7 +882,7 @@ class EDBPadstack(object):
                             via._edb_padstackinstance.GetNet(),
                             self._get_edb_value(pos[0]),
                             self._get_edb_value(pos[1]),
-                            self._get_edb_value(rad2),
+                            self._get_edb_value(rad_l),
                         )
                         s3d = self._edb.cell.hierarchy._hierarchy.Structure3D.Create(
                             layout, generate_unique_name("via3d_" + via.aedt_name.replace("via_", ""), n=3)
