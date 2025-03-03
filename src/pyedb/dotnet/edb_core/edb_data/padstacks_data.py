@@ -167,7 +167,7 @@ class EDBPadProperties(object):
         )
         if flag:
             return PolygonData(self._edb._app, edb_object)
-        else:
+        else:  # pragma no cover
             raise AttributeError(f"No polygon data.")
 
     @property
