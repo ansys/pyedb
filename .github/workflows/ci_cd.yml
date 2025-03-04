@@ -131,8 +131,7 @@ jobs:
           timeout_minutes: 60
           command: |
             .venv\Scripts\Activate.ps1
-            pytest -v external/pyaedt/tests/system/general/test_01_3dlayout_edb.py
-            pytest -v external/pyaedt/tests/system/general/test_01_configuration_files.py
+            pytest -n 2 external/pyaedt/tests/system/general/test_01_3dlayout_edb.py external/pyaedt/tests/system/general/test_01_configuration_files.py
             
 
       - name: Run PyAEDT solvers tests
@@ -145,5 +144,4 @@ jobs:
           timeout_minutes: 60
           command: |
             .venv\Scripts\Activate.ps1
-            pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
-            pytest -v external/pyaedt/tests/system/solvers/test_00_analyze.py
+            pytest -n 2 external/pyaedt/tests/system/solvers/test_45_workflows.py external/pyaedt/tests/system/solvers/test_00_analyze.py
