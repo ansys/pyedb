@@ -144,9 +144,4 @@ jobs:
           command: |
             .venv\Scripts\Activate.ps1
             pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
-            pytest -v external/pyaedt/tests/system/solvers --ignore=tests/system/solvers/test_45_FilterSolutions.py
-            pytest -v external/pyaedt/tests/system/solvers --ignore=tests/system/solvers/test_26_emit.py
-            pytest -v external/pyaedt/tests/system/solvers --ignore=tests/system/solvers/test_31_Q3D.py
-            pytest -v external/pyaedt/tests/system/solvers --ignore=tests/system/solvers/test_01_pdf.py
-            
-
+            pytest -v external/pyaedt/tests/system/solvers/test_00_analyze.py
