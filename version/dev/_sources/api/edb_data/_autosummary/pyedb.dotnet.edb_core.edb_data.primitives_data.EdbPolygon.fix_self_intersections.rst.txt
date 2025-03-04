@@ -1,0 +1,6 @@
+fix\_self\_intersections
+========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.primitives_data
+
+.. automethod:: EdbPolygon.fix_self_intersections

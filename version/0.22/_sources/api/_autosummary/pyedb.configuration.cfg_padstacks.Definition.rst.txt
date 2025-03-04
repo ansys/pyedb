@@ -1,0 +1,24 @@
+﻿Definition
+==========
+
+.. currentmodule:: pyedb.configuration.cfg_padstacks
+
+.. autoclass:: Definition
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Definition.apply
+      
+   
+   
+
+   
+   
+   

@@ -1,0 +1,24 @@
+﻿CfgSpiceModel
+=============
+
+.. currentmodule:: pyedb.configuration.cfg_spice_models
+
+.. autoclass:: CfgSpiceModel
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgSpiceModel.apply
+      
+   
+   
+
+   
+   
+   
