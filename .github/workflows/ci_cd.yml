@@ -131,13 +131,7 @@ jobs:
           timeout_minutes: 60
           command: |
             .venv\Scripts\Activate.ps1
-            pytest -n 4 -k external/pyaedt/tests/system/general/test_01_3dlayout_edb.py
-            pytest -n 4 -k external/pyaedt/tests/system/general/test_01_configuration_files.py
-            pytest -n 4 -k external/pyaedt/tests/system/general/test_20_HFSS.py
-            pytest -n 4 -k external/pyaedt/tests/system/general/test_21_Circuit.py
-            pytest -n 4 -k external/pyaedt/tests/system/general/test_22_Circuit_DynamicLink.py
-            pytest -n 4 -k external/pyaedt/tests/system/general/test_41_3dlayout_modeler.py
-            
+            pytest -n 4 --dist loadfile -v external/pyaedt/tests/system/general/
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@v3
@@ -149,7 +143,10 @@ jobs:
           timeout_minutes: 60
           command: |
             .venv\Scripts\Activate.ps1
-            pytest -k external/pyaedt/tests/system/solvers/test_45_workflows.py
-            pytest -k external/pyaedt/tests/system/solvers/test_00_analyze.py
+            pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
+            pytest -v external/pyaedt/tests/system/solvers --ignore=tests/system/solvers/test_45_FilterSolutions.py
+            pytest -v external/pyaedt/tests/system/solvers --ignore=tests/system/solvers/test_26_emit.py
+            pytest -v external/pyaedt/tests/system/solvers --ignore=tests/system/solvers/test_31_Q3D.py
+            pytest -v external/pyaedt/tests/system/solvers --ignore=tests/system/solvers/test_01_pdf.py
             
 
