@@ -30,7 +30,7 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
     """Manages pin group terminal properties."""
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object)
+        super().__init__(edb_object.msg)
         self._edb_object = edb_object
         self._pedb = pedb
 
