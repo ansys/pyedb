@@ -1,0 +1,6 @@
+get\_product\_property
+======================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.get_product_property

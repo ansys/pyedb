@@ -1,0 +1,6 @@
+set\_parameters\_to\_edb
+========================
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. automethod:: CfgSource.set_parameters_to_edb
