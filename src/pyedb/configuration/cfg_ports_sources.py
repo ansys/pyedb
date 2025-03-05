@@ -281,7 +281,11 @@ class CfgCircuitElement(CfgBase):
             pos_coor_terminal[self.name] = self._pedb.get_point_terminal(self.name, net_name, point, layer)
 
         elif pos_type == "pin":
-            pins = {pos_value: self._pedb.components.instances[self.positive_terminal_info.reference_designator].pins[pos_value]}
+            pins = {
+                pos_value: self._pedb.components.instances[self.positive_terminal_info.reference_designator].pins[
+                    pos_value
+                ]
+            }
             if self.positive_terminal_info.contact_type in ["quad", "inline"]:
                 for _, pin in pins.items():
                     contact_type = self.positive_terminal_info.contact_type
@@ -293,7 +297,7 @@ class CfgCircuitElement(CfgBase):
             else:
                 pos_objs.update(pins)
         elif pos_type == "pin_group":
-            pins = self._get_pins(pos_type, pos_value,self.positive_terminal_info.reference_designator)
+            pins = self._get_pins(pos_type, pos_value, self.positive_terminal_info.reference_designator)
             if self.distributed:
                 pos_objs.update(pins)
                 self._elem_num = len(pos_objs)
@@ -354,13 +358,17 @@ class CfgCircuitElement(CfgBase):
                     neg_obj = {neg_value: self._pedb.siwave.pin_groups[neg_value]}
                 elif neg_type == "net":
                     # Get pins
-                    pins = self._get_pins(neg_type, neg_value, self.negative_terminal_info.reference_designator)  # terminal type pin or net
+                    pins = self._get_pins(
+                        neg_type, neg_value, self.negative_terminal_info.reference_designator
+                    )  # terminal type pin or net
                     # create pin group
-                    neg_obj = self._create_pin_group(pins, self.negative_terminal_info.reference_designator,True)
+                    neg_obj = self._create_pin_group(pins, self.negative_terminal_info.reference_designator, True)
                 elif neg_type == "pin":
                     terminal_name = f"{self.negative_terminal_info.reference_designator}_{neg_value}"
                     neg_obj = {
-                        terminal_name: self._pedb.components.instances[self.negative_terminal_info.reference_designator].pins[neg_value]
+                        terminal_name: self._pedb.components.instances[
+                            self.negative_terminal_info.reference_designator
+                        ].pins[neg_value]
                     }
                 else:
                     raise Exception(f"Wrong negative terminal type {neg_type}.")
