@@ -1,0 +1,6 @@
+use\_shell\_elements
+====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: HfssSolverSettings.use_shell_elements

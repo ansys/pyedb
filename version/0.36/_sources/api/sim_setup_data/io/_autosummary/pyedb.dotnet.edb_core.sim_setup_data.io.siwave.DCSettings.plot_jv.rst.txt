@@ -1,0 +1,6 @@
+plot\_jv
+========
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
+
+.. autoproperty:: DCSettings.plot_jv

@@ -1,0 +1,6 @@
+base\_polygon
+=============
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.base_polygon

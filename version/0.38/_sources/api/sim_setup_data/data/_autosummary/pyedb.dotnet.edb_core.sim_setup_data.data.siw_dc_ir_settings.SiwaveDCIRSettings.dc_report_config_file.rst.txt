@@ -1,0 +1,6 @@
+dc\_report\_config\_file
+========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.siw_dc_ir_settings
+
+.. autoproperty:: SiwaveDCIRSettings.dc_report_config_file
