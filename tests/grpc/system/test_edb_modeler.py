@@ -79,13 +79,13 @@ class TestClass:
         assert poly0.is_intersecting(poly0)
         poly_3022 = edbapp.modeler.get_primitive(3022)
         assert edbapp.modeler.get_primitive(3023)
-        assert poly_3022.aedt_name == "poly void_2425"
+        assert poly_3022.aedt_name == "poly_3022"
         poly_3022.aedt_name = "poly3022"
         assert poly_3022.aedt_name == "poly3022"
         poly_with_voids = [poly for poly in edbapp.modeler.polygons if poly.has_voids]
         assert poly_with_voids
         for k in poly_with_voids[0].voids:
-            assert k.id
+            assert k.edb_uid
             assert k.expand(0.0005)
         poly_167 = [i for i in edbapp.modeler.paths if i.edb_uid == 167][0]
         assert poly_167.expand(0.0005)
@@ -459,32 +459,32 @@ class TestClass:
         # Done
         edbapp = Edb()
         edbapp["$H"] = "0.65mil"
-        edbapp["Via_S"] = "40mil"
-        edbapp["MS_W"] = "4.75mil"
-        edbapp["MS_S"] = "5mil"
-        edbapp["SL_W"] = "6.75mil"
-        edbapp["SL_S"] = "8mil"
+        edbapp["$Via_S"] = "40mil"
+        edbapp["$MS_W"] = "4.75mil"
+        edbapp["$MS_S"] = "5mil"
+        edbapp["$SL_W"] = "6.75mil"
+        edbapp["$SL_S"] = "8mil"
         edbapp.stackup.add_layer("trace1", thickness="$H")
         t1_1 = edbapp.modeler.create_trace(
-            width="MS_W",
+            width="$MS_W",
             layer_name="trace1",
-            path_list=[("-Via_S/2", "0"), ("-MS_S/2-MS_W/2", "-16 mil"), ("-MS_S/2-MS_W/2", "-100 mil")],
+            path_list=[("-$Via_S/2", "0"), ("-$MS_S/2-$MS_W/2", "-16 mil"), ("-$MS_S/2-$MS_W/2", "-100 mil")],
             start_cap_style="FLat",
             end_cap_style="FLat",
             net_name="t1_1",
         )
         t2_1 = edbapp.modeler.create_trace(
-            width="MS_W",
+            width="$MS_W",
             layer_name="trace1",
-            path_list=[("-Via_S/2", "0"), ("-SL_S/2-SL_W/2", "16 mil"), ("-SL_S/2-SL_W/2", "100 mil")],
+            path_list=[("-$Via_S/2", "0"), ("-$SL_S/2-$SL_W/2", "16 mil"), ("-$SL_S/2-$SL_W/2", "100 mil")],
             start_cap_style="FLat",
             end_cap_style="FLat",
             net_name="t2_1",
         )
         t3_1 = edbapp.modeler.create_trace(
-            width="MS_W",
+            width="$MS_W",
             layer_name="trace1",
-            path_list=[("-Via_S/2", "0"), ("-SL_S/2-SL_W/2", "16 mil"), ("SL_S/2+MS_W/2", "100 mil")],
+            path_list=[("-$Via_S/2", "0"), ("-$SL_S/2-$SL_W/2", "16 mil"), ("$SL_S/2+$MS_W/2", "100 mil")],
             start_cap_style="FLat",
             end_cap_style="FLat",
             net_name="t3_1",

@@ -137,11 +137,11 @@ class Modeler(object):
             List of primitives.
         """
         for p in self._layout.primitives:
-            if p.id == primitive_id:
+            if p.edb_uid == primitive_id:
                 return self.__mapping_primitive_type(p)
         for p in self._layout.primitives:
             for v in p.voids:
-                if v.id == primitive_id:
+                if v.edb_uid == primitive_id:
                     return self.__mapping_primitive_type(v)
 
     def __mapping_primitive_type(self, primitive):

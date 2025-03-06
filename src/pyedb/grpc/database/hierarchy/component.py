@@ -369,7 +369,7 @@ class Component(GrpcComponentGroup):
         if not self.model_type == "SPICEModel":
             return None
         else:
-            return SpiceModel(self._edb_model)
+            return SpiceModel(self._edb_model.msg)
 
     @property
     def s_param_model(self):
@@ -382,7 +382,7 @@ class Component(GrpcComponentGroup):
         if not self.model_type == "SParameterModel":
             return None
         else:
-            return GrpcSParameterModel(self._edb_model)
+            return GrpcSParameterModel(self._edb_model.msg)
 
     @property
     def netlist_model(self):

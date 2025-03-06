@@ -162,11 +162,11 @@ class Material(GrpcMaterialDef):
         """
         try:
             if super().dielectric_material_model.type.name.lower() == "debye":
-                self.__dielectric_model = GrpcDebyeModel(super().dielectric_material_model)
+                self.__dielectric_model = GrpcDebyeModel(super().dielectric_material_model.msg)
             elif super().dielectric_material_model.type.name.lower() == "multipole_debye":
-                self.__dielectric_model = GrpcMultipoleDebyeModel(super().dielectric_material_model)
+                self.__dielectric_model = GrpcMultipoleDebyeModel(super().dielectric_material_model.msg)
             elif super().dielectric_material_model.type.name.lower() == "djordjecvic_sarkar":
-                self.__dielectric_model = GrpcDjordjecvicSarkarModel(super().dielectric_material_model)
+                self.__dielectric_model = GrpcDjordjecvicSarkarModel(super().dielectric_material_model.msg)
             return self.__dielectric_model
         except:
             return None
