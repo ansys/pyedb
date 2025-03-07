@@ -1951,7 +1951,7 @@ class TestClass:
             reference_pin_names = [f"{component_name}-{pin}" for pin in reference_pin_names]
         assert len(edbapp.excitations) == 0
         assert edbapp.components.create_port_on_pins(
-            refdes=component_name if pins_mode == "int" or pins_mode == "global_str" else None,
+            refdes=component_name if pins_mode == "str" else None,
             pins=(
                 positive_pin_names
                 if pins_mode == "str" or pins_mode == "global_str"
