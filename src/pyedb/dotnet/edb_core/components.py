@@ -996,6 +996,9 @@ class Components(object):
                     pass
             else:
                 nets.append(net)
+
+        if not isinstance(reference_net, List):
+            reference_net = [reference_net]
         ref_nets = []
         for net in reference_net:
             net_name = None

@@ -163,16 +163,16 @@ class TestClass:
         """Add a sywave DC analysis."""
         assert self.edbapp.siwave.add_siwave_dc_analysis(name="Test_dc")
 
-    def test_hfss_mesh_operations(self):
+    def test_hfss_get_trace_width_for_traces_with_ports(self):
         """Retrieve the trace width for traces with ports."""
-        self.edbapp.components.create_port_on_component(
+        assert self.edbapp.components.create_port_on_component(
             "U1",
             ["VDD_DDR"],
             reference_net="GND",
             port_type=SourceType.CircPort,
         )
-        mesh_ops = self.edbapp.hfss.get_trace_width_for_traces_with_ports()
-        assert len(mesh_ops) > 0
+        trace_widths = self.edbapp.hfss.get_trace_width_for_traces_with_ports()
+        assert len(trace_widths) > 0
 
     def test_add_variables(self):
         """Add design and project variables."""
