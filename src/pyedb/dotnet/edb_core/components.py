@@ -806,7 +806,7 @@ class Components(object):
             pins = [pins.name]
         elif isinstance(pins, self._edb.Cell.Primitive.PadstackInstance):
             pins = [pins.GetName()]
-        if not reference_pins:  # pragma: no cover
+        if not reference_pins:
             self._logger.error("No reference pin provided.")
             return False
         if isinstance(reference_pins, str):
@@ -830,11 +830,11 @@ class Components(object):
                     _temp.append(ref_pin.GetName())
             reference_pins = _temp
         elif isinstance(reference_pins, int):
-            if reference_pins in self._padstack.instances:  # pragma: no cover
+            if reference_pins in self._padstack.instances:
                 reference_pins = self._padstack.instances[reference_pins]
         elif isinstance(reference_pins, EDBPadstackInstance):
             reference_pins = [reference_pins.name]
-        elif isinstance(reference_pins, self._edb.Cell.Primitive.PadstackInstance):  # pragma: no cover
+        elif isinstance(reference_pins, self._edb.Cell.Primitive.PadstackInstance):
             reference_pins = [reference_pins.GetName()]
         if isinstance(refdes, str):
             refdes = self.instances[refdes]
