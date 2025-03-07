@@ -25,6 +25,7 @@
 
 import os
 from pathlib import Path
+from typing import Sequence
 
 import pytest
 
@@ -1754,24 +1755,37 @@ class TestClass:
         )
         assert len(edbapp.ports) == 15
 
-    def test_create_circuit_port_on_component(self, edb_examples):
+    @pytest.mark.parametrize("positive_net_names", (["2V5", "NetR105_2"], ["2V5", "GND", "NetR105_2"]))
+    @pytest.mark.parametrize("nets_mode", ("str", "net"))
+    def test_create_circuit_port_on_component(self, edb_examples, nets_mode: str, positive_net_names: Sequence[str]):
         edbapp = edb_examples.get_si_verse()
+        positive_net_names = ["2V5", "NetR105_2"]
+        reference_net_names = ["GND"]
         assert edbapp.components.create_port_on_component(
             component="U10",
-            net_list=["2V5", "NetR105_2"],
+            net_list=positive_net_names if nets_mode == "str" else [edbapp.nets[net] for net in positive_net_names],
             port_type=SourceType.CircPort,
             do_pingroup=False,
-            reference_net=["GND"],
+            reference_net=reference_net_names
+            if nets_mode == "str"
+            else [edbapp.nets[net] for net in reference_net_names],
         )
         assert len(edbapp.excitations) == 4
 
-    def test_create_circuit_port_on_component_pins(self, edb_examples):
+    @pytest.mark.parametrize("comp_mode", ("str", "comp"))
+    @pytest.mark.parametrize("pins_mode", ("str", "pin"))
+    def test_create_circuit_port_on_component_pins(self, comp_mode: str, edb_examples, pins_mode: str):
         edbapp = edb_examples.get_si_verse()
-        edbcomp = edbapp.components["U10"]
+        component_name = "U10"
+        edbcomp = edbapp.components[component_name]
+        positive_pin_names = ["4"]
+        reference_pin_names = ["2"]
         assert edbapp.components.create_port_on_pins(
-            refdes="U10",
-            pins=edbcomp.pins["4"],
-            reference_pins=edbcomp.pins["2"],
+            refdes=component_name if comp_mode == "str" else edbcomp,
+            pins=positive_pin_names if pins_mode == "str" else [edbcomp.pins[pin] for pin in positive_pin_names],
+            reference_pins=reference_pin_names
+            if pins_mode == "str"
+            else [edbcomp.pins[pin] for pin in reference_pin_names],
         )
         assert len(edbapp.excitations) == 2
 

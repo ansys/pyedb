@@ -28,6 +28,7 @@ import json
 import math
 import os
 import re
+from typing import List
 import warnings
 
 from pyedb.component_libraries.ansys_components import (
@@ -800,6 +801,8 @@ class Components(object):
         >>> edb.close_edb()
         """
 
+        if isinstance(refdes, EDBComponent):
+            refdes = refdes.name
         if isinstance(pins, str):
             pins = [pins]
         elif isinstance(pins, EDBPadstackInstance):
@@ -980,21 +983,36 @@ class Components(object):
         if isinstance(component, str):
             component = self.instances[component].edbcomponent
 
-        if not isinstance(net_list, list):
+        if not isinstance(net_list, List):
             net_list = [net_list]
+        nets = []
         for net in net_list:
             if not isinstance(net, str):
                 try:
                     net_name = net.name
                     if net_name != "":
-                        net_list.append(net_name)
+                        nets.append(net_name)
                 except:
                     pass
-        if reference_net in net_list:
-            net_list.remove(reference_net)
-        cmp_pins = [
-            p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.GetNet().GetName() in net_list
-        ]
+            else:
+                nets.append(net)
+        ref_nets = []
+        for net in reference_net:
+            net_name = None
+            if not isinstance(net, str):
+                try:
+                    net_name = net.name
+                    if net_name != "":
+                        ref_nets.append(net_name)
+                except:
+                    pass
+            else:
+                net_name = net
+                ref_nets.append(net_name)
+            if net_name in nets:
+                self._logger.warning(f"Removing reference net {net_name} from the positive net list.")
+                nets.remove(net_name)
+        cmp_pins = [p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.GetNet().GetName() in nets]
         for p in cmp_pins:  # pragma no cover
             if not p.IsLayoutPin():
                 p.SetIsLayoutPin(True)
@@ -1003,6 +1021,9 @@ class Components(object):
                 "No pins found on component {}, searching padstack instances instead".format(component.GetName())
             )
             return False
+        ref_pins = [
+            p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.GetNet().GetName() in ref_nets
+        ]
         pin_layers = cmp_pins[0].GetPadstackDef().GetData().GetLayerNames()
         if port_type == SourceType.CoaxPort:
             if not solder_balls_height:
@@ -1011,11 +1032,6 @@ class Components(object):
                 solder_balls_size = self.instances[component.GetName()].solder_ball_diameter[0]
             if not solder_balls_mid_size:
                 solder_balls_mid_size = self.instances[component.GetName()].solder_ball_diameter[1]
-            ref_pins = [
-                p
-                for p in list(component.LayoutObjs)
-                if int(p.GetObjType()) == 1 and p.GetNet().GetName() in reference_net
-            ]
             if not ref_pins:
                 self._logger.error(
                     "No reference pins found on component. You might consider"
@@ -1062,11 +1078,6 @@ class Components(object):
                 self._padstack.create_coax_port(padstackinstance=pin, name=port_name)
 
         elif port_type == SourceType.CircPort:
-            ref_pins = [
-                p
-                for p in list(component.LayoutObjs)
-                if int(p.GetObjType()) == 1 and p.GetNet().GetName() in reference_net
-            ]
             for p in ref_pins:
                 if not p.IsLayoutPin():
                     p.SetIsLayoutPin(True)
@@ -1097,7 +1108,7 @@ class Components(object):
                             f"Failed to create reference pin group terminal on component {component.GetName()}"
                         )
                         return False
-                for net in net_list:
+                for net in nets:
                     pins = [pin for pin in cmp_pins if pin.GetNet().GetName() == net]
                     if pins:
                         if len(pins) == 1:
@@ -1115,7 +1126,7 @@ class Components(object):
                     else:
                         self._logger.info("No pins found on component {} for the net {}".format(component, net))
             else:
-                for net in net_list:
+                for net in nets:
                     pins = [pin for pin in cmp_pins if pin.GetNet().GetName() == net]
                     for pin in pins:
                         if ref_pins:
