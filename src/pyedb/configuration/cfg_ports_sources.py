@@ -239,7 +239,7 @@ class CfgCircuitElement(CfgBase):
         self._pedb = pedb
         self.name = kwargs["name"]
         self.type = kwargs["type"]
-        self._reference_designator = kwargs.get("reference_designator", None)
+        self.reference_designator = kwargs.get("reference_designator", None)
         self.distributed = kwargs.get("distributed", False)
         self._elem_num = 1
 
@@ -249,7 +249,7 @@ class CfgCircuitElement(CfgBase):
         else:
             self.positive_terminal_info = CfgTerminalInfo(self._pedb, **pos)
             if not self.positive_terminal_info.reference_designator:
-                self.positive_terminal_info.reference_designator = self._reference_designator
+                self.positive_terminal_info.reference_designator = self.reference_designator
 
         neg = kwargs.get("negative_terminal", {})
         if len(neg) == 0:
@@ -484,6 +484,7 @@ class CfgPort(CfgCircuitElement):
         data = {
             "name": self.name,
             "type": self.type,
+            "reference_designator": self.reference_designator,
             "positive_terminal": self.positive_terminal_info.export_properties(),
         }
         if self.negative_terminal_info:
