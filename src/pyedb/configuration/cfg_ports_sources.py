@@ -50,7 +50,8 @@ class CfgTerminalInfo(CfgBase):
         self.reference_designator = kwargs.get("reference_designator")
 
         self.contact_type = kwargs.get("contact_type", "default")  # options are full, center, quad, inline
-        self.contact_radius = self._pedb.edb_value(kwargs.get("contact_radius", "0.1mm")).ToDouble()
+        contact_radius = "0.1mm" if kwargs.get("contact_radius") is None else kwargs.get("contact_radius")
+        self.contact_radius = self._pedb.edb_value(contact_radius).ToDouble()
         self.num_of_contact = kwargs.get("num_of_contact", 4)
 
     def export_properties(self):
@@ -453,6 +454,9 @@ class CfgCircuitElement(CfgBase):
                 is_pin=True,
             )
             instances[pin_name] = p_inst
+        self._pedb.components.create(
+            pins=list(instances.values()),
+        )
         return instances
 
     def _create_pin_group(self, pins, reference_designator, is_ref=False):
