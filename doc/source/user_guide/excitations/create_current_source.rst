@@ -12,13 +12,13 @@ This page shows how to create current and voltage sources on a component.
 
 
 
-    from pyedb import Edb
+    from pyedb.grpc.edb import Edb
     from pyedb.generic.general_methods import generate_unique_folder_name
     import pyedb.misc.downloads as downloads
 
     temp_folder = generate_unique_folder_name()
     targetfile = downloads.download_file("edb/ANSYS-HSD_V1.aedb", destination=temp_folder)
-    edbapp = Edb(edbpath=targetfile, edbversion="2024.2")
+    edbapp = Edb(edbpath=targetfile, edbversion="2025.2")
 
     # create simple current source on ``U1`` component between ``USB3_D_N`` and ``GND`` nets
     edbapp.siwave.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0) != ""
@@ -60,8 +60,8 @@ This page shows how to create current and voltage sources on a component.
         reference_designator="U1", pin_numbers=["R23", "P23"], group_name="vp_neg"
     )
     edbapp.siwave.create_voltage_probe_on_pin_group("vprobe", "vp_pos", "vp_neg")
-    edbapp.save_edb()
-    edbapp.close_edb()
+    edbapp.save()
+    edbapp.close()
 
 
 .. image:: ../../resources/create_sources_and_probes.png

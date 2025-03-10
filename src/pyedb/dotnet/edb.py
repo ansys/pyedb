@@ -42,18 +42,18 @@ from zipfile import ZipFile as zpf
 import rtree
 
 from pyedb.configuration.configuration import Configuration
-from pyedb.dotnet.application.Variables import decompose_variable_value
-from pyedb.dotnet.edb_core.cell.layout import Layout
-from pyedb.dotnet.edb_core.cell.terminal.terminal import Terminal
-from pyedb.dotnet.edb_core.components import Components
-from pyedb.dotnet.edb_core.dotnet.database import Database
-from pyedb.dotnet.edb_core.edb_data.control_file import (
+from pyedb.dotnet.database.Variables import decompose_variable_value
+from pyedb.dotnet.database.cell.layout import Layout
+from pyedb.dotnet.database.cell.terminal.terminal import Terminal
+from pyedb.dotnet.database.components import Components
+from pyedb.dotnet.database.dotnet.database import Database
+from pyedb.dotnet.database.edb_data.control_file import (
     ControlFile,
     convert_technology_file,
 )
-from pyedb.dotnet.edb_core.edb_data.design_options import EdbDesignOptions
-from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.edb_core.edb_data.ports import (
+from pyedb.dotnet.database.edb_data.design_options import EdbDesignOptions
+from pyedb.dotnet.database.edb_data.edbvalue import EdbValue
+from pyedb.dotnet.database.edb_data.ports import (
     BundleWavePort,
     CircuitPort,
     CoaxPort,
@@ -61,37 +61,37 @@ from pyedb.dotnet.edb_core.edb_data.ports import (
     GapPort,
     WavePort,
 )
-from pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data import (
+from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import (
     RaptorXSimulationSetup,
 )
-from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
+from pyedb.dotnet.database.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
-from pyedb.dotnet.edb_core.edb_data.sources import SourceType
-from pyedb.dotnet.edb_core.edb_data.variables import Variable
-from pyedb.dotnet.edb_core.general import (
+from pyedb.dotnet.database.edb_data.sources import SourceType
+from pyedb.dotnet.database.edb_data.variables import Variable
+from pyedb.dotnet.database.general import (
     LayoutObjType,
     Primitives,
     convert_py_list_to_net_list,
 )
-from pyedb.dotnet.edb_core.hfss import EdbHfss
-from pyedb.dotnet.edb_core.layout_validation import LayoutValidation
-from pyedb.dotnet.edb_core.materials import Materials
-from pyedb.dotnet.edb_core.modeler import Modeler
-from pyedb.dotnet.edb_core.net_class import (
+from pyedb.dotnet.database.hfss import EdbHfss
+from pyedb.dotnet.database.layout_validation import LayoutValidation
+from pyedb.dotnet.database.materials import Materials
+from pyedb.dotnet.database.modeler import Modeler
+from pyedb.dotnet.database.net_class import (
     EdbDifferentialPairs,
     EdbExtendedNets,
     EdbNetClasses,
 )
-from pyedb.dotnet.edb_core.nets import EdbNets
-from pyedb.dotnet.edb_core.padstack import EdbPadstacks
-from pyedb.dotnet.edb_core.siwave import EdbSiwave
-from pyedb.dotnet.edb_core.stackup import Stackup
-from pyedb.dotnet.edb_core.utilities.hfss_simulation_setup import (
+from pyedb.dotnet.database.nets import EdbNets
+from pyedb.dotnet.database.padstack import EdbPadstacks
+from pyedb.dotnet.database.siwave import EdbSiwave
+from pyedb.dotnet.database.stackup import Stackup
+from pyedb.dotnet.database.utilities.hfss_simulation_setup import (
     HFSSPISimulationSetup,
     HfssSimulationSetup,
 )
-from pyedb.dotnet.edb_core.utilities.siwave_simulation_setup import (
+from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
     SiwaveSimulationSetup,
 )

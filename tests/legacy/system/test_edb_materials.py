@@ -27,7 +27,7 @@ import os
 
 import pytest
 
-from pyedb.dotnet.edb_core.materials import (
+from pyedb.dotnet.database.materials import (
     PERMEABILITY_DEFAULT_VALUE,
     Material,
     MaterialProperties,

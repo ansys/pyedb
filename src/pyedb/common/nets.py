@@ -1,42 +1,7 @@
 import math
-import os
 import time
 
 from pyedb.generic.constants import CSS4_COLORS
-
-
-def is_notebook():
-    """Check if pyaedt is running in Jupyter or not.
-
-    Returns
-    -------
-    bool
-    """
-    try:
-        shell = get_ipython().__class__.__name__
-        if shell in ["ZMQInteractiveShell"]:  # pragma: no cover
-            return True  # Jupyter notebook or qtconsole
-        else:
-            return False
-    except NameError:
-        return False  # Probably standard Python interpreter
-
-
-def is_ipython():
-    """Check if pyaedt is running in Jupyter or not.
-
-    Returns
-    -------
-    bool
-    """
-    try:
-        shell = get_ipython().__class__.__name__
-        if shell in ["TerminalInteractiveShell", "SpyderShell"]:
-            return True  # Jupyter notebook or qtconsole
-        else:  # pragma: no cover
-            return False
-    except NameError:
-        return False  # Probably standard Python interpreter
 
 
 class CommonNets:
@@ -57,8 +22,6 @@ class CommonNets:
         show=True,
         annotate_component_names=True,
         plot_vias=False,
-        include_outline=True,
-        plot_edges=True,
         **kwargs,
     ):
         """Plot a Net to Matplotlib 2D Chart.
@@ -79,7 +42,7 @@ class CommonNets:
             If a path is specified the plot will be saved in this location.
             If ``save_plot`` is provided, the ``show`` parameter is ignored.
         outline : list, optional
-            Add a customer outline from a list of points of the outline to plot.
+            List of points of the outline to plot.
         size : tuple, int, optional
             Image size in pixel (width, height). Default value is ``(6000, 3000)``
         top_view : bool, optional
@@ -96,17 +59,12 @@ class CommonNets:
             Default is ``False``.
         show : bool, optional
             Whether to show the plot or not. Default is `True`.
-        include_outline : bool, optional
-            Whether to include the internal layout outline or not. Default is `True`.
-        plot_edges : bool, optional
-            Whether to plot polygon edges or not. Default is `True`.
 
         Returns
         -------
         (ax, fig)
             Matplotlib ax and figures.
         """
-
         if "plot_components_on_top" in kwargs and top_view:
             plot_components = kwargs["plot_components_on_top"]
         if "plot_components_on_bottom" in kwargs and not top_view:
@@ -118,30 +76,22 @@ class CommonNets:
                 sign = -1
             return [[sign * i[0], i[1]] for i in poly]
 
-        try:
-            import matplotlib.pyplot as plt
-        except ImportError:  # pragma: no cover
-            self._pedb.logger.error("Matplotlib is needed. Please, install it first.")
-            return False
+        import matplotlib.pyplot as plt
 
         dpi = 100.0
         figsize = (size[0] / dpi, size[1] / dpi)
 
         fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(1, 1, 1)
-        try:
-            from shapely import affinity, union_all
-            from shapely.geometry import (
-                LinearRing,
-                MultiLineString,
-                MultiPolygon,
-                Point,
-                Polygon,
-            )
-            from shapely.plotting import plot_line, plot_polygon
-        except ImportError:  # pragma: no cover
-            self._pedb.logger.error("Shapely is needed. Please, install it first.")
-            return False
+        from shapely import affinity
+        from shapely.geometry import (
+            LinearRing,
+            MultiLineString,
+            MultiPolygon,
+            Point,
+            Polygon,
+        )
+        from shapely.plotting import plot_line, plot_polygon
 
         start_time = time.time()
         if not nets:
@@ -154,33 +104,19 @@ class CommonNets:
             layers = [layers]
         color_index = 0
         label_colors = {}
-        edge_colors = {}
         if outline:
             poly = Polygon(outline)
             plot_line(poly.boundary, add_points=False, color=(0.7, 0, 0), linewidth=4)
-        elif include_outline:
-            prims = self._pedb.modeler.primitives_by_layer.get("Outline", [])
-            if prims:
-                for prim in prims:
-                    if prim.is_void:
-                        continue
-                    xt, yt = prim.points()
-                    p1 = [(i, j) for i, j in zip(xt[::-1], yt[::-1])]
-                    p1 = mirror_poly(p1)
-                    poly = LinearRing(p1)
-                    plot_line(poly, add_points=False, color=(0.7, 0, 0), linewidth=4)
-            else:
-                bbox = self._pedb.hfss.get_layout_bounding_box()
-                if not bbox:
-                    return False, False
-                x1 = bbox[0]
-                x2 = bbox[2]
-                y1 = bbox[1]
-                y2 = bbox[3]
-                p = [(x1, y1), (x1, y2), (x2, y2), (x2, y1), (x1, y1)]
-                p = mirror_poly(p)
-                poly = LinearRing(p)
-                plot_line(poly, add_points=False, color=(0.7, 0, 0), linewidth=4)
+        else:
+            bbox = self._pedb.hfss.get_layout_bounding_box()
+            x1 = bbox[0]
+            x2 = bbox[2]
+            y1 = bbox[1]
+            y2 = bbox[3]
+            p = [(x1, y1), (x1, y2), (x2, y2), (x2, y1), (x1, y1)]
+            p = mirror_poly(p)
+            poly = LinearRing(p)
+            plot_line(poly, add_points=False, color=(0.7, 0, 0), linewidth=4)
         layer_colors = {i: k.color for i, k in self._pedb.stackup.layers.items()}
         top_layer = list(self._pedb.stackup.signal_layers.keys())[0]
         bottom_layer = list(self._pedb.stackup.signal_layers.keys())[-1]
@@ -310,24 +246,14 @@ class CommonNets:
             #     poly = LineString(line).buffer(prim.width / 2)
             # else:
             xt, yt = prim.points()
-            if len(xt) < 3:
-                return
             p1 = [(i, j) for i, j in zip(xt[::-1], yt[::-1])]
             p1 = mirror_poly(p1)
 
             holes = []
             for void in prim.voids:
                 xvt, yvt = void.points(arc_segments=3)
-                if len(xvt) < 3:
-                    continue
                 h1 = mirror_poly([(i, j) for i, j in zip(xvt, yvt)])
                 holes.append(h1)
-            if len(holes) > 1:
-                holes = union_all([Polygon(i) for i in holes])
-                if isinstance(holes, MultiPolygon):
-                    holes = [i.boundary for i in list(holes.geoms)]
-                else:
-                    holes = [holes.boundary]
             poly = Polygon(p1, holes)
             if layer_name == "Outline":
                 if label_colors[label] in lines:
@@ -338,36 +264,33 @@ class CommonNets:
 
         if color_by_net:
             for net in nets:
-                prims = self._pedb.nets.nets[net].primitives
-                polys = []
-                lines = []
-                if net not in nets:
-                    continue
-                label = "Net " + net
-                label_colors[label] = list(CSS4_COLORS.keys())[color_index]
-                try:
-                    edge_colors[label] = [i * 0.5 for i in label_colors[label]]
-                except TypeError:
-                    edge_colors[label] = label_colors[label]
-                color_index += 1
-                if color_index >= len(CSS4_COLORS):
-                    color_index = 0
-                for prim in prims:
-                    create_poly(prim, polys, lines)
-                if polys:
-                    ob = MultiPolygon(polys)
-                    plot_polygon(
-                        ob,
-                        ax=ax,
-                        color=label_colors[label],
-                        add_points=False,
-                        alpha=0.7,
-                        label=label,
-                        edgecolor="none" if not plot_edges else edge_colors[label],
-                    )
-                if lines:
-                    ob = MultiLineString(p)
-                    plot_line(ob, ax=ax, add_points=False, color=label_colors[label], linewidth=1, label=label)
+                if net in self._pedb.nets.nets:
+                    prims = self._pedb.nets.nets[net].primitives
+                    polys = []
+                    lines = []
+                    if net not in nets:
+                        continue
+                    label = "Net " + net
+                    label_colors[label] = list(CSS4_COLORS.keys())[color_index]
+                    color_index += 1
+                    if color_index >= len(CSS4_COLORS):
+                        color_index = 0
+                    for prim in prims:
+                        create_poly(prim, polys, lines)
+                    if polys:
+                        ob = MultiPolygon(polys)
+                        plot_polygon(
+                            ob,
+                            ax=ax,
+                            color=label_colors[label],
+                            add_points=False,
+                            alpha=0.7,
+                            label=label,
+                            edgecolor="none",
+                        )
+                    if lines:
+                        ob = MultiLineString(p)
+                        plot_line(ob, ax=ax, add_points=False, color=label_colors[label], linewidth=1, label=label)
         else:
             prims_by_layers_dict = {i: j for i, j in self._pedb.modeler.primitives_by_layer.items()}
             if not top_view:
@@ -397,10 +320,6 @@ class CommonNets:
                         if color_index >= len(CSS4_COLORS):
                             color_index = 0
                     label_colors[label] = c
-                    try:
-                        edge_colors[label] = [i * 0.5 for i in c]
-                    except TypeError:
-                        edge_colors[label] = label_colors[label]
                 for prim in prims:
                     create_poly(prim, polys, lines)
                 if polys:
@@ -412,7 +331,7 @@ class CommonNets:
                         add_points=False,
                         alpha=alpha,
                         label=label,
-                        edgecolor="none" if not plot_edges else edge_colors[label],
+                        edgecolor="none",
                     )
                 if lines:
                     ob = MultiLineString(p)
@@ -480,15 +399,10 @@ class CommonNets:
         plt.title(message, size=20)
         if show_legend:
             plt.legend(loc="upper left", fontsize="x-large")
-        end_time = time.time() - start_time
-        self._logger.info(f"Plot Generation time {round(end_time, 3)}")
         if save_plot:
             plt.savefig(save_plot)
-        if show:  # pragma: no cover
-            if is_notebook():
-                pass
-            elif is_ipython() or "PYTEST_CURRENT_TEST" in os.environ:
-                fig.show()
-            else:
-                plt.show()
+        elif show:
+            plt.show()
+        end_time = time.time() - start_time
+        self._logger.info(f"Plot Generation time {round(end_time, 3)}")
         return fig, ax

@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 from pyedb.configuration.cfg_common import CfgBase
-from pyedb.dotnet.edb_core.definition.package_def import PackageDef
+from pyedb.dotnet.database.definition.package_def import PackageDef
 
 
 class CfgPackage(CfgBase):

@@ -22,7 +22,7 @@
 
 from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition, CfgPadstackInstance
-from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstack
+from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstack
 
 
 class CfgTrace:

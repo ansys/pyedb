@@ -43,7 +43,6 @@ def visit_desc_content(self, node: Element) -> None:
 
 LaTeXTranslator.visit_desc_content = visit_desc_content
 
-
 # <----------------- End of sphinx pdf builder override---------------->
 
 logger = logging.getLogger(__name__)
@@ -218,7 +217,6 @@ if os.path.exists(local_config_file):
 else:
     config = {"run_examples": True}
 
-
 # Specify environment variable to build the doc without graphical mode while
 # keeping examples graphical mode activated.
 os.environ["PYAEDT_NON_GRAPHICAL"] = "1"
@@ -329,7 +327,7 @@ pygments_style = "sphinx"
 nbsphinx_execute = "auto"
 
 # Allow errors to help debug.
-nbsphinx_allow_errors = False
+nbsphinx_allow_errors = True
 
 # Sphinx gallery customization
 nbsphinx_thumbnails = {
@@ -374,10 +372,9 @@ html_context = {
 
 # specify the location of your github repo
 html_theme_options = {
-    "logo": "pyansys",
-    "switcher": {
-        "json_url": f"https://{cname}/versions.json",
-        "version_match": switcher_version,
+    "logo": {
+        "image_light": "_static/logo.png",
+        "image_dark": "_static/logo.png",
     },
     "github_url": "https://github.com/ansys/pyedb",
     "navigation_with_keys": False,
@@ -394,17 +391,22 @@ html_theme_options = {
             "url": "https://github.com/ansys/pyedb/discussions",
             "icon": "fa fa-comment fa-fw",
         },
-        {
-            "name": "Download documentation in PDF",
-            "url": f"https://{cname}/version/{switcher_version}/_static/assets/download/{project}.pdf",  # noqa: E501
-            "icon": "fa fa-file-pdf fa-fw",
-        },
     ],
-    "use_meilisearch": {
-        "api_key": os.getenv("MEILISEARCH_PUBLIC_API_KEY", ""),
-        "index_uids": {
-            f"pyedb-v{get_version_match(__version__).replace('.', '-')}": "PyEDB",
-        },
+    "switcher": {
+        "json_url": f"https://{cname}/versions.json",
+        "version_match": get_version_match(__version__),
+    },
+    "collapse_navigation": True,
+    "navigation_with_keys": True,
+    "static_search": {
+        "threshold": 0.5,
+        "minMatchCharLength": 2,
+        "limit": 10,
+        "ignoreLocation": True,
+    },
+    "cheatsheet": {
+        "file": "cheatsheet/cheat_sheet.qmd",
+        "title": "PyEDB cheat sheet",
     },
 }
 

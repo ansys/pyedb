@@ -1,4 +1,3 @@
-import ast
 import os
 import warnings
 
@@ -9,7 +8,6 @@ except ImportError:
         "The NumPy module is required to run some functionalities of PostProcess.\n"
         "Install with \n\npip install numpy\n\nRequires CPython."
     )
-
 try:
     from matplotlib.patches import PathPatch
     from matplotlib.path import Path
