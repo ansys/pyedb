@@ -818,6 +818,7 @@ class Components(object):
             return self.deactivate_rlc_component(component=refdes, create_circuit_port=True)
         if not port_name:
             port_name = "Port_{}_{}".format(pins[0].net_name, pins[0].name)
+
         if len(pins) > 1 > 1 or pingroup_on_single_pin:
             pec_boundary = False
             self._logger.info(
@@ -858,7 +859,7 @@ class Components(object):
 
         if term:
             return term
-        return False
+        return False  # pragma: no cover
 
     def _get_pins_for_ports(
         self, pins: Union[int, str, EDBPadstackInstance, List[Union[int, str, EDBPadstackInstance]]], comp: EDBComponent
@@ -981,7 +982,7 @@ class Components(object):
                 self._logger.warning(f"Removing reference net {net_name} from the positive net list.")
                 nets.remove(net_name)
         cmp_pins = [p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.GetNet().GetName() in nets]
-        for p in cmp_pins:  # pragma no cover
+        for p in cmp_pins:
             if not p.IsLayoutPin():
                 p.SetIsLayoutPin(True)
         if len(cmp_pins) == 0:

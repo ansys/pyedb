@@ -1910,7 +1910,6 @@ class TestClass:
     @pytest.mark.parametrize("nets_mode", ("str", "net"))
     def test_create_circuit_port_on_component(self, edb_examples, nets_mode: str, positive_net_names: Sequence[str]):
         edbapp = edb_examples.get_si_verse()
-        positive_net_names = ["2V5", "NetR105_2"]
         reference_net_names = ["GND"]
         assert edbapp.components.create_port_on_component(
             component="U10",
@@ -1920,6 +1919,22 @@ class TestClass:
             reference_net=(
                 reference_net_names if nets_mode == "str" else [edbapp.nets[net] for net in reference_net_names]
             ),
+        )
+        assert len(edbapp.excitations) == 4
+
+    def test_create_circuit_port_on_component_set_is_pin(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        positive_net_names = ["2V5", "NetR105_2"]
+        reference_net_names = ["GND"]
+        component_name = "U10"
+        for pin in edbapp.components[component_name].pins.values():
+            pin.is_pin = False
+        assert edbapp.components.create_port_on_component(
+            component=component_name,
+            net_list=positive_net_names,
+            port_type=SourceType.CircPort,
+            do_pingroup=False,
+            reference_net=reference_net_names,
         )
         assert len(edbapp.excitations) == 4
 
@@ -1967,15 +1982,43 @@ class TestClass:
         )
         assert len(edbapp.excitations) == 2
 
+    def test_create_circuit_port_on_component_pins_pingroup_on_single_pin(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        component_name = "U10"
+        edbcomp = edbapp.components[component_name]
+        positive_pin_names = ["4"]
+        reference_pin_names = ["2"]
+        assert edbapp.components.create_port_on_pins(
+            refdes=edbcomp,
+            pins=positive_pin_names,
+            reference_pins=reference_pin_names,
+            pingroup_on_single_pin=True,
+        )
+        assert len(edbapp.excitations) == 2
+
+    def test_create_circuit_port_on_component_pins_no_pins(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        component_name = "U10"
+        edbcomp = edbapp.components[component_name]
+        positive_pin_names = []
+        reference_pin_names = ["2"]
+        assert not edbapp.components.create_port_on_pins(
+            refdes=edbcomp,
+            pins=positive_pin_names,
+            reference_pins=reference_pin_names,
+        )
+        assert len(edbapp.excitations) == 0
+
     def test_create_circuit_port_on_component_pins_no_reference_pins(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         component_name = "U10"
         edbcomp = edbapp.components[component_name]
         positive_pin_names = ["4"]
+        reference_pin_names = []
         assert not edbapp.components.create_port_on_pins(
             refdes=edbcomp,
             pins=positive_pin_names,
-            reference_pins=[],
+            reference_pins=reference_pin_names,
         )
         assert len(edbapp.excitations) == 0
 
