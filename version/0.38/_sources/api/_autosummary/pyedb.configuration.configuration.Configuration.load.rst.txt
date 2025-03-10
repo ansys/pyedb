@@ -1,0 +1,6 @@
+load
+====
+
+.. currentmodule:: pyedb.configuration.configuration
+
+.. automethod:: Configuration.load

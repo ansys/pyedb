@@ -1,0 +1,6 @@
+trim\_reference\_size
+=====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationBatch.trim_reference_size

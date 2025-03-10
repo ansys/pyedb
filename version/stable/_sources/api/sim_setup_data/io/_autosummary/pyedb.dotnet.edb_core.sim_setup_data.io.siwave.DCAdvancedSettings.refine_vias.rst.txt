@@ -1,0 +1,6 @@
+refine\_vias
+============
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
+
+.. autoproperty:: DCAdvancedSettings.refine_vias

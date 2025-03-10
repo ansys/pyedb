@@ -1,0 +1,6 @@
+get\_closest\_arc\_midpoint
+===========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. automethod:: EDBPadstackInstance.get_closest_arc_midpoint

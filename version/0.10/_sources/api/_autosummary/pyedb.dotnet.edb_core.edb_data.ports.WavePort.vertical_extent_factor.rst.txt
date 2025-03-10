@@ -1,0 +1,6 @@
+vertical\_extent\_factor
+========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.ports
+
+.. autoproperty:: WavePort.vertical_extent_factor

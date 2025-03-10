@@ -1,0 +1,6 @@
+api\_class
+==========
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstackInstance.api_class

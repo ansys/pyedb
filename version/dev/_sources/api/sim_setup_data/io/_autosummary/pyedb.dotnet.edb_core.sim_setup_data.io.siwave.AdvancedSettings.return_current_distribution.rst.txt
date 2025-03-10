@@ -1,0 +1,6 @@
+return\_current\_distribution
+=============================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
+
+.. autoproperty:: AdvancedSettings.return_current_distribution

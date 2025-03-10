@@ -1,0 +1,6 @@
+get\_simulation\_settings
+=========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.siwave_simulation_setup
+
+.. automethod:: SiwaveSimulationSetup.get_simulation_settings
