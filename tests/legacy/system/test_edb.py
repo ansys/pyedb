@@ -856,6 +856,7 @@ class TestClass:
         setup1.adaptive_settings.max_refinement = 1000001
         setup1.adaptive_settings.max_refine_per_pass = 20
         setup1.adaptive_settings.min_passes = 2
+        setup1.adaptive_settings.min_converged_passes = 2
         setup1.adaptive_settings.save_fields = True
         setup1.adaptive_settings.save_rad_field_only = True
         setup1.adaptive_settings.use_convergence_matrix = True
@@ -866,6 +867,7 @@ class TestClass:
         assert edbapp.setups["setup1"].adaptive_settings.max_refinement == 1000001
         assert edbapp.setups["setup1"].adaptive_settings.max_refine_per_pass == 20
         assert edbapp.setups["setup1"].adaptive_settings.min_passes == 2
+        assert edbapp.setups["setup1"].adaptive_settings.min_converged_passes == 2
         assert edbapp.setups["setup1"].adaptive_settings.save_fields
         assert edbapp.setups["setup1"].adaptive_settings.save_rad_field_only
         # assert adaptive_settings.use_convergence_matrix
@@ -1341,7 +1343,7 @@ class TestClass:
         self.local_scratch.copyfile(gds_in, gds_out)
 
         c = ControlFile(c_file_in, layer_map=c_map)
-        setup = c.setups.add_setup("Setup1", "1GHz")
+        setup = c.setups.add_setup("Setup1", "1GHz", 0.02, 10)
         setup.add_sweep("Sweep1", "0.01GHz", "5GHz", "0.1GHz")
         c.boundaries.units = "um"
         c.stackup.units = "um"
@@ -1364,8 +1366,8 @@ class TestClass:
         )
 
         assert edb
-        assert "P1" in edb.excitations
-        assert "Setup1" in edb.setups
+        assert "P1" and "P2" in edb.excitations
+        assert "Setup1" and "Setup Test" in edb.setups
         assert "B1" in edb.components.instances
         edb.close()
 
@@ -1495,7 +1497,7 @@ class TestClass:
         )
         assert ctrl.boundaries.ports
         # setup using q3D for DC point
-        setup = ctrl.setups.add_setup("test_setup", "10GHz")
+        setup = ctrl.setups.add_setup("test_setup", "10GHz", 0.02, 10)
         assert setup
         setup.add_sweep(
             name="test_sweep",

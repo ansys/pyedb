@@ -59,7 +59,7 @@ class EDBNetsData(NetDotNet):
         """
         from pyedb.dotnet.database.cell.layout import primitive_cast
 
-        return [primitive_cast(self._app, i) for i in self.net_object.Primitives]
+        return [primitive_cast(self._app, i) for i in self.net_object.Primitives if i]
         # return [self._app.layout.find_object_by_id(i.GetId()) for i in self.net_object.Primitives]
 
     @property

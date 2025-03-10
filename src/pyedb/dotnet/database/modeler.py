@@ -661,8 +661,7 @@ class Modeler(object):
         else:
             polygonData = main_shape
         if not polygonData or polygonData.IsNull():
-            self._logger.error("Failed to create main shape polygon data")
-            return False
+            raise RuntimeError("Failed to create main shape polygon data")
         for void in voids:
             if isinstance(void, list):
                 void = self.Shape("polygon", points=void)

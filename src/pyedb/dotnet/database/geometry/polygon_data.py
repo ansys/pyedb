@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from typing import Union
 
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.point_data import PointData
@@ -128,3 +129,7 @@ class PolygonData:
             arcs = convert_py_list_to_net_list(arcs)
         poly = self._edb_object.CreateFromArcs(arcs, flag)
         return PolygonData(self._pedb, poly)
+
+    def point_in_polygon(self, x: Union[str, float], y: Union[str, float]) -> bool:
+        """Determines whether a point is inside the polygon."""
+        return self._edb_object.PointInPolygon(self._pedb.point_data(x, y))

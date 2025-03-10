@@ -54,7 +54,6 @@ API to make scripting simpler.
    getting_started/index
    user_guide/index
    api/index
-   examples/index
    contributing
 
 Indices and tables

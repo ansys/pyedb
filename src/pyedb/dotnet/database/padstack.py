@@ -1636,14 +1636,12 @@ class EdbPadstacks(object):
         merged_via_ids = []
         if not contour_boxes:
             raise Exception("No contour box provided, you need to pass a nested list as argument.")
-        if not start_layer:
-            start_layer = list(self._pedb.stackup.layers.values())[0].name
-        if not stop_layer:
-            stop_layer = list(self._pedb.stackup.layers.values())[-1].name
+
         instances_index = {}
         for id, inst in self.instances.items():
             instances_index[id] = inst.position
         for contour_box in contour_boxes:
+            all_instances = self.instances
             instances = self.get_padstack_instances_id_intersecting_polygon(
                 points=contour_box, padstack_instances_index=instances_index
             )
@@ -1651,9 +1649,28 @@ class EdbPadstacks(object):
                 raise Exception(f"No padstack instances found inside {contour_box}")
             else:
                 if net_filter:
-                    instances = [
-                        self.instances[id] for id in instances if not self.instances[id].net_name in net_filter
-                    ]
+                    # instances = [id for id in instances if not self.instances[id].net_name in net_filter]
+                    instances = [id for id in instances if all_instances[id].net_name not in net_filter]
+                # filter instances by start and stop layer
+                if start_layer:
+                    if start_layer not in self._pedb.stackup.layers.keys():
+                        raise Exception(f"{start_layer} not exist")
+                    else:
+                        instances = [id for id in instances if all_instances[id].start_layer == start_layer]
+                if stop_layer:
+                    if stop_layer not in self._pedb.stackup.layers.keys():
+                        raise Exception(f"{stop_layer} not exist")
+                    else:
+                        instances = [id for id in instances if all_instances[id].stop_layer == stop_layer]
+                if not instances:
+                    raise Exception(
+                        f"No padstack instances found inside {contour_box} between {start_layer} and {stop_layer}"
+                    )
+
+                if not start_layer:
+                    start_layer = list(self._pedb.stackup.layers.values())[0].name
+                if not stop_layer:
+                    stop_layer = list(self._pedb.stackup.layers.values())[-1].name
 
                 net = self.instances[instances[0]].net_name
                 x_values = []
@@ -1690,8 +1707,11 @@ class EdbPadstacks(object):
                     ):
                         raise Exception(f"Failed to create padstack definition {new_padstack_def}")
                     merged_instance = self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net)
+                    merged_instance.start_layer = start_layer
+                    merged_instance.stop_layer = stop_layer
+
                     merged_via_ids.append(merged_instance.id)
-                    [self.instances[id].delete() for id in instances]
+                    _ = [all_instances[id].delete() for id in instances]
         return merged_via_ids
 
     def merge_via_along_lines(
@@ -1839,8 +1859,9 @@ class EdbPadstacks(object):
                     for _x, _y in zip(x_grid.ravel(), y_grid.ravel())
                 }
 
+                all_instances = self.instances
                 for item in padstacks_inbox:
                     if item not in to_keep:
-                        self.instances[item].delete()
+                        all_instances[item].delete()
 
                 return True

@@ -19,10 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import re
 
-from pyedb.dotnet.database.cell.connectable import Connectable
-from pyedb.dotnet.database.general import convert_py_list_to_net_list
-from pyedb.dotnet.database.geometry.polygon_data import PolygonData
+from pyedb.dotnet.edb_core.cell.connectable import Connectable
+from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
+from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
 from pyedb.misc.utilities import compute_arc_points
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -267,7 +268,7 @@ class Primitive(Connectable):
 
         Returns
         -------
-        bool, :class:`dotnet.database.edb_data.primitives.EDBPrimitives`
+        bool, :class:`dotnet.edb_core.edb_data.primitives.EDBPrimitives`
             Polygon when successful, ``False`` when failed.
 
         """
@@ -284,7 +285,7 @@ class Primitive(Connectable):
 
         Parameters
         ----------
-        primitive : :class:`pyaeedt.database.edb_data.primitives_data.EDBPrimitives` or `PolygonData`
+        primitive : :class:`pyaeedt.edb_core.edb_data.primitives_data.EDBPrimitives` or `PolygonData`
 
         Returns
         -------
@@ -308,7 +309,7 @@ class Primitive(Connectable):
 
         Parameters
         ----------
-        primitive : :class:`pyaeedt.database.edb_data.primitives_data.EDBPrimitives` or `PolygonData`
+        primitive : :class:`pyaeedt.edb_core.edb_data.primitives_data.EDBPrimitives` or `PolygonData`
 
         Returns
         -------
@@ -354,11 +355,11 @@ class Primitive(Connectable):
 
         Parameters
         ----------
-        primitives : :class:`dotnet.database.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
+        primitives : :class:`dotnet.edb_core.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
 
         Returns
         -------
-        List of :class:`dotnet.database.edb_data.EDBPrimitives`
+        List of :class:`dotnet.edb_core.edb_data.EDBPrimitives`
         """
         poly = self.primitive_object.GetPolygonData()
         if not isinstance(primitives, list):
@@ -404,11 +405,11 @@ class Primitive(Connectable):
 
         Parameters
         ----------
-        primitives : :class:`dotnet.database.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
+        primitives : :class:`dotnet.edb_core.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
 
         Returns
         -------
-        List of :class:`dotnet.database.edb_data.EDBPrimitives`
+        List of :class:`dotnet.edb_core.edb_data.EDBPrimitives`
         """
         poly = self._edb_object.GetPolygonData()
         if not isinstance(primitives, list):
@@ -475,11 +476,11 @@ class Primitive(Connectable):
 
         Parameters
         ----------
-        primitives : :class:`dotnet.database.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
+        primitives : :class:`dotnet.edb_core.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
 
         Returns
         -------
-        List of :class:`dotnet.database.edb_data.EDBPrimitives`
+        List of :class:`dotnet.edb_core.edb_data.EDBPrimitives`
         """
         poly = self._edb_object.GetPolygonData()
         if not isinstance(primitives, list):
@@ -600,7 +601,7 @@ class Primitive(Connectable):
 
     @property
     def polygon_data(self):
-        """:class:`pyedb.dotnet.database.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
+        """:class:`pyedb.dotnet.edb_core.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
         return PolygonData(self._pedb, self._edb_object.GetPolygonData())
 
     def add_void(self, point_list):
@@ -608,7 +609,7 @@ class Primitive(Connectable):
 
         Parameters
         ----------
-        point_list : list or :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives` \
+        point_list : list or :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives` \
             or EDB Primitive Object. Point list in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
 
         Returns
@@ -788,53 +789,65 @@ class Primitive(Connectable):
                 return True
         return False
 
-    def plot(self, plot_net=False, show=True, save_plot=None):
-        """Plot the current polygon on matplotlib.
+    @property
+    def _em_properties(self):
+        """Get EM properties."""
+        default = (
+            r"$begin 'EM properties'\n"
+            r"\tType('Mesh')\n"
+            r"\tDataId='EM properties1'\n"
+            r"\t$begin 'Properties'\n"
+            r"\t\tGeneral=''\n"
+            r"\t\tModeled='true'\n"
+            r"\t\tUnion='true'\n"
+            r"\t\t'Use Precedence'='false'\n"
+            r"\t\t'Precedence Value'='1'\n"
+            r"\t\tPlanarEM=''\n"
+            r"\t\tRefined='true'\n"
+            r"\t\tRefineFactor='1'\n"
+            r"\t\tNoEdgeMesh='false'\n"
+            r"\t\tHFSS=''\n"
+            r"\t\t'Solve Inside'='false'\n"
+            r"\t\tSIwave=''\n"
+            r"\t\t'DCIR Equipotential Region'='false'\n"
+            r"\t$end 'Properties'\n"
+            r"$end 'EM properties'\n"
+        )
 
-        Parameters
-        ----------
-        plot_net : bool, optional
-            Whether if plot the entire net or only the selected polygon. Default is ``False``.
-        show : bool, optional
-            Whether if show the plot or not. Default is ``True``.
-        save_plot : str, optional
-            Save the plot path.
+        pid = self._pedb.edb_api.ProductId.Designer
+        _, p = self._edb_object.GetProductProperty(pid, 18, "")
+        if p:
+            return p
+        else:
+            return default
+
+    @_em_properties.setter
+    def _em_properties(self, em_prop):
+        """Set EM properties"""
+        pid = self._pedb.edb_api.ProductId.Designer
+        self._edb_object.SetProductProperty(pid, 18, em_prop)
+
+    @property
+    def dcir_equipotential_region(self):
+        """Check whether dcir equipotential region is enabled.
 
         Returns
         -------
-        (ax, fig)
-            Matplotlib ax and figures.
+        bool
         """
-        import matplotlib.pyplot as plt
-        from shapely.geometry import Polygon
-        from shapely.plotting import plot_polygon
-
-        dpi = 100.0
-        figsize = (2000 / dpi, 1000 / dpi)
-        if plot_net and self.net_name:
-            fig, ax = self._pedb.nets.plot([self.net_name], color_by_net=True, show=False, show_legend=False)
+        pattern = r"'DCIR Equipotential Region'='([^']+)'"
+        em_pp = self._em_properties
+        result = re.search(pattern, em_pp).group(1)
+        if result == "true":
+            return True
         else:
-            fig = plt.figure(figsize=figsize)
-            ax = fig.add_subplot(1, 1, 1)
-        xt, yt = self.points()
-        p1 = [(i, j) for i, j in zip(xt[::-1], yt[::-1])]
+            return False
 
-        holes = []
-        for void in self.voids:
-            xvt, yvt = void.points(arc_segments=3)
-            h1 = [(i, j) for i, j in zip(xvt, yvt)]
-            holes.append(h1)
-        poly = Polygon(p1, holes)
-        plot_polygon(poly, add_points=False, color=(1, 0, 0))
-        ax.grid(False)
-        ax.set_axis_off()
-        # Hide axes ticks
-        ax.set_xticks([])
-        ax.set_yticks([])
-        message = f"Polygon {self.id} on net {self.net_name}"
-        plt.title(message, size=20)
-        if save_plot:
-            plt.savefig(save_plot)
-        elif show:
-            plt.show()
-        return ax, fig
+    @dcir_equipotential_region.setter
+    def dcir_equipotential_region(self, value):
+        """Set dcir equipotential region."""
+        pp = r"'DCIR Equipotential Region'='true'" if value else r"'DCIR Equipotential Region'='false'"
+        em_pp = self._em_properties
+        pattern = r"'DCIR Equipotential Region'='([^']+)'"
+        new_em_pp = re.sub(pattern, pp, em_pp)
+        self._em_properties = new_em_pp
