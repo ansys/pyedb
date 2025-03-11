@@ -1044,7 +1044,7 @@ class Materials(object):
         self.__edb.logger.error(f"Material {material_name} does not exist in syslib AMAT file.")
         return res
 
-    def update_materials_from_syslibrary(self, update_all: bool = True, material_name: Union[str, list] = None):
+    def update_materials_from_sys_library(self, update_all: bool = True, material_name: Union[str, list] = None):
         """Update material properties from syslib AMAT file."""
         amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")
         materials_dict = self.read_materials(amat_file)

@@ -352,6 +352,6 @@ class TestClass:
         edbapp.materials.update_materials_from_syslibrary(False, "copper")
         assert edbapp.materials["copper"].thermal_conductivity == 400
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 1
-        edbapp.materials.update_materials_from_syslibrary()
+        edbapp.materials.update_materials_from_sys_library()
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
         edbapp.close()
