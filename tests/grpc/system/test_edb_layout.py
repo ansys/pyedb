@@ -23,7 +23,7 @@
 
 import pytest
 
-pytestmark = [pytest.mark.unit, pytest.mark.legacy]
+pytestmark = [pytest.mark.unit, pytest.mark.grpc]
 
 
 class TestClass:

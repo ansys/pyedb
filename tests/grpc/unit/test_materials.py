@@ -28,7 +28,7 @@ import pytest
 
 from pyedb.dotnet.database.materials import Materials
 
-pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
+pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.grpc]
 
 MATERIALS = """
 $begin 'Polyflon CuFlon (tm)'

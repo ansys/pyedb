@@ -109,7 +109,7 @@ jobs:
           timeout_minutes: 15
           command: |
             . .venv\Scripts\Activate.ps1
-            pytest -m tests/legacy -n auto --dist loadfile -v --cov
+            pytest -m "legacy" -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
@@ -179,7 +179,7 @@ jobs:
           command: |
             export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            xvfb-run pytest -m tests/legacy -n auto --dist loadfile -v --cov
+            xvfb-run pytest -m "legacy" -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |

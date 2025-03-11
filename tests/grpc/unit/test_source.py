@@ -24,7 +24,7 @@ import pytest
 
 from pyedb.dotnet.database.edb_data.sources import Source
 
-pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
+pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.grpc]
 
 
 class TestClass:

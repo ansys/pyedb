@@ -30,7 +30,7 @@ import pytest
 from pyedb.dotnet.edb import Edb
 from tests.conftest import desktop_version
 
-pytestmark = [pytest.mark.system, pytest.mark.legacy]
+pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
 
 class TestClass:

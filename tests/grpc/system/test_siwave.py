@@ -29,7 +29,7 @@ import pytest
 from pyedb.siwave import Siwave
 from tests.conftest import desktop_version, local_path
 
-pytestmark = [pytest.mark.unit, pytest.mark.legacy]
+pytestmark = [pytest.mark.unit, pytest.mark.grpc]
 
 
 @pytest.mark.skipif(True, reason="skipping test on CI because they fail in non-graphical")

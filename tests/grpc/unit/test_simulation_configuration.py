@@ -29,7 +29,7 @@ from pyedb.dotnet.database.edb_data.simulation_configuration import (
 )
 from pyedb.generic.constants import SourceType
 
-pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
+pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.grpc]
 
 
 class TestClass:

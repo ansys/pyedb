@@ -24,7 +24,7 @@ import pytest
 
 from pyedb.modeler.geometry_operators import GeometryOperators as go
 
-pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
+pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.grpc]
 
 
 class TestClass:

@@ -25,7 +25,7 @@ import pytest
 
 from pyedb.dotnet.database.padstack import EdbPadstacks
 
-pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
+pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.grpc]
 
 
 class TestClass:

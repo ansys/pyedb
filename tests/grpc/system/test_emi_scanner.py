@@ -32,7 +32,7 @@ from pyedb.misc.siw_feature_config.emc_rule_checker_settings import (
 )
 from tests.conftest import local_path
 
-pytestmark = [pytest.mark.system, pytest.mark.legacy]
+pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
 
 class TestClass:

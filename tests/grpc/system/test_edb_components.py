@@ -32,7 +32,7 @@ from pyedb.grpc.edb import Edb as Edb
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
-pytestmark = [pytest.mark.system, pytest.mark.legacy]
+pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
 bom_example = "bom_example.csv"
 

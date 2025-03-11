@@ -38,7 +38,7 @@ from pyedb.grpc.database.definition.materials import (
 )
 from tests.conftest import local_path
 
-pytestmark = [pytest.mark.system, pytest.mark.legacy]
+pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
 PROPERTIES = (
     "conductivity",
