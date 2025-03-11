@@ -34,10 +34,24 @@ class CfgTerminalInfo(CfgBase):
 
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
-        self.type = list(kwargs.keys())[0]
+        if "pin" in kwargs:
+            self.type = "pin"
+        elif "net" in kwargs:
+            self.type = "net"
+        elif "pin_group" in kwargs:
+            self.type = "pin_group"
+        elif "nearest_pin" in kwargs:
+            self.type = "nearest_pin"
+        elif "coordinates" in kwargs:
+            self.type = "coordinates"
+        else:  # pragma no cover
+            raise RuntimeError
         self.value = kwargs[self.type]
+        self.reference_designator = kwargs.get("reference_designator")
+
         self.contact_type = kwargs.get("contact_type", "default")  # options are full, center, quad, inline
-        self.contact_radius = self._pedb.edb_value(kwargs.get("contact_radius", "0.1mm")).ToDouble()
+        contact_radius = "0.1mm" if kwargs.get("contact_radius") is None else kwargs.get("contact_radius")
+        self.contact_radius = self._pedb.edb_value(contact_radius).ToDouble()
         self.num_of_contact = kwargs.get("num_of_contact", 4)
 
     def export_properties(self):
@@ -235,6 +249,8 @@ class CfgCircuitElement(CfgBase):
             self.positive_terminal_info = CfgCoordianteTerminalInfo(self._pedb, **pos)
         else:
             self.positive_terminal_info = CfgTerminalInfo(self._pedb, **pos)
+            if not self.positive_terminal_info.reference_designator:
+                self.positive_terminal_info.reference_designator = self.reference_designator
 
         neg = kwargs.get("negative_terminal", {})
         if len(neg) == 0:
@@ -245,6 +261,8 @@ class CfgCircuitElement(CfgBase):
             self.negative_terminal_info = CfgNearestPinTerminalInfo(self._pedb, **neg)
         else:
             self.negative_terminal_info = CfgTerminalInfo(self._pedb, **neg)
+            if not self.negative_terminal_info.reference_designator:
+                self.negative_terminal_info.reference_designator = self.positive_terminal_info.reference_designator
 
     def create_terminals(self):
         """Create step 1. Collect positive and negative terminals."""
@@ -254,8 +272,8 @@ class CfgCircuitElement(CfgBase):
         pos_objs = dict()
         pos_coor_terminal = dict()
         if self.type == "coax":
-            pins = self._get_pins(pos_type, pos_value)
-            pins = {f"{self.name}_{self.reference_designator}": i for _, i in pins.items()}
+            pins = self._get_pins(pos_type, pos_value, self.positive_terminal_info.reference_designator)
+            pins = {f"{self.name}_{self.positive_terminal_info.reference_designator}": i for _, i in pins.items()}
             pos_objs.update(pins)
         elif pos_type == "coordinates":
             layer = self.positive_terminal_info.layer
@@ -264,7 +282,11 @@ class CfgCircuitElement(CfgBase):
             pos_coor_terminal[self.name] = self._pedb.get_point_terminal(self.name, net_name, point, layer)
 
         elif pos_type == "pin":
-            pins = {pos_value: self._pedb.components.instances[self.reference_designator].pins[pos_value]}
+            pins = {
+                pos_value: self._pedb.components.instances[self.positive_terminal_info.reference_designator].pins[
+                    pos_value
+                ]
+            }
             if self.positive_terminal_info.contact_type in ["quad", "inline"]:
                 for _, pin in pins.items():
                     contact_type = self.positive_terminal_info.contact_type
@@ -276,7 +298,7 @@ class CfgCircuitElement(CfgBase):
             else:
                 pos_objs.update(pins)
         elif pos_type == "pin_group":
-            pins = self._get_pins(pos_type, pos_value)
+            pins = self._get_pins(pos_type, pos_value, self.positive_terminal_info.reference_designator)
             if self.distributed:
                 pos_objs.update(pins)
                 self._elem_num = len(pos_objs)
@@ -291,7 +313,7 @@ class CfgCircuitElement(CfgBase):
             else:
                 pos_objs[pos_value] = self._pedb.siwave.pin_groups[pos_value]
         elif pos_type == "net":
-            pins = self._get_pins(pos_type, pos_value)
+            pins = self._get_pins(pos_type, pos_value, self.positive_terminal_info.reference_designator)
             if self.distributed:
                 pos_objs.update(pins)
                 self._elem_num = len(pos_objs)
@@ -305,7 +327,7 @@ class CfgCircuitElement(CfgBase):
                     self._elem_num = len(pos_objs)
             else:
                 # create pin group
-                neg_obj = self._create_pin_group(pins)
+                neg_obj = self._create_pin_group(pins, self.positive_terminal_info.reference_designator)
                 pos_objs.update(neg_obj)
         else:
             raise Exception(f"Wrong positive terminal type {pos_type}.")
@@ -337,13 +359,17 @@ class CfgCircuitElement(CfgBase):
                     neg_obj = {neg_value: self._pedb.siwave.pin_groups[neg_value]}
                 elif neg_type == "net":
                     # Get pins
-                    pins = self._get_pins(neg_type, neg_value)  # terminal type pin or net
+                    pins = self._get_pins(
+                        neg_type, neg_value, self.negative_terminal_info.reference_designator
+                    )  # terminal type pin or net
                     # create pin group
-                    neg_obj = self._create_pin_group(pins, True)
+                    neg_obj = self._create_pin_group(pins, self.negative_terminal_info.reference_designator, True)
                 elif neg_type == "pin":
-                    terminal_name = f"{self.reference_designator}_{neg_value}"
+                    terminal_name = f"{self.negative_terminal_info.reference_designator}_{neg_value}"
                     neg_obj = {
-                        terminal_name: self._pedb.components.instances[self.reference_designator].pins[neg_value]
+                        terminal_name: self._pedb.components.instances[
+                            self.negative_terminal_info.reference_designator
+                        ].pins[neg_value]
                     }
                 else:
                     raise Exception(f"Wrong negative terminal type {neg_type}.")
@@ -351,11 +377,11 @@ class CfgCircuitElement(CfgBase):
                     j.create_terminal(i) if not j.terminal else j.terminal for i, j in neg_obj.items()
                 ][0]
 
-    def _get_pins(self, terminal_type, terminal_value):
+    def _get_pins(self, terminal_type, terminal_value, reference_designator):
         terminal_value = terminal_value if isinstance(terminal_value, list) else [terminal_value]
 
         def get_pin_obj(pin_name):
-            return {pin_name: self._pedb.components.instances[self.reference_designator].pins[pin_name]}
+            return {pin_name: self._pedb.components.instances[reference_designator].pins[pin_name]}
 
         pins = dict()
         if terminal_type == "pin":
@@ -363,11 +389,11 @@ class CfgCircuitElement(CfgBase):
                 pins.update(get_pin_obj(i))
         else:
             if terminal_type == "net":
-                temp = self._pedb.components.get_pins(self.reference_designator, terminal_value[0])
+                temp = self._pedb.components.get_pins(reference_designator, terminal_value[0])
             elif terminal_type == "pin_group":
                 pin_group = self._pedb.siwave.pin_groups[terminal_value[0]]
                 temp = pin_group.pins
-            pins.update({f"{self.reference_designator}_{terminal_value[0]}_{i}": j for i, j in temp.items()})
+            pins.update({f"{reference_designator}_{terminal_value[0]}_{i}": j for i, j in temp.items()})
         return pins
 
     def _create_virtual_pins_on_pin(self, pin, contact_type, radius, num_of_contact=4):
@@ -428,15 +454,18 @@ class CfgCircuitElement(CfgBase):
                 is_pin=True,
             )
             instances[pin_name] = p_inst
+        self._pedb.components.create(
+            pins=list(instances.values()),
+        )
         return instances
 
-    def _create_pin_group(self, pins, is_ref=False):
+    def _create_pin_group(self, pins, reference_designator, is_ref=False):
         if is_ref:
-            pg_name = f"pg_{self.name}_{self.reference_designator}_ref"
+            pg_name = f"pg_{self.name}_{reference_designator}_ref"
         else:
-            pg_name = f"pg_{self.name}_{self.reference_designator}"
+            pg_name = f"pg_{self.name}_{reference_designator}"
         pin_names = [i.component_pin for i in pins.values()]
-        name, temp = self._pedb.siwave.create_pin_group(self.reference_designator, pin_names, pg_name)
+        name, temp = self._pedb.siwave.create_pin_group(reference_designator, pin_names, pg_name)
         return {name: temp}
 
 
