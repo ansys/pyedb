@@ -961,7 +961,7 @@ class Padstacks(object):
         str
             Name of the new padstack.
         """
-        new_padstack_definition_data = GrpcPadstackDefData(self.definitions[target_padstack_name].data)
+        new_padstack_definition_data = GrpcPadstackDefData(self.definitions[target_padstack_name].data.msg)
         if not new_padstack_name:
             new_padstack_name = generate_unique_name(target_padstack_name)
         padstack_definition = PadstackDef.create(self.db, new_padstack_name)
@@ -1166,7 +1166,7 @@ class Padstacks(object):
         antipad_x_offset = GrpcValue(antipad_x_offset)
         antipad_y_offset = GrpcValue(antipad_y_offset)
         antipad_rotation = GrpcValue(antipad_rotation)
-        new_padstack_def = GrpcPadstackDefData(self.definitions[padstack_name].data)
+        new_padstack_def = GrpcPadstackDefData(self.definitions[padstack_name].data.msg)
         if not layer_name:
             layer_name = list(self._pedb.stackup.signal_layers.keys())
         elif isinstance(layer_name, str):
