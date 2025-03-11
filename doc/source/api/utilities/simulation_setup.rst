@@ -3,7 +3,7 @@ Simulation setup
 This class is the container of simulation setup.
 
 
-.. currentmodule:: pyedb.dotnet.edb_core.utilities.simulation_setup
+.. currentmodule:: pyedb.dotnet.database.utilities.simulation_setup
 
 .. autosummary::
    :toctree: _autosummary

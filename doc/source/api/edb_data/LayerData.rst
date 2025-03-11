@@ -17,7 +17,7 @@ These classes are the containers of the layer and stackup manager of the EDB API
     ...
 
 
-.. currentmodule:: pyedb.dotnet.edb_core.edb_data.layer_data
+.. currentmodule:: pyedb.dotnet.database.edb_data.layer_data
 
 .. autosummary::
    :toctree: _autosummary

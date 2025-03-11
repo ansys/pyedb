@@ -16,7 +16,7 @@ These classes are the containers of ports methods of the EDB for both HFSS and S
     ...
 
 
-.. currentmodule:: pyedb.dotnet.edb_core.edb_data.ports
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
 
 .. autosummary::
    :toctree: _autosummary

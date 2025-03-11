@@ -268,7 +268,7 @@ class Primitive(Connectable):
 
         Returns
         -------
-        bool, :class:`dotnet.edb_core.edb_data.primitives.EDBPrimitives`
+        bool, :class:`dotnet.database.edb_data.primitives.EDBPrimitives`
             Polygon when successful, ``False`` when failed.
 
         """
@@ -285,7 +285,7 @@ class Primitive(Connectable):
 
         Parameters
         ----------
-        primitive : :class:`pyaeedt.edb_core.edb_data.primitives_data.EDBPrimitives` or `PolygonData`
+        primitive : :class:`pyaeedt.database.edb_data.primitives_data.EDBPrimitives` or `PolygonData`
 
         Returns
         -------
@@ -309,7 +309,7 @@ class Primitive(Connectable):
 
         Parameters
         ----------
-        primitive : :class:`pyaeedt.edb_core.edb_data.primitives_data.EDBPrimitives` or `PolygonData`
+        primitive : :class:`pyaeedt.database.edb_data.primitives_data.EDBPrimitives` or `PolygonData`
 
         Returns
         -------
@@ -355,11 +355,11 @@ class Primitive(Connectable):
 
         Parameters
         ----------
-        primitives : :class:`dotnet.edb_core.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
+        primitives : :class:`dotnet.database.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
 
         Returns
         -------
-        List of :class:`dotnet.edb_core.edb_data.EDBPrimitives`
+        List of :class:`dotnet.database.edb_data.EDBPrimitives`
         """
         poly = self.primitive_object.GetPolygonData()
         if not isinstance(primitives, list):
@@ -405,11 +405,11 @@ class Primitive(Connectable):
 
         Parameters
         ----------
-        primitives : :class:`dotnet.edb_core.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
+        primitives : :class:`dotnet.database.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
 
         Returns
         -------
-        List of :class:`dotnet.edb_core.edb_data.EDBPrimitives`
+        List of :class:`dotnet.database.edb_data.EDBPrimitives`
         """
         poly = self._edb_object.GetPolygonData()
         if not isinstance(primitives, list):
@@ -476,11 +476,11 @@ class Primitive(Connectable):
 
         Parameters
         ----------
-        primitives : :class:`dotnet.edb_core.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
+        primitives : :class:`dotnet.database.edb_data.EDBPrimitives` or EDB PolygonData or EDB Primitive or list
 
         Returns
         -------
-        List of :class:`dotnet.edb_core.edb_data.EDBPrimitives`
+        List of :class:`dotnet.database.edb_data.EDBPrimitives`
         """
         poly = self._edb_object.GetPolygonData()
         if not isinstance(primitives, list):
@@ -601,7 +601,7 @@ class Primitive(Connectable):
 
     @property
     def polygon_data(self):
-        """:class:`pyedb.dotnet.edb_core.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
+        """:class:`pyedb.dotnet.database.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
         return PolygonData(self._pedb, self._edb_object.GetPolygonData())
 
     def add_void(self, point_list):
@@ -609,7 +609,7 @@ class Primitive(Connectable):
 
         Parameters
         ----------
-        point_list : list or :class:`pyedb.dotnet.edb_core.edb_data.primitives_data.EDBPrimitives` \
+        point_list : list or :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives` \
             or EDB Primitive Object. Point list in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
 
         Returns

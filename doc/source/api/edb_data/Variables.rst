@@ -3,7 +3,7 @@ Variables
 Class managing EDB Variables.
 
 
-.. currentmodule:: pyedb.dotnet.edb_core.edb_data.variables
+.. currentmodule:: pyedb.dotnet.database.edb_data.variables
 
 .. autosummary::
    :toctree: _autosummary
