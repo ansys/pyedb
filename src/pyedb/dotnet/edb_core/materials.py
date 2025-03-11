@@ -1043,3 +1043,18 @@ class Materials(object):
 
         self.__edb.logger.error(f"Material {material_name} does not exist in syslib AMAT file.")
         return res
+
+    def update_materials_from_syslibrary(self, update_all:bool=True, material_name: Union[str, list]=None):
+        """Update material properties from syslib AMAT file."""
+        amat_file =  os.path.join(self.__edb.base_path, "syslib", "Materials.amat")
+        materials_dict = self.read_materials(amat_file)
+        if update_all:
+            for name, obj in self.materials.items():
+                if name in materials_dict:
+                    obj.update(materials_dict[name])
+                    self.__edb.logger.info(f"Material {name} is updated from syslibrary.")
+        else:
+            material_names = material_name if isinstance(material_name, list) else [material_name]
+            for name in material_names:
+                self.materials[name].update(materials_dict[name])
+                self.__edb.logger.info(f"Material {name} is updated from syslibrary.")
