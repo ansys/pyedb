@@ -139,7 +139,7 @@ class Step(object):
         # adding component add package in Step
         if component:
             if not component.part_name in self._packages:
-                package = Package(self._ipc)
+                package = Package(self._ipc, self._pedb)
                 package.add_component_outline(component)
                 package.name = component.part_name
                 package.height = ""
@@ -215,7 +215,7 @@ class Step(object):
 
     def add_layer_feature(self, layer, polys):  # pragma no cover
         layer_name = layer.name
-        layer_feature = LayerFeature(self._ipc)
+        layer_feature = LayerFeature(self._ipc, self._pedb)
         layer_feature.layer_name = layer_name
         layer_feature.color = layer.color
 
@@ -261,7 +261,7 @@ class Step(object):
 
     def add_drill_layer_feature(self, via_list=None, layer_feature_name=""):  # pragma no cover
         if via_list:
-            drill_layer_feature = LayerFeature(self._ipc)
+            drill_layer_feature = LayerFeature(self._ipc, self._pedb)
             drill_layer_feature.is_drill_feature = True
             drill_layer_feature.layer_name = layer_feature_name
             for via in via_list:

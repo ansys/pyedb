@@ -187,7 +187,6 @@ class Edb(Database):
         use_ppe: bool = False,
         technology_file: str = None,
         remove_existing_aedt: bool = False,
-        grpc=False,
     ):
         if isinstance(edbpath, Path):
             edbpath = str(edbpath)
@@ -374,6 +373,11 @@ class Edb(Database):
         self._core_primitives = Modeler(self)
         self._stackup2 = self._stackup
         self._materials = Materials(self)
+
+    @property
+    def grpc(self):
+        """grpc flag."""
+        return False
 
     @property
     def cell_names(self):
@@ -1182,11 +1186,11 @@ class Edb(Database):
 
                     temp.append(EdbRectangle(i, self))
                 elif prim_type == Primitives.Circle.name:
-                    from pyedb.dotnet.edb_core.edb_data.primitives_data import EdbCircle
+                    from pyedb.dotnet.database.edb_data.primitives_data import EdbCircle
 
                     temp.append(EdbCircle(i, self))
                 elif prim_type == Primitives.Polygon.name:
-                    from pyedb.dotnet.edb_core.edb_data.primitives_data import (
+                    from pyedb.dotnet.database.edb_data.primitives_data import (
                         EdbPolygon,
                     )
 
