@@ -28,6 +28,8 @@ from os.path import dirname
 
 import pytest
 
+pytestmark = [pytest.mark.system, pytest.mark.grpc]
+
 from pyedb.grpc.edb import Edb as Edb
 from pyedb.misc.misc import list_installed_ansysem
 from tests.conftest import generate_random_string
