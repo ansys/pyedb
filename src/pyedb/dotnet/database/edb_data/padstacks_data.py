@@ -34,7 +34,7 @@ from pyedb.dotnet.database.general import (
     pascal_to_snake,
     snake_to_pascal,
 )
-from pyedb.dotnet.edb_core.geometry.polygon_data import PolygonData
+from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
