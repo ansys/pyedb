@@ -187,6 +187,7 @@ class Edb(Database):
         use_ppe: bool = False,
         technology_file: str = None,
         remove_existing_aedt: bool = False,
+        grpc=False,
     ):
         if isinstance(edbpath, Path):
             edbpath = str(edbpath)
@@ -1171,11 +1172,11 @@ class Edb(Database):
             elif obj_type == LayoutObjType.Primitive.name:
                 prim_type = i.GetPrimitiveType().ToString()
                 if prim_type == Primitives.Path.name:
-                    from pyedb.dotnet.edb_core.cell.primitive.path import Path
+                    from pyedb.dotnet.database.cell.primitive.path import Path
 
                     temp.append(Path(self, i))
                 elif prim_type == Primitives.Rectangle.name:
-                    from pyedb.dotnet.edb_core.edb_data.primitives_data import (
+                    from pyedb.dotnet.database.edb_data.primitives_data import (
                         EdbRectangle,
                     )
 
@@ -4605,7 +4606,7 @@ class Edb(Database):
     @property
     def definitions(self):
         """Definitions class."""
-        from pyedb.dotnet.edb_core.definition.definitions import Definitions
+        from pyedb.dotnet.database.definition.definitions import Definitions
 
         return Definitions(self)
 
