@@ -153,8 +153,9 @@ class Configuration:
                     result = pdef_data.GetPadParametersValue(lyr_name, self._pedb._edb.Definition.PadType.RegularPad)
                     flag, pad_shape, params, offset_x, offset_y, rotation = result
                     if flag is False:
-                        result = pdef_data.GetPolygonalPadParameters(lyr_name,
-                                                                     self._pedb._edb.Definition.PadType.RegularPad)
+                        result = pdef_data.GetPolygonalPadParameters(
+                            lyr_name, self._pedb._edb.Definition.PadType.RegularPad
+                        )
                         flag, polygon_data, offset_x, offset_y, rotation = result
                         if flag:
                             temp_pdef_data[pdef_name] = pdef_data
