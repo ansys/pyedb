@@ -1164,7 +1164,7 @@ class Edb(Database):
         ):
             obj_type = i.GetObjType().ToString()
             if obj_type == LayoutObjType.PadstackInstance.name:
-                from pyedb.dotnet.edb_core.edb_data.padstacks_data import (
+                from pyedb.dotnet.database.edb_data.padstacks_data import (
                     EDBPadstackInstance,
                 )
 
