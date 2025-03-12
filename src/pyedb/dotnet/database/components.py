@@ -28,7 +28,7 @@ import json
 import math
 import os
 import re
-from typing import List, Union
+from typing import List, Set, Union
 import warnings
 
 from pyedb.component_libraries.ansys_components import (
@@ -857,9 +857,7 @@ class Components(object):
                 "PEC boundary created between pin {} and reference pin {}".format(pins[0].name, reference_pins[0].name)
             )
 
-        if term:
-            return term
-        return False  # pragma: no cover
+        return term or False
 
     def _get_pins_for_ports(
         self, pins: Union[int, str, EDBPadstackInstance, List[Union[int, str, EDBPadstackInstance]]], comp: EDBComponent
@@ -949,38 +947,15 @@ class Components(object):
         if isinstance(component, str):
             component = self.instances[component].edbcomponent
 
-        if not isinstance(net_list, List):
-            net_list = [net_list]
-        nets = []
-        for net in net_list:
-            if not isinstance(net, str):
-                try:
-                    net_name = net.name
-                    if net_name != "":
-                        nets.append(net_name)
-                except:
-                    pass
-            else:
-                nets.append(net)
+        nets = self._normalize_net_list(net_list)
 
         if not isinstance(reference_net, List):
             reference_net = [reference_net]
-        ref_nets = []
-        for net in reference_net:
-            net_name = None
-            if not isinstance(net, str):
-                try:
-                    net_name = net.name
-                    if net_name != "":
-                        ref_nets.append(net_name)
-                except:
-                    pass
-            else:
-                net_name = net
-                ref_nets.append(net_name)
-            if net_name in nets:
-                self._logger.warning(f"Removing reference net {net_name} from the positive net list.")
-                nets.remove(net_name)
+        ref_nets = self._normalize_net_list(reference_net)
+        nets_to_remove = ref_nets.intersection(nets)
+        if nets_to_remove:
+            self._logger.warning(f"Removing reference nets {sorted(nets_to_remove)} from the positive net list.")
+        nets -= nets_to_remove
         cmp_pins = [p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.GetNet().GetName() in nets]
         for p in cmp_pins:
             if not p.IsLayoutPin():
@@ -1054,7 +1029,7 @@ class Components(object):
                 self._logger.warning("No reference pins found on component")
                 if not extend_reference_pins_outside_component:
                     self._logger.warning(
-                        "argument extend_reference_pins_outside_component is False. You might want "
+                        "Argument extend_reference_pins_outside_component is False. You might want "
                         "setting to True to extend the reference pin search outside the component"
                     )
                 else:
@@ -1118,6 +1093,19 @@ class Components(object):
                             else:
                                 self._logger.error("Skipping port creation no reference pin found.")
         return True
+
+    def _normalize_net_list(self, net_list) -> Set[str]:
+        if not isinstance(net_list, List):
+            net_list = [net_list]
+        nets = set()
+        for net in net_list:
+            if isinstance(net, EDBNetsData):
+                net_name = net.name
+                if net_name != "":
+                    nets.add(net_name)
+            elif isinstance(net, str) and net != "":
+                nets.add(net)
+        return nets
 
     def _create_terminal(self, pin, term_name=None):
         """Create terminal on component pin.

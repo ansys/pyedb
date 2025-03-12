@@ -24,7 +24,7 @@
 
 import os
 from pathlib import Path
-from typing import Sequence
+from typing import List, Sequence
 
 import pytest
 
@@ -1877,11 +1877,11 @@ class TestClass:
         assert path_bom.exists()
         edbapp.close()
 
-    def test_create_port_on_component_no_ref_pins_in_component(self, edb_examples):
-        from pyedb.generic.constants import SourceType
-
+    @pytest.mark.parametrize("port_type", (SourceType.CircPort, SourceType.CoaxPort))
+    def test_create_port_on_component_no_ref_pins_in_component(self, edb_examples, port_type: SourceType):
         edbapp = edb_examples.get_no_ref_pins_component()
-        edbapp.components.create_port_on_component(
+        assert len(edbapp.ports) == 0
+        result = edbapp.components.create_port_on_component(
             component="J2E2",
             net_list=[
                 "net1",
@@ -1900,27 +1900,47 @@ class TestClass:
                 "net14",
                 "net15",
             ],
-            port_type=SourceType.CircPort,
+            port_type=port_type,
             reference_net=["GND"],
             extend_reference_pins_outside_component=True,
         )
-        assert len(edbapp.ports) == 15
+        expected_result = result if port_type == SourceType.CircPort else not result
+        assert expected_result
+        expected_port_count = 15 if port_type == SourceType.CircPort else 0
+        assert len(edbapp.ports) == expected_port_count
 
-    @pytest.mark.parametrize("positive_net_names", (["2V5", "NetR105_2"], ["2V5", "GND", "NetR105_2"]))
+    @pytest.mark.parametrize("positive_net_names", (["2V5", "NetR105_2"], ["2V5", "GND", "NetR105_2"], "2V5"))
     @pytest.mark.parametrize("nets_mode", ("str", "net"))
     def test_create_circuit_port_on_component(self, edb_examples, nets_mode: str, positive_net_names: Sequence[str]):
         edbapp = edb_examples.get_si_verse()
+        positive_net_list = [positive_net_names] if not isinstance(positive_net_names, List) else positive_net_names
         reference_net_names = ["GND"]
         assert edbapp.components.create_port_on_component(
             component="U10",
-            net_list=(positive_net_names if nets_mode == "str" else [edbapp.nets[net] for net in positive_net_names]),
+            net_list=positive_net_names if nets_mode == "str" else [edbapp.nets[net] for net in positive_net_list],
             port_type=SourceType.CircPort,
             do_pingroup=False,
             reference_net=(
                 reference_net_names if nets_mode == "str" else [edbapp.nets[net] for net in reference_net_names]
             ),
         )
-        assert len(edbapp.excitations) == 4
+        assert len(edbapp.excitations) == 2 * len(set(positive_net_list) - set(reference_net_names))
+
+    def test_create_circuit_port_on_component_string_net_list(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        positive_net_names = "2V5"
+        reference_net_names = "GND"
+        component_name = "U10"
+        for pin in edbapp.components[component_name].pins.values():
+            pin.is_pin = False
+        assert edbapp.components.create_port_on_component(
+            component=component_name,
+            net_list=positive_net_names,
+            port_type=SourceType.CircPort,
+            do_pingroup=False,
+            reference_net=reference_net_names,
+        )
+        assert len(edbapp.excitations) == 2
 
     def test_create_circuit_port_on_component_set_is_pin(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
