@@ -279,6 +279,8 @@ class CfgCircuitElement(CfgBase):
             layer = self.positive_terminal_info.layer
             point = [self.positive_terminal_info.point_x, self.positive_terminal_info.point_y]
             net_name = self.positive_terminal_info.net
+            if net_name not in self._pedb.nets:
+                self._pedb.nets.find_or_create_net(net_name)
             pos_coor_terminal[self.name] = self._pedb.get_point_terminal(self.name, net_name, point, layer)
 
         elif pos_type == "pin":
@@ -344,6 +346,8 @@ class CfgCircuitElement(CfgBase):
                 layer = self.negative_terminal_info.layer
                 point = [self.negative_terminal_info.point_x, self.negative_terminal_info.point_y]
                 net_name = self.negative_terminal_info.net
+                if net_name not in self._pedb.nets:
+                    self._pedb.nets.find_or_create_net(net_name)
                 self.neg_terminal = self._pedb.get_point_terminal(self.name + "_ref", net_name, point, layer)
             elif neg_type == "nearest_pin":
                 ref_net = neg_value.get("reference_net", "GND")
