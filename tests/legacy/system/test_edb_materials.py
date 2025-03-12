@@ -349,7 +349,7 @@ class TestClass:
 
     def test_update_materials_from_syslib(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-        edbapp.materials.update_materials_from_syslibrary(False, "copper")
+        edbapp.materials.update_materials_from_sys_library(False, "copper")
         assert edbapp.materials["copper"].thermal_conductivity == 400
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 1
         edbapp.materials.update_materials_from_sys_library()
