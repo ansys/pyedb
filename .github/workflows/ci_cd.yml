@@ -99,8 +99,7 @@ jobs:
       - name: "Install Python library and tests dependencies"
         run: |
           . .venv\Scripts\Activate.ps1
-          python -m pip install -U .[tests]
-          pip install --pre ansys-edb-core
+          python -m pip install .[tests]
 
       - name: "Executing legacy tests"
         uses: nick-fields/retry@v3
@@ -110,7 +109,7 @@ jobs:
           timeout_minutes: 15
           command: |
             . .venv\Scripts\Activate.ps1
-            pytest -m "legacy" -n auto --dist loadfile -v --cov
+            pytest tests/legacy -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
@@ -169,8 +168,7 @@ jobs:
       - name: "Install Python library and tests dependencies"
         run: |
           . .venv/bin/activate
-          python -m pip install -U .[tests]
-          pip install --pre ansys-edb-core
+          python -m pip install .[tests]
 
       - name: "Executing legacy tests"
         uses: nick-fields/retry@v3
@@ -181,7 +179,7 @@ jobs:
           command: |
             export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            xvfb-run pytest -m "legacy" -n auto --dist loadfile -v --cov
+            xvfb-run pytest tests/legacy -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
