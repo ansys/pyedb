@@ -346,3 +346,12 @@ class TestClass:
         assert 0.00045 == material.loss_tangent
         assert 0.00045 == material.dielectric_loss_tangent
         assert 12 == material.permittivity
+
+    def test_update_materials_from_syslib(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.materials.update_materials_from_sys_library(False, "copper")
+        assert edbapp.materials["copper"].thermal_conductivity == 400
+        edbapp.materials["FR4_epoxy"].thermal_conductivity = 1
+        edbapp.materials.update_materials_from_sys_library()
+        edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
+        edbapp.close()
