@@ -118,6 +118,7 @@ filterwarnings = [
 ]
 markers = [
     "legacy: mark test as related to the legacy API.",
+    "grpc: mark test as related to the gRPC API.",
     "unit: mark test as an unit test.",
     "integration: mark test as an integration test.",
     "system: mark test as a system test.",
