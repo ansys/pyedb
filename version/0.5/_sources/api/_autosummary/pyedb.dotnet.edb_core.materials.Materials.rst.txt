@@ -1,0 +1,65 @@
+﻿Materials
+=========
+
+.. currentmodule:: pyedb.dotnet.edb_core.materials
+
+.. autoclass:: Materials
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Materials.add_conductor_material
+      
+      
+      Materials.add_debye_material
+      
+      
+      Materials.add_dielectric_material
+      
+      
+      Materials.add_djordjevicsarkar_material
+      
+      
+      Materials.add_material
+      
+      
+      Materials.add_multipole_debye_material
+      
+      
+      Materials.duplicate
+      
+      
+      Materials.get_djordjevicsarkar_model
+      
+      
+      Materials.get_property_by_material_name
+      
+      
+      Materials.load_amat
+      
+      
+      Materials.material_name_to_id
+      
+      
+      Materials.read_materials
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Materials.materials
+      Materials.syslib
+   
+   

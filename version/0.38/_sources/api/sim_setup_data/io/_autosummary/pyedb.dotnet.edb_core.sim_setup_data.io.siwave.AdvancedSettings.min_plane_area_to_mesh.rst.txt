@@ -1,0 +1,6 @@
+min\_plane\_area\_to\_mesh
+==========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
+
+.. autoproperty:: AdvancedSettings.min_plane_area_to_mesh

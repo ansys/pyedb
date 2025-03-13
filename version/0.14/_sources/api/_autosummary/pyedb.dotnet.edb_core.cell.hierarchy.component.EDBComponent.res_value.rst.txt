@@ -1,0 +1,6 @@
+res\_value
+==========
+
+.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component
+
+.. autoproperty:: EDBComponent.res_value

@@ -1,0 +1,6 @@
+is\_point
+=========
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.primitives_data
+
+.. autoproperty:: EDBArcs.is_point

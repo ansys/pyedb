@@ -1,0 +1,6 @@
+model\_type
+===========
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: DefeatureSettings.model_type

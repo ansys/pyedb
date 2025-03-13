@@ -1,0 +1,6 @@
+get\_attributes
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_pin_groups
+
+.. automethod:: CfgPinGroup.get_attributes

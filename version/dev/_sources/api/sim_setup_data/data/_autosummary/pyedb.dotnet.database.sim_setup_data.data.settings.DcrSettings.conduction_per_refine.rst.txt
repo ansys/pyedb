@@ -1,0 +1,6 @@
+conduction\_per\_refine
+=======================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+.. autoproperty:: DcrSettings.conduction_per_refine

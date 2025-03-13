@@ -1,0 +1,6 @@
+kHFSSPI
+=======
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.simulation_setup
+
+.. autoattribute:: SimulationSetupType.kHFSSPI
