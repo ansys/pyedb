@@ -89,11 +89,21 @@ class Step(object):
         net_name = net.name
         logical_net = LogicalNet()
         logical_net.name = net_name
-        net_pins = list(net._edb_object.PadstackInstances)
+        if not self._pedb.grpc:
+            net_pins = list(net._edb_object.PadstackInstances)
+        else:
+            net_pins = net.padstack_instances
         for pin in net_pins:
             new_pin_ref = logical_net.get_pin_ref_def()
-            new_pin_ref.pin = pin.GetName()
-            new_pin_ref.component_ref = pin.GetComponent().GetName()
+            if not self._pedb.grpc:
+                new_pin_ref.pin = pin.GetName()
+                new_pin_ref.component_ref = pin.GetComponent().GetName()
+            else:
+                new_pin_ref.pin = pin.name
+                if pin.component:
+                    new_pin_ref.component_ref = pin.component.name
+                else:
+                    new_pin_ref.component_ref = ""
             logical_net.pin_ref.append(new_pin_ref)
         self.logical_nets.append(logical_net)
 
@@ -146,9 +156,14 @@ class Step(object):
                 package.type = component.type
                 pin_number = 0
                 for _, pin in component.pins.items():
-                    geometry_type, pad_parameters, pos_x, pos_y, rot = self._pedb.padstacks.get_pad_parameters(
-                        pin._edb_padstackinstance, component.placement_layer, 0
-                    )
+                    if not self._pedb.grpc:
+                        geometry_type, pad_parameters, pos_x, pos_y, rot = self._pedb.padstacks.get_pad_parameters(
+                            pin._edb_padstackinstance, component.placement_layer, 0
+                        )
+                    else:
+                        geometry_type, pad_parameters, pos_x, pos_y, rot = self._pedb.padstacks.get_pad_parameters(
+                            pin, component.placement_layer, 0
+                        )
                     if pad_parameters:
                         position = pin._position if pin._position else pin.position
                         pin_pos_x = self._ipc.from_meter_to_units(position[0], self.units)
@@ -173,9 +188,9 @@ class Step(object):
             ipc_component = Component()
             ipc_component.type = component.type
             try:
-                ipc_component.value = component.value
+                ipc_component.value = str(component.value)
             except:
-                pass
+                self._pedb.logger.error(f"IPC export, failed loading component {component.refdes} value.")
             ipc_component.refdes = component.refdes
             center = component.center
             ipc_component.location = [
@@ -193,8 +208,12 @@ class Step(object):
         stop_layer,
     ):  # pragma no cover
         started = False
-        start_layer_name = start_layer.GetName()
-        stop_layer_name = stop_layer.GetName()
+        if not self._pedb.grpc:
+            start_layer_name = start_layer.GetName()
+            stop_layer_name = stop_layer.GetName()
+        else:
+            start_layer_name = start_layer.name
+            stop_layer_name = stop_layer.name
         layer_list = []
         for layer_name in self._ipc.layers_name:
             if started:
@@ -225,7 +244,7 @@ class Step(object):
         self._ipc.ecad.cad_data.cad_data_step.layer_features.append(layer_feature)
 
     def add_profile(self, poly):  # pragma no cover
-        profile = LayerFeature(self._ipc)
+        profile = LayerFeature(self._ipc, self._pedb)
         profile.layer_name = "profile"
         if poly:
             if not poly.is_void:
@@ -235,22 +254,32 @@ class Step(object):
     def add_padstack_instances(self, padstack_instances, padstack_defs):  # pragma no cover
         top_bottom_layers = self._ipc.top_bottom_layers
         layers = {j.layer_name: j for j in self._ipc.ecad.cad_data.cad_data_step.layer_features}
-
+        layer_colors = {i: j.color for i, j in self._ipc._pedb.stackup.layers.items()}
         for padstack_instance in padstack_instances:
-            _, start_layer, stop_layer = padstack_instance._edb_padstackinstance.GetLayerRange()
+            if not self._pedb.grpc:
+                _, start_layer, stop_layer = padstack_instance._edb_padstackinstance.GetLayerRange()
+            else:
+                start_layer, stop_layer = padstack_instance.get_layer_range()
             for layer_name in self.layer_ranges(start_layer, stop_layer):
                 if layer_name not in layers:
                     layer_feature = LayerFeature(self._ipc)
                     layer_feature.layer_name = layer_name
-                    layer_feature.color = self._ipc._pedb.stackup[layer_name].color
+                    # layer_feature.color = self._ipc._pedb.stackup[layer_name].color
+                    layer_feature.color = layer_colors[layer_name]
                     self._ipc.ecad.cad_data.cad_data_step.layer_features.append(layer_feature)
                     layers[layer_name] = self._ipc.ecad.cad_data.cad_data_step.layer_features[-1]
                 pdef_name = (
-                    padstack_instance._pdef.name if padstack_instance._pdef else padstack_instance.padstack_definition
+                    padstack_instance._pdef if padstack_instance._pdef else padstack_instance.padstack_definition
                 )
                 if pdef_name in padstack_defs:
                     padstack_def = padstack_defs[pdef_name]
-                    comp_name = padstack_instance._edb_object.GetComponent().GetName()
+                    if not self._pedb.grpc:
+                        comp_name = padstack_instance._edb_object.GetComponent().GetName()
+                    else:
+                        if padstack_instance.component:
+                            comp_name = padstack_instance.component.name
+                        else:
+                            comp_name = ""
                     if padstack_instance.is_pin and comp_name:
                         component_inst = self._pedb.components.instances[comp_name]
                         layers[layer_name].add_component_padstack_instance_feature(
@@ -261,15 +290,18 @@ class Step(object):
 
     def add_drill_layer_feature(self, via_list=None, layer_feature_name=""):  # pragma no cover
         if via_list:
-            drill_layer_feature = LayerFeature(self._ipc, self._pedb)
+            drill_layer_feature = LayerFeature(self._ipc, self._pedb.grpc)
             drill_layer_feature.is_drill_feature = True
             drill_layer_feature.layer_name = layer_feature_name
             for via in via_list:
                 try:
-                    via_diameter = via.pin.GetPadstackDef().GetData().GetHoleParameters()[2][0]
+                    if not self._pedb.grpc:
+                        via_diameter = via.pin.GetPadstackDef().GetData().GetHoleParameters()[2][0]
+                    else:
+                        via_diameter = via.definition.hole_diameter
                     drill_layer_feature.add_drill_feature(via, via_diameter)
                 except:
-                    pass
+                    self._pedb.logger.warning(f"Failed adding ipc drill on via {via.name}")
             self.layer_features.append(drill_layer_feature)
 
     def write_xml(self, cad_data):  # pragma no cover
