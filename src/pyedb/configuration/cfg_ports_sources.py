@@ -24,9 +24,9 @@ import os
 import numpy as np
 
 from pyedb.configuration.cfg_common import CfgBase
-from pyedb.dotnet.edb_core.edb_data.ports import WavePort
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
-from pyedb.dotnet.edb_core.geometry.point_data import PointData
+from pyedb.dotnet.database.edb_data.ports import WavePort
+from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.dotnet.database.geometry.point_data import PointData
 
 
 class CfgTerminalInfo(CfgBase):

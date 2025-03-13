@@ -34,7 +34,10 @@ dependencies = [
     "pydantic>=2.6.4,<2.11",
     "Rtree >= 1.2.0",
     "toml == 0.10.2",
-    "scikit-rf"
+    "scikit-rf",
+    "ansys-edb-core",
+    "ansys-api-edb",
+    "psutil",
     ]
 
 [project.optional-dependencies]
@@ -48,7 +51,7 @@ tests = [
     "shapely"
 ]
 doc = [
-    "ansys-sphinx-theme>=0.10.0,<1.1",
+    "ansys-sphinx-theme>=0.10.0,<1.4",
     "imageio>=2.30.0,<2.37",
     "ipython>=8.13.0,<8.32",
     "jupyterlab>=4.0.0,<4.4",
@@ -115,6 +118,7 @@ filterwarnings = [
 ]
 markers = [
     "legacy: mark test as related to the legacy API.",
+    "grpc: mark test as related to the gRPC API.",
     "unit: mark test as an unit test.",
     "integration: mark test as an integration test.",
     "system: mark test as a system test.",

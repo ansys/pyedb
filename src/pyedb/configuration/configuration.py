@@ -27,7 +27,7 @@ from pathlib import Path
 import toml
 
 from pyedb.configuration.cfg_data import CfgData
-from pyedb.dotnet.edb_core.definition.package_def import PackageDef
+from pyedb.dotnet.database.definition.package_def import PackageDef
 
 
 class Configuration:

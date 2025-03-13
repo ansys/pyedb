@@ -28,11 +28,11 @@ from pathlib import Path
 
 import pytest
 
-from pyedb.dotnet.edb import Edb
-from pyedb.dotnet.edb_core.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
+from pyedb.dotnet.database.edb_data.edbvalue import EdbValue
+from pyedb.dotnet.database.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
+from pyedb.dotnet.edb import Edb
 from pyedb.generic.constants import RadiationBoxType, SourceType
 from pyedb.generic.general_methods import is_linux, isclose
 from tests.conftest import desktop_version, local_path
@@ -1292,7 +1292,7 @@ class TestClass:
 
     def test_hfss_extent_info(self):
         """HFSS extent information."""
-        from pyedb.dotnet.edb_core.cell.primitive.primitive import Primitive
+        from pyedb.dotnet.database.cell.primitive.primitive import Primitive
 
         config = {
             "air_box_horizontal_extent_enabled": False,
@@ -1332,7 +1332,7 @@ class TestClass:
 
     def test_import_gds_from_tech(self):
         """Use techfile."""
-        from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
+        from pyedb.dotnet.database.edb_data.control_file import ControlFile
 
         c_file_in = os.path.join(
             local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
@@ -1417,7 +1417,7 @@ class TestClass:
 
     def test_add_via_with_options_control_file(self):
         """Add new via layer with option in control file."""
-        from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
+        from pyedb.dotnet.database.edb_data.control_file import ControlFile
 
         ctrl = ControlFile()
         ctrl.stackup.add_layer(
@@ -1452,7 +1452,7 @@ class TestClass:
 
     def test_add_layer_api_with_control_file(self):
         """Add new layers with control file."""
-        from pyedb.dotnet.edb_core.edb_data.control_file import ControlFile
+        from pyedb.dotnet.database.edb_data.control_file import ControlFile
 
         ctrl = ControlFile()
         # Material

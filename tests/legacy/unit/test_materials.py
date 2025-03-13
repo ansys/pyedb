@@ -26,7 +26,7 @@ from unittest.mock import mock_open
 from mock import MagicMock, PropertyMock, patch
 import pytest
 
-from pyedb.dotnet.edb_core.materials import Materials
+from pyedb.dotnet.database.materials import Materials
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
@@ -84,7 +84,7 @@ $end 'Water(@360K)'
 """
 
 
-@patch("pyedb.dotnet.edb_core.materials.Materials.materials", new_callable=PropertyMock)
+@patch("pyedb.dotnet.database.materials.Materials.materials", new_callable=PropertyMock)
 @patch.object(builtins, "open", new_callable=mock_open, read_data=MATERIALS)
 def test_materials_read_materials(mock_file_open, mock_materials_property):
     """Read materials from an AMAT file."""

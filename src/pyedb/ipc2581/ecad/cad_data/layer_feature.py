@@ -29,8 +29,9 @@ from pyedb.ipc2581.ecad.cad_data.feature import Feature, FeatureType
 class LayerFeature(object):
     """Class describing IPC2581 layer feature."""
 
-    def __init__(self, ipc):
+    def __init__(self, ipc, pedb):
         self._ipc = ipc
+        self._pedb = pedb
         self.layer_name = ""
         self.color = ""
         self._features = []
@@ -48,12 +49,15 @@ class LayerFeature(object):
 
     def add_feature(self, obj_instance=None):  # pragma no cover
         if obj_instance:
-            feature = Feature(self._ipc)
-            feature.net = obj_instance.net_name
-            if obj_instance.type == "Polygon":
+            feature = Feature(self._ipc, self._pedb)
+            if obj_instance.net_name:
+                feature.net = obj_instance.net_name
+            else:
+                feature.net = ""
+            if obj_instance.type.lower() == "polygon":
                 feature.feature_type = FeatureType.Polygon
                 feature.polygon.add_poly_step(obj_instance)
-            elif obj_instance.type == "Path":
+            elif obj_instance.type.lower() == "path":
                 feature.feature_type = FeatureType.Path
                 feature.path.add_path_step(obj_instance)
             self.features.append(feature)
@@ -62,7 +66,7 @@ class LayerFeature(object):
 
     def add_via_instance_feature(self, padstack_inst=None, padstackdef=None, layer_name=None):  # pragma no cover
         if padstack_inst and padstackdef:
-            feature = Feature(self._ipc)
+            feature = Feature(self._ipc, self._pedb)
             def_name = padstackdef.name
             position = padstack_inst.position if padstack_inst.position else padstack_inst.position
             feature.padstack_instance.net = padstack_inst.net_name
@@ -71,11 +75,14 @@ class LayerFeature(object):
             feature.feature_type = FeatureType.PadstackInstance
             feature.padstack_instance.x = self._ipc.from_meter_to_units(position[0], self._ipc.units)
             feature.padstack_instance.y = self._ipc.from_meter_to_units(position[1], self._ipc.units)
-            if padstackdef._hole_params is None:
-                hole_props = [i.ToDouble() for i in padstackdef.hole_params[2]]
+            if not self._pedb.grpc:
+                if padstackdef._hole_params is None:
+                    hole_props = [i.ToDouble() for i in padstackdef.hole_params[2]]
+                else:
+                    hole_props = [i.ToDouble() for i in padstackdef._hole_params[2]]
+                feature.padstack_instance.diameter = float(hole_props[0]) if hole_props else 0
             else:
-                hole_props = [i.ToDouble() for i in padstackdef._hole_params[2]]
-            feature.padstack_instance.diameter = float(hole_props[0]) if hole_props else 0
+                feature.padstack_instance.diameter = padstackdef.hole_diameter
             feature.padstack_instance.hole_name = def_name
             feature.padstack_instance.name = padstack_inst.name
             try:
@@ -96,7 +103,7 @@ class LayerFeature(object):
                 pass
 
     def add_drill_feature(self, via, diameter=0.0):  # pragma no cover
-        feature = Feature(self._ipc)
+        feature = Feature(self._ipc, self._pedb)
         feature.feature_type = FeatureType.Drill
         feature.drill.net = via.net_name
         position = via._position if via._position else via.position
@@ -113,14 +120,19 @@ class LayerFeature(object):
                 is_via = False
                 if not pin.start_layer == pin.stop_layer:
                     is_via = True
-                pin_net = pin._edb_object.GetNet().GetName()
-                pos_rot = pin._edb_padstackinstance.GetPositionAndRotationValue()
-                pin_rotation = pos_rot[2].ToDouble()
-                if pin._edb_padstackinstance.IsLayoutPin():
-                    out2 = pin._edb_padstackinstance.GetComponent().GetTransform().TransformPoint(pos_rot[1])
-                    pin_position = [out2.X.ToDouble(), out2.Y.ToDouble()]
+                if not self._pedb.grpc:
+                    pin_net = pin._edb_object.GetNet().GetName()
+                    pos_rot = pin._edb_padstackinstance.GetPositionAndRotationValue()
+                    pin_rotation = pos_rot[2].ToDouble()
+                    if pin._edb_padstackinstance.IsLayoutPin():
+                        out2 = pin._edb_padstackinstance.GetComponent().GetTransform().TransformPoint(pos_rot[1])
+                        pin_position = [out2.X.ToDouble(), out2.Y.ToDouble()]
+                    else:
+                        pin_position = [pos_rot[1].X.ToDouble(), pos_rot[1].Y.ToDouble()]
                 else:
-                    pin_position = [pos_rot[1].X.ToDouble(), pos_rot[1].Y.ToDouble()]
+                    pin_net = pin.net_name
+                    pin_rotation = pin.rotation
+                    pin_position = pin.position
                 pin_x = self._ipc.from_meter_to_units(pin_position[0], self._ipc.units)
                 pin_y = self._ipc.from_meter_to_units(pin_position[1], self._ipc.units)
                 cmp_rot_deg = component.rotation * 180 / math.pi
@@ -131,11 +143,11 @@ class LayerFeature(object):
                 comp_placement_layer = component.placement_layer
                 if comp_placement_layer == top_bottom_layers[-1]:
                     mirror = True
-                feature = Feature(self._ipc)
+                feature = Feature(self._ipc, self._pedb)
                 feature.feature_type = FeatureType.PadstackInstance
                 feature.net = pin_net
                 feature.padstack_instance.net = pin_net
-                feature.padstack_instance.pin = pin.pin.GetName()
+                feature.padstack_instance.pin = pin.name
                 feature.padstack_instance.x = pin_x
                 feature.padstack_instance.y = pin_y
                 feature.padstack_instance.rotation = rotation
