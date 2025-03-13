@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.primitive.primitive import Circle as GrpcCircle
 from ansys.edb.core.primitive.primitive import Primitive as GrpcPrimitive
@@ -130,16 +131,38 @@ class Primitive(GrpcPrimitive):
         """
         return [Primitive(self._pedb, prim) for prim in super().voids]
 
-    # @property
-    # def polygon_data(self):
-    #     return self.cast().polygon_data
-    #
-    # @polygon_data.setter
-    # def polygon_data(self, value):
-    #     from pyedb.grpc.database.primitive.polygon import GrpcPolygonData
-    #
-    #     if isinstance(value, GrpcPolygonData):
-    #         self.cast().polygon_data = value
+    @property
+    def aedt_name(self):
+        """Name to be visualized in AEDT.
+
+        Returns
+        -------
+        str
+            Name.
+        """
+        try:
+            name = self.get_product_property(GrpcProductIdType.DESIGNER, 1)
+            name = name.strip("'")
+        except:
+            name = ""
+        if not name:
+            if str(self.primitive_type).lower() == "path":
+                ptype = "line"
+            elif str(self.primitive_type).lower() == "rectangle":
+                ptype = "rect"
+            elif str(self.primitive_type).lower() == "polygon":
+                ptype = "poly"
+            elif str(self.primitive_type).lower() == "bondwire":
+                ptype = "bwr"
+            else:
+                ptype = str(self.primitive_type).lower()
+            name = "{}__{}".format(ptype, self.edb_uid)
+            self.aedt_name = name
+        return name
+
+    @aedt_name.setter
+    def aedt_name(self, value):
+        self.set_product_property(GrpcProductIdType.DESIGNER, 1, value)
 
     def get_connected_objects(self):
         """Get connected objects.

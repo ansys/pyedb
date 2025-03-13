@@ -581,3 +581,8 @@ class TestClass:
             for void in poly.voids:
                 assert void.bbox
         edbapp.close()
+
+    def test_aedt_name(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        primitives = edbapp.modeler.primitives
+        assert primitives[0].aedt_name == "line_0"
