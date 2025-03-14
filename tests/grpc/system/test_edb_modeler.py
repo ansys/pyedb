@@ -343,7 +343,7 @@ class TestClass:
         from pyedb.grpc.edb import Edb as Edb
 
         # TODO check bug #464.
-        edb = Edb(restart_rpc_server=True)
+        edb = Edb(edbversion=desktop_version, restart_rpc_server=True)
         edb.stackup.add_layer(layer_name="test")
         x = edb.modeler.create_polygon(layer_name="test", points=[[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]])
         assert not x.is_null
@@ -385,7 +385,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_path_length.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_path_length", "test.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, desktop_version, restart_rpc_server=True)
+        edbapp = Edb(edbpath=target_path, edbversion=desktop_version, restart_rpc_server=True)
         net1 = [path for path in edbapp.modeler.paths if path.net_name == "loop1"]
         net1_length = 0
         for path in net1:
@@ -415,7 +415,7 @@ class TestClass:
 
     def test_duplicate(self):
         # Done
-        edbapp = Edb()
+        edbapp = Edb(edbversion=desktop_version)
         edbapp["$H"] = "0.65mil"
         assert edbapp["$H"] == 1.651e-5
         edbapp["$S_D"] = "10.65mil"
@@ -457,7 +457,7 @@ class TestClass:
 
     def test_unite_polygon(self):
         # Done
-        edbapp = Edb()
+        edbapp = Edb(edbversion=desktop_version)
         edbapp["$H"] = "0.65mil"
         edbapp["$Via_S"] = "40mil"
         edbapp["$MS_W"] = "4.75mil"
@@ -534,7 +534,7 @@ class TestClass:
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
         target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
         self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = Edb(target_path_edb, desktop_version, restart_rpc_server=True)
+        edbapp = Edb(edbpath=target_path_edb, edbversion=desktop_version, restart_rpc_server=True)
         edbapp.create_model_for_arbitrary_wave_ports(
             temp_directory=self.local_scratch.path,
             output_edb="wave_ports.aedb",
@@ -551,7 +551,7 @@ class TestClass:
 
     def test_path_center_line(self):
         # TODO wait Material class done.
-        edb = Edb()
+        edb = Edb(edbversion=desktop_version)
         edb.stackup.add_layer("GND", "Gap")
         edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.2mm", material="Duroid (tm)")
         edb.stackup.add_layer("TOP", "Substrat")
