@@ -575,7 +575,7 @@ class TestClass:
 
     def test_component_lib(self):
         # Done
-        edbapp = Edb()
+        edbapp = Edb(edbversion=desktop_version)
         comp_lib = edbapp.components.get_vendor_libraries()
         assert len(comp_lib.capacitors) == 13
         assert len(comp_lib.inductors) == 7
