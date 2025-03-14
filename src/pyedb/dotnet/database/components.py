@@ -28,6 +28,7 @@ import json
 import math
 import os
 import re
+from typing import List, Set, Union
 import warnings
 
 from pyedb.component_libraries.ansys_components import (
@@ -38,6 +39,7 @@ from pyedb.component_libraries.ansys_components import (
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.database.definition.component_def import EDBComponentDef
+from pyedb.dotnet.database.edb_data.nets_data import EDBNetsData
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.sources import Source, SourceType
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
@@ -761,16 +763,17 @@ class Components(object):
         ----------
         refdes : Component reference designator
             str or EDBComponent object.
-        pins : pin name where the terminal has to be created. Single pin or several ones can be provided.If several
-        pins are provided a pin group will is created. Pin names can be the EDB name or the EDBPadstackInstance one.
-        For instance the pin called ``Pin1`` located on component ``U1``, ``U1-Pin1`` or ``Pin1`` can be provided and
-        will be handled.
-            str, [str], EDBPadstackInstance, [EDBPadstackInstance]
-        reference_pins : reference pin name used for terminal reference. Single pin or several ones can be provided.
-        If several pins are provided a pin group will is created. Pin names can be the EDB name or the
-        EDBPadstackInstance one. For instance the pin called ``Pin1`` located on component ``U1``, ``U1-Pin1``
-        or ``Pin1`` can be provided and will be handled.
-            str, [str], EDBPadstackInstance, [EDBPadstackInstance]
+        pins : pin specifier(s) or instance(s) where the port terminal is to be created. Single pin name or a list of
+        several can be provided. If several pins are provided a pin group will be created. Pin specifiers can be the
+        global EDB object ID or padstack instance name or pin name on component with refdes ``refdes``. Pin instances
+        can be provided as ``EDBPadstackInstance`` objects.
+        For instance for the pin called ``Pin1`` located on component with refdes ``U1``: ``U1-Pin1``, ``Pin1`` with
+        ``refdes=U1``, the pin's global EDB object ID, or the ``EDBPadstackInstance`` corresponding to the pin can be
+        provided.
+            Union[int, str, EDBPadstackInstance], List[Union[int, str, EDBPadstackInstance]]
+        reference_pins : reference pin specifier(s) or instance(s) for the port reference terminal. Allowed values are
+        the same as for the ``pins`` parameter.
+            Union[int, str, EDBPadstackInstance], List[Union[int, str, EDBPadstackInstance]]
         impedance : Port impedance
             str, float
         port_name : str, optional
@@ -800,98 +803,50 @@ class Components(object):
         >>> edb.close_edb()
         """
 
-        if isinstance(pins, str):
-            pins = [pins]
-        elif isinstance(pins, EDBPadstackInstance):
-            pins = [pins.name]
-        if not reference_pins:
-            self._logger.error("No reference pin provided.")
-            return False
-        if isinstance(reference_pins, str):
-            reference_pins = [reference_pins]
-        if isinstance(reference_pins, list):
-            _temp = []
-            for ref_pin in reference_pins:
-                if isinstance(ref_pin, int):
-                    if ref_pin in self._padstack.instances:
-                        _temp.append(self._padstack.instances[ref_pin])
-                elif isinstance(ref_pin, str):
-                    if ref_pin in self.instances[refdes].pins:
-                        _temp.append(self.instances[refdes].pins[ref_pin])
-                    else:
-                        p = [pp for pp in list(self._padstack.instances.values()) if pp.name == ref_pin]
-                        if p:
-                            _temp.append(p)
-                elif isinstance(ref_pin, EDBPadstackInstance):
-                    _temp.append(ref_pin.name)
-            reference_pins = _temp
-        elif isinstance(reference_pins, int):
-            if reference_pins in self._padstack.instances:
-                reference_pins = self._padstack.instances[reference_pins]
         if isinstance(refdes, str):
             refdes = self.instances[refdes]
         elif isinstance(refdes, self._pedb._edb.Cell.Hierarchy.Component):
             refdes = EDBComponent(self._pedb, refdes)
-        refdes_pins = refdes.pins
-        if any(refdes.rlc_values):
-            return self.deactivate_rlc_component(component=refdes, create_circuit_port=True)
-        if len([pin for pin in pins if isinstance(pin, str)]) == len(pins):
-            cmp_pins = []
-            for pin_name in pins:
-                cmp_pins = [pin for pin in list(refdes_pins.values()) if pin_name == pin.name]
-                if not cmp_pins:
-                    for pin in list(refdes_pins.values()):
-                        if pin.name and "-" in pin.name:
-                            if pin_name == pin.name.split("-")[1]:
-                                cmp_pins.append(pin)
-            if not cmp_pins:
-                self._logger.warning("No pin found during port creation. Port is not defined.")
-                return
-            pins = cmp_pins
-        if not len([pin for pin in pins if isinstance(pin, EDBPadstackInstance)]) == len(pins):
-            self._logger.error("Pin list must contain only pins instances")
+        pins = self._get_pins_for_ports(pins, refdes)
+        if not pins:
+            self._logger.error("No pins found during port creation. Port is not defined.")
             return False
+        reference_pins = self._get_pins_for_ports(reference_pins, refdes)
+        if not reference_pins:
+            self._logger.error("No reference pins found during port creation. Port is not defined.")
+            return False
+        if refdes and any(refdes.rlc_values):
+            return self.deactivate_rlc_component(component=refdes, create_circuit_port=True)
         if not port_name:
             port_name = "Port_{}_{}".format(pins[0].net_name, pins[0].name)
-        if len([pin for pin in reference_pins if isinstance(pin, str)]) == len(reference_pins):
-            ref_cmp_pins = []
-            for ref_pin_name in reference_pins:
-                if ref_pin_name in refdes_pins:
-                    ref_cmp_pins.append(refdes_pins[ref_pin_name])
-                elif "-" in ref_pin_name:
-                    if ref_pin_name.split("-")[1] in refdes_pins:
-                        ref_cmp_pins.append(refdes_pins[ref_pin_name.split("-")[1]])
-            if not ref_cmp_pins:
-                self._logger.error("No reference pins found.")
-                return False
-            reference_pins = ref_cmp_pins
-        if len(pins) > 1 or pingroup_on_single_pin:
+
+        if len(pins) > 1 > 1 or pingroup_on_single_pin:
             pec_boundary = False
             self._logger.info(
                 "Disabling PEC boundary creation, this feature is supported on single pin "
-                "ports only, {} pins found".format(len(pins))
+                f"ports only, {len(pins)} pins found (pingroup_on_single_pin: {pingroup_on_single_pin})."
             )
             group_name = "group_{}".format(port_name)
             pin_group = self.create_pingroup_from_pins(pins, group_name)
             term = self._create_pin_group_terminal(pingroup=pin_group, term_name=port_name)
-
         else:
             term = self._create_terminal(pins[0].primitive_object, term_name=port_name)
         term.SetIsCircuitPort(True)
+
         if len(reference_pins) > 1 or pingroup_on_single_pin:
             pec_boundary = False
             self._logger.info(
-                "Disabling PEC boundary creation. This feature is supported on single pin"
-                "ports only {} reference pins found.".format(len(reference_pins))
+                "Disabling PEC boundary creation. This feature is supported on single pin "
+                f"ports only, {len(reference_pins)} reference pins found "
+                f"(pingroup_on_single_pin: {pingroup_on_single_pin})."
             )
             ref_group_name = "group_{}_ref".format(port_name)
             ref_pin_group = self.create_pingroup_from_pins(reference_pins, ref_group_name)
-            ref_pin_group = self._pedb.siwave.pin_groups[ref_pin_group.GetName()]
             ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
-
         else:
             ref_term = self._create_terminal(reference_pins[0].primitive_object, term_name=port_name + "_ref")
         ref_term.SetIsCircuitPort(True)
+
         term.SetImpedance(self._edb.utility.value(impedance))
         term.SetReferenceTerminal(ref_term)
         if pec_boundary:
@@ -902,9 +857,30 @@ class Components(object):
             self._logger.info(
                 "PEC boundary created between pin {} and reference pin {}".format(pins[0].name, reference_pins[0].name)
             )
-        if term:
-            return term
-        return False
+
+        return term or False
+
+    def _get_pins_for_ports(
+        self, pins: Union[int, str, EDBPadstackInstance, List[Union[int, str, EDBPadstackInstance]]], comp: EDBComponent
+    ) -> List[EDBPadstackInstance]:
+        if not isinstance(pins, List):
+            pins = [pins]
+        result = []
+        for pin in pins:
+            if isinstance(pin, int) and pin in self._padstack.instances:
+                result.append(self._padstack.instances[pin])
+            elif isinstance(pin, str):
+                if comp and pin in comp.pins:
+                    result.append(comp.pins[pin])
+                else:
+                    p = [pp for pp in list(self._padstack.instances.values()) if pp.name == pin]
+                    if p:
+                        result.append(p[0])
+            elif isinstance(pin, EDBPadstackInstance):
+                result.append(pin)
+            elif isinstance(pin, self._edb.Cell.Primitive.PadstackInstance):
+                result.append(EDBPadstackInstance(pin, self._pedb))
+        return result
 
     def create_port_on_component(
         self,
@@ -972,22 +948,17 @@ class Components(object):
         if isinstance(component, str):
             component = self.instances[component].edbcomponent
 
-        if not isinstance(net_list, list):
-            net_list = [net_list]
-        for net in net_list:
-            if not isinstance(net, str):
-                try:
-                    net_name = net.name
-                    if net_name != "":
-                        net_list.append(net_name)
-                except:
-                    pass
-        if reference_net in net_list:
-            net_list.remove(reference_net)
-        cmp_pins = [
-            p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.GetNet().GetName() in net_list
-        ]
-        for p in cmp_pins:  # pragma no cover
+        nets = self._normalize_net_list(net_list)
+
+        if not isinstance(reference_net, List):
+            reference_net = [reference_net]
+        ref_nets = self._normalize_net_list(reference_net)
+        nets_to_remove = ref_nets.intersection(nets)
+        if nets_to_remove:
+            self._logger.warning(f"Removing reference nets {sorted(nets_to_remove)} from the positive net list.")
+        nets -= nets_to_remove
+        cmp_pins = [p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.GetNet().GetName() in nets]
+        for p in cmp_pins:
             if not p.IsLayoutPin():
                 p.SetIsLayoutPin(True)
         if len(cmp_pins) == 0:
@@ -995,6 +966,9 @@ class Components(object):
                 "No pins found on component {}, searching padstack instances instead".format(component.GetName())
             )
             return False
+        ref_pins = [
+            p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.GetNet().GetName() in ref_nets
+        ]
         pin_layers = cmp_pins[0].GetPadstackDef().GetData().GetLayerNames()
         if port_type == SourceType.CoaxPort:
             if not solder_balls_height:
@@ -1003,11 +977,6 @@ class Components(object):
                 solder_balls_size = self.instances[component.GetName()].solder_ball_diameter[0]
             if not solder_balls_mid_size:
                 solder_balls_mid_size = self.instances[component.GetName()].solder_ball_diameter[1]
-            ref_pins = [
-                p
-                for p in list(component.LayoutObjs)
-                if int(p.GetObjType()) == 1 and p.GetNet().GetName() in reference_net
-            ]
             if not ref_pins:
                 self._logger.error(
                     "No reference pins found on component. You might consider"
@@ -1053,12 +1022,7 @@ class Components(object):
             for pin in cmp_pins:
                 self._padstack.create_coax_port(padstackinstance=pin, name=port_name)
 
-        elif port_type == SourceType.CircPort:  # pragma no cover
-            ref_pins = [
-                p
-                for p in list(component.LayoutObjs)
-                if int(p.GetObjType()) == 1 and p.GetNet().GetName() in reference_net
-            ]
+        elif port_type == SourceType.CircPort:
             for p in ref_pins:
                 if not p.IsLayoutPin():
                     p.SetIsLayoutPin(True)
@@ -1066,7 +1030,7 @@ class Components(object):
                 self._logger.warning("No reference pins found on component")
                 if not extend_reference_pins_outside_component:
                     self._logger.warning(
-                        "argument extend_reference_pins_outside_component is False. You might want "
+                        "Argument extend_reference_pins_outside_component is False. You might want "
                         "setting to True to extend the reference pin search outside the component"
                     )
                 else:
@@ -1089,7 +1053,7 @@ class Components(object):
                             f"Failed to create reference pin group terminal on component {component.GetName()}"
                         )
                         return False
-                for net in net_list:
+                for net in nets:
                     pins = [pin for pin in cmp_pins if pin.GetNet().GetName() == net]
                     if pins:
                         if len(pins) == 1:
@@ -1107,7 +1071,7 @@ class Components(object):
                     else:
                         self._logger.info("No pins found on component {} for the net {}".format(component, net))
             else:
-                for net in net_list:
+                for net in nets:
                     pins = [pin for pin in cmp_pins if pin.GetNet().GetName() == net]
                     for pin in pins:
                         if ref_pins:
@@ -1130,6 +1094,19 @@ class Components(object):
                             else:
                                 self._logger.error("Skipping port creation no reference pin found.")
         return True
+
+    def _normalize_net_list(self, net_list) -> Set[str]:
+        if not isinstance(net_list, List):
+            net_list = [net_list]
+        nets = set()
+        for net in net_list:
+            if isinstance(net, EDBNetsData):
+                net_name = net.name
+                if net_name != "":
+                    nets.add(net_name)
+            elif isinstance(net, str) and net != "":
+                nets.add(net)
+        return nets
 
     def _create_terminal(self, pin, term_name=None):
         """Create terminal on component pin.
