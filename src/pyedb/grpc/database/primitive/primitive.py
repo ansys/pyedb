@@ -146,17 +146,17 @@ class Primitive(GrpcPrimitive):
         except:
             name = ""
         if not name:
-            if str(self.primitive_type).lower() == "path":
+            if self.primitive_type.name.lower() == "path":
                 ptype = "line"
-            elif str(self.primitive_type).lower() == "rectangle":
+            elif self.primitive_type.name.lower() == "rectangle":
                 ptype = "rect"
-            elif str(self.primitive_type).lower() == "polygon":
+            elif self.primitive_type.name.lower() == "polygon":
                 ptype = "poly"
-            elif str(self.primitive_type).lower() == "bondwire":
+            elif self.primitive_type.name.lower() == "bondwire":
                 ptype = "bwr"
             else:
-                ptype = str(self.primitive_type).lower()
-            name = "{}__{}".format(ptype, self.edb_uid)
+                ptype = self.primitive_type.name.lower()
+            name = "{}_{}".format(ptype, self.edb_uid)
             self.aedt_name = name
         return name
 
@@ -571,25 +571,6 @@ class Primitive(GrpcPrimitive):
                 arc = i
                 len = i.length
         return arc
-
-    @property
-    def aedt_name(self):
-        """Name to be visualized in AEDT.
-
-        Returns
-        -------
-        str
-            Name.
-        """
-        from ansys.edb.core.database import ProductIdType
-
-        return self.get_product_property(ProductIdType.DESIGNER, 1)
-
-    @aedt_name.setter
-    def aedt_name(self, value):
-        from ansys.edb.core.database import ProductIdType
-
-        self.set_product_property(ProductIdType.DESIGNER, 1, value)
 
     def add_void(self, point_list):
         """Add a void to current primitive.
