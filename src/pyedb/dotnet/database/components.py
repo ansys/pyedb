@@ -39,6 +39,7 @@ from pyedb.component_libraries.ansys_components import (
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.database.definition.component_def import EDBComponentDef
+from pyedb.dotnet.database.edb_data.nets_data import EDBNetsData
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.sources import Source, SourceType
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
