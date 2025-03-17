@@ -60,12 +60,7 @@ class CfgStackup:
             if i.type == "signal":
                 if i.material not in materials:
                     self.materials.append(
-                        CfgMaterial(
-                            name=i.material,
-                            conductivity=580000000,
-                            permittivity=1,
-                            permeability=0.999991
-                        )
+                        CfgMaterial(name=i.material, conductivity=580000000, permittivity=1, permeability=0.999991)
                     )
                 if i.fill_material not in materials:
                     self.materials.append(
@@ -74,7 +69,7 @@ class CfgStackup:
                             conductivity=0,
                             permittivity=4.3,
                             permeability=1,
-                            dielectric_loss_tangent=0.02
+                            dielectric_loss_tangent=0.02,
                         )
                     )
             elif i.type == "dielectric":
@@ -85,7 +80,7 @@ class CfgStackup:
                             conductivity=0,
                             permittivity=4.3,
                             permeability=0.999991,
-                            dielectric_loss_tangent=0.02
+                            dielectric_loss_tangent=0.02,
                         )
                     )
 
