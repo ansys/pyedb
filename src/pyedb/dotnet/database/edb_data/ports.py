@@ -117,61 +117,6 @@ class WavePort(EdgeTerminal):
     def __init__(self, pedb, edb_terminal):
         super().__init__(pedb, edb_terminal)
 
-    @property
-    def horizontal_extent_factor(self):
-        """Horizontal extent factor."""
-        return self._hfss_port_property["Horizontal Extent Factor"]
-
-    @horizontal_extent_factor.setter
-    def horizontal_extent_factor(self, value):
-        p = self._hfss_port_property
-        p["Horizontal Extent Factor"] = value
-        self._hfss_port_property = p
-
-    @property
-    def vertical_extent_factor(self):
-        """Vertical extent factor."""
-        return self._hfss_port_property["Vertical Extent Factor"]
-
-    @vertical_extent_factor.setter
-    def vertical_extent_factor(self, value):
-        p = self._hfss_port_property
-        p["Vertical Extent Factor"] = value
-        self._hfss_port_property = p
-
-    @property
-    def pec_launch_width(self):
-        """Launch width for the printed electronic component (PEC)."""
-        return self._hfss_port_property["PEC Launch Width"]
-
-    @pec_launch_width.setter
-    def pec_launch_width(self, value):
-        p = self._hfss_port_property
-        p["PEC Launch Width"] = value
-        self._hfss_port_property = p
-
-    @property
-    def deembed(self):
-        """Whether deembed is active."""
-        return self._edb_object.GetPortPostProcessingProp().DoDeembed
-
-    @deembed.setter
-    def deembed(self, value):
-        p = self._edb_object.GetPortPostProcessingProp()
-        p.DoDeembed = value
-        self._edb_object.SetPortPostProcessingProp(p)
-
-    @property
-    def deembed_length(self):
-        """Deembed Length."""
-        return self._edb_object.GetPortPostProcessingProp().DeembedLength.ToDouble()
-
-    @deembed_length.setter
-    def deembed_length(self, value):
-        p = self._edb_object.GetPortPostProcessingProp()
-        p.DeembedLength = self._pedb.edb_value(value)
-        self._edb_object.SetPortPostProcessingProp(p)
-
 
 class ExcitationSources(Terminal):
     """Manage sources properties.
