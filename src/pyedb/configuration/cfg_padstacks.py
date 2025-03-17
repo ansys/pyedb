@@ -427,7 +427,7 @@ class CfgPadstackInstance(CfgBase):
             self.api = self.DotNet(self)
 
         self.name = kwargs.get("name", None)
-        self.net_name = kwargs.get("net_name", "")
+        self.net_name = kwargs.get("net_name", None)
         self.layer_range = kwargs.get("layer_range", [None, None])
         self.definition = kwargs.get("definition", None)
         self.backdrill_parameters = kwargs.get("backdrill_parameters", None)
