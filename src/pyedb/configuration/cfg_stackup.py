@@ -55,6 +55,40 @@ class CfgStackup:
         self.materials = [CfgMaterial(**mat) for mat in data.get("materials", [])]
         self.layers = [CfgLayer(**lay) for lay in data.get("layers", [])]
 
+        materials = [m.name for m in self.materials]
+        for i in self.layers:
+            if i.type == "signal":
+                if i.material not in materials:
+                    self.materials.append(
+                        CfgMaterial(
+                            name=i.material,
+                            conductivity=580000000,
+                            permittivity=1,
+                            permeability=0.999991
+                        )
+                    )
+                if i.fill_material not in materials:
+                    self.materials.append(
+                        CfgMaterial(
+                            name=i.fill_material,
+                            conductivity=0,
+                            permittivity=4.3,
+                            permeability=1,
+                            dielectric_loss_tangent=0.02
+                        )
+                    )
+            elif i.type == "dielectric":
+                if i.material not in materials:
+                    self.materials.append(
+                        CfgMaterial(
+                            name=i.material,
+                            conductivity=0,
+                            permittivity=4.3,
+                            permeability=0.999991,
+                            dielectric_loss_tangent=0.02
+                        )
+                    )
+
     def apply(self):
         """Apply configuration settings to the current design"""
         if len(self.materials):
