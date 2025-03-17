@@ -192,6 +192,7 @@ class Edb(EdbInit):
         edbversion=None,
         isaedtowned=False,
         oproject=None,
+        student_version: bool = False,
         use_ppe=False,
         technology_file=None,
         restart_rpc_server=False,
