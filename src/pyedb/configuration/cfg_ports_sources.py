@@ -24,6 +24,7 @@ import os
 import numpy as np
 
 from pyedb.configuration.cfg_common import CfgBase
+from pyedb.dotnet.database.cell.primitive.primitive import Primitive
 from pyedb.dotnet.database.edb_data.ports import WavePort
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.point_data import PointData
@@ -221,9 +222,6 @@ class CfgPorts:
                 )
             else:
                 _, primitive, point = p._edb_object.GetEdges()[0].GetParameters()
-
-                from pyedb.dotnet.database.cell.primitive.primitive import Primitive
-                from pyedb.dotnet.database.geometry.point_data import PointData
 
                 primitive = Primitive(self._pedb, primitive)
                 point = PointData(self._pedb, point)
