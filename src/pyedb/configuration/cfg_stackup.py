@@ -62,6 +62,7 @@ class CfgStackup:
                     self.materials.append(
                         CfgMaterial(name=i.material, conductivity=580000000, permittivity=1, permeability=0.999991)
                     )
+                    materials.append(i.material)
                 if i.fill_material not in materials:
                     self.materials.append(
                         CfgMaterial(
@@ -72,6 +73,7 @@ class CfgStackup:
                             dielectric_loss_tangent=0.02,
                         )
                     )
+                    materials.append(i.fill_material)
             elif i.type == "dielectric":
                 if i.material not in materials:
                     self.materials.append(
@@ -83,6 +85,7 @@ class CfgStackup:
                             dielectric_loss_tangent=0.02,
                         )
                     )
+                    materials.append(i.material)
 
     def apply(self):
         """Apply configuration settings to the current design"""
