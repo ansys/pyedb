@@ -1,0 +1,6 @@
+paths
+=====
+
+.. currentmodule:: pyedb.dotnet.edb_core.layout
+
+.. autoproperty:: EdbLayout.paths

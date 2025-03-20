@@ -1,0 +1,83 @@
+﻿Siwave
+======
+
+.. currentmodule:: pyedb.siwave
+
+.. autoclass:: Siwave
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Siwave.close_project
+      
+      
+      Siwave.export_configuration
+      
+      
+      Siwave.export_dc_simulation_report
+      
+      
+      Siwave.export_edb
+      
+      
+      Siwave.export_element_data
+      
+      
+      Siwave.export_icepak_project
+      
+      
+      Siwave.export_siwave_report
+      
+      
+      Siwave.import_edb
+      
+      
+      Siwave.load_configuration
+      
+      
+      Siwave.open_project
+      
+      
+      Siwave.quit_application
+      
+      
+      Siwave.run_dc_simulation
+      
+      
+      Siwave.run_icepak_simulation
+      
+      
+      Siwave.save_project
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Siwave.current_version
+      Siwave.file_dir
+      Siwave.file_path
+      Siwave.icepak
+      Siwave.lock_file
+      Siwave.oproject
+      Siwave.project_file
+      Siwave.project_name
+      Siwave.project_path
+      Siwave.pyaedt_dir
+      Siwave.results_directory
+      Siwave.src_dir
+      Siwave.version
+      Siwave.version_keys
+   
+   

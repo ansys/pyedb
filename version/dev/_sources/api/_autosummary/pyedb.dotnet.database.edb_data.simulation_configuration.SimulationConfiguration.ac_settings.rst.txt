@@ -1,0 +1,6 @@
+ac\_settings
+============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfiguration.ac_settings

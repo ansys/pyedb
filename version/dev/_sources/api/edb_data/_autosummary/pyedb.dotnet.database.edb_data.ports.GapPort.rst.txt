@@ -1,0 +1,79 @@
+﻿GapPort
+=======
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoclass:: GapPort
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      GapPort.couple_ports
+      
+      
+      GapPort.delete
+      
+      
+      GapPort.get_edge_terminal_reference_primitive
+      
+      
+      GapPort.get_pad_edge_terminal_reference_pin
+      
+      
+      GapPort.get_padstack_terminal_reference_pin
+      
+      
+      GapPort.get_pin_group_terminal_reference_pin
+      
+      
+      GapPort.get_point_terminal_reference_primitive
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      GapPort.boundary_type
+      GapPort.component
+      GapPort.deembed
+      GapPort.deembed_length
+      GapPort.do_renormalize
+      GapPort.hfss_type
+      GapPort.horizontal_extent_factor
+      GapPort.id
+      GapPort.impedance
+      GapPort.is_circuit_port
+      GapPort.is_current_source
+      GapPort.is_null
+      GapPort.is_port
+      GapPort.is_reference_terminal
+      GapPort.is_voltage_source
+      GapPort.layer
+      GapPort.location
+      GapPort.magnitude
+      GapPort.name
+      GapPort.net
+      GapPort.net_name
+      GapPort.pec_launch_width
+      GapPort.phase
+      GapPort.ref_terminal
+      GapPort.reference_net_name
+      GapPort.reference_object
+      GapPort.renormalize
+      GapPort.renormalize_z0
+      GapPort.terminal_type
+      GapPort.type
+      GapPort.vertical_extent_factor
+   
+   

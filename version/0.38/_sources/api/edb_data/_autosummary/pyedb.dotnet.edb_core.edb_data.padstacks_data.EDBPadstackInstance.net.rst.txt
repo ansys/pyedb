@@ -1,0 +1,6 @@
+net
+===
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstackInstance.net

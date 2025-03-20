@@ -1,0 +1,6 @@
+get\_attributes
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_padstacks
+
+.. automethod:: Definition.get_attributes
