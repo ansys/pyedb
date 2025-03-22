@@ -54,6 +54,7 @@ class CfgTerminalInfo(CfgBase):
         contact_radius = "0.1mm" if kwargs.get("contact_radius") is None else kwargs.get("contact_radius")
         self.contact_radius = self._pedb.edb_value(contact_radius).ToDouble()
         self.num_of_contact = kwargs.get("num_of_contact", 4)
+        self.contact_expansion = kwargs.get("contact_expansion", 1)
 
     def export_properties(self):
         return {self.type: self.value}
@@ -316,7 +317,11 @@ class CfgCircuitElement(CfgBase):
                     contact_type = self.positive_terminal_info.contact_type
                     radius = self.positive_terminal_info.contact_radius
                     num_of_contact = self.positive_terminal_info.num_of_contact
-                    virtual_pins = self._create_virtual_pins_on_pin(pin, contact_type, radius, num_of_contact)
+                    contact_expansion = self.positive_terminal_info.contact_expansion
+
+                    virtual_pins = self._create_virtual_pins_on_pin(
+                        pin, contact_type, radius, num_of_contact, contact_expansion
+                    )
                     pos_objs.update(virtual_pins)
                     self._elem_num = len(pos_objs)
             else:
@@ -331,7 +336,11 @@ class CfgCircuitElement(CfgBase):
                     contact_type = self.positive_terminal_info.contact_type
                     radius = self.positive_terminal_info.contact_radius
                     num_of_contact = self.positive_terminal_info.num_of_contact
-                    virtual_pins = self._create_virtual_pins_on_pin(pin, contact_type, radius, num_of_contact)
+                    contact_expansion = self.positive_terminal_info.contact_expansion
+
+                    virtual_pins = self._create_virtual_pins_on_pin(
+                        pin, contact_type, radius, num_of_contact, contact_expansion
+                    )
                     pos_objs.update(virtual_pins)
                     self._elem_num = len(pos_objs)
             else:
@@ -346,7 +355,11 @@ class CfgCircuitElement(CfgBase):
                     contact_type = self.positive_terminal_info.contact_type
                     radius = self.positive_terminal_info.contact_radius
                     num_of_contact = self.positive_terminal_info.num_of_contact
-                    virtual_pins = self._create_virtual_pins_on_pin(pin, contact_type, radius, num_of_contact)
+                    contact_expansion = self.positive_terminal_info.contact_expansion
+
+                    virtual_pins = self._create_virtual_pins_on_pin(
+                        pin, contact_type, radius, num_of_contact, contact_expansion
+                    )
                     pos_objs.update(virtual_pins)
                     self._elem_num = len(pos_objs)
             else:
@@ -422,7 +435,7 @@ class CfgCircuitElement(CfgBase):
             pins.update({f"{reference_designator}_{terminal_value[0]}_{i}": j for i, j in temp.items()})
         return pins
 
-    def _create_virtual_pins_on_pin(self, pin, contact_type, radius, num_of_contact=4):
+    def _create_virtual_pins_on_pin(self, pin, contact_type, radius, num_of_contact=4, expansion=1):
         component = pin.component
         placement_layer = component.placement_layer
         pos_x, pos_y = pin.position
@@ -441,6 +454,9 @@ class CfgCircuitElement(CfgBase):
                 raise AttributeError(f"Unsupported pad shape {pad.shape.lower()}")
         else:  # pragma no cover
             raise AttributeError(f"Unsupported pad shape {pad.shape.lower()}")
+
+        width = width * expansion
+        height = height * expansion
 
         positions = []
         if contact_type.lower() == "inline":
