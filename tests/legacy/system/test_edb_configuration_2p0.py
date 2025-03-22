@@ -1048,6 +1048,7 @@ class TestClass:
                     "contact_type": "inline",
                     "contact_radius": "0.15mm",
                     "num_of_contact": 5,
+                    "contact_expansion": 0.9,
                 },
                 "negative_terminal": {"net": "GND"},
             },
