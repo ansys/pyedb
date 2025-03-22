@@ -109,6 +109,47 @@ class MaterialProperties(BaseModel):
 class Material(object):
     """Manage EDB methods for material property management."""
 
+    default_property_values = {
+        "conductivity": 0,
+        "dielectric_loss_tangent": 0,
+        "magnetic_loss_tangent": 0,
+        "mass_density": 0,
+        "permittivity": 1,
+        "permeability": 1,
+        "poisson_ratio": 0,
+        "specific_heat": 0,
+        "thermal_conductivity": 0,
+        "youngs_modulus": 0,
+        "thermal_expansion_coefficient": 0
+    }
+
+    default_conductor_property_values = {
+        "conductivity": 58000000,
+        "dielectric_loss_tangent": 0,
+        "magnetic_loss_tangent": 0,
+        "mass_density": 8933,
+        "permittivity": 1,
+        "permeability": 0.999991,
+        "poisson_ratio": 0.38,
+        "specific_heat": 385,
+        "thermal_conductivity": 400,
+        "youngs_modulus": 120000000000,
+        "thermal_expansion_coefficient": 1.77e-05
+    }
+    default_dielectric_property_values = {
+        "conductivity": 58000000,
+        "dielectric_loss_tangent": 0.02,
+        "magnetic_loss_tangent": 0,
+        "mass_density": 1900,
+        "permittivity": 4.4,
+        "permeability": 1,
+        "poisson_ratio": 0.28,
+        "specific_heat": 1150,
+        "thermal_conductivity": 0.294,
+        "youngs_modulus": 11000000000,
+        "thermal_expansion_coefficient": 1.5e-05
+    }
+
     def __init__(self, edb: Edb, material_def):
         self.__edb: Edb = edb
         self.__edb_definition = edb.edb_api.definition
