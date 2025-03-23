@@ -69,7 +69,7 @@ DC_ATTRIBUTES = [
     "dc_conductivity",
     "dc_permittivity",
 ]
-PERMEABILITY_DEFAULT_VALUE = 1
+PERMEABILITY_DEFAULT_VALUE = 0.999991
 
 
 def get_line_float_value(line):
@@ -108,47 +108,6 @@ class MaterialProperties(BaseModel):
 
 class Material(object):
     """Manage EDB methods for material property management."""
-
-    default_property_values = {
-        "conductivity": 0,
-        "dielectric_loss_tangent": 0,
-        "magnetic_loss_tangent": 0,
-        "mass_density": 0,
-        "permittivity": 1,
-        "permeability": 1,
-        "poisson_ratio": 0,
-        "specific_heat": 0,
-        "thermal_conductivity": 0,
-        "youngs_modulus": 0,
-        "thermal_expansion_coefficient": 0
-    }
-
-    default_conductor_property_values = {
-        "conductivity": 58000000,
-        "dielectric_loss_tangent": 0,
-        "magnetic_loss_tangent": 0,
-        "mass_density": 8933,
-        "permittivity": 1,
-        "permeability": 0.999991,
-        "poisson_ratio": 0.38,
-        "specific_heat": 385,
-        "thermal_conductivity": 400,
-        "youngs_modulus": 120000000000,
-        "thermal_expansion_coefficient": 1.77e-05
-    }
-    default_dielectric_property_values = {
-        "conductivity": 58000000,
-        "dielectric_loss_tangent": 0.02,
-        "magnetic_loss_tangent": 0,
-        "mass_density": 1900,
-        "permittivity": 4.4,
-        "permeability": 1,
-        "poisson_ratio": 0.28,
-        "specific_heat": 1150,
-        "thermal_conductivity": 0.294,
-        "youngs_modulus": 11000000000,
-        "thermal_expansion_coefficient": 1.5e-05
-    }
 
     def __init__(self, edb: Edb, material_def):
         self.__edb: Edb = edb
@@ -487,6 +446,33 @@ class Material(object):
 class Materials(object):
     """Manages EDB methods for material management accessible from `Edb.materials` property."""
 
+    default_conductor_property_values = {
+        "conductivity": 58000000,
+        "dielectric_loss_tangent": 0,
+        "magnetic_loss_tangent": 0,
+        "mass_density": 8933,
+        "permittivity": 1,
+        "permeability": 0.999991,
+        "poisson_ratio": 0.38,
+        "specific_heat": 385,
+        "thermal_conductivity": 400,
+        "youngs_modulus": 120000000000,
+        "thermal_expansion_coefficient": 1.77e-05
+    }
+    default_dielectric_property_values = {
+        "conductivity": 0,
+        "dielectric_loss_tangent": 0.02,
+        "magnetic_loss_tangent": 0,
+        "mass_density": 1900,
+        "permittivity": 4.4,
+        "permeability": 1,
+        "poisson_ratio": 0.28,
+        "specific_heat": 1150,
+        "thermal_conductivity": 0.294,
+        "youngs_modulus": 11000000000,
+        "thermal_expansion_coefficient": 1.5e-05
+    }
+
     def __init__(self, edb: Edb):
         self.__edb = edb
         self.__edb_definition = edb.edb_api.definition
@@ -561,14 +547,14 @@ class Materials(object):
 
         return material
 
-    def add_conductor_material(self, name, conductivity, **kwargs):
+    def add_conductor_material(self, name, conductivity=58000000, **kwargs):
         """Add a new conductor material.
 
         Parameters
         ----------
         name : str
             Name of the new material.
-        conductivity : str, float, int
+        conductivity : str, float, int, optional
             Conductivity of the new material.
 
         Returns
@@ -576,10 +562,11 @@ class Materials(object):
         :class:`pyedb.dotnet.edb_core.materials.Material`
 
         """
+        props = self.default_conductor_property_values.copy()
+        props["conductivity"] = conductivity
         extended_kwargs = {key: value for (key, value) in kwargs.items()}
-        extended_kwargs["conductivity"] = conductivity
-        material = self.add_material(name, **extended_kwargs)
-
+        props.update(extended_kwargs)
+        material = self.add_material(name, **props)
         return material
 
     def add_dielectric_material(self, name, permittivity, dielectric_loss_tangent, **kwargs):
@@ -589,20 +576,21 @@ class Materials(object):
         ----------
         name : str
             Name of the new material.
-        permittivity : str, float, int
+        permittivity : str, float, int, optional
             Permittivity of the new material.
-        dielectric_loss_tangent : str, float, int
+        dielectric_loss_tangent : str, float, int, optional
             Dielectric loss tangent of the new material.
 
         Returns
         -------
         :class:`pyedb.dotnet.edb_core.materials.Material`
         """
+        props = self.default_dielectric_property_values.copy()
+        props["permittivity"] = permittivity
+        props["dielectric_loss_tangent"] = dielectric_loss_tangent
         extended_kwargs = {key: value for (key, value) in kwargs.items()}
-        extended_kwargs["permittivity"] = permittivity
-        extended_kwargs["dielectric_loss_tangent"] = dielectric_loss_tangent
-        material = self.add_material(name, **extended_kwargs)
-
+        props.update(extended_kwargs)
+        material = self.add_material(name, **props)
         return material
 
     def add_djordjevicsarkar_dielectric(
