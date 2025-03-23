@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from pyedb.configuration.cfg_common import CfgBase
+from pyedb import Edb
 
 
 class CfgMaterial(CfgBase):
@@ -49,7 +50,7 @@ class CfgLayer(CfgBase):
 
 
 class CfgStackup:
-    def __init__(self, pedb, data):
+    def __init__(self, pedb: Edb, data):
         self._pedb = pedb
 
         self.materials = [CfgMaterial(**mat) for mat in data.get("materials", [])]
@@ -60,17 +61,13 @@ class CfgStackup:
             if i.type == "signal":
                 if i.material not in materials:
                     self.materials.append(
-                        CfgMaterial(name=i.material, conductivity=580000000, permittivity=1, permeability=0.999991)
+                        CfgMaterial(name=i.material, **self._pedb.materials.default_conductor_property_values)
                     )
                     materials.append(i.material)
                 if i.fill_material not in materials:
                     self.materials.append(
                         CfgMaterial(
-                            name=i.fill_material,
-                            conductivity=0,
-                            permittivity=4.3,
-                            permeability=1,
-                            dielectric_loss_tangent=0.02,
+                            name=i.fill_material, **self._pedb.materials.default_dielectric_property_values
                         )
                     )
                     materials.append(i.fill_material)
@@ -78,11 +75,7 @@ class CfgStackup:
                 if i.material not in materials:
                     self.materials.append(
                         CfgMaterial(
-                            name=i.material,
-                            conductivity=0,
-                            permittivity=4.3,
-                            permeability=0.999991,
-                            dielectric_loss_tangent=0.02,
+                            name=i.material, **self._pedb.materials.default_dielectric_property_values
                         )
                     )
                     materials.append(i.material)
