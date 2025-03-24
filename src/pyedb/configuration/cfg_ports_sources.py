@@ -24,9 +24,10 @@ import os
 import numpy as np
 
 from pyedb.configuration.cfg_common import CfgBase
-from pyedb.dotnet.edb_core.edb_data.ports import WavePort
-from pyedb.dotnet.edb_core.general import convert_py_list_to_net_list
-from pyedb.dotnet.edb_core.geometry.point_data import PointData
+from pyedb.dotnet.database.cell.primitive.primitive import Primitive
+from pyedb.dotnet.database.edb_data.ports import WavePort
+from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.dotnet.database.geometry.point_data import PointData
 
 
 class CfgTerminalInfo(CfgBase):
@@ -141,7 +142,7 @@ class CfgPorts:
         self.ports = []
         for p in ports_data:
             if p["type"] == "wave_port":
-                self.ports.append(CfgWavePort(self._pedb, **p))
+                self.ports.append(CfgEdgePort(self._pedb, **p))
             elif p["type"] == "diff_wave_port":
                 self.ports.append(CfgDiffWavePort(self._pedb, **p))
             elif p["type"] in ["coax", "circuit"]:
@@ -167,7 +168,12 @@ class CfgPorts:
 
         for _, p in ports.items():
             if not p.ref_terminal:
-                port_type = "coax"
+                if p.terminal_type == "PadstackInstanceTerminal":
+                    port_type = "coax"
+                elif p.hfss_type == "Wave":
+                    port_type = "wave_port"
+                else:
+                    port_type = "gap_port"
             else:
                 port_type = "circuit"
 
@@ -206,13 +212,29 @@ class CfgPorts:
                     positive_terminal=pos_term_info,
                     negative_terminal=neg_term_info,
                 )
-            else:
+            elif port_type == "coax":
                 cfg_port = CfgPort(
                     self._pedb,
                     name=p.name,
                     type=port_type,
                     reference_designator=refdes,
                     positive_terminal=pos_term_info,
+                )
+            else:
+                _, primitive, point = p._edb_object.GetEdges()[0].GetParameters()
+
+                primitive = Primitive(self._pedb, primitive)
+                point = PointData(self._pedb, point)
+
+                cfg_port = CfgEdgePort(
+                    self._pedb,
+                    name=p.name,
+                    type=port_type,
+                    primitive_name=primitive.aedt_name,
+                    point_on_edge=[point._edb_object.X.ToString(), point._edb_object.Y.ToString()],
+                    horizontal_extent_factor=p.horizontal_extent_factor,
+                    vertical_extent_factor=p.vertical_extent_factor,
+                    pec_launch_width=p.pec_launch_width,
                 )
 
             self.ports.append(cfg_port)
@@ -624,7 +646,7 @@ class CfgProbe(CfgCircuitElement):
             self.api = self.DotNet(self)
 
 
-class CfgWavePort:
+class CfgEdgePort:
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
         self.name = kwargs["name"]
@@ -650,9 +672,23 @@ class CfgWavePort:
         wave_port.horizontal_extent_factor = self.horizontal_extent_factor
         wave_port.vertical_extent_factor = self.vertical_extent_factor
         wave_port.pec_launch_width = self.pec_launch_width
-        wave_port.hfss_type = "Wave"
+        if self.type == "wave_port":
+            wave_port.hfss_type = "Wave"
+        else:
+            wave_port.hfss_type = "Gap"
         wave_port.do_renormalize = True
         return wave_port
+
+    def export_properties(self):
+        return {
+            "name": self.name,
+            "type": self.type,
+            "primitive_name": self.primitive_name,
+            "point_on_edge": self.point_on_edge,
+            "horizontal_extent_factor": self.horizontal_extent_factor,
+            "vertical_extent_factor": self.vertical_extent_factor,
+            "pec_launch_width": self.pec_launch_width,
+        }
 
 
 class CfgDiffWavePort:
@@ -666,7 +702,7 @@ class CfgDiffWavePort:
 
         kwargs["positive_terminal"]["type"] = "wave_port"
         kwargs["positive_terminal"]["name"] = self.name + ":T1"
-        self.positive_port = CfgWavePort(
+        self.positive_port = CfgEdgePort(
             self._pedb,
             horizontal_extent_factor=self.horizontal_extent_factor,
             vertical_extent_factor=self.vertical_extent_factor,
@@ -675,7 +711,7 @@ class CfgDiffWavePort:
         )
         kwargs["negative_terminal"]["type"] = "wave_port"
         kwargs["negative_terminal"]["name"] = self.name + ":T2"
-        self.negative_port = CfgWavePort(
+        self.negative_port = CfgEdgePort(
             self._pedb,
             horizontal_extent_factor=self.horizontal_extent_factor,
             vertical_extent_factor=self.vertical_extent_factor,

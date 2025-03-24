@@ -433,12 +433,13 @@ class TestClass:
                     "point_on_edge": [0, "1mm"],
                     "horizontal_extent_factor": 6,
                     "vertical_extent_factor": 4,
-                    "pec_launch_width": "0,2mm",
+                    "pec_launch_width": "0.2mm",
                 }
             ]
         }
         edbapp.configuration.load(data, apply_file=True)
         assert edbapp.ports["wport_1"].horizontal_extent_factor == 6
+        edbapp.configuration.get_data_from_db(ports=True)
         edbapp.close()
 
     def test_05h_diff_wave_port(self, edb_examples):

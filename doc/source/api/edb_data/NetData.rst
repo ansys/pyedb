@@ -6,7 +6,7 @@ Net properties
 The following class is the container of data management for nets, extended nets and differential pairs.
 
 
-.. currentmodule:: pyedb.dotnet.edb_core.edb_data.nets_data
+.. currentmodule:: pyedb.dotnet.database.edb_data.nets_data
 
 .. autosummary::
    :toctree: _autosummary

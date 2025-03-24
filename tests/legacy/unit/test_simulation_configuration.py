@@ -24,7 +24,7 @@ import os
 
 import pytest
 
-from pyedb.dotnet.edb_core.edb_data.simulation_configuration import (
+from pyedb.dotnet.database.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
 from pyedb.generic.constants import SourceType

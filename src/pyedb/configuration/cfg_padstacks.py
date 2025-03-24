@@ -22,7 +22,7 @@
 import os
 
 from pyedb.configuration.cfg_common import CfgBase
-from pyedb.dotnet.edb_core.general import (
+from pyedb.dotnet.database.general import (
     convert_py_list_to_net_list,
     pascal_to_snake,
     snake_to_pascal,
@@ -427,7 +427,7 @@ class CfgPadstackInstance(CfgBase):
             self.api = self.DotNet(self)
 
         self.name = kwargs.get("name", None)
-        self.net_name = kwargs.get("net_name", "")
+        self.net_name = kwargs.get("net_name", None)
         self.layer_range = kwargs.get("layer_range", [None, None])
         self.definition = kwargs.get("definition", None)
         self.backdrill_parameters = kwargs.get("backdrill_parameters", None)

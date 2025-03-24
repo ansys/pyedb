@@ -59,7 +59,7 @@ jobs:
           - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
     steps:
       - name: Build wheelhouse and perform smoke test
-        uses: ansys/actions/build-wheelhouse@v7
+        uses: ansys/actions/build-wheelhouse@v8
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
@@ -109,7 +109,7 @@ jobs:
           timeout_minutes: 15
           command: |
             . .venv\Scripts\Activate.ps1
-            pytest -m "legacy" -n auto --dist loadfile -v --cov
+            pytest tests/legacy -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
@@ -179,7 +179,7 @@ jobs:
           command: |
             export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            xvfb-run pytest -m "legacy" -n auto --dist loadfile -v --cov
+            xvfb-run pytest tests/legacy -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
@@ -391,7 +391,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
-        uses: ansys/actions/build-library@v7
+        uses: ansys/actions/build-library@v8
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -408,13 +408,13 @@ jobs:
       contents: write
     steps:
       - name: Release to the public PyPI repository
-        uses: ansys/actions/release-pypi-public@v7
+        uses: ansys/actions/release-pypi-public@v8
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           use-trusted-publisher: true
 
       - name: Release to GitHub
-        uses: ansys/actions/release-github@v7
+        uses: ansys/actions/release-github@v8
         with:
           library-name: ${{ env.PACKAGE_NAME }}
 
@@ -425,8 +425,10 @@ jobs:
     needs: [package]
     steps:
       - name: Deploy the latest documentation
-        uses: ansys/actions/doc-deploy-dev@v7
+        uses: ansys/actions/doc-deploy-dev@v8
         with:
+          bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -437,7 +439,7 @@ jobs:
     needs: upload-dev-docs
     steps:
       - name: "Deploy the latest documentation index"
-        uses: ansys/actions/doc-deploy-index@v7
+        uses: ansys/actions/doc-deploy-index@v8
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}/version/dev
           index-name: pyedb-vdev
@@ -452,10 +454,12 @@ jobs:
     needs: [release]
     steps:
       - name: Deploy the stable documentation
-        uses: ansys/actions/doc-deploy-stable@v7
+        uses: ansys/actions/doc-deploy-stable@v8
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
 
   doc-index-stable:
     name: "Deploy stable docs index"
@@ -478,7 +482,7 @@ jobs:
           echo "VERSION_MEILI=$VERSION_MEILI" >> $GITHUB_ENV
 
       - name: "Deploy the latest documentation index"
-        uses: ansys/actions/doc-deploy-index@v7
+        uses: ansys/actions/doc-deploy-index@v8
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}/version/${{ env.VERSION }}
           index-name: pyedb-v${{ env.VERSION_MEILI }}
