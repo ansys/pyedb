@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.configuration.cfg_common import CfgBase
 from pyedb import Edb
+from pyedb.configuration.cfg_common import CfgBase
 
 
 class CfgMaterial(CfgBase):
@@ -66,17 +66,13 @@ class CfgStackup:
                     materials.append(i.material)
                 if i.fill_material not in materials:
                     self.materials.append(
-                        CfgMaterial(
-                            name=i.fill_material, **self._pedb.materials.default_dielectric_property_values
-                        )
+                        CfgMaterial(name=i.fill_material, **self._pedb.materials.default_dielectric_property_values)
                     )
                     materials.append(i.fill_material)
             elif i.type == "dielectric":
                 if i.material not in materials:
                     self.materials.append(
-                        CfgMaterial(
-                            name=i.material, **self._pedb.materials.default_dielectric_property_values
-                        )
+                        CfgMaterial(name=i.material, **self._pedb.materials.default_dielectric_property_values)
                     )
                     materials.append(i.material)
 

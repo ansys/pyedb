@@ -457,7 +457,7 @@ class Materials(object):
         "specific_heat": 385,
         "thermal_conductivity": 400,
         "youngs_modulus": 120000000000,
-        "thermal_expansion_coefficient": 1.77e-05
+        "thermal_expansion_coefficient": 1.77e-05,
     }
     default_dielectric_property_values = {
         "conductivity": 0,
@@ -470,7 +470,7 @@ class Materials(object):
         "specific_heat": 1150,
         "thermal_conductivity": 0.294,
         "youngs_modulus": 11000000000,
-        "thermal_expansion_coefficient": 1.5e-05
+        "thermal_expansion_coefficient": 1.5e-05,
     }
 
     def __init__(self, edb: Edb):
