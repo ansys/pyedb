@@ -69,7 +69,7 @@ DC_ATTRIBUTES = [
     "dc_conductivity",
     "dc_permittivity",
 ]
-PERMEABILITY_DEFAULT_VALUE = 0.999991
+PERMEABILITY_DEFAULT_VALUE = 1
 
 
 def get_line_float_value(line):
