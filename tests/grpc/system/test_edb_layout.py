@@ -32,7 +32,12 @@ class TestClass:
         pass
 
     def test_find(self, edb_examples):
-        # Done
         edbapp = edb_examples.get_si_verse()
-        assert edbapp.layout.find_primitive(layer_name="Inner5(PWR2)")
+        assert edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128", net_name=["2V5"])
+        edbapp.close()
+
+    def test_primitives(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        prim = edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128", net_name=["2V5"])[0]
+        assert prim.polygon_data.is_inside(["111.4mm", 44.7e-3])
         edbapp.close()
