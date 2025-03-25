@@ -45,7 +45,6 @@ class TestClass:
 
     def test_hfss_create_coax_port_on_component_from_hfss(self, edb_examples):
         """Create a coaxial port on a component from its pin."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.hfss.create_coax_port_on_component("U1", "DDR4_DQS0_P")
         assert edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"], True)
@@ -53,7 +52,6 @@ class TestClass:
 
     def test_layout_bounding_box(self, edb_examples):
         """Evaluate layout bounding box"""
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert len(edbapp.get_bounding_box()) == 2
         assert edbapp.get_bounding_box() == [[-0.01426004895, -0.00455000106], [0.15010507444, 0.08000000002]]
@@ -61,7 +59,6 @@ class TestClass:
 
     def test_siwave_create_circuit_port_on_net(self, edb_examples):
         """Create a circuit port on a net."""
-        #  Done
         edbapp = edb_examples.get_si_verse()
         initial_len = len(edbapp.padstacks.pingroups)
         assert edbapp.siwave.create_circuit_port_on_net("U1", "1V0", "U1", "GND", 50, "test") == "test"
@@ -85,7 +82,6 @@ class TestClass:
 
     def test_siwave_create_voltage_source(self, edb_examples):
         """Create a voltage source."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert "Vsource_" in edbapp.siwave.create_voltage_source_on_net("U1", "USB3_D_P", "U1", "GND", 3.3, 0)
         assert len(edbapp.terminals) == 2
@@ -108,7 +104,6 @@ class TestClass:
 
     def test_siwave_create_current_source(self, edb_examples):
         """Create a current source."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.siwave.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0)
         pins = edbapp.components.get_pin_from_component("U1")
@@ -150,7 +145,6 @@ class TestClass:
 
     def test_siwave_create_dc_terminal(self, edb_examples):
         """Create a DC terminal."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         assert edbapp.siwave.create_dc_terminal("U1", "DDR4_DQ40", "dc_terminal1") == "dc_terminal1"
         edbapp.close()
