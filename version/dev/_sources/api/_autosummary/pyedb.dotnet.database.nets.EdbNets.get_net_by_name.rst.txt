@@ -1,0 +1,6 @@
+get\_net\_by\_name
+==================
+
+.. currentmodule:: pyedb.dotnet.database.nets
+
+.. automethod:: EdbNets.get_net_by_name

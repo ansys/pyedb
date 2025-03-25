@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. automethod:: GapPort.delete

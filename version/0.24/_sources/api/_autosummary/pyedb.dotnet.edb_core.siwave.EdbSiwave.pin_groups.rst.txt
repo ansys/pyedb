@@ -1,0 +1,6 @@
+pin\_groups
+===========
+
+.. currentmodule:: pyedb.dotnet.edb_core.siwave
+
+.. autoproperty:: EdbSiwave.pin_groups

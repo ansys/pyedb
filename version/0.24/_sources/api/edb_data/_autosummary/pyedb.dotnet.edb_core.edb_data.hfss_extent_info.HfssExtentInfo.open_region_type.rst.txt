@@ -1,0 +1,6 @@
+open\_region\_type
+==================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.open_region_type

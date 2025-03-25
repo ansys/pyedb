@@ -1,0 +1,6 @@
+padstacks\_no\_name
+===================
+
+.. currentmodule:: pyedb.dotnet.edb_core.layout_validation
+
+.. automethod:: LayoutValidation.padstacks_no_name

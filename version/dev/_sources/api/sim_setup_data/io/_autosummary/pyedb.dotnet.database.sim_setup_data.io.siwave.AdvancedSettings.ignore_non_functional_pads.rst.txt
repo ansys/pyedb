@@ -1,0 +1,6 @@
+ignore\_non\_functional\_pads
+=============================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoproperty:: AdvancedSettings.ignore_non_functional_pads
