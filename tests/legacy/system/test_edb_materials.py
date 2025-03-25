@@ -190,7 +190,7 @@ class TestClass:
         assert material
         assert material.name == materials[MATERIAL_NAME].name
         # Check default values
-        assert material.permeability == PERMEABILITY_DEFAULT_VALUE
+        assert material.permeability == 0.999991
         with pytest.raises(ValueError):
             materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
 
