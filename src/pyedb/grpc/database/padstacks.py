@@ -45,6 +45,7 @@ from ansys.edb.core.definition.padstack_def_data import PadType as GrpcPadType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.utility.value import Value as GrpcValue
+import numpy as np
 import rtree
 
 from pyedb.generic.general_methods import generate_unique_name
@@ -1498,3 +1499,55 @@ class Padstacks(object):
             merged_via_ids.append(merged_instance.id)
             [self.instances[id].delete() for id in instances]
         return merged_via_ids
+
+    def reduce_via_in_bounding_box(self, bounding_box, x_samples, y_samples, nets=None):
+        """
+        reduce the number of vias intersecting bounding box and nets by x and y samples.
+
+        Parameters
+        ----------
+        bounding_box : tuple or list.
+            bounding box, [x1, y1, x2, y2]
+        x_samples : int
+        y_samples : int
+        nets : str or list, optional
+            net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+            all instances are included in the index. Default value is ``None``.
+
+        Returns
+        -------
+        bool
+            ``True`` when succeeded ``False`` when failed.
+        """
+
+        padstacks_inbox = self.get_padstack_instances_intersecting_bounding_box(bounding_box, nets)
+        if not padstacks_inbox:
+            raise "No pad-stack in bounding box."
+        else:
+            if len(padstacks_inbox) <= (x_samples * y_samples):
+                raise f"more samples {x_samples * y_samples} than existing {len(padstacks_inbox)}"
+            else:
+                # extract ids and positions
+                vias = {item: self.instances[item].position for item in padstacks_inbox}
+                ids, positions = zip(*vias.items())
+                pt_x, pt_y = zip(*positions)
+
+                # meshgrid
+                _x_min, _x_max = min(pt_x), max(pt_x)
+                _y_min, _y_max = min(pt_y), max(pt_y)
+
+                x_grid, y_grid = np.meshgrid(
+                    np.linspace(_x_min, _x_max, x_samples), np.linspace(_y_min, _y_max, y_samples)
+                )
+
+                # mapping to meshgrid
+                to_keep = {
+                    ids[np.argmin(np.square(_x - pt_x) + np.square(_y - pt_y))]
+                    for _x, _y in zip(x_grid.ravel(), y_grid.ravel())
+                }
+
+                all_instances = self.instances
+                for item in padstacks_inbox:
+                    if item not in to_keep:
+                        all_instances[item].delete()
+                return True
