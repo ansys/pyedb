@@ -824,13 +824,12 @@ class Padstacks(object):
         elif polygon_hole:
             if isinstance(polygon_hole, list):
                 polygon_hole = GrpcPolygonData(points=polygon_hole)
-
             padstack_data.set_hole_parameters(
                 offset_x=value0,
                 offset_y=value0,
                 rotation=value0,
                 type_geom=GrpcPadGeometryType.PADGEOMTYPE_POLYGON,
-                sizes=polygon_hole,
+                fp=polygon_hole,
             )
             padstack_data.plating_percentage = GrpcValue(20.0)
         else:
@@ -1520,9 +1519,7 @@ class Padstacks(object):
                 raise Exception(f"No padstack instances found inside {contour_box}")
             else:
                 if net_filter:
-                    # instances = [id for id in instances if not self.instances[id].net_name in net_filter]
-                    instances = [id for id in instances if all_instances[id].net_name not in net_filter]
-                # filter instances by start and stop layer
+                    instances = [id for id in instances if not self.instances[id].net_name in net_filter]
                 if start_layer:
                     if start_layer not in self._pedb.stackup.layers.keys():
                         raise Exception(f"{start_layer} not exist")
@@ -1562,7 +1559,7 @@ class Padstacks(object):
                     convex_hull_contour = ConvexHull(instances_pts)
                     contour_points = list(instances_pts[convex_hull_contour.vertices])
                     layer = list(self._pedb.stackup.layers.values())[0].name
-                    polygon = self._pedb.modeler.create_polygon(main_shape=contour_points, layer_name=layer)
+                    polygon = self._pedb.modeler.create_polygon(points=contour_points, layer_name=layer)
                     polygon_data = polygon.polygon_data
                     polygon.delete()
                     new_padstack_def = generate_unique_name(self.instances[instances[0]].definition.name)
@@ -1581,6 +1578,6 @@ class Padstacks(object):
                     merged_instance.start_layer = start_layer
                     merged_instance.stop_layer = stop_layer
 
-                    merged_via_ids.append(merged_instance.id)
+                    merged_via_ids.append(merged_instance.edb_uid)
                     _ = [all_instances[id].delete() for id in instances]
         return merged_via_ids
