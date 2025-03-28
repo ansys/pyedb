@@ -26,6 +26,7 @@ This module contains these classes: `EdbLayout` and `Shape`.
 from typing import Union
 
 from ansys.edb.core.layout.layout import Layout as GrpcLayout
+import ansys.edb.core.primitive.primitive
 
 from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
@@ -34,7 +35,12 @@ from pyedb.grpc.database.net.differential_pair import DifferentialPair
 from pyedb.grpc.database.net.extended_net import ExtendedNet
 from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.net.net_class import NetClass
+from pyedb.grpc.database.primitive.bondwire import Bondwire
+from pyedb.grpc.database.primitive.circle import Circle
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+from pyedb.grpc.database.primitive.path import Path
+from pyedb.grpc.database.primitive.polygon import Polygon
+from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
@@ -58,6 +64,24 @@ class Layout(GrpcLayout):
         Read-Only.
         """
         return self._pedb._active_cell
+
+    @property
+    def primitives(self):
+        prims = []
+        for prim in super().primitives:
+            if isinstance(prim, ansys.edb.core.primitive.primitive.Path):
+                prims.append(Path(self._pedb, prim))
+            elif isinstance(prim, ansys.edb.core.primitive.primitive.Polygon):
+                prims.append(Polygon(self._pedb, prim))
+            elif isinstance(prim, ansys.edb.core.primitive.primitive.PadstackInstance):
+                prims.append(PadstackInstance(self._pedb, prim))
+            elif isinstance(prim, ansys.edb.core.primitive.primitive.Rectangle):
+                prims.append(Rectangle(self._pedb, prim))
+            elif isinstance(prim, ansys.edb.core.primitive.primitive.Circle):
+                prims.append(Circle(self._pedb, prim))
+            elif isinstance(prim, ansys.edb.core.primitive.primitive.Bondwire):
+                prims.append(Bondwire(self._pedb, prim))
+        return prims
 
     @property
     def terminals(self):
@@ -180,17 +204,32 @@ class Layout(GrpcLayout):
         """
         return [VoltageRegulator(self._pedb, i) for i in self._pedb.active_cell.layout.voltage_regulators]
 
-    def find_primitive(self, layer_name: Union[str, list]) -> list:
+    def find_primitive(
+        self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
+    ) -> list:
         """Find a primitive objects by layer name.
-
         Parameters
         ----------
         layer_name : str, list
+        layer_name : str, list, optional
             Name of the layer.
+        name : str, list, optional
+            Name of the primitive
+        net_name : str, list, optional
+            Name of the primitive
         Returns
         -------
         List[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive`].
             List of Primitive.
         """
-        layer_name = layer_name if isinstance(layer_name, list) else [layer_name]
-        return [i for i in self.primitives if i.layer.name in layer_name]
+        if layer_name:
+            layer_name = layer_name if isinstance(layer_name, list) else [layer_name]
+        if name:
+            name = name if isinstance(name, list) else [name]
+        if net_name:
+            net_name = net_name if isinstance(net_name, list) else [net_name]
+        prims = self.primitives
+        prims = [i for i in prims if i.aedt_name in name] if name is not None else prims
+        prims = [i for i in prims if i.layer_name in layer_name] if layer_name is not None else prims
+        prims = [i for i in prims if i.net_name in net_name] if net_name is not None else prims
+        return prims
