@@ -35,6 +35,12 @@ U8_IC_DIE_PROPERTIES = {
             "definition": "MAXM-T833+2_V",
             "type": "ic",
             "ic_die_properties": {"type": "flip_chip", "orientation": "chip_down"},
+            "solder_ball_properties": {
+                "shape": "spheroid",
+                "diameter": "244um",
+                "mid_diameter": "400um",
+                "height": "300um",
+            },
         }
     ]
 }
@@ -49,6 +55,7 @@ def _assert_initial_ic_die_properties(component: dict):
 def _assert_final_ic_die_properties(component: dict):
     assert component["ic_die_properties"]["type"] == "flip_chip"
     assert component["ic_die_properties"]["orientation"] == "chip_down"
+    assert component["solder_ball_properties"]["diameter"] == "244um"
 
 
 class TestClass:
