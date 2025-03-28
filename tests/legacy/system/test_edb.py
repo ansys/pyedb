@@ -2002,6 +2002,21 @@ class TestClass:
         )
         assert len(edbapp.excitations) == 2
 
+    def test_create_circuit_port_on_component_pins_pingroup_on_multiple_pins(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        component_name = "U1"
+        edbcomp = edbapp.components[component_name]
+        positive_pin_names = ["R20", "R21", "T20"]
+        reference_pin_names = ["N21", "R19", "T21"]
+        assert edbapp.components.create_port_on_pins(
+            refdes=edbcomp,
+            pins=positive_pin_names,
+            reference_pins=reference_pin_names,
+        )
+        assert len(edbapp.excitations) == 2
+        for excitation in edbapp.excitations.values():
+            assert excitation.terminal_type == "PinGroupTerminal"
+
     def test_create_circuit_port_on_component_pins_pingroup_on_single_pin(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         component_name = "U10"
