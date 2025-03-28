@@ -2007,6 +2007,7 @@ class TestClass:
     def test_create_circuit_port_on_component_pins_pingroup_on_multiple_pins(
         self, edb_examples, pec_boundary: bool, positive_pin_names: Sequence[str]
     ):
+        EXPECTED_TERMINAL_TYPE = "PinGroupTerminal" if len(positive_pin_names) > 1 else "PadstackInstanceTerminal"
         edbapp = edb_examples.get_si_verse()
         component_name = "U1"
         edbcomp = edbapp.components[component_name]
@@ -2019,7 +2020,10 @@ class TestClass:
         )
         assert len(edbapp.excitations) == 2
         for excitation in edbapp.excitations.values():
-            assert excitation.terminal_type == "PinGroupTerminal"
+            if excitation.is_reference_terminal:
+                assert excitation.terminal_type == "PinGroupTerminal"
+            else:
+                assert excitation.terminal_type == EXPECTED_TERMINAL_TYPE
 
     def test_create_circuit_port_on_component_pins_pingroup_on_single_pin(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
