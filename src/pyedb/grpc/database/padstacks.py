@@ -45,7 +45,9 @@ from ansys.edb.core.definition.padstack_def_data import PadType as GrpcPadType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.utility.value import Value as GrpcValue
+import numpy as np
 import rtree
+from scipy.spatial import ConvexHull
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
@@ -1332,9 +1334,39 @@ class Padstacks(object):
             padstack_instances_index.insert(inst.id, inst.position)
         return padstack_instances_index
 
-    def get_padstack_instances_intersecting_bounding_box(self, bounding_box, nets=None):
+    def get_padstack_instances_id_intersecting_polygon(self, points, nets=None, padstack_instances_index=None):
         """Returns the list of padstack instances ID intersecting a given bounding box and nets.
 
+        Parameters
+        ----------
+        points : tuple or list.
+            bounding box, [x1, y1, x2, y2]
+        nets : str or list, optional
+            net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+            all instances are included in the index. Default value is ``None``.
+        padstack_instances_index : optional, Rtree object.
+            Can be provided optionally to prevent computing padstack instances Rtree index again.
+
+        Returns
+        -------
+        List[int]
+            List of padstack instances ID intersecting the bounding box.
+        """
+        if not points:
+            raise Exception("No points defining polygon was provided")
+        if not padstack_instances_index:
+            padstack_instances_index = {}
+            for inst in self.instances:
+                padstack_instances_index[inst.id] = inst.position
+        _x = [pt[0] for pt in points]
+        _y = [pt[1] for pt in points]
+        points = [_x, _y]
+        return [
+            ind for ind, pt in padstack_instances_index.items() if GeometryOperators.is_point_in_polygon(pt, points)
+        ]
+
+    def get_padstack_instances_intersecting_bounding_box(self, bounding_box, nets=None, padstack_instances_index=None):
+        """Returns the list of padstack instances ID intersecting a given bounding box and nets.
         Parameters
         ----------
         bounding_box : tuple or list.
@@ -1342,14 +1374,18 @@ class Padstacks(object):
         nets : str or list, optional
             net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
             all instances are included in the index. Default value is ``None``.
-
+        padstack_instances_index : optional, Rtree object.
+            Can be provided optionally to prevent computing padstack instances Rtree index again.
         Returns
         -------
         List of padstack instances ID intersecting the bounding box.
         """
         if not bounding_box:
             raise Exception("No bounding box was provided")
-        index = self.get_padstack_instances_rtree_index(nets=nets)
+        if not padstack_instances_index:
+            index = self.get_padstack_instances_rtree_index(nets=nets)
+        else:
+            index = padstack_instances_index
         if not len(bounding_box) == 4:
             raise Exception("The bounding box length must be equal to 4")
         if isinstance(bounding_box, list):
@@ -1479,7 +1515,7 @@ class Padstacks(object):
             convex_hull_contour = ConvexHull(instances_pts)
             contour_points = list(instances_pts[convex_hull_contour.vertices])
             layer = list(self._pedb.stackup.layers.values())[0].name
-            polygon = self._pedb.modeler.create_polygon(main_shape=contour_points, layer_name=layer)
+            polygon = self._pedb.modeler.create_polygon(points=contour_points, layer_name=layer)
             polygon_data = polygon.polygon_data
             polygon.delete()
             new_padstack_def = generate_unique_name("test")
