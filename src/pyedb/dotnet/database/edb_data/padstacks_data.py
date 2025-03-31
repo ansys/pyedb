@@ -510,7 +510,7 @@ class EDBPadstack(object):
         list
             List of layers.
         """
-        return self._padstack_def_data.GetLayerNames()
+        return list(self._padstack_def_data.GetLayerNames())
 
     @property
     def via_start_layer(self):
@@ -521,7 +521,7 @@ class EDBPadstack(object):
         str
             Name of the starting layer.
         """
-        return list(self.via_layers)[0]
+        return self.via_layers[0]
 
     @property
     def via_stop_layer(self):
@@ -532,7 +532,7 @@ class EDBPadstack(object):
         str
             Name of the stopping layer.
         """
-        return list(self.via_layers)[-1]
+        return self.via_layers[-1]
 
     @property
     def hole_params(self):
@@ -2141,3 +2141,88 @@ class EDBPadstackInstance(Primitive):
             max_limit=max_limit,
             component_only=component_only,
         )
+
+    def split(self):
+        """Split padstack instance into multiple instances. The new instances only connect adjacent layers."""
+        pdef_name = self.padstack_definition
+        position = self.position
+        net_name = self.net_name
+        name = self.name
+        stackup_layer_range = list(self._pedb.stackup.signal_layers.keys())
+        start_idx = stackup_layer_range.index(self.start_layer)
+        stop_idx = stackup_layer_range.index(self.stop_layer)
+        for idx, (l1, l2) in enumerate(
+                list(zip(stackup_layer_range[start_idx:stop_idx], stackup_layer_range[start_idx + 1:stop_idx + 1]))):
+            self._pedb.padstacks.place(
+                position,
+                pdef_name,
+                net_name,
+                f"{name}_{idx}",
+                fromlayer=l1,
+                tolayer=l2
+            )
+        self.delete()
+
+    def convert_hole_to_conical_shape(self, angle=75):
+        """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
+
+        Parameters
+        ----------
+        angle : float, optional
+            Angle of laser penetration in degrees. The angle defines the lowest hole diameter with this formula:
+            HoleDiameter -2*tan(laser_angle* Hole depth). Hole depth is the height of the via (dielectric thickness).
+            The default is ``75``.
+            The lowest hole is ``0.75*HoleDepth/HoleDiam``.
+
+        Returns
+        -------
+        """
+        pos = self.position
+        stackup_layers = self._pedb.stackup.stackup_layers
+        signal_layers = self._pedb.stackup.signal_layers
+        layer_idx = list(signal_layers.keys()).index(self.start_layer)
+
+        _layer_idx = list(stackup_layers.keys()).index(self.start_layer)
+        diel_layer_idx = list(stackup_layers.keys())[_layer_idx + 1]
+        diel_thickness = stackup_layers[diel_layer_idx].thickness
+
+        rad_large = self.definition.hole_diameter / 2
+        rad_small = rad_large - diel_thickness * 1 / math.tan(math.radians(angle))
+
+        if layer_idx + 1 < len(signal_layers) / 2:  # upper half of stack
+            rad_u = rad_large
+            rad_l = rad_small
+        else:
+            rad_u = rad_small
+            rad_l = rad_large
+
+        layout = self._pedb.active_layout
+        cloned_circle = self._edb.cell.primitive.circle.create(
+            layout,
+            self.start_layer,
+            self._edb_padstackinstance.GetNet(),
+            self._pedb.edb_value(pos[0]),
+            self._pedb.edb_value(pos[1]),
+            self._pedb.edb_value(rad_u),
+        )
+        cloned_circle2 = self._edb.cell.primitive.circle.create(
+            layout,
+            self.stop_layer,
+            self._edb_padstackinstance.GetNet(),
+            self._pedb.edb_value(pos[0]),
+            self._pedb.edb_value(pos[1]),
+            self._pedb.edb_value(rad_l),
+        )
+        s3d = self._pedb._edb.Cell.Hierarchy.Structure3D.Create(
+            layout, generate_unique_name("via3d_" + self.aedt_name.replace("via_", ""), n=3)
+        )
+        s3d.AddMember(cloned_circle.prim_obj)
+        s3d.AddMember(cloned_circle2.prim_obj)
+        s3d.SetMaterial(self.definition.material)
+        s3d.SetMeshClosureProp(self._pedb._edb.Cell.Hierarchy.Structure3D.TClosure.EndsClosed)
+
+        hole_override_enabled = True
+        hole_override_diam = 0
+        self._edb_object.SetHoleOverride(hole_override_enabled,
+                                        self._pedb.edb_value(hole_override_diam))
+
