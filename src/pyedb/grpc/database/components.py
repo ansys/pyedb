@@ -54,6 +54,7 @@ from pyedb.grpc.database.definition.component_pin import ComponentPin
 from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
+from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.utility.sources import SourceType
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -119,33 +120,16 @@ class Components(object):
 
     def __init__(self, p_edb):
         self._pedb = p_edb
-        self._cmp = {}
-        self._res = {}
-        self._cap = {}
-        self._ind = {}
-        self._ios = {}
-        self._ics = {}
-        self._others = {}
+        self.refresh_components()
         self._pins = {}
         self._comps_by_part = {}
-        self._init_parts()
-        # self._padstack = Padstacks(self._pedb)
+        self._padstack = Padstacks(self._pedb)
         # self._excitations = self._pedb.excitations
 
     @property
     def _logger(self):
         """Logger."""
         return self._pedb.logger
-
-    def _init_parts(self):
-        a = self.instances
-        a = self.resistors
-        a = self.ICs
-        a = self.Others
-        a = self.inductors
-        a = self.IOs
-        a = self.components_by_partname
-        return True
 
     @property
     def _active_layout(self):
@@ -180,8 +164,6 @@ class Components(object):
         >>> edbapp.components.instances
 
         """
-        if not self._cmp:
-            self.refresh_components()
         return self._cmp
 
     @property
@@ -287,10 +269,28 @@ class Components(object):
         """Refresh the component dictionary."""
         self._logger.info("Refreshing the Components dictionary.")
         self._cmp = {}
+        self._res = {}
+        self._ind = {}
+        self._cap = {}
+        self._ics = {}
+        self._ios = {}
+        self._others = {}
         for i in self._pedb.layout.groups:
-            if isinstance(i, Component):
-                if not i.is_null:
-                    self._cmp[i.name] = i
+            self._cmp[i.name] = i
+            if i.type == "resistor":
+                self._res[i.name] = i
+            elif i.type == "capacitor":
+                self._cap[i.name] = i
+            elif i.type == "inductor":
+                self._ind[i.name] = i
+            elif i.type == "ic":
+                self._ics[i.name] = i
+            elif i.type == "io":
+                self._ios[i.name] = i
+            elif i.type == "other":
+                self._others[i.name] = i
+            else:
+                self._logger.warning(f"Unknown component type {i.name} found while refreshing components, will ignore")
         return True
 
     @property
@@ -309,14 +309,6 @@ class Components(object):
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.resistors
         """
-        self._res = {}
-        for el, val in self.instances.items():
-            if not val.is_null:
-                try:
-                    if val.type == "resistor":
-                        self._res[el] = val
-                except:
-                    pass
         return self._res
 
     @property
@@ -335,14 +327,6 @@ class Components(object):
         >>> edbapp = Edb("myaedbfolder")
         >>> edbapp.components.capacitors
         """
-        self._cap = {}
-        for el, val in self.instances.items():
-            if not val.is_null:
-                try:
-                    if val.type == "capacitor":
-                        self._cap[el] = val
-                except:
-                    pass
         return self._cap
 
     @property
@@ -362,14 +346,6 @@ class Components(object):
         >>> edbapp.components.inductors
 
         """
-        self._ind = {}
-        for el, val in self.instances.items():
-            if not val.is_null:
-                try:
-                    if val.type == "inductor":
-                        self._ind[el] = val
-                except:
-                    pass
         return self._ind
 
     @property
@@ -389,14 +365,6 @@ class Components(object):
         >>> edbapp.components.ICs
 
         """
-        self._ics = {}
-        for el, val in self.instances.items():
-            if not val.is_null:
-                try:
-                    if val.type == "ic":
-                        self._ics[el] = val
-                except:
-                    pass
         return self._ics
 
     @property
@@ -416,14 +384,6 @@ class Components(object):
         >>> edbapp.components.IOs
 
         """
-        self._ios = {}
-        for el, val in self.instances.items():
-            if not val.is_null:
-                try:
-                    if val.type == "io":
-                        self._ios[el] = val
-                except:
-                    pass
         return self._ios
 
     @property
@@ -443,14 +403,6 @@ class Components(object):
         >>> edbapp.components.others
 
         """
-        self._others = {}
-        for el, val in self.instances.items():
-            if not val.is_null:
-                try:
-                    if val.type == "other":
-                        self._others[el] = val
-                except:
-                    pass
         return self._others
 
     @property
