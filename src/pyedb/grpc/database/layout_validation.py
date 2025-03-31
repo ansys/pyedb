@@ -274,7 +274,7 @@ class LayoutValidation:
         bool
         """
         if not net_list:
-            net_list = list(self._pedb.nets.keys())
+            net_list = list(self._pedb.nets.nets.keys())
         elif isinstance(net_list, str):
             net_list = [net_list]
         new_prims = []
