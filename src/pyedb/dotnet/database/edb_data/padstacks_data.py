@@ -2152,15 +2152,9 @@ class EDBPadstackInstance(Primitive):
         start_idx = stackup_layer_range.index(self.start_layer)
         stop_idx = stackup_layer_range.index(self.stop_layer)
         for idx, (l1, l2) in enumerate(
-                list(zip(stackup_layer_range[start_idx:stop_idx], stackup_layer_range[start_idx + 1:stop_idx + 1]))):
-            self._pedb.padstacks.place(
-                position,
-                pdef_name,
-                net_name,
-                f"{name}_{idx}",
-                fromlayer=l1,
-                tolayer=l2
-            )
+            list(zip(stackup_layer_range[start_idx:stop_idx], stackup_layer_range[start_idx + 1 : stop_idx + 1]))
+        ):
+            self._pedb.padstacks.place(position, pdef_name, net_name, f"{name}_{idx}", fromlayer=l1, tolayer=l2)
         self.delete()
 
     def convert_hole_to_conical_shape(self, angle=75):
@@ -2223,6 +2217,4 @@ class EDBPadstackInstance(Primitive):
 
         hole_override_enabled = True
         hole_override_diam = 0
-        self._edb_object.SetHoleOverride(hole_override_enabled,
-                                        self._pedb.edb_value(hole_override_diam))
-
+        self._edb_object.SetHoleOverride(hole_override_enabled, self._pedb.edb_value(hole_override_diam))
