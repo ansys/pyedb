@@ -99,7 +99,7 @@ class CommonNets:
 
         start_time = time.time()
         if not nets:
-            nets = list(self._pedb.nets.keys())
+            nets = list(self._pedb.nets.nets.keys())
         if isinstance(nets, str):
             nets = [nets]
         if not layers:
@@ -400,7 +400,10 @@ class CommonNets:
         ax.set_xticks([])
         ax.set_yticks([])
         if not title:
-            title = self._pedb.active_cell.name
+            if not self._pedb.grpc:
+                title = self._pedb.active_cell.GetName()
+            else:
+                title = self._pedb.active_cell.name
         message = f"Edb Top View {title}" if top_view else f"Edb Bottom View {title}"
         plt.title(message, size=20)
         if show_legend:
