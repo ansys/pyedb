@@ -81,8 +81,6 @@ class Layout(GrpcLayout):
                 prims.append(Circle(self._pedb, prim))
             elif isinstance(prim, ansys.edb.core.primitive.primitive.Bondwire):
                 prims.append(Bondwire(self._pedb, prim))
-            else:
-                raise "Not valid primitive."
         return prims
 
     @property
