@@ -22,6 +22,7 @@ class CommonNets:
         show=True,
         annotate_component_names=True,
         plot_vias=False,
+        title=None,
         **kwargs,
     ):
         """Plot a Net to Matplotlib 2D Chart.
@@ -57,6 +58,9 @@ class CommonNets:
         plot_vias : bool, optional
             Whether to plot vias (circular and rectangular) or not. This may impact in the plot computation time.
             Default is ``False``.
+        title : str, optional
+            Specify the default plot title. Is value is ``None`` the project name is assigned by default. Default value
+            is ``None``.
         show : bool, optional
             Whether to show the plot or not. Default is `True`.
 
@@ -95,7 +99,7 @@ class CommonNets:
 
         start_time = time.time()
         if not nets:
-            nets = list(self.nets.keys())
+            nets = list(self._pedb.nets.keys())
         if isinstance(nets, str):
             nets = [nets]
         if not layers:
@@ -395,7 +399,9 @@ class CommonNets:
         # Hide axes ticks
         ax.set_xticks([])
         ax.set_yticks([])
-        message = "Edb Top View" if top_view else "Edb Bottom View"
+        if not title:
+            title = self._pedb.active_cell.name
+        message = f"Edb Top View {title}" if top_view else f"Edb Bottom View {title}"
         plt.title(message, size=20)
         if show_legend:
             plt.legend(loc="upper left", fontsize="x-large")
