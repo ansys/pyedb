@@ -22,7 +22,7 @@
 
 from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition, CfgPadstackInstance
-from pyedb.dotnet.edb_core.edb_data.padstacks_data import EDBPadstack
+from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstack
 
 
 class CfgTrace:
@@ -90,8 +90,8 @@ class CfgModeler:
                 pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
                 pdef.SetData(pdata)
                 pdef = EDBPadstack(pdef, self._pedb.padstacks)
-                p._pyedb_obj = pdef
-                p.set_parameters_to_edb()
+                p.pyedb_obj = pdef
+                p.api.set_parameters_to_edb()
 
         if self.padstack_instances:
             for p in self.padstack_instances:
@@ -101,8 +101,8 @@ class CfgModeler:
                     position=p.position,
                     definition_name=p.definition,
                 )
-                p._pyedb_obj = p_inst
-                p.set_parameters_to_edb()
+                p.pyedb_obj = p_inst
+                p.api.set_parameters_to_edb()
 
         if self.planes:
             for p in self.planes:
@@ -136,5 +136,5 @@ class CfgModeler:
                     placement_layer=c.placement_layer,
                     component_part_name=c.definition,
                 )
-                c._pyedb_obj = obj
-                c.set_parameters_to_edb()
+                c.pyedb_obj = obj
+                c.api.set_parameters_to_edb()

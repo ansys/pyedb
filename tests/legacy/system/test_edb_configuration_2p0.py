@@ -433,12 +433,13 @@ class TestClass:
                     "point_on_edge": [0, "1mm"],
                     "horizontal_extent_factor": 6,
                     "vertical_extent_factor": 4,
-                    "pec_launch_width": "0,2mm",
+                    "pec_launch_width": "0.2mm",
                 }
             ]
         }
         edbapp.configuration.load(data, apply_file=True)
         assert edbapp.ports["wport_1"].horizontal_extent_factor == 6
+        edbapp.configuration.get_data_from_db(ports=True)
         edbapp.close()
 
     def test_05h_diff_wave_port(self, edb_examples):
@@ -1026,6 +1027,57 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
+    def test_15d_sources_equipotential(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        sources_i = [
+            {
+                "name": "ISOURCE_J5",
+                "reference_designator": "J5",
+                "type": "current",
+                "magnitude": 17,
+                "positive_terminal": {"net": "SFPA_VCCR", "contact_type": "quad"},
+                "negative_terminal": {"net": "GND"},
+            },
+            {
+                "name": "ISOURCE_J5_SFPA_TX_P",
+                "reference_designator": "J5",
+                "type": "current",
+                "magnitude": 17,
+                "positive_terminal": {
+                    "net": "SFPA_TX_P",
+                    "contact_type": "inline",
+                    "contact_radius": "0.15mm",
+                    "num_of_contact": 5,
+                    "contact_expansion": 0.9,
+                },
+                "negative_terminal": {"net": "GND"},
+            },
+            {
+                "name": "x_y_port",
+                "type": "current",
+                "magnitude": 2,
+                "positive_terminal": {
+                    "coordinates": {
+                        "layer": "1_Top",
+                        "point": ["104mm", "37mm"],
+                        "net": "AVCC_1V3",
+                    },
+                    "contact_radius": "1mm",
+                },
+                "negative_terminal": {
+                    "coordinates": {
+                        "layer": "Inner6(GND2)",
+                        "point": ["104mm", "45mm"],
+                        "net": "GND",
+                    },
+                    "contact_radius": "1.2mm",
+                },
+            },
+        ]
+        data = {"sources": sources_i}
+        assert edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
     def test_16_components_rlc(self, edb_examples):
         components = [
             {
@@ -1216,7 +1268,12 @@ class TestClass:
                         "part_type": "io",
                         "definition": "BGA",
                         "placement_layer": "TOP",
-                        "solder_ball_properties": {"shape": "cylinder", "diameter": "244um", "height": "406um"},
+                        "solder_ball_properties": {
+                            "shape": "cylinder",
+                            "diameter": "244um",
+                            "height": "406um",
+                            "material": "air",
+                        },
                         "port_properties": {
                             "reference_offset": "0.1mm",
                             "reference_size_auto": False,
@@ -1235,6 +1292,7 @@ class TestClass:
         assert rect.voids
         assert [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP_POLY"][0]
         assert edbapp.components["U1"]
+        assert edbapp.components["U1"].component_property.GetSolderBallProperty().Clone().GetMaterialName() == "air"
         edbapp.close()
 
     def test_19_variables(self, edb_examples):
@@ -1247,4 +1305,19 @@ class TestClass:
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
+    def test_probes(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        probe = [
+            {
+                "name": "probe1",
+                "reference_designator": "J5",
+                "positive_terminal": {"pin": "15"},
+                "negative_terminal": {"pin": "16"},
+            },
+        ]
+        data = {"probes": probe}
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert "probe1" in edbapp.probes
         edbapp.close()

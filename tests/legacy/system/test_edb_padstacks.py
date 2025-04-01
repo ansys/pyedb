@@ -139,7 +139,7 @@ class TestClass:
                 assert pad.offset_x is not None or False
                 assert pad.offset_y is not None or False
                 assert isinstance(pad.geometry_type, int)
-            polygon = pad.polygon_data
+            polygon = pad._polygon_data_dotnet
             if polygon:
                 assert polygon.GetBBox()
 

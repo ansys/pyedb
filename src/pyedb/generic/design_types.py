@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import os
-
 
 # lazy imports
 def Edb(
@@ -34,6 +32,7 @@ def Edb(
     student_version=False,
     use_ppe=False,
     technology_file=None,
+    grpc=False,
 ):
     """Provides the EDB application interface.
 
@@ -63,10 +62,20 @@ def Edb(
         Whether to open the AEDT student version. The default is ``False.``
     technology_file : str, optional
         Full path to technology file to be converted to xml before importing or xml. Supported by GDS format only.
+    grpc : bool, optional
+        Whether to enable gRPC. Default value is ``False``.
 
     Returns
     -------
-    :class:`pyedb.dotnet.edb.Edb`, :class:`pyedb.grpc.edb.Edb`
+    :class:`Edb <pyedb.dotnet.edb.Edb>` or :class:`Edb <pyedb.grpc.edb.Edb>`
+
+    Note
+    ----
+    PyEDB gRPC will be released starting ANSYS release 2025R2. For legacy purpose, the gRPC will not be activated by
+    default. However, PyEDB gRPC will be the lon term supported version. The legacy PyEDB .NET will be deprecated and
+    at some point all new features will only be implemented in PyEDB gRPC. We highly encourage users moving to gRPC
+    starting release 2025R2, we tried keeping gRPC version backward compatible with legace .NET as much as possible and
+    only minor adjustments are required to be compatible.
 
     Examples
     --------
@@ -104,23 +113,21 @@ def Edb(
     """
 
     # Use EDB legacy (default choice)
-    if bool(os.getenv("PYEDB_USE_DOTNET", "1")):
-        from pyedb.dotnet.edb import Edb as app
-
-        return app(
-            edbpath=edbpath,
-            cellname=cellname,
-            isreadonly=isreadonly,
-            edbversion=edbversion,
-            isaedtowned=isaedtowned,
-            oproject=oproject,
-            student_version=student_version,
-            use_ppe=use_ppe,
-            technology_file=technology_file,
-        )
-    # TODO: Use EDB gRPC
+    if grpc:
+        from pyedb.grpc.edb import Edb as app
     else:
-        raise Exception("not implemented yet.")
+        from pyedb.dotnet.edb import Edb as app
+    return app(
+        edbpath=edbpath,
+        cellname=cellname,
+        isreadonly=isreadonly,
+        edbversion=edbversion,
+        isaedtowned=isaedtowned,
+        oproject=oproject,
+        student_version=student_version,
+        use_ppe=use_ppe,
+        technology_file=technology_file,
+    )
 
 
 def Siwave(

@@ -8,7 +8,7 @@ Primitives properties
 ---------------------
 These classes are the containers of data management for primitives and arcs.
 
-.. currentmodule:: pyedb.dotnet.edb_core.edb_data.primitives_data
+.. currentmodule:: pyedb.dotnet.database.edb_data.primitives_data
 
 .. autosummary::
    :toctree: _autosummary
