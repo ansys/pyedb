@@ -1337,7 +1337,7 @@ class Padstacks(object):
 
         Parameters
         ----------
-        bounding_box : tuple or list.
+        points : tuple or list.
             bounding box, [x1, y1, x2, y2]
         nets : str or list, optional
             net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
@@ -1347,14 +1347,15 @@ class Padstacks(object):
 
         Returns
         -------
-        List of padstack instances ID intersecting the bounding box.
+        List[int]
+            List of padstack instances ID intersecting the bounding box.
         """
         if not points:
             raise Exception("No points defining polygon was provided")
         if not padstack_instances_index:
             padstack_instances_index = {}
             for inst in self.instances:
-                padstack_instances_index[inst.edb_uid] = inst.position
+                padstack_instances_index[inst.id] = inst.position
         _x = [pt[0] for pt in points]
         _y = [pt[1] for pt in points]
         points = [_x, _y]
@@ -1362,9 +1363,8 @@ class Padstacks(object):
             ind for ind, pt in padstack_instances_index.items() if GeometryOperators.is_point_in_polygon(pt, points)
         ]
 
-    def get_padstack_instances_intersecting_bounding_box(self, bounding_box, nets=None):
+    def get_padstack_instances_intersecting_bounding_box(self, bounding_box, nets=None, padstack_instances_index=None):
         """Returns the list of padstack instances ID intersecting a given bounding box and nets.
-
         Parameters
         ----------
         bounding_box : tuple or list.
@@ -1372,14 +1372,18 @@ class Padstacks(object):
         nets : str or list, optional
             net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
             all instances are included in the index. Default value is ``None``.
-
+        padstack_instances_index : optional, Rtree object.
+            Can be provided optionally to prevent computing padstack instances Rtree index again.
         Returns
         -------
         List of padstack instances ID intersecting the bounding box.
         """
         if not bounding_box:
             raise Exception("No bounding box was provided")
-        index = self.get_padstack_instances_rtree_index(nets=nets)
+        if not padstack_instances_index:
+            index = self.get_padstack_instances_rtree_index(nets=nets)
+        else:
+            index = padstack_instances_index
         if not len(bounding_box) == 4:
             raise Exception("The bounding box length must be equal to 4")
         if isinstance(bounding_box, list):
@@ -1569,71 +1573,31 @@ class Padstacks(object):
             instances = self.get_padstack_instances_id_intersecting_polygon(
                 points=contour_box, padstack_instances_index=instances_index
             )
-            if not instances:
-                raise Exception(f"No padstack instances found inside {contour_box}")
-            else:
-                if net_filter:
-                    instances = [id for id in instances if not self.instances[id].net_name in net_filter]
-                if start_layer:
-                    if start_layer not in self._pedb.stackup.layers.keys():
-                        raise Exception(f"{start_layer} not exist")
-                    else:
-                        instances = [id for id in instances if all_instances[id].start_layer == start_layer]
-                if stop_layer:
-                    if stop_layer not in self._pedb.stackup.layers.keys():
-                        raise Exception(f"{stop_layer} not exist")
-                    else:
-                        instances = [id for id in instances if all_instances[id].stop_layer == stop_layer]
-                if not instances:
-                    raise Exception(
-                        f"No padstack instances found inside {contour_box} between {start_layer} and {stop_layer}"
-                    )
-
-                if not start_layer:
-                    start_layer = list(self._pedb.stackup.layers.values())[0].name
-                if not stop_layer:
-                    stop_layer = list(self._pedb.stackup.layers.values())[-1].name
-
-                net = self.instances[instances[0]].net_name
-                x_values = []
-                y_values = []
-                for inst in instances:
-                    pos = instances_index[inst]
-                    x_values.append(pos[0])
-                    y_values.append(pos[1])
-                x_values = list(set(x_values))
-                y_values = list(set(y_values))
-                if len(x_values) == 1 or len(y_values) == 1:
-                    create_instances = self.merge_via_along_lines(
-                        net_name=net, padstack_instances_id=instances, minimum_via_number=2
-                    )
-                    merged_via_ids.extend(create_instances)
-                else:
-                    instances_pts = np.array([instances_index[id] for id in instances])
-                    convex_hull_contour = ConvexHull(instances_pts)
-                    contour_points = list(instances_pts[convex_hull_contour.vertices])
-                    layer = list(self._pedb.stackup.layers.values())[0].name
-                    polygon = self._pedb.modeler.create_polygon(points=contour_points, layer_name=layer)
-                    polygon_data = polygon.polygon_data
-                    polygon.delete()
-                    new_padstack_def = generate_unique_name(self.instances[instances[0]].definition.name)
-                    if not self.create(
-                        padstackname=new_padstack_def,
-                        pad_shape="Polygon",
-                        antipad_shape="Polygon",
-                        pad_polygon=polygon_data,
-                        antipad_polygon=polygon_data,
-                        polygon_hole=polygon_data,
-                        start_layer=start_layer,
-                        stop_layer=stop_layer,
-                    ):
-                        raise Exception(f"Failed to create padstack definition {new_padstack_def}")
-                    merged_instance = self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net)
-                    merged_instance.start_layer = start_layer
-                    merged_instance.stop_layer = stop_layer
-
-                    merged_via_ids.append(merged_instance.edb_uid)
-                    _ = [all_instances[id].delete() for id in instances]
+            if net_filter:
+                instances = [self.instances[id] for id in instances if not self.instances[id].net.name in net_filter]
+            net = self.instances[instances[0]].net.name
+            instances_pts = np.array([self.instances[id].position for id in instances])
+            convex_hull_contour = ConvexHull(instances_pts)
+            contour_points = list(instances_pts[convex_hull_contour.vertices])
+            layer = list(self._pedb.stackup.layers.values())[0].name
+            polygon = self._pedb.modeler.create_polygon(points=contour_points, layer_name=layer)
+            polygon_data = polygon.polygon_data
+            polygon.delete()
+            new_padstack_def = generate_unique_name("test")
+            if not self.create(
+                padstackname=new_padstack_def,
+                pad_shape="Polygon",
+                antipad_shape="Polygon",
+                pad_polygon=polygon_data,
+                antipad_polygon=polygon_data,
+                polygon_hole=polygon_data,
+                start_layer=start_layer,
+                stop_layer=stop_layer,
+            ):
+                self._logger.error(f"Failed to create padstack definition {new_padstack_def}")
+            merged_instance = self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net)
+            merged_via_ids.append(merged_instance.id)
+            [self.instances[id].delete() for id in instances]
         return merged_via_ids
 
     def reduce_via_in_bounding_box(self, bounding_box, x_samples, y_samples, nets=None):
