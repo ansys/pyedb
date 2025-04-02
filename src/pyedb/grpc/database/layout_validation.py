@@ -22,8 +22,11 @@
 
 import re
 
-# from pyedb.generic.general_methods import generate_unique_name
-# from pyedb.grpc.database.primitive.padstack_instances import PadstackInstance
+from ansys.edb.core.database import ProductIdType as GrpcProductIdType
+
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+
 # from pyedb.grpc.database.primitive.primitive import Primitive
 
 
@@ -120,146 +123,145 @@ class LayoutValidation:
                         i.net = self._pedb.nets.nets[temp_name]
         return dc_shorts
 
-    # def disjoint_nets(
-    #         self,
-    #         net_list=None,
-    #         keep_only_main_net=False,
-    #         clean_disjoints_less_than=0.0,
-    #         order_by_area=False,
-    #         keep_disjoint_pins=False,
-    # ):
-    #     """Find and fix disjoint nets from a given netlist.
-    #
-    #     Parameters
-    #     ----------
-    #     net_list : str, list, optional
-    #         List of nets on which check disjoints. If `None` is provided then the algorithm will loop on all nets.
-    #     keep_only_main_net : bool, optional
-    #         Remove all secondary nets other than principal one (the one with more objects in it). Default is `False`.
-    #     clean_disjoints_less_than : bool, optional
-    #       Clean all disjoint nets with area less than specified area in square meters. Default is `0.0` to disable it.
-    #     order_by_area : bool, optional
-    #         Whether if the naming order has to be by number of objects (fastest) or area (slowest but more accurate).
-    #         Default is ``False``.
-    #     keep_disjoint_pins : bool, optional
-    #         Whether if delete disjoints pins not connected to any other primitive or not. Default is ``False``.
-    #
-    #     Returns
-    #     -------
-    #     List
-    #         New nets created.
-    #
-    #     Examples
-    #     --------
-    #
-    #     >>> renamed_nets = edb.layout_validation.disjoint_nets(["GND","Net2"])
-    #     """
-    #     from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-    #     timer_start = self._pedb.logger.reset_timer()
-    #
-    #     if not net_list:
-    #         net_list = list(self._pedb.nets.keys())
-    #     elif isinstance(net_list, str):
-    #         net_list = [net_list]
-    #     _objects_list = {}
-    #     _padstacks_list = {}
-    #     for prim in self._pedb.modeler.primitives:
-    #         if not prim.net.is_null:
-    #             n_name = prim.net.name
-    #             if n_name in _objects_list:
-    #                 _objects_list[n_name].append(prim)
-    #             else:
-    #                 _objects_list[n_name] = [prim]
-    #     for pad in list(self._pedb.padstacks.instances.values()):
-    #         if not pad.net.is_null:
-    #             n_name = pad.net_name
-    #             if n_name in _padstacks_list:
-    #                 _padstacks_list[n_name].append(pad)
-    #             else:
-    #                 _padstacks_list[n_name] = [pad]
-    #     new_nets = []
-    #     disjoints_objects = []
-    #     self._pedb.logger.reset_timer()
-    #     for net in net_list:
-    #         net_groups = []
-    #         obj_dict = {}
-    #         for i in _objects_list.get(net, []):
-    #             obj_dict[i.id] = i
-    #         for i in _padstacks_list.get(net, []):
-    #             obj_dict[i.id] = i
-    #         objs = list(obj_dict.values())
-    #         l = len(objs)
-    #         while l > 0:
-    #             l1 = self._layout_instance.get_connected_objects(objs[0].layout_object_instance, False)
-    #             l1.append(objs[0].id)
-    #             repetition = False
-    #             for net_list in net_groups:
-    #                 if set(l1).intersection(net_list):
-    #                     net_groups.append([i for i in l1 if i not in net_list])
-    #                     repetition = True
-    #             if not repetition:
-    #                 net_groups.append(l1)
-    #             objs = [i for i in objs if i.id not in l1]
-    #             l = len(objs)
-    #         if len(net_groups) > 1:
-    #
-    #             def area_calc(elem):
-    #                 sum = 0
-    #                 for el in elem:
-    #                     try:
-    #                         if el.layout_obj.obj_type.value == 0:
-    #                             if not el.is_void:
-    #                                 sum += el.area()
-    #                     except:
-    #                         pass
-    #                 return sum
-    #
-    #             if order_by_area:
-    #                 areas = [area_calc(i) for i in net_groups]
-    #                 sorted_list = [x for _, x in sorted(zip(areas, net_groups), reverse=True)]
-    #             else:
-    #                 sorted_list = sorted(net_groups, key=len, reverse=True)
-    #             for disjoints in sorted_list[1:]:
-    #                 if keep_only_main_net:
-    #                     for geo in disjoints:
-    #                         try:
-    #                             obj_dict[geo].delete()
-    #                         except KeyError:
-    #                             pass
-    #                 elif len(disjoints) == 1 and (
-    #                         clean_disjoints_less_than
-    #                         and "area" in dir(obj_dict[disjoints[0]])
-    #                         and obj_dict[disjoints[0]].area() < clean_disjoints_less_than
-    #                 ):
-    #                     try:
-    #                         obj_dict[disjoints[0]].delete()
-    #                     except KeyError:
-    #                         pass
-    #                 elif (
-    #                         len(disjoints) == 1
-    #                         and not keep_disjoint_pins
-    #                         and isinstance(obj_dict[disjoints[0]], PadstackInstance)
-    #                 ):
-    #                     try:
-    #                         obj_dict[disjoints[0]].delete()
-    #                     except KeyError:
-    #                         pass
-    #
-    #                 else:
-    #                     new_net_name = generate_unique_name(net, n=6)
-    #                     net_obj = self._pedb.nets.find_or_create_net(new_net_name)
-    #                     if net_obj:
-    #                         new_nets.append(net_obj.name)
-    #                         for geo in disjoints:
-    #                             try:
-    #                                 obj_dict[geo].net_name = net_obj.name
-    #                             except KeyError:
-    #                                 pass
-    #                         disjoints_objects.extend(disjoints)
-    #     self._pedb._logger.info("Found {} objects in {} new nets.".format(len(disjoints_objects), len(new_nets)))
-    #     self._pedb._logger.info_timer("Disjoint Cleanup Completed.", timer_start)
-    #
-    #     return new_nets
+    def disjoint_nets(
+        self,
+        net_list=None,
+        keep_only_main_net=False,
+        clean_disjoints_less_than=0.0,
+        order_by_area=False,
+        keep_disjoint_pins=False,
+    ):
+        """Find and fix disjoint nets from a given netlist.
+
+        Parameters
+        ----------
+        net_list : str, list, optional
+            List of nets on which check disjoints. If `None` is provided then the algorithm will loop on all nets.
+        keep_only_main_net : bool, optional
+            Remove all secondary nets other than principal one (the one with more objects in it). Default is `False`.
+        clean_disjoints_less_than : bool, optional
+          Clean all disjoint nets with area less than specified area in square meters. Default is `0.0` to disable it.
+        order_by_area : bool, optional
+            Whether if the naming order has to be by number of objects (fastest) or area (slowest but more accurate).
+            Default is ``False``.
+        keep_disjoint_pins : bool, optional
+            Whether if delete disjoints pins not connected to any other primitive or not. Default is ``False``.
+
+        Returns
+        -------
+        List
+            New nets created.
+
+        Examples
+        --------
+
+        >>> renamed_nets = edb.layout_validation.disjoint_nets(["GND","Net2"])
+        """
+        timer_start = self._pedb.logger.reset_timer()
+
+        if not net_list:
+            net_list = list(self._pedb.nets.keys())
+        elif isinstance(net_list, str):
+            net_list = [net_list]
+        _objects_list = {}
+        _padstacks_list = {}
+        for prim in self._pedb.modeler.primitives:
+            if not prim.net.is_null:
+                n_name = prim.net.name
+                if n_name in _objects_list:
+                    _objects_list[n_name].append(prim)
+                else:
+                    _objects_list[n_name] = [prim]
+        for pad in list(self._pedb.padstacks.instances.values()):
+            if not pad.net.is_null:
+                n_name = pad.net_name
+                if n_name in _padstacks_list:
+                    _padstacks_list[n_name].append(pad)
+                else:
+                    _padstacks_list[n_name] = [pad]
+        new_nets = []
+        disjoints_objects = []
+        self._pedb.logger.reset_timer()
+        for net in net_list:
+            net_groups = []
+            obj_dict = {}
+            for i in _objects_list.get(net, []):
+                obj_dict[i.id] = i
+            for i in _padstacks_list.get(net, []):
+                obj_dict[i.id] = i
+            objs = list(obj_dict.values())
+            l = len(objs)
+            while l > 0:
+                l1 = self._layout_instance.get_connected_objects(objs[0].layout_object_instance, False)
+                l1.append(objs[0].id)
+                repetition = False
+                for net_list in net_groups:
+                    if set(l1).intersection(net_list):
+                        net_groups.append([i for i in l1 if i not in net_list])
+                        repetition = True
+                if not repetition:
+                    net_groups.append(l1)
+                objs = [i for i in objs if i.id not in l1]
+                l = len(objs)
+            if len(net_groups) > 1:
+
+                def area_calc(elem):
+                    sum = 0
+                    for el in elem:
+                        try:
+                            if el.layout_obj.obj_type.value == 0:
+                                if not el.is_void:
+                                    sum += el.area()
+                        except:
+                            pass
+                    return sum
+
+                if order_by_area:
+                    areas = [area_calc(i) for i in net_groups]
+                    sorted_list = [x for _, x in sorted(zip(areas, net_groups), reverse=True)]
+                else:
+                    sorted_list = sorted(net_groups, key=len, reverse=True)
+                for disjoints in sorted_list[1:]:
+                    if keep_only_main_net:
+                        for geo in disjoints:
+                            try:
+                                obj_dict[geo].delete()
+                            except KeyError:
+                                pass
+                    elif len(disjoints) == 1 and (
+                        clean_disjoints_less_than
+                        and "area" in dir(obj_dict[disjoints[0]])
+                        and obj_dict[disjoints[0]].area() < clean_disjoints_less_than
+                    ):
+                        try:
+                            obj_dict[disjoints[0]].delete()
+                        except KeyError:
+                            pass
+                    elif (
+                        len(disjoints) == 1
+                        and not keep_disjoint_pins
+                        and isinstance(obj_dict[disjoints[0]], PadstackInstance)
+                    ):
+                        try:
+                            obj_dict[disjoints[0]].delete()
+                        except KeyError:
+                            pass
+
+                    else:
+                        new_net_name = generate_unique_name(net, n=6)
+                        net_obj = self._pedb.nets.find_or_create_net(new_net_name)
+                        if net_obj:
+                            new_nets.append(net_obj.name)
+                            for geo in disjoints:
+                                try:
+                                    obj_dict[geo].net_name = net_obj.name
+                                except KeyError:
+                                    pass
+                            disjoints_objects.extend(disjoints)
+        self._pedb._logger.info("Found {} objects in {} new nets.".format(len(disjoints_objects), len(new_nets)))
+        self._pedb._logger.info_timer("Disjoint Cleanup Completed.", timer_start)
+
+        return new_nets
 
     def fix_self_intersections(self, net_list=None):
         """Find and fix self intersections from a given netlist.
@@ -317,3 +319,22 @@ class LayoutValidation:
                     v.rlc_values = [0, 1, 0]
         self._pedb._logger.info(f"Found {len(temp)} inductors have no value.")
         return
+
+    def padstacks_no_name(self, fix=False):
+        pds = self._pedb.layout.padstack_instances
+        counts = 0
+        via_count = 1
+        for obj in pds:
+            name = obj.get_product_property(GrpcProductIdType.DESIGNER, 11)
+            name = str(name).strip("'")
+            if name == "":
+                counts += 1
+                if fix:
+                    if not obj.component:
+                        obj.set_product_property(GrpcProductIdType.DESIGNER, 11, f"Via{via_count}")
+                        via_count = via_count + 1
+                    else:
+                        obj.set_product_property(
+                            GrpcProductIdType.DESIGNER, 11, f"{obj.component.name}-{obj.component_pin}"
+                        )
+        self._pedb._logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")
