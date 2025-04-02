@@ -1917,7 +1917,7 @@ class TestClass:
         reference_net_names = ["GND"]
         assert edbapp.components.create_port_on_component(
             component="U10",
-            net_list=positive_net_names if nets_mode == "str" else [edbapp.nets[net] for net in positive_net_list],
+            net_list=(positive_net_names if nets_mode == "str" else [edbapp.nets[net] for net in positive_net_list]),
             port_type=SourceType.CircPort,
             do_pingroup=False,
             reference_net=(
@@ -2001,6 +2001,29 @@ class TestClass:
             ),
         )
         assert len(edbapp.excitations) == 2
+
+    @pytest.mark.parametrize("positive_pin_names", (["R20", "R21", "T20"], ["R20"]))
+    @pytest.mark.parametrize("pec_boundary", (False, True))
+    def test_create_circuit_port_on_component_pins_pingroup_on_multiple_pins(
+        self, edb_examples, pec_boundary: bool, positive_pin_names: Sequence[str]
+    ):
+        EXPECTED_TERMINAL_TYPE = "PinGroupTerminal" if len(positive_pin_names) > 1 else "PadstackInstanceTerminal"
+        edbapp = edb_examples.get_si_verse()
+        component_name = "U1"
+        edbcomp = edbapp.components[component_name]
+        reference_pin_names = ["N21", "R19", "T21"]
+        assert edbapp.components.create_port_on_pins(
+            refdes=edbcomp,
+            pins=positive_pin_names,
+            reference_pins=reference_pin_names,
+            pec_boundary=pec_boundary,
+        )
+        assert len(edbapp.excitations) == 2
+        for excitation in edbapp.excitations.values():
+            if excitation.is_reference_terminal:
+                assert excitation.terminal_type == "PinGroupTerminal"
+            else:
+                assert excitation.terminal_type == EXPECTED_TERMINAL_TYPE
 
     def test_create_circuit_port_on_component_pins_pingroup_on_single_pin(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
