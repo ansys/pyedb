@@ -909,7 +909,7 @@ class TestClass:
                         "type": "signal",
                     },
                     {
-                        "fill_material": "megtron4",
+                        "fill_material": "SolerMask",
                         "material": "copper",
                         "name": "Inner1",
                         "thickness": "0.017mm",
