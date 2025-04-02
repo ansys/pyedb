@@ -307,9 +307,13 @@ class Modeler(object):
         _obj_instances = list(self._pedb.layout_instance.FindLayoutObjInstance(pt, None, nets).Items)
         returned_obj = []
         if layer:
-            selected_obj = [obj for obj in _obj_instances if layer in [lay.GetName() for lay in list(obj.GetLayers())]]
-            for obj in selected_obj:
-                prim = obj.GetLayoutObj()
+            selected_prim = [
+                obj.GetLayoutObj()
+                for obj in _obj_instances
+                if layer in [lay.GetName() for lay in list(obj.GetLayers())]
+                and "Terminal" not in str(obj.GetLayoutObj())
+            ]
+            for prim in selected_prim:
                 obj_id = prim.GetId()
                 prim_type = str(prim.GetPrimitiveType())
                 if prim_type == "Polygon":
@@ -321,7 +325,10 @@ class Modeler(object):
         else:
             for obj in _obj_instances:
                 obj_id = obj.GetLayoutObj().GetId()
-                [returned_obj.append(p) for p in [obj for obj in self.primitives if obj.id == obj_id]]
+                [
+                    returned_obj.append(Primitive(p, self._pedb))
+                    for p in [obj for obj in self.primitives if obj.id == obj_id]
+                ]
         return returned_obj
 
     def get_polygon_bounding_box(self, polygon):
