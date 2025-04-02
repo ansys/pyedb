@@ -505,13 +505,23 @@ class TestClass:
     #     assert edbapp.padstacks.definitions["v35h15"].hole_parameters["diameter"] == "0.2mm"
 
     def test_via_merge(self, edb_examples):
-        # TODO
-        # edbapp = edb_examples.get_si_verse()
-        # polygon = [[[118e-3, 60e-3], [125e-3, 60e-3], [124e-3, 56e-3], [118e-3, 56e-3]]]
-        # result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
-        # assert len(result) == 1
-        # edbapp.close()
-        pass
+        edbapp = edb_examples.get_si_verse()
+        polygon = [[[118e-3, 60e-3], [125e-3, 60e-3], [124e-3, 56e-3], [118e-3, 56e-3]]]
+        result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
+        assert len(result) == 1
+        edbapp.close()
+
+    def test_reduce_via_in_bounding_box(self):
+        source_path = os.path.join(local_path, "example_models", test_subfolder, "vias_300.aedb")
+        edbapp = Edb(edbpath=source_path, edbversion=desktop_version)
+        assert len(edbapp.padstacks.instances) == 301
+        # empty bounding box
+        assert edbapp.padstacks.reduce_via_in_bounding_box([-16e-3, -7e-3, -13e-3, -6e-3], 10, 10) is False
+        # over sampling
+        assert edbapp.padstacks.reduce_via_in_bounding_box([-20e-3, -10e-3, 20e-3, 10e-3], 20, 20) is False
+        assert edbapp.padstacks.reduce_via_in_bounding_box([-20e-3, -10e-3, 20e-3, 10e-3], 10, 10) is True
+        assert len(edbapp.padstacks.instances) == 96
+        edbapp.close_edb()
 
     def test_via_merge3(self):
         source_path = os.path.join(local_path, "example_models", "TEDB", "merge_via_4layers.aedb")
