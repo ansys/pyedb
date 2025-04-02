@@ -24,6 +24,7 @@
 """
 
 import os
+from typing import Sequence
 
 import pytest
 
@@ -1577,3 +1578,136 @@ class TestClass:
         assert edb.nets
         assert edb.components
         edb.close()
+
+    @pytest.mark.parametrize("positive_net_names", (["2V5", "NetR105_2"], ["2V5", "GND", "NetR105_2"], "2V5"))
+    @pytest.mark.parametrize("nets_mode", ("str", "net"))
+    def test_create_circuit_port_on_component(self, edb_examples, nets_mode: str, positive_net_names: Sequence[str]):
+        edbapp = edb_examples.get_si_verse()
+        positive_net_list = [positive_net_names] if not isinstance(positive_net_names, list) else positive_net_names
+        reference_net_names = ["GND"]
+        assert edbapp.source_excitation.create_port_on_component(
+            component="U10",
+            net_list=positive_net_names if nets_mode == "str" else [edbapp.nets[net] for net in positive_net_list],
+            port_type="circuit_port",
+            do_pingroup=False,
+            reference_net=(
+                reference_net_names if nets_mode == "str" else [edbapp.nets[net] for net in reference_net_names]
+            ),
+        )
+        assert len(edbapp.excitations) == 2 * len(set(positive_net_list) - set(reference_net_names))
+
+    def test_create_circuit_port_on_component_string_net_list(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        positive_net_names = "2V5"
+        reference_net_names = "GND"
+        component_name = "U10"
+        for pin in edbapp.components[component_name].pins.values():
+            pin.is_pin = False
+        assert edbapp.source_excitation.create_port_on_component(
+            component=component_name,
+            net_list=positive_net_names,
+            port_type="circuit_port",
+            do_pingroup=False,
+            reference_net=reference_net_names,
+        )
+        assert len(edbapp.excitations) == 2
+
+    def test_create_circuit_port_on_component_set_is_pin(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        positive_net_names = ["2V5", "NetR105_2"]
+        reference_net_names = ["GND"]
+        component_name = "U10"
+        for pin in edbapp.components[component_name].pins.values():
+            pin.is_pin = False
+        assert edbapp.source_excitation.create_port_on_component(
+            component=component_name,
+            net_list=positive_net_names,
+            port_type="circuit_port",
+            do_pingroup=False,
+            reference_net=reference_net_names,
+        )
+        assert len(edbapp.excitations) == 4
+
+    @pytest.mark.parametrize("comp_mode", ("str", "comp"))
+    def test_create_circuit_port_on_component_pins_comp_mode(self, comp_mode: str, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        component_name = "U10"
+        edbcomp = edbapp.components[component_name]
+        positive_pin_names = ["4"]
+        reference_pin_names = ["2"]
+        assert edbapp.source_excitation.create_port_on_pins(
+            refdes=component_name if comp_mode == "str" else edbcomp,
+            pins=positive_pin_names,
+            reference_pins=reference_pin_names,
+        )
+        assert len(edbapp.excitations) == 2
+
+    @pytest.mark.parametrize("pins_mode", ("global_str", "int", "str", "pin"))
+    def test_create_circuit_port_on_component_pins_pins_mode(self, edb_examples, pins_mode: str):
+        edbapp = edb_examples.get_si_verse()
+        component_name = "U10"
+        edbcomp = edbapp.components[component_name]
+        positive_pin_names = ["4"]
+        reference_pin_names = ["2"]
+        positive_pin_numbers = [edbcomp.pins[pin].edb_uid for pin in positive_pin_names]
+        reference_pin_numbers = [edbcomp.pins[pin].edb_uid for pin in reference_pin_names]
+        if pins_mode == "global_str":
+            positive_pin_names = [f"{component_name}-{pin}" for pin in positive_pin_names]
+            reference_pin_names = [f"{component_name}-{pin}" for pin in reference_pin_names]
+        assert len(edbapp.excitations) == 0
+        assert edbapp.source_excitation.create_port_on_pins(
+            refdes=component_name if pins_mode == "str" else None,
+            pins=(
+                positive_pin_names
+                if pins_mode == "str" or pins_mode == "global_str"
+                else (positive_pin_numbers if pins_mode == "int" else [edbcomp.pins[pin] for pin in positive_pin_names])
+            ),
+            reference_pins=(
+                reference_pin_names
+                if pins_mode == "str" or pins_mode == "global_str"
+                else (
+                    reference_pin_numbers if pins_mode == "int" else [edbcomp.pins[pin] for pin in reference_pin_names]
+                )
+            ),
+        )
+        assert len(edbapp.excitations) == 2
+
+    def test_create_circuit_port_on_component_pins_pingroup_on_single_pin(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        component_name = "U10"
+        edbcomp = edbapp.components[component_name]
+        positive_pin_names = ["4"]
+        reference_pin_names = ["2"]
+        assert edbapp.source_excitation.create_port_on_pins(
+            refdes=edbcomp,
+            pins=positive_pin_names,
+            reference_pins=reference_pin_names,
+            pingroup_on_single_pin=True,
+        )
+        assert len(edbapp.excitations) == 2
+
+    def test_create_circuit_port_on_component_pins_no_pins(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        component_name = "U10"
+        edbcomp = edbapp.components[component_name]
+        positive_pin_names = []
+        reference_pin_names = ["2"]
+        assert not edbapp.source_excitation.create_port_on_pins(
+            refdes=edbcomp,
+            pins=positive_pin_names,
+            reference_pins=reference_pin_names,
+        )
+        assert len(edbapp.excitations) == 0
+
+    def test_create_circuit_port_on_component_pins_no_reference_pins(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        component_name = "U10"
+        edbcomp = edbapp.components[component_name]
+        positive_pin_names = ["4"]
+        reference_pin_names = []
+        assert not edbapp.source_excitation.create_port_on_pins(
+            refdes=edbcomp,
+            pins=positive_pin_names,
+            reference_pins=reference_pin_names,
+        )
+        assert len(edbapp.excitations) == 0

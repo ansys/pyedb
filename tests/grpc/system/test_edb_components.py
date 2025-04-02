@@ -634,3 +634,10 @@ class TestClass:
         assert component.location == [0.13275000120000002, 0.07350000032]
         assert component.res_value == 1.2
         edbapp.close()
+
+    def test_export_gds_comp_xml(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        xml_output = os.path.join(self.local_scratch.path, "test.xml")
+        assert edbapp.export_gds_comp_xml(["U1", "U2", "C2", "R1"], control_path=xml_output)
+        assert os.path.isfile(xml_output)
+        edbapp.close()

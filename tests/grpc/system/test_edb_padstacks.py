@@ -510,3 +510,19 @@ class TestClass:
         result = edbapp.padstacks.merge_via(contour_boxes=polygon, start_layer="1_Top", stop_layer="16_Bottom")
         assert len(result) == 1
         edbapp.close()
+
+    def test_via_merge3(self):
+        source_path = os.path.join(local_path, "example_models", "TEDB", "merge_via_4layers.aedb")
+        edbapp = Edb(edbpath=source_path, edbversion=desktop_version)
+
+        merged_via = edbapp.padstacks.merge_via(
+            contour_boxes=[[[11e-3, -5e-3], [17e-3, -5e-3], [17e-3, 1e-3], [11e-3, 1e-3], [11e-3, -5e-3]]],
+            net_filter=["NET_3"],
+            start_layer="layer1",
+            stop_layer="layer2",
+        )
+
+        assert edbapp.padstacks.instances[merged_via[0]].net_name == "NET_1"
+        assert edbapp.padstacks.instances[merged_via[0]].start_layer == "layer1"
+        assert edbapp.padstacks.instances[merged_via[0]].stop_layer == "layer2"
+        edbapp.close()

@@ -45,9 +45,7 @@ from ansys.edb.core.definition.padstack_def_data import PadType as GrpcPadType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.utility.value import Value as GrpcValue
-import numpy as np
 import rtree
-from scipy.spatial import ConvexHull
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
@@ -826,13 +824,12 @@ class Padstacks(object):
         elif polygon_hole:
             if isinstance(polygon_hole, list):
                 polygon_hole = GrpcPolygonData(points=polygon_hole)
-
             padstack_data.set_hole_parameters(
                 offset_x=value0,
                 offset_y=value0,
                 rotation=value0,
                 type_geom=GrpcPadGeometryType.PADGEOMTYPE_POLYGON,
-                sizes=polygon_hole,
+                fp=polygon_hole,
             )
             padstack_data.plating_percentage = GrpcValue(20.0)
         else:
@@ -1393,18 +1390,23 @@ class Padstacks(object):
         return list(index.intersection(bounding_box))
 
     def merge_via_along_lines(
-        self, net_name="GND", distance_threshold=5e-3, minimum_via_number=6, selected_angles=None
+        self,
+        net_name="GND",
+        distance_threshold=5e-3,
+        minimum_via_number=6,
+        selected_angles=None,
+        padstack_instances_id=None,
     ):
         """Replace padstack instances along lines into a single polygon.
 
-        Detect all padstack instances that are placed along lines and replace them by a single polygon based one
+        Detect all pad-stack instances that are placed along lines and replace them by a single polygon based one
         forming a wall shape. This method is designed to simplify meshing on via fence usually added to shield RF traces
         on PCB.
 
         Parameters
         ----------
         net_name : str
-            Net name used for detected padstack instances. Default value is ``"GND"``.
+            Net name used for detected pad-stack instances. Default value is ``"GND"``.
 
         distance_threshold : float, None, optional
             If two points in a line are separated by a distance larger than `distance_threshold`,
@@ -1418,22 +1420,29 @@ class Padstacks(object):
             Other values can be assigned like 45 degrees. When `None` is provided all lines are detected. Default value
             is `None`.
 
+        padstack_instances_id : List[int]
+            List of pad-stack instances ID's to include. If `None`, the algorithm will scan all pad-stack
+            instances belonging to the specified net. Default value is `None`.
+
         Returns
         -------
-        bool
-            ``True`` when succeeded ``False`` when failed. <
+        List[int], list of created pad-stack instances id.
 
         """
         _def = list(set([inst.padstack_def for inst in list(self.instances.values()) if inst.net_name == net_name]))
         if not _def:
             self._logger.error(f"No padstack definition found for net {net_name}")
             return False
+        instances_created = []
         _instances_to_delete = []
         padstack_instances = []
-        for pdstk_def in _def:
-            padstack_instances.append(
-                [inst for inst in self.definitions[pdstk_def.name].instances if inst.net_name == net_name]
-            )
+        if padstack_instances_id:
+            padstack_instances = [[self.instances[id] for id in padstack_instances_id]]
+        else:
+            for pdstk_def in _def:
+                padstack_instances.append(
+                    [inst for inst in self.definitions[pdstk_def.name].instances if inst.net_name == net_name]
+                )
         for pdstk_series in padstack_instances:
             instances_location = [inst.position for inst in pdstk_series]
             lines, line_indexes = GeometryOperators.find_points_along_lines(
@@ -1467,44 +1476,46 @@ class Padstacks(object):
                     polygon_hole=polygon_data,
                 ):
                     self._logger.error(f"Failed to create padstack definition {new_padstack_def.name}")
-                if not self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net_name):
-                    self._logger.error(f"Failed to place padstack instance {new_padstack_def.name}")
+                new_instance = self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net_name)
+                if not new_instance:
+                    self._logger.error(f"Failed to place padstack instance {new_padstack_def}")
+                else:
+                    instances_created.append(new_instance.id)
             for inst in _instances_to_delete:
                 inst.delete()
-        return True
+        return instances_created
 
     def merge_via(self, contour_boxes, net_filter=None, start_layer=None, stop_layer=None):
-        """Evaluate padstack instances included on the provided point list and replace all by single instance.
+        """Evaluate pad-stack instances included on the provided point list and replace all by single instance.
 
         Parameters
         ----------
         contour_boxes : List[List[List[float, float]]]
             Nested list of polygon with points [x,y].
         net_filter : optional
-            List[str: net_name] apply a net filter,
-            nets included in the filter are excluded from the via merge.
+            List[str: net_name] apply a net filter, nets included in the filter are excluded from the via merge.
         start_layer : optional, str
-            Padstack instance start layer, if `None` the top layer is selected.
+            Pad-stack instance start layer, if `None` the top layer is selected.
         stop_layer : optional, str
-            Padstack instance stop layer, if `None` the bottom layer is selected.
+            Pad-stack instance stop layer, if `None` the bottom layer is selected.
 
         Return
         ------
-        List[str], list of created padstack instances ID.
+        List[str], list of created pad-stack instances ID.
 
         """
+
+        import numpy as np
+        from scipy.spatial import ConvexHull
+
         merged_via_ids = []
         if not contour_boxes:
-            self._pedb.logger.error("No contour box provided, you need to pass a nested list as argument.")
-            return False
-        if not start_layer:
-            start_layer = list(self._pedb.stackup.layers.values())[0].name
-        if not stop_layer:
-            stop_layer = list(self._pedb.stackup.layers.values())[-1].name
+            raise Exception("No contour box provided, you need to pass a nested list as argument.")
         instances_index = {}
         for id, inst in self.instances.items():
             instances_index[id] = inst.position
         for contour_box in contour_boxes:
+            all_instances = self.instances
             instances = self.get_padstack_instances_id_intersecting_polygon(
                 points=contour_box, padstack_instances_index=instances_index
             )

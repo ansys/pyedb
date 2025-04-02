@@ -122,13 +122,7 @@ class Net(GrpcNet):
         return self._pedb.layout_validation.dc_shorts(self.name, fix)
 
     def plot(
-        self,
-        layers=None,
-        show_legend=True,
-        save_plot=None,
-        outline=None,
-        size=(2000, 1000),
-        show=True,
+        self, layers=None, show_legend=True, save_plot=None, outline=None, size=(2000, 1000), show=True, title=None
     ):
         """Plot a net to Matplotlib 2D chart.
 
@@ -147,7 +141,9 @@ class Net(GrpcNet):
         size : tuple, optional
             Image size in pixel (width, height).
         show : bool, optional
-            Whether to show the plot or not. Default is `True`.
+            Whether to show the plot or not. Default is ``True``.
+        title : str, optional
+            Plot title. If value is ``None`` the project name is assigned by default. Default value is ``None``.
         """
 
         self._pedb.nets.plot(
@@ -160,6 +156,7 @@ class Net(GrpcNet):
             show=show,
             plot_components=True,
             plot_vias=True,
+            title=None,
         )
 
     def get_smallest_trace_width(self):
