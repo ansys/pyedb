@@ -46,6 +46,7 @@ from pyedb.dotnet.database.Variables import decompose_variable_value
 from pyedb.dotnet.database.cell.layout import Layout
 from pyedb.dotnet.database.cell.terminal.terminal import Terminal
 from pyedb.dotnet.database.components import Components
+import pyedb.dotnet.database.dotnet.database
 from pyedb.dotnet.database.dotnet.database import Database
 from pyedb.dotnet.database.edb_data.control_file import (
     ControlFile,
@@ -760,6 +761,23 @@ class Edb(Database):
     def active_cell(self):
         """Active cell."""
         return self._active_cell
+
+    @active_cell.setter
+    def active_cell(self, value):
+        if isinstance(value, str):
+            _cell = [cell for cell in self.circuit_cells if cell.GetName() == value]
+            if _cell:
+                self._active_cell = _cell[0]
+                self._init_objects()
+                self.logger.info(f"Cell {value} set as active")
+            else:
+                raise f"Design {value} not found in database."
+        elif isinstance(value, pyedb.dotnet.database.dotnet.database.CellClassDotNet):
+            self._active_cell = value
+            self._init_objects()
+            self.logger.info(f"Cell {value.GetName()} set as active")
+        else:
+            raise "No valid design."
 
     @property
     def core_components(self):  # pragma: no cover

@@ -39,6 +39,7 @@ import warnings
 from zipfile import ZipFile as zpf
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+import ansys.edb.core.layout.cell
 from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup as GrpcSIWaveDCIRSimulationSetup,
 )
@@ -800,6 +801,23 @@ class Edb(EdbInit):
         :class:`Cell <ansys.edb.core.layout.cell.Cell>`.
         """
         return self._active_cell
+
+    @active_cell.setter
+    def active_cell(self, value):
+        if isinstance(value, str):
+            _cell = [cell for cell in self.circuit_cells if cell.name == value]
+            if _cell:
+                self._active_cell = _cell[0]
+                self._init_objects()
+                self.logger.info(f"Design {value} set as active")
+            else:
+                raise f"Design {value} not found in database."
+        elif isinstance(value, ansys.edb.core.layout.cell.Cell):
+            self._active_cell = value
+            self._init_objects()
+            self.logger.info(f"Design {value.name} set as active")
+        else:
+            raise "No valid design."
 
     @property
     def components(self):
