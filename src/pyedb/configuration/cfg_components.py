@@ -216,6 +216,7 @@ class CfgComponent(CfgBase):
             if self.pyedb_obj.type.lower() == "ic":
                 self._set_ic_die_properties_to_edb()
                 self._set_port_properties_to_edb()
+                self._set_solder_ball_properties_to_edb()
             elif self.pyedb_obj.type.lower() in ["io", "other"]:
                 self._set_solder_ball_properties_to_edb()
                 self._set_port_properties_to_edb()
@@ -228,6 +229,7 @@ class CfgComponent(CfgBase):
             if self.pyedb_obj.type.lower() == "ic":
                 self._retrieve_ic_die_properties_from_edb()
                 self._retrieve_port_properties_from_edb()
+                self._retrieve_solder_ball_properties_from_edb()
             elif self.pyedb_obj.type.lower() in ["io", "other"]:
                 self._retrieve_solder_ball_properties_from_edb()
                 self._retrieve_port_properties_from_edb()

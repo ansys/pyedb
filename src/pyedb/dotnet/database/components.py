@@ -820,12 +820,13 @@ class Components(object):
         if not port_name:
             port_name = "Port_{}_{}".format(pins[0].net_name, pins[0].name)
 
-        if len(pins) > 1 > 1 or pingroup_on_single_pin:
-            pec_boundary = False
-            self._logger.info(
-                "Disabling PEC boundary creation, this feature is supported on single pin "
-                f"ports only, {len(pins)} pins found (pingroup_on_single_pin: {pingroup_on_single_pin})."
-            )
+        if len(pins) > 1 or pingroup_on_single_pin:
+            if pec_boundary:
+                pec_boundary = False
+                self._logger.info(
+                    "Disabling PEC boundary creation, this feature is supported on single pin "
+                    f"ports only, {len(pins)} pins found (pingroup_on_single_pin: {pingroup_on_single_pin})."
+                )
             group_name = "group_{}".format(port_name)
             pin_group = self.create_pingroup_from_pins(pins, group_name)
             term = self._create_pin_group_terminal(pingroup=pin_group, term_name=port_name)
@@ -834,12 +835,13 @@ class Components(object):
         term.SetIsCircuitPort(True)
 
         if len(reference_pins) > 1 or pingroup_on_single_pin:
-            pec_boundary = False
-            self._logger.info(
-                "Disabling PEC boundary creation. This feature is supported on single pin "
-                f"ports only, {len(reference_pins)} reference pins found "
-                f"(pingroup_on_single_pin: {pingroup_on_single_pin})."
-            )
+            if pec_boundary:
+                pec_boundary = False
+                self._logger.info(
+                    "Disabling PEC boundary creation. This feature is supported on single pin "
+                    f"ports only, {len(reference_pins)} reference pins found "
+                    f"(pingroup_on_single_pin: {pingroup_on_single_pin})."
+                )
             ref_group_name = "group_{}_ref".format(port_name)
             ref_pin_group = self.create_pingroup_from_pins(reference_pins, ref_group_name)
             ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
