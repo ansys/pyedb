@@ -2274,8 +2274,7 @@ class Components(object):
         pingroup = PinGroup.create(self._active_layout, group_name, pins)
 
         if pingroup.is_null:  # pragma: no cover
-            self._logger.error(f"Failed to create pin group {group_name}.")
-            return False
+            raise RuntimeError(f"Failed to create pin group {group_name}.")
         else:
             for pin in pins:
                 if not pin.net.is_null:
