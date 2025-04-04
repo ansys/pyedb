@@ -1,0 +1,6 @@
+source\_version
+===============
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.source_version

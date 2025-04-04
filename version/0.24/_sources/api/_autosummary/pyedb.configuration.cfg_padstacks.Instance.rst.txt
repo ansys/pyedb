@@ -1,0 +1,24 @@
+﻿Instance
+========
+
+.. currentmodule:: pyedb.configuration.cfg_padstacks
+
+.. autoclass:: Instance
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Instance.apply
+      
+   
+   
+
+   
+   
+   

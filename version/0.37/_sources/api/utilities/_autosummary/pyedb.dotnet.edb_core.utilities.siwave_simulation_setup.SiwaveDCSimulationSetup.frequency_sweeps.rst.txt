@@ -1,0 +1,6 @@
+frequency\_sweeps
+=================
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.siwave_simulation_setup
+
+.. autoproperty:: SiwaveDCSimulationSetup.frequency_sweeps

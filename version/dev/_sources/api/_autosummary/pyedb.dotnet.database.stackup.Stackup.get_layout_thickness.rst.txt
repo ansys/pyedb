@@ -1,0 +1,6 @@
+get\_layout\_thickness
+======================
+
+.. currentmodule:: pyedb.dotnet.database.stackup
+
+.. automethod:: Stackup.get_layout_thickness

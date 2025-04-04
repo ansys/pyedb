@@ -1,0 +1,6 @@
+hfss\_setups
+============
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.hfss_setups

@@ -1,0 +1,6 @@
+circuit\_cells
+==============
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.circuit_cells

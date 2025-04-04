@@ -1,0 +1,27 @@
+﻿CfgGeneral
+==========
+
+.. currentmodule:: pyedb.configuration.cfg_general
+
+.. autoclass:: CfgGeneral
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgGeneral.apply
+      
+      
+      CfgGeneral.get_data_from_db
+      
+   
+   
+
+   
+   
+   
