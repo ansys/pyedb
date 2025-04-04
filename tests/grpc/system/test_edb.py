@@ -1712,3 +1712,39 @@ class TestClass:
             reference_pins=reference_pin_names,
         )
         assert len(edbapp.excitations) == 0
+
+    def test_active_cell_setter(self):
+        """Use multiple cells."""
+        src = os.path.join(local_path, "example_models", "TEDB", "multi_cells.aedb")
+        edb = Edb(edbpath=src, edbversion=desktop_version)
+        edb.active_cell = edb.circuit_cells[0]
+        assert len(edb.modeler.primitives) == 2096
+        assert len(edb.components.instances) == 509
+        assert len(edb.padstacks.instances) == 5699
+
+        edb.active_cell = edb.circuit_cells[1]
+        assert len(edb.modeler.primitives) == 203
+        assert len(edb.components.instances) == 66
+        assert len(edb.padstacks.instances) == 473
+
+        edb.active_cell = edb.circuit_cells[2]
+        assert len(edb.modeler.primitives) == 2096
+        assert len(edb.components.instances) == 509
+        assert len(edb.padstacks.instances) == 5699
+
+        edb.active_cell = edb.circuit_cells[3]
+        assert len(edb.modeler.primitives) == 203
+        assert len(edb.components.instances) == 66
+        assert len(edb.padstacks.instances) == 473
+
+        edb.active_cell = "main"
+        assert len(edb.modeler.primitives) == 2096
+        assert len(edb.components.instances) == 509
+        assert len(edb.padstacks.instances) == 5699
+
+        edb.active_cell = "main_cutout"
+        assert len(edb.modeler.primitives) == 203
+        assert len(edb.components.instances) == 66
+        assert len(edb.padstacks.instances) == 473
+
+        edb.close()
