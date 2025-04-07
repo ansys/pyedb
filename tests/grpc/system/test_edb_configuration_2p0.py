@@ -530,7 +530,7 @@ class TestClass:
                 "open_region_type": "radiation",
                 "pml_visible": False,
                 "pml_operation_frequency": "5GHz",
-                "pml_radiation_factor": "10",
+                "pml_radiation_factor": 10,
                 "dielectric_extent_type": "bounding_box",
                 "horizontal_padding": 0.0,
                 "honor_primitives_on_dielectric_layers": True,
@@ -547,8 +547,6 @@ class TestClass:
         if edbapp.grpc:
             # grpc pml_operation_frequency is float (str with .NET)
             data["boundaries"]["pml_operation_frequency"] = 5e9
-            # Checking bug why pml_operation_factor is never applied
-            data["boundaries"]["pml_radiation_factor"] = 0.0
             assert data == data_from_db
         else:
             assert data == data_from_db

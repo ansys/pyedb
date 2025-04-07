@@ -339,7 +339,7 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         self._update_hfss_extent_info(hfss_extent)
 
     @property
-    def radiation_level(self):
+    def pml_radiation_factor(self):
         """PML Radiation level to calculate the thickness of boundary.
 
         Returns
@@ -348,10 +348,10 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
             Boundary thickness value.
 
         """
-        return GrpcValue(self._hfss_extent_info.radiation_level).value
+        return self._hfss_extent_info.radiation_level.value
 
-    @radiation_level.setter
-    def radiation_level(self, value):
+    @pml_radiation_factor.setter
+    def pml_radiation_factor(self, value):
         hfss_extent = self._hfss_extent_info
         hfss_extent.radiation_level = GrpcValue(value)
         self._update_hfss_extent_info(hfss_extent)

@@ -53,7 +53,7 @@ class CfgBoundaries(CfgBase):
         if self.pml_operation_frequency:
             self._pedb.hfss.hfss_extent_info.operating_freq = self.pml_operation_frequency
         if self.pml_radiation_factor:
-            self._pedb.hfss.hfss_extent_info.radiation_level = self.pml_radiation_factor
+            self._pedb.hfss.hfss_extent_info.pml_radiation_factor = self.pml_radiation_factor
         if self.dielectric_extent_type:
             self._pedb.hfss.hfss_extent_info.extent_type = self.dielectric_extent_type.lower()
         # if self.dielectric_base_polygon:
@@ -86,7 +86,7 @@ class CfgBoundaries(CfgBase):
         else:
             self.pml_operation_frequency = self._pedb.hfss.hfss_extent_info.operating_freq.tostring
         if self._pedb.grpc:
-            self.pml_radiation_factor = self._pedb.hfss.hfss_extent_info.radiation_level
+            self.pml_radiation_factor = self._pedb.hfss.hfss_extent_info.pml_radiation_factor
         else:
             self.pml_radiation_factor = self._pedb.hfss.hfss_extent_info.radiation_level.tostring
         self.dielectric_extent_type = self._pedb.hfss.hfss_extent_info.extent_type
