@@ -811,6 +811,7 @@ class EdbSiwave(object):
 
     def add_siwave_syz_analysis(
         self,
+        name=None,
         accuracy_level=1,
         decade_count=10,
         sweeptype=1,
@@ -823,6 +824,8 @@ class EdbSiwave(object):
 
         Parameters
         ----------
+        name : str optional
+            Setup name.
         accuracy_level : int, optional
            Level of accuracy of SI slider. The default is ``1``.
         decade_count : int
@@ -849,7 +852,7 @@ class EdbSiwave(object):
         :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
             Setup object class.
         """
-        setup = self._pedb.create_siwave_syz_setup()
+        setup = self._pedb.create_siwave_syz_setup(name=name)
         sweep = "linear count"
         if sweeptype == 2:
             sweep = "log scale"
