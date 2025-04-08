@@ -183,7 +183,7 @@ class HfssExtentInfo(GrpcHfssExtentInfo):
         -------
         :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
         """
-        return self._hfss_extent_info.dielectric_base_polygon
+        return super().dielectric_base_polygon
 
     @dielectric_base_polygon.setter
     def dielectric_base_polygon(self, value):
