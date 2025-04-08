@@ -133,6 +133,7 @@ class CfgComponent(CfgBase):
                             l=GrpcValue(i["inductance"]),
                             c_enabled=i["capacitance_enabled"],
                             c=GrpcValue(i["capacitance"]),
+                            is_parallel=i["is_parallel"],
                         )
                         m.set_rlc(pin_pair=p, rlc=rlc)
                     c_p.model = m
@@ -169,13 +170,22 @@ class CfgComponent(CfgBase):
         def _retrieve_ic_die_properties_from_edb(self):
             temp = dict()
             cp = self.pyedb_obj.component_property
-            ic_die_prop = cp.GetDieProperty().Clone()
-            die_type = pascal_to_snake(ic_die_prop.GetType().ToString())
-            temp["type"] = die_type
-            if not die_type == "no_die":
-                temp["orientation"] = pascal_to_snake(ic_die_prop.GetOrientation().ToString())
-                if die_type == "wire_bond":
-                    temp["height"] = ic_die_prop.GetHeightValue().ToString()
+            if self.pedb.grpc:
+                ic_die_prop = cp.die_property
+                die_type = pascal_to_snake(ic_die_prop.die_type.name)
+                temp["type"] = die_type
+                if not die_type == "no_die":
+                    temp["orientation"] = pascal_to_snake(ic_die_prop.die_orientation.name)
+                    if die_type == "wire_bond":
+                        temp["height"] = ic_die_prop.height.value
+            else:
+                ic_die_prop = cp.GetDieProperty().Clone()
+                die_type = pascal_to_snake(ic_die_prop.GetType().ToString())
+                temp["type"] = die_type
+                if not die_type == "no_die":
+                    temp["orientation"] = pascal_to_snake(ic_die_prop.GetOrientation().ToString())
+                    if die_type == "wire_bond":
+                        temp["height"] = ic_die_prop.GetHeightValue().ToString()
             self.parent.ic_die_properties = temp
 
         def _set_ic_die_properties_to_edb(self):
@@ -200,19 +210,22 @@ class CfgComponent(CfgBase):
             temp = dict()
             cp = self.pyedb_obj.component_property
             if self.pedb.grpc:
-                solder_ball_prop = cp.solder_ball_property
-                diam, mid_diam = solder_ball_prop.get_diameter()
-                height = solder_ball_prop.height
-                shape = solder_ball_prop.shape.name
-                material = solder_ball_prop.material_name
-                uses_solder_ball = solder_ball_prop.uses_solderball
+                try:
+                    solder_ball_prop = cp.solder_ball_property
+                    diam, mid_diam = solder_ball_prop.get_diameter()
+                    height = solder_ball_prop.height
+                    shape = solder_ball_prop.shape.name
+                    material = solder_ball_prop.material_name
+                    uses_solder_ball = solder_ball_prop.uses_solderball
 
-                temp["uses_solder_ball"] = uses_solder_ball
-                temp["shape"] = pascal_to_snake(shape)
-                temp["diameter"] = diam
-                temp["mid_diameter"] = mid_diam
-                temp["height"] = height
-                temp["material"] = material
+                    temp["uses_solder_ball"] = uses_solder_ball
+                    temp["shape"] = pascal_to_snake(shape)
+                    temp["diameter"] = diam
+                    temp["mid_diameter"] = mid_diam
+                    temp["height"] = height
+                    temp["material"] = material
+                except:
+                    self.pedb.logger.info("No solder ball property")
 
             else:
                 solder_ball_prop = cp.GetSolderBallProperty().Clone()
@@ -261,14 +274,17 @@ class CfgComponent(CfgBase):
                 return
             else:
                 if self.pedb.grpc:
-                    port_prop = cp.port_property
-                    reference_height = port_prop.reference_height.value
-                    reference_size_auto = port_prop.reference_size_auto
-                    reference_size_x, reference_size_y = port_prop.get_reference_size()
-                    temp["reference_height"] = reference_height
-                    temp["reference_size_auto"] = reference_size_auto
-                    temp["reference_size_x"] = reference_size_x.value
-                    temp["reference_size_y"] = reference_size_y.value
+                    try:
+                        port_prop = cp.port_property
+                        reference_height = port_prop.reference_height.value
+                        reference_size_auto = port_prop.reference_size_auto
+                        reference_size_x, reference_size_y = port_prop.get_reference_size()
+                        temp["reference_height"] = reference_height
+                        temp["reference_size_auto"] = reference_size_auto
+                        temp["reference_size_x"] = reference_size_x.value
+                        temp["reference_size_y"] = reference_size_y.value
+                    except:
+                        pass
 
                 else:
                     port_prop = cp.GetPortProperty().Clone()
