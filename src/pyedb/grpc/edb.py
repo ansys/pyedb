@@ -285,6 +285,7 @@ class Edb(EdbInit):
         else:
             self.logger.info("Failed to initialize EDB.")
         self._layout_instance = None
+        self.logger.info("EDB loaded using PyEDB-gRPC")
 
     def __enter__(self):
         return self

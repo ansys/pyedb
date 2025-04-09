@@ -279,6 +279,8 @@ class Edb(Database):
             self.logger.info("EDB initialized.")
         else:
             self.logger.info("Failed to initialize DLLs.")
+        self.logger.warning("PyEDB .NET will be deprecated soon with ANSYS release 2025R2.")
+        self.logger.warning("PyEDB is now introducing a new gRPC API, almost 100% backward compatible.")
 
     def __enter__(self):
         return self
