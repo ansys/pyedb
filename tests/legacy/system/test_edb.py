@@ -173,6 +173,8 @@ class TestClass:
             name="test", start_freq="=GHz", stop_freq="10GHz", step_freq="10MHz"
         )
         assert "test" in self.edbapp.setups
+        self.edbapp.setups["test"].delete()
+        assert not "test" in self.edbapp.setups
 
     def test_siwave_add_dc_analysis(self):
         """Add a sywave DC analysis."""
