@@ -38,14 +38,24 @@ class CfgPinGroups:
         self.pin_groups = []
         layout_pin_groups = self._pedb.siwave.pin_groups
         for pg_name, pg_obj in layout_pin_groups.items():
-            pins = list(pg_obj.pins.keys())
-            refdes = list(pg_obj.pins.values())[0].component.name
-            cfg_pg = CfgPinGroup(
-                self._pedb,
-                name=pg_name,
-                reference_designator=refdes,
-                pins=pins,
-            )
+            if self._pedb.grpc:
+                pins = pg_obj.pins
+                refdes = pins[0].component.name
+                cfg_pg = CfgPinGroup(
+                    self._pedb,
+                    name=pg_name,
+                    reference_designator=refdes,
+                    pins=[pin.component_pin for pin in pins],
+                )
+            else:
+                pins = list(pg_obj.pins.keys())
+                refdes = list(pg_obj.pins.values())[0].component.name
+                cfg_pg = CfgPinGroup(
+                    self._pedb,
+                    name=pg_name,
+                    reference_designator=refdes,
+                    pins=pins,
+                )
             self.pin_groups.append(cfg_pg)
         return self.export_properties()
 
