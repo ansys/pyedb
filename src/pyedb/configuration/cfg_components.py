@@ -152,6 +152,41 @@ class CfgComponent(CfgBase):
                         )
                         m.SetPinPairRlc(p, rlc)
                     c_p.SetModel(m)
+                if self.pedb.grpc:
+                    from ansys.edb.core.hierarchy.pin_pair_model import (
+                        PinPairModel as GrpcPinPairModel,
+                    )
+                    from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
+                    from ansys.edb.core.utility.value import Value as GrpcValue
+
+                    m = GrpcPinPairModel.create()
+                    for i in self.parent.pin_pair_model:
+                        p = (str(i["first_pin"]), str(i["second_pin"]))
+                        rlc = GrpcRlc(
+                            r_enabled=i["resistance_enabled"],
+                            r=GrpcValue(i["resistance"]),
+                            l_enabled=i["inductance_enabled"],
+                            l=GrpcValue(i["inductance"]),
+                            c_enabled=i["capacitance_enabled"],
+                            c=GrpcValue(i["capacitance"]),
+                        )
+                        m.set_rlc(pin_pair=p, rlc=rlc)
+                    c_p.model = m
+                else:
+                    m = self.pedb._edb.Cell.Hierarchy.PinPairModel()
+                    for i in self.parent.pin_pair_model:
+                        p = self.pedb._edb.Utility.PinPair(str(i["first_pin"]), str(i["second_pin"]))
+                        rlc = self.pedb._edb.Utility.Rlc(
+                            self.pedb.edb_value(i["resistance"]),
+                            i["resistance_enabled"],
+                            self.pedb.edb_value(i["inductance"]),
+                            i["inductance_enabled"],
+                            self.pedb.edb_value(i["capacitance"]),
+                            i["capacitance_enabled"],
+                            i["is_parallel"],
+                        )
+                        m.SetPinPairRlc(p, rlc)
+                    c_p.SetModel(m)
                 self.pyedb_obj.component_property = c_p
             elif self.parent.s_parameter_model:
                 m = self.pedb._edb.Cell.Hierarchy.SParameterModel()
@@ -234,6 +269,28 @@ class CfgComponent(CfgBase):
                 shape = solder_ball_prop.GetShape().ToString()
                 material = solder_ball_prop.GetMaterialName()
                 uses_solder_ball = solder_ball_prop.UsesSolderball()
+            if self.pedb.grpc:
+                solder_ball_prop = cp.solder_ball_property
+                diam, mid_diam = solder_ball_prop.get_diameter()
+                height = solder_ball_prop.height
+                shape = solder_ball_prop.shape.name
+                material = solder_ball_prop.material_name
+                uses_solder_ball = solder_ball_prop.uses_solderball
+
+                temp["uses_solder_ball"] = uses_solder_ball
+                temp["shape"] = pascal_to_snake(shape)
+                temp["diameter"] = diam
+                temp["mid_diameter"] = mid_diam
+                temp["height"] = height
+                temp["material"] = material
+
+            else:
+                solder_ball_prop = cp.GetSolderBallProperty().Clone()
+                _, diam, mid_diam = solder_ball_prop.GetDiameterValue()
+                height = solder_ball_prop.GetHeightValue().ToString()
+                shape = solder_ball_prop.GetShape().ToString()
+                material = solder_ball_prop.GetMaterialName()
+                uses_solder_ball = solder_ball_prop.UsesSolderball()
 
                 temp["uses_solder_ball"] = uses_solder_ball
                 temp["shape"] = pascal_to_snake(shape)
@@ -285,6 +342,25 @@ class CfgComponent(CfgBase):
                         temp["reference_size_y"] = reference_size_y.value
                     except:
                         pass
+
+                else:
+                    port_prop = cp.GetPortProperty().Clone()
+                    reference_height = port_prop.GetReferenceHeightValue().ToString()
+                    reference_size_auto = port_prop.GetReferenceSizeAuto()
+                    _, reference_size_x, reference_size_y = port_prop.GetReferenceSize()
+                    temp["reference_height"] = reference_height
+                    temp["reference_size_auto"] = reference_size_auto
+                    temp["reference_size_x"] = str(reference_size_x)
+                    temp["reference_size_y"] = str(reference_size_y)
+                if self.pedb.grpc:
+                    port_prop = cp.port_property
+                    reference_height = port_prop.reference_height.value
+                    reference_size_auto = port_prop.reference_size_auto
+                    reference_size_x, reference_size_y = port_prop.get_reference_size()
+                    temp["reference_height"] = reference_height
+                    temp["reference_size_auto"] = reference_size_auto
+                    temp["reference_size_x"] = reference_size_x.value
+                    temp["reference_size_y"] = reference_size_y.value
 
                 else:
                     port_prop = cp.GetPortProperty().Clone()
