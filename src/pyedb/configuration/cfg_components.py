@@ -36,35 +36,77 @@ class CfgComponent(CfgBase):
             self.pedb = parent.pedb
 
         def retrieve_model_properties_from_edb(self):
-            c_p = self.pyedb_obj.component_property
-            model = c_p.GetModel().Clone()
+            if self.pedb.grpc:
+                from ansys.edb.core.hierarchy.netlist_model import (
+                    NetlistModel as GrpcNetlistModel,
+                )
+                from ansys.edb.core.hierarchy.pin_pair_model import (
+                    PinPairModel as GrpcPinPairModel,
+                )
+                from ansys.edb.core.hierarchy.sparameter_model import (
+                    SParameterModel as GrpcSParameterModel,
+                )
+                from ansys.edb.core.hierarchy.spice_model import (
+                    SPICEModel as GrpcSPICEModel,
+                )
 
-            if model.GetModelType().ToString() == "NetlistModel":
-                self.parent.netlist_model["netlist"] = model.GetNetlist()
-            elif model.GetModelType().ToString() == "PinPairModel":
-                temp = {}
-                for i in model.PinPairs:
-                    temp["first_pin"] = i.FirstPin
-                    temp["second_pin"] = i.SecondPin
-                    rlc = model.GetPinPairRlc(i)
-                    temp["is_parallel"] = rlc.IsParallel
-                    temp["resistance"] = rlc.R.ToString()
-                    temp["resistance_enabled"] = rlc.REnabled
-                    temp["inductance"] = rlc.L.ToString()
-                    temp["inductance_enabled"] = rlc.LEnabled
-                    temp["capacitance"] = rlc.C.ToString()
-                    temp["capacitance_enabled"] = rlc.CEnabled
-                    self.parent.pin_pair_model.append(temp)
-            elif model.GetModelType().ToString() == "SParameterModel":
-                self.parent.s_parameter_model["reference_net"] = model.GetReferenceNet()
-                self.parent.s_parameter_model["model_name"] = model.GetComponentModelName()
-            elif model.GetModelType().ToString() == "SPICEModel":
-                self.parent.spice_model["model_name"] = model.GetModelName()
-                self.parent.spice_model["model_path"] = model.GetModelPath()
-                self.parent.spice_model["sub_circuit"] = model.GetSubCkt()
-                self.parent.spice_model["terminal_pairs"] = [
-                    [i, j] for i, j in dict(model.GetTerminalPinPairs()).items()
-                ]
+                c_p = self.pyedb_obj.component_property
+                model = c_p.model
+                if isinstance(model, GrpcNetlistModel):
+                    self.parent.netlist_model["netlist"] = model.netlist
+                elif isinstance(model, GrpcPinPairModel):
+                    temp = {}
+                    for i in model.pin_pairs():
+                        temp["first_pin"] = i[0]
+                        temp["second_pin"] = i[1]
+                        rlc = model.rlc(i)
+                        temp["is_parallel"] = rlc.is_parallel
+                        temp["resistance"] = rlc.r.value
+                        temp["resistance_enabled"] = rlc.r_enabled
+                        temp["inductance"] = rlc.l.value
+                        temp["inductance_enabled"] = rlc.l_enabled
+                        temp["capacitance"] = rlc.c.value
+                        temp["capacitance_enabled"] = rlc.c_enabled
+                        self.parent.pin_pair_model.append(temp)
+                elif isinstance(model, GrpcSParameterModel):
+                    self.parent.s_parameter_model["reference_net"] = model.reference_net
+                    self.parent.s_parameter_model["model_name"] = model.component_model
+                elif isinstance(model, GrpcSPICEModel):
+                    self.parent.spice_model["model_name"] = model.model_name
+                    self.parent.spice_model["model_path"] = model.model_path
+                    self.parent.spice_model["sub_circuit"] = model.sub_circuit
+                    # check bug #525 status
+                    self.parent.spice_model["terminal_pairs"] = [[i, j] for i, j in dict(model.terminals.items())]
+            else:
+                c_p = self.pyedb_obj.component_property
+                model = c_p.GetModel().Clone()
+
+                if model.GetModelType().ToString() == "NetlistModel":
+                    self.parent.netlist_model["netlist"] = model.GetNetlist()
+                elif model.GetModelType().ToString() == "PinPairModel":
+                    temp = {}
+                    for i in model.PinPairs:
+                        temp["first_pin"] = i.FirstPin
+                        temp["second_pin"] = i.SecondPin
+                        rlc = model.GetPinPairRlc(i)
+                        temp["is_parallel"] = rlc.IsParallel
+                        temp["resistance"] = rlc.R.ToString()
+                        temp["resistance_enabled"] = rlc.REnabled
+                        temp["inductance"] = rlc.L.ToString()
+                        temp["inductance_enabled"] = rlc.LEnabled
+                        temp["capacitance"] = rlc.C.ToString()
+                        temp["capacitance_enabled"] = rlc.CEnabled
+                        self.parent.pin_pair_model.append(temp)
+                elif model.GetModelType().ToString() == "SParameterModel":
+                    self.parent.s_parameter_model["reference_net"] = model.GetReferenceNet()
+                    self.parent.s_parameter_model["model_name"] = model.GetComponentModelName()
+                elif model.GetModelType().ToString() == "SPICEModel":
+                    self.parent.spice_model["model_name"] = model.GetModelName()
+                    self.parent.spice_model["model_path"] = model.GetModelPath()
+                    self.parent.spice_model["sub_circuit"] = model.GetSubCkt()
+                    self.parent.spice_model["terminal_pairs"] = [
+                        [i, j] for i, j in dict(model.GetTerminalPinPairs()).items()
+                    ]
 
         def _set_model_properties_to_edb(self):
             c_p = self.pyedb_obj.component_property
@@ -74,20 +116,41 @@ class CfgComponent(CfgBase):
                 c_p.SetModel(m)
                 self.component_property = c_p
             elif self.parent.pin_pair_model:
-                m = self.pedb._edb.Cell.Hierarchy.PinPairModel()
-                for i in self.parent.pin_pair_model:
-                    p = self.pedb._edb.Utility.PinPair(str(i["first_pin"]), str(i["second_pin"]))
-                    rlc = self.pedb._edb.Utility.Rlc(
-                        self.pedb.edb_value(i["resistance"]),
-                        i["resistance_enabled"],
-                        self.pedb.edb_value(i["inductance"]),
-                        i["inductance_enabled"],
-                        self.pedb.edb_value(i["capacitance"]),
-                        i["capacitance_enabled"],
-                        i["is_parallel"],
+                if self.pedb.grpc:
+                    from ansys.edb.core.hierarchy.pin_pair_model import (
+                        PinPairModel as GrpcPinPairModel,
                     )
-                    m.SetPinPairRlc(p, rlc)
-                c_p.SetModel(m)
+                    from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
+                    from ansys.edb.core.utility.value import Value as GrpcValue
+
+                    m = GrpcPinPairModel.create()
+                    for i in self.parent.pin_pair_model:
+                        p = (str(i["first_pin"]), str(i["second_pin"]))
+                        rlc = GrpcRlc(
+                            r_enabled=i["resistance_enabled"],
+                            r=GrpcValue(i["resistance"]),
+                            l_enabled=i["inductance_enabled"],
+                            l=GrpcValue(i["inductance"]),
+                            c_enabled=i["capacitance_enabled"],
+                            c=GrpcValue(i["capacitance"]),
+                        )
+                        m.set_rlc(pin_pair=p, rlc=rlc)
+                    c_p.model = m
+                else:
+                    m = self.pedb._edb.Cell.Hierarchy.PinPairModel()
+                    for i in self.parent.pin_pair_model:
+                        p = self.pedb._edb.Utility.PinPair(str(i["first_pin"]), str(i["second_pin"]))
+                        rlc = self.pedb._edb.Utility.Rlc(
+                            self.pedb.edb_value(i["resistance"]),
+                            i["resistance_enabled"],
+                            self.pedb.edb_value(i["inductance"]),
+                            i["inductance_enabled"],
+                            self.pedb.edb_value(i["capacitance"]),
+                            i["capacitance_enabled"],
+                            i["is_parallel"],
+                        )
+                        m.SetPinPairRlc(p, rlc)
+                    c_p.SetModel(m)
                 self.pyedb_obj.component_property = c_p
             elif self.parent.s_parameter_model:
                 m = self.pedb._edb.Cell.Hierarchy.SParameterModel()
@@ -136,19 +199,35 @@ class CfgComponent(CfgBase):
         def _retrieve_solder_ball_properties_from_edb(self):
             temp = dict()
             cp = self.pyedb_obj.component_property
-            solder_ball_prop = cp.GetSolderBallProperty().Clone()
-            _, diam, mid_diam = solder_ball_prop.GetDiameterValue()
-            height = solder_ball_prop.GetHeightValue().ToString()
-            shape = solder_ball_prop.GetShape().ToString()
-            material = solder_ball_prop.GetMaterialName()
-            uses_solder_ball = solder_ball_prop.UsesSolderball()
+            if self.pedb.grpc:
+                solder_ball_prop = cp.solder_ball_property
+                diam, mid_diam = solder_ball_prop.get_diameter()
+                height = solder_ball_prop.height
+                shape = solder_ball_prop.shape.name
+                material = solder_ball_prop.material_name
+                uses_solder_ball = solder_ball_prop.uses_solderball
 
-            temp["uses_solder_ball"] = uses_solder_ball
-            temp["shape"] = pascal_to_snake(shape)
-            temp["diameter"] = diam.ToString()
-            temp["mid_diameter"] = mid_diam.ToString()
-            temp["height"] = height
-            temp["material"] = material
+                temp["uses_solder_ball"] = uses_solder_ball
+                temp["shape"] = pascal_to_snake(shape)
+                temp["diameter"] = diam
+                temp["mid_diameter"] = mid_diam
+                temp["height"] = height
+                temp["material"] = material
+
+            else:
+                solder_ball_prop = cp.GetSolderBallProperty().Clone()
+                _, diam, mid_diam = solder_ball_prop.GetDiameterValue()
+                height = solder_ball_prop.GetHeightValue().ToString()
+                shape = solder_ball_prop.GetShape().ToString()
+                material = solder_ball_prop.GetMaterialName()
+                uses_solder_ball = solder_ball_prop.UsesSolderball()
+
+                temp["uses_solder_ball"] = uses_solder_ball
+                temp["shape"] = pascal_to_snake(shape)
+                temp["diameter"] = diam.ToString()
+                temp["mid_diameter"] = mid_diam.ToString()
+                temp["height"] = height
+                temp["material"] = material
             self.parent.solder_ball_properties = temp
 
         def _set_solder_ball_properties_to_edb(self):
@@ -181,14 +260,25 @@ class CfgComponent(CfgBase):
             if c_type not in ["ic", "io", "other"]:
                 return
             else:
-                port_prop = cp.GetPortProperty().Clone()
-                reference_height = port_prop.GetReferenceHeightValue().ToString()
-                reference_size_auto = port_prop.GetReferenceSizeAuto()
-                _, reference_size_x, reference_size_y = port_prop.GetReferenceSize()
-                temp["reference_height"] = reference_height
-                temp["reference_size_auto"] = reference_size_auto
-                temp["reference_size_x"] = str(reference_size_x)
-                temp["reference_size_y"] = str(reference_size_y)
+                if self.pedb.grpc:
+                    port_prop = cp.port_property
+                    reference_height = port_prop.reference_height.value
+                    reference_size_auto = port_prop.reference_size_auto
+                    reference_size_x, reference_size_y = port_prop.get_reference_size()
+                    temp["reference_height"] = reference_height
+                    temp["reference_size_auto"] = reference_size_auto
+                    temp["reference_size_x"] = reference_size_x.value
+                    temp["reference_size_y"] = reference_size_y.value
+
+                else:
+                    port_prop = cp.GetPortProperty().Clone()
+                    reference_height = port_prop.GetReferenceHeightValue().ToString()
+                    reference_size_auto = port_prop.GetReferenceSizeAuto()
+                    _, reference_size_x, reference_size_y = port_prop.GetReferenceSize()
+                    temp["reference_height"] = reference_height
+                    temp["reference_size_auto"] = reference_size_auto
+                    temp["reference_size_x"] = str(reference_size_x)
+                    temp["reference_size_y"] = str(reference_size_y)
                 self.parent.port_properties = temp
 
         def _set_port_properties_to_edb(self):
@@ -273,7 +363,7 @@ class CfgComponents:
 
         if components_data:
             for comp in components_data:
-                obj = self.pedb.layout.find_component_by_name(comp["reference_designator"])
+                obj = self.pedb.components.instances[comp["reference_designator"]]
                 self.components.append(CfgComponent(self.pedb, obj, **comp))
 
     def clean(self):
