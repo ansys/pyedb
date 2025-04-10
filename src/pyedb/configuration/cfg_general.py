@@ -32,10 +32,12 @@ class CfgGeneral:
         self.suppress_pads = data.get("suppress_pads", True)
 
     def apply(self):
-        # TODO check if design_options features exists in grpc
-        # self._pedb.design_options.antipads_always_on = self.anti_pads_always_on
-        # self._pedb.design_options.suppress_pads = self.suppress_pads
-        pass
+        if self._pedb.grpc:
+            self._pedb.active_cell.anti_pads_always_on = self.anti_pads_always_on
+            self._pedb.active_cell.suppress_pads = self.suppress_pads
+        else:
+            self._pedb.design_options.antipads_always_on = self.anti_pads_always_on
+            self._pedb.design_options.suppress_pads = self.suppress_pads
 
     def get_data_from_db(self):
         self.anti_pads_always_on = self._pedb.design_options.antipads_always_on
