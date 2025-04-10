@@ -183,62 +183,141 @@ class CfgSetups:
                     continue
 
             stp = {}
-            if s.type == "hfss":
-                for p_name in CfgHFSSSetup(self._pedb).__dict__:
-                    if p_name.startswith("_"):
-                        continue
-                    elif p_name == "type":
-                        stp[p_name] = s.type
-                    elif p_name == "f_adapt":
-                        stp[p_name] = list(s.adaptive_settings.adaptive_frequency_data_list)[0].adaptive_frequency
-                    elif p_name == "max_num_passes":
-                        stp[p_name] = list(s.adaptive_settings.adaptive_frequency_data_list)[0].max_passes
-                    elif p_name == "max_mag_delta_s":
-                        stp[p_name] = list(s.adaptive_settings.adaptive_frequency_data_list)[0].max_delta
-                    elif p_name == "freq_sweep":
-                        f_sweep = []
-                        for _, sw in s.sweeps.items():
-                            sweep_data = {}
-                            for sw_p_name in CfgSweepData().__dict__:
-                                if sw_p_name == "frequencies":
-                                    pass  # Frequencies cannot be read from EDB
-                                else:
-                                    sweep_data[sw_p_name] = getattr(sw, sw_p_name)
-                            f_sweep.append(sweep_data)
-                        stp["freq_sweep"] = f_sweep
-                    elif p_name == "mesh_operations":
-                        mops = []
-                        for _, i in s.mesh_operations.items():
-                            mop = {}
-                            for mop_p_name in CfgLengthMeshOperation().__dict__:
-                                mop[mop_p_name] = getattr(i, mop_p_name)
-                            mops.append(mop)
-                        stp["mesh_operations"] = mops
-                    else:
-                        stp[p_name] = getattr(s, p_name)
+            if self._pedb.grpc:
+                from ansys.edb.core.simulation_setup.mesh_operation import (
+                    LengthMeshOperation as GrpcLengthMeshOperation,
+                )
 
-            elif s.type == "siwave_ac":
-                for p_name in CfgSIwaveACSetup(self._pedb).__dict__:
-                    if p_name.startswith("_"):
-                        continue
-                    elif p_name == "freq_sweep":
-                        pass  # Bug in EDB API
-                    else:
-                        stp[p_name] = getattr(s, p_name)
-            elif s.type == "siwave_dc":
-                for p_name in CfgSIwaveDCSetup(self._pedb).__dict__:
-                    if p_name.startswith("_"):
-                        continue
-                    elif p_name == "freq_sweep":
-                        pass
-                    elif p_name == "dc_ir_settings":
-                        dc_ir_s = {}
-                        for dcir_p_name in CfgDcIrSettings().__dict__:
-                            dc_ir_s[dcir_p_name] = getattr(s.dc_ir_settings, dcir_p_name)
-                        stp["dc_ir_settings"] = dc_ir_s
-                    elif p_name == "dc_slider_position":
-                        stp[p_name] = getattr(s.dc_settings, p_name)
-                    else:
-                        stp[p_name] = getattr(s, p_name)
+                s_type = s.type.name.lower()
+                if s_type == "hfss":
+                    for p_name in CfgHFSSSetup(self._pedb).__dict__:
+                        if p_name.startswith("_"):
+                            continue
+                        elif p_name == "type":
+                            stp[p_name] = s.type.name.lower()
+                        elif p_name == "f_adapt":
+                            stp[p_name] = s.settings.general.single_frequency_adaptive_solution.adaptive_frequency
+                        elif p_name == "max_num_passes":
+                            stp[p_name] = s.settings.general.single_frequency_adaptive_solution.max_passes
+                        elif p_name == "max_mag_delta_s":
+                            stp[p_name] = s.settings.general.single_frequency_adaptive_solution.max_delta
+                        elif p_name == "freq_sweep":
+                            f_sweep = []
+                            for sw in s.sweep_data:
+                                sweep_data = {}
+                                for sw_p_name in CfgSweepData().__dict__:
+                                    if sw_p_name == "frequencies":
+                                        pass  # Frequencies cannot be read from EDB
+                                    else:
+                                        sweep_data[sw_p_name] = getattr(sw, sw_p_name)
+                                f_sweep.append(sweep_data)
+                            stp["freq_sweep"] = f_sweep
+                        elif p_name == "mesh_operations":
+                            mops = []
+                            for i in s.mesh_operations:
+                                mop = {}
+                                for mop_p_name in CfgLengthMeshOperation().__dict__:
+                                    if mop_p_name == "type":
+                                        if isinstance(i, GrpcLengthMeshOperation):
+                                            mop[mop_p_name] = "length"
+                                    elif mop_p_name == "nets_layers_list":
+                                        mop[mop_p_name] = i.__dict__["_net_layer_info"]
+                                    elif mop_p_name == "restrict_length":
+                                        mop[mop_p_name] = i.__dict__["_restrict_max_length"]
+                                    else:
+                                        mop[mop_p_name] = i.__dict__[f"_{mop_p_name}"]
+                                mops.append(mop)
+                            stp["mesh_operations"] = mops
+                        else:
+                            stp[p_name] = getattr(s, p_name)
+
+                elif s_type == "siwave_ac":
+                    for p_name in CfgSIwaveACSetup(self._pedb).__dict__:
+                        if p_name.startswith("_"):
+                            continue
+                        elif p_name == "freq_sweep":
+                            pass  # Bug in EDB API
+                        else:
+                            stp[p_name] = getattr(s, p_name)
+                elif s_type == "siwave_dc":
+                    for p_name in CfgSIwaveDCSetup(self._pedb).__dict__:
+                        if p_name.startswith("_"):
+                            continue
+                        elif p_name == "freq_sweep":
+                            pass
+                        elif p_name == "dc_ir_settings":
+                            dc_ir_s = {}
+                            for dcir_p_name in CfgDcIrSettings().__dict__:
+                                dc_ir_s[dcir_p_name] = getattr(s.dc_ir_settings, dcir_p_name)
+                            stp["dc_ir_settings"] = dc_ir_s
+                        elif p_name == "dc_slider_position":
+                            stp[p_name] = getattr(s.dc_settings, p_name)
+                        else:
+                            stp[p_name] = getattr(s, p_name)
+            else:
+                for _, s in self._pedb.setups.items():
+                    if float(self._pedb.edbversion) < 2025.1:
+                        if not s.type == "hfss":
+                            self._pedb.logger.warning("Only HFSS setups are exported in 2024 R2 and earlier version.")
+                            continue
+                    if s.type == "hfss":
+                        for p_name in CfgHFSSSetup(self._pedb).__dict__:
+                            if p_name.startswith("_"):
+                                continue
+                            elif p_name == "type":
+                                stp[p_name] = s.type
+                            elif p_name == "f_adapt":
+                                stp[p_name] = list(s.adaptive_settings.adaptive_frequency_data_list)[
+                                    0
+                                ].adaptive_frequency
+                            elif p_name == "max_num_passes":
+                                stp[p_name] = list(s.adaptive_settings.adaptive_frequency_data_list)[0].max_passes
+                            elif p_name == "max_mag_delta_s":
+                                stp[p_name] = list(s.adaptive_settings.adaptive_frequency_data_list)[0].max_delta
+                            elif p_name == "freq_sweep":
+                                f_sweep = []
+                                for sw in s.sweeps.items():
+                                    sweep_data = {}
+                                    for sw_p_name in CfgSweepData().__dict__:
+                                        if sw_p_name == "frequencies":
+                                            pass  # Frequencies cannot be read from EDB
+                                        else:
+                                            sweep_data[sw_p_name] = getattr(sw[1], sw_p_name)
+                                    f_sweep.append(sweep_data)
+                                stp["freq_sweep"] = f_sweep
+                            elif p_name == "mesh_operations":
+                                mops = []
+                                for _, i in s.mesh_operations.items():
+                                    mop = {}
+                                    for mop_p_name in CfgLengthMeshOperation().__dict__:
+                                        mop[mop_p_name] = getattr(i, mop_p_name)
+                                    mops.append(mop)
+                                stp["mesh_operations"] = mops
+                            else:
+                                stp[p_name] = getattr(s, p_name)
+
+                    elif s.type == "siwave_ac":
+                        for p_name in CfgSIwaveACSetup(self._pedb).__dict__:
+                            if p_name.startswith("_"):
+                                continue
+                            elif p_name == "freq_sweep":
+                                pass  # Bug in EDB API
+                            else:
+                                stp[p_name] = getattr(s, p_name)
+                    elif s.type == "siwave_dc":
+                        for p_name in CfgSIwaveDCSetup(self._pedb).__dict__:
+                            if p_name.startswith("_"):
+                                continue
+                            elif p_name == "freq_sweep":
+                                pass
+                            elif p_name == "dc_ir_settings":
+                                dc_ir_s = {}
+                                for dcir_p_name in CfgDcIrSettings().__dict__:
+                                    dc_ir_s[dcir_p_name] = getattr(s.dc_ir_settings, dcir_p_name)
+                                stp["dc_ir_settings"] = dc_ir_s
+                            elif p_name == "dc_slider_position":
+                                stp[p_name] = getattr(s.dc_settings, p_name)
+                            else:
+                                stp[p_name] = getattr(s, p_name)
             setups.append(stp)
         return setups
