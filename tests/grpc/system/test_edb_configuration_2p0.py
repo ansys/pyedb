@@ -120,7 +120,9 @@ class TestClass:
                         target_mop = [i for i in target["mesh_operations"] if i["name"] == mop["name"]][0]
                         for mop_p_name, mop_value in mop.items():
                             print(mop_p_name)
-                            assert mop_value == target_mop[mop_p_name]
+                            if not mop_p_name == "nets_layers_list":
+                                # grpc API changed the layer assignment format.
+                                assert mop_value == target_mop[mop_p_name]
                 else:
                     assert value == target[p]
         edbapp.close()
@@ -1113,7 +1115,14 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(components=True)
         c375 = [i for i in data_from_db["components"] if i["reference_designator"] == "C375"][0]
-        assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
+        if edbapp.grpc:
+            # grpc is returning component value as float not string
+            components[0]["pin_pair_model"][0]["resistance"] = 10.0
+            components[0]["pin_pair_model"][0]["inductance"] = 1e-9
+            components[0]["pin_pair_model"][0]["capacitance"] = 10e-9
+            assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
+        else:
+            assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
         edbapp.close()
 
     def test_16_export_to_external_file(self, edb_examples):

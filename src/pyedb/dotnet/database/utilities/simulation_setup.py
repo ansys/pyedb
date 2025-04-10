@@ -285,6 +285,10 @@ class SimulationSetup(object):
         self._update_setup()
         return sweep_data
 
+    def delete(self):
+        """Delete current simulation setup."""
+        self._pedb.layout.cell.DeleteSimulationSetup(self.name)
+
     def _add_frequency_sweep(self, sweep_data):
         """Add a frequency sweep.
 
