@@ -147,19 +147,34 @@ class Configuration:
                 cfg_pdef.api.set_parameters_to_edb()
         else:
             temp_pdef_data = {}
-            for pdef_name, pdef in self._pedb.padstacks.definitions.items():
-                pdef_data = pdef._padstack_def_data
-                for lyr_name in list(pdef_data.GetLayerNames()):
-                    result = pdef_data.GetPadParametersValue(lyr_name, self._pedb._edb.Definition.PadType.RegularPad)
-                    flag, pad_shape, params, offset_x, offset_y, rotation = result
-                    if flag is False:
-                        result = pdef_data.GetPolygonalPadParameters(
+            if self._pedb.grpc:
+                from ansys.edb.core.definition.padstack_def_data import (
+                    PadType as GrpcPadType,
+                )
+
+                for pdef_name, pdef in self._pedb.padstacks.definitions.items():
+                    for layer in pdef.data.layer_names:
+                        result = pdef.data.get_pad_parameters(layer, GrpcPadType.REGULAR_PAD)
+                        if len(result) == 4:
+                            # polygon based
+                            temp_pdef_data[pdef_name] = pdef.data
+                            break
+            else:
+                for pdef_name, pdef in self._pedb.padstacks.definitions.items():
+                    pdef_data = pdef._padstack_def_data
+                    for lyr_name in list(pdef_data.GetLayerNames()):
+                        result = pdef_data.GetPadParametersValue(
                             lyr_name, self._pedb._edb.Definition.PadType.RegularPad
                         )
-                        flag, polygon_data, offset_x, offset_y, rotation = result
-                        if flag:
-                            temp_pdef_data[pdef_name] = pdef_data
-                            break
+                        flag, pad_shape, params, offset_x, offset_y, rotation = result
+                        if flag is False:
+                            result = pdef_data.GetPolygonalPadParameters(
+                                lyr_name, self._pedb._edb.Definition.PadType.RegularPad
+                            )
+                            flag, polygon_data, offset_x, offset_y, rotation = result
+                            if flag:
+                                temp_pdef_data[pdef_name] = pdef_data
+                                break
             self.cfg_data.stackup.apply()
             for pdef_name, pdef_data in temp_pdef_data.items():
                 pdef = self._pedb.padstacks.definitions[pdef_name]
