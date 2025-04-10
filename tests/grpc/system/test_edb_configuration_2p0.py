@@ -1115,7 +1115,14 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(components=True)
         c375 = [i for i in data_from_db["components"] if i["reference_designator"] == "C375"][0]
-        assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
+        if edbapp.grpc:
+            # grpc is returning component value as float not string
+            components[0]["pin_pair_model"][0]["resistance"] = 10.0
+            components[0]["pin_pair_model"][0]["inductance"] = 1e-9
+            components[0]["pin_pair_model"][0]["capacitance"] = 10e-9
+            assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
+        else:
+            assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
         edbapp.close()
 
     def test_16_export_to_external_file(self, edb_examples):
