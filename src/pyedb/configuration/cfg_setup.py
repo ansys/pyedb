@@ -282,7 +282,7 @@ class CfgSetups:
                                         if sw_p_name == "frequencies":
                                             pass  # Frequencies cannot be read from EDB
                                         else:
-                                            sweep_data[sw_p_name] = getattr(sw, sw_p_name)
+                                            sweep_data[sw_p_name] = getattr(sw[1], sw_p_name)
                                     f_sweep.append(sweep_data)
                                 stp["freq_sweep"] = f_sweep
                             elif p_name == "mesh_operations":
