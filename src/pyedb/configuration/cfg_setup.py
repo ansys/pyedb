@@ -61,7 +61,7 @@ class CfgSetup(CfgBase):
                 else:
                     kw[attr] = getattr(i, attr)
             if self._pedb.grpc:
-                edb_setup.add_sweep(name=i.name)
+                edb_setup.add_sweep(name=i.name, frequency_set=f_set)
             else:
                 edb_setup.add_sweep(i.name, frequency_set=f_set, **kw)
 
