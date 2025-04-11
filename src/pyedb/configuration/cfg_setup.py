@@ -60,7 +60,10 @@ class CfgSetup(CfgBase):
                         f_set.append([f.distribution, f.start, f.stop, f.increment])
                 else:
                     kw[attr] = getattr(i, attr)
-            edb_setup.add_sweep(i.name, frequency_set=f_set, **kw)
+            if self._pedb.grpc:
+                edb_setup.add_sweep(name=i.name)
+            else:
+                edb_setup.add_sweep(i.name, frequency_set=f_set, **kw)
 
 
 class CfgSIwaveACSetup(CfgSetup):
