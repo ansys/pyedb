@@ -1,0 +1,6 @@
+open
+====
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.open

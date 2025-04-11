@@ -1,0 +1,6 @@
+set\_pi\_slider
+===============
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
+
+.. automethod:: AdvancedSettings.set_pi_slider

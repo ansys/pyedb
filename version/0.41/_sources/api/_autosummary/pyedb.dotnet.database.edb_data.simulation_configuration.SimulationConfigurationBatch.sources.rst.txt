@@ -1,0 +1,6 @@
+sources
+=======
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationBatch.sources
