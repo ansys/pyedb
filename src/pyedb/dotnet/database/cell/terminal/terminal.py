@@ -108,20 +108,6 @@ class Terminal(Connectable):
         return self._pedb.logger.error("Cannot determine terminal layer")
 
     @property
-    def location(self):
-        """Location of the terminal."""
-        try:
-            _, point_data, _ = self._edb_object.GetParameters()
-            return [point_data.X.ToDouble(), point_data.Y.ToDouble()]
-        except:
-            self._pedb.logger.error("Cannot determine terminal location")
-
-    @location.setter
-    def location(self, value):
-        layer = self.layer
-        self._edb_object.SetParameters(self._pedb.point_data(*value), layer._edb_object)
-
-    @property
     def is_circuit_port(self):
         """Whether it is a circuit port."""
         return self._edb_object.GetIsCircuitPort()

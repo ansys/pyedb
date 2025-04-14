@@ -78,3 +78,15 @@ class PointTerminal(Terminal):
         layer = self._pedb.stackup.layers[value]._edb_layer
         point_data = self._pedb.point_data(*self.location)
         self._edb_object.SetParameters(point_data, layer)
+
+    @property
+    def location(self):
+        """Location of the terminal."""
+
+        _, point_data, _ = self._edb_object.GetParameters()
+        return [point_data.X.ToDouble(), point_data.Y.ToDouble()]
+
+    @location.setter
+    def location(self, value):
+        layer = self.layer
+        self._edb_object.SetParameters(self._pedb.point_data(*value), layer._edb_object)
