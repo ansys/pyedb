@@ -861,6 +861,8 @@ class Database(EdbDotNet):
             db_path,
             read_only,
         )
+        if self._db.IsNull():
+            raise AttributeError(f"Failed to open edb file {db_path}")
         return self._db
 
     def delete(self, db_path):

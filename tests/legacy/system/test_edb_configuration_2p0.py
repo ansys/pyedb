@@ -317,6 +317,7 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.ports["COAX_U1_AM17"]
         assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"]
+        assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"].location
         edbapp.close()
 
     def test_05c_ports_circuit_pin_net(self, edb_examples):

@@ -278,7 +278,7 @@ class Edb(Database):
         if self.active_cell:
             self.logger.info("EDB initialized.")
         else:
-            self.logger.info("Failed to initialize DLLs.")
+            raise AttributeError("Failed to initialize DLLs.")
 
     def __enter__(self):
         return self
@@ -549,10 +549,7 @@ class Edb(Database):
         self.run_as_standalone(self.standalone)
 
         # self.logger.info("EDB Standalone %s", self.standalone)
-        try:
-            self.open(self.edbpath, self.isreadonly)
-        except Exception as e:
-            self.logger.error("Builder is not Initialized.")
+        self.open(self.edbpath, self.isreadonly)
         if not self.active_db:
             self.logger.warning("Error Opening db")
             self._active_cell = None

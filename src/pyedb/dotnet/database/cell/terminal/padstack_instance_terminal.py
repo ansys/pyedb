@@ -43,6 +43,11 @@ class PadstackInstanceTerminal(Terminal):
             return EDBPadstackInstance(edb_padstack_instance[1], self._pedb).position
         return False
 
+    @property
+    def location(self):
+        """Location of the padstack instance."""
+        return self.position
+
     def create(self, padstack_instance, name=None, layer=None, is_ref=False):
         """Create an edge terminal.
 
