@@ -949,7 +949,7 @@ class TestClass:
                     "freq_sweep": [
                         {
                             "name": "Sweep1",
-                            "type": "Interpolation",
+                            "type": "discrete",
                             "frequencies": [
                                 {"distribution": "log_scale", "start": 1e3, "stop": 1e9, "samples": 10},
                                 {"distribution": "linear_count", "start": 1e9, "stop": 10e9, "points": 11},
