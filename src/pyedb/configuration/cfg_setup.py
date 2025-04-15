@@ -53,17 +53,9 @@ class CfgSetup(CfgBase):
     def _apply_freq_sweep(self, edb_setup):
         for i in self.freq_sweep:
             f_set = []
-            kw = {}
-            for attr in i.get_attributes(exclude="name"):
-                if attr == "frequencies":
-                    for f in i.frequencies:
-                        f_set.append([f.distribution, f.start, f.stop, f.increment])
-                else:
-                    kw[attr] = getattr(i, attr)
-            if self._pedb.grpc:
-                edb_setup.add_sweep(name=i.name)
-            else:
-                edb_setup.add_sweep(i.name, frequency_set=f_set, **kw)
+            for f in i.frequencies:
+                f_set.append([f.distribution, f.start, f.stop, f.increment])
+            edb_setup.add_sweep(i.name, frequency_set=f_set, sweep_type=i.type)
 
 
 class CfgSIwaveACSetup(CfgSetup):
