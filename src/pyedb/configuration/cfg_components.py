@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import os
 
 from pyedb.configuration.cfg_common import CfgBase
 from pyedb.dotnet.database.general import pascal_to_snake, snake_to_pascal
@@ -81,8 +80,8 @@ class CfgComponent(CfgBase):
             c_p = self.pyedb_obj.component_property
             if self.parent.netlist_model:
                 m = self.pedb._edb.Cell.Hierarchy.SParameterModel()
-                m.SetNetlist(self.parent.netlist_model["netlist"])
-                c_p.SetModel(m)
+                m.net_list = self.parent.netlist_model["netlist"]
+                c_p.model = m
                 self.component_property = c_p
             elif self.parent.pin_pair_model:
                 from ansys.edb.core.hierarchy.pin_pair_model import (
@@ -124,13 +123,17 @@ class CfgComponent(CfgBase):
                     )
                     m.set_rlc(pin_pair=p, rlc=rlc)
                 c_p.model = m
-
                 self.pyedb_obj.component_property = c_p
             elif self.parent.s_parameter_model:
-                m = self.pedb._edb.Cell.Hierarchy.SParameterModel()
-                m.SetComponentModelName(self.parent.s_parameter_model["model_name"])
-                m.SetReferenceNet(self.parent.s_parameter_model["reference_net"])
-                c_p.SetModel(m)
+                from ansys.edb.core.hierarchy.sparameter_model import (
+                    SParameterModel as GrpcSParameterModel,
+                )
+
+                m = GrpcSParameterModel.create(
+                    name=self.parent.s_parameter_model["model_name"],
+                    ref_net=self.parent.s_parameter_model["reference_net"],
+                )
+                c_p.model = m
                 self.component_property = c_p
             elif self.parent.spice_model:
                 self.pyedb_obj.assign_spice_model(
@@ -155,21 +158,31 @@ class CfgComponent(CfgBase):
             self.parent.ic_die_properties = temp
 
         def _set_ic_die_properties_to_edb(self):
+            from ansys.edb.core.definition.die_property import (
+                DieOrientation as GrpcDieOrientation,
+            )
+            from ansys.edb.core.definition.die_property import DieType as GrpcDieType
+            from ansys.edb.core.utility.value import Value as GrpcValue
+
             cp = self.pyedb_obj.component_property
-            ic_die_prop = cp.GetDieProperty().Clone()
+            ic_die_prop = cp.die_property
             die_type = self.parent.ic_die_properties.get("type")
-            ic_die_prop.SetType(getattr(self.pedb._edb.Definition.DieType, snake_to_pascal(die_type)))
-            if not die_type == "no_die":
+            die_type = snake_to_pascal(die_type)
+            if die_type == "wirebond":
+                ic_die_prop.die_type = GrpcDieType.WIREBOND
+            elif die_type == "flipchip":
+                ic_die_prop.die_type = GrpcDieType.FLIPCHIP
+            elif not die_type == "no_die":
                 orientation = self.parent.ic_die_properties.get("orientation")
-                if orientation:
-                    ic_die_prop.SetOrientation(
-                        getattr(self.pedb._edb.Definition.DieOrientation, snake_to_pascal(orientation))
-                    )
+                if orientation == "chip_up":
+                    ic_die_prop.die_orientation = GrpcDieOrientation.CHIP_UP
+                else:
+                    ic_die_prop.die_orientation = GrpcDieOrientation.CHIP_DOWN
                 if die_type == "wire_bond":
                     height = self.parent.ic_die_properties.get("height")
                     if height:
-                        ic_die_prop.SetHeight(self.pedb.edb_value(height))
-            cp.SetDieProperty(ic_die_prop)
+                        ic_die_prop.height = GrpcValue(height)
+            cp.die_property = ic_die_prop
             self.pyedb_obj.component_property = cp
 
         def _retrieve_solder_ball_properties_from_edb(self):
@@ -193,26 +206,29 @@ class CfgComponent(CfgBase):
             self.parent.solder_ball_properties = temp
 
         def _set_solder_ball_properties_to_edb(self):
-            cp = self.pyedb_obj.component_property
-            solder_ball_prop = cp.GetSolderBallProperty().Clone()
-            shape = self.parent.solder_ball_properties.get("shape")
-            if shape:
-                solder_ball_prop.SetShape(getattr(self.pedb._edb.Definition.SolderballShape, snake_to_pascal(shape)))
-            else:
-                return
+            from ansys.edb.core.definition.solder_ball_property import (
+                SolderballShape as GrpcSolderballShape,
+            )
+            from ansys.edb.core.utility.value import Value as GrpcValue
 
+            cp = self.pyedb_obj.component_property
+            solder_ball_prop = cp.solder_ball_property
+            shape = self.parent.solder_ball_properties.get("shape")
             if shape == "cylinder":
+                solder_ball_prop.shape = GrpcSolderballShape.SOLDERBALL_CYLINDER
                 diameter = self.parent.solder_ball_properties["diameter"]
-                solder_ball_prop.SetDiameter(self.pedb.edb_value(diameter), self.pedb.edb_value(diameter))
+                solder_ball_prop.set_diameter(GrpcValue(diameter), GrpcValue(diameter))
             elif shape == "spheroid":
+                solder_ball_prop.shape = GrpcSolderballShape.SOLDERBALL_SPHEROID
                 diameter = self.parent.solder_ball_properties["diameter"]
                 mid_diameter = self.parent.solder_ball_properties["mid_diameter"]
-                solder_ball_prop.SetDiameter(self.pedb.edb_value(diameter), self.pedb.edb_value(mid_diameter))
+                solder_ball_prop.set_diameter(GrpcValue(diameter), GrpcValue(mid_diameter))
             else:
                 raise ValueError("Solderball shape must be either cylinder or spheroid")
-            solder_ball_prop.SetHeight(self.pedb.edb_value(self.parent.solder_ball_properties["height"]))
-            solder_ball_prop.SetMaterialName(self.parent.solder_ball_properties.get("material", "solder"))
-            cp.SetSolderBallProperty(solder_ball_prop)
+
+            solder_ball_prop.height = GrpcValue(self.parent.solder_ball_properties["height"])
+            solder_ball_prop.material_name = self.parent.solder_ball_properties.get("material", "solder")
+            cp.solder_ball_property = solder_ball_prop
             self.pyedb_obj.component_property = cp
 
         def _retrieve_port_properties_from_edb(self):
@@ -234,18 +250,20 @@ class CfgComponent(CfgBase):
                 self.parent.port_properties = temp
 
         def _set_port_properties_to_edb(self):
+            from ansys.edb.core.utility.value import Value as GrpcValue
+
             cp = self.pyedb_obj.component_property
-            port_prop = cp.GetPortProperty().Clone()
+            port_prop = cp.port_property
             height = self.parent.port_properties.get("reference_height")
             if height:
-                port_prop.SetReferenceHeight(self.pedb.edb_value(height))
+                port_prop.reference_height = GrpcValue(height)
             reference_size_auto = self.parent.port_properties.get("reference_size_auto")
             if reference_size_auto is not None:
-                port_prop.SetReferenceSizeAuto(reference_size_auto)
+                port_prop.reference_size_auto = reference_size_auto
             reference_size_x = self.parent.port_properties.get("reference_size_x", 0)
             reference_size_y = self.parent.port_properties.get("reference_size_y", 0)
-            port_prop.SetReferenceSize(self.pedb.edb_value(reference_size_x), self.pedb.edb_value(reference_size_y))
-            cp.SetPortProperty(port_prop)
+            port_prop.set_reference_size(GrpcValue(reference_size_x), GrpcValue(reference_size_y))
+            cp.port_property = port_prop
             self.pyedb_obj.component_property = cp
 
         def set_parameters_to_edb(self):
