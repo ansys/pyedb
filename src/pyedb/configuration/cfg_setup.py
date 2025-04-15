@@ -55,10 +55,7 @@ class CfgSetup(CfgBase):
             f_set = []
             for f in i.frequencies:
                 f_set.append([f.distribution, f.start, f.stop, f.increment])
-            edb_setup.add_sweep(i.name,
-                                frequency_set=f_set,
-                                sweep_type=i.type
-                                )
+            edb_setup.add_sweep(i.name, frequency_set=f_set, sweep_type=i.type)
 
 
 class CfgSIwaveACSetup(CfgSetup):
