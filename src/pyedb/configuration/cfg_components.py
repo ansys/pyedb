@@ -107,22 +107,7 @@ class CfgComponent(CfgBase):
                 from ansys.edb.core.hierarchy.pin_pair_model import (
                     PinPairModel as GrpcPinPairModel,
                 )
-                from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
-                from ansys.edb.core.utility.value import Value as GrpcValue
 
-                m = GrpcPinPairModel.create()
-                for i in self.parent.pin_pair_model:
-                    p = (str(i["first_pin"]), str(i["second_pin"]))
-                    rlc = GrpcRlc(
-                        r_enabled=i["resistance_enabled"],
-                        r=GrpcValue(i["resistance"]),
-                        l_enabled=i["inductance_enabled"],
-                        l=GrpcValue(i["inductance"]),
-                        c_enabled=i["capacitance_enabled"],
-                        c=GrpcValue(i["capacitance"]),
-                    )
-                    m.set_rlc(pin_pair=p, rlc=rlc)
-                c_p.model = m
                 self.pyedb_obj.component_property = c_p
             elif self.parent.s_parameter_model:
                 from ansys.edb.core.hierarchy.sparameter_model import (
@@ -188,22 +173,28 @@ class CfgComponent(CfgBase):
         def _retrieve_solder_ball_properties_from_edb(self):
             temp = dict()
             cp = self.pyedb_obj.component_property
+            solder_ball_prop = None
+            try:
+                solder_ball_prop = cp.solder_ball_property
+                diam, mid_diam = solder_ball_prop.get_diameter()
+                height = solder_ball_prop.height
+                shape = solder_ball_prop.shape.name
+                material = solder_ball_prop.material_name
+                uses_solder_ball = solder_ball_prop.uses_solderball
 
-            solder_ball_prop = cp.solder_ball_property
-            diam, mid_diam = solder_ball_prop.get_diameter()
-            height = solder_ball_prop.height
-            shape = solder_ball_prop.shape.name
-            material = solder_ball_prop.material_name
-            uses_solder_ball = solder_ball_prop.uses_solderball
+                temp["uses_solder_ball"] = uses_solder_ball
+                temp["shape"] = pascal_to_snake(shape)
+                temp["diameter"] = diam
+                temp["mid_diameter"] = mid_diam
+                temp["height"] = height
+                temp["material"] = material
 
-            temp["uses_solder_ball"] = uses_solder_ball
-            temp["shape"] = pascal_to_snake(shape)
-            temp["diameter"] = diam
-            temp["mid_diameter"] = mid_diam
-            temp["height"] = height
-            temp["material"] = material
-
-            self.parent.solder_ball_properties = temp
+                self.parent.solder_ball_properties = temp
+            except:
+                if not solder_ball_prop:
+                    self.pedb.logger.warning(
+                        f"Failed retrieving solder balls property on component {self.pyedb_obj.name}"
+                    )
 
         def _set_solder_ball_properties_to_edb(self):
             from ansys.edb.core.definition.solder_ball_property import (
@@ -238,16 +229,18 @@ class CfgComponent(CfgBase):
             if c_type not in ["ic", "io", "other"]:
                 return
             else:
-                port_prop = cp.port_property
-                reference_height = port_prop.reference_height.value
-                reference_size_auto = port_prop.reference_size_auto
-                reference_size_x, reference_size_y = port_prop.get_reference_size()
-                temp["reference_height"] = reference_height
-                temp["reference_size_auto"] = reference_size_auto
-                temp["reference_size_x"] = reference_size_x.value
-                temp["reference_size_y"] = reference_size_y.value
-
-                self.parent.port_properties = temp
+                try:
+                    port_prop = cp.port_property
+                    reference_height = port_prop.reference_height.value
+                    reference_size_auto = port_prop.reference_size_auto
+                    reference_size_x, reference_size_y = port_prop.get_reference_size()
+                    temp["reference_height"] = reference_height
+                    temp["reference_size_auto"] = reference_size_auto
+                    temp["reference_size_x"] = reference_size_x.value
+                    temp["reference_size_y"] = reference_size_y.value
+                    self.parent.port_properties = temp
+                except:
+                    self.pedb.logger.warning(f"No port property found on component {self.pyedb_obj.name}")
 
         def _set_port_properties_to_edb(self):
             from ansys.edb.core.utility.value import Value as GrpcValue
