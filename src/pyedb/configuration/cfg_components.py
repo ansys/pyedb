@@ -322,6 +322,39 @@ class CfgComponent(CfgBase):
                     [i, j] for i, j in dict(model.GetTerminalPinPairs()).items()
                 ]
 
+        def _set_ic_die_properties_to_edb(self):
+            cp = self.pyedb_obj.component_property
+            ic_die_prop = cp.GetDieProperty().Clone()
+            die_type = self.parent.ic_die_properties.get("type")
+            ic_die_prop.SetType(getattr(self.pedb._edb.Definition.DieType, snake_to_pascal(die_type)))
+            if not die_type == "no_die":
+                orientation = self.parent.ic_die_properties.get("orientation")
+                if orientation:
+                    ic_die_prop.SetOrientation(
+                        getattr(self.pedb._edb.Definition.DieOrientation, snake_to_pascal(orientation))
+                    )
+                if die_type == "wire_bond":
+                    height = self.parent.ic_die_properties.get("height")
+                    if height:
+                        ic_die_prop.SetHeight(self.pedb.edb_value(height))
+            cp.SetDieProperty(ic_die_prop)
+            self.pyedb_obj.component_property = cp
+
+        def _set_port_properties_to_edb(self):
+            cp = self.pyedb_obj.component_property
+            port_prop = cp.GetPortProperty().Clone()
+            height = self.parent.port_properties.get("reference_height")
+            if height:
+                port_prop.SetReferenceHeight(self.pedb.edb_value(height))
+            reference_size_auto = self.parent.port_properties.get("reference_size_auto")
+            if reference_size_auto is not None:
+                port_prop.SetReferenceSizeAuto(reference_size_auto)
+            reference_size_x = self.parent.port_properties.get("reference_size_x", 0)
+            reference_size_y = self.parent.port_properties.get("reference_size_y", 0)
+            port_prop.SetReferenceSize(self.pedb.edb_value(reference_size_x), self.pedb.edb_value(reference_size_y))
+            cp.SetPortProperty(port_prop)
+            self.pyedb_obj.component_property = cp
+
         def _set_model_properties_to_edb(self):
             c_p = self.pyedb_obj.component_property
             if self.parent.netlist_model:
@@ -373,6 +406,29 @@ class CfgComponent(CfgBase):
                     self.parent.spice_model["sub_circuit"],
                     self.parent.spice_model["terminal_pairs"],
                 )
+
+        def _set_solder_ball_properties_to_edb(self):
+            cp = self.pyedb_obj.component_property
+            solder_ball_prop = cp.GetSolderBallProperty().Clone()
+            shape = self.parent.solder_ball_properties.get("shape")
+            if shape:
+                solder_ball_prop.SetShape(getattr(self.pedb._edb.Definition.SolderballShape, snake_to_pascal(shape)))
+            else:
+                return
+
+            if shape == "cylinder":
+                diameter = self.parent.solder_ball_properties["diameter"]
+                solder_ball_prop.SetDiameter(self.pedb.edb_value(diameter), self.pedb.edb_value(diameter))
+            elif shape == "spheroid":
+                diameter = self.parent.solder_ball_properties["diameter"]
+                mid_diameter = self.parent.solder_ball_properties["mid_diameter"]
+                solder_ball_prop.SetDiameter(self.pedb.edb_value(diameter), self.pedb.edb_value(mid_diameter))
+            else:
+                raise ValueError("Solderball shape must be either cylinder or spheroid")
+            solder_ball_prop.SetHeight(self.pedb.edb_value(self.parent.solder_ball_properties["height"]))
+            solder_ball_prop.SetMaterialName(self.parent.solder_ball_properties.get("material", "solder"))
+            cp.SetSolderBallProperty(solder_ball_prop)
+            self.pyedb_obj.component_property = cp
 
         def _retrieve_ic_die_properties_from_edb(self):
             temp = dict()
