@@ -239,7 +239,7 @@ class SimulationSetup(object):
         """List of frequency sweeps."""
         return {i.name: i for i in self.sim_setup_info.sweep_data_list}
 
-    def add_sweep(self, name, frequency_set: list = None, **kwargs):
+    def add_sweep(self, name, frequency_set: list = None, sweep_type: str = "interpolation", **kwargs):
         """Add frequency sweep.
 
         Parameters
@@ -248,7 +248,8 @@ class SimulationSetup(object):
             Name of the frequency sweep. The default is ``None``.
         frequency_set : list, optional
             List of frequency points. The default is ``None``.
-
+        sweep_type : str, optional
+            Sweep type. The default is ``"interpolation"``. Options are ``"discrete"``,"discrete"``.
         Returns
         -------
 
@@ -265,7 +266,7 @@ class SimulationSetup(object):
         for k, v in kwargs.items():
             if k in dir(sweep_data):
                 setattr(sweep_data, k, v)
-        sweep_data.type = kwargs.get("type") if kwargs.get("type") else "interpolation"
+        sweep_data.type = sweep_type
 
         if frequency_set is None:
             sweep_type = "linear_scale"
