@@ -64,6 +64,15 @@ class CfgModeler:
             self._pedb = parent._pedb
 
         def set_parameter_to_edb(self):
+            from ansys.edb.core.definition.padstack_def import (
+                PadstackDef as GrpcPadstackDef,
+            )
+            from ansys.edb.core.definition.padstack_def_data import (
+                PadstackDefData as GrpcPadstackDefData,
+            )
+
+            from pyedb.grpc.database.definition.padstack_def import PadstackDef
+
             if self.parent.traces:
                 for t in self.parent.traces:
                     obj = self._pedb.modeler.create_trace(
@@ -79,10 +88,10 @@ class CfgModeler:
 
             if self.parent.padstack_defs:
                 for p in self.parent.padstack_defs:
-                    pdata = self._pedb._edb.Definition.PadstackDefData.Create()
-                    pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
-                    pdef.SetData(pdata)
-                    pdef = EDBPadstack(pdef, self._pedb.padstacks)
+                    pdata = GrpcPadstackDefData.create()
+                    pdef = GrpcPadstackDef.create(self._pedb.active_db, p.name)
+                    pdef.data = pdata
+                    pdef = PadstackDef(self._pedb, pdef)
                     p.pyedb_obj = pdef
                     p.api.set_parameters_to_edb()
 
