@@ -179,7 +179,13 @@ class TestClass:
                             if sw_p_name == "frequencies":
                                 pass
                             else:
-                                assert sw_value == target_sw[sw_p_name]
+                                if edbapp.grpc:
+                                    if sw_value == "interpolation":
+                                        assert target_sw[sw_p_name].name == "INTERPOLATING_SWEEP"
+                                    else:
+                                        assert sw_value == target_sw[sw_p_name]
+                                else:
+                                    assert sw_value == target_sw[sw_p_name]
                 else:
                     assert value == target[p]
         edbapp.close()
