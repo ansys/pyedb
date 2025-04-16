@@ -120,7 +120,7 @@ class CfgModeler:
                         obj.aedt_name = p.name
                     elif p.type == "polygon":
                         obj = self._pedb.modeler.create_polygon(
-                            main_shape=p.points, layer_name=p.layer, net_name=p.net_name
+                            points=p.points, layer_name=p.layer, net_name=p.net_name
                         )
                         obj.aedt_name = p.name
 
