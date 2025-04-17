@@ -2133,3 +2133,11 @@ class TestClass:
         assert len(edb.padstacks.instances) == 473
 
         edb.close()
+
+    def test_import_layout_file(self):
+        input_file = os.path.join(local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example.gds")
+        control_file = os.path.join(
+            local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
+        )
+        map_file = os.path.join(local_path, "example_models", "cad", "GDS", "dummy_layermap.map")
+        assert self.edbapp.import_layout_file(input_file=input_file, control_file=control_file, map_file=map_file)

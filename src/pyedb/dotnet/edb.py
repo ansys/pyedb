@@ -632,9 +632,9 @@ class Edb(Database):
         tech_file : str, optional
             Technology file. The file can be *.ircx, *.vlc.tech, or *.itf
         map_file : str, optional
-            Layer map file.
+            Layer map .map file.
         layer_filter:str,optional
-            Layer filter file.
+            Layer filter .txt file.
 
         Returns
         -------
