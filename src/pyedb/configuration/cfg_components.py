@@ -280,7 +280,7 @@ class CfgComponent(CfgBase):
             self.parent.reference_designator = self.pyedb_obj.name
             self.retrieve_model_properties_from_edb()
             if self.pyedb_obj.type.lower() == "ic":
-                self._retrieve_ic_die_properties_from_edb()
+                self.retrieve_parameters_from_edb()
                 self._retrieve_port_properties_from_edb()
                 self._retrieve_solder_ball_properties_from_edb()
             elif self.pyedb_obj.type.lower() in ["io", "other"]:
