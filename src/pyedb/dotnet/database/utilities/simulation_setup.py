@@ -271,19 +271,13 @@ class SimulationSetup(object):
         if frequency_set is None:
             sweep_type = "linear_scale"
             start, stop, increment = "50MHz", "5GHz", "50MHz"
-            sweep_data.add(sweep_type, start, stop, increment)
-        elif len(frequency_set) == 0:
-            pass
-        else:
-            if not isinstance(frequency_set[0], list):
-                frequency_set = [frequency_set]
-            for fs in frequency_set:
-                sweep_data.add(*fs)
+            frequency_set = [sweep_type, start, stop, increment]
+        elif not isinstance(frequency_set[0], list):
+            frequency_set = [frequency_set]
 
-        ss_info = self.sim_setup_info
-        ss_info.add_sweep_data(sweep_data)
-        self.set_sim_setup_info(ss_info)
-        self._update_setup()
+        for fs in frequency_set:
+            sweep_type, start, stop, increment = fs
+            sweep_data.add(sweep_type, start, stop, increment)
         return sweep_data
 
     def delete(self):
