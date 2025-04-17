@@ -1071,18 +1071,37 @@ class TestClass:
                 ["linear count", "1MHz", "10MHz", 10],
             ],
         )
+        assert len(edbapp.setups["setup1"].sweeps["sweep1"].frequencies) == 10
+        assert edbapp.setups["setup1"].sweeps["sweep1"].frequency_string == ["LINC 0.001GHz 0.01GHz 10"]
         sweep2 = setup1.add_sweep(
             name="sweep2",
             frequency_set=[
                 ["log scale", "1kHz", "100kHz", 10],
             ],
         )
+        assert len(edbapp.setups["setup1"].sweeps["sweep2"].frequencies) == 21
+        assert edbapp.setups["setup1"].sweeps["sweep2"].frequency_string == ["DEC 1e-06GHz 0.0001GHz 10"]
         sweep3 = setup1.add_sweep(
             name="sweep3",
             frequency_set=[
                 ["linear scale", "20MHz", "30MHz", "1MHz"],
             ],
         )
+        assert len(edbapp.setups["setup1"].sweeps["sweep3"].frequencies) == 11
+        assert edbapp.setups["setup1"].sweeps["sweep3"].frequency_string == ["LIN 0.02GHz 0.03GHz 0.001GHz"]
+        edbapp.setups["setup1"].sweeps["sweep1"].frequency_string = [
+            "DEC 100kHz 1MHz 2",
+            "LINC 2MHz 10MHz 2",
+            "LIN 10MHz 20MHz 10MHz",
+        ]
+        assert edbapp.setups["setup1"].sweeps["sweep1"].frequencies == [
+            100000.0,
+            316227.76601683797,
+            1000000.0,
+            2000000.0,
+            10000000.0,
+            20000000.0,
+        ]
         edbapp.close()
 
     @pytest.mark.skipif(

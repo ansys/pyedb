@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+import re
 import warnings
 
 
@@ -524,23 +524,76 @@ class SweepData(object):
 
     def add(self, sweep_type, start, stop, increment):
         sweep_type = sweep_type.replace(" ", "_")
-        start = start.upper().replace("Z", "z") if isinstance(start, str) else str(start)
-        stop = stop.upper().replace("Z", "z") if isinstance(stop, str) else str(stop)
-        increment = increment.upper().replace("Z", "z") if isinstance(increment, str) else int(increment)
-        if sweep_type in ["linear_count", "linear_scale"]:
-            freqs = list(self._edb_object.SetFrequencies(start, stop, increment))
-        elif sweep_type == "log_scale":
-            freqs = list(self._edb_object.SetLogFrequencies(start, stop, increment))
+        start = f"{self._pedb.edb_value(start).ToDouble() / 1e9}GHz"
+        stop = f"{self._pedb.edb_value(stop).ToDouble() / 1e9}GHz"
+
+        if sweep_type == "linear_scale":
+            increment = f"{self._pedb.edb_value(increment).ToDouble() / 1e9}GHz"
+            frequencty_string = f"LIN {start} {stop} {increment}"
         else:
-            raise ValueError("sweep_type must be either 'linear_count', 'linear_scale' or 'log_scale")
-        return self.add_frequencies(freqs)
+            increment = int(increment)
+            if sweep_type == "log_scale":
+                frequencty_string = f"DEC {start} {stop} {increment}"
+            elif sweep_type == "linear_count":
+                frequencty_string = f"LINC {start} {stop} {increment}"
+            else:
+                raise ValueError("sweep_type must be either 'linear_count', 'linear_scale' or 'log_scale")
+        temp = self.frequency_string
+        temp.append(frequencty_string)
+        self.frequency_string = temp
+        return self.frequencies
+
+    @property
+    def frequency_string(self):
+        """A string describing the frequency sweep. Below is an example.
+        'LIN 0GHz 20GHz 0.05GHz LINC 20GHz 30GHz 10 DEC 40GHz 50GHz 10'
+        """
+        pattern = r"(?:LIN[C]?|DEC) [^ ]+ [^ ]+ [^ ]+"
+        grouped = re.findall(pattern, self._edb_object.FrequencyString)
+        return grouped
+
+    @frequency_string.setter
+    def frequency_string(self, value):
+        value = value if isinstance(value, list) else [value]
+        temp = []
+        for i in value:
+            sweep_type, start, stop, increment = i.split(" ")
+            start = start.replace("k", "K").replace("h", "H").replace("Z", "z").replace("g", "G")
+            stop = stop.replace("k", "K").replace("h", "H").replace("Z", "z").replace("g", "G")
+            temp.append(" ".join([sweep_type, start, stop, increment]))
+        value = temp
+        self._edb_object.FrequencyString = " ".join(value)
+
+        frequencies = []
+        for i in value:
+            sweep_type, start, stop, increment = i.split(" ")
+            if sweep_type == "LIN":
+                frequencies.extend(self._edb_object.SetFrequencies(start, stop, increment))
+            else:
+                increment = int(increment)
+                if sweep_type == "DEC":
+                    frequencies.extend(self._edb_object.SetLogFrequencies(start, stop, increment))
+                elif sweep_type == "LINC":
+                    frequencies.extend(self._edb_object.SetFrequencies(start, stop, increment))
+
+        self.clear()
+        self.add_frequencies(frequencies)
 
     def add_frequencies(self, frequencies):
         if not isinstance(frequencies, list):
             frequencies = [frequencies]
+
+        temp = []
+        for i in frequencies:
+            i = self._pedb.edb_value(i).ToDouble()
+            if i not in temp and i not in self.frequencies:
+                temp.append(i)
+        frequencies = temp
+
         for i in frequencies:
             i = self._pedb.edb_value(i).ToString()
             self._edb_object.Frequencies.Add(i)
+        self._update_sweep()
         return list(self._edb_object.Frequencies)
 
     def clear(self):
