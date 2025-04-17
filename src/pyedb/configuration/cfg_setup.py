@@ -23,23 +23,6 @@
 from pyedb.configuration.cfg_common import CfgBase
 
 
-class CfgFrequencies(CfgBase):
-    def __init__(self, **kwargs):
-        self.distribution = kwargs.get("distribution").replace(" ", "_") if kwargs.get("distribution") else None
-        self.start = kwargs.get("start")
-        self.stop = kwargs.get("stop")
-        self.increment = kwargs.get("increment", kwargs.get("points", kwargs.get("samples", kwargs.get("step"))))
-
-
-class CfgSweepData(CfgBase):
-    def __init__(self, **kwargs):
-        self.name = kwargs.get("name")
-        self.type = kwargs.get("type").lower() if kwargs.get("type") else None
-        self.frequencies = []
-        for kw in kwargs.get("frequencies", []):
-            self.frequencies.append(CfgFrequencies(**kw))
-
-
 class CfgSetup(CfgBase):
     class Common:
         @property
@@ -53,9 +36,16 @@ class CfgSetup(CfgBase):
         def _apply_freq_sweep(self, edb_setup):
             for i in self.parent.freq_sweep:
                 f_set = []
-                for f in i.frequencies:
-                    f_set.append([f.distribution, f.start, f.stop, f.increment])
-                edb_setup.add_sweep(i.name, frequency_set=f_set, sweep_type=i.type)
+                freq_string = []
+                for f in i.get("frequencies", []):
+                    if isinstance(f, dict):
+                        increment = f.get("increment", f.get("points", f.get("samples", f.get("step"))))
+                        f_set.append([f["distribution"], f["start"], f["stop"], increment])
+                    else:
+                        freq_string.append(f)
+                sweep = edb_setup.add_sweep(i["name"], frequency_set=f_set, sweep_type=i["type"])
+                if len(freq_string) > 0:
+                    sweep.frequency_string = freq_string
 
     class Grpc(Common):
         def __init__(self, parent):
@@ -65,19 +55,26 @@ class CfgSetup(CfgBase):
         def __init__(self, parent):
             super().__init__(parent)
 
-    def __init__(self, pedb, **kwargs):
+    def __init__(self, pedb, pedb_obj, **kwargs):
         self.pedb = pedb
+        self.pyedb_obj = pedb_obj
         self.name = kwargs.get("name")
         self.type = kwargs.get("type").lower() if kwargs.get("type") else None
 
         self.freq_sweep = []
-        for i in kwargs.get("freq_sweep", []):
-            self.freq_sweep.append(CfgSweepData(**i))
+
+        self.freq_sweep = kwargs.get("freq_sweep", [])
 
         if self.pedb.grpc:
             self.api = self.Grpc(self)
         else:
             self.api = self.DotNet(self)
+
+    def _to_dict(self):
+        return {
+            "name": self.name,
+            "type": self.type,
+        }
 
 
 class CfgSIwaveACSetup(CfgSetup):
@@ -144,12 +141,30 @@ class CfgHFSSSetup(CfgSetup):
                     # mesh_region=i.mesh_region
                 )
 
+        def retrieve_parameters_from_edb(self):
+            self.parent.name = self.pyedb_obj.name
+            self.parent.type = self.pyedb_obj.type
+            adaptive_frequency_data_list = list(self.pyedb_obj.adaptive_settings.adaptive_frequency_data_list)[0]
+            self.parent.f_adapt = adaptive_frequency_data_list.adaptive_frequency
+            self.parent.max_num_passes = adaptive_frequency_data_list.max_passes
+            self.parent.max_mag_delta_s = adaptive_frequency_data_list.max_delta
+            self.parent.freq_sweep = []
+            for name, sw in self.pyedb_obj.sweeps.items():
+                self.parent.freq_sweep.append({
+                    "name": name,
+                    "type": sw.type,
+                    "frequencies": sw.frequency_string
+                })
+
+            for mop in self.parent.mesh_operations:
+                mop.retrieve_parameters_from_edb()
+
     class DotNet(Grpc):
         def __init__(self, parent):
             super().__init__(parent)
 
-    def __init__(self, pedb, **kwargs):
-        super().__init__(pedb, **kwargs)
+    def __init__(self, pedb, pyedb_obj, **kwargs):
+        super().__init__(pedb, pyedb_obj, **kwargs)
 
         self.f_adapt = kwargs.get("f_adapt")
         self.max_num_passes = kwargs.get("max_num_passes")
@@ -158,6 +173,18 @@ class CfgHFSSSetup(CfgSetup):
         self.mesh_operations = []
         for i in kwargs.get("mesh_operations", []):
             self.mesh_operations.append(CfgLengthMeshOperation(**i))
+
+    def to_dict(self):
+        temp = self._to_dict()
+        mesh_operations = [i.to_dict() for i in self.mesh_operations]
+        temp.update({
+            "f_adapt": self.f_adapt,
+            "max_num_passes": self.max_num_passes,
+            "max_mag_delta_s": self.max_mag_delta_s,
+            "mesh_operations": mesh_operations,
+            "freq_sweep": self.freq_sweep
+        })
+        return temp
 
 
 class CfgDcIrSettings(CfgBase):
@@ -173,6 +200,14 @@ class CfgMeshOperation(CfgBase):
         self.nets_layers_list = kwargs.get("nets_layers_list", {})
         self.refine_inside = kwargs.get("refine_inside", False)
 
+    def _to_dict(self):
+        return {
+            "name": self.name,
+            "type": self.type,
+            "nets_layers_list": self.nets_layers_list,
+            "refine_inside": self.refine_inside,
+        }
+
 
 class CfgLengthMeshOperation(CfgMeshOperation):
     def __init__(self, **kwargs):
@@ -184,6 +219,13 @@ class CfgLengthMeshOperation(CfgMeshOperation):
         self.restrict_length = kwargs.get("restrict_length", True)
         self.max_length = kwargs.get("max_length", "1mm")
 
+    def to_dict(self):
+        temp = self._to_dict()
+        temp.update({
+            "restrict_length": self.restrict_length,
+            "max_length": self.max_length,
+        })
+
 
 class CfgSetups:
     def __init__(self, pedb, setups_data):
@@ -191,7 +233,7 @@ class CfgSetups:
         self.setups = []
         for stp in setups_data:
             if stp.get("type").lower() == "hfss":
-                self.setups.append(CfgHFSSSetup(self.pedb, **stp))
+                self.setups.append(CfgHFSSSetup(self.pedb, None, **stp))
             elif stp.get("type").lower() in ["siwave_ac", "siwave_syz"]:
                 self.setups.append(CfgSIwaveACSetup(self.pedb, **stp))
             elif stp.get("type").lower() == "siwave_dc":
@@ -200,6 +242,17 @@ class CfgSetups:
     def apply(self):
         for s in self.setups:
             s.api.set_parameters_to_edb()
+
+    def to_dict(self):
+        return [i.to_dict() for i in self.setups]
+
+    def retrieve_parameters_from_edb(self):
+        self.setups = []
+        for _, setup in self.pedb.setups.items():
+            if setup.type == "hfss":
+                hfss = CfgHFSSSetup(self.pedb, setup)
+                hfss.api.retrieve_parameters_from_edb()
+                self.setups.append(hfss)
 
     def get_data_from_db(self):
         setups = []
