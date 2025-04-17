@@ -20,10 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.configuration.cfg_common import CfgBase
 
-
-class CfgSetup(CfgBase):
+class CfgSetup:
     class Common:
         @property
         def pyedb_obj(self):
@@ -131,14 +129,13 @@ class CfgHFSSSetup(CfgSetup):
 
             for i in self.parent.mesh_operations:
                 edb_setup.add_length_mesh_operation(
-                    net_layer_list=i.nets_layers_list,
-                    name=i.name,
-                    # max_elements=i.max_elements,
-                    max_length=i.max_length,
-                    # restrict_elements=i.restrict_max_elements,
-                    restrict_length=i.restrict_length,
-                    refine_inside=i.refine_inside,
-                    # mesh_region=i.mesh_region
+                    name=i["name"],
+                    max_elements=i.get("max_elements", 1000),
+                    max_length=i.get("max_length", "1mm"),
+                    restrict_length=i.get("restrict_length", True),
+                    refine_inside=i.get("refine_inside", False),
+                    #mesh_region=i.get(mesh_region),
+                    net_layer_list=i.get("nets_layers_list", {}),
                 )
 
         def retrieve_parameters_from_edb(self):
@@ -156,8 +153,17 @@ class CfgHFSSSetup(CfgSetup):
                     "frequencies": sw.frequency_string
                 })
 
-            for mop in self.parent.mesh_operations:
-                mop.retrieve_parameters_from_edb()
+            self.parent.mesh_operations = []
+            for name, mop in self.pyedb_obj.mesh_operations.items():
+                self.parent.mesh_operations.append({
+                    "name": name,
+                    "type": mop.type,
+                    "max_elements": mop.max_elements,
+                    "max_length": mop.max_length,
+                    "restrict_length": mop.restrict_length,
+                    "refine_inside": mop.refine_inside,
+                    "nets_layers_list": mop.nets_layers_list
+                })
 
     class DotNet(Grpc):
         def __init__(self, parent):
@@ -170,61 +176,23 @@ class CfgHFSSSetup(CfgSetup):
         self.max_num_passes = kwargs.get("max_num_passes")
         self.max_mag_delta_s = kwargs.get("max_mag_delta_s")
 
-        self.mesh_operations = []
-        for i in kwargs.get("mesh_operations", []):
-            self.mesh_operations.append(CfgLengthMeshOperation(**i))
+        self.mesh_operations = kwargs.get("mesh_operations", [])
 
     def to_dict(self):
         temp = self._to_dict()
-        mesh_operations = [i.to_dict() for i in self.mesh_operations]
         temp.update({
             "f_adapt": self.f_adapt,
             "max_num_passes": self.max_num_passes,
             "max_mag_delta_s": self.max_mag_delta_s,
-            "mesh_operations": mesh_operations,
+            "mesh_operations": self.mesh_operations,
             "freq_sweep": self.freq_sweep
         })
         return temp
 
 
-class CfgDcIrSettings(CfgBase):
+class CfgDcIrSettings:
     def __init__(self, **kwargs):
         self.export_dc_thermal_data = kwargs.get("export_dc_thermal_data")
-
-
-class CfgMeshOperation(CfgBase):
-    def __init__(self, **kwargs):
-        self.name = kwargs.get("name")
-        self.type = kwargs.get("type")
-        # self.mesh_region = kwargs.get("mesh_region")
-        self.nets_layers_list = kwargs.get("nets_layers_list", {})
-        self.refine_inside = kwargs.get("refine_inside", False)
-
-    def _to_dict(self):
-        return {
-            "name": self.name,
-            "type": self.type,
-            "nets_layers_list": self.nets_layers_list,
-            "refine_inside": self.refine_inside,
-        }
-
-
-class CfgLengthMeshOperation(CfgMeshOperation):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        # waiting bug review
-        # self.restrict_max_elements = kwargs.get("restrict_max_elements", True)
-        # self.max_elements = kwargs.get("max_elements", 1000)
-        self.restrict_length = kwargs.get("restrict_length", True)
-        self.max_length = kwargs.get("max_length", "1mm")
-
-    def to_dict(self):
-        temp = self._to_dict()
-        temp.update({
-            "restrict_length": self.restrict_length,
-            "max_length": self.max_length,
-        })
 
 
 class CfgSetups:

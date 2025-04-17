@@ -94,6 +94,7 @@ class TestClass:
                             "name": "mop_1",
                             "type": "length",
                             "max_length": "3mm",
+                            "max_elements": 100,
                             "restrict_length": True,
                             "refine_inside": False,
                             "nets_layers_list": {"GND": ["1_Top", "16_Bottom"]},
@@ -119,7 +120,6 @@ class TestClass:
                     for mop in value:
                         target_mop = [i for i in target["mesh_operations"] if i["name"] == mop["name"]][0]
                         for mop_p_name, mop_value in mop.items():
-                            print(mop_p_name)
                             assert mop_value == target_mop[mop_p_name]
                 else:
                     assert value == target[p]
