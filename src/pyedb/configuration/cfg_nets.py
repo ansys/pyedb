@@ -24,8 +24,39 @@
 class CfgNets:
     """Manage configuration net class."""
 
+    class Grpc:
+        def __init__(self, parent):
+            self.parent = parent
+            self._pedb = parent._pedb
+
+        def set_parameter_to_edb(self):
+            for signal_net in self.parent.signal_nets:
+                if signal_net in self._pedb.nets:
+                    self._pedb.nets.nets[signal_net].is_power_ground = False
+            for power_net in self.parent.power_nets:
+                if power_net in self._pedb.nets:
+                    self._pedb.nets.nets[power_net].is_power_ground = True
+
+        def get_parameter_from_edb(self):
+            """Get net information."""
+            for net in self._pedb.nets.signal:
+                self.parent.signal_nets.append(net)
+            for net in self._pedb.nets.power:
+                self.parent.power_nets.append(net)
+            data = {"signal_nets": self.parent.signal_nets, "power_ground_nets": self.parent.power_nets}
+            return data
+
+    class DotNet(Grpc):
+        def __init__(self, parent):
+            self.parent = parent
+            super().__init__(parent)
+
     def __init__(self, pdata, signal_nets=None, power_nets=None):
         self._pedb = pdata._pedb
+        if self._pedb.grpc:
+            self.api = self.Grpc(self)
+        else:
+            self.api = self.DotNet(self)
         self.signal_nets = []
         self.power_nets = []
         if signal_nets:
@@ -35,23 +66,8 @@ class CfgNets:
 
     def apply(self):
         """Apply net on layout."""
-        for signal_net in self.signal_nets:
-            if signal_net in self._pedb.nets:
-                self._pedb.nets.nets[signal_net].is_power_ground = False
-        for power_net in self.power_nets:
-            if power_net in self._pedb.nets:
-                self._pedb.nets.nets[power_net].is_power_ground = True
-
-    def _load_data_from_db(self):
-        self.signal_nets = []
-        self.power_nets = []
-        for net in self._pedb.nets.signal:
-            self.signal_nets.append(net)
-        for net in self._pedb.nets.power:
-            self.power_nets.append(net)
+        self.api.set_parameter_to_edb()
 
     def get_data_from_db(self):
         """Get net information."""
-        self._load_data_from_db()
-        data = {"signal_nets": self.signal_nets, "power_ground_nets": self.power_nets}
-        return data
+        return self.api.get_parameter_from_edb()

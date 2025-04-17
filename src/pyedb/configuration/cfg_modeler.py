@@ -58,8 +58,168 @@ class CfgPlane:
 class CfgModeler:
     """Manage configuration general settings."""
 
+    class Grpc:
+        def __init__(self, parent):
+            self.parent = parent
+            self._pedb = parent._pedb
+
+        def set_parameter_to_edb(self):
+            from ansys.edb.core.definition.padstack_def import (
+                PadstackDef as GrpcPadstackDef,
+            )
+            from ansys.edb.core.definition.padstack_def_data import (
+                PadstackDefData as GrpcPadstackDefData,
+            )
+
+            from pyedb.grpc.database.definition.padstack_def import PadstackDef
+
+            if self.parent.traces:
+                for t in self.parent.traces:
+                    obj = self._pedb.modeler.create_trace(
+                        path_list=t.path,
+                        layer_name=t.layer,
+                        net_name=t.net_name,
+                        width=t.width,
+                        start_cap_style=t.start_cap_style,
+                        end_cap_style=t.end_cap_style,
+                        corner_style=t.corner_style,
+                    )
+                    obj.aedt_name = t.name
+
+            if self.parent.padstack_defs:
+                for p in self.parent.padstack_defs:
+                    pdata = GrpcPadstackDefData.create()
+                    pdef = GrpcPadstackDef.create(self._pedb.active_db, p.name)
+                    pdef.data = pdata
+                    pdef = PadstackDef(self._pedb, pdef)
+                    p.pyedb_obj = pdef
+                    p.api.set_parameters_to_edb()
+
+            if self.parent.padstack_instances:
+                for p in self.parent.padstack_instances:
+                    p_inst = self._pedb.padstacks.place(
+                        via_name=p.name,
+                        net_name=p.net_name,
+                        position=p.position,
+                        definition_name=p.definition,
+                    )
+                    p.pyedb_obj = p_inst
+                    p.api.set_parameters_to_edb()
+
+            if self.parent.planes:
+                for p in self.parent.planes:
+                    if p.type == "rectangle":
+                        obj = self._pedb.modeler.create_rectangle(
+                            layer_name=p.layer,
+                            net_name=p.net_name,
+                            lower_left_point=p.lower_left_point,
+                            upper_right_point=p.upper_right_point,
+                            corner_radius=p.corner_radius,
+                            rotation=p.rotation,
+                        )
+                        obj.aedt_name = p.name
+                    elif p.type == "polygon":
+                        obj = self._pedb.modeler.create_polygon(
+                            points=p.points, layer_name=p.layer, net_name=p.net_name
+                        )
+                        obj.aedt_name = p.name
+
+                    for v in p.voids:
+                        for i in self._pedb.layout.primitives:
+                            if i.aedt_name == v:
+                                self._pedb.modeler.add_void(obj, i)
+
+            if self.parent.components:
+                pedb_p_inst = self._pedb.padstacks.instances_by_name
+                for c in self.parent.components:
+                    obj = self._pedb.components.create(
+                        [pedb_p_inst[i] for i in c.pins],
+                        component_name=c.reference_designator,
+                        placement_layer=c.placement_layer,
+                        component_part_name=c.definition,
+                    )
+                    c.pyedb_obj = obj
+                    c.api.set_parameters_to_edb()
+
+    class DotNet(Grpc):
+        def __init__(self, parent):
+            super().__init__(parent)
+
+        def set_parameter_to_edb(self):
+            if self.parent.traces:
+                for t in self.parent.traces:
+                    obj = self._pedb.modeler.create_trace(
+                        path_list=t.path,
+                        layer_name=t.layer,
+                        net_name=t.net_name,
+                        width=t.width,
+                        start_cap_style=t.start_cap_style,
+                        end_cap_style=t.end_cap_style,
+                        corner_style=t.corner_style,
+                    )
+                    obj.aedt_name = t.name
+
+            if self.parent.padstack_defs:
+                for p in self.parent.padstack_defs:
+                    pdata = self._pedb._edb.Definition.PadstackDefData.Create()
+                    pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
+                    pdef.SetData(pdata)
+                    pdef = EDBPadstack(pdef, self._pedb.padstacks)
+                    p.pyedb_obj = pdef
+                    p.api.set_parameters_to_edb()
+
+            if self.parent.padstack_instances:
+                for p in self.parent.padstack_instances:
+                    p_inst = self._pedb.padstacks.place(
+                        via_name=p.name,
+                        net_name=p.net_name,
+                        position=p.position,
+                        definition_name=p.definition,
+                    )
+                    p.pyedb_obj = p_inst
+                    p.api.set_parameters_to_edb()
+
+            if self.parent.planes:
+                for p in self.parent.planes:
+                    if p.type == "rectangle":
+                        obj = self._pedb.modeler.create_rectangle(
+                            layer_name=p.layer,
+                            net_name=p.net_name,
+                            lower_left_point=p.lower_left_point,
+                            upper_right_point=p.upper_right_point,
+                            corner_radius=p.corner_radius,
+                            rotation=p.rotation,
+                        )
+                        obj.aedt_name = p.name
+                    elif p.type == "polygon":
+                        obj = self._pedb.modeler.create_polygon(
+                            main_shape=p.points, layer_name=p.layer, net_name=p.net_name
+                        )
+                        obj.aedt_name = p.name
+
+                    for v in p.voids:
+                        for i in self._pedb.layout.primitives:
+                            if i.aedt_name == v:
+                                self._pedb.modeler.add_void(obj, i)
+
+            if self.parent.components:
+                pedb_p_inst = self._pedb.padstacks.instances_by_name
+                for c in self.parent.components:
+                    obj = self._pedb.components.create(
+                        [pedb_p_inst[i] for i in c.pins],
+                        component_name=c.reference_designator,
+                        placement_layer=c.placement_layer,
+                        component_part_name=c.definition,
+                    )
+                    c.pyedb_obj = obj
+                    c.api.set_parameters_to_edb()
+
     def __init__(self, pedb, data):
         self._pedb = pedb
+        if self._pedb.grpc:
+            self.api = self.Grpc(self)
+        else:
+            self.api = self.DotNet(self)
         self.traces = [CfgTrace(**i) for i in data.get("traces", [])]
         self.padstack_defs = [
             CfgPadstackDefinition(self._pedb, None, **i) for i in data.get("padstack_definitions", [])
@@ -71,70 +231,4 @@ class CfgModeler:
         self.components = [CfgComponent(self._pedb, None, **i) for i in data.get("components", [])]
 
     def apply(self):
-        if self.traces:
-            for t in self.traces:
-                obj = self._pedb.modeler.create_trace(
-                    path_list=t.path,
-                    layer_name=t.layer,
-                    net_name=t.net_name,
-                    width=t.width,
-                    start_cap_style=t.start_cap_style,
-                    end_cap_style=t.end_cap_style,
-                    corner_style=t.corner_style,
-                )
-                obj.aedt_name = t.name
-
-        if self.padstack_defs:
-            for p in self.padstack_defs:
-                pdata = self._pedb._edb.Definition.PadstackDefData.Create()
-                pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
-                pdef.SetData(pdata)
-                pdef = EDBPadstack(pdef, self._pedb.padstacks)
-                p.pyedb_obj = pdef
-                p.api.set_parameters_to_edb()
-
-        if self.padstack_instances:
-            for p in self.padstack_instances:
-                p_inst = self._pedb.padstacks.place(
-                    via_name=p.name,
-                    net_name=p.net_name,
-                    position=p.position,
-                    definition_name=p.definition,
-                )
-                p.pyedb_obj = p_inst
-                p.api.set_parameters_to_edb()
-
-        if self.planes:
-            for p in self.planes:
-                if p.type == "rectangle":
-                    obj = self._pedb.modeler.create_rectangle(
-                        layer_name=p.layer,
-                        net_name=p.net_name,
-                        lower_left_point=p.lower_left_point,
-                        upper_right_point=p.upper_right_point,
-                        corner_radius=p.corner_radius,
-                        rotation=p.rotation,
-                    )
-                    obj.aedt_name = p.name
-                elif p.type == "polygon":
-                    obj = self._pedb.modeler.create_polygon(
-                        main_shape=p.points, layer_name=p.layer, net_name=p.net_name
-                    )
-                    obj.aedt_name = p.name
-
-                for v in p.voids:
-                    for i in self._pedb.layout.primitives:
-                        if i.aedt_name == v:
-                            self._pedb.modeler.add_void(obj, i)
-
-        if self.components:
-            pedb_p_inst = self._pedb.padstacks.instances_by_name
-            for c in self.components:
-                obj = self._pedb.components.create(
-                    [pedb_p_inst[i] for i in c.pins],
-                    component_name=c.reference_designator,
-                    placement_layer=c.placement_layer,
-                    component_part_name=c.definition,
-                )
-                c.pyedb_obj = obj
-                c.api.set_parameters_to_edb()
+        self.api.set_parameter_to_edb()
