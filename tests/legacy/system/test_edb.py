@@ -1089,10 +1089,19 @@ class TestClass:
         )
         assert len(edbapp.setups["setup1"].sweeps["sweep3"].frequencies) == 11
         assert edbapp.setups["setup1"].sweeps["sweep3"].frequency_string == ["LIN 0.02GHz 0.03GHz 0.001GHz"]
-        edbapp.setups["setup1"].sweeps["sweep1"].frequency_string = ["DEC 100kHz 1MHz 2", "LINC 2MHz 10MHz 2",
-                                                                     "LIN 10MHz 20MHz 10MHz"]
-        assert edbapp.setups["setup1"].sweeps["sweep1"].frequencies == [100000.0, 316227.76601683797, 1000000.0,
-                                                                        2000000.0, 10000000.0, 20000000.0]
+        edbapp.setups["setup1"].sweeps["sweep1"].frequency_string = [
+            "DEC 100kHz 1MHz 2",
+            "LINC 2MHz 10MHz 2",
+            "LIN 10MHz 20MHz 10MHz",
+        ]
+        assert edbapp.setups["setup1"].sweeps["sweep1"].frequencies == [
+            100000.0,
+            316227.76601683797,
+            1000000.0,
+            2000000.0,
+            10000000.0,
+            20000000.0,
+        ]
         edbapp.close()
 
     @pytest.mark.skipif(
