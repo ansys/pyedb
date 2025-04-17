@@ -73,9 +73,14 @@ class Ipc2581(object):
             padstack_def = PadstackDef()
             padstack_def.name = padstack_name
             padstack_def.padstack_hole_def.name = padstack_name
-            if padstackdef.hole_properties:
+            if not self._pedb.grpc:
+                if padstackdef.hole_properties:
+                    padstack_def.padstack_hole_def.diameter = self.from_meter_to_units(
+                        padstackdef.hole_properties[0], self.units
+                    )
+            else:
                 padstack_def.padstack_hole_def.diameter = self.from_meter_to_units(
-                    padstackdef.hole_properties[0], self.units
+                    padstackdef.hole_diameter, self.units
                 )
             for layer, pad in padstackdef.pad_by_layer.items():
                 if pad.parameters_values:
@@ -124,7 +129,7 @@ class Ipc2581(object):
                         primitive_ref = "Default"
                     padstack_def.add_padstack_pad_def(layer=layer, pad_use="REGULAR", primitive_ref=primitive_ref)
             for layer, antipad in padstackdef.antipad_by_layer.items():
-                if antipad.parameters_values:
+                if antipad:
                     if antipad.geometry_type == 1:
                         primitive_ref = "CIRCLE_{}".format(
                             self.from_meter_to_units(antipad.parameters_values[0], self.units)
@@ -169,7 +174,7 @@ class Ipc2581(object):
                         primitive_ref = "Default"
                     padstack_def.add_padstack_pad_def(layer=layer, pad_use="ANTIPAD", primitive_ref=primitive_ref)
             for layer, thermalpad in padstackdef.thermalpad_by_layer.items():
-                if thermalpad.parameters_values:
+                if thermalpad:
                     if thermalpad.geometry_type == 1:
                         primitive_ref = "CIRCLE_{}".format(
                             self.from_meter_to_units(thermalpad.parameters_values[0], self.units)
@@ -240,7 +245,10 @@ class Ipc2581(object):
             self.bom.bom_items.append(bom_item)
 
     def add_layers_info(self):
-        self.design_name = self._pedb.layout.cell.GetName()
+        if not self._pedb.grpc:
+            self.design_name = self._pedb.layout.cell.GetName()
+        else:
+            self.design_name = self._pedb.layout.cell.name
         self.ecad.design_name = self.design_name
         self.ecad.cad_header.units = self.units
         self.ecad.cad_data.stackup.total_thickness = self.from_meter_to_units(
@@ -264,31 +272,20 @@ class Ipc2581(object):
             loss_tg = 0
             embedded = "NOT_EMBEDDED"
             # try:
-            material_name = self._pedb.stackup.layers[layer_name]._edb_layer.GetMaterial()
-            edb_material = self._pedb.edb_api.definition.MaterialDef.FindByName(self._pedb.active_db, material_name)
+            material_name = self._pedb.stackup.layers[layer_name].material
+            material = self._pedb.materials[material_name]
             material_type = "CONDUCTOR"
             if self._pedb.stackup.layers[layer_name].type == "dielectric":
                 layer_type = "DIELPREG"
                 material_type = "DIELECTRIC"
-
-                permitivity = edb_material.GetProperty(self._pedb.edb_api.definition.MaterialPropertyId.Permittivity)[1]
-                if not isinstance(permitivity, float):
-                    permitivity = permitivity.ToDouble()
-                loss_tg = edb_material.GetProperty(
-                    self._pedb.edb_api.definition.MaterialPropertyId.DielectricLossTangent
-                )[1]
-                if not isinstance(loss_tg, float):
-                    loss_tg = loss_tg.ToDouble()
+                permitivity = material.permittivity
+                loss_tg = material.loss_tangent
                 conductivity = 0
             if layer_type == "CONDUCTOR":
-                conductivity = edb_material.GetProperty(self._pedb.edb_api.definition.MaterialPropertyId.Conductivity)[
-                    1
-                ]
-                if not isinstance(conductivity, float):
-                    conductivity = conductivity.ToDouble()
+                conductivity = material.conductivity
             self.ecad.cad_header.add_spec(
                 name=layer_name,
-                material=self._pedb.stackup.layers[layer_name]._edb_layer.GetMaterial(),
+                material=material_name,
                 layer_type=material_type,
                 conductivity=str(conductivity),
                 dielectric_constant=str(permitivity),
@@ -351,35 +348,36 @@ class Ipc2581(object):
         self.ecad.cad_data.cad_data_step.add_drill_layer_feature(via_list, "DRILL_1-{}".format(l1))
 
     def from_meter_to_units(self, value, units):
-        if isinstance(value, str):
-            value = float(value)
-        if isinstance(value, list):
-            returned_list = []
-            for val in value:
-                if isinstance(val, str):
-                    val = float(val)
-                if units.lower() == "mm":
-                    returned_list.append(round(val * 1000, 4))
-                if units.lower() == "um":
-                    returned_list.append(round(val * 1e6, 4))
+        if value:
+            if isinstance(value, str):
+                value = float(value)
+            if isinstance(value, list):
+                returned_list = []
+                for val in value:
+                    if isinstance(val, str):
+                        val = float(val)
+                    if units.lower() == "mm":
+                        returned_list.append(round(val * 1000, 4))
+                    if units.lower() == "um":
+                        returned_list.append(round(val * 1e6, 4))
+                    if units.lower() == "mils":
+                        returned_list.append(round(val * 39370.079, 4))
+                    if units.lower() == "inch":
+                        returned_list.append(round(val * 39.370079, 4))
+                    if units.lower() == "cm":
+                        returned_list.append(round(val * 100, 4))
+                return returned_list
+            else:
+                if units.lower() == "millimeter":
+                    return round(value * 1000, 4)
+                if units.lower() == "micrometer":
+                    return round(value * 1e6, 4)
                 if units.lower() == "mils":
-                    returned_list.append(round(val * 39370.079, 4))
+                    return round(value * 39370.079, 4)
                 if units.lower() == "inch":
-                    returned_list.append(round(val * 39.370079, 4))
-                if units.lower() == "cm":
-                    returned_list.append(round(val * 100, 4))
-            return returned_list
-        else:
-            if units.lower() == "millimeter":
-                return round(value * 1000, 4)
-            if units.lower() == "micrometer":
-                return round(value * 1e6, 4)
-            if units.lower() == "mils":
-                return round(value * 39370.079, 4)
-            if units.lower() == "inch":
-                return round(value * 39.370079, 4)
-            if units.lower() == "centimeter":
-                return round(value * 100, 4)
+                    return round(value * 39.370079, 4)
+                if units.lower() == "centimeter":
+                    return round(value * 100, 4)
 
     def write_xml(self):
         if self.file_path:

@@ -48,15 +48,16 @@ class Profile(object):
         for poly in self.profile:
             for feature in poly.features:
                 if feature.feature_type == 0:
-                    polygon = ET.SubElement(profile, "Polygon")
-                    polygon_begin = ET.SubElement(polygon, "PolyBegin")
-                    polygon_begin.set(
-                        "x", str(self._ipc.from_meter_to_units(feature.polygon.poly_steps[0].x, self._ipc.units))
-                    )
-                    polygon_begin.set(
-                        "y", str(self._ipc.from_meter_to_units(feature.polygon.poly_steps[0].y, self._ipc.units))
-                    )
-                    for poly_step in feature.polygon.poly_steps[1:]:
-                        poly_step.write_xml(polygon, self._ipc)
-                    for cutout in feature.polygon.cutout:
-                        cutout.write_xml(profile, self._ipc)
+                    if feature.polygon.poly_steps:
+                        polygon = ET.SubElement(profile, "Polygon")
+                        polygon_begin = ET.SubElement(polygon, "PolyBegin")
+                        polygon_begin.set(
+                            "x", str(self._ipc.from_meter_to_units(feature.polygon.poly_steps[0].x, self._ipc.units))
+                        )
+                        polygon_begin.set(
+                            "y", str(self._ipc.from_meter_to_units(feature.polygon.poly_steps[0].y, self._ipc.units))
+                        )
+                        for poly_step in feature.polygon.poly_steps[1:]:
+                            poly_step.write_xml(polygon, self._ipc)
+                        for cutout in feature.polygon.cutout:
+                            cutout.write_xml(profile, self._ipc)

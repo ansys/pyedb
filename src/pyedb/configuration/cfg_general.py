@@ -24,22 +24,42 @@
 class CfgGeneral:
     """Manage configuration general settings."""
 
+    class Grpc:
+        def __init__(self, parent):
+            self.parent = parent
+            self.pedb = parent.pedb
+
+        def set_parameters_to_edb(self):
+            self.pedb.active_cell.anti_pads_always_on = self.parent.anti_pads_always_on
+            self.pedb.active_cell.suppress_pads = self.parent.suppress_pads
+
+        def get_parameters_from_edb(self):
+            anti_pads_always_on = self.pedb.design_options.antipads_always_on
+            suppress_pads = self.pedb.design_options.suppress_pads
+            data = {"anti_pads_always_on": anti_pads_always_on, "suppress_pads": suppress_pads}
+            return data
+
+    class DotNet(Grpc):
+        def __init__(self, parent):
+            super().__init__(parent)
+
+        def set_parameters_to_edb(self):
+            self.pedb.design_options.antipads_always_on = self.parent.anti_pads_always_on
+            self.pedb.design_options.suppress_pads = self.parent.suppress_pads
+
     def __init__(self, pedb, data):
-        self._pedb = pedb
+        self.pedb = pedb
+        if self.pedb.grpc:
+            self.api = self.Grpc(self)
+        else:
+            self.api = self.DotNet(self)
         self.spice_model_library = data.get("spice_model_library", "")
         self.s_parameter_library = data.get("s_parameter_library", "")
         self.anti_pads_always_on = data.get("anti_pads_always_on", False)
         self.suppress_pads = data.get("suppress_pads", True)
 
     def apply(self):
-        self._pedb.design_options.antipads_always_on = self.anti_pads_always_on
-        self._pedb.design_options.suppress_pads = self.suppress_pads
+        self.api.set_parameters_to_edb()
 
     def get_data_from_db(self):
-        self.anti_pads_always_on = self._pedb.design_options.antipads_always_on
-        self.suppress_pads = self._pedb.design_options.suppress_pads
-
-        data = {}
-        data["anti_pads_always_on"] = self.anti_pads_always_on
-        data["suppress_pads"] = self.suppress_pads
-        return data
+        return self.api.get_parameters_from_edb()

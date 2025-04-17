@@ -20,6 +20,7 @@ env:
   MEILISEARCH_PUBLIC_API_KEY: ${{ secrets.MEILISEARCH_PUBLIC_API_KEY }}
   ON_CI: True
 
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -58,7 +59,7 @@ jobs:
           - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
     steps:
       - name: Build wheelhouse and perform smoke test
-        uses: ansys/actions/build-wheelhouse@v5
+        uses: ansys/actions/build-wheelhouse@v8
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
@@ -108,7 +109,7 @@ jobs:
           timeout_minutes: 15
           command: |
             . .venv\Scripts\Activate.ps1
-            pytest -m "legacy" -n auto --dist loadfile -v --cov
+            pytest tests/legacy -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
@@ -139,7 +140,7 @@ jobs:
     name: Test dotnet (linux)
     runs-on: [ Linux, self-hosted, toolkits ]
     env:
-      ANSYSEM_ROOT242: '/opt/AnsysEM/v242/Linux64'
+      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: "Install Git and clone project"
@@ -176,9 +177,9 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            xvfb-run pytest -m "legacy" -n auto --dist loadfile -v --cov
+            xvfb-run pytest tests/legacy -n auto --dist loadfile -v --cov
 
       - name: "Create coverage files"
         run: |
@@ -263,7 +264,8 @@ jobs:
           timeout_minutes: 40
           command: |
             .venv\Scripts\Activate.ps1
-            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/tests/system/general/
+            pytest -v external/pyaedt/tests/system/general/test_01_3dlayout_edb.py
+            pytest -v external/pyaedt/tests/system/general/test_01_configuration_files.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@v3
@@ -275,7 +277,8 @@ jobs:
           timeout_minutes: 40
           command: |
             .venv\Scripts\Activate.ps1
-            pytest --durations=50 -v external/pyaedt/tests/system/solvers
+            pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
+            pytest -v external/pyaedt/tests/system/solvers/test_00_analyze.py
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -287,7 +290,7 @@ jobs:
     needs: [smoke-tests]
     runs-on: [ self-hosted, Linux, pyaedt ]
     env:
-      ANSYSEM_ROOT242: '/opt/AnsysEM/v242/Linux64'
+      ANSYSEM_ROOT251: '/opt/AnsysEM/v251/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
@@ -321,19 +324,19 @@ jobs:
 
       - name: Install PyAEDT main branch version with its test dependencies
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           pip install --no-cache-dir external/pyaedt[tests]
 
       - name: Install PyEDB
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           python -m pip install .
 
       - name: Install CI dependencies (e.g. vtk-osmesa)
         run: |
-          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
           . .venv/bin/activate
           # Uninstall conflicting dependencies
           pip uninstall --yes vtk
@@ -348,12 +351,11 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            pytest -n auto --dist loadfile --durations=50 -v external/pyaedt/tests/system/general/
+            pytest -v external/pyaedt/tests/system/general/test_01_3dlayout_edb.py
+            pytest -v external/pyaedt/tests/system/general/test_01_configuration_files.py
 
-      # FIXME: The need to run test_45_workflows first should be removed
-      # This is due to a strange behavior when using numpy2 and AEDT, see #987 and #989 for more information
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@v3
         env:
@@ -363,102 +365,25 @@ jobs:
           retry_on: error
           timeout_minutes: 50
           command: |
-            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT242 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=${{ env.ANSYSEM_ROOT251 }}/common/mono/Linux64/lib64:$LD_LIBRARY_PATH
             . .venv/bin/activate
-            pytest --durations=50 -v external/pyaedt/tests/system/solvers/test_45_workflows.py
-            pytest --durations=50 -v external/pyaedt/tests/system/solvers --deselect=tests/system/solvers/test_45_workflows.py
+            pytest -v external/pyaedt/tests/system/solvers/test_45_workflows.py
+            pytest -v external/pyaedt/tests/system/solvers/test_00_analyze.py
 
-# =================================================================================================
-# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-# =================================================================================================
+
 
   docs-build:
     name: Build documentation
-    runs-on: [ Windows, self-hosted, pyedb ]
-    timeout-minutes: 480
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      # Revert to previous verison due too setup-python#819
-      - name: "Set up Python"
-        uses: actions/setup-python@v4
+      - name: Build documentation
+        uses: ansys/actions/doc-build@v8
         with:
+          dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-
-      - name: 'Create virtual env'
-        run: |
-          python -m venv .venv
-
-      - name: "Update pip"
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install pip -U
-          python -m pip install wheel setuptools -U
-          python -c "import sys; print(sys.executable)"
-
-      - name: Install pyedb with doc dependencies
-        run: |
-          . .venv\Scripts\Activate.ps1
-          pip install .[doc]
-
-      - name: Verify that pyedb can be imported
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -c "import pyedb"
-
-      - name: Retrieve pyedb version
-        run: |
-          . .venv\Scripts\Activate.ps1
-          echo "PyEDB version is: $(python -c "from pyedb import __version__; print(); print(__version__)")"
-
-      - name: Clone PyAEDT on main branch
-        uses: actions/checkout@v4
-        with:
-          repository: ansys/pyaedt
-          path: "external/pyaedt"
-          ref: "main"
-
-      - name: Install PyAEDT main branch version with its test dependencies
-        run: |
-          . .venv\Scripts\Activate.ps1
-          pip install --no-cache-dir external/pyaedt[tests]
-
-      # Use environment variable to keep the doctree and avoid redundant build for PDF pages
-      - name: Create HTML documentation
-        env:
-          SPHINXBUILD_KEEP_DOCTREEDIR: "1"
-        run: |
-          .venv\Scripts\Activate.ps1
-          . .\doc\make.bat html
-
-      - name: Upload HTML documentation artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: documentation-html
-          path: doc/_build/html
-          retention-days: 7
-
-      # Use environment variable to remove the doctree after the build of PDF pages
-      # Keeping doctree could cause an issue, see https://github.com/ansys/pyaedt/pull/3844/files
-      - name: Create PDF documentation
-        env:
-          SPHINXBUILD_KEEP_DOCTREEDIR: "0"
-        run: |
-          .venv\Scripts\Activate.ps1
-          . .\doc\make.bat pdf
-
-      - name: Upload PDF Documentation artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: documentation-pdf
-          path: doc/_build/latex/pyedb.pdf
-          retention-days: 7
-
-      - name: Add assets to HTML docs
-        run: |
-          zip -r documentation-html.zip .\doc\_build\html
-          mv documentation-html.zip .\doc\_build\html\_static\assets\download\
-          cp doc/_build/latex/pyedb.pdf .\doc\_build\html\_static\assets\download\
+          sphinxopts: '-j auto --color -w build_errors.txt'
+          check-links: false
+          needs-quarto: true
 
   package:
     name: Package library
@@ -466,7 +391,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
-        uses: ansys/actions/build-library@v5
+        uses: ansys/actions/build-library@v8
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -483,15 +408,16 @@ jobs:
       contents: write
     steps:
       - name: Release to the public PyPI repository
-        uses: ansys/actions/release-pypi-public@v6
+        uses: ansys/actions/release-pypi-public@v8
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           use-trusted-publisher: true
 
       - name: Release to GitHub
-        uses: ansys/actions/release-github@v6
+        uses: ansys/actions/release-github@v8
         with:
           library-name: ${{ env.PACKAGE_NAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   upload-dev-docs:
     name: Upload dev documentation
@@ -500,8 +426,10 @@ jobs:
     needs: [package]
     steps:
       - name: Deploy the latest documentation
-        uses: ansys/actions/doc-deploy-dev@v5
+        uses: ansys/actions/doc-deploy-dev@v8
         with:
+          bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -512,7 +440,7 @@ jobs:
     needs: upload-dev-docs
     steps:
       - name: "Deploy the latest documentation index"
-        uses: ansys/actions/doc-deploy-index@v5
+        uses: ansys/actions/doc-deploy-index@v8
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}/version/dev
           index-name: pyedb-vdev
@@ -527,10 +455,12 @@ jobs:
     needs: [release]
     steps:
       - name: Deploy the stable documentation
-        uses: ansys/actions/doc-deploy-stable@v5
+        uses: ansys/actions/doc-deploy-stable@v8
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
 
   doc-index-stable:
     name: "Deploy stable docs index"
@@ -553,7 +483,7 @@ jobs:
           echo "VERSION_MEILI=$VERSION_MEILI" >> $GITHUB_ENV
 
       - name: "Deploy the latest documentation index"
-        uses: ansys/actions/doc-deploy-index@v5
+        uses: ansys/actions/doc-deploy-index@v8
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}/version/${{ env.VERSION }}
           index-name: pyedb-v${{ env.VERSION_MEILI }}

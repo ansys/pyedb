@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
+requires = ["flit_core >=3.2,<3.11"] # THIS SHOULD BE REVERTED TO '["flit_core >=3.2,<4"]'
 build-backend = "flit_core.buildapi"
 
 
@@ -34,12 +34,16 @@ dependencies = [
     "pydantic>=2.6.4,<2.11",
     "Rtree >= 1.2.0",
     "toml == 0.10.2",
-    "scikit-rf"
+    "shapely",
+    "scikit-rf",
+    "ansys-edb-core",
+    "ansys-api-edb",
+    "psutil",
     ]
 
 [project.optional-dependencies]
 tests = [
-    "matplotlib>=3.5.0,<3.10",
+    "matplotlib>=3.5.0,<3.11",
     "mock>=5.1.0,<5.2",
     "pytest>=7.4.0,<8.4",
     "pytest-cov>=4.0.0,<6.1",
@@ -48,16 +52,16 @@ tests = [
     "shapely"
 ]
 doc = [
-    "ansys-sphinx-theme>=0.10.0,<1.1",
+    "ansys-sphinx-theme>=0.10.0,<1.4",
     "imageio>=2.30.0,<2.37",
     "ipython>=8.13.0,<8.32",
     "jupyterlab>=4.0.0,<4.4",
     "jupytext>=1.16.0,<1.17",
-    "matplotlib>=3.5.0,<3.10",
+    "matplotlib>=3.5.0,<3.11",
     "nbsphinx>=0.9.0,<0.10",
     "nbconvert < 7.17",
     "numpydoc>=1.5.0,<1.9",
-    "pypandoc>=1.10.0,<1.15",
+    "pypandoc>=1.10.0,<1.16",
     # NOTE: Remove recommonmark once examples are reworked.
     "recommonmark",
     "Sphinx>=7.1.0,<8.2",
@@ -70,7 +74,7 @@ doc = [
 
 ]
 full = [
-    "matplotlib>=3.5.0,<3.10",
+    "matplotlib>=3.5.0,<3.11",
     "shapely",
 ]
 
@@ -115,6 +119,7 @@ filterwarnings = [
 ]
 markers = [
     "legacy: mark test as related to the legacy API.",
+    "grpc: mark test as related to the gRPC API.",
     "unit: mark test as an unit test.",
     "integration: mark test as an integration test.",
     "system: mark test as a system test.",

@@ -35,6 +35,12 @@ U8_IC_DIE_PROPERTIES = {
             "definition": "MAXM-T833+2_V",
             "type": "ic",
             "ic_die_properties": {"type": "flip_chip", "orientation": "chip_down"},
+            "solder_ball_properties": {
+                "shape": "spheroid",
+                "diameter": "244um",
+                "mid_diameter": "400um",
+                "height": "300um",
+            },
         }
     ]
 }
@@ -49,6 +55,7 @@ def _assert_initial_ic_die_properties(component: dict):
 def _assert_final_ic_die_properties(component: dict):
     assert component["ic_die_properties"]["type"] == "flip_chip"
     assert component["ic_die_properties"]["orientation"] == "chip_down"
+    assert component["solder_ball_properties"]["diameter"] == "244um"
 
 
 class TestClass:
@@ -310,6 +317,7 @@ class TestClass:
         assert edbapp.configuration.load(data, apply_file=True)
         assert edbapp.ports["COAX_U1_AM17"]
         assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"]
+        assert edbapp.ports["COAX_U1_PCIe_Gen4_TX2_CAP_N"].location
         edbapp.close()
 
     def test_05c_ports_circuit_pin_net(self, edb_examples):
@@ -433,12 +441,13 @@ class TestClass:
                     "point_on_edge": [0, "1mm"],
                     "horizontal_extent_factor": 6,
                     "vertical_extent_factor": 4,
-                    "pec_launch_width": "0,2mm",
+                    "pec_launch_width": "0.2mm",
                 }
             ]
         }
         edbapp.configuration.load(data, apply_file=True)
         assert edbapp.ports["wport_1"].horizontal_extent_factor == 6
+        edbapp.configuration.get_data_from_db(ports=True)
         edbapp.close()
 
     def test_05h_diff_wave_port(self, edb_examples):
@@ -901,7 +910,7 @@ class TestClass:
                         "type": "signal",
                     },
                     {
-                        "fill_material": "megtron4",
+                        "fill_material": "SolerMask",
                         "material": "copper",
                         "name": "Inner1",
                         "thickness": "0.017mm",
@@ -940,7 +949,7 @@ class TestClass:
                     "freq_sweep": [
                         {
                             "name": "Sweep1",
-                            "type": "Interpolation",
+                            "type": "discrete",
                             "frequencies": [
                                 {"distribution": "log_scale", "start": 1e3, "stop": 1e9, "samples": 10},
                                 {"distribution": "linear_count", "start": 1e9, "stop": 10e9, "points": 11},
@@ -1034,15 +1043,27 @@ class TestClass:
                 "reference_designator": "J5",
                 "type": "current",
                 "magnitude": 17,
-                "positive_terminal": {"net": "SFPA_VCCR", "contact_radius": "0.1mm", "multi_contact": True},
-                "negative_terminal": {"net": "GND", "contact_radius": "0.21mm", "multi_contact": True, "inline": True},
-                "equipotential": True,
+                "positive_terminal": {"net": "SFPA_VCCR", "contact_type": "quad"},
+                "negative_terminal": {"net": "GND"},
+            },
+            {
+                "name": "ISOURCE_J5_SFPA_TX_P",
+                "reference_designator": "J5",
+                "type": "current",
+                "magnitude": 17,
+                "positive_terminal": {
+                    "net": "SFPA_TX_P",
+                    "contact_type": "inline",
+                    "contact_radius": "0.15mm",
+                    "num_of_contact": 5,
+                    "contact_expansion": 0.9,
+                },
+                "negative_terminal": {"net": "GND"},
             },
             {
                 "name": "x_y_port",
                 "type": "current",
                 "magnitude": 2,
-                "equipotential": True,
                 "positive_terminal": {
                     "coordinates": {
                         "layer": "1_Top",
@@ -1255,7 +1276,12 @@ class TestClass:
                         "part_type": "io",
                         "definition": "BGA",
                         "placement_layer": "TOP",
-                        "solder_ball_properties": {"shape": "cylinder", "diameter": "244um", "height": "406um"},
+                        "solder_ball_properties": {
+                            "shape": "cylinder",
+                            "diameter": "244um",
+                            "height": "406um",
+                            "material": "air",
+                        },
                         "port_properties": {
                             "reference_offset": "0.1mm",
                             "reference_size_auto": False,
@@ -1274,6 +1300,7 @@ class TestClass:
         assert rect.voids
         assert [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP_POLY"][0]
         assert edbapp.components["U1"]
+        assert edbapp.components["U1"].component_property.GetSolderBallProperty().Clone().GetMaterialName() == "air"
         edbapp.close()
 
     def test_19_variables(self, edb_examples):
@@ -1286,4 +1313,19 @@ class TestClass:
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.configuration.load(data, apply_file=True)
+        edbapp.close()
+
+    def test_probes(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        probe = [
+            {
+                "name": "probe1",
+                "reference_designator": "J5",
+                "positive_terminal": {"pin": "15"},
+                "negative_terminal": {"pin": "16"},
+            },
+        ]
+        data = {"probes": probe}
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert "probe1" in edbapp.probes
         edbapp.close()

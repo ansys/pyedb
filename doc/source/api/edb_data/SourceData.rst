@@ -14,7 +14,7 @@ These classes are the containers of sources methods of the EDB for both HFSS and
     ...
 
 
-.. currentmodule:: pyedb.dotnet.edb_core.edb_data.sources
+.. currentmodule:: pyedb.dotnet.database.edb_data.sources
 
 .. autosummary::
    :toctree: _autosummary

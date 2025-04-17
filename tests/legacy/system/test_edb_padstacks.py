@@ -139,7 +139,7 @@ class TestClass:
                 assert pad.offset_x is not None or False
                 assert pad.offset_y is not None or False
                 assert isinstance(pad.geometry_type, int)
-            polygon = pad.polygon_data
+            polygon = pad._polygon_data_dotnet
             if polygon:
                 assert polygon.GetBBox()
 
@@ -241,6 +241,9 @@ class TestClass:
     def test_split_microvias(self):
         """Convert padstack definition to multiple microvias definitions."""
         edbapp = Edb(self.target_path4, edbversion=desktop_version)
+        edbapp.padstacks.instances_by_name["via219"].split()
+        assert "via219_2" in [i.name for i in edbapp.padstacks.definitions["BALL_VIA_1"].instances]
+        edbapp.padstacks.instances_by_name["via218"].convert_hole_to_conical_shape()
         assert len(edbapp.padstacks.definitions["C4_POWER_1"].split_to_microvias()) > 0
         edbapp.close()
 

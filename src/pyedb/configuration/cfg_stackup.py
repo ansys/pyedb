@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pyedb import Edb
 from pyedb.configuration.cfg_common import CfgBase
 
 
@@ -49,11 +50,31 @@ class CfgLayer(CfgBase):
 
 
 class CfgStackup:
-    def __init__(self, pedb, data):
+    def __init__(self, pedb: Edb, data):
         self._pedb = pedb
 
         self.materials = [CfgMaterial(**mat) for mat in data.get("materials", [])]
         self.layers = [CfgLayer(**lay) for lay in data.get("layers", [])]
+
+        materials = [m.name for m in self.materials]
+        for i in self.layers:
+            if i.type == "signal":
+                if i.material not in materials:
+                    self.materials.append(
+                        CfgMaterial(name=i.material, **self._pedb.materials.default_conductor_property_values)
+                    )
+                    materials.append(i.material)
+                if i.fill_material not in materials:
+                    self.materials.append(
+                        CfgMaterial(name=i.fill_material, **self._pedb.materials.default_dielectric_property_values)
+                    )
+                    materials.append(i.fill_material)
+            elif i.type == "dielectric":
+                if i.material not in materials:
+                    self.materials.append(
+                        CfgMaterial(name=i.material, **self._pedb.materials.default_dielectric_property_values)
+                    )
+                    materials.append(i.material)
 
     def apply(self):
         """Apply configuration settings to the current design"""

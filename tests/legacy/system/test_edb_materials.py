@@ -27,7 +27,7 @@ import os
 
 import pytest
 
-from pyedb.dotnet.edb_core.materials import (
+from pyedb.dotnet.database.materials import (
     PERMEABILITY_DEFAULT_VALUE,
     Material,
     MaterialProperties,
@@ -190,7 +190,7 @@ class TestClass:
         assert material
         assert material.name == materials[MATERIAL_NAME].name
         # Check default values
-        assert material.permeability == PERMEABILITY_DEFAULT_VALUE
+        assert material.permeability == 0.999991
         with pytest.raises(ValueError):
             materials.add_conductor_material(MATERIAL_NAME, 12, permittivity=12)
 
@@ -346,3 +346,12 @@ class TestClass:
         assert 0.00045 == material.loss_tangent
         assert 0.00045 == material.dielectric_loss_tangent
         assert 12 == material.permittivity
+
+    def test_update_materials_from_syslib(self, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        edbapp.materials.update_materials_from_sys_library(False, "copper")
+        assert edbapp.materials["copper"].thermal_conductivity == 400
+        edbapp.materials["FR4_epoxy"].thermal_conductivity = 1
+        edbapp.materials.update_materials_from_sys_library()
+        edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
+        edbapp.close()

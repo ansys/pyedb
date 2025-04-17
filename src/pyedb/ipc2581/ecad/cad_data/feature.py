@@ -30,15 +30,16 @@ from pyedb.ipc2581.ecad.cad_data.polygon import Polygon
 class Feature(object):
     """Class describing IPC2581 features."""
 
-    def __init__(self, ipc):
+    def __init__(self, ipc, pedb):
         self._ipc = ipc
+        self._pedb = pedb
         self.feature_type = FeatureType().Polygon
         self.net = ""
         self.x = 0.0
         self.y = 0.0
-        self.polygon = Polygon(self._ipc)
+        self.polygon = Polygon(self._ipc, self._pedb)
         self._cutouts = []
-        self.path = Path(self._ipc)
+        self.path = Path(self._ipc, pedb)
         # self.pad = PadstackDef()
         self.padstack_instance = PadstackInstance()
         self.drill = Drill()
