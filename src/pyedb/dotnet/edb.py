@@ -643,15 +643,16 @@ class Edb(Database):
         -------
         Full path to the AEDB file : str
         """
+        self.logger.warning("import_layout_pcb method is deprecated, use import_layout_file instead.")
         return self.import_layout_file(
             input_file,
-            working_dir="",
-            anstranslator_full_path="",
-            use_ppe=False,
-            control_file=None,
-            map_file=None,
-            tech_file=None,
-            layer_filter=None,
+            working_dir,
+            anstranslator_full_path,
+            use_ppe,
+            control_file,
+            map_file,
+            tech_file,
+            layer_filter,
         )
 
     def import_layout_file(
