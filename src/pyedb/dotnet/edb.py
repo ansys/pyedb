@@ -599,6 +599,61 @@ class Edb(Database):
             return True
         return None
 
+    def import_layout_pcb(
+        self,
+        input_file,
+        working_dir="",
+        anstranslator_full_path="",
+        use_ppe=False,
+        control_file=None,
+        map_file=None,
+        tech_file=None,
+        layer_filter=None,
+    ):
+        """Import a board file and generate an ``edb.def`` file in the working directory.
+
+        .. deprecated:: 0.42.0
+           Use :func:`import_layout_file` method instead.
+
+        This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
+
+        Parameters
+        ----------
+        input_file : str
+            Full path to the board file.
+        working_dir : str, optional
+            Directory in which to create the ``aedb`` folder. The name given to the AEDB file
+            is the same as the name of the board file.
+        anstranslator_full_path : str, optional
+            Full path to the Ansys translator. The default is ``""``.
+        use_ppe : bool
+            Whether to use the PPE License. The default is ``False``.
+        control_file : str, optional
+            Path to the XML file. The default is ``None``, in which case an attempt is made to find
+            the XML file in the same directory as the board file. To succeed, the XML file and board file
+            must have the same name. Only the extension differs.
+        tech_file : str, optional
+            Technology file. The file can be *.ircx, *.vlc.tech, or *.itf
+        map_file : str, optional
+            Layer map .map file.
+        layer_filter:str,optional
+            Layer filter .txt file.
+
+        Returns
+        -------
+        Full path to the AEDB file : str
+        """
+        return self.import_layout_file(
+            input_file,
+            working_dir="",
+            anstranslator_full_path="",
+            use_ppe=False,
+            control_file=None,
+            map_file=None,
+            tech_file=None,
+            layer_filter=None,
+        )
+
     def import_layout_file(
         self,
         input_file,
