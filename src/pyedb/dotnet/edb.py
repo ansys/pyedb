@@ -32,7 +32,6 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 import time
 import traceback
 from typing import Union
@@ -48,10 +47,7 @@ from pyedb.dotnet.database.cell.terminal.terminal import Terminal
 from pyedb.dotnet.database.components import Components
 import pyedb.dotnet.database.dotnet.database
 from pyedb.dotnet.database.dotnet.database import Database
-from pyedb.dotnet.database.edb_data.control_file import (
-    ControlFile,
-    convert_technology_file,
-)
+from pyedb.dotnet.database.edb_data.control_file import convert_technology_file
 from pyedb.dotnet.database.edb_data.design_options import EdbDesignOptions
 from pyedb.dotnet.database.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.database.edb_data.ports import (
@@ -243,7 +239,7 @@ class Edb(Database):
                 else:
                     control_file = convert_technology_file(technology_file, edbversion=edbversion)
             self.logger.info("Translating ODB++ to EDB...")
-            self.import_layout_pcb(edbpath[:-4], working_dir, use_ppe=use_ppe, control_file=control_file)
+            self.import_layout_file(edbpath[:-4], working_dir, use_ppe=use_ppe, control_file=control_file)
             if settings.enable_local_log_file and self.log_name:
                 self._logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)
@@ -256,7 +252,7 @@ class Edb(Database):
                     control_file = technology_file
                 else:
                     control_file = convert_technology_file(technology_file, edbversion=edbversion)
-            self.import_layout_pcb(edbpath, working_dir, use_ppe=use_ppe, control_file=control_file)
+            self.import_layout_file(edbpath, working_dir, use_ppe=use_ppe, control_file=control_file)
             if settings.enable_local_log_file and self.log_name:
                 self._logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath[-2:])
@@ -610,6 +606,65 @@ class Edb(Database):
         anstranslator_full_path="",
         use_ppe=False,
         control_file=None,
+        map_file=None,
+        tech_file=None,
+        layer_filter=None,
+    ):
+        """Import a board file and generate an ``edb.def`` file in the working directory.
+
+        .. deprecated:: 0.42.0
+           Use :func:`import_layout_file` method instead.
+
+        This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
+
+        Parameters
+        ----------
+        input_file : str
+            Full path to the board file.
+        working_dir : str, optional
+            Directory in which to create the ``aedb`` folder. The name given to the AEDB file
+            is the same as the name of the board file.
+        anstranslator_full_path : str, optional
+            Full path to the Ansys translator. The default is ``""``.
+        use_ppe : bool
+            Whether to use the PPE License. The default is ``False``.
+        control_file : str, optional
+            Path to the XML file. The default is ``None``, in which case an attempt is made to find
+            the XML file in the same directory as the board file. To succeed, the XML file and board file
+            must have the same name. Only the extension differs.
+        tech_file : str, optional
+            Technology file. The file can be *.ircx, *.vlc.tech, or *.itf
+        map_file : str, optional
+            Layer map .map file.
+        layer_filter:str,optional
+            Layer filter .txt file.
+
+        Returns
+        -------
+        Full path to the AEDB file : str
+        """
+        self.logger.warning("import_layout_pcb method is deprecated, use import_layout_file instead.")
+        return self.import_layout_file(
+            input_file,
+            working_dir,
+            anstranslator_full_path,
+            use_ppe,
+            control_file,
+            map_file,
+            tech_file,
+            layer_filter,
+        )
+
+    def import_layout_file(
+        self,
+        input_file,
+        working_dir="",
+        anstranslator_full_path="",
+        use_ppe=False,
+        control_file=None,
+        map_file=None,
+        tech_file=None,
+        layer_filter=None,
     ):
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
@@ -630,6 +685,12 @@ class Edb(Database):
             Path to the XML file. The default is ``None``, in which case an attempt is made to find
             the XML file in the same directory as the board file. To succeed, the XML file and board file
             must have the same name. Only the extension differs.
+        tech_file : str, optional
+            Technology file. The file can be *.ircx, *.vlc.tech, or *.itf
+        map_file : str, optional
+            Layer map .map file.
+        layer_filter:str,optional
+            Layer filter .txt file.
 
         Returns
         -------
@@ -666,6 +727,12 @@ class Edb(Database):
                 cmd_translator.append("-c={}".format(control_file))
             else:
                 cmd_translator.append('-c="{}"'.format(control_file))
+        if map_file:
+            cmd_translator.append('-g="{}"'.format(map_file))
+        if tech_file:
+            cmd_translator.append('-t="{}"'.format(tech_file))
+        if layer_filter:
+            cmd_translator.append('-f="{}"'.format(layer_filter))
         p = subprocess.Popen(cmd_translator)
         p.wait()
         if not os.path.exists(os.path.join(working_dir, aedb_name)):
@@ -1466,7 +1533,7 @@ class Edb(Database):
             ``True`` when successful, ``False`` when failed.
 
         """
-        if self.import_layout_pcb(
+        if self.import_layout_file(
             inputBrd,
             working_dir=WorkDir,
             anstranslator_full_path=anstranslator_full_path,
@@ -1475,103 +1542,6 @@ class Edb(Database):
             return True
         else:
             return False
-
-    def import_gds_file(
-        self,
-        inputGDS,
-        anstranslator_full_path="",
-        use_ppe=False,
-        control_file=None,
-        tech_file=None,
-        map_file=None,
-        layer_filter=None,
-    ):
-        """Import a GDS file and generate an ``edb.def`` file in the working directory.
-
-        ..note::
-            `ANSYSLMD_LICENSE_FILE` is needed to run the translator.
-
-        Parameters
-        ----------
-        inputGDS : str
-            Full path to the GDS file.
-        anstranslator_full_path : str, optional
-            Full path to the Ansys translator.
-        use_ppe : bool, optional
-            Whether to use the PPE License. The default is ``False``.
-        control_file : str, optional
-            Path to the XML file. The default is ``None``, in which case an attempt is made to find
-            the XML file in the same directory as the GDS file. To succeed, the XML file and GDS file must
-            have the same name. Only the extension differs.
-        tech_file : str, optional
-            Technology file. For versions<2024.1 it uses Helic to convert tech file to xml and then imports
-            the gds. Works on Linux only.
-            For versions>=2024.1 it can directly parse through supported foundry tech files.
-        map_file : str, optional
-            Layer map file.
-        layer_filter:str,optional
-            Layer filter file.
-
-        """
-        control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(inputGDS)[-1][:-3] + "xml")
-        if float(self.edbversion) < 2024.1:
-            if not is_linux and tech_file:
-                self.logger.error("Technology files are supported only in Linux. Use control file instead.")
-                return False
-
-            ControlFile(xml_input=control_file, tecnhology=tech_file, layer_map=map_file).write_xml(control_file_temp)
-            if self.import_layout_pcb(
-                inputGDS,
-                anstranslator_full_path=anstranslator_full_path,
-                use_ppe=use_ppe,
-                control_file=control_file_temp,
-            ):
-                return True
-            else:
-                return False
-        else:
-            if anstranslator_full_path and os.path.exists(anstranslator_full_path):
-                path = anstranslator_full_path
-            else:
-                path = os.path.join(self.base_path, "anstranslator")
-                if is_windows:
-                    path += ".exe"
-
-            temp_map_file = os.path.splitext(inputGDS)[0] + ".map"
-            temp_layermap_file = os.path.splitext(inputGDS)[0] + ".layermap"
-
-            if map_file is None:
-                if os.path.isfile(temp_map_file):
-                    map_file = temp_map_file
-                elif os.path.isfile(temp_layermap_file):
-                    map_file = temp_layermap_file
-                else:
-                    self.logger.error("Unable to define map file.")
-
-            if tech_file is None:
-                if control_file is None:
-                    temp_control_file = os.path.splitext(inputGDS)[0] + ".xml"
-                    if os.path.isfile(temp_control_file):
-                        control_file = temp_control_file
-                    else:
-                        self.logger.error("Unable to define control file.")
-
-                command = [path, inputGDS, f'-g="{map_file}"', f'-c="{control_file}"']
-            else:
-                command = [
-                    path,
-                    inputGDS,
-                    f'-o="{control_file_temp}"' f'-t="{tech_file}"',
-                    f'-g="{map_file}"',
-                    f'-f="{layer_filter}"',
-                ]
-
-            result = subprocess.run(command, capture_output=True, text=True, shell=True)
-            print(result.stdout)
-            print(command)
-            temp_inputGDS = inputGDS.split(".gds")[0]
-            self.edbpath = temp_inputGDS + ".aedb"
-            return self.open_edb()
 
     def _create_extent(
         self,
