@@ -141,15 +141,18 @@ class TestClass:
                             "frequencies": [
                                 {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"},
                                 {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
-                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11}
+                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11},
                             ],
                         },
-                        {'name': 'sweep2',
-                         'type': 'discrete',
-                         'frequencies': ['LIN 0.05GHz 0.2GHz 0.01GHz',
-                                         'DEC 1e-06GHz 0.0001GHz 10',
-                                         'LINC 0.01GHz 0.02GHz 11']
-                         },
+                        {
+                            "name": "sweep2",
+                            "type": "discrete",
+                            "frequencies": [
+                                "LIN 0.05GHz 0.2GHz 0.01GHz",
+                                "DEC 1e-06GHz 0.0001GHz 10",
+                                "LINC 0.01GHz 0.02GHz 11",
+                            ],
+                        },
                     ],
                 },
             ]
@@ -161,7 +164,11 @@ class TestClass:
         assert setup["name"] == "hfss_setup_1"
         sweep1 = setup["freq_sweep"][0]
         assert sweep1["name"] == "sweep1"
-        assert sweep1["frequencies"] == ['LIN 0.05GHz 0.2GHz 0.01GHz',  'DEC 1e-06GHz 0.0001GHz 10',  'LINC 0.01GHz 0.02GHz 11']
+        assert sweep1["frequencies"] == [
+            "LIN 0.05GHz 0.2GHz 0.01GHz",
+            "DEC 1e-06GHz 0.0001GHz 10",
+            "LINC 0.01GHz 0.02GHz 11",
+        ]
         sweep2 = setup["freq_sweep"][1]
         assert sweep2["type"] == "discrete"
         edbapp.close()

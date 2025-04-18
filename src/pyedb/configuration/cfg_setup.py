@@ -30,6 +30,7 @@ class CfgSetup:
         Type of the setup. Optionals are ``"hfss"``, ``"siwave_ac"``, ``"siwave_dc"``.
 
     """
+
     class Common:
         @property
         def pyedb_obj(self):
@@ -95,7 +96,6 @@ class CfgSetup:
 
 class CfgSIwaveACSetup(CfgSetup):
     class Grpc(CfgSetup.Common):
-
         def __init__(self, parent):
             super().__init__(parent)
 
@@ -129,23 +129,25 @@ class CfgSIwaveACSetup(CfgSetup):
 
     def to_dict(self):
         temp = self._to_dict_setup()
-        temp.update({
-            "use_si_settings": self.use_si_settings,
-            "si_slider_position": self.si_slider_position,
-            "pi_slider_position": self.pi_slider_position
-        })
+        temp.update(
+            {
+                "use_si_settings": self.use_si_settings,
+                "si_slider_position": self.si_slider_position,
+                "pi_slider_position": self.pi_slider_position,
+            }
+        )
         return temp
 
 
 class CfgSIwaveDCSetup(CfgSetup):
     class Grpc(CfgSetup.Common):
-
         def __init__(self, parent):
             super().__init__(parent)
 
         def set_parameters_to_edb(self):
-            edb_setup = self.pedb.create_siwave_dc_setup(name=self.parent.name,
-                                                         dc_slider_position=self.parent.dc_slider_position)
+            edb_setup = self.pedb.create_siwave_dc_setup(
+                name=self.parent.name, dc_slider_position=self.parent.dc_slider_position
+            )
             edb_setup.dc_settings.dc_slider_position = self.parent.dc_slider_position
             dc_ir_settings = self.parent.dc_ir_settings
             edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings["export_dc_thermal_data"]
@@ -169,16 +171,12 @@ class CfgSIwaveDCSetup(CfgSetup):
 
     def to_dict(self):
         temp = self._to_dict_setup()
-        temp.update({
-            "dc_slider_position": self.dc_slider_position,
-            "dc_ir_settings": self.dc_ir_settings
-        })
+        temp.update({"dc_slider_position": self.dc_slider_position, "dc_ir_settings": self.dc_ir_settings})
         return temp
 
 
 class CfgHFSSSetup(CfgSetup):
     class Grpc(CfgSetup.Common):
-
         def __init__(self, parent):
             super().__init__(parent)
 
@@ -187,8 +185,9 @@ class CfgHFSSSetup(CfgSetup):
                 raise "Setup {} already existing. Editing it.".format(self.parent.name)
 
             edb_setup = self.pedb.create_hfss_setup(self.parent.name)
-            edb_setup.set_solution_single_frequency(self.parent.f_adapt, self.parent.max_num_passes,
-                                                    self.parent.max_mag_delta_s)
+            edb_setup.set_solution_single_frequency(
+                self.parent.f_adapt, self.parent.max_num_passes, self.parent.max_mag_delta_s
+            )
 
             self._apply_freq_sweep(edb_setup)
 
@@ -211,23 +210,21 @@ class CfgHFSSSetup(CfgSetup):
             self.parent.max_mag_delta_s = adaptive_frequency_data_list.max_delta
             self.parent.freq_sweep = []
             for name, sw in self.pyedb_obj.sweeps.items():
-                self.parent.freq_sweep.append({
-                    "name": name,
-                    "type": sw.type,
-                    "frequencies": sw.frequency_string
-                })
+                self.parent.freq_sweep.append({"name": name, "type": sw.type, "frequencies": sw.frequency_string})
 
             self.parent.mesh_operations = []
             for name, mop in self.pyedb_obj.mesh_operations.items():
-                self.parent.mesh_operations.append({
-                    "name": name,
-                    "type": mop.type,
-                    "max_elements": mop.max_elements,
-                    "max_length": mop.max_length,
-                    "restrict_length": mop.restrict_length,
-                    "refine_inside": mop.refine_inside,
-                    "nets_layers_list": mop.nets_layers_list
-                })
+                self.parent.mesh_operations.append(
+                    {
+                        "name": name,
+                        "type": mop.type,
+                        "max_elements": mop.max_elements,
+                        "max_length": mop.max_length,
+                        "restrict_length": mop.restrict_length,
+                        "refine_inside": mop.refine_inside,
+                        "nets_layers_list": mop.nets_layers_list,
+                    }
+                )
 
     class DotNet(Grpc):
         def __init__(self, parent):
@@ -244,13 +241,15 @@ class CfgHFSSSetup(CfgSetup):
 
     def to_dict(self):
         temp = self._to_dict_setup()
-        temp.update({
-            "f_adapt": self.f_adapt,
-            "max_num_passes": self.max_num_passes,
-            "max_mag_delta_s": self.max_mag_delta_s,
-            "mesh_operations": self.mesh_operations,
-            "freq_sweep": self.freq_sweep
-        })
+        temp.update(
+            {
+                "f_adapt": self.f_adapt,
+                "max_num_passes": self.max_num_passes,
+                "max_mag_delta_s": self.max_mag_delta_s,
+                "mesh_operations": self.mesh_operations,
+                "freq_sweep": self.freq_sweep,
+            }
+        )
         return temp
 
 
