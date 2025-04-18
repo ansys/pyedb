@@ -94,6 +94,7 @@ class TestClass:
                             "name": "mop_1",
                             "type": "length",
                             "max_length": "3mm",
+                            "max_elements": 100,
                             "restrict_length": True,
                             "refine_inside": False,
                             "nets_layers_list": {"GND": ["1_Top", "16_Bottom"]},
@@ -119,7 +120,6 @@ class TestClass:
                     for mop in value:
                         target_mop = [i for i in target["mesh_operations"] if i["name"] == mop["name"]][0]
                         for mop_p_name, mop_value in mop.items():
-                            print(mop_p_name)
                             assert mop_value == target_mop[mop_p_name]
                 else:
                     assert value == target[p]
@@ -139,21 +139,18 @@ class TestClass:
                             "name": "sweep1",
                             "type": "interpolation",
                             "frequencies": [
-                                {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"}
+                                {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"},
+                                {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
+                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11},
                             ],
                         },
                         {
                             "name": "sweep2",
-                            "type": "interpolation",
+                            "type": "discrete",
                             "frequencies": [
-                                {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10}
-                            ],
-                        },
-                        {
-                            "name": "sweep3",
-                            "type": "interpolation",
-                            "frequencies": [
-                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11}
+                                "LIN 0.05GHz 0.2GHz 0.01GHz",
+                                "DEC 1e-06GHz 0.0001GHz 10",
+                                "LINC 0.01GHz 0.02GHz 11",
                             ],
                         },
                     ],
@@ -163,23 +160,17 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        for setup in data["setups"]:
-            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
-            for p, value in setup.items():
-                if p == "max_num_passes":
-                    assert value == int(target[p])
-                elif p == "max_mag_delta_s":
-                    assert value == float(target[p])
-                elif p == "freq_sweep":
-                    for sw in value:
-                        target_sw = [i for i in target["freq_sweep"] if i["name"] == sw["name"]][0]
-                        for sw_p_name, sw_value in sw.items():
-                            if sw_p_name == "frequencies":
-                                pass
-                            else:
-                                assert sw_value == target_sw[sw_p_name]
-                else:
-                    assert value == target[p]
+        setup = data_from_db["setups"][0]
+        assert setup["name"] == "hfss_setup_1"
+        sweep1 = setup["freq_sweep"][0]
+        assert sweep1["name"] == "sweep1"
+        assert sweep1["frequencies"] == [
+            "LIN 0.05GHz 0.2GHz 0.01GHz",
+            "DEC 1e-06GHz 0.0001GHz 10",
+            "LINC 0.01GHz 0.02GHz 11",
+        ]
+        sweep2 = setup["freq_sweep"][1]
+        assert sweep2["type"] == "discrete"
         edbapp.close()
 
     def test_02_pin_groups(self, edb_examples):
@@ -767,13 +758,22 @@ class TestClass:
                 {
                     "name": "siwave_1",
                     "type": "siwave_dc",
-                    "dc_slider_position": 1,
+                    "dc_slider_position": 2,
                     "dc_ir_settings": {"export_dc_thermal_data": True},
                 }
             ]
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
+
+        siwave_dc = edbapp.setups["siwave_1"]
+        assert siwave_dc.dc_settings.dc_slider_position == 2
+        assert siwave_dc.dc_ir_settings.export_dc_thermal_data is True
+
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        src_siwave_dc = data_from_db["setups"][0]
+        target_siwave_dc = data["setups"][0]
+        assert src_siwave_dc == target_siwave_dc
         edbapp.close()
 
     def test_13_stackup_layers(self, edb_examples):
@@ -945,6 +945,7 @@ class TestClass:
                 {
                     "name": "siwave_1",
                     "type": "siwave_ac",
+                    "use_si_settings": True,
                     "si_slider_position": 1,
                     "freq_sweep": [
                         {
@@ -961,6 +962,14 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
+        siwave_ac = edbapp.setups["siwave_1"]
+        assert siwave_ac.use_si_settings is True
+        assert siwave_ac.si_slider_position == 1
+
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        src_siwave_dc = data_from_db["setups"][0]
+        assert src_siwave_dc["si_slider_position"] == 1
+        assert src_siwave_dc["use_si_settings"] is True
         edbapp.close()
 
     def test_15b_sources_net_net(self, edb_examples):

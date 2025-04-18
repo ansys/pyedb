@@ -546,7 +546,7 @@ class SweepData(object):
     @property
     def frequency_string(self):
         """A string describing the frequency sweep. Below is an example.
-        'LIN 0GHz 20GHz 0.05GHz LINC 20GHz 30GHz 10 DEC 40GHz 50GHz 10'
+        ['LIN 0GHz 20GHz 0.05GHz', 'LINC 20GHz 30GHz 10', 'DEC 40GHz 50GHz 10']
         """
         pattern = r"(?:LIN[C]?|DEC) [^ ]+ [^ ]+ [^ ]+"
         grouped = re.findall(pattern, self._edb_object.FrequencyString)
