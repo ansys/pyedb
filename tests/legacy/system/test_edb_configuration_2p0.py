@@ -751,13 +751,22 @@ class TestClass:
                 {
                     "name": "siwave_1",
                     "type": "siwave_dc",
-                    "dc_slider_position": 1,
+                    "dc_slider_position": 2,
                     "dc_ir_settings": {"export_dc_thermal_data": True},
                 }
             ]
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
+
+        siwave_dc = edbapp.setups["siwave_1"]
+        assert siwave_dc.dc_settings.dc_slider_position == 2
+        assert siwave_dc.dc_ir_settings.export_dc_thermal_data is True
+
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        src_siwave_dc = data_from_db["setups"][0]
+        target_siwave_dc = data["setups"][0]
+        assert src_siwave_dc == target_siwave_dc
         edbapp.close()
 
     def test_13_stackup_layers(self, edb_examples):
