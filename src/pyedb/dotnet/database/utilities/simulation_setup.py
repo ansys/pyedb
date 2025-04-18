@@ -268,7 +268,7 @@ class SimulationSetup(object):
                 setattr(sweep_data, k, v)
         sweep_data.type = sweep_type
 
-        if frequency_set is None:
+        if frequency_set in [None, []]:
             sweep_type = "linear_scale"
             start, stop, increment = "50MHz", "5GHz", "50MHz"
             frequency_set = [[sweep_type, start, stop, increment]]
