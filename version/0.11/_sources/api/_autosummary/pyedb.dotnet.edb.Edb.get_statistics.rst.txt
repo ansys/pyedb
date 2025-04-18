@@ -1,0 +1,6 @@
+get\_statistics
+===============
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.get_statistics

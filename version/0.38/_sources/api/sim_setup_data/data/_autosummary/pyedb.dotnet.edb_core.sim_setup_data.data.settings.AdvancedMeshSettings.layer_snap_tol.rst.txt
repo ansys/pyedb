@@ -1,0 +1,6 @@
+layer\_snap\_tol
+================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: AdvancedMeshSettings.layer_snap_tol

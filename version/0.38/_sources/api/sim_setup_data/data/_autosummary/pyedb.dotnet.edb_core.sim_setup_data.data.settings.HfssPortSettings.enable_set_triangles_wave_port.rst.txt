@@ -1,0 +1,6 @@
+enable\_set\_triangles\_wave\_port
+==================================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: HfssPortSettings.enable_set_triangles_wave_port

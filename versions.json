@@ -1,0 +1,27 @@
+[
+  {
+    "name": "dev",
+    "version": "dev",
+    "url": "https://edb.docs.pyansys.com/version/dev/"
+  },
+  {
+    "name": "0.42 (stable)",
+    "version": "0.42",
+    "url": "https://edb.docs.pyansys.com/version/stable/"
+  },
+  {
+    "name": "0.41",
+    "version": "0.41",
+    "url": "https://edb.docs.pyansys.com/version/0.41/"
+  },
+  {
+    "name": "0.38",
+    "version": "0.38",
+    "url": "https://edb.docs.pyansys.com/version/0.38/"
+  },
+  {
+    "name": "Older versions",
+    "version": "N/A",
+    "url": "https://edb.docs.pyansys.com/version/"
+  }
+]

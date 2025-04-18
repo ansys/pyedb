@@ -1,0 +1,6 @@
+dc\_min\_void\_area\_to\_mesh
+=============================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
+
+.. autoproperty:: DCAdvancedSettings.dc_min_void_area_to_mesh
