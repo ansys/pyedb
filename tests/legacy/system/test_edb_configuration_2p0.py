@@ -938,6 +938,7 @@ class TestClass:
                 {
                     "name": "siwave_1",
                     "type": "siwave_ac",
+                    "use_si_settings": True,
                     "si_slider_position": 1,
                     "freq_sweep": [
                         {
@@ -954,6 +955,14 @@ class TestClass:
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
+        siwave_ac = edbapp.setups["siwave_1"]
+        assert siwave_ac.use_si_settings is True
+        assert siwave_ac.si_slider_position == 1
+
+        data_from_db = edbapp.configuration.get_data_from_db(setups=True)
+        src_siwave_dc = data_from_db["setups"][0]
+        assert src_siwave_dc["si_slider_position"] == 1
+        assert src_siwave_dc["use_si_settings"] is True
         edbapp.close()
 
     def test_15b_sources_net_net(self, edb_examples):
