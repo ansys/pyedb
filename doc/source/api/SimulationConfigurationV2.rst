@@ -117,15 +117,10 @@ These classes are the containers of simulation configuration constructors V2.0 f
    :toctree: _autosummary
    :nosignatures:
 
-   CfgFrequencies
-   CfgSweepData
    CfgSetup
    CfgSIwaveACSetup
    CfgSIwaveDCSetup
    CfgHFSSSetup
-   CfgDcIrSettings
-   CfgMeshOperation
-   CfgLengthMeshOperation
    CfgSetups
 
 .. currentmodule:: pyedb.configuration.cfg_spice_models
