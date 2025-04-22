@@ -194,7 +194,9 @@ class Configuration:
             if kwargs.get("package_definitions", False):
                 data["package_definitions"] = self.parent.cfg_data.package_definitions.get_data_from_db()
             if kwargs.get("setups", False):
-                data["setups"] = self.parent.cfg_data.setups.get_data_from_db()
+                setups = self.parent.cfg_data.setups
+                setups.retrieve_parameters_from_edb()
+                data["setups"] = setups.to_dict()
             if kwargs.get("sources", False):
                 data["sources"] = self.parent.cfg_data.sources.get_data_from_db()
             if kwargs.get("ports", False):
