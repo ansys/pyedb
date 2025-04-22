@@ -97,6 +97,7 @@ class SimulationSetup(object):
             self._name = self._edb_object.GetName()
 
         self._sweep_list = {}
+        self._siwave_sweeps = {}
 
     @property
     def sim_setup_info(self):
@@ -237,9 +238,16 @@ class SimulationSetup(object):
     @property
     def sweeps(self):
         """List of frequency sweeps."""
-        return {i.name: i for i in self.sim_setup_info.sweep_data_list}
+        if self.setup_type == "kSIwave":
+            sweep_list = []
+            for setup, sweep in self._siwave_sweeps.items():
+                if setup == self.name:
+                    sweep_list.append(sweep)
+            return sweep_list
+        else:
+            return {i.name: i for i in self.sim_setup_info.sweep_data_list}
 
-    def add_sweep(self, name, frequency_set: list = None, sweep_type: str = "interpolation", **kwargs):
+    def add_sweep(self, name: str = None, frequency_set: list = None, sweep_type: str = "interpolation", **kwargs):
         """Add frequency sweep.
 
         Parameters
@@ -278,6 +286,11 @@ class SimulationSetup(object):
         for fs in frequency_set:
             sweep_type, start, stop, increment = fs
             sweep_data.add(sweep_type, start, stop, increment)
+        if self.setup_type == "kSIwave":
+            if self.name not in self._siwave_sweeps.keys():
+                self._siwave_sweeps[self.name] = sweep_data
+            else:
+                self._siwave_sweeps[self.name].append(sweep_data)
         return sweep_data
 
     def delete(self):
