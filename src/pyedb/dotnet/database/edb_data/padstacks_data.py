@@ -2155,7 +2155,9 @@ class EDBPadstackInstance(Primitive):
         for idx, (l1, l2) in enumerate(
             list(zip(stackup_layer_range[start_idx:stop_idx], stackup_layer_range[start_idx + 1 : stop_idx + 1]))
         ):
-            pd_inst = self._pedb.padstacks.place(position, pdef_name, net_name, f"{name}_{idx}", fromlayer=l1, tolayer=l2)
+            pd_inst = self._pedb.padstacks.place(
+                position, pdef_name, net_name, f"{name}_{idx}", fromlayer=l1, tolayer=l2
+            )
             temp.append(pd_inst)
         self.delete()
         return temp
