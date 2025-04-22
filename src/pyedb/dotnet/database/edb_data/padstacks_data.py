@@ -2142,7 +2142,7 @@ class EDBPadstackInstance(Primitive):
             component_only=component_only,
         )
 
-    def split(self):
+    def split(self) -> list:
         """Split padstack instance into multiple instances. The new instances only connect adjacent layers."""
         pdef_name = self.padstack_definition
         position = self.position
@@ -2151,11 +2151,14 @@ class EDBPadstackInstance(Primitive):
         stackup_layer_range = list(self._pedb.stackup.signal_layers.keys())
         start_idx = stackup_layer_range.index(self.start_layer)
         stop_idx = stackup_layer_range.index(self.stop_layer)
+        temp = []
         for idx, (l1, l2) in enumerate(
             list(zip(stackup_layer_range[start_idx:stop_idx], stackup_layer_range[start_idx + 1 : stop_idx + 1]))
         ):
-            self._pedb.padstacks.place(position, pdef_name, net_name, f"{name}_{idx}", fromlayer=l1, tolayer=l2)
+            pd_inst = self._pedb.padstacks.place(position, pdef_name, net_name, f"{name}_{idx}", fromlayer=l1, tolayer=l2)
+            temp.append(pd_inst)
         self.delete()
+        return temp
 
     def convert_hole_to_conical_shape(self, angle=75):
         """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
