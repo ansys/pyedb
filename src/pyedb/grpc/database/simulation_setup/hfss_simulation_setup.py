@@ -326,7 +326,7 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
             Whether the sweep is discrete. The default is ``False``.
         frequency_set : List, optional
             Frequency set is a list adding one or more frequency sweeps. If ``frequency_set`` is provided, the other
-            arguments are ignored except ``discrete``. Default valur is ``None``.
+            arguments are ignored except ``discrete``. Default value is ``None``.
             example of frequency_set : [['linear_scale', '50MHz', '200MHz', '10MHz']].
 
         Returns
