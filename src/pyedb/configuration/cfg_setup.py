@@ -204,6 +204,64 @@ class CfgHFSSSetup(CfgSetup):
 
         def retrieve_parameters_from_edb(self):
             self._retrieve_parameters_from_edb_common()
+            single_frequency_adaptive_solution = self.pyedb_obj.settings.general.single_frequency_adaptive_solution
+            self.parent.f_adapt = single_frequency_adaptive_solution.adaptive_frequency
+            self.parent.max_num_passes = single_frequency_adaptive_solution.max_passes
+            self.parent.max_mag_delta_s = float(single_frequency_adaptive_solution.max_delta)
+            self.parent.freq_sweep = []
+            for sw in self.pyedb_obj.sweep_data:
+                self.parent.freq_sweep.append({"name": sw.name, "type": sw.type, "frequencies": sw.frequency_string})
+
+            self.parent.mesh_operations = []
+            from ansys.edb.core.simulation_setup.mesh_operation import (
+                LengthMeshOperation as GrpcLengthMeshOperation,
+            )
+
+            for mesh_op in self.pyedb_obj.mesh_operations:
+                if isinstance(mesh_op, GrpcLengthMeshOperation):
+                    mop_type = "length"
+                else:
+                    mop_type = "skin"
+                self.parent.mesh_operations.append(
+                    {
+                        "name": mesh_op.name,
+                        "type": mop_type,
+                        "max_elements": mesh_op.max_elements,
+                        "max_length": mesh_op.max_length,
+                        "restrict_length": mesh_op.restrict_max_length,
+                        "refine_inside": mesh_op.refine_inside,
+                        "nets_layers_list": mesh_op.net_layer_info,
+                    }
+                )
+
+    class DotNet(Grpc):
+        def __init__(self, parent):
+            super().__init__(parent)
+
+        def set_parameters_to_edb(self):
+            if self.parent.name in self.pedb.setups:
+                raise "Setup {} already existing. Editing it.".format(self.parent.name)
+
+            edb_setup = self.pedb.create_hfss_setup(self.parent.name)
+            edb_setup.set_solution_single_frequency(
+                self.parent.f_adapt, self.parent.max_num_passes, self.parent.max_mag_delta_s
+            )
+
+            self._apply_freq_sweep(edb_setup)
+
+            for i in self.parent.mesh_operations:
+                edb_setup.add_length_mesh_operation(
+                    name=i["name"],
+                    max_elements=i.get("max_elements", 1000),
+                    max_length=i.get("max_length", "1mm"),
+                    restrict_length=i.get("restrict_length", True),
+                    refine_inside=i.get("refine_inside", False),
+                    # mesh_region=i.get(mesh_region),
+                    net_layer_list=i.get("nets_layers_list", {}),
+                )
+
+        def retrieve_parameters_from_edb(self):
+            self._retrieve_parameters_from_edb_common()
             adaptive_frequency_data_list = list(self.pyedb_obj.adaptive_settings.adaptive_frequency_data_list)[0]
             self.parent.f_adapt = adaptive_frequency_data_list.adaptive_frequency
             self.parent.max_num_passes = adaptive_frequency_data_list.max_passes
@@ -225,10 +283,6 @@ class CfgHFSSSetup(CfgSetup):
                         "nets_layers_list": mop.nets_layers_list,
                     }
                 )
-
-    class DotNet(Grpc):
-        def __init__(self, parent):
-            super().__init__(parent)
 
     def __init__(self, pedb, pyedb_obj, **kwargs):
         super().__init__(pedb, pyedb_obj, **kwargs)
@@ -254,9 +308,56 @@ class CfgHFSSSetup(CfgSetup):
 
 
 class CfgSetups:
+    class Grpc:
+        def __init__(self, parent):
+            self.parent = parent
+            self._pedb = parent.pedb
+
+        def retrieve_parameters_from_edb(self):
+            self.parent.setups = []
+            for _, setup in self._pedb.setups.items():
+                if setup.type.name.lower() == "hfss":
+                    hfss = CfgHFSSSetup(self._pedb, setup)
+                    hfss.api.retrieve_parameters_from_edb()
+                    self.parent.setups.append(hfss)
+                elif setup.type.name.lower() == "si_wave_dcir":
+                    siwave_dc = CfgSIwaveDCSetup(self._pedb, setup)
+                    siwave_dc.api.retrieve_parameters_from_edb()
+                    self.parent.setups.append(siwave_dc)
+                elif setup.type.name.lower() == "si_wave":
+                    siwave_ac = CfgSIwaveACSetup(self._pedb, setup)
+                    siwave_ac.api.retrieve_parameters_from_edb()
+                    self.parent.setups.append(siwave_ac)
+                elif setup.type.name.lower() == "raptor_x":
+                    pass
+
+    class DotNet(Grpc):
+        def __init__(self, parent):
+            super().__init__(parent)
+
+        def retrieve_parameters_from_edb(self):
+            self.parent.setups = []
+            for _, setup in self._pedb.setups.items():
+                if setup.type == "hfss":
+                    hfss = CfgHFSSSetup(self._pedb, setup)
+                    hfss.api.retrieve_parameters_from_edb()
+                    self.parent.setups.append(hfss)
+                elif setup.type == "siwave_dc":
+                    siwave_dc = CfgSIwaveDCSetup(self._pedb, setup)
+                    siwave_dc.api.retrieve_parameters_from_edb()
+                    self.parent.setups.append(siwave_dc)
+                elif setup.type == "siwave_ac":
+                    siwave_ac = CfgSIwaveACSetup(self._pedb, setup)
+                    siwave_ac.api.retrieve_parameters_from_edb()
+                    self.parent.setups.append(siwave_ac)
+
     def __init__(self, pedb, setups_data):
         self.pedb = pedb
         self.setups = []
+        if self.pedb.grpc:
+            self.api = self.Grpc(self)
+        else:
+            self.api = self.DotNet(self)
         for stp in setups_data:
             if stp["type"].lower() == "hfss":
                 self.setups.append(CfgHFSSSetup(self.pedb, None, **stp))
@@ -273,17 +374,4 @@ class CfgSetups:
         return [i.to_dict() for i in self.setups]
 
     def retrieve_parameters_from_edb(self):
-        self.setups = []
-        for _, setup in self.pedb.setups.items():
-            if setup.type == "hfss":
-                hfss = CfgHFSSSetup(self.pedb, setup)
-                hfss.api.retrieve_parameters_from_edb()
-                self.setups.append(hfss)
-            elif setup.type == "siwave_dc":
-                siwave_dc = CfgSIwaveDCSetup(self.pedb, setup)
-                siwave_dc.api.retrieve_parameters_from_edb()
-                self.setups.append(siwave_dc)
-            elif setup.type == "siwave_ac":
-                siwave_ac = CfgSIwaveACSetup(self.pedb, setup)
-                siwave_ac.api.retrieve_parameters_from_edb()
-                self.setups.append(siwave_ac)
+        self.api.retrieve_parameters_from_edb()
