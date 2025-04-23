@@ -8,13 +8,14 @@ from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInf
 from pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings import (
     SiwaveDCIRSettings,
 )
+from pyedb.dotnet.database.sim_setup_data.data.sweep_data import SweepData
 from pyedb.dotnet.database.sim_setup_data.io.siwave import (
     AdvancedSettings,
     DCAdvancedSettings,
     DCSettings,
 )
 from pyedb.dotnet.database.utilities.simulation_setup import SimulationSetup
-from pyedb.generic.general_methods import is_linux
+from pyedb.generic.general_methods import generate_unique_name, is_linux
 
 
 def _parse_value(v):
@@ -94,6 +95,8 @@ class SiwaveSimulationSetup(SimulationSetup):
             sim_setup_info = SimSetupInfo(self._pedb, sim_setup=self, setup_type="kSIwave", name=name)
             self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
             self._update_setup()
+
+        self._siwave_sweeps = {}
 
     def create(self, name=None):
         """Create a SIwave SYZ setup.
@@ -247,6 +250,60 @@ class SiwaveSimulationSetup(SimulationSetup):
         edb_setup_info.simulation_settings.UseSISettings = value
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
+
+    def add_sweep(self, name: str = None, frequency_set: list = None, sweep_type: str = "interpolation", **kwargs):
+        """Add frequency sweep.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the frequency sweep. The default is ``None``.
+        frequency_set : list, optional
+            List of frequency points. The default is ``None``.
+        sweep_type : str, optional
+            Sweep type. The default is ``"interpolation"``. Options are ``"discrete"``,"discrete"``.
+        Returns
+        -------
+
+        Examples
+        --------
+        >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
+        >>> setup1.add_sweep(name="sw1", frequency_set=["linear count", "1MHz", "100MHz", 10])
+        """
+        name = generate_unique_name("sweep") if not name else name
+        if name in self.sweeps:
+            raise ValueError("Sweep {} already exists.".format(name))
+
+        sweep_data = SweepData(self._pedb, name=name, sim_setup=self)
+        for k, v in kwargs.items():
+            if k in dir(sweep_data):
+                setattr(sweep_data, k, v)
+        sweep_data.type = sweep_type
+
+        if frequency_set in [None, []]:
+            sweep_type = "linear_scale"
+            start, stop, increment = "50MHz", "5GHz", "50MHz"
+            frequency_set = [[sweep_type, start, stop, increment]]
+        elif not isinstance(frequency_set[0], list):
+            frequency_set = [frequency_set]
+
+        for fs in frequency_set:
+            sweep_type, start, stop, increment = fs
+            sweep_data.add(sweep_type, start, stop, increment)
+        if self.name not in self._siwave_sweeps.keys():
+            self._siwave_sweeps[self.name] = sweep_data
+        else:
+            self._siwave_sweeps[self.name].append(sweep_data)
+        return sweep_data
+
+    @property
+    def sweeps(self):
+        """List of frequency sweeps."""
+        sweep_dict = {}
+        for setup, sweep in self._siwave_sweeps.items():
+            if setup == self.name:
+                sweep_dict[sweep.name] = sweep
+        return sweep_dict
 
 
 class SiwaveDCSimulationSetup(SimulationSetup):
