@@ -56,7 +56,10 @@ class CfgTerminalInfo(CfgBase):
             self.api = self.Grpc(self)
         else:
             self.api = self.DotNet(self)
-        if "pin" in kwargs:
+
+        if kwargs.get("padstack"):
+            self.type = "padstack"
+        elif "pin" in kwargs:
             self.type = "pin"
         elif "net" in kwargs:
             self.type = "net"
@@ -129,14 +132,14 @@ class CfgSources:
                 pos_term_info = {"pin_group": pg.name}
             elif src.terminal_type == "PadstackInstanceTerminal":
                 refdes = src.component.refdes if src.component else ""
-                pos_term_info = {"pin": src.padstack_instance.component_pin}
+                pos_term_info = {"padstack": src.padstack_instance.aedt_name}
 
             neg_term = self._pedb.terminals[src.ref_terminal.name]
             if neg_term.terminal_type == "PinGroupTerminal":
                 pg = self._pedb.siwave.pin_groups[neg_term._edb_object.GetPinGroup().GetName()]
                 neg_term_info = {"pin_group": pg.name}
             elif neg_term.terminal_type == "PadstackInstanceTerminal":
-                neg_term_info = {"pin": neg_term.padstack_instance.component_pin}
+                neg_term_info = {"padstack": neg_term.padstack_instance.aedt_name}
 
             cfg_src = CfgSource(
                 self._pedb,
@@ -158,30 +161,9 @@ class CfgSources:
 
 
 class CfgPorts:
-    class Grpc:
-        def __init__(self, parent):
-            self.parent = parent
-            self._pedb = parent._pedb
-
-        def get_pin_group(self, port):
-            return self._pedb.siwave.pin_groups[port._edb_object.pin_group.name]
-
-        def get_edge_info(self, port):
-            return port._edb_object.GetEdges()[0].GetParameters()
-
-    class DotNet(Grpc):
-        def __init__(self, parent):
-            super().__init__(parent)
-
-        def get_pin_group(self, port):
-            return self._pedb.siwave.pin_groups[port._edb_object.GetPinGroup().GetName()]
-
     def __init__(self, pedb, ports_data):
         self._pedb = pedb
-        if self._pedb.grpc:
-            self.api = self.Grpc(self)
-        else:
-            self.api = self.DotNet(self)
+
         self.ports = []
         for p in ports_data:
             if p["type"] == "wave_port":
@@ -196,6 +178,9 @@ class CfgPorts:
     def apply(self):
         edb_primitives = {}
         for i in self._pedb.layout.primitives:
+            if i.aedt_name:
+                edb_primitives[i.aedt_name] = i
+        for i in self._pedb.layout.padstack_instances:
             if i.aedt_name:
                 edb_primitives[i.aedt_name] = i
         for p in self.ports:
@@ -228,7 +213,7 @@ class CfgPorts:
                 pos_term_info = {"pin_group": pg.name}
             elif p.terminal_type == "PadstackInstanceTerminal":
                 refdes = p.component.refdes if p.component else ""
-                pos_term_info = {"pin": p.padstack_instance.component_pin}
+                pos_term_info = {"padstack": p.padstack_instance.aedt_name}
             elif p.terminal_type == "PointTerminal":
                 refdes = ""
                 pos_term_info = {"coordinates": {"layer": p.layer.name, "point": p.location, "net": p.net.name}}
@@ -240,7 +225,7 @@ class CfgPorts:
                     # pg = self._pedb.siwave.pin_groups[neg_term._edb_object.GetPinGroup().GetName()]
                     neg_term_info = {"pin_group": pg.name}
                 elif neg_term.terminal_type == "PadstackInstanceTerminal":
-                    neg_term_info = {"pin": neg_term.padstack_instance.component_pin}
+                    neg_term_info = {"padstack": neg_term.padstack_instance.aedt_name}
                 elif neg_term.terminal_type == "PointTerminal":
                     neg_term_info = {
                         "coordinates": {
@@ -267,7 +252,7 @@ class CfgPorts:
                     positive_terminal=pos_term_info,
                 )
             else:
-                _, primitive, point = self.api.get_edge_info(p)
+                _, primitive, point = p._edb_object.GetEdges()[0].GetParameters()
 
                 primitive = Primitive(self._pedb, primitive)
                 point = PointData(self._pedb, point)
@@ -314,7 +299,7 @@ class CfgCircuitElement(CfgBase):
 
         pos = kwargs["positive_terminal"]  # {"pin" : "A1"}
         if list(pos.keys())[0] == "coordinates":
-            self.positive_terminal_info = CfgCoordinateTerminalInfo(self._pedb, **pos)
+            self.positive_terminal_info = CfgCoordianteTerminalInfo(self._pedb, **pos)
         else:
             self.positive_terminal_info = CfgTerminalInfo(self._pedb, **pos)
             if not self.positive_terminal_info.reference_designator:
@@ -324,7 +309,7 @@ class CfgCircuitElement(CfgBase):
         if len(neg) == 0:
             self.negative_terminal_info = None
         elif list(neg.keys())[0] == "coordinates":
-            self.negative_terminal_info = CfgCoordinateTerminalInfo(self._pedb, **neg)
+            self.negative_terminal_info = CfgCoordianteTerminalInfo(self._pedb, **neg)
         elif list(neg.keys())[0] == "nearest_pin":
             self.negative_terminal_info = CfgNearestPinTerminalInfo(self._pedb, **neg)
         else:
@@ -351,6 +336,11 @@ class CfgCircuitElement(CfgBase):
                 self._pedb.nets.find_or_create_net(net_name)
             pos_coor_terminal[self.name] = self._pedb.get_point_terminal(self.name, net_name, point, layer)
 
+        elif pos_type == "padstack":
+            for pds in self._pedb.layout.padstack_instances:
+                if pds.aedt_name == pos_value:
+                    pos_objs.update({pos_value: pds})
+                    break
         elif pos_type == "pin":
             pins = {
                 pos_value: self._pedb.components.instances[self.positive_terminal_info.reference_designator].pins[
@@ -448,6 +438,11 @@ class CfgCircuitElement(CfgBase):
                     )  # terminal type pin or net
                     # create pin group
                     neg_obj = self._create_pin_group(pins, self.negative_terminal_info.reference_designator, True)
+                elif neg_type == "padstack":
+                    for pds in self._pedb.layout.padstack_instances:
+                        if pds.aedt_name == neg_value:
+                            neg_obj = {neg_value: pds}
+                            break
                 elif neg_type == "pin":
                     terminal_name = f"{self.negative_terminal_info.reference_designator}_{neg_value}"
                     neg_obj = {
