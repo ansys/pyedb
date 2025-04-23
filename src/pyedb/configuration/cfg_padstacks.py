@@ -372,6 +372,7 @@ class CfgPadstackInstance(CfgBase):
         def set_parameters_to_edb(self):
             if self.parent.name is not None:
                 self.pyedb_obj.aedt_name = self.parent.name
+            self.pyedb_obj.is_pin = self.parent.is_pin
             if self.parent.net_name is not None:
                 self.pyedb_obj.net_name = self.pedb.nets.find_or_create_net(self.parent.net_name).name
             if self.parent.layer_range[0] is not None:
@@ -396,6 +397,7 @@ class CfgPadstackInstance(CfgBase):
 
         def retrieve_parameters_from_edb(self):
             self.parent.name = self.pyedb_obj.aedt_name
+            self.parent.is_pin = self.pyedb_obj.is_pin
             self.parent.definition = self.pyedb_obj.padstack_definition
             self.parent.backdrill_parameters = self.pyedb_obj.backdrill_parameters
             _, position, rotation = self.pyedb_obj._edb_object.GetPositionAndRotationValue()
@@ -427,6 +429,7 @@ class CfgPadstackInstance(CfgBase):
             self.api = self.DotNet(self)
 
         self.name = kwargs.get("name", None)
+        self.is_pin = kwargs.get("is_pin", False)
         self.net_name = kwargs.get("net_name", None)
         self.layer_range = kwargs.get("layer_range", [None, None])
         self.definition = kwargs.get("definition", None)
