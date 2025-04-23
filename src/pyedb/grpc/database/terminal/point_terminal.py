@@ -101,3 +101,8 @@ class PointTerminal(GrpcPointTerminal):
     @property
     def terminal_type(self):
         return "PointTerminal"
+
+    @property
+    def is_port(self):
+        """Adding DotNet compatibility."""
+        return True
