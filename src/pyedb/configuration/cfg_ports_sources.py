@@ -158,6 +158,9 @@ class CfgPorts:
         for i in self._pedb.layout.primitives:
             if i.aedt_name:
                 edb_primitives[i.aedt_name] = i
+        for i in self._pedb.layout.padstack_instances:
+            if i.aedt_name:
+                edb_primitives[i.aedt_name] = i
         for p in self.ports:
             if p.type in ["wave_port", "diff_wave_port"]:
                 p.set_parameters_to_edb(edb_primitives)
