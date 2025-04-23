@@ -74,9 +74,9 @@ class PinGroup(GrpcPinGroup):
 
         Returns
         -------
-        List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`].
+        Dict[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`].
         """
-        return [PadstackInstance(self._pedb, i) for i in super().pins]
+        return {i.name: PadstackInstance(self._pedb, i) for i in super().pins}
 
     @property
     def net(self):
