@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.terminal.terminals import BundleTerminal as GrpcBundleTerminal
-from ansys.edb.core.terminal.terminals import EdgeTerminal as GrpcEdgeTerminal
+from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundleTerminal
+from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal
 
 
 class EdgeTerminal(GrpcEdgeTerminal):

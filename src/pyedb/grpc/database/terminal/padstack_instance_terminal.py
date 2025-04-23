@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.terminal.terminals import (
+from ansys.edb.core.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
 )
-from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
+from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
 
 class PadstackInstanceTerminal(GrpcPadstackInstanceTerminal):

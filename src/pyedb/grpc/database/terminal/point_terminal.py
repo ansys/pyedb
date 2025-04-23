@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-from ansys.edb.core.terminal.terminals import PointTerminal as GrpcPointTerminal
+from ansys.edb.core.terminal.point_terminal import PointTerminal as GrpcPointTerminal
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 
