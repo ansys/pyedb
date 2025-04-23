@@ -125,6 +125,36 @@ class CfgSParameters:
         def __init__(self, parent):
             super().__init__(parent)
 
+        def apply(self):
+            for s_param in self.parent.s_parameters_models:
+                fpath = s_param.file_path
+                if not Path(fpath).anchor:
+                    fpath = str(Path(self.parent.path_libraries) / fpath)
+                comp_def = self._pedb.definitions.component[s_param.component_definition]
+                if s_param.pin_order:
+                    comp_def.set_properties(pin_order=s_param.pin_order)
+                comp_def.add_n_port_model(fpath, s_param.name)
+                comp_list = dict()
+                if s_param.apply_to_all:
+                    comp_list.update(
+                        {
+                            refdes: comp
+                            for refdes, comp in comp_def.components.items()
+                            if refdes not in s_param.components
+                        }
+                    )
+                else:
+                    comp_list.update(
+                        {refdes: comp for refdes, comp in comp_def.components.items() if refdes in s_param.components}
+                    )
+
+                for refdes, comp in comp_list.items():
+                    if refdes in s_param.reference_net_per_component:
+                        ref_net = s_param.reference_net_per_component[refdes]
+                    else:
+                        ref_net = s_param.reference_net
+                    comp.use_s_parameter_model(s_param.name, reference_net=ref_net)
+
     def __init__(self, pedb, data, path_lib=None):
         self._pedb = pedb
         if self._pedb.grpc:

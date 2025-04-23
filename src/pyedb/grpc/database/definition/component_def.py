@@ -216,3 +216,18 @@ class ComponentDef(GrpcComponentDef):
             n_port_model.reference_file = fpath
             self.add_component_model(n_port_model)
             return n_port_model
+
+    def get_properties(self):
+        data = {}
+        temp = []
+        for i in self.component_pins:
+            temp.append(i.name)
+        data["pin_order"] = temp
+        return data
+
+    def set_properties(self, **kwargs):
+        pin_order = kwargs.get("pin_order")
+        if pin_order:
+            old = {i.name: i for i in self.component_pins}
+            temp = [old[str(i)] for i in pin_order]
+            self.component_pins = temp
