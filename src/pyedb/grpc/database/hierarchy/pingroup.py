@@ -74,9 +74,9 @@ class PinGroup(GrpcPinGroup):
 
         Returns
         -------
-        List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`].
+        Dict[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`].
         """
-        return [PadstackInstance(self._pedb, i) for i in super().pins]
+        return {i.name: PadstackInstance(self._pedb, i) for i in super().pins}
 
     @property
     def net(self):
@@ -105,11 +105,15 @@ class PinGroup(GrpcPinGroup):
         """
         return self.net.name
 
-    # @property
-    # def terminal(self):
-    #     """Terminal."""
-    #     term = PinGroupTerminal(self._pedb, self.get_pin_group_terminal())  # TODO check method is missing
-    #     return term if not term.is_null else None
+    @property
+    def terminal(self):
+        """Terminal."""
+        term = self.pin_group_terminal
+        if not term.is_null:
+            term = PinGroupTerminal(self._pedb, term)
+            return term
+        else:
+            return None
 
     def create_terminal(self, name=None):
         """Create a terminal.
