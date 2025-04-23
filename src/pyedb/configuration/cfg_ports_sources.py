@@ -161,9 +161,30 @@ class CfgSources:
 
 
 class CfgPorts:
+    class Grpc:
+        def __init__(self, parent):
+            self.parent = parent
+            self._pedb = parent._pedb
+
+        def get_pin_group(self, port):
+            return self._pedb.siwave.pin_groups[port._edb_object.pin_group.name]
+
+        def get_edge_info(self, port):
+            return port._edb_object.GetEdges()[0].GetParameters()
+
+    class DotNet(Grpc):
+        def __init__(self, parent):
+            super().__init__(parent)
+
+        def get_pin_group(self, port):
+            return self._pedb.siwave.pin_groups[port._edb_object.GetPinGroup().GetName()]
+
     def __init__(self, pedb, ports_data):
         self._pedb = pedb
-
+        if self._pedb.grpc:
+            self.api = self.Grpc(self)
+        else:
+            self.api = self.DotNet(self)
         self.ports = []
         for p in ports_data:
             if p["type"] == "wave_port":
@@ -299,7 +320,7 @@ class CfgCircuitElement(CfgBase):
 
         pos = kwargs["positive_terminal"]  # {"pin" : "A1"}
         if list(pos.keys())[0] == "coordinates":
-            self.positive_terminal_info = CfgCoordianteTerminalInfo(self._pedb, **pos)
+            self.positive_terminal_info = CfgCoordinateTerminalInfo(self._pedb, **pos)
         else:
             self.positive_terminal_info = CfgTerminalInfo(self._pedb, **pos)
             if not self.positive_terminal_info.reference_designator:
@@ -309,7 +330,7 @@ class CfgCircuitElement(CfgBase):
         if len(neg) == 0:
             self.negative_terminal_info = None
         elif list(neg.keys())[0] == "coordinates":
-            self.negative_terminal_info = CfgCoordianteTerminalInfo(self._pedb, **neg)
+            self.negative_terminal_info = CfgCoordinateTerminalInfo(self._pedb, **neg)
         elif list(neg.keys())[0] == "nearest_pin":
             self.negative_terminal_info = CfgNearestPinTerminalInfo(self._pedb, **neg)
         else:
