@@ -304,8 +304,27 @@ class CfgProbes:
 
 
 class CfgCircuitElement(CfgBase):
+    class Grpc:
+        def __init__(self, parent):
+            self.parent = parent
+            self._pedb = parent._pedb
+
+        def update_pins(self, reference_designator, terminal_value, pins, dict_to_update):
+            dict_to_update.update({f"{reference_designator}_{terminal_value[0]}_{i.name}": i for i in pins})
+
+    class DotNet(Grpc):
+        def __init__(self, parent):
+            super().__init__(parent)
+
+        def update_pins(self, reference_designator, terminal_value, pins, dict_to_update):
+            dict_to_update.update({f"{reference_designator}_{terminal_value[0]}_{i}": j for i, j in pins.items()})
+
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
+        if self._pedb.grpc:
+            self.api = self.Grpc(self)
+        else:
+            self.api = self.DotNet(self)
         self.name = kwargs["name"]
         self.type = kwargs["type"]
         self.reference_designator = kwargs.get("reference_designator", None)
@@ -476,7 +495,9 @@ class CfgCircuitElement(CfgBase):
             elif terminal_type == "pin_group":
                 pin_group = self._pedb.siwave.pin_groups[terminal_value[0]]
                 temp = pin_group.pins
-            pins.update({f"{reference_designator}_{terminal_value[0]}_{i}": j for i, j in temp.items()})
+            self.api.update_pins(
+                reference_designator=reference_designator, terminal_value=terminal_value, pins=temp, dict_to_update=pins
+            )
         return pins
 
     def _create_virtual_pins_on_pin(self, pin, contact_type, radius, num_of_contact=4, expansion=1):
