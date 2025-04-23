@@ -174,7 +174,7 @@ class CfgPorts:
             super().__init__(parent)
 
         def get_pin_group(self, port):
-            return self._pedb.siwave.pin_groups[p._edb_object.GetPinGroup().GetName()]
+            return self._pedb.siwave.pin_groups[port._edb_object.GetPinGroup().GetName()]
 
     def __init__(self, pedb, ports_data):
         self._pedb = pedb
