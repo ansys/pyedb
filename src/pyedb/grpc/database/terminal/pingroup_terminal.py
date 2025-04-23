@@ -24,6 +24,7 @@ from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.terminal.terminals import PinGroupTerminal as GrpcPinGroupTerminal
 
 from pyedb.grpc.database.net.net import Net
+from pyedb.misc.misc import deprecated_property
 
 
 class PinGroupTerminal(GrpcPinGroupTerminal):
@@ -55,6 +56,12 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         if value == "voltage_probe":
             value = GrpcBoundaryType.VOLTAGE_PROBE
         super(PinGroupTerminal, self.__class__).boundary_type.__set__(self, value)
+
+    @property
+    def is_port(self):
+        if self.boundary_type == "port":
+            return True
+        return False
 
     @property
     def magnitude(self):
@@ -160,3 +167,27 @@ class PinGroupTerminal(GrpcPinGroupTerminal):
         from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 
         return PinGroup(self._pedb, super().pin_group)
+
+    @property
+    def terminal_type(self):
+        return "PinGroupTerminal"
+
+    @property
+    @deprecated_property
+    def ref_terminal(self):
+        """Property keeping DotNet compatibility
+
+        ..deprecated:: 0.43.0
+           Use: func:`reference_terminal` property instead.
+
+        """
+        self._pedb.logger.warning("ref_terminal property is deprecated, use reference_terminal property instead.")
+        return self.reference_terminal
+
+    @ref_terminal.setter
+    def ref_terminal(self, value):
+        self.reference_terminal = value
+
+    @property
+    def hfss_type(self):
+        return "circuit"

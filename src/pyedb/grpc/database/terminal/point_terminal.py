@@ -97,3 +97,7 @@ class PointTerminal(GrpcPointTerminal):
     @reference_terminal.setter
     def reference_terminal(self, value):
         super(PointTerminal, self.__class__).reference_terminal.__set__(self, value)
+
+    @property
+    def terminal_type(self):
+        return "PointTerminal"
