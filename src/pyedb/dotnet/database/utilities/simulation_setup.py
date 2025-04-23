@@ -239,11 +239,11 @@ class SimulationSetup(object):
     def sweeps(self):
         """List of frequency sweeps."""
         if self.setup_type == "kSIwave":
-            sweep_list = []
+            sweep_dict = {}
             for setup, sweep in self._siwave_sweeps.items():
                 if setup == self.name:
-                    sweep_list.append(sweep)
-            return sweep_list
+                    sweep_dict[sweep.name] = sweep
+            return sweep_dict
         else:
             return {i.name: i for i in self.sim_setup_info.sweep_data_list}
 
