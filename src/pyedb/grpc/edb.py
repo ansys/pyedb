@@ -3386,13 +3386,13 @@ class Edb(EdbInit):
         """
         from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
 
-        if isinstance(terminal.boundary_type, GrpcBoundaryType):
+        if terminal.boundary_type == "port":
             terminal.boundary_type = GrpcBoundaryType.PORT
         terminal.is_circuit_port = is_circuit_port
-
-        if isinstance(ref_terminal.boundary_type, GrpcBoundaryType):
-            ref_terminal.boundary_type = GrpcBoundaryType.PORT
-        terminal.ref_terminal = ref_terminal
+        if ref_terminal:
+            if ref_terminal.boundary_type == "port":
+                ref_terminal.boundary_type = GrpcBoundaryType.PORT
+            terminal.reference_terminal = ref_terminal
         if name:
             terminal.name = name
         return self.ports[terminal.name]

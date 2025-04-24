@@ -124,7 +124,10 @@ class TestClass:
                                 # grpc API changed the layer assignment format.
                                 assert mop_value == target_mop[mop_p_name]
                 else:
-                    assert value == target[p]
+                    if p == "type":
+                        assert value == target[p].name.lower()
+                    else:
+                        assert value == target[p]
         edbapp.close()
 
     def test_01a_setups_frequency_sweeps(self, edb_examples):

@@ -98,7 +98,9 @@ class PadstackInstance(GrpcPadstackInstance):
             PadstackInstanceTerminal,
         )
 
-        term = PadstackInstanceTerminal(self._pedb, self._edb_object)
+        term = self.get_padstack_instance_terminal()
+        if not term.is_null:
+            term = PadstackInstanceTerminal(self._pedb, term)
         return term if not term.is_null else None
 
     def create_terminal(self, name=None):
