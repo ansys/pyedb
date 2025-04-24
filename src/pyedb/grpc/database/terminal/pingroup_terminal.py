@@ -20,8 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from ansys.edb.core.terminal.pin_group_terminal import (
+    PinGroupTerminal as GrpcPinGroupTerminal,
+)
 from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
-from ansys.edb.core.terminal.pin_group_terminal import PinGroupTerminal as GrpcPinGroupTerminal
 
 from pyedb.grpc.database.net.net import Net
 

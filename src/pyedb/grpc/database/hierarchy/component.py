@@ -42,7 +42,9 @@ from ansys.edb.core.hierarchy.sparameter_model import (
     SParameterModel as GrpcSParameterModel,
 )
 from ansys.edb.core.hierarchy.spice_model import SPICEModel as GrpcSPICEModel
-from ansys.edb.core.primitive.padstack_instance import PadstackInstance as GrpcPadstackInstance
+from ansys.edb.core.primitive.padstack_instance import (
+    PadstackInstance as GrpcPadstackInstance,
+)
 from ansys.edb.core.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
 )

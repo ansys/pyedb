@@ -20,14 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Union, List, Set
+from typing import List, Set, Union
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal
 from ansys.edb.core.terminal.edge_terminal import PrimitiveEdge as GrpcPrimitiveEdge
+from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as GrpcValue
 

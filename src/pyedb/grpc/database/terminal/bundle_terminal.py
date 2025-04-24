@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundleTerminal
 from ansys.edb.core.terminal.terminal import (
     SourceTermToGroundType as GrpcSourceTermToGroundType,
 )
-from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as GrpcBundleTerminal
 from ansys.edb.core.terminal.terminal import HfssPIType as GrpcHfssPIType
 from ansys.edb.core.utility.value import Value as GrpcValue
 

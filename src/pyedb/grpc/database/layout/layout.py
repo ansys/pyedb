@@ -26,13 +26,13 @@ This module contains these classes: `EdbLayout` and `Shape`.
 from typing import Union
 
 from ansys.edb.core.layout.layout import Layout as GrpcLayout
-import ansys.edb.core.primitive.primitive
-import ansys.edb.core.primitive.path
-import ansys.edb.core.primitive.rectangle
-import ansys.edb.core.primitive.polygon
+import ansys.edb.core.primitive.bondwire
 import ansys.edb.core.primitive.circle
 import ansys.edb.core.primitive.padstack_instance
-import ansys.edb.core.primitive.bondwire
+import ansys.edb.core.primitive.path
+import ansys.edb.core.primitive.polygon
+import ansys.edb.core.primitive.primitive
+import ansys.edb.core.primitive.rectangle
 
 from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup

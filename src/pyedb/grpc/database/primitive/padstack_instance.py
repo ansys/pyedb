@@ -27,8 +27,12 @@ from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
-from ansys.edb.core.primitive.padstack_instance import PadstackInstance as GrpcPadstackInstance
-from ansys.edb.core.terminal.pin_group_terminal import PinGroupTerminal as GrpcPinGroupTerminal
+from ansys.edb.core.primitive.padstack_instance import (
+    PadstackInstance as GrpcPadstackInstance,
+)
+from ansys.edb.core.terminal.pin_group_terminal import (
+    PinGroupTerminal as GrpcPinGroupTerminal,
+)
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
