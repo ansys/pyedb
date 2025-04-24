@@ -96,8 +96,6 @@ class SimulationSetup(object):
         if self._edb_object:
             self._name = self._edb_object.GetName()
 
-        self._sweep_list = {}
-
     @property
     def sim_setup_info(self):
         return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_object.GetSimSetupInfo())
@@ -239,7 +237,7 @@ class SimulationSetup(object):
         """List of frequency sweeps."""
         return {i.name: i for i in self.sim_setup_info.sweep_data_list}
 
-    def add_sweep(self, name, frequency_set: list = None, sweep_type: str = "interpolation", **kwargs):
+    def add_sweep(self, name: str = None, frequency_set: list = None, sweep_type: str = "interpolation", **kwargs):
         """Add frequency sweep.
 
         Parameters
@@ -292,15 +290,7 @@ class SimulationSetup(object):
         sweep_data: SweepData
         """
         warnings.warn("Use new property :func:`add_sweep_data` instead.", DeprecationWarning)
-        self._sweep_list[sweep_data.name] = sweep_data
-        edb_setup_info = self.sim_setup_info
-
-        if self._setup_type in ["kSIwave", "kHFSS", "kRaptorX", "kHFSSPI"]:
-            for _, v in self._sweep_list.items():
-                edb_setup_info.SweepDataList.Add(v._edb_object)
-
-        self._edb_object = self._set_edb_setup_info(edb_setup_info)
-        self._update_setup()
+        return self.sim_setup_info.add_sweep_data(sweep_data)
 
     def delete_frequency_sweep(self, sweep_data):
         """Delete a frequency sweep.
@@ -310,17 +300,17 @@ class SimulationSetup(object):
             sweep_data : EdbFrequencySweep.
         """
         name = sweep_data.name
-        if name in self._sweep_list:
-            self._sweep_list.pop(name)
+        if name in self.sweeps:
+            self.sweeps.pop(name)
 
         fsweep = []
-        if self.frequency_sweeps:
-            fsweep = [val for key, val in self.frequency_sweeps.items() if not key == name]
+        if self.sweeps:
+            fsweep = [val for key, val in self.sweeps.items() if not key == name]
             self.sim_setup_info._edb_object.SweepDataList.Clear()
             for i in fsweep:
                 self.sim_setup_info._edb_object.SweepDataList.Add(i._edb_object)
             self._update_setup()
-            return True if name in self.frequency_sweeps else False
+            return False if name in self.sweeps else True
 
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
         """Add frequency sweep.
