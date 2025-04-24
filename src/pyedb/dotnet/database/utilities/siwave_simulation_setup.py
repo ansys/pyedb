@@ -270,28 +270,9 @@ class SiwaveSimulationSetup(SimulationSetup):
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
         >>> setup1.add_sweep(name="sw1", frequency_set=["linear count", "1MHz", "100MHz", 10])
         """
-        name = generate_unique_name("sweep") if not name else name
-        if name in self.sweeps:
-            raise ValueError("Sweep {} already exists.".format(name))
+        sweep_data = SimulationSetup.add_sweep(self, name, frequency_set, sweep_type, **kwargs)
+        self._siwave_sweeps_list.append(sweep_data)
 
-        sweep_data = SweepData(self._pedb, name=name, sim_setup=self)
-        for k, v in kwargs.items():
-            if k in dir(sweep_data):
-                setattr(sweep_data, k, v)
-        sweep_data.type = sweep_type
-
-        if frequency_set in [None, []]:
-            sweep_type = "linear_scale"
-            start, stop, increment = "50MHz", "5GHz", "50MHz"
-            frequency_set = [[sweep_type, start, stop, increment]]
-        elif not isinstance(frequency_set[0], list):
-            frequency_set = [frequency_set]
-
-        for fs in frequency_set:
-            sweep_type, start, stop, increment = fs
-            sweep_data.add(sweep_type, start, stop, increment)
-            self._siwave_sweeps_list.append(sweep_data)
-        return sweep_data
 
     @property
     def sweeps(self):
