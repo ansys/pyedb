@@ -96,7 +96,7 @@ class SiwaveSimulationSetup(SimulationSetup):
             self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
             self._update_setup()
 
-        self._siwave_sweeps = {}
+        self._siwave_sweeps_list = []
 
     def create(self, name=None):
         """Create a SIwave SYZ setup.
@@ -290,20 +290,13 @@ class SiwaveSimulationSetup(SimulationSetup):
         for fs in frequency_set:
             sweep_type, start, stop, increment = fs
             sweep_data.add(sweep_type, start, stop, increment)
-        if self.name not in self._siwave_sweeps.keys():
-            self._siwave_sweeps[self.name] = sweep_data
-        else:
-            self._siwave_sweeps[self.name].append(sweep_data)
+            self._siwave_sweeps_list.append(sweep_data)
         return sweep_data
 
     @property
     def sweeps(self):
         """List of frequency sweeps."""
-        sweep_dict = {}
-        for setup, sweep in self._siwave_sweeps.items():
-            if setup == self.name:
-                sweep_dict[sweep.name] = sweep
-        return sweep_dict
+        return {i.name: i for i in self._siwave_sweeps_list}
 
 
 class SiwaveDCSimulationSetup(SimulationSetup):
