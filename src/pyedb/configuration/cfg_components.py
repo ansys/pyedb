@@ -262,7 +262,7 @@ class CfgComponent(CfgBase):
         def set_parameters_to_edb(self):
             if self.parent.type:
                 self.pyedb_obj.type = self.parent.type
-            if self.parent.enabled:
+            if self.parent.enabled is not None:
                 self.pyedb_obj.enabled = self.parent.enabled
 
             self._set_model_properties_to_edb()
