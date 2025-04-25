@@ -1153,7 +1153,7 @@ class EdbPadstacks(object):
             Name of the net. The default is ``""``.
         via_name : str, optional
             The default is ``""``.
-        rotation : float, optional
+        rotation : float, str, optional
             Rotation of the padstack in degrees. The default
             is ``0``.
         fromlayer :
@@ -1175,7 +1175,7 @@ class EdbPadstacks(object):
                 padstack = self.definitions[pad].edb_padstack
         position = self._edb.geometry.point_data(position[0], position[1])
         net = self._pedb.nets.find_or_create_net(net_name)
-        rotation = self._get_edb_value(rotation * math.pi / 180)
+        rotation = self._get_edb_value(rotation * math.pi / 180) if not isinstance(rotation, str) else self._get_edb_value(rotation)
         sign_layers_values = {i: v for i, v in self._pedb.stackup.signal_layers.items()}
         sign_layers = list(sign_layers_values.keys())
         if not fromlayer:
