@@ -88,20 +88,26 @@ class CfgBoundaries(CfgBase):
                 )
 
         def get_parameters_from_edb(self):
-            self.open_region = self._pedb.hfss.hfss_extent_info.use_open_region
-            self.open_region_type = self._pedb.hfss.hfss_extent_info.open_region_type
-            self.pml_visible = self._pedb.hfss.hfss_extent_info.is_pml_visible
-            self.pml_operation_frequency = self._pedb.hfss.hfss_extent_info.operating_freq
-            self.pml_radiation_factor = self._pedb.hfss.hfss_extent_info.pml_radiation_factor
-            self.dielectric_extent_type = self._pedb.hfss.hfss_extent_info.extent_type
-            self.horizontal_padding = self._pedb.hfss.hfss_extent_info.dielectric_extent_size
-            self.honor_primitives_on_dielectric_layers = self._pedb.hfss.hfss_extent_info.honor_user_dielectric
-            self.air_box_extent_type = self._pedb.hfss.hfss_extent_info.extent_type
-            self.air_box_truncate_model_ground_layers = self._pedb.hfss.hfss_extent_info.truncate_air_box_at_ground
-            self.air_box_horizontal_padding = self._pedb.hfss.hfss_extent_info.air_box_horizontal_extent
-            self.air_box_positive_vertical_padding = self._pedb.hfss.hfss_extent_info.air_box_positive_vertical_extent
-            self.air_box_negative_vertical_padding = self._pedb.hfss.hfss_extent_info.air_box_negative_vertical_extent
-            return self.parent.get_attributes()
+            self.parent.open_region = self._pedb.hfss.hfss_extent_info.use_open_region
+            self.parent.open_region_type = self._pedb.hfss.hfss_extent_info.open_region_type
+            self.parent.pml_visible = self._pedb.hfss.hfss_extent_info.is_pml_visible
+            self.parent.pml_operation_frequency = self._pedb.hfss.hfss_extent_info.operating_freq
+            self.parent.pml_radiation_factor = self._pedb.hfss.hfss_extent_info.pml_radiation_factor
+            self.parent.dielectric_extent_type = self._pedb.hfss.hfss_extent_info.extent_type
+            self.parent.horizontal_padding = self._pedb.hfss.hfss_extent_info.dielectric_extent_size
+            self.parent.honor_primitives_on_dielectric_layers = self._pedb.hfss.hfss_extent_info.honor_user_dielectric
+            self.parent.air_box_extent_type = self._pedb.hfss.hfss_extent_info.extent_type
+            self.parent.air_box_truncate_model_ground_layers = (
+                self._pedb.hfss.hfss_extent_info.truncate_air_box_at_ground
+            )
+            self.parent.air_box_horizontal_padding = self._pedb.hfss.hfss_extent_info.air_box_horizontal_extent
+            self.parent.air_box_positive_vertical_padding = (
+                self._pedb.hfss.hfss_extent_info.air_box_positive_vertical_extent
+            )
+            self.parent.air_box_negative_vertical_padding = (
+                self._pedb.hfss.hfss_extent_info.air_box_negative_vertical_extent
+            )
+            return self.parent.get_attributes(exclude="boundary_data")
 
     class DotNet(Grpc):
         def __init__(self, parent):
