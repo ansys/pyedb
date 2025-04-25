@@ -663,6 +663,10 @@ class PadstackInstance(GrpcPadstackInstance):
         name = self.get_product_property(GrpcProductIdType.DESIGNER, 11)
         return str(name).strip("'")
 
+    @aedt_name.setter
+    def aedt_name(self, value):
+        self.set_product_property(GrpcProductIdType.DESIGNER, 11, value)
+
     def get_backdrill_type(self, from_bottom=True):
         """Return backdrill type
         Parameters
