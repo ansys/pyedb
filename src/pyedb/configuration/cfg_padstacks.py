@@ -704,7 +704,9 @@ class CfgPadstackInstance(CfgBase):
                     self.parent.pyedb_obj.aedt_name = self.parent.parent.name
                 self.parent.pyedb_obj.is_pin = self.parent.parent.is_pin
                 if self.parent.parent.net_name is not None:
-                    self.parent.pyedb_obj.net_name = self._pedb.nets.find_or_create_net(self.parent.net_name).name
+                    self.parent.pyedb_obj.net_name = self._pedb.nets.find_or_create_net(
+                        self.parent.parent.net_name
+                    ).name
                 if self.parent.parent.layer_range[0] is not None:
                     self.parent.pyedb_obj.start_layer = self.parent.parent.layer_range[0]
                 if self.parent.parent.layer_range[1] is not None:
