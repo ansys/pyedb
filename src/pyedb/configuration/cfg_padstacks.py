@@ -364,7 +364,7 @@ class CfgPadstackDefinition(CfgBase):
                 }
 
             def set_hole_parameters_to_edb(self, params):
-                original_params = self.parent.hole_parameters
+                original_params = self.parent.parent.hole_parameters
                 pdef_data = self.parent.pyedb_obj._padstack_def_data
 
                 temp_param = []
@@ -382,7 +382,7 @@ class CfgPadstackDefinition(CfgBase):
                     self._pedb.edb_value(params.get("offset_y", original_params.get("offset_y", 0))),
                     self._pedb.edb_value(params.get("rotation", original_params.get("rotation", 0))),
                 )
-                self.pyedb_obj._padstack_def_data = pdef_data
+                self.parent.pyedb_obj._padstack_def_data = pdef_data
 
             def set_solder_parameters_to_edb(self, parameters):
                 pdef_data = self.parent.pyedb_obj._padstack_def_data
@@ -395,7 +395,7 @@ class CfgPadstackDefinition(CfgBase):
 
                 pdef_data.SetSolderBallShape(self.parent._solder_shape_type[shape])
                 if not shape == "no_solder_ball":
-                    pdef_data.SetSolderBallParameter(self._pedb.edb_value(diameter), self.pedb.edb_value(mid_diameter))
+                    pdef_data.SetSolderBallParameter(self._pedb.edb_value(diameter), self._pedb.edb_value(mid_diameter))
                     pdef_data.SetSolderBallPlacement(self.parent._solder_placement[placement])
 
                 if material:
@@ -501,7 +501,7 @@ class CfgPadstackDefinition(CfgBase):
                             temp_param.append(layer_data["size"])
                             pad_shape = self._pedb._edb.Definition.PadGeometryType.Square
 
-                        elif p == pascal_to_snake(self.pedb._edb.Definition.PadGeometryType.Rectangle.ToString()):
+                        elif p == pascal_to_snake(self._pedb._edb.Definition.PadGeometryType.Rectangle.ToString()):
                             temp_param.append(layer_data["x_size"])
                             temp_param.append(layer_data["y_size"])
                             pad_shape = self._pedb._edb.Definition.PadGeometryType.Rectangle
@@ -700,49 +700,53 @@ class CfgPadstackInstance(CfgBase):
                 super().__init__(parent)
 
             def set_parameters_to_edb(self):
-                if self.parent.name is not None:
-                    self.parent.pyedb_obj.aedt_name = self.parent.name
-                self.parent.pyedb_obj.is_pin = self.parent.is_pin
-                if self.parent.net_name is not None:
+                if self.parent.parent.name is not None:
+                    self.parent.pyedb_obj.aedt_name = self.parent.parent.name
+                self.parent.pyedb_obj.is_pin = self.parent.parent.is_pin
+                if self.parent.parent.net_name is not None:
                     self.parent.pyedb_obj.net_name = self._pedb.nets.find_or_create_net(self.parent.net_name).name
-                if self.parent.layer_range[0] is not None:
-                    self.parent.pyedb_obj.start_layer = self.parent.layer_range[0]
-                if self.parent.layer_range[1] is not None:
-                    self.parent.pyedb_obj.stop_layer = self.parent.layer_range[1]
-                if self.parent.backdrill_parameters:
-                    self.parent.pyedb_obj.backdrill_parameters = self.parent.backdrill_parameters
-                if self.parent.solder_ball_layer:
+                if self.parent.parent.layer_range[0] is not None:
+                    self.parent.pyedb_obj.start_layer = self.parent.parent.layer_range[0]
+                if self.parent.parent.layer_range[1] is not None:
+                    self.parent.pyedb_obj.stop_layer = self.parent.parent.layer_range[1]
+                if self.parent.parent.backdrill_parameters:
+                    self.parent.pyedb_obj.backdrill_parameters = self.parent.parent.backdrill_parameters
+                if self.parent.parent.solder_ball_layer:
                     self.parent.pyedb_obj._edb_object.SetSolderBallLayer(
-                        self._pedb.stackup[self.parent.solder_ball_layer]._edb_object
+                        self._pedb.stackup[self.parent.parent.solder_ball_layer]._edb_object
                     )
 
                 hole_override_enabled, hole_override_diam = self.parent.pyedb_obj._edb_object.GetHoleOverrideValue()
                 hole_override_enabled = (
-                    self.parent.hole_override_enabled if self.parent.hole_override_enabled else hole_override_enabled
+                    self.parent.parent.hole_override_enabled
+                    if self.parent.parent.hole_override_enabled
+                    else hole_override_enabled
                 )
                 hole_override_diam = (
-                    self.parent.hole_override_diameter if self.parent.hole_override_diameter else hole_override_diam
+                    self.parent.parent.hole_override_diameter
+                    if self.parent.parent.hole_override_diameter
+                    else hole_override_diam
                 )
                 self.parent.pyedb_obj._edb_object.SetHoleOverride(
                     hole_override_enabled, self._pedb.edb_value(hole_override_diam)
                 )
 
             def retrieve_parameters_from_edb(self):
-                self.parent.name = self.parent.pyedb_obj.aedt_name
-                self.parent.is_pin = self.parent.pyedb_obj.is_pin
-                self.parent.definition = self.parent.pyedb_obj.padstack_definition
-                self.parent.backdrill_parameters = self.parent.pyedb_obj.backdrill_parameters
+                self.parent.parent.name = self.parent.pyedb_obj.aedt_name
+                self.parent.parent.is_pin = self.parent.pyedb_obj.is_pin
+                self.parent.parent.definition = self.parent.pyedb_obj.padstack_definition
+                self.parent.parent.backdrill_parameters = self.parent.pyedb_obj.backdrill_parameters
                 _, position, rotation = self.parent.pyedb_obj._edb_object.GetPositionAndRotationValue()
-                self.parent.position = [position.X.ToString(), position.Y.ToString()]
-                self.parent.rotation = rotation.ToString()
-                self.parent._id = self.parent.pyedb_obj.id
+                self.parent.parent.position = [position.X.ToString(), position.Y.ToString()]
+                self.parent.parent.rotation = rotation.ToString()
+                self.parent.parent._id = self.parent.pyedb_obj.id
                 (
                     self.parent.hole_override_enabled,
                     hole_override_diameter,
                 ) = self.parent.pyedb_obj._edb_object.GetHoleOverrideValue()
-                self.parent.hole_override_diameter = hole_override_diameter.ToString()
-                self.parent.solder_ball_layer = self.parent.pyedb_obj._edb_object.GetSolderBallLayer().GetName()
-                self.parent.layer_range = [self.parent.pyedb_obj.start_layer, self.parent.pyedb_obj.stop_layer]
+                self.parent.parent.hole_override_diameter = hole_override_diameter.ToString()
+                self.parent.parent.solder_ball_layer = self.parent.pyedb_obj._edb_object.GetSolderBallLayer().GetName()
+                self.parent.parent.layer_range = [self.parent.pyedb_obj.start_layer, self.parent.pyedb_obj.stop_layer]
 
         def __init__(self, parent):
             self.parent = parent
