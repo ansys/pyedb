@@ -35,6 +35,7 @@ from pyedb.dotnet.database.general import (
     snake_to_pascal,
 )
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
+from pyedb.generic.data_handlers import float_units
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.modeler.geometry_operators import GeometryOperators
 
@@ -1958,15 +1959,18 @@ class EDBPadstackInstance(Primitive):
         pad_shape = padstack_pad.geometry_type
         params = padstack_pad.parameters_values
         polygon_data = padstack_pad._polygon_data_dotnet
+        pad_offset = [float_units(padstack_pad.offset_x), float_units(padstack_pad.offset_y)]
 
         def _rotate(p):
             x = p[0] * math.cos(rotation) - p[1] * math.sin(rotation)
             y = p[0] * math.sin(rotation) + p[1] * math.cos(rotation)
             return [x, y]
 
-        def _translate(p):
-            x = p[0] + padstack_center[0]
-            y = p[1] + padstack_center[1]
+        def _translate(p, t=None):
+            if t is None:
+                t = padstack_center
+            x = p[0] + t[0]
+            y = p[1] + t[1]
             return [x, y]
 
         rect = None
@@ -2092,7 +2096,8 @@ class EDBPadstackInstance(Primitive):
 
         if rect is None or len(rect) != 4:
             return False
-        path = self._pedb.modeler.Shape("polygon", points=rect)
+        offset_rect = [_translate(p, _rotate(pad_offset)) for p in rect]
+        path = self._pedb.modeler.Shape("polygon", points=offset_rect)
         pdata = self._pedb.modeler.shape_to_polygon_data(path)
         new_rect = []
         for point in pdata.Points:

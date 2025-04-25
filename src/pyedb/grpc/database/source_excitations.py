@@ -20,14 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Union
+from typing import List, Set, Union
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
-from ansys.edb.core.terminal.terminals import EdgeTerminal as GrpcEdgeTerminal
-from ansys.edb.core.terminal.terminals import PrimitiveEdge as GrpcPrimitiveEdge
+from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as GrpcEdgeTerminal
+from ansys.edb.core.terminal.edge_terminal import PrimitiveEdge as GrpcPrimitiveEdge
+from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
 from ansys.edb.core.utility.value import Value as GrpcValue
 
@@ -267,8 +267,8 @@ class SourceExcitation:
         return term or False
 
     def _get_pins_for_ports(
-        self, pins: Union[int, str, PadstackInstance, list[Union[int, str, PadstackInstance]]], comp: Component
-    ) -> list[PadstackInstance]:
+        self, pins: Union[int, str, PadstackInstance, List[Union[int, str, PadstackInstance]]], comp: Component
+    ) -> List[PadstackInstance]:
         if not isinstance(pins, list):
             pins = [pins]
         result = []
@@ -506,7 +506,7 @@ class SourceExcitation:
         return True
 
     @staticmethod
-    def _normalize_net_list(net_list) -> set[str]:
+    def _normalize_net_list(net_list) -> Set[str]:
         if not isinstance(net_list, list):
             net_list = [net_list]
         nets = set()
