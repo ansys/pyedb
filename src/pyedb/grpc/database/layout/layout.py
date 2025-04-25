@@ -26,7 +26,13 @@ This module contains these classes: `EdbLayout` and `Shape`.
 from typing import Union
 
 from ansys.edb.core.layout.layout import Layout as GrpcLayout
+import ansys.edb.core.primitive.bondwire
+import ansys.edb.core.primitive.circle
+import ansys.edb.core.primitive.padstack_instance
+import ansys.edb.core.primitive.path
+import ansys.edb.core.primitive.polygon
 import ansys.edb.core.primitive.primitive
+import ansys.edb.core.primitive.rectangle
 
 from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
@@ -69,17 +75,17 @@ class Layout(GrpcLayout):
     def primitives(self):
         prims = []
         for prim in super().primitives:
-            if isinstance(prim, ansys.edb.core.primitive.primitive.Path):
+            if isinstance(prim, ansys.edb.core.primitive.path.Path):
                 prims.append(Path(self._pedb, prim))
-            elif isinstance(prim, ansys.edb.core.primitive.primitive.Polygon):
+            elif isinstance(prim, ansys.edb.core.primitive.polygon.Polygon):
                 prims.append(Polygon(self._pedb, prim))
-            elif isinstance(prim, ansys.edb.core.primitive.primitive.PadstackInstance):
+            elif isinstance(prim, ansys.edb.core.primitive.padstack_instance.PadstackInstance):
                 prims.append(PadstackInstance(self._pedb, prim))
-            elif isinstance(prim, ansys.edb.core.primitive.primitive.Rectangle):
+            elif isinstance(prim, ansys.edb.core.primitive.rectangle.Rectangle):
                 prims.append(Rectangle(self._pedb, prim))
-            elif isinstance(prim, ansys.edb.core.primitive.primitive.Circle):
+            elif isinstance(prim, ansys.edb.core.primitive.circle.Circle):
                 prims.append(Circle(self._pedb, prim))
-            elif isinstance(prim, ansys.edb.core.primitive.primitive.Bondwire):
+            elif isinstance(prim, ansys.edb.core.primitive.bondwire.Bondwire):
                 prims.append(Bondwire(self._pedb, prim))
         return prims
 

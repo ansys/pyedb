@@ -22,7 +22,7 @@
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-from ansys.edb.core.primitive.primitive import Circle as GrpcCircle
+from ansys.edb.core.primitive.circle import Circle as GrpcCircle
 from ansys.edb.core.primitive.primitive import Primitive as GrpcPrimitive
 
 from pyedb.misc.utilities import compute_arc_points

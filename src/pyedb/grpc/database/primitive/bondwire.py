@@ -20,11 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.primitive.primitive import (
+from ansys.edb.core.primitive.bondwire import (
     BondwireCrossSectionType as GrpcBondwireCrossSectionType,
 )
-from ansys.edb.core.primitive.primitive import Bondwire as GrpcBondWire
-from ansys.edb.core.primitive.primitive import BondwireType as GrpcBondWireType
+from ansys.edb.core.primitive.bondwire import Bondwire as GrpcBondWire
+from ansys.edb.core.primitive.bondwire import BondwireType as GrpcBondWireType
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 

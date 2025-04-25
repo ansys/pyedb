@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 
-from ansys.edb.core.primitive.primitive import Circle as GrpcCircle
+from ansys.edb.core.primitive.circle import Circle as GrpcCircle
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.primitive.primitive import Primitive
