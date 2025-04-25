@@ -1175,7 +1175,11 @@ class EdbPadstacks(object):
                 padstack = self.definitions[pad].edb_padstack
         position = self._edb.geometry.point_data(position[0], position[1])
         net = self._pedb.nets.find_or_create_net(net_name)
-        rotation = self._get_edb_value(rotation * math.pi / 180) if not isinstance(rotation, str) else self._get_edb_value(rotation)
+        rotation = (
+            self._get_edb_value(rotation * math.pi / 180)
+            if not isinstance(rotation, str)
+            else self._get_edb_value(rotation)
+        )
         sign_layers_values = {i: v for i, v in self._pedb.stackup.signal_layers.items()}
         sign_layers = list(sign_layers_values.keys())
         if not fromlayer:
