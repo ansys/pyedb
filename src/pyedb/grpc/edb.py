@@ -1085,7 +1085,7 @@ class Edb(EdbInit):
         :class:`Circle <pyedb.grpc.database.primitive.circle.Circle>`,
         :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`]
         """
-        from ansys.edb.core.terminal.terminals import (
+        from ansys.edb.core.terminal.padstack_instance_terminal import (
             PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
         )
 
@@ -2324,7 +2324,7 @@ class Edb(EdbInit):
             ids.append(lobj.id)
         if include_partial_instances:
             from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-            from ansys.edb.core.primitive.primitive import (
+            from ansys.edb.core.primitive.padstack_instance import (
                 PadstackInstance as GrpcPadstackInstance,
             )
 
@@ -3384,7 +3384,7 @@ class Edb(EdbInit):
         list: [:class:`GapPort <pyedb.grpc.database.ports.ports.GapPort`>,
             :class:`WavePort <pyedb.grpc.database.ports.ports.WavePort>`].
         """
-        from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
+        from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
         if terminal.boundary_type == "port":
             terminal.boundary_type = GrpcBoundaryType.PORT

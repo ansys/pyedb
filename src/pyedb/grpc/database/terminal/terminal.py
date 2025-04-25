@@ -22,10 +22,10 @@
 
 import re
 
-from ansys.edb.core.terminal.terminals import BoundaryType as GrpcBoundaryType
-from ansys.edb.core.terminal.terminals import EdgeType as GrpcEdgeType
-from ansys.edb.core.terminal.terminals import Terminal as GrpcTerminal
-from ansys.edb.core.terminal.terminals import TerminalType as GrpcTerminalType
+from ansys.edb.core.terminal.edge_terminal import EdgeType as GrpcEdgeType
+from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
+from ansys.edb.core.terminal.terminal import Terminal as GrpcTerminal
+from ansys.edb.core.terminal.terminal import TerminalType as GrpcTerminalType
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance

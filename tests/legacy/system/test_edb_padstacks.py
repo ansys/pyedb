@@ -20,13 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Tests related to Edb padstacks
-"""
+"""Tests related to Edb padstacks"""
+import math
 import os
 from pathlib import Path
 
 import pytest
 
+from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.dotnet.database.geometry.polygon_data import PolygonData
+from pyedb.dotnet.database.padstack import EDBPadstackInstance
 from pyedb.dotnet.edb import Edb
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
@@ -281,7 +284,8 @@ class TestClass:
         assert vias[0].metal_volume
         assert vias[1].metal_volume
 
-    def test_padstacks_create_rectangle_in_pad(self):
+    @pytest.mark.parametrize("return_points", [True, False])
+    def test_padstacks_create_rectangle_in_pad(self, return_points: bool):
         """Create a rectangle inscribed inside a padstack instance pad."""
         example_model = os.path.join(local_path, "example_models", test_subfolder, "padstacks.aedb")
         self.local_scratch.copyfolder(
@@ -295,12 +299,31 @@ class TestClass:
         )
         for test_prop in (edb.padstacks.instances, edb.padstacks.instances):
             padstack_instances = list(test_prop.values())
+            confirmed_pads = 0
             for padstack_instance in padstack_instances:
-                result = padstack_instance.create_rectangle_in_pad("s", partition_max_order=8)
+                layer_name = "s"
+                result = padstack_instance.create_rectangle_in_pad(
+                    layer_name, return_points=return_points, partition_max_order=8
+                )
                 if padstack_instance.padstack_definition != "Padstack_None":
                     assert result
+                    if return_points and layer_name in padstack_instance.layer_range_names:
+                        pad_pd = _get_padstack_polygon_data(edb, padstack_instance, layer_name)
+                        if pad_pd is None:
+                            # refer to comment in _get_padstack_polygon_data body to see why we're skipping this check
+                            continue
+                        rect_pd = PolygonData(
+                            padstack_instance._pedb,
+                            create_from_points=True,
+                            points=result,
+                        )._edb_object
+                        _assert_inside(rect_pd, pad_pd)
+                        # count the number of successful confirmations since some are skipped
+                        confirmed_pads += 1
                 else:
                     assert not result
+            if return_points:
+                assert confirmed_pads == 19
         edb.close()
 
     def test_padstaks_plot_on_matplotlib(self):
@@ -503,3 +526,26 @@ class TestClass:
         assert edbapp.padstacks.instances[merged_via[0]].start_layer == "layer1"
         assert edbapp.padstacks.instances[merged_via[0]].stop_layer == "layer2"
         edbapp.close()
+
+
+def _get_padstack_polygon_data(edb: Edb, padstack_instance: EDBPadstackInstance, layer_name: str) -> PolygonData:
+    edb.layout_instance.Refresh()
+    loi = edb.layout_instance.GetLayoutObjInstance(padstack_instance._edb_object, None)
+    geometries = loi.GetGeometries(edb.modeler.layers[layer_name]._edb_object)
+    pds = [g.GetPolygonData(True) for g in geometries]
+    if not pds:
+        # unknown issue here: sometimes the LayoutInstance returns nothing even though there are shapes on the layer for
+        # the instance; as this is used in tests I'm going to return None and check that we successfully confirmed at
+        # least one case
+        return None
+    result = edb.api_class.Geometry.PolygonData.Unite(convert_py_list_to_net_list(pds))[0]
+    return result
+
+
+def _assert_inside(rect, pad):
+    BASE_MESSAGE = "rectangle is not inside pad as"
+    result = rect.Intersect(pad)
+    assert len(result) == 1, f"{BASE_MESSAGE} intersection returned more than one lump"
+    assert math.isclose(
+        result[0].Area(), rect.Area()
+    ), f"{BASE_MESSAGE} area of intersection is not equal to rectangle area"

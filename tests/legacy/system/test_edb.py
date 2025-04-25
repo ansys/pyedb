@@ -1159,7 +1159,7 @@ class TestClass:
             for k, v in setup1.advanced_settings.pi_defaults.items():
                 assert settings["advanced_settings"][k] == v[p]
 
-        sweep = setup1.add_sweep(
+        setup1.add_sweep(
             name="sweep1",
             frequency_set=[
                 ["linear count", "0", "1kHz", 1],
@@ -1167,6 +1167,7 @@ class TestClass:
                 ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
             ],
         )
+        sweep = setup1.sweeps["sweep1"]
         assert 0 in sweep.frequencies
         assert not sweep.adaptive_sampling
         assert not sweep.adv_dc_extrapolation
