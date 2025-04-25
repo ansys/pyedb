@@ -238,28 +238,6 @@ class CfgHFSSSetup(CfgSetup):
         def __init__(self, parent):
             super().__init__(parent)
 
-        def set_parameters_to_edb(self):
-            if self.parent.name in self.pedb.setups:
-                raise "Setup {} already existing. Editing it.".format(self.parent.name)
-
-            edb_setup = self.pedb.create_hfss_setup(self.parent.name)
-            edb_setup.set_solution_single_frequency(
-                self.parent.f_adapt, self.parent.max_num_passes, self.parent.max_mag_delta_s
-            )
-
-            self._apply_freq_sweep(edb_setup)
-
-            for i in self.parent.mesh_operations:
-                edb_setup.add_length_mesh_operation(
-                    name=i["name"],
-                    max_elements=i.get("max_elements", 1000),
-                    max_length=i.get("max_length", "1mm"),
-                    restrict_length=i.get("restrict_length", True),
-                    refine_inside=i.get("refine_inside", False),
-                    # mesh_region=i.get(mesh_region),
-                    net_layer_list=i.get("nets_layers_list", {}),
-                )
-
         def retrieve_parameters_from_edb(self):
             self._retrieve_parameters_from_edb_common()
             adaptive_frequency_data_list = list(self.pyedb_obj.adaptive_settings.adaptive_frequency_data_list)[0]
