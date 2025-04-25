@@ -29,8 +29,8 @@ import pytest
 
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
+from pyedb.dotnet.database.padstack import EDBPadstackInstance
 from pyedb.dotnet.edb import Edb
-from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from tests.conftest import desktop_version, local_path
 from tests.legacy.system.conftest import test_subfolder
 
@@ -528,7 +528,7 @@ class TestClass:
         edbapp.close()
 
 
-def _get_padstack_polygon_data(edb: Edb, padstack_instance: PadstackInstance, layer_name: str) -> PolygonData:
+def _get_padstack_polygon_data(edb: Edb, padstack_instance: EDBPadstackInstance, layer_name: str) -> PolygonData:
     edb.layout_instance.Refresh()
     loi = edb.layout_instance.GetLayoutObjInstance(padstack_instance._edb_object, None)
     geometries = loi.GetGeometries(edb.modeler.layers[layer_name]._edb_object)
