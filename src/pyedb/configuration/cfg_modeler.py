@@ -175,6 +175,7 @@ class CfgModeler:
                         net_name=p.net_name,
                         position=p.position,
                         definition_name=p.definition,
+                        rotation=p.rotation if p.rotation is not None else 0,
                     )
                     p.pyedb_obj = p_inst
                     p.api.set_parameters_to_edb()

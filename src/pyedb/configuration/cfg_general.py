@@ -44,8 +44,10 @@ class CfgGeneral:
             super().__init__(parent)
 
         def set_parameters_to_edb(self):
-            self.pedb.design_options.antipads_always_on = self.parent.anti_pads_always_on
-            self.pedb.design_options.suppress_pads = self.parent.suppress_pads
+            if self.parent.anti_pads_always_on is not None:
+                self.pedb.design_options.anti_pads_always_on = self.parent.anti_pads_always_on
+            if self.parent.suppress_pads is not None:
+                self.pedb.design_options.suppress_pads = self.parent.suppress_pads
 
     def __init__(self, pedb, data):
         self.pedb = pedb
@@ -55,8 +57,8 @@ class CfgGeneral:
             self.api = self.DotNet(self)
         self.spice_model_library = data.get("spice_model_library", "")
         self.s_parameter_library = data.get("s_parameter_library", "")
-        self.anti_pads_always_on = data.get("anti_pads_always_on", False)
-        self.suppress_pads = data.get("suppress_pads", True)
+        self.anti_pads_always_on = data.get("anti_pads_always_on", None)
+        self.suppress_pads = data.get("suppress_pads", None)
 
     def apply(self):
         self.api.set_parameters_to_edb()

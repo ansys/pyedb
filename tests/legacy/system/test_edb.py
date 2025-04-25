@@ -1294,8 +1294,8 @@ class TestClass:
         """Evaluate Edb design settings and options."""
         self.edbapp.design_options.suppress_pads = False
         assert not self.edbapp.design_options.suppress_pads
-        self.edbapp.design_options.antipads_always_on = True
-        assert self.edbapp.design_options.antipads_always_on
+        self.edbapp.design_options.anti_pads_always_on = True
+        assert self.edbapp.design_options.anti_pads_always_on
 
     def test_pins(self):
         """Evaluate the pins."""
