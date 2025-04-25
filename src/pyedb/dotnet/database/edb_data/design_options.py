@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
 
 
 class EdbDesignOptions:
@@ -51,8 +52,25 @@ class EdbDesignOptions:
             ``True`` if antipad is always on, ``False`` otherwise.
 
         """
-        return self._active_cell.GetAntiPadsAlwaysOn()
+        warnings.warn("Use new property :func:`anti_pads_always_on` instead.", DeprecationWarning)
+        return self.anti_pads_always_on
 
     @antipads_always_on.setter
     def antipads_always_on(self, value):
+        self.anti_pads_always_on = value
+
+    @property
+    def anti_pads_always_on(self):
+        """Whether to always turn on antipad.
+
+        Returns
+        -------
+        bool
+            ``True`` if antipad is always on, ``False`` otherwise.
+
+        """
+        return self._active_cell.GetAntiPadsAlwaysOn()
+
+    @anti_pads_always_on.setter
+    def anti_pads_always_on(self, value):
         self._active_cell.SetAntiPadsAlwaysOn(value)
