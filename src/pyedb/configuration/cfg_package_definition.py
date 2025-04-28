@@ -69,7 +69,10 @@ class CfgPackageDefinitions:
             self._pedb = parent._pedb
 
         def set_parameter_to_edb(self):
-            from pyedb.grpc.database.definition.package_def import PackageDef
+            if self._pedb.grpc:
+                from pyedb.grpc.database.definition.package_def import PackageDef
+            else:
+                from pyedb.dotnet.database.definition.package_def import PackageDef
 
             for pkg in self.parent.packages:
                 comp_def_from_db = self._pedb.definitions.component[pkg.component_definition]
@@ -115,7 +118,7 @@ class CfgPackageDefinitions:
                 pkg_attrs = {i for i in pkg_attrs if i in CfgPackage().__dict__}
                 for pkg_attr_name in pkg_attrs:
                     pkg[pkg_attr_name] = getattr(pkg_obj, pkg_attr_name)
-                hs_obj = pkg_obj.heat_sink
+                hs_obj = pkg_obj.heatsink
                 if hs_obj:
                     hs = {}
                     hs_attrs = [i for i in dir(hs_obj) if not i.startswith("_")]
