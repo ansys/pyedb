@@ -654,15 +654,28 @@ class TestClass:
         pdef = [i for i in data_from_layout["padstacks"]["definitions"] if i["name"] == "v35h15"][0]
 
         pad_params = pdef["pad_parameters"]
-        assert pad_params["regular_pad"][0]["diameter"] == "0.5mm"
-        assert pad_params["regular_pad"][0]["offset_x"] == "0.1mm"
-        assert pad_params["anti_pad"][0]["diameter"] == "1mm"
-        assert pad_params["thermal_pad"][0]["inner"] == "1mm"
-        assert pad_params["thermal_pad"][0]["channel_width"] == "0.2mm"
+        if edbapp.grpc:
+            assert pad_params["regular_pad"][0]["diameter"] == "0.0005"
+            assert pad_params["regular_pad"][0]["offset_x"] == "0.0001"
+            assert pad_params["anti_pad"][0]["diameter"] == "0.001"
+            assert pad_params["thermal_pad"][0]["inner"] == "0.001"
+            assert pad_params["thermal_pad"][0]["channel_width"] == "0.0002"
+        else:
+            assert pad_params["regular_pad"][0]["diameter"] == "0.5mm"
+            assert pad_params["regular_pad"][0]["offset_x"] == "0.1mm"
+            assert pad_params["anti_pad"][0]["diameter"] == "1mm"
+            assert pad_params["thermal_pad"][0]["inner"] == "1mm"
+            assert pad_params["thermal_pad"][0]["channel_width"] == "0.2mm"
 
         hole_params = pdef["hole_parameters"]
         assert hole_params["shape"] == "circle"
-        assert hole_params["diameter"] == "0.2mm"
+        if edbapp.grpc:
+            assert hole_params["diameter"] == "0.0002"
+        else:
+            assert hole_params["diameter"] == "0.2mm"
+        if edbapp.grpc:
+            solder_ball_parameters["diameter"] = "0.0004"
+            solder_ball_parameters["mid_diameter"] = "0.0005"
         assert pdef["solder_ball_parameters"] == solder_ball_parameters
 
         instance = [i for i in data_from_layout["padstacks"]["instances"] if i["name"] == "Via998"][0]
