@@ -45,6 +45,11 @@ class PackageDef(GrpcPackageDef):
     """
 
     def __init__(self, pedb, edb_object=None, name=None, component_part_name=None, extent_bounding_box=None):
+        if not edb_object:
+            if name:
+                edb_object = GrpcPackageDef.create(db=pedb.active_db, name=name)
+            else:
+                raise AttributeError("Name must be provided to create and instantiate a PackageDef object.")
         super(GrpcPackageDef, self).__init__(edb_object.msg)
         self._pedb = pedb
         self._edb_object = edb_object
@@ -129,7 +134,6 @@ class PackageDef(GrpcPackageDef):
 
     @therm_cond.setter
     def therm_cond(self, value):
-        self.therm_cond = GrpcValue(value)
         super(PackageDef, self.__class__).thermal_conductivity.__set__(self, GrpcValue(value))
 
     @property
@@ -186,7 +190,10 @@ class PackageDef(GrpcPackageDef):
         :class:`HeatSink <pyedb.grpc.database.utility.heat_sink.HeatSink>`
             HeatSink object.
         """
-        return HeatSink(self._pedb, super().heat_sink)
+        try:
+            return HeatSink(self._pedb, super().heat_sink)
+        except:
+            pass
 
     def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness):
         """Set Heat sink.
