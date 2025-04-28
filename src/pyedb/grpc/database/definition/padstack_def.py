@@ -577,7 +577,10 @@ class PadstackDef(GrpcPadstackDef):
             Possible returned values are ``"through"``, ``"begin_on_upper_pad"``,
             ``"end_on_lower_pad"``, ``"upper_pad_to_lower_pad"``, and ``"undefined"``.
         """
-        return self.data.hole_range.name.lower()
+        try:
+            return self.data.hole_range.name.lower()
+        except:
+            return None
 
     @hole_range.setter
     def hole_range(self, value):
