@@ -26,6 +26,7 @@ from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.edb_logger import pyedb_logger
 from pyedb.grpc.database.utility.heat_sink import HeatSink
+from pyedb.misc.misc import deprecated_property
 
 
 class PackageDef(GrpcPackageDef):
@@ -194,6 +195,16 @@ class PackageDef(GrpcPackageDef):
             return HeatSink(self._pedb, super().heat_sink)
         except:
             pass
+
+    @property
+    @deprecated_property
+    def heatsink(self):
+        """Property added for .NET compatibility.
+        . deprecated:: pyedb 0.43.0
+        Use :func:`heat_sink` instead.
+
+        """
+        return self.heat_sink
 
     def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness):
         """Set Heat sink.
