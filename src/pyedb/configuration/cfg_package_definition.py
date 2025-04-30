@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from pyedb.configuration.cfg_common import CfgBase
-from pyedb.dotnet.database.definition.package_def import PackageDef
 
 
 class CfgPackage(CfgBase):
@@ -70,6 +69,8 @@ class CfgPackageDefinitions:
             self._pedb = parent._pedb
 
         def set_parameter_to_edb(self):
+            from pyedb.grpc.database.definition.package_def import PackageDef
+
             for pkg in self.parent.packages:
                 comp_def_from_db = self._pedb.definitions.component[pkg.component_definition]
                 if pkg.name in self._pedb.definitions.package:
@@ -129,6 +130,45 @@ class CfgPackageDefinitions:
     class DotNet(Grpc):
         def __init__(self, parent):
             super().__init__(parent)
+
+        def set_parameter_to_edb(self):
+            from pyedb.dotnet.database.definition.package_def import PackageDef
+
+            for pkg in self.parent.packages:
+                comp_def_from_db = self._pedb.definitions.component[pkg.component_definition]
+                if pkg.name in self._pedb.definitions.package:
+                    self._pedb.definitions.package[pkg.name].delete()
+
+                if pkg.extent_bounding_box:
+                    package_def = PackageDef(self._pedb, name=pkg.name, extent_bounding_box=pkg.extent_bounding_box)
+                else:
+                    package_def = PackageDef(self._pedb, name=pkg.name, component_part_name=pkg.component_definition)
+                pkg.set_attributes(package_def)
+
+                if pkg.heatsink:
+                    attrs = pkg.heatsink.get_attributes()
+                    for attr, value in attrs.items():
+                        package_def.set_heatsink(**attrs)
+
+                comp_list = dict()
+                if pkg.apply_to_all:
+                    comp_list.update(
+                        {
+                            refdes: comp
+                            for refdes, comp in comp_def_from_db.components.items()
+                            if refdes not in pkg.components
+                        }
+                    )
+                else:
+                    comp_list.update(
+                        {
+                            refdes: comp
+                            for refdes, comp in comp_def_from_db.components.items()
+                            if refdes in pkg.components
+                        }
+                    )
+                for _, i in comp_list.items():
+                    i.package_def = pkg.name
 
     def __init__(self, pedb, data):
         self._pedb = pedb

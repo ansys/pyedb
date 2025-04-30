@@ -781,7 +781,8 @@ class TestClass:
                     target_heatsink = target_pdef["heatsink"]
                     for hs_p, hs_value in target_heatsink.items():
                         if hs_p in ["fin_base_height", "fin_height", "fin_spacing", "fin_thickness"]:
-                            hs_value = edbapp.edb_value(hs_value).ToDouble()
+                            if not edbapp.grpc:
+                                hs_value = edbapp.edb_value(hs_value).ToDouble()
                         assert hs_value == target_heatsink[hs_p]
                 else:
                     assert value == target_pdef[p]
