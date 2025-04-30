@@ -271,6 +271,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         """
         sweep_data = SimulationSetup.add_sweep(self, name, frequency_set, sweep_type, **kwargs)
         self._siwave_sweeps_list.append(sweep_data)
+        return sweep_data
 
     @property
     def sweeps(self):
