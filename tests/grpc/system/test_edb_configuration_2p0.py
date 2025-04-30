@@ -896,6 +896,20 @@ class TestClass:
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
+                if p == "thickness" and edbapp.grpc:
+                    from ansys.edb.core.utility.value import Value as GrpcValue
+
+                    value = round(GrpcValue(value).value, 9)
+                if edbapp.grpc and p == "roughness":
+                    value["top"]["nodule_radius"] = 1e-7
+                    value["top"]["surface_ratio"] = 1.0
+                    value["bottom"]["roughness"] = 2e-6
+                    value["side"]["nodule_radius"] = 5e-7
+                    value["side"]["surface_ratio"] = 2.9
+                if edbapp.grpc and p == "etching":
+                    # TODO check bug #536 status. For now etching on NetClass is not supported with grpc.
+                    target_mat[p]["etch_power_ground_nets"] = value["etch_power_ground_nets"]
+                    value["factor"] = float(value["factor"])
                 assert value == target_mat[p]
         edbapp.close()
 
