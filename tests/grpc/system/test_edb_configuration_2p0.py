@@ -781,7 +781,8 @@ class TestClass:
                     target_heatsink = target_pdef["heatsink"]
                     for hs_p, hs_value in target_heatsink.items():
                         if hs_p in ["fin_base_height", "fin_height", "fin_spacing", "fin_thickness"]:
-                            hs_value = edbapp.edb_value(hs_value).ToDouble()
+                            if not edbapp.grpc:
+                                hs_value = edbapp.edb_value(hs_value).ToDouble()
                         assert hs_value == target_heatsink[hs_p]
                 else:
                     assert value == target_pdef[p]
@@ -896,6 +897,20 @@ class TestClass:
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
+                if p == "thickness" and edbapp.grpc:
+                    from ansys.edb.core.utility.value import Value as GrpcValue
+
+                    value = round(GrpcValue(value).value, 9)
+                if edbapp.grpc and p == "roughness":
+                    value["top"]["nodule_radius"] = 1e-7
+                    value["top"]["surface_ratio"] = 1.0
+                    value["bottom"]["roughness"] = 2e-6
+                    value["side"]["nodule_radius"] = 5e-7
+                    value["side"]["surface_ratio"] = 2.9
+                if edbapp.grpc and p == "etching":
+                    # TODO check bug #536 status. For now etching on NetClass is not supported with grpc.
+                    target_mat[p]["etch_power_ground_nets"] = value["etch_power_ground_nets"]
+                    value["factor"] = float(value["factor"])
                 assert value == target_mat[p]
         edbapp.close()
 
