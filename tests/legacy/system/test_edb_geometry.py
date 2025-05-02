@@ -21,43 +21,22 @@
 # SOFTWARE.
 
 
-class PointData:
-    """Point Data."""
+import pytest
 
-    def __init__(self, pedb, edb_object=None, x=None, y=None):
-        self._pedb = pedb
-        if edb_object:
-            self._edb_object = edb_object
-        else:
-            x = x if x else 0
-            y = y if y else 0
-            self._edb_object = self._pedb.edb_api.geometry.point_data(
-                self._pedb.edb_value(x),
-                self._pedb.edb_value(y),
-            )
+pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
-    @property
-    def x(self):
-        """X value of point."""
-        return self._edb_object.X.ToString()
 
-    @x.setter
-    def x(self, value):
-        self._edb_object.X = self._pedb.edb_value(value)
+class TestClass:
+    @pytest.fixture(autouse=True)
+    def init(self, local_scratch, edb_examples):
+        edbapp = edb_examples.get_si_verse()
+        path = edbapp.layout.find_primitive(name="line_272")[0]
+        self.path_center_line_polygon_data = path.get_center_line_polygon_data()
+        self.point_data = self.path_center_line_polygon_data.get_point(1)
+        pass
 
-    @property
-    def x_evaluated(self):
-        return self._edb_object.X.ToDouble()
-
-    @property
-    def y(self):
-        """Y value of point."""
-        return self._edb_object.Y.ToString()
-
-    @y.setter
-    def y(self, value):
-        self._edb_object.Y = self._pedb.edb_value(value)
-
-    @property
-    def y_evaluated(self):
-        return self._edb_object.Y.ToDouble()
+    def test_point_data(self):
+        assert isinstance(self.point_data.x_evaluated, float)
+        assert isinstance(self.point_data.y_evaluated, float)
+        self.point_data.x = "1mm"
+        assert self.point_data.x == "1mm"
