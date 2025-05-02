@@ -108,9 +108,9 @@ class RpcSession:
             if restart_server:
                 pyedb_logger.logger.info("Restarting RPC server")
                 if kill_all_instances:
-                    RpcSession.__kill_all_instances()
+                    RpcSession.kill_all_instances()
                 else:
-                    RpcSession.__kill()
+                    RpcSession.kill()
                 RpcSession.__start_rpc_server()
             else:
                 pyedb_logger.info(f"Server already running on port {RpcSession.port}")
@@ -141,13 +141,14 @@ class RpcSession:
             pyedb_logger.logger.info("Grpc session started")
 
     @staticmethod
-    def __kill():
+    def kill():
         p = psutil.Process(RpcSession.pid)
         time.sleep(latency_delay)
         p.terminate()
+        RpcSession.__get_process_id()
 
     @staticmethod
-    def _kill_all_instances():
+    def kill_all_instances():
         proc = [p.pid for p in list(psutil.process_iter()) if "edb_rpc" in p.name().lower()]
         time.sleep(latency_delay)
         for pid in proc:
@@ -163,6 +164,7 @@ class RpcSession:
             end_managing()
             RpcSession.rpc_session.disconnect()
             time.sleep(latency_delay)
+            RpcSession.__get_process_id()
 
     @staticmethod
     def __get_random_free_port():

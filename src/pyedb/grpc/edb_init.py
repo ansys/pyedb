@@ -22,7 +22,9 @@
 
 
 """Database."""
+import atexit
 import os
+import signal
 import sys
 
 import ansys.edb.core.database as database
@@ -68,6 +70,15 @@ class EdbInit(object):
         oa_directory = os.path.join(self.base_path, "common", "oa")
         os.environ["ANSYS_OADIR"] = oa_directory
         os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
+        # register server kill
+        atexit.register(RpcSession.kill)
+        # register signal handlers
+        signal.signal(signal.SIGTERM, self.signal_handler)
+        signal.signal(signal.SIGINT, self.signal_handler)
+
+    def signal_handler(self, signum, frame):
+        RpcSession.kill()
+        sys.exit(0)
 
     @property
     def db(self):
@@ -168,7 +179,7 @@ class EdbInit(object):
         self._db.close()
         self._db = None
         if kill_all_instances:
-            RpcSession._kill_all_instances()
+            RpcSession.kill_all_instances()
             RpcSession.pid = 0
         elif terminate_rpc_session:
             RpcSession.rpc_session.disconnect()

@@ -290,8 +290,7 @@ class Edb(EdbInit):
         return self
 
     def __exit__(self, ex_type, ex_value, ex_traceback):
-        if ex_type:
-            self.edb_exception(ex_value, ex_traceback)
+        self.signal_handler(ex_type, ex_value)
 
     def __getitem__(self, variable_name):
         """Get a variable to the Edb project. The variable can be project using ``$`` prefix or
