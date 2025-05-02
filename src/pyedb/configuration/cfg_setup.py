@@ -81,10 +81,7 @@ class CfgSetup:
                             f_set.append([f["distribution"], f["start"], f["stop"], increment])
                         else:
                             freq_string.append(f)
-                    discrete_sweep = True
-                    if i["type"] == "interpolation":
-                        discrete_sweep = False
-                    sweep = edb_setup.add_sweep(i["name"], frequency_set=f_set, discrete=discrete_sweep)
+                    sweep = edb_setup.add_sweep(i["name"], frequency_set=f_set, sweep_type=i["type"])
                     if len(freq_string) > 0:
                         self.parent.api.set_frequency_string(sweep, freq_string)
 
