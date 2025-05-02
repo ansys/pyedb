@@ -39,9 +39,9 @@ import warnings
 from zipfile import ZipFile as zpf
 
 import rtree
-import pyedb.dotnet
 
 from pyedb.configuration.configuration import Configuration
+import pyedb.dotnet
 from pyedb.dotnet.database.Variables import decompose_variable_value
 from pyedb.dotnet.database.cell.layout import Layout
 from pyedb.dotnet.database.cell.terminal.terminal import Terminal

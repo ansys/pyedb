@@ -48,4 +48,3 @@ class TestClass:
         polygon_data_obj = path_obj.get_center_line_polygon_data()
         assert polygon_data_obj.__class__.__name__ == "PolygonData"
         assert path_obj.set_center_line_polygon_data(polygon_data_obj)
-
