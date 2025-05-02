@@ -46,6 +46,10 @@ class PointData:
         self._edb_object.X = self._pedb.edb_value(value)
 
     @property
+    def x_evaluated(self):
+        return self._edb_object.X.ToDouble()
+
+    @property
     def y(self):
         """Y value of point."""
         return self._edb_object.Y.ToString()
@@ -53,3 +57,7 @@ class PointData:
     @y.setter
     def y(self, value):
         self._edb_object.Y = self._pedb.edb_value(value)
+
+    @property
+    def y_evaluated(self):
+        return self._edb_object.Y.ToDouble()

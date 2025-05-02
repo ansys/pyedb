@@ -36,6 +36,7 @@ class TestClass:
         pass
 
     def test_point_data(self):
+        assert isinstance(self.point_data.x_evaluated, float)
+        assert isinstance(self.point_data.y_evaluated, float)
         self.point_data.x = "1mm"
         assert self.point_data.x == "1mm"
-
