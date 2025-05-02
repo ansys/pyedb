@@ -164,6 +164,50 @@ class CfgStackup:
         def __init__(self, parent):
             super().__init__(parent)
 
+        def __apply_layers(self):
+            """Apply layer settings to the current design"""
+            layers = list()
+            layers.extend(self.parent.layers)
+
+            removal_list = []
+            lc_signal_layers = []
+            for name, obj in self._pedb.stackup.all_layers.items():
+                if obj.type == "dielectric":
+                    removal_list.append(name)
+                elif obj.type == "signal":
+                    lc_signal_layers.append(obj.id)
+            for l in removal_list:
+                self._pedb.stackup.remove_layer(l)
+
+            # update all signal layers
+            id_name = {i[0]: i[1] for i in self._pedb.stackup.layers_by_id}
+            signal_idx = 0
+            for l in layers:
+                if l.type == "signal":
+                    layer_id = lc_signal_layers[signal_idx]
+                    layer_name = id_name[layer_id]
+                    attrs = l.get_attributes()
+                    self._pedb.stackup.layers[layer_name].update(**attrs)
+                    signal_idx = signal_idx + 1
+
+            # add all dielectric layers. Dielectric layers must be added last. Otherwise,
+            # dielectric layer will occupy signal and document layer id.
+            prev_layer_clone = None
+            l = layers.pop(0)
+            if l.type == "signal":
+                prev_layer_clone = self._pedb.stackup.layers[l.name]
+            else:
+                attrs = l.get_attributes()
+                prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
+            for idx, l in enumerate(layers):
+                if l.type == "dielectric":
+                    attrs = l.get_attributes()
+                    prev_layer_clone = self._pedb.stackup.add_layer_below(
+                        base_layer_name=prev_layer_clone.name, **attrs
+                    )
+                elif l.type == "signal":
+                    prev_layer_clone = self._pedb.stackup.layers[l.name]
+
     def __init__(self, pedb: Edb, data):
         self._pedb = pedb
         if self._pedb.grpc:

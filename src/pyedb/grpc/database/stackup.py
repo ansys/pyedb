@@ -170,11 +170,19 @@ class LayerCollection(GrpcLayerCollection):
         if "thickness" in kwargs:
             thickness = GrpcValue(kwargs["thickness"])
         elevation = GrpcValue(0.0)
-        _layer_type = GrpcLayerType.SIGNAL_LAYER
-        if layer_type.lower() == "dielectric":
-            _layer_type = GrpcLayerType.DIELECTRIC_LAYER
+        if "type" in kwargs:
+            _l_map = {"signal": GrpcLayerType.SIGNAL_LAYER, "dielectric": GrpcLayerType.DIELECTRIC_LAYER}
+            _layer_type = _l_map[kwargs["type"]]
+        else:
+            _layer_type = GrpcLayerType.SIGNAL_LAYER
+            if layer_type.lower() == "dielectric":
+                _layer_type = GrpcLayerType.DIELECTRIC_LAYER
+        if "material" in kwargs:
+            material = kwargs["material"]
+        else:
+            material = "copper"
         layer = GrpcStackupLayer.create(
-            name=name, layer_type=_layer_type, thickness=thickness, material="copper", elevation=elevation
+            name=name, layer_type=_layer_type, thickness=thickness, material=material, elevation=elevation
         )
         return self._layer_collection.add_layer_below(layer, base_layer_name)
 
@@ -695,8 +703,8 @@ class Stackup(LayerCollection):
 
         """
         new_layer_collection = LayerCollection.create()
-        for lyr in self.layers:
-            if not (lyr.name == name):
+        for layer_name, lyr in self.layers.items():
+            if not (layer_name == name):
                 new_layer_collection.add_layer_bottom(lyr)
 
         self._pedb.layout.layer_collection = new_layer_collection
