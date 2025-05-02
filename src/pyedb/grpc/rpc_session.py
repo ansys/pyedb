@@ -50,7 +50,7 @@ class RpcSession:
     port = 10000
 
     @staticmethod
-    def start(edb_version, port=0, restart_server=False, kill_all_instances=False):
+    def start(edb_version, port=0, restart_server=False):
         """Start RPC-server, the server must be started before opening EDB.
 
         Parameters
@@ -107,10 +107,7 @@ class RpcSession:
         if RpcSession.pid:
             if restart_server:
                 pyedb_logger.logger.info("Restarting RPC server")
-                if kill_all_instances:
-                    RpcSession.kill_all_instances()
-                else:
-                    RpcSession.kill()
+                RpcSession.kill()
                 RpcSession.__start_rpc_server()
             else:
                 pyedb_logger.info(f"Server already running on port {RpcSession.port}")
