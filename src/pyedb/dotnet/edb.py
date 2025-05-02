@@ -39,6 +39,7 @@ import warnings
 from zipfile import ZipFile as zpf
 
 import rtree
+import pyedb.dotnet
 
 from pyedb.configuration.configuration import Configuration
 from pyedb.dotnet.database.Variables import decompose_variable_value
@@ -372,6 +373,11 @@ class Edb(Database):
         self._materials = Materials(self)
 
     @property
+    def pedb_class(self):
+        if not self.grpc:
+            return pyedb.dotnet
+
+    @property
     def grpc(self):
         """grpc flag."""
         return False
@@ -584,7 +590,7 @@ class Edb(Database):
         #     self.standalone = False
 
         self.run_as_standalone(self.standalone)
-        self.create(self.edbpath)
+        self._db = self.create(self.edbpath)
         if not self.active_db:
             self.logger.warning("Error creating the database.")
             self._active_cell = None

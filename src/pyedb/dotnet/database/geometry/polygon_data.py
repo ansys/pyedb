@@ -135,3 +135,12 @@ class PolygonData:
     def point_in_polygon(self, x: Union[str, float], y: Union[str, float]) -> bool:
         """Determines whether a point is inside the polygon."""
         return self._edb_object.PointInPolygon(self._pedb.point_data(x, y))
+
+    def get_point(self, index):
+        """Gets the point at the index as a PointData object."""
+        edb_object = self._edb_object.GetPoint(index)
+        return self._pedb.pedb_class.database.geometry.point_data.PointData(self._pedb, edb_object)
+
+    def set_point(self, index, point_data):
+        """Sets the point at the index from a PointData object."""
+        self._edb_object.SetPoint(index, point_data)
