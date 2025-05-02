@@ -341,6 +341,18 @@ class Path(Primitive):
             polygon_data = self._edb.geometry.polygon_data.dotnetobj(convert_py_list_to_net_list(points), False)
             self._edb_object.SetCenterLine(polygon_data)
 
+    def get_center_line_polygon_data(self):
+        """Gets center lines of the path as a PolygonData object."""
+        edb_object = self._edb_object.GetCenterLine()
+        return self._pedb.pedb_class.database.geometry.polygon_data.PolygonData(self._pedb, edb_object=edb_object)
+
+    def set_center_line_polygon_data(self, polygon_data):
+        """Sets center lines of the path from a PolygonData object."""
+        if not self._edb_object.SetCenterLine(polygon_data._edb_object):
+            raise ValueError
+        else:
+            return True
+
     @property
     def corner_style(self):
         """:class:`PathCornerType`: Path's corner style."""
