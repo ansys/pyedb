@@ -367,18 +367,23 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
             start_freq = self._pedb.number_with_units(start_freq, "Hz")
             stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
             step = str(step)
-            if distribution.lower() == "linear":
-                distribution = "LIN"
-            elif distribution.lower() == "linear_count":
-                distribution = "LINC"
-            elif distribution.lower() == "exponential":
-                distribution = "ESTP"
-            elif distribution.lower() == "decade_count":
-                distribution = "DEC"
-            elif distribution.lower() == "octave_count":
-                distribution = "OCT"
-            else:
-                distribution = "LIN"
+            if not distribution in ["LIN", "LINC", "ESTP", "DEC", "OCT"]:
+                if distribution.lower() == "linear" or distribution.lower() == "linear scale":
+                    distribution = "LIN"
+                elif distribution.lower() == "linear_count" or distribution.lower() == "linear count":
+                    distribution = "LINC"
+                elif distribution.lower() == "exponential":
+                    distribution = "ESTP"
+                elif (
+                    distribution.lower() == "decade_count"
+                    or distribution.lower() == "decade count"
+                    or distribution.lower()
+                ) == "log scale":
+                    distribution = "DEC"
+                elif distribution.lower() == "octave_count" or distribution.lower() == "octave count":
+                    distribution = "OCT"
+                else:
+                    distribution = "LIN"
             if not name:
                 name = f"sweep_{init_sweep_count + 1}"
             sweep_data = [
@@ -392,7 +397,7 @@ class HfssSimulationSetup(GrpcHfssSimulationSetup):
                 sweep_data.append(sweep)
             self.sweep_data = sweep_data
             if len(self.sweep_data) == init_sweep_count + 1:
-                return True
+                return self.sweep_data[-1]
             else:
                 self._pedb.logger.error("Failed to add frequency sweep data")
                 return False
