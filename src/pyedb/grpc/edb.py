@@ -570,7 +570,6 @@ class Edb(EdbInit):
                     self.edbpath,
                     self.isreadonly,
                     restart_rpc_server=restart_rpc_server,
-                    kill_all_instances=kill_all_instances,
                 )
                 n_try -= 1
             except Exception as e:

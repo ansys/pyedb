@@ -79,7 +79,7 @@ class CfgBoundaries(CfgBase):
             if self.air_box_horizontal_padding:
                 self._pedb.hfss.hfss_extent_info.air_box_horizontal_extent = float(self.air_box_horizontal_padding)
             if self.air_box_positive_vertical_padding:
-                self._pedb.hfss.hfss_extent_info.parentair_box_positive_vertical_extent = float(
+                self._pedb.hfss.hfss_extent_info.air_box_positive_vertical_extent = float(
                     self.air_box_positive_vertical_padding
                 )
             if self.air_box_negative_vertical_padding:
