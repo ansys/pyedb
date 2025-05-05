@@ -198,7 +198,6 @@ class Edb(EdbInit):
         use_ppe=False,
         technology_file=None,
         restart_rpc_server=False,
-        kill_all_instances=False,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
@@ -273,9 +272,9 @@ class Edb(EdbInit):
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath[-2:])
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
-            self.open_edb(restart_rpc_server=restart_rpc_server, kill_all_instances=kill_all_instances)
+            self.open_edb(restart_rpc_server=restart_rpc_server)
         elif not os.path.exists(os.path.join(self.edbpath, "edb.def")):
-            self.create_edb(restart_rpc_server=restart_rpc_server, kill_all_instances=kill_all_instances)
+            self.create_edb(restart_rpc_server=restart_rpc_server)
             self.logger.info("EDB %s created correctly.", self.edbpath)
         elif ".aedb" in edbpath:
             self.edbpath = edbpath
@@ -290,8 +289,7 @@ class Edb(EdbInit):
         return self
 
     def __exit__(self, ex_type, ex_value, ex_traceback):
-        if ex_type:
-            self.edb_exception(ex_value, ex_traceback)
+        self._signal_handler(ex_type, ex_value)
 
     def __getitem__(self, variable_name):
         """Get a variable to the Edb project. The variable can be project using ``$`` prefix or
