@@ -967,6 +967,8 @@ class TestClass:
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
+                if edbapp.grpc and p == "thickness":
+                    target_mat[p] = str(target_mat[p] * 1000) + "mm"
                 assert value == target_mat[p]
         edbapp.close()
 
