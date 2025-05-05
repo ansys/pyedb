@@ -34,7 +34,7 @@ import ansys.edb.core.geometry.polygon_data
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure
 from ansys.edb.core.hierarchy.structure3d import Structure3D as GrpcStructure3D
-from ansys.edb.core.primitive.primitive import Circle as GrpcCircle
+from ansys.edb.core.primitive.circle import Circle as GrpcCircle
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.generic.general_methods import generate_unique_name
@@ -577,7 +577,10 @@ class PadstackDef(GrpcPadstackDef):
             Possible returned values are ``"through"``, ``"begin_on_upper_pad"``,
             ``"end_on_lower_pad"``, ``"upper_pad_to_lower_pad"``, and ``"undefined"``.
         """
-        return self.data.hole_range.name.lower()
+        try:
+            return self.data.hole_range.name.lower()
+        except:
+            return None
 
     @hole_range.setter
     def hole_range(self, value):

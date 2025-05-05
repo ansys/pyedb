@@ -95,6 +95,8 @@ class SiwaveSimulationSetup(SimulationSetup):
             self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
             self._update_setup()
 
+        self._siwave_sweeps_list = []
+
     def create(self, name=None):
         """Create a SIwave SYZ setup.
 
@@ -247,6 +249,34 @@ class SiwaveSimulationSetup(SimulationSetup):
         edb_setup_info.simulation_settings.UseSISettings = value
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
         self._update_setup()
+
+    def add_sweep(self, name: str = None, frequency_set: list = None, sweep_type: str = "interpolation", **kwargs):
+        """Add frequency sweep.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the frequency sweep. The default is ``None``.
+        frequency_set : list, optional
+            List of frequency points. The default is ``None``.
+        sweep_type : str, optional
+            Sweep type. The default is ``"interpolation"``. Options are ``"discrete"``,"discrete"``.
+        Returns
+        -------
+
+        Examples
+        --------
+        >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
+        >>> setup1.add_sweep(name="sw1", frequency_set=["linear count", "1MHz", "100MHz", 10])
+        """
+        sweep_data = SimulationSetup.add_sweep(self, name, frequency_set, sweep_type, **kwargs)
+        self._siwave_sweeps_list.append(sweep_data)
+        return sweep_data
+
+    @property
+    def sweeps(self):
+        """List of frequency sweeps."""
+        return {i.name: i for i in self._siwave_sweeps_list}
 
 
 class SiwaveDCSimulationSetup(SimulationSetup):

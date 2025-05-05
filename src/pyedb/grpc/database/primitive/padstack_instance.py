@@ -27,8 +27,12 @@ from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
-from ansys.edb.core.primitive.primitive import PadstackInstance as GrpcPadstackInstance
-from ansys.edb.core.terminal.terminals import PinGroupTerminal as GrpcPinGroupTerminal
+from ansys.edb.core.primitive.padstack_instance import (
+    PadstackInstance as GrpcPadstackInstance,
+)
+from ansys.edb.core.terminal.pin_group_terminal import (
+    PinGroupTerminal as GrpcPinGroupTerminal,
+)
 from ansys.edb.core.utility.value import Value as GrpcValue
 
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
@@ -662,6 +666,10 @@ class PadstackInstance(GrpcPadstackInstance):
 
         name = self.get_product_property(GrpcProductIdType.DESIGNER, 11)
         return str(name).strip("'")
+
+    @aedt_name.setter
+    def aedt_name(self, value):
+        self.set_product_property(GrpcProductIdType.DESIGNER, 11, value)
 
     def get_backdrill_type(self, from_bottom=True):
         """Return backdrill type

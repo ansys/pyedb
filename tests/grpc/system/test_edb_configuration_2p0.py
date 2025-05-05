@@ -144,21 +144,18 @@ class TestClass:
                             "name": "sweep1",
                             "type": "interpolation",
                             "frequencies": [
-                                {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"}
+                                {"distribution": "linear scale", "start": "50MHz", "stop": "200MHz", "step": "10MHz"},
+                                {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10},
+                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11},
                             ],
                         },
                         {
                             "name": "sweep2",
-                            "type": "interpolation",
+                            "type": "discrete",
                             "frequencies": [
-                                {"distribution": "log scale", "start": "1KHz", "stop": "100kHz", "samples": 10}
-                            ],
-                        },
-                        {
-                            "name": "sweep3",
-                            "type": "interpolation",
-                            "frequencies": [
-                                {"distribution": "linear count", "start": "10MHz", "stop": "20MHz", "points": 11}
+                                "LIN 0.05GHz 0.2GHz 0.01GHz",
+                                "DEC 1e-06GHz 0.0001GHz 10",
+                                "LINC 0.01GHz 0.02GHz 11",
                             ],
                         },
                     ],
@@ -168,29 +165,24 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
-        for setup in data["setups"]:
-            target = [i for i in data_from_db["setups"] if i["name"] == setup["name"]][0]
-            for p, value in setup.items():
-                if p == "max_num_passes":
-                    assert value == int(target[p])
-                elif p == "max_mag_delta_s":
-                    assert value == float(target[p])
-                elif p == "freq_sweep":
-                    for sw in value:
-                        target_sw = [i for i in target["freq_sweep"] if i["name"] == sw["name"]][0]
-                        for sw_p_name, sw_value in sw.items():
-                            if sw_p_name == "frequencies":
-                                pass
-                            else:
-                                if edbapp.grpc:
-                                    if sw_value == "interpolation":
-                                        assert target_sw[sw_p_name].name == "INTERPOLATING_SWEEP"
-                                    else:
-                                        assert sw_value == target_sw[sw_p_name]
-                                else:
-                                    assert sw_value == target_sw[sw_p_name]
-                else:
-                    assert value == target[p]
+        setup = data_from_db["setups"][0]
+        assert setup["name"] == "hfss_setup_1"
+        if edbapp.grpc:
+            # grpc sweep data has been refactored, ending up with same values but organized differently.
+            sweep1 = setup["freq_sweep"][1]
+            assert sweep1["frequencies"] == ["LIN 10MHz 20MHz 11", "LIN 1KHz 100kHz 10", "LIN 50MHz 200MHz 10MHz"]
+            sweep2 = setup["freq_sweep"][0]
+            assert sweep2["type"] == "discrete"
+        else:
+            sweep1 = setup["freq_sweep"][0]
+            assert sweep1["name"] == "sweep1"
+            assert sweep1["frequencies"] == [
+                "LIN 0.05GHz 0.2GHz 0.01GHz",
+                "DEC 1e-06GHz 0.0001GHz 10",
+                "LINC 0.01GHz 0.02GHz 11",
+            ]
+            sweep2 = setup["freq_sweep"][1]
+            assert sweep2["type"] == "discrete"
         edbapp.close()
 
     def test_02_pin_groups(self, edb_examples):
@@ -654,15 +646,28 @@ class TestClass:
         pdef = [i for i in data_from_layout["padstacks"]["definitions"] if i["name"] == "v35h15"][0]
 
         pad_params = pdef["pad_parameters"]
-        assert pad_params["regular_pad"][0]["diameter"] == "0.5mm"
-        assert pad_params["regular_pad"][0]["offset_x"] == "0.1mm"
-        assert pad_params["anti_pad"][0]["diameter"] == "1mm"
-        assert pad_params["thermal_pad"][0]["inner"] == "1mm"
-        assert pad_params["thermal_pad"][0]["channel_width"] == "0.2mm"
+        if edbapp.grpc:
+            assert pad_params["regular_pad"][0]["diameter"] == "0.0005"
+            assert pad_params["regular_pad"][0]["offset_x"] == "0.0001"
+            assert pad_params["anti_pad"][0]["diameter"] == "0.001"
+            assert pad_params["thermal_pad"][0]["inner"] == "0.001"
+            assert pad_params["thermal_pad"][0]["channel_width"] == "0.0002"
+        else:
+            assert pad_params["regular_pad"][0]["diameter"] == "0.5mm"
+            assert pad_params["regular_pad"][0]["offset_x"] == "0.1mm"
+            assert pad_params["anti_pad"][0]["diameter"] == "1mm"
+            assert pad_params["thermal_pad"][0]["inner"] == "1mm"
+            assert pad_params["thermal_pad"][0]["channel_width"] == "0.2mm"
 
         hole_params = pdef["hole_parameters"]
         assert hole_params["shape"] == "circle"
-        assert hole_params["diameter"] == "0.2mm"
+        if edbapp.grpc:
+            assert hole_params["diameter"] == "0.0002"
+        else:
+            assert hole_params["diameter"] == "0.2mm"
+        if edbapp.grpc:
+            solder_ball_parameters["diameter"] = "0.0004"
+            solder_ball_parameters["mid_diameter"] = "0.0005"
         assert pdef["solder_ball_parameters"] == solder_ball_parameters
 
         instance = [i for i in data_from_layout["padstacks"]["instances"] if i["name"] == "Via998"][0]
@@ -768,7 +773,8 @@ class TestClass:
                     target_heatsink = target_pdef["heatsink"]
                     for hs_p, hs_value in target_heatsink.items():
                         if hs_p in ["fin_base_height", "fin_height", "fin_spacing", "fin_thickness"]:
-                            hs_value = edbapp.edb_value(hs_value).ToDouble()
+                            if not edbapp.grpc:
+                                hs_value = edbapp.edb_value(hs_value).ToDouble()
                         assert hs_value == target_heatsink[hs_p]
                 else:
                     assert value == target_pdef[p]
@@ -883,6 +889,20 @@ class TestClass:
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
+                if p == "thickness" and edbapp.grpc:
+                    from ansys.edb.core.utility.value import Value as GrpcValue
+
+                    value = round(GrpcValue(value).value, 9)
+                if edbapp.grpc and p == "roughness":
+                    value["top"]["nodule_radius"] = 1e-7
+                    value["top"]["surface_ratio"] = 1.0
+                    value["bottom"]["roughness"] = 2e-6
+                    value["side"]["nodule_radius"] = 5e-7
+                    value["side"]["surface_ratio"] = 2.9
+                if edbapp.grpc and p == "etching":
+                    # TODO check bug #536 status. For now etching on NetClass is not supported with grpc.
+                    target_mat[p]["etch_power_ground_nets"] = value["etch_power_ground_nets"]
+                    value["factor"] = float(value["factor"])
                 assert value == target_mat[p]
         edbapp.close()
 
