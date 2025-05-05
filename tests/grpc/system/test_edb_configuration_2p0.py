@@ -491,6 +491,7 @@ class TestClass:
         edbapp.close()
 
     def test_06_s_parameters(self, edb_examples):
+        # TODO check bug #542 status. Seems some API's are missing.
         data = {
             "general": {"s_parameter_library": self.local_input_folder},
             "s_parameters": [
