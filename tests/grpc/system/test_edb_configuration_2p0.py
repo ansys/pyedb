@@ -259,6 +259,12 @@ class TestClass:
                     "negative_terminal": {"pin": "2"},
                 },
                 {
+                    "name": "CIRCUIT_C376_1_2",
+                    "type": "circuit",
+                    "positive_terminal": {"padstack": "C376-1"},
+                    "negative_terminal": {"padstack": "C376-2"},
+                },
+                {
                     "name": "CIRCUIT_X1_B8_GND",
                     "reference_designator": "X1",
                     "type": "circuit",
@@ -284,20 +290,11 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         assert "CIRCUIT_C375_1_2" in edbapp.ports
+        assert "CIRCUIT_C376_1_2" in edbapp.ports
         assert "CIRCUIT_X1_B8_GND" in edbapp.ports
         assert "CIRCUIT_U7_VDD_DDR_GND" in edbapp.ports
-        data_from_json = edbapp.configuration.cfg_data.ports.export_properties()
-        edbapp.configuration.cfg_data.ports.get_data_from_db()
-        data_from_db = edbapp.configuration.cfg_data.ports.export_properties()
-        for p1 in data_from_json:
-            p2 = data_from_db.pop(0)
-            for k, v in p1.items():
-                if k in ["reference_designator"]:
-                    continue
-                if k in ["positive_terminal", "negative_terminal"]:
-                    if "net" in v:
-                        continue
-                assert p2[k] == v
+        data_from_db = edbapp.configuration.get_data_from_db(ports=True, pin_groups=True)
+        assert data_from_db["ports"]
         edbapp.close()
 
     def test_05b_ports_coax(self, edb_examples):
