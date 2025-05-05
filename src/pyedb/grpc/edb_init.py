@@ -71,10 +71,10 @@ class EdbInit(object):
         os.environ["ANSYS_OADIR"] = oa_directory
         os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
         # register server kill
-        atexit.register(RpcSession.kill)
+        atexit.register(self._signal_handler)
         # register signal handlers
-        signal.signal(signal.SIGTERM, self.signal_handler)
-        signal.signal(signal.SIGINT, self.signal_handler)
+        signal.signal(signal.SIGTERM, self._signal_handler)
+        signal.signal(signal.SIGINT, self._signal_handler)
 
     def _signal_handler(self, signum, frame):
         RpcSession.kill()
