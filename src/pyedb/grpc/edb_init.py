@@ -76,9 +76,8 @@ class EdbInit(object):
         signal.signal(signal.SIGTERM, self.signal_handler)
         signal.signal(signal.SIGINT, self.signal_handler)
 
-    def signal_handler(self, signum, frame):
+    def _signal_handler(self, signum, frame):
         RpcSession.kill()
-        sys.exit(0)
 
     @property
     def db(self):
