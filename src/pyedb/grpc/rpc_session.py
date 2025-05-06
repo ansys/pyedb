@@ -142,7 +142,8 @@ class RpcSession:
         p = psutil.Process(RpcSession.pid)
         time.sleep(latency_delay)
         p.terminate()
-        RpcSession.__get_process_id()
+        print(f"RPC session pid: {RpcSession.pid} killed due to execution failure.")
+        RpcSession.pid = 0
 
     @staticmethod
     def kill_all_instances():
