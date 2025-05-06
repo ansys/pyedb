@@ -134,9 +134,13 @@ class Edb(Database):
         Reference to the AEDT project object.
     student_version : bool, optional
         Whether to open the AEDT student version. The default is ``False.``
+    map_file : str, optional
+        Layer map .map file.
     technology_file : str, optional
         Full path to technology file to be converted to xml before importing or xml.
         Supported by GDS format only.
+    layer_filter:str,optional
+        Layer filter .txt file.
 
     Examples
     --------
@@ -183,9 +187,9 @@ class Edb(Database):
         student_version: bool = False,
         use_ppe: bool = False,
         control_file: str = None,
-        map_file=None,
+        map_file: str = None,
         technology_file: str = None,
-        layer_filter=None,
+        layer_filter: str = None,
         remove_existing_aedt: bool = False,
     ):
         if isinstance(edbpath, Path):
