@@ -77,7 +77,7 @@ class EdbInit(object):
         signal.signal(signal.SIGINT, self._signal_handler)
 
     @staticmethod
-    def _signal_handler(signum, frame):
+    def _signal_handler(signum=None, frame=None):
         RpcSession.kill()
 
     @property
