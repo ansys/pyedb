@@ -205,6 +205,8 @@ class Configuration:
                 self.parent.cfg_data.components.retrieve_parameters_from_edb()
                 components = []
                 for i in self.parent.cfg_data.components.components:
+                    if i.type == "io":
+                        components.append(i.get_attributes())
                     components.append(i.get_attributes())
 
                 if kwargs.get("components", False):
@@ -305,6 +307,14 @@ class Configuration:
 
             file_path = file_path if isinstance(file_path, Path) else Path(file_path)
             file_path = file_path.with_suffix(".json") if file_path.suffix == "" else file_path
+
+            for comp in data["components"]:
+                for key, value in comp.items():
+                    try:
+                        json.dumps(value)
+                        print(f"Key '{key}' is serializable.")
+                    except TypeError as e:
+                        print(f"Key '{key}' failed: {e}")
 
             with open(file_path, "w") as f:
                 if file_path.suffix == ".json":
