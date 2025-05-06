@@ -138,15 +138,23 @@ class LayerCollection(GrpcLayerCollection):
 
         """
         thickness = GrpcValue(0.0)
+        layer_type_map = {"dielectric": GrpcLayerType.DIELECTRIC_LAYER, "signal": GrpcLayerType.SIGNAL_LAYER}
         if "thickness" in kwargs:
             thickness = GrpcValue(kwargs["thickness"])
         elevation = GrpcValue(0.0)
-        _layer_type = GrpcLayerType.SIGNAL_LAYER
-        if layer_type.lower() == "dielectric":
-            _layer_type = GrpcLayerType.DIELECTRIC_LAYER
+        if "type" in kwargs:
+            _layer_type = layer_type_map[kwargs["type"]]
+        else:
+            _layer_type = layer_type_map[layer_type]
+        if "material" in kwargs:
+            _material = kwargs["material"]
+        else:
+            _material = "copper"
         layer = GrpcStackupLayer.create(
-            name=name, layer_type=_layer_type, thickness=thickness, material="copper", elevation=elevation
+            name=name, layer_type=_layer_type, thickness=thickness, material=_material, elevation=elevation
         )
+        if "fill_material" in kwargs:
+            layer.set_fill_material(kwargs["fill_material"])
         return self._layer_collection.add_layer_bottom(layer)
 
     def add_layer_below(self, name, base_layer_name, layer_type="signal", **kwargs):
