@@ -77,7 +77,7 @@ class EdbInit(object):
         signal.signal(signal.SIGINT, self._signal_handler)
 
     @staticmethod
-    def _signal_handler(signum, frame):
+    def _signal_handler(signum=None, frame=None):
         RpcSession.kill()
 
     @property
@@ -92,6 +92,9 @@ class EdbInit(object):
         ----------
         db_path : str
             Path to top-level database folder
+
+        port : int
+            grpc port number.
 
         restart_rpc_server : optional, bool
             Force restarting RPC server when `True`.Default value is `False`
@@ -122,7 +125,7 @@ class EdbInit(object):
         read_only : bool
             Obtain read-only access.
         port : optional, int.
-            Specify the port number.If not provided a randon free one is selected. Default value is `0`.
+            Specify the port number. If not provided a randon free one is selected. Default value is `0`.
         restart_rpc_server : optional, bool
             Force restarting RPC server when `True`. Default value is `False`.
 
