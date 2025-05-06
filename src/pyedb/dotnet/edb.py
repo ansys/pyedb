@@ -244,7 +244,7 @@ class Edb(Database):
                 tech_file=technology_file,
                 layer_filter=layer_filter,
                 map_file=map_file,
-            )
+            ):
                 raise AttributeError("Translation was unsuccessful")
                 return False
             if settings.enable_local_log_file and self.log_name:
@@ -261,7 +261,7 @@ class Edb(Database):
                 tech_file=technology_file,
                 layer_filter=layer_filter,
                 map_file=map_file,
-            )
+            ):
                 raise AttributeError("Translation was unsuccessful")
                 return False
             if settings.enable_local_log_file and self.log_name:
