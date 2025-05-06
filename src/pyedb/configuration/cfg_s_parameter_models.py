@@ -80,7 +80,7 @@ class CfgSParameters:
                 else:
                     pin_order = compdef_obj.get_properties()["pin_order"]
                     temp_comps = [i for i in cfg_components if i["definition"] == name]
-                    for model_name, model_obj in nport_models.items():
+                    for model_obj in nport_models:
                         temp_comp_list = []
                         reference_net_per_component = {}
                         for i in temp_comps:
@@ -154,6 +154,56 @@ class CfgSParameters:
                     else:
                         ref_net = s_param.reference_net
                     comp.use_s_parameter_model(s_param.name, reference_net=ref_net)
+
+        def get_data_from_db(self, cfg_components):
+            db_comp_def = self._pedb.definitions.component
+            for name, compdef_obj in db_comp_def.items():
+                nport_models = compdef_obj.component_models
+                if not nport_models:
+                    continue
+                else:
+                    pin_order = compdef_obj.get_properties()["pin_order"]
+                    temp_comps = [i for i in cfg_components if i["definition"] == name]
+                    for model_name, model_obj in nport_models.items():
+                        temp_comp_list = []
+                        reference_net_per_component = {}
+                        for i in temp_comps:
+                            s_param_model = i.get("s_parameter_model")
+                            if s_param_model:
+                                if s_param_model["model_name"] == model_name:
+                                    temp_comp_list.append(i["reference_designator"])
+                                    reference_net_per_component[i["reference_designator"]] = s_param_model[
+                                        "reference_net"
+                                    ]
+                            else:
+                                continue
+
+                        self.parent.s_parameters_models.append(
+                            CfgSParameterModel(
+                                name=model_name,
+                                component_definition=name,
+                                file_path=model_obj.reference_file,
+                                apply_to_all=False,
+                                components=temp_comp_list,
+                                reference_net_per_component=reference_net_per_component,
+                                pin_order=pin_order,
+                            )
+                        )
+
+            data = []
+            for i in self.parent.s_parameters_models:
+                data.append(
+                    {
+                        "name": i.name,
+                        "component_definition": i.component_definition,
+                        "file_path": i.file_path,
+                        "apply_to_all": i.apply_to_all,
+                        "components": i.components,
+                        "reference_net_per_component": i.reference_net_per_component,
+                        "pin_order": i.pin_order,
+                    }
+                )
+            return data
 
     def __init__(self, pedb, data, path_lib=None):
         self._pedb = pedb

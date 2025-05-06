@@ -34,8 +34,8 @@ class CfgGeneral:
             self.pedb.active_cell.suppress_pads = self.parent.suppress_pads
 
         def get_parameters_from_edb(self):
-            anti_pads_always_on = self.pedb.design_options.antipads_always_on
-            suppress_pads = self.pedb.design_options.suppress_pads
+            anti_pads_always_on = self.pedb.active_cell.anti_pads_always_on
+            suppress_pads = self.pedb.active_cell.suppress_pads
             data = {"anti_pads_always_on": anti_pads_always_on, "suppress_pads": suppress_pads}
             return data
 
@@ -48,6 +48,12 @@ class CfgGeneral:
                 self.pedb.design_options.anti_pads_always_on = self.parent.anti_pads_always_on
             if self.parent.suppress_pads is not None:
                 self.pedb.design_options.suppress_pads = self.parent.suppress_pads
+
+        def get_parameters_from_edb(self):
+            anti_pads_always_on = self.pedb.design_options.antipads_always_on
+            suppress_pads = self.pedb.design_options.suppress_pads
+            data = {"anti_pads_always_on": anti_pads_always_on, "suppress_pads": suppress_pads}
+            return data
 
     def __init__(self, pedb, data):
         self.pedb = pedb

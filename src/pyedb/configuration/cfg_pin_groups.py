@@ -40,7 +40,7 @@ class CfgPinGroups:
             layout_pin_groups = self._pedb.siwave.pin_groups
             for pg_name, pg_obj in layout_pin_groups.items():
                 if self._pedb.grpc:
-                    pins = pg_obj.pins
+                    pins = list(pg_obj.pins.values())
                     refdes = pins[0].component.name
                     cfg_pg = CfgPinGroup(
                         self._pedb,

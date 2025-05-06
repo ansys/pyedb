@@ -195,7 +195,7 @@ class CfgSIwaveDCSetup(CfgSetup):
                 name=self.parent.name, dc_slider_position=self.parent.dc_slider_position
             )
             edb_setup.settings.dc.dc_slider_pos = self.parent.dc_slider_position
-            edb_setup.settings.export_dc_thermal_data = self.parent.dc_ir_settings["export_dc_thermal_data"]
+            edb_setup.settings.export_dc_thermal_data = self.parent.dc_ir_settings.get("export_dc_thermal_data", False)
 
         def retrieve_parameters_from_edb(self):
             self._retrieve_parameters_from_edb_common()
@@ -214,7 +214,7 @@ class CfgSIwaveDCSetup(CfgSetup):
             )
             edb_setup.dc_settings.dc_slider_position = self.parent.dc_slider_position
             dc_ir_settings = self.parent.dc_ir_settings
-            edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings["export_dc_thermal_data"]
+            edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings.get("export_dc_thermal_data", False)
 
     def __init__(self, pedb, pyedb_obj, **kwargs):
         super().__init__(pedb, pyedb_obj, **kwargs)
