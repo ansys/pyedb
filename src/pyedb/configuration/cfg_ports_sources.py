@@ -191,7 +191,7 @@ class CfgPorts:
         def get_edge_info(self, port):
             return port._edb_object.GetEdges()[0].GetParameters()
 
-        def _get_edge_port_from_edb(self, p):
+        def _get_edge_port_from_edb(self, p, port_type):
             # primitive, point = p._edb_object.GetEdges()[0].GetParameters()
             edges = p.edges
             primitive = None
@@ -202,7 +202,7 @@ class CfgPorts:
             cfg_port = CfgEdgePort(
                 self._pedb,
                 name=p.name,
-                type=self.parent.port_type,
+                type=port_type,
                 primitive_name=primitive.aedt_name,
                 point_on_edge=[point._edb_object.X.ToString(), point._edb_object.Y.ToString()],
                 horizontal_extent_factor=p.horizontal_extent_factor,
@@ -218,7 +218,7 @@ class CfgPorts:
         def get_pin_group(self, port):
             return self._pedb.siwave.pin_groups[port._edb_object.GetPinGroup().GetName()]
 
-        def _get_edge_port_from_edb(self, p):
+        def _get_edge_port_from_edb(self, p, port_type):
             _, primitive, point = p._edb_object.GetEdges()[0].GetParameters()
 
             primitive = Primitive(self._pedb, primitive)
@@ -227,7 +227,7 @@ class CfgPorts:
             cfg_port = CfgEdgePort(
                 self._pedb,
                 name=p.name,
-                type=self.parent.port_type,
+                type=port_type,
                 primitive_name=primitive.aedt_name,
                 point_on_edge=[point._edb_object.X.ToString(), point._edb_object.Y.ToString()],
                 horizontal_extent_factor=p.horizontal_extent_factor,
@@ -335,7 +335,7 @@ class CfgPorts:
                     positive_terminal=pos_term_info,
                 )
             else:
-                cfg_port = self.api._get_edge_port_from_edb(p)
+                cfg_port = self.api._get_edge_port_from_edb(p, port_type)
             self.ports.append(cfg_port)
         return self.export_properties()
 
