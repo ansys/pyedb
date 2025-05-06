@@ -134,6 +134,10 @@ class Edb(Database):
         Reference to the AEDT project object.
     student_version : bool, optional
         Whether to open the AEDT student version. The default is ``False.``
+    control_file : str, optional
+            Path to the XML file. The default is ``None``, in which case an attempt is made to find
+            the XML file in the same directory as the board file. To succeed, the XML file and board file
+            must have the same name. Only the extension differs.
     map_file : str, optional
         Layer map .map file.
     technology_file : str, optional
