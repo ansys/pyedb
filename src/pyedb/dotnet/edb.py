@@ -253,7 +253,9 @@ class Edb(Database):
                     control_file = technology_file
                 else:
                     control_file = convert_technology_file(technology_file, edbversion=edbversion)
-            self.import_layout_file(edbpath, working_dir, use_ppe=use_ppe, control_file=control_file)
+            if not self.import_layout_file(edbpath, working_dir, use_ppe=use_ppe, control_file=control_file):
+                raise AttributeError("Translation was unsuccessful")
+                return False
             if settings.enable_local_log_file and self.log_name:
                 self._logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath[-2:])
@@ -739,8 +741,7 @@ class Edb(Database):
             cmd_translator.append('-t="{}"'.format(tech_file))
         if layer_filter:
             cmd_translator.append('-f="{}"'.format(layer_filter))
-        p = subprocess.Popen(cmd_translator)
-        p.wait()
+        subprocess.run(cmd_translator)
         if not os.path.exists(os.path.join(working_dir, aedb_name)):
             self.logger.error("Translator failed to translate.")
             return False
