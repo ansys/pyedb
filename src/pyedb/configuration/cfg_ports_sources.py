@@ -108,8 +108,27 @@ class CfgNearestPinTerminalInfo(CfgTerminalInfo):
 
 
 class CfgSources:
+    class Grpc:
+        def __init__(self, parent):
+            self.parent = parent
+            self._pedb = parent._pedb
+
+        def get_pin_group_name(self, src):
+            return src.pin_group.name
+
+    class DotNet(Grpc):
+        def __init__(self, parent):
+            super().__init__(parent)
+
+        def get_pin_group_name(self, src):
+            return src._edb_object.GetPinGroup().GetName()
+
     def __init__(self, pedb, sources_data):
         self._pedb = pedb
+        if self._pedb.grpc:
+            self.api = self.Grpc(self)
+        else:
+            self.api = self.DotNet(self)
         self.sources = [CfgSource(self._pedb, **src) for src in sources_data]
 
     def apply(self):
@@ -128,7 +147,7 @@ class CfgSources:
 
             if src.terminal_type == "PinGroupTerminal":
                 refdes = ""
-                pg = self._pedb.siwave.pin_groups[src._edb_object.GetPinGroup().GetName()]
+                pg = self._pedb.siwave.pin_groups[self.api.get_pin_group_name(src)]
                 pos_term_info = {"pin_group": pg.name}
             elif src.terminal_type == "PadstackInstanceTerminal":
                 refdes = src.component.refdes if src.component else ""
@@ -136,7 +155,7 @@ class CfgSources:
 
             neg_term = self._pedb.terminals[src.ref_terminal.name]
             if neg_term.terminal_type == "PinGroupTerminal":
-                pg = self._pedb.siwave.pin_groups[neg_term._edb_object.GetPinGroup().GetName()]
+                pg = self._pedb.siwave.pin_groups[self.api.get_pin_group_name(neg_term)]
                 neg_term_info = {"pin_group": pg.name}
             elif neg_term.terminal_type == "PadstackInstanceTerminal":
                 neg_term_info = {"padstack": neg_term.padstack_instance.aedt_name}
@@ -172,12 +191,50 @@ class CfgPorts:
         def get_edge_info(self, port):
             return port._edb_object.GetEdges()[0].GetParameters()
 
+        def _get_edge_port_from_edb(self, p):
+            # primitive, point = p._edb_object.GetEdges()[0].GetParameters()
+            edges = p.edges
+            primitive = None
+            point = None
+            primitive = Primitive(self._pedb, primitive)
+            point = PointData(self._pedb, point)
+
+            cfg_port = CfgEdgePort(
+                self._pedb,
+                name=p.name,
+                type=self.parent.port_type,
+                primitive_name=primitive.aedt_name,
+                point_on_edge=[point._edb_object.X.ToString(), point._edb_object.Y.ToString()],
+                horizontal_extent_factor=p.horizontal_extent_factor,
+                vertical_extent_factor=p.vertical_extent_factor,
+                pec_launch_width=p.pec_launch_width,
+            )
+            return cfg_port
+
     class DotNet(Grpc):
         def __init__(self, parent):
             super().__init__(parent)
 
         def get_pin_group(self, port):
             return self._pedb.siwave.pin_groups[port._edb_object.GetPinGroup().GetName()]
+
+        def _get_edge_port_from_edb(self, p):
+            _, primitive, point = p._edb_object.GetEdges()[0].GetParameters()
+
+            primitive = Primitive(self._pedb, primitive)
+            point = PointData(self._pedb, point)
+
+            cfg_port = CfgEdgePort(
+                self._pedb,
+                name=p.name,
+                type=self.parent.port_type,
+                primitive_name=primitive.aedt_name,
+                point_on_edge=[point._edb_object.X.ToString(), point._edb_object.Y.ToString()],
+                horizontal_extent_factor=p.horizontal_extent_factor,
+                vertical_extent_factor=p.vertical_extent_factor,
+                pec_launch_width=p.pec_launch_width,
+            )
+            return cfg_port
 
     def __init__(self, pedb, ports_data):
         self._pedb = pedb
@@ -223,6 +280,11 @@ class CfgPorts:
                     port_type = "circuit"
                 elif p.hfss_type == "Wave":
                     port_type = "wave_port"
+                elif p.terminal_type == "EdgeTerminal":
+                    if p.is_wave_port:
+                        port_type = "Wave"
+                    else:
+                        port_type = "gap_port"
                 else:
                     port_type = "gap_port"
             else:
@@ -273,22 +335,7 @@ class CfgPorts:
                     positive_terminal=pos_term_info,
                 )
             else:
-                _, primitive, point = p._edb_object.GetEdges()[0].GetParameters()
-
-                primitive = Primitive(self._pedb, primitive)
-                point = PointData(self._pedb, point)
-
-                cfg_port = CfgEdgePort(
-                    self._pedb,
-                    name=p.name,
-                    type=port_type,
-                    primitive_name=primitive.aedt_name,
-                    point_on_edge=[point._edb_object.X.ToString(), point._edb_object.Y.ToString()],
-                    horizontal_extent_factor=p.horizontal_extent_factor,
-                    vertical_extent_factor=p.vertical_extent_factor,
-                    pec_launch_width=p.pec_launch_width,
-                )
-
+                cfg_port = self.api._get_edge_port_from_edb(p)
             self.ports.append(cfg_port)
         return self.export_properties()
 
@@ -723,8 +770,99 @@ class CfgProbe(CfgCircuitElement):
 
 
 class CfgEdgePort:
+    class Grpc:
+        def __init__(self, parent):
+            self.parent = parent
+            self._pedb = parent._pedb
+
+        def set_parameters_to_edb(self, edb_primitives):
+            from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
+            from ansys.edb.core.terminal.edge_terminal import (
+                EdgeTerminal as GrpcEdgeTerminal,
+            )
+            from ansys.edb.core.terminal.edge_terminal import (
+                PrimitiveEdge as GrpcPrimitiveEdge,
+            )
+            from ansys.edb.core.utility.value import Value as GrpcValue
+
+            from pyedb.grpc.database.ports.ports import WavePort
+
+            point_on_edge = GrpcPointData(self.parent.point_on_edge)
+            primitive = edb_primitives[self.parent.primitive_name]
+            pos_edge = GrpcPrimitiveEdge.create(primitive, point_on_edge)
+            edge_term = GrpcEdgeTerminal.create(
+                layout=primitive.layout, name=self.parent.name, net=primitive.net, edges=[pos_edge], is_ref=False
+            )
+            edge_term.impedance = GrpcValue(50)
+            wave_port = WavePort(self._pedb, edge_term)
+            wave_port.horizontal_extent_factor = self.parent.horizontal_extent_factor
+            wave_port.vertical_extent_factor = self.parent.vertical_extent_factor
+            wave_port.pec_launch_width = self.parent.pec_launch_width
+            if self.parent.type == "wave_port":
+                wave_port.hfss_type = "Wave"
+            else:
+                wave_port.hfss_type = "Gap"
+            wave_port.do_renormalize = True
+            return wave_port
+
+        def export_properties(self):
+            return {
+                "name": self.name,
+                "type": self.type,
+                "primitive_name": self.primitive_name,
+                "point_on_edge": self.point_on_edge,
+                "horizontal_extent_factor": self.horizontal_extent_factor,
+                "vertical_extent_factor": self.vertical_extent_factor,
+                "pec_launch_width": self.pec_launch_width,
+            }
+
+    class DotNet(Grpc):
+        def __init__(self, parent):
+            super().__init__(parent)
+
+        def set_parameters_to_edb(self, edb_primitives):
+            point_on_edge = PointData(self._pedb, x=self.parent.point_on_edge[0], y=self.parent.point_on_edge[1])
+            primitive = edb_primitives[self.parent.primitive_name]
+            pos_edge = self._pedb.edb_api.cell.terminal.PrimitiveEdge.Create(
+                primitive._edb_object, point_on_edge._edb_object
+            )
+            pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb.edb_api.cell.terminal.Edge)
+            edge_term = self._pedb.edb_api.cell.terminal.EdgeTerminal.Create(
+                primitive._edb_object.GetLayout(),
+                primitive._edb_object.GetNet(),
+                self.parent.name,
+                pos_edge,
+                isRef=False,
+            )
+            edge_term.SetImpedance(self._pedb.edb_value(50))
+            wave_port = WavePort(self._pedb, edge_term)
+            wave_port.horizontal_extent_factor = self.parent.horizontal_extent_factor
+            wave_port.vertical_extent_factor = self.parent.vertical_extent_factor
+            wave_port.pec_launch_width = self.parent.pec_launch_width
+            if self.parent.type == "wave_port":
+                wave_port.hfss_type = "Wave"
+            else:
+                wave_port.hfss_type = "Gap"
+            wave_port.do_renormalize = True
+            return wave_port
+
+        def export_properties(self):
+            return {
+                "name": self.parent.name,
+                "type": self.parent.type,
+                "primitive_name": self.parent.primitive_name,
+                "point_on_edge": self.parent.point_on_edge,
+                "horizontal_extent_factor": self.parent.horizontal_extent_factor,
+                "vertical_extent_factor": self.parent.vertical_extent_factor,
+                "pec_launch_width": self.parent.pec_launch_width,
+            }
+
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
+        if self._pedb.grpc:
+            self.api = self.Grpc(self)
+        else:
+            self.api = self.DotNet(self)
         self.name = kwargs["name"]
         self.type = kwargs["type"]
         self.primitive_name = kwargs["primitive_name"]
@@ -734,37 +872,10 @@ class CfgEdgePort:
         self.pec_launch_width = kwargs.get("pec_launch_width", "0.01mm")
 
     def set_parameters_to_edb(self, edb_primitives):
-        point_on_edge = PointData(self._pedb, x=self.point_on_edge[0], y=self.point_on_edge[1])
-        primitive = edb_primitives[self.primitive_name]
-        pos_edge = self._pedb.edb_api.cell.terminal.PrimitiveEdge.Create(
-            primitive._edb_object, point_on_edge._edb_object
-        )
-        pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb.edb_api.cell.terminal.Edge)
-        edge_term = self._pedb.edb_api.cell.terminal.EdgeTerminal.Create(
-            primitive._edb_object.GetLayout(), primitive._edb_object.GetNet(), self.name, pos_edge, isRef=False
-        )
-        edge_term.SetImpedance(self._pedb.edb_value(50))
-        wave_port = WavePort(self._pedb, edge_term)
-        wave_port.horizontal_extent_factor = self.horizontal_extent_factor
-        wave_port.vertical_extent_factor = self.vertical_extent_factor
-        wave_port.pec_launch_width = self.pec_launch_width
-        if self.type == "wave_port":
-            wave_port.hfss_type = "Wave"
-        else:
-            wave_port.hfss_type = "Gap"
-        wave_port.do_renormalize = True
-        return wave_port
+        return self.api.set_parameters_to_edb(edb_primitives)
 
     def export_properties(self):
-        return {
-            "name": self.name,
-            "type": self.type,
-            "primitive_name": self.primitive_name,
-            "point_on_edge": self.point_on_edge,
-            "horizontal_extent_factor": self.horizontal_extent_factor,
-            "vertical_extent_factor": self.vertical_extent_factor,
-            "pec_launch_width": self.pec_launch_width,
-        }
+        return self.api.export_properties()
 
 
 class CfgDiffWavePort:

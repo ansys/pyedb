@@ -417,6 +417,7 @@ class TestClass:
         edbapp.close()
 
     def test_05g_wave_port(self, edb_examples):
+        # TODO check bug #545 status.
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.modeler.create_rectangle(
@@ -450,6 +451,7 @@ class TestClass:
         edbapp.close()
 
     def test_05h_diff_wave_port(self, edb_examples):
+        # TODO check bug #545 status.
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.modeler.create_rectangle(
