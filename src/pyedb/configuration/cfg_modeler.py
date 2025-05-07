@@ -235,7 +235,7 @@ class CfgModeler:
         ]
         self.planes = [CfgPlane(**i) for i in data.get("planes", [])]
         self.components = [CfgComponent(self._pedb, None, **i) for i in data.get("components", [])]
-        self.primitives_to_delete = data.get("primitives_to_delete", {})
+        self.primitives_to_delete = data.get("primitives_to_delete", {"layer_name": [], "name": [], "net_name": []})
 
     def apply(self):
         self.api.set_parameter_to_edb()
