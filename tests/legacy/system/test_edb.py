@@ -1456,7 +1456,7 @@ class TestClass:
         edb = Edb(
             gds_out,
             edbversion=desktop_version,
-            technology_file=os.path.join(self.local_scratch.path, "test_138.xml"),
+            control_file=os.path.join(self.local_scratch.path, "test_138.xml"),
         )
 
         assert edb
@@ -2113,7 +2113,7 @@ class TestClass:
         """Create EDB from zip file."""
         src = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1_0.zip")
         zip_path = self.local_scratch.copyfile(src)
-        edb = Edb(zip_path, edbversion=desktop_version)
+        edb = Edb(zip_path, edbversion="2025.1")
         assert edb.nets
         assert edb.components
         edb.close()
