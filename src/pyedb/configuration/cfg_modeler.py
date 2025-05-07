@@ -141,6 +141,11 @@ class CfgModeler:
                     c.pyedb_obj = obj
                     c.api.set_parameters_to_edb()
 
+        def delete_primitives(self):
+            primitives = self._pedb.layout.find_primitive(**self.parent.primitives_to_delete)
+            for i in primitives:
+                i.delete()
+
     class DotNet(Grpc):
         def __init__(self, parent):
             super().__init__(parent)
@@ -230,6 +235,8 @@ class CfgModeler:
         ]
         self.planes = [CfgPlane(**i) for i in data.get("planes", [])]
         self.components = [CfgComponent(self._pedb, None, **i) for i in data.get("components", [])]
+        self.primitives_to_delete = data.get("primitives_to_delete", {"layer_name": [], "name": [], "net_name": []})
 
     def apply(self):
         self.api.set_parameter_to_edb()
+        self.api.delete_primitives()
