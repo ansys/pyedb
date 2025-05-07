@@ -1312,11 +1312,7 @@ class TestClass:
     def test_modeler_delete(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         assert edbapp.layout.find_primitive(name="line_163")
-        data = {
-            "modeler": {
-                "primitives_to_delete": {"name": ["line_163"]}
-            }
-        }
+        data = {"modeler": {"primitives_to_delete": {"name": ["line_163"]}}}
         edbapp.configuration.load(data, apply_file=True)
         assert len(edbapp.layout.find_primitive(name="line_163")) == 0
         edbapp.close()
