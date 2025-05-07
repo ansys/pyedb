@@ -2113,7 +2113,7 @@ class TestClass:
         """Create EDB from zip file."""
         src = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1_0.zip")
         zip_path = self.local_scratch.copyfile(src)
-        edb = Edb(zip_path, edbversion=dekstop_version)
+        edb = Edb(zip_path, edbversion=desktop_version)
         assert edb.nets
         assert edb.components
         edb.close()
