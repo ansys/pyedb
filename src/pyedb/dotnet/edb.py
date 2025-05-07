@@ -245,7 +245,7 @@ class Edb(Database):
             zipped_file.close()
             self.logger.info("Translating ODB++ to EDB...")
             if not self.import_layout_file(
-                edbpath,
+                edbpath[:-4],
                 working_dir,
                 use_ppe=use_ppe,
                 control_file=control_file,
