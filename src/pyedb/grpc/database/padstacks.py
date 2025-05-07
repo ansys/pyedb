@@ -1569,14 +1569,13 @@ class Padstacks(object):
         for id, inst in self.instances.items():
             instances_index[id] = inst.position
         for contour_box in contour_boxes:
-            all_instances = self.instances
             instances = self.get_padstack_instances_id_intersecting_polygon(
                 points=contour_box, padstack_instances_index=instances_index
             )
             if net_filter:
-                instances = [self.instances[id] for id in instances if not self.instances[id].net.name in net_filter]
-            net = self.instances[instances[0].edb_uid].net.name
-            instances_pts = np.array([self.instances[inst.edb_uid].position for inst in instances])
+                instances = [id for id in instances if not self.instances[id].net.name in net_filter]
+            net = self.instances[instances[0]].net.name
+            instances_pts = np.array([self.instances[inst].position for inst in instances])
             convex_hull_contour = ConvexHull(instances_pts)
             contour_points = list(instances_pts[convex_hull_contour.vertices])
             layer = list(self._pedb.stackup.layers.values())[0].name
@@ -1603,7 +1602,7 @@ class Padstacks(object):
                 tolayer=stop_layer,
             )
             merged_via_ids.append(merged_instance.edb_uid)
-            [self.instances[inst.edb_uid].delete() for inst in instances]
+            [self.instances[inst].delete() for inst in instances]
         return merged_via_ids
 
     def reduce_via_in_bounding_box(self, bounding_box, x_samples, y_samples, nets=None):
