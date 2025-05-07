@@ -1575,8 +1575,8 @@ class Padstacks(object):
             )
             if net_filter:
                 instances = [self.instances[id] for id in instances if not self.instances[id].net.name in net_filter]
-            net = self.instances[instances[0]].net.name
-            instances_pts = np.array([self.instances[id].position for id in instances])
+            net = self.instances[instances[0].edb_uid].net.name
+            instances_pts = np.array([self.instances[inst.edb_uid].position for inst in instances])
             convex_hull_contour = ConvexHull(instances_pts)
             contour_points = list(instances_pts[convex_hull_contour.vertices])
             layer = list(self._pedb.stackup.layers.values())[0].name
@@ -1595,9 +1595,15 @@ class Padstacks(object):
                 stop_layer=stop_layer,
             ):
                 self._logger.error(f"Failed to create padstack definition {new_padstack_def}")
-            merged_instance = self.place(position=[0, 0], definition_name=new_padstack_def, net_name=net)
-            merged_via_ids.append(merged_instance.id)
-            [self.instances[id].delete() for id in instances]
+            merged_instance = self.place(
+                position=[0, 0],
+                definition_name=new_padstack_def,
+                net_name=net,
+                fromlayer=start_layer,
+                tolayer=stop_layer,
+            )
+            merged_via_ids.append(merged_instance.edb_uid)
+            [self.instances[inst.edb_uid].delete() for inst in instances]
         return merged_via_ids
 
     def reduce_via_in_bounding_box(self, bounding_box, x_samples, y_samples, nets=None):
