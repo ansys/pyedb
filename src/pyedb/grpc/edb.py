@@ -2019,8 +2019,8 @@ class Edb(EdbInit):
                     nets_to_preserve.extend(el.nets)
         if include_pingroups:
             for pingroup in self.layout.pin_groups:
-                for pin in pingroup.pins:
-                    if pin.net_name in reference_list:
+                for pin_name, pin in pingroup.pins.items():
+                    if pin_name in reference_list:
                         pins_to_preserve.append(pin.edb_uid)
         if check_terminals:
             terms = [
