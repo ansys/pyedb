@@ -146,7 +146,7 @@ class WavePort(EdgeTerminal):
     """
 
     def __init__(self, pedb, edb_terminal):
-        super().__init__(pedb, edb_terminal.msg)
+        super().__init__(pedb, edb_terminal)
 
     @property
     def horizontal_extent_factor(self):
@@ -161,9 +161,9 @@ class WavePort(EdgeTerminal):
 
     @horizontal_extent_factor.setter
     def horizontal_extent_factor(self, value):
-        self.p = p
-        p = self.p
+        p = self._hfss_port_property
         p["Horizontal Extent Factor"] = value
+        self._hfss_port_property = p
 
     @property
     def vertical_extent_factor(self):
