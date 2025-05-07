@@ -230,4 +230,4 @@ class ComponentDef(GrpcComponentDef):
         if pin_order:
             old = {i.name: i for i in self.component_pins}
             temp = [old[str(i)] for i in pin_order]
-            self.component_pins = temp
+            self.reorder_pins(temp)

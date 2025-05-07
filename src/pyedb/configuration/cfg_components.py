@@ -136,9 +136,9 @@ class CfgComponent(CfgBase):
             die_type = pascal_to_snake(ic_die_prop.die_type.name)
             temp["type"] = die_type
             if not die_type == "no_die":
-                temp["orientation"] = pascal_to_snake(ic_die_prop.die_orientation.name)
+                temp["orientation"] = ic_die_prop.die_orientation.name.lower()
                 if die_type == "wire_bond":
-                    temp["height"] = ic_die_prop.height.value
+                    temp["height"] = str(ic_die_prop.height.value)
 
             self.parent.ic_die_properties = temp
 
@@ -183,10 +183,10 @@ class CfgComponent(CfgBase):
                 uses_solder_ball = solder_ball_prop.uses_solderball
 
                 temp["uses_solder_ball"] = uses_solder_ball
-                temp["shape"] = pascal_to_snake(shape)
-                temp["diameter"] = diam
-                temp["mid_diameter"] = mid_diam
-                temp["height"] = height
+                temp["shape"] = shape.lower()
+                temp["diameter"] = str(diam)
+                temp["mid_diameter"] = str(mid_diam)
+                temp["height"] = str(height)
                 temp["material"] = material
 
                 self.parent.solder_ball_properties = temp

@@ -178,8 +178,7 @@ class Components(object):
     @property
     def nport_comp_definition(self):
         """Retrieve Nport component definition list."""
-        m = "Ansys.Ansoft.Edb.Definition.NPortComponentModel"
-        return {name: l for name, l in self.definitions.items() if m in [i for i in l.model]}
+        return {name: l for name, l in self.definitions.items() if l.reference_file}
 
     def import_definition(self, file_path):
         """Import component definition from json file.
