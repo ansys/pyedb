@@ -491,7 +491,9 @@ class Edb(EdbInit):
         """
         terminals = [term for term in self.layout.terminals if not term.is_reference_terminal]
         ports = {}
+        from pyedb.grpc.database.ports.ports import WavePort
         from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
+        from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
         from pyedb.grpc.database.terminal.padstack_instance_terminal import (
             PadstackInstanceTerminal,
         )
@@ -502,6 +504,11 @@ class Edb(EdbInit):
                 ports[bundle_ter.name] = bundle_ter
             elif isinstance(t, PadstackInstanceTerminal):
                 ports[t.name] = CoaxPort(self, t)
+            elif isinstance(t, EdgeTerminal):
+                if t.is_wave_port:
+                    ports[t.name] = WavePort(self, t)
+                else:
+                    ports[t.name] = EdgeTerminal(self, t)
             else:
                 ports[t.name] = GapPort(self, t)
         return ports
