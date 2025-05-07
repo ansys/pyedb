@@ -1616,7 +1616,7 @@ class Padstacks(object):
         x_samples : int
         y_samples : int
         nets : str or list, optional
-            net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+            net name of list of nets name applying filtering on pad-stack instances selection. If ``None`` is provided
             all instances are included in the index. Default value is ``None``.
 
         Returns
