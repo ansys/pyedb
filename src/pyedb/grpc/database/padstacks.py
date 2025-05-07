@@ -1627,10 +1627,11 @@ class Padstacks(object):
 
         padstacks_inbox = self.get_padstack_instances_intersecting_bounding_box(bounding_box, nets)
         if not padstacks_inbox:
-            raise "No pad-stack in bounding box."
+            return False
         else:
             if len(padstacks_inbox) <= (x_samples * y_samples):
-                raise f"more samples {x_samples * y_samples} than existing {len(padstacks_inbox)}"
+                self._pedb.logger.error(f"more samples {x_samples * y_samples} than existing {len(padstacks_inbox)}")
+                return False
             else:
                 # extract ids and positions
                 vias = {item: self.instances[item].position for item in padstacks_inbox}
