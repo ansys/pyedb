@@ -1456,7 +1456,7 @@ class TestClass:
         edb = Edb(
             gds_out,
             edbversion=desktop_version,
-            technology_file=os.path.join(self.local_scratch.path, "test_138.xml"),
+            control_file=os.path.join(self.local_scratch.path, "test_138.xml"),
         )
 
         assert edb

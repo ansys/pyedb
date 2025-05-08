@@ -198,7 +198,6 @@ class Edb(EdbInit):
         use_ppe=False,
         technology_file=None,
         restart_rpc_server=False,
-        kill_all_instances=False,
     ):
         edbversion = get_string_version(edbversion)
         self._clean_variables()
@@ -273,9 +272,9 @@ class Edb(EdbInit):
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath[-2:])
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
-            self.open_edb(restart_rpc_server=restart_rpc_server, kill_all_instances=kill_all_instances)
+            self.open_edb(restart_rpc_server=restart_rpc_server)
         elif not os.path.exists(os.path.join(self.edbpath, "edb.def")):
-            self.create_edb(restart_rpc_server=restart_rpc_server, kill_all_instances=kill_all_instances)
+            self.create_edb(restart_rpc_server=restart_rpc_server)
             self.logger.info("EDB %s created correctly.", self.edbpath)
         elif ".aedb" in edbpath:
             self.edbpath = edbpath
@@ -290,8 +289,7 @@ class Edb(EdbInit):
         return self
 
     def __exit__(self, ex_type, ex_value, ex_traceback):
-        if ex_type:
-            self.edb_exception(ex_value, ex_traceback)
+        self._signal_handler(ex_type, ex_value)
 
     def __getitem__(self, variable_name):
         """Get a variable to the Edb project. The variable can be project using ``$`` prefix or
@@ -493,7 +491,9 @@ class Edb(EdbInit):
         """
         terminals = [term for term in self.layout.terminals if not term.is_reference_terminal]
         ports = {}
+        from pyedb.grpc.database.ports.ports import WavePort
         from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
+        from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
         from pyedb.grpc.database.terminal.padstack_instance_terminal import (
             PadstackInstanceTerminal,
         )
@@ -504,6 +504,11 @@ class Edb(EdbInit):
                 ports[bundle_ter.name] = bundle_ter
             elif isinstance(t, PadstackInstanceTerminal):
                 ports[t.name] = CoaxPort(self, t)
+            elif isinstance(t, EdgeTerminal):
+                if t.is_wave_port:
+                    ports[t.name] = WavePort(self, t)
+                else:
+                    ports[t.name] = EdgeTerminal(self, t)
             else:
                 ports[t.name] = GapPort(self, t)
         return ports
@@ -572,7 +577,6 @@ class Edb(EdbInit):
                     self.edbpath,
                     self.isreadonly,
                     restart_rpc_server=restart_rpc_server,
-                    kill_all_instances=kill_all_instances,
                 )
                 n_try -= 1
             except Exception as e:
@@ -613,7 +617,7 @@ class Edb(EdbInit):
         n_try = 10
         while not self.db and n_try:
             try:
-                self.create(self.edbpath, restart_rpc_server=restart_rpc_server, kill_all_instances=kill_all_instances)
+                self.create(self.edbpath, restart_rpc_server=restart_rpc_server)
                 n_try -= 1
             except Exception as e:
                 self.logger.error(e.args[0])

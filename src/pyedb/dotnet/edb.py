@@ -48,7 +48,6 @@ from pyedb.dotnet.database.cell.terminal.terminal import Terminal
 from pyedb.dotnet.database.components import Components
 import pyedb.dotnet.database.dotnet.database
 from pyedb.dotnet.database.dotnet.database import Database
-from pyedb.dotnet.database.edb_data.control_file import convert_technology_file
 from pyedb.dotnet.database.edb_data.design_options import EdbDesignOptions
 from pyedb.dotnet.database.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.database.edb_data.ports import (
@@ -135,9 +134,17 @@ class Edb(Database):
         Reference to the AEDT project object.
     student_version : bool, optional
         Whether to open the AEDT student version. The default is ``False.``
+    control_file : str, optional
+            Path to the XML file. The default is ``None``, in which case an attempt is made to find
+            the XML file in the same directory as the board file. To succeed, the XML file and board file
+            must have the same name. Only the extension differs.
+    map_file : str, optional
+        Layer map .map file.
     technology_file : str, optional
         Full path to technology file to be converted to xml before importing or xml.
         Supported by GDS format only.
+    layer_filter:str,optional
+        Layer filter .txt file.
 
     Examples
     --------
@@ -183,7 +190,10 @@ class Edb(Database):
         oproject=None,
         student_version: bool = False,
         use_ppe: bool = False,
+        control_file: str = None,
+        map_file: str = None,
         technology_file: str = None,
+        layer_filter: str = None,
         remove_existing_aedt: bool = False,
     ):
         if isinstance(edbpath, Path):
@@ -233,27 +243,35 @@ class Edb(Database):
                 zipped_file.extractall(edbpath[:-4])
                 self.logger.info("ODB++ unzipped successfully.")
             zipped_file.close()
-            control_file = None
-            if technology_file:
-                if os.path.splitext(technology_file)[1] == ".xml":
-                    control_file = technology_file
-                else:
-                    control_file = convert_technology_file(technology_file, edbversion=edbversion)
             self.logger.info("Translating ODB++ to EDB...")
-            self.import_layout_file(edbpath[:-4], working_dir, use_ppe=use_ppe, control_file=control_file)
+            if not self.import_layout_file(
+                edbpath[:-4],
+                working_dir,
+                use_ppe=use_ppe,
+                control_file=control_file,
+                tech_file=technology_file,
+                layer_filter=layer_filter,
+                map_file=map_file,
+            ):
+                raise AttributeError("Translation was unsuccessful")
+                return False
             if settings.enable_local_log_file and self.log_name:
                 self._logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)
         elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
-            control_file = None
-            if technology_file:
-                if os.path.splitext(technology_file)[1] == ".xml":
-                    control_file = technology_file
-                else:
-                    control_file = convert_technology_file(technology_file, edbversion=edbversion)
-            self.import_layout_file(edbpath, working_dir, use_ppe=use_ppe, control_file=control_file)
+            if not self.import_layout_file(
+                edbpath,
+                working_dir,
+                use_ppe=use_ppe,
+                control_file=control_file,
+                tech_file=technology_file,
+                layer_filter=layer_filter,
+                map_file=map_file,
+            ):
+                raise AttributeError("Translation was unsuccessful")
+                return False
             if settings.enable_local_log_file and self.log_name:
                 self._logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath[-2:])
@@ -739,8 +757,7 @@ class Edb(Database):
             cmd_translator.append('-t="{}"'.format(tech_file))
         if layer_filter:
             cmd_translator.append('-f="{}"'.format(layer_filter))
-        p = subprocess.Popen(cmd_translator)
-        p.wait()
+        subprocess.run(cmd_translator)
         if not os.path.exists(os.path.join(working_dir, aedb_name)):
             self.logger.error("Translator failed to translate.")
             return False
