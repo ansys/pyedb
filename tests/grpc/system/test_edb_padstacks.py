@@ -253,7 +253,7 @@ class TestClass:
 
     def test_split_microvias(self):
         """Convert padstack definition to multiple microvias definitions."""
-        edbapp = Edb(self.target_path4, edbversion=desktop_version, restart_rpc_server=True, kill_all_instances=True)
+        edbapp = Edb(self.target_path4, edbversion=desktop_version)
         assert len(edbapp.padstacks.definitions["C4_POWER_1"].split_to_microvias()) > 0
         edbapp.close()
 

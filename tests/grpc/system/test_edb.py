@@ -54,7 +54,7 @@ class TestClass:
 
     def test_layout_bounding_box(self, edb_examples):
         """Evaluate layout bounding box"""
-        # Done
+        # TODO check bug #546 status
         edbapp = edb_examples.get_si_verse()
         assert len(edbapp.get_bounding_box()) == 2
         assert edbapp.get_bounding_box() == [[-0.01426004895, -0.00455000106], [0.15010507444, 0.08000000002]]
@@ -442,13 +442,12 @@ class TestClass:
         from pyedb.grpc.database.primitive.path import Path as PyEDBPath
 
         sig = PyEDBPath(edb, sig)
-        # TODO check bug #435 can't get product properties skipping wave port for now
         assert sig.create_edge_port("pcb_port_1", "end", "Wave", None, 8, 8)
         assert sig.create_edge_port("pcb_port_2", "start", "gap")
         gap_port = edb.ports["pcb_port_2"]
         assert gap_port.component.is_null
-        assert gap_port.magnitude == 0.0
-        assert gap_port.phase == 0.0
+        assert gap_port.source_amplitude == 0.0
+        assert gap_port.source_phase == 0.0
         assert gap_port.impedance
         assert not gap_port.deembed
         gap_port.name = "gap_port"
@@ -460,7 +459,7 @@ class TestClass:
 
     def test_edb_statistics(self, edb_examples):
         """Get statistics."""
-        # Done
+        # TODO check bug #546 layout instance query
         edb = edb_examples.get_si_verse()
         edb_stats = edb.get_statistics(compute_area=True)
         assert edb_stats
@@ -1353,7 +1352,7 @@ class TestClass:
         """Move a polygon."""
         # Done
         target_path = os.path.join(self.local_scratch.path, "test_move_edit_polygons", "test.aedb")
-        edbapp = Edb(target_path, edbversion=desktop_version, restart_rpc_server=True, kill_all_instances=True)
+        edbapp = Edb(target_path, edbversion=desktop_version, restart_rpc_server=True)
 
         edbapp.stackup.add_layer("GND")
         edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")

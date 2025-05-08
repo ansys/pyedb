@@ -225,7 +225,7 @@ class SourceExcitation:
         if refdes and any(refdes.rlc_values):
             return self._pedb.components.deactivate_rlc_component(component=refdes, create_circuit_port=True)
         if not port_name:
-            port_name = f"Port_{pins[0].net_name}_{pins[0].name}"
+            port_name = f"Port_{pins[0].net_name}_{pins[0].component.name}_{pins[0].name}"
 
         if len(pins) > 1 or pingroup_on_single_pin:
             pec_boundary = False
@@ -713,9 +713,19 @@ class SourceExcitation:
         -------
         Edb pin group terminal.
         """
+        from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
+
+        from pyedb.grpc.database.hierarchy.pingroup import PinGroup
+
         if pingroup.is_null:
             self._logger.error(f"{pingroup} is null")
-        pin = PadstackInstance(self._pedb, pingroup.pins[0])
+        if not pingroup.pins:
+            self._pedb.logger.error("No pins defined on pingroup.")
+            return False
+        if isinstance(pingroup, GrpcPinGroup):
+            pingroup = PinGroup(self._pedb, pingroup)
+        pin = list(pingroup.pins.values())[0]
+        pin = PadstackInstance(self._pedb, pin)
         if term_name is None:
             term_name = f"{pin.component.name}.{pin.name}.{pin.net_name}"
         for t in self._pedb.active_layout.terminals:
