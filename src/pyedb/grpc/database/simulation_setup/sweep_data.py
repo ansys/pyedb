@@ -21,10 +21,12 @@
 # SOFTWARE.
 
 from ansys.edb.core.simulation_setup.simulation_setup import (
-    SweepData as GrpcSweepData,
-    FrequencyData as GrpcFrequencyData,
     Distribution as GrpcDistribution,
 )
+from ansys.edb.core.simulation_setup.simulation_setup import (
+    FrequencyData as GrpcFrequencyData,
+)
+from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSweepData
 
 
 class SweepData(GrpcSweepData):
@@ -34,11 +36,8 @@ class SweepData(GrpcSweepData):
         super().__init__(
             name=name,
             frequency_data=GrpcFrequencyData(
-                distribution=GrpcDistribution[distribution],
-                start_f=start_f,
-                end_f=end_f,
-                step=step
-            )
+                distribution=GrpcDistribution[distribution], start_f=start_f, end_f=end_f, step=step
+            ),
         )
         self._edb_object = edb_object
         self._pedb = pedb

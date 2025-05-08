@@ -29,10 +29,12 @@ import warnings
 
 from ansys.edb.core.database import ProductIdType as GrpcProductIdType
 from ansys.edb.core.simulation_setup.simulation_setup import (
-    SweepData as GrpcSweepData,
-    FrequencyData as GrpcFrequencyData,
     Distribution as GrpcDistribution,
 )
+from ansys.edb.core.simulation_setup.simulation_setup import (
+    FrequencyData as GrpcFrequencyData,
+)
+from ansys.edb.core.simulation_setup.simulation_setup import SweepData as GrpcSweepData
 
 from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
 
@@ -597,12 +599,9 @@ class Siwave(object):
         sweep_data = [
             GrpcSweepData(
                 name=sweep_name,
-                frequency_data= GrpcFrequencyData(
-                    distribution=GrpcDistribution[distribution],
-                    start_f=start_freq,
-                    end_f=stop_freq,
-                    step=step_freq
-                )
+                frequency_data=GrpcFrequencyData(
+                    distribution=GrpcDistribution[distribution], start_f=start_freq, end_f=stop_freq, step=step_freq
+                ),
             )
         ]
         if discrete_sweep:

@@ -1241,9 +1241,13 @@ class Hfss(object):
             HfssSimulationSetup as GrpcHfssSimulationSetup,
         )
         from ansys.edb.core.simulation_setup.simulation_setup import (
-            SweepData as GrpcSweepData,
-            FrequencyData as GrpcFrequencyData,
             Distribution as GrpcDistribution,
+        )
+        from ansys.edb.core.simulation_setup.simulation_setup import (
+            FrequencyData as GrpcFrequencyData,
+        )
+        from ansys.edb.core.simulation_setup.simulation_setup import (
+            SweepData as GrpcSweepData,
         )
 
         if not name:
@@ -1270,12 +1274,9 @@ class Hfss(object):
         sweep_data = [
             GrpcSweepData(
                 name=sweep_name,
-                frequency_data= GrpcFrequencyData(
-                    distribution=GrpcDistribution[distribution],
-                    start_f=start_freq,
-                    end_f=stop_freq,
-                    step=step_freq
-                )
+                frequency_data=GrpcFrequencyData(
+                    distribution=GrpcDistribution[distribution], start_f=start_freq, end_f=stop_freq, step=step_freq
+                ),
             )
         ]
         if discrete_sweep:
