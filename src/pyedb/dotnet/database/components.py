@@ -947,6 +947,24 @@ class Components(object):
         >>> port_type=SourceType.CoaxPort, do_pingroup=False, refnet="GND")
 
         """
+        # Adding grpc compatibility
+        if port_type == "circuit_port":
+            port_type = SourceType.CircPort
+        elif port_type == "coaxial_port":
+            port_type = SourceType.CoaxPort
+        elif port_type == "lumped_port":
+            port_type = SourceType.LumpedPort
+        elif port_type == "rlc":
+            port_type = SourceType.Rlc
+        elif port_type == "current_source":
+            port_type = SourceType.Isource
+        elif port_type == "voltage_source":
+            port_type = SourceType.Vsource
+        elif port_type == "dc_terminal":
+            port_type = SourceType.DcTerminal
+        else:
+            self._pedb.logger.error(f"Port type {port_type} seems to be for grpc version but is not compatible.")
+            return False
         if isinstance(component, str):
             component = self.instances[component].edbcomponent
 
