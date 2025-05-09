@@ -56,6 +56,9 @@ class CfgCutout(CfgBase):
             self.api = self.Grpc(self)
         else:
             self.api = self.DotNet(self)
+        self.auto_identify_nets = kwargs.get('auto_identify_nets',
+                                             {"enabled": False, "resistor_below": 100, "inductor_below": 1,
+                                              "capacitor_above": 1})
         self.signal_list = kwargs.get("signal_list")
         self.reference_list = kwargs.get("reference_list")
         self.extent_type = kwargs.get("extent_type")
@@ -99,7 +102,43 @@ class CfgOperations(CfgBase):
 
         def apply_on_edb(self):
             if self.parent.op_cutout:
-                polygon_points = self._pedb.cutout(**self.parent.op_cutout.get_attributes())
+                cutout_params = self.parent.op_cutout.get_attributes()
+                auto_identify_nets = cutout_params.pop("auto_identify_nets")
+                if auto_identify_nets["enabled"]:
+                    reference_list = cutout_params.get("reference_list", [])
+                    if auto_identify_nets:
+                        self._pedb.nets.generate_extended_nets(
+                            auto_identify_nets["resistor_below"],
+                            auto_identify_nets["inductor_below"],
+                            auto_identify_nets["capacitor_above"],
+                            auto_identify_nets.get("exception_list", [])
+                        )
+                        signal_nets = []
+                        for i in self._pedb.ports.values():
+                            # Positive terminal
+                            extended_net = i.net.extended_net
+                            if extended_net:
+                                temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_list]
+                                temp = [i2 for i2 in temp if i2 not in signal_nets]
+                                signal_nets.extend(temp)
+                            else:
+                                signal_nets.append(i.net.name)
+
+                            # Negative terminal
+                            ref_net = i.ref_terminal.net if i.ref_terminal else None
+                            if ref_net is None:
+                                continue
+                            elif ref_net.name not in reference_list:
+                                extended_net = ref_net.extended_net
+                                if extended_net:
+                                    temp = [i2 for i2 in extended_net.nets.keys() if i2 not in reference_list]
+                                    temp = [i2 for i2 in temp if i2 not in signal_nets]
+                                    signal_nets.extend(temp)
+                                else:
+                                    signal_nets.append(ref_net.name)
+
+                        cutout_params["signal_list"] = signal_nets
+                polygon_points = self._pedb.cutout(**cutout_params)
                 if "pyedb_cutout" not in self._pedb.stackup.all_layers:
                     self._pedb.stackup.add_document_layer(name="pyedb_cutout")
                     self._pedb.modeler.create_polygon(

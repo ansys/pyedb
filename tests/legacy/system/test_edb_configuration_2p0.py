@@ -573,6 +573,28 @@ class TestClass:
         assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND", "pyedb_cutout"])
         edbapp.close()
 
+    def test_operations_cutout_auto_identify_nets(self, edb_examples):
+        data = {
+            "ports": [{
+                "name": "COAX_U1",
+                "reference_designator": "U1",
+                "type": "coax",
+                "positive_terminal": {"pin": "AP18"},
+            }],
+            "operations": {
+                "cutout": {
+                    "auto_identify_nets": {"enabled": True, "resistor_below": 100, "inductor_below": 1,
+                                           "capacitor_above": "10nF"},
+                    "reference_list": ["GND"],
+                    "extent_type": "ConvexHull",
+                }
+            }
+        }
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert {"PCIe_Gen4_TX3_CAP_P", "PCIe_Gen4_TX3_P"}.issubset(edbapp.nets.nets.keys())
+        edbapp.close()
+
     def test_09_padstack_definition(self, edb_examples):
         solder_ball_parameters = {
             "shape": "spheroid",
