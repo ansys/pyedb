@@ -436,7 +436,7 @@ class TestClass:
                     "type": "gap_port",
                     "primitive_name": prim_1.aedt_name,
                     "point_on_edge": [0, 0],
-                }
+                },
             ]
         }
         edbapp.configuration.load(data, apply_file=True)
