@@ -405,7 +405,7 @@ class TestClass:
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
         edbapp.close()
 
-    def test_05g_wave_port(self, edb_examples):
+    def test_05g_edge_port(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.modeler.create_rectangle(
@@ -430,11 +430,18 @@ class TestClass:
                     "horizontal_extent_factor": 6,
                     "vertical_extent_factor": 4,
                     "pec_launch_width": "0.2mm",
-                }
+                },
+                {
+                    "name": "gap_port_1",
+                    "type": "gap_port",
+                    "primitive_name": prim_1.aedt_name,
+                    "point_on_edge": [0, 0],
+                },
             ]
         }
         edbapp.configuration.load(data, apply_file=True)
         assert edbapp.ports["wport_1"].horizontal_extent_factor == 6
+        assert edbapp.ports["gap_port_1"].hfss_type == "Gap"
         edbapp.configuration.get_data_from_db(ports=True)
         edbapp.close()
 
@@ -571,6 +578,34 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND", "pyedb_cutout"])
+        edbapp.close()
+
+    def test_operations_cutout_auto_identify_nets(self, edb_examples):
+        data = {
+            "ports": [
+                {
+                    "name": "COAX_U1",
+                    "reference_designator": "U1",
+                    "type": "coax",
+                    "positive_terminal": {"pin": "AP18"},
+                }
+            ],
+            "operations": {
+                "cutout": {
+                    "auto_identify_nets": {
+                        "enabled": True,
+                        "resistor_below": 100,
+                        "inductor_below": 1,
+                        "capacitor_above": "10nF",
+                    },
+                    "reference_list": ["GND"],
+                    "extent_type": "ConvexHull",
+                }
+            },
+        }
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert {"PCIe_Gen4_TX3_CAP_P", "PCIe_Gen4_TX3_P"}.issubset(edbapp.nets.nets.keys())
         edbapp.close()
 
     def test_09_padstack_definition(self, edb_examples):
