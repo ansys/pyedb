@@ -830,9 +830,9 @@ class TestClass:
         assert edbapp.setups["setup1"].name == "setup1"
         setup1.add_sweep(name="sw1", distribution="linear_count", start_freq="1MHz", stop_freq="100MHz", step=10)
         assert edbapp.setups["setup1"].sweep_data[0].name == "sw1"
-        assert edbapp.setups["setup1"].sweep_data[0].start_f == "1MHz"
-        assert edbapp.setups["setup1"].sweep_data[0].end_f == "100MHz"
-        assert edbapp.setups["setup1"].sweep_data[0].step == "10"
+        assert edbapp.setups["setup1"].sweep_data[0].frequency_data.start_f == "1MHz"
+        assert edbapp.setups["setup1"].sweep_data[0].frequency_data.end_f == "100MHz"
+        assert edbapp.setups["setup1"].sweep_data[0].frequency_data.step == "10"
         setup1.add_sweep(name="sw2", distribution="linear", start_freq="210MHz", stop_freq="300MHz", step="10MHz")
         assert edbapp.setups["setup1"].sweep_data[0].name == "sw2"
         setup1.add_sweep(name="sw3", distribution="log_scale", start_freq="1GHz", stop_freq="10GHz", step=10)
