@@ -429,7 +429,7 @@ class EdbHfss(object):
             source_name,
         )
 
-    def create_coax_port_on_component(self, ref_des_list, net_list):
+    def create_coax_port_on_component(self, ref_des_list, net_list, delete_existing_terminal=False):
         """Create a coaxial port on a component or component list on a net or net list.
            The name of the new coaxial port is automatically assigned.
 
@@ -441,6 +441,10 @@ class EdbHfss(object):
         net_list : list, str
             List of one or more nets.
 
+        delete_existing_terminal : bool
+            Only active with grpc version. This argument is added only to ensure compatibility between DotNet and grpc.
+
+
         Returns
         -------
         bool
@@ -448,6 +452,8 @@ class EdbHfss(object):
 
         """
         coax = []
+        if delete_existing_terminal:
+            self._pedb.logger.warning(f"flag delete_existing_terminal is set to True but is only supported with grpc.")
         if not isinstance(ref_des_list, list):
             ref_des_list = [ref_des_list]
         if not isinstance(net_list, list):
