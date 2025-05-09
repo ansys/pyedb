@@ -56,9 +56,9 @@ class CfgCutout(CfgBase):
             self.api = self.Grpc(self)
         else:
             self.api = self.DotNet(self)
-        self.auto_identify_nets = kwargs.get('auto_identify_nets',
-                                             {"enabled": False, "resistor_below": 100, "inductor_below": 1,
-                                              "capacitor_above": 1})
+        self.auto_identify_nets = kwargs.get(
+            "auto_identify_nets", {"enabled": False, "resistor_below": 100, "inductor_below": 1, "capacitor_above": 1}
+        )
         self.signal_list = kwargs.get("signal_list")
         self.reference_list = kwargs.get("reference_list")
         self.extent_type = kwargs.get("extent_type")
@@ -111,7 +111,7 @@ class CfgOperations(CfgBase):
                             auto_identify_nets["resistor_below"],
                             auto_identify_nets["inductor_below"],
                             auto_identify_nets["capacitor_above"],
-                            auto_identify_nets.get("exception_list", [])
+                            auto_identify_nets.get("exception_list", []),
                         )
                         signal_nets = []
                         for i in self._pedb.ports.values():

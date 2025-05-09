@@ -575,20 +575,26 @@ class TestClass:
 
     def test_operations_cutout_auto_identify_nets(self, edb_examples):
         data = {
-            "ports": [{
-                "name": "COAX_U1",
-                "reference_designator": "U1",
-                "type": "coax",
-                "positive_terminal": {"pin": "AP18"},
-            }],
+            "ports": [
+                {
+                    "name": "COAX_U1",
+                    "reference_designator": "U1",
+                    "type": "coax",
+                    "positive_terminal": {"pin": "AP18"},
+                }
+            ],
             "operations": {
                 "cutout": {
-                    "auto_identify_nets": {"enabled": True, "resistor_below": 100, "inductor_below": 1,
-                                           "capacitor_above": "10nF"},
+                    "auto_identify_nets": {
+                        "enabled": True,
+                        "resistor_below": 100,
+                        "inductor_below": 1,
+                        "capacitor_above": "10nF",
+                    },
                     "reference_list": ["GND"],
                     "extent_type": "ConvexHull",
                 }
-            }
+            },
         }
         edbapp = edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
