@@ -246,6 +246,8 @@ class CfgPorts:
         for p in ports_data:
             if p["type"] == "wave_port":
                 self.ports.append(CfgEdgePort(self._pedb, **p))
+            elif p["type"] == "gap_port":
+                self.ports.append(CfgEdgePort(self._pedb, **p))
             elif p["type"] == "diff_wave_port":
                 self.ports.append(CfgDiffWavePort(self._pedb, **p))
             elif p["type"] in ["coax", "circuit"]:
@@ -262,7 +264,7 @@ class CfgPorts:
             if i.aedt_name:
                 edb_primitives[i.aedt_name] = i
         for p in self.ports:
-            if p.type in ["wave_port", "diff_wave_port"]:
+            if p.type in ["wave_port", "diff_wave_port", "gap_port"]:
                 p.set_parameters_to_edb(edb_primitives)
             else:
                 p.set_parameters_to_edb()
@@ -278,15 +280,10 @@ class CfgPorts:
                     port_type = "coax"
                 elif p.terminal_type == "PinGroupTerminal":
                     port_type = "circuit"
-                elif p.hfss_type == "Wave":
-                    port_type = "wave_port"
                 elif p.terminal_type == "EdgeTerminal":
-                    if p.is_wave_port:
-                        port_type = "Wave"
-                    else:
-                        port_type = "gap_port"
+                    port_type = "wave_port" if p.hfss_type == "Wave" else "gap_port"
                 else:
-                    port_type = "gap_port"
+                    raise ValueError("Unknown terminal type")
             else:
                 port_type = "circuit"
 
