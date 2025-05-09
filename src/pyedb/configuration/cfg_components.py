@@ -495,7 +495,7 @@ class CfgComponent(CfgBase):
 
         self.port_properties = kwargs.get("port_properties", {})
         self.solder_ball_properties = kwargs.get("solder_ball_properties", {})
-        self.ic_die_properties = kwargs.get("ic_die_properties", {})
+        self.ic_die_properties = kwargs.get("ic_die_properties", {"type": "no_die"})
         self.pin_pair_model = kwargs.get("pin_pair_model", [])
         self.spice_model = kwargs.get("spice_model", {})
         self.s_parameter_model = kwargs.get("s_parameter_model", {})
