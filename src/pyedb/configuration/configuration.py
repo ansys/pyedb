@@ -482,9 +482,6 @@ class Configuration:
         # Configure package definitions
         self.cfg_data.package_definitions.apply()
 
-        # Configure operations
-        self.cfg_data.operations.apply()
-
         # Modeler
         self.cfg_data.modeler.apply()
 
@@ -493,6 +490,9 @@ class Configuration:
 
         # Configure probes
         self.cfg_data.probes.apply()
+
+        # Configure operations
+        self.cfg_data.operations.apply()
 
         return True
 

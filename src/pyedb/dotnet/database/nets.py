@@ -308,11 +308,21 @@ class EdbNets(CommonNets):
                 val_value = cmp.rlc_values
                 if refdes in exception_list:
                     pass
-                elif val_type == "Inductor" and val_value[1] < inductor_below:
+                elif (
+                    val_type == "Inductor"
+                    and self._pedb.edb_value(val_value[1]).ToDouble() <= self._pedb.edb_value(inductor_below).ToDouble()
+                ):
                     pass
-                elif val_type == "Resistor" and val_value[0] < resistor_below:
+                elif (
+                    val_type == "Resistor"
+                    and self._pedb.edb_value(val_value[0]).ToDouble() <= self._pedb.edb_value(resistor_below).ToDouble()
+                ):
                     pass
-                elif val_type == "Capacitor" and val_value[2] > capacitor_above:
+                elif (
+                    val_type == "Capacitor"
+                    and self._pedb.edb_value(val_value[2]).ToDouble()
+                    >= self._pedb.edb_value(capacitor_above).ToDouble()
+                ):
                     pass
                 else:
                     continue
