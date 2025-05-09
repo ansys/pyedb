@@ -1,0 +1,6 @@
+restore\_default
+================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. automethod:: SettingsBase.restore_default

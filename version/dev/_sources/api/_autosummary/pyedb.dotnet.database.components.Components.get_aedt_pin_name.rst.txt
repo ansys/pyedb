@@ -1,0 +1,6 @@
+get\_aedt\_pin\_name
+====================
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.get_aedt_pin_name

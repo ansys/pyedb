@@ -1,0 +1,6 @@
+renormalize\_z0
+===============
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.ports
+
+.. autoproperty:: GapPort.renormalize_z0

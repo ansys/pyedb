@@ -1,0 +1,6 @@
+type
+====
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.layer_data
+
+.. autoproperty:: LayerEdbClass.type

@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.dotnet.database.utilities.siwave_simulation_setup
+
+.. automethod:: SiwaveDCSimulationSetup.delete

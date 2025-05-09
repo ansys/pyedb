@@ -1,0 +1,6 @@
+add\_multipole\_debye\_material
+===============================
+
+.. currentmodule:: pyedb.dotnet.database.materials
+
+.. automethod:: Materials.add_multipole_debye_material

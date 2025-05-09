@@ -1,0 +1,6 @@
+include\_only\_selected\_nets
+=============================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationBatch.include_only_selected_nets

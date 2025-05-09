@@ -1,0 +1,6 @@
+remove\_floating\_geometry
+==========================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+.. autoproperty:: DefeatureSettings.remove_floating_geometry

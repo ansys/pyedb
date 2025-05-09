@@ -1,0 +1,6 @@
+honor\_user\_dielectric
+=======================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationBatch.honor_user_dielectric

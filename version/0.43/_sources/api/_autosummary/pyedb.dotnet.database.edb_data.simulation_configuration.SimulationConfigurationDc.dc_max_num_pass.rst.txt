@@ -1,0 +1,6 @@
+dc\_max\_num\_pass
+==================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationDc.dc_max_num_pass

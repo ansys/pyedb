@@ -1,0 +1,6 @@
+add\_rlc
+========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. automethod:: SimulationConfiguration.add_rlc

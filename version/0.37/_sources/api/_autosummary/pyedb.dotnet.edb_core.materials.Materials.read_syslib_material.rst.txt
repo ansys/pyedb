@@ -1,0 +1,6 @@
+read\_syslib\_material
+======================
+
+.. currentmodule:: pyedb.dotnet.edb_core.materials
+
+.. automethod:: Materials.read_syslib_material
