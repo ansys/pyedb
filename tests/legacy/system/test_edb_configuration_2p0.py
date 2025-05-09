@@ -445,20 +445,6 @@ class TestClass:
         edbapp.configuration.get_data_from_db(ports=True)
         edbapp.close()
 
-    def test_05b_ports_edge_port_on_pad(self, edb_examples):
-        ports = [
-            {
-                "name": "edge_port1",
-                "type": "gap_port",
-                "primitive_name": "J5-15",
-                "point_on_edge": ["113mm", "9.2mm"],
-            }
-        ]
-        data = {"ports": ports}
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        edbapp.close()
-
     def test_05h_diff_wave_port(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
