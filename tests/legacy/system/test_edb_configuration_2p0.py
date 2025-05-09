@@ -405,7 +405,7 @@ class TestClass:
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
         edbapp.close()
 
-    def test_05g_wave_port(self, edb_examples):
+    def test_05g_edge_port(self, edb_examples):
         edbapp = edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
         edbapp.modeler.create_rectangle(
@@ -430,12 +430,33 @@ class TestClass:
                     "horizontal_extent_factor": 6,
                     "vertical_extent_factor": 4,
                     "pec_launch_width": "0.2mm",
+                },
+                {
+                    "name": "gap_port_1",
+                    "type": "gap_port",
+                    "primitive_name": prim_1.aedt_name,
+                    "point_on_edge": [0, 0],
                 }
             ]
         }
         edbapp.configuration.load(data, apply_file=True)
         assert edbapp.ports["wport_1"].horizontal_extent_factor == 6
+        assert edbapp.ports["gap_port_1"].hfss_type == "Gap"
         edbapp.configuration.get_data_from_db(ports=True)
+        edbapp.close()
+
+    def test_05b_ports_edge_port_on_pad(self, edb_examples):
+        ports = [
+            {
+                "name": "edge_port1",
+                "type": "gap_port",
+                "primitive_name": "J5-15",
+                "point_on_edge": ["113mm", "9.2mm"],
+            }
+        ]
+        data = {"ports": ports}
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close()
 
     def test_05h_diff_wave_port(self, edb_examples):
