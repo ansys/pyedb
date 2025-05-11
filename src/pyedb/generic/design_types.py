@@ -33,6 +33,7 @@ def Edb(
     use_ppe=False,
     technology_file=None,
     grpc=False,
+    control_file=None,
 ):
     """Provides the EDB application interface.
 
@@ -127,6 +128,7 @@ def Edb(
         student_version=student_version,
         use_ppe=use_ppe,
         technology_file=technology_file,
+        control_file=control_file
     )
 
 
