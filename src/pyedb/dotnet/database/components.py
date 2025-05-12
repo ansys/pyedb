@@ -1594,7 +1594,9 @@ class Components(object):
         >>> edbapp.components.create(pins, "A1New")
 
         """
-        pins = [p._edb_object for p in pins]
+        _pins = [p._edb_object for p in pins if isinstance(p, EDBPadstackInstance)]
+        if _pins:
+            pins = pins
         if not component_name:
             component_name = generate_unique_name("Comp_")
         if component_part_name:
@@ -1607,8 +1609,6 @@ class Components(object):
             self._active_layout, component_name, compdef.GetName()
         )
 
-        if isinstance(pins[0], EDBPadstackInstance):
-            pins = [i._edb_object for i in pins]
         hosting_component_location = pins[0].GetComponent().GetTransform()
         for pin in pins:
             pin.SetIsLayoutPin(True)
