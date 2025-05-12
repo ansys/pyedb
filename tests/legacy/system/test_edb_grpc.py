@@ -374,7 +374,6 @@ class TestClass:
         edb = Edb(
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
             edbversion=desktop_version,
-            restart_rpc_server=True,
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
         out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
