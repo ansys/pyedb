@@ -56,9 +56,7 @@ class CfgCutout(CfgBase):
             self.api = self.Grpc(self)
         else:
             self.api = self.DotNet(self)
-        self.auto_identify_nets = kwargs.get(
-            "auto_identify_nets", {"enabled": False, "resistor_below": 100, "inductor_below": 1, "capacitor_above": 1}
-        )
+        self.auto_identify_nets = kwargs["auto_identify_nets"]
         self.signal_list = kwargs.get("signal_list")
         self.reference_list = kwargs.get("reference_list")
         self.extent_type = kwargs.get("extent_type")
@@ -163,7 +161,7 @@ class CfgOperations(CfgBase):
             self.api = self.Grpc(self)
         else:
             self.api = self.DotNet(self)
-        auto_identify_nets = data.pop("auto_identify_nets")
+        auto_identify_nets = data.pop("auto_identify_nets") if data.get("auto_identify_nets") else {"enabled": False, "resistor_below": 100, "inductor_below": 1, "capacitor_above": 1}
         self.op_cutout = CfgCutout(pedb, **data["cutout"], auto_identify_nets=auto_identify_nets) if data.get("cutout") in data else None
 
     def apply(self):
