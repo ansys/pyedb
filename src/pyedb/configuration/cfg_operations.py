@@ -163,7 +163,8 @@ class CfgOperations(CfgBase):
             self.api = self.Grpc(self)
         else:
             self.api = self.DotNet(self)
-        self.op_cutout = CfgCutout(pedb, **data["cutout"]) if data.get("cutout") in data else None
+        auto_identify_nets = data.pop("auto_identify_nets")
+        self.op_cutout = CfgCutout(pedb, **data["cutout"], auto_identify_nets=auto_identify_nets) if data.get("cutout") in data else None
 
     def apply(self):
         """Imports operation information from JSON."""
