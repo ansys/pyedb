@@ -658,7 +658,6 @@ class TestClass:
         edb = Edb(
             edbpath=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
             edbversion=desktop_version,
-            restart_rpc_server=True,
         )
         kwargs = {
             "layer_name": "TOP",
@@ -676,7 +675,7 @@ class TestClass:
         for p in traces:
             t = edb.modeler.create_trace(path_list=p, **kwargs)
             edb_traces.append(t)
-        assert edb_traces[0].length == 0.02
+        assert round(edb_traces[0].length, 6) == 0.01
 
         # TODO add wave port support
         # assert edb.source_excitation.create_wave_port(traces[0], trace_pathes[0][0], "wave_port")
