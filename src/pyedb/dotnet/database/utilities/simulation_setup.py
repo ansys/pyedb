@@ -109,6 +109,11 @@ class SimulationSetup(object):
         warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
         return self.sim_setup_info._edb_object
 
+    @property
+    def is_null(self):
+        """Adding this property for compatibility with grpc."""
+        return self._edb_object.IsNull()
+
     def get_simulation_settings(self):
         sim_settings = self.sim_setup_info.simulation_settings
         properties = {}

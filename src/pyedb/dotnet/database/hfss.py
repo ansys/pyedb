@@ -1240,9 +1240,9 @@ class EdbHfss(object):
         self._layout.cell.SetHFSSExtentInfo(hfss_extent)  # returns void
         return True
 
-    def add_setup(self):
+    def add_setup(self, name=None):
         """Adding method for grpc compatibility"""
-        return self._pedb.create_hfss_setup()
+        return self._pedb.create_hfss_setup(name=name)
 
     def configure_hfss_analysis_setup(self, simulation_setup=None):
         """
