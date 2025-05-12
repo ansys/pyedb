@@ -553,43 +553,41 @@ class TestClass:
             assert setup.sweep_data[0].enforce_causality
         edb.close()
 
-    def test_configure_hfss_analysis_setup(self, edb_examples):
-        """Configure HFSS analysis setup."""
-        # TODO adapt for config file 2.0
-        edb = edb_examples.get_si_verse()
-        # sim_setup = SimulationConfiguration()
-        # sim_setup.mesh_sizefactor = 1.9
-        # assert not sim_setup.do_lambda_refinement
-        # edb.hfss.configure_hfss_analysis_setup(sim_setup)
-        # mesh_size_factor = (
-        #    list(edb.active_cell.SimulationSetups)[0]
-        #    .GetSimSetupInfo()
-        #    .get_SimulationSettings()
-        #    .get_InitialMeshSettings()
-        #    .get_MeshSizefactor()
-        # )
-        # assert mesh_size_factor == 1.9
-        edb.close()
-
     def test_create_various_ports_0(self):
         """Create various ports."""
         edb = Edb(
             edbpath=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
             edbversion=desktop_version,
-            restart_rpc_server=True,
         )
         prim_1_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
-        assert edb.source_excitation.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
+        if edb.grpc:
+            assert edb.source_excitation.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
+        else:
+            # This method is also available at same location in grpc but is deprecated.
+            assert edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
 
         prim_2_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_3"][0]
-        assert edb.source_excitation.create_edge_port_horizontal(
-            prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
-        )
-        assert edb.source_excitation.get_ports_number() == 2
+        if edb.grpc:
+            assert edb.source_excitation.create_edge_port_horizontal(
+                prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
+            )
+        else:
+            # This method is also available at same location in grpc but is deprecated.
+            assert edb.hfss.create_edge_port_horizontal(
+                prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
+            )
+        if edb.grpc:
+            assert edb.source_excitation.get_ports_number() == 2
+        else:
+            assert edb.hfss.get_ports_number() == 2
         port_ver = edb.ports["port_ver"]
         assert not port_ver.is_null
         assert not port_ver.is_circuit_port
-        assert port_ver.type.name == "EDGE"
+        if edb.grpc:
+            assert port_ver.type.name == "EDGE"
+        else:
+            # grpc is too different
+            assert port_ver.boundary_type == "PortBoundary"
 
         port_hori = edb.ports["port_hori"]
         assert port_hori.reference_terminal

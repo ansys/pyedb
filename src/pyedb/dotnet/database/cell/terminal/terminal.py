@@ -196,6 +196,15 @@ class Terminal(Connectable):
         return self._edb_object.IsReferenceTerminal()
 
     @property
+    def reference_terminal(self):
+        """Adding grpc compatibility."""
+        return self.ref_terminal
+
+    @reference_terminal.setter
+    def reference_terminal(self, value):
+        self.ref_terminal = value
+
+    @property
     def ref_terminal(self):
         """Get reference terminal."""
 
