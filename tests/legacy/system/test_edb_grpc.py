@@ -194,7 +194,6 @@ class TestClass:
 
     def test_add_variables(self, edb_examples):
         """Add design and project variables."""
-        # Done
         edbapp = edb_examples.get_si_verse()
         edbapp.add_design_variable("my_variable", "1mm")
         assert "my_variable" in edbapp.active_cell.get_all_variable_names()
@@ -204,10 +203,22 @@ class TestClass:
         assert "my_parameter" in edbapp.active_cell.get_all_variable_names()
         variable_value = edbapp.active_cell.get_variable_value("my_parameter").value
         assert variable_value == 2e-3
-        assert not edbapp.add_design_variable("my_parameter", "2mm", True)
+        if edbapp.grpc:
+            assert not edbapp.add_design_variable("my_parameter", "2mm", True)
+        else:
+            # grpc and DotNet variable implementation server are too different.
+            assert not edbapp.add_design_variable("my_parameter", "2mm", True)[0]
         edbapp.add_project_variable("$my_project_variable", "3mm")
-        assert edbapp.db.get_variable_value("$my_project_variable") == 3e-3
-        assert not edbapp.add_project_variable("$my_project_variable", "3mm")
+        if edbapp.grpc:
+            assert edbapp.db.get_variable_value("$my_project_variable") == 3e-3
+        else:
+            # grpc implementation is very different.
+            assert edbapp.get_variable_value("$my_project_variable") == 3e-3
+        if edbapp.grpc:
+            assert not edbapp.add_project_variable("$my_project_variable", "3mm")
+        else:
+            # grpc and DotNet variable implementation server are too different.
+            assert not edbapp.add_project_variable("$my_project_variable", "3mm")[0]
         edbapp.close()
 
     def test_save_edb_as(self, edb_examples):
