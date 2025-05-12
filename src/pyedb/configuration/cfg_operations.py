@@ -169,6 +169,8 @@ class CfgOperations(CfgBase):
                 else {"enabled": False, "resistor_below": 100, "inductor_below": 1, "capacitor_above": 1}
             )
             self.op_cutout = CfgCutout(pedb, auto_identify_nets=auto_identify_nets, **cutout)
+        else:
+            self.op_cutout = None
 
     def apply(self):
         """Imports operation information from JSON."""
