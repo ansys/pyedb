@@ -536,12 +536,21 @@ class TestClass:
         setup = list(edb.hfss_setups.values())[0]
         setup.add_sweep()
         assert len(setup.sweep_data) == 1
-        assert not setup.sweep_data[0].interpolation_data.enforce_causality
+        if edb.grpc:
+            assert not setup.sweep_data[0].interpolation_data.enforce_causality
+        else:
+            assert not setup.sweep_data[0].enforce_causality
         sweeps = setup.sweep_data
         for sweep in sweeps:
-            sweep.interpolation_data.enforce_causality = True
+            if edb.grpc:
+                sweep.interpolation_data.enforce_causality = True
+            else:
+                sweep.enforce_causality = True
         setup.sweep_data = sweeps
-        assert setup.sweep_data[0].interpolation_data.enforce_causality
+        if edb.grpc:
+            assert setup.sweep_data[0].interpolation_data.enforce_causality
+        else:
+            assert setup.sweep_data[0].enforce_causality
         edb.close()
 
     def test_configure_hfss_analysis_setup(self, edb_examples):

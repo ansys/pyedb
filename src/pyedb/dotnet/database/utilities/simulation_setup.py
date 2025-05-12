@@ -237,6 +237,18 @@ class SimulationSetup(object):
         """List of frequency sweeps."""
         return {i.name: i for i in self.sim_setup_info.sweep_data_list}
 
+    @property
+    def sweep_data(self):
+        """Adding property for compatibility with grpc."""
+        return list(self.sweeps.values())
+
+    @sweep_data.setter
+    def sweep_data(self, sweep_data):
+        for sweep in self.sweep_data:
+            self.delete_frequency_sweep(sweep)
+        for sweep in sweep_data:
+            self._add_frequency_sweep(sweep)
+
     def add_sweep(self, name: str = None, frequency_set: list = None, sweep_type: str = "interpolation", **kwargs):
         """Add frequency sweep.
 

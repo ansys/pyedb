@@ -484,6 +484,10 @@ class CellClassDotNet:
 
         return PrimitiveDotNet(self._app)
 
+    @property
+    def simulation_setups(self):
+        return self._app.setups
+
     def get_all_variable_names(self):
         """Method added for compatibility with grpc.
 
