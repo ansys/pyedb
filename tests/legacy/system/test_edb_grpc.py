@@ -388,7 +388,6 @@ class TestClass:
         edb = Edb(
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
             edbversion=desktop_version,
-            restart_rpc_server=True,
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
         out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
@@ -405,7 +404,6 @@ class TestClass:
         edb = Edb(
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "simple.aedb"),
             edbversion=desktop_version,
-            restart_rpc_server=True,
         )
         options_config = {"UNITE_NETS": 1, "LAUNCH_MAXWELL": 0}
         out = edb.write_export3d_option_config_file(self.local_scratch.path, options_config)
@@ -420,7 +418,6 @@ class TestClass:
         edb = Edb(
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "edge_ports.aedb"),
             edbversion=desktop_version,
-            restart_rpc_server=True,
         )
         poly_list = [poly for poly in edb.layout.primitives if poly.primitive_type.value == 2]
         port_poly = [poly for poly in poly_list if poly.edb_uid == 17][0]
@@ -469,7 +466,6 @@ class TestClass:
 
     def test_edb_statistics(self, edb_examples):
         """Get statistics."""
-        # TODO check bug #546 layout instance query
         edb = edb_examples.get_si_verse()
         edb_stats = edb.get_statistics(compute_area=True)
         assert edb_stats
@@ -486,9 +482,10 @@ class TestClass:
         assert edb_stats.num_inductors
         assert edb_stats.num_capacitors
         assert edb_stats.num_resistors
-        assert edb_stats.occupying_ratio["1_Top"] == 0.30168200230804587
-        assert edb_stats.occupying_ratio["Inner1(GND1)"] == 0.9374673366306919
-        assert edb_stats.occupying_ratio["16_Bottom"] == 0.20492545425825437
+        # Adding rounding to avoid digit difference between grpc ad DotNet
+        assert round(edb_stats.occupying_ratio["1_Top"], 6) == round(0.30168200230804587, 6)
+        assert round(edb_stats.occupying_ratio["Inner1(GND1)"], 6) == round(0.9374673366306919, 6)
+        assert round(edb_stats.occupying_ratio["16_Bottom"], 6) == round(0.20492545425825437, 6)
         edb.close()
 
     def test_hfss_set_bounding_box_extent(self, edb_examples):
@@ -510,7 +507,6 @@ class TestClass:
 
     def test_create_rlc_component(self, edb_examples):
         """Create rlc components from pin"""
-        # Done
         edb = edb_examples.get_si_verse()
         pins = edb.components.get_pin_from_component("U1", "1V0")
         ref_pins = edb.components.get_pin_from_component("U1", "GND")
