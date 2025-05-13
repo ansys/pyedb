@@ -1961,12 +1961,21 @@ class TestClass:
         edbcomp = edbapp.components[component_name]
         positive_pin_names = ["4"]
         reference_pin_names = ["2"]
-        assert edbapp.source_excitation.create_port_on_pins(
-            refdes=edbcomp,
-            pins=positive_pin_names,
-            reference_pins=reference_pin_names,
-            pingroup_on_single_pin=True,
-        )
+        if edbapp.grpc:
+            assert edbapp.source_excitation.create_port_on_pins(
+                refdes=edbcomp,
+                pins=positive_pin_names,
+                reference_pins=reference_pin_names,
+                pingroup_on_single_pin=True,
+            )
+        else:
+            # Method from COmponents deprecated in grpc and moved to SourceExcitation-
+            assert edbapp.components.create_port_on_pins(
+                refdes=edbcomp,
+                pins=positive_pin_names,
+                reference_pins=reference_pin_names,
+                pingroup_on_single_pin=True,
+            )
         assert len(edbapp.excitations) == 2
 
     def test_create_circuit_port_on_component_pins_no_pins(self, edb_examples):
@@ -1975,11 +1984,19 @@ class TestClass:
         edbcomp = edbapp.components[component_name]
         positive_pin_names = []
         reference_pin_names = ["2"]
-        assert not edbapp.source_excitation.create_port_on_pins(
-            refdes=edbcomp,
-            pins=positive_pin_names,
-            reference_pins=reference_pin_names,
-        )
+        if edbapp.grpc:
+            assert not edbapp.source_excitation.create_port_on_pins(
+                refdes=edbcomp,
+                pins=positive_pin_names,
+                reference_pins=reference_pin_names,
+            )
+        else:
+            # Method deprecated in grpc and moved to SourceExcitation class.
+            assert not edbapp.components.create_port_on_pins(
+                refdes=edbcomp,
+                pins=positive_pin_names,
+                reference_pins=reference_pin_names,
+            )
         assert len(edbapp.excitations) == 0
 
     def test_create_circuit_port_on_component_pins_no_reference_pins(self, edb_examples):
