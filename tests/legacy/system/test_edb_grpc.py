@@ -2005,11 +2005,19 @@ class TestClass:
         edbcomp = edbapp.components[component_name]
         positive_pin_names = ["4"]
         reference_pin_names = []
-        assert not edbapp.source_excitation.create_port_on_pins(
-            refdes=edbcomp,
-            pins=positive_pin_names,
-            reference_pins=reference_pin_names,
-        )
+        if edbapp.grpc:
+            assert not edbapp.source_excitation.create_port_on_pins(
+                refdes=edbcomp,
+                pins=positive_pin_names,
+                reference_pins=reference_pin_names,
+            )
+        else:
+            # Method deprecated in grpc and moved to SourceExcitation class.
+            assert not edbapp.components.create_port_on_pins(
+                refdes=edbcomp,
+                pins=positive_pin_names,
+                reference_pins=reference_pin_names,
+            )
         assert len(edbapp.excitations) == 0
 
     def test_active_cell_setter(self):
