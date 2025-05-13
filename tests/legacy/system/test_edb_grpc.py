@@ -1223,7 +1223,7 @@ class TestClass:
     def test_stackup_properties(self):
         """Evaluate stackup properties."""
         # Done
-        edb = Edb(edbversion=desktop_version, restart_rpc_server=True)
+        edb = Edb(edbversion=desktop_version)
         edb.stackup.add_layer(layer_name="gnd", fillMaterial="air", thickness="10um")
         edb.stackup.add_layer(layer_name="diel1", fillMaterial="air", thickness="200um", base_layer="gnd")
         edb.stackup.add_layer(layer_name="sig1", fillMaterial="air", thickness="10um", base_layer="diel1")
