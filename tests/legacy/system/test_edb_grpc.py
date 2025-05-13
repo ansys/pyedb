@@ -1168,7 +1168,7 @@ class TestClass:
     def test_create_padstack_instance(self, edb_examples):
         """Create padstack instances."""
         # Done
-        edb = Edb(edbversion=desktop_version, restart_rpc_server=True)
+        edb = Edb(edbversion=desktop_version)
         edb.stackup.add_layer(layer_name="1_Top", fillMaterial="air", thickness="30um")
         edb.stackup.add_layer(layer_name="contact", fillMaterial="air", thickness="100um", base_layer="1_Top")
 
