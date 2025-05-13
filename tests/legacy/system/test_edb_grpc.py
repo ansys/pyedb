@@ -1339,10 +1339,7 @@ class TestClass:
     def test_backdrill_via_with_offset(self):
         """Set backdrill from top."""
 
-        #  TODO when material init is fixed
-        from ansys.edb.core.utility.value import Value as GrpcValue
-
-        edb = Edb(edbversion=desktop_version, restart_rpc_server=True)
+        edb = Edb(edbversion=desktop_version)
         edb.stackup.add_layer(layer_name="bot")
         edb.stackup.add_layer(layer_name="diel1", base_layer="bot", layer_type="dielectric", thickness="127um")
         edb.stackup.add_layer(layer_name="signal1", base_layer="diel1")
@@ -1354,8 +1351,8 @@ class TestClass:
         padstack_instance = edb.padstacks.place(position=[0, 0], net_name="test", definition_name="test1")
         edb.padstacks.definitions["test1"].hole_range = "through"
         drill_layer = edb.stackup.layers["signal1"]
-        drill_diameter = GrpcValue("200um")
-        drill_offset = GrpcValue("100um")
+        drill_diameter = "200um"
+        drill_offset = "100um"
         padstack_instance.set_back_drill_by_layer(
             drill_to_layer=drill_layer, diameter=drill_diameter, offset=drill_offset
         )
@@ -1443,7 +1440,7 @@ class TestClass:
         """Create EDB from dxf file."""
         src = os.path.join(local_path, "example_models", test_subfolder, "edb_test_82.dxf")
         dxf_path = self.local_scratch.copyfile(src)
-        edb3 = Edb(dxf_path, edbversion=desktop_version, restart_rpc_server=True)
+        edb3 = Edb(dxf_path, edbversion=desktop_version)
         assert len(edb3.modeler.polygons) == 1
         assert edb3.modeler.polygons[0].polygon_data.points == [
             (0.0, 0.0),
