@@ -1541,6 +1541,11 @@ class EDBPadstackInstance(Primitive):
                 False,
             )
 
+    def set_back_drill_by_layer(self, drill_to_layer, diameter, offset):
+        """Method added to bring compatibility with grpc."""
+
+        self.set_backdrill_bottom(drill_depth=drill_to_layer.name, drill_diameter=diameter, offset=offset)
+
     def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from bottom.
 
