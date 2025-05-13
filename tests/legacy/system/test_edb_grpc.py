@@ -912,20 +912,31 @@ class TestClass:
         edbapp.close()
 
     def test_hfss_frequency_sweep(self, edb_examples):
-        # Done
         edbapp = edb_examples.get_si_verse()
         setup1 = edbapp.create_hfss_setup("setup1")
         assert edbapp.setups["setup1"].name == "setup1"
         setup1.add_sweep(name="sw1", distribution="linear_count", start_freq="1MHz", stop_freq="100MHz", step=10)
         assert edbapp.setups["setup1"].sweep_data[0].name == "sw1"
-        assert edbapp.setups["setup1"].sweep_data[0].frequency_data.start_f == "1MHz"
-        assert edbapp.setups["setup1"].sweep_data[0].frequency_data.end_f == "100MHz"
-        assert edbapp.setups["setup1"].sweep_data[0].frequency_data.step == "10"
+        if edbapp.grpc:
+            assert edbapp.setups["setup1"].sweep_data[0].frequency_data.start_f == "1MHz"
+            assert edbapp.setups["setup1"].sweep_data[0].frequency_data.end_f == "100MHz"
+            assert edbapp.setups["setup1"].sweep_data[0].frequency_data.step == "10"
+        else:
+            # grpc sweep data has completely changed.
+            assert edbapp.setups["setup1"].sweep_data[0].frequency_string[0] == "LINC 0.001GHz 0.1GHz 10"
         setup1.add_sweep(name="sw2", distribution="linear", start_freq="210MHz", stop_freq="300MHz", step="10MHz")
-        assert edbapp.setups["setup1"].sweep_data[0].name == "sw2"
+        if edbapp.grpc:
+            assert edbapp.setups["setup1"].sweep_data[0].name == "sw2"
+        else:
+            # Dotnet api is not adding in the same order.
+            assert edbapp.setups["setup1"].sweep_data[-1].name == "sw2"
         setup1.add_sweep(name="sw3", distribution="log_scale", start_freq="1GHz", stop_freq="10GHz", step=10)
-        assert edbapp.setups["setup1"].sweep_data[0].name == "sw3"
-        setup1.sweep_data[2].use_q3d_for_dc = True
+        if edbapp.grpc:
+            assert edbapp.setups["setup1"].sweep_data[0].name == "sw3"
+            setup1.sweep_data[2].use_q3d_for_dc = True
+        else:
+            assert edbapp.setups["setup1"].sweep_data[-1].name == "sw3"
+            setup1.sweep_data[-1].use_q3d_for_dc = True
         edbapp.close()
 
     def test_siwave_dc_simulation_setup(self, edb_examples):

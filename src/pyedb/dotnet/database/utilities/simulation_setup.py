@@ -254,13 +254,31 @@ class SimulationSetup(object):
         for sweep in sweep_data:
             self._add_frequency_sweep(sweep)
 
-    def add_sweep(self, name: str = None, frequency_set: list = None, sweep_type: str = "interpolation", **kwargs):
+    def add_sweep(
+        self,
+        name: str = None,
+        distribution: str = None,
+        start_freq: str = None,
+        stop_freq: str = None,
+        step=None,
+        frequency_set: list = None,
+        sweep_type: str = "interpolation",
+        **kwargs,
+    ):
         """Add frequency sweep.
 
         Parameters
         ----------
         name : str, optional
             Name of the frequency sweep. The default is ``None``.
+        distribution : str, optional
+            Added for grpc compatibility.
+        start_freq : str, optional
+            Added for rpc compatibility.
+        stop_freq : str, optional
+            Added for grpc compatibility.
+        step : optional
+            Added for grpc compatibility.
         frequency_set : list, optional
             List of frequency points. The default is ``None``.
         sweep_type : str, optional
@@ -278,10 +296,11 @@ class SimulationSetup(object):
             raise ValueError("Sweep {} already exists.".format(name))
 
         sweep_data = SweepData(self._pedb, name=name, sim_setup=self)
-        for k, v in kwargs.items():
-            if k in dir(sweep_data):
-                setattr(sweep_data, k, v)
-        sweep_data.type = sweep_type
+        # adding grpc compatibility
+        if distribution and start_freq and stop_freq and step:
+            if distribution == "linear":
+                distribution = "linear_scale"  # to be compatible with grpc
+            frequency_set = [[distribution, start_freq, stop_freq, step]]
 
         if frequency_set in [None, []]:
             sweep_type = "linear_scale"
@@ -293,6 +312,12 @@ class SimulationSetup(object):
         for fs in frequency_set:
             sweep_type, start, stop, increment = fs
             sweep_data.add(sweep_type, start, stop, increment)
+
+        for k, v in kwargs.items():
+            if k in dir(sweep_data):
+                setattr(sweep_data, k, v)
+        sweep_data.type = sweep_type
+
         return sweep_data
 
     def delete(self):
