@@ -886,7 +886,7 @@ class TestClass:
         assert mop.net_layer_info[0] == ("GND", "1_Top", True)
         assert mop.net_layer_info[1] == ("GND", "16_Bottom", True)
         assert mop.name == "m1"
-        assert mop.max_elements == "1000"
+        assert mop.max_elements == 1000
         assert mop.restrict_max_elements
         assert mop.restrict_max_length
         assert mop.max_length == "1mm"
@@ -896,7 +896,7 @@ class TestClass:
         mop = edbapp.setups["setup"].add_skin_depth_mesh_operation({"GND": ["1_Top", "16_Bottom"]})
         assert mop.net_layer_info[0] == ("GND", "1_Top", True)
         assert mop.net_layer_info[1] == ("GND", "16_Bottom", True)
-        assert mop.max_elements == "1000"
+        assert mop.max_elements == 1000
         assert mop.restrict_max_elements
         assert mop.skin_depth == "1um"
         assert mop.surface_triangle_length == "1mm"
