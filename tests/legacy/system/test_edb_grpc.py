@@ -1798,15 +1798,27 @@ class TestClass:
         edbapp = edb_examples.get_si_verse()
         positive_net_list = [positive_net_names] if not isinstance(positive_net_names, list) else positive_net_names
         reference_net_names = ["GND"]
-        assert edbapp.source_excitation.create_port_on_component(
-            component="U10",
-            net_list=positive_net_names if nets_mode == "str" else [edbapp.nets[net] for net in positive_net_list],
-            port_type="circuit_port",
-            do_pingroup=False,
-            reference_net=(
-                reference_net_names if nets_mode == "str" else [edbapp.nets[net] for net in reference_net_names]
-            ),
-        )
+        if edbapp.grpc:
+            assert edbapp.source_excitation.create_port_on_component(
+                component="U10",
+                net_list=positive_net_names if nets_mode == "str" else [edbapp.nets[net] for net in positive_net_list],
+                port_type="circuit_port",
+                do_pingroup=False,
+                reference_net=(
+                    reference_net_names if nets_mode == "str" else [edbapp.nets[net] for net in reference_net_names]
+                ),
+            )
+        else:
+            # method from components class is deprecated in grpc.
+            assert edbapp.components.create_port_on_component(
+                component="U10",
+                net_list=positive_net_names if nets_mode == "str" else [edbapp.nets[net] for net in positive_net_list],
+                port_type="circuit_port",
+                do_pingroup=False,
+                reference_net=(
+                    reference_net_names if nets_mode == "str" else [edbapp.nets[net] for net in reference_net_names]
+                ),
+            )
         assert len(edbapp.excitations) == 2 * len(set(positive_net_list) - set(reference_net_names))
 
     def test_create_circuit_port_on_component_string_net_list(self, edb_examples):
