@@ -1662,8 +1662,6 @@ class TestClass:
         edbapp.close()
 
     def test_bondwire(self, edb_examples):
-        # TODO check bug #450 change trajectory and start end elevation.
-        # Done
         edbapp = edb_examples.get_si_verse()
         bondwire_1 = edbapp.modeler.create_bondwire(
             definition_name="Default",
@@ -1683,7 +1681,10 @@ class TestClass:
         bondwire_1.material = "Gold"
         assert bondwire_1.material == "Gold"
         bondwire_1.type = "jedec4"
-        assert bondwire_1.type == "jedec4"
+        if edbapp.grpc:
+            assert bondwire_1.type == "jedec4"
+        else:
+            assert bondwire_1.type == "jedec_4"
         bondwire_1.cross_section_type = "round"
         assert bondwire_1.cross_section_type == "round"
         bondwire_1.cross_section_height = "0.1mm"
@@ -1694,9 +1695,6 @@ class TestClass:
         assert bondwire_1.trajectory == [1, 0.1, 0.2, 0.3]
         bondwire_1.width = "0.2mm"
         assert bondwire_1.width == 0.0002
-        # bondwire_1.start_elevation = "16_Bottom"
-        # bondwire_1.end_elevation = "16_Bottom"
-        # assert len(edbapp.layout.bondwires) == 1
         edbapp.close()
 
     def test_voltage_regulator(self, edb_examples):

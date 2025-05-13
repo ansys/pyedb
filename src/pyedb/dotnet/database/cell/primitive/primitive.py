@@ -51,7 +51,9 @@ class Primitive(Connectable):
             "invalid": bondwire_type.Invalid,
             "apd": bondwire_type.ApdBondwire,
             "jedec_4": bondwire_type.Jedec4Bondwire,
+            "jedec4": bondwire_type.Jedec4Bondwire,
             "jedec_5": bondwire_type.Jedec5Bondwire,
+            "jedec5": bondwire_type.Jedec5Bondwire,
             "num_of_bondwire_type": bondwire_type.NumOfBondwireType,
         }
         bondwire_cross_section_type = self._pedb._edb.Cell.Primitive.BondwireCrossSectionType

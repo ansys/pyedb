@@ -1361,6 +1361,7 @@ class Modeler(object):
         end_y,
         net,
         bondwire_type="jedec4",
+        start_cell_instance_name=None,
     ):
         """Create a bondwire object.
 
@@ -1390,13 +1391,16 @@ class Modeler(object):
             Y value of end point.
         net : str or :class:`Net <ansys.edb.net.Net>` or None
             Net of the Bondwire.
+        start_cell_instance_name : None
+            Added for grpc compatibility.
 
         Returns
         -------
         :class:`pyedb.dotnet.database.dotnet.primitive.BondwireDotNet`
             Bondwire object created.
         """
-
+        if start_cell_instance_name:
+            self._pedb.logger.warning(f"start_cell_instance_name {start_cell_instance_name} is only valid with grpc.")
         return Bondwire(
             pedb=self._pedb,
             bondwire_type=bondwire_type,
