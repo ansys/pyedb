@@ -1261,6 +1261,8 @@ class EDBPadstackInstance(Primitive):
         """
         terminal = self.create_terminal(name)
         if reference:
+            if isinstance(reference, tuple):
+                reference = reference[1]
             ref_terminal = reference.create_terminal(terminal.name + "_ref")
             if reference._edb_object.ToString() == "PinGroup":
                 is_circuit_port = True
