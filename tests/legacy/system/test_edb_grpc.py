@@ -1787,7 +1787,7 @@ class TestClass:
         # Done
         src = os.path.join(local_path, "example_models", "TEDB", "ANSYS-HSD_V1_0.zip")
         zip_path = self.local_scratch.copyfile(src)
-        edb = Edb(zip_path, edbversion=desktop_version, restart_rpc_server=True)
+        edb = Edb(zip_path, edbversion=desktop_version)
         assert edb.nets
         assert edb.components
         edb.close()
