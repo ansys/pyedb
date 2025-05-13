@@ -414,52 +414,86 @@ class TestClass:
 
     def test_create_edge_port_on_polygon(self):
         """Create lumped and vertical port."""
-        # Done
         edb = Edb(
             edbpath=os.path.join(local_path, "example_models", test_subfolder, "edge_ports.aedb"),
             edbversion=desktop_version,
         )
-        poly_list = [poly for poly in edb.layout.primitives if poly.primitive_type.value == 2]
-        port_poly = [poly for poly in poly_list if poly.edb_uid == 17][0]
-        ref_poly = [poly for poly in poly_list if poly.edb_uid == 19][0]
+        if edb.grpc:
+            # grpc PrimitiveType enum changed.
+            poly_list = [poly for poly in edb.layout.primitives if poly.primitive_type.value == 2]
+        else:
+            poly_list = [poly for poly in edb.layout.primitives if poly.primitive_type == "polygon"]
+        # TODO override grpc primitive id with edb_uid to avoid confusion.
+        port_poly = [poly for poly in poly_list if poly.id == 17][0]
+        ref_poly = [poly for poly in poly_list if poly.id == 19][0]
         port_location = [-65e-3, -13e-3]
         ref_location = [-63e-3, -13e-3]
-        assert edb.source_excitation.create_edge_port_on_polygon(
-            polygon=port_poly,
-            reference_polygon=ref_poly,
-            terminal_point=port_location,
-            reference_point=ref_location,
-        )
-        port_poly = [poly for poly in poly_list if poly.edb_uid == 23][0]
-        ref_poly = [poly for poly in poly_list if poly.edb_uid == 22][0]
+        if edb.grpc:
+            assert edb.source_excitation.create_edge_port_on_polygon(
+                polygon=port_poly,
+                reference_polygon=ref_poly,
+                terminal_point=port_location,
+                reference_point=ref_location,
+            )
+        else:
+            # method already deprecated in grpc.
+            assert edb.hfss.create_edge_port_on_polygon(
+                polygon=port_poly,
+                reference_polygon=ref_poly,
+                terminal_point=port_location,
+                reference_point=ref_location,
+            )
+        # TODO override grpc primitive id with edb_uid to avoid confusion.
+        port_poly = [poly for poly in poly_list if poly.id == 23][0]
+        ref_poly = [poly for poly in poly_list if poly.id == 22][0]
         port_location = [-65e-3, -10e-3]
         ref_location = [-65e-3, -10e-3]
-        assert edb.source_excitation.create_edge_port_on_polygon(
-            polygon=port_poly,
-            reference_polygon=ref_poly,
-            terminal_point=port_location,
-            reference_point=ref_location,
-        )
-        port_poly = [poly for poly in poly_list if poly.edb_uid == 25][0]
+        if edb.grpc:
+            assert edb.source_excitation.create_edge_port_on_polygon(
+                polygon=port_poly,
+                reference_polygon=ref_poly,
+                terminal_point=port_location,
+                reference_point=ref_location,
+            )
+        else:
+            # method already deprecated in grpc.
+            assert edb.hfss.create_edge_port_on_polygon(
+                polygon=port_poly,
+                reference_polygon=ref_poly,
+                terminal_point=port_location,
+                reference_point=ref_location,
+            )
+        port_poly = [poly for poly in poly_list if poly.id == 25][0]
         port_location = [-65e-3, -7e-3]
-        assert edb.source_excitation.create_edge_port_on_polygon(
-            polygon=port_poly, terminal_point=port_location, reference_layer="gnd"
-        )
+        if edb.grpc:
+            assert edb.source_excitation.create_edge_port_on_polygon(
+                polygon=port_poly, terminal_point=port_location, reference_layer="gnd"
+            )
+        else:
+            # method already deprecated in grpc.
+            assert edb.hfss.create_edge_port_on_polygon(
+                polygon=port_poly, terminal_point=port_location, reference_layer="gnd"
+            )
         sig = edb.modeler.create_trace([[0, 0], ["9mm", 0]], "sig2", "1mm", "SIG", "Flat", "Flat")
-        from pyedb.grpc.database.primitive.path import Path as PyEDBPath
-
-        sig = PyEDBPath(edb, sig)
+        # TODO grpc create trace must return PyEDB path not internal one.
         assert sig.create_edge_port("pcb_port_1", "end", "Wave", None, 8, 8)
         assert sig.create_edge_port("pcb_port_2", "start", "gap")
         gap_port = edb.ports["pcb_port_2"]
-        assert gap_port.component.is_null
+        if edb.grpc:
+            assert gap_port.component.is_null
+        else:
+            assert not gap_port.component
         assert gap_port.source_amplitude == 0.0
         assert gap_port.source_phase == 0.0
         assert gap_port.impedance
         assert not gap_port.deembed
         gap_port.name = "gap_port"
         assert gap_port.name == "gap_port"
-        assert gap_port.port_post_processing_prop.renormalization_impedance.value == 50
+        # TODO return impedance value as float in grpc.
+        if edb.grpc:
+            assert gap_port.port_post_processing_prop.renormalization_impedance == 50
+        else:
+            assert gap_port.renormalization_impedance == 50
         gap_port.is_circuit_port = True
         assert gap_port.is_circuit_port
         edb.close()
