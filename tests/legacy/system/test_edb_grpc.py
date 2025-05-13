@@ -1880,11 +1880,19 @@ class TestClass:
         edbcomp = edbapp.components[component_name]
         positive_pin_names = ["4"]
         reference_pin_names = ["2"]
-        assert edbapp.source_excitation.create_port_on_pins(
-            refdes=component_name if comp_mode == "str" else edbcomp,
-            pins=positive_pin_names,
-            reference_pins=reference_pin_names,
-        )
+        if edbapp.grpc:
+            assert edbapp.source_excitation.create_port_on_pins(
+                refdes=component_name if comp_mode == "str" else edbcomp,
+                pins=positive_pin_names,
+                reference_pins=reference_pin_names,
+            )
+        else:
+            # Method from Components class deprecated in grpc and moved to SourceExcitations.
+            assert edbapp.components.create_port_on_pins(
+                refdes=component_name if comp_mode == "str" else edbcomp,
+                pins=positive_pin_names,
+                reference_pins=reference_pin_names,
+            )
         assert len(edbapp.excitations) == 2
 
     @pytest.mark.parametrize("pins_mode", ("global_str", "int", "str", "pin"))
