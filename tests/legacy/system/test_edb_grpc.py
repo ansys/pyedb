@@ -1159,7 +1159,7 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_pin_group.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_135_pin_group.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version, restart_rpc_server=True)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         for _, pingroup in edbapp.siwave.pin_groups.items():
             pingroup.delete()
         assert not edbapp.siwave.pin_groups
