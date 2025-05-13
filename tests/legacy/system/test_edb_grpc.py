@@ -1651,10 +1651,10 @@ class TestClass:
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
         target_path_edb = os.path.join(self.local_scratch.path, "test_wave_ports", "test.aedb")
         self.local_scratch.copyfolder(source_path_edb, target_path_edb)
-        edbapp = Edb(target_path_edb, edbversion=desktop_version, restart_rpc_server=True)
+        edbapp = Edb(target_path_edb, edbversion=desktop_version)
         assert edbapp.create_model_for_arbitrary_wave_ports(
             temp_directory=self.local_scratch.path,
-            output_edb="wave_ports.aedb",
+            output_edb=os.path.join(self.local_scratch.path, "wave_ports.aedb"),
             mounting_side="top",
         )
         edb_model = os.path.join(self.local_scratch.path, "wave_ports.aedb")
