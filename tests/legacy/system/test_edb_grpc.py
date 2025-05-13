@@ -1441,7 +1441,6 @@ class TestClass:
     @pytest.mark.skipif(is_linux, reason="Failing download files")
     def test_create_edb_with_dxf(self):
         """Create EDB from dxf file."""
-        # Done
         src = os.path.join(local_path, "example_models", test_subfolder, "edb_test_82.dxf")
         dxf_path = self.local_scratch.copyfile(src)
         edb3 = Edb(dxf_path, edbversion=desktop_version, restart_rpc_server=True)
