@@ -1144,12 +1144,13 @@ class TestClass:
         source_path = os.path.join(local_path, "example_models", test_subfolder, "test_sources.aedb")
         target_path = os.path.join(self.local_scratch.path, "test_134_source_setter.aedb")
         self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version, restart_rpc_server=True)
+        edbapp = Edb(target_path, edbversion=desktop_version)
         sources = list(edbapp.siwave.sources.values())
         sources[0].magnitude = 1.45
-        assert sources[0].magnitude.value == 1.45
         sources[1].magnitude = 1.45
-        assert sources[1].magnitude.value == 1.45
+        # TODO grpc return float value.
+        assert sources[0].magnitude == 1.45
+        assert sources[1].magnitude == 1.45
         edbapp.close()
 
     def test_delete_pingroup(self):
