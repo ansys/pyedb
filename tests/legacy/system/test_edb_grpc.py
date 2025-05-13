@@ -1854,13 +1854,23 @@ class TestClass:
         component_name = "U10"
         for pin in edbapp.components[component_name].pins.values():
             pin.is_pin = False
-        assert edbapp.source_excitation.create_port_on_component(
-            component=component_name,
-            net_list=positive_net_names,
-            port_type="circuit_port",
-            do_pingroup=False,
-            reference_net=reference_net_names,
-        )
+        if edbapp.grpc:
+            assert edbapp.source_excitation.create_port_on_component(
+                component=component_name,
+                net_list=positive_net_names,
+                port_type="circuit_port",
+                do_pingroup=False,
+                reference_net=reference_net_names,
+            )
+        else:
+            # Method from Components class deprecated in grpc and moved to SourceExcitation.
+            assert edbapp.components.create_port_on_component(
+                component=component_name,
+                net_list=positive_net_names,
+                port_type="circuit_port",
+                do_pingroup=False,
+                reference_net=reference_net_names,
+            )
         assert len(edbapp.excitations) == 4
 
     @pytest.mark.parametrize("comp_mode", ("str", "comp"))
