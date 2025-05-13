@@ -1456,11 +1456,10 @@ class TestClass:
     @pytest.mark.skipif(is_linux, reason="Not supported in IPY")
     def test_solve_siwave(self):
         """Solve EDB with Siwave."""
-        # Done
         target_path = os.path.join(local_path, "example_models", "T40", "ANSYS-HSD_V1_DCIR.aedb")
         out_edb = os.path.join(self.local_scratch.path, "to_be_solved.aedb")
         self.local_scratch.copyfolder(target_path, out_edb)
-        edbapp = Edb(out_edb, edbversion=desktop_version, restart_rpc_server=True)
+        edbapp = Edb(out_edb, edbversion=desktop_version)
         edbapp.siwave.create_exec_file(add_dc=True)
         out = edbapp.solve_siwave()
         assert os.path.exists(out)
