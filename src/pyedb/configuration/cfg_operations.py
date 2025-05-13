@@ -56,7 +56,7 @@ class CfgCutout(CfgBase):
             self.api = self.Grpc(self)
         else:
             self.api = self.DotNet(self)
-        self.auto_identify_nets = kwargs["auto_identify_nets"]
+        self.auto_identify_nets = kwargs.get("auto_identify_nets")
         self.signal_list = kwargs.get("signal_list")
         self.reference_list = kwargs.get("reference_list")
         self.extent_type = kwargs.get("extent_type")
