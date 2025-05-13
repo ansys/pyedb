@@ -1498,7 +1498,7 @@ class TestClass:
         """Move a polygon."""
         # Done
         target_path = os.path.join(self.local_scratch.path, "test_move_edit_polygons", "test.aedb")
-        edbapp = Edb(target_path, edbversion=desktop_version, restart_rpc_server=True)
+        edbapp = Edb(target_path, edbversion=desktop_version)
 
         edbapp.stackup.add_layer("GND")
         edbapp.stackup.add_layer("Diel", "GND", layer_type="dielectric", thickness="0.1mm", material="FR4_epoxy")
@@ -1511,18 +1511,64 @@ class TestClass:
         assert round(polygon.center[1], 6) == -0.0045
 
         assert polygon.rotate(angle=45)
-        assert polygon.bbox == [0.012462681128504282, -0.043037320277837944, 0.08953731887149571, 0.03403732027783795]
+        if edbapp.grpc:
+            # grpc and dotnet have different last digits values
+            assert polygon.bbox == [
+                0.012462681128504282,
+                -0.043037320277837944,
+                0.08953731887149571,
+                0.03403732027783795,
+            ]
+        else:
+            assert polygon.bbox == [
+                0.012462680425333156,
+                -0.043037319574666846,
+                0.08953731957466685,
+                0.034037319574666845,
+            ]
         assert polygon.rotate(angle=34, center=[0, 0])
-        assert polygon.bbox == [0.030839512681298656, -0.02515183168439915, 0.05875505700187538, 0.07472816760474396]
+        if edbapp.grpc:
+            # grpc and dotnet have different last digits values
+            assert polygon.bbox == [
+                0.030839512681298656,
+                -0.02515183168439915,
+                0.05875505700187538,
+                0.07472816760474396,
+            ]
+        else:
+            assert polygon.bbox == [
+                0.03083951217158376,
+                -0.025151830651067256,
+                0.05875505636026722,
+                0.07472816865208806,
+            ]
         assert polygon.scale(factor=1.5)
-        assert polygon.bbox == [0.023860626601154476, -0.05012183150668493, 0.06573394308201956, 0.09969816742702975]
+        if edbapp.grpc:
+            # grpc and dotnet have different last digits values
+            assert polygon.bbox == [
+                0.023860626601154476,
+                -0.05012183150668493,
+                0.06573394308201956,
+                0.09969816742702975,
+            ]
+        else:
+            assert polygon.bbox == [0.0238606261244129, -0.05012183047685609, 0.06573394240743807, 0.09969816847787688]
         assert polygon.scale(factor=-0.5, center=[0, 0])
-        assert polygon.bbox == [
-            -0.03286697154100978,
-            -0.049849083713514875,
-            -0.011930313300577238,
-            0.025060915753342464,
-        ]
+        if edbapp.grpc:
+            # grpc and dotnet have different last digits values
+            assert polygon.bbox == [
+                -0.03286697154100978,
+                -0.049849083713514875,
+                -0.011930313300577238,
+                0.025060915753342464,
+            ]
+        else:
+            assert polygon.bbox == [
+                -0.032866971203719036,
+                -0.04984908423893844,
+                -0.01193031306220645,
+                0.025060915238428044,
+            ]
         assert polygon.move_layer("GND")
         assert len(edbapp.modeler.polygons) == 1
         assert edbapp.modeler.polygons[0].layer_name == "GND"
@@ -1551,29 +1597,52 @@ class TestClass:
         edbapp.close()
 
     def test_dcir_properties(self, edb_examples):
-        # Done
         edbapp = edb_examples.get_si_verse()
         setup = edbapp.create_siwave_dc_setup()
-        setup.settings.export_dc_thermal_data = True
-        assert setup.settings.export_dc_thermal_data
-        assert not setup.settings.import_thermal_data
-        setup.settings.dc_report_show_active_devices = True
-        assert setup.settings.dc_report_show_active_devices
-        assert not setup.settings.per_pin_use_pin_format
-        setup.settings.use_loop_res_for_per_pin = True
-        assert setup.settings.use_loop_res_for_per_pin
-        setup.settings.dc_report_config_file = edbapp.edbpath
-        assert setup.settings.dc_report_config_file
-        setup.settings.full_dc_report_path = edbapp.edbpath
-        assert setup.settings.full_dc_report_path
-        setup.settings.icepak_temp_file = edbapp.edbpath
-        assert setup.settings.icepak_temp_file
-        setup.settings.per_pin_res_path = edbapp.edbpath
-        assert setup.settings.per_pin_res_path
-        setup.settings.via_report_path = edbapp.edbpath
-        assert setup.settings.via_report_path
-        setup.settings.source_terms_to_ground = {"test": 1}
-        assert setup.settings.source_terms_to_ground
+        if edbapp.grpc:
+            # grpc settings is replacing dc_ir_settings
+            # TODO check is grpc can be backward compatible
+            setup.settings.export_dc_thermal_data = True
+            assert setup.settings.export_dc_thermal_data
+            assert not setup.settings.import_thermal_data
+            setup.settings.dc_report_show_active_devices = True
+            assert setup.settings.dc_report_show_active_devices
+            assert not setup.settings.per_pin_use_pin_format
+            setup.settings.use_loop_res_for_per_pin = True
+            assert setup.settings.use_loop_res_for_per_pin
+            setup.settings.dc_report_config_file = edbapp.edbpath
+            assert setup.settings.dc_report_config_file
+            setup.settings.full_dc_report_path = edbapp.edbpath
+            assert setup.settings.full_dc_report_path
+            setup.settings.icepak_temp_file = edbapp.edbpath
+            assert setup.settings.icepak_temp_file
+            setup.settings.per_pin_res_path = edbapp.edbpath
+            assert setup.settings.per_pin_res_path
+            setup.settings.via_report_path = edbapp.edbpath
+            assert setup.settings.via_report_path
+            setup.settings.source_terms_to_ground = {"test": 1}
+            assert setup.settings.source_terms_to_ground
+        else:
+            setup.dc_ir_settings.export_dc_thermal_data = True
+            assert setup.dc_ir_settings.export_dc_thermal_data
+            assert not setup.dc_ir_settings.import_thermal_data
+            setup.dc_ir_settings.dc_report_show_active_devices = True
+            assert setup.dc_ir_settings.dc_report_show_active_devices
+            assert not setup.dc_ir_settings.per_pin_use_pin_format
+            setup.dc_ir_settings.use_loop_res_for_per_pin = True
+            assert setup.dc_ir_settings.use_loop_res_for_per_pin
+            setup.dc_ir_settings.dc_report_config_file = edbapp.edbpath
+            assert setup.dc_ir_settings.dc_report_config_file
+            setup.dc_ir_settings.full_dc_report_path = edbapp.edbpath
+            assert setup.dc_ir_settings.full_dc_report_path
+            setup.dc_ir_settings.icepak_temp_file = edbapp.edbpath
+            assert setup.dc_ir_settings.icepak_temp_file
+            setup.dc_ir_settings.per_pin_res_path = edbapp.edbpath
+            assert setup.dc_ir_settings.per_pin_res_path
+            setup.dc_ir_settings.via_report_path = edbapp.edbpath
+            assert setup.dc_ir_settings.via_report_path
+            setup.dc_ir_settings.source_terms_to_ground = {"test": 1}
+            assert setup.dc_ir_settings.source_terms_to_ground
         edbapp.close()
 
     def test_arbitrary_wave_ports(self):
