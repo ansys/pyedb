@@ -909,32 +909,41 @@ class TestClass:
         data = {
             "stackup": {
                 "materials": [
-                    {"name": "copper", "conductivity": 570000000,
-                     "thermal_modifier": [
-                         {"property_name": "conductivity",
-                          "basic_quadratic_c1": 0,
-                          "basic_quadratic_c2": 0,
-                          "basic_quadratic_temperature_reference": 22,
-                          "advanced_quadratic_lower_limit": -273.15,
-                          'advanced_quadratic_upper_limit': 1000,
-                          'advanced_quadratic_auto_calculate': True,
-                          'advanced_quadratic_lower_constant': 1,
-                          'advanced_quadratic_upper_constant': 1},
-                     ]
-                     },
-                    {"name": "Megtron4", "permittivity": 3.77, "dielectric_loss_tangent": 0.005,
-                     "thermal_modifier": [
-                         {"property_name": "dielectric_loss_tangent",
-                          "basic_quadratic_c1": 0,
-                          "basic_quadratic_c2": 0,
-                          "basic_quadratic_temperature_reference": 22,
-                          "advanced_quadratic_lower_limit": -273.15,
-                          'advanced_quadratic_upper_limit': 1000,
-                          'advanced_quadratic_auto_calculate': True,
-                          'advanced_quadratic_lower_constant': 1,
-                          'advanced_quadratic_upper_constant': 1}
-                     ]
-                     },
+                    {
+                        "name": "copper",
+                        "conductivity": 570000000,
+                        "thermal_modifier": [
+                            {
+                                "property_name": "conductivity",
+                                "basic_quadratic_c1": 0,
+                                "basic_quadratic_c2": 0,
+                                "basic_quadratic_temperature_reference": 22,
+                                "advanced_quadratic_lower_limit": -273.15,
+                                "advanced_quadratic_upper_limit": 1000,
+                                "advanced_quadratic_auto_calculate": True,
+                                "advanced_quadratic_lower_constant": 1,
+                                "advanced_quadratic_upper_constant": 1,
+                            },
+                        ],
+                    },
+                    {
+                        "name": "Megtron4",
+                        "permittivity": 3.77,
+                        "dielectric_loss_tangent": 0.005,
+                        "thermal_modifier": [
+                            {
+                                "property_name": "dielectric_loss_tangent",
+                                "basic_quadratic_c1": 0,
+                                "basic_quadratic_c2": 0,
+                                "basic_quadratic_temperature_reference": 22,
+                                "advanced_quadratic_lower_limit": -273.15,
+                                "advanced_quadratic_upper_limit": 1000,
+                                "advanced_quadratic_auto_calculate": True,
+                                "advanced_quadratic_lower_constant": 1,
+                                "advanced_quadratic_upper_constant": 1,
+                            }
+                        ],
+                    },
                     {"name": "Megtron4_2", "permittivity": 3.77, "dielectric_loss_tangent": 0.005},
                     {"name": "Solder Resist", "permittivity": 4, "dielectric_loss_tangent": 0},
                 ]
