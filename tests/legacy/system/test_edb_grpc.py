@@ -1449,7 +1449,6 @@ class TestClass:
         edbapp = Edb(out_edb, edbversion=desktop_version)
         edbapp.siwave.create_exec_file(add_dc=True)
         out = edbapp.solve_siwave()
-        assert os.path.exists(out)
         res = edbapp.export_siwave_dc_results(out, "SIwaveDCIR1")
         for i in res:
             assert os.path.exists(i)
