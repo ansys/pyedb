@@ -27,15 +27,15 @@ from pyedb.configuration.cfg_common import CfgBase
 class CfgMaterialPropertyThermalModifier:
     def __init__(self, **kwargs):
         self.property_name = kwargs["property_name"]
-        self.basic_quadratic_c1 = kwargs.get('basic_quadratic_c1', 0)
-        self.basic_quadratic_c2 = kwargs.get('basic_quadratic_c2', 0)
-        self.basic_quadratic_temperature_reference = kwargs.get('basic_quadratic_temperature_reference', 22)
-        self.advanced_quadratic_lower_limit = kwargs.get('advanced_quadratic_lower_limit', -273.15)
-        self.advanced_quadratic_upper_limit = kwargs.get('advanced_quadratic_upper_limit', 1000)
+        self.basic_quadratic_c1 = kwargs.get("basic_quadratic_c1", 0)
+        self.basic_quadratic_c2 = kwargs.get("basic_quadratic_c2", 0)
+        self.basic_quadratic_temperature_reference = kwargs.get("basic_quadratic_temperature_reference", 22)
+        self.advanced_quadratic_lower_limit = kwargs.get("advanced_quadratic_lower_limit", -273.15)
+        self.advanced_quadratic_upper_limit = kwargs.get("advanced_quadratic_upper_limit", 1000)
 
-        self.advanced_quadratic_auto_calculate = kwargs.get('advanced_quadratic_auto_calculate', True)
-        self.advanced_quadratic_lower_constant = kwargs.get('advanced_quadratic_lower_constant', 1)
-        self.advanced_quadratic_upper_constant = kwargs.get('advanced_quadratic_upper_constant', 1)
+        self.advanced_quadratic_auto_calculate = kwargs.get("advanced_quadratic_auto_calculate", True)
+        self.advanced_quadratic_lower_constant = kwargs.get("advanced_quadratic_lower_constant", 1)
+        self.advanced_quadratic_upper_constant = kwargs.get("advanced_quadratic_upper_constant", 1)
 
     def to_dict(self):
         return {
@@ -47,7 +47,7 @@ class CfgMaterialPropertyThermalModifier:
             "advanced_quadratic_upper_limit": self.advanced_quadratic_upper_limit,
             "advanced_quadratic_auto_calculate": self.advanced_quadratic_auto_calculate,
             "advanced_quadratic_lower_constant": self.advanced_quadratic_lower_constant,
-            "advanced_quadratic_upper_constant": self.advanced_quadratic_upper_constant
+            "advanced_quadratic_upper_constant": self.advanced_quadratic_upper_constant,
         }
 
 
@@ -64,8 +64,9 @@ class CfgMaterial(CfgBase):
         self.specific_heat = kwargs.get("specific_heat", None)
         self.thermal_conductivity = kwargs.get("thermal_conductivity", None)
 
-        self.thermal_modifier = [CfgMaterialPropertyThermalModifier(**i) for i in kwargs.get("thermal_modifier", {}) if
-                                 i is not None]
+        self.thermal_modifier = [
+            CfgMaterialPropertyThermalModifier(**i) for i in kwargs.get("thermal_modifier", {}) if i is not None
+        ]
 
 
 class CfgLayer(CfgBase):

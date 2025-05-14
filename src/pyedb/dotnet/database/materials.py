@@ -459,16 +459,16 @@ class Material(object):
     #     _ = getattr(self, name)
 
     def set_thermal_modifier(
-            self,
-            property_name: str,
-            basic_quadratic_temperature_reference: 21,
-            basic_quadratic_c1: float = 0.1,
-            basic_quadratic_c2: float = 0.1,
-            advanced_quadratic_lower_limit: float = -270,
-            advanced_quadratic_upper_limit: float = 1001,
-            advanced_quadratic_auto_calculate: bool = False,
-            advanced_quadratic_lower_constant: float = 1.1,
-            advanced_quadratic_upper_constant: float = 1.1,
+        self,
+        property_name: str,
+        basic_quadratic_temperature_reference: 21,
+        basic_quadratic_c1: float = 0.1,
+        basic_quadratic_c2: float = 0.1,
+        advanced_quadratic_lower_limit: float = -270,
+        advanced_quadratic_upper_limit: float = 1001,
+        advanced_quadratic_auto_calculate: bool = False,
+        advanced_quadratic_lower_constant: float = 1.1,
+        advanced_quadratic_upper_constant: float = 1.1,
     ):
         _edb = self._pedb._edb
         basic = _edb.Utility.BasicQuadraticParams(
@@ -486,8 +486,7 @@ class Material(object):
 
         thermal_modifier = _edb.Definition.MaterialPropertyThermalModifier(basic, advanced)
         if not self.__material_def.SetThermalModifier(
-            self.material_property_id_mapping[property_name],
-            thermal_modifier
+            self.material_property_id_mapping[property_name], thermal_modifier
         ):
             raise ValueError(f"Fail to set thermal modifier for property {property_name}")
         else:
