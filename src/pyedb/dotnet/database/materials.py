@@ -116,6 +116,22 @@ class Material(object):
         self.__material_def = material_def
         self.__dc_model = material_def.GetDielectricMaterialModel()
 
+        self._pedb = edb
+        self._edb_object = material_def
+        definition = self.__edb_definition
+        self.material_property_id_mapping = {
+            "conductivity": definition.MaterialPropertyId.Conductivity,
+            "permittivity": definition.MaterialPropertyId.Permittivity,
+            "dielectric_loss_tangent": definition.MaterialPropertyId.DielectricLossTangent,
+            "magnetic_loss_tangent": definition.MaterialPropertyId.MagneticLossTangent,
+            "mass_density": definition.MaterialPropertyId.MassDensity,
+            "permeability": definition.MaterialPropertyId.Permeability,
+            "poisson_ratio": definition.MaterialPropertyId.PoissonsRatio,
+            "specific_heat": definition.MaterialPropertyId.SpecificHeat,
+            "thermal_conductivity": definition.MaterialPropertyId.ThermalConductivity,
+            "thermal_expansion_coefficient": definition.MaterialPropertyId.ThermalExpansionCoefficient,
+        }
+
     @property
     def name(self):
         """Material name."""
@@ -441,6 +457,41 @@ class Material(object):
     #     setattr(self.__properties, name, None)
     #     # Trigger get value on the property
     #     _ = getattr(self, name)
+
+    def set_thermal_modifier(
+            self,
+            property_name: str,
+            basic_quadratic_temperature_reference: 21,
+            basic_quadratic_c1: float = 0.1,
+            basic_quadratic_c2: float = 0.1,
+            advanced_quadratic_lower_limit: float = -270,
+            advanced_quadratic_upper_limit: float = 1001,
+            advanced_quadratic_auto_calculate: bool = False,
+            advanced_quadratic_lower_constant: float = 1.1,
+            advanced_quadratic_upper_constant: float = 1.1,
+    ):
+        _edb = self._pedb._edb
+        basic = _edb.Utility.BasicQuadraticParams(
+            _edb.Utility.Value(basic_quadratic_temperature_reference),
+            _edb.Utility.Value(basic_quadratic_c1),
+            _edb.Utility.Value(basic_quadratic_c2),
+        )
+        advanced = _edb.Utility.AdvancedQuadraticParams(
+            _edb.Utility.Value(advanced_quadratic_lower_limit),
+            _edb.Utility.Value(advanced_quadratic_upper_limit),
+            advanced_quadratic_auto_calculate,
+            _edb.Utility.Value(advanced_quadratic_lower_constant),
+            _edb.Utility.Value(advanced_quadratic_upper_constant),
+        )
+
+        thermal_modifier = _edb.Definition.MaterialPropertyThermalModifier(basic, advanced)
+        if not self.__material_def.SetThermalModifier(
+            self.material_property_id_mapping[property_name],
+            thermal_modifier
+        ):
+            raise ValueError(f"Fail to set thermal modifier for property {property_name}")
+        else:
+            return True
 
 
 class Materials(object):
