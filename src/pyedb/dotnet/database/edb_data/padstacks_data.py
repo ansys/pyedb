@@ -1466,6 +1466,19 @@ class EDBPadstackInstance(Primitive):
             return self._edb_padstackinstance.SetBackDrillParameters(layer, val, False)
 
     @property
+    def backdrill_type(self):
+        """Adding grpc compatibility. DotNet is supporting only layer drill type with adding stub length."""
+        return "layer_drill"
+
+    def get_back_drill_by_layer(self):
+        params = self.backdrill_parameters["from_bottom"]
+        return (
+            params["drill_to_layer"],
+            round(self._pedb.edb_value(params["stub_length"]).ToDouble(), 6),
+            round(self._pedb.edb_value(params["diameter"]).ToDouble(), 6),
+        )
+
+    @property
     def backdrill_bottom(self):
         """Backdrill layer from bottom.
 

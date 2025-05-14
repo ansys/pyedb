@@ -1362,16 +1362,6 @@ class TestClass:
         assert layer == "signal1"
         assert offset == 100e-6
         assert diameter == 200e-6
-        # padstack_instance2 = edb.padstacks.place(position=[0.5, 0.5], net_name="test", definition_name="test1")
-        # padstack_instance2.set_back_drill_by_layer(drill_to_layer=drill_layer,
-        #                                            diameter=drill_diameter,
-        #                                            offset=drill_offset,
-        #                                            from_bottom=False)
-        # assert padstack_instance2.get_back_drill_by_layer(from_bottom=False)
-        # layer2, offset2, diameter2 = padstack_instance2.get_back_drill_by_layer()
-        # assert layer2 == "signal1"
-        # assert offset2 == 100e-6
-        # assert diameter2 == 200e-6
         edb.close()
 
     def test_add_layer_api_with_control_file(self):
