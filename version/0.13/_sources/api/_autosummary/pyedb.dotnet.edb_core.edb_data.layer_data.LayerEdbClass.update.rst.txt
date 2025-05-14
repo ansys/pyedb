@@ -1,0 +1,6 @@
+update
+======
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.layer_data
+
+.. automethod:: LayerEdbClass.update

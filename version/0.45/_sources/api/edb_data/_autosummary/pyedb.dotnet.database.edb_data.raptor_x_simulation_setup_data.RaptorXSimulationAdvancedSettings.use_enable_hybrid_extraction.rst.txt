@@ -1,0 +1,6 @@
+use\_enable\_hybrid\_extraction
+===============================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data
+
+.. autoproperty:: RaptorXSimulationAdvancedSettings.use_enable_hybrid_extraction

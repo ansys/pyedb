@@ -1,0 +1,6 @@
+close\_project
+==============
+
+.. currentmodule:: pyedb.siwave
+
+.. automethod:: Siwave.close_project

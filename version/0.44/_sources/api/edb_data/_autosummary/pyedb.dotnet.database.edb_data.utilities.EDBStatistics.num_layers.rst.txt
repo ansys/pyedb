@@ -1,0 +1,6 @@
+num\_layers
+===========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.utilities
+
+.. autoproperty:: EDBStatistics.num_layers

@@ -1,0 +1,6 @@
+min\_plane\_area\_to\_mesh
+==========================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.min_plane_area_to_mesh

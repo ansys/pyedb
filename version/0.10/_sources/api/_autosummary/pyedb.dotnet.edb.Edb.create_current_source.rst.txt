@@ -1,0 +1,6 @@
+create\_current\_source
+=======================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.create_current_source

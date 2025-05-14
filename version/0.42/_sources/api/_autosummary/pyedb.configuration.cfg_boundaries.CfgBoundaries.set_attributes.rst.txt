@@ -1,0 +1,6 @@
+set\_attributes
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_boundaries
+
+.. automethod:: CfgBoundaries.set_attributes

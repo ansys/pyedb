@@ -1,0 +1,6 @@
+get\_configurations
+===================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. automethod:: DCAdvancedSettings.get_configurations

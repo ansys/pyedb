@@ -1,0 +1,6 @@
+use\_s\_parameter\_model
+========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component
+
+.. automethod:: EDBComponent.use_s_parameter_model
