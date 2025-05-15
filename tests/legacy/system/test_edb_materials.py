@@ -349,13 +349,11 @@ class TestClass:
 
     def test_update_materials_from_syslib(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
-
-        assert edbapp.cutout(
-            signal_list=["SFPA_RX_P", "SFPA_RX_N"],
-            reference_list=["GND"],
-            extent_type="ConvexHull",
-            simple_pad_check=True,
-        )
+        edbapp.materials.update_materials_from_sys_library(False, "copper")
+        assert edbapp.materials["copper"].thermal_conductivity == 400
+        edbapp.materials["FR4_epoxy"].thermal_conductivity = 1
+        edbapp.materials.update_materials_from_sys_library()
+        edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
         edbapp.close()
 
     def test_material_thermal_modifier(self):
