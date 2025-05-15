@@ -1902,14 +1902,18 @@ class TestClass:
 
     @pytest.mark.parametrize("pins_mode", ("global_str", "int", "str", "pin"))
     def test_create_circuit_port_on_component_pins_pins_mode(self, edb_examples, pins_mode: str):
-        # TODO overwrite edb_uid to id in grpc to avoid confusion
+        # Check issue #550 on changing edb_uid to id.
         edbapp = edb_examples.get_si_verse()
         component_name = "U10"
         edbcomp = edbapp.components[component_name]
         positive_pin_names = ["4"]
         reference_pin_names = ["2"]
-        positive_pin_numbers = [edbcomp.pins[pin].id for pin in positive_pin_names]
-        reference_pin_numbers = [edbcomp.pins[pin].id for pin in reference_pin_names]
+        if edbapp.grpc:
+            positive_pin_numbers = [edbcomp.pins[pin].edb_uid for pin in positive_pin_names]
+            reference_pin_numbers = [edbcomp.pins[pin].edb_uid for pin in reference_pin_names]
+        else:
+            positive_pin_numbers = [edbcomp.pins[pin].id for pin in positive_pin_names]
+            reference_pin_numbers = [edbcomp.pins[pin].id for pin in reference_pin_names]
         if pins_mode == "global_str":
             positive_pin_names = [f"{component_name}-{pin}" for pin in positive_pin_names]
             reference_pin_names = [f"{component_name}-{pin}" for pin in reference_pin_names]
