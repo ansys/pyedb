@@ -545,41 +545,6 @@ class TestClass:
         assert data == data_from_db
         edbapp.close()
 
-    def test_08a_operations_cutout(self, edb_examples):
-        data = {
-            "operations": {
-                "cutout": {
-                    "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
-                    "reference_list": ["GND"],
-                    "extent_type": "ConvexHull",
-                    "expansion_size": 0.002,
-                    "use_round_corner": False,
-                    "output_aedb_path": "",
-                    "open_cutout_at_end": True,
-                    "use_pyaedt_cutout": True,
-                    "number_of_threads": 4,
-                    "use_pyaedt_extent_computing": True,
-                    "extent_defeature": 0,
-                    "remove_single_pin_components": False,
-                    "custom_extent": "",
-                    "custom_extent_units": "mm",
-                    "include_partial_instances": False,
-                    "keep_voids": True,
-                    "check_terminals": False,
-                    "include_pingroups": False,
-                    "expansion_factor": 0,
-                    "maximum_iterations": 10,
-                    "preserve_components_with_model": False,
-                    "simple_pad_check": False,
-                    "keep_lines_as_path": False,
-                }
-            }
-        }
-        edbapp = edb_examples.get_si_verse()
-        assert edbapp.configuration.load(data, apply_file=True)
-        assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND", "pyedb_cutout"])
-        edbapp.close()
-
     def test_operations_cutout_auto_identify_nets(self, edb_examples):
         data = {
             "ports": [
@@ -1412,4 +1377,39 @@ class TestClass:
         data = {"probes": probe}
         assert edbapp.configuration.load(data, apply_file=True)
         assert "probe1" in edbapp.probes
+        edbapp.close()
+
+    def test_08a_operations_cutout(self, edb_examples):
+        data = {
+            "operations": {
+                "cutout": {
+                    "signal_list": ["SFPA_RX_P", "SFPA_RX_N"],
+                    "reference_list": ["GND"],
+                    "extent_type": "ConvexHull",
+                    "expansion_size": 0.002,
+                    "use_round_corner": False,
+                    "output_aedb_path": "",
+                    "open_cutout_at_end": True,
+                    "use_pyaedt_cutout": True,
+                    "number_of_threads": 4,
+                    "use_pyaedt_extent_computing": True,
+                    "extent_defeature": 0,
+                    "remove_single_pin_components": False,
+                    "custom_extent": "",
+                    "custom_extent_units": "mm",
+                    "include_partial_instances": False,
+                    "keep_voids": True,
+                    "check_terminals": False,
+                    "include_pingroups": False,
+                    "expansion_factor": 0,
+                    "maximum_iterations": 10,
+                    "preserve_components_with_model": False,
+                    "simple_pad_check": False,
+                    "keep_lines_as_path": False,
+                }
+            }
+        }
+        edbapp = edb_examples.get_si_verse()
+        assert edbapp.configuration.load(data, apply_file=True)
+        assert set(list(edbapp.nets.nets.keys())) == set(["SFPA_RX_P", "SFPA_RX_N", "GND", "pyedb_cutout"])
         edbapp.close()
