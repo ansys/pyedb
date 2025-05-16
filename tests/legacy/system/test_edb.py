@@ -541,7 +541,7 @@ class TestClass:
     #             assert self.edbapp[key].value == val
     #         elif key == "var2":
     #             assert check_numeric_equivalence(self.edbapp[key].value, 1.0e-5)
-    #         elif key == "var3":
+    #       test_create_edge_port_on_polygon  elif key == "var3":
     #             assert self.edbapp[key].value == val[0]
     #             assert self.edbapp[key].description == val[1]
     #         elif key == "$var4":
@@ -1065,7 +1065,7 @@ class TestClass:
     def test_hfss_simulation_setup_b(self, edb_examples):
         edbapp = edb_examples.get_si_verse()
         setup1 = edbapp.create_hfss_setup("setup1")
-        sweep1 = setup1.add_sweep(
+        setup1.add_sweep(
             name="sweep1",
             frequency_set=[
                 ["linear count", "1MHz", "10MHz", 10],
@@ -1073,7 +1073,7 @@ class TestClass:
         )
         assert len(edbapp.setups["setup1"].sweeps["sweep1"].frequencies) == 10
         assert edbapp.setups["setup1"].sweeps["sweep1"].frequency_string == ["LINC 0.001GHz 0.01GHz 10"]
-        sweep2 = setup1.add_sweep(
+        setup1.add_sweep(
             name="sweep2",
             frequency_set=[
                 ["log scale", "1kHz", "100kHz", 10],
@@ -2160,4 +2160,5 @@ class TestClass:
             local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
         )
         map_file = os.path.join(local_path, "example_models", "cad", "GDS", "dummy_layermap.map")
-        assert self.edbapp.import_layout_file(input_file=input_file, control_file=control_file, map_file=map_file)
+        edb = Edb()
+        assert edb.import_layout_file(input_file=input_file, control_file=control_file, map_file=map_file)
