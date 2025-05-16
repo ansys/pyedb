@@ -608,11 +608,12 @@ class TestClass:
             edbpath=os.path.join(local_path, "example_models", "edb_edge_ports.aedb"),
             edbversion=desktop_version,
         )
-        prim_1_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
         if edb.grpc:
+            prim_1_id = [i.edb_uid for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
             assert edb.source_excitation.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
         else:
             # This method is also available at same location in grpc but is deprecated.
+            prim_1_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
             assert edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
 
         prim_2_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_3"][0]

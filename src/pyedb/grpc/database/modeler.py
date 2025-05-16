@@ -556,9 +556,6 @@ class Modeler(object):
             ``True`` when successful, ``False`` when failed.
         """
         net = self._pedb.nets.find_or_create_net(net_name)
-        if layer_name in self._pedb.stackup.layers:
-            layer = self._pedb.stackup.layers[layer_name]
-
         if start_cap_style.lower() == "round":
             start_cap_style = GrpcPathEndCapType.ROUND
         elif start_cap_style.lower() == "extended":
@@ -591,7 +588,7 @@ class Modeler(object):
         polygon_data = GrpcPolygonData(points=[GrpcPointData(i) for i in points])
         path = Path.create(
             layout=self._active_layout,
-            layer=layer,
+            layer=layer_name,
             net=net,
             width=width,
             end_cap1=start_cap_style,

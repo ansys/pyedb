@@ -181,7 +181,7 @@ class Path(GrpcPath, Primitive):
         #     )
         # else:
         return self._pedb.hfss.create_edge_port_vertical(
-            self.id,
+            self.edb_uid,
             pos,
             name,
             50,
