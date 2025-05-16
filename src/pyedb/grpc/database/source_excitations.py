@@ -353,6 +353,14 @@ class SourceExcitation:
         >>> port_type=SourceType.CoaxPort, do_pingroup=False, refnet="GND")
 
         """
+        if isinstance(port_type, int):
+            # Adding DotNet backward compatibility with SourceType
+            type_mapping = {0: "coax_port", 1: "circuit_port"}
+            if port_type in type_mapping:
+                port_type = type_mapping[port_type]
+            else:
+                self._logger.error(f"unsupported port type with method.")
+                return False
         if isinstance(component, str):
             component = self._pedb.components.instances[component]
         if not isinstance(net_list, list):

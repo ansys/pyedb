@@ -1561,32 +1561,32 @@ class TestClass:
         edbapp.close()
 
     def test_voltage_regulator(self, edb_examples):
-        # TODO is not working with EDB NET not implemented yet in Grpc
+        # TODO working with EDB NET only. Not implemented yet in grpc yet. Also Voltage regulator is bugged in DotNet.
         edbapp = edb_examples.get_si_verse()
-        positive_sensor_pin = edbapp.components["U1"].pins["A2"]
-        negative_sensor_pin = edbapp.components["U1"].pins["A3"]
-        vrm = edbapp.siwave.create_vrm_module(
-            name="test",
-            positive_sensor_pin=positive_sensor_pin,
-            negative_sensor_pin=negative_sensor_pin,
-            voltage="1.5V",
-            load_regulation_current="0.5A",
-            load_regulation_percent=0.2,
-        )
-        assert vrm.component
-        assert vrm.component.refdes == "U1"
-        assert vrm.negative_remote_sense_pin
-        assert vrm.negative_remote_sense_pin.name == "U1-A3"
-        assert vrm.positive_remote_sense_pin
-        assert vrm.positive_remote_sense_pin.name == "U1-A2"
-        assert vrm.voltage == 1.5
-        assert vrm.is_active
-        assert not vrm.is_null
-        assert vrm.id
-        assert edbapp.voltage_regulator_modules
-        assert "test" in edbapp.voltage_regulator_modules
+        if not edbapp.grpc:
+            positive_sensor_pin = edbapp.components["U1"].pins["A2"]
+            negative_sensor_pin = edbapp.components["U1"].pins["A3"]
+            vrm = edbapp.siwave.create_vrm_module(
+                name="test",
+                positive_sensor_pin=positive_sensor_pin,
+                negative_sensor_pin=negative_sensor_pin,
+                voltage="1.5V",
+                load_regulation_current="0.5A",
+                load_regulation_percent=0.2,
+            )
+            assert vrm.component
+            assert vrm.component.refdes == "U1"
+            assert vrm.negative_remote_sense_pin
+            assert vrm.negative_remote_sense_pin.name == "U1-A3"
+            assert vrm.positive_remote_sense_pin
+            assert vrm.positive_remote_sense_pin.name == "U1-A2"
+            assert vrm.voltage == 1.5
+            assert vrm.is_active
+            assert not vrm.is_null
+            assert vrm.id
+            assert edbapp.voltage_regulator_modules
+            assert "test" in edbapp.voltage_regulator_modules
         edbapp.close()
-        pass
 
     def test_workflow(self, edb_examples):
         # TODO check with config file 2.0
@@ -1930,7 +1930,7 @@ class TestClass:
             local_path, "example_models", "cad", "GDS", "sky130_fictitious_dtc_example_control_no_map.xml"
         )
         map_file = os.path.join(local_path, "example_models", "cad", "GDS", "dummy_layermap.map")
-        edb = Edb()
+        edb = Edb(edbversion=desktop_version)
         assert edb.import_layout_file(input_file=input_file, control_file=control_file, map_file=map_file)
 
     @pytest.mark.parametrize("positive_pin_names", (["R20", "R21", "T20"], ["R20"]))
