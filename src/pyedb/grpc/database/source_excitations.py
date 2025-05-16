@@ -403,7 +403,7 @@ class SourceExcitation:
                     "outside the component when not found if argument extend_reference_pins_outside_component is True."
                 )
                 return False
-            pad_params = self._pedb.padstack.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
+            pad_params = self._pedb.padstacks.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
             if not pad_params[0] == 7:
                 if not solder_balls_size:  # pragma no cover
                     sball_diam = min([GrpcValue(val).value for val in pad_params[1]])
@@ -439,7 +439,7 @@ class SourceExcitation:
                 shape=sball_shape,
             )
             for pin in cmp_pins:
-                self._pedb.padstack.create_coax_port(padstackinstance=pin, name=port_name)
+                self._pedb.source_excitation.create_coax_port(padstackinstance=pin, name=port_name)
 
         elif port_type == "circuit_port":  # pragma no cover
             ref_pins = [p for p in list(component.pins.values()) if p.net_name in reference_net]
@@ -802,7 +802,7 @@ class SourceExcitation:
             port_name = generate_unique_name(port_name, n=2)
             self._logger.info("An existing port already has this same name. Renaming to {}.".format(port_name))
         PadstackInstanceTerminal.create(
-            layout=self._pedb._active_layout,
+            layout=self._pedb.active_layout,
             name=port_name,
             padstack_instance=padstackinstance,
             layer=terminal_layer,
