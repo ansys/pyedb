@@ -720,7 +720,7 @@ class Hfss(object):
             "`pyedb.grpc.core.excitations.create_source_on_component` instead.",
             DeprecationWarning,
         )
-        self._pedb.source_excitation.create_wave_port(
+        return self._pedb.source_excitation.create_wave_port(
             prim_id,
             point_on_edge,
             port_name,
