@@ -710,7 +710,7 @@ class TestClass:
             edbversion=desktop_version,
         )
         kwargs = {
-            "layer_name": "1_Top",
+            "layer_name": "TOP",
             "net_name": "SIGP",
             "width": "0.1mm",
             "start_cap_style": "Flat",

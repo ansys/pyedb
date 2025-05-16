@@ -839,7 +839,7 @@ class SourceExcitation:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, tuple):
             point_on_edge = GrpcPointData(point_on_edge)
-        prim = [i for i in self._pedb.modeler.primitives if i.id == prim_id]
+        prim = [i for i in self._pedb.modeler.primitives if i.edb_uid == prim_id]
         if not prim:
             self._pedb.logger.error(f"No primitive found for ID {prim_id}")
             return False
@@ -1660,7 +1660,7 @@ class SourceExcitation:
             port_name = generate_unique_name("Terminal_")
 
         if isinstance(prim_id, Primitive):
-            prim_id = prim_id.id
+            prim_id = prim_id.edb_uid
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
         pos_edge_term.impedance = GrpcValue(impedance)
         wave_port = WavePort(self._pedb, pos_edge_term)
