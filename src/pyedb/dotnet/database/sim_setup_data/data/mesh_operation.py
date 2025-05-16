@@ -48,6 +48,15 @@ class MeshOperation(object):
         }
 
     @property
+    def net_layer_info(self):
+        """Adding property for grpc compatibility."""
+        layer_inf = []
+        for net_name, mesh_op in self.nets_layers_list.items():
+            for layer in mesh_op:
+                layer_inf.append((net_name, layer, True))
+        return layer_inf
+
+    @property
     def enabled(self):
         """Whether if mesh operation is enabled.
 
@@ -221,6 +230,11 @@ class LengthMeshOperation(MeshOperation, object):
         return self._edb_object.MaxLength
 
     @property
+    def restrict_max_length(self):
+        """Adding property for grpc compatibility."""
+        return self.restrict_length
+
+    @property
     def restrict_length(self):
         """Whether to restrict length of elements.
 
@@ -285,6 +299,11 @@ class SkinDepthMeshOperation(MeshOperation, object):
     @surface_triangle_length.setter
     def surface_triangle_length(self, value):
         self._edb_object.SurfTriLength = value
+
+    @property
+    def number_of_layers(self):
+        """Adding property for grpc compatibility."""
+        return self.number_of_layer_elements
 
     @property
     def number_of_layer_elements(self):

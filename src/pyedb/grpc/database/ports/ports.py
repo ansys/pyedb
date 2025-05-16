@@ -108,6 +108,10 @@ class GapPort(EdgeTerminal):
             self._edb_object.port_post_processing_prop.renormalizion_z0[1],
         )
 
+    @property
+    def terminal_type(self):
+        return self._edb_object.terminal_type
+
 
 class CircuitPort(GapPort):
     """Manages gap port properties.

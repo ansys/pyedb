@@ -55,6 +55,16 @@ class GapPort(EdgeTerminal):
         return self._edb_object.GetSourceAmplitude().ToDouble()
 
     @property
+    def source_amplitude(self):
+        """Property added for grpc compatibility"""
+        return self.magnitude
+
+    @property
+    def source_phase(self):
+        """Property added for grpc compatibility"""
+        return self.phase
+
+    @property
     def phase(self):
         """Phase."""
         return self._edb_object.GetSourcePhase().ToDouble()
@@ -76,6 +86,10 @@ class GapPort(EdgeTerminal):
             self._edb_object.GetPortPostProcessingProp().RenormalizionZ0.ToComplex().Item1,
             self._edb_object.GetPortPostProcessingProp().RenormalizionZ0.ToComplex().Item2,
         )
+
+    @property
+    def renormalization_impedance(self):
+        return self.renormalize_z0[0]
 
 
 class CircuitPort(GapPort):

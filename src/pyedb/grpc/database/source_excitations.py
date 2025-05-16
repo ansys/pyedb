@@ -353,6 +353,14 @@ class SourceExcitation:
         >>> port_type=SourceType.CoaxPort, do_pingroup=False, refnet="GND")
 
         """
+        if isinstance(port_type, int):
+            # Adding DotNet backward compatibility with SourceType
+            type_mapping = {0: "coax_port", 1: "circuit_port"}
+            if port_type in type_mapping:
+                port_type = type_mapping[port_type]
+            else:
+                self._logger.error(f"unsupported port type with method.")
+                return False
         if isinstance(component, str):
             component = self._pedb.components.instances[component]
         if not isinstance(net_list, list):
@@ -395,7 +403,7 @@ class SourceExcitation:
                     "outside the component when not found if argument extend_reference_pins_outside_component is True."
                 )
                 return False
-            pad_params = self._pedb.padstack.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
+            pad_params = self._pedb.padstacks.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
             if not pad_params[0] == 7:
                 if not solder_balls_size:  # pragma no cover
                     sball_diam = min([GrpcValue(val).value for val in pad_params[1]])
@@ -431,7 +439,7 @@ class SourceExcitation:
                 shape=sball_shape,
             )
             for pin in cmp_pins:
-                self._pedb.padstack.create_coax_port(padstackinstance=pin, name=port_name)
+                self._pedb.source_excitation.create_coax_port(padstackinstance=pin, name=port_name)
 
         elif port_type == "circuit_port":  # pragma no cover
             ref_pins = [p for p in list(component.pins.values()) if p.net_name in reference_net]
@@ -794,7 +802,7 @@ class SourceExcitation:
             port_name = generate_unique_name(port_name, n=2)
             self._logger.info("An existing port already has this same name. Renaming to {}.".format(port_name))
         PadstackInstanceTerminal.create(
-            layout=self._pedb._active_layout,
+            layout=self._pedb.active_layout,
             name=port_name,
             padstack_instance=padstackinstance,
             layer=terminal_layer,
@@ -831,7 +839,7 @@ class SourceExcitation:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, tuple):
             point_on_edge = GrpcPointData(point_on_edge)
-        prim = [i for i in self._pedb.modeler.primitives if i.id == prim_id]
+        prim = [i for i in self._pedb.modeler.primitives if i.edb_uid == prim_id]
         if not prim:
             self._pedb.logger.error(f"No primitive found for ID {prim_id}")
             return False
@@ -1580,10 +1588,10 @@ class SourceExcitation:
             port_name = generate_unique_name("diff")
 
         if isinstance(positive_primitive_id, Primitive):
-            positive_primitive_id = positive_primitive_id.id
+            positive_primitive_id = positive_primitive_id.edb_uid
 
         if isinstance(negative_primitive_id, Primitive):
-            negative_primitive_id = negative_primitive_id.id
+            negative_primitive_id = negative_primitive_id.edb_uid
 
         _, pos_term = self.create_wave_port(
             positive_primitive_id,
@@ -1652,7 +1660,7 @@ class SourceExcitation:
             port_name = generate_unique_name("Terminal_")
 
         if isinstance(prim_id, Primitive):
-            prim_id = prim_id.id
+            prim_id = prim_id.edb_uid
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
         pos_edge_term.impedance = GrpcValue(impedance)
         wave_port = WavePort(self._pedb, pos_edge_term)
@@ -2027,7 +2035,7 @@ class SourceExcitation:
             port_name = generate_unique_name("bundle_port")
 
         if isinstance(primitives_id[0], Primitive):
-            primitives_id = [i.id for i in primitives_id]
+            primitives_id = [i.edb_uid for i in primitives_id]
 
         terminals = []
         _port_name = port_name
