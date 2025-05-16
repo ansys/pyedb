@@ -461,7 +461,7 @@ class Material(object):
     def set_thermal_modifier(
         self,
         property_name: str,
-        basic_quadratic_temperature_reference: 21,
+        basic_quadratic_temperature_reference: float = 21,
         basic_quadratic_c1: float = 0.1,
         basic_quadratic_c2: float = 0.1,
         advanced_quadratic_lower_limit: float = -270,
@@ -470,6 +470,34 @@ class Material(object):
         advanced_quadratic_lower_constant: float = 1.1,
         advanced_quadratic_upper_constant: float = 1.1,
     ):
+        """Sets the material property thermal modifier of a given material property.
+
+        Parameters
+        ----------
+        property_name : str
+            Name of the property to modify.
+        basic_quadratic_temperature_reference : float, optional
+            The TempRef value in the quadratic model.
+        basic_quadratic_c1 : float, optional
+            The C1 value in the quadratic model.
+        basic_quadratic_c2 : float, optional
+            The C2 value in the quadratic model.
+        advanced_quadratic_lower_limit : float, optional
+            The lower temperature limit where the quadratic model is valid.
+        advanced_quadratic_upper_limit : float, optional
+            The upper temperature limit where the quadratic model is valid.
+        advanced_quadratic_auto_calculate : bool, optional
+             The flag indicating whether or the LowerConstantThermalModifierVal and UpperConstantThermalModifierVal
+             values should be auto calculated.
+        advanced_quadratic_lower_constant : float, optional
+            The constant thermal modifier value for temperatures lower than LowerConstantThermalModifierVal.
+        advanced_quadratic_upper_constant : float, optional
+            The constant thermal modifier value for temperatures greater than UpperConstantThermalModifierVal.
+
+        Returns
+        -------
+
+        """
         _edb = self._pedb._edb
         basic = _edb.Utility.BasicQuadraticParams(
             _edb.Utility.Value(basic_quadratic_temperature_reference),
