@@ -738,7 +738,7 @@ class TestClass:
 
         paths = [i[1] for i in trace_pathes]
         assert edb.hfss.create_bundle_wave_port(traces, paths)
-        p = edb.excitations["wave_port"]
+        p = edb.ports["wave_port"]
         p.horizontal_extent_factor = 6
         p.vertical_extent_factor = 5
         p.pec_launch_width = "0.02mm"

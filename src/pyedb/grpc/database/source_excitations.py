@@ -1588,10 +1588,10 @@ class SourceExcitation:
             port_name = generate_unique_name("diff")
 
         if isinstance(positive_primitive_id, Primitive):
-            positive_primitive_id = positive_primitive_id.id
+            positive_primitive_id = positive_primitive_id.edb_uid
 
         if isinstance(negative_primitive_id, Primitive):
-            negative_primitive_id = negative_primitive_id.id
+            negative_primitive_id = negative_primitive_id.edb_uid
 
         _, pos_term = self.create_wave_port(
             positive_primitive_id,
@@ -2035,7 +2035,7 @@ class SourceExcitation:
             port_name = generate_unique_name("bundle_port")
 
         if isinstance(primitives_id[0], Primitive):
-            primitives_id = [i.id for i in primitives_id]
+            primitives_id = [i.edb_uid for i in primitives_id]
 
         terminals = []
         _port_name = port_name

@@ -527,7 +527,7 @@ class Hfss(object):
             "`pyedb.grpc.core.excitations.create_differential_wave_port` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_differential_wave_port(
+        return self._pedb.source_excitation.create_differential_wave_port(
             positive_primitive_id,
             positive_points_on_edge,
             negative_primitive_id,
@@ -579,7 +579,7 @@ class Hfss(object):
             "`pyedb.grpc.core.excitations.create_bundle_wave_port` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.create_bundle_wave_port(
+        return self._pedb.source_excitation.create_bundle_wave_port(
             primitives_id, points_on_edge, port_name, horizontal_extent_factor, vertical_extent_factor, pec_launch_width
         )
 
