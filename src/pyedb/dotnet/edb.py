@@ -1457,7 +1457,7 @@ class Edb(Database):
             ``True`` when successful, ``False`` when failed.
 
         """
-        self.close()
+        Database.close(self)
 
         if self.log_name and settings.enable_local_log_file:
             self._logger.remove_all_file_loggers()
@@ -1467,6 +1467,9 @@ class Edb(Database):
         self.logger.info("EDB file release time: {0:.2f}ms".format(elapsed_time * 1000.0))
         self._clean_variables()
         return True
+
+    def close(self):
+        self.close_edb()
 
     def save_edb(self):
         """Save the EDB file.
